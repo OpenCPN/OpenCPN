@@ -165,7 +165,7 @@ typedef unsigned int	GLuint;		/* 4-byte unsigned */
 typedef int		GLsizei;	/* 4-byte signed */
 typedef float		GLfloat;	/* single precision float */
 typedef float		GLclampf;	/* single precision float in [0,1] */
-//typedef double		GLdouble;	/* double precision float */
+typedef double		GLdouble;	/* double precision float */
 typedef double		GLclampd;	/* double precision float in [0,1] */
 
 
@@ -175,13 +175,8 @@ typedef double		GLclampd;	/* double precision float in [0,1] */
  */
 
 /* Boolean values */
-#ifndef GL_FALSE
-    #define GL_FALSE				0x0
-#endif
-
-#ifndef GL_TRUE
-    #define GL_TRUE					0x1
-#endif
+#define GL_FALSE				0x0
+#define GL_TRUE					0x1
 
 /* Data types */
 #define GL_BYTE					0x1400

@@ -85,8 +85,7 @@ eglQuerySurfacePointerANGLE: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EG
     attribute, void ** value]
 eglReleaseTexImage: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint buffer]
 eglReleaseThread: [EGLBoolean]
-eglSetBlobCacheFuncsANDROID: ['void ', EGLDisplay dpy, EGLSetBlobFuncANDROID set,
-  EGLGetBlobFuncANDROID get]
+# eglSetBlobCacheFuncsANDROID: ['void ', EGLDisplay dpy, EGLSetBlobFuncANDROID set, EGLGetBlobFuncANDROID get]
 eglSignalSyncKHR: [EGLBoolean, EGLDisplay dpy, EGLSyncKHR sync, EGLenum mode]
 eglSignalSyncNV: [EGLBoolean, EGLSyncNV sync, EGLenum mode]
 eglStreamAttribKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream, EGLenum attribute,

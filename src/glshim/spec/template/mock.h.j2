@@ -1,0 +1,116 @@
+{% extends "base/header.j2" %}
+{% block headers %}{% endblock %}
+{% block main %}
+#ifdef __cplusplus
+extern "C" {
+#endif
+{% include "base/headers.j2" %}
+{{ super() }}
+#ifdef __cplusplus
+} // extern "C"
+#endif
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+const char *mock_name(int func);
+void *mock_cur();
+void *mock_get(int idx);
+void *mock_peek();
+void *mock_shift();
+void *mock_slide(int func);
+void mock_print(const packed_call_t *packed);
+void mock_push(void *call);
+
+static int verbose_test = 0;
+static int failed_test = 0;
+#define verbose { verbose_test = 1; }
+
+#define mock_warningf(...) { printf("WARNING: "), printf(__VA_ARGS__); }
+#define mock_errorf(...) { printf("ERROR: "); printf(__VA_ARGS__); failed_test = 1; }
+#define mock_assert(cond, ...) { if (!(cond)) { mock_errorf(__VA_ARGS__); }}
+#define assert(cond) mock_assert(cond, "%s\n", #cond)
+
+#define mock_print_ptr(prefix, ptr, size) \
+    printf("%s ", prefix); \
+    if (ptr == NULL) { \
+        printf("NULL"); \
+    } else { \
+        for (size_t i = 0; i < size; i++) { \
+            if (i > 0 && i % 4 == 0) printf(" "); \
+            printf("%02X", *(uint8_t *)(ptr+i)); \
+        } \
+    } \
+    printf("\n");
+
+#define mock_return { \
+    packed_call_t *call = NULL; \
+    while ((call = mock_shift()) != NULL) { \
+        mock_warningf("extra "); \
+        mock_print(call); \
+    } \
+    if (state.error) { \
+        mock_warningf("Ended with GL error flag: %s\n", gl_str(state.error)); \
+    } \
+    return failed_test; \
+}
+
+{% for func in functions %}
+#define emit_{{ func.name }}({{ func.args|args(0) }}) { \
+    mock_push(pack_{{ func.name }}(NULL{% if func.args %}, {{ func.args|args(0) }}{% endif %})); \
+}
+#define test_{{ func.name }}({{ func.args|args(0, '_') }}) { \
+    {{ func.name }}_PACKED *packed = mock_cur(); \
+    if (packed == NULL) { \
+        mock_errorf("{{ func.name }} missing (no calls left)\n"); \
+    } else if (packed->index != {{ func.name }}_INDEX) { \
+        if (verbose_test) { \
+            mock_print(mock_cur()); \
+        } \
+        packed_call_t *tmp = (packed_call_t *)packed; \
+        packed = mock_slide({{ func.name }}_INDEX); \
+        if (! packed) { \
+            mock_errorf("{{ func.name }} missing\n"); \
+        } else { \
+            mock_warningf("unexpected call while looking for {{ func.name }}:\n  "); \
+            mock_print(tmp); \
+        }\
+    } else { \
+        if (verbose_test) { \
+            mock_print(mock_cur()); \
+        } \
+        mock_shift(); \
+    } \
+    if (packed) { \
+        int match = 1; \
+        void *a, *b; \
+        {% for arg in func.args %}
+        {% if '*' in arg.type %}
+        a = packed->args.{{ arg.name }}, b = _{{ arg.name }}; \
+        if (b == NULL && a != NULL || (a != NULL && b != NULL && (memcmp(a, b, sizeof(_{{ arg.name }})) != 0))) { \
+            printf("  ERROR: arg mismatch: {{ arg.name }}\n"); \
+            mock_print_ptr("  expected:", b, sizeof(_{{ arg.name }})); \
+            mock_print_ptr("     found:", a, sizeof(_{{ arg.name }})); \
+        {% elif 'float' in arg.type or 'double' in arg.type %}
+        if (packed->args.{{ arg.name }} - _{{ arg.name }} >= 0.01) { \
+        {% else %}
+        if (packed->args.{{ arg.name }} != _{{ arg.name }}) { \
+        {% endif %}
+            match = 0; \
+        } \
+        {% endfor %}
+        if (! match) { \
+            mock_errorf("calls do not match:\n"); \
+            printf("  have: "); mock_print((const packed_call_t *)packed); \
+            printf("  want: {{ func.name }}({{ func.args|printf }});\n", {{ func.args|args(0, '_') }}); \
+        } \
+    } \
+}
+{% endfor %}
+
+{% for func in functions %}
+{% if not func.name.startswith('glX') %}
+{{ func.return }} gles_{{ func.name }}({{ func.name }}_ARG_EXPAND);
+{% endif %}
+{% endfor %}
+{% endblock %}

@@ -15,7 +15,7 @@ glx:
   glXCreateGLXPixmapWithConfigSGIX: [void, uint32_t config, uint32_t pixmap, uint32_t
       glxpixmap]
   glXCreateGLXVideoSourceSGIX: [void, Display *dpy, uint32_t screen, uint32_t server,
-    uint32_t path, uint32_t class, uint32_t node]
+    uint32_t path, uint32_t cls, uint32_t node]
   glXCreateNewContext: [void, uint32_t config, uint32_t render_type, uint32_t share_list,
     uint32_t direct]
   glXCreatePbuffer: [void, uint32_t config, uint32_t pbuffer]
@@ -69,7 +69,7 @@ glx:
   glXSwapBuffers: [void, Display *dpy, GLXDrawable drawable]
   glXSwapIntervalSGI: [void, unsigned int interval]
   glXSwapIntervalMESA: [int, unsigned int interval]
-  glXUseXFont: [void, Font font, int first, int count, int list]
+  glXUseXFont: [void, Font font, int first, int count, int listBase]
   glXVendorPrivate: [void]
   glXVendorPrivateWithReply: [void]
   glXWaitGL: [void]

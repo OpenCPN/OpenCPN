@@ -1,24 +1,36 @@
+#ifdef __linux__
+#include <linux/fb.h>
+#endif
+
 #include <execinfo.h>
 #include <fcntl.h>
-#include <linux/fb.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <unistd.h>
 
 #include "glx.h"
-#include <GLES/gl.h>
+
+#include "../gl/loader.h"
+#include "../gl/raster.h"
+#include "../gl/remote.h"
+#include "text.h"
+#include "liveinfo.h"
 
 bool eglInitialized = false;
-EGLDisplay eglDisplay;
 EGLSurface eglSurface;
 EGLConfig eglConfigs[1];
 
+//#define X11HACK_TRUECOLOR 1
+#define X11HACK_SHM 1
+
 int8_t CheckEGLErrors() {
+    LOAD_EGL(eglGetError);
     EGLenum error;
     char *errortext;
 
-    error = eglGetError();
+    error = egl_eglGetError();
 
     if (error != EGL_SUCCESS && error != 0) {
         switch (error) {
@@ -52,7 +64,6 @@ static int get_config_default(int attribute, int *value) {
         case GLX_DOUBLEBUFFER:
             *value = 1;
             break;
-        case GLX_LEVEL:
         case GLX_STEREO:
             *value = 0;
             break;
@@ -81,11 +92,8 @@ static int get_config_default(int attribute, int *value) {
         case GLX_ACCUM_ALPHA_SIZE:
             *value = 0;
             break;
-        case GLX_TRANSPARENT_TYPE:
-            *value = GLX_NONE;
-            break;
         case GLX_RENDER_TYPE:
-            *value = GLX_RGBA_BIT | GLX_COLOR_INDEX_BIT;
+            *value = GLX_RGBA_BIT;
             break;
         case GLX_VISUAL_ID:
             *value = 1;
@@ -96,15 +104,9 @@ static int get_config_default(int attribute, int *value) {
         case GLX_DRAWABLE_TYPE:
             *value = GLX_WINDOW_BIT;
             break;
-        case GLX_BUFFER_SIZE:
-             *value = 16;
-            break;
-        case GLX_X_VISUAL_TYPE:
-        case GLX_CONFIG_CAVEAT:
-        case GLX_SAMPLE_BUFFERS:
-        case GLX_SAMPLES:
-            *value = 0;
-            break;
+        case 2: // apparently this is bpp
+	     *value = 16;
+            return 0;
         default:
             printf("libGL: unknown attrib %i\n", attribute);
             *value = 0;
@@ -113,38 +115,59 @@ static int get_config_default(int attribute, int *value) {
     return 0;
 }
 
-// hmm...
 static EGLContext eglContext;
 static GLXContext glxContext;
-static Display *g_display;
 
+#ifdef __linux__
 #ifndef FBIO_WAITFORVSYNC
 #define FBIO_WAITFORVSYNC _IOW('F', 0x20, __u32)
 #endif
+#endif
 static bool g_showfps = false;
+static bool g_liveinfo = true;
+static bool g_fps_overlay = false;
 static bool g_usefb = false;
 static bool g_vsync = false;
 static bool g_xrefresh = false;
 static bool g_stacktrace = false;
+static bool g_x11_reopen = false;
+// raspberry pi globals
 static bool g_bcm_active = false;
-#ifndef BCMHOST
 static bool g_bcmhost = false;
-#else
-static bool g_bcmhost = true;
-#endif
+void (*bcm_host_init)();
+void (*bcm_host_deinit)();
 
 static int fbdev = -1;
 static int swap_interval = 1;
 
-static void init_display(Display *display) {
-    if (! g_display) {
-        g_display = XOpenDisplay(NULL);
+static Display *get_display(Display *display) {
+    static Display *x11_display = NULL;
+    if (! x11_display) {
+        if (g_x11_reopen) {
+            x11_display = XOpenDisplay(NULL);
+        } else {
+            x11_display = display;
+        }
     }
-    if (g_usefb) {
-        eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    } else {
-        eglDisplay = eglGetDisplay(g_display);
+    return x11_display;
+}
+
+static EGLDisplay get_egl_display(Display *display) {
+    static EGLDisplay eglDisplay = NULL;
+    LOAD_EGL(eglGetDisplay);
+    if (! eglDisplay) {
+        if (! g_usefb) {
+            eglDisplay = egl_eglGetDisplay(get_display(display));
+        } else {
+            eglDisplay = egl_eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        }
+        if (! g_usefb && eglDisplay == EGL_NO_DISPLAY) {
+            fprintf(stderr, "libGL: Could not open display. Trying framebuffer.\n");
+            eglDisplay = egl_eglGetDisplay(EGL_DEFAULT_DISPLAY);
+            g_usefb = 1;
+        }
     }
+    return eglDisplay;
 }
 
 static void init_vsync() {
@@ -162,12 +185,10 @@ static void signal_handler(int sig) {
     if (g_xrefresh)
         xrefresh();
 
-#ifdef BCMHOST
-    if (g_bcm_active) {
+    if (g_bcmhost && g_bcm_active) {
         g_bcm_active = false;
         bcm_host_deinit();
     }
-#endif
 
     if (g_stacktrace) {
         switch (sig) {
@@ -180,7 +201,7 @@ static void signal_handler(int sig) {
                 if (! size) {
                     printf("No stacktrace. Compile with -funwind-tables.\n");
                 } else {
-                    printf("Stacktrace: %i\n", size);
+                    printf("Stacktrace: %lu\n", size);
                     backtrace_symbols_fd(array, size, 2);
                 }
                 break;
@@ -207,6 +228,12 @@ static void scan_env() {
 
     env(LIBGL_XREFRESH, g_xrefresh, "xrefresh will be called on cleanup");
     env(LIBGL_STACKTRACE, g_stacktrace, "stacktrace will be printed on crash");
+    if (bcm_host) {
+        bcm_host_init = dlsym(bcm_host, "bcm_host_init");
+        bcm_host_deinit = dlsym(bcm_host, "bcm_host_deinit");
+        if (bcm_host_init && bcm_host_deinit)
+            g_bcmhost = true;
+    }
     if (g_xrefresh || g_stacktrace || g_bcmhost) {
         // TODO: a bit gross. Maybe look at this: http://stackoverflow.com/a/13290134/293352
         signal(SIGBUS, signal_handler);
@@ -220,23 +247,51 @@ static void scan_env() {
         }
         if (g_xrefresh)
             atexit(xrefresh);
-#ifdef BCMHOST
+        if (g_bcmhost && g_bcm_active)
             atexit(bcm_host_deinit);
-#endif
     }
     env(LIBGL_FB, g_usefb, "framebuffer output enabled");
     env(LIBGL_FPS, g_showfps, "fps counter enabled");
+    env(LIBGL_FPS_OVERLAY, g_fps_overlay, "fps overlay enabled");
     env(LIBGL_VSYNC, g_vsync, "vsync enabled");
+    env(LIBGL_X11_REOPEN, g_x11_reopen, "reopening X11 display");
     if (g_vsync) {
         init_vsync();
     }
+    const char *remote = getenv("LIBGL_REMOTE");
+    if (remote) {
+        unsetenv("LIBGL_REMOTE");
+        if (strcmp(remote, "1") == 0) {
+            remote = NULL;
+        }
+        int pid = remote_spawn(remote);
+        if (pid > 0) {
+            state.remote = pid;
+            printf("libGL: remote pid %d\n", pid);
+        }
+    }
 }
 
-GLXContext glXCreateContext(Display *display,
-                            XVisualInfo *visual,
-                            GLXContext shareList,
-                            Bool isDirect) {
-    EGLint configAttribs[] = {
+static Display *Xdsp;
+static Window Xwin;
+static XWindowAttributes Xgwa;
+static GC Xgc;
+static XImage *Ximage = 0;
+static int Ximage_width, Ximage_height;
+
+GLXContext glXCreateContext(Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct) {
+    scan_env();
+    FORWARD_IF_REMOTE(glXCreateContext);
+    PROXY_GLES(glXCreateContext);
+    LOAD_EGL(eglBindAPI);
+    LOAD_EGL(eglChooseConfig);
+    LOAD_EGL(eglCreateContext);
+    LOAD_EGL(eglDestroyContext);
+    LOAD_EGL(eglDestroySurface);
+    LOAD_EGL(eglInitialize);
+    LOAD_EGL(eglMakeCurrent);
+
+    EGLint configAttribs_default[] = {
 #ifdef PANDORA
         EGL_RED_SIZE, 5,
         EGL_GREEN_SIZE, 6,
@@ -253,6 +308,21 @@ GLXContext glXCreateContext(Display *display,
         EGL_NONE
     };
 
+    EGLint configAttribs_x11hack[] = {
+#if X11HACK_TRUECOLOR
+        EGL_RED_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_BLUE_SIZE, 8,
+	EGL_ALPHA_SIZE, 8,
+#endif
+        EGL_DEPTH_SIZE, 16,
+	EGL_BUFFER_SIZE, 8,
+        EGL_SURFACE_TYPE,
+	EGL_PIXMAP_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+        EGL_NONE
+    };
+
 #ifdef USE_ES2
     EGLint attrib_list[] = {
         EGL_CONTEXT_CLIENT_VERSION, 2,
@@ -262,77 +332,78 @@ GLXContext glXCreateContext(Display *display,
     EGLint *attrib_list = NULL;
 #endif
 
-    scan_env();
 
-#ifdef BCMHOST
-    if (! g_bcm_active) {
+    if (g_bcmhost && !g_bcm_active) {
         g_bcm_active = true;
         bcm_host_init();
     }
-#endif
 
     GLXContext fake = malloc(sizeof(struct __GLXContextRec));
-    if (eglDisplay != NULL) {
-        eglMakeCurrent(eglDisplay, NULL, NULL, EGL_NO_CONTEXT);
-        if (eglContext != NULL) {
-            eglDestroyContext(eglDisplay, eglContext);
+    EGLDisplay eglDisplay = get_egl_display(dpy);
+    if (eglDisplay) {
+        egl_eglMakeCurrent(eglDisplay, NULL, NULL, EGL_NO_CONTEXT);
+        if (eglContext) {
+            egl_eglDestroyContext(eglDisplay, eglContext);
             eglContext = NULL;
         }
-        if (eglSurface != NULL) {
-            eglDestroySurface(eglDisplay, eglSurface);
+        if (eglSurface) {
+            egl_eglDestroySurface(eglDisplay, eglSurface);
             eglSurface = NULL;
         }
     }
 
-    // make an egl context here...
-    EGLBoolean result;
-    if (eglDisplay == NULL || eglDisplay == EGL_NO_DISPLAY) {
-        init_display(display);
-        if (eglDisplay == EGL_NO_DISPLAY) {
-            printf("Unable to create EGL display.\n");
-            return fake;
-        }
+    if (eglDisplay == EGL_NO_DISPLAY) {
+        printf("Unable to create EGL display.\n");
+        return fake;
     }
 
     // first time?
+    EGLBoolean result;
     if (eglInitialized == false) {
-        eglBindAPI(EGL_OPENGL_ES_API);
-        result = eglInitialize(eglDisplay, NULL, NULL);
+        egl_eglBindAPI(EGL_OPENGL_ES_API);
+        result = egl_eglInitialize(eglDisplay, NULL, NULL);
         if (result != EGL_TRUE) {
             printf("Unable to initialize EGL display.\n");
             return fake;
         }
+
         eglInitialized = true;
     }
 
     int configsFound;
-    result = eglChooseConfig(eglDisplay, configAttribs, eglConfigs, 1, &configsFound);
+    result = egl_eglChooseConfig
+        (eglDisplay, g_bcmhost ? configAttribs_x11hack : configAttribs_default,
+         eglConfigs, 1, &configsFound);
     CheckEGLErrors();
     if (result != EGL_TRUE || configsFound == 0) {
         printf("No EGL configs found.\n");
         return fake;
     }
-    eglContext = eglCreateContext(eglDisplay, eglConfigs[0], EGL_NO_CONTEXT, attrib_list);
+    eglContext = egl_eglCreateContext(eglDisplay, eglConfigs[0], EGL_NO_CONTEXT, attrib_list);
     CheckEGLErrors();
 
     // need to return a glx context pointing at it
-    fake->display = g_display;
+    fake->display = get_display(dpy);
     fake->direct = true;
     fake->xid = 1;
     return fake;
 }
 
-GLXContext glXCreateContextAttribsARB(Display *display, void *config,
-                                      GLXContext share_context, Bool direct,
-                                      const int *attrib_list) {
-    return glXCreateContext(display, NULL, NULL, direct);
+GLXContext glXCreateContextAttribsARB(Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list) {
+    PROXY_GLES(glXCreateContextAttribsARB);
+    return glXCreateContext(dpy, NULL, NULL, direct);
 }
 
-void glXDestroyContext(Display *display, GLXContext ctx) {
+void glXDestroyContext(Display *dpy, GLXContext ctx) {
+    FORWARD_IF_REMOTE(glXDestroyContext);
+    PROXY_GLES(glXDestroyContext);
+    LOAD_EGL(eglDestroyContext);
+    LOAD_EGL(eglDestroySurface);
+    EGLDisplay eglDisplay = get_egl_display(dpy);
     if (eglContext) {
-        EGLBoolean result = eglDestroyContext(eglDisplay, eglContext);
+        EGLBoolean result = egl_eglDestroyContext(eglDisplay, eglContext);
         if (eglSurface != NULL) {
-            eglDestroySurface(eglDisplay, eglSurface);
+            egl_eglDestroySurface(eglDisplay, eglSurface);
         }
 
         if (result != EGL_TRUE) {
@@ -347,32 +418,19 @@ void glXDestroyContext(Display *display, GLXContext ctx) {
 }
 
 Display *glXGetCurrentDisplay() {
-    if (g_display && eglContext) {
-        return g_display;
-    }
+    PROXY_GLES(glXGetCurrentDisplay);
+    Display *dpy = get_display(NULL);
+    if (dpy && eglContext)
+        return dpy;
     return NULL;
 }
 
-XVisualInfo *glXChooseVisual(Display *display,
-                             int screen,
-                             int *attributes) {
-
-    // apparently can't trust the Display I'm passed?
-    if (g_display == NULL) {
-        //g_display = XOpenDisplay(NULL);
-        g_display = display;
-    }
-
-    int default_depth = XDefaultDepth(display, screen);
-    if (default_depth != 16 && default_depth != 24)
-        printf("libGL: unusual desktop color depth %d\n", default_depth);
-
+XVisualInfo *glXChooseVisual(Display *dpy, int screen, int *attribList) {
+    PROXY_GLES(glXChooseVisual);
+    dpy = get_display(dpy);
+    int depth = DefaultDepth(dpy, screen);
     XVisualInfo *visual = (XVisualInfo *)malloc(sizeof(XVisualInfo));
-    if (!XMatchVisualInfo(display, screen, default_depth, TrueColor, visual)) {
-        printf("libGL: XMatchVisualInfo failed in glXChooseVisual\n");
-        return NULL;
-    }
-
+    XMatchVisualInfo(dpy, screen, depth, TrueColor, visual);
     return visual;
 }
 
@@ -383,30 +441,143 @@ EGL_NO_SURFACE, or if draw or read are set to EGL_NO_SURFACE and context is
 not set to EGL_NO_CONTEXT.
 */
 
-Bool glXMakeCurrent(Display *display,
-                    int drawable,
-                    GLXContext context) {
+#include <EGL/egl.h>
+#include <EGL/eglext_brcm.h>
+static char *readpixels_buf;
 
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <X11/extensions/XShm.h>
+XShmSegmentInfo shminfo;
+
+Bool glXMakeCurrent(Display *dpy, GLXDrawable drawable, GLXContext ctx) {
+    FORWARD_IF_REMOTE(glXMakeCurrent);
+    PROXY_GLES(glXMakeCurrent);
+    LOAD_EGL(eglCreateWindowSurface);
+    LOAD_EGL(eglDestroySurface);
+    LOAD_EGL(eglMakeCurrent);
+
+    int width, height;
+    if(g_bcmhost) {
+        Xwin = (Window)drawable;
+        XGetWindowAttributes(dpy, Xwin, &Xgwa);
+        width = Xgwa.width, height = Xgwa.height;
+    }
+
+    EGLDisplay eglDisplay = get_egl_display(dpy);
     if (eglDisplay != NULL) {
-        eglMakeCurrent(eglDisplay, NULL, NULL, EGL_NO_CONTEXT);
+        egl_eglMakeCurrent(eglDisplay, NULL, NULL, EGL_NO_CONTEXT);
         if (eglSurface != NULL) {
-            eglDestroySurface(eglDisplay, eglSurface);
+            egl_eglDestroySurface(eglDisplay, eglSurface);
         }
     }
     // call with NULL to just destroy old stuff.
-    if (! context) {
+    if (! ctx) {
         return true;
     }
-    if (eglDisplay == NULL) {
-        init_display(display);
-    }
 
-    if (g_usefb)
-        drawable = 0;
-    eglSurface = eglCreateWindowSurface(eglDisplay, eglConfigs[0], drawable, NULL);
+    if(g_bcmhost) {
+        //// create an X image for drawing to the screen
+        Xgc = DefaultGC(dpy, 0);
+
+        if(width != Ximage_width || height != Ximage_height) {
+#ifdef X11HACK_SHM
+            if(Ximage) {
+                XShmDetach(dpy, &shminfo);
+                XDestroyImage(Ximage);
+                shmdt(shminfo.shmaddr);
+                Ximage = NULL;
+            }
+#else
+            if(Ximage)
+                free(Ximage->data);
+            XFree(Ximage);
+#endif
+            free(readpixels_buf);
+            readpixels_buf = NULL;
+
+            width = (width-1)/2*2+2; // force even width
+#ifdef X11HACK_SHM
+            Ximage = XShmCreateImage(dpy, Xgwa.visual, Xgwa.depth,
+                                     ZPixmap, 0, &shminfo, width, height);
+            /* Get the shared memory and check for errors */
+            shminfo.shmid = shmget(IPC_PRIVATE, width*Xgwa.depth*height,
+                                   IPC_CREAT | 0777 );
+            if(shminfo.shmid < 0) return false;
+
+            /* attach, and check for errrors */
+            shminfo.shmaddr = Ximage->data = (char *)shmat(shminfo.shmid, 0, 0);
+            if(shminfo.shmaddr == (char *) -1) return 1;
+
+            /* set as read/write, and attach to the display */
+            shminfo.readOnly = False;
+            XShmAttach(dpy, &shminfo);
+#else
+            char *buf = (char *)malloc(width*height*4);
+            Ximage = XCreateImage(dpy, Xgwa.visual, Xgwa.depth,
+                                  ZPixmap, 0, buf, width, height, 32, 0);
+#endif
+            Ximage_width = width;
+            Ximage_height = height;
+        }
+    
+
+        EGLint rt;
+#if X11HACK_TRUECOLOR
+        EGLint pixel_format = EGL_PIXEL_FORMAT_ARGB_8888_BRCM;
+#else
+        EGLint pixel_format = EGL_PIXEL_FORMAT_RGB_565_BRCM;
+#endif
+
+        LOAD_EGL(eglGetConfigAttrib);
+        //      LOAD_EGL(eglCreateGlobalImageBRCM);
+
+        void (*egl_eglCreateGlobalImageBRCM)() = dlsym(egl, "eglCreateGlobalImageBRCM");
+        LOAD_EGL(eglCreatePixmapSurface);
+		  
+        egl_eglGetConfigAttrib(eglDisplay, eglConfigs[0], EGL_RENDERABLE_TYPE, &rt);
+        CheckEGLErrors();
+        if (rt & EGL_OPENGL_ES_BIT) {
+            pixel_format |= EGL_PIXEL_FORMAT_RENDER_GLES_BRCM;
+            pixel_format |= EGL_PIXEL_FORMAT_GLES_TEXTURE_BRCM;
+        }
+        if (rt & EGL_OPENGL_ES2_BIT) {
+            pixel_format |= EGL_PIXEL_FORMAT_RENDER_GLES2_BRCM;
+            pixel_format |= EGL_PIXEL_FORMAT_GLES2_TEXTURE_BRCM;
+        }
+        if (rt & EGL_OPENVG_BIT) {
+            pixel_format |= EGL_PIXEL_FORMAT_RENDER_VG_BRCM;
+            pixel_format |= EGL_PIXEL_FORMAT_VG_IMAGE_BRCM;
+        }
+        if (rt & EGL_OPENGL_BIT) {
+            pixel_format |= EGL_PIXEL_FORMAT_RENDER_GL_BRCM;
+        }
+
+        EGLint pixmap[5];
+        pixmap[0] = 0;
+        pixmap[1] = 0;
+        pixmap[2] = width;
+        pixmap[3] = height;
+        pixmap[4] = pixel_format;
+    
+        egl_eglCreateGlobalImageBRCM(width, height, pixmap[4], 0,
+#ifdef X11HACK_TRUECOLOR
+                                     width*4,
+#else
+                                     width*2,
+#endif				   
+                                     pixmap);
+        eglSurface = egl_eglCreatePixmapSurface(eglDisplay, eglConfigs[0], pixmap, NULL);
+    } else {        
+        if (g_usefb)
+            drawable = 0;
+
+        eglSurface = egl_eglCreateWindowSurface(eglDisplay, eglConfigs[0], drawable, NULL);
+    }
+    
     CheckEGLErrors();
 
-    EGLBoolean result = eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
+    EGLBoolean result = egl_eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
     CheckEGLErrors();
     if (result) {
         return true;
@@ -414,28 +585,15 @@ Bool glXMakeCurrent(Display *display,
     return false;
 }
 
-Bool glXMakeContextCurrent(Display *display, int drawable,
-                           int readable, GLXContext context) {
-    return glXMakeCurrent(display, drawable, context);
+Bool glXMakeContextCurrent(Display *dpy, GLXDrawable draw, int read, GLXContext ctx) {
+    PROXY_GLES(glXMakeContextCurrent);
+    return glXMakeCurrent(dpy, draw, ctx);
 }
 
-void glXSwapBuffers(Display *display,
-                    int drawable) {
+void glXSwapBuffers(Display *dpy, GLXDrawable drawable) {
+    FORWARD_IF_REMOTE(glXSwapBuffers);
     static int frames = 0;
-
-    render_raster();
-    if (g_vsync && fbdev >= 0) {
-        // TODO: can I just return if I don't meet vsync over multiple frames?
-        // this will just block otherwise.
-        int arg = 0;
-        for (int i = 0; i < swap_interval; i++) {
-            ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);
-        }
-    }
-    eglSwapBuffers(eglDisplay, eglSurface);
-    CheckEGLErrors();
-
-    if (g_showfps) {
+    if (g_showfps || g_liveinfo) {
         // framerate counter
         static float avg, fps = 0;
         static int frame1, last_frame, frame, now, current_frames;
@@ -459,21 +617,124 @@ void glXSwapBuffers(Display *display,
                 current_frames = 0;
 
                 avg = frame / (float)(now - frame1);
-                printf("libGL fps: %.2f, avg: %.2f\n", fps, avg);
+                if (g_showfps) {
+                    printf("libGL fps: %.2f, avg: %.2f\n", fps, avg);
+                }
             }
         }
+
         last_frame = now;
+
+        if (fps > 0) {
+            char buf[17] = {0};
+            if (g_fps_overlay) {
+                snprintf(buf, 16, "%.2f fps\n", fps);
+                text_draw(4, 17, buf);
+            }
+            // this shows the framerate on notaz' live system info overlay
+            if (g_liveinfo) {
+                snprintf(buf, 16, "fps:%.2f", fps);
+                if (liveinfo_send(buf) < 0) {
+                    g_liveinfo = false;
+                }
+            }
+        }
     }
+
+    PROXY_GLES(glXSwapBuffers);
+    LOAD_EGL(eglSwapBuffers);
+    render_raster();
+#ifdef __linux__
+    if (g_vsync && fbdev >= 0) {
+        // TODO: can I just return if I don't meet vsync over multiple frames?
+        // this will just block otherwise.
+        int arg = 0;
+        for (int i = 0; i < swap_interval; i++) {
+	     ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);
+        }
+    }
+#endif
+
+    if(g_bcmhost) {
+        Xwin = (Window)drawable;
+        XGetWindowAttributes(dpy, Xwin, &Xgwa);
+
+        int width = Xgwa.width;
+        int height = Xgwa.height;
+
+        if(width != Ximage_width || height != Ximage_height) {
+            glXMakeCurrent(dpy, drawable, eglContext);
+            return;
+        }
+
+        glFinish();
+
+        if(!readpixels_buf)
+            readpixels_buf = malloc(width*height*4);
+
+        if(Xgwa.depth != 16) {
+            //  glReadPixels(0, 0, width, height,
+            //	   GL_RGBA, GL_UNSIGNED_BYTE, Ximage->data);
+
+            glReadPixels(0, 0, width, height,
+                         GL_RGBA, GL_UNSIGNED_BYTE, readpixels_buf);
+
+            int x, y;
+            for(y=0; y<height; y++) {
+                int srcy = height-1-y;		// flip y for X windows
+                int *pixptr = (int*)readpixels_buf + y*width;
+                int *dest = ((int*)(&(Ximage->data[0])))+(srcy*width);
+
+                memcpy(dest, pixptr, width*4);
+            }
+        } else {
+#if 1
+            glReadPixels(0, 0, width, height,
+                         GL_RGBA, GL_UNSIGNED_BYTE, readpixels_buf);
+
+            unsigned int *pixptr = (unsigned int*)readpixels_buf;
+            int count, x, y;
+            for(y=0; y<height; y++) {
+                int srcy = height-1-y;		// flip y for X windows
+                unsigned int *dest = ((unsigned int*)(&(Ximage->data[0])))+(srcy*(width/2));
+                count = width/2;
+                while(count--) {
+                    unsigned int src0 = pixptr[0];
+                    unsigned int src1 = pixptr[1];
+                    pixptr += 2;
+
+                    *dest++ = ((src1 & 0xf8)      <<24) |
+                        ((src1 & (0xfc<< 8))<<11) |
+                        ((src1 & (0xf8<<16))>> 3) |
+                        ((src0 & 0xf8)      << 8) |
+                        ((src0 & (0xfc<< 8))>> 5) |
+                        ((src0 & (0xf8<<16))>>19);
+                }
+            }
+#else
+            glReadPixels(0, 0, width, height,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, Ximage->data);
+#endif
+        }
+
+#ifdef X11HACK_SHM
+        XShmPutImage(dpy, Xwin, Xgc, Ximage, 0, 0, 0, 0, width, height, False);
+#else
+        XPutImage(dpy, Xwin, Xgc, Ximage, 0, 0, 0, 0, width, height);
+#endif
+    } else {
+        egl_eglSwapBuffers(get_egl_display(dpy), eglSurface);
+    }
+    CheckEGLErrors();
 }
 
-int glXGetConfig(Display *display,
-                 XVisualInfo *visual,
-                 int attribute,
-                 int *value) {
+int glXGetConfig(Display *display, XVisualInfo *visual, int attribute, int *value) {
+    PROXY_GLES(glXGetConfig);
     return get_config_default(attribute, value);
 }
 
-const char *glXQueryExtensionsString(Display *display, int screen) {
+const char *glXQueryExtensionsString(Display *dpy, int screen) {
+    PROXY_GLES(glXQueryExtensionsString);
     const char *extensions = {
         "GLX_ARB_create_context "
         "GLX_ARB_create_context_profile "
@@ -482,11 +743,13 @@ const char *glXQueryExtensionsString(Display *display, int screen) {
     return extensions;
 }
 
-const char *glXQueryServerString(Display *display, int screen, int name) {
+const char *glXQueryServerString(Display *dpy, int screen, int name) {
+    PROXY_GLES(glXQueryServerString);
     return "";
 }
 
 Bool glXQueryExtension(Display *display, int *errorBase, int *eventBase) {
+    PROXY_GLES(glXQueryExtension);
     if (errorBase)
         *errorBase = 0;
 
@@ -496,14 +759,16 @@ Bool glXQueryExtension(Display *display, int *errorBase, int *eventBase) {
     return true;
 }
 
-Bool glXQueryVersion(Display *display, int *major, int *minor) {
+Bool glXQueryVersion(Display *dpy, int *maj, int *min) {
+    PROXY_GLES(glXQueryVersion);
     // TODO: figure out which version we want to pretend to implement
-    *major = 1;
-    *minor = 4;
+    *maj = 1;
+    *min = 4;
     return true;
 }
 
 const char *glXGetClientString(Display *display, int name) {
+    PROXY_GLES(glXGetClientString);
     // TODO: return actual data here
     switch (name) {
         case GLX_VENDOR: break;
@@ -513,79 +778,113 @@ const char *glXGetClientString(Display *display, int name) {
     return "";
 }
 
-int glXQueryContext( Display *dpy, GLXContext ctx, int attribute, int *value ){
-    return 0;
-}
-
-
-void glXQueryDrawable( Display *dpy, int draw, int attribute,
-                       unsigned int *value ) {
-}
-
 // stubs for glfw (GLX 1.3)
 GLXContext glXGetCurrentContext() {
+    PROXY_GLES(glXGetCurrentContext);
     // hack to make some games start
     return glxContext ? glxContext : (void *)1;
 }
 
-GLXFBConfig *glXChooseFBConfig(Display *display, int screen,
-                       const int *attrib_list, int *count) {
-    *count = 1;
-    GLXFBConfig *configs = malloc(sizeof(GLXFBConfig) * *count);
+GLXFBConfig *glXChooseFBConfig(Display *dpy, int screen, const int *attrib_list, int *nelements) {
+    PROXY_GLES(glXChooseFBConfig);
+    *nelements = 1;
+    GLXFBConfig *configs = malloc(sizeof(GLXFBConfig) * *nelements);
     return configs;
 }
 
-GLXFBConfig *glXGetFBConfigs(Display *display, int screen, int *count) {
-    *count = 1;
-    GLXFBConfig *configs = malloc(sizeof(GLXFBConfig) * *count);
+GLXFBConfig *glXGetFBConfigs(Display *dpy, int screen, int *nelements) {
+    PROXY_GLES(glXGetFBConfigs);
+    *nelements = 1;
+    GLXFBConfig *configs = malloc(sizeof(GLXFBConfig) * *nelements);
     return configs;
 }
 
-int glXGetFBConfigAttrib(Display *display, GLXFBConfig config, int attribute, int *value) {
+int glXGetFBConfigAttrib(Display *dpy, GLXFBConfig config, int attribute, int *value) {
+    PROXY_GLES(glXGetFBConfigAttrib);
     return get_config_default(attribute, value);
 }
 
-XVisualInfo *glXGetVisualFromFBConfig(Display *display, GLXFBConfig config) {
-    if (g_display == NULL) {
-        g_display = XOpenDisplay(NULL);
-    }
+XVisualInfo *glXGetVisualFromFBConfig(Display *dpy, GLXFBConfig config) {
+    PROXY_GLES(glXGetVisualFromFBConfig);
     XVisualInfo *visual = (XVisualInfo *)malloc(sizeof(XVisualInfo));
-    XMatchVisualInfo(g_display, 0, 16, TrueColor, visual);
+    XMatchVisualInfo(get_display(dpy), 0, 16, TrueColor, visual);
     return visual;
 }
 
-GLXContext glXCreateNewContext(Display *display, GLXFBConfig config,
-                               int render_type, GLXContext share_list,
-                               Bool is_direct) {
-    return glXCreateContext(display, 0, share_list, is_direct);
+GLXContext glXCreateNewContext(Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct) {
+    PROXY_GLES(glXCreateNewContext);
+    return glXCreateContext(dpy, 0, share_list, direct);
 }
 
-void glXSwapIntervalMESA(int interval) {
+int glXSwapIntervalMESA(unsigned int interval) {
     printf("glXSwapInterval(%i)\n", interval);
     if (! g_vsync)
         printf("Enable LIBGL_VSYNC=1 if you want to use vsync.\n");
     swap_interval = interval;
+    return 0;
 }
 
-void glXSwapIntervalSGI(int interval) {
-    glXSwapIntervalMESA(interval);
+int glXSwapIntervalSGI(int interval) {
+    return glXSwapIntervalMESA(interval);
 }
 
-void glXSwapIntervalEXT(Display *display, int drawable, int interval) {
+void glXSwapIntervalEXT(Display *display, GLXDrawable drawable, int interval) {
     glXSwapIntervalMESA(interval);
 }
 
 // misc stubs
-void glXCopyContext(Display *display, GLXContext src, GLXContext dst, GLuint mask) {}
-void glXCreateGLXPixmap(Display *display, XVisualInfo * visual, Pixmap pixmap) {} // should return GLXPixmap
-void glXDestroyGLXPixmap(Display *display, void *pixmap) {} // really wants a GLXpixmap
-void glXCreateWindow(Display *display, GLXFBConfig config, Window win, int *attrib_list) {} // should return GLXWindow
-void glXDestroyWindow(Display *display, void *win) {} // really wants a GLXWindow
-void glXGetCurrentDrawable() {} // this should actually return GLXDrawable. Good luck.
-Bool glXIsDirect(Display * display, GLXContext ctx) {
+void glXCopyContext(Display *dpy, GLXContext src, GLXContext dst, unsigned long mask) {
+    PROXY_GLES(glXCopyContext);
+}
+
+GLXPixmap glXCreateGLXPixmap(Display *dpy, XVisualInfo *visual, Pixmap pixmap) {
+    PROXY_GLES(glXCreateGLXPixmap);
+} // should return GLXPixmap
+
+void glXDestroyGLXPixmap(Display *dpy, void *pixmap) {
+    PROXY_GLES(glXDestroyGLXPixmap);
+} // really wants a GLXpixmap
+
+GLXDrawable glXGetCurrentDrawable() {
+    PROXY_GLES(glXGetCurrentDrawable);
+} // this should actually return GLXDrawable. Good luck.
+
+Bool glXIsDirect(Display *dpy, GLXContext ctx) {
+    PROXY_GLES(glXIsDirect);
     return true;
 }
-void glXUseXFont(Font font, int first, int count, int listBase) {}
-void glXWaitGL() {}
-void glXWaitX() {}
-void glXReleaseBuffersMESA() {}
+
+GLXWindow glXCreateWindow(Display *dpy, GLXFBConfig config, Window win, const int *attrib_list) {
+    PROXY_GLES(glXCreateWindow);
+}
+
+void glXDestroyWindow(Display *dpy, GLXWindow win) {
+    PROXY_GLES(glXDestroyWindow);
+}
+
+void glXUseXFont(Font font, int first, int count, int listBase) {
+    PROXY_GLES(glXUseXFont);
+    if (state.list.active) {
+        fprintf(stderr, "libGL:error: glXUseXFont called during active block\n");
+        return;
+    }
+    for (int i = 0; i < count; i++) {
+        unsigned int c = first + i;
+        int list = listBase + i;
+        glNewList(list, GL_COMPILE);
+        text_draw_glyph(c);
+        glEndList();
+    }
+}
+
+void glXWaitGL() {
+    PROXY_GLES(glXWaitGL);
+}
+
+void glXWaitX() {
+    PROXY_GLES(glXWaitX);
+}
+
+Bool glXReleaseBuffersMESA(Display *dpy, GLXDrawable drawable) {
+    PROXY_GLES(glXReleaseBuffersMESA);
+}

@@ -1,0 +1,80 @@
+{% extends "base/base.j2" %}
+{% block main %}
+#include <stdio.h>
+#include "tack.h"
+
+static tack_t mock = {0};
+
+const char *mock_name(int func) {
+    switch (func) {
+        {% for f in functions %}
+        case {{ f.name }}_INDEX: return "{{ f.name }}";
+        {% endfor %}
+    }
+}
+
+void mock_print(const packed_call_t *packed) {
+    if (packed == NULL) {
+        printf("NULL()\n");
+        return;
+    }
+    switch (packed->index) {
+        {% for f in functions %}
+        case {{ f.name }}_INDEX: {
+            {{ f.name }}_PACKED *unpacked = ({{ f.name }}_PACKED *)packed;
+            printf("{{ f.name }}({{ f.args|printf }});\n"
+            {%- for arg in f.args %}, unpacked->args.{{ arg.name }}{% endfor -%});
+            break;
+        }
+        {% endfor %}
+    }
+}
+
+void *mock_get(int idx) {
+    return tack_get(&mock, idx);
+}
+
+void *mock_peek() {
+    return tack_peek(&mock);
+}
+
+void *mock_cur() {
+    return tack_cur(&mock);
+}
+
+void *mock_shift() {
+    return tack_shift(&mock);
+}
+
+void *mock_slide(int func) {
+    if (mock.pos >= mock.len) {
+        return NULL;
+    }
+    packed_call_t **stack = (packed_call_t **)mock.data;
+    for (int i = mock.pos; i < mock.len; i++) {
+        if (stack[i]->index == func) {
+            mock.pos = i + 1;
+            return stack[i];
+        }
+    }
+    return NULL;
+}
+
+void mock_push(void *call) {
+    tack_push(&mock, call);
+}
+
+void *mock_pop() {
+    return tack_pop(&mock);
+}
+
+{% for func in functions %}
+{{ func.return }} {% if not func.name.startswith('glX') %}gles_{% endif %}{{ func.name }}({{ func.args|args }}) {
+    emit_{{ func.name }}({{ func.args|args(0) }});
+    {% if not func.void %}
+    return ({{ func.return }})0;
+    {% endif %}
+}
+{% endfor %}
+
+{% endblock %}

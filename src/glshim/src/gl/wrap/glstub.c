@@ -43,15 +43,6 @@ STUB(void glTranslatef(GLfloat x, GLfloat y, GLfloat z));
 
 // STUB(void glMultiTexCoord());
 // STUB(void glVertexAttrib());
-STUB(GLint glRenderMode(GLenum mode))
-#ifndef USE_ES2
-STUB(void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha))
-#endif
-STUB(void glBlendEquationSeparatei(GLuint buf, GLenum modeRGB, GLenum modeAlpha))
-#ifndef USE_ES2
-STUB(void glBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha))
-#endif
-STUB(void glBlendFuncSeparatei(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha))
 STUB(void glClearAccum(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha))
 STUB(void glColorMaterial(GLenum face, GLenum mode))
 STUB(void glCopyPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum type))
@@ -61,19 +52,12 @@ STUB(void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, 
 STUB(void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat *params))
 STUB(void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint *params))
 STUB(void glIndexf(GLfloat c))
-STUB(void glInitNames())
-STUB(void glLoadName(GLuint name))
 STUB(void glPixelTransferf(GLenum pname, GLfloat param))
 STUB(void glPixelTransferi(GLenum pname, GLint param))
 STUB(void glPixelZoom(GLfloat xfactor, GLfloat yfactor))
 STUB(void glPolygonMode(GLenum face, GLenum mode))
 STUB(void glPolygonStipple(const GLubyte *mask))
-STUB(void glPopName())
-STUB(void glPushName())
 STUB(void glReadBuffer(GLenum mode))
 STUB(void glSecondaryColor3f(GLfloat r, GLfloat g, GLfloat b))
-
-// glSelectBuffer: http://www.lighthouse3d.com/opengl/picking/index.php?color1
-STUB(void glSelectBuffer(GLsizei size, GLuint *buffer))
 
 #undef STUB

@@ -1,7 +1,9 @@
 // TODO: glIsEnabled(), glGetMap()
 // TODO: GL_AUTO_NORMAL
 
+#include "array.h"
 #include "eval.h"
+#include "gl_str.h"
 #include "math/eval.h"
 
 static inline map_state_t **get_map_pointer(GLenum target) {
@@ -23,7 +25,7 @@ static inline map_state_t **get_map_pointer(GLenum target) {
         case GL_MAP2_VERTEX_3:        return &state.map2.vertex3;
         case GL_MAP2_VERTEX_4:        return &state.map2.vertex4;
         default:
-            printf("libGL: unknown glMap target 0x%x\n", target);
+            printf("libGL: unsupported glMap target %s\n", gl_str(target));
     }
     return NULL;
 }
@@ -201,7 +203,7 @@ static inline GLenum eval_mesh_prep(map_statef_t **map, GLenum mode) {
         case GL_FILL: return GL_TRIANGLE_STRIP;
         case 0: return 1;
         default:
-            printf("unknown glEvalMesh mode: %x\n", mode);
+            printf("Unsupported glEvalMesh mode: %s\n", gl_str_primitive(mode));
             return 0;
     }
 }

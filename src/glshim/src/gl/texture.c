@@ -1,4 +1,14 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#include "error.h"
+#include "gl_helpers.h"
+#include "gl_str.h"
+#include "loader.h"
+#include "pixel.h"
 #include "texture.h"
+#include "types.h"
+#include "remote.h"
 
 // expand non-power-of-two sizes
 // TODO: what does this do to repeating textures?
@@ -54,7 +64,6 @@ static void *swizzle_texture(GLsizei width, GLsizei height,
             break;
     }
     switch (*type) {
-        case GL_FLOAT:
         case GL_UNSIGNED_BYTE:
         case GL_UNSIGNED_SHORT_5_6_5:
         case GL_UNSIGNED_SHORT_4_4_4_4:
@@ -70,11 +79,11 @@ static void *swizzle_texture(GLsizei width, GLsizei height,
 
     if (convert) {
         GLvoid *pixels = (GLvoid *)data;
-        if (! pixel_convert(data, &pixels, width, height,
-                            *format, *type, GL_RGBA, GL_UNSIGNED_BYTE)) {
-            printf("libGL swizzle error: (%#4x, %#4x -> RGBA, UNSIGNED_BYTE)\n",
-                *format, *type);
-            return NULL;
+        if (data) {
+            if (! pixel_convert(data, &pixels, width, height, *format, *type, GL_RGBA, GL_UNSIGNED_BYTE)) {
+                printf("libGL swizzle error: (%s, %s -> RGBA, UNSIGNED_BYTE)\n", gl_str(*format), gl_str(*type));
+                return NULL;
+            }
         }
         *type = GL_UNSIGNED_BYTE;
         *format = GL_RGBA;
@@ -83,17 +92,19 @@ static void *swizzle_texture(GLsizei width, GLsizei height,
     return (void *)data;
 }
 
-void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
+void glTexImage2D(GLenum target, GLint level, GLint internalformat,
                   GLsizei width, GLsizei height, GLint border,
                   GLenum format, GLenum type, const GLvoid *data) {
 
-    gltexture_t *bound = state.texture.bound;
     GLvoid *pixels = (GLvoid *)data;
+    ERROR_IN_BLOCK();
+    FORWARD_IF_REMOTE(glTexImage2D);
+    gltexture_t *bound = state.texture.bound[state.texture.active];
     if (data) {
         // implements GL_UNPACK_ROW_LENGTH
         if (state.texture.unpack_row_length && state.texture.unpack_row_length != width) {
             int imgWidth, pixelSize;
-            pixelSize = pixel_sizeof(format, type);
+            pixelSize = gl_pixel_sizeof(format, type);
             imgWidth = state.texture.unpack_row_length * pixelSize;
             GLubyte *dst = (GLubyte *)malloc(width * height * pixelSize);
             pixels = (GLvoid *)dst;
@@ -131,21 +142,22 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
                 pixel_to_ppm(pixels, width, height, format, type, bound->texture);
             }
         }
+    } else {
+        // convert format even if data is NULL
+        swizzle_texture(width, height, &format, &type, NULL);
     }
 
     /* TODO:
     GL_INVALID_VALUE is generated if border is not 0.
     GL_INVALID_OPERATION is generated if type is
     GL_UNSIGNED_SHORT_5_6_5 and format is not GL_RGB.
-
+    
     GL_INVALID_OPERATION is generated if type is one of
     GL_UNSIGNED_SHORT_4_4_4_4, or GL_UNSIGNED_SHORT_5_5_5_1
     and format is not GL_RGBA.
     */
 
     LOAD_GLES(glTexImage2D);
-    LOAD_GLES(glTexSubImage2D);
-
     switch (target) {
         case GL_PROXY_TEXTURE_2D:
             break;
@@ -157,13 +169,14 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
                 bound->nwidth = nwidth;
                 bound->nheight = nheight;
             }
-            if (height != nheight || width != nwidth) {
+            if (false && (height != nheight || width != nwidth)) {
+                LOAD_GLES(glTexSubImage2D);
                 gles_glTexImage2D(target, level, format, nwidth, nheight, border,
                                   format, type, NULL);
                 gles_glTexSubImage2D(target, level, 0, 0, width, height,
                                      format, type, pixels);
             } else {
-                gles_glTexImage2D(target, level, internalFormat, width, height, border,
+                gles_glTexImage2D(target, level, format, width, height, border,
                                   format, type, pixels);
             }
         }
@@ -176,9 +189,12 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
 void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
                      GLsizei width, GLsizei height, GLenum format, GLenum type,
                      const GLvoid *data) {
+    const GLvoid *pixels = data;
+    ERROR_IN_BLOCK();
+    FORWARD_IF_REMOTE(glTexSubImage2D);
     LOAD_GLES(glTexSubImage2D);
     target = map_tex_target(target);
-    const GLvoid *pixels = swizzle_texture(width, height, &format, &type, data);
+    pixels = swizzle_texture(width, height, &format, &type, data);
     gles_glTexSubImage2D(target, level, xoffset, yoffset,
                          width, height, format, type, pixels);
     if (pixels != data)
@@ -186,42 +202,39 @@ void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
 }
 
 // 1d stubs
-void glTexImage1D(GLenum target, GLint level, GLint internalFormat,
+void glTexImage1D(GLenum target, GLint level, GLint internalformat,
                   GLsizei width, GLint border,
                   GLenum format, GLenum type, const GLvoid *data) {
 
     // TODO: maybe too naive to force GL_TEXTURE_2D here?
-    glTexImage2D(GL_TEXTURE_2D, level, internalFormat, width, 1,
+    glTexImage2D(GL_TEXTURE_2D, level, internalformat, width, 1,
                  border, format, type, data);
 }
-void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+void glTexSubImage1D(GLenum target, GLint level, GLint xoffset,
                      GLsizei width, GLenum format, GLenum type,
                      const GLvoid *data) {
 
-    glTexSubImage2D(target, level, xoffset, yoffset,
-                    width, 1, format, type, data);
+    glTexSubImage2D(target, level, xoffset, 0, width, 1, format, type, data);
 }
 
 // 3d stubs
-void glTexImage3D(GLenum target, GLint level, GLint internalFormat,
+void glTexImage3D(GLenum target, GLint level, GLint internalformat,
                   GLsizei width, GLsizei height, GLsizei depth, GLint border,
                   GLenum format, GLenum type, const GLvoid *data) {
 
     // TODO: maybe too naive to force GL_TEXTURE_2D here?
-    glTexImage2D(GL_TEXTURE_2D, level, internalFormat, width, height,
-                 border, format, type, data);
+    glTexImage2D(GL_TEXTURE_2D, level, internalformat, width, height, border, format, type, data);
 }
-void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset,
                      GLsizei width, GLsizei height, GLsizei depth, GLenum format,
                      GLenum type, const GLvoid *data) {
 
-    glTexSubImage2D(target, level, xoffset, yoffset,
-                    width, height, format, type, data);
+    glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, data);
 }
 
 void glPixelStorei(GLenum pname, GLint param) {
+    FORWARD_IF_REMOTE(glPixelStorei);
     // TODO: add to glGetIntegerv?
-    LOAD_GLES(glPixelStorei);
     switch (pname) {
         case GL_UNPACK_ROW_LENGTH:
             state.texture.unpack_row_length = param;
@@ -236,56 +249,94 @@ void glPixelStorei(GLenum pname, GLint param) {
             state.texture.unpack_lsb_first = param;
             break;
         default:
+        {
+            LOAD_GLES(glPixelStorei);
             gles_glPixelStorei(pname, param);
             break;
+        }
     }
 }
 
 void glBindTexture(GLenum target, GLuint texture) {
-    if (state.list.active) {
-        rlBindTexture(state.list.active, texture);
-    } else {
-        if (texture) {
-            int ret;
-            khint_t k;
-            khash_t(tex) *list = state.texture.list;
-            if (! list) {
-                list = state.texture.list = kh_init(tex);
-                // segfaults if we don't do a single put
-                kh_put(tex, list, 1, &ret);
-                kh_del(tex, list, 1);
-            }
-
-            k = kh_get(tex, list, texture);
-            gltexture_t *tex = NULL;;
-            if (k == kh_end(list)){
-                k = kh_put(tex, list, texture, &ret);
-                tex = kh_value(list, k) = malloc(sizeof(gltexture_t));
-                tex->texture = texture;
-                tex->target = target;
-                tex->width = 0;
-                tex->height = 0;
-                tex->uploaded = false;
-            } else {
-                tex = kh_value(list, k);
-            }
-            state.texture.bound = tex;
-        } else {
-            state.texture.bound = NULL;
+    PUSH_IF_COMPILING(glBindTexture);
+    ERROR_IN_BLOCK();
+    GLuint active = state.texture.active;
+    if (texture) {
+        int ret;
+        khint_t k;
+        khash_t(tex) *list = state.texture.list;
+        if (! list) {
+            list = state.texture.list = kh_init(tex);
+            // segfaults if we don't do a single put
+            kh_put(tex, list, 1, &ret);
+            kh_del(tex, list, 1);
         }
 
-        state.texture.rect_arb = (target == GL_TEXTURE_RECTANGLE_ARB);
-        target = map_tex_target(target);
-
-        LOAD_GLES(glBindTexture);
-        gles_glBindTexture(target, texture);
+        k = kh_get(tex, list, texture);
+        gltexture_t *tex = NULL;;
+        if (k == kh_end(list)){
+            k = kh_put(tex, list, texture, &ret);
+            tex = kh_value(list, k) = malloc(sizeof(gltexture_t));
+            tex->texture = texture;
+            tex->target = target;
+            tex->width = 0;
+            tex->height = 0;
+            tex->uploaded = false;
+        } else {
+            tex = kh_value(list, k);
+        }
+        state.texture.bound[active] = tex;
+    } else {
+        state.texture.bound[active] = NULL;
     }
+
+    state.texture.rect_arb[active] = (target == GL_TEXTURE_RECTANGLE_ARB);
+    target = map_tex_target(target);
+
+    LOAD_GLES(glBindTexture);
+    gles_glBindTexture(target, texture);
+}
+
+void glActiveTexture(GLenum texture) {
+    PUSH_IF_COMPILING(glActiveTexture);
+    if ((texture < GL_TEXTURE0) || (texture > GL_TEXTURE_MAX)) {
+        // TODO: set the GL error flag?
+        fprintf(stderr, "glActiveTexture: texture > GL_TEXTURE_MAX\n");
+        return;
+    }
+
+    state.texture.active = texture - GL_TEXTURE0;
+    LOAD_GLES(glActiveTexture);
+    gles_glActiveTexture(texture);
+}
+
+void glClientActiveTexture(GLenum texture) {
+    PUSH_IF_COMPILING(glClientActiveTexture);
+    GLuint new = texture - GL_TEXTURE0;
+    if (state.texture.client == new) {
+        return;
+    }
+    if ((texture < GL_TEXTURE0) || (texture > GL_TEXTURE_MAX)) {
+        // TODO: set the GL error flag?
+        fprintf(stderr, "glClientActiveTexture: texture > GL_TEXTURE_MAX\n");
+        return;
+    }
+    state.texture.client = new;
+    LOAD_GLES(glClientActiveTexture);
+    gles_glClientActiveTexture(texture);
+}
+
+void glTexEnvf(GLenum target, GLenum pname, GLfloat param) {
+    ERROR_IN_BLOCK();
+    PUSH_IF_COMPILING(glTexEnvf);
+    PROXY_GLES(glTexEnvf);
 }
 
 // TODO: also glTexParameterf(v)?
 void glTexParameteri(GLenum target, GLenum pname, GLint param) {
     PUSH_IF_COMPILING(glTexParameteri);
     LOAD_GLES(glTexParameteri);
+    ERROR_IN_BLOCK();
     target = map_tex_target(target);
     switch (param) {
         case GL_CLAMP:
@@ -306,8 +357,10 @@ void glDeleteTextures(GLsizei n, const GLuint *textures) {
             k = kh_get(tex, list, t);
             if (k != kh_end(list)) {
                 tex = kh_value(list, k);
-                if (tex == state.texture.bound)
-                    state.texture.bound = NULL;
+                for (int j = 0; j < MAX_TEX; j++) {
+                    if (tex == state.texture.bound[j])
+                        state.texture.bound[j] = NULL;
+                }
                 free(tex);
                 kh_del(tex, list, k);
             }
@@ -318,5 +371,20 @@ void glDeleteTextures(GLsizei n, const GLuint *textures) {
 }
 
 GLboolean glAreTexturesResident(GLsizei n, const GLuint *textures, GLboolean *residences) {
+    if (state.block.active) {
+        gl_set_error(GL_INVALID_OPERATION);
+        return 0;
+    }
+    if (n < 0) {
+        gl_set_error(GL_INVALID_VALUE);
+        return 0;
+    }
     return true;
+}
+
+void glPrioritizeTextures(GLsizei n, const GLuint *textures, const GLclampf *priorities) {
+    ERROR_IN_BLOCK();
+    if (n < 0) {
+        ERROR(GL_INVALID_VALUE);
+    }
 }
