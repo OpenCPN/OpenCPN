@@ -1455,7 +1455,7 @@ static void *LIGHTS05 (void *param)
 
 l05_end:
 
-      if( ps52plib->m_bShowLdisText )
+//      if( ps52plib->m_bShowLdisText )
       {
             // Only show Light in certain position once. Otherwise there will be clutter.
             static double lastLat, lastLon;

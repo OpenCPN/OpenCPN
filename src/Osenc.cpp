@@ -1517,6 +1517,9 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
                 sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
                 
                 bcont = m_ProgDialog->Update( iObj, sobj );
+#ifdef __WXMSW__            
+                wxSafeYield();
+#endif                
             }
 #endif
 
@@ -2510,22 +2513,23 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
     }   // while
     
     // Now we know the payload length and the Feature count
-    
-    //  Now write the record out
-    OSENC_VET_Record record;
-    
-    record.record_type = VECTOR_EDGE_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VET_Record_Base) + payloadSize + sizeof(uint32_t);
+    if(nFeatures){
+        //  Now write the record out
+        OSENC_VET_Record record;
+        
+        record.record_type = VECTOR_EDGE_NODE_TABLE_RECORD;
+        record.record_length = sizeof(OSENC_VET_Record_Base) + payloadSize + sizeof(uint32_t);
 
-    // Write out the record
-    stream->Write(&record , sizeof(OSENC_VET_Record_Base));
+        // Write out the record
+        stream->Write(&record , sizeof(OSENC_VET_Record_Base));
+        
+        //  Write out the Feature(Object) count
+        stream->Write(&nFeatures , sizeof(uint32_t));
+        
+        //  Write out the payload
+        stream->Write(pPayload, payloadSize);
     
-    //  Write out the Feature(Object) count
-    stream->Write(&nFeatures , sizeof(uint32_t));
-    
-    //  Write out the payload
-    stream->Write(pPayload, payloadSize);
-    
+    }
     //  All done with buffer
     free(pPayload);
     
@@ -2608,19 +2612,21 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( Osenc_outstream *stream, S5
     // Now we know the payload length and the Feature count
     
     //  Now write the record out
-    OSENC_VCT_Record record;
+    if(featureCount){
+        OSENC_VCT_Record record;
     
-    record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
-    
-    // Write out the record
-    stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
-    
-    //  Write out the Feature(Object) count
-    stream->Write(&featureCount , sizeof(uint32_t));
-    
-    //  Write out the payload
-    stream->Write(pPayload, payloadSize);
+        record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
+        record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
+        
+        // Write out the record
+        stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
+        
+        //  Write out the Feature(Object) count
+        stream->Write(&featureCount , sizeof(uint32_t));
+        
+        //  Write out the payload
+        stream->Write(pPayload, payloadSize);
+    }
     
     //  All done with buffer
     free(pPayload);

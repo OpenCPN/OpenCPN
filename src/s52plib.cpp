@@ -1796,7 +1796,8 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
                 //  Add in the offsets, specified in units of nominal font height
                 yp += ptext->yoffs * ( ptext->rendered_char_height );
-                xp += ptext->xoffs * ( ptext->rendered_char_height );
+                //  X offset specified in units of average char width
+                xp += ptext->xoffs * ptext->avgCharWidth;
                 
                 pRectDrawn->SetX( xp );
                 pRectDrawn->SetY( yp );
@@ -1894,8 +1895,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( ptext->rendered_char_height );
-            xp += ptext->xoffs * ( ptext->rendered_char_height );
-
+            //  X offset specified in units of average char width
+            xp += ptext->xoffs * ptext->avgCharWidth;
+            
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
@@ -1934,7 +1936,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         }
             
     #endif
-        } else {
+        } else {                // OpenGL
             wxFont oldfont = pdc->GetFont(); // save current font
 
             
@@ -1962,8 +1964,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( h - descent );
-            xp += ptext->xoffs * ( h - descent );
-
+            
+            //  X offset specified in units of average char width
+            xp += ptext->xoffs * ptext->avgCharWidth;
+            
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
@@ -2089,21 +2093,34 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 
         //    Establish a font
         if( !text->pFont ) {
-
-            //    If we have loaded a legacy S52 compliant PLIB,
-            //    then we should use the formal font selection as required by
-            //    S52 specifications.
-            if( useLegacyRaster ) {
-                int spec_weight = text->weight - 0x30;
-                wxFontWeight fontweight;
-                if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
+            
+            // Process the font specifications from the LUP symbolizatio rule
+            int spec_weight = text->weight - 0x30;
+            wxFontWeight fontweight;
+            if( spec_weight < 5 )
+                fontweight = wxFONTWEIGHT_LIGHT;
+            else{
+                if( spec_weight == 5 )
+                    fontweight = wxFONTWEIGHT_NORMAL;
                 else
-                    if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
-                    else
-                        fontweight = wxFONTWEIGHT_BOLD;
-
-                text->pFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
-                        wxFONTSTYLE_NORMAL, fontweight );
+                    fontweight = wxFONTWEIGHT_BOLD;
+            }
+             
+            wxFont *specFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
+                                                               wxFONTSTYLE_NORMAL, fontweight );
+            
+            //Get the width of a single average character in the spec font
+            wxScreenDC dc;
+            dc.SetFont(*specFont);
+            wxSize tsz = dc.GetTextExtent(_T("X"));
+            text->avgCharWidth = tsz.x;
+            
+            //    If we have loaded a legacy S52 compliant PLIB,
+            //    then we should use the formal font selection as required by S52 specifications.
+            //    Otherwise, we have our own plan...
+            
+            if( useLegacyRaster ) {
+                text->pFont = specFont;
             } else {
                 int spec_weight = text->weight - 0x30;
                 wxFontWeight fontweight;
@@ -2148,18 +2165,33 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
         wxRect rect;
+        bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText, vp );
 
-        bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText,
-                vp );
-
-        //    If this is an un-cached text object render, then do not update the text object in any way
+        //  If this is an un-cached text render, it probably means that a single object has two or more
+        //  text renders in its rule set.  RDOCAL is one example.  There are others
+        //  We need to cache only the first text structure, but should update the render rectangle
+        //  to reflect all texts rendered for this object,  in order to process the declutter logic.
+        bool b_dupok = false;
         if( b_free_text ) {
             delete text;
-            return 1;
+        
+            if(!bwas_drawn){
+                return 1;
+            }
+            else{                               // object was drawn
+                text = rzRules->obj->FText;
+                
+                wxRect r0 = text->rText;
+                r0 = r0.Union(rect);
+                text->rText = r0;
+            
+                b_dupok = true;                 // OK to add a duplicate text structure to the declutter list, just for this case.
+            }
         }
-
-        text->rText = rect;
-
+        else
+            text->rText = rect;
+        
+        
         //      If this text was actually drawn, add a pointer to its rect to the de-clutter list if it doesn't already exist
         if( m_bDeClutterText ) {
             if( bwas_drawn ) {
@@ -2168,7 +2200,8 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     S52_TextC *oc = node->GetData();
 
                     if( oc == text ) {
-                        b_found = true;
+                        if(!b_dupok)
+                            b_found = true;
                         break;
                     }
                 }
@@ -2216,7 +2249,11 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
     float xscale = 1.0;
     
-    if( (!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6)) || (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6)) ){
+    if( (!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "TWRTPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "RCTLPT", 6))
+    ){
         // assume the symbol length 
         float sym_length = 30;
         float scaled_length = sym_length / vp->view_scale_ppm;
@@ -2242,8 +2279,9 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
         
         double latdraw, londraw;                // position of the drawn symbol with pivot applied
-        GetPixPointSingleNoRotate( r.x + (prule->pos.symb.pivot_x.SYCL / fsf),
-                                   r.y + (prule->pos.symb.pivot_y.SYRW / fsf), &latdraw, &londraw, vp );
+        GetPixPointSingleNoRotate( r.x + ((prule->pos.symb.pivot_x.SYCL - prule->pos.symb.bnbox_x.SBXC) / fsf),
+                                   r.y + ((prule->pos.symb.pivot_y.SYRW - prule->pos.symb.bnbox_y.SBXR) / fsf),
+                                   &latdraw, &londraw, vp );
         
         if( !rzRules->obj->BBObj.Contains( latdraw, londraw ) ) // Symbol reference point is outside base area object
              return 1;
@@ -5723,11 +5761,23 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
     return DoRenderObject( NULL, rzRules, vp );
 }
 
+int s52plib::RenderObjectToDCText( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+{
+    return DoRenderObjectTextOnly( pdcin, rzRules, vp );
+}
+
+int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp )
+{
+    m_glcc = (wxGLContext *) &glcc;
+    return DoRenderObjectTextOnly( NULL, rzRules, vp );
+}
+
+
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-//     if(rzRules->obj->Index == 914)
+//     if(rzRules->obj->Index == 2460)
 //         int yyp = 0;
 
     if( !ObjectRenderCheckPos( rzRules, vp ) )
@@ -5857,6 +5907,106 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
         rules = rules->next;
     }
 
+    return 1;
+}
+
+int s52plib::DoRenderObjectTextOnly( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+{
+//    if(strncmp(rzRules->obj->FeatureName, "RDOCAL", 6))
+//        return 0;
+
+//    if(rzRules->obj->Index != 636)
+//        return 0;
+    
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
+    
+    if( IsObjNoshow( rzRules->LUP->OBCL) )
+        return 0;
+    
+    if( !ObjectRenderCheckCat( rzRules, vp ) ) {
+        
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+        
+        // already added, nothing below can change its display category        
+            if(rzRules->obj->bCS_Added ) 
+                return 0;
+            
+            //  Otherwise, make sure the CS, if present, has been evaluated,
+                //  and then check the category again    
+                //  no rules 
+                if( !ObjectRenderCheckCS( rzRules, vp ) )
+                    return 0;
+                
+                
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                        break;
+                    }
+                    rules = rules->next;
+                }
+                
+                // still not displayable    
+                if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                    return 0;
+    }
+    
+    m_pdc = pdcin; // use this DC
+    Rules *rules = rzRules->LUP->ruleList;
+    
+    while( rules != NULL ) {
+        switch( rules->ruleType ){
+            case RUL_TXT_TX:
+                RenderTX( rzRules, rules, vp );
+                break; // TX
+            case RUL_TXT_TE:
+                RenderTE( rzRules, rules, vp );
+                break; // TE
+            case RUL_CND_SY: {
+                if( !rzRules->obj->bCS_Added ) {
+                    rzRules->obj->CSrules = NULL;
+                    GetAndAddCSRules( rzRules, rules );
+                    if(strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                }
+                
+                Rules *rules_last = rules;
+                rules = rzRules->obj->CSrules;
+                
+                while( NULL != rules ) {
+                    switch( rules->ruleType ){
+                        case RUL_TXT_TX:
+                            RenderTX( rzRules, rules, vp );
+                            break;
+                        case RUL_TXT_TE:
+                            RenderTE( rzRules, rules, vp );
+                            break;
+                        default:
+                            break; // no rule type (init)
+                    }
+                    rules_last = rules;
+                    rules = rules->next;
+                }
+                
+                rules = rules_last;
+                break;
+            }
+            
+            case RUL_NONE:
+            default:
+                 break; // no rule type (init)
+        } // switch
+        
+        rules = rules->next;
+    }
+    
     return 1;
 }
 
@@ -8552,8 +8702,21 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
         if( m_bUseSCAMIN ) {
             if( ( DISPLAYBASE == rzRules->LUP->DISC ) || ( PRIO_GROUP1 == rzRules->LUP->DPRI ) ) b_visible =
                     true;
-            else
-                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible = false;
+            else{
+//                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible = false;
+
+extern int g_chart_zoom_modifier_vector;
+
+                double zoom_mod = (double)g_chart_zoom_modifier_vector;
+
+                double modf = zoom_mod/5.;  // -1->1
+                double mod = pow(8., modf);
+                mod = wxMax(mod, .2);
+                mod = wxMin(mod, 8.0);
+
+                if( vp->chart_scale  > rzRules->obj->Scamin * mod )
+                    b_visible = false;
+            }
 
             //      On the other hand, $TEXTS features need not really be displayed at all scales, always
             //      To do so makes a very cluttered display
@@ -8575,6 +8738,7 @@ void s52plib::SetDisplayCategory(enum _DisCat cat)
     if(old != cat){
         ClearNoshow();
     }
+    GenerateStateHash();
 }
 
 
@@ -8634,6 +8798,7 @@ bool s52plib::EnableGLLS(bool b_enable)
     
 void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 {
+    return;
     wxRect rScreen( 0, 0, screenw, screenh );
     //    Iterate over the text rectangle list
     //        1.  Apply the specified offset to the list elements
@@ -8773,6 +8938,15 @@ RenderFromHPGL::RenderFromHPGL( s52plib* plibarg )
     transparency = 255;
 }
 
+RenderFromHPGL::~RenderFromHPGL( )
+{
+#ifdef ocpnUSE_GL
+    if( renderToOpenGl ) {
+        glDisable (GL_BLEND );
+    }
+#endif    
+}
+    
 void RenderFromHPGL::SetTargetDC( wxDC* pdc )
 {
     targetDC = pdc;
@@ -8953,6 +9127,12 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
 {
 //      int width = 1;
 //      double radius = 0.0;
+
+#ifdef ocpnUSE_GL
+    if( renderToOpenGl )
+        glGetFloatv(GL_CURRENT_COLOR,m_currentColor);
+#endif        
+    
     wxPoint lineStart;
     wxPoint lineEnd;
 
@@ -9064,12 +9244,19 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
         }
 
         // Only get here if non of the other cases did a continue.
-        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
-        msg += wxString( command );
-        wxLogWarning( msg );
+//        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
+//        msg += wxString( command );
+//        wxLogWarning( msg );
     }
+    
+    transparency = 255;
+    
 #ifdef ocpnUSE_GL
-    glDisable( GL_BLEND );
+    if( renderToOpenGl ) {
+        glDisable (GL_BLEND );
+        glColor4fv( m_currentColor );
+    }
 #endif    
+
     return true;
 }

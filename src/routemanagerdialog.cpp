@@ -46,6 +46,7 @@
 #include "TrackPropDlg.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
+#include "Track.h"
 
 #define DIALOG_MARGIN 3
 

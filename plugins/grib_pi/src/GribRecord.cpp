@@ -411,6 +411,9 @@ GribRecord::~GribRecord()
 //-------------------------------------------------------------------------------
 void  GribRecord::multiplyAllData(double k)
 {
+    if (data == 0 || !isOk())
+        return;
+
 	for (zuint j=0; j<Nj; j++) {
 		for (zuint i=0; i<Ni; i++)
 		{

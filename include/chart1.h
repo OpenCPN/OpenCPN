@@ -41,10 +41,10 @@
 #include "viewport.h"
 #include "nmea0183.h"
 #include "chartdbs.h"
+#include "s52s57.h"
 
 #ifdef USE_S57
 #include "mygdal/cpl_error.h"
-
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
@@ -372,6 +372,7 @@ class MyFrame: public wxFrame
 
     void ProcessCanvasResize(void);
 
+    void BuildMenuBar( void );
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void RegisterGlobalMenuItems();
     void UpdateGlobalMenuItems();
@@ -393,6 +394,8 @@ class MyFrame: public wxFrame
     bool ToggleLights( bool doToggle = true, bool temporary = false );
     void ToggleAnchor(void);
     void TrackOn(void);
+    void SetENCDisplayCategory( enum _DisCat nset );
+    
     Track *TrackOff(bool do_add_point = false);
     void TrackDailyRestart(void);
     bool ShouldRestartTrack();

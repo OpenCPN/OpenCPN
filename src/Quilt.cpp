@@ -29,6 +29,7 @@
 #include "s52plib.h"
 #include "chcanv.h"
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
+#include "chartimg.h"
 
 #ifdef USE_S57
 #include "s57chart.h"
@@ -45,6 +46,7 @@ extern ChartCanvas *cc1;
 extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_vector;
 extern bool g_fog_overzoom;
 extern double  g_overzoom_emphasis_base;
 extern bool g_bopengl;
@@ -381,6 +383,29 @@ ChartBase *Quilt::GetNextChart()
                         cnode->GetData()->dbIndex, FULL_INIT );
     }
 
+    m_bbusy = false;
+    return pret;
+}
+
+ChartBase *Quilt::GetNextSmallerScaleChart()
+{
+    if( !ChartData ) return NULL;
+    
+    if( !ChartData->IsValid() ) return NULL;
+    
+    if( m_bbusy )
+        return NULL;
+    
+    m_bbusy = true;
+    ChartBase *pret = NULL;
+    if( cnode ) {
+        cnode = cnode->GetPrevious();
+        while( cnode && !cnode->GetData()->b_Valid )
+            cnode = cnode->GetPrevious();
+        if( cnode && cnode->GetData()->b_Valid ) pret = ChartData->OpenChartFromDB(
+            cnode->GetData()->dbIndex, FULL_INIT );
+    }
+    
     m_bbusy = false;
     return pret;
 }
@@ -741,11 +766,12 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
-//     double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
-//     mod = wxMax(mod, .2);
-//     mod = wxMin(mod, 2.0);
-
-     double modf = ((double)g_chart_zoom_modifier)/5.;  // -1->1
+    double zoom_mod = (double)g_chart_zoom_modifier;
+    
+    if(family == CHART_FAMILY_VECTOR)
+        zoom_mod = (double)g_chart_zoom_modifier_vector;
+        
+     double modf = zoom_mod/5.;  // -1->1
      double mod = pow(8., modf);
      mod = wxMax(mod, .2);
      mod = wxMin(mod, 8.0);
@@ -785,7 +811,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
                 && IsChartQuiltableRef( test_db_index )
-                && !IsChartS57Overlay( test_db_index ) ){
+                /*&& !IsChartS57Overlay( test_db_index )*/ ){
 
                 index_array.Add(test_db_index);
                 int nscale = ChartData->GetDBChartScale(test_db_index);
@@ -1323,6 +1349,14 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
 }
 
+ChartBase *Quilt::GetRefChart()
+{
+    if(m_refchart_dbIndex >= 0 )
+        return ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
+    else
+        return 0;
+}
+
 void Quilt::UnlockQuilt()
 {
     wxASSERT(m_bbusy == false);
@@ -1583,6 +1617,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
                         if( b_overlay )
                             pqc->b_include = true;
                     }
+                    
+                    //  If the reference chart happens to be an overlay (e.g. 3UABUOYS.000),
+                    //  we dont want it to eclipse any smaller scale standard useage charts.
+                    const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
+                    if(s57chart::IsCellOverlayType(cte_ref.GetpFullPath() )){
+                        pqc->b_include = true;
+                    }
 #endif
                 }
             }
@@ -1773,7 +1814,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         //    Update the next pass full region to remove the region just allocated
         //    Maintain the present full quilt coverage region
-        m_covered_region.Union( piqp->quilt_region );
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( piqp->dbIndex );
+        piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
+                
+        if(!piqp->b_overlay)    
+            m_covered_region.Union( piqp->quilt_region );
     }
 #else
     // this is the old algorithm does the same thing in n^2/2 operations instead of 2*n-1
@@ -2103,7 +2148,19 @@ void Quilt::ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region )
 
 int g_render;
 
-bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
+bool Quilt::RenderQuiltRegionViewOnDCNoText( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    return DoRenderQuiltRegionViewOnDC( dc, vp, chart_region);
+}
+
+bool Quilt::RenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    return DoRenderQuiltRegionViewOnDCTextOnly( dc, vp, chart_region);
+}
+
+
+
+bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
 {
 
 #ifdef ocpnUSE_DIBSECTION
@@ -2151,7 +2208,24 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                     if( !get_screen_region.Empty() ) {
 
                         if( !pqp->b_overlay ) {
-                            b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+                                b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            }
+                            else{
+                                s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                                if(Chs57){
+                                    b_chart_rendered = Chs57->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                }
+                                else{
+                                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                                    if(ChPI){
+                                        b_chart_rendered = ChPI->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                    }
+                                    else    
+                                        b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                                }
+                            }
+                                
                             if( chart->GetChartType() != CHART_TYPE_CM93COMP )
                                 b_chart_rendered = true;
                             screen_region.Subtract( get_screen_region );
@@ -2445,5 +2519,45 @@ void Quilt::SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp )
     dc.Clear();
     m_covered_region.Clear();
 
+}
+
+bool Quilt::DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    if( !m_bcomposed )
+        return false;
+    
+    OCPNRegion rendered_region;
+    
+    if( GetnCharts() && !m_bbusy ) {
+        
+        OCPNRegion screen_region = chart_region;
+        
+        //  Walk the quilt, drawing each chart from largest scale to smallest
+        
+        ChartBase *chart = GetLargestScaleChart();
+        int chartsDrawn = 0;
+        
+        while( chart ) {
+                QuiltPatch *pqp = GetCurrentPatch();
+                if( pqp->b_Valid  ) {
+                    s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                    if(Chs57)
+                        Chs57->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );
+                    else{
+                        ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                        if(ChPI){
+                            ChPI->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );
+                        }
+                    }
+                }
+                
+                chart =  GetNextSmallerScaleChart();
+         }
+        
+    } else {             // no charts yet, or busy....
+        SubstituteClearDC( dc, vp );
+    }
+    
+    return true;
 }
 

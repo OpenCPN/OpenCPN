@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-01-27 16:14-0500\n"
+"PO-Revision-Date: 2017-02-12 03:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -23,11 +23,12 @@ msgstr "Aloita pyyntö"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Piirrä pyydetty alue\n"
+"tai napsautus tästä pysäyttää pyynön"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Valitse alue ja jatka"
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -83,7 +84,7 @@ msgstr "Asetukset"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Piirrä pyydetty alue tai napsautus tästä pysäyttää pyynön"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -95,7 +96,7 @@ msgstr "Valitse GRIB-tiedosto"
 
 #: src/GribUIDialog.cpp:1679
 msgid " files don't exist!"
-msgstr ""
+msgstr " tiedostoja ei ole!"
 
 #: src/GribUIDialog.cpp:1701
 msgid " can't be read!"
@@ -475,15 +476,15 @@ msgstr "Toiston asetukset"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr ""
+msgstr "Nopeudensäätö"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"
-msgstr ""
+msgstr "Hidas"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Fast"
-msgstr ""
+msgstr "Nopea"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Loop Mode"
@@ -971,7 +972,7 @@ msgstr "Virhe! Max Lat alle Min Lat tai Max Lon alle Min Lon!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Liian suuri alue! Kummankin sivun on oltava pienempi kuin 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"

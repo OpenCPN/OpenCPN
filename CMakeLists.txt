@@ -1048,6 +1048,7 @@ SET(HDRS
                 include/OCPNPlatform.h
                 include/S57Sector.h
                 include/FlexHash.h
+                include/iENCToolbar.h
 )
 
 SET(SRCS
@@ -1140,6 +1141,7 @@ SET(SRCS
                 src/canvasMenu.cpp
                 src/OCPNPlatform.cpp 
                 src/FlexHash.cpp
+                src/iENCToolbar.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -1553,6 +1555,11 @@ SET(uiData
 	src/bitmaps/toolicons_journeyman.png
 	src/bitmaps/toolicons_journeyman_flat.png
 	src/bitmaps/toolicons_traditional.png
+	src/bitmaps/iconRMinus.png
+        src/bitmaps/iconRPlus.png
+        src/bitmaps/iconMinimum.png
+        src/bitmaps/iconStandard.png
+        src/bitmaps/iconAll.png
 	)
 
 IF (USE_S57)

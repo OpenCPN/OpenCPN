@@ -75,6 +75,7 @@
 #include "OCPNPlatform.h"
 #include "version.h"
 #include "toolbar.h"
+#include "Track.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -121,7 +122,7 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern wxString         g_locale;
 extern bool             g_btouch;
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
 unsigned int      gs_plib_flags;
 
@@ -1898,11 +1899,11 @@ void PlugInManager::SendConfigToAllPlugIns()
     }
 
     // Some useful display metrics
-    if(g_FloatingToolbarDialog){
-        v[_T("OpenCPN Toolbar Width")] = g_FloatingToolbarDialog->GetSize().x;
-        v[_T("OpenCPN Toolbar Height")] = g_FloatingToolbarDialog->GetSize().y;
-        v[_T("OpenCPN Toolbar PosnX")] = g_FloatingToolbarDialog->GetPosition().x;
-        v[_T("OpenCPN Toolbar PosnY")] = g_FloatingToolbarDialog->GetPosition().y;
+    if(g_MainToolbar){
+        v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
+        v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetSize().y;
+        v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
+        v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
     }    
     
     wxJSONWriter w;
@@ -4179,6 +4180,81 @@ float *PlugInChartBaseGL::GetNoCOVRTableHead(int iTable)
 
 
 // ----------------------------------------------------------------------------
+// PlugInChartBaseExtended Implementation
+//  
+// ----------------------------------------------------------------------------
+
+PlugInChartBaseExtended::PlugInChartBaseExtended()
+{}
+
+PlugInChartBaseExtended::~PlugInChartBaseExtended()
+{}
+
+int PlugInChartBaseExtended::RenderRegionViewOnGL( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
+                                             const wxRegion &Region, bool b_use_stencil )
+{
+    return 0;
+}
+
+int PlugInChartBaseExtended::RenderRegionViewOnGLNoText( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
+                                                   const wxRegion &Region, bool b_use_stencil )
+{
+    return 0;
+}
+
+int PlugInChartBaseExtended::RenderRegionViewOnGLTextOnly( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
+                                                   const wxRegion &Region, bool b_use_stencil )
+{
+    return 0;
+}
+
+
+wxBitmap &PlugInChartBaseExtended::RenderRegionViewOnDCNoText(const PlugIn_ViewPort& VPoint, const wxRegion &Region)
+{
+    return wxNullBitmap;
+}
+
+bool PlugInChartBaseExtended::RenderRegionViewOnDCTextOnly(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, const wxRegion &Region)
+{
+    return false;
+}
+
+ListOfPI_S57Obj *PlugInChartBaseExtended::GetObjRuleListAtLatLon(float lat, float lon, float select_radius,
+                                                           PlugIn_ViewPort *VPoint)
+{
+    return NULL;
+}
+
+wxString PlugInChartBaseExtended::CreateObjDescriptions( ListOfPI_S57Obj* obj_list )
+{
+    return _T("");
+}
+
+int PlugInChartBaseExtended::GetNoCOVREntries()
+{
+    return 0;
+}
+
+int PlugInChartBaseExtended::GetNoCOVRTablePoints(int iTable)
+{
+    return 0;
+}
+
+int  PlugInChartBaseExtended::GetNoCOVRTablenPoints(int iTable)
+{
+    return 0;
+}
+
+float *PlugInChartBaseExtended::GetNoCOVRTableHead(int iTable)
+{ 
+    return 0;
+}
+
+void PlugInChartBaseExtended::ClearPLIBTextList()
+{
+}
+
+// ----------------------------------------------------------------------------
 // ChartPlugInWrapper Implementation
 //    This class is a wrapper/interface to PlugIn charts(PlugInChartBase)
 // ----------------------------------------------------------------------------
@@ -4456,7 +4532,8 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
-        if(!Region.Empty() && ppicb_gl)
+        PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
+        if(!Region.Empty() && (ppicb_gl || ppicb_x))
         {
             wxRegion *r = RectRegion.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
@@ -4475,7 +4552,10 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     glChartCanvas::RotateToViewPort(VPoint);
 
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
-                    ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    if(ppicb_x)
+                        ppicb_x->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    else if(ppicb_gl)
+                        ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
                     glPopMatrix();
                     glChartCanvas::DisableClipRegion();
@@ -4490,6 +4570,90 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         return false;
 #endif    
     return true;
+}
+
+bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
+                                              const OCPNRegion &RectRegion, const LLRegion &Region)
+{
+    #ifdef ocpnUSE_GL
+    if(m_ppicb)
+    {
+        ViewPort vp = VPoint;           // non-const copy
+        
+        gs_plib_flags = 0;               // reset the CAPs flag
+        PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
+        PlugInChartBaseGL *ppicb = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
+        if(!Region.Empty() && (ppicb || ppicb_x))
+        {
+            wxRegion *r = RectRegion.GetNew_wxRegion();
+            for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
+                LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
+                chart_region.Intersect(Region);
+                
+                if(!chart_region.Empty()) {
+                    ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+                    
+                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                    
+ #ifdef USE_S57
+                    ps52plib->m_last_clip_rect = upd.GetRect();
+ #endif                    
+                    glPushMatrix(); //    Adjust for rotation
+                    glChartCanvas::RotateToViewPort(VPoint);
+                    
+                    PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
+                    if(ppicb_x)
+                        ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    else if(ppicb)
+                        ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    
+                    
+                    glPopMatrix();
+                    glChartCanvas::DisableClipRegion();
+                    
+                    
+                }  //!empty
+            } //for
+            delete r;
+        }
+    }
+    else
+        return false;
+    #endif    
+        return true;
+}
+
+bool ChartPlugInWrapper::RenderRegionViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint,
+                                           const OCPNRegion &Region )
+{
+#ifdef ocpnUSE_GL
+    if(m_ppicb)
+    {
+        gs_plib_flags = 0;               // reset the CAPs flag
+        PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
+        if(!Region.Empty() && ppicb_x)
+        {
+            wxRegion *r = Region.GetNew_wxRegion();
+            for(OCPNRegionIterator upd ( Region ); upd.HaveRects(); upd.NextRect()) {
+                
+                glPushMatrix(); //    Adjust for rotation
+                glChartCanvas::RotateToViewPort(VPoint);
+                    
+                PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint );
+                ppicb_x->RenderRegionViewOnGLTextOnly( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    
+                glPopMatrix();
+                    
+                    
+            } //for
+            delete r;
+        }
+    }
+    else
+        return false;
+#endif    
+    return true;
+
 }
 
 
@@ -4512,6 +4676,72 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
     }
     else
         return false;
+}
+
+bool ChartPlugInWrapper::RenderRegionViewOnDCNoText(wxMemoryDC& dc, const ViewPort& VPoint,
+                                              const OCPNRegion &Region)
+{
+    if(m_ppicb)
+    {
+        gs_plib_flags = 0;               // reset the CAPs flag
+        PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
+        
+        PlugInChartBaseExtended *pCBx = dynamic_cast<PlugInChartBaseExtended*>( m_ppicb );
+        PlugInChartBase *ppicb = dynamic_cast<PlugInChartBase*>(m_ppicb);
+            
+        if(Region.IsOk() && (pCBx || ppicb))
+        {
+            wxRegion *r = Region.GetNew_wxRegion();
+            
+            if(pCBx)
+                dc.SelectObject(pCBx->RenderRegionViewOnDCNoText( pivp, *r));
+            else if(ppicb)
+                dc.SelectObject(ppicb->RenderRegionView( pivp, *r));
+
+            delete r;
+            return true;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+bool ChartPlugInWrapper::RenderRegionViewOnDCTextOnly(wxMemoryDC& dc, const ViewPort& VPoint,
+                                                    const OCPNRegion &Region)
+{
+    if(m_ppicb)
+    {
+        bool ret_val = false;
+        gs_plib_flags = 0;               // reset the CAPs flag
+        PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
+        if(Region.IsOk())
+        {
+            wxRegion *r = Region.GetNew_wxRegion();
+ 
+            PlugInChartBaseExtended *pCBx = dynamic_cast<PlugInChartBaseExtended*>( m_ppicb );
+            if(pCBx)
+                ret_val = pCBx->RenderRegionViewOnDCTextOnly( dc, pivp, *r);
+            
+            delete r;
+            return ret_val;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+void ChartPlugInWrapper::ClearPLIBTextList()
+{
+    if(m_ppicb)
+    {
+        PlugInChartBaseExtended *pCBx = dynamic_cast<PlugInChartBaseExtended*>( m_ppicb );
+        if(pCBx)
+            pCBx->ClearPLIBTextList();
+    }
 }
 
 bool ChartPlugInWrapper::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
@@ -4677,19 +4907,27 @@ wxString GetPlugInPath(opencpn_plugin *pplugin)
 ListOfPI_S57Obj *PlugInManager::GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
                                                  float SelectRadius, const ViewPort& vp )
 {
+    ListOfPI_S57Obj *list = NULL;
     if(target) {
         PlugInChartBaseGL *picbgl = dynamic_cast <PlugInChartBaseGL *>(target->GetPlugInChart());
         if(picbgl){
             PlugIn_ViewPort pi_vp = CreatePlugInViewport( vp );
-            ListOfPI_S57Obj *piol = picbgl->GetObjRuleListAtLatLon(zlat, zlon, SelectRadius, &pi_vp);
+            list = picbgl->GetObjRuleListAtLatLon(zlat, zlon, SelectRadius, &pi_vp);
 
-            return piol;
+            return list;
+        }
+        PlugInChartBaseExtended *picbx = dynamic_cast <PlugInChartBaseExtended *>(target->GetPlugInChart());
+        if(picbx){
+            PlugIn_ViewPort pi_vp = CreatePlugInViewport( vp );
+            list = picbx->GetObjRuleListAtLatLon(zlat, zlon, SelectRadius, &pi_vp);
+            
+            return list;
         }
         else
-            return NULL;
+            return list;
     }
     else
-        return NULL;
+        return list;
 }
 
 wxString PlugInManager::CreateObjDescriptions( ChartPlugInWrapper *target, ListOfPI_S57Obj *rule_list )
@@ -4700,8 +4938,13 @@ wxString PlugInManager::CreateObjDescriptions( ChartPlugInWrapper *target, ListO
         if(picbgl){
             ret_str = picbgl->CreateObjDescriptions( rule_list );
         }
+        else{
+            PlugInChartBaseExtended *picbx = dynamic_cast <PlugInChartBaseExtended *>(target->GetPlugInChart());
+            if(picbx){
+                ret_str = picbx->CreateObjDescriptions( rule_list );
+            }
+        }
     }
-    
     return ret_str;
 }
 

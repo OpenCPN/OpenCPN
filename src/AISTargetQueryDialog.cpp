@@ -37,6 +37,7 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
+#include "Track.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;

@@ -42,6 +42,7 @@
 #include "navutil.h"
 #include "tinyxml.h"
 #include "kml.h"
+#include "Track.h"
 
 extern MyFrame *gFrame;
 extern double gLat;

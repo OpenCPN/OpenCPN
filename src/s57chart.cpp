@@ -1320,7 +1320,24 @@ s57chart::~s57chart()
     
     m_pcs_vector.clear();
     m_pve_vector.clear();
-    
+
+    for( VE_Hash::iterator it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        if(pedge){
+            free(pedge->pPoints);
+            delete pedge;
+        }
+    }
+    m_ve_hash.clear();
+
+    for( VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc ) {
+        VC_Element *pcs = itc->second;
+        if(pcs) {
+            free(pcs->pPoint);
+            delete pcs;
+        }
+    }
+    m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
@@ -1444,6 +1461,21 @@ bool s57chart::GetChartExtent( Extent *pext )
         return false;
 }
 
+static void free_mps(mps_container *mps)
+{
+    
+    if ( mps == 0)
+        return;
+    if( ps52plib && mps->cs_rules ){
+        for(unsigned int i=0 ; i < mps->cs_rules->GetCount() ; i++){
+            Rules *rule_chain_top = mps->cs_rules->Item(i);
+            ps52plib->DestroyRulesChain( rule_chain_top );
+        }
+        delete mps->cs_rules;
+    }
+    free( mps );
+}
+
 void s57chart::FreeObjectsAndRules()
 {
 //      Delete the created ObjRazRules, including the S57Objs
@@ -1475,19 +1507,9 @@ void s57chart::FreeObjectsAndRules()
                         ctop = cnxx;
                     }
                 }
+                free_mps( top->mps );
 
-                if( top->mps ){
-                    if( ps52plib && top->mps->cs_rules ){
-                        for(unsigned int i=0 ; i < top->mps->cs_rules->GetCount() ; i++){
-                            Rules *rule_chain_top = top->mps->cs_rules->Item(i);
-                            ps52plib->DestroyRulesChain( rule_chain_top );
-                        }
-                        delete top->mps->cs_rules;
-                    }
-                    free( top->mps );
-                }
-
-                 nxx = top->next;
+                nxx = top->next;
                 free( top );
                 top = nxx;
             }
@@ -2439,12 +2461,42 @@ bool s57chart::RenderOverlayRegionViewOnGL( const wxGLContext &glc, const ViewPo
     return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, true );
 }
 
+bool s57chart::RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPort& VPoint,
+                                     const OCPNRegion &RectRegion, const LLRegion &Region )
+{
+    bool b_text = ps52plib->GetShowS57Text();
+    ps52plib->m_bShowS57Text = false;
+    bool b_ret =  DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, false );
+    ps52plib->m_bShowS57Text = b_text;
+    
+    return b_ret;
+}
+
+bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint)
+{
+#ifdef ocpnUSE_GL
+    
+    if( !ps52plib ) return false;
+    
+    SetVPParms( VPoint );
+    
+    glPushMatrix(); //    Adjust for rotation
+    glChartCanvas::RotateToViewPort(VPoint);
+           
+    glChartCanvas::DisableClipRegion();
+    DoRenderOnGLText( glc, VPoint );
+            
+    glPopMatrix();
+    
+    
+#endif
+    return true;
+}
+
 bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                        const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay )
 {
 #ifdef ocpnUSE_GL
-//     CALLGRIND_START_INSTRUMENTATION
-//      g_bDebugS57 = true;
 
     if( !ps52plib ) return false;
 
@@ -2574,6 +2626,93 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 
 #endif          //#ifdef ocpnUSE_GL
 
+    return true;
+}
+
+bool s57chart::DoRenderOnGLText( const wxGLContext &glc, const ViewPort& VPoint )
+{
+#ifdef ocpnUSE_GL
+    
+    int i;
+    ObjRazRules *top;
+    ObjRazRules *crnt;
+    ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
+    
+    //      Render the areas quickly
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES )
+            top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3];           // Area Plain Boundaries
+            
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+///                ps52plib->RenderAreaToGL( glc, crnt, &tvp );
+            }
+    }
+    
+    //    Render the lines and points
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3];           // Area Plain Boundaries
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+            }
+            
+            top = razRules[i][2];           //LINES
+            while( top != NULL ) {
+                ObjRazRules *crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+            }
+            
+            if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) top = razRules[i][0];       //SIMPLIFIED Points
+        else
+            top = razRules[i][1];           //Paper Chart Points Points
+            
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+            }
+            
+    }
+    
+#endif          //#ifdef ocpnUSE_GL
+    
+    return true;
+}
+
+
+bool s57chart::RenderRegionViewOnDCNoText( wxMemoryDC& dc, const ViewPort& VPoint,
+                                     const OCPNRegion &Region )
+{
+    bool b_text = ps52plib->GetShowS57Text();
+    ps52plib->m_bShowS57Text = false;
+    bool b_ret = DoRenderRegionViewOnDC( dc, VPoint, Region, false );
+    ps52plib->m_bShowS57Text = b_text;
+    
+    return b_ret;
+}
+
+bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPoint,
+                                           const OCPNRegion &Region )
+{
+    if(!dc.IsOk())
+        return false;
+
+    SetVPParms( VPoint );
+    
+    DCRenderText( dc, VPoint );
+    
     return true;
 }
 
@@ -3082,6 +3221,51 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
      */
     return true;
 }
+
+bool s57chart::DCRenderText( wxMemoryDC& dcinput, const ViewPort& vp )
+{
+    int i;
+    ObjRazRules *top;
+    ObjRazRules *crnt;
+    ViewPort tvp = vp;                    // undo const  TODO fix this in PLIB
+    
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3];           // Area Plain Boundaries
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+            }
+            
+            top = razRules[i][2];           //LINES
+            while( top != NULL ) {
+                ObjRazRules *crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+            }
+            
+            if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) top = razRules[i][0];       //SIMPLIFIED Points
+        else
+            top = razRules[i][1];           //Paper Chart Points Points
+            
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+            }
+    }
+            
+    return true;
+}
+
+
+
 
 bool s57chart::IsCellOverlayType( char *pFullPath )
 {
@@ -3631,7 +3815,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
-
+    bool bsave_text = ps52plib->m_bShowS57Text;
+    
     // SetDisplayCategory may clear Noshow array
     ps52plib->SaveObjNoshow();
 
@@ -3642,11 +3827,22 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
         if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
     }
 
+    
     ps52plib->m_bShowSoundg = false;
-
+    ps52plib->m_bShowS57Text = false;
+    
 //      Use display category MARINERS_STANDARD to force use of OBJLArray
     DisCat dsave = ps52plib->GetDisplayCategory();
     ps52plib->SetDisplayCategory( MARINERS_STANDARD );
+
+    ps52plib->AddObjNoshow( "BRIDGE" );
+    ps52plib->AddObjNoshow( "GATCON" );
+    
+    double safety_depth = S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
+    S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, -100);  
+    double safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
+    S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, -100);
+                        
 
 #ifdef ocpnUSE_DIBSECTION
     ocpnMemDC memdc, dc_org;
@@ -3673,8 +3869,15 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     ps52plib->SetDisplayCategory(dsave);
     ps52plib->RestoreObjNoshow();
 
+    ps52plib->RemoveObjNoshow( "BRIDGE" );
+    ps52plib->RemoveObjNoshow( "GATCON" );
+    
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
-
+    ps52plib->m_bShowS57Text = bsave_text;
+    
+    S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, safety_depth);  
+    S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, safety_contour);
+    
 //      Reset the color scheme
     ps52plib->RestoreColorScheme();
 
@@ -5059,6 +5262,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                free_mps( top->mps );
+                top->mps = 0;
                 if (top->LUP)
                     top->obj->m_DisplayCat = top->LUP->DISC;
 
@@ -5078,6 +5283,9 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        free_mps( ctop->mps );
+                        ctop->mps = 0;
+
                         if (ctop->LUP)
                             ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
@@ -6578,9 +6786,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         ListOfObjRazRules::Node *snode = NULL;
         ListOfPI_S57Obj::Node *pnode = NULL;
 
-        if(Chs57)
+        if(Chs57 && rule_list)
             snode = rule_list->GetLast();
-        else if( target_plugin_chart )
+        else if( target_plugin_chart && pi_rule_list)
             pnode = pi_rule_list->GetLast();
 
 

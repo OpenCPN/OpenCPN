@@ -85,6 +85,7 @@ private:
 #include "FontMgr.h"
 #include "mipmap/mipmap.h"
 #include "chartimg.h"
+#include "Track.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -126,7 +127,7 @@ extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
@@ -2005,8 +2006,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         else
             glColor4ub(128, 128, 128, 255);
 
-        /* scaled ship? */
-        float scale_factor_y = g_ChartScaleFactorExp, scale_factor_x = g_ChartScaleFactorExp;
+        float scale_factor_y = 1.0;
+        float scale_factor_x = 1.0;
+        
         int ownShipWidth = 22; // Default values from s_ownship_icon
         int ownShipLength= 84;
         lShipMidPoint = lGPSPoint;
@@ -2019,6 +2021,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             ownShipLength= ownship_size.y;
         }
 
+        /* scaled ship? */
         if( g_OwnShipIconType != 0 )
             cc1->ComputeShipScaleFactor
                 (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
@@ -2036,9 +2039,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glRotatef(deg, 0, 0, 1);
 
         
-        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType < 2 )){
-            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   // soften the scale factor a bit
-            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;
+        // Scale the generic icon to ChartScaleFactor, slightly softened....
+        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
+            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
         }
         
         glScalef(scale_factor_x, scale_factor_y, 1);
@@ -2502,8 +2506,10 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
     ChartPathHashTexfactType::iterator ittf = hash.find( key );
     
     //    Not Found ?
-    if( ittf == hash.end() )
+    if( ittf == hash.end() ){
         hash[key] = new glTexFactory(chart, g_raster_format);
+        hash[key]->SetHashKey(key);
+    }
     
     pTexFact = hash[key];
     pTexFact->SetLRUTime(++m_LRUtime);
@@ -2642,8 +2648,25 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                         }
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                         RenderNoDTA(vp, get_region);
-                        b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
-                    }
+
+                        if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+                            chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                        }
+                        else{
+                            s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                            if(Chs57){
+                                Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                            }
+                            else{
+                                ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                                if(ChPI){
+                                    ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                }
+                                else    
+                                    chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                            }
+                        }
+                     }
                 }
             }
 
@@ -2897,6 +2920,70 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     }
 }
 
+void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region )
+{
+    if( !cc1->m_pQuilt->GetnCharts() || cc1->m_pQuilt->IsBusy() )
+        return;
+    
+    //  render the quilt
+        ChartBase *chart = cc1->m_pQuilt->GetLargestScaleChart();
+        
+        LLRegion region = vp.GetLLRegion(rect_region);
+        
+        LLRegion rendered_region;
+        while( chart ) {
+            
+            QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+            if( pqp->b_Valid ) {
+                LLRegion get_region = pqp->ActiveRegion;
+                bool b_rendered = false;
+                
+                if( !pqp->b_overlay ) {
+                    if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                        
+                        s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                        if(Chs57){
+                            Chs57->RenderViewOnGLTextOnly( *m_pcontext, vp);
+                        }
+                        else{
+                            ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                            if(ChPI){
+                                ChPI->RenderRegionViewOnGLTextOnly( *m_pcontext, vp, rect_region);
+                            }
+                        }
+                    }    
+                }
+            }
+            
+            
+            chart = cc1->m_pQuilt->GetNextSmallerScaleChart();
+        }
+
+/*        
+        //    Render any Overlay patches for s57 charts(cells)
+        if( cc1->m_pQuilt->HasOverlays() ) {
+            ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+            while( pch ) {
+                QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                if( pqp->b_Valid && pqp->b_overlay && pch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                    LLRegion get_region = pqp->ActiveRegion;
+                    
+                    get_region.Intersect( region );
+                    #ifdef USE_S57
+                    if( !get_region.Empty()  ) {
+                        s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
+                        if( Chs57 )
+                            Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                    }
+                    #endif                
+                }
+                
+                pch = cc1->m_pQuilt->GetNextChart();
+            }
+        }
+*/        
+}
+
 void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = cc1->VPoint;
@@ -2912,29 +2999,40 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 #endif
         
     LLRegion chart_region;
-    if(!vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
-        // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...
-        double ll[8];
-        ChartPlugInWrapper *cpw = dynamic_cast<ChartPlugInWrapper*> ( Current_Ch );
-        if( !cpw) return;
-        
-        cpw->chartpix_to_latlong(0,                     0,              ll+0, ll+1);
-        cpw->chartpix_to_latlong(0,                     cpw->GetSize_Y(), ll+2, ll+3);
-        cpw->chartpix_to_latlong(cpw->GetSize_X(),      cpw->GetSize_Y(), ll+4, ll+5);
-        cpw->chartpix_to_latlong(cpw->GetSize_X(),      0,              ll+6, ll+7);
-        
-        // for now don't allow raster charts to cross both 0 meridian and IDL (complicated to deal with)
-        for(int i=1; i<6; i+=2)
-            if(fabs(ll[i] - ll[i+2]) > 180) {
-                // we detect crossing idl here, make all longitudes positive
-                for(int i=1; i<8; i+=2)
-                    if(ll[i] < 0)
-                        ll[i] += 360;
-                break;
-            }
+    if( !vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
+        if(Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER){
+            // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...
+            double ll[8];
+            ChartPlugInWrapper *cpw = dynamic_cast<ChartPlugInWrapper*> ( Current_Ch );
+            if( !cpw) return;
             
-        chart_region = LLRegion(4, ll);
-        
+            cpw->chartpix_to_latlong(0,                     0,              ll+0, ll+1);
+            cpw->chartpix_to_latlong(0,                     cpw->GetSize_Y(), ll+2, ll+3);
+            cpw->chartpix_to_latlong(cpw->GetSize_X(),      cpw->GetSize_Y(), ll+4, ll+5);
+            cpw->chartpix_to_latlong(cpw->GetSize_X(),      0,              ll+6, ll+7);
+            
+            // for now don't allow raster charts to cross both 0 meridian and IDL (complicated to deal with)
+            for(int i=1; i<6; i+=2)
+                if(fabs(ll[i] - ll[i+2]) > 180) {
+                    // we detect crossing idl here, make all longitudes positive
+                    for(int i=1; i<8; i+=2)
+                        if(ll[i] < 0)
+                            ll[i] += 360;
+                    break;
+                }
+                
+            chart_region = LLRegion(4, ll);
+        }
+        else{
+            Extent ext;
+            Current_Ch->GetChartExtent(&ext);
+            
+            double ll[8] = {ext.SLAT, ext.WLON,
+            ext.SLAT, ext.ELON,
+            ext.NLAT, ext.ELON,
+            ext.NLAT, ext.WLON};
+            chart_region = LLRegion(4, ll);
+        }
     }
     else
         chart_region = vp.b_quilt ? cc1->m_pQuilt->GetFullQuiltRegion() : Current_Ch->GetValidRegion();
@@ -2965,11 +3063,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         } 
     }
         
-    for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-        LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
-        ViewPort cvp = ClippedViewport(vp, region);
-        DrawGroundedOverlayObjects(dc, cvp);
-    }
+     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
+         LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
+         ViewPort cvp = ClippedViewport(vp, region);
+         DrawGroundedOverlayObjects(dc, cvp);
+     }
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
@@ -3328,7 +3426,8 @@ void glChartCanvas::Render()
     m_bfogit = m_benableFog && g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
     bool scale_it  =  m_benableVScale && g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
     
-    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( ).Empty(), useFBO = false;
+    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( ).Empty();
+    bool useFBO = false;
     int sx = GetSize().x;
     int sy = GetSize().y;
 
@@ -3585,6 +3684,31 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+    //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
+    if( VPoint.b_quilt ) {
+        if(cc1->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+
+            ChartBase *chart = cc1->m_pQuilt->GetRefChart();
+            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI)
+                        ChPI->ClearPLIBTextList();
+                    else
+                        ps52plib->ClearTextList();
+                }
+                
+                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
+                ViewPort vpx = VPoint;
+                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
+                
+                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                RenderQuiltViewGLText( vpx, screen_region );
+            }
+        }
+    }
+    
     DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not
@@ -3653,11 +3777,11 @@ void glChartCanvas::Render()
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+    if(g_MainToolbar && g_MainToolbar->m_pRecoverwin ){
         int recoverx, recovery;
-        g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
-        if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
-            gldc.DrawBitmap( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
+        g_MainToolbar->m_pRecoverwin->GetPosition( &recoverx, &recovery );
+        if( g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
+            gldc.DrawBitmap( g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
     }
     
     

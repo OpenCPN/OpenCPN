@@ -3097,10 +3097,13 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
         
-        double factor = GetCharHeight() / (double)16.0;   // Because I know what the base icon size is....
+        double factor = (0.7 * (double)GetCharHeight()) / (double)16.0;   // Because I know what the base icon size is....
         factor = wxMin(3.0, factor);            // not greater than 3
         factor = wxMax(1.0, factor);            // nor less than 1
         
+        //  A little optimization for "normal" situations, requiring no scaling
+        if(factor < 2.) factor = 1.;
+            
         wxImageList *icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
 
         int target = 16;

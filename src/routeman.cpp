@@ -60,7 +60,7 @@
 #include <wx/stdpaths.h>
 #include <wx/apptrait.h>
 #include "OCPNPlatform.h"
-
+#include "Track.h"
 
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;

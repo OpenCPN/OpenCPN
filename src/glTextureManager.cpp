@@ -1309,10 +1309,10 @@ bool glTextureManager::FactoryCrunch(double factor)
     glTexFactory *ptf_oldest = NULL;
         
     for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        wxString chart_full_path = it0->first;
         glTexFactory *ptf = it0->second;
         if(!ptf)
             continue;
+        wxString chart_full_path = ptf->GetChartPath();
         
         // we better have to find one because glTexFactory keep cache texture open
         // and ocpn will eventually run out of file descriptors
@@ -1355,7 +1355,7 @@ bool glTextureManager::FactoryCrunch(double factor)
     
     //  Need more, so delete the oldest chart too
         
-    m_chart_texfactory_hash.erase(ptf_oldest->GetChartPath());                // This chart  becoming invalid
+    m_chart_texfactory_hash.erase(ptf_oldest->GetHashKey());                // This chart  becoming invalid
                 
     delete ptf_oldest;
     

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-01-27 16:17-0500\n"
+"PO-Revision-Date: 2017-02-13 20:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -268,11 +268,11 @@ msgstr "Valor máximo do velocímetro:"
 
 #: src/dashboard_pi.cpp:1814
 msgid "Speed Over Ground Damping Factor:"
-msgstr ""
+msgstr "Velocidade sobre solo, factor de amortecimento:"
 
 #: src/dashboard_pi.cpp:1820
 msgid "COG Damping Factor:"
-msgstr ""
+msgstr "COG Factor de amortecimento:"
 
 #: src/dashboard_pi.cpp:1825
 msgid "Boat speed units:"

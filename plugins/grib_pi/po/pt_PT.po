@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-01-27 16:17-0500\n"
+"PO-Revision-Date: 2017-02-13 20:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -23,11 +23,12 @@ msgstr "Iniciar um pedido"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Marque a área do pedido\n"
+"ou prima aqui para interromper o pedido"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Validar a área e continuar"
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -83,7 +84,7 @@ msgstr "Configurações"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Marque a área do pedido ou prima aqui para interromper o pedido"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -95,7 +96,7 @@ msgstr "Seleccione um ficheiro GRIB"
 
 #: src/GribUIDialog.cpp:1679
 msgid " files don't exist!"
-msgstr ""
+msgstr " ficheiros inexistentes!"
 
 #: src/GribUIDialog.cpp:1701
 msgid " can't be read!"
@@ -475,15 +476,15 @@ msgstr "Opções de reprodução"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr ""
+msgstr "Controlo de Velocidade"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"
-msgstr ""
+msgstr "Lento"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Fast"
-msgstr ""
+msgstr "Rápido"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Loop Mode"
@@ -949,7 +950,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Pediu um previsão para mais de 8 dias.\n"
+"Isto vai entrar em conflito com os dados que serão removidos do seu pedido.\n"
+"Não esqueça que para além dos primeiros 8 dias, a resolução será de apenas 2.5\\u00B0x2.5\\u00B0\n"
+"e o intervalo de tempo de 12 horas."
 
 #: src/GribRequestDialog.cpp:837
 msgid "Max"
@@ -971,7 +975,7 @@ msgstr "Erro! Max Lat menor que Min Lat ou Max Lon menor que Min Lon!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Área demasiado grande! Cada lado deve ser inferior a 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"
