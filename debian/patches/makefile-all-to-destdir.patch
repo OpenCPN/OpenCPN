@@ -1,0 +1,47 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -2469,24 +2469,26 @@
+ 	mkdir -p $(DESTDIR)$(pkgdatadir)/doc/includes
+ 	cp -p ./$(srcdir)/data/doc/includes/*.css  $(DESTDIR)$(pkgdatadir)/doc/includes
+ 	cp -p ./$(srcdir)/data/doc/includes/*.js  $(DESTDIR)$(pkgdatadir)/doc/includes
+-	cp -p ./$(srcdir)/data/opencpn.png  /usr/share/icons
+-	cp -p ./$(srcdir)/data/opencpn.desktop  /usr/share/applications
+-	mkdir -p /usr/local/share/locale/de/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/da/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/it/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/pl/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/fr/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/es/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/nl/LC_MESSAGES
+-	mkdir -p /usr/local/share/locale/sv/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_de_DE.mo /usr/local/share/locale/de/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_da_DK.mo /usr/local/share/locale/da/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_it_IT.mo /usr/local/share/locale/it/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_pl_PL.mo /usr/local/share/locale/pl/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_fr_FR.mo /usr/local/share/locale/fr/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_es_ES.mo /usr/local/share/locale/es/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_nl_NL.mo /usr/local/share/locale/nl/LC_MESSAGES
+-	cp -p ./$(srcdir)/po/opencpn_sv_SE.mo /usr/local/share/locale/sv/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/icons
++	cp -p ./$(srcdir)/data/opencpn.png  $(DESTDIR)$(datadir)/icons
++	mkdir -p $(DESTDIR)$(datadir)/applications
++	cp -p ./$(srcdir)/data/opencpn.desktop  $(DESTDIR)$(datadir)/applications
++	mkdir -p $(DESTDIR)$(datadir)/locale/de/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/da/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/it/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/pl/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/fr/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/es/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/nl/LC_MESSAGES
++	mkdir -p $(DESTDIR)$(datadir)/locale/sv/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_de_DE.mo $(DESTDIR)$(datadir)/locale/de/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_da_DK.mo $(DESTDIR)$(datadir)/locale/da/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_it_IT.mo $(DESTDIR)$(datadir)/locale/it/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_pl_PL.mo $(DESTDIR)$(datadir)/locale/pl/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_fr_FR.mo $(DESTDIR)$(datadir)/locale/fr/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_es_ES.mo $(DESTDIR)$(datadir)/locale/es/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_nl_NL.mo $(DESTDIR)$(datadir)/locale/nl/LC_MESSAGES
++	cp -p ./$(srcdir)/po/opencpn_sv_SE.mo $(DESTDIR)$(datadir)/locale/sv/LC_MESSAGES
+ 
+ uninstall-local:
+ 	rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/*

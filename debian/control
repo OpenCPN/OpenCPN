@@ -1,0 +1,20 @@
+Source: opencpn
+Section: utils
+Priority: optional
+Maintainer: Anton Martchukov <anton@martchukov.com>
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, libglu-dev, libwxbase2.8-dev, libwxgtk2.8-dev, libgtk2.0-dev, imagemagick
+Standards-Version: 3.8.3
+Homepage: http://www.opencpn.org/
+
+Package: opencpn
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: a concise ChartPlotter/Navigator
+ opencpn is a cross-platform ship-borne GUI ChartPlotter
+ application supporting
+ .
+     * GPS/GPDS Postition Input
+     * BSB Raster Chart Display
+     * S57 Vector ENChart Display
+     * AIS Input Decoding
+     * Waypoint Autopilot Navigation

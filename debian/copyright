@@ -1,0 +1,25 @@
+This work was packaged for Debian by:
+
+    Anton Martchukov <anton@martchukov.com> on Sun, 07 Feb 2010 13:58:16 +0300
+
+It was downloaded from http://sourceforge.net/projects/opencpn/
+
+Upstream Author(s):
+
+    dsr <bdbcat@yahoo.com>
+
+Copyright:
+
+    Copyright (C) 2008-2010 dsr <bdbcat@yahoo.com>
+
+License:
+
+    You are free to distribute this software under the terms of
+    the GNU General Public License version 2.
+    
+On Debian systems, the complete text of the GNU General Public
+License can be found in the file `/usr/share/common-licenses/GPL-2'.
+
+The Debian packaging is:
+
+    Copyright (C) 2010 Anton Martchukov <anton@martchukov.com>
