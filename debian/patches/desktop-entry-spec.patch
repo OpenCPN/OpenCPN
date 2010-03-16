@@ -1,0 +1,40 @@
+From: Anton Martchukov <anton@martchukov.com>
+Subject: Fix opencpn.desktop to Conform to freedesktop.org Desktop Entry Specification
+
+* opencpn.desktop: Added version field.
+* opencpn.desktop: Added icon file reference.
+* opencpn.desktop: Added Comment field.
+* opencpn.desktop: Added Categories field.
+* opencpn.desktop: Removed empty unrequired fields.
+* opencpn.desktop: Removed Encoding field.
+* opencpn.desktop: Removed TerminalOpts field.
+* opencpn.desktop: Removed X-* fields.
+
+Forwarded: http://sourceforge.net/tracker/?func=detail&aid=2971544&group_id=180842&atid=894806
+--- a/data/opencpn.desktop
++++ b/data/opencpn.desktop
+@@ -1,19 +1,10 @@
+ [Desktop Entry]
+-Comment=
+-Comment[en_US]=
+-Encoding=UTF-8
+-Exec=opencpn
+-GenericName=
+-GenericName[en_US]=
+-Icon=exec
+-MimeType=
++Version=1.0
+ Name=OpenCPN
+-Name[en_US]=OpenCPN
+-Path=
++Comment=Open source chart plotter / navigator
++Exec=opencpn
++Icon=opencpn
+ StartupNotify=true
+ Terminal=false
+-TerminalOptions=
+ Type=Application
+-X-DCOP-ServiceType=
+-X-KDE-SubstituteUID=false
+-X-KDE-Username=
++Categories=Education;Science;Geography;

@@ -1,9 +1,10 @@
 Source: opencpn
 Section: utils
 Priority: optional
-Maintainer: Anton Martchukov <anton@martchukov.com>
+Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
+Uploaders: Anton Martchukov <anton@martchukov.com>
 Build-Depends: debhelper (>= 7.0.50~), autotools-dev, libglu-dev, libwxbase2.8-dev, libwxgtk2.8-dev, libgtk2.0-dev, imagemagick
-Standards-Version: 3.8.3
+Standards-Version: 3.8.4
 Homepage: http://www.opencpn.org/
 
 Package: opencpn

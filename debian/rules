@@ -13,7 +13,8 @@
 	dh  $@
 
 override_dh_install:
-	convert $(CURDIR)/data/opencpn.png -resize 32x32 $(CURDIR)/debian/opencpn/usr/share/icons/opencpn.xpm
+	mkdir -p $(CURDIR)/debian/opencpn/usr/share/pixmaps
+	convert $(CURDIR)/data/opencpn.png -resize 32x32 $(CURDIR)/debian/opencpn/usr/share/pixmaps/opencpn.xpm
 	
 	dh_install
 	

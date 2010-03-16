@@ -1,5 +1,3 @@
 fix-gsocket.patch
-makefile-all-to-destdir.patch
-makefile-share-fixperms.patch
-fix-desktop-depricated-TerminalOptions.patch
-desktop-add-icon.patch
+desktop-entry-spec.patch
+makefile-data-fhs.patch
