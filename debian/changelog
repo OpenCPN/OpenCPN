@@ -1,5 +1,19 @@
+opencpn (2.1.624a-1) unstable; urgency=low
+
+  * Packaged for new upstream release 2.1.624a 
+
+ -- Anton Martchukov <antonm@alcor.martchukov.com>  Sat, 26 Jun 2010 22:03:15 +0400
+
+opencpn (2.1.624-1) unstable; urgency=low
+
+  * Packaged for new upstream release 2.1.624
+  * fix-gsocket.patch has been applied upstream 
+  * makefile-data-fhs.patch has been applied upstream 
+
+ -- Anton Martchukov <antonm@alcor.martchukov.com>  Sat, 26 Jun 2010 02:17:46 +0400
+
 opencpn (1.3.6-1) unstable; urgency=low
 
-  * Initial release (Closes: #538067)
+  * Initial release
 
  -- Anton Martchukov <anton@martchukov.com>  Sun, 07 Feb 2010 13:58:16 +0300
