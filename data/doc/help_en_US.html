@@ -1,0 +1,2860 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>OpenCPN Manual</title>
+    
+    <!-- base href="http://opencpn.org/" -->
+    <link type="text/css" rel="stylesheet" href="css/print.css">
+  </head>
+  <body>
+    <div id="node-31" class="section-1">
+      <div id="node-10" class="section-2">
+        <h1 class="book-heading">
+           Getting Started 
+        </h1>
+        <p>
+           Welcome! 
+          <br>
+          <br>
+           Getting started using OpenCPN consists of 3 basic steps: 
+        </p>
+        <ol>
+          <li>
+            <a href="http://opencpn.org/installing_opencpn">Installing OpenCPN </a>
+          </li>
+          <li>
+            <a href="http://opencpn.org/installing_charts">Installing Nautical Charts </a>to be read by OpenCPN 
+          </li>
+          <li>
+             *(Optional) <a href="http://opencpn.org/setting_up_gps">Setting up&nbsp;GPS </a>to "talk" to your computer and OpenCPN 
+          </li>
+        </ol>
+         Completing these 3 steps will get you started and allow you to check out the program.&nbsp; Later, after exploring the program, you may want to read through the <a href="http://opencpn.org/basic_features">Basic Featues </a>and <a href="http://opencpn.org/advanced_features">Advanced Features </a>sections to really get a good grasp of what the program offers.&nbsp; If you still have questions or would just like to get in touch with other OpenCPN users, there is also a fairly large community behind OpenCPN. You can find us in this Cruiser's <a href="http://www.cruisersforum.com/forums/f134/">forum.</a>
+        <br>
+        <div id="node-11" class="section-3">
+          <h1 class="book-heading">
+             Installing OpenCPN 
+          </h1>
+          <h3>
+             Windows 98/ME/2000/XP/Vista/7 
+          </h3>
+          <ul>
+            <li>
+               Download the installation package for Windows from&nbsp;<a href="http://opencpn.org/download">opencpn.org/download</a>. 
+            </li>
+            <li>
+               Run the downloaded installer. 
+            </li>
+            <li>
+               If upgrading from a previous version of OpenCPN, there is no need to uninstall the previous version. Simply install the new version and it will upgrade OpenCPN, saving all your existing configuration and preferences. 
+            </li>
+            <li>
+               If this is a new installation, click on the Toolbox icon <img alt="Toolbox Settings" src="images/settings.png" align="absmiddle">&nbsp;and configure your GPS source, chart directories, and other settings. 
+            </li>
+          </ul>
+          <h3>
+             Linux 
+          </h3>
+          <h4>
+             32bit Ubuntu/Debian Distributions 
+          </h4>
+          <ul>
+            <li>
+               Download the .deb from&nbsp;<a href="http://opencpn.org/download">opencpn.org/download</a>. 
+            </li>
+            <li>
+               Install the package via dpkg: 
+              <ul>
+                <li>
+                  <pre> $ sudo dpkg -i &lt;downloaded_file.deb&gt; 
+                  </pre>
+                </li>
+                <li>
+                   The binary will be installed to&nbsp;<strong>/</strong><strong>usr/local/bin/opencpn</strong>. 
+                </li>
+              </ul>
+            </li>
+            <li>
+               If this is a new installation, click on the Toolbox icon <img alt="Toolbox Settings" src="images/settings.png" align="absmiddle">&nbsp;and configure your GPS source, chart directories, and other settings. 
+            </li>
+          </ul>
+          <h4>
+             Other 32 and 64bit Linux Distributions and the BSD operating systems. 
+          </h4>
+          <ul>
+            <li>
+               Currently other distributions requires compiling the source. This will involve resolving various dependencies and is for folks comfortable with developing on Linux. 
+            </li>
+            <li>
+               Download the source from&nbsp;from&nbsp;<a href="http://opencpn.org/download">opencpn.org/download</a>&nbsp;or directly from the CVS server. The SourceForge link for this project is&nbsp;<a href="http://sourceforge.net/projects/opencpn/">sourceforge.net/projects/opencpn/</a>. 
+            </li>
+            <li>
+               Interested in maintaining a package for your favorite Linux distribution? Follow the SourceForge link above. 
+            </li>
+            <li>
+               This also includes the different BSD distributions. Report your experiences back to the forum. 
+            </li>
+          </ul>
+          <h3>
+             Mac OSX 
+          </h3>
+          <ul>
+            <li>
+               Mac OSX developer / package maintainer currently needed. Please see&nbsp;<a title="http://sourceforge.net/projects/opencpn/" href="http://sourceforge.net/projects/opencpn/">http://sourceforge.net/projects/opencpn/</a>&nbsp;to get involved. 
+            </li>
+          </ul>
+          <br>
+          <strong>Location of Important Files<br>
+          </strong>
+          <ul>
+            <li>
+               &nbsp;It is important to know the location of the log file and the configuration file on your computer. If you ask questions on the forum, there is a fair chance that you will be asked about the content in these files. Once you get familiar with OpenCPN, have a look at the files! 
+            </li>
+            <li>
+               On <strong>Linux</strong> the "opencpn.log" is in your home directory. 
+              <br>
+               The "opencpn.conf" is in a hidden directory, called "opencpn", also in your home directory. 
+              <br>
+               For a quick way to view the files you can try these commands. 
+              <br>
+               $gedit `echo $HOME/opencpn.log` 
+              <br>
+               $gedit `echo $HOME/.opencpn/opencpn.conf` 
+              <br>
+               Of course you can swap "gedit" for your favourite editor. 
+            </li>
+            <li>
+               On <strong>Windows 2000, XP and Vista and Windows 7 </strong>the two files, opencpn.log and opencpn.ini are in a location governed by the environmental variable %APPDATA%. 
+              <br>
+               From any command prompt enter: explorer %APPDATA%\opencpn. Windows Explorer will start with the correct folder open. 
+            </li>
+            <li>
+               As an alternative follow these instructions: 
+              <br>
+               1 Go to Start -&gt; Run 
+              <br>
+               2 Enter Code: %APPDATA%\opencpn 
+              <br>
+               3 Click OK! 
+            </li>
+            <li>
+               On Windows 7, instead of "Run" use &nbsp; "Search programs and files". 
+            </li>
+            <li>
+               Note that some folders in the path %APPDATA% are hidden, so to be able to navigate to the log- and ini-file you may have to adjust your settings. 
+            </li>
+          </ul>
+        </div>
+        <div id="node-12" class="section-3">
+          <h1 class="book-heading">
+             Installing Charts 
+          </h1>
+           To install charts OpenCPN must be pointed to a directory containing charts of a <a href="http://opencpn.org/chart_formats">recognized format</a>. Don't point OpenCPN to individual charts, you must specify the directory that contains the charts. Download some charts (see below) and organize them in a fashion that suits you.&nbsp; You may want to consider storing them in a directory where they will not be tampered with or moved accidentally. 
+          <br>
+           Open the Toolbox by clicking <img alt="" src="images/settings.png" height="32" width="32">.&nbsp; You are sent to the first tab "Settings", tick the box "Show Chart Outlines", this will help you visualize the loaded charts. 
+          <br>
+           &nbsp; 
+          <br>
+          <img alt="" src="images/wx3.png" height="297" width="642">
+          <br>
+          <br>
+           Then click the tab "Charts". 
+          <br>
+          <br>
+          <img alt="" src="images/wx4.png" height="670" width="653">
+          <br>
+          <br>
+           Under "Available Chart Directories" navigate to your chart-directory. Above we have found the South China Sea vector charts in the /opt/Navigation/ENC directory. When clicking the button "Add Selection" the selected chart directory appears in the box "Active Chart Directories". The screen-shots are from Linux, but this process works similar on all platforms. All that remains is to click the "Ok" button. OpenCPN will then process your selection. You can now start using your charts. 
+          <br>
+          <br>
+          <strong>Start using your charts</strong>. 
+          <br>
+           You can click and drag the chart with your mouse. The scroll wheel zooms in and out. Right clicking brings up a menu with useful actions. Exactly what the menu contains depends on the circumstances. Read the rest of the manual for a full explanation. 
+          <br>
+          <br>
+          <strong>A few hints. </strong>
+          <ul>
+            <li>
+               If all is just black, with maybe some blue lines, you are viewing the background world vector shoreline chart. You must move to the geographical position of the charts you just loaded. As you come close you will see the outlines of your loaded charts, in red for raster charts and in green for S57 vector charts. Click in the rectangle created by the outlines, to activate, and view the chart. 
+            </li>
+            <li>
+              <a name="cm93"></a>As you ticked the, Show Outline box, as described above, the loaded charts will be outlined in red for raster and green for vector charts. In CM93 the charts will be outlined in purple. The smallest scale charts in CM93, the Z scale and A scale charts will not be outlined, neither will all available charts be visible as outlines at the same time. The reason for this is computing speed and clarity. Generally the next level or two of larger scale charts are shown. Presently this presents a problem in a few areas, where no B scale charts are available, and large scale plans exists, directly embedded in the small scale charts. Generally in areas where only A or Z scale charts are available, expect potentially dangerous omissions. <strong>Warning</strong>, do not use CM93 small scale charts only, for navigation, without referring to other sources. 
+            </li>
+            <li>
+               When using a vector chart for the first time OpenCPN has to process the data, and transform the information to an internal display format. This can take some time, depending on your computer. This internal SENC chart is then saved for future use. 
+            </li>
+            <li>
+               Be aware that it is possible to "Over-zoom" charts in OpenCPN. A warning will appear on the display. Please respect this warning. It is recommended to not zoom more than a factor 2, for safe navigation. You will find the actual zoom-factor in the lower right-hand corner of the display. 
+            </li>
+            <li>
+               It is safe and reasonably efficient to put all your charts <strong>except&nbsp; </strong>the CM93 database in one large directory, and set that directory in Toolbox-&gt;Charts. The CM93 database contains its own file and directory structure. The top-level directory only, of this database should be loaded, as described above, into OpenCPN. 
+              <br>
+               If you do a lot of chart downloads, updates, etc., then it will be faster to break the charts folder into smaller groups, and specify them individually in the Toolbox-&gt;Charts dialog. 
+            </li>
+            <li>
+               The option "Force Full Database Rebuild" is mainly aimed at users converting charts, in a situation where minor changes or corrections are made. 
+            </li>
+            <li>
+               OpenCPN,&nbsp; supports&nbsp; <strong>Mercator charts, Transverse Mercator Charts and Polyconical Charts</strong> (US Great Lakes). Charts using other projections will be displayed as if the were Mercator charts, except for the fact that they will not be used for quilting. Most charts are using Mercator projection, so this limitation is not to bad. 
+              <br>
+               Other projections, such as <strong>Gnomonic</strong>, are mainly used in larger scale charts, for smaller areas, for example harbor plans, in scales larger than 1:50,000. 
+              <br>
+               The errors introduced in OpenCPN by treating these charts as Mercator are generally small, but <strong>be aware of this limitation</strong>. 
+            </li>
+          </ul>
+          <div id="node-38" class="section-4">
+            <h1 class="book-heading">
+               Chart Formats 
+            </h1>
+            <h3>
+               OpenCPN supported chart formats: 
+            </h3>
+            <p>
+              <strong>BSB / RNC / KAP Versions 1, 2 and 3. </strong>
+              <br>
+               (BSB Version 4 and later are not supported due to proprietary encryption algorithms.) 
+            </p>
+            <p>
+              <strong>NOS/GEO Version 1</strong> Subsequent versions are probably supported but need to be tested. However, this format is obsolete for new charts. 
+            </p>
+            <p>
+              <strong>CM93 Version 2.</strong>
+              <br>
+               (C-map Version 3 and later are not supported.) 
+            </p>
+            <p>
+              <strong>S57/S52 (ENC).</strong>
+              <br>
+               (S63 Encrypted ENC is not supported. This is the format for the majority of newly produced vector charts from many national hydrographic offices. S63 charts are exactly the same as S57 except the they are encrypted to keep them from being illegally distributed.) 
+            </p>
+            <h3>
+               Other formats, that with some effort, can be used. 
+            </h3>
+            <p>
+               Generally many chart pictures in <strong>gif, jpeg, png, tif </strong>and other formats can be used, when properly geo-referenced, to generate<strong> KAP</strong> file (BSB / RNC) that OpenCPN can display. For the details about this process see the <a href="http://www.cruisersforum.com/forums/f134/charts-31346.html">chart thread</a> in the forum.&nbsp; Also, make sure to browse around the forum as there are a handfull of other interesting chart related threads. 
+            </p>
+            <p>
+              <strong>WCI</strong> charts generated with <a href="http://www.sping.com/seaclear/">SeaClear and MapCal </a>can also be transformed to BSB charts and used by OpenCPN. The key is to open a WCI chart in MapCal and convert it to a BMP picture, and then transform this picture to a tiff file, using for example ImageMagic. 
+            </p>
+            <p>
+               &nbsp;Before Maptech started to produce BSB charts the <strong>HDR</strong> format was used in the late eighties to mid nineties. These charts consists of many picture tiles in <strong>pcx </strong>format, more than 100 tiles is not unusual. The tiles can be merged to one picture and then used as any other picture to make an OpenCPN compatible chart. For details on this process see the<a href="http://opencpn.org/chart_conversion_manual"> Chart Conversion Manual</a>&nbsp; and <a href="http://www.cruisersforum.com/forums/f134/open-chart-standard-32731-4.html#post381315">this post</a> and the following posts in the forum. 
+            </p>
+            <p>
+               &nbsp;The HDR format is from an era when computer-memory and processing power were less powerful than today, as a consequence these charts are not of the same quality as more modern charts. Furthermore, most of these charts are not using WGS84 as reference datum. These charts should not be the first choice, but can be useful if nothing else is available. 
+            </p>
+            <h3>
+               Other formats that are <em>not</em> supported. 
+            </h3>
+            <p>
+               The Hydrographic Chart Raster Format (HCRF), used by the United Kingdom Hydrographic Offices' ARCS (Admiralty Raster Chart Service), Australian Hydrographic Services' Seafarer products and the NZ<em>Mariner</em>, New Zealands Official charts, are not supported.&nbsp; This is also due to proprietary encryption algorithms and copyright issues. 
+              <br>
+              <br>
+               Mapmedia's various chart formats are not supported, for the same reasons as for the other proprietary charts. 
+            </p>
+          </div>
+          <div id="node-86" class="section-4">
+            <h1 class="book-heading">
+               Chart sources 
+            </h1>
+            <h2>
+               &nbsp; 
+            </h2>
+             &nbsp;&nbsp; 
+            <h2>
+               Where to find free charts 
+            </h2>
+            <ul type="circle">
+              <li>
+                 To get you started quickly, here are three sample charts from Puerto Rico:<a href="http://opencpn.org/sites/default/files/users/taifun/25640_1.KAP"> one, </a><a href="http://opencpn.org/sites/default/files/users/taifun/25664_1.KAP">two</a> and <a href="http://opencpn.org/sites/default/files/users/taifun/25666_1.KAP">three</a>. Right click and use "Save Link As", or similar. Just clicking shows you the actual file as a text file, this is an advanced subject, to be treated later. 
+              </li>
+              <li>
+                 For those interested in U.S. waters, S57 vector charts are now available for free download from NOAA. Find all the charts you need, both raster (RNC) and ENC's, for your region through NOAA OCS Website at : <a href="http://www.nauticalcharts.noaa.gov/staff/charts.htm" title="http://www.nauticalcharts.noaa.gov/staff/charts.htm">http://www.nauticalcharts.noaa.gov/staff/charts.htm</a>. 
+              </li>
+              <li>
+                 Links to a wide selection of ENC's for U.S. inland waters and other countries are available at : <a href="http://www.dacust.com/inlandwaters/index.html" title="http://www.dacust.com/inlandwaters/index.html">http://www.dacust.com/inlandwaters/index.html</a>. 
+              </li>
+              <li>
+                 Brazil publishes free raster charts (RNC) for their whole coast and new charts for inland water is published regularly.There is also coverage for part of Antarctica. Here is a direct link to the download page:&nbsp;<a href="https://www.mar.mil.br/dhn/chm/cartas/download/cartasbsb/cartas_eletronicas_Internet.htm">Brazilean Charts</a>. Don't miss the link to CARTAS DE RIOS at the bottom of this page. 
+              </li>
+              <li>
+                 The East Asia Hydrographic Commission is providing free offshore S57 vector charts for the South China Sea area at : <a href="http://www.scsenc.org.hk/main.htm">www.scsenc.org.hk/main.htm</a> .&nbsp; The motivation for releasing these charts is well worth reading. 
+                <p>
+                  <cite>Realizing that official and high quality small scale ENCs conforming with the established IHO standard were not available for the SCS, the EAHC MSs decided to cooperate closely and resolve the situation so that mariners could use most up-to-date chart information for voyage planning and enhancing safety of navigation, rather than resorted to some commercially developed electronic products which were either prepared in proprietary formats, or containing unofficial data with very infrequent updating.<br>
+                  </cite>
+                </p>
+              </li>
+              <li>
+                <a href="http://www.cioh.org.co/index.php?option=com_docman&amp;task=doc_download&amp;gid=176&amp;Itemid=%0A%20%20%20%20">Colombia</a> and <a href="http://www.hydro.gov.au/seafarer/enc/enc-sample/enc-sample.htm">Australia</a> publishes sample S57 single charts. 
+              </li>
+              <li>
+                 New Zealand <a href="http://www.linz.govt.nz/hydro/charts/digital-charts/chart-images/index.aspx">publishes</a> high quality tiff pictures of almost all their charts. From a&nbsp; start, in the last few month of 2009, the work to create OpenCPN compatible charts from these pictures has quickly matured.&nbsp; For the latest on this subject, check the "<a href="http://www.cruisersforum.com/forums/f134/charts-31346.html">Chart</a>" thread in the Forum. All NZ charts are now available for OpenCPN <a href="http://mce66.altervista.org/software.html#Free_Nautical_Raster_Maps"><strong>here. </strong></a>
+              </li>
+              <li>
+                 Many European countries publishes free S57 ENC charts for their inland waterways: 
+                <br>
+                <a href="http://www.doris.bmvit.gv.at/inland_ecdis/downloads/inland_ecdis_standard_20/">Austria</a>
+                <br>
+                <a href="http://nts.flaris.be/default.aspx?path=NtS/Downloads">Belgium</a>
+                <br>
+                <a href="http://www.appd-bg.org/siteen/page.php?27">Bulgaria</a>
+                <br>
+                <a href="http://www.crup.hr/index.php?page=encdownload">Croatia</a>
+                <br>
+                <a href="http://193.86.76.109/lpm/maps_S57.asp?lang=en"> Czech Republic</a>
+                <br>
+                <a href="http://www.vituki.hu/index.php?option=com_remository&amp;Itemid=89&amp;func=finishdown&amp;id=44">Hungary</a>
+                <br>
+                <a href="http://www.risserver.nl/ENC">Netherlands</a>
+                <br>
+                <a href="http://www.afdj.ro/electronic_map.html">Romania</a>
+                <br>
+                <a href="http://www.crup.hr/index.php?page=encdownload">Serbia</a>
+                <br>
+                <a href="http://port-of-switzerland.ch/site/index.php?option=com_content&amp;view=article&amp;id=286&amp;Itemid=93">Switzerland</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div id="node-13" class="section-3">
+          <h1 class="book-heading">
+             Setting Up GPS 
+          </h1>
+          <br>
+          <h3>
+             Windows 98/ME/2000/XP/Vista/7 
+          </h3>
+          <br>
+          <p>
+             To use OpenCPN with a GPS, a GPS receiver is needed. 
+          </p>
+          <p>
+             There are a variety of possible choices for a GPS receiver: 
+          </p>
+          <ul>
+            <li>
+               A computer, such as a Sony Vaio P has a built in GPS receiver 
+            </li>
+            <li>
+               A NMEA Expander to amplify a nmea stream to multiple listeners 
+            </li>
+            <li>
+               A handheld GPS receiver 
+            </li>
+            <li>
+               A dedicated GPS receiver 
+            </li>
+          </ul>
+          <p>
+             The remainder of this section describes using OpenCPN with a dedicated GPS receiver, however, the instructions for a dedicated receiver will be similar for any serial/USB connected NMEA data stream. 
+          </p>
+          <h4>
+             A Dedicated GPS Receiver 
+          </h4>
+          <p>
+             There are several companies making dedicated GPS receivers. The Supplementary Hardware section for GPS devices lists several manufacturers. 
+          </p>
+          <p>
+             NMEA has traditionally been implemented as a serial protocol and therefore, even if a USB connection is used, there needs to be a USB to Serial Port conversion. The specific driver for the each GPS receiver will handle this conversion. 
+          </p>
+          <h4>
+             Configuring BU-353 
+          </h4>
+          <p>
+             &nbsp;It is not necessary to use the installation disk to setup the BU-353. Following the steps listed below will result in the latest driver being installed. 
+          </p>
+          <ol>
+            <li>
+               Download the latest driver from Prolific - <a href="http://www.prolific.com.tw/Eng/downloads.asp?ID=31" title="http://www.prolific.com.tw/Eng/downloads.asp?ID=31">http://www.prolific.com.tw/Eng/downloads.asp?ID=31</a>
+            </li>
+            <li>
+               Unzip and install the driver 
+            </li>
+            <li>
+               Plug in the BU-353. 
+            </li>
+            <li>
+               Start -&gt; (Right Click) My Computer -&gt; Properties -&gt; Hardware -&gt;Device Manager 
+              <br>
+               or Start-&gt;Run devmgmt.msc 
+            </li>
+            <li>
+               Expand Ports 
+            </li>
+            <li>
+               Look for the “Prolific USB-to-Serial Comm Port” and note the com port number (e.g., COM4) <img alt="" src="images/DeviceManager-1.jpg" height="445" width="299">
+            </li>
+            <li>
+               Right click on the “Prolific USB-to-Serial Comm Port”. Choose Driver 
+            </li>
+            <li>
+               Select 4800 bits per second, 8 data bits, None parity, 1 stop bit, and None for Flow Control&nbsp;<img alt="" src="images/Prolific.jpg" height="450" width="410">
+            </li>
+            <li>
+               Start OpenCPN 
+            </li>
+            <li>
+               Click on the ToolBox Icon <img alt="Toolbox Settings" src="images/settings.png" align="absmiddle">
+            </li>
+            <li>
+               Select GPS 
+            </li>
+            <li>
+               Under NMEA Data Source select the Com port noted in #6 
+            </li>
+            <li>
+               Choose OK 
+            </li>
+            <li>
+               Select Auto Follow to center the map over your GPS location 
+            </li>
+          </ol>
+          <h4>
+             Troubleshooting 
+          </h4>
+          <p>
+             There is a small LED located on the BU-353. If the LED is off there is no power being received. Check the connection. 
+          </p>
+          <p>
+             If the LED is solid it indicates the BU-353 is searching for a GPS signal. Try moving the GPS receiver to a clear location. 
+          </p>
+          <p>
+             If the LED is flashing it indicates the BU-353 has a position fix and is transmitting data. 
+          </p>
+          <ol>
+            <li>
+               Try viewing the NMEA data stream in OpenCPN. Choose ToolBox-&gt;GPS-&gt;click Show GPS/NMEA Data Stream Window 
+            </li>
+            <li>
+               Alternatively, a diagnostic program is included on the installation CD called GPSInfo.exe. Launch this program to install the diagnostic utility. 
+            </li>
+          </ol>
+          <p>
+             If it appears that the NMEA data stream is being received, the most likely issue is that OpenCPN is not centered over your location. Click AutoFollow to center the map at your GPS location. 
+          </p>
+          <h4>
+             Known Issues 
+          </h4>
+          <p>
+             If you change the USB port for the GPS receiver Prolific will reassign the COM port number. This will require repeating steps 4-12 above. 
+          </p>
+          <p>
+             On some computer / GPS receiver combinations when the computer resumes from Stand By the GPS receiver will no longer transmit its NMEA data stream. 
+          </p>
+          <p>
+             A workaround for this issue is provided by using a COM port splitter such as XPort <a href="http://curioustech.home.insightbb.com/xport.html" title="http://curioustech.home.insightbb.com/xport.html">http://curioustech.home.insightbb.com/xport.html</a>
+          </p>
+          <ol>
+            <li>
+               Download <a href="http://curioustech.home.insightbb.com/xport.html">XPort</a>. 
+            </li>
+            <li>
+               Unzip it to a folder of your choice 
+            </li>
+            <li>
+               Double Click XPort.exe 
+            </li>
+            <li>
+               Set the Baud Rate to 4800 
+            </li>
+            <li>
+               Under Enable Ports add an entry for COM10 
+            </li>
+            <li>
+               Click “Find GPS”. The port returned should match the port identified in Step #6 in the Configuring BU-353 Section 
+            </li>
+            <li>
+               Select Prolific USB-to-Serial Comm Port in the check box section 
+            </li>
+            <li>
+               Return to OpenCPN 
+            </li>
+            <li>
+               Click on the ToolBox Icon <img alt="Toolbox Settings" src="images/settings.png" align="absmiddle">
+            </li>
+            <li>
+               Select GPS 
+            </li>
+            <li>
+               Under NMEA Data Source change the Com port to COM10 
+              <h3>
+                <br>
+                <br>
+                 Linux 
+              </h3>
+              <br>
+              <h4>
+                 Ubuntu/Debian Distributions 
+              </h4>
+              <ul>
+                <li>
+                   Install the gpsd and gpsd-clients packages 
+                  <br>
+                  <ul>
+                     $ sudo apt-get install gpsd gpsd-clients 
+                  </ul>
+                </li>
+                <li>
+                   Go to Toolbox--&gt;GPS and select "Network GPSD" as your "NMEA Data Source", unless you have a gpsd version in the 2.9.x series( Ubuntu 10.04&nbsp; and other new distros). In this case choose&nbsp; Toolbox--&gt;GPS --&gt; "NMEA Data Source" --&gt;"Network LIBGPS".&nbsp; Note that in this case you also have to use OpenCPN version greater than 2.1.0 Beta build 530. 
+                </li>
+                <li>
+                   On Ubuntu 9.10 and later, that is realy all you have to do. When you plug in your gps this will trigger gpsd to start. 
+                </li>
+                <li>
+                   If this this doesn't work for you, follow the instructions below. 
+                </li>
+                <li>
+                   Check first if gpsd is working: 
+                  <br>
+                   $ ps aux | grep gpsd 
+                  <br>
+                   nobody&nbsp;&nbsp; 12338&nbsp; 0.3&nbsp; 0.1&nbsp;&nbsp; 4124&nbsp; 1448 ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S&lt;s&nbsp; 18:31&nbsp;&nbsp; 0:00 gpsd -F /var/run/gpsd.sock 
+                  <br>
+                   you &nbsp;&nbsp; 12356&nbsp; 0.0&nbsp; 0.0&nbsp;&nbsp; 3036&nbsp;&nbsp; 800 pts/3&nbsp;&nbsp;&nbsp; S+&nbsp;&nbsp; 18:32&nbsp;&nbsp; 0:00 grep --color=tty -d skip gpsd 
+                  <br>
+                   This or similar responses indicate that gpsd is running. If you only have something like the second line, ....it is not running. 
+                  <br>
+                   &nbsp; 
+                </li>
+                <li>
+                   Determine which device your GPS&nbsp;is on your linux system by checking the startup.&nbsp; Look for a line that says something about GPS&nbsp;and /dev/ttyUSB# 
+                  <br>
+                  <ul>
+                    <li>
+                      <pre> $ dmesg 
+                      </pre>
+                       Or even better, after connecting a gps mouse, BU-353, we look for a dmesg by running this command. 
+                      <br>
+                      <pre> $ dmesg | grep tty
+and get this response back.
+[13616.095305] usb 2-3: pl2303 converter now attached to ttyUSB0 
+                      </pre>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                   Add a script to start gpsd.&nbsp; I&nbsp;saved mine as startgps and set thet executeable attribute.&nbsp; Edit line 3 to match your device, ie /dev/ttyUSB0 
+                  <br>
+                  <ul>
+                    <li>
+                      <pre> #!/bin/sh
+ sudo killall gpsd
+ sudo gpsd -n -D 2 /dev/ttyUSB0
+ xgps -speedunits knots -l
+                      </pre>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                   Run the script: 
+                  <br>
+                  <ul>
+                    <li>
+                      <pre> $ ./startgps
+                      </pre>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+               If this is a new installation, click on the Toolbox icon <img alt="Toolbox Settings" src="images/settings.png" align="absmiddle">&nbsp;and configure your GPS source, chart directories, and other settings. 
+              <h4>
+                 Other Distributions 
+              </h4>
+              <ul>
+                <li>
+                   Install gpsd from source.&nbsp; More information is available here: <a href="http://gpsd.berlios.de/">http://gpsd.berlios.de/</a>
+                </li>
+              </ul>
+              <h4>
+                 Bluetooth GPS Ubuntu. 
+              </h4>
+              <br>
+               If you have a bluetooth GPS&nbsp; you will need to first configure it through the standard Ubuntu Bluetooth "set up new device " proceedure. 
+              <br>
+              <br>
+               Once you have done that you will need to find what the address of the GPS is. To do that you run this command. 
+              <br>
+              <br>
+               sudo hcitool scan 
+              <br>
+              <br>
+               it will then start looking for the Bluetooth GPS and hopefully find your GPS. You should see something similar. 
+              <br>
+              <br>
+               Scanning ... 
+              <br>
+               &nbsp;&nbsp; &nbsp;00:1C:88:10:D3:4D &nbsp;&nbsp; iBT-GPS 
+              <br>
+              <br>
+               In this case i have a IBT-GPS at address &nbsp;&nbsp;&nbsp; 00:1C:88:10:D3:4D &nbsp; (Your GPS address will be different) 
+              <br>
+              <br>
+               Next we have to bind the GPS address to a "virtual" device OpenCPN understands in this case rfcomm0 
+              <br>
+              <br>
+               we do this with the following command. 
+              <br>
+              <br>
+               sudo rfcomm bind /dev/rfcomm0 00:1C:88:10:D3:4D &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Note put your GPS address in this line 
+              <br>
+              <br>
+               It is my understanding you do not have to run these commands each time your linux is restarted as it will remeber your GPS address. 
+              <br>
+              <br>
+               Now all you need to do is go into OpenCPN Toolbox and select GPS 
+              <br>
+              <br>
+               Now in the NMEA Data Source options select from the pulldown menu 
+              <br>
+              <br>
+               /dev/rfcomm0 
+              <br>
+              <br>
+               Thats it you should now have a Bluetooth GPS Connected. 
+              <br>
+              <br>
+              <h3>
+                 Mac OSX 
+              </h3>
+              <br>
+              <img alt="" src="images/48px-Under_construction_icon-blue.png" align="left" height="40" width="48">This article&nbsp;<b>is in not complete.</b>&nbsp;You are welcome to assist in its construction by editing it as well. Everyone is allowed to edit after&nbsp;<a href="http://opencpn.org/user/register">creating an account</a>&nbsp;and/or&nbsp;<a href="http://opencpn.org/user">logging in</a>. 
+              <br>
+              <ul>
+                <li>
+                  <em>Add howto here</em>
+                </li>
+              </ul>
+            </li>
+          </ol>
+          <div id="node-93" class="section-4">
+            <h1 class="book-heading">
+               GPS Status 
+            </h1>
+            <img src="images/ToolBar_0.png" alt="" height="38" width="700">
+            <br>
+            <br>
+             The GPS&nbsp; staus is indicated all the way to the right in the toolbar. 
+            <br>
+            <br>
+            <img src="images/gpsRed.png" alt="" align="absmiddle" height="28" width="28">&nbsp;No GPS or Invalid GPS data. 
+            <br>
+            <br>
+            <img src="images/gpsGrn.png" alt="" align="absmiddle" height="28" width="28"> Active/Valid GPS data 
+            <br>
+            <br>
+            <img src="images/gps1.png" alt="" align="absmiddle" height="28" width="28"> Active/Valid GPS data + GPS reporting 0 - 4 satellites 
+            <br>
+            <br>
+            <img src="images/gps2.png" alt="" height="28" width="28"> Active/Valid GPS data + GPS reporting 5 - 9 satellites 
+            <br>
+            <br>
+            <img src="images/gps3.png" alt="" align="absmiddle" height="28" width="28"> Active/Valid GPS data + GPS reporting 10+ satellites 
+            <br>
+            <br>
+          </div>
+        </div>
+      </div>
+      <div id="node-14" class="section-2">
+        <h1 class="book-heading">
+           Basic Features 
+        </h1>
+         Let's take a look at some of OpenCPN's basic features. 
+        <br>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/toolbar_buttons"><strong>Toolbar Buttons</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Quick look at OpenCPN&nbsp;button toolbar and their functions 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/zoom_in_out"><strong>Zoom in &amp; out</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to zoom in and out on a chart 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/scaling_charts"><strong>Scaling Charts</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to scale in and out to different charts 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/status_bar"><strong>Status Bar</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Status bar color definitions and explanations 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/auto_follow"><strong>Auto Follow and Display Orientation<br>
+    </strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to have chart follow gps or quickly center boat in chart 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/tides_and_currents"><strong>Tides and Currents</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to view tides and current station data&nbsp; on chart 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/hot_keys"><strong>Hot Keys</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Definition of "hot keys" 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/ship_track"><strong>Ship Track</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to record your track history and overlay on chart 
+        </div>
+        <br>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/mob"><strong>Man Over Board</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Man Over Board 
+        </div>
+        <br>
+        <div id="node-15" class="section-3">
+          <h1 class="book-heading">
+             Toolbar Buttons 
+          </h1>
+          <p>
+            <img src="images/ToolBar_0.png" alt="" height="46" width="843">
+          </p>
+          <p>
+             From left to right: 
+          </p>
+          <p>
+            <img src="images/zoomin.png" alt="" height="32" width="32">&nbsp;Zoom In (<a href="http://opencpn.org/zoom_in_out">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/zoomout.png" alt="" height="32" width="32">&nbsp;Zoom Out (<a href="http://opencpn.org/zoom_in_out">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/scin.png" alt="" height="32" width="32">&nbsp;Scale Next Chart&nbsp;Down (<a href="http://opencpn.org/scaling_charts">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/scout.png" alt="" height="32" width="32">&nbsp;Scale Next Chart Up (<a href="http://opencpn.org/scaling_charts">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/route.png" alt="" height="32" width="32">&nbsp;Create Route (<a href="http://opencpn.org/routes_and_marks">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/auto-follow_0.png" alt="" height="32" width="32">&nbsp;Find/Follow Boat (<a href="http://opencpn.org/auto_follow">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/settings_002.png" alt="" height="32" width="32">&nbsp;Launch Toolbox(<a href="http://opencpn.org/toolbox">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/text.png" alt="" height="32" width="32">&nbsp;Show Vector Text Labels on Vector Chart. 
+          </p>
+          <p>
+            <img src="images/ais.png" alt="" height="32" width="32">&nbsp;Show AIS Targets*&nbsp; *** (<a href="http://opencpn.org/ais">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/current.png" alt="" height="32" width="32">&nbsp;Show/Hide Currents On Chart (<a href="http://opencpn.org/tides_and_currents">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/tide.png" alt="" height="32" width="32">&nbsp;Show/Hide Tides On Chart (<a href="http://opencpn.org/tides_and_currents">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/print.png" alt="" height="32" width="32">&nbsp;Print** 
+          </p>
+          <p>
+            <img src="images/gpx_import.png" alt="" height="32" width="32">&nbsp;Import GPX File**(<a href="http://opencpn.org/import_export">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/gpx_export.png" alt="" height="32" width="32">&nbsp;Export GPX File**(<a href="http://opencpn.org/import_export">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/track.png" alt="" height="32" width="32">&nbsp;Toggle Track On/Off**(<a href="http://opencpn.org/ship_track">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/grib_0.png" alt="" height="32" width="32">&nbsp;Grib Overlay**(<a href="http://opencpn.org/grib_weather">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/colscheme.png" alt="" height="32" width="32">&nbsp;Change Color Scheme 
+          </p>
+          <p>
+            <img src="images/mob_btn.png" alt="" height="32" width="32">&nbsp;Drop Man Over Board(MOB) marker(<a href="http://opencpn.org/mob">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/help.png" alt="" height="32" width="32">&nbsp;About OpenCPN and Help File 
+          </p>
+          <p>
+            <img src="images/course-up_0.png" alt="" height="28" width="28">&nbsp;Course Up/North Up***(<a href="http://opencpn.org/auto_follow">Learn more</a>) 
+          </p>
+          <p>
+            <img src="images/gpsRed.png" alt="" height="28" width="28">&nbsp;GPS status***(<a href="http://opencpn.org/gps_status">Learn more</a>) 
+          </p>
+          <p>
+             *Note 1: AIS button is available if an Ais Data Port is defined in the ToolBox 
+            <br>
+            <br>
+             **Note 2: These icons can be enabled or disabled from the ToolBox 
+          </p>
+          <p class="rteindent1">
+             Printer 'ToolBox-Settings-Show Printing Icon' to hide or un-hide. 
+            <br>
+             GPX IN, and GPX OUT 'ToolBox-Etc.-Show GPX Icons' to hide or un-hide. 
+            <br>
+             Tracks 'ToolBox-Etc.-Show Track Icon' to hide or un-hide. 
+            <br>
+             Grib 'ToolBox-GRIB' to hide or un-hide. 
+          </p>
+          <p>
+             *** Note 3: These icons change depending on status. 
+          </p>
+        </div>
+        <div id="node-16" class="section-3">
+          <h1 class="book-heading">
+             Zoom in &amp; out 
+          </h1>
+          <p>
+            <img alt="" src="images/zoomin.png" height="32" width="32">&nbsp;<img alt="" src="images/zoomout.png" height="32" width="32">&nbsp;These buttons&nbsp;allow you to zoom in and out on the chart currently being displayed.&nbsp;&nbsp; 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+            <img alt="" src="images/zoomin.png" height="32" width="32">&nbsp;Will zoom the chart in for more detail. 
+          </p>
+          <p>
+            <strong><img alt="" src="images/zoomout.png" height="32" width="32">&nbsp;</strong>Will zoom the chart view out for more area. 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+             Alternatively, the + and - keys on your keyboard will zoom in and out.&nbsp; If you have a mouse with a scroll wheel, it can also be used to quickly zoom in and out. 
+          </p>
+        </div>
+        <div id="node-17" class="section-3">
+          <h1 class="book-heading">
+             Scaling Charts 
+          </h1>
+          <p>
+            <img alt="" src="images/scin.png" height="32" width="32">&nbsp;<img alt="" src="images/scout.png" height="32" width="32">&nbsp;These buttons will allow you to change the scale of chart you are using. 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+            <img alt="" src="images/scin.png" height="32" width="32">Will scale down/out&nbsp;to the next chart of less detail but greater area, if available, within the current view 
+          </p>
+          <p>
+            <img alt="" src="images/scout.png" height="32" width="32">&nbsp;Will scale up/in to the next chart of&nbsp;greater detail but&nbsp;less area, if available, within the current view 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+             Hint: Scaling down and up coresponds to available charts left and right&nbsp;on the <a href="http://opencpn.org/status_bar">status bar</a>. 
+          </p>
+          <p>
+            <img alt="" src="images/StatusBar.png" height="35" width="900">
+            <br>
+             &nbsp; 
+          </p>
+        </div>
+        <div id="node-37" class="section-3">
+          <h1 class="book-heading">
+             Status Bar 
+          </h1>
+          <p>
+             On the bottom is the Status Bar(s). Activated from 'Tool Box-Show Status Bar'. 
+          </p>
+          <p>
+             The top line, 'Chart Selection Bar', has the following description. 
+          </p>
+          <p>
+             If a larger scale chart (large scale = greater detail in a smaller area) is available for the location of your mouse pointer, you will see more than one segmented bar. The segmented color bars in the Status Bar represent: 
+          </p>
+          <ul>
+            <li>
+               Blue for Raster 
+            </li>
+            <li>
+               Green For ENC's 
+            </li>
+            <li>
+               Brown/Yellow for CM93 charts 
+            </li>
+            <li>
+               The current chart displays as a lighter shade of its color, or if quilting is active, the charts currently making up the quilt are displayd in lighter shade. 
+            </li>
+          </ul>
+          <p>
+             When you hover the mouse pointer over the bar, and not in quilting mode, a thumbnail of the chart will appear under the <a href="http://opencpn.org/scaling_charts">SCALE IN/OUT </a>icons and a chart information box will pop up just above the button. If quilting is on, instead of a thumbnail, the chart represented by the button will be highlighted in a transparent reddish color. By clicking on the appropriate bar, or using the appropriate <a href="http://opencpn.org/hot_keys">HOT KEYS</a>, you will switch to the chart shown in the thumbnail. This feature is especially useful if you wish to view an ENC or a Raster chart of the same area. 
+          </p>
+          <p>
+            <img alt="" src="images/StatusBar.png" height="35" width="900">
+          </p>
+          <p>
+             The bottom line starting from the left, has the position of the GPS that feeds OpenCPN (your ship or boat). SOG, COG, Cursor (position), From Ownship and TrueScale are in other boxes. If the true scale is missing on the far right, the chart quilting feature is activated. 
+            <br>
+            <br>
+             The buttons are displaying a lot more information however. 
+            <br>
+             &nbsp; 
+          </p>
+          <p>
+            <img alt="" src="images/tmerc.png" height="30" width="130">&nbsp;&nbsp; These buttons shows that the two charts are <strong>Transverse Mercator</strong>. 
+            <br>
+            <br>
+            <img alt="" src="images/polyconic.png" height="30" width="130">&nbsp;&nbsp; This button indicates that the chart is a <strong>Poly Conic</strong>&nbsp; chart. 
+            <br>
+            <br>
+            <img alt="" src="images/skewed.png" height="30" width="130">&nbsp;&nbsp; This button shows that the chart is <strong>skewed, </strong>and <strong>not </strong>Norh Up. 
+            <br>
+             &nbsp; 
+          </p>
+          <p>
+            <img alt="" src="images/not_participate.png" height="30" width="130">&nbsp;&nbsp;&nbsp; This chart is <strong>excluded from quilting</strong> because of user action. Right 
+            <br>
+             click to&nbsp; include in quilting again. 
+            <br>
+            <br>
+            <img alt="" src="images/hidden-quilt.png" height="30" width="130">&nbsp;&nbsp;&nbsp; The raster chart represented by this button don't participate in the quilt because it is hidden by other, larger scale charts. Vector charts are represented similar. 
+            <br>
+            <br>
+             To illustrate a lot of this, here is a screen shot in quilting mode. 
+            <br>
+            <br>
+            <img alt="" src="images/quilt2.png" height="655" width="850">
+            <br>
+            <br>
+            <em>The screen is a quilt of two Polyconical charts. Hovering the mouse pointer over the left chart-button highlights the lager scale chart for Manitowoc. Two smaller scale charts that cover the area displayed on the screen are included in the quilt, but are invisible as they are covered by the larger scale charts. To view these charts, right-click anywhere on a chart in the quilt and select "Remove this chart from quilt", one of these charts will now be shown in the quilt.<br> The Brown right most button shows that CM93 version 2, charts are available for the area, but not currently displayed.<br> The information box shows relevant information about the chart. We can see that the chart is&nbsp; Polyconic, and because of this a warning is displayed for poor accuracy. The reason is, that although Polyconic charts are allowed to participate in quilting, the result is not totally free from errors, however small.</em>
+            <br>
+            <br>
+            <br>
+             &nbsp; 
+          </p>
+        </div>
+        <div id="node-18" class="section-3">
+          <h1 class="book-heading">
+             Auto Follow and Display Orientation 
+          </h1>
+          <ul>
+            <li>
+               Clicking the <strong>Auto Follow</strong> button&nbsp;<img alt="" src="images/auto-follow_0.png" align="absmiddle" height="32" width="32">&nbsp;will center the chart directly on your vessel's current GPS&nbsp;location. 
+            </li>
+            <li>
+               This is useful for two different situations: 
+            </li>
+          </ul>
+          <ol>
+            <li>
+               When you have panned the map away from your current location and want to quickly move back to your vessel. 
+            </li>
+            <li>
+               When underway, this will keep the display on the chart around your vessel, with the boat at the center of the chart. 
+            </li>
+          </ol>
+          <ul>
+            <li>
+               Note:&nbsp;Panning the chart will disable this mode. Simply click <img alt="" src="images/auto-follow_0.png" align="absmiddle" height="32" width="32">&nbsp;again to turn <strong>Auto Follow</strong> mode back on. 
+            </li>
+            <li>
+               The display can be oriented two ways, normally it is <strong>North Up</strong> but&nbsp; <strong>Course Up</strong> is an alternative. Course up can be activated by ticking Toolbox-&gt;Settings-&gt;Course UP Mode. 
+            </li>
+            <li>
+              <img alt="" src="images/north-up.png" align="absmiddle" height="34" width="29">&nbsp; This icon to the far right in the ToolBar indicates that the display is in <strong>North Up </strong>mode. This is a toggle button. Click it and ... 
+            </li>
+            <li>
+              <img alt="" src="images/course-up_0.png" align="absmiddle" height="28" width="28"> and it turns red for <strong>Course Up</strong> mode. These setting can also be controlled in the ToolBox -&gt; Settings -&gt; Chart Display Options -&gt;Course Up Mode 
+            </li>
+            <li>
+              <strong>Look Ahead!</strong> To see more of the chart in front of the boat, activate ToolBox -&gt; Settings -&gt; Chart Display Options -&gt;Look Ahead&nbsp; Mode. Your own boat will no longer be in the center of the screen. Instead it will be located away from the center, in the opposite direction to your present gps course(COG). 
+            </li>
+          </ul>
+          <div class="rtecenter">
+            <img alt="" src="images/lookahead.png" align="absmiddle" height="330" width="198">
+            <br>
+            <br>
+            <br>
+             &nbsp; 
+          </div>
+          <br>
+          <br>
+        </div>
+        <div id="node-19" class="section-3">
+          <h1 class="book-heading">
+             Tides and Currents 
+          </h1>
+          <h2>
+            <br>
+             Notes 
+          </h2>
+          <ul>
+            <li>
+               Tide and Current predictions are not available for all areas. 
+            </li>
+            <li>
+               As with all predictions, the displayed values are calculated using mathematical models and actual tides and currents will vary 
+            </li>
+          </ul>
+          <br>
+          <h2>
+             Enable Tides and Currents Display 
+          </h2>
+          <ul>
+            <li>
+               Click the toolbar button&nbsp;<img alt="" src="images/tide.png" align="absmiddle" height="32" width="32"> to see <strong>tide </strong>stations. 
+            </li>
+            <li>
+               Select&nbsp;<img alt="" src="images/current.png" align="absmiddle" height="32" width="32"> to see <strong>current </strong>stations. 
+            </li>
+            <li>
+              <u><strong>Important:</strong></u><strong>&nbsp;tide and currents will not be displayed unless these toolbar buttons are selected.</strong>
+            </li>
+          </ul>
+          <p>
+             &nbsp; 
+          </p>
+          <h2>
+             Displaying Tides 
+          </h2>
+          <ul>
+            <li>
+               Available tide stations will show on the chart as green graphs with a "T" logo: 
+            </li>
+          </ul>
+          <p>
+            <img alt="" src="images/tide.jpg" align="absmiddle" height="240" width="240">
+          </p>
+          <ul>
+            <li>
+               Right click the green icon <img alt="" src="images/tidesml.png" align="absmiddle" height="16" width="16">&nbsp;to see tidal graph: 
+            </li>
+          </ul>
+          <p>
+            <img alt="" src="images/tides_detail.png" align="absmiddle" height="374" width="495">
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <h2>
+             Displaying Currents 
+          </h2>
+          <ul>
+            <li>
+               Available current stations will show on the chart as orange arrows: 
+            </li>
+          </ul>
+          <p>
+             &nbsp;<img alt="" src="images/currents.png" align="absmiddle" height="150" width="176">
+          </p>
+          <ul>
+            <li>
+               Arrow indicates current <strong>direction </strong>and <strong>strength </strong>- the bigger the arrow, the more current. 
+            </li>
+            <li>
+               Right click the orange box <img alt="" src="images/currents_box.png" align="absmiddle" height="27" width="29">&nbsp;to see current graph: 
+            </li>
+          </ul>
+          <p>
+            <img alt="" src="images/current_detail.png" align="absmiddle" height="372" width="494">
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+        </div>
+        <div id="node-36" class="section-3">
+          <h1 class="book-heading">
+             Hot Keys 
+          </h1>
+          <ul>
+            <li>
+               Arrow Keys, Moves the chart view 
+            </li>
+            <li>
+               Alt + Arrow Keys, Moves the chart view in very small steps. 
+            </li>
+            <li>
+               + or Ctrl + Z Zoom In 
+            </li>
+            <li>
+               - or Ctrl + X Zoom Out 
+            </li>
+            <li>
+               F2 Toggle Auto Follow ON/OFF 
+            </li>
+            <li>
+               F3 or Ctrl + S Show / hide ENC Text 
+            </li>
+            <li>
+               F4 Starts the measure tool. Escape : Stops it. 
+            </li>
+            <li>
+               F5 Toggle Screen Brightness 
+            </li>
+            <li>
+               F7 or Ctrl + Left-Arrow &nbsp; &nbsp; Larger Scale Chart (Scale In) 
+            </li>
+            <li>
+               F8 or Ctrl + Right-Arrow&nbsp;&nbsp; Smaller Scale Chart (Scale Out) 
+            </li>
+            <li>
+               F9&nbsp; Chart Quilting on/off 
+            </li>
+            <li>
+               F12 or Ctrl + O Show/Hide Chart Outlines 
+            </li>
+            <li>
+               Ctrl + L-Arrow or F7 Larger Scale Chart (Scale In)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            </li>
+            <li>
+               Ctrl + M Drop Marker at current cursor position. 
+            </li>
+            <li>
+               Ctrl + O or F12 Show/Hide Chart Outlines 
+            </li>
+            <li>
+               Ctrl + Q Quits OpenCPN 
+            </li>
+            <li>
+               Ctrl + R-Arrow or F8 Smaller Scale Chart (Scale Out) 
+            </li>
+            <li>
+               Ctrl + S or F3 Show / hide ENC Text 
+            </li>
+            <li>
+               Ctrl +space Man Over Board, sets MOB Marker at current GPS position. 
+            </li>
+          </ul>
+        </div>
+        <div id="node-20" class="section-3">
+          <h1 class="book-heading">
+             Ship Track 
+          </h1>
+          <p>
+             Toggling &nbsp;the track icon&nbsp;<img alt="" src="images/track.png" height="32" width="32">&nbsp; turns tracking on and off. Tracking means that a record is kept of the vessels position as it proceeds. A trail is left behind the vessel. To display the tracking icon tick the box Toolbox-&gt;Etc-&gt;Show Track Icon.&nbsp;Below the "Show Track icon" check box there are two more options related to track recording. &nbsp;You may set how often a track point is recorded every X number of seconds or X Nautical miles. 
+            <br>
+            <br>
+            <img src="images/track_0.png" alt="" height="209" width="636">
+            <br>
+            <br>
+             Recorded tracks can be import, exported and managed using the <a href="http://opencpn.org/import_export">gpx in and gpx out buttons and route manager</a>. 
+            <br>
+            <br>
+             When right clicking on a track you can select Track Properties from the menu, and a new dialog pops up. The same thing can be achieved through the Route Manager. 
+            <br>
+            <img src="images/track-prop.png" alt="" height="462" width="636">
+          </p>
+        </div>
+        <div id="node-94" class="section-3">
+          <h1 class="book-heading">
+             Man Over Board 
+          </h1>
+           Drop a Man Over Board Marker at your present position by hitting the <strong>Man Over Board Button</strong><img alt="" src="images/mob_btn.png" align="absbottom" height="32" width="32">&nbsp; on the ToolBar or hit the<strong> Keys Ctrl + Spacebar</strong>. The best way to proceed is to right click on the Man Over Board (MOB) marker an select "Go To Here". This creates an instant route and activates it.&nbsp; A window titled "This Leg" pops up at the right hand side of the display. BRG and RNG gives aconstant update of direction and distans to the MOB marker. 
+          <br>
+          <div class="rtecenter">
+            <img src="images/leginfo.png" alt="" height="443" width="128">
+          </div>
+          <br>
+        </div>
+      </div>
+      <div id="node-21" class="section-2">
+        <h1 class="book-heading">
+           Advanced Features 
+        </h1>
+         Let's take a look at some of OpenCPN's advanced features. 
+        <br>
+        <br>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/ais"><strong>AIS</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to overlay AIS target data from AIS reciever data stream on chart 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/node/90"><strong>Anchor Watch</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to set and clear anchor wathes 
+        </div>
+        <ul>
+          <li>
+            <a href="http://opencpn.org/quilt"><strong>Chart Quilting</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Explanation and use of Chart Quilting. 
+        </div>
+        <ul>
+          <li class="leaf first">
+            <a href="http://opencpn.org/import_export"><strong>The Rote Manager and Data Import/Export</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to import and export, waypoints, tracks, and routes in and out of OpenCPN 
+        </div>
+        <ul>
+          <li class="leaf">
+            <a href="http://opencpn.org/grib_weather"><strong>GRIB Weather</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           How to overlay GRIB file data on a&nbsp;chart in OpenCPN 
+        </div>
+        <ul>
+          <li class="leaf">
+            <a href="http://opencpn.org/routes_and_marks"><strong>Routes and Marks</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Creating and using routes and marks 
+        </div>
+        <ul>
+          <li class="leaf">
+            <a href="http://opencpn.org/toolbox"><strong>Toolbox (Settings)</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           An explanation of the toolbox (&nbsp;<img alt="" src="images/settings.png" height="32" width="32">) 
+        </div>
+        <ul>
+          <li class="leaf last">
+            <a href="http://opencpn.org/vector_chart_display"><strong>Vector Chart Display</strong></a>
+          </li>
+        </ul>
+        <div class="rteindent1">
+           Viewing and customizing vector chart symbols, labels and data display 
+        </div>
+        <div id="node-90" class="section-3">
+          <h1 class="book-heading">
+             Anchor Watch 
+          </h1>
+          <h2>
+             &nbsp; 
+          </h2>
+          <p>
+             Anchor watch can be set on any mark that you have created with OpenCPN, as long as the boat is within 5 cables of this mark. This means that the Anchor watch items, on the right click menu, will only be visible if&nbsp; your boat is within 0.5 nautical miles of any mark.&nbsp; A maximum of two marks can have anchor watch set at the same time. 
+          </p>
+           This feature can be used in other situations than just anchoring, but keeping an eye on your anchor, and making sure it isn't dragging, is the main purpose. Below we are using the "Man Overboard" icon to mark the anchor, this is just an easy way, and not necessary for the anchor watch to work. 
+          <br>
+          <br>
+           To learn how it works let's make a dry run to a nice trade wind anchorage. 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch.png" height="354" width="400">
+          </div>
+          <br>
+           After circling around and exploring the bay, we know where we want to drop our anchor. 
+          <br>
+           At&nbsp; the chosen spot we drop the anchor, at the same time we click the man overboard icon on OpenCPN to mark the point. 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch1.png" height="361" width="401">
+          </div>
+          <br>
+           The wind, ENE at 15 kts let us drift back until we are satisfied with our scope. A burst in reverse convinces us that the anchor is set, later confirmed by a leisurely snorkeling over the anchor. Time to sort out the anchor watch 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch2.png" height="581" width="343">
+          </div>
+          <br>
+           Right click on the man over board mark, choose properties, this brings up the "Mark Properties" dialog. We have to change a few things here to make it worthwhile setting the anchor watch. "Mark Name" is changed from "MAN&nbsp;OVERBOARD" to the watch circle in meters. In our case we have changed this to 60. We have 40 m of chain out, our gps antennae on our 40 footer sits at the pushpit, some minor gps uncertainties and a few extra meters for our anchor to dig in, is our reasoning for this. We also change the mark icon to something better than the life-buoy. 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch3.png" height="364" width="400">
+          </div>
+          <br>
+           We right click on the mark once again, and choose "Set Anchor Watch" from the menu. 
+          <br>
+           See picture above. The anchor watch is now active, and an alarm will be set off if the boat for some reason exits the circle. To deactivate the anchor watch, right click on the mark and select "Clear Anchor Watch". 
+          <br>
+          <br>
+           To get protection from the wind and a bit of northerly swell, we have really anchored to close to the beach. To keep an eye on this potential danger we set another mark on the beach. 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch4.png" height="449" width="400">
+          </div>
+          <br>
+           This time we set the "Mark Name" to -100, this means that if the boat comes within 100 meters of this mark, the alarm is set off. 
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchor-watch5.png" height="360" width="400">
+          </div>
+          <br>
+           An hour later, after a heavy squall passed, the wind goes light and flukey. The boat drifts towards the beach and the anchor alarm sounds and comes up on our computer screen. 
+          <br>
+           The alarm sound is the same as the AIS warning sound and is set in the ToolBox under the AIS tab. 
+          <br>
+          <br>
+          <br>
+          <div class="rtecenter">
+            <img alt="" src="images/anchorwatch6.png" height="362" width="401">
+          </div>
+          <br>
+           This is what happens if you activate the anchor watch without changing the name, the alarm&nbsp; is instantly activated. Clear the anchor watch and read from the beginning of the page. 
+          <br>
+          <br>
+          <br>
+        </div>
+        <div id="node-26" class="section-3">
+          <h1 class="book-heading">
+             Automatic Identification System - AIS 
+          </h1>
+          <p>
+             For a general introduction to AIS <a href="http://en.wikipedia.org/wiki/Automatic_Identification_System">Wikipedia</a> is a god place to start. 
+            <br>
+             The screendump below gives you a first feel for how AIS targets are presented and used in OpenCPN. 
+            <br>
+            <br>
+            <img alt="" src="images/ais_0.png" height="578" width="750">
+            <br>
+            <br>
+            <em>The Lookahead mode is activated here and our own vessel is proceeding 352 deg at 13 kts, leaving an activated track behind, and projecting a dashed line ahead representing the course. This ends in a dot, that represents where we will be in 6 minutes, or 1.3 nautical miles ahead. We are meeting a vessel, steaming in the opposite direction following the traffic separation. This target also has a line and a dot in-front of it representing course and where it will be in 6 minutes(user configurable). The two blue dots with a red/yellow line between them, represents where the vessels will be at CPA - closest point of approach, or when the are nearest each other, with present courses and speeds.</em><em> The meeting vessel is red, as it is a potential danger to us.</em>
+            <br>
+            <br>
+             A lot of information about the vessels that transmits AIS signals and are displayed on the chart, is available. 
+            <br>
+             &nbsp; 
+          </p>
+          <p class="rtecenter">
+            <img alt="" src="images/ais1.png" height="413" width="548">
+          </p>
+          <p>
+            <br>
+            <em>&nbsp; The cursor is on top of the the meeting vessel on a SW course. As we have not yet received full information, this can take a while, we don't get the name but an id number, the so called MMSI number, instead.<br><br>
+            </em>
+          </p>
+          <p class="rtecenter">
+            <img alt="" src="images/ais2.png" height="308" width="356">
+          </p>
+          <p>
+            <br>
+            <em>This vessel is identified by name, and has a green color, as it does not represent any danger to our navigation.<br><br>
+            </em>
+          </p>
+          <p class="rtecenter">
+            <img alt="" src="images/ais-target-query.png" height="604" width="330">
+            <br>
+             &nbsp; 
+          </p>
+          <p class="rteleft">
+            <em>If we instead of just hovering the cursor on an object, right click, the menu item AIS Target Query brings up the dialog above. A lot of relevant information is displayed. TCPA is the time until CPA, how long before we are at the closest point to the other vessel.</em>
+            <br>
+            <br>
+             &nbsp; <img alt="" src="images/ais4.png" height="578" width="750">
+            <br>
+            <em>All the bells and whistles are activated! A new target appears behind an island on our port bow, OpenCPN sounds an alarm and draws a jagged circle around the new target. An AIS alert box with all the information about the new target pops up. We can silence the noise but, has to acknowledge before the box disappears.<br><br><br><img alt="" src="images/ais-target%2520list.png" height="314" width="750"><br> Another way to present the AIS information. The AIS target list is available through the right click menu.<br>
+            </em>
+          </p>
+          <p class="rteleft">
+             &nbsp; 
+          </p>
+          <h3>
+             The ToolBox AIS Tab 
+          </h3>
+          <br>
+          <div class="rteleft">
+            <img alt="" src="images/toolbox4.png" height="674" width="639">
+          </div>
+          <p class="rtecenter">
+             &nbsp; 
+          </p>
+          <p class="rteleft">
+             This tab controls the behavior of many thing in the AIS display. There are no "best" settings. It all depend on where you are, what kind of navigation you are into and what kind of vessel you are on. It is your responsibility to evaluate this. 
+            <br>
+            <br>
+            <strong>AIS data port</strong>: Select your AIS input port on your computer. When this is set to anything but "None", the AIS button appears in the ToolBar. 
+            <br>
+             &nbsp; 
+          </p>
+          <p class="rteleft">
+            <img alt="" src="images/ais.png" align="absmiddle" height="32" width="32"> The default button, shows when there are no AIS input and when AIS is working normally. 
+            <br>
+            <br>
+            <img alt="" src="images/ais_disabled.png" align="absmiddle" height="32" width="32"> AIS input is working, but no AIS information is shown on the chart. With a working AIS input these two buttons toggles. 
+            <br>
+            <br>
+            <img alt="" src="images/ais_alarm.png" align="absmiddle" height="32" width="32"> An alarm because the AIS input is no longer working, and the display is not updated. 
+            <br>
+            <br>
+            <strong>CPA calculation</strong>: Rules for how and when the Closest Point of Approach- CPA (when two vessels are nearest each other) is calculated. There are three tick boxes, which can be activated with user set values. 
+            <br>
+            <strong>1.</strong> If the vessel is far away it is less interesting to calculate CPA. In a busy waterway this could cut down on clutter and processing speed if a reasonable value is set. 
+            <br>
+            <strong>2.</strong> Similar arguments to No 1. This controls when a warning for minimum CPA distance is given. 
+            <br>
+            <strong>3.</strong> Similar to No 2 this controls the alarm based on a minimum time to CPA. A target is regarded as lost if regular transmissions is not received, updating the vessels status. 
+            <br>
+            <br>
+            <strong>Lost Targets:</strong> Rules for how lost targets should be handled on the display. 
+            <br>
+            <strong>1.</strong> Target is regarded as lost if no transmission are received for the number of minutes set here, the target will change on the display and have a black bar across.<img alt="" src="images/ais-lost.png" align="absmiddle" height="51" width="51">
+            <br>
+            <strong>2.</strong> The lost target will be removed from the display after the number of minutes set here. 
+            <br>
+            <br>
+            <strong>Display:</strong> If and how a vessel course and speed should be displayed and stationary vessels should be on the screen. 
+            <br>
+            <strong>1.</strong> An arrow will be shown in front of the vessel representing it's COG (Course Over Ground). The length of this arrow and the dot at the end of it represents the calculated position in the number of minutes set here. Set easily calculated values. If a vessel approaches you doing 15 kts and the time is set to 6 minutes, the dot will be 1.5 nautical miles ahead of the vessel. 
+            <br>
+            <strong>2.</strong> An anchored or moored target <img alt="" src="images/ais-moor.png" align="absmiddle" height="50" width="50">&nbsp; will not be displayed if the speed is less than the value set here. 
+            <br>
+            <br>
+            <strong>CPA/TCPA Alerts:</strong> When an alert is triggered, a jagged circle in red is drawn around the target that set off the alarm. Additional events can be set here, drawing more attention to the alarm. For practical navigation, make sure your alarm sound is set. 
+            <br>
+            <strong>1.</strong> Shows an alert dialog on the screen with target information when an alarm is triggered. 
+            <br>
+            <strong>2.</strong> Sounds an alarm when an alarm is triggered. 
+            <br>
+            <strong>3.</strong> Don't show alarms for anchored and moored targets. 
+            <br>
+            <strong>Button 1.</strong> Select an alarm that suits you. This alarm will also be used if an anchor watch is set. Users can ad there own sound files. 
+            <br>
+            <strong>Button 2.</strong> Test the selected sound and make sure this important feature is working 
+          </p>
+          <h3>
+            <br>
+            <strong>When exactly is an alarm activated?</strong>
+          </h3>
+          <p class="rteleft">
+             An alert is set off if your boat is approaching the CPA, the blue dot on the extension of the course line, and the previously discussed set of conditions are met. Once the distance to the CPA increases, this happens when the involved vessels has passed each other, the alarm stops, even if the other conditions still apply.&nbsp; 
+          </p>
+          <p class="rtecenter">
+             +++ 
+          </p>
+          <p class="rteleft">
+            <br>
+            <strong>Quick Reference for targets:</strong>
+            <br>
+            <br>
+            <img alt="" src="images/ais-red.png" align="absmiddle" height="50" width="50"> Potential Danger. 
+            <br>
+            <br>
+            <img alt="" src="images/ais-yellow.png" align="absmiddle" height="50" width="50"> No Danger. Not Identified ( Name not received) 
+            <br>
+            <br>
+            <img alt="" src="images/ais-green.png" align="absmiddle" height="50" width="50"> No Danger. Identified 
+            <br>
+            <br>
+            <img alt="" src="images/ais-lost.png" align="absmiddle" height="50" width="50"> Lost Target 
+            <br>
+            <br>
+            <img alt="" src="images/ais-moor.png" align="absmiddle" height="50" width="50"> Anchored or moored 
+            <br>
+            <br>
+            <br>
+            <img src="images/ais-classB_0.png" alt="" align="absmiddle" height="50" width="32"> The V-shape stern indicates a Class B target. Tugboats and pilot boats very often carry Class B transponders. These are often designed specifically for small commercial boats, fishing boats and pleasure crafts. 
+            <br>
+            <br>
+            <br>
+             - a diamond with plus inside for NavAids. 
+            <br>
+             &nbsp; 
+          </p>
+        </div>
+        <div id="node-92" class="section-3">
+          <h1 class="book-heading">
+             Chart Quilting 
+          </h1>
+           Chart quilting is a way to display parts of several charts together on the screen, redrawn to the same scale. 
+          <br>
+          <br>
+          <strong>Quick Start</strong>
+          <br>
+           Hit F9 to get into quilting mode. Zooming in, automatically brings up larger scale charts, 
+          <br>
+           if available. Panning reveals a continuous quilt of the available charts. If you started with a raster chart, only raster-charts, and perhaps CM93, will be in the quilt. The same logic applies to S57 Vector Charts (ENCS). Make sure you are familiar with the <a href="http://opencpn.org/status_bar">status bar</a> as this will help you interpret all available information. The quilt, like a single chart can be displayed North Up or Course Up read&nbsp; <a href="http://opencpn.org/auto_follow">more here.</a>
+          <br>
+          <br>
+          <strong>More details</strong>
+          <br>
+           What is the use of this feature? 
+          <br>
+          <br>
+          <img alt="" src="images/quilt3.png" height="616" width="800">
+          <br>
+          <br>
+          <em>In single chart mode, getting near the edge of the chart there is no information outside the chart.</em>
+          <br>
+          <br>
+          <img alt="" src="images/quilt4.png" height="616" width="800">
+          <br>
+          <h3>
+             &nbsp; 
+          </h3>
+          <p>
+            <em>The situation changes dramatically when quilting mode is activated. The amount of&nbsp; relevant information on the screen increases.</em>
+          </p>
+          <h3>
+            <br>
+             Displaying charts 
+          </h3>
+           OpenCPN has two modes of displaying charts, single chart mode and quilting mode. 
+          <br>
+          <br>
+          <strong>To activate</strong><strong>chart quilting </strong>go to Toolbox -&gt; Settings -&gt; Chart Display Options and tick the box "Enable Chart Quilting",&nbsp; tick the box "Show Chart Outlines" at the same time as this will help you see which chart mode is active. 
+          <br>
+           Alternatively chart quilting mode can be toggled on/off with the "F9" key. 
+          <br>
+          <br>
+          <strong>Is Chart quilting on?</strong>
+          <br>
+           When quilting is on, all chart outlines disappear. 
+          <br>
+          <br>
+           When hovering with the mouse pointer over a chart button in single chart mode, a thumbnail of the chart is displayed in the upper left corner of the screen. At the same time an information box pops up above the button with details about the chart.&nbsp; This changes with quilting as the thumbnail is replaced with a high-lightning of the charts part in the quilt with a transparent reddish color. 
+          <br>
+          <br>
+           The exception to the last rule is CM93 charts. When an area is only covered by CM93 charts, indicated by a long yellow chart button in the status bar, and in quilting mode, no info-box is displayed and no reddish highlighting is taking place.&nbsp; 
+          <br>
+          <br>
+           More than one chart can be displayed and active at the same time, on the picture above, for example there are three pale blue buttons, as there are three raster-charts in this quilt. In single mode only one chart button is highlighted at a time. 
+          <br>
+          <br>
+           Depth units that is normally shown in the upper right corner of the display, if activated in the toolbox, is only displayed in quilting mode if all participating charts&nbsp; uses the same unit. 
+          <br>
+           Zoom level, normally displayed on the far right on the Status bar, is not present in quilting. 
+          <br>
+          <br>
+           Many of these features are illustrated in this screen-dump. 
+          <br>
+          <br>
+          <img alt="" src="images/quilt5.png" height="616" width="800">
+          <br>
+          <em><br> This is a quilt consisting of three raster charts, two that are actually displayed and one smaller scale chart that is hidden behind the larger scaled charts of St Croix.<br><img alt="" src="images/hidden-quilt.png" height="21" width="150">&nbsp; This is the button for the not displayed chart in the quilt.<br> The mouse pointer is over the middle raster chart and the chart information box is shown, together with the red highlighting of the chart on the screen.<br> No depth unit is shown in the quilt as the left chart is in Feet and the right in Fathoms an parts thereof. Notice the lack of zoom level in the status bar, a quilt , by definition, consists of several different zoom levels.</em>
+          <br>
+          <br>
+          <strong>Which charts are quilted?</strong>
+          <br>
+           There are several rules built into OpenCPN governing exactly how different charts reacts to the quilting mode. 
+          <br>
+          <strong>Raster charts</strong> and <strong>Vector charts </strong>are quilted separately and don't mix together. You can quilt either raster charts or vector charts, but not both at the same time. The exception to this rule is that CM93 ver2 charts, if available, are shown if no other chart cover exists for a displayed area, for both raster- and vector- chart quilting. 
+          <br>
+          <strong>CM93 ver2</strong> charts can be quilted separately. 
+          <br>
+          <br>
+          <strong>Mercator Charts</strong> are always quilted in quilting mode 
+          <br>
+          <strong>Polyconic Charts</strong>, are allowed in a quilt together with Mercator charts, but a warning is issued in the chart information box, for poor georeferencing. I other words expect lower accuracy from the chart. 
+          <br>
+          <strong>Skewed Charts</strong> are allowed in the quilt as long as it doesn't deviate more than 5 degrees 
+          <br>
+           from North Up. 
+          <br>
+          <strong>Transverse Mercator </strong>Charts are not quilted at all, neither with other charts nor among themselves. 
+          <br>
+          <br>
+          <strong>User control</strong>. 
+          <br>
+           Users can control if an individual chart, is allowed in the quilt or not. Right clicking on any chart in a quilt and clicking "Remove this chart from quilt" on the pop up menu, removes the chart from the quilt. The chart button in the Status bar changes to <img alt="" src="images/not_participate.png" height="20" width="60">. 
+          <br>
+           To activate the chart again right click this button an then click "Ad this chart to quilt" 
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+        </div>
+        <div id="node-40" class="section-3">
+          <h1 class="book-heading">
+             GRIB Weather 
+          </h1>
+           OpenCPN has a built in lightweight grib weather file viewer, with a limited set of features, aimed at being useful while under way. It is not possible to download grib files from within OpenCPN. Many external sources for grib files are available however,&nbsp; <a href="http://weather.mailasail.com/Franks-Weather/Grib-Files-Getting-And-Using">Franks-Weather&nbsp;</a> is a good starting point. 
+          <br>
+          <ul>
+            <li>
+               To display grib files as an overlay on your normal charts you have to first activate the grib icon <img alt="" src="images/grib_002.png" height="32" width="32">
+            </li>
+            <li>
+               Go to <img alt="" src="images/settings.png" height="32" width="32"> and select the GRIB tab. 
+              <br>
+              <p>
+                <img alt="" src="images/grib-tb.png" height="159" width="643">
+              </p>
+            </li>
+            <li>
+               Tick the "Show GRIB tab" box. Tick the next box as well, unless you are on old hardware. Not ticking the "High Definition Graphics" box can help to speed up the grib display, in such cases. 
+            </li>
+            <li>
+              <img alt="" src="images/grib.png" height="624" width="651"> Here you see the Grib icon in the tool bar. 
+            </li>
+            <li>
+               The Next step is to click the icon, which brings up the Grib Display Control. Use the upper part of this window to navigate to, and select your grib files. The grib files will then be appear in the control. See picture above. 
+            </li>
+            <li>
+               Click on the "&gt;" in front of the gribfile. The individual forecasts contained in the gribfile, is then displayed under the gribfile heading. 
+            </li>
+            <li>
+               Click on one of the forecasts and it will be displayed. When you move the cursor over the grib display, the values for wind etc will be displayed for the cursor position, in the lower part of the "Grib Display Control". Here you can select what grib values to view. Note that not all gribfiles contains wave data. 
+            </li>
+            <li>
+               OpenCPN will display most grib file formats, but as it is a fairly new feature, bug reports are very welcome. 
+            </li>
+          </ul>
+          <h3>
+             What is a grib file? 
+          </h3>
+          <ul>
+            <li>
+               If you are not familiar with grib weather files, make sure you understand the basics, before you start to use them. It is essential to understand the limitations of weather forecasts in the grib format. It is also worth pointing out that gribs are <strong>not</strong> reliable near tropical systems. 
+            </li>
+            <li>
+               To get started with gribs and to find sources for downloads, check <a href="http://weather.mailasail.com/Franks-Weather/Grib-Files-Getting-And-Using">Franks-Weather.</a>
+            </li>
+            <li>
+               A very good book is David Burch: Modern Marine Weather, with a thorough treatment of the subject. 
+            </li>
+            <li>
+               A few files including lectures on&nbsp; tropical weather and gribs are available <a href="http://www.pangolin.co.nz/jetsam/view_article.php?idx=19">here</a>. 
+            </li>
+            <li>
+              <a href="http://www.zygrib.org/index.php?page=abstract_en">ZyGrib</a> is a free and open-source software(FOSS) dedicated grib viewer. 
+            </li>
+          </ul>
+        </div>
+        <div id="node-22" class="section-3">
+          <h1 class="book-heading">
+             Routes and Marks 
+          </h1>
+          <h3>
+             Routes 
+          </h3>
+          <p>
+            <img src="images/route.png" alt="" height="32" width="32">&nbsp;Will initiate the creation of a route.&nbsp; When clicked the cursor changes to a&nbsp; (<img src="images/pencil2.png" alt="" align="absbottom" height="16" width="31">&nbsp;) pencil. Left click along the desired route you want to make. This will leave sequential waypoints as you click along.&nbsp;&nbsp;If your desired route extends off&nbsp;the currently displayed chart, move the route cursor into the desired area.&nbsp; You can zoom in and out with the&nbsp;mouse scroll wheel or keyboard&nbsp;+/- keys during route creating.&nbsp; You can&nbsp;also&nbsp;right click and select 'MAX DETAIL HERE' or 'Scale Out' during route creation. When finished right click and choose end&nbsp;route from the context menu. <img src="images/context.png" alt="" align="texttop" height="140" width="174">
+          </p>
+          <p>
+             The right click menu is context sensitive, exactly what you get depend on what sort of chart it is and if quilting is activated, for example. 
+            <br>
+             You should now have an inacitve (Blue) route.&nbsp; Active routes are Red, inactivated routes are Blue. 
+          </p>
+          <h3>
+             Multiple Routes&nbsp; 
+          </h3>
+          <p>
+             OpenCPN currently&nbsp;has no provision to hide routes, so all your routes will show on the chart all the time. 
+          </p>
+          <p>
+             &nbsp;To keep the chart clear of useful but un-needed routes follow these steps: 
+            <br>
+             • Create a folder called 'GPX_Routes.' 
+            <br>
+             • Create your route. 
+            <br>
+             •&nbsp;Turn on In and Out GPX icons with Tool Box-Etc-Show GPX Icons. 
+            <br>
+             • 'GPX OUT' with a descriptive file name and save it in a created folder called GPX_Routes. 
+            <br>
+             • Delete the route from the chart. 
+            <br>
+             • You can export all your routes as one big file or export and delete a route as you create them 
+            <br>
+             • When needed simply use the 'GPX IN' to open the route file.&nbsp; 
+            <br>
+             • These actions can also be done through the Route Manager. 
+            <br>
+             &nbsp;&nbsp;&nbsp; 
+          </p>
+          <p>
+             To get rid of the way points left on the chart when a route has been imported and then deleted. 
+          </p>
+          <p>
+             1. Right-click on any waypoint in the route and select 'Delete All waypoints'. 
+            <br>
+             2. Say 'Yes' to: 'Are you sure you want to delete &lt;ALL&gt; waypoints?' 
+            <br>
+             3. Right-click on the route line and select either 'Delete route' or 'Delete all routes'. 
+          </p>
+          <p>
+             4. Answer in the affirmative. 
+          </p>
+          <h3>
+             Marks... 
+          </h3>
+          <p>
+             You can create a mark by right-clicking anywhere in the map, and selecting "Drop Mark Here" from the menu. The mark will have a triangle icon, to change that right-click the icon and select "Mark Properties". 
+          </p>
+          <p>
+             You can move the mark by dragging it around. 
+          </p>
+          <p>
+             When creating routes, openCPN will ask if it should use a nearby mark if any, when you add a routepoint. 
+          </p>
+          <p>
+             You can delete a mark by right-clicking its icon, and selecting "Delete Mark". Deleting a mark that is part of a route, will also change the route. 
+            <br>
+             The <a href="http://opencpn.org/mob">Man Over Board</a> mark&nbsp; can be activated through the icon <img alt="" src="images/mob_btn.png" align="absmiddle" height="32" width="32"> in the toolbar, or through hitting Ctrl + Spacebar. The mark looks loke the button an is dropped on present position. This mark cannot be moved with the cursor (by mistake). 
+          </p>
+          <h3>
+             Saving and Loading Routes and Marks 
+          </h3>
+          <ul>
+            <li>
+               Refer to&nbsp;<a href="http://opencpn.org/import_export">opencpn.org/import_export</a>&nbsp;to load and save data using <img src="images/gpx_import.png" alt="" align="absmiddle" height="32" width="32">&nbsp;and <img src="images/gpx_export.png" alt="" align="absmiddle" height="32" width="32">, and to transfer between other programs. The Route Manager Dialog is also described on the same page. 
+            </li>
+          </ul>
+          <h3>
+             Activating and using routes 
+          </h3>
+           Right clicking on the track, changes the color from blue to orange and brings up a comprehensive menu. 
+          <br>
+          <br>
+          <img src="images/route-info1.png" alt="" height="578" width="750">
+          <br>
+          <br>
+           Clicking "Activate Route" or performing the same action through the Route Manager, changes the route color to red and new, route information window appears on the right side of the display. Once a route is activated, you are presented with the choice of "Deactivate Route" in the different menus. 
+          <br>
+          <br>
+          <img src="images/route-info2.png" alt="" height="578" width="750">
+          <br>
+          <br>
+          <img src="images/leginfo.png" alt="" align="left" border="10" height="443" hspace="20" vspace="20" width="128">
+          <br>
+          <br>
+          <br>
+          <br>
+           XTE&nbsp; Cross Track Error. How far off course your boat is. 
+          <br>
+          <br>
+           BRG&nbsp; Direction to next waypoint. 
+          <br>
+          <br>
+           RNG Distance to next waypoint. 
+          <br>
+          <br>
+           TTG Time To Go to next waypoint. 
+          <br>
+          <br>
+          <br>
+          <br>
+           Grapich illustration to the values above. Think about it as driving a car on a road. 
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+        </div>
+        <div id="node-39" class="section-3">
+          <h1 class="book-heading">
+             The Route Manager and Data Import/Export 
+          </h1>
+          <ul>
+            <li>
+               OpenCPN can save and load waypoints and routes using the GPX transfer format. 
+            </li>
+            <li>
+               This lets you save your routes and marks so you can have more than the active ones - for example to do route planning, or archive existing data. 
+            </li>
+            <li>
+               GPX format is supported by a wide variety of programs. 
+            </li>
+            <li>
+               The <img alt="" src="images/gpx_import.png" align="absmiddle" height="32" width="32">&nbsp;and <img alt="" src="images/gpx_export.png" align="absmiddle" height="32" width="32">&nbsp;buttons must be enabled in the toolbox/settings in order to use this feature: 
+            </li>
+          </ul>
+          <p>
+            <img alt="" src="images/gpx_options_0.png" height="79" width="159">
+          </p>
+          <ul>
+            <li>
+               You can have as many saved files as you wish, there are no limits on the number of saved files. 
+            </li>
+            <li>
+               Use this for passage planning by saving multiple possible routes for a passage. 
+            </li>
+            <li>
+               Save routes for historical/log purposes. 
+            </li>
+            <li>
+               The <strong>Route Manager</strong> can do all the tasks described above and more. Right click anywhere on a chart and select Route Manager. 
+              <br>
+              <br>
+              <img alt="" src="images/route-manager.png" height="377" width="750">
+            </li>
+            <br>
+            <li>
+               Activate: Activates a route marked in the left part of the window. 
+            </li>
+            <li>
+               Zoom to: Zooms in on a route marked in the left part of the window. 
+            </li>
+            <li>
+               Reverse: Reverses a selected route. 
+            </li>
+            <li>
+               Properties:This button brings up a new dialog. 
+              <br>
+              <br>
+              <img alt="" src="images/Route_Properties.png" height="537" width="746">
+            </li>
+            <br>
+            <li>
+               Delete: Deletes selected route or track. 
+            </li>
+            <li>
+               Delete All Routes: Be carefull! 
+            </li>
+            <li>
+               Delete All Tracks: Be Carefull! 
+            </li>
+            <li>
+               Import: Same as GPX IN button. 
+            </li>
+            <li>
+               Export: Same as GPC OUT Button. 
+            </li>
+          </ul>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+            <img alt="" src="images/48px-Under_construction_icon-blue.png" align="left" height="40" width="48">This article&nbsp;<b>is in not complete.</b>&nbsp;You are welcome to assist in its construction by editing it as well. Everyone is allowed to edit after&nbsp;<a href="http://opencpn.org/user/register">creating an account</a>&nbsp;and/or&nbsp;<a href="http://opencpn.org/user">logging in</a>. 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <p>
+             TODO: Tracklog? 
+          </p>
+          <div id="node-46" class="section-4">
+            <h1 class="book-heading">
+               Planning Data 
+            </h1>
+            <h3>
+               Creating and Importing Great Circle Routes 
+            </h3>
+             GPX import can be used for many things, three sample applications follows below. First, look at this picture. Planning a trip from Cape Town to Freemantle ? 
+            <br>
+            <img alt="" src="images/gc.png" height="414" width="800">
+            <br>
+            <p>
+               Here you have two imported routes, the Southern route is a pure Great Circle, the middle route is a Composite Great Circle, and then the normal Rhumb Line furthest to the north. 
+              <br>
+               A Great Circle is the shortest distance between two point on the globe. A composite route is the same thing with the additional condition to stay below a limiting latitude, in this case 39°30'S. A rhumb line is a straight line on a Mercator chart. The Mercator projection is the standard for OpenCPN. 
+            </p>
+             Let us compare the distances involved. 
+            <br>
+            <ul>
+              <li>
+                 The pure great circle is 4610 nautical miles (M) 
+              </li>
+              <li>
+                 The great circle as plotted with 5° of longitude between the waypoints is 4627 M 
+              </li>
+              <li>
+                 The pure composite route, limited by latitude 39°30’ S is 4651M 
+              </li>
+              <li>
+                 The composite route as plotted with 3° of longitude between waypoints (for the great circles) is 4669 M. 
+              </li>
+              <li>
+                 The rhumb line is 4843 M. 
+              </li>
+            </ul>
+             So the advantage of a great circle is obvious. The disadvantages, in this case are many. 
+            <br>
+             Colder weather, stronger winds, higher seas and perhaps even icebergs. The great circle is just one factor in the decision making when planning a route, the weather is likely to be the deciding factor in most cases. 
+            <br>
+            <br>
+             A great circle route&nbsp; is created with&nbsp; the "gc" <a target="_blank" href="http://www.ruby-lang.org/en/">Ruby</a> script, that is cross platform. 
+            <br>
+             To create a gpx file containing a great circle you have to enter the departure points lat &amp; long, followed by the destination points lat &amp; long and the optionally a limiting latitude for composite sailing and the distance in long between waypoints, default is set to 5°. 
+            <br>
+            <br>
+            <h3>
+               Need to see some offshore weather observations? 
+            </h3>
+            <br>
+            <a href="http://opencpn.org/sites/default/files/users/taifun/wx1.png"><img alt="" src="images/wx1.png"></a>
+            <br>
+            <br>
+             NOAAs&nbsp; <a href="http://www.ndbc.noaa.gov/ship_obs.php">NDBC site</a> gives access to a lot of offshore observations from buoys and ships worldwide. 
+            <br>
+             To easy visualize all this data the "ShipWxRep" script transform a limited set of all the available data into gpx waypoints. The format, as seen above is "wind direction, wind speed, time for observation, and air pressure". This can be helpful when evaluating the accuracy of grib files, even though the best tool in this respect probably is a calibrated digital barometer. 
+            <br>
+            <br>
+            <h3>
+               Plotting Miami Tropical Forecast Advisories. 
+            </h3>
+             If you only have access to low bandwith internet, this script is a way to quickly plott the contents of, for example an email, containing the forcast advisory. In any case, it is a good idea to have the forecast track of a tropical system available where you normally do your navigation and planning. 
+            <br>
+            <img src="images/TS1.png" alt="" height="342" width="710">
+            <br>
+            <br>
+            <img src="images/TS2.png" alt="" height="350" width="710">
+            <br>
+            <strong>Download</strong> the scripts <a href="http://opencpn.org/sites/default/files/users/taifun/gpx_scripts_1.zip">here</a>. For some help run each script without arguments. 
+            <br>
+            <br>
+            <br>
+            <br>
+          </div>
+        </div>
+        <div id="node-24" class="section-3">
+          <h1 class="book-heading">
+             Toolbox (Settings) 
+          </h1>
+          <p>
+            <br clear="left">
+            <img alt="" src="images/settings_002.png" height="32" width="32">
+            <br>
+            <br>
+            <span><span><font face="Arial"><font color="#000000">Click this icon to open the </font><b><span>Tool Box</span></b><span> which has the following</span><font color="#000000">.</font></font></span></span>
+            <br>
+            <br>
+            <span><span><font color="#000000" face="Arial"> </font></span></span>
+          </p>
+          <h3>
+             &nbsp; <strong><span><span><font color="#000000" face="Arial">Settings Tab</font></span></span></strong><span><span><font color="#000000" face="Arial"><br>
+</font></span></span>
+          </h3>
+          <p>
+            <font color="#000000" size="3">&nbsp;<img alt="" src="images/toolbox.png" height="633" width="600"><br>
+            </font>
+          </p>
+          <p>
+            <font color="#000000" size="3">
+            <br>
+            </font><span><font color="#000000"><strong>Show Status Bar: </strong>The status bar at the bottom of the display contains a lot of navigation information. If you have this inf available elsewhere, turning this setting off increases the available space for the chart.<br><br><strong>Show Printing Icon:</strong> When you need to print Chartlets<br><br><strong>Enable Char Quilting</strong>: </font></span><font color="#000000"><a href="http://opencpn.org/quilt"><span>Has its own page.</span></a><span><br><br><strong>Course Up Mode: </strong></span><a href="http://opencpn.org/auto_follow"><span>See this page</span></a><span><span>.</span></span><span><br><br><strong>Lookahead Mode:</strong> </span></font><span><font color="#000000"><a href="http://opencpn.org/auto_follow">See this page</a></font></span><span><font color="#000000"><span>.</span></font></span><span><font color="#000000"><br><br><strong>Show Chart Outlines: </strong>The border of the available charts are shown. Vector charts are green, raster charts are red, and on CM93 available smaller charts are purple. More</font></span><span><font color="#000000"> </font></span><font color="#000000"><a href="http://opencpn.org/installing_charts#cm93"><span>here.</span></a></font><span><br><br><strong><font color="#000000">Show Depth Units:</font></strong> </span><span>Shows </span><span>the charts depth units if available. When in quilt mode, depth units are only shown if all charts in the quilt has the same depth unit.</span>
+            <br>
+            <br>
+            <span><strong>OwnShip COG arrow predictor.....:</strong></span> Shows a red dashed line in front of your own boat, with present COG and ends in a dot, which represents where you will be in the set number of minutes, with the present speed. 
+          </p>
+          <h3>
+            <span><strong>The GPS Tab:</strong></span>
+          </h3>
+          <p>
+            <span><img alt="" src="images/toolbox1.png" height="633" width="600"></span>
+            <br>
+            <br>
+            <strong>NMEA Data Source:</strong> Set the source for your GPS connection. 
+            <br>
+            <strong>Details for windows.</strong>
+            <br>
+             In the tab select the 'NMEA Data Source' from the choices&nbsp;shown in the drop-down box, and choose the port to which your GPS is connected. If you are using a standard serial port, then choose the proper physical port number to match. If, on the other hand, you are using a USB GPS, then you will select the virtual serial port which was created by your GPS device driver. You may need to try several selections to find the correct port. For XP/Vista: Using the Device Manager, look for a serial port which appears and disappears dynamically as you plug and unplug the USB GPS cable. This is your virtual GPS serial port. When the properly configured GPS is connected, powered up, and recognized, and a show agreen&nbsp;<img alt="" src="images/gpsGrn.png" align="absmiddle" height="28" width="28"> icon or gps status icon&nbsp;<img alt="" src="images/gps2.png" align="absmiddle" height="28" width="28"> in the right end of the tool-bar. OpenCPN automatically configures&nbsp; bits, parity, etc. These do not need to be separately specified. 
+            <br>
+            <strong>Details for Linux.</strong> Connect directly to one of the available physical ports, or use gpsd. For gpsd versions earlier than 2.9, select "Network GPSD" else select "Network LIBGPS". 
+            <br>
+            <br>
+            <strong>GPSD Data Server:</strong> is normally "localhost", but it's possible to have one gpsd server on a local network with many OpenCPN clients. In this case, specify the network address of the gpsd server. With OpenCPN it's possible to connect even a <strong>Windows</strong> instance, to a gpsd server this way. 
+            <br>
+            <br>
+            <strong>NMEA Baude Rate:</strong> 4800 is the normal value for many devices, but some newer gps receivers require a different value. Check your documentation. 
+            <br>
+            <br>
+            <br>
+            <strong>Show GPS/NMEA data stream window:</strong> If you check this box you will get a window that shows the NMEA data sentences coming into OpenCPN. For simple NMEA data stream debugging, add the following to your opencpn.ini file:Under [Settings] add a line 
+            <br>
+            <em>DebugNMEA=1500</em>
+            <br>
+             This will provide up to 1500 debug messages pertaining to NMEA traffic to the opencpn.log 
+            <br>
+            <br>
+            <strong>Autopilot Output Port:</strong> Connect any NMEA 183 compatible autopilot. Select the correct serial port from the list. 
+          </p>
+          <h3>
+            <strong><span>The Chart Tab </span></strong>
+          </h3>
+          <p>
+            <img alt="" src="images/toolbox2.png" height="633" width="600">
+          </p>
+          <p>
+            <span>This is treated in detail </span><a href="http://opencpn.org/installing_charts"><span>here.</span></a>
+          </p>
+          <br>
+          <br>
+          <h3>
+             Vector Charts Tab 
+          </h3>
+          <p>
+            <img alt="" src="images/toolbox-vec.png" height="633" width="600">
+          </p>
+          <p>
+            <span><font face="Arial"><span>More about vectorcharts </span></font></span><font face="Arial"><span><a href="http://opencpn.org/vector_chart_display"><span>on this page.<br>
+</span></a></span></font><span><br>
+            </span>
+          </p>
+          <h3>
+            <span>The AIS Tab</span>
+          </h3>
+          <br>
+          <h3>
+            <img alt="" src="images/toolbox4.png" height="633" width="600">
+          </h3>
+          <p>
+            <font color="#000000">More about <a href="http://opencpn.org/ais">AIS</a>. </font><font color="#000000" size="3"><br><br>
+            </font>
+          </p>
+          <h3>
+             The Language and Font Tab 
+            <br>
+            <br clear="left">
+            <img alt="" src="images/toolbox7.png" height="674" width="600">
+          </h3>
+          <p>
+            <strong>&nbsp;Languages: </strong>The following languages are available&nbsp; 
+            <br>
+             Czech 
+            <br>
+             Danish 
+            <br>
+             Dutch 
+            <br>
+             English 
+            <br>
+             French 
+            <br>
+             German 
+            <br>
+             Italian 
+            <br>
+             Polish 
+            <br>
+             Portuguese 
+            <br>
+             Russian 
+            <br>
+             Spanish 
+            <br>
+             Swedish 
+            <br>
+             Choose your language here. Make sure your selected language has the support files installed on your computer (Linux). Default language is US English. 
+            <br>
+            <br>
+            <strong>Font Options</strong>. Fonts can be selected for some elemets on the display. 
+            <br>
+             &nbsp; 
+          </p>
+          <p>
+             &nbsp; 
+          </p>
+          <h3>
+             The GRIB Tab<font color="#000000" size="3">&nbsp;</font>
+          </h3>
+          <font color="#000000" size="3">  </font>
+          <p>
+            <font color="#000000" size="3"><font><img alt="" src="images/toolbox-grib.png" height="633" width="600"><br><br>
+</font></font><font color="#000000"><font><span>More about <a href="http://opencpn.org/grib_weather">Grib files and settings.</a></span></font></font><font color="#000000" size="3"><font><br><br>
+</font></font>
+          </p>
+          <font color="#000000" size="3">  </font>
+          <h3>
+             &nbsp;The Etc. Tab 
+          </h3>
+          <p>
+            <img alt="" src="images/toolbox-etc.png" height="633" width="600">
+          </p>
+          <br>
+          <strong>Show GPX icons:</strong> Show these icons in the Toolbar. <a href="http://opencpn.org/routes_and_marks">More here.</a>
+          <br>
+          <strong>Tracks</strong> are <a href="http://opencpn.org/ship_track">described here.</a>
+          <br>
+          <br>
+          <strong>Radar rings:</strong> These show up as red rings centered on your gps position, and can be useful in different circumstances, such as keeping clear of dangers. The settings are, hopefully, intuitive. 
+          <br>
+          <br>
+          <strong>Waypoint locking</strong>. Locks waypoints, and prevents accidental moving of them. This box should normally be ticked&nbsp; when under way. 
+          <br>
+          <br>
+          <strong>GUI Options</strong>
+          <br>
+          <br>
+          <strong>Enable wheel-zoom-to-cursor</strong>: Normally when clicking on the screen, the display centers on the clicked point. The wheel zooms in/out always using the center of the display. With this box ticked,&nbsp; the zooming happens at the point of the cursor. This means that as soon as you start to zoom in the display centers on the cursor. 
+          <br>
+          <br>
+          <strong>Preserve scale when switching charts:</strong>&nbsp; Normally when switching charts OpenCPN will open the new chart scaled close to it's natural scale, the zoom factor stays the same. With this box ticked OpenCPN will keep the scale from the last chart, when switching, not exactly, but generally of the same magnitude. The zoom-factor will increase as you switches to smaller scale charts. 
+          <br>
+          <br>
+          <strong>Play ship bells:</strong> Every half-hour the traditional ship bell will&nbsp; be heard. 
+          <br>
+          <br>
+          <p>
+             &nbsp; 
+          </p>
+        </div>
+        <div id="node-25" class="section-3">
+          <h1 class="book-heading">
+             Vector Chart Display 
+          </h1>
+          <p>
+            <img alt="" src="images/48px-Under_construction_icon-blue.png" align="left" height="40" width="48">This article&nbsp;<b>is in not complete.</b>&nbsp;You are welcome to assist in its construction by editing it as well. Everyone is allowed to edit after&nbsp;<a href="http://opencpn.org/user/register">creating an account</a>&nbsp;and/or&nbsp;<a href="http://opencpn.org/user">logging in</a>. 
+            <br>
+            <br>
+            <img src="images/toolbox-vec.png" alt="" height="674" width="639">
+          </p>
+        </div>
+      </div>
+      <div id="node-64" class="section-2">
+        <h1 class="book-heading">
+           NMEA Sentences 
+        </h1>
+        <h3>
+           OpenCPN Recognized NMEA Sentences: 
+        </h3>
+        <ol>
+          <li>
+            <strong>HDM - Heading, Magnetic</strong>
+          </li>
+          <li>
+            <strong>HDG - Magnetic heading, deviation, variation</strong>
+          </li>
+          <li>
+            <strong>HDT - Heading, True</strong>
+          </li>
+          <li>
+            <strong>RMB - Recommended Minimum Navigation Information</strong>
+            <br>
+            <ol>
+              <li>
+                 Status, V = Navigation receiver warning 
+              </li>
+              <li>
+                 Cross Track Error - nautical miles 
+              </li>
+              <li>
+                 Direction to Steer, Left or Right 
+              </li>
+              <li>
+                 TO Waypoint ID 
+              </li>
+              <li>
+                 FROM Waypoint ID 
+              </li>
+              <li>
+                 Destination Waypoint Latitude 
+              </li>
+              <li>
+                 N or S 
+              </li>
+              <li>
+                 Destination Waypoint Longitude 
+              </li>
+              <li>
+                 E or W 
+              </li>
+              <li>
+                 Range to destination in nautical miles 
+              </li>
+              <li>
+                 Bearing to destination in degrees True 
+              </li>
+              <li>
+                 Destination closing velocity in knots 
+              </li>
+              <li>
+                 Arrival Status, A = Arrival Circle Entered 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>RMC -Recommended Minimum Navigation Information </strong>
+            <ol>
+              <li>
+                 Time (UTC) 
+              </li>
+              <li>
+                 Status, V = Navigation receiver warning 
+              </li>
+              <li>
+                 Latitude 
+              </li>
+              <li>
+                 N or S 
+              </li>
+              <li>
+                 Longitude 
+              </li>
+              <li>
+                 E or W 
+              </li>
+              <li>
+                 Speed over ground, knots 
+              </li>
+              <li>
+                 Track made good, degrees true 
+              </li>
+              <li>
+                 Date, ddmmyy 
+              </li>
+              <li>
+                 Magnetic Variation, degrees 
+              </li>
+              <li>
+                 E or W 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>WPL - Waypoint Location</strong>
+            <br>
+            <ol>
+              <li>
+                 Latitude 
+              </li>
+              <li>
+                 N or S (North or South) 
+              </li>
+              <li>
+                 Longitude 
+              </li>
+              <li>
+                 E or W (East or West) 
+              </li>
+              <li>
+                 Waypoint Name 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>RTE - Routes</strong>
+            <br>
+            <ol>
+              <li>
+                 Total number of messages being transmitted 
+              </li>
+              <li>
+                 Message Number 
+              </li>
+              <li>
+                 Message Mode 
+                <br>
+                <ol>
+                  <li>
+                     c = complete route, all waypoints 
+                  </li>
+                  <li>
+                     w = working route, the waypoint you just left, the waypoint you're heading to, then all the rest 
+                  </li>
+                </ol>
+              </li>
+              <li>
+                 Waypoint ID 
+              </li>
+              <li>
+                 More Waypoints 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>GGA -&nbsp;Global Positioning System Fix Data</strong>
+            <ol>
+              <li>
+                 Universal Time Coordinated (UTC) 
+              </li>
+              <li>
+                 Latitude 
+              </li>
+              <li>
+                 Longitude 
+              </li>
+              <li>
+                 GPS Quality Indicator 
+              </li>
+              <li>
+                 Number of satellites in view, 00 - 12 
+              </li>
+              <li>
+                 Horizontal Dilution of precision 
+              </li>
+              <li>
+                 Antenna Altitude above/below mean-sea-level (geoid) 
+              </li>
+              <li>
+                 Units of antenna altitude, meters 
+              </li>
+              <li>
+                 Geoidal separation, the difference between the WGS-84 earth 
+              </li>
+              <li>
+                 Units of geoidal separation, meters 
+              </li>
+              <li>
+                 Age of differential GPS data, time in seconds since last SC104 
+              </li>
+              <li>
+                 Differential reference station ID, 0000-1023 
+              </li>
+              <li>
+                 Checksum 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>GLL - Geographic Position, Latitude / Longitude</strong>
+            <br>
+            <ol>
+              <li>
+                 Latitude 
+              </li>
+              <li>
+                 N or S (North or South) 
+              </li>
+              <li>
+                 Longitude 
+              </li>
+              <li>
+                 E or W (East or West) 
+              </li>
+              <li>
+                 Time (UTC) 
+              </li>
+              <li>
+                 Status A - Data Valid, V - Data Invalid 
+              </li>
+            </ol>
+          </li>
+          <li>
+             &nbsp;<strong>GSV -&nbsp;Satellites in view</strong>
+            <ol>
+              <li>
+                 Number of sentences for full data / sentence 1 of 2 
+              </li>
+              <li>
+                 Number of satellites in view 
+              </li>
+              <li>
+                 Satellite PRN number 
+              </li>
+              <li>
+                 Elevation, degrees 
+              </li>
+              <li>
+                 Azimuth, degrees 
+              </li>
+              <li>
+                 SNR - higher is better / for up to 4 satellites per sentence 
+              </li>
+              <li>
+                 Checksum 
+              </li>
+            </ol>
+          </li>
+          <li>
+            <strong>VTG - Track Made Good and Ground Speed</strong>
+            <br>
+            <ol>
+              <li>
+                 Track Degrees 
+              </li>
+              <li>
+                 T = True 
+              </li>
+              <li>
+                 Track Degrees 
+              </li>
+              <li>
+                 M = Magnetic 
+              </li>
+              <li>
+                 Speed Knots 
+              </li>
+              <li>
+                 N = Knots 
+              </li>
+              <li>
+                 Speed Kilometers Per Hour 
+              </li>
+              <li>
+                 K = Kilometres Per Hour 
+              </li>
+            </ol>
+          </li>
+        </ol>
+        <ol>
+          <li>
+            <strong>VDM - Automatic Information System (AIS) position reports from other vessels </strong>
+            <ol>
+              <li>
+                 Time (UTC) 
+              </li>
+              <li>
+                 MMSI Number 
+              </li>
+              <li>
+                 Latitude 
+              </li>
+              <li>
+                 Longitude 
+              </li>
+              <li>
+                 Speed Knots 
+              </li>
+              <li>
+                 Heading 
+              </li>
+              <li>
+                 Course over ground 
+              </li>
+              <li>
+                 Rate of turn 
+              </li>
+              <li>
+                 Navigation status 
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id="node-6" class="section-2">
+        <h1 class="book-heading">
+           FAQ 
+        </h1>
+        <ul>
+          <li>
+            <strong>What are all those 'U' things all over my chart?</strong>
+          </li>
+        </ul>
+        <p>
+           The feature being rendered is S57 Text relating to 'M_QUAL'. 
+        </p>
+        <p>
+           This is a meta-object describing the quality of data shown. The Attribute of interest is CATZOC, or "Category of Zone of Confidence". The value on most US ENC's is "6", or "un-assessed". Thus, the 'U'. 
+        </p>
+        <p>
+           You can turn this symbol off in OpenCPN by de-selecting the box next to M_QUAL in 'Tool Box' / 'Vector Charts' tab 'Mariners Standard' selection list box. 
+        </p>
+        <p>
+           To learn the acronyms used in this application search the S57 'Object and Attribute' catalog at: <a href="http://www.s-57.com/" title="http://www.s-57.com/">http://www.s-57.com/</a>
+        </p>
+        <ul>
+          <li>
+            <strong>I have routes and way points in Sea Clear and I would like to import them into OpenCPN. Can I do it?</strong>
+          </li>
+        </ul>
+        <p>
+           Yes. I had originally created and maintained all my routes and waypoints in SeaClear, exported them, loaded them into GPSUtility (for Windows) and saved them as text files. 
+        </p>
+        <p>
+           To import into OpenCPN &nbsp;I opened all my text files (routes and waypoints) with GPSUtility, saved that out as one big gpx file, and loaded it into OpenCPN. Works like a champ. 
+        </p>
+        <p>
+           I've edited them and saved them back out as GPX files with no trouble. 
+        </p>
+        <p>
+           Individual routes can be edited and saved in appropriately named GPX files. 
+        </p>
+        <ul>
+          <li>
+            <strong>Whenever I try to open a particular chart OpenCPN crashes. What's going on?</strong>
+          </li>
+        </ul>
+        <p>
+           Chances are the chart file is corrupted. Note the name and number of the suspect chart and replace it with a fresh download. 
+        </p>
+        <p>
+           NOTE: A list of the charts with their names and file names can be found in the README.TEXT that accompanies the charts downloaded from NOOA. 
+        </p>
+        <p>
+           Some unzip utilities for Linux are problematic when opening ECN's. If there are many corrupt charts in your download, try using a different unzip utility. 
+        </p>
+        <ul>
+          <li>
+            <strong>OpenCPN and Great Circle Navigation</strong>
+          </li>
+        </ul>
+        <p>
+           Raster charts display bearings and headings as straight, measurable lines on the chart. Similarly, Vector ENC's are rendered as Mercator projections in OpenCPN and most other ECS's for the same reason. 
+        </p>
+        <p>
+           For typical coastal navigation, errors which occur using rhumb line instead of great circle calculations are small for the distances usually covered by one chart. 
+        </p>
+        <p>
+           Mercator Charts and Mercator navigation is the standard for most navigational purposes. Other terms used instead of "Mercator Sailing" is "Loxodrome Sailing" or "Rhumb Line Sailing". 
+        </p>
+        <p>
+           OpenCPN uses Mercator Sailing and cannot directly display Great Circles, but through GPX route import , Great Circle Routes can be used as explained on <a href="http://opencpn.org/planning_data">this</a> page in the wiki. 
+        </p>
+        <p>
+          <img alt="" src="images/48px-Under_construction_icon-blue.png" align="left" height="40" width="48">This article&nbsp;<b>is in not complete.</b>&nbsp;You are welcome to assist in its construction by editing it as well. Everyone is allowed to edit after&nbsp;<a href="http://opencpn.org/user/register">creating and account</a>&nbsp;and/or&nbsp;<a href="http://opencpn.org/user">logging in</a>. 
+        </p>
+      </div>
+      <div id="node-27" class="section-2">
+        <h1 class="book-heading">
+           License and Authors 
+        </h1>
+        <p>
+           &nbsp;OpenCPN is licensed under the <a href="http://opencpn.org/gpl">GNU General Public License (GPL)<br>
+          </a>
+        </p>
+        <p>
+        </p>
+        <div>
+           &nbsp;David S Register 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;bdbcat@yahoo.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN Lead Developer 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Jean-Eudes Onfray 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;je@onfray.fr 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Dialog usability enhancements 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Pavel Kalian 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;pavel@kalian.cz 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;S52 Rasterization Improvements 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Piotr Carlson 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;pjotrc_at_interia.pl 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;General usability enhancements 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Anders Lund 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;anders@alweb.dk 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;RouteManagerDialog 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Gordon Mau 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;gmau@hotmail.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN Documentation 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Tim Francis 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;tim.francis.asia@gmail.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN Documentation 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Mark A Sikes 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;markasikes@gmail.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN CoDeveloper 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Thomas Haller 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;thomasmartin.haller@web.de 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;GPX Import/Export Implementation 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Will Kamp 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;will@matrixmariner.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Toolbar Icon design 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Richard Smith 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;smithstrawler@hotmail.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN CoDeveloper, MacOSX 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;David Herring 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;dherring@dherring.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN CoDeveloper, MacOSX 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Philip Lange 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;philip.lange@albemarleweb.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;OpenCPN Documentation 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Ron Kuris 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;swcafe@gmail.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;wxWidgets Support 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Julian Smart, Robert Roebling et al 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;wxwidgets.org 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;wxWidgets Authors 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Sylvain Duclos 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;sylvain_duclos@yahoo.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;S52 Presentation Library code 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Manish P. Pagey 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;pagey@san.rr.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Serial Port Library 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;David Flater 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;software@flaterco.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;XTIDE tide and current code 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Frank Warmerdam 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;warmerdam@pobox.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;GDAL Class Library 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Mike Higgins 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;higgins@monitor.net 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;BSB Chart Format Detail 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Samuel R. Blackburn 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;sammy@sed.csc.com 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;NMEA0183 Class Library 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Atul Narkhede 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;narkhede@cs.unc.edu 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Polygon Graphics utilities 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Jan C. Depner 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;depnerj@navo.navy.mil 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;WVS Chart Library 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Stuart Cunningham, et al 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;stuart_hc@users.sourceforge.net 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;BSB Chart Georeferencing Algorithms 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;John F. Waers 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;jfwaers@csn.net 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;UTM Conversion Algorithms 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Carsten Tschach 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;tschach@zedat.fu-berlin.de 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;UTM Conversion Algorithms 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Ed Williams 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;http://williams.best.vwh.net/avform.htm 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Great Circle Formulary 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Philippe Bekaert 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;CIE-&gt;RGB Color Conversion Matrix 
+        </div>
+        <div>
+           &nbsp; 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp;Robert Lipe 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;robertlipe@usa.net 
+        </div>
+        <div>
+           &nbsp;&nbsp; &nbsp; &nbsp;Garmin USB GPS Interface 
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
