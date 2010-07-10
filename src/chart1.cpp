@@ -8748,7 +8748,7 @@ void ToolTipWin::SetBitmap()
       wxClientDC cdc(GetParent());
 
 
-      wxFont *plabelFont = pFontMgr->GetFont(_T("ToolTips"));
+      wxFont *plabelFont = pFontMgr->GetFont(_("ToolTips"));
       cdc.GetTextExtent(m_string, &w, &h,  NULL, NULL, plabelFont);
 
       m_size.x = w + 8;

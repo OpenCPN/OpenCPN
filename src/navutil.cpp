@@ -1088,7 +1088,7 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
       wxRect r1 ( r.x-sx2, r.y-sy2, sx2 * 2, sy2 * 2 );
       if ( m_bShowName )
       {
-            dc.SetFont ( *pFontMgr->GetFont ( _T ( "Marks" ) ) );
+            dc.SetFont ( *pFontMgr->GetFont ( _( "Marks" ) ) );
             int stextx, stexty;
             dc.GetTextExtent ( m_MarkName, &stextx, &stexty );
             wxRect r2 ( r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY, stextx, stexty );
@@ -1123,8 +1123,8 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 
       if ( m_bShowName )
       {
-            dc.SetFont ( *pFontMgr->GetFont ( _T ( "Marks" ) ) );
-            dc.SetTextForeground(pFontMgr->GetFontColor(_T("Marks")));
+            dc.SetFont ( *pFontMgr->GetFont ( _( "Marks" ) ) );
+            dc.SetTextForeground(pFontMgr->GetFontColor(_("Marks")));
 
             dc.DrawText ( m_MarkName, r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY );
       }

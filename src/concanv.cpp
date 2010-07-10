@@ -112,19 +112,19 @@ ConsoleCanvas::ConsoleCanvas(wxFrame *frame):
       m_pitemStaticBoxSizerLeg->Add(m_pLegRouteButton, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 2);
 
 
-      pXTE = new AnnunText(this, -1,  _T("Console Legend"), _T("Console Value"));
+      pXTE = new AnnunText(this, -1,  _("Console Legend"), _("Console Value"));
       pXTE->SetALabel(_T("XTE"));
       m_pitemStaticBoxSizerLeg->Add(pXTE, 1, wxALIGN_LEFT|wxALL, 2);
 
-      pBRG = new AnnunText(this, -1, _T("Console Legend"), _T("Console Value"));
+      pBRG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pBRG->SetALabel(_T("BRG"));
       m_pitemStaticBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT|wxALL, 2);
 
-      pRNG = new AnnunText(this, -1, _T("Console Legend"), _T("Console Value"));
+      pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pRNG->SetALabel(_T("RNG"));
       m_pitemStaticBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT|wxALL, 2);
 
-      pTTG = new AnnunText(this, -1,  _T("Console Legend"), _T("Console Value"));
+      pTTG = new AnnunText(this, -1,  _("Console Legend"), _("Console Value"));
       pTTG->SetALabel(_T("TTG"));
       m_pitemStaticBoxSizerLeg->Add(pTTG, 1, wxALIGN_LEFT|wxALL, 2);
 
