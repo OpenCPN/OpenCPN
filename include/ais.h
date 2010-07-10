@@ -154,7 +154,9 @@ public:
 
     AIS_Target_Data();
     wxString BuildQueryResult(void);
-    char *Get_vessel_type_string(bool b_short = false);
+    wxString GetRolloverString(void);
+    wxString Get_vessel_type_string(bool b_short = false);
+    wxString Get_class_string(bool b_short = false);
 
 
     int                       MID;

@@ -218,9 +218,14 @@ void  GribRecord::setDataType(const zuchar t)
 //------------------------------------------------------------------------------
 std::string GribRecord::makeKey(int dataType,int levelType,int levelValue)
 {   // Make data type key  sample:'11-100-850'
-	char ktmp[32];
-	wxSnprintf(ktmp, 32, "%d-%d-%d", dataType, levelType, levelValue);
-	return std::string(ktmp);
+//	char ktmp[32];
+//	wxSnprintf((wxChar *)ktmp, 32, "%d-%d-%d", dataType, levelType, levelValue);
+//	return std::string(ktmp);
+
+	wxString k;
+	k.Printf(_T("%d-%d-%d"), dataType, levelType, levelValue);
+	return std::string(k.mb_str());
+
 }
 //-----------------------------------------
 GribRecord::~GribRecord()

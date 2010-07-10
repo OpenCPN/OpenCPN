@@ -443,6 +443,10 @@ bool             g_bbigred;
 
 PlugInManager    *g_pi_manager;
 
+bool             g_bAISRolloverShowClass;
+bool             g_bAISRolloverShowCOG;
+bool             g_bAISRolloverShowCPA;
+
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
 //-----------------------------------------------------------------------------------------------------

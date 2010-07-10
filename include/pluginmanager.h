@@ -153,6 +153,9 @@ private:
       int               m_plugin_tool_id_next;
       int               m_plugin_menu_item_id_next;
 
+ //     opencpn_plugin    *m_plugin_base;
+
+
 };
 
 

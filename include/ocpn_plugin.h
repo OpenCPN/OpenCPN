@@ -28,6 +28,14 @@
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
+#ifndef DECL_EXP
+#ifdef __WXMSW__
+#  define DECL_EXP     __declspec(dllexport)
+#else
+#  define DECL_EXP
+#endif
+#endif
+
 
 #define API_VERSION_MAJOR           1
 #define API_VERSION_MINOR           0
@@ -55,7 +63,7 @@ class       wxNotebook;
 #define     WANTS_AIS_SENTENCES                 0x00000200
 
 //----------------------------------------------------------------------------------------------------------
-//    Some interface object class definitions
+//    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
 class PlugIn_ViewPort
 {
@@ -93,43 +101,55 @@ class PlugIn_Position_Fix
 
 //----------------------------------------------------------------------------------------------------------
 //    The Generic PlugIn Interface Class Definition
-//    This is a pure virtual class, which opencpn PlugIns must derive from
+//
+//    This is a virtual class.
+//    opencpn PlugIns must derive from this class.
+//    There are two types of methods in this class
+//    a. Required...must be overridden and implemented by PlugIns
+//    b. Optional..may be overridden by PlugIns
+
+//    PlugIns must implement optional method overrides consistent with their
+//     declared capabilities flag as returned by Init().
 //----------------------------------------------------------------------------------------------------------
-class opencpn_plugin
+class DECL_EXP opencpn_plugin
 {
 
 public:
       opencpn_plugin(void *pmgr) {}
       virtual ~opencpn_plugin() {}
 
-      //    Minimum API down to the PlugIn
-      //    All PlugIns must implement all of these methods, if only with stubs
+      //    Public API to the PlugIn class
 
-      virtual int Init(void) = 0;               // Return the PlugIn Capabilites flag
-      virtual bool DeInit(void) = 0;
+      //    This group of methods is required, and will be called by the opencpn host
+      //    opencpn PlugIns must implement this group
+      virtual int Init(void);               // Return the PlugIn Capabilites flag
+      virtual bool DeInit(void);
 
-      virtual int GetAPIVersionMajor() = 0;
-      virtual int GetAPIVersionMinor() = 0;
-      virtual int GetPlugInVersionMajor() = 0;
-      virtual int GetPlugInVersionMinor() = 0;
+      virtual int GetAPIVersionMajor();
+      virtual int GetAPIVersionMinor();
+      virtual int GetPlugInVersionMajor();
+      virtual int GetPlugInVersionMinor();
 
-      virtual wxString GetShortDescription() = 0;
-      virtual wxString GetLongDescription() = 0;
+      virtual wxString GetShortDescription();
+      virtual wxString GetLongDescription();
 
-      virtual int GetToolbarToolCount(void) = 0;
+      //    This group is optional.
+      //    PlugIns may override any of these methods as required
 
-      virtual int GetToolboxPanelCount(void) = 0;
-      virtual void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook) = 0;
-      virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel) = 0;
+      virtual int GetToolbarToolCount(void);
 
-      virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp) = 0;
-      virtual void SetCursorLatLon(double lat, double lon) = 0;
+      virtual int GetToolboxPanelCount(void);
+      virtual void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
+      virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
 
-      virtual void SetPositionFix(PlugIn_Position_Fix &pfix) = 0;
-      virtual void SetNMEASentence(wxString &sentence) = 0;
+      virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+      virtual void SetCursorLatLon(double lat, double lon);
 
-      virtual void OnToolbarToolCallback(int id) = 0;
-      virtual void OnContextMenuItemCallback(int id) = 0;
+      virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
+      virtual void SetNMEASentence(wxString &sentence);
+
+      virtual void OnToolbarToolCallback(int id);
+      virtual void OnContextMenuItemCallback(int id);
 
  };
 
@@ -148,13 +168,6 @@ public:
 //
 //----------------------------------------------------------------------------------------------------------
 
-#ifndef DECL_EXP
-#ifdef __WXMSW__
-#  define DECL_EXP     __declspec(dllexport)
-#else
-#  define DECL_EXP
-#endif
-#endif
 
 extern "C"  DECL_EXP int InsertPlugInTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
                                           wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
@@ -168,15 +181,15 @@ extern "C"  DECL_EXP void SetCanvasContextMenuItemViz(int item, bool viz);      
 extern "C"  DECL_EXP void SetCanvasContextMenuItemGrey(int item, bool grey);
 
 
-extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
+extern "C"  DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
 
-extern "C" DECL_EXP void RequestRefresh(wxWindow *);
-extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
+extern "C"  DECL_EXP void RequestRefresh(wxWindow *);
+extern "C"  DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
-extern "C" DECL_EXP void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon);
-extern "C" DECL_EXP void GetCanvasLLPix( PlugIn_ViewPort *vp, wxPoint p, double *plat, double *plon);
+extern "C"  DECL_EXP void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon);
+extern "C"  DECL_EXP void GetCanvasLLPix( PlugIn_ViewPort *vp, wxPoint p, double *plat, double *plon);
 
-extern "C" DECL_EXP wxWindow *GetOCPNCanvasWindow();
+extern "C"  DECL_EXP wxWindow *GetOCPNCanvasWindow();
 
 
 #endif            // _PLUGIN_H_

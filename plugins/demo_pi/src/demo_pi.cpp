@@ -86,8 +86,8 @@ int demo_pi::Init(void)
 
       // Create the Context Menu Items
 
-      //    We need to create a dummy menu to act as a surrogate parent ot the created MenuItems
-      //    in order to avoid an ASSERT on msw debug builds
+      //    In order to avoid an ASSERT on msw debug builds,
+      //    we need to create a dummy menu to act as a surrogate parent of the created MenuItems
       //    The Items will be re-parented when added to the real context meenu
       wxMenu dummy_menu;
 
@@ -150,9 +150,6 @@ Demonstrates PlugIn processing of NMEA messages.");
 
 }
 
-void demo_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
-{}
-
 void demo_pi::SetNMEASentence(wxString &sentence)
 {
 //      printf("demo_pi::SetNMEASentence\n");
@@ -162,25 +159,6 @@ void demo_pi::SetNMEASentence(wxString &sentence)
       }
 }
 
-
-int demo_pi::GetToolbarToolCount(void)
-{ 
-      return 0;
-}
-      
-int demo_pi::GetToolboxPanelCount(void)
-{
-      return 0;
-}
-
-void demo_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
-{}
-
-void demo_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
-{}
-
-void demo_pi::OnToolbarToolCallback(int id)
-{}
 
 void demo_pi::OnContextMenuItemCallback(int id)
 {
@@ -208,16 +186,6 @@ void demo_pi::OnContextMenuItemCallback(int id)
 
 }
 
-bool demo_pi::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
-{
-      return false;
-}
-
-void demo_pi::SetCursorLatLon(double lat, double lon)
-{}
-
-
-
 
 //----------------------------------------------------------------
 //
@@ -231,15 +199,13 @@ END_EVENT_TABLE()
 
 DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
       :wxWindow(pparent, id, wxPoint(10,10), wxSize(200,200),
-             wxCAPTION | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxRESIZE_BORDER, _T("OpenCPN PlugIn"))
+             wxSIMPLE_BORDER, _T("OpenCPN PlugIn"))
 {
-
       mLat = 0.0;
       mLon = 1.0;
       mSog = 2.0;
       mCog = 3.0;
       mVar = 4.0;
-
 
 }
 

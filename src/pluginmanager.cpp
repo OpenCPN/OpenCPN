@@ -52,6 +52,8 @@ PlugInManager::PlugInManager(MyFrame *parent)
             m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
             m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
       }
+
+//      m_plugin_base = new opencpn_plugin(this);
 }
 
 PlugInManager::~PlugInManager()
@@ -528,5 +530,73 @@ bool GetGlobalColor(wxString colorName, wxColour *pcolour)
 
       return true;
 }
+
+//-----------------------------------------------------------------------------------------
+//    The opencpn_plugin base class implementation
+//-----------------------------------------------------------------------------------------
+
+int opencpn_plugin::Init(void)
+{  return 0; }
+
+
+bool opencpn_plugin::DeInit(void)
+{  return true; }
+
+int opencpn_plugin::GetAPIVersionMajor()
+{  return API_VERSION_MAJOR; }
+
+int opencpn_plugin::GetAPIVersionMinor()
+{  return API_VERSION_MINOR; }
+
+int opencpn_plugin::GetPlugInVersionMajor()
+{  return 1; }
+
+int opencpn_plugin::GetPlugInVersionMinor()
+{  return 0; }
+
+
+wxString opencpn_plugin::GetShortDescription()
+{
+      return _("OpenCPN PlugIn Base Class");
+}
+
+wxString opencpn_plugin::GetLongDescription()
+{
+      return _("OpenCPN PlugIn Base Class\n\
+PlugInManager created this base class");
+}
+
+
+
+void opencpn_plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
+{}
+
+void opencpn_plugin::SetNMEASentence(wxString &sentence)
+{}
+
+int opencpn_plugin::GetToolbarToolCount(void)
+{  return 0; }
+
+int opencpn_plugin::GetToolboxPanelCount(void)
+{  return 0; }
+
+void opencpn_plugin::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
+{}
+
+void opencpn_plugin::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
+{}
+
+void opencpn_plugin::OnToolbarToolCallback(int id)
+{}
+
+void opencpn_plugin::OnContextMenuItemCallback(int id)
+{}
+
+bool opencpn_plugin::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+{  return false; }
+
+void opencpn_plugin::SetCursorLatLon(double lat, double lon)
+{}
+
 
 

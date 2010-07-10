@@ -67,19 +67,9 @@ public:
       wxString GetShortDescription();
       wxString GetLongDescription();
 
-      bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
-      void SetCursorLatLon(double lat, double lon);
+//    The optional method overrides
 
-      int GetToolbarToolCount(void);
-      
-      int GetToolboxPanelCount(void);
-      void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
-      void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
-
-      void SetPositionFix(PlugIn_Position_Fix &pfix);
       void SetNMEASentence(wxString &sentence);
-
-      void OnToolbarToolCallback(int id);
       void OnContextMenuItemCallback(int id);
       
 

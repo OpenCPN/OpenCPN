@@ -102,7 +102,7 @@
       class IDX_entry;
       class S57ObjectTree;
       class S57ObjectDesc;
-      class AISroWin;
+      class RolloverWin;
       class Quilt;
       class PixelCache;
       class ChInfoWin;
@@ -504,7 +504,7 @@ private:
       wxBitmap    m_bmCurrentDusk;
       wxBitmap    m_bmCurrentNight;
 
-      AISroWin    *m_pPopUpWin;
+      RolloverWin *m_pRolloverWin;
 
       wxImage     m_os_image_green_day;
       wxImage     m_os_image_green_dusk;
@@ -532,10 +532,6 @@ private:
       ViewPort    m_cache_vp;
       wxBitmap    *m_prot_bm;
       wxPoint     m_roffset;
-
-      bool        m_bShowSegInfo;
-      RoutePoint  *m_segShow_point_a;
-      RoutePoint  *m_segShow_point_b;
 
       bool        m_b_rot_hidef;
 
@@ -788,11 +784,11 @@ public:
 //----------------------------------------------------------------------------
 // AIS Rollover Window
 //----------------------------------------------------------------------------
-class AISroWin: public wxWindow
+class RolloverWin: public wxWindow
 {
       public:
-            AISroWin(wxWindow *parent);
-            ~AISroWin();
+            RolloverWin(wxWindow *parent);
+            ~RolloverWin();
 
             void OnPaint(wxPaintEvent& event);
 

@@ -172,6 +172,10 @@ extern double           g_ownship_predictor_minutes;
 
 extern PlugInManager    *g_pi_manager;
 
+extern bool             g_bAISRolloverShowClass;
+extern bool             g_bAISRolloverShowCOG;
+extern bool             g_bAISRolloverShowCPA;
+
 #ifdef USE_WIFI_CLIENT
 extern wxString         *pWIFIServerName;
 #endif
@@ -947,7 +951,7 @@ void options::CreateControls()
 
    //      Display
     wxStaticBox* itemStaticBoxDisplay = new wxStaticBox(itemPanelAIS, wxID_ANY, _("Display"));
-    wxStaticBoxSizer* itemStaticBoxSizerDisplay= new wxStaticBoxSizer(itemStaticBoxDisplay, wxVERTICAL);
+    wxStaticBoxSizer* itemStaticBoxSizerDisplay= new wxStaticBoxSizer(itemStaticBoxDisplay, wxHORIZONTAL);
     itemBoxSizer6AIS->Add(itemStaticBoxSizerDisplay, 0, wxALL|wxEXPAND, 3);
 
     wxFlexGridSizer *pDisplayGrid = new wxFlexGridSizer(2);
@@ -991,6 +995,23 @@ void options::CreateControls()
 
     m_pText_Moored_Speed = new wxTextCtrl(itemPanelAIS, -1);
     pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALIGN_RIGHT, group_item_spacing);
+
+    // Rollover
+    wxStaticBox* itemStaticBoxRollover = new wxStaticBox(itemPanelAIS, wxID_ANY, _("Rollover"));
+    wxStaticBoxSizer* itemStaticBoxSizerRollover= new wxStaticBoxSizer(itemStaticBoxRollover, wxVERTICAL);
+    itemStaticBoxSizerDisplay->Add(itemStaticBoxSizerRollover, 0, wxALL|wxEXPAND, 3);
+
+    wxStaticText *pStatic_Dummy4 = new wxStaticText( itemPanelAIS, -1, _("      \"Ship Name\" MMSI (Call Sign)"));
+    itemStaticBoxSizerRollover->Add(pStatic_Dummy4, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+    m_pCheck_Rollover_Class = new wxCheckBox( itemPanelAIS, -1, _("[Class] Type (Status)"));
+    itemStaticBoxSizerRollover->Add(m_pCheck_Rollover_Class, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+    m_pCheck_Rollover_COG = new wxCheckBox( itemPanelAIS, -1, _("SOG COG"));
+    itemStaticBoxSizerRollover->Add(m_pCheck_Rollover_COG, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+    m_pCheck_Rollover_CPA = new wxCheckBox( itemPanelAIS, -1, _("CPA TCPA"));
+    itemStaticBoxSizerRollover->Add(m_pCheck_Rollover_CPA, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
         //      Alert Box
     wxStaticBox* itemStaticBoxAlert = new wxStaticBox(itemPanelAIS, wxID_ANY, _("CPA/TCPA Alerts"));
@@ -1389,6 +1410,11 @@ void options::SetInitialSettings()
 
       m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
+      // Rollover
+      m_pCheck_Rollover_Class->SetValue(g_bAISRolloverShowClass);
+      m_pCheck_Rollover_COG->SetValue(g_bAISRolloverShowCOG);
+      m_pCheck_Rollover_CPA->SetValue(g_bAISRolloverShowCPA);
+
 
 #ifdef USE_S57
 //    S52 Primary Filters
@@ -1717,6 +1743,11 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
     g_bAIS_CPA_Alert_Suppress_Moored = m_pCheck_Alert_Moored->GetValue();
+
+      // Rollover
+      g_bAISRolloverShowClass = m_pCheck_Rollover_Class->GetValue();
+      g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
+      g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
 
 //    NMEA Options

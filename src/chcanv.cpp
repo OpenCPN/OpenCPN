@@ -2206,7 +2206,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_bChartDragging = false;
         m_bMeasure_Active = false;
         m_pMeasureRoute = NULL;
-        m_pPopUpWin = NULL;
+        m_pRolloverWin = NULL;
         m_pCIWin = NULL;
         m_RescaleCandidate = NULL;
 
@@ -2219,8 +2219,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pEditRouteArray             = NULL;
         m_pFoundRoutePoint            = NULL;
         m_pFoundRoutePointSecond      = NULL;
-
-        m_bShowSegInfo = false;
 
 //    Build the cursors
 
@@ -2570,7 +2568,7 @@ ChartCanvas::~ChartCanvas()
         delete pPanTimer;
         delete pCurTrackTimer;
         delete pRotDefTimer;
-        delete m_pPopUpWin;
+        delete m_pRolloverWin;
         delete m_pCIWin;
 
         delete pBM;
@@ -5541,6 +5539,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         }
 
 
+        bool showRollover = false;
 //    AIS Target Rollover
         if(g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS )     // pjotrc 2010.02.09
         {
@@ -5552,57 +5551,77 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                     if(ptarget)
                     {
-                        if(NULL == m_pPopUpWin)
+                        showRollover = true;
+
+                        if(NULL == m_pRolloverWin)
                         {
-                              m_pPopUpWin = new AISroWin(this);
-                              m_pPopUpWin->Hide();
+                              m_pRolloverWin = new RolloverWin(this);
+                              m_pRolloverWin->Hide();
                         }
 
 
-                        if(!m_pPopUpWin->IsShown())
+                        if(!m_pRolloverWin->IsShown())
                         {
-                              wxString s;
 
+                              wxString s = ptarget->GetRolloverString();
+                              m_pRolloverWin->SetString(s);
 
-                              if(ptarget->b_nameValid)
-                              {
-                                    char *tp = ptarget->ShipName;
-                                    while((*tp) && (*tp != '@'))
-                                          s.Append(*tp++);
-                                    s.Trim();
-
-                                    wxString t(ptarget->Get_vessel_type_string(true), wxConvUTF8);
-                                    if(t.Len())
-                                    {
-                                          s.Prepend(_T(" "));
-                                          s.Prepend(t);
-                                    }
-                              }
-                              else
-                              {
-                                    wxString t;
-                                    t.Printf(_T("%d"), ptarget->MMSI);
-                                    s.Prepend(t);
-                              }
-
-
-                              m_pPopUpWin->SetString(s);
-
-                              m_pPopUpWin->SetPosition(wxPoint(x+16, y+16));
-                              m_pPopUpWin->SetBitmap();
-                              m_pPopUpWin->Refresh();
-                              m_pPopUpWin->Show();
+                              m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
+                              m_pRolloverWin->SetBitmap();
+                              m_pRolloverWin->Refresh();
+                              m_pRolloverWin->Show();
 
                         }
                     }
               }
-              else
-              {
-                    if(m_pPopUpWin && m_pPopUpWin->IsShown())
-                          m_pPopUpWin->Hide();
-
-              }
         }
+
+      // Route info rollover
+      // Show the route segment info
+      SelectItem *pFindRouteSeg;
+      pFindRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
+      if (pFindRouteSeg)
+      {
+            showRollover = true;
+
+            if(NULL == m_pRolloverWin)
+            {
+                  m_pRolloverWin = new RolloverWin(this);
+                  m_pRolloverWin->Hide();
+            }
+
+            if(!m_pRolloverWin->IsShown())
+            {
+                  wxString s;
+                  RoutePoint *segShow_point_a = ( RoutePoint * ) pFindRouteSeg->m_pData1;
+                  RoutePoint *segShow_point_b = ( RoutePoint * ) pFindRouteSeg->m_pData2;
+
+                  double brg, dist;
+                  DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
+                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
+
+                  s.Append(_("Leg: from "));
+                  s.Append(segShow_point_a->m_MarkName);
+                  s.Append(_(" to "));
+                  s.Append(segShow_point_b->m_MarkName);
+                  s.Append(_T("\n"));
+                  wxString t;
+                  if ( dist > 0.1 )
+                        t.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
+                  else
+                        t.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.);
+                  s.Append(t);
+
+                  m_pRolloverWin->SetString(s);
+
+                  m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
+                  m_pRolloverWin->SetBitmap();
+                  m_pRolloverWin->Refresh();
+                  m_pRolloverWin->Show();
+            }
+      }
+      if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
+                  m_pRolloverWin->Hide();
 
 //          Mouse Clicks
 
@@ -6027,7 +6046,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         m_bChartDragging = false;
                 }
 
-                m_bShowSegInfo = false;;
         }
 
         if ( event.RightDown() )
@@ -6190,12 +6208,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                   seltype |= SELTYPE_ROUTESEGMENT;
                             }
 
-                            //      Show the route segment info
-                            m_bShowSegInfo = true;
-                            m_segShow_point_a = ( RoutePoint * ) pFindRouteSeg->m_pData1;
-                            m_segShow_point_b = ( RoutePoint * ) pFindRouteSeg->m_pData2;
-                            Refresh(false);
-
                       }
 
                       if ( pFindTrackSeg )
@@ -6233,7 +6245,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       if ( !bseltc )
                             CanvasPopupMenu ( x,y, seltype );
 
-                      m_bShowSegInfo = false;
+                      // Seth: Is this refresh needed?
                       Refresh ( false );            // needed for MSW, not GTK  Why??
 
                 }
@@ -6555,7 +6567,6 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         m_pFoundRoutePoint = NULL;
 
         m_pFoundRoutePointSecond = NULL;
-        m_bShowSegInfo = false;
 
 
         delete pdef_menu;
@@ -7564,10 +7575,12 @@ void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, d
 
       hilite_array[3].x = xp1;
       hilite_array[3].y = yp1;
-
+/*
       dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "YELO1" ) ) ) );
       dc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "YELO1" ) ) ) );
       dc->DrawPolygon(4, hilite_array);
+*/
+      AlphaBlending ( *dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
 
       dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
       dc->DrawRotatedText(s, xp, yp, angle);
@@ -7946,27 +7959,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 wxPoint rpt;
                 m_pMouseRoute->DrawPointWhich ( scratch_dc, parent_frame->nRoute_State - 1,  &rpt );
                 m_pMouseRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, VPoint, false );
-        }
-
-
-        wxFont *pFont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_MODERN, wxNORMAL, wxNORMAL);
-        if(pFont)
-              scratch_dc.SetFont(*pFont);
-
-        if(m_bShowSegInfo)
-        {
-              wxPoint r;
-              GetCanvasPointPix (m_cursor_lat, m_cursor_lon, &r );
-
-              wxString s = _T("1");
-              int h;
-              scratch_dc.GetTextExtent(s, NULL, &h);
-
-              r.y -= h;
-
-              if(m_segShow_point_a && m_segShow_point_b)
-                  RenderRouteLegInfo(&scratch_dc, m_segShow_point_a->m_lat, m_segShow_point_a->m_lon,
-                                 m_segShow_point_b->m_lat, m_segShow_point_b->m_lon, r, _("Leg:  "));
         }
 
 
@@ -11051,16 +11043,16 @@ void S57ObjectTree::OnItemSelectChange( wxTreeEvent& event)
 
 //-----------------------------------------------------------------------
 //
-//    AIS Rollover window implementation
+//    Generic Rollover window implementation
 //
 //-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(AISroWin, wxWindow)
-            EVT_PAINT(AISroWin::OnPaint)
+BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
+            EVT_PAINT(RolloverWin::OnPaint)
 
             END_EVENT_TABLE()
 
 // Define a constructor
-AISroWin::AISroWin(wxWindow *parent):
+RolloverWin::RolloverWin(wxWindow *parent):
             wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(1,1), wxNO_BORDER)
 {
       m_pbm = NULL;
@@ -11068,12 +11060,12 @@ AISroWin::AISroWin(wxWindow *parent):
       Hide();
 }
 
-AISroWin::~AISroWin()
+RolloverWin::~RolloverWin()
 {
       delete m_pbm;
 }
 
-void AISroWin::SetBitmap()
+void RolloverWin::SetBitmap()
 {
       int h, w;
 
@@ -11081,10 +11073,10 @@ void AISroWin::SetBitmap()
 
 
       wxFont *plabelFont = pFontMgr->GetFont(_T("AISRollover"));
-      cdc.GetTextExtent(m_string, &w, &h,  NULL, NULL, plabelFont);
+      cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
 
       m_size.x = w + 4;
-      m_size.y = h + 10;
+      m_size.y = h + 4;
 
       wxMemoryDC mdc;
 
@@ -11094,18 +11086,20 @@ void AISroWin::SetBitmap()
 
       mdc.Blit(0, 0, m_size.x, m_size.y, &cdc, m_position.x, m_position.y);
 
+      AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+
       //    Draw the text
       mdc.SetFont(*plabelFont);
       mdc.SetTextForeground(pFontMgr->GetFontColor(_T("AISRollover")));
 
-      mdc.DrawText(m_string,0,0);
+      mdc.DrawText(m_string, 2, 2);
 
       SetSize(m_position.x, m_position.y, m_size.x, m_size.y);           // Assumes a nominal 32 x 32 cursor
 
 
 }
 
-void AISroWin::OnPaint(wxPaintEvent& event)
+void RolloverWin::OnPaint(wxPaintEvent& event)
 {
       int width, height;
       GetClientSize(&width, &height );

@@ -279,6 +279,10 @@ extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
 
 
+extern bool             g_bAISRolloverShowClass;
+extern bool             g_bAISRolloverShowCOG;
+extern bool             g_bAISRolloverShowCPA;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -1047,7 +1051,7 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 {
       wxPoint r;
       wxRect            hilitebox;
-      unsigned char transparency = 200;
+      unsigned char transparency = 100;
 
       cc1->GetCanvasPointPix ( m_lat, m_lon, &r );
 //      printf(" x: %d     y: %d\n", r.x, r.y);
@@ -1067,11 +1071,6 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
             pen = g_pRouteMan->GetActiveRoutePointPen();
       else
             pen = g_pRouteMan->GetRoutePointPen();
-
-      unsigned char ol_red   = pen->GetColour().Red(); //50;
-      unsigned char ol_green = pen->GetColour().Green(); //100;
-      unsigned char ol_blue  = pen->GetColour().Blue(); //255;
-
 
 //    Substitue icon?
       wxBitmap *pbm;
@@ -1103,8 +1102,8 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
       //  Highlite any selected point
       if ( m_bPtIsSelected )
       {
-            DrawTransparentBox ( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height,
-                                 ol_red, ol_green, ol_blue, transparency );
+            AlphaBlending ( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height,
+                                 pen->GetColour(), transparency );
       }
 
       bool bDrawHL = false;
@@ -1143,53 +1142,6 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 
       if ( m_bBlink )
             g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
-
-}
-
-void RoutePoint::DrawTransparentBox ( wxDC& dc, int x, int y, int size_x, int size_y,
-                                      unsigned char rval, unsigned char gval, unsigned char bval, unsigned char transparency )
-{
-
-      //    Get wxImage of area of interest
-      wxBitmap obm ( size_x, size_y );
-      wxMemoryDC mdc1;
-      mdc1.SelectObject ( obm );
-      mdc1.Blit ( 0, 0, size_x, size_y, &dc, x, y );
-      mdc1.SelectObject ( wxNullBitmap );
-      wxImage oim = obm.ConvertToImage();
-
-      //    Create an image with selected transparency/color
-      int olay_red   = rval * transparency;
-      int olay_green = gval * transparency;
-      int olay_blue  = bval * transparency;
-
-      //    Create destination image
-      wxImage dest ( size_x, size_y, false );
-      unsigned char *dest_data = ( unsigned char * ) malloc ( size_x * size_y * 3 * sizeof ( unsigned char ) );
-      unsigned char *po = oim.GetData();
-      unsigned char *d = dest_data;
-
-      int sb = size_x * size_y;
-      for ( int i=0 ; i<sb ; i++ )
-      {
-            int r = ( ( *po++ ) * 255 ) + olay_red;
-            *d++ = ( unsigned char ) ( r / 512 );
-            int g = ( ( *po++ ) * 255 ) + olay_green;
-            *d++ = ( unsigned char ) ( g / 512 );
-            int b = ( ( *po++ ) * 255 ) + olay_blue;
-            *d++ = ( unsigned char ) ( b / 512 );
-      }
-
-      dest.SetData ( dest_data );
-
-      //    Convert destination to bitmap and draw it
-      wxBitmap dbm ( dest );
-      dc.DrawBitmap ( dbm, x, y, false );
-
-      // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
-      // Do it explicitely here for all platforms.
-      dc.CalcBoundingBox ( x, y );
-      dc.CalcBoundingBox ( x + size_x, y + size_y );
 
 }
 
@@ -2516,6 +2468,10 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_ais_query_dialog_y < 0) || (g_ais_query_dialog_y > display_height))
             g_ais_query_dialog_y = 5;
 
+      Read ( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
+      Read ( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
+      Read ( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
+
       g_NMEALogWindow_sx = Read ( _T ( "NMEALogWindowSizeX" ), 400L );
       g_NMEALogWindow_sy = Read ( _T ( "NMEALogWindowSizeY" ), 100L );
       g_NMEALogWindow_x = Read ( _T ( "NMEALogWindowPosX" ), 10L );
@@ -3611,6 +3567,10 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AlertDialogPosY" ),  g_ais_alert_dialog_y );
       Write ( _T ( "QueryDialogPosX" ),  g_ais_query_dialog_x );
       Write ( _T ( "QueryDialogPosY" ),  g_ais_query_dialog_y );
+
+      Write ( _T ( "bAISRolloverShowClass" ),  g_bAISRolloverShowClass );
+      Write ( _T ( "bAISRolloverShowCOG" ),  g_bAISRolloverShowCOG );
+      Write ( _T ( "bAISRolloverShowCPA" ),  g_bAISRolloverShowCPA );
 
 
 #ifdef USE_S57
@@ -6289,6 +6249,53 @@ wxString toSDMM ( int NEflag, double a )
             }
       }
       return s;
+}
+
+void AlphaBlending ( wxDC &dc, int x, int y, int size_x, int size_y,
+                                      wxColour color, unsigned char transparency )
+{
+
+      //    Get wxImage of area of interest
+      wxBitmap obm ( size_x, size_y );
+      wxMemoryDC mdc1;
+      mdc1.SelectObject ( obm );
+      mdc1.Blit ( 0, 0, size_x, size_y, &dc, x, y );
+      mdc1.SelectObject ( wxNullBitmap );
+      wxImage oim = obm.ConvertToImage();
+
+      //    Create an image with selected transparency/color
+      int olay_red   = color.Red() * transparency;
+      int olay_green = color.Green() * transparency;
+      int olay_blue  = color.Blue() * transparency;
+
+      //    Create destination image
+      wxImage dest ( size_x, size_y, false );
+      unsigned char *dest_data = ( unsigned char * ) malloc ( size_x * size_y * 3 * sizeof ( unsigned char ) );
+      unsigned char *po = oim.GetData();
+      unsigned char *d = dest_data;
+
+      int sb = size_x * size_y;
+      transparency = 255-transparency;
+      for ( int i=0 ; i<sb ; i++ )
+      {
+            int r = ( ( *po++ ) * transparency ) + olay_red;
+            *d++ = ( unsigned char ) ( r / 255 );
+            int g = ( ( *po++ ) * transparency ) + olay_green;
+            *d++ = ( unsigned char ) ( g / 255 );
+            int b = ( ( *po++ ) * transparency ) + olay_blue;
+            *d++ = ( unsigned char ) ( b / 255 );
+      }
+
+      dest.SetData ( dest_data );
+
+      //    Convert destination to bitmap and draw it
+      wxBitmap dbm ( dest );
+      dc.DrawBitmap ( dbm, x, y, false );
+
+      // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
+      // Do it explicitely here for all platforms.
+      dc.CalcBoundingBox ( x, y );
+      dc.CalcBoundingBox ( x + size_x, y + size_y );
 }
 
 //    TTYScroll and TTYWindow Implemetation

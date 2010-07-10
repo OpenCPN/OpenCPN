@@ -71,6 +71,8 @@
 
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a);
+extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
+                                      wxColour color, unsigned char transparency );
 
 // ----------------------------------------------------------------------------
 // resources
@@ -106,8 +108,6 @@ public:
       RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, wxString *pGUID = NULL, bool bAddToList = true);
       ~RoutePoint(void);
       void Draw(wxDC& dc, wxPoint *rpn = NULL);
-      void DrawTransparentBox(wxDC& dc, int x, int y, int size_x, int size_y,
-                                          unsigned char rval, unsigned char gval, unsigned char bval, unsigned char transparency);
       void ReLoadIcon(void);
 
       wxString CreatePropString(void);

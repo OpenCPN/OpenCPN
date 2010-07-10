@@ -293,6 +293,9 @@ public:
     wxCheckBox                *m_pCheck_AlertDialog;
     wxCheckBox                *m_pCheck_AlertAudio;
     wxCheckBox                *m_pCheck_Alert_Moored;
+    wxCheckBox                *m_pCheck_Rollover_Class;
+    wxCheckBox                *m_pCheck_Rollover_COG;
+    wxCheckBox                *m_pCheck_Rollover_CPA;
 
 //    For Fonts page
     wxPanel*                itemPanelFont;

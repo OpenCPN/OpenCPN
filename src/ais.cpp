@@ -102,6 +102,10 @@ extern int              g_nNMEADebug;
 extern int              g_total_NMEAerror_messages;
 extern AISTargetListDialog    *g_pAISTargetList;
 
+extern bool             g_bAISRolloverShowClass;
+extern bool             g_bAISRolloverShowCOG;
+extern bool             g_bAISRolloverShowCPA;
+
 //    A static structure storing generic position data
 //    Used to communicate from NMEA threads to main application thread
 //static      GenericPosDat     AISPositionMuxData;
@@ -294,6 +298,20 @@ enum {
 
 //#define AIS_DEBUG  1
 
+wxString trimAISField(char *data)
+{
+      //  Clip any unused characters (@) from data
+/*
+      wxString field;
+      while((*data) && (*data != '@'))
+            field.Append(*data++);
+*/
+      wxString field = wxString::From8BitData(data);
+      while (field.Right(1)=='@' || field.Right(1)==' ')
+            field.RemoveLast();
+      return field;
+}
+
 //------------------------------------------------------------------------------
 //    AIS Event Implementation
 //------------------------------------------------------------------------------
@@ -384,28 +402,17 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       wxString line;
       wxString result;
 
-    //  Clip any unused characters (@) from the name
-      wxString ts;
-      char *tp = ShipName;
-      while((*tp) && (*tp != '@'))
-            ts.Append(*tp++);
-
       line.Printf(_("ShipName:  "));
-      line.Append( ts );
+      if(b_nameValid)
+            line.Append( trimAISField(ShipName) );
       line.Append(_T("\n\n"));
       result.Append(line);
 
       line.Printf(_T("MMSI:      %d\n"), MMSI);
       result.Append(line);
 
-       //  Clip any unused characters (@) from the callsign
-      ts.Clear();
-      tp = CallSign;
-      while((*tp) && (*tp != '@'))
-            ts.Append(*tp++);
-
       line.Printf(_("CallSign:  "));
-      line.Append( ts );
+      line.Append( trimAISField(CallSign) );
       line.Append(_T("\n"));
       result.Append(line);
 
@@ -415,50 +422,28 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Printf(_T("IMO:\n"));
       result.Append(line);
 
-      if(AIS_CLASS_A == Class)
-            line.Printf(_("Class:     A\n\n"));
-      else if(AIS_CLASS_B == Class)                   // pjotrc 2010.02.01
-            line.Printf(_("Class:     B\n\n"));
-      else if(AIS_ATON == Class)                      // pjotrc 2010.02.01
-            line.Printf(_("Aid to Navigation\n\n"));  // pjotrc 2010.02.01
-	else line.Printf(_("Class unknown\n\n"));
-
+      line.Printf(_("Class:     "));
+      line.Append(Get_class_string(false));
+      line.Append(_T("\n"));
       result.Append(line);
 
     //      Nav Status
-      ts.Clear();
-      if((NavStatus <= 8) && (NavStatus >= 0))
-      {
-            tp = &ais_status[NavStatus][0];
-            while(*tp)
-                  ts.Append(*tp++);
-      }
-
       line.Printf(_("Navigational Status:  "));
-      line.Append( ts );
+      if((NavStatus <= 8) && (NavStatus >= 0))
+            line.Append( wxString::From8BitData(&ais_status[NavStatus][0]) );
       line.Append(_T("\n"));
       result.Append(line);
 
 
     //      Ship type
-      tp = Get_vessel_type_string();
-      ts.Clear();
-      while(*tp)
-            ts.Append(*tp++);
-
       line.Printf(_("Ship Type:            "));
-      line.Append( ts );
+      line.Append( Get_vessel_type_string() );
       line.Append(_T("\n"));
       result.Append(line);
 
     //  Destination
-      ts.Clear();
-      tp = Destination;
-      while((*tp) && (*tp != '@'))
-            ts.Append(*tp++);
-
       line.Printf(_("Destination:          "));
-      line.Append( ts );
+      line.Append( trimAISField(Destination) );
       line.Append(_T("\n"));
       result.Append(line);
 
@@ -614,8 +599,61 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       return result;
 }
 
+wxString AIS_Target_Data::GetRolloverString( void )
+{
+      wxString result;
+      wxString t;
+      if(b_nameValid)
+      {
+            result.Append(_T("\""));
+            result.Append(trimAISField(ShipName));
+            result.Append(_T("\" "));
+      }
+      t.Printf(_T("%d"), MMSI); result.Append(t);
+      t = trimAISField(CallSign);
+      if (t.Len())
+      {
+            result.Append(_T(" ("));
+            result.Append(t);
+            result.Append(_T(")"));
+      }
+      if (g_bAISRolloverShowClass)
+      {
+            if (result.Len())
+                  result.Append(_T("\n"));
+            result.Append(_T("["));
+            result.Append(Get_class_string(false));
+            result.Append(_T("] "));
+            result.Append(Get_vessel_type_string(false));
+            if((NavStatus <= 8) && (NavStatus >= 0))
+            {
+                  result.Append(_T(" ("));
+                  result.Append(wxString::From8BitData(&ais_status[NavStatus][0]));
+                  result.Append(_T(")"));
+            }
+      }
+      if(g_bAISRolloverShowCOG && (SOG <= 102.2))
+      {
+            if (result.Len())
+                  result.Append(_T("\n"));
+            t.Printf(_T("%.2fKts"), SOG); result.Append(t);
+            result.Append(_T(" "));
+            t.Printf(_T("%.0f°"), COG); result.Append(t);
+      }
+      if (g_bAISRolloverShowCPA && bCPA_Valid)
+      {
+            if (result.Len())
+                  result.Append(_T("\n"));
+            result.Append(_("CPA"));
+            result.Append(_T(" "));
+            t.Printf(_T("%.2fNm"), CPA); result.Append(t);
+            result.Append(_T(" "));
+            t.Printf(_T("%.0fMins"), TCPA); result.Append(t);
+      }
+      return result;
+}
 
-char *AIS_Target_Data::Get_vessel_type_string(bool b_short)
+wxString AIS_Target_Data::Get_vessel_type_string(bool b_short)
 {
       int i=19;                            // pjotrc 2010.02.10 renumber
       if (Class == AIS_ATON)               // pjotrc 2010.02.01
@@ -675,13 +713,25 @@ char *AIS_Target_Data::Get_vessel_type_string(bool b_short)
 	}
 
       if(!b_short)
-            return &ais_type[i][0];
+            return wxString::From8BitData(&ais_type[i][0]);
       else
-            return &short_ais_type[i][0];
+            return wxString::From8BitData(&short_ais_type[i][0]);
 }
 
-
-
+wxString AIS_Target_Data::Get_class_string(bool b_short)
+{
+      switch (Class)
+      {
+      case AIS_CLASS_A:
+            return _("A");
+      case AIS_CLASS_B:
+            return _("B");
+      case AIS_ATON:
+            return b_short ? _("AtoN") : _("Aid to Navigation");
+      default:
+            return b_short ? _("Unk") : _("Unknown");
+      }
+}
 
 
 //---------------------------------------------------------------------------------
@@ -3200,13 +3250,6 @@ void AISTargetListDialog::OnClose(wxCloseEvent& event)
       g_pAISTargetList = NULL;
 }
 
-wxString trimAISField(wxString field)
-{
-      while (field.Right(1)=='@' || field.Right(1)==' ')
-            field.RemoveLast();
-      return field;
-}
-
 void AISTargetListDialog::UpdateAISTargetList(void)
 {
       if(m_pdecoder)
@@ -3229,31 +3272,22 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                         wxString data;
 
                         m_pListCtrlAISTargets->SetItem(idx, tlNAME,
-                                    trimAISField(wxString::From8BitData(pAISTarget->ShipName)));
+                                    trimAISField(pAISTarget->ShipName));
                         m_pListCtrlAISTargets->SetItem(idx, tlCALL,
-                                    trimAISField(wxString::From8BitData(pAISTarget->CallSign)));
+                                    trimAISField(pAISTarget->CallSign));
                         data.Printf(_T("%d"), pAISTarget->MMSI); m_pListCtrlAISTargets->SetItem(idx, tlMMSI, data);
 //                        data.Printf(_T("%d"), pAISTarget->IMO); m_pListCtrlAISTargets->SetItem(idx, tlIMO, data);
-                        if(AIS_CLASS_A == pAISTarget->Class)
-                              m_pListCtrlAISTargets->SetItem(idx, tlCLASS, _("A"));
-                        else if(AIS_CLASS_B == pAISTarget->Class)
-                              m_pListCtrlAISTargets->SetItem(idx, tlCLASS, _("B"));
-                        else if(AIS_ATON == pAISTarget->Class)
-                              m_pListCtrlAISTargets->SetItem(idx, tlCLASS, _("AtoN"));
-                        else
-                              m_pListCtrlAISTargets->SetItem(idx, tlCLASS, _("Unk"));
-                        m_pListCtrlAISTargets->SetItem(idx, tlTYPE,
-                                    wxString::From8BitData(pAISTarget->Get_vessel_type_string(false)));
+                        m_pListCtrlAISTargets->SetItem(idx, tlCLASS, pAISTarget->Get_class_string(true));
+                        m_pListCtrlAISTargets->SetItem(idx, tlTYPE, pAISTarget->Get_vessel_type_string(false));
                         if((pAISTarget->NavStatus <= 8) && (pAISTarget->NavStatus >= 0))
                         {
-                              char *tp = &ais_status[pAISTarget->NavStatus][0];
                               m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS,
-                                          trimAISField(wxString::From8BitData(tp)));
+                                          wxString::From8BitData(&ais_status[pAISTarget->NavStatus][0]));
                         }
                         else
                               m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS, _("-"));
                         m_pListCtrlAISTargets->SetItem(idx, tlDESTINATION,
-                                    trimAISField(wxString::From8BitData(pAISTarget->Destination)));
+                                    trimAISField(pAISTarget->Destination));
                         wxString eta = _T("");
                         if((pAISTarget->ETA_Mo) && (pAISTarget->ETA_Hr < 24))
                         {

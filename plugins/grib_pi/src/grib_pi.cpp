@@ -174,12 +174,6 @@ sea surface temperature, and current directions and speed.");
 
 }
 
-void grib_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
-{}
-
-void grib_pi::SetNMEASentence(wxString &sentence)
-{}
-
 
 int grib_pi::GetToolbarToolCount(void)
 { 
@@ -261,10 +255,6 @@ void grib_pi::OnToolbarToolCallback(int id)
 
 }
 
-
-
-void grib_pi::OnContextMenuItemCallback(int id)
-{}
 
 
 
