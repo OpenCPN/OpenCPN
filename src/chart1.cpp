@@ -326,7 +326,6 @@ int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
 
 
-bool              g_bShowGPXIcons;  // toh, 2009.02.14
 bool              g_bNavAidShowRadarRings;            // toh, 2009.02.24
 int               g_iNavAidRadarRingsNumberVisible;   // toh, 2009.02.24
 float             g_fNavAidRadarRingsStep;            // toh, 2009.02.24
@@ -645,8 +644,7 @@ wxBitmap *_img_polyprj;
  #include "bitmaps/print.xpm"
  #include "bitmaps/help.xpm"
  #include "bitmaps/colscheme.xpm"
- #include "bitmaps/gpx_import.xpm"
- #include "bitmaps/gpx_export.xpm"
+ #include "bitmaps/route_manager.xpm"
  #include "bitmaps/track.xpm"
 #endif
 
@@ -2319,18 +2317,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
         x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
     }
 
-    if (g_bShowGPXIcons)
-    {
-          CheckAndAddPlugInTool(tb);
-          tb->AddTool( ID_GPXIMPORT, _T(""), *(*phash)[wxString(_T("gpx_import"))], _("Import GPX file"), wxITEM_NORMAL);
-          x += pitch_tool;
-          x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
-
-          CheckAndAddPlugInTool(tb);
-          tb->AddTool( ID_GPXEXPORT, _T(""), *(*phash)[wxString(_T("gpx_export"))], _("Export GPX file"), wxITEM_NORMAL);
-          x += pitch_tool;
-          x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
-    }
+    CheckAndAddPlugInTool(tb);
+    tb->AddTool( ID_ROUTEMANAGER, _T(""), *(*phash)[wxString(_T("route_manager"))], _("Route Manager"), wxITEM_NORMAL);
+    x += pitch_tool;
+    x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
 
     if (g_bShowTrackIcon)
     {
@@ -2338,16 +2328,6 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
           tb->AddTool( ID_TRACK, _T(""), *(*phash)[wxString(_T("track"))], _("Toggle Tracking"), wxITEM_CHECK);
           x += pitch_tool;
           x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
-    }
-
-    if (0/*g_bShowGRIBIcon*/)
-    {
-          if((*phash)[wxString(_T("grib"))])
-          {
- //           tb->AddTool( ID_GRIB, _T(""), *(*phash)[wxString(_T("grib"))], _("Show GRIB dialog"), wxITEM_NORMAL);
-            x += pitch_tool;
-            x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
-          }
     }
 
 
@@ -2653,8 +2633,7 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("follow")]                 = (char *)_img_follow;
     tool_xpm_hash[_T("help")]                   = (char *)_img_help;
     tool_xpm_hash[_T("colorscheme")]            = (char *)_img_colscheme;
-    tool_xpm_hash[_T("gpx_import")]             = (char *)_img_gpx_import;
-    tool_xpm_hash[_T("gpx_export")]             = (char *)_img_gpx_export;
+    tool_xpm_hash[_T("route_manager")]          = (char *)_img_route_manager;
     tool_xpm_hash[_T("track")]                  = (char *)_img_track;
     tool_xpm_hash[_T("grib")]                   = (char *)_img_grib;
     tool_xpm_hash[_T("mob")]                    = (char *)_img_mob;
@@ -2726,8 +2705,7 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("follow")]       = (char *)follow;
     tool_xpm_hash[_T("help")]         = (char *)help;
     tool_xpm_hash[_T("colorscheme")]  = (char *)colscheme;
-    tool_xpm_hash[_T("gpx_import")]   = (char *)gpx_import; // toh, 2009.02.14
-    tool_xpm_hash[_T("gpx_export")]   = (char *)gpx_export; // toh, 2009.02.14
+    tool_xpm_hash[_T("route_manager")] = (char *)route_manager;
     tool_xpm_hash[_T("track")]        = (char *)track;
 
 
@@ -2990,10 +2968,8 @@ void MyFrame::EnableToolbar(bool newstate)
             m_toolBar-> EnableTool(ID_TBSTAT, newstate);
             m_toolBar-> EnableTool(ID_PRINT, newstate);
             m_toolBar-> EnableTool(ID_COLSCHEME, newstate);
-            m_toolBar-> EnableTool(ID_GPXIMPORT, newstate);
-            m_toolBar-> EnableTool(ID_GPXEXPORT, newstate);
+            m_toolBar-> EnableTool(ID_ROUTEMANAGER, newstate);
             m_toolBar-> EnableTool(ID_TRACK, newstate);
-//            m_toolBar-> EnableTool(ID_GRIB, newstate);
             m_toolBar-> EnableTool(ID_AIS, newstate);
       }
 }
@@ -3490,16 +3466,17 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
          break;
        }
 
-    case ID_GPXIMPORT:       // toh, 2009.02.14
-       {
-             DoImportGPX();
-             break;
-       }
-    case ID_GPXEXPORT:        // toh, 2009.02.14
-       {
-             DoExportGPX();
-             break;
-       }
+      case ID_ROUTEMANAGER:
+      {
+            if ( NULL == pRouteManagerDialog )          // There is one global instance of the Dialog
+                  pRouteManagerDialog = new RouteManagerDialog ( this );
+
+            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->Show();
+            break;
+      }
 
     case ID_TRACK:
     {
@@ -3744,7 +3721,6 @@ int MyFrame::DoOptionsDialog()
 
       bool bPrevPrintIcon = g_bShowPrintIcon;
 
-      bool bPrevGPXIcon = g_bShowGPXIcons;
       bool bPrevTrackIcon = g_bShowTrackIcon;
       bool bPrevQuilt = cc1->GetQuiltMode();
 
@@ -3971,7 +3947,6 @@ int MyFrame::DoOptionsDialog()
       delete pSetDlg;
 
       if((bPrevPrintIcon       != g_bShowPrintIcon)     ||
-         (bPrevGPXIcon         != g_bShowGPXIcons)      ||
          (bPrevTrackIcon       != g_bShowTrackIcon)     ||
           b_refresh_after_options
         )

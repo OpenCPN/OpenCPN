@@ -119,6 +119,8 @@ public:
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
 
+      bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
+
       float             m_lat;
       float             m_lon;
       float             m_seg_len;              // length in NMI to this point
@@ -255,6 +257,7 @@ class Track : public wxEvtHandler, public Route
 
             void Draw(wxDC& dc, ViewPort &VP);
 
+            Route *RouteFromTrack(void);
 
 
       private:
@@ -331,6 +334,7 @@ public:
       void WriteXMLNavObj(const wxString& file);
 
       bool ExportGPXRoute(wxWindow* parent, Route *pRoute);
+      bool ExportGPXWaypoint(wxWindow* parent, RoutePoint *pRoutePoint);
 
       wxXmlDocument     *m_pXMLNavObj;
       wxXmlNode         *m_XMLrootnode;

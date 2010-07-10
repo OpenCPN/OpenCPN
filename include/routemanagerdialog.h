@@ -35,44 +35,78 @@ class RouteManagerDialog : public wxDialog {
             RouteManagerDialog(wxWindow *parent);
             ~RouteManagerDialog();
             void UpdateRouteListCtrl();     // Rebuild route list
+            void UpdateTrkListCtrl();
+            void UpdateWptListCtrl();
 
       private:
             void Create();
-            void UpdateButtons();           // Correct button state
+            void UpdateRteButtons();           // Correct button state
             void MakeAllRoutesInvisible();  // Mark all routes as invisible. Does not flush settings.
             void ZoomtoRoute(Route *route); // Attempt to zoom route into the view
+            void UpdateTrkButtons();           // Correct button state
+            void UpdateWptButtons();           // Correct button state
 
             // event handlers
-            void OnDeleteClick(wxCommandEvent &event);
-            void OnPropertiesClick(wxCommandEvent &event);
-            void OnZoomtoClick(wxCommandEvent &event);
-            void OnActivateClick(wxCommandEvent &event);
-            void OnReverseClick(wxCommandEvent &event);
+            void OnRteDeleteClick(wxCommandEvent &event);
+            void OnRtePropertiesClick(wxCommandEvent &event);
+            void OnRteZoomtoClick(wxCommandEvent &event);
+            void OnRteActivateClick(wxCommandEvent &event);
+            void OnRteReverseClick(wxCommandEvent &event);
+            void OnRteExportClick(wxCommandEvent &event);
+            void OnRteToggleVisibility(wxMouseEvent &event);
+            void OnRteBtnLeftDown(wxMouseEvent &event); // record control key state for some action buttons
+            void OnRteDeleteAllClick(wxCommandEvent &event);
+            void OnRteSelected(wxListEvent &event);
+            void OnRteSendToGPSClick(wxCommandEvent &event);
+            void OnRteDefaultAction(wxListEvent &event);
+            void OnTrkDefaultAction(wxListEvent &event);
+            void OnTrkNewClick(wxCommandEvent &event);
+            void OnTrkPropertiesClick(wxCommandEvent &event);
+            void OnTrkDeleteClick(wxCommandEvent &event);
+            void OnTrkExportClick(wxCommandEvent &event);
+            void OnTrkRouteFromTrackClick(wxCommandEvent &event);
+            void OnTrkDeleteAllClick(wxCommandEvent &event);
+            void OnTrkSelected(wxListEvent &event);
+            void OnTrkToggleVisibility(wxMouseEvent &event);
+            void OnWptDefaultAction(wxListEvent &event);
+            void OnWptNewClick(wxCommandEvent &event);
+            void OnWptPropertiesClick(wxCommandEvent &event);
+            void OnWptZoomtoClick(wxCommandEvent &event);
+            void OnWptDeleteClick(wxCommandEvent &event);
+            void OnWptGoToClick(wxCommandEvent &event);
+            void OnWptExportClick(wxCommandEvent &event);
+            void OnWptSendToGPSClick(wxCommandEvent &event);
+            void OnWptDeleteAllClick(wxCommandEvent &event);
+            void OnWptSelected(wxListEvent &event);
+            void OnWptToggleVisibility(wxMouseEvent &event);
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
-            void OnRouteListClickUp(wxMouseEvent &event);
-            void OnRouteListLeftDown(wxMouseEvent &event);
-            void OnTimeOut(wxTimerEvent &event);
-            void OnBtnLeftDown(wxMouseEvent &event); // record control key state for some action buttons
-            void OnDeleteAllRoutesClick(wxCommandEvent &event);
-            void OnDeleteAllTracksClick(wxCommandEvent &event);
-
-            void OnRouteSelected(wxListEvent &event);
 
             // properties
             wxListCtrl *m_pRouteListCtrl;
+            wxListCtrl *m_pTrkListCtrl;
+            wxListCtrl *m_pWptListCtrl;
 
-            wxButton *btnDelete;
-            wxButton *btnZoomto;
-            wxButton *btnProperties;
-            wxButton *btnActivate;
+            wxButton *btnRteProperties;
+            wxButton *btnRteActivate;
+            wxButton *btnRteZoomto;
+            wxButton *btnRteReverse;
+            wxButton *btnRteDelete;
+            wxButton *btnRteExport;
+            wxButton *btnRteSendToGPS;
+            wxButton *btnTrkProperties;
+            wxButton *btnTrkDelete;
+            wxButton *btnTrkExport;
+            wxButton *btnTrkRouteFromTrack;
+            wxButton *btnWptProperties;
+            wxButton *btnWptZoomto;
+            wxButton *btnWptDelete;
+            wxButton *btnWptGoTo;
+            wxButton *btnWptExport;
+            wxButton *btnWptSendToGPS;
             wxButton *btnImport;
             wxButton *btnExport;
-            wxButton *btnReverse;
-            wxButton *btnDeleteAllRoutes;
-            wxButton *btnDeleteAllTracks;
 
-            wxTimer *m_Timer;         // for mouse click detection
             bool m_bPossibleClick;    // do
             bool m_bCtrlDown;         // record control key state for some action buttons
             bool m_bNeedConfigFlush;  // if true, update config in destructor

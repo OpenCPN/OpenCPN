@@ -871,6 +871,7 @@ SendToGpsDlg::SendToGpsDlg( )
        m_SendButton = NULL;
        m_CancelButton = NULL;
        m_pRoute = NULL;
+       m_pRoutePoint = NULL;
  }
 
  SendToGpsDlg::SendToGpsDlg(  wxWindow* parent, wxWindowID id,
@@ -975,6 +976,8 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
       //    And send it out
       if(m_pRoute)
             m_pRoute->SendToGPS(src, true, m_pgauge);
+      if(m_pRoutePoint)
+            m_pRoutePoint->SendToGPS(src, m_pgauge);
 
       Show(false);
       event.Skip();

@@ -306,7 +306,6 @@ public:
 
 //    For "Etc." Page
     wxPanel*                itemPanelAdvanced;
-    wxCheckBox              *pGPXShowIcons;
     wxCheckBox              *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;

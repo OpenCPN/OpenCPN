@@ -136,7 +136,6 @@ extern bool             g_bAIS_CPA_Alert_Audio;
 extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 
-extern bool             g_bShowGPXIcons;
 extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1112,15 +1111,6 @@ void options::CreateControls()
 
     itemNotebook4->AddPage(itemPanelAdvanced, _("Etc."));
 
-    //  GPX import/export checkbox
-    wxStaticBox* itemStaticBoxSizerGPXStatic = new wxStaticBox(itemPanelAdvanced, wxID_ANY, _("GPX"));
-    wxStaticBoxSizer* itemStaticBoxSizerGPX = new wxStaticBoxSizer(itemStaticBoxSizerGPXStatic, wxVERTICAL);
-    itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerGPX, 0, wxGROW|wxALL, border_size);
-    pGPXShowIcons = new wxCheckBox( itemPanelAdvanced, ID_GPXCHECKBOX, _("Show GPX icons"), wxDefaultPosition,
-                                    wxSize(-1, -1), 0 );
-    pGPXShowIcons->SetValue(FALSE);
-    itemStaticBoxSizerGPX->Add(pGPXShowIcons, 1, wxALIGN_LEFT|wxALL, border_size);
-
     //  Tracks
     wxStaticBox* itemStaticBoxSizerTrackStatic = new wxStaticBox(itemPanelAdvanced, wxID_ANY, _("Tracks"));
     wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer(itemStaticBoxSizerTrackStatic, wxVERTICAL);
@@ -1320,7 +1310,6 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
       m_pText_OSCOG_Predictor->SetValue(s);
 
-      pGPXShowIcons->SetValue(g_bShowGPXIcons);             // toh, 2009.02.14
       pNavAidShowRadarRings->SetValue(g_bNavAidShowRadarRings);   // toh, 2009.02.24
       wxString buf;
       buf.Printf(_T("%d"),g_iNavAidRadarRingsNumberVisible);
@@ -1678,7 +1667,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
 
-    g_bShowGPXIcons = pGPXShowIcons->GetValue();
     g_bNavAidShowRadarRings = pNavAidShowRadarRings->GetValue();
     wxString buf = pNavAidRadarRingsNumberVisible->GetValue();
     g_iNavAidRadarRingsNumberVisible = atoi(buf.mb_str());

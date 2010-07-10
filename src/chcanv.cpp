@@ -308,7 +308,6 @@ extern double           g_ownship_predictor_minutes;
 
 extern ArrayOfInts      g_quilt_noshow_index_array;
 extern ChartStack       *pCurrentStack;
-extern RouteManagerDialog *pRouteManagerDialog;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
@@ -354,11 +353,10 @@ enum
         ID_DEF_MENU_MOVE_BOAT_HERE,
         ID_DEF_MENU_GOTO_HERE,
         ID_DEF_MENU_CM93ZOOM,
-        ID_DEF_MENU_ROUTEMANAGER,
 
+        ID_WP_MENU_GOTO,
         ID_WP_MENU_DELPOINT,
         ID_WP_MENU_PROPERTIES,
-        ID_WP_MENU_DELETEALL,
         ID_RT_MENU_ACTIVATE,
         ID_RT_MENU_DEACTIVATE,
         ID_RT_MENU_INSERT,
@@ -371,9 +369,6 @@ enum
         ID_RT_MENU_ACTNXTPOINT,
         ID_RT_MENU_REMPOINT,
         ID_RT_MENU_PROPERTIES,
-        ID_RT_MENU_SENDTOGPS,
-        ID_RT_MENU_EXPORT,
-        ID_RT_MENU_DELETEALL,
         ID_WP_MENU_SET_ANCHORWATCH,             // pjotrc 2010.02.15
         ID_WP_MENU_CLEAR_ANCHORWATCH,           // pjotrc 2010.02.15
         ID_DEF_MENU_AISTARGETLIST,
@@ -387,7 +382,6 @@ enum
         ID_DEF_MENU_ACTIVATE_MEASURE,
         ID_DEF_MENU_DEACTIVATE_MEASURE,
         ID_TK_MENU_PROPERTIES,
-        ID_TK_MENU_EXPORT,
         ID_TK_MENU_DELETE,
         ID_WP_MENU_ADDITIONAL_INFO,
 
@@ -2156,11 +2150,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_RT_MENU_DEACTPOINT,   ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_RT_MENU_ACTNXTPOINT,  ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_RT_MENU_PROPERTIES,   ChartCanvas::PopupMenuHandler )
-        EVT_MENU ( ID_RT_MENU_EXPORT,       ChartCanvas::PopupMenuHandler )
-        EVT_MENU ( ID_RT_MENU_DELETEALL,    ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )    // pjotrc 2010.02.15
         EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )    // pjotrc 2010.02.15
-        EVT_MENU ( ID_RT_MENU_SENDTOGPS,    ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_RC_MENU_SCALE_IN,     ChartCanvas::PopupMenuHandler )
@@ -2173,14 +2164,12 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_DEF_MENU_ACTIVATE_MEASURE,   ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_DEACTIVATE_MEASURE, ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_CM93ZOOM,           ChartCanvas::PopupMenuHandler )
-        EVT_MENU ( ID_DEF_MENU_ROUTEMANAGER,       ChartCanvas::PopupMenuHandler )
 
+        EVT_MENU ( ID_WP_MENU_GOTO,           ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_WP_MENU_DELPOINT,           ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_WP_MENU_PROPERTIES,         ChartCanvas::PopupMenuHandler )
-        EVT_MENU ( ID_WP_MENU_DELETEALL,          ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_WP_MENU_ADDITIONAL_INFO,    ChartCanvas::PopupMenuHandler )   // toh, 2009.02.08
 
-        EVT_MENU ( ID_TK_MENU_EXPORT,           ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_TK_MENU_PROPERTIES,       ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_TK_MENU_DELETE,           ChartCanvas::PopupMenuHandler )
 
@@ -6371,7 +6360,6 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         {
               pdef_menu->Append ( ID_TK_MENU_PROPERTIES,        _( "Track Properties" ) );
               pdef_menu->Append ( ID_TK_MENU_DELETE,            _( "Delete Track" ) );
-              pdef_menu->Append ( ID_TK_MENU_EXPORT,            _( "Export Track...." ) );
               pdef_menu->AppendSeparator();
 
         }
@@ -6385,9 +6373,6 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               pdef_menu->Append ( ID_RT_MENU_DELETE,            _( "Delete Route" ) );
               pdef_menu->Append ( ID_RT_MENU_REVERSE,           _( "Reverse Route" ) );
               pdef_menu->Append ( ID_RT_MENU_PROPERTIES,        _( "Route Properties" ) );
-              pdef_menu->Append ( ID_RT_MENU_EXPORT,            _( "Export Route...." ) );
-              pdef_menu->Append ( ID_RT_MENU_SENDTOGPS,         _( "Send Route To GPS..." ) );
-//              pdef_menu->Append ( ID_RT_MENU_DELETEALL ,        _( "Delete All Routes..." ) );
 
               if ( m_pSelectedRoute )
               {
@@ -6423,9 +6408,11 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
 
         if(seltype & SELTYPE_MARKPOINT)
         {
+              if ( !g_pRouteMan->GetpActiveRoute() )
+                    pdef_menu->Append ( ID_WP_MENU_GOTO,        _( "Go To Mark/WP" ) );
+
               pdef_menu->Append ( ID_WP_MENU_DELPOINT,    _( "Delete Mark" ) );
               pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
-              pdef_menu->Append ( ID_WP_MENU_DELETEALL,   _( "Delete All Waypoints..." ) );
 
               if ((m_pFoundRoutePoint == pAnchorWatchPoint1) || (m_pFoundRoutePoint == pAnchorWatchPoint2))       //pjotrc 2010.02.15
                     pdef_menu->Append ( ID_WP_MENU_CLEAR_ANCHORWATCH,   _( "Clear Anchor Watch" ) );                //pjotrc 2010.02.15
@@ -6507,15 +6494,14 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         pdef_menu->Append ( ID_DEF_MENU_DROP_WP,    _( "Drop Mark Here" ) );
         pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
 
-        if ( !g_pRouteMan->GetpActiveRoute() )
-              pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
+//        if ( !g_pRouteMan->GetpActiveRoute() )
+        if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
+                    pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
 
         if(!m_bMeasure_Active)
               pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_MEASURE,    _( "Measure....." ) );
         else
               pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
-
-        pdef_menu->Append(ID_DEF_MENU_ROUTEMANAGER, _("Route Manager..."));
 
         if ( g_pAIS )
               pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
@@ -6664,14 +6650,39 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
                 }
 
-                case ID_DEF_MENU_ROUTEMANAGER:
-                        ShowRouteManager();
-                        break;
-
                 case ID_DEF_MENU_AISTARGETLIST:
                         ShowAISTargetList();
                         break;
 
+                case ID_WP_MENU_GOTO:
+                  {
+                        RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+                        pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
+
+                        Route *temp_route = new Route();
+                        pRouteList->Append ( temp_route );
+
+                        temp_route->AddPoint(pWP_src);
+                        temp_route->AddPoint(m_pFoundRoutePoint);
+
+                        pSelect->AddSelectableRouteSegment ( gLat, gLon, m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, pWP_src, m_pFoundRoutePoint, temp_route );
+
+                        wxString name = m_pFoundRoutePoint->m_MarkName;
+                        if (name.IsEmpty())
+                              name = _("(Unnamed Waypoint)");
+                        wxString rteName = _("Go to "); rteName.Append(name);
+                        temp_route->m_RouteNameString = rteName;
+                        temp_route->m_RouteStartString = _("Here");;
+                        temp_route->m_RouteEndString = name;
+                        temp_route->m_bDeleteOnArrival = true;
+
+                        if ( g_pRouteMan->GetpActiveRoute() )
+                          g_pRouteMan->DeactivateRoute();
+
+                        g_pRouteMan->ActivateRoute( temp_route, m_pFoundRoutePoint );
+
+                        break;
+                   }
 
                 case ID_WP_MENU_DELPOINT:
                 {
@@ -6700,17 +6711,6 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         pMarkPropDialog->Show();
                         break;
 
-                case ID_WP_MENU_DELETEALL:
-                {
-                        wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> waypoints?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
-                        if(mdlg.ShowModal() == wxID_YES)
-                        {
-                            pWayPointMan->DeleteAllWaypoints(false);          // only delete unused waypoints
-                            m_pFoundRoutePoint = NULL;
-                        }
-
-                        break;
-                }
                 case ID_WP_MENU_CLEAR_ANCHORWATCH:             // pjotrc 2010.02.15
                        if (pAnchorWatchPoint1 == m_pFoundRoutePoint)
                        {
@@ -7104,42 +7104,6 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
                 }
 
-                case ID_RT_MENU_DELETEALL:
-                {
-                       wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
-                       if(mdlg.ShowModal() == wxID_YES)
-                       {
-                             if ( g_pRouteMan->GetpActiveRoute() )
-                                   g_pRouteMan->DeactivateRoute();
-
-                            g_pRouteMan->DeleteAllRoutes();
-                            m_pSelectedRoute = NULL;
-                            m_pFoundRoutePoint = NULL;
-                            m_pFoundRoutePointSecond = NULL;
-                       }
-
-                        break;
-                }
-                case ID_RT_MENU_SENDTOGPS:
-                {
-                        SendToGpsDlg *pdlg = new SendToGpsDlg();
-                        pdlg->SetRoute(m_pSelectedRoute);
-
-                        pdlg->Create ( NULL, -1, _( "Send To GPS..." ) );
-                        pdlg->ShowModal();
-
-                        delete pdlg;
-
-                        break;
-
-                }
-                case ID_RT_MENU_EXPORT:
-                {
-                        pConfig->ExportGPXRoute(this, m_pSelectedRoute);
-                        break;
-                }
-
-
               case ID_TK_MENU_PROPERTIES:
               {
                     if ( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
@@ -7152,12 +7116,6 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                     pRoutePropDialog->Show();
 
                     Refresh ( false );
-                    break;
-              }
-
-             case ID_TK_MENU_EXPORT:
-              {
-                    pConfig->ExportGPXRoute(this, m_pSelectedTrack);
                     break;
               }
 
@@ -7277,16 +7235,6 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
         g_click_stop = 0;    // Context menu was processed, all is well
 
-}
-
-void ChartCanvas::ShowRouteManager(void)
-{
-      if ( NULL == pRouteManagerDialog )          // There is one global instance of the Dialog
-            pRouteManagerDialog = new RouteManagerDialog ( this );
-
-
-      pRouteManagerDialog->UpdateRouteListCtrl();
-      pRouteManagerDialog->Show();
 }
 
 void ChartCanvas::ShowAISTargetList(void)

@@ -205,6 +205,7 @@ class SendToGpsDlg : public wxDialog
                     const wxPoint& pos = SYMBOL_STG_POSITION, const wxSize& size = SYMBOL_STG_SIZE,
                     long style = SYMBOL_STG_STYLE);
        void SetRoute(Route *pRoute){m_pRoute = pRoute;}
+       void SetWaypoint(RoutePoint *pRoutePoint){m_pRoutePoint = pRoutePoint;}
 
 private:
       void CreateControls();
@@ -213,6 +214,7 @@ private:
       void OnSendClick( wxCommandEvent& event );
 
       Route       *m_pRoute;
+      RoutePoint  *m_pRoutePoint;
       wxComboBox  *m_itemCommListBox;
       wxGauge     *m_pgauge;
       wxButton    *m_CancelButton;

@@ -26,6 +26,7 @@ extern wxBitmap *_img_grib;
 extern wxBitmap *_img_help;
 extern wxBitmap *_img_print;
 extern wxBitmap *_img_route;
+extern wxBitmap *_img_route_manager;
 extern wxBitmap *_img_scin;
 extern wxBitmap *_img_scout;
 extern wxBitmap *_img_settings;

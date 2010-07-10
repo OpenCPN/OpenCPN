@@ -207,7 +207,6 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 
 extern bool             g_bShowPrintIcon;
-extern bool             g_bShowGPXIcons;              // toh, 2009.02.14
 extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
 extern int              g_iNavAidRadarRingsNumberVisible;   // toh, 2009.02.24
 extern float            g_fNavAidRadarRingsStep;            // toh, 2009.02.24
@@ -1230,6 +1229,47 @@ bool RoutePoint::IsSame ( RoutePoint *pOtherRP )
       return IsSame;
 }
 
+bool RoutePoint::SendToGPS ( wxString& com_name, wxGauge *pProgress )
+{
+      SENTENCE    snt;
+      NMEA0183    oNMEA0183;
+      oNMEA0183.TalkerID = _T ( "EC" );
+
+      if ( pProgress )
+            pProgress->SetRange ( 100 );
+
+      int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
+
+      if ( this->m_lat < 0. )
+            oNMEA0183.Wpl.Position.Latitude.Set ( -this->m_lat, _T ( "S" ) );
+      else
+            oNMEA0183.Wpl.Position.Latitude.Set ( this->m_lat, _T ( "N" ) );
+
+      if ( this->m_lon < 0. )
+            oNMEA0183.Wpl.Position.Longitude.Set ( -this->m_lon, _T ( "W" ) );
+      else
+            oNMEA0183.Wpl.Position.Longitude.Set ( this->m_lon, _T ( "E" ) );
+
+
+      oNMEA0183.Wpl.To = this->m_MarkName.Truncate ( 6 );
+
+      oNMEA0183.Wpl.Write ( snt );
+
+      g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+      if ( pProgress )
+      {
+            pProgress->SetValue ( 100 );
+            pProgress->Refresh();
+            pProgress->Update();
+      }
+
+      wxMilliSleep ( 500 );
+
+      g_pCommMan->CloseComPort ( port_fd );
+
+      return true;
+}
 
 
 
@@ -2260,6 +2300,33 @@ void Track::Draw ( wxDC& dc, ViewPort &VP )
       }
 }
 
+Route *Track::RouteFromTrack(void)
+{
+      Route *route = new Route();
+      RoutePoint *pWP_src = NULL;
+      wxRoutePointListNode *prpnode = pRoutePointList->GetFirst();
+      while ( prpnode )
+      {
+            RoutePoint *prp = prpnode->GetData();
+
+            RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), NULL );
+            route->AddPoint(pWP_dst);
+            pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+            if (pWP_src)
+                  pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+            pWP_src = pWP_dst;
+
+            prpnode = prpnode->GetNext(); //RoutePoint
+      }
+
+      route->m_RouteNameString = m_RouteNameString;
+      route->m_RouteStartString = m_RouteStartString;
+      route->m_RouteEndString = m_RouteEndString;
+      route->m_bDeleteOnArrival = false;
+
+      return route;
+}
 
 
 
@@ -3096,8 +3163,6 @@ int MyConfig::LoadMyConfig ( int iteration )
       */
 
       SetPath ( _T ( "/Settings/Others" ) );
-      g_bShowGPXIcons = false;
-      Read ( _T ( "ShowGPXIcons" ), &g_bShowGPXIcons );
 
       // Radar rings
       g_bNavAidShowRadarRings = false;          // toh, 2009.02.24
@@ -3646,7 +3711,6 @@ void MyConfig::UpdateSettings()
 
 
       SetPath ( _T ( "/Settings/Others" ) );
-      Write ( _T ( "ShowGPXIcons" ), g_bShowGPXIcons );
 
       // Radar rings; toh, 2009.02.24
       Write ( _T ( "ShowRadarRings" ), g_bNavAidShowRadarRings );
@@ -3720,6 +3784,44 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
                   m_XMLrootnode->AddChild ( track_node );
             }
 
+            WriteXMLNavObj ( fn.GetFullPath() );
+            return true;
+      }
+      else
+            return false;
+}
+
+bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
+{
+      wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
+                  wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
+
+      int response = saveDialog.ShowModal();
+
+      wxString path = saveDialog.GetPath();
+      wxFileName fn ( path );
+      m_gpx_path = fn.GetPath();
+
+      if ( response == wxID_OK )
+      {
+            fn.SetExt ( _T ( "gpx" ) );
+
+            if(wxFileExists(fn.GetFullPath()))
+            {
+                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                                            wxICON_QUESTION | wxYES_NO | wxCANCEL);
+                  if (answer != wxYES)
+                        return false;
+            }
+
+            CreateExportGPXNavObj();
+//            ::AppendGPXWayPoints(m_XMLrootnode);
+//          This should not be necessary
+            if ( !WptIsInRouteList ( pRoutePoint ) )
+            {
+                  wxXmlNode *mark_node = ::CreateGPXPointNode ( pRoutePoint, _T("wpt") );
+                  m_XMLrootnode->AddChild ( mark_node );
+            }
             WriteXMLNavObj ( fn.GetFullPath() );
             return true;
       }

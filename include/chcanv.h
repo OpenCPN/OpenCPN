@@ -283,8 +283,6 @@ public:
       bool ZoomCanvasOut(double lat = 0., double lon = 0.);
       bool PanCanvas(int dx, int dy);
 
-
-      void ShowRouteManager(void);
       void ShowAISTargetList(void);
 
       ChartBase *GetLargestScaleQuiltChart();
