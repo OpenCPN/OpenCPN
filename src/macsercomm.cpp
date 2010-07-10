@@ -57,15 +57,15 @@ int CSyncSerialComm::Open()
     int				handshake;
     struct termios	options;
     m_fileDescriptor = -1;
-    
+
     // Open the serial port read/write, with no controlling terminal, and don't wait for a connection.
     // The O_NONBLOCK flag also causes subsequent I/O on the device to be non-blocking.
     // See open(2) ("man 2 open") for details.
-    
+
     m_fileDescriptor = open(m_pszPortName, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (m_fileDescriptor == -1)
     {
-        wxLogMessage("Error opening serial port %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error opening serial port %s - %s(%d).\n"),
                m_pszPortName, strerror(errno), errno);
         return false ;
     }
@@ -74,10 +74,10 @@ int CSyncSerialComm::Open()
     // unless the TIOCEXCL ioctl is issued. This will prevent additional opens except by root-owned
     // processes.
     // See tty(4) ("man 4 tty") and ioctl(2) ("man 2 ioctl") for details.
-    
+
     if (ioctl(m_fileDescriptor, TIOCEXCL) == -1)
     {
-        wxLogMessage("Error setting TIOCEXCL on %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error setting TIOCEXCL on %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
 		if (m_fileDescriptor != -1)
 		{
@@ -86,13 +86,13 @@ int CSyncSerialComm::Open()
 		}
 		return false ;
     }
-    
+
     // Now that the device is open, clear the O_NONBLOCK flag so subsequent I/O will block.
     // See fcntl(2) ("man 2 fcntl") for details.
-    
+
     if (fcntl(m_fileDescriptor, F_SETFL, 0) == -1)
     {
-        wxLogMessage("Error clearing O_NONBLOCK %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error clearing O_NONBLOCK %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
 		if (m_fileDescriptor != -1)
 		{
@@ -101,11 +101,11 @@ int CSyncSerialComm::Open()
 		}
         return false ;
     }
-    
+
     // Get the current options and save them so we can restore the default settings later.
     if (tcgetattr(m_fileDescriptor, &m_OriginalTTYAttrs) == -1)
     {
-        wxLogMessage("Error getting tty attributes %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error getting tty attributes %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
 		if (m_fileDescriptor != -1)
 		{
@@ -131,25 +131,25 @@ int CSyncSerialComm::Close()
     {
         close(m_fileDescriptor);
     // Block until all written output has been sent from the device.
-    // Note that this call is simply passed on to the serial device driver. 
+    // Note that this call is simply passed on to the serial device driver.
 	// See tcsendbreak(3) ("man 3 tcsendbreak") for details.
     if (tcdrain(m_fileDescriptor) == -1)
     {
-        wxLogMessage("Error waiting for drain - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error waiting for drain - %s(%d).\n"),
             strerror(errno), errno);
     }
-    
+
     // Traditionally it is good practice to reset a serial port back to
     // the state in which you found it. This is why the original termios struct
     // was saved.
     if (tcsetattr(m_fileDescriptor, TCSANOW, &m_OriginalTTYAttrs) == -1)
     {
-        wxLogMessage("Error resetting tty attributes - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error resetting tty attributes - %s(%d).\n"),
             strerror(errno), errno);
     }
     close(m_fileDescriptor);
 	m_fileDescriptor = -1 ;
-    }	
+    }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -167,99 +167,99 @@ int CSyncSerialComm::ConfigPort(int dwBaudRate, int dwTimeOutInSec)
 {
     struct termios	options;
     int				handshake;
-			
+
     // The serial port attributes such as timeouts and baud rate are set by modifying the termios
     // structure and then calling tcsetattr() to cause the changes to take effect. Note that the
     // changes will not become effective without the tcsetattr() call.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.
-    
+
     options = m_OriginalTTYAttrs;
-    
+
     // Print the current input and output baud rates.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.
-    
-    wxLogMessage("Current input baud rate is %d\n", (int) cfgetispeed(&options));
-    wxLogMessage("Current output baud rate is %d\n", (int) cfgetospeed(&options));
-    
-    // Set raw input (non-canonical) mode, with reads blocking until either a single character 
+
+    wxLogMessage((const wxChar *)("Current input baud rate is %d\n"), (int) cfgetispeed(&options));
+    wxLogMessage((const wxChar *)("Current output baud rate is %d\n"), (int) cfgetospeed(&options));
+
+    // Set raw input (non-canonical) mode, with reads blocking until either a single character
     // has been received or a one second timeout expires.
     // See tcsetattr(4) ("man 4 tcsetattr") and termios(4) ("man 4 termios") for details.
-    
+
     cfmakeraw(&options);
     options.c_cc[VMIN] = 1;
     options.c_cc[VTIME] = 10;
-        
+
     // The baud rate, word length, and handshake options can be set as follows:
-    
-    cfsetspeed(&options, dwBaudRate);		// Set 19200 baud    
+
+    cfsetspeed(&options, dwBaudRate);		// Set 19200 baud
     options.c_cflag |= (CS8 	   | 	// Use 7 bit words
 						CCTS_OFLOW | 	// CTS flow control of output
 						CRTS_IFLOW);	// RTS flow control of input
-			
 
-    // Print the new input and output baud rates. Note that the IOSSIOSPEED ioctl interacts with the serial driver 
+
+    // Print the new input and output baud rates. Note that the IOSSIOSPEED ioctl interacts with the serial driver
 	// directly bypassing the termios struct. This means that the following two calls will not be able to read
 	// the current baud rate if the IOSSIOSPEED ioctl was used but will instead return the speed set by the last call
 	// to cfsetspeed.
-    
-    wxLogMessage("Input baud rate changed to %d\n", (int) cfgetispeed(&options));
-    wxLogMessage("Output baud rate changed to %d\n", (int) cfgetospeed(&options));
-    
+
+    wxLogMessage((const wxChar *)("Input baud rate changed to %d\n"), (int) cfgetispeed(&options));
+    wxLogMessage((const wxChar *)("Output baud rate changed to %d\n"), (int) cfgetospeed(&options));
+
     // Cause the new options to take effect immediately.
     if (tcsetattr(m_fileDescriptor, TCSANOW, &options) == -1)
     {
-        wxLogMessage("Error setting tty attributes %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error setting tty attributes %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
         goto error;
     }
 
     // To set the modem handshake lines, use the following ioctls.
     // See tty(4) ("man 4 tty") and ioctl(2) ("man 2 ioctl") for details.
-    
+
     if (ioctl(m_fileDescriptor, TIOCSDTR) == -1) // Assert Data Terminal Ready (DTR)
     {
-        wxLogMessage("Error asserting DTR %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error asserting DTR %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
     }
-    
+
     if (ioctl(m_fileDescriptor, TIOCCDTR) == -1) // Clear Data Terminal Ready (DTR)
     {
-        wxLogMessage("Error clearing DTR %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error clearing DTR %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
     }
-    
+
     handshake = TIOCM_DTR | TIOCM_RTS | TIOCM_CTS | TIOCM_DSR;
     if (ioctl(m_fileDescriptor, TIOCMSET, &handshake) == -1)
     // Set the modem lines depending on the bits set in handshake
     {
-        wxLogMessage("Error setting handshake lines %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error setting handshake lines %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
     }
-    
+
     // To read the state of the modem lines, use the following ioctl.
     // See tty(4) ("man 4 tty") and ioctl(2) ("man 2 ioctl") for details.
-    
+
     if (ioctl(m_fileDescriptor, TIOCMGET, &handshake) == -1)
     // Store the state of the modem lines in handshake
     {
-        wxLogMessage("Error getting handshake lines %s - %s(%d).\n",
+        wxLogMessage((const wxChar *)("Error getting handshake lines %s - %s(%d).\n"),
             m_pszPortName, strerror(errno), errno);
     }
-    
-    wxLogMessage("Handshake lines currently set to %d\n", handshake);
-    
+
+    wxLogMessage((const wxChar *)("Handshake lines currently set to %d\n"), handshake);
+
     // Success
     return m_fileDescriptor;
-    
+
     // Failure path
 error:
     if (m_fileDescriptor != -1)
     {
         close(m_fileDescriptor);
     }
-    
+
     return -1;
-			
+
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -282,14 +282,14 @@ int CSyncSerialComm::Write(const char *pszBuf, int dwSize)
 		iTries--;
         // Send an AT command to the modem
         numBytes = write(m_fileDescriptor, pszBuf, dwSize-numBytes);
-        
+
 		if (numBytes == -1)
 		{
-			wxLogMessage("Error writing to modem - %s(%d).\n", strerror(errno), errno);
+			wxLogMessage((const wxChar *)("Error writing to modem - %s(%d).\n"), strerror(errno), errno);
 		}
 		else
 		{
-			wxLogMessage("Wrote %ld bytes\n", numBytes);
+			wxLogMessage((const wxChar *)("Wrote %ld bytes\n"), numBytes);
 		}
 	}
 	return bool(numBytes == dwSize) ;

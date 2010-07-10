@@ -348,12 +348,22 @@ IF(WIN32)
   SET(SRCS ${SRCS} src/opencpn.rc)
 ENDIF(WIN32)
 IF(APPLE)
+  INCLUDE_DIRECTORIES(/usr/X11/include /usr/X11/include/GL)
+  SET(CMAKE_C_FLAGS_DEBUG "-O2 -arch i386")
+  SET(CMAKE_C_FLAGS_MINSIZEREL "-O2 -arch i386")
+  SET(CMAKE_C_FLAGS_RELEASE "-O2 -arch i386")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -arch i386")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-O2 -arch i386")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch i386")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -arch i386")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -arch i386")
+
   SET(SRCS ${SRCS}
     include/macsercomm.h
     src/macsercomm.cpp
     include/macutils.h
     src/macutils.c
-)
+    )
 ENDIF(APPLE)
 
 
@@ -520,7 +530,7 @@ GETTEXT_BUILD_MO(po/opencpn_pl_PL.po pl)
 GETTEXT_BUILD_MO(po/opencpn_pt_PT.po pt)
 GETTEXT_BUILD_MO(po/opencpn_ru_RU.po ru)
 GETTEXT_BUILD_MO(po/opencpn_sv_SE.po sv)
-GETTEXT_BUILD_MO(po/opencpn_pt_BR.po sv)
+GETTEXT_BUILD_MO(po/opencpn_pt_BR.po pt)
 ADD_CUSTOM_TARGET(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 #ADD_DEPENDENCIES(i18n ${PACKAGE_PO_FILES})
 ADD_DEPENDENCIES(${PACKAGE_NAME} i18n)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-07-10 15:05-0400\n"
 "PO-Revision-Date: 2010-06-13 23:30+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -36,6 +36,9 @@ msgid ""
 msgstr ""
 "                       Es sind keine Karten installiert.\n"
 "Bitte wählen Sie die Verzeichnisse unter Einstellungen -> Seekarten aus."
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
 #
 msgid "      COG arrow predictor length (Minutes):"
 msgstr "    Länge Voraus-Anzeige KüG-Pfeil (Minuten):"
@@ -72,6 +75,15 @@ msgstr "   Fehler bei der Erstellung des Zeilen-Indexes für Karte "
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Zeilen-Index fehlerhaft, erstelle Index neu für Karte "
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr ""
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "  Ergebnis: OK, interne Georeferenzierungs-Lösung wurde verwendet."
@@ -145,6 +157,9 @@ msgstr " Aktualisiert:  "
 msgid " is %5g"
 msgstr " ist %5g"
 #
+msgid " to "
+msgstr ""
+#
 msgid "&Acknowledge"
 msgstr "Quittieren"
 #
@@ -160,17 +175,28 @@ msgstr "Schließen"
 msgid "&Delete"
 msgstr "Löschen"
 #
-msgid "&Delete All Routes..."
-msgstr "Alle Routen löschen"
+#, fuzzy
+msgid "&Delete All"
+msgstr "Löschen"
 #
-msgid "&Delete All Tracks..."
-msgstr "Alle Tracks löschen"
+#, fuzzy
+msgid "&Export Route..."
+msgstr "Route exportieren"
 #
-msgid "&Export..."
+#, fuzzy
+msgid "&Export Track..."
+msgstr "Track exportieren"
+#
+#, fuzzy
+msgid "&Export Wpt..."
 msgstr "Exportieren"
 #
 msgid "&Font family:"
 msgstr "Schriftfamilie:"
+#
+#, fuzzy
+msgid "&Go To"
+msgstr "Zielfahrt hierhin (Direktwegpunkt)"
 #
 msgid "&Kilometers"
 msgstr "Kilometer"
@@ -178,11 +204,18 @@ msgstr "Kilometer"
 msgid "&Nautical miles"
 msgstr "Seemeilen"
 #
+msgid "&New"
+msgstr ""
+#
 msgid "&OK"
 msgstr "&OK"
 #
 msgid "&Point size:"
 msgstr "Schriftgröße:"
+#
+#, fuzzy
+msgid "&Properties"
+msgstr "Eigenschaften"
 #
 msgid "&Properties..."
 msgstr "Eigenschaften"
@@ -190,8 +223,16 @@ msgstr "Eigenschaften"
 msgid "&Reverse"
 msgstr "Umkehren"
 #
+#, fuzzy
+msgid "&Send to GPS"
+msgstr "An GPS senden"
+#
 msgid "&Silence Alert"
 msgstr "Warnton ausschalten"
+#
+#, fuzzy
+msgid "&Start Track"
+msgstr "Tracking für Ziele anzeigen"
 #
 msgid "&Style:"
 msgstr "Stil:"
@@ -219,14 +260,15 @@ msgstr ""
 "'\n"
 "Vorschlag: Schließen Sie andere Anwendungen, die ggf. den COM-Port belegen."
 #
-msgid "(Active Track)"
-msgstr "(aktiver Track)"
-#
 msgid "(Unnamed Route)"
 msgstr "(unbenannte Route)"
 #
 msgid "(Unnamed Track)"
 msgstr "(unbenannter Track)"
+#
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Wegpunkte umbenennen?"
 #
 msgid "-"
 msgstr "-"
@@ -301,9 +343,8 @@ msgstr "Karte zum Patchwork hinzufügen"
 msgid "Additional information"
 msgstr "Zusätzliche Informationen"
 #
-msgid ""
-"Aid to Navigation\n"
-"\n"
+#, fuzzy
+msgid "Aid to Navigation"
 msgstr ""
 "Navigationshilfe\n"
 "\n"
@@ -366,8 +407,15 @@ msgstr "CM93"
 msgid "CM93 Zoom Detail"
 msgstr "CM93-Detailgrad"
 #
+msgid "CPA"
+msgstr ""
+#
 msgid "CPA Calculation"
 msgstr "CPA-Berechnung"
+#
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "CPA-/ TCPA-Alarme"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "CPA-/ TCPA-Alarme"
@@ -435,25 +483,10 @@ msgstr "Schriftart auswählen"
 msgid "Class"
 msgstr "Klasse"
 #
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-"Klasse: unbekannt\n"
-"\n"
-#
-msgid ""
-"Class:     A\n"
-"\n"
+#, fuzzy
+msgid "Class:     "
 msgstr ""
 "Klasse:     A\n"
-"\n"
-#
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Klasse:     B\n"
 "\n"
 #
 msgid "Clear All"
@@ -476,6 +509,12 @@ msgstr "KüG"
 #
 msgid "Colors"
 msgstr "Farben"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Der TCP/IP Host konnte nicht ermittelt werden: '"
@@ -511,8 +550,9 @@ msgstr "Route deaktivieren"
 msgid "Deep Depth"
 msgstr "Tiefwassergrenze"
 #
-msgid "Delete All Waypoints..."
-msgstr "Alle Wegpunkte löschen"
+#, fuzzy
+msgid "Delete All"
+msgstr "Alle auswählen"
 #
 msgid "Delete Mark"
 msgstr "Markierung löschen"
@@ -565,6 +605,10 @@ msgstr "MüB Markierung setzen"
 msgid "Drop Mark Here"
 msgstr "Neue Markierung einfügen"
 #
+#, fuzzy
+msgid "E&xport All..."
+msgstr "Exportieren"
+#
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
@@ -604,12 +648,6 @@ msgstr "OpenCPN beenden"
 msgid "Export GPX file"
 msgstr "GPX-Datei exportieren"
 #
-msgid "Export Route...."
-msgstr "Route exportieren"
-#
-msgid "Export Track...."
-msgstr "Track exportieren"
-#
 msgid "Fathoms"
 msgstr "Faden"
 #
@@ -635,9 +673,6 @@ msgstr "GPS-/ Plotter-Schnittstelle"
 msgid "GPSD Data Server"
 msgstr "GPSD-Datenserver"
 #
-msgid "GPX"
-msgstr "GPX"
-#
 msgid "GRIB"
 msgstr "GRIB"
 #
@@ -654,6 +689,14 @@ msgid "GUI Options"
 msgstr "Benutzerinterface-Einstellungen"
 #
 msgid "Go To Here"
+msgstr "Zielfahrt hierhin (Direktwegpunkt)"
+#
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Zielfahrt hierhin (Direktwegpunkt)"
+#
+#, fuzzy
+msgid "Go to "
 msgstr "Zielfahrt hierhin (Direktwegpunkt)"
 #
 msgid "Help"
@@ -692,8 +735,13 @@ msgstr "Abschnitt"
 msgid "Leg/Route"
 msgstr "Abschn./Route"
 #
-msgid "Leg:  "
+#, fuzzy
+msgid "Leg: from "
 msgstr "Abschnitt:"
+#
+#, fuzzy
+msgid "Length"
+msgstr "Abschnitt"
 #
 msgid "License"
 msgstr "Lizenz"
@@ -746,6 +794,10 @@ msgstr "Ziele als verloren markieren nach (Minuten):"
 #
 msgid "Mark/WP Properties"
 msgstr "Markierungs-/ WP-Eigenschaften"
+#
+#, fuzzy
+msgid "Marks"
+msgstr "Neue Markierung"
 #
 msgid "Max Detail Here"
 msgstr "max. Vergrößerung hier"
@@ -825,6 +877,14 @@ msgstr "OpenCPN Info"
 msgid "OpenCPN Message"
 msgstr "OpenCPN Meldung"
 #
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Routenerstellung"
 #
@@ -895,6 +955,12 @@ msgstr ""
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr ""
 "Bitte starten Sie OpenCPN zur Aktivierung der geänderten Sprachauswahl neu."
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
 #
 msgid "Points"
 msgstr "Punkte"
@@ -978,20 +1044,30 @@ msgstr "Alter der Meldung:        %3d Sek.\n"
 msgid "Reverse Route"
 msgstr "Route umkehren"
 #
+msgid "Rollover"
+msgstr ""
+#
 msgid "Route"
 msgstr "Route"
 #
 msgid "Route Manager"
 msgstr "Routenmanager"
 #
-msgid "Route Manager..."
-msgstr "Routenmanager anzeigen"
-#
 msgid "Route Name"
 msgstr "Routen-Name"
 #
 msgid "Route Properties"
 msgstr "Routen-Eigenschaften"
+#
+msgid "Route from Track"
+msgstr ""
+#
+#, fuzzy
+msgid "Routes"
+msgstr "Route"
+#
+msgid "SOG COG"
+msgstr ""
 #
 msgid "Safety Depth"
 msgstr "Sicherheitstiefe"
@@ -1024,9 +1100,6 @@ msgid "Send"
 msgstr "Senden"
 #
 msgid "Send Route To GPS"
-msgstr "Route an GPS senden"
-#
-msgid "Send Route To GPS..."
 msgstr "Route an GPS senden"
 #
 msgid "Send To GPS..."
@@ -1076,12 +1149,6 @@ msgstr "Seekarten-Texte anzeigen"
 #
 msgid "Show GPS/NMEA data stream window"
 msgstr "Fenster mit GPS-/ NMEA-Datenfluss anzeigen"
-#
-msgid "Show GPX icons"
-msgstr "GPX-Symbole anzeigen"
-#
-msgid "Show GRIB dialog"
-msgstr "GRIB-Fenster anzeigen"
 #
 msgid "Show GRIB icon"
 msgstr "GRIB-Symbol anzeigen"
@@ -1255,8 +1322,15 @@ msgstr "morgen"
 msgid "ToolBox"
 msgstr "Einstellungen"
 #
+msgid "ToolTips"
+msgstr ""
+#
 msgid "Total Distance"
 msgstr "Gesamtentfernung"
+#
+#, fuzzy
+msgid "Track Name"
+msgstr "Name der Markierung"
 #
 msgid "Track Properties"
 msgstr "Track-Eigenschaften"
@@ -1340,6 +1414,10 @@ msgstr "Warnung, wenn CPA geringer ist als (sm):"
 msgid "Waypoint Locking"
 msgstr "Wegpunkte sperren"
 #
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Wegpunkte"
+#
 msgid "Waypoints"
 msgstr "Wegpunkte"
 #
@@ -1378,6 +1456,9 @@ msgstr "Hineinzoomen"
 msgid "Zoom Out"
 msgstr "Herauszoomen"
 #
+msgid "[Class] Type (Status)"
+msgstr ""
+#
 msgid "cm93 Detail"
 msgstr "CM93 Details"
 #
@@ -1389,3 +1470,66 @@ msgstr ""
 "Unpassende libgps API Version.\n"
 "OpenCPN hat die Version %d.%d gefunden, benötigt aber mindestens Version 3.1 "
 "oder höher."
+#
+#
+#
+#~ msgid "&Delete All Routes..."
+#~ msgstr "Alle Routen löschen"
+#
+#
+#
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "Alle Tracks löschen"
+#
+#
+#
+#~ msgid "(Active Track)"
+#~ msgstr "(aktiver Track)"
+#
+#
+#
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Klasse: unbekannt\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Klasse:     B\n"
+#~ "\n"
+#
+#
+#
+#~ msgid "Delete All Waypoints..."
+#~ msgstr "Alle Wegpunkte löschen"
+#
+#
+#
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+#~ msgid "Route Manager..."
+#~ msgstr "Routenmanager anzeigen"
+#
+#
+#
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Route an GPS senden"
+#
+#
+#
+#~ msgid "Show GPX icons"
+#~ msgstr "GPX-Symbole anzeigen"
+#
+#
+#
+#~ msgid "Show GRIB dialog"
+#~ msgstr "GRIB-Fenster anzeigen"

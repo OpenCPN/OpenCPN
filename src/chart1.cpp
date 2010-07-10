@@ -361,11 +361,6 @@ bool            g_bDebugS57;
 s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr   *m_pRegistrarMan;
-
-// begin rms
-#elif defined __WXOSX__
-s52plib         *ps52plib;
-// end rms
 #endif
 
 #ifdef USE_WIFI_CLIENT
@@ -2840,6 +2835,7 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
             break;
     }
 
+/*    Romoved at 2.2 build 710 for testing
 #ifdef __WXOSX__
     // RMS Problems with 2.8.3 on the mac and Destroy toolbar
     //DestroyMyToolbar();
@@ -2849,10 +2845,11 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
       SetToolBar((wxToolBar *)m_toolBar);
     }
 #else
+*/
     DestroyMyToolbar();
     m_toolBar = CreateAToolbar();
     SetToolBar((wxToolBar *)m_toolBar);
-#endif
+//#endif
 
     wxColour back_color = GetGlobalColor(_T("GREY2"));            // Was GREY1, switched on v 1.3.4 transparent icons
 
@@ -4733,9 +4730,9 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
                               m_toolBar->DeleteTool(ID_TBEXIT);
 
       //      Delete the current status tool
-      #ifndef __WXOSX__
+//      #ifndef __WXOSX__
                         m_toolBar->RemoveTool(ID_TBSTATBOX);
-      #endif
+//      #endif
       // end rms
                   }
 
@@ -4968,9 +4965,9 @@ void MyFrame::UpdateToolbarStatusWindow(ChartBase *pchart, bool bUpdate)
 
 //      Delete the current status tool
 //  begin rms
-#ifndef __WXOSX__
+//#ifndef __WXOSX__
             m_toolBar->DeleteTool(ID_TBSTAT);
-#endif
+//#endif
 // end rms
        }
 

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-07-10 15:05-0400\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -33,6 +33,9 @@ msgid ""
 msgstr ""
 "          Mapy niezainstalowane.\n"
 "\"\"Proszę wybrać katalogi map w Narzędzia->Mapy."
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
 #
 # 
 msgid "      COG arrow predictor length (Minutes):"
@@ -78,6 +81,15 @@ msgstr ""
 #
 # 
 msgid "   Line Index corrupt, recreating Index for chart "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 msgstr ""
 #
 # 
@@ -175,6 +187,9 @@ msgstr ""
 msgid " is %5g"
 msgstr ""
 #
+msgid " to "
+msgstr ""
+#
 # 
 msgid "&Acknowledge"
 msgstr ""
@@ -200,22 +215,32 @@ msgstr "Usuń znak"
 #
 # 
 #, fuzzy
-msgid "&Delete All Routes..."
-msgstr "Usuń wszystkie drogi"
+msgid "&Delete All"
+msgstr "Usuń znak"
 #
 # 
 #, fuzzy
-msgid "&Delete All Tracks..."
-msgstr "Usuń wszystkie drogi"
+msgid "&Export Route..."
+msgstr "Eksportuj drogę..."
 #
 # 
 #, fuzzy
-msgid "&Export..."
+msgid "&Export Track..."
+msgstr "Eksportuj ślad..."
+#
+# 
+#, fuzzy
+msgid "&Export Wpt..."
 msgstr "Eksportuj..."
 #
 # 
 msgid "&Font family:"
 msgstr "&Rodzaj czcionki:"
+#
+# 
+#, fuzzy
+msgid "&Go To"
+msgstr "Przesuń statek tutaj"
 #
 # 
 msgid "&Kilometers"
@@ -225,6 +250,9 @@ msgstr "&Kilometry"
 msgid "&Nautical miles"
 msgstr "&Mile morskie"
 #
+msgid "&New"
+msgstr ""
+#
 # 
 msgid "&OK"
 msgstr "&OK"
@@ -232,6 +260,11 @@ msgstr "&OK"
 # 
 msgid "&Point size:"
 msgstr "&Rozmiar w punktach:"
+#
+# 
+#, fuzzy
+msgid "&Properties"
+msgstr "Właściwości"
 #
 # 
 #, fuzzy
@@ -245,8 +278,18 @@ msgstr "Odwróć drogę"
 #
 # 
 #, fuzzy
+msgid "&Send to GPS"
+msgstr "Wyślij do GPS..."
+#
+# 
+#, fuzzy
 msgid "&Silence Alert"
 msgstr "Wybierz sygnał alarmu dźwiękowego"
+#
+# 
+#, fuzzy
+msgid "&Start Track"
+msgstr "Pokaż ślady obiektów"
 #
 # 
 msgid "&Style:"
@@ -283,11 +326,6 @@ msgstr ""
 #
 # 
 #, fuzzy
-msgid "(Active Track)"
-msgstr "Usuń ślad"
-#
-# 
-#, fuzzy
 msgid "(Unnamed Route)"
 msgstr "Zakończ drogę"
 #
@@ -295,6 +333,11 @@ msgstr "Zakończ drogę"
 #, fuzzy
 msgid "(Unnamed Track)"
 msgstr "Zakończ drogę"
+#
+# 
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Punkty drogi"
 #
 msgid "-"
 msgstr ""
@@ -388,9 +431,8 @@ msgid "Additional information"
 msgstr "Informacje dodatkowe"
 #
 # 
-msgid ""
-"Aid to Navigation\n"
-"\n"
+#, fuzzy
+msgid "Aid to Navigation"
 msgstr ""
 "Znak nawigacyjny\n"
 "\n"
@@ -472,9 +514,17 @@ msgstr "CM93"
 msgid "CM93 Zoom Detail"
 msgstr "Poziom szczegółowości CM93"
 #
+msgid "CPA"
+msgstr ""
+#
 # 
 msgid "CPA Calculation"
 msgstr "Obliczenie CPA"
+#
+# 
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "Ostrzeżenia CPA/TCPA"
 #
 # 
 msgid "CPA/TCPA Alerts"
@@ -559,27 +609,10 @@ msgid "Class"
 msgstr "Zamknij"
 #
 # 
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-"Klasa nieznana\n"
-"\n"
-#
-# 
-msgid ""
-"Class:     A\n"
-"\n"
+#, fuzzy
+msgid "Class:     "
 msgstr ""
 "Klasa:     A\n"
-"\n"
-#
-# 
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Klasa:     B\n"
 "\n"
 #
 # 
@@ -608,6 +641,12 @@ msgstr ""
 # 
 msgid "Colors"
 msgstr "Kolory"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
 #
 # 
 msgid "Could not resolve TCP/IP host '"
@@ -656,8 +695,9 @@ msgid "Deep Depth"
 msgstr "Głęboka woda"
 #
 # 
-msgid "Delete All Waypoints..."
-msgstr "Usuń wszystkie punkty drogi..."
+#, fuzzy
+msgid "Delete All"
+msgstr "Wybierz wszystko"
 #
 # 
 msgid "Delete Mark"
@@ -729,6 +769,11 @@ msgid "Drop Mark Here"
 msgstr "Postaw znak tutaj"
 #
 # 
+#, fuzzy
+msgid "E&xport All..."
+msgstr "Eksportuj..."
+#
+# 
 msgid "ENC/Vector"
 msgstr "ENC/Wektorowe"
 #
@@ -780,14 +825,6 @@ msgid "Export GPX file"
 msgstr "Eksportuj plik GPX"
 #
 # 
-msgid "Export Route...."
-msgstr "Eksportuj drogę..."
-#
-# 
-msgid "Export Track...."
-msgstr "Eksportuj ślad..."
-#
-# 
 msgid "Fathoms"
 msgstr "Sążnie"
 #
@@ -821,10 +858,6 @@ msgid "GPSD Data Server"
 msgstr "Serwer danych GPSD"
 #
 # 
-msgid "GPX"
-msgstr "GPX"
-#
-# 
 msgid "GRIB"
 msgstr "GRIB"
 #
@@ -847,6 +880,16 @@ msgstr "Opcje GUI"
 # 
 #, fuzzy
 msgid "Go To Here"
+msgstr "Przesuń statek tutaj"
+#
+# 
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Przesuń statek tutaj"
+#
+# 
+#, fuzzy
+msgid "Go to "
 msgstr "Przesuń statek tutaj"
 #
 # 
@@ -901,7 +944,12 @@ msgstr "Odcinek/droga"
 #
 # 
 #, fuzzy
-msgid "Leg:  "
+msgid "Leg: from "
+msgstr "Odcinek"
+#
+# 
+#, fuzzy
+msgid "Length"
 msgstr "Odcinek"
 #
 # 
@@ -975,6 +1023,11 @@ msgstr "Oznacz obiekty jako zgubione po (minutach:):"
 # 
 msgid "Mark/WP Properties"
 msgstr "Właściwości znaku/punktu drogi"
+#
+# 
+#, fuzzy
+msgid "Marks"
+msgstr "Nowy znak"
 #
 # 
 msgid "Max Detail Here"
@@ -1081,6 +1134,14 @@ msgstr "Info OpenCPN"
 msgid "OpenCPN Message"
 msgstr "Komunikat OpenCPN"
 #
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
 # 
 msgid "OpenCPN Route Create"
 msgstr "Tworzenie drogi OpenCPN"
@@ -1173,6 +1234,12 @@ msgstr ""
 # 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Uruchom ponownie OpenCPN aby aktywować wybrany język"
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
 #
 # 
 msgid "Points"
@@ -1283,16 +1350,15 @@ msgstr "Wiek raportu:               %3d Sek.\n"
 msgid "Reverse Route"
 msgstr "Odwróć drogę"
 #
+msgid "Rollover"
+msgstr ""
+#
 # 
 msgid "Route"
 msgstr "Droga"
 #
 # 
 msgid "Route Manager"
-msgstr ""
-#
-# 
-msgid "Route Manager..."
 msgstr ""
 #
 # 
@@ -1303,6 +1369,17 @@ msgstr "Droga"
 # 
 msgid "Route Properties"
 msgstr "Właściwości drogi"
+#
+msgid "Route from Track"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Routes"
+msgstr "Droga"
+#
+msgid "SOG COG"
+msgstr ""
 #
 # 
 msgid "Safety Depth"
@@ -1349,10 +1426,6 @@ msgstr "Wyślij"
 # 
 #, fuzzy
 msgid "Send Route To GPS"
-msgstr "Wyślij drogę do GPS..."
-#
-# 
-msgid "Send Route To GPS..."
 msgstr "Wyślij drogę do GPS..."
 #
 # 
@@ -1418,14 +1491,6 @@ msgstr "Pokaż tekst ENC"
 # 
 msgid "Show GPS/NMEA data stream window"
 msgstr "Pokaż okno strumienia danych GPS/NMEA"
-#
-# 
-msgid "Show GPX icons"
-msgstr "Pokaż ikony GPX"
-#
-# 
-msgid "Show GRIB dialog"
-msgstr "Pokaż dialog GRIB"
 #
 # 
 msgid "Show GRIB icon"
@@ -1648,9 +1713,17 @@ msgstr "Jutro"
 msgid "ToolBox"
 msgstr "Narzędzia"
 #
+msgid "ToolTips"
+msgstr ""
+#
 # 
 msgid "Total Distance"
 msgstr "Całkowita odległość"
+#
+# 
+#, fuzzy
+msgid "Track Name"
+msgstr "Nazwa znaku"
 #
 # 
 msgid "Track Properties"
@@ -1747,6 +1820,11 @@ msgid "Waypoint Locking"
 msgstr "Blokowanie punktów drogi"
 #
 # 
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Punkty drogi"
+#
+# 
 msgid "Waypoints"
 msgstr "Punkty drogi"
 #
@@ -1790,6 +1868,9 @@ msgstr "Powiększ"
 msgid "Zoom Out"
 msgstr "Pomniejsz"
 #
+msgid "[Class] Type (Status)"
+msgstr ""
+#
 # 
 msgid "cm93 Detail"
 msgstr "Poziom szczegółów CM93"
@@ -1802,6 +1883,49 @@ msgstr ""
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "&Delete All Routes..."
+#~ msgstr "Usuń wszystkie drogi"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "Usuń wszystkie drogi"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "(Active Track)"
+#~ msgstr "Usuń ślad"
+#
+#
+#
+# 
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Klasa nieznana\n"
+#~ "\n"
+#
+#
+#
+# 
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Klasa:     B\n"
+#~ "\n"
+#
+#
+#
+#
+#
 #
 #
 #
@@ -1811,6 +1935,14 @@ msgstr ""
 # 
 #~ msgid "Delete All Routes..."
 #~ msgstr "Usuń wszystkie drogi"
+#
+#
+#
+# 
+#~ msgid "Delete All Waypoints..."
+#~ msgstr "Usuń wszystkie punkty drogi..."
+#
+#
 #
 #
 #
@@ -1837,6 +1969,32 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 #~ msgid "Export...."
 #~ msgstr "Eksportuj..."
+#
+#
+#
+# 
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+# 
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Wyślij drogę do GPS..."
+#
+#
+#
+# 
+#~ msgid "Show GPX icons"
+#~ msgstr "Pokaż ikony GPX"
+#
+#
+#
+# 
+#~ msgid "Show GRIB dialog"
+#~ msgstr "Pokaż dialog GRIB"

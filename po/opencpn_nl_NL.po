@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-07-10 15:05-0400\n"
 "PO-Revision-Date: 2010-06-16 08:47+0100\n"
 "Last-Translator: Bart <champ8242@gmail.com>\n"
 "Language-Team:  <bart@gmail.com>\n"
@@ -34,6 +34,9 @@ msgid ""
 msgstr ""
 "           Geen Kaarten Geinstalleerd. \n"
 " Selecteer kaartenmap in Toolbox->Kaarten"
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
 #
 msgid "      COG arrow predictor length (Minutes):"
 msgstr "       COG lengte voorspellingspijl  (Minuten):"
@@ -68,6 +71,15 @@ msgstr "   Fout bij creeren Regel Index voor kaart"
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr " Regel Index kapot, hercreeer Index voor kaart"
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr ""
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "Resultaat OK, Interne georef oplossing gebruikt."
@@ -140,6 +152,9 @@ msgstr " Bijgewerkt: "
 msgid " is %5g"
 msgstr "  is %5g"
 #
+msgid " to "
+msgstr ""
+#
 msgid "&Acknowledge"
 msgstr "&Bevestig"
 #
@@ -155,17 +170,28 @@ msgstr "&Sluiten"
 msgid "&Delete"
 msgstr "&Wis"
 #
-msgid "&Delete All Routes..."
-msgstr "&Wis alle routes..."
+#, fuzzy
+msgid "&Delete All"
+msgstr "&Wis"
 #
-msgid "&Delete All Tracks..."
-msgstr "Wis alle Tracks..."
+#, fuzzy
+msgid "&Export Route..."
+msgstr "Exporteer Route ...."
 #
-msgid "&Export..."
+#, fuzzy
+msgid "&Export Track..."
+msgstr "Exporteer Track ...."
+#
+#, fuzzy
+msgid "&Export Wpt..."
 msgstr "&Exporteer"
 #
 msgid "&Font family:"
 msgstr "&Lettertype famillie:"
+#
+#, fuzzy
+msgid "&Go To"
+msgstr "Ga naar Hier"
 #
 msgid "&Kilometers"
 msgstr "&Kilometers"
@@ -173,11 +199,18 @@ msgstr "&Kilometers"
 msgid "&Nautical miles"
 msgstr "&Nautische mijlen"
 #
+msgid "&New"
+msgstr ""
+#
 msgid "&OK"
 msgstr "&OK"
 #
 msgid "&Point size:"
 msgstr "&Lettertype grootte"
+#
+#, fuzzy
+msgid "&Properties"
+msgstr "Eigenschappen"
 #
 msgid "&Properties..."
 msgstr "&Eigenschappen..."
@@ -185,8 +218,16 @@ msgstr "&Eigenschappen..."
 msgid "&Reverse"
 msgstr "&Omdraaien"
 #
+#, fuzzy
+msgid "&Send to GPS"
+msgstr "Zend naar GPS..."
+#
 msgid "&Silence Alert"
 msgstr "&Stilte waarschuwing"
+#
+#, fuzzy
+msgid "&Start Track"
+msgstr "Laat target track zien"
 #
 msgid "&Style:"
 msgstr "&Stijl"
@@ -214,14 +255,15 @@ msgstr ""
 "'\n"
 "Suggestie: Probeer andere applicaties te sluiten"
 #
-msgid "(Active Track)"
-msgstr "(Active Track)"
-#
 msgid "(Unnamed Route)"
 msgstr "(Route zonder naam)"
 #
 msgid "(Unnamed Track)"
 msgstr "(Track zonder naam)"
+#
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Hernoem Waypoints?"
 #
 msgid "-"
 msgstr "-"
@@ -292,9 +334,8 @@ msgstr "Voeg deze kaart toe aan quilt."
 msgid "Additional information"
 msgstr "Additionele informatie"
 #
-msgid ""
-"Aid to Navigation\n"
-"\n"
+#, fuzzy
+msgid "Aid to Navigation"
 msgstr ""
 "Navigatie middelen\n"
 "\n"
@@ -357,8 +398,15 @@ msgstr "CM93"
 msgid "CM93 Zoom Detail"
 msgstr "CM93 Zoom Detail"
 #
+msgid "CPA"
+msgstr ""
+#
 msgid "CPA Calculation"
 msgstr "CPA Calculatie"
+#
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "CPA/TCPA Waarschuwing"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Waarschuwing"
@@ -426,25 +474,10 @@ msgstr "Kies Lettertype"
 msgid "Class"
 msgstr "Klasse"
 #
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-"Klasse Onbekend\n"
-"\n"
-#
-msgid ""
-"Class:     A\n"
-"\n"
+#, fuzzy
+msgid "Class:     "
 msgstr ""
 "Class:     A\n"
-"\n"
-#
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Class:     B\n"
 "\n"
 #
 msgid "Clear All"
@@ -467,6 +500,12 @@ msgstr "CoG"
 #
 msgid "Colors"
 msgstr "Kleuren"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Kan TCP/IP host niet berijken'"
@@ -502,8 +541,9 @@ msgstr "Deactiveer route"
 msgid "Deep Depth"
 msgstr "Diep Diepte"
 #
-msgid "Delete All Waypoints..."
-msgstr "Wis alle waypoiten"
+#, fuzzy
+msgid "Delete All"
+msgstr "Selecteer alles"
 #
 msgid "Delete Mark"
 msgstr "Wis Markering"
@@ -556,6 +596,10 @@ msgstr "MOB markering"
 msgid "Drop Mark Here"
 msgstr "Plaats markering hier"
 #
+#, fuzzy
+msgid "E&xport All..."
+msgstr "&Exporteer"
+#
 msgid "ENC/Vector"
 msgstr "ENC/Vector"
 #
@@ -595,12 +639,6 @@ msgstr "Einde OpenCPN"
 msgid "Export GPX file"
 msgstr "Exporteer GPX bestand"
 #
-msgid "Export Route...."
-msgstr "Exporteer Route ...."
-#
-msgid "Export Track...."
-msgstr "Exporteer Track ...."
-#
 msgid "Fathoms"
 msgstr "Fathoms"
 #
@@ -626,9 +664,6 @@ msgstr "GPS/Plotter Port"
 msgid "GPSD Data Server"
 msgstr "GPSD Data Server"
 #
-msgid "GPX"
-msgstr "GPX"
-#
 msgid "GRIB"
 msgstr "GRIB"
 #
@@ -645,6 +680,14 @@ msgid "GUI Options"
 msgstr "Weergave opties"
 #
 msgid "Go To Here"
+msgstr "Ga naar Hier"
+#
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Ga naar Hier"
+#
+#, fuzzy
+msgid "Go to "
 msgstr "Ga naar Hier"
 #
 msgid "Help"
@@ -683,8 +726,13 @@ msgstr "Leg"
 msgid "Leg/Route"
 msgstr "Leg/Route"
 #
-msgid "Leg:  "
+#, fuzzy
+msgid "Leg: from "
 msgstr "Leg:"
+#
+#, fuzzy
+msgid "Length"
+msgstr "Leg"
 #
 msgid "License"
 msgstr "Licentie"
@@ -738,6 +786,10 @@ msgstr "Markeer target als verloren na niet ontvangen (minuten):"
 #
 msgid "Mark/WP Properties"
 msgstr "Markering/WP Eigenschappen"
+#
+#, fuzzy
+msgid "Marks"
+msgstr "Nieuwe markering"
 #
 msgid "Max Detail Here"
 msgstr "Maximale details hier"
@@ -817,6 +869,14 @@ msgstr "OpenCPN Info"
 msgid "OpenCPN Message"
 msgstr "OpenCPN bericht"
 #
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Route creeeren"
 #
@@ -877,6 +937,12 @@ msgstr "Zoom Schaal uit om onderdrukte SEATEMP GRIB te zien"
 #
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Start OpenCPN opnieuw om de nieuwe taalkeuze te activeren."
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
 #
 msgid "Points"
 msgstr "Punten"
@@ -960,20 +1026,30 @@ msgstr "Rapport ouderdom:           %3d Sec.\n"
 msgid "Reverse Route"
 msgstr "Route omdraaien"
 #
+msgid "Rollover"
+msgstr ""
+#
 msgid "Route"
 msgstr "Route"
 #
 msgid "Route Manager"
 msgstr "Route Manager"
 #
-msgid "Route Manager..."
-msgstr "Route Manager..."
-#
 msgid "Route Name"
 msgstr "Route naam"
 #
 msgid "Route Properties"
 msgstr "Route Eigenschappen"
+#
+msgid "Route from Track"
+msgstr ""
+#
+#, fuzzy
+msgid "Routes"
+msgstr "Route"
+#
+msgid "SOG COG"
+msgstr ""
 #
 msgid "Safety Depth"
 msgstr "Veilige diepte"
@@ -1007,9 +1083,6 @@ msgstr "Zenden"
 #
 msgid "Send Route To GPS"
 msgstr "Zend Route naar GPS"
-#
-msgid "Send Route To GPS..."
-msgstr "Zend Route naar GPS..."
 #
 msgid "Send To GPS..."
 msgstr "Zend naar GPS..."
@@ -1058,12 +1131,6 @@ msgstr "Laat ENC tekst zien"
 #
 msgid "Show GPS/NMEA data stream window"
 msgstr "Laat GPS/NMEA gegevensstroom scherm zien"
-#
-msgid "Show GPX icons"
-msgstr "Laat GPX icoon zien"
-#
-msgid "Show GRIB dialog"
-msgstr "Laat GRIB dialoog zien"
 #
 msgid "Show GRIB icon"
 msgstr "Laat GRIB icoon zien"
@@ -1237,8 +1304,15 @@ msgstr "Morgen"
 msgid "ToolBox"
 msgstr "ToolBox"
 #
+msgid "ToolTips"
+msgstr ""
+#
 msgid "Total Distance"
 msgstr "Totale afstand"
+#
+#, fuzzy
+msgid "Track Name"
+msgstr "Markeer Naam"
 #
 msgid "Track Properties"
 msgstr "Track Eigenschappen"
@@ -1322,6 +1396,10 @@ msgstr "Waarschuw als CPA minder is dan (NM):"
 msgid "Waypoint Locking"
 msgstr "Waypoint vastzetten"
 #
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Waypoints"
+#
 msgid "Waypoints"
 msgstr "Waypoints"
 #
@@ -1360,6 +1438,9 @@ msgstr "Zoom In"
 msgid "Zoom Out"
 msgstr "Zoom Uit"
 #
+msgid "[Class] Type (Status)"
+msgstr ""
+#
 msgid "cm93 Detail"
 msgstr "cm93 Detail"
 #
@@ -1370,3 +1451,66 @@ msgid ""
 msgstr ""
 "libgps API versie verschil.\n"
 "OpenCPN heeft versie %d.%d gevonden, maar moet minstens versie 3.1 zijn"
+#
+#
+#
+#~ msgid "&Delete All Routes..."
+#~ msgstr "&Wis alle routes..."
+#
+#
+#
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "Wis alle Tracks..."
+#
+#
+#
+#~ msgid "(Active Track)"
+#~ msgstr "(Active Track)"
+#
+#
+#
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Klasse Onbekend\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Class:     B\n"
+#~ "\n"
+#
+#
+#
+#~ msgid "Delete All Waypoints..."
+#~ msgstr "Wis alle waypoiten"
+#
+#
+#
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+#~ msgid "Route Manager..."
+#~ msgstr "Route Manager..."
+#
+#
+#
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Zend Route naar GPS..."
+#
+#
+#
+#~ msgid "Show GPX icons"
+#~ msgstr "Laat GPX icoon zien"
+#
+#
+#
+#~ msgid "Show GRIB dialog"
+#~ msgstr "Laat GRIB dialoog zien"

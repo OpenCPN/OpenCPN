@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-07-10 15:05-0400\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -36,6 +36,9 @@ msgid ""
 msgstr ""
 "           Карты не установлены.\n"
 "Пожалуйста, укажите каталог с картами в меню Настройки->Карты."
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
 #
 # 
 msgid "      COG arrow predictor length (Minutes):"
@@ -81,6 +84,15 @@ msgstr ""
 #
 # 
 msgid "   Line Index corrupt, recreating Index for chart "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 msgstr ""
 #
 # 
@@ -178,6 +190,9 @@ msgstr ""
 msgid " is %5g"
 msgstr ""
 #
+msgid " to "
+msgstr ""
+#
 # 
 msgid "&Acknowledge"
 msgstr ""
@@ -203,22 +218,32 @@ msgstr "Удалить маркер"
 #
 # 
 #, fuzzy
-msgid "&Delete All Routes..."
-msgstr "Удалить все маршруты"
+msgid "&Delete All"
+msgstr "Удалить маркер"
 #
 # 
 #, fuzzy
-msgid "&Delete All Tracks..."
-msgstr "Удалить все маршруты"
+msgid "&Export Route..."
+msgstr "Экспорт...."
 #
 # 
 #, fuzzy
-msgid "&Export..."
+msgid "&Export Track..."
+msgstr "Экспорт...."
+#
+# 
+#, fuzzy
+msgid "&Export Wpt..."
 msgstr "Экспорт...."
 #
 # 
 msgid "&Font family:"
 msgstr "Семейство &шрифтов:"
+#
+# 
+#, fuzzy
+msgid "&Go To"
+msgstr "Установить судно здесь"
 #
 # 
 msgid "&Kilometers"
@@ -228,6 +253,9 @@ msgstr "&Километры"
 msgid "&Nautical miles"
 msgstr "&Морские мили"
 #
+msgid "&New"
+msgstr ""
+#
 # 
 msgid "&OK"
 msgstr "&Да"
@@ -235,6 +263,11 @@ msgstr "&Да"
 # 
 msgid "&Point size:"
 msgstr "&Размер шрифта:"
+#
+# 
+#, fuzzy
+msgid "&Properties"
+msgstr "Свойства"
 #
 # 
 #, fuzzy
@@ -248,8 +281,18 @@ msgstr "Обратный маршрут"
 #
 # 
 #, fuzzy
+msgid "&Send to GPS"
+msgstr "Отправить в устройство GPS"
+#
+# 
+#, fuzzy
 msgid "&Silence Alert"
 msgstr "Выберите звук предупреждения"
+#
+# 
+#, fuzzy
+msgid "&Start Track"
+msgstr "Отображать треки целей"
 #
 # 
 msgid "&Style:"
@@ -286,11 +329,6 @@ msgstr ""
 #
 # 
 #, fuzzy
-msgid "(Active Track)"
-msgstr "Удалить трек"
-#
-# 
-#, fuzzy
 msgid "(Unnamed Route)"
 msgstr "Конец маршрута"
 #
@@ -298,6 +336,11 @@ msgstr "Конец маршрута"
 #, fuzzy
 msgid "(Unnamed Track)"
 msgstr "Конец маршрута"
+#
+# 
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Путевые точки"
 #
 msgid "-"
 msgstr ""
@@ -391,10 +434,9 @@ msgid "Additional information"
 msgstr "Дополнительная информация"
 #
 # 
-msgid ""
-"Aid to Navigation\n"
-"\n"
-msgstr ""
+#, fuzzy
+msgid "Aid to Navigation"
+msgstr "Навишационные данные"
 #
 # 
 msgid "All files (*.*)|*.*"
@@ -473,9 +515,17 @@ msgstr ""
 msgid "CM93 Zoom Detail"
 msgstr "Увеличение деталей CM93"
 #
+msgid "CPA"
+msgstr ""
+#
 # 
 msgid "CPA Calculation"
 msgstr "Вычисление CPA"
+#
+# 
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "Предупреждения CPA/TCPA"
 #
 # 
 msgid "CPA/TCPA Alerts"
@@ -560,25 +610,10 @@ msgid "Class"
 msgstr "Закрыть"
 #
 # 
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-#
-# 
-msgid ""
-"Class:     A\n"
-"\n"
+#, fuzzy
+msgid "Class:     "
 msgstr ""
 "Класс:     A\n"
-"\n"
-#
-# 
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Класс:     B\n"
 "\n"
 #
 # 
@@ -607,6 +642,12 @@ msgstr ""
 # 
 msgid "Colors"
 msgstr "Цветность"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
 #
 # 
 msgid "Could not resolve TCP/IP host '"
@@ -655,8 +696,9 @@ msgid "Deep Depth"
 msgstr "Глубоко"
 #
 # 
-msgid "Delete All Waypoints..."
-msgstr "Удалить все путевые точки"
+#, fuzzy
+msgid "Delete All"
+msgstr "Выбрать всё"
 #
 # 
 msgid "Delete Mark"
@@ -728,6 +770,11 @@ msgid "Drop Mark Here"
 msgstr "Установить маркер"
 #
 # 
+#, fuzzy
+msgid "E&xport All..."
+msgstr "Экспорт...."
+#
+# 
 msgid "ENC/Vector"
 msgstr ""
 #
@@ -787,16 +834,6 @@ msgid "Export GPX file"
 msgstr "Экспортировать файл GPX"
 #
 # 
-#, fuzzy
-msgid "Export Route...."
-msgstr "Экспорт...."
-#
-# 
-#, fuzzy
-msgid "Export Track...."
-msgstr "Экспорт...."
-#
-# 
 msgid "Fathoms"
 msgstr "Сажени"
 #
@@ -830,10 +867,6 @@ msgid "GPSD Data Server"
 msgstr "Сервер GPSD"
 #
 # 
-msgid "GPX"
-msgstr "GPX"
-#
-# 
 msgid "GRIB"
 msgstr "GRIB"
 #
@@ -856,6 +889,16 @@ msgstr "Настройки интерфейса пользователя"
 # 
 #, fuzzy
 msgid "Go To Here"
+msgstr "Установить судно здесь"
+#
+# 
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Установить судно здесь"
+#
+# 
+#, fuzzy
+msgid "Go to "
 msgstr "Установить судно здесь"
 #
 # 
@@ -910,7 +953,12 @@ msgstr "Уч/Маршрут"
 #
 # 
 #, fuzzy
-msgid "Leg:  "
+msgid "Leg: from "
+msgstr "Участок"
+#
+# 
+#, fuzzy
+msgid "Length"
 msgstr "Участок"
 #
 # 
@@ -980,6 +1028,11 @@ msgstr "Пометить цель как потеряную через (мин.)
 # 
 msgid "Mark/WP Properties"
 msgstr "Параметры маркера/точки"
+#
+# 
+#, fuzzy
+msgid "Marks"
+msgstr "Новый маркер"
 #
 # 
 msgid "Max Detail Here"
@@ -1086,6 +1139,14 @@ msgstr "Информация OpenCPN"
 msgid "OpenCPN Message"
 msgstr "Сообщение OpenCPN"
 #
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
 # 
 msgid "OpenCPN Route Create"
 msgstr "Создать маршрут OpenCPN"
@@ -1171,6 +1232,12 @@ msgstr "Уменьшите масштаб для просмотра скртых
 # 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Для активации нового языка необходимо перезагрузить OpenCPN"
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
 #
 # 
 msgid "Points"
@@ -1283,16 +1350,15 @@ msgstr "Давность сообщения:               %3d сек.\n"
 msgid "Reverse Route"
 msgstr "Обратный маршрут"
 #
+msgid "Rollover"
+msgstr ""
+#
 # 
 msgid "Route"
 msgstr "Маршрут"
 #
 # 
 msgid "Route Manager"
-msgstr ""
-#
-# 
-msgid "Route Manager..."
 msgstr ""
 #
 # 
@@ -1303,6 +1369,17 @@ msgstr "Маршрут"
 # 
 msgid "Route Properties"
 msgstr "Параметры маршрута"
+#
+msgid "Route from Track"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Routes"
+msgstr "Маршрут"
+#
+msgid "SOG COG"
+msgstr ""
 #
 # 
 msgid "Safety Depth"
@@ -1349,11 +1426,6 @@ msgstr "Отправить"
 # 
 #, fuzzy
 msgid "Send Route To GPS"
-msgstr "Отправить в устройство GPS"
-#
-# 
-#, fuzzy
-msgid "Send Route To GPS..."
 msgstr "Отправить в устройство GPS"
 #
 # 
@@ -1420,14 +1492,6 @@ msgstr "Показать надписи  ENC"
 # 
 msgid "Show GPS/NMEA data stream window"
 msgstr "Отобразить окно потока данных GPS/NMEA"
-#
-# 
-msgid "Show GPX icons"
-msgstr "Показать иконку GPX"
-#
-# 
-msgid "Show GRIB dialog"
-msgstr "Показать диалог GRIB"
 #
 # 
 msgid "Show GRIB icon"
@@ -1642,9 +1706,17 @@ msgstr "Завтра"
 msgid "ToolBox"
 msgstr "Настройки"
 #
+msgid "ToolTips"
+msgstr ""
+#
 # 
 msgid "Total Distance"
 msgstr "Общая дистанция"
+#
+# 
+#, fuzzy
+msgid "Track Name"
+msgstr "Название маркера"
 #
 # 
 msgid "Track Properties"
@@ -1741,6 +1813,11 @@ msgid "Waypoint Locking"
 msgstr "Блокировка путевых точек"
 #
 # 
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Путевые точки"
+#
+# 
 msgid "Waypoints"
 msgstr "Путевые точки"
 #
@@ -1784,6 +1861,9 @@ msgstr "Увеличить"
 msgid "Zoom Out"
 msgstr "Уменьшить"
 #
+msgid "[Class] Type (Status)"
+msgstr ""
+#
 # 
 msgid "cm93 Detail"
 msgstr "Детали CM93"
@@ -1793,6 +1873,29 @@ msgid ""
 "libgps API Version mismatch.\n"
 "Opencpn found version %d.%d, but requires at least version 3.1"
 msgstr ""
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "&Delete All Routes..."
+#~ msgstr "Удалить все маршруты"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "Удалить все маршруты"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "(Active Track)"
+#~ msgstr "Удалить трек"
+#
+#
 #
 #
 #
@@ -1812,6 +1915,18 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Класс:     B\n"
+#~ "\n"
+#
+#
+#
+#
+#
 #
 #
 #
@@ -1824,6 +1939,14 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Delete All Waypoints..."
+#~ msgstr "Удалить все путевые точки"
+#
+#
+#
+#
+#
 #
 #
 #
@@ -1833,3 +1956,28 @@ msgstr ""
 # 
 #~ msgid "Export...."
 #~ msgstr "Экспорт...."
+#
+#
+#
+# 
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Отправить в устройство GPS"
+#
+#
+#
+# 
+#~ msgid "Show GPX icons"
+#~ msgstr "Показать иконку GPX"
+#
+#
+#
+# 
+#~ msgid "Show GRIB dialog"
+#~ msgstr "Показать диалог GRIB"

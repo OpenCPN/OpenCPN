@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-07-10 15:05-0400\n"
 "PO-Revision-Date: 2010-06-12 08:29+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -36,6 +36,9 @@ msgid ""
 msgstr ""
 "           Nejsou instalovány mapy.\n"
 "Vyber prosím složky map v Nastavení->Mapy."
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
 #
 #
 msgid "      COG arrow predictor length (Minutes):"
@@ -80,6 +83,15 @@ msgstr "  Chyba při vytváření indexu řádků mapy"
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "  Index řádků je poškozen, znovuvytvářím index mapy."
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr ""
 #
 #
 msgid "   Result: OK, Internal georef solution used."
@@ -175,6 +187,9 @@ msgstr " Aktualizováno:"
 msgid " is %5g"
 msgstr " je %5g"
 #
+msgid " to "
+msgstr ""
+#
 #
 msgid "&Acknowledge"
 msgstr "&Potvrdit"
@@ -196,20 +211,33 @@ msgid "&Delete"
 msgstr "&Smazat"
 #
 #
-msgid "&Delete All Routes..."
-msgstr "&Smazat všechny trasy..."
+#, fuzzy
+msgid "&Delete All"
+msgstr "&Smazat"
 #
 #
-msgid "&Delete All Tracks..."
-msgstr "&Smazat všechny stopy..."
+#, fuzzy
+msgid "&Export Route..."
+msgstr "Export trasy...."
 #
 #
-msgid "&Export..."
+#, fuzzy
+msgid "&Export Track..."
+msgstr "Export stopy...."
+#
+#
+#, fuzzy
+msgid "&Export Wpt..."
 msgstr "&Export...."
 #
 #
 msgid "&Font family:"
 msgstr "Rodina &fontů:"
+#
+#
+#, fuzzy
+msgid "&Go To"
+msgstr "Navigovat sem"
 #
 #
 msgid "&Kilometers"
@@ -218,6 +246,9 @@ msgstr "&Kilometry"
 #
 msgid "&Nautical miles"
 msgstr "&Námořní míle"
+#
+msgid "&New"
+msgstr ""
 #
 #
 msgid "&OK"
@@ -228,6 +259,11 @@ msgid "&Point size:"
 msgstr "Velik&ost bodů:"
 #
 #
+#, fuzzy
+msgid "&Properties"
+msgstr "Vlastnosti"
+#
+#
 msgid "&Properties..."
 msgstr "&Vlastnosti"
 #
@@ -236,8 +272,18 @@ msgid "&Reverse"
 msgstr "&Otočit"
 #
 #
+#, fuzzy
+msgid "&Send to GPS"
+msgstr "Odeslat do GPS..."
+#
+#
 msgid "&Silence Alert"
 msgstr "Potlačit vý&strahu"
+#
+#
+#, fuzzy
+msgid "&Start Track"
+msgstr "Zobrazit stopy cílů"
 #
 #
 msgid "&Style:"
@@ -272,16 +318,17 @@ msgstr ""
 "Doporučení: Zkus zavřít ostatní aplikace."
 #
 #
-msgid "(Active Track)"
-msgstr "(Aktivní stopa)"
-#
-#
 msgid "(Unnamed Route)"
 msgstr "(Nepojmenovaná trasa)"
 #
 #
 msgid "(Unnamed Track)"
 msgstr "(Nepojmenovaná stopa)"
+#
+#
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Přejmenovat trasové body"
 #
 msgid "-"
 msgstr ""
@@ -374,9 +421,8 @@ msgid "Additional information"
 msgstr "Další informace"
 #
 #
-msgid ""
-"Aid to Navigation\n"
-"\n"
+#, fuzzy
+msgid "Aid to Navigation"
 msgstr ""
 "Pomůcka pro navigaci\n"
 "\n"
@@ -456,9 +502,17 @@ msgstr "CM93"
 msgid "CM93 Zoom Detail"
 msgstr "Detail přiblížení CM93"
 #
+msgid "CPA"
+msgstr ""
+#
 #
 msgid "CPA Calculation"
 msgstr "Výpočet CPA"
+#
+#
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "CPA/TCPA výstrahy"
 #
 #
 msgid "CPA/TCPA Alerts"
@@ -545,27 +599,10 @@ msgid "Class"
 msgstr "Třída"
 #
 #
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-"Třída neznámá\n"
-"\n"
-#
-#
-msgid ""
-"Class:     A\n"
-"\n"
+#, fuzzy
+msgid "Class:     "
 msgstr ""
 "Třída:     A\n"
-"\n"
-#
-#
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Třída:     B\n"
 "\n"
 #
 #
@@ -594,6 +631,12 @@ msgstr ""
 #
 msgid "Colors"
 msgstr "Barvy"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
 #
 #
 msgid "Could not resolve TCP/IP host '"
@@ -641,8 +684,9 @@ msgid "Deep Depth"
 msgstr "Velká hloubka"
 #
 #
-msgid "Delete All Waypoints..."
-msgstr "Smazat všechny trasové body..."
+#, fuzzy
+msgid "Delete All"
+msgstr "Vybrat vše"
 #
 #
 msgid "Delete Mark"
@@ -713,6 +757,11 @@ msgid "Drop Mark Here"
 msgstr "Umístit zde značku"
 #
 #
+#, fuzzy
+msgid "E&xport All..."
+msgstr "&Export...."
+#
+#
 msgid "ENC/Vector"
 msgstr "ENC/Vector"
 #
@@ -764,14 +813,6 @@ msgid "Export GPX file"
 msgstr "Exportuj GPX soubor"
 #
 #
-msgid "Export Route...."
-msgstr "Export trasy...."
-#
-#
-msgid "Export Track...."
-msgstr "Export stopy...."
-#
-#
 msgid "Fathoms"
 msgstr "Fathomy (Sáhy)"
 #
@@ -805,10 +846,6 @@ msgid "GPSD Data Server"
 msgstr "GPSD Data Server"
 #
 #
-msgid "GPX"
-msgstr "GPX"
-#
-#
 msgid "GRIB"
 msgstr "GRIB"
 #
@@ -830,6 +867,16 @@ msgstr "Volby grafického rozhraní"
 #
 #
 msgid "Go To Here"
+msgstr "Navigovat sem"
+#
+#
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Navigovat sem"
+#
+#
+#, fuzzy
+msgid "Go to "
 msgstr "Navigovat sem"
 #
 #
@@ -881,8 +928,14 @@ msgid "Leg/Route"
 msgstr "Úsek/Trasa"
 #
 #
-msgid "Leg:  "
+#, fuzzy
+msgid "Leg: from "
 msgstr "Úsek:"
+#
+#
+#, fuzzy
+msgid "Length"
+msgstr "Úsek"
 #
 #
 msgid "License"
@@ -953,6 +1006,11 @@ msgstr "Označit cíle za ztracené po (minut)"
 #
 msgid "Mark/WP Properties"
 msgstr "Označit/Vlastnosti TB"
+#
+#
+#, fuzzy
+msgid "Marks"
+msgstr "Nová značka"
 #
 #
 msgid "Max Detail Here"
@@ -1057,6 +1115,14 @@ msgstr "Informace OpenCPN"
 msgid "OpenCPN Message"
 msgstr "Zpráva OpenCPN"
 #
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
 #
 msgid "OpenCPN Route Create"
 msgstr "Vytvořit OpenCPN Trasu"
@@ -1138,6 +1204,12 @@ msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
 #
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Prosím restartuj OpenCPN pro aktivaci nového jazyka."
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
 #
 #
 msgid "Points"
@@ -1246,6 +1318,9 @@ msgstr "Stáří reportu:               %3d Sec.\n"
 msgid "Reverse Route"
 msgstr "Otočit trasu"
 #
+msgid "Rollover"
+msgstr ""
+#
 #
 msgid "Route"
 msgstr "Trasa"
@@ -1255,16 +1330,23 @@ msgid "Route Manager"
 msgstr "Správce tras"
 #
 #
-msgid "Route Manager..."
-msgstr "Správce tras..."
-#
-#
 msgid "Route Name"
 msgstr "Název trasy"
 #
 #
 msgid "Route Properties"
 msgstr "Vlastnosti trasy"
+#
+msgid "Route from Track"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Routes"
+msgstr "Trasa"
+#
+msgid "SOG COG"
+msgstr ""
 #
 #
 msgid "Safety Depth"
@@ -1309,10 +1391,6 @@ msgstr "Poslat"
 #
 msgid "Send Route To GPS"
 msgstr "Odeslat trasu do GPS"
-#
-#
-msgid "Send Route To GPS..."
-msgstr "Odeslat trasu do GPS..."
 #
 #
 msgid "Send To GPS..."
@@ -1377,14 +1455,6 @@ msgstr "Ukaž ENC text"
 #
 msgid "Show GPS/NMEA data stream window"
 msgstr "Zobrazit okno toku dat GPS/NMEA"
-#
-#
-msgid "Show GPX icons"
-msgstr "Zobrazit ikony GPX"
-#
-#
-msgid "Show GRIB dialog"
-msgstr "Ukaž dialog GRIB"
 #
 #
 msgid "Show GRIB icon"
@@ -1605,9 +1675,17 @@ msgstr "Zítra"
 msgid "ToolBox"
 msgstr "Nástroje"
 #
+msgid "ToolTips"
+msgstr ""
+#
 #
 msgid "Total Distance"
 msgstr "Celková vzdálenost"
+#
+#
+#, fuzzy
+msgid "Track Name"
+msgstr "Jméno značky"
 #
 #
 msgid "Track Properties"
@@ -1711,6 +1789,11 @@ msgid "Waypoint Locking"
 msgstr "Zamykání trasových bodů"
 #
 #
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Trasové body"
+#
+#
 msgid "Waypoints"
 msgstr "Trasové body"
 #
@@ -1758,6 +1841,9 @@ msgstr "Zvětšit"
 msgid "Zoom Out"
 msgstr "Zmenšit"
 #
+msgid "[Class] Type (Status)"
+msgstr ""
+#
 #
 msgid "cm93 Detail"
 msgstr "Detail cm93"
@@ -1769,3 +1855,77 @@ msgid ""
 msgstr ""
 "Konflikt verze libgps API.\n"
 "Opencpn nalezlo verzi %d.%d, ale potřebuje alespoň verzi 3.1"
+#
+#
+#
+#
+#~ msgid "&Delete All Routes..."
+#~ msgstr "&Smazat všechny trasy..."
+#
+#
+#
+#
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "&Smazat všechny stopy..."
+#
+#
+#
+#
+#~ msgid "(Active Track)"
+#~ msgstr "(Aktivní stopa)"
+#
+#
+#
+#
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Třída neznámá\n"
+#~ "\n"
+#
+#
+#
+#
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Třída:     B\n"
+#~ "\n"
+#
+#
+#
+#
+#~ msgid "Delete All Waypoints..."
+#~ msgstr "Smazat všechny trasové body..."
+#
+#
+#
+#
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+#
+#~ msgid "Route Manager..."
+#~ msgstr "Správce tras..."
+#
+#
+#
+#
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Odeslat trasu do GPS..."
+#
+#
+#
+#
+#~ msgid "Show GPX icons"
+#~ msgstr "Zobrazit ikony GPX"
+#
+#
+#
+#
+#~ msgid "Show GRIB dialog"
+#~ msgstr "Ukaž dialog GRIB"

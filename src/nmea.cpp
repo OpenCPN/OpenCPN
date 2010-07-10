@@ -1000,7 +1000,7 @@ void *OCP_NMEA_Thread::Entry()
                    if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                       tptr = rx_buffer;
 
-                   wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, "temp_buf overrun1");
+                   wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
 
                 }
 
@@ -1010,7 +1010,7 @@ void *OCP_NMEA_Thread::Entry()
                     if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                        tptr = rx_buffer;
 
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, "temp_buf overrun2");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
 
                     *ptmpbuf = 0;
 

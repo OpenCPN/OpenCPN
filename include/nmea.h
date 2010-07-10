@@ -403,8 +403,9 @@ typedef struct garmin_unit_info {
 
 
 /*              Packet structure for Pkt_ID = 51 (PVT Data Record)   */
-#pragma pack(push)  /* push current alignment to stack */
-#pragma pack(1)     /* set alignment to 1 byte boundary */
+//#pragma pack(push)  /* push current alignment to stack */
+//#pragma pack(1)     /* set alignment to 1 byte boundary */
+#pragma pack(push,1) /* push current alignment to stack, set alignment to 1 byte boundary */
 
 typedef struct {
         float   alt;
