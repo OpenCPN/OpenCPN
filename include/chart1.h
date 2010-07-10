@@ -64,11 +64,9 @@
 #define __CHART1_H__
 
 #include "wx/print.h"
-//#include "wx/printdlg.h"
 #include "wx/datetime.h"
 
 #ifdef __WXMSW__
-//#include "../resource.h"
 #include "wx/msw/private.h"
 #endif
 
@@ -90,7 +88,9 @@ int GetApplicationMemoryUse(void);
 // The point for anchor watch should really be a class...
 double AnchorDistFix( double const d, double const AnchorPointMinDist, double const AnchorPointMaxDist);   //  pjotrc 2010.02.22
 
+//    Fwd definitions
 class OCPN_NMEAEvent;
+class ChartCanvas;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -132,9 +132,9 @@ enum
       ID_GPXIMPORT,
       ID_GPXEXPORT,
       ID_TRACK,
-      ID_GRIB,
       ID_TBSTATBOX,
-      ID_MOB
+      ID_MOB,
+      ID_PLUGIN_BASE
 
 };
 
@@ -237,7 +237,6 @@ class ChartDirInfo
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
 
 
-
 class MyApp: public wxApp
 {
   public:
@@ -276,9 +275,6 @@ class MyFrame: public wxFrame
     void ClearRouteTool();
     void DoStackUp(void);
     void DoStackDown(void);
-    void UpdateToolbarStatusWindow(ChartBase *pchart, bool bSendSize = true);
-    void UpdateToolbarDynamics(void);
-    void UpdateToolbarStatusBox(bool bupdate_toolbar = true);
 
     void MouseEvent(wxMouseEvent& event);
     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
@@ -320,6 +316,8 @@ class MyFrame: public wxFrame
 
     double GetBestVPScale(ChartBase *pchart);
 
+    ChartCanvas *GetCanvasWindow(){ return m_pchart_canvas; }
+    void SetCanvasWindow(ChartCanvas *pcanv){ m_pchart_canvas = pcanv; }
 
     ColorScheme GetColorScheme();
     void SetAndApplyColorScheme(ColorScheme cs);
@@ -346,10 +344,15 @@ class MyFrame: public wxFrame
     int                 m_statTool_pos;
     string_to_pbitmap_hash *m_phash;
 
+    //      PlugIn support
+    int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
+    void RequestNewToolbar();
+
   private:
     void DoSetSize(void);
     void DoCOGSet(void);
 
+        //      Toolbar support
     ocpnToolBarSimple *CreateAToolbar();
     void DestroyMyToolbar();
     void UpdateToolbar(ColorScheme cs);
@@ -359,6 +362,14 @@ class MyFrame: public wxFrame
                          string_to_pbitmap_hash &hash);
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
+    void UpdateToolbarStatusWindow(ChartBase *pchart, bool bSendSize = true);
+    void UpdateToolbarDynamics(void);
+    void UpdateToolbarStatusBox(bool bupdate_toolbar = true);
+
+    bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
+
+
+
 
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
@@ -375,6 +386,7 @@ class MyFrame: public wxFrame
 
     int                 m_StatusBarFieldCount;
 
+    ChartCanvas         *m_pchart_canvas;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads
 
@@ -403,6 +415,11 @@ class MyFrame: public wxFrame
     wxToolBarToolBase *m_pStatDummyTool;
     wxStaticBitmap    *m_ptool_ct_dummyStaticBmp;
 //    wxBitmapButton      *m_ptool_ct_dummy_bb;
+
+
+    //      Plugin Support
+    int                 m_next_available_plugin_tool_id;
+
 
     DECLARE_EVENT_TABLE()
 };

@@ -51,7 +51,7 @@
 
 #include "dychart.h"
 
-#include "ocpn_pixel.h"
+//#include "ocpn_pixel.h"
 #include "bbox.h"
 #include "chcanv.h"         // for enums
 #include "chart1.h"

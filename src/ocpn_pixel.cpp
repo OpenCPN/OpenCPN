@@ -1142,7 +1142,7 @@ bool ocpnBitmap::CreateFromImage( const wxImage& image, int depth )
 // ocpnMemDC implementation
 // ============================================================================
 
-IMPLEMENT_DYNAMIC_CLASS(ocpnMemDC, wxMemoryDC)
+//IMPLEMENT_DYNAMIC_CLASS(ocpnMemDC, wxMemoryDC)
 
 
 ocpnMemDC::ocpnMemDC()

@@ -261,7 +261,7 @@ class WXDLLEXPORT wxPalette;
 // ocpnBitmapo: an optimized wxBitmap
 // ----------------------------------------------------------------------------
 
-class WXDLLEXPORT ocpnBitmap : public wxBitmap
+class /*WXDLLEXPORT*/ ocpnBitmap : public wxBitmap
 {
 public:
     // default ctor creates an invalid bitmap, you must Create() it later
@@ -306,7 +306,7 @@ protected:
 
 private:
 
-    DECLARE_DYNAMIC_CLASS(ocpnBitmapo)
+    DECLARE_DYNAMIC_CLASS(ocpnBitmap)
 };
 
 
@@ -318,7 +318,7 @@ private:
 //      ocpnMemDC Definition
 //----------------------------------------------------------------------------
 
-class WXDLLEXPORT ocpnMemDC : public wxMemoryDC
+class /*WXDLLEXPORT*/ ocpnMemDC : public wxMemoryDC
 {
     public:
         ocpnMemDC();
@@ -340,7 +340,7 @@ class WXDLLEXPORT ocpnMemDC : public wxMemoryDC
       wxDIB *m_pselectedDIB;
 #endif
 
-    DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnMemDC)
+ //   DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnMemDC)
 };
 
 #endif  // _OCPN_PIXEL_H_

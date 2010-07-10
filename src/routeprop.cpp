@@ -673,8 +673,8 @@ void RouteProp::OnEvtColDragEnd(wxListEvent& event)
  * MarkProp type definition
  */
 
-DEFINE_EVENT_TYPE(EVT_LLCHANGE)           // events from LatLonTextCtrl
-
+//DEFINE_EVENT_TYPE(EVT_LLCHANGE)           // events from LatLonTextCtrl
+const wxEventType EVT_LLCHANGE = wxNewEventType();
 
 IMPLEMENT_DYNAMIC_CLASS( MarkProp, wxDialog )
 

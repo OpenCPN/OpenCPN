@@ -196,16 +196,6 @@ class ViewPort
 };
 
 
-//    This is the callback function prototype used to call back registered overlay providers
-typedef bool (*RenderOverlayCallBackFunction)(wxMemoryDC *pmdc, ViewPort *vp);
-
-
-class OverlaySpec
-{
-      public:
-            int                                 m_sequence;
-            RenderOverlayCallBackFunction       m_render_callback;
-};
 
 
 class emboss_data
@@ -266,6 +256,8 @@ public:
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
 
+      int GetNextContextMenuId();
+
       void SetColorScheme(ColorScheme cs);
 
       //    Accessors
@@ -291,10 +283,7 @@ public:
       bool ZoomCanvasOut(double lat = 0., double lon = 0.);
       bool PanCanvas(int dx, int dy);
 
-      bool RegisterOverlayProvider(int sequence, RenderOverlayCallBackFunction pcallback);
-      bool UnRegisterOverlayProvider(int sequence, RenderOverlayCallBackFunction pcallback);
 
-      void ShowGribDialog(void);
       void ShowRouteManager(void);
       void ShowAISTargetList(void);
 
@@ -551,6 +540,7 @@ private:
       RoutePoint  *m_segShow_point_b;
 
       bool        m_b_rot_hidef;
+
 
 DECLARE_EVENT_TABLE()
 };

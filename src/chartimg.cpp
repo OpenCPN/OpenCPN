@@ -102,6 +102,7 @@
 #include "wx/dir.h"
 
 #include "chartimg.h"
+#include "ocpn_pixel.h"
 
 //  Why are these not in wx/prec.h?
 #include "wx/stream.h"

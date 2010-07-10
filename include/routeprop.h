@@ -253,7 +253,8 @@ public:
 //    Specifically, we need to catch loss-of-focus events and signal the parent dialog
 //    to update the mark's lat/lon dynamically.
 
-DECLARE_EVENT_TYPE(EVT_LLCHANGE, -1)
+//DECLARE_EVENT_TYPE(EVT_LLCHANGE, -1)
+extern /*expdecl*/ const wxEventType EVT_LLCHANGE;
 
 class LatLonTextCtrl: public wxTextCtrl
 {

@@ -87,6 +87,7 @@
 #include "cutil.h"
 #include "s52utils.h"
 #include "navutil.h"                    // for LogMessageOnce()
+#include "ocpn_pixel.h"
 
 #include <stdlib.h>                             // 261, min() becomes __min(), etc.
 

@@ -241,12 +241,6 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 
 extern bool             g_bUseGreenShip;
 
-extern wxString         g_grib_dir;
-extern bool             g_bShowGRIBIcon;
-extern bool             g_bGRIBUseHiDef;
-extern int              g_grib_dialog_x, g_grib_dialog_y;
-extern int              g_grib_dialog_sx, g_grib_dialog_sy;
-
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
@@ -2366,20 +2360,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
       Read ( _T ( "ShowChartOutlines" ),  &g_bShowOutlines, 0 );
       Read ( _T ( "GarminPersistance" ),  &g_bGarminPersistance, 0 );
-      Read ( _T ( "ShowGRIBIcon" ),  &g_bShowGRIBIcon, 0 );
-      Read ( _T ( "GRIBUseHiDef" ),  &g_bGRIBUseHiDef, 0 );
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );
-
-      g_grib_dialog_sx = Read ( _T ( "GRIBDialogSizeX" ), 300L );
-      g_grib_dialog_sy = Read ( _T ( "GRIBDialogSizeY" ), 540L );
-      g_grib_dialog_x =  Read ( _T ( "GRIBDialogPosX" ), 20L );
-      g_grib_dialog_y =  Read ( _T ( "GRIBDialogPosY" ), 20L );
-
-      if((g_grib_dialog_x < 0) || (g_grib_dialog_x > display_width))
-            g_grib_dialog_x = 5;
-      if((g_grib_dialog_y < 0) || (g_grib_dialog_y > display_height))
-            g_grib_dialog_y = 5;
 
       Read ( _T ( "StartWithTrackActive" ),  &g_bTrackCarryOver, 0 );
 
@@ -2571,11 +2553,6 @@ int MyConfig::LoadMyConfig ( int iteration )
             *g_pSENCPrefix = vals;
 
 #endif
-
-      SetPath ( _T ( "/Directories" ) );
-      Read ( _T ( "CM93DictionaryLocation" ), &g_CM93DictDir );
-
-      Read ( _T ( "GRIBDirectory" ), &g_grib_dir );
 
       SetPath ( _T ( "/Directories" ) );
       wxString vald;
@@ -3473,14 +3450,6 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
       Write ( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
 
-      Write ( _T ( "ShowGRIBIcon" ), g_bShowGRIBIcon );
-      Write ( _T ( "GRIBUseHiDef" ), g_bGRIBUseHiDef );
-
-      Write ( _T ( "GRIBDialogSizeX" ),  g_grib_dialog_sx );
-      Write ( _T ( "GRIBDialogSizeY" ),  g_grib_dialog_sy );
-      Write ( _T ( "GRIBDialogPosX" ),   g_grib_dialog_x );
-      Write ( _T ( "GRIBDialogPosY" ),   g_grib_dialog_y );
-
       Write ( _T ( "NMEALogWindowSizeX" ),  g_NMEALogWindow_sx );
       Write ( _T ( "NMEALogWindowSizeY" ),  g_NMEALogWindow_sy );
       Write ( _T ( "NMEALogWindowPosX" ),   g_NMEALogWindow_x );
@@ -3611,7 +3580,6 @@ void MyConfig::UpdateSettings()
       SetPath ( _T ( "/Directories" ) );
       Write ( _T ( "InitChartDir" ), *pInit_Chart_Dir );
       Write ( _T ( "GPXIODir" ), m_gpx_path );
-      Write ( _T ( "GRIBDirectory" ), g_grib_dir );
 
 
       if ( g_pnmea )

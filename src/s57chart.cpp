@@ -101,6 +101,7 @@
 #include "cutil.h"
 #include "georef.h"
 #include "navutil.h"                            // for LogMessageOnce
+#include "ocpn_pixel.h"
 
 #include "cpl_csv.h"
 #include "setjmp.h"

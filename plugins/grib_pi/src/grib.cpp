@@ -2,7 +2,7 @@
  *
  *
  * Project:  OpenCPN
- * Purpose:  GRIB Manager Object
+ * Purpose:  GRIB Object
  * Author:   David Register
  *
  ***************************************************************************
@@ -33,26 +33,15 @@
 #include <wx/wfstream.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include <wx/debug.h>
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-#include "dychart.h"
-#include "grib.h"
-#include "georef.h"
+#include "grib_pi.h"
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
-#define new DEBUG_NEW
-#endif
-
-
-CPL_CVSID ( "$Id: grib.cpp,v 1.17 2010/06/21 01:58:43 bdbcat Exp $" );
-
+/*
 extern FontMgr          *pFontMgr;
 extern ColorScheme      global_color_scheme;
 
@@ -64,21 +53,25 @@ extern wxString         g_grib_dir;
 extern ChartCanvas     *cc1;
 
 extern bool             g_bGRIBUseHiDef;
+*/
 
-#include "bitmaps/folder.xpm"
+
+
+#include "folder.xpm"
 
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY ( ArrayOfGribRecordSets );
 WX_DEFINE_OBJARRAY ( ArrayOfGribRecordPtrs );
 
-static GRIBOverlayFactory   *s_pGRIBOverlayFactory;
-
-static bool GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ( wxMemoryDC *pmdc, ViewPort *vp )
+//static GRIBOverlayFactory   *s_pGRIBOverlayFactory;
+/*
+static bool GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ( wxMemoryDC *pmdc, PlugIn_ViewPort *vp )
 {
       return s_pGRIBOverlayFactory->RenderGribOverlay ( pmdc, vp );
 
 }
+*/
 
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime ( const wxString& first, const wxString& second )
@@ -119,18 +112,17 @@ END_EVENT_TABLE()
 
 GRIBUIDialog::GRIBUIDialog( )
 {
+//      printf("GRIBUIDialog ctor\n");
       Init();
 }
 
 GRIBUIDialog::~GRIBUIDialog( )
 {
-      delete s_pGRIBOverlayFactory;
 }
 
 
 void GRIBUIDialog::Init( )
 {
-      s_pGRIBOverlayFactory = new GRIBOverlayFactory;
       m_sequence_active = -1;
       m_pCurrentGribRecordSet = NULL;
       m_pRecordTree = NULL;
@@ -144,9 +136,15 @@ void GRIBUIDialog::Init( )
 }
 
 
-bool GRIBUIDialog::Create ( wxWindow *parent, wxWindowID id, const wxString& caption, const wxString initial_grib_dir,
-                            const wxPoint& pos, const wxSize& size, long style )
+bool GRIBUIDialog::Create ( wxWindow *parent, grib_pi *ppi, wxWindowID id,
+                              const wxString& caption, const wxString initial_grib_dir,
+                              const wxPoint& pos, const wxSize& size, long style )
 {
+//      printf("GRIBUIDialog::Create\n");
+
+      pParent = parent;
+      pPlugIn = ppi;
+
       m_currentGribDir = initial_grib_dir;
 
       //    As a display optimization....
@@ -156,8 +154,8 @@ bool GRIBUIDialog::Create ( wxWindow *parent, wxWindowID id, const wxString& cap
       //    will not detract from night-vision
 
       long wstyle = wxDEFAULT_FRAME_STYLE;
-      if ( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) )
-            wstyle |= ( wxNO_BORDER );
+//      if ( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) )
+//            wstyle |= ( wxNO_BORDER );
 
       wxSize size_min = size;
 //      size_min.IncTo ( wxSize ( 500,600 ) );
@@ -165,13 +163,13 @@ bool GRIBUIDialog::Create ( wxWindow *parent, wxWindowID id, const wxString& cap
             return false;
 
 
-      wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
-      SetBackgroundColour ( back_color );
+//      wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
+//      SetBackgroundColour ( back_color );
 
-      m_dFont = pFontMgr->GetFont ( _T ( "GRIBUIDialog" ), 10 );
-      SetFont ( *m_dFont );
+//      m_dFont = pFontMgr->GetFont ( _T ( "GRIBUIDialog" ), 10 );
+//      SetFont ( *m_dFont );
 
-      SetForegroundColour ( pFontMgr->GetFontColor ( _T ( "GRIBUIDialog" ) ) );
+//      SetForegroundColour ( pFontMgr->GetFontColor ( _T ( "GRIBUIDialog" ) ) );
 
       m_pfolder_bitmap = new wxBitmap ( folder );   // comes from XPM include
 
@@ -311,13 +309,13 @@ void GRIBUIDialog::CreateControls()
       boxSizer->Add ( AckBox, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
 //    Button color
-      wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );;
+//      wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );;
 
 // The OK button
       wxButton* bOK = new wxButton ( this, ID_OK, _( "&Close" ),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       AckBox->Add ( bOK, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-      bOK->SetBackgroundColour ( button_color );
+//      bOK->SetBackgroundColour ( button_color );
 }
 
 
@@ -471,16 +469,16 @@ void GRIBUIDialog::UpdateTrackingControls(void)
 
 void GRIBUIDialog::OnClose ( wxCloseEvent& event )
 {
-      g_grib_dir = m_currentGribDir;
+      pPlugIn->SetGribDir(m_currentGribDir);
 
       //    Unregister any existing GRIB overlays
       while ( m_sequence_active != -1 )
       {
-            cc1->UnRegisterOverlayProvider ( m_sequence_active, ( RenderOverlayCallBackFunction ) ( GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ) );
+//            cc1->UnRegisterOverlayProvider ( m_sequence_active, ( RenderOverlayCallBackFunction ) ( GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ) );
             m_sequence_active--;
       }
 
-      cc1->Refresh();
+      RequestRefresh(pParent);
 
       delete m_pRecordTree;
 
@@ -488,7 +486,7 @@ void GRIBUIDialog::OnClose ( wxCloseEvent& event )
       delete m_pitemCurrentGribDirectoryCtrl;
 
       Destroy();
-      g_pGribDialog = NULL;
+      pPlugIn->OnGribDialogClose();
 }
 
 
@@ -502,8 +500,8 @@ void GRIBUIDialog::OnMove ( wxMoveEvent& event )
 {
       //    Record the dialog position
       wxPoint p = event.GetPosition();
-      g_grib_dialog_x = p.x;
-      g_grib_dialog_y = p.y;
+      pPlugIn->SetGribDialogX(p.x);
+      pPlugIn->SetGribDialogY(p.y);
 
       event.Skip();
 }
@@ -512,8 +510,8 @@ void GRIBUIDialog::OnSize ( wxSizeEvent& event )
 {
       //    Record the dialog size
       wxSize p = event.GetSize();
-      g_grib_dialog_sx = p.x;
-      g_grib_dialog_sy = p.y;
+      pPlugIn->SetGribDialogSizeX(p.x);
+      pPlugIn->SetGribDialogSizeY(p.y);
 
       event.Skip();
 }
@@ -538,9 +536,13 @@ void GRIBUIDialog::OnChooseDirClick ( wxCommandEvent& event )
                   PopulateTreeControl();
                   m_pRecordTree->Expand ( m_RecordTree_root_id );
             }
+
+            pPlugIn->GetGRIBOverlayFactory()->Reset();
+
             Refresh();
 
-            g_grib_dir = m_currentGribDir;
+            pPlugIn->SetGribDir(m_currentGribDir);
+
       }
 }
 
@@ -606,7 +608,7 @@ void GRIBUIDialog::PopulateTreeControl()
             m_pRecordTree->m_file_id_array[i] = m_pRecordTree->AppendItem ( m_RecordTree_root_id,
                                  fn.GetFullName(), -1, -1, pmtid );
 
-            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[i], GetGlobalColor ( _T ( "UBLCK")));
+//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[i], GetGlobalColor ( _T ( "UBLCK")));
       }
 
 
@@ -645,10 +647,10 @@ void GRIBUIDialog::PopulateTreeControlGRS ( GRIBFile *pgribfile, int file_index 
       //    each under the proper file item.
       ArrayOfGribRecordSets *rsa = pgribfile->GetRecordSetArrayPtr();
 
-      if(rsa->GetCount() == 0)
-            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "DILG1")));
-      else
-            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "BLUE2")));
+//      if(rsa->GetCount() == 0)
+//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "DILG1")));
+//      else
+//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "BLUE2")));
 
       for ( unsigned int i=0 ; i < rsa->GetCount() ; i++ )
       {
@@ -734,25 +736,18 @@ void GRIBUIDialog::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
 
             }
       }
-      //    Unregister any existing GRIB overlays
-      while ( m_sequence_active != -1 )
-      {
-            cc1->UnRegisterOverlayProvider ( m_sequence_active, ( RenderOverlayCallBackFunction ) ( GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ) );
-            m_sequence_active--;
-      }
 
       if(pGribRecordSet)
       {
       //    Give the overlay factory the GribRecordSet
-            s_pGRIBOverlayFactory->SetGribRecordSet ( pGribRecordSet );
+            pPlugIn->GetGRIBOverlayFactory()->SetGribRecordSet ( pGribRecordSet );
 
             SetFactoryOptions();
+       }
 
-            m_sequence_active++;
-            cc1->RegisterOverlayProvider ( m_sequence_active, ( RenderOverlayCallBackFunction ) ( GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ) );
-      }
 
-      cc1->Refresh();
+//      printf("GRIBUI: Requesting Refresh\n");
+      RequestRefresh(pParent);
 
       UpdateTrackingControls();
 }
@@ -761,14 +756,15 @@ void GRIBUIDialog::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
 void GRIBUIDialog::SetFactoryOptions()
 {
             //    Set the visibility options
-      s_pGRIBOverlayFactory->EnableRenderWind(m_cbWindSpeed.GetValue());
-      s_pGRIBOverlayFactory->EnableRenderPressure(m_cbPress.GetValue());
-      s_pGRIBOverlayFactory->EnableRenderSigHw(m_cbSigHw.GetValue());
-      s_pGRIBOverlayFactory->EnableRenderQuickscat(m_cbWindSpeed.GetValue());           // Note that Quickscat display shares with Wind Speed/Dir forecast
-      s_pGRIBOverlayFactory->EnableRenderSeatmp(m_cbSeaTmp.GetValue());
-      s_pGRIBOverlayFactory->EnableRenderSeaCurrent(m_cbSeaCurrent.GetValue());
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderWind(m_cbWindSpeed.GetValue());
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderPressure(m_cbPress.GetValue());
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderSigHw(m_cbSigHw.GetValue());
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderQuickscat(m_cbWindSpeed.GetValue());           // Note that Quickscat display shares with Wind Speed/Dir forecast
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderSeatmp(m_cbSeaTmp.GetValue());
+      pPlugIn->GetGRIBOverlayFactory()->EnableRenderSeaCurrent(m_cbSeaCurrent.GetValue());
 
-      cc1->Refresh();
+      RequestRefresh(pParent);
+
 }
 
 
@@ -786,6 +782,9 @@ GRIBOverlayFactory::GRIBOverlayFactory()
       m_pbm_crain   = NULL;
       m_pbm_seatemp = NULL;
       m_pbm_current = NULL;
+
+      m_bReadyToRender = false;
+
 }
 
 GRIBOverlayFactory::~GRIBOverlayFactory()
@@ -804,10 +803,9 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
       m_IsobarArray.Empty();
 
 }
-
-void GRIBOverlayFactory::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
+void GRIBOverlayFactory::Reset()
 {
-      m_pGribRecordSet = pGribRecordSet;
+      m_pGribRecordSet = NULL;
 
       ClearCachedData();
 
@@ -818,6 +816,27 @@ void GRIBOverlayFactory::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
             delete piso;
       }
       m_IsobarArray.Clear();                            // Will need to rebuild Isobar list
+
+      m_bReadyToRender = false;
+
+}
+
+void GRIBOverlayFactory::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
+{
+      Reset();
+      m_pGribRecordSet = pGribRecordSet;
+/*
+      ClearCachedData();
+
+      //    Clear out the cached isobars
+      for(unsigned int i = 0 ; i < m_IsobarArray.GetCount() ; i++)
+      {
+            IsoLine *piso = (IsoLine *)m_IsobarArray.Item(i);
+            delete piso;
+      }
+      m_IsobarArray.Clear();                            // Will need to rebuild Isobar list
+*/
+      m_bReadyToRender = true;
 
 }
 void GRIBOverlayFactory::ClearCachedData(void)
@@ -836,8 +855,10 @@ void GRIBOverlayFactory::ClearCachedData(void)
       m_pbm_current = NULL;
 }
 
-bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, ViewPort *vp )
+bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *vp )
 {
+//      printf("GRIBOverlayFactory::Render\n");
+
       if ( !m_pGribRecordSet )
             return false;
 
@@ -958,8 +979,11 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, ViewPort *vp )
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
+//      printf("renderGRIBWind\n");
+
+
        //    Get the the grid
       int imax = pGRX->getNi();                  // Longitude
       int jmax = pGRX->getNj();                  // Latitude
@@ -977,11 +1001,15 @@ bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMe
 
       int oldx = -1000; int oldy = -1000;
 
+      wxColour colour;
+      GetGlobalColor ( _T ( "YELO2" ), &colour );
+
       for(int i=0 ; i < imax ; i++)
       {
             double  lonl = pGRX->getX(i);
             double  latl = pGRX->getY(0);
-            wxPoint pl = GetDCPixPoint(vp, latl, lonl);
+            wxPoint pl;
+            GetCanvasPixLL(vp, &pl, latl, lonl);
 
             if(abs(pl.x - oldx) >= space)
             {
@@ -990,19 +1018,20 @@ bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMe
                   {
                         double  lon = pGRX->getX(i);
                         double  lat = pGRX->getY(j);
-                        wxPoint p = GetDCPixPoint(vp, lat, lon);
+                        wxPoint p;
+                        GetCanvasPixLL(vp, &p, lat, lon);
 
                         if(abs(p.y - oldy) >= space)
                         {
                               oldy = p.y;
 
-                              if(vp->vpBBox.PointInBox(lon, lat, 0.) || vp->vpBBox.PointInBox(lon - 360., lat, 0.))
+                              if(PointInLLBox(vp, lon, lat) || PointInLLBox(vp, lon-360., lat))
                               {
                                     double vx = pGRX->getValue(i, j);
                                     double vy = pGRY->getValue(i, j);
 
                                     if (vx != GRIB_NOTDEF && vy != GRIB_NOTDEF)
-                                          drawWindArrowWithBarbs(pmdc, p.x, p.y, vx, vy, (lat < 0.), GetGlobalColor ( _T ( "YELO2" ) ));
+                                          drawWindArrowWithBarbs(pmdc, p.x, p.y, vx, vy, (lat < 0.), colour);
                               }
                         }
                   }
@@ -1011,8 +1040,9 @@ bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMe
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
+
       wxDateTime t ( m_pGribRecordSet->m_Reference_Time );
       wxDateTime tnow = wxDateTime::Now();
       wxTimeSpan dt = tnow - t;
@@ -1038,7 +1068,8 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
       {
             double  lonl = pGRX->getX(i);
             double  latl = pGRX->getY(0);
-            wxPoint pl = GetDCPixPoint(vp, latl, lonl);
+            wxPoint pl;
+            GetCanvasPixLL(vp, &pl, latl, lonl);
 
             if(abs(pl.x - oldx) >= space)
             {
@@ -1047,13 +1078,14 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
                   {
                         double  lon = pGRX->getX(i);
                         double  lat = pGRX->getY(j);
-                        wxPoint p = GetDCPixPoint(vp, lat, lon);
+                        wxPoint p;
+                        GetCanvasPixLL(vp, &p, lat, lon);
 
                         if(abs(p.y - oldy) >= space)
                         {
                               oldy = p.y;
 
-                              if(vp->vpBBox.PointInBox(lon, lat, 0.) || vp->vpBBox.PointInBox(lon - 360., lat, 0.))
+                              if(PointInLLBox(vp, lon, lat) || PointInLLBox(vp, lon-360., lat))
                               {
                                     double vx = pGRX->getValue(i, j);
                                     double vy = pGRY->getValue(i, j);
@@ -1088,23 +1120,32 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
 }
 
 
-bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
-      wxPoint porg = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMin());
+//      printf("renderGRIBSigWh\n");
+
+      wxPoint porg;
+      GetCanvasPixLL(vp,  &porg, pGR->getLatMax(), pGR->getLonMin());
 
       //    Check two BBoxes....
       //    TODO Make a better Intersect method
-      wxBoundingBox grib_bb(pGR->getLonMin(), pGR->getLatMin(), pGR->getLonMax(), pGR->getLatMax());
-      wxBoundingBox grib_bb1(pGR->getLonMin()-360., pGR->getLatMin(), pGR->getLonMax()-360., pGR->getLatMax());
 
-      if((vp->vpBBox.Intersect(grib_bb) != _OUT) || (vp->vpBBox.Intersect(grib_bb1) != _OUT))
+      bool bdraw = false;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin(), pGR->getLonMax(), 0.) != _OUT)
+            bdraw= true;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin() - 360., pGR->getLonMax() - 360., 0.) != _OUT)
+            bdraw= true;
+
+      if(bdraw)
       {
 
       // If needed, create the bitmap
             if(m_pbm_sigwh == NULL)
             {
-                  wxPoint pmin = GetDCPixPoint(vp,  pGR->getLatMin(), pGR->getLonMin());
-                  wxPoint pmax = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMax());
+                  wxPoint pmin;
+                  GetCanvasPixLL(vp,  &pmin, pGR->getLatMin(), pGR->getLonMin());
+                  wxPoint pmax;
+                  GetCanvasPixLL(vp,  &pmax, pGR->getLatMax(), pGR->getLonMax());
 
                   int width = abs(pmax.x - pmin.x);
                   int height = abs(pmax.y - pmin.y);
@@ -1129,7 +1170,7 @@ bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, View
                                     double lat, lon;
                                     p.x = ipix + porg.x;
                                     p.y = jpix + porg.y;
-                                    vp->GetMercatorLLFromPix( p, &lat, &lon);
+                                    GetCanvasLLPix( vp, p, &lat, &lon);
 
                                     double  vh = pGR->getInterpolatedValue(lon, lat);
 
@@ -1202,8 +1243,9 @@ bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, View
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
+//      printf("renderGRIBWvDir\n");
 
       //    Get the the grid
       int imax = pGR->getNi();                  // Longitude
@@ -1216,11 +1258,15 @@ bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, View
 
       int oldx = -1000; int oldy = -1000;
 
+      wxColour colour;
+      GetGlobalColor ( _T ( "UBLCK" ), &colour );
+
       for(int i=0 ; i < imax ; i++)
       {
             double  lonl = pGR->getX(i);
             double  latl = pGR->getY(0);
-            wxPoint pl = GetDCPixPoint(vp, latl, lonl);
+            wxPoint pl;
+            GetCanvasPixLL(vp, &pl, latl, lonl);
 
             if(abs(pl.x - oldx) >= space)
             {
@@ -1229,40 +1275,52 @@ bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, View
                   {
                         double  lon = pGR->getX(i);
                         double  lat = pGR->getY(j);
-                        wxPoint p = GetDCPixPoint(vp, lat, lon);
+                        wxPoint p;
+                        GetCanvasPixLL(vp, &p, lat, lon);
 
                         if(abs(p.y - oldy) >= space)
                         {
                               oldy = p.y;
 
-                              if(vp->vpBBox.PointInBox(lon, lat, 0.) || vp->vpBBox.PointInBox(lon - 360., lat, 0.))
+                              if(PointInLLBox(vp, lon, lat) || PointInLLBox(vp, lon-360., lat))
                               {
                                     double dir = pGR->getValue(i, j);
 
                                     if (dir != GRIB_NOTDEF)
-                                          drawWaveArrow(pmdc, p.x, p.y, dir-90., GetGlobalColor ( _T ( "UBLCK" ) ));
+                                          drawWaveArrow(pmdc, p.x, p.y, dir-90., colour);
                               }
                         }
                   }
             }
       }
+
       return true;
 }
 
 
-bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
-      wxPoint porg = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMin());
-      wxBoundingBox grib_bb(pGR->getLonMin(), pGR->getLatMin(), pGR->getLonMax(), pGR->getLatMax());
+//      printf("renderGRIBCRAIN\n");
 
-      if(vp->vpBBox.Intersect(grib_bb) != _OUT)
+      wxPoint porg;
+      GetCanvasPixLL(vp,  &porg, pGR->getLatMax(), pGR->getLonMin());
+
+      bool bdraw = false;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin(), pGR->getLonMax(), 0.) != _OUT)
+            bdraw= true;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin() - 360., pGR->getLonMax() - 360., 0.) != _OUT)
+            bdraw= true;
+
+      if(bdraw)
       {
 
       // If needed, create the bitmap
             if(m_pbm_crain == NULL)
             {
-                  wxPoint pmin = GetDCPixPoint(vp,  pGR->getLatMin(), pGR->getLonMin());
-                  wxPoint pmax = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMax());
+                  wxPoint pmin;
+                  GetCanvasPixLL(vp,  &pmin, pGR->getLatMin(), pGR->getLonMin());
+                  wxPoint pmax;
+                  GetCanvasPixLL(vp,  &pmax, pGR->getLatMax(), pGR->getLonMax());
 
                   int width = abs(pmax.x - pmin.x);
                   int height = abs(pmax.y - pmin.y);
@@ -1287,7 +1345,7 @@ bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, View
                                           double lat, lon;
                                           p.x = ipix + porg.x;
                                           p.y = jpix + porg.y;
-                                          vp->GetMercatorLLFromPix( p, &lat, &lon);
+                                          GetCanvasLLPix( vp, p, &lat, &lon);
 
                                           double  vh = pGR->getInterpolatedValue(lon, lat);
 
@@ -1358,23 +1416,31 @@ bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, View
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
-      wxPoint porg = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMin());
+//      printf("renderGRIBSeaTemp\n");
+
+      wxPoint porg;
+      GetCanvasPixLL(vp,  &porg, pGR->getLatMax(), pGR->getLonMin());
 
       //    Check two BBoxes....
       //    TODO Make a better Intersect method
-      wxBoundingBox grib_bb(pGR->getLonMin(), pGR->getLatMin(), pGR->getLonMax(), pGR->getLatMax());
-      wxBoundingBox grib_bb1(pGR->getLonMin()-360., pGR->getLatMin(), pGR->getLonMax()-360., pGR->getLatMax());
+      bool bdraw = false;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin(), pGR->getLonMax(), 0.) != _OUT)
+            bdraw= true;
+      if(Intersect(vp, pGR->getLatMin(), pGR->getLatMax(), pGR->getLonMin() - 360., pGR->getLonMax() - 360., 0.) != _OUT)
+            bdraw= true;
 
-      if((vp->vpBBox.Intersect(grib_bb) != _OUT) || (vp->vpBBox.Intersect(grib_bb1) != _OUT))
+      if(bdraw)
       {
 
       // If needed, create the bitmap
             if(m_pbm_seatemp == NULL)
             {
-                  wxPoint pmin = GetDCPixPoint(vp,  pGR->getLatMin(), pGR->getLonMin());
-                  wxPoint pmax = GetDCPixPoint(vp,  pGR->getLatMax(), pGR->getLonMax());
+                  wxPoint pmin;
+                  GetCanvasPixLL(vp,  &pmin, pGR->getLatMin(), pGR->getLonMin());
+                  wxPoint pmax;
+                  GetCanvasPixLL(vp,  &pmax, pGR->getLatMax(), pGR->getLonMax());
 
                   int width = abs(pmax.x - pmin.x);
                   int height = abs(pmax.y - pmin.y);
@@ -1399,7 +1465,7 @@ bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, Vi
                                           double lat, lon;
                                           p.x = ipix + porg.x;
                                           p.y = jpix + porg.y;
-                                          vp->GetMercatorLLFromPix( p, &lat, &lon);
+                                          GetCanvasLLPix( vp, p, &lat, &lon);
 
                                           double  vh = pGR->getInterpolatedValue(lon, lat);
 
@@ -1469,23 +1535,32 @@ bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, Vi
 }
 
 
-bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
-      wxPoint porg = GetDCPixPoint(vp,  pGRX->getLatMax(), pGRX->getLonMin());
+//      printf("renderGRIBCurrent\n");
+
+
+      wxPoint porg;
+      GetCanvasPixLL(vp,  &porg, pGRX->getLatMax(), pGRX->getLonMin());
 
       //    Check two BBoxes....
       //    TODO Make a better Intersect method
-      wxBoundingBox grib_bb(pGRX->getLonMin(), pGRX->getLatMin(), pGRX->getLonMax(), pGRX->getLatMax());
-      wxBoundingBox grib_bb1(pGRX->getLonMin()-360., pGRX->getLatMin(), pGRX->getLonMax()-360., pGRX->getLatMax());
+      bool bdraw = false;
+      if(Intersect(vp, pGRX->getLatMin(), pGRX->getLatMax(), pGRX->getLonMin(), pGRX->getLonMax(), 0.) != _OUT)
+            bdraw= true;
+      if(Intersect(vp, pGRX->getLatMin(), pGRX->getLatMax(), pGRX->getLonMin() - 360., pGRX->getLonMax() - 360., 0.) != _OUT)
+            bdraw= true;
 
-      if((vp->vpBBox.Intersect(grib_bb) != _OUT) || (vp->vpBBox.Intersect(grib_bb1) != _OUT))
+      if(bdraw)
       {
 
       // If needed, create the bitmap
             if(m_pbm_current == NULL)
             {
-                  wxPoint pmin = GetDCPixPoint(vp,  pGRX->getLatMin(), pGRX->getLonMin());
-                  wxPoint pmax = GetDCPixPoint(vp,  pGRX->getLatMax(), pGRX->getLonMax());
+                  wxPoint pmin;
+                  GetCanvasPixLL(vp,  &pmin, pGRX->getLatMin(), pGRX->getLonMin());
+                  wxPoint pmax;
+                  GetCanvasPixLL(vp,  &pmax, pGRX->getLatMax(), pGRX->getLonMax());
 
                   int width = abs(pmax.x - pmin.x);
                   int height = abs(pmax.y - pmin.y);
@@ -1510,7 +1585,7 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, w
                                           double lat, lon;
                                           p.x = ipix + porg.x;
                                           p.y = jpix + porg.y;
-                                          vp->GetMercatorLLFromPix( p, &lat, &lon);
+                                          GetCanvasLLPix( vp, p, &lat, &lon);
 
                                           double vx = pGRX->getInterpolatedValue(lon, lat);
                                           double vy = pGRY->getInterpolatedValue(lon, lat);
@@ -1574,7 +1649,6 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, w
             }
 
       }
-
 
       return true;
 }
@@ -1715,8 +1789,9 @@ wxColour GRIBOverlayFactory::GetSeaCurrentGraphicColor(double val_in)
       return c;
 }
 
-bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
+#if 0
       //    Initialize the array of Isobars if necessary
       if(!m_IsobarArray.GetCount())
       {
@@ -1745,7 +1820,7 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, V
             */
 
       }
-
+#endif
       return true;
 }
 
@@ -1773,11 +1848,6 @@ void GRIBOverlayFactory::drawWaveArrow(wxMemoryDC *pmdc, int i, int j, double an
 
 
 
-
-wxPoint GRIBOverlayFactory::GetDCPixPoint(ViewPort *vp, double lat, double lon)
-{
-      return vp->GetMercatorPixFromLL(lat, lon);
-}
 
 void GRIBOverlayFactory::drawWindArrowWithBarbs(wxMemoryDC *pmdc,
                                       int i, int j, double vx, double vy,
@@ -1883,7 +1953,7 @@ void GRIBOverlayFactory::drawTransformedLine( wxMemoryDC *pmdc, wxPen pen,
       ll = (int) (k*si+l*co +0.5) + dj;
 
 #if wxUSE_GRAPHICS_CONTEXT
-      if(g_bGRIBUseHiDef)
+      if(0/*g_bGRIBUseHiDef*/)
       {
             if(m_pgc)
             {
@@ -2110,4 +2180,41 @@ GRIBFile::GRIBFile ( const wxString file_name )
 GRIBFile::~GRIBFile ()
 {
       delete  m_pGribReader;
+}
+
+
+// Calculates if two boxes intersect. If so, the function returns _ON.
+// If they do not intersect, two scenario's are possible:
+// other is outside this -> return _OUT
+// other is inside this -> return _IN
+OVERLAP Intersect(PlugIn_ViewPort *vp,
+       double lat_min, double lat_max, double lon_min, double lon_max, double Marge)
+{
+
+    if (((vp->lon_min - Marge) > (lon_max + Marge)) ||
+         ((vp->lon_max + Marge) < (lon_min - Marge)) ||
+         ((vp->lat_max + Marge) < (lat_min - Marge)) ||
+         ((vp->lat_min - Marge) > (lat_max + Marge)))
+        return _OUT;
+
+    // Check if other.bbox is inside this bbox
+    if ((vp->lon_min <= lon_min) &&
+         (vp->lon_max >= lon_max) &&
+         (vp->lat_max >= lat_max) &&
+         (vp->lat_min <= lat_min))
+        return _IN;
+
+    // Boundingboxes intersect
+    return _ON;
+}
+
+// Is the given point in the vp ??
+bool PointInLLBox(PlugIn_ViewPort *vp, double x, double y)
+{
+
+
+    if (  x >= (vp->lon_min) && x <= (vp->lon_max) &&
+            y >= (vp->lat_min) && y <= (vp->lat_max) )
+            return TRUE;
+    return FALSE;
 }

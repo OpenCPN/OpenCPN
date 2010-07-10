@@ -174,7 +174,9 @@ class OCPN_NMEAEvent: public wxEvent
 
 };
 
-    DECLARE_EVENT_TYPE(wxEVT_OCPN_NMEA, 6666)
+//    DECLARE_EVENT_TYPE(wxEVT_OCPN_NMEA, 6666)
+    extern /*expdecl*/ const wxEventType wxEVT_OCPN_NMEA;
+
 
 
 // code implementing the event type and the event class
@@ -283,8 +285,10 @@ typedef enum ENUM_BUFFER_STATE
 
 
 //          Inter-thread communication event declaration
-DECLARE_EVENT_TYPE(EVT_NMEA, -1)
-DECLARE_EVENT_TYPE(EVT_THREADMSG, -1)
+//DECLARE_EVENT_TYPE(EVT_NMEA, -1)
+extern /*expdecl*/ const wxEventType EVT_NMEA;
+//DECLARE_EVENT_TYPE(EVT_THREADMSG, -1)
+extern /*expdecl*/ const wxEventType EVT_THREADMSG;
 
 
 class OCP_NMEA_Thread: public wxThread

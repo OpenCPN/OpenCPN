@@ -304,11 +304,6 @@ public:
 //    For "AIS Options"
     wxComboBox              *m_itemAISListBox;
 
-//    For "GRIB" Page
-    wxPanel*                itemPanelGRIB;
-    wxCheckBox              *pGRIBShowIcon;
-    wxCheckBox              *pGRIBUseHiDef;
-
 //    For "Etc." Page
     wxPanel*                itemPanelAdvanced;
     wxCheckBox              *pGPXShowIcons;

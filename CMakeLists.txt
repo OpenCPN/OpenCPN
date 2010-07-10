@@ -29,9 +29,11 @@ PROJECT(OpenCPN)
 SET(PACKAGE_NAME opencpn)
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-MESSAGE (STATUS "*** Building ${PROJECT} ${PACKAGE_VERSION} ***")
+MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
-SET(CMAKE_BUILD_TYPE Debug)
+add_subdirectory (plugins)
+
+#SET(CMAKE_BUILD_TYPE Debug)
 
 IF (PREFIX)
 	SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -59,6 +61,13 @@ IF(WIN32)
 ENDIF(WIN32)
  
 SET(wxWidgets_USE_LIBS base core net xml html adv)
+
+# These options can be used to set the linux widgets build type
+#SET( wxWidgets_USE_DEBUG ON)
+#SET( wxWidgets_USE_UNICODE ON)
+#SET( wxWidgets_USE_UNIVERSAL OFF)
+#SET( wxWidgets_USE_STATIC OFF)
+
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
 #INCLUDE_DIRECTORIES(${wxWidgets_INCLUDE_DIRS})
@@ -87,82 +96,47 @@ FIND_PACKAGE(Gettext REQUIRED)
 # header files and cpp/c files and CMake will sort them out
 
 SET(SRC_NMEA0183
-		src/nmea.cpp 
-		src/nmea0183/latlong.cpp 
-		src/nmea0183/long.cpp 
-		src/nmea0183/nmea0183.cpp 
-		src/nmea0183/nmea0183.hpp 
-		src/nmea0183/response.cpp 
-		src/nmea0183/rmb.cpp 
-		src/nmea0183/sentence.cpp 
-		src/nmea0183/talkerid.cpp 
-		src/nmea0183/rmc.cpp 
-		src/nmea0183/hexvalue.cpp 
-		src/nmea0183/lat.cpp 
-		src/nmea0183/expid.cpp 
-		src/nmea0183/wpl.cpp 
-		src/nmea0183/rte.cpp 
-		src/nmea0183/hdt.cpp 
-		src/nmea0183/hdg.cpp 
-		src/nmea0183/hdm.cpp 
-		src/nmea0183/gll.cpp 
-		src/nmea0183/vtg.cpp 
-		src/nmea0183/gga.cpp 
-		src/nmea0183/gsv.cpp 
+		include/nmea.h
+		src/nmea.cpp
+		src/nmea0183/LatLong.hpp
+		src/nmea0183/latlong.cpp
+		src/nmea0183/long.cpp
+		src/nmea0183/nmea0183.cpp
+		src/nmea0183/nmea0183.hpp
+		src/nmea0183/Response.hpp
+		src/nmea0183/response.cpp
+		src/nmea0183/RMB.hpp
+		src/nmea0183/rmb.cpp
+		src/nmea0183/Sentence.hpp
+		src/nmea0183/sentence.cpp
+		src/nmea0183/talkerid.cpp
+		src/nmea0183/RMC.HPP
+		src/nmea0183/rmc.cpp
+		src/nmea0183/hexvalue.cpp
+		src/nmea0183/lat.cpp
+		src/nmea0183/expid.cpp
+		src/nmea0183/wpl.hpp
+		src/nmea0183/wpl.cpp
+		src/nmea0183/rte.hpp
+		src/nmea0183/rte.cpp
+		src/nmea0183/hdt.hpp
+		src/nmea0183/hdt.cpp
+		src/nmea0183/hdg.hpp
+		src/nmea0183/hdg.cpp
+		src/nmea0183/hdm.hpp
+		src/nmea0183/hdm.cpp
+		src/nmea0183/gll.hpp
+		src/nmea0183/gll.cpp
+		src/nmea0183/vtg.hpp
+		src/nmea0183/vtg.cpp
+		src/nmea0183/gga.hpp
+		src/nmea0183/gga.cpp
+		src/nmea0183/gsv.hpp
+		src/nmea0183/gsv.cpp
 	)
 ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 
-SET(SRC_GRIB
-		src/grib.cpp 
-		src/grib/GribReader.cpp 
-		src/grib/GribRecord.cpp  
-		src/grib/zuFile.cpp 
-		src/grib/IsoLine.cpp 
-	)
-ADD_LIBRARY(GRIB ${SRC_GRIB})
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/grib)
-
-FIND_PACKAGE(ZLIB QUIET)
-IF (ZLIB_FOUND)
-	message (STATUS "Linking existing zlib library")
-	INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-	ADD_DEFINITIONS(${ZLIB_DEFINITIONS})
-	SET(EXTRA_LIBS ${EXTRA_LIBS} ${ZLIB_LIBRARIES})
-ELSE (ZLIB_FOUND)
-#	SET(SRC_ZLIB
-#		src/grib/zlib-1.2.3/zconf.h
-#		src/grib/zlib-1.2.3/zlib.h
-#	)
-	message (STATUS "Using embeded zlib headers")
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/grib/zlib-1.2.3)
-#	ADD_LIBRARY(zlib STATIC ${SRC_ZLIB})
-#	SET(EXTRA_LIBS ${EXTRA_LIBS} zlib)
-#	ADD_DEPENDENCIES(GRIB zlib)
-ENDIF (ZLIB_FOUND)
-
-FIND_PACKAGE(BZip2 QUIET)
-IF (BZIP2_FOUND)
-	message (STATUS "Linking existing bzip2 library")
-	INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
-	ADD_DEFINITIONS(${BZIP2_DEFINITIONS})
-	SET(EXTRA_LIBS ${EXTRA_LIBS} ${BZIP2_LIBRARIES})
-ELSE (BZIP2_FOUND)
-	message (STATUS "Using embeded bzip2 library")
-	SET(SRC_BZ2
-		src/grib/bzip2/bzlib.c 
-		src/grib/bzip2/blocksort.c 
-		src/grib/bzip2/compress.c 
-		src/grib/bzip2/crctable.c 
-		src/grib/bzip2/decompress.c 
-		src/grib/bzip2/huffman.c 
-		src/grib/bzip2/randtable.c
-	)
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/grib/bzip2)
-	ADD_LIBRARY(bzip2 STATIC ${SRC_BZ2})
-	SET(EXTRA_LIBS ${EXTRA_LIBS} bzip2)
-	ADD_DEPENDENCIES(GRIB bzip2)
-ENDIF (BZIP2_FOUND)
 
 IF(NOT WIN32)
 OPTION (USE_GPSD "Enable GPSD Library" ON) 
@@ -186,86 +160,143 @@ ENDIF (NOT WIN32)
 
 
 #FILE(GLOB_RECURSE SRCS *.cpp *.c)
+SET(HDRS
+		include/chart1.h
+		include/bbox.h
+		include/ocpn_pixel.h
+		include/chartdb.h
+		include/chartdbs.h
+		include/chartimg.h
+		include/chcanv.h
+		include/concanv.h
+		include/cutil.h
+		include/georef.h
+		include/navutil.h
+		include/routeman.h
+		include/routemanagerdialog.h
+		include/routeprop.h
+		include/statwin.h
+		include/tcmgr.h
+		include/thumbwin.h
+		include/options.h
+		include/wvschart.h
+		include/about.h
+		include/ais.h
+		include/cm93.h
+		include/scrollingdialog.h
+                include/pluginmanager.h
+                include/ocpn_plugin.h
+)
 SET(SRCS 
-		src/chart1.cpp 
-		src/bbox.cpp 
-		src/ocpn_pixel.cpp 
-		src/chartdb.cpp 
-		src/chartdbs.cpp 
-		src/chartimg.cpp 
-		src/chcanv.cpp 
-		src/concanv.cpp 
-		src/cutil.c 
-		src/georef.c 
-		src/navutil.cpp 
-		src/routeman.cpp 
-		src/routemanagerdialog.cpp 
-		src/routeprop.cpp 
-		src/statwin.cpp 
-		src/tcmgr.cpp 
-		src/thumbwin.cpp 
-		src/options.cpp 
-		src/wvschart.cpp 
-		src/about.cpp 
-		src/ais.cpp 
-		src/cm93.cpp 
-		src/scrollingdialog.cpp 
+		src/chart1.cpp
+		src/bbox.cpp
+		src/ocpn_pixel.cpp
+		src/chartdb.cpp
+		src/chartdbs.cpp
+		src/chartimg.cpp
+		src/chcanv.cpp
+		src/concanv.cpp
+		src/cutil.c
+		src/georef.c
+		src/navutil.cpp
+		src/routeman.cpp
+		src/routemanagerdialog.cpp
+		src/routeprop.cpp
+		src/statwin.cpp
+		src/tcmgr.cpp
+		src/thumbwin.cpp
+		src/options.cpp
+		src/wvschart.cpp
+		src/about.cpp
+		src/ais.cpp
+		src/cm93.cpp
+		src/scrollingdialog.cpp
+                src/pluginmanager.cpp
     )
 SET(PACKAGE_HEADERS ""
 #	include/ais.h
 )
 
-OPTION (USE_S57 "Enable S57 ENC support" ON) 
+OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
 	message (STATUS "S57 ENC support: enabled")
 	ADD_DEFINITIONS(-DUSE_S57)
 
 	SET(SRC_S57ENC
-		src/s52cnsy.cpp 
-		src/s52plib.cpp 
-		src/s52utils.cpp 
-		src/s57chart.cpp 
-		src/mygeom.cpp 
-		src/tri.c 
-		src/myiso8211/ddffielddefn.cpp 
-		src/myiso8211/ddfmodule.cpp 
-		src/myiso8211/ddfrecord.cpp 
-		src/myiso8211/ddfsubfielddefn.cpp 
-		src/myiso8211/ddffield.cpp 
-		src/myiso8211/ddfutils.cpp 
-		src/mygdal/ddfrecordindex.cpp 
-		src/mygdal/cpl_conv.cpp 
-		src/mygdal/cpl_csv.cpp 
-		src/mygdal/cpl_dir.cpp 
-		src/mygdal/cpl_error.cpp 
-		src/mygdal/cpl_findfile.cpp 
-		src/mygdal/cpl_minixml.cpp 
-		src/mygdal/cpl_path.cpp 
-		src/mygdal/cpl_string.cpp 
-		src/mygdal/cpl_vsisimple.cpp 
-		src/mygdal/cplgetsymbol.cpp 
-		src/mygdal/ograssemblepolygon.cpp 
-		src/mygdal/ogrcurve.cpp 
-		src/mygdal/ogrfeature.cpp 
-		src/mygdal/ogrfeaturedefn.cpp 
-		src/mygdal/ogrfielddefn.cpp 
+		include/s52plib.h
+		include/s52utils.h
+		include/s57chart.h
+		include/mygeom.h
+		src/s52cnsy.cpp
+		src/s52plib.cpp
+		src/s52utils.cpp
+		src/s57chart.cpp
+		src/mygeom.cpp
+		src/tri.c
+		src/myiso8211/ddffielddefn.cpp
+		src/myiso8211/ddfmodule.cpp
+		src/myiso8211/ddfrecord.cpp
+		src/myiso8211/ddfsubfielddefn.cpp
+		src/myiso8211/ddffield.cpp
+		src/myiso8211/ddfutils.cpp
+		src/mygdal/cpl_config.h
+		src/mygdal/gdal_priv.h
+		src/mygdal/cpl_conv.h
+		src/mygdal/iso8211.h
+		src/mygdal/cpl_csv.h
+		src/mygdal/ogr_api.h
+		src/mygdal/cpl_error.h
+		src/mygdal/ogr_attrind.h
+		src/mygdal/cpl_list.h
+		src/mygdal/ogr_core.h
+		src/mygdal/cpl_minixml.h
+		src/mygdal/ogr_feature.h
+		src/mygdal/cpl_multiproc.h
+		src/mygdal/ogr_geometry.h
+		src/mygdal/cpl_odbc.h
+		src/mygdal/ogr_p.h
+		src/mygdal/cpl_port.h
+		src/mygdal/ogr_s57.h
+		src/mygdal/cpl_string.h
+		src/mygdal/ogr_spatialref.h
+		src/mygdal/cpl_vsi.h
+		src/mygdal/ogrsf_frmts.h
+		src/mygdal/gdal.h
+		src/mygdal/s57.h
+		src/mygdal/gdal_frmts.h
+		src/mygdal/ddfrecordindex.cpp
+		src/mygdal/cpl_conv.cpp
+		src/mygdal/cpl_csv.cpp
+		src/mygdal/cpl_dir.cpp
+		src/mygdal/cpl_error.cpp
+		src/mygdal/cpl_findfile.cpp
+		src/mygdal/cpl_minixml.cpp
+		src/mygdal/cpl_path.cpp
+		src/mygdal/cpl_string.cpp
+		src/mygdal/cpl_vsisimple.cpp
+		src/mygdal/cplgetsymbol.cpp
+		src/mygdal/ograssemblepolygon.cpp
+		src/mygdal/ogrcurve.cpp
+		src/mygdal/ogrfeature.cpp
+		src/mygdal/ogrfeaturedefn.cpp
+		src/mygdal/ogrfielddefn.cpp
 		src/mygdal/ogrgeometry.cpp 
-		src/mygdal/ogrgeometrycollection.cpp 
-		src/mygdal/ogrgeometryfactory.cpp 
-		src/mygdal/ogrlinearring.cpp 
-		src/mygdal/ogrlinestring.cpp 
-		src/mygdal/ogrmultilinestring.cpp 
-		src/mygdal/ogrmultipoint.cpp 
-		src/mygdal/ogrmultipolygon.cpp 
-		src/mygdal/ogrpoint.cpp 
-		src/mygdal/ogrpolygon.cpp 
-		src/mygdal/ogrs57datasource.cpp 
-		src/mygdal/ogrlayer.cpp 
-		src/mygdal/ogrs57layer.cpp 
-		src/mygdal/ogrutils.cpp 
-		src/mygdal/s57classregistrar.cpp 
-		src/mygdal/s57featuredefns.cpp 
-		src/mygdal/s57reader.cpp 
+		src/mygdal/ogrgeometrycollection.cpp
+		src/mygdal/ogrgeometryfactory.cpp
+		src/mygdal/ogrlinearring.cpp
+		src/mygdal/ogrlinestring.cpp
+		src/mygdal/ogrmultilinestring.cpp
+		src/mygdal/ogrmultipoint.cpp
+		src/mygdal/ogrmultipolygon.cpp
+		src/mygdal/ogrpoint.cpp
+		src/mygdal/ogrpolygon.cpp
+		src/mygdal/ogrs57datasource.cpp
+		src/mygdal/ogrlayer.cpp
+		src/mygdal/ogrs57layer.cpp
+		src/mygdal/ogrutils.cpp
+		src/mygdal/s57classregistrar.cpp
+		src/mygdal/s57featuredefns.cpp
+		src/mygdal/s57reader.cpp
 		src/mygdal/gdal_misc.cpp
 	)
 	ADD_LIBRARY(S57ENC ${SRC_S57ENC})
@@ -279,7 +310,11 @@ OPTION (USE_WIFI_CLIENT "Enable wifi client" OFF)
 IF (USE_WIFI_CLIENT)
 	message (STATUS "WiFi client support: enabled")
 	ADD_DEFINITIONS(-DUSE_WIFI_CLIENT)
-	SET(SRCS ${SRCS} src/wificlient.cpp)
+	SET(SRCS ${SRCS}
+        	include/wificlient.h
+        	src/wificlient.cpp
+	)
+
 ENDIF (USE_WIFI_CLIENT)
 
 #TODO
@@ -314,31 +349,16 @@ IF(WIN32)
 ENDIF(WIN32)
 IF(APPLE)
   SET(SRCS ${SRCS}
+    include/macsercomm.h
     src/macsercomm.cpp
+    include/macutils.h
     src/macutils.c
 )
 ENDIF(APPLE)
 
-#TODO Darwin
-#dnl pull in OpenGL headers and link with OpenGL libraries on the mac
-#DARWIN_CPP_EXTRA=-I/Developer/SDKs/MacOSX10.4u.sdk/usr/X11R6/include
-#DARWIN_LD_EXTRA=-L/System/Library/Frameworks/OpenGL.framework/Libraries
-#
-# if BUILD_FOR_DARWIN
-#APP = OpenCPN
-#bundle_dir = $(APP).app
-#contents_dir = $(APP).app/Contents
-#binary_dir = $(contents_dir)/MacOS
-#resource_dir = $(contents_dir)/Resources
-#support_dir = $(contents_dir)/SharedSupport
-#staging_dir = buildosx/app-bundle
-#dmg_staging_dir = $(APP)-$(VERSION)
-#WX_DYLIBS_PATTERN=*wx*$(WX_RELEASE).0.dylib
-#GL_PATTERN=libGL*.dylib
-#GL_LIB_LOC=/usr/X11R6/lib
-#GL_DEP_LIBS = `ls $(GL_LIB_LOC)/$(GL_PATTERN)`
 
-ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 MACOSX_BUNDLE ${SRCS})
+ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 MACOSX_BUNDLE ${HDRS} ${SRCS})
+
 IF(WIN32)
     IF(MSVC)
         SET(CMAKE_C_FLAGS_DEBUG               "/MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
@@ -357,7 +377,6 @@ ENDIF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	${wxWidgets_LIBRARIES}
 	NMEA0183
-	GRIB
 	${EXTRA_LIBS}
 )
 IF(WIN32)
@@ -389,18 +408,18 @@ INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata)
 
 IF (USE_S57)
 	SET(s57data
-		data/s57data/attdecode.csv 
+		data/s57data/attdecode.csv
 		data/s57data/S52RAZDS.RLE
-		data/s57data/s57attributes.csv 
-		data/s57data/s57expectedinput.csv 
+		data/s57data/s57attributes.csv
+		data/s57data/s57expectedinput.csv
 		data/s57data/s57objectclasses.csv
 	   )
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 ENDIF (USE_S57)
 
 SET(tcData
-        data/tcdata/HARMONIC 
-        data/tcdata/HARMONIC.IDX 
+        data/tcdata/HARMONIC
+        data/tcdata/HARMONIC.IDX
    )
 INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
 

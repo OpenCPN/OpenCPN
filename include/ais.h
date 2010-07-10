@@ -280,7 +280,8 @@ class OCPN_AISEvent: public wxEvent
 
 };
 
-    DECLARE_EVENT_TYPE(wxEVT_OCPN_AIS, -1)
+//    DECLARE_EVENT_TYPE(wxEVT_OCPN_AIS, -1)
+extern /*expdecl*/ const wxEventType wxEVT_OCPN_AIS;
 
 
 

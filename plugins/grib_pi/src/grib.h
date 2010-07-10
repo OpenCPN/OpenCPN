@@ -2,7 +2,7 @@
  * $Id: grib.h,v 1.8 2010/06/21 01:54:37 bdbcat Exp $
  *
  * Project:  OpenCPN
- * Purpose:  GRIB Manager Object
+ * Purpose:  GRIB Plugin Freinds
  * Author:   David Register
  *
  ***************************************************************************
@@ -26,6 +26,9 @@
  ***************************************************************************
  */
 
+#ifndef _GRIB_H_
+#define _GRIB_H_
+
 
 #include "wx/wxprec.h"
 
@@ -34,11 +37,9 @@
 #endif //precompiled headers
 
 #include <wx/treectrl.h>
+#include <wx/fileconf.h>
+#include <wx/notebook.h>
 
-
-#include "dychart.h"
-#include "chart1.h"
-#include "navutil.h"
 
 #include "GribReader.h"
 #include "GribRecord.h"
@@ -47,6 +48,11 @@
 #define ID_OK                       10001
 #define ID_GRIBRECORDREECTRL        10002
 #define ID_CHOOSEGRIBDIR            10003
+
+#ifndef PI
+#define PI        3.1415926535897931160E0      /* pi */
+#endif
+
 
 enum {
       ID_CB_WINDSPEED = 11000,
@@ -57,15 +63,24 @@ enum {
       ID_CB_SEACURRENT
 };
 
+enum OVERLAP {_IN,_ON,_OUT};
+
 class GRIBFile;
 class GRIBRecord;
 class GribRecordTree;
 class GRIBOverlayFactory;
 class GribRecordSet;
 
+class wxFileConfig;
+class grib_pi;
 
 WX_DECLARE_OBJARRAY(GribRecordSet, ArrayOfGribRecordSets);
 WX_DECLARE_OBJARRAY(GribRecord *, ArrayOfGribRecordPtrs);
+
+OVERLAP Intersect(PlugIn_ViewPort *vp,
+       double lat_min, double lat_max, double lon_min, double lon_max, double Marge);
+bool PointInLLBox(PlugIn_ViewPort *vp, double x, double y);
+
 
 class GribRecordSet
 {
@@ -96,7 +111,7 @@ class GRIBUIDialog: public wxDialog
             ~GRIBUIDialog( );
             void Init();
 
-            bool Create(  wxWindow *parent, wxWindowID id = wxID_ANY,
+            bool Create(  wxWindow *parent, grib_pi *ppi, wxWindowID id = wxID_ANY,
                          const wxString& caption = _("GRIB Display Control"), const wxString initial_grib_dir = wxT(""),
                          const wxPoint& pos = wxDefaultPosition,
                          const wxSize& size = wxDefaultSize,
@@ -128,6 +143,9 @@ class GRIBUIDialog: public wxDialog
 
 
             //    Data
+            wxWindow          *pParent;
+            grib_pi           *pPlugIn;
+
             wxFont            *m_dFont;
 
             GribRecordTree    *m_pRecordTree;
@@ -181,7 +199,9 @@ class GRIBOverlayFactory
             ~GRIBOverlayFactory();
 
             void SetGribRecordSet(GribRecordSet *pGribRecordSet);
-            bool RenderGribOverlay( wxMemoryDC *pmdc, ViewPort *vp );
+            bool RenderGribOverlay( wxMemoryDC *pmdc, PlugIn_ViewPort *vp );
+            bool IsReadyToRender(){ return m_bReadyToRender; }
+            void Reset();
 
             GribRecordSet           *m_pGribRecordSet;
 
@@ -193,19 +213,17 @@ class GRIBOverlayFactory
             void EnableRenderSeaCurrent(bool b_rend){ m_ben_SeaCurrent = b_rend; }
 
       private:
-            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, ViewPort *vp);
-            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, ViewPort *vp);
+            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
 
             void drawWindArrowWithBarbs(wxMemoryDC *pmdc, int x, int y, double vx, double vy, bool south, wxColour arrowColor);
             void drawWaveArrow(wxMemoryDC *pmdc, int i, int j, double dir, wxColour arrowColor);
-
-            wxPoint GetDCPixPoint(ViewPort *vp, double lat, double lon);
 
             void drawTransformedLine( wxMemoryDC *pmdc, wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
 
@@ -238,6 +256,9 @@ class GRIBOverlayFactory
             bool              m_ben_Quickscat;
             bool              m_ben_Seatmp;
             bool              m_ben_SeaCurrent;
+
+            bool              m_bReadyToRender;
+
 
 };
 
@@ -320,4 +341,6 @@ class GRIBFile
             int         m_nGribRecords;
 
 };
+
+#endif
 

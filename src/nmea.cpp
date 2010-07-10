@@ -74,8 +74,8 @@ static      GenericPosDat     ThreadPositionData;
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
 //------------------------------------------------------------------------------
-DEFINE_EVENT_TYPE(wxEVT_OCPN_NMEA)
-
+//DEFINE_EVENT_TYPE(wxEVT_OCPN_NMEA)
+const wxEventType wxEVT_OCPN_NMEA = wxNewEventType();
 
 OCPN_NMEAEvent::OCPN_NMEAEvent( wxEventType commandType, int id )
       :wxEvent(id, commandType)

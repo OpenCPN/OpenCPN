@@ -170,9 +170,11 @@
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
 #include "cm93.h"
-#include "grib.h"
+
 #include "cutil.h"
 #include "routemanagerdialog.h"
+#include "pluginmanager.h"
+
 
 #include <wx/image.h>
 #include "wx/apptrait.h"
@@ -440,6 +442,8 @@ int              g_nCOMPortCheck;
 
 bool             g_bbigred;
 
+PlugInManager    *g_pi_manager;
+
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
 //-----------------------------------------------------------------------------------------------------
@@ -530,17 +534,6 @@ bool             g_bUseGreenShip;
 
 wxString         g_AW1GUID;
 wxString         g_AW2GUID;
-
-
-//    GRIB Support
-GRIBUIDialog     *g_pGribDialog;
-
-int              g_grib_dialog_x, g_grib_dialog_y;
-int              g_grib_dialog_sx, g_grib_dialog_sy;
-wxString         g_grib_dir;
-bool             g_bShowGRIBIcon;
-bool             g_bGRIBUseHiDef;
-
 
 bool             g_b_overzoom_x;                      // Allow high overzoom
 bool             g_bshow_overzoom_emboss;
@@ -1466,6 +1459,7 @@ bool MyApp::OnInit()
 //                        Here, we'll do explicit sizing on SIZE events
 
         cc1 =  new ChartCanvas(gFrame);                         // the chart display canvas
+        gFrame->SetCanvasWindow(cc1);
 
         cc1->SetQuiltMode(pConfig->m_bQuilt);                     // set initial quilt mode
 
@@ -1507,6 +1501,11 @@ bool MyApp::OnInit()
         gFrame->ApplyGlobalSettings(1, true);               // done once on init with resize
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
+
+//      Load and initialize any PlugIns
+        g_pi_manager = new PlugInManager(gFrame);
+        g_pi_manager->LoadAllPlugIns(g_SData_Locn);
+
 
 // Show the frame
         gFrame->ClearBackground();
@@ -1979,6 +1978,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 #endif
 
 
+        m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
 }
 
@@ -2259,36 +2259,44 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     string_to_pbitmap_hash *phash;
     phash = m_phash;
 
-
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_ZOOMIN, _T(""), *(*phash)[wxString(_T("zoomin"))], _T(""), wxITEM_NORMAL);
     x += pitch_tool;
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_ZOOMOUT, _T(""), *(*phash)[wxString(_T("zoomout"))], _T(""), wxITEM_NORMAL);
     x += pitch_tool;
 
 
-    {
-      tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
-      x += pitch_tool;
-      tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
-      x += pitch_tool;
-    }
+
+    CheckAndAddPlugInTool(tb);
+    tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
+    x += pitch_tool;
+    CheckAndAddPlugInTool(tb);
+    tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
+    x += pitch_tool;
 
 
+
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_ROUTE, _T(""), *(*phash)[wxString(_T("route"))], _("Create Route"), wxITEM_NORMAL);
     x += pitch_tool;
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_FOLLOW, _T(""), *(*phash)[wxString(_T("follow"))], _("Auto Follow"), wxITEM_CHECK);
     x += pitch_tool;
 
 
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_SETTINGS, _T(""), *(*phash)[wxString(_T("settings"))], _("ToolBox"), wxITEM_NORMAL);
     x += pitch_tool;
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_TEXT, _T(""), *(*phash)[wxString(_T("text"))], _("Show ENC Text"), wxITEM_CHECK);
     x += pitch_tool;
+
 
     m_pAISTool = NULL;
     if(!pAIS_Port->IsSameAs(_T("None"), false))
     {
-//          m_pAISTool = tb->AddTool( ID_AIS, _T(""), *(*phash)[wxString(_T("AIS_Normal"))], _("Show AIS Targets"), wxITEM_CHECK);   // pjotrc 2010.02.09
+          CheckAndAddPlugInTool(tb);
           m_pAISTool = tb->AddTool( ID_AIS, _T(""), *(*phash)[wxString(_T("AIS_Normal"))], *(*phash)[wxString(_T("AIS_Disabled"))],
                                     wxITEM_CHECK, _("Show AIS Targets"));
           x += pitch_tool;
@@ -2296,25 +2304,29 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_CURRENT, _T(""), *(*phash)[wxString(_T("current"))], _("Show Currents"), wxITEM_CHECK);
     x += pitch_tool;
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_TIDE, _T(""), *(*phash)[wxString(_T("tide"))], _("Show Tides"), wxITEM_CHECK);
     x += pitch_tool;
 
-
     if(g_bShowPrintIcon)
     {
-        tb->AddTool( ID_PRINT, _T(""), *(*phash)[wxString(_T("print"))], _("Print Chart"), wxITEM_NORMAL);
+          CheckAndAddPlugInTool(tb);
+          tb->AddTool( ID_PRINT, _T(""), *(*phash)[wxString(_T("print"))], _("Print Chart"), wxITEM_NORMAL);
         x += pitch_tool;
         x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
     }
 
     if (g_bShowGPXIcons)
     {
+          CheckAndAddPlugInTool(tb);
           tb->AddTool( ID_GPXIMPORT, _T(""), *(*phash)[wxString(_T("gpx_import"))], _("Import GPX file"), wxITEM_NORMAL);
           x += pitch_tool;
           x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
 
+          CheckAndAddPlugInTool(tb);
           tb->AddTool( ID_GPXEXPORT, _T(""), *(*phash)[wxString(_T("gpx_export"))], _("Export GPX file"), wxITEM_NORMAL);
           x += pitch_tool;
           x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
@@ -2322,16 +2334,17 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     if (g_bShowTrackIcon)
     {
+          CheckAndAddPlugInTool(tb);
           tb->AddTool( ID_TRACK, _T(""), *(*phash)[wxString(_T("track"))], _("Toggle Tracking"), wxITEM_CHECK);
           x += pitch_tool;
           x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
     }
 
-    if (g_bShowGRIBIcon)
+    if (0/*g_bShowGRIBIcon*/)
     {
           if((*phash)[wxString(_T("grib"))])
           {
-            tb->AddTool( ID_GRIB, _T(""), *(*phash)[wxString(_T("grib"))], _("Show GRIB dialog"), wxITEM_NORMAL);
+ //           tb->AddTool( ID_GRIB, _T(""), *(*phash)[wxString(_T("grib"))], _("Show GRIB dialog"), wxITEM_NORMAL);
             x += pitch_tool;
             x += 1;                     // now why in the heck is this necessary?????? Grrrrrrrr.
           }
@@ -2339,16 +2352,21 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_COLSCHEME, _T(""), *(*phash)[wxString(_T("colorscheme"))], _("Change Color Scheme"), wxITEM_NORMAL);
     x += pitch_tool;
 
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_MOB, _T(""), *(*phash)[wxString(_T("mob_btn"))], _("Drop MOB Marker"), wxITEM_NORMAL);
     x += pitch_tool;
 
+    CheckAndAddPlugInTool(tb);
     tb->AddTool( ID_HELP, _T(""), *(*phash)[wxString(_T("help"))], _("About OpenCPN"), wxITEM_NORMAL);
     x += pitch_tool;
 
+    int xpr = tool_margin.x + (tb->GetToolsCount() * pitch_tool);
 
+    x = xpr;
 
     // The status filler tool will be here
     m_statTool_pos = tb->GetToolPos(ID_HELP) + 1;
@@ -2462,7 +2480,86 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     return tb;
 }
 
+bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
+{
+      if(!g_pi_manager)
+            return false;
 
+      bool bret = false;
+      int n_tools = tb->GetToolsCount();
+
+      //    Walk the PlugIn tool spec array, checking the requested position
+      //    If a tool has been requested by a plugin at this position, add it
+      ArrayOfPlugInToolbarTools  tool_array = g_pi_manager->GetPluginToolbarToolArray();
+
+      for(unsigned int i=0; i < tool_array.GetCount(); i++)
+      {
+            PlugInToolbarToolContainer *pttc = tool_array.Item(i);
+            if(pttc->position == n_tools)
+            {
+                  tb->AddTool( pttc->id, wxString(pttc->label), *(pttc->bitmap), wxString(pttc->shortHelp), pttc->kind);
+                  bret = true;
+            }
+      }
+
+      return bret;
+}
+
+void MyFrame::RequestNewToolbar()
+{
+      DestroyMyToolbar();
+      m_toolBar = CreateAToolbar();
+      SetToolBar((wxToolBar *)m_toolBar);
+}
+
+
+/*
+int MyFrame::InsertPlugInTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+                                        wxChar *shortHelp, wxChar *longHelp, wxObject *clientData,
+                                        int position, PlugInCallBackFunction pcallback)
+{
+      PlugInToolSpec *pits = new PlugInToolSpec;
+      pits->label = label;
+      pits->position = position;
+      pits->id = m_next_available_plugin_tool_id;
+      pits->bitmap = bitmap;
+      pits->bmpDisabled = bmpDisabled;
+      pits->kind = kind;
+      pits->shortHelp = shortHelp;
+      pits->longHelp = longHelp;
+      pits->clientData = clientData;
+      pits->p_left_click_callback = pcallback;
+
+      m_PlugInToolArray.Add(pits);
+
+      m_next_available_plugin_tool_id++;
+
+      DestroyMyToolbar();
+      m_toolBar = CreateAToolbar();
+      SetToolBar((wxToolBar *)m_toolBar);
+
+      return pits->id;
+}
+
+void MyFrame::RemovePlugInTool(int tool_id)
+{
+      //    Walk the PlugIn tool spec array, checking id
+      for(unsigned int i=0; i < m_PlugInToolArray.GetCount(); i++)
+      {
+            PlugInToolSpec *pits = m_PlugInToolArray.Item(i);
+            if(pits->id == tool_id)
+            {
+                  m_PlugInToolArray.Remove(pits);
+                  delete pits;
+            }
+      }
+
+      DestroyMyToolbar();
+      m_toolBar = CreateAToolbar();
+      SetToolBar((wxToolBar *)m_toolBar);
+
+}
+*/
 
 wxBitmap *ConvertRedToBlue(wxBitmap *pbmp )
 {
@@ -2896,7 +2993,7 @@ void MyFrame::EnableToolbar(bool newstate)
             m_toolBar-> EnableTool(ID_GPXIMPORT, newstate);
             m_toolBar-> EnableTool(ID_GPXEXPORT, newstate);
             m_toolBar-> EnableTool(ID_TRACK, newstate);
-            m_toolBar-> EnableTool(ID_GRIB, newstate);
+//            m_toolBar-> EnableTool(ID_GRIB, newstate);
             m_toolBar-> EnableTool(ID_AIS, newstate);
       }
 }
@@ -2929,6 +3026,14 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
             cc1->Refresh(false);
             cc1->Update();
+      }
+
+      //    Unload the PlugIns
+      if(g_pi_manager)
+      {
+            g_pi_manager->UnLoadAllPlugIns();
+            delete g_pi_manager;
+            g_pi_manager = NULL;
       }
 
       wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
@@ -3404,15 +3509,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
                 TrackOff();
           break;
     }
-    case ID_GRIB:
-    {
-          if(NULL == g_pGribDialog)
-               cc1->ShowGribDialog();
-          else
-                g_pGribDialog->Close();
-
-          break;
-    }
 
     case ID_TBSTATBOX:
     {
@@ -3427,6 +3523,27 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
           pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
          break;
     }
+
+        default:
+        {
+              //        Look for PlugIn tools
+              //        If found, make the callback.
+              //        TODO Modify this to allow multiple tools per plugin
+              if(g_pi_manager)
+              {
+                    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+                    for(unsigned int i=0; i < tool_array.GetCount(); i++)
+                    {
+                          PlugInToolbarToolContainer *pttc = tool_array.Item(i);
+                          if(event.GetId() == pttc->id)
+                          {
+                                if(pttc->m_pplugin)
+                                      pttc->m_pplugin->OnToolbarToolCallback(pttc->id);
+                          }
+                     }
+              }
+              break;
+        }
 
 
   }         // switch
@@ -3629,7 +3746,6 @@ int MyFrame::DoOptionsDialog()
 
       bool bPrevGPXIcon = g_bShowGPXIcons;
       bool bPrevTrackIcon = g_bShowTrackIcon;
-      bool bPrevGRIBIcon = g_bShowGRIBIcon;
       bool bPrevQuilt = cc1->GetQuiltMode();
 
       wxString prev_locale = g_locale;
@@ -3857,7 +3973,6 @@ int MyFrame::DoOptionsDialog()
       if((bPrevPrintIcon       != g_bShowPrintIcon)     ||
          (bPrevGPXIcon         != g_bShowGPXIcons)      ||
          (bPrevTrackIcon       != g_bShowTrackIcon)     ||
-         (bPrevGRIBIcon        != g_bShowGRIBIcon)      ||
           b_refresh_after_options
         )
             return true;    // indicate a refresh is necessary;
@@ -6068,6 +6183,10 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
             g_NMEALogWindow->Refresh(false);
       }
 
+      //    Send NMEA sentences to PlugIns
+      if(g_pi_manager)
+            g_pi_manager->SendNMEASentenceToAllPlugIns(str_buf);
+
       m_NMEA0183 << str_buf;
       if(m_NMEA0183.PreParse())
       {
@@ -6365,6 +6484,10 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
                 }
 
                 bshow_tick = true;
+
+                //    Send Position Fix events to PlugIns
+                if(g_pi_manager)
+                      g_pi_manager->SendPositionFixToAllPlugIns(pGPSData);
 
                 break;
         }

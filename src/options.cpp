@@ -92,6 +92,8 @@
 #include "cm93.h"
 
 #include "navutil.h"
+#include "pluginmanager.h"
+
 #ifdef USE_S57
 #include "s52plib.h"
 #include "s52utils.h"
@@ -156,9 +158,6 @@ extern int              g_cm93_zoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;
 extern bool             g_bShowCM93DetailSlider;
 
-extern bool             g_bShowGRIBIcon;
-extern bool             g_bGRIBUseHiDef;
-
 extern TTYWindow        *g_NMEALogWindow;
 extern int              g_NMEALogWindow_x, g_NMEALogWindow_y;
 extern int              g_NMEALogWindow_sx, g_NMEALogWindow_sy;
@@ -171,6 +170,8 @@ extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 
 extern double           g_ownship_predictor_minutes;
+
+extern PlugInManager    *g_pi_manager;
 
 #ifdef USE_WIFI_CLIENT
 extern wxString         *pWIFIServerName;
@@ -1079,6 +1080,7 @@ void options::CreateControls()
 */
     itemNotebook4->AddPage(itemPanelFont, _("Language/Fonts"));
 
+#if 0
     //      Build GRIB. Page
 
     itemPanelGRIB = new wxPanel( itemNotebook4, ID_PANELGRIB, wxDefaultPosition, wxDefaultSize,
@@ -1099,7 +1101,7 @@ void options::CreateControls()
 
     pGRIBUseHiDef = new wxCheckBox( itemPanelGRIB, -1, _("Use High Definition Graphics"));
     itemStaticBoxSizerGRIB->Add(pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
-
+#endif
 
     //      Build Etc. Page
 
@@ -1242,6 +1244,10 @@ void options::CreateControls()
 
     // toh, 2009.02.14; end
 
+    //      PlugIns can add panels, too
+    if(g_pi_manager)
+          g_pi_manager->AddAllPlugInToolboxPanels( itemNotebook4 );
+
 
     pSettingsCB1 = pDebugShowStat;
 
@@ -1338,8 +1344,6 @@ void options::SetInitialSettings()
       m_pCheck_Trackpoint_time->SetValue(g_bTrackTime);
       m_pCheck_Trackpoint_distance->SetValue(g_bTrackDistance);
 
-      pGRIBShowIcon->SetValue(g_bShowGRIBIcon);
-      pGRIBUseHiDef->SetValue(g_bGRIBUseHiDef);
 
 
 //    AIS Parameters
@@ -1885,9 +1889,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
     }
 
 
-//    GRIB
-    g_bShowGRIBIcon= pGRIBShowIcon->GetValue();
-    g_bGRIBUseHiDef= pGRIBUseHiDef->GetValue();
 
 //    Language Tab
     int k_lang = 0;
@@ -1903,6 +1904,11 @@ void options::OnXidOkClick( wxCommandEvent& event )
             if(g_locale != locale_old)
                   k_lang = LOCALE_CHANGED;
     }
+
+    //      PlugIns may have added panels
+    if(g_pi_manager)
+          g_pi_manager->CloseAllPlugInPanels( (int) wxOK );
+
 
     //      Could be a lot smarter here
     EndModal(GENERIC_CHANGED | S52_CHANGED | k_force | k_charts | k_lang);

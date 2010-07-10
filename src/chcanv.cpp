@@ -162,8 +162,9 @@
 #include "routeprop.h"
 #include "tcmgr.h"
 #include "cm93.h"                   // for chart outline draw
-#include "grib.h"
 #include "routemanagerdialog.h"
+#include "pluginmanager.h"
+#include "ocpn_pixel.h"
 
 #ifdef USE_S57
 #include "s57chart.h"               // for ArrayOfS57Obj
@@ -290,13 +291,6 @@ extern bool             g_bUseGreenShip;
 
 extern ChartCanvas      *cc1;
 
-
-extern GRIBUIDialog     *g_pGribDialog;
-
-extern int              g_grib_dialog_x, g_grib_dialog_y;
-extern int              g_grib_dialog_sx, g_grib_dialog_sy;
-extern wxString         g_grib_dir;
-
 extern bool             g_bshow_overzoom_emboss;
 extern int              g_n_ownship_meters;
 
@@ -319,6 +313,7 @@ extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
 
+extern PlugInManager    *g_pi_manager;
 
 
 
@@ -394,9 +389,10 @@ enum
         ID_TK_MENU_PROPERTIES,
         ID_TK_MENU_EXPORT,
         ID_TK_MENU_DELETE,
-        ID_WP_MENU_ADDITIONAL_INFO,                  // toh, 2009.02.08
+        ID_WP_MENU_ADDITIONAL_INFO,
 
-        ID_DEF_MENU_QUILTREMOVE
+        ID_DEF_MENU_QUILTREMOVE,
+        ID_DEF_MENU_LAST
 
 };
 
@@ -2565,6 +2561,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pos_image_red   = &m_os_image_red_day;
 
         m_pQuilt = new Quilt();
+
 }
 
 ChartCanvas::~ChartCanvas()
@@ -2803,10 +2800,11 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         ReloadVP();
                         break;
                   }
+/*
                   case WXK_F11:
                         ShowGribDialog();
                         break;
-
+*/
                   case WXK_F12:
                       {
                         parent_frame->ToggleChartOutlines();
@@ -2898,18 +2896,6 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
       }
 
       return b_proc;
-}
-
-void ChartCanvas::ShowGribDialog(void)
-{
-      if(NULL == g_pGribDialog)
-      {
-            g_pGribDialog = new GRIBUIDialog();
-            g_pGribDialog->Create ( this, -1, _("GRIB Display Control"), g_grib_dir,
-                               wxPoint( g_grib_dialog_x, g_grib_dialog_y), wxSize( g_grib_dialog_sx, g_grib_dialog_sy));
-      }
-
-      g_pGribDialog->Show();                        // Show modeless, so it stays on the screen
 }
 
 
@@ -5486,9 +5472,10 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         }
 #endif
 
+        //  Send the current cursor lat/lon to all PlugIns requesting it
+        if(g_pi_manager)
+              g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon);
 
-        if(g_pGribDialog)
-              g_pGribDialog->SetCursorLatLon(m_cursor_lat, m_cursor_lon);
 
         //        Check for wheel rotation
         m_mouse_wheel_oneshot = 50;                  //msec
@@ -6540,6 +6527,29 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         g_click_stop = 3;
 #endif
 
+        //  Add PlugIn Context Menu items
+        ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
+
+        for(unsigned int i=0; i < item_array.GetCount(); i++)
+        {
+              PlugInMenuItemContainer *pimis = item_array.Item(i);
+              {
+                    if(pimis->b_viz)
+                    {
+                        wxMenuItem *pmi = new wxMenuItem(pdef_menu, pimis->id,
+                                pimis->pmenu_item->GetLabel(),
+                                pimis->pmenu_item->GetHelp(),
+                                pimis->pmenu_item->GetKind(),
+                                pimis->pmenu_item->GetSubMenu());
+                        pdef_menu->Append(pmi);
+                        pdef_menu->Enable(pimis->id, !pimis->b_grey);
+
+                        Connect(pimis->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::PopupMenuHandler);
+                    }
+              }
+        }
+
+
         //        Invoke the drop-down menu
         DoCanvasPopupMenu ( x, y, pdef_menu );
 
@@ -7242,6 +7252,26 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         Refresh ( false );
                         break;
 
+              default:
+              {
+                    //  Look for PlugIn Context Menu selections
+                    //  If found, make the callback
+                    ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
+
+                    for(unsigned int i=0; i < item_array.GetCount(); i++)
+                    {
+                          PlugInMenuItemContainer *pimis = item_array.Item(i);
+                          {
+                                if(pimis->id == event.GetId())
+                                {
+                                      if(pimis->m_pplugin)
+                                          pimis->m_pplugin->OnContextMenuItemCallback(pimis->id);
+                                }
+                          }
+                    }
+
+                    break;
+              }
         }           // switch
 
 
@@ -7845,6 +7875,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 upd ++ ;
         }
 
+#if 0
 //    Process the array of registered overlay providers
         for(unsigned int i=0 ; i < m_OverlaySpecArray.GetCount() ; i++)
         {
@@ -7853,7 +7884,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               //  Do the callback
               (*olspec->m_render_callback)(&scratch_dc, &VPoint);            //(*pcallback)()
         }
-
+#endif
+        if(g_pi_manager)
+            g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, &VPoint);
 
         //      If Depth Unit Display is selected, emboss it
         if ( g_bShowDepthUnits )
@@ -8313,38 +8346,10 @@ void ChartCanvas::RenderGeorefErrorMap( wxMemoryDC *pmdc, ViewPort *vp)
 
 #endif
 
-
-
- bool ChartCanvas::RegisterOverlayProvider(int sequence, RenderOverlayCallBackFunction callback)
+int ChartCanvas::GetNextContextMenuId()
 {
-      OverlaySpec *spec = new OverlaySpec;
-      spec->m_sequence = sequence;
-      spec->m_render_callback = callback;
-
-      m_OverlaySpecArray.Add(spec);
-
-      return true;
+      return ID_DEF_MENU_LAST;
 }
-
-bool ChartCanvas::UnRegisterOverlayProvider(int sequence, RenderOverlayCallBackFunction callback)
-{
-      for(unsigned int i=0 ; i < m_OverlaySpecArray.GetCount() ; i++)
-      {
-            OverlaySpec *olspec = (OverlaySpec *)m_OverlaySpecArray.Item(i);
-
-            if((olspec->m_render_callback = callback) && (olspec->m_sequence == sequence))
-            {
-                  m_OverlaySpecArray.Remove(olspec);
-                  delete olspec;
-                  break;
-            }
-      }
-
-      return true;
-}
-
-
-
 
 
 
@@ -9354,7 +9359,7 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 //    Establish the inital drawing day as today
         graphday = wxDateTime::Now();
         wxDateTime graphday_00 = wxDateTime::Today();
-        int t_graphday_00 = graphday_00.GetTicks();
+        time_t t_graphday_00 = graphday_00.GetTicks();
 
         //    Correct a Bug in wxWidgets time support
         if ( !graphday_00.IsDST() && graphday.IsDST() )
@@ -9428,7 +9433,7 @@ void TCWin::NXEvent ( wxCommandEvent& event )
         graphday += dm;
 
         wxDateTime graphday_00 = graphday.ResetTime();
-        int t_graphday_00 = graphday_00.GetTicks();
+        time_t t_graphday_00 = graphday_00.GetTicks();
         t_graphday_00_at_station = t_graphday_00 - ( corr_mins * 60 );
 
 
@@ -9447,7 +9452,7 @@ void TCWin::PREvent ( wxCommandEvent& event )
         graphday += dm;
 
         wxDateTime graphday_00 = graphday.ResetTime();
-        int t_graphday_00 = graphday_00.GetTicks();
+        time_t t_graphday_00 = graphday_00.GetTicks();
         t_graphday_00_at_station = t_graphday_00 - ( corr_mins * 60 );
 
 
@@ -9534,7 +9539,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 }
 
                 //    Make a line for "right now"
-                int t_now = wxDateTime::Now().GetTicks();       // now, in ticks
+                time_t t_now = wxDateTime::Now().GetTicks();       // now, in ticks
 
                 float t_ratio = x_graph_w * ( t_now - t_graphday_00_at_station ) / ( 25 * 3600 );
 
@@ -10208,8 +10213,10 @@ ocpCursor::ocpCursor ( const wxString& cursorName, long type,
         wxMemoryDC dwxdc;
         dwxdc.SelectObject ( tbmp );
 
-        HCURSOR hcursor = wxBitmapToHCURSOR ( wxBitmap ( cImage, ( wxDC & ) dwxdc ),
-                                              hotSpotX, hotSpotY );
+//        HCURSOR hcursor = wxBitmapToHCURSOR ( wxBitmap ( cImage, ( wxDC & ) dwxdc ),
+//                                              hotSpotX, hotSpotY );
+        HCURSOR hcursor = NULL;
+
         if ( !hcursor )
         {
                 wxLogWarning ( _T( "Failed to create ocpCursor." ) );
@@ -10243,8 +10250,11 @@ ocpCursor::ocpCursor ( const char **xpm_data, long type,
         wxMemoryDC dwxdc;
         dwxdc.SelectObject ( tbmp );
 
-        HCURSOR hcursor = wxBitmapToHCURSOR ( wxBitmap ( cImage, ( wxDC & ) dwxdc ),
-                                              hotSpotX, hotSpotY );
+//        HCURSOR hcursor = wxBitmapToHCURSOR ( wxBitmap ( cImage, ( wxDC & ) dwxdc ),
+//                                              hotSpotX, hotSpotY );
+
+        HCURSOR hcursor = NULL;
+
         if ( !hcursor )
         {
                 wxLogWarning ( _T( "Failed to create ocpCursor." ) );

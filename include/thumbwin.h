@@ -80,7 +80,7 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include "ocpn_pixel.h"
+//#include "ocpn_pixel.h"
 
 //----------------------------------------------------------------------------
 //   constants
