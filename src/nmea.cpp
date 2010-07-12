@@ -141,6 +141,12 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
 
       m_gps_data = NULL;
 
+      ThreadPositionData.FixTime = 0;
+      ThreadPositionData.kLat = 0.;
+      ThreadPositionData.kLon = 0.;
+      ThreadPositionData.kCog = 0.;
+      ThreadPositionData.kSog = 0.;
+      ThreadPositionData.nSats = 0;
 
 //      Create and manage NMEA data stream source
 
@@ -293,24 +299,58 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
                 return;
             }
 
+            int n_check_version = 5;            // check up to five times
+            bool b_version_match = false;
+            bool b_use_lib = false;
+            struct version_t check_version;
+            while(n_check_version)
+            {
             //    Check library version
-            if(m_fn_gps_waiting(m_gps_data))
-                  m_fn_gps_poll(m_gps_data);
+                  if(m_fn_gps_waiting(m_gps_data))
+                        m_fn_gps_poll(m_gps_data);
 
-            struct version_t check_version = m_gps_data->version;
+                  if(m_gps_data->set & VERSION_SET)
+                  {
+                        check_version = m_gps_data->version;
 
-            if((check_version.proto_major >= 3) && (check_version.proto_minor >= 1))
+                        if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
+                        {
+                              b_version_match = true;
+                              b_use_lib = true;
+                              break;
+                        }
+                        else
+                              break;
+                  }
+
+                  n_check_version--;
+            }
+
+            if(!b_version_match)
+            {
+                  wxString msg;
+                  msg.Printf(_("libgps API version mismatch.\nOpenCPN found version %d.%d, but requires at least version 3.0\n\n\
+Would you like to use this version of libgps anyway?"),
+                             check_version.proto_major, check_version.proto_minor);
+                  wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
+
+                  if(wxID_YES == md.ShowModal())
+                        b_use_lib = true;
+
+
+            }
+
+            wxString msg;
+            msg.Printf(_T("Found libgps version %d.%d"), check_version.proto_major, check_version.proto_minor);
+            wxLogMessage(msg);
+
+            if(b_use_lib)
             {
                   m_fn_gps_stream(m_gps_data, WATCH_ENABLE, NULL);
                   TimerLIBGPS.Start(TIMER_LIBGPS_MSEC,wxTIMER_CONTINUOUS);
             }
             else
             {
-                  wxString msg;
-                  msg.Printf(_("libgps API Version mismatch.\nOpencpn found version %d.%d, but requires at least version 3.1"), check_version.proto_major, check_version.proto_minor);
-                  wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_ERROR );
-                  md.ShowModal();
-
                   m_fn_gps_close(m_gps_data);
                   m_gps_data = NULL;
 
@@ -468,19 +508,31 @@ void libgps_hook(struct gps_data_t *data, char *buf, size_t size)
 {
 #ifdef BUILD_WITH_LIBGPS
 
-   ThreadPositionData.FixTime = (time_t)data->fix.time;
-   ThreadPositionData.kLat = data->fix.latitude;
-   ThreadPositionData.kLon = data->fix.longitude;
+      if(data->set & TIME_SET)
+            ThreadPositionData.FixTime = (time_t)data->fix.time;
 
-   ThreadPositionData.kCog = 0.;
-   if(!wxIsNaN(data->fix.track))
-         ThreadPositionData.kCog = data->fix.track;
+      if(data->set & LATLON_SET)
+      {
+            ThreadPositionData.kLat = data->fix.latitude;
+            ThreadPositionData.kLon = data->fix.longitude;
+      }
 
-   ThreadPositionData.kSog = 0.;
-   if(!wxIsNaN(data->fix.speed))
-         ThreadPositionData.kSog = data->fix.speed;
+      if(data->set & TRACK_SET)
+      {
+            ThreadPositionData.kCog = 0.;
+                  if(!wxIsNaN(data->fix.track))
+                  ThreadPositionData.kCog = data->fix.track;
+      }
 
-   ThreadPositionData.nSats = data->satellites_visible;
+      if(data->set & SPEED_SET)
+      {
+            ThreadPositionData.kSog = 0.;
+            if(!wxIsNaN(data->fix.speed))
+                  ThreadPositionData.kSog = data->fix.speed;
+      }
+
+      if(data->set & SATELLITE_SET)
+            ThreadPositionData.nSats = data->satellites_visible;
 
 #endif
 }
@@ -492,21 +544,26 @@ void NMEAWindow::OnTimerLIBGPS(wxTimerEvent& event)
 
       m_fn_gps_set_raw_hook(m_gps_data, libgps_hook);
 
-      if(m_fn_gps_waiting(m_gps_data)) {
+      if(m_fn_gps_waiting(m_gps_data))
+      {
          m_fn_gps_poll(m_gps_data);
 
-         //    Signal the main program
-
-         if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0))
-//         if(!wxIsNaN(ThreadPositionData.kLat)  &&  !wxIsNaN(ThreadPositionData.kLon))
+         //    Maybe signal the main program
+//         if((m_gps_data->set & ONLINE_SET) && (m_gps_data->online > 0))       // GPS must be online
          {
-               wxCommandEvent event( EVT_NMEA,  GetId() );
-               event.SetEventObject( (wxObject *)this );
-               event.SetExtraLong(EVT_NMEA_DIRECT);
-               event.SetClientData(&ThreadPositionData);
-               m_pParentEventHandler->AddPendingEvent(event);
+               if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
+               {
+                     wxCommandEvent event( EVT_NMEA,  GetId() );
+                     event.SetEventObject( (wxObject *)this );
+                     event.SetExtraLong(EVT_NMEA_DIRECT);
+                     event.SetClientData(&ThreadPositionData);
+                     m_pParentEventHandler->AddPendingEvent(event);
+               }
          }
       }
+
+//      if((m_gps_data->set & ONLINE_SET)/* && (m_gps_data->online > 0)*/)       // GPS must be online
+//            int yyp = 5;
 
       TimerLIBGPS.Start(TIMER_LIBGPS_MSEC,wxTIMER_CONTINUOUS);
 #endif
