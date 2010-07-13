@@ -137,7 +137,6 @@ WX_DEFINE_OBJARRAY(Array_Of_M_COVR_Desc);
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(List_Of_M_COVR_Desc);
 
-//#define CM93_DEBUG_PRINTF 1
 
 
 //    CM93 Encode/Decode support tables
@@ -1682,6 +1681,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
       double ur_lon = box.GetMaxX();
       double ur_lat = box.GetMaxY();
 
+      if(g_bDebugCM93)
+            printf("cm93chart::SetVPParms   ll_lon: %g  ll_lat: %g   ur_lon: %g   ur_lat:  %g  m_dval: %g\n", ll_lon, ll_lat, ur_lon, ur_lat, m_dval);
 
       //    Adjust to always positive for easier cell calculations
       if(ll_lon < 0)
@@ -1697,6 +1698,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
 
       int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, GetNativeScale());
       vpcells.Add(lower_left_cell);                   // always add the lower left cell
+
+      if(g_bDebugCM93)
+            printf("cm93chart::SetVPParms   Adding %d\n", lower_left_cell);
 
       double rlat, rlon;
       Get_CM93_Cell_Origin(lower_left_cell, GetNativeScale(), &rlat, &rlon);
@@ -1715,6 +1719,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
             {
                   int next_cell = Get_CM93_CellIndex(lati, loni, GetNativeScale());
                   vpcells.Add(next_cell);
+                  if(g_bDebugCM93)
+                        printf("cm93chart::SetVPParms   Adding %d\n", next_cell);
 
                   loni += dlon;
             }
@@ -3804,15 +3810,14 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
       int ilon = cellindex % 10000;
 
 
-#ifdef CM93_DEBUG_PRINTF
-      double dlat = m_dval / 3.;
-      double dlon = m_dval / 3.;
-      double lat, lon;
-      Get_CM93_Cell_Origin(cellindex, GetNativeScale(), &lat, &lon);
-      printf("\n   Attempting loadcell %d scale %c, sub_char %c at lat: %g/%g lon:%g/%g\n", cellindex, wxChar(m_scalechar[0]), sub_char, lat, lat + dlat, lon, lon+dlon);
-#endif
-
-
+      if(g_bDebugCM93)
+      {
+            double dlat = m_dval / 3.;
+            double dlon = m_dval / 3.;
+            double lat, lon;
+            Get_CM93_Cell_Origin(cellindex, GetNativeScale(), &lat, &lon);
+            printf("\n   Attempting loadcell %d scale %c, sub_char %c at lat: %g/%g lon:%g/%g\n", cellindex, wxChar(m_scalechar[0]), sub_char, lat, lat + dlat, lon, lon+dlon);
+      }
 
       int jlat = (int)(((ilat - 30) / m_dval) * m_dval) + 30;              // normalize
       int jlon = (int)((ilon / m_dval) * m_dval);
@@ -3835,9 +3840,8 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
       file[0] = sub_char;
       file.Prepend(fileroot);
 
-#ifdef CM93_DEBUG_PRINTF
-      printf("    filename: %s\n", file.mb_str());
-#endif
+      if(g_bDebugCM93)
+            printf("    filename: %s\n", (char *)file.c_str());
 
       if(!::wxFileExists(file))
       {
@@ -3857,21 +3861,21 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
 
             file1.Prepend(fileroot);
 
-#ifdef CM93_DEBUG_PRINTF
-            printf("    alternate filename: %s\n", file1.mb_str());
-#endif
+            if(g_bDebugCM93)
+                  printf("    alternate filename: %s\n", (char *)file1.c_str());
 
             if(!::wxFileExists(file1))
             {
 
             //    This is not really an error if the sub_char is not '0'.  It just means there are no more subcells....
-#ifdef CM93_DEBUG_PRINTF
-                  if(sub_char == '0')
-                        printf("   Tried to load non-existent CM93 cell\n");
-                  else
-                        printf("   No sub_cells of scale(%c) found\n", sub_char);
+                  if(g_bDebugCM93)
+                  {
+                        if(sub_char == '0')
+                             printf("   Tried to load non-existent CM93 cell\n");
+                        else
+                              printf("   No sub_cells of scale(%c) found\n", sub_char);
+                  }
 
-#endif
                   return 0;
             }
             else
@@ -3884,14 +3888,12 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
       msg += file;
       wxLogMessage(msg);
 
-#ifdef CM93_DEBUG_PRINTF
+      if(g_bDebugCM93)
       {
             char str[256];
             strncpy(str, msg.mb_str(), 255);
             printf("   %s\n", str);
       }
-#endif
-
 
       //    Ingest it
       if(!Ingest_CM93_Cell((const char *)file.mb_str(), &m_CIB))
@@ -4200,10 +4202,9 @@ void cm93compchart::SetVPParms(const ViewPort &vpt)
             {
                   double efr = efactor * (7 - i);
                   scale_breaks_adj[i] = scale_breaks[i] * pow(10., efr);
-#ifdef CM93_DEBUG_PRINTF
-                  printf("g_cm93_zoom_factor: %2d  efactor: %6g efr:%6g, scale_breaks[i]:%6g  scale_breaks_adj[i]: %6g\n",
+                  if(g_bDebugCM93)
+                        printf("g_cm93_zoom_factor: %2d  efactor: %6g efr:%6g, scale_breaks[i]:%6g  scale_breaks_adj[i]: %6g\n",
                          g_cm93_zoom_factor, efactor, efr, scale_breaks[i], scale_breaks_adj[i]);
-#endif
             }
       }
 
@@ -4230,9 +4231,8 @@ void cm93compchart::SetVPParms(const ViewPort &vpt)
 void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
 {
 
-#ifdef CM93_DEBUG_PRINTF
+      if(g_bDebugCM93)
             printf("\non SetVPParms, cmscale:%d, %c\n", cmscale, (char)('A' + cmscale -1));
-#endif
 
       m_cmscale = cmscale;
 
@@ -4247,9 +4247,9 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
             {
                   if(Is_CM93Cell_Present(m_prefix, vpt.clat, vpt.clon, cmscale))
                   {
-#ifdef CM93_DEBUG_PRINTF
-                        printf(" chart %c at VP clat/clon is present\n", (char)('A' + cmscale -1));
-#endif
+                        if(g_bDebugCM93)
+                              printf(" chart %c at VP clat/clon is present\n", (char)('A' + cmscale -1));
+
                         m_pcm93chart_array[cmscale] = new cm93chart();
 
 
@@ -4271,9 +4271,9 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                         wxString msg;
                         msg.Printf(_T("   CM93 finds no chart of any scale present at Lat/Lon  %g %g"), vpt.clat, vpt.clon);
                         wxLogMessage(msg);
-#ifdef CM93_DEBUG_PRINTF
-                        printf("   CM93 finds no chart of any scale present at Lat/Lon  %g %g\n", vpt.clat, vpt.clon);
-#endif
+                        if(g_bDebugCM93)
+                              printf("   CM93 finds no chart of any scale present at Lat/Lon  %g %g\n", vpt.clat, vpt.clon);
+
                         b_nochart = true;
                         break;
                   }
@@ -4281,9 +4281,8 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   else
                   {
                         cmscale--;                          // revert to larger scale if selected is not present
-#ifdef CM93_DEBUG_PRINTF
-                        printf(" no %c scale chart present, adjusting cmscale to %c\n", (char)('A' + cmscale), (char)('A' + cmscale -1));
-#endif
+                        if(g_bDebugCM93)
+                              printf(" no %c scale chart present, adjusting cmscale to %c\n", (char)('A' + cmscale), (char)('A' + cmscale -1));
                   }
 
             }
@@ -4294,9 +4293,9 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
 
             if(b_nochart)
             {
-#ifdef CM93_DEBUG_PRINTF
-                  printf(" b_nochart return\n");
-#endif
+                  if(g_bDebugCM93)
+                        printf(" b_nochart return\n");
+
                   m_pcm93chart_current = NULL;
                   for(int i = 0 ; i < 8 ; i++)
                          m_pcm93chart_array[i] = NULL;
@@ -4330,9 +4329,8 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   bool bin_mcovr = false;
                   if(!m_pcm93chart_current->m_covr_array.GetCount())
                   {
-      #ifdef CM93_DEBUG_PRINTF
-                        printf(" chart %c has no M_COVR\n", (char)('A' + cmscale -1));
-      #endif
+                        if(g_bDebugCM93)
+                              printf(" chart %c has no M_COVR\n", (char)('A' + cmscale -1));
                   }
 
 
@@ -4353,14 +4351,14 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
 
                   if(bin_mcovr)
                   {
-      #ifdef CM93_DEBUG_PRINTF
-                        printf(" chart %c contains clat/clon\n", (char)('A' + cmscale -1));
-      #endif
+                        if(g_bDebugCM93)
+                              printf(" chart %c contains clat/clon\n", (char)('A' + cmscale -1));
+
                         cellscale_is_useable = true;
                         break;
                   }
 
-//    This commented bloack assumed that scale 0 coverage is available worlwide.....
+//    This commented block assumed that scale 0 coverage is available worlwide.....
 //    Might not be so with partial CM93 sets
 /*
                   else if(cmscale == 0)
@@ -4375,9 +4373,8 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                               cmscale--;        // revert to larger scale if the current scale cells do not contain VP
                         else
                               b_nochart = true;    // we have retired to scale 0, and still no chart coverage, so stop already...
-      #ifdef CM93_DEBUG_PRINTF
-                        printf(" VP is not in M_COVR, adjusting cmscale to %c\n", (char)('A' + cmscale -1));
-      #endif
+                        if(g_bDebugCM93)
+                              printf(" VP is not in M_COVR, adjusting cmscale to %c\n", (char)('A' + cmscale -1));
                   }
             }
       }
@@ -4584,17 +4581,18 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
 //      CALLGRIND_START_INSTRUMENTATION
 
-#ifdef CM93_DEBUG_PRINTF
-      printf("\nOn DoRenderRegionViewOnDC Ref scale is %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
-      wxRegionIterator upd ( Region );
-      while ( upd )
+      if(g_bDebugCM93)
       {
-            wxRect rect = upd.GetRect();
-            rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
-            printf("   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-            upd ++ ;
+            printf("\nOn DoRenderRegionViewOnDC Ref scale is %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
+            wxRegionIterator upd ( Region );
+            while ( upd )
+            {
+                  wxRect rect = upd.GetRect();
+                  rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+                  printf("   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                  upd ++ ;
+            }
       }
-#endif
 
 
       ViewPort vp_positive = VPoint;
@@ -4668,9 +4666,9 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
                               if(m_pcm93chart_current)
                               {
-#ifdef CM93_DEBUG_PRINTF
-                                    printf("  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
-#endif
+                                    if(g_bDebugCM93)
+                                          printf("  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
+
                                     m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive, scale_type);
 
                                     wxRegion sscale_region;
@@ -4794,11 +4792,12 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
             nss_max = wxMax(nss_max, m_cmscale+1);
 
-#ifdef CM93_DEBUG_PRINTF
-            printf(" RenderNextSmallerCellOutline, base chart scale is %c\n", (char)('A' +m_cmscale - 1));
-            printf("    top_scale: %8.0f   VP.chart_scale: %8.0f\n", top_scale, vp.chart_scale);
-            printf("    nss_max is %c\n", (char)('A' +nss_max - 1));
-#endif
+            if(g_bDebugCM93)
+            {
+                  printf(" RenderNextSmallerCellOutline, base chart scale is %c\n", (char)('A' +m_cmscale - 1));
+                  printf("    top_scale: %8.0f   VP.chart_scale: %8.0f\n", top_scale, vp.chart_scale);
+                  printf("    nss_max is %c\n", (char)('A' +nss_max - 1));
+            }
 
 
             int nss = m_cmscale +1;
