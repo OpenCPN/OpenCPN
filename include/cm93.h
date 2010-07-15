@@ -355,6 +355,8 @@ class cm93chart : public s57chart
 
             void translate_colmar(wxString &sclass, S57attVal *pattValTmp);
 
+            ArrayOfInts GetVPCellArray(const ViewPort &vpt);
+
             int CreateObjChain(void);
 
             void Unload_CM93_Cell(void);

@@ -104,6 +104,7 @@
 #include "mygeom.h"
 #include "cutil.h"
 #include "navutil.h"                            // for LogMessageOnce
+#include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 
 #include <stdio.h>
 
@@ -776,22 +777,21 @@ int Get_CM93_CellIndex(double lat, double lon, int scale)
       }
 
       //    Longitude
-      double lon1 = (lon + 360.) * 3.;                      // basic cell size
+      double lon1 = (lon + 360.) * 3.;                      // basic cell size is 20 minutes
       while(lon1 >= 1080.0)
             lon1 -= 1080.0;
-      unsigned int lon2 = ((unsigned int)lon1) / dval;      // normalize
-      unsigned int lon3 = lon2 * dval;
+      unsigned short lon2 = (unsigned short)floor(lon1 /dval);      // normalize
+      unsigned short lon3 = lon2 * dval;
 
       retval = lon3;
 
       //    Latitude
       double lat1 = (lat * 3.) + 270. - 30;
-      unsigned int lat2 = ((unsigned int)lat1) / dval;      // normalize
-      unsigned int lat3 = lat2 * dval;
+      unsigned short lat2 = (unsigned short)floor(lat1 / dval);      // normalize
+      unsigned short lat3 = lat2 * dval;
 
 
       retval += (lat3 + 30) * 10000;
-
 
       return retval;
 }
@@ -1504,6 +1504,25 @@ cm93chart::cm93chart()
       ref_lat = 0.;
       ref_lon = 0.;
 
+
+
+
+
+
+
+
+/*
+      ooFILE *flstreamt = fopen("/home/dsr/Desktop/Charts/CM93_May2009/03300060/03300060.INF", "rb");
+      if(flstreamt)
+      {
+            void *p = calloc(10000, 1);
+            read_and_decode_bytes(flstreamt, p, 10000);
+            FILE *flstreamo = fopen("/home/dsr/03300060.info", "wb");
+            fwrite ( p, 1, 10000, flstreamo );
+            fclose(flstreamo);
+      }
+*/
+
 }
 
 cm93chart::~cm93chart()
@@ -1673,61 +1692,23 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
 
       toSM ( vpt.clat, vpt.clon, ref_lat, ref_lon, &m_easting_vp_center, &m_northing_vp_center );
 
-      //    Fetch the lat/lon of the screen corner points
-      LLBBox box = vpt.vpBBox;
-      double ll_lon = box/*vpt.vpBBox*/.GetMinX();
-      double ll_lat = box.GetMinY();
-
-      double ur_lon = box.GetMaxX();
-      double ur_lat = box.GetMaxY();
 
       if(g_bDebugCM93)
-            printf("cm93chart::SetVPParms   ll_lon: %g  ll_lat: %g   ur_lon: %g   ur_lat:  %g  m_dval: %g\n", ll_lon, ll_lat, ur_lon, ur_lat, m_dval);
-
-      //    Adjust to always positive for easier cell calculations
-      if(ll_lon < 0)
       {
-            ll_lon += 360;
-            ur_lon += 360;
+      //    Fetch the lat/lon of the screen corner points
+            LLBBox box = vpt.vpBBox;
+            double ll_lon = box.GetMinX();
+            double ll_lat = box.GetMinY();
+
+            double ur_lon = box.GetMaxX();
+            double ur_lat = box.GetMaxY();
+
+            printf("cm93chart::SetVPParms   ll_lon: %g  ll_lat: %g   ur_lon: %g   ur_lat:  %g  m_dval: %g\n", ll_lon, ll_lat, ur_lon, ur_lat, m_dval);
       }
+
 
       //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells;
-
-      vpcells.Clear();
-
-      int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, GetNativeScale());
-      vpcells.Add(lower_left_cell);                   // always add the lower left cell
-
-      if(g_bDebugCM93)
-            printf("cm93chart::SetVPParms   Adding %d\n", lower_left_cell);
-
-      double rlat, rlon;
-      Get_CM93_Cell_Origin(lower_left_cell, GetNativeScale(), &rlat, &rlon);
-
-
-      double dlat = m_dval / 3.;
-      double dlon = m_dval / 3.;
-
-
-      double loni = rlon + dlon;
-      double lati = rlat;
-
-      while(lati < ur_lat)
-      {
-            while(loni < ur_lon)
-            {
-                  int next_cell = Get_CM93_CellIndex(lati, loni, GetNativeScale());
-                  vpcells.Add(next_cell);
-                  if(g_bDebugCM93)
-                        printf("cm93chart::SetVPParms   Adding %d\n", next_cell);
-
-                  loni += dlon;
-            }
-            lati += dlat;
-            loni = rlon;
-      }
-
+      ArrayOfInts vpcells = GetVPCellArray(vpt);
 
       //    Check the member array to see if all these viewport cells have been loaded
       bool bcell_is_in;
@@ -1763,6 +1744,72 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
                   }
             }
       }
+}
+
+
+ArrayOfInts cm93chart::GetVPCellArray(const ViewPort &vpt)
+{
+      //    Fetch the lat/lon of the screen corner points
+      LLBBox box = vpt.vpBBox;
+      double ll_lon = box.GetMinX();
+      double ll_lat = box.GetMinY();
+
+      double ur_lon = box.GetMaxX();
+      double ur_lat = box.GetMaxY();
+
+      //    Adjust to always positive for easier cell calculations
+      if(ll_lon < 0)
+      {
+            ll_lon += 360;
+            ur_lon += 360;
+      }
+
+     //    Create an array of CellIndexes covering the current viewport
+      ArrayOfInts vpcells;
+
+      vpcells.Clear();
+
+      int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, GetNativeScale());
+      vpcells.Add(lower_left_cell);                   // always add the lower left cell
+
+      if(g_bDebugCM93)
+            printf("cm93chart::GetVPCellArray   Adding %d\n", lower_left_cell);
+
+      double rlat, rlon;
+      Get_CM93_Cell_Origin(lower_left_cell, GetNativeScale(), &rlat, &rlon);
+
+
+      // Use exact integer math here
+      //    It is more obtuse, but it removes dependency on FP rounding policy
+
+      int loni_0 = (int)wxRound(rlon * 3);
+      int loni_20 = loni_0 + m_dval;               // already added the lower left cell
+      int lati_20 = (int)wxRound(rlat * 3);
+
+
+      while(lati_20 < (ur_lat * 3.))
+      {
+            while(loni_20 < (ur_lon * 3.))
+            {
+                  unsigned int next_lon = loni_20 + 1080;
+                  while(next_lon >= 1080)
+                        next_lon -= 1080;
+
+                  unsigned int next_cell = next_lon;
+
+                  next_cell += (lati_20 + 270) * 10000;
+
+                  vpcells.Add((int)next_cell);
+                  if(g_bDebugCM93)
+                        printf("cm93chart::GetVPCellArray   Adding %d\n", next_cell);
+
+                  loni_20 += m_dval;
+            }
+            lati_20 += m_dval;
+            loni_20 = loni_0;
+      }
+
+      return vpcells;
 }
 
 
@@ -3614,53 +3661,9 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell(void)
 
 bool cm93chart::LoadM_COVRSet(ViewPort *vpt)
 {
-      //    Fetch the lat/lon of the screen corner points
-      double ll_lon = vpt->vpBBox.GetMinX();
-      double ll_lat = vpt->vpBBox.GetMinY();
-
-      double ur_lon = vpt->vpBBox.GetMaxX();
-      double ur_lat = vpt->vpBBox.GetMaxY();
-
-
-      //    Adjust to always positive for easier cell calculations
-      if(ll_lon < 0)
-      {
-            ll_lon += 360;
-            ur_lon += 360;
-      }
 
       //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells;
-
-      vpcells.Clear();
-
-      int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, GetNativeScale());
-      vpcells.Add(lower_left_cell);                   // always add the lower left cell
-
-      double rlat, rlon;
-      Get_CM93_Cell_Origin(lower_left_cell, GetNativeScale(), &rlat, &rlon);
-
-
-      double dlat = m_dval / 3.;
-      double dlon = m_dval / 3.;
-
-
-      double loni = rlon + dlon;
-      double lati = rlat;
-
-      while(lati < ur_lat)
-      {
-            while(loni < ur_lon)
-            {
-                  int next_cell = Get_CM93_CellIndex(lati, loni, GetNativeScale());
-                  vpcells.Add(next_cell);
-
-                  loni += dlon;
-            }
-            lati += dlat;
-            loni = rlon;
-      }
-
+      ArrayOfInts vpcells = GetVPCellArray(*vpt);
 
       //    Check the member array to see if all these viewport cells have had their m_covr loaded
       bool bcell_is_in;

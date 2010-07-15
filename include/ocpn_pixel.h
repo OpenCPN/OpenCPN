@@ -340,7 +340,7 @@ class /*WXDLLEXPORT*/ ocpnMemDC : public wxMemoryDC
       wxDIB *m_pselectedDIB;
 #endif
 
- //   DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnMemDC)
+   DECLARE_DYNAMIC_CLASS(ocpnMemDC)
 };
 
 #endif  // _OCPN_PIXEL_H_
