@@ -111,8 +111,8 @@ int grib_pi::Init(void)
 
       //    This PlugIn needs a toolbar icon, so request its insertion if enabled locally
       if(m_bGRIBShowIcon)
-            m_leftclick_tool_id  = InsertPlugInTool((wxChar *)"", _img_grib, _img_grib, wxITEM_NORMAL,
-                  (wxChar *)"Grib", (wxChar *)"", NULL,
+            m_leftclick_tool_id  = InsertPlugInTool((wxChar *)_(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                  (wxChar *)_("Grib"), (wxChar *)_(""), NULL,
                    GRIB_TOOL_POSITION, 0, this);
 
       // Create the drawing factory
