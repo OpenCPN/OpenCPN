@@ -26,90 +26,6 @@
  ***************************************************************************
  *
  *
- * $Log: about.cpp,v $
- * Revision 1.75  2010/06/25 13:30:53  bdbcat
- * 624 Quick Fix
- *
- * Revision 1.74  2010/06/25 02:01:09  bdbcat
- * 624
- *
- * Revision 1.73  2010/06/24 02:02:58  bdbcat
- * 623
- *
- * Revision 1.72  2010/06/21 01:55:36  bdbcat
- * 620
- *
- * Revision 1.71  2010/06/16 03:51:21  bdbcat
- * 615a
- *
- * Revision 1.70  2010/06/13 21:04:30  bdbcat
- * 613a
- *
- * Revision 1.69  2010/06/12 00:48:37  bdbcat
- * 611b
- *
- * Revision 1.68  2010/06/11 16:30:59  bdbcat
- * 611a
- *
- * Revision 1.67  2010/06/07 15:29:04  bdbcat
- * 607a
- *
- * Revision 1.66  2010/06/06 20:50:20  bdbcat
- * 606a
- *
- * Revision 1.65  2010/06/04 22:32:33  bdbcat
- * 604
- *
- * Revision 1.64  2010/05/31 00:43:15  bdbcat
- * 530
- *
- * Revision 1.63  2010/05/29 17:31:48  bdbcat
- * 529a
- *
- * Revision 1.62  2010/05/27 18:56:12  bdbcat
- * 527a
- *
- * Revision 1.61  2010/05/26 22:13:40  bdbcat
- * 526a
- *
- * Revision 1.60  2010/05/25 00:12:13  bdbcat
- * Build 524a
- *
- * Revision 1.59  2010/05/24 01:39:54  bdbcat
- * Build 523a
- *
- * Revision 1.58  2010/05/20 19:03:40  bdbcat
- * Build 520
- *
- * Revision 1.57  2010/05/15 03:57:04  bdbcat
- * Build 514
- *
- * Revision 1.56  2010/05/04 04:45:21  bdbcat
- * Build 504
- *
- * Revision 1.55  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.54  2010/05/02 20:04:50  bdbcat
- * Build 502b
- *
- * Revision 1.53  2010/05/02 03:00:34  bdbcat
- * Build 501
- *
- * Revision 1.52  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.51  2010/04/16 23:35:28  bdbcat
- * 416.
- *
- * Revision 1.50  2010/04/15 15:48:21  bdbcat
- * Build 415.
- *
- * Revision 1.49  2010/04/01 20:17:37  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.48  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 
@@ -133,7 +49,7 @@ CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 //    Some constants
 
-char OpenCPNVersion[] = {"\n      Version 2.2 Build 710"};
+char OpenCPNVersion[] = {"\n      Version 2.2 Build 716"};
 
 
 char AboutText[] =
