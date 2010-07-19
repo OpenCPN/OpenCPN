@@ -49,7 +49,7 @@ CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 //    Some constants
 
-char OpenCPNVersion[] = {"\n      Version 2.2 Build 716"};
+char OpenCPNVersion[] = {"\n      Version 2.2 Build 719"};
 
 
 char AboutText[] =

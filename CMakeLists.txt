@@ -414,7 +414,7 @@ SET(wvsData
         data/wvsdata/wvs1.dat
         data/wvsdata/wvs43.dat
    )
-INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata)
+INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata )
 
 IF (USE_S57)
 	SET(s57data
@@ -424,24 +424,24 @@ IF (USE_S57)
 		data/s57data/s57expectedinput.csv
 		data/s57data/s57objectclasses.csv
 	   )
-	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
+	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data )
 ENDIF (USE_S57)
 
 SET(tcData
         data/tcdata/HARMONIC
         data/tcdata/HARMONIC.IDX
    )
-INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
+INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata )
 
-INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA})
+INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} )
 
-INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds PATTERN "CVS" EXCLUDE)
+INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc PATTERN "CVS" EXCLUDE)
+#INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
 
-INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps)
-INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps)
-INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications)
+INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps )
+INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps )
+INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
 
 #  Fix up time_t definition
 # Checks for 32-bit version. And always use 32-bit time_t for compatibility
@@ -514,7 +514,7 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
       COMMENT "i18n [${_poBasename}]: Created mo file."
    )
 
-   INSTALL(FILES ${_gmoFile} DESTINATION ${PREFIX_DATA}/locale/${_lang}/LC_MESSAGES RENAME ${PACKAGE_NAME}.mo)
+   INSTALL(FILES ${_gmoFile} DESTINATION ${PREFIX_DATA}/locale/${_lang}/LC_MESSAGES RENAME ${PACKAGE_NAME}.mo )
    SET(_gmoFiles ${_gmoFiles} ${_gmoFile})
 ENDMACRO(GETTEXT_BUILD_MO)
 
@@ -539,6 +539,11 @@ ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 ENDIF(NOT APPLE)
 
 
+# On Windows builds, copy the wxWidgets dlls to the executable directory
+IF(WIN32 AND NOT UNIX)
+INSTALL(DIRECTORY wxWidgets/ DESTINATION ${PREFIX_BIN} )
+ENDIF(WIN32 AND NOT UNIX)
+
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
@@ -548,31 +553,48 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
 SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
 SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${VERISON_PATCH})
+SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
-SET(CPACK_NSIS_DISPLAY_NAME "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
+
+
+
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
-  SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} My Famous Project")
+
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenCPN")
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\opencpn.exe")
+
+#  This line sets the name of the Windows Desktop shortcut
+  SET(CPACK_NSIS_LINK_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
+
+#  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} OpenCPN")
+  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
+
   SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.opencpn.org")
-  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.opencpn.com")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.opencpn.org")
   SET(CPACK_NSIS_CONTACT "Dave Register <bdbcat@yahoo.com>")
-  SET(CPACK_NSIS_MODIFY_PATH ON)
+
+#  Set this value to OFF to bypass the installer page relating to $PATH modification
+  SET(CPACK_NSIS_MODIFY_PATH OFF)
+
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}${VERSION_MINOR}_setup" )
+
 ELSE(WIN32 AND NOT UNIX)
-  SET(CPACK_STRIP_FILES "bin/MyExecutable")
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
+  SET(CPACK_STRIP_FILES "bin/opencpn.exe")
   SET(CPACK_SOURCE_STRIP_FILES "")
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-1_i386" )
+
 ENDIF(WIN32 AND NOT UNIX)
 
-SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME})
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
+#SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME})
 #SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt")
 #SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/data/README")
 #SET(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/data/Welcome.txt")
-SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-1_i386" )
 IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
 #    MESSAGE(STATUS "Using generic cpack package description file.")
     SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")

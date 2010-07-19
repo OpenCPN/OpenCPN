@@ -1011,6 +1011,25 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
     *dlon = lam2 / DEGREE;
 }
 
+void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
+                     double *bearing, double *dist)
+{
+    /*      Setup the static parameters  */
+    phi1 = lat1 * DEGREE;            /* Initial Position  */
+    lam1 = lon1 * DEGREE;
+    phi2 = lat2 * DEGREE;
+    lam2 = lon2 * DEGREE;
+
+    geod_inv();
+    if(al12 < 0)
+       al12 += 2*M_PI;
+
+    if(bearing)
+       *bearing = al12 / DEGREE;
+    if(dist)
+       *dist = geod_S / 1852.0;
+}
+
 
 
 /* --------------------------------------------------------------------------------- */

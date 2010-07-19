@@ -124,6 +124,8 @@ extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, doubl
 extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double *dlat, double *dlon);
+extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
+                                double *bearing, double *dist);
 
 extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
 

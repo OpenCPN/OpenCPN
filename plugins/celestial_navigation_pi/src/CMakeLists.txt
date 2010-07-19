@@ -1,7 +1,7 @@
 ##---------------------------------------------------------------------------
-## Author:      bdbcat aka. dsr (Dave Register)
+## Author:      Sean D'Epagnier
 ## Copyright:   
-## License:     wxWidgets License
+## License:     GPL
 ##---------------------------------------------------------------------------
  
 
@@ -14,9 +14,9 @@ IF (COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0011 OLD)
 ENDIF (COMMAND cmake_policy)
 
-PROJECT(grib_pi)
+PROJECT(celestial_navigation_pi)
 
-SET(PACKAGE_NAME grib_pi)
+SET(PACKAGE_NAME celestial_navigation_pi)
 SET(PLUGIN_SOURCE_DIR .)
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
 
@@ -67,27 +67,33 @@ FIND_PACKAGE(Gettext REQUIRED)
 # header files and cpp/c files and CMake will sort them out
 
 
-SET(SRC_GRIB
-                src/grib_pi.h
- 		src/grib_pi.cpp
-                src/grib.h 
-                src/grib.cpp
-		src/GribReader.cpp 
-		src/GribRecord.cpp  
-		src/zuFile.cpp 
-		src/IsoLine.cpp 
-		src/bzip2/bzlib.c 
-		src/bzip2/blocksort.c 
-		src/bzip2/compress.c 
-		src/bzip2/crctable.c 
-		src/bzip2/decompress.c 
-		src/bzip2/huffman.c 
-		src/bzip2/randtable.c
+SET(SRC_CELESTIAL_NAVIGATION
+          astrolabe/calendar.cpp
+          astrolabe/dicts.cpp
+          astrolabe/dynamical.cpp
+          astrolabe/elp2000.cpp
+          astrolabe/equinox.cpp
+          astrolabe/globals.cpp
+          astrolabe/nutation.cpp
+          astrolabe/riseset.cpp
+          astrolabe/sun.cpp
+          astrolabe/util.cpp
+          astrolabe/vsop87d.cpp
+          geomag/geomag.c
+	  celestialnavigationdialog.cpp
+	  sightdialog.cpp 
+          sight.cpp
+          celestial_navigation_pi.cpp
 	)
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CELESTIAL_NAVIGATION})
+
+INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/../../include ${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(../include)
+INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/include/astrolabe)
+INCLUDE_DIRECTORIES(../../../src/nmea0183)
+INCLUDE_DIRECTORIES(../../../src/mygdal)
+
 
 IF(WIN32)
 SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
@@ -104,3 +110,4 @@ IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
 ENDIF(WIN32)
  	  	 
+INSTALL(DIRECTORY ../data DESTINATION ${PREFIX_PARENTDATA}/plugins/celestial_navigation)
