@@ -1022,7 +1022,7 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
 
     geod_inv();
     if(al12 < 0)
-       al12 += 2*M_PI;
+       al12 += 2*PI;
 
     if(bearing)
        *bearing = al12 / DEGREE;

@@ -2492,54 +2492,6 @@ void MyFrame::RequestNewToolbar()
 }
 
 
-/*
-int MyFrame::InsertPlugInTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                        wxChar *shortHelp, wxChar *longHelp, wxObject *clientData,
-                                        int position, PlugInCallBackFunction pcallback)
-{
-      PlugInToolSpec *pits = new PlugInToolSpec;
-      pits->label = label;
-      pits->position = position;
-      pits->id = m_next_available_plugin_tool_id;
-      pits->bitmap = bitmap;
-      pits->bmpDisabled = bmpDisabled;
-      pits->kind = kind;
-      pits->shortHelp = shortHelp;
-      pits->longHelp = longHelp;
-      pits->clientData = clientData;
-      pits->p_left_click_callback = pcallback;
-
-      m_PlugInToolArray.Add(pits);
-
-      m_next_available_plugin_tool_id++;
-
-      DestroyMyToolbar();
-      m_toolBar = CreateAToolbar();
-      SetToolBar((wxToolBar *)m_toolBar);
-
-      return pits->id;
-}
-
-void MyFrame::RemovePlugInTool(int tool_id)
-{
-      //    Walk the PlugIn tool spec array, checking id
-      for(unsigned int i=0; i < m_PlugInToolArray.GetCount(); i++)
-      {
-            PlugInToolSpec *pits = m_PlugInToolArray.Item(i);
-            if(pits->id == tool_id)
-            {
-                  m_PlugInToolArray.Remove(pits);
-                  delete pits;
-            }
-      }
-
-      DestroyMyToolbar();
-      m_toolBar = CreateAToolbar();
-      SetToolBar((wxToolBar *)m_toolBar);
-
-}
-*/
-
 wxBitmap *ConvertRedToBlue(wxBitmap *pbmp )
 {
       wxImage *pimg = new wxImage(pbmp->ConvertToImage());
@@ -3005,12 +2957,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
             cc1->Update();
       }
 
-      //    Unload the PlugIns
+      //    Deactivate the PlugIns
       if(g_pi_manager)
       {
-            g_pi_manager->UnLoadAllPlugIns();
-            delete g_pi_manager;
-            g_pi_manager = NULL;
+            g_pi_manager->DeactivateAllPlugIns();
       }
 
       wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
@@ -3101,6 +3051,17 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     cc1->Destroy();
     cc1 = NULL;
+
+    //    Unload the PlugIns
+    //      Note that we are waiting until after the canvas is destroyed,
+    //      since some PlugIns may have created children of canvas.
+    //      Such a PlugIn must stay intact for the canvas dtor to call DestoryChildren()
+    if(g_pi_manager)
+    {
+          g_pi_manager->UnLoadAllPlugIns();
+          delete g_pi_manager;
+          g_pi_manager = NULL;
+    }
 
     if(g_pnmea)
     {

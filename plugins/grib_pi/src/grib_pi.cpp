@@ -134,6 +134,8 @@ int grib_pi::Init(void)
 bool grib_pi::DeInit(void)
 {
 //      printf("grib_pi DeInit()\n");
+      if(m_pGribDialog)
+            m_pGribDialog->Close();
 
       delete m_pGRIBOverlayFactory;
       return true;

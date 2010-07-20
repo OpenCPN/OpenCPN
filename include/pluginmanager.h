@@ -112,6 +112,7 @@ public:
 
       bool LoadAllPlugIns(wxString &shared_data_prefix);
       bool UnLoadAllPlugIns();
+      bool DeactivateAllPlugIns();
       PlugInContainer *LoadPlugIn(wxString plugin_file);
 
       bool RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp);

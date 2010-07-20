@@ -471,12 +471,6 @@ void GRIBUIDialog::OnClose ( wxCloseEvent& event )
 {
       pPlugIn->SetGribDir(m_currentGribDir);
 
-      //    Unregister any existing GRIB overlays
-      while ( m_sequence_active != -1 )
-      {
-//            cc1->UnRegisterOverlayProvider ( m_sequence_active, ( RenderOverlayCallBackFunction ) ( GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ) );
-            m_sequence_active--;
-      }
 
       RequestRefresh(pParent);
 

@@ -13,6 +13,7 @@ MESSAGE (STATUS "*** Building PlugIns ***")
  
 add_subdirectory (grib_pi/src)
 add_subdirectory (demo_pi/src)
-add_subdirectory (celestial_navigation_pi/src)
-
+IF(NOT WIN32)
+  add_subdirectory (celestial_navigation_pi/src)
+ENDIF(NOT WIN32)
 

@@ -103,7 +103,6 @@ bool PlugInManager::UnLoadAllPlugIns()
             msg += pic->m_plugin_file;
             wxLogMessage(msg);
 
-            pic->m_pplugin->DeInit();
             pic->m_destroy_fn(pic->m_pplugin);
 
             delete pic->m_plibrary;            // This will unload the PlugIn
@@ -113,6 +112,19 @@ bool PlugInManager::UnLoadAllPlugIns()
       return true;
 }
 
+bool PlugInManager::DeactivateAllPlugIns()
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            wxString msg(_("PlugInManager: Deactivating PlugIn: "));
+            msg += pic->m_plugin_file;
+            wxLogMessage(msg);
+
+            pic->m_pplugin->DeInit();
+      }
+      return true;
+}
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
