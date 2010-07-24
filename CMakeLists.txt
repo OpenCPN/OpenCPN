@@ -410,8 +410,14 @@ INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ".")
 ELSE(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN})
 ENDIF(WIN32)
+
 #ADD_CUSTOM_TARGET(dummy ALL DEPENDS ${PACKAGE_NAME} i18n)
+
 #INSTALL(FILES ${PACKAGE_HEADERS} DESTINATION ${PREFIX_INCLUDE})
+
+IF(WIN32)
+SET(PREFIX_PKGDATA ".")
+ENDIF(WIN32)
 
 SET(wvsData
         data/wvsdata/readmewvs.txt
@@ -568,21 +574,20 @@ IF(WIN32 AND NOT UNIX)
   # sure there is at least one set of four (4) backlasshes.
 
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenCPN")
-  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\opencpn.exe")
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
+  SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
 
 #  This line sets the name of the Windows Desktop shortcut
   SET(CPACK_NSIS_LINK_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
 
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} OpenCPN")
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} Version ${PACKAGE_VERSION}")
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
 
   SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.opencpn.org")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.opencpn.org")
-  SET(CPACK_NSIS_CONTACT "Dave Register <bdbcat@yahoo.com>")
+  SET(CPACK_NSIS_CONTACT "http:\\\\\\\\www.opencpn.org")
 
-#  Set this value to OFF to bypass the installer page relating to $PATH modification
-  SET(CPACK_NSIS_MODIFY_PATH OFF)
 
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}${VERSION_MINOR}_setup" )
 
