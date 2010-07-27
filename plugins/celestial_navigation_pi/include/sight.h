@@ -18,9 +18,26 @@
     Copyright (C) 2010, Sean D'Epagnier <geckosenator@gmail.com>
  */
 
-#include "chartbase.h"
 
 #include <list>
+
+enum OVERLAP {_IN,_ON,_OUT};
+
+#ifndef PI
+      #define PI        3.1415926535897931160E0      /* pi */
+#endif
+#define DEGREE    (PI/180.0)
+#define RADIAN    (180.0/PI)
+
+static const double WGS84_semimajor_axis_meters       = 6378137.0;           // WGS84 semimajor axis
+static const double mercator_k0                       = 0.9996;
+static const double WGSinvf                           = 298.257223563;       /* WGS84 1/f */
+
+extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double *dlat, double *dlon);
+extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
+                                double *bearing, double *dist);
+
+
 
 WX_DECLARE_LIST(wxRealPoint, wxRealPointList);
 
@@ -66,8 +83,8 @@ public:
       void ComputeTraceOneVariable(double center, double certainty, double constantangle,
                                    double stepsize, double &min, double &max, double &step);
 
-      void DrawPolygon(wxDC& dc, ViewPort &pVP, wxRealPointList &area);
-      virtual void Draw(wxDC& dc, ViewPort &pVP);
+      void DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &pVP, wxRealPointList &area);
+      virtual void Render(wxMemoryDC& dc, PlugIn_ViewPort &pVP);
 
 private:
       void BuildElevationLineOfPosition(double elevationmin, double elevationmax, double elevationstep,

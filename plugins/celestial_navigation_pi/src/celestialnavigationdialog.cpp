@@ -32,13 +32,11 @@
 
 #include <iostream>
 
+#include "../../../include/ocpn_plugin.h"
+
+#include "sight.h"
 #include "celestialnavigationdialog.h"
 #include "sightdialog.h"
-#include "sight.h"
-//#include "navutil.h"
-//#include "routeprop.h"
-#include "georef.h"
-//#include "chartimg.h"               // for ChartBaseBSB
 
 #define DIALOG_MARGIN 3
 
@@ -76,9 +74,7 @@ static const char *eye[]={
 enum { rmVISIBLE = 0, rmBODY, rmTIME, rmELEVATION, rmAZIMUTH, rmHEIGHT_CORRECTION, rmEDGE_CORRECTION, rmREFRACTION_CORRECTION, rmPARALLAX_CORRECTION, rmCORRECTED_ELEVATION, rmCOLOR };// RMColumns;
 
 // GLOBALS :0
-extern SightList *pSightList;
-extern ChartCanvas *cc1;
-extern ChartBase *Current_Ch;
+wxWindow *cc1;
 
 // sort callback. Sort by body.
 int wxCALLBACK SortSights(long item1, long item2, long list)
@@ -200,7 +196,7 @@ void CelestialNavigationDialog::UpdateSightListCtrl()
       wxListItem item;
       int index = 0;
 
-      for (it = (*pSightList).begin(); it != (*pSightList).end(); ++it, ++index)
+      for (it = m_SightList.begin(); it != m_SightList.end(); ++it, ++index)
       {
             item.SetId(index);
             item.SetImage((*it)->IsVisible() ? 0 : -1);
@@ -260,14 +256,14 @@ void CelestialNavigationDialog::UpdateButtons()
 
       btnProperties->Enable(enable);
       btnDelete->Enable(enable);
-      btnDeleteAllSights->Enable(pSightList->GetCount());
+      btnDeleteAllSights->Enable(m_SightList.GetCount() > 0);
 }
 
 void CelestialNavigationDialog::MakeAllSightsInvisible()
 {
       SightList::iterator it;
       long index = 0;
-      for (it = pSightList->begin(); it != pSightList->end(); ++it, ++index)
+      for (it = m_SightList.begin(); it != m_SightList.end(); ++it, ++index)
       {
             if ((*it)->IsVisible()) { // avoid config updating as much as possible!
                   (*it)->SetVisible(false);
@@ -283,7 +279,7 @@ void CelestialNavigationDialog::OnNewClick(wxCommandEvent &event)
       
       if( dialog->ShowModal() == wxID_OK ) {
          Sight *s = dialog->MakeNewSight();
-         pSightList->Append(s);
+         m_SightList.Append(s);
 
          UpdateSightListCtrl();
 
@@ -297,16 +293,16 @@ void CelestialNavigationDialog::OnPropertiesClick(wxCommandEvent &event)
       long selected_index = m_pSightListCtrl->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
       if (selected_index < 0) return;
 
-      Sight *psight = pSightList->Item(m_pSightListCtrl->GetItemData(selected_index))->GetData();
+      Sight *psight = m_SightList.Item(m_pSightListCtrl->GetItemData(selected_index))->GetData();
 
       SightDialog *dialog = new SightDialog(GetParent());
       dialog->ReadSight(psight);
       
       if( dialog->ShowModal() == wxID_OK ) {
-         pSightList->DeleteObject(psight);
+         m_SightList.DeleteObject(psight);
 
          Sight *s = dialog->MakeNewSight();
-         pSightList->Insert(selected_index, s);
+         m_SightList.Insert(selected_index, s);
 
          UpdateSightListCtrl();
 
@@ -320,8 +316,8 @@ void CelestialNavigationDialog::OnDeleteClick(wxCommandEvent &event)
       long selected_index = m_pSightListCtrl->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
       if (selected_index < 0) return;
 
-      Sight *psight_to_delete = pSightList->Item(m_pSightListCtrl->GetItemData(selected_index))->GetData();
-      pSightList->DeleteObject(psight_to_delete);
+      Sight *psight_to_delete = m_SightList.Item(m_pSightListCtrl->GetItemData(selected_index))->GetData();
+      m_SightList.DeleteObject(psight_to_delete);
 
       UpdateSightListCtrl();
       cc1->Refresh();
@@ -333,10 +329,10 @@ void CelestialNavigationDialog::OnDeleteAllSightsClick(wxCommandEvent &event)
 {
    wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> sights?"), wxString(_("OpenCPN Alert"),wxYES_NO  ));
 
-      pSightList->Clear();
+      m_SightList.Clear();
 
       UpdateSightListCtrl();
-      cc1->Refresh();
+      RequestRefresh(cc1);
 }
 
 void CelestialNavigationDialog::OnSightListLeftDown(wxMouseEvent &event)
@@ -349,11 +345,11 @@ void CelestialNavigationDialog::OnSightListLeftDown(wxMouseEvent &event)
       if (clicked_index > -1 && event.GetX() < m_pSightListCtrl->GetColumnWidth(0))
       {
             // Process the clicked item
-            Sight *sight = pSightList->Item(m_pSightListCtrl->GetItemData(clicked_index))->GetData();
+            Sight *sight = m_SightList.Item(m_pSightListCtrl->GetItemData(clicked_index))->GetData();
             sight->SetVisible(!sight->IsVisible());
             m_pSightListCtrl->SetItemImage(clicked_index, sight->IsVisible() ? 0 : -1);
 
-            cc1->Refresh();
+            RequestRefresh(cc1);
       }
 
       // Allow wx to process...
@@ -364,13 +360,14 @@ void CelestialNavigationDialog::OnSightSelected(wxListEvent &event)
 {
     long clicked_index = event.m_itemIndex;
     // Process the clicked item
-    Sight *sight = pSightList->Item(m_pSightListCtrl->GetItemData(clicked_index))->GetData();
+    Sight *sight = m_SightList.Item(m_pSightListCtrl->GetItemData(clicked_index))->GetData();
     m_pSightListCtrl->SetItemImage(clicked_index, sight->IsVisible() ? 0 : -1);
-    cc1->Refresh();
+    RequestRefresh(cc1);
 
     UpdateButtons();
 
 }
+
 
 //END Event handlers
 

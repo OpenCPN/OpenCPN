@@ -33,6 +33,8 @@
 #include "navutil.h"
 
 extern MyConfig        *pConfig;
+extern FontMgr         *pFontMgr;
+extern wxString        g_SData_Locn;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -53,7 +55,6 @@ PlugInManager::PlugInManager(MyFrame *parent)
             m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
       }
 
-//      m_plugin_base = new opencpn_plugin(this);
 }
 
 PlugInManager::~PlugInManager()
@@ -541,6 +542,19 @@ bool GetGlobalColor(wxString colorName, wxColour *pcolour)
       *pcolour = c;
 
       return true;
+}
+
+wxFont *OCPNGetFont(wxString TextElement, int default_size)
+{
+      if(pFontMgr)
+            return pFontMgr->GetFont(TextElement, default_size);
+      else
+            return NULL;
+}
+
+wxString *GetpSharedDataLocation(void)
+{
+      return &g_SData_Locn;
 }
 
 //-----------------------------------------------------------------------------------------

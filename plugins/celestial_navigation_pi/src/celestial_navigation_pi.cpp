@@ -32,9 +32,10 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#include "../../../include/ocpn_plugin.h"
 
-#include "celestial_navigation_pi.h"
 #include "sight.h"
+#include "celestial_navigation_pi.h"
 
 #ifndef DECL_EXP
 #ifdef __WXMSW__
@@ -44,6 +45,7 @@
 #endif
 #endif
 
+extern wxWindow *cc1;
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -56,14 +58,6 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
-
-
-//---------------------------------------------
-//
-//    Static Variables
-//
-//----------------------------------------------
-SightList *pSightList;
 
 
 
@@ -83,12 +77,12 @@ SightList *pSightList;
 
 int celestial_navigation_pi::Init(void)
 {
-      printf("celestial_navigation_pi Init()\n");
-
       m_pcelestial_navigation_dialog = NULL;
 
       // Get a pointer to the opencpn display canvas, to use as a parent for windows created
       m_parent_window = GetOCPNCanvasWindow();
+
+      cc1 = m_parent_window;
 
       // Create the Context Menu Items
 
@@ -101,16 +95,12 @@ int celestial_navigation_pi::Init(void)
       m_show_id = AddCanvasContextMenuItem(pmi, this );
       SetCanvasContextMenuItemViz(m_show_id, true);
 
-      wxMenuItem *pmih = new wxMenuItem(&dummy_menu, -1, _("Hide PlugIn Celestial_NavigationWindow"));
-      m_hide_id = AddCanvasContextMenuItem(pmih, this );
-      SetCanvasContextMenuItemViz(m_hide_id, false);
-
-      return (INSTALLS_CONTEXTMENU_ITEMS);
+      return (WANTS_OVERLAY_CALLBACK |
+              INSTALLS_CONTEXTMENU_ITEMS);
 }
 
 bool celestial_navigation_pi::DeInit(void)
 {
-//      printf("celestial_navigation_pi DeInit()\n");
       if(m_pcelestial_navigation_dialog)
       {
             m_pcelestial_navigation_dialog->Close();
@@ -161,21 +151,24 @@ void celestial_navigation_pi::OnContextMenuItemCallback(int id)
 
 
       if(NULL == m_pcelestial_navigation_dialog)
-      {
             m_pcelestial_navigation_dialog = new CelestialNavigationDialog(m_parent_window);
 
+      m_pcelestial_navigation_dialog->Show();
+}
 
-            SetCanvasContextMenuItemViz(m_hide_id, true);
-            SetCanvasContextMenuItemViz(m_show_id, false);
-      }
-      else
-      {
-            m_pcelestial_navigation_dialog->Close();
-            m_pcelestial_navigation_dialog->Destroy();
-            m_pcelestial_navigation_dialog = NULL;
+bool celestial_navigation_pi::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+{
+   if(!m_pcelestial_navigation_dialog)
+      return false;
 
-            SetCanvasContextMenuItemViz(m_hide_id, false);
-            SetCanvasContextMenuItemViz(m_show_id, true);
-      }      
-
+   wxSightListNode *node = m_pcelestial_navigation_dialog->m_SightList.GetFirst();
+   while ( node )
+   {
+      Sight *pSightRender = node->GetData();
+      if ( pSightRender )
+         pSightRender->Render ( *pmdc, *vp );
+      
+      node = node->GetNext();
+   }
+   return true;
 }

@@ -49,8 +49,15 @@
 #endif                        // end rms
 
 #ifdef BUILD_WITH_LIBGPS
-#include <gps.h>
-#include <dlfcn.h>
+      #ifdef __WXOSX__ // begin rdm
+            #define policy_t gps_policy_t
+            #include <gps.h>
+            #undef policy_t
+      #else
+            #include <gps.h>
+      #endif // end rdm
+
+      #include <dlfcn.h>
 #endif
 
 

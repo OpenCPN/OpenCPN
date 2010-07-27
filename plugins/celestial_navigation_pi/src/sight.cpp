@@ -30,7 +30,6 @@
 #include <wx/filename.h>
 #include <wx/graphics.h>
 
-#include "dychart.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -38,15 +37,15 @@
 
 #include <wx/listimpl.cpp>
 
-#include "chart1.h"
-#include "navutil.h"
-#include "chcanv.h"
-#include "georef.h"
+
+#include "../../../include/ocpn_plugin.h"
 
 #include "sight.h"
 
 WX_DEFINE_LIST ( SightList );
 WX_DEFINE_LIST ( wxRealPointList );
+
+wxString        g_SData_Locn;
 
 //-----------------------------------------------------------------------------
 //          Sight Implementation
@@ -65,12 +64,14 @@ Sight::Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
      m_Height(height), m_Colour(colour)
 {
 
+   g_SData_Locn == *GetpSharedDataLocation();
+
    while(m_Azimuth < 0)
       m_Azimuth += 360;
    while(m_Azimuth >= 360)
       m_Azimuth -= 360;
 
-   if(!isnan(m_Elevation)) {
+   if(!wxIsNaN(m_Elevation)) {
       /* correct for height of observer
          The dip of the sea horizon in minutes = 1.753*sqrt(height) */
       m_HeightCorrection = 1.753*sqrt(m_Height) * cos(M_PI/180 * m_Elevation) / 60.0;
@@ -120,7 +121,7 @@ Sight::Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
    double elevationmin, elevationmax, elevationstep;
    ComputeTraceOneVariable(m_CorrectedElevation, m_ElevationCertainty, 90,
                            1, elevationmin, elevationmax, elevationstep);
-   if(isnan(m_Elevation))
+   if(wxIsNaN(m_Elevation))
       elevationmin = elevationstep;
    
    double timemin, timemax, timestep;
@@ -128,13 +129,13 @@ Sight::Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
                            60, timemin, timemax, timestep);
    
    /* draw line of latitude around celestial pole if we have an elevation */
-   if(isnan(m_Azimuth))
+   if(wxIsNaN(m_Azimuth))
       BuildElevationLineOfPosition(elevationmin, elevationmax, elevationstep,
                                    azimuthstep,
                                    timemin, timemax, timestep);
 
    /* otherwise draw bearing line (compass sight) */
-   if(!isnan(m_Azimuth))
+   if(!wxIsNaN(m_Azimuth))
       BuildBearingLineOfPosition(elevationmin, elevationmax, elevationstep,
                                    azimuthmin, azimuthmax, azimuthstep,
                                    timemin, timemax, timestep);
@@ -236,8 +237,7 @@ using namespace astrolabe::sun;
 using namespace astrolabe::util;
 using namespace astrolabe::vsop87d;
 
-extern wxString        g_SData_Locn;
-extern ChartCanvas      *cc1;
+//extern ChartCanvas      *cc1;
 
 /* calculate what longitude the body for this sight is directly over at a given time */ 
 void Sight::BodyLocation(wxDateTime time, double &lat, double &lon)
@@ -429,9 +429,13 @@ bool Sight::BearingPoint(wxDateTime datetime, double elevation, double bearing,
 
           static bool first=true;
           if(first) {
-             std::string geomag_text_path = g_SData_Locn.fn_str().data();
-             geomag_text_path.append("astrolabe/IGRF11.COF");
-             geomag_load(geomag_text_path.c_str());
+             wxString geomag_text_path = g_SData_Locn;
+             geomag_text_path.Append(_T("astrolabe/IGRF11.COF"));
+             geomag_load(geomag_text_path.mb_str());
+             first = false;
+//             std::string geomag_text_path = g_SData_Locn.fn_str(); //dsr  .data();
+//             geomag_text_path.append("astrolabe/IGRF11.COF");
+//             geomag_load(geomag_text_path.c_str());
              first = false;
           }
 
@@ -548,19 +552,51 @@ wxRealPointList *Sight::ReduceToConvexPolygon(wxRealPointList *points)
    return polygon;
 }
 
+
+// Calculates if two boxes intersect. If so, the function returns _ON.
+// If they do not intersect, two scenario's are possible:
+// other is outside this -> return _OUT
+// other is inside this -> return _IN
+
+static OVERLAP Intersect(PlugIn_ViewPort *vp,
+       double lat_min, double lat_max, double lon_min, double lon_max, double Marge)
+{
+
+    if (((vp->lon_min - Marge) > (lon_max + Marge)) ||
+         ((vp->lon_max + Marge) < (lon_min - Marge)) ||
+         ((vp->lat_max + Marge) < (lat_min - Marge)) ||
+         ((vp->lat_min - Marge) > (lat_max + Marge)))
+        return _OUT;
+
+    // Check if other.bbox is inside this bbox
+    if ((vp->lon_min <= lon_min) &&
+         (vp->lon_max >= lon_max) &&
+         (vp->lat_max >= lat_max) &&
+         (vp->lat_min <= lat_min))
+        return _IN;
+
+    // Boundingboxes intersect
+    return _ON;
+}
+
 /* Draw a polygon (specified in lat/lon coords) to dc given a list of points */
-void Sight::DrawPolygon(wxDC& dc, ViewPort &pVP, wxRealPointList &area)
+void Sight::DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &VP, wxRealPointList &area)
 {
    int n = area.size();
-   wxPoint points[n];
+   wxPoint *ppoints = new wxPoint[n];
    bool rear1 = false, rear2 = false;
    wxRealPointList::iterator it = area.begin();
-   LLBBox polybox;
+
+   double minx = 1000;
+   double maxx = -1000;
+   double miny = 1000;
+   double maxy = -1000;
+
    for(int i=0; i<n && it != area.end(); i++, it++) {
       wxPoint r;
 
       /* don't draw areas crossing opposite from center longitude */
-      double lon = (*it)->y - pVP.clon;
+      double lon = (*it)->y - VP.clon;
       while(lon < 0)
          lon += 360;
       while(lon >= 360)
@@ -570,26 +606,33 @@ void Sight::DrawPolygon(wxDC& dc, ViewPort &pVP, wxRealPointList &area)
       if(lon > 180 && lon < 270)
          rear2 = true;
 
-      while((*it)->y - pVP.clon < -180)
+      while((*it)->y - VP.clon < -180)
          (*it)->y += 360;
-      while((*it)->y - pVP.clon > 180)
+      while((*it)->y - VP.clon > 180)
          (*it)->y -= 360;
 
-      polybox.Expand((*it)->y, (*it)->x);
-      cc1->GetCanvasPointPix ( (*it)->x, (*it)->y, &r );
-      points[i] = r;
+      minx = wxMin(minx, (*it)->x);
+      miny = wxMin(miny, (*it)->y);
+      maxx = wxMax(maxx, (*it)->x);
+      maxy = wxMax(maxy, (*it)->y);
+
+      GetCanvasPixLL(&VP, &r, (*it)->x, (*it)->y);
+      ppoints[i] = r;
    }
 
    if(!(rear1 && rear2) &&
-      pVP.vpBBox.Intersect(polybox) != _OUT)
-      dc.DrawPolygon(n, points);
+      Intersect(&VP, miny, maxy,
+                minx, maxx, 0) != _OUT)
+      dc.DrawPolygon(n, ppoints);
+
+   delete[] ppoints;
 }
 
 /* Compute trace areas for one dimension, given center certainty, and constant */
 void Sight::ComputeTraceOneVariable(double center, double certainty, double constant,
                                     double stepsize, double &min, double &max, double &step)
 {
-   if(isnan(center)) {
+   if(wxIsNaN(center)) {
       min = -constant;
       max =  constant;
       step = stepsize;
@@ -600,8 +643,8 @@ void Sight::ComputeTraceOneVariable(double center, double certainty, double cons
    }
 }
 
-/* draw the area of position for this sight */
-void Sight::Draw ( wxDC& dc, ViewPort &VP )
+/* render the area of position for this sight */
+void Sight::Render( wxMemoryDC& dc, PlugIn_ViewPort &VP )
 {
       if ( !m_bVisible )
             return;
@@ -615,3 +658,305 @@ void Sight::Draw ( wxDC& dc, ViewPort &VP )
             it++;
       }
 }
+
+
+/* --------------------------------------------------------------------------------- */
+/*
+      Geodesic Forward and Reverse calculation functions
+      Abstracted and adapted from PROJ-4.5.0 by David S.Register (bdbcat@yahoo.com)
+
+      Original source code contains the following license:
+
+      Copyright (c) 2000, Frank Warmerdam
+
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+*/
+/* --------------------------------------------------------------------------------- */
+
+
+
+
+#define DTOL                 1e-12
+
+#define HALFPI  1.5707963267948966
+#define SPI     3.14159265359
+#define TWOPI   6.2831853071795864769
+#define ONEPI   3.14159265358979323846
+#define MERI_TOL 1e-9
+
+static double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
+static int merid, signS;
+
+/*   Input/Output from geodesic functions   */
+static double al12;           /* Forward azimuth */
+static double al21;           /* Back azimuth    */
+static double geod_S;         /* Distance        */
+static double phi1, lam1, phi2, lam2;
+
+static int ellipse;
+static double geod_f;
+static double geod_a;
+static double es, onef, f, f64, f2, f4;
+
+double adjlon (double lon) {
+      if (fabs(lon) <= SPI) return( lon );
+      lon += ONEPI;  /* adjust to 0..2pi rad */
+      lon -= TWOPI * floor(lon / TWOPI); /* remove integral # of 'revolutions'*/
+      lon -= ONEPI;  /* adjust back to -pi..pi rad */
+      return( lon );
+}
+
+
+
+void geod_inv() {
+      double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
+      sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
+
+
+            /*   Stuff the WGS84 projection parameters as necessary
+      To avoid having to include <geodesic,h>
+            */
+
+      ellipse = 1;
+      f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
+      geod_a = WGS84_semimajor_axis_meters;
+
+      es = 2 * f - f * f;
+      onef = sqrt(1. - es);
+      geod_f = 1 - onef;
+      f2 = geod_f/2;
+      f4 = geod_f/4;
+      f64 = geod_f*geod_f/64;
+
+
+      if (ellipse) {
+            th1 = atan(onef * tan(phi1));
+            th2 = atan(onef * tan(phi2));
+      } else {
+            th1 = phi1;
+            th2 = phi2;
+      }
+      thm = .5 * (th1 + th2);
+      dthm = .5 * (th2 - th1);
+      dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
+      if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
+            al12 =  al21 = geod_S = 0.;
+            return;
+      }
+      sindlamm = sin(dlamm);
+      costhm = cos(thm);      sinthm = sin(thm);
+      cosdthm = cos(dthm);    sindthm = sin(dthm);
+      L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
+                  * sindlamm * sindlamm;
+      d = acos(cosd = 1 - L - L);
+      if (ellipse) {
+            E = cosd + cosd;
+            sind = sin( d );
+            Y = sinthm * cosdthm;
+            Y *= (Y + Y) / (1. - L);
+            T = sindthm * costhm;
+            T *= (T + T) / L;
+            X = Y + T;
+            Y -= T;
+            T = d / sind;
+            D = 4. * T * T;
+            A = D * E;
+            B = D + D;
+            geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
+                        f64 * (X * (A + (T - .5 * (A - E)) * X) -
+                        Y * (B + E * Y) + D * X * Y));
+            tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
+                        (f2 * T + f64 * (32. * T - (20. * T - A)
+                        * X - (B + 4.) * Y)) * tan(dlam)));
+      } else {
+            geod_S = geod_a * d;
+            tandlammp = tan(dlamm);
+      }
+      u = atan2(sindthm , (tandlammp * costhm));
+      v = atan2(cosdthm , (tandlammp * sinthm));
+      al12 = adjlon(TWOPI + v - u);
+      al21 = adjlon(TWOPI - v - u);
+}
+
+
+
+
+void geod_pre(void) {
+
+      /*   Stuff the WGS84 projection parameters as necessary
+      To avoid having to include <geodesic,h>
+      */
+      ellipse = 1;
+      f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
+      geod_a = WGS84_semimajor_axis_meters;
+
+      es = 2 * f - f * f;
+      onef = sqrt(1. - es);
+      geod_f = 1 - onef;
+      f2 = geod_f/2;
+      f4 = geod_f/4;
+      f64 = geod_f*geod_f/64;
+
+      al12 = adjlon(al12); /* reduce to  +- 0-PI */
+      signS = fabs(al12) > HALFPI ? 1 : 0;
+      th1 = ellipse ? atan(onef * tan(phi1)) : phi1;
+      costh1 = cos(th1);
+      sinth1 = sin(th1);
+      if ((merid = fabs(sina12 = sin(al12)) < MERI_TOL)) {
+            sina12 = 0.;
+            cosa12 = fabs(al12) < HALFPI ? 1. : -1.;
+            M = 0.;
+      } else {
+            cosa12 = cos(al12);
+            M = costh1 * sina12;
+      }
+      N = costh1 * cosa12;
+      if (ellipse) {
+            if (merid) {
+                  c1 = 0.;
+                  c2 = f4;
+                  D = 1. - c2;
+                  D *= D;
+                  P = c2 / D;
+            } else {
+                  c1 = geod_f * M;
+                  c2 = f4 * (1. - M * M);
+                  D = (1. - c2)*(1. - c2 - c1 * M);
+                  P = (1. + .5 * c1 * M) * c2 / D;
+            }
+      }
+      if (merid) s1 = HALFPI - th1;
+      else {
+            s1 = (fabs(M) >= 1.) ? 0. : acos(M);
+            s1 =  sinth1 / sin(s1);
+            s1 = (fabs(s1) >= 1.) ? 0. : acos(s1);
+      }
+}
+
+
+void  geod_for(void) {
+      double d,sind,u,V,X,ds,cosds,sinds,ss,de;
+
+      ss = 0.;
+
+      if (ellipse) {
+            d = geod_S / (D * geod_a);
+            if (signS) d = -d;
+            u = 2. * (s1 - d);
+            V = cos(u + d);
+            X = c2 * c2 * (sind = sin(d)) * cos(d) * (2. * V * V - 1.);
+            ds = d + X - 2. * P * V * (1. - 2. * P * cos(u)) * sind;
+            ss = s1 + s1 - ds;
+      } else {
+            ds = geod_S / geod_a;
+            if (signS) ds = - ds;
+      }
+      cosds = cos(ds);
+      sinds = sin(ds);
+      if (signS) sinds = - sinds;
+      al21 = N * cosds - sinth1 * sinds;
+      if (merid) {
+            phi2 = atan( tan(HALFPI + s1 - ds) / onef);
+            if (al21 > 0.) {
+                  al21 = PI;
+                  if (signS)
+                        de = PI;
+                  else {
+                        phi2 = - phi2;
+                        de = 0.;
+                  }
+            } else {
+                  al21 = 0.;
+                  if (signS) {
+                        phi2 = - phi2;
+                        de = 0;
+                  } else
+                        de = PI;
+            }
+      } else {
+            al21 = atan(M / al21);
+            if (al21 > 0)
+                  al21 += PI;
+            if (al12 < 0.)
+                  al21 -= PI;
+            al21 = adjlon(al21);
+            phi2 = atan(-(sinth1 * cosds + N * sinds) * sin(al21) /
+                        (ellipse ? onef * M : M));
+            de = atan2(sinds * sina12 ,
+                       (costh1 * cosds - sinth1 * sinds * cosa12));
+            if (ellipse){
+                  if (signS)
+                        de += c1 * ((1. - c2) * ds +
+                                    c2 * sinds * cos(ss));
+                  else
+                        de -= c1 * ((1. - c2) * ds -
+                                    c2 * sinds * cos(ss));
+            }
+      }
+      lam2 = adjlon( lam1 + de );
+}
+
+
+
+
+
+
+
+/* --------------------------------------------------------------------------------- */
+/*
+// Given the lat/long of starting point, and traveling a specified distance,
+// at an initial bearing, calculates the lat/long of the resulting location.
+// using elliptic earth model.
+*/
+/* --------------------------------------------------------------------------------- */
+
+void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, double *dlon)
+{
+    /*      Setup the static parameters  */
+    phi1 = lat * DEGREE;            /* Initial Position  */
+    lam1 = lon * DEGREE;
+    al12 = brg * DEGREE;            /* Forward azimuth */
+    geod_S = dist * 1852.0;         /* Distance        */
+
+    geod_pre();
+    geod_for();
+
+    *dlat = phi2 / DEGREE;
+    *dlon = lam2 / DEGREE;
+}
+
+void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
+                     double *bearing, double *dist)
+{
+    /*      Setup the static parameters  */
+    phi1 = lat1 * DEGREE;            /* Initial Position  */
+    lam1 = lon1 * DEGREE;
+    phi2 = lat2 * DEGREE;
+    lam2 = lon2 * DEGREE;
+
+    geod_inv();
+    if(al12 < 0)
+       al12 += 2*PI;
+
+    if(bearing)
+       *bearing = al12 / DEGREE;
+    if(dist)
+       *dist = geod_S / 1852.0;
+}
+

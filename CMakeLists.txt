@@ -455,9 +455,11 @@ INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
 
 #  Fix up time_t definition
 # Checks for 32-bit version. And always use 32-bit time_t for compatibility
-IF(CMAKE_GENERATOR MATCHES "Visual Studio" AND CMAKE_SIZEOF_VOID_P MATCHES 4)
+
+
+IF(WIN32 AND NOT UNIX)
   ADD_DEFINITIONS(-D_USE_32BIT_TIME_T)
-ENDIF(CMAKE_GENERATOR MATCHES "Visual Studio" AND CMAKE_SIZEOF_VOID_P MATCHES 4)
+ENDIF(WIN32 AND NOT UNIX)
 
 #uninstall-local:
 #        rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/*

@@ -236,6 +236,8 @@ extern bool             AnchorAlertOn2;  // pjotrc 2010.02.17
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 
+extern RouteManagerDialog *pRouteManagerDialog;
+
 
 extern bool             bDrawCurrentValues;
 extern wxString         *pWVS_Locn;
@@ -5582,42 +5584,46 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
       pFindRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
       if (pFindRouteSeg)
       {
-            showRollover = true;
-
-            if(NULL == m_pRolloverWin)
+            Route *pr = (Route *)pFindRouteSeg->m_pData3;
+            if(pr && pr->IsVisible())
             {
-                  m_pRolloverWin = new RolloverWin(this);
-                  m_pRolloverWin->Hide();
-            }
+                  showRollover = true;
 
-            if(!m_pRolloverWin->IsShown())
-            {
-                  wxString s;
-                  RoutePoint *segShow_point_a = ( RoutePoint * ) pFindRouteSeg->m_pData1;
-                  RoutePoint *segShow_point_b = ( RoutePoint * ) pFindRouteSeg->m_pData2;
+                  if(NULL == m_pRolloverWin)
+                  {
+                        m_pRolloverWin = new RolloverWin(this);
+                        m_pRolloverWin->Hide();
+                  }
 
-                  double brg, dist;
-                  DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
-                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
+                  if(!m_pRolloverWin->IsShown())
+                  {
+                        wxString s;
+                        RoutePoint *segShow_point_a = ( RoutePoint * ) pFindRouteSeg->m_pData1;
+                        RoutePoint *segShow_point_b = ( RoutePoint * ) pFindRouteSeg->m_pData2;
 
-                  s.Append(_("Leg: from "));
-                  s.Append(segShow_point_a->m_MarkName);
-                  s.Append(_(" to "));
-                  s.Append(segShow_point_b->m_MarkName);
-                  s.Append(_T("\n"));
-                  wxString t;
-                  if ( dist > 0.1 )
-                        t.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
-                  else
-                        t.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.);
-                  s.Append(t);
+                        double brg, dist;
+                        DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
+                                    segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
 
-                  m_pRolloverWin->SetString(s);
+                        s.Append(_("Leg: from "));
+                        s.Append(segShow_point_a->m_MarkName);
+                        s.Append(_(" to "));
+                        s.Append(segShow_point_b->m_MarkName);
+                        s.Append(_T("\n"));
+                        wxString t;
+                        if ( dist > 0.1 )
+                              t.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
+                        else
+                              t.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.);
+                        s.Append(t);
 
-                  m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
-                  m_pRolloverWin->SetBitmap();
-                  m_pRolloverWin->Refresh();
-                  m_pRolloverWin->Show();
+                        m_pRolloverWin->SetString(s);
+
+                        m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
+                        m_pRolloverWin->SetBitmap();
+                        m_pRolloverWin->Refresh();
+                        m_pRolloverWin->Show();
+                  }
             }
       }
       if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
@@ -6710,6 +6716,10 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                               pMarkPropDialog->SetRoutePoint ( NULL );
                               pMarkPropDialog->UpdateProperties();
                         }
+
+                        if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                              pRouteManagerDialog->UpdateWptListCtrl();
+
                         break;
                 }
                 case ID_WP_MENU_PROPERTIES:
@@ -6927,6 +6937,9 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                               pRoutePropDialog->UpdateProperties();
                         }
+
+                        if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                              pRouteManagerDialog->UpdateRouteListCtrl();
 
                         break;
 
@@ -7146,6 +7159,9 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                           pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedTrack );
                           pRoutePropDialog->UpdateProperties();
                     }
+
+                    if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                        pRouteManagerDialog->UpdateTrkListCtrl();
 
                     break;
               }

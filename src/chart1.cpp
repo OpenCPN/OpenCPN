@@ -924,8 +924,8 @@ bool MyApp::OnInit()
                   ::wxRenameFile(log, oldlog);
             }
         }
-        const char *mode = "a";
-        flog = fopen(log.mb_str(), mode);
+
+        flog = fopen(log.mb_str(), "a");
         logger=new wxLogStderr(flog);
 
         Oldlogger = wxLog::SetActiveTarget(logger);
@@ -2936,15 +2936,19 @@ void MyFrame::OnExit(wxCommandEvent& event)
 
 }
 
+static bool b_inCloseWindow;
+
 void MyFrame::OnCloseWindow(wxCloseEvent& event)
 {
       //    It is possible that double clicks on application exit box could cause re-entrance here
       //    Not good, and don't need it anyway, so simply return.
-      if(quitflag)
+      if(b_inCloseWindow)
       {
 //            wxLogMessage(_T("opencpn::MyFrame re-entering OnCloseWindow"));
             return;
       }
+
+      b_inCloseWindow = true;
 
       ::wxSetCursor(wxCURSOR_WAIT);
 
@@ -5738,6 +5742,10 @@ static int menu_selected_index;
 
 void MyFrame::PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex )
 {
+      //    No context menu if quilting is disabled
+      if(!cc1->GetQuiltMode())
+            return;
+
       menu_selected_dbIndex = selected_dbIndex;
       menu_selected_index = selected_index;
 

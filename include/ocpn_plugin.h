@@ -43,7 +43,7 @@
 //    Fwd Definitions
 class       wxFileConfig;
 class       wxNotebook;
-
+class       wxFont;
 
 
 //---------------------------------------------------------------------------------------------------------
@@ -191,6 +191,9 @@ extern "C"  DECL_EXP void GetCanvasLLPix( PlugIn_ViewPort *vp, wxPoint p, double
 
 extern "C"  DECL_EXP wxWindow *GetOCPNCanvasWindow();
 
+extern "C"  DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size);
+
+extern "C"  DECL_EXP wxString *GetpSharedDataLocation();
 
 #endif            // _PLUGIN_H_
 

@@ -36,8 +36,6 @@
 #include "wx/listctrl.h"
 #include "wx/hyperlink.h"           // toh, 2009.02.08
 #include "scrollingdialog.h"
-#include "chart1.h"
-
 
 /*!
  * Forward declarations
@@ -130,7 +128,7 @@ public:
 
     void CreateControls();
 
-    void SetColorScheme(ColorScheme cs);
+ //   void SetColorScheme(ColorScheme cs);
     void SetDialogTitle(wxString title);
 
     void OnSightDialogDateTimeSetClick( wxCommandEvent& event );

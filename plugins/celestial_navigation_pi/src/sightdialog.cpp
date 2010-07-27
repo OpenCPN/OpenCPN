@@ -44,20 +44,11 @@
 #include "wx/colordlg.h"
 
 #include "sightdialog.h"
-#include "navutil.h"                // for Route
-#include "georef.h"
-#include "chart1.h"
-#include "routeman.h"
-#include "chcanv.h"
+
+#include "../../../include/ocpn_plugin.h"
 
 #include "sight.h"
 
-
-extern MyConfig         *pConfig;
-extern ChartCanvas      *cc1;
-
-
-#define MAX_NUM_HYPERLINKS    6           // toh, 2009.02.23
 
 #define ID_CHOICE_BODY  wxID_HIGHEST + 1
 
@@ -340,11 +331,11 @@ void SightDialog::CreateControls()
     itemCol.SetImage(-1);
 
 
-    SetColorScheme((ColorScheme)0);
+//    SetColorScheme((ColorScheme)0);
 
 }
 
-
+/*
 void SightDialog::SetColorScheme(ColorScheme cs)
 {
       SetBackgroundColour(GetGlobalColor(_T("DILG1")));
@@ -359,6 +350,7 @@ void SightDialog::SetColorScheme(ColorScheme cs)
       m_OKButton->SetBackgroundColour(back_color);
       m_OKButton->SetForegroundColour(text_color);
 }
+*/
 /*!
  * Should we show tooltips?
  */
@@ -449,13 +441,13 @@ void SightDialog::ReadSight(Sight *s)
 
    m_timeCertaintyText->SetValue(wxString::Format(_T("%f"), s->m_TimeCertainty));
 
-   m_elevationUsed->SetValue(!isnan(s->m_Elevation));
+   m_elevationUsed->SetValue(!wxIsNaN(s->m_Elevation));
    if(m_elevationUsed->GetValue())
       m_elevationText->SetValue(wxString::Format(_T("%f"), s->m_Elevation));
 
    m_elevationCertaintyText->SetValue(wxString::Format(_T("%f"), s->m_ElevationCertainty));
 
-   m_azimuthUsed->SetValue(!isnan(s->m_Azimuth));
+   m_azimuthUsed->SetValue(!wxIsNaN(s->m_Azimuth));
    if(m_azimuthUsed->GetValue())
       m_azimuthText->SetValue(wxString::Format(_T("%f"), s->m_Azimuth));
 
@@ -482,8 +474,8 @@ Sight *SightDialog::MakeNewSight()
    return new Sight(m_bodiesChoice->GetStringSelection(),
                     (Sight::BodyLimb)m_bodyLimbChoice->GetSelection(),
                     m_datetime, timecertainty,
-                    m_elevationUsed->GetValue() ? elevation : NAN, elevationcertainty,
-                    m_azimuthUsed->GetValue() ? azimuth : NAN,
+                    m_elevationUsed->GetValue() ? elevation : -1, elevationcertainty,
+                    m_azimuthUsed->GetValue() ? azimuth : -1,
                     m_azimuthMagneticNorth->GetValue(),
                     azimuthcertainty, height, m_Color->GetForegroundColour());
 }

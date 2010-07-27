@@ -260,11 +260,11 @@ void astrolabe::elp2000::ELP2000::dimension3(double jd, double &longitude, doubl
         double tl = p->l;
         double tr = p->r;
         const double arg = p->D * D + p->M * M + p->M1 * M1 + p->F * F;
-        if (fabs(p->M) == 1) {
+        if (fabs((double)p->M) == 1) {
             tl *= E;
             tr *= E;
             }
-        else if (fabs(p->M == 2)) {
+        else if (fabs((double)p->M) == 2) {
             tl *= E2;
             tr *= E2;
             }
@@ -279,9 +279,9 @@ void astrolabe::elp2000::ELP2000::dimension3(double jd, double &longitude, doubl
     for (std::vector<TableB>::const_iterator q = tblB.begin(); q != tblB.end(); q++) {
         double tb = q->b;
         const double arg = q->D * D + q->M * M + q->M1 * M1 + q->F * F;
-        if (fabs(q->M) == 1) 
+        if (fabs((double)q->M) == 1) 
             tb *= E;
-        else if (fabs(q->M) == 2) 
+        else if (fabs((double)q->M) == 2) 
             tb *= E2;
         bsum += tb * sin(arg);
         }
@@ -338,9 +338,9 @@ double astrolabe::elp2000::ELP2000::longitude(double jd) const {
     for (std::vector<TableA>::const_iterator p = tblLR.begin(); p != tblLR.end(); p++) {
         double tl = p->l;
         const double arg = p->D * D + p->M * M + p->M1 * M1 + p->F * F;
-        if (fabs(p->M) == 1) 
+        if (fabs((double)p->M) == 1) 
             tl *= E;
-        else if (fabs(p->M == 2)) 
+        else if (fabs((double)p->M) == 2) 
             tl *= E2;
         lsum += tl * sin(arg);
         }
@@ -367,9 +367,9 @@ double astrolabe::elp2000::ELP2000::latitude(double jd) const {
     for (std::vector<TableB>::const_iterator p = tblB.begin(); p != tblB.end(); p++) {
         double tb = p->b;
         const double arg = p->D * D + p->M * M + p->M1 * M1 + p->F * F;
-        if (fabs(p->M) == 1) 
+        if (fabs((double)p->M) == 1) 
             tb *= E;
-        else if (fabs(p->M) == 2) 
+        else if (fabs((double)p->M) == 2) 
             tb *= E2;
         bsum += tb * sin(arg);
         }
@@ -399,9 +399,9 @@ double astrolabe::elp2000::ELP2000::radius(double jd) const {
     for (std::vector<TableA>::const_iterator p = tblLR.begin(); p != tblLR.end(); p++) {
         double tr = p->r;
         const double arg = p->D * D + p->M * M + p->M1 * M1 + p->F * F;
-        if (fabs(p->M) == 1) 
+        if (fabs((double)p->M) == 1) 
             tr *= E;
-        else if (fabs(p->M == 2)) 
+        else if (fabs((double)p->M) == 2) 
             tr *= E2;
         rsum += tr * cos(arg);
         }

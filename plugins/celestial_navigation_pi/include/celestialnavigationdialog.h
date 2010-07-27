@@ -26,7 +26,6 @@
 #include <wx/listctrl.h>
 
 class wxButton;
-class Sight;
 
 class CelestialNavigationDialog : public wxDialog {
       DECLARE_EVENT_TABLE()
@@ -35,11 +34,14 @@ class CelestialNavigationDialog : public wxDialog {
             CelestialNavigationDialog(wxWindow *parent);
             ~CelestialNavigationDialog();
 
+            SightList m_SightList;
+
       private:
             void UpdateSightListCtrl();     // Rebuild sight list
             void MakeAllSightsInvisible();
             void UpdateButtons();           // Correct button state
-            void MakeAllGreatCirclesInvisible();  // Mark all routes as invisible. Does not flush settings.
+            void MakeAllGreatCirclesInvisible();  // Mark all sights as invisible. Does not flush settings.
+
             // event handlers
             void OnNewClick(wxCommandEvent &event);
             void OnPropertiesClick(wxCommandEvent &event);
