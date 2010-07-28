@@ -474,8 +474,8 @@ Sight *SightDialog::MakeNewSight()
    return new Sight(m_bodiesChoice->GetStringSelection(),
                     (Sight::BodyLimb)m_bodyLimbChoice->GetSelection(),
                     m_datetime, timecertainty,
-                    m_elevationUsed->GetValue() ? elevation : -1, elevationcertainty,
-                    m_azimuthUsed->GetValue() ? azimuth : -1,
+                    m_elevationUsed->GetValue() ? elevation : NAN, elevationcertainty,
+                    m_azimuthUsed->GetValue() ? azimuth : NAN,
                     m_azimuthMagneticNorth->GetValue(),
                     azimuthcertainty, height, m_Color->GetForegroundColour());
 }

@@ -45,8 +45,6 @@
 WX_DEFINE_LIST ( SightList );
 WX_DEFINE_LIST ( wxRealPointList );
 
-wxString        g_SData_Locn;
-
 //-----------------------------------------------------------------------------
 //          Sight Implementation
 //-----------------------------------------------------------------------------
@@ -63,9 +61,6 @@ Sight::Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
      m_AzimuthCertainty(azimuthcertainty),
      m_Height(height), m_Colour(colour)
 {
-
-   g_SData_Locn == *GetpSharedDataLocation();
-
    while(m_Azimuth < 0)
       m_Azimuth += 360;
    while(m_Azimuth >= 360)
@@ -242,8 +237,9 @@ using namespace astrolabe::vsop87d;
 /* calculate what longitude the body for this sight is directly over at a given time */ 
 void Sight::BodyLocation(wxDateTime time, double &lat, double &lon)
 {
-   astrolabe::globals::vsop87d_text_path = g_SData_Locn.fn_str();
-   astrolabe::globals::vsop87d_text_path.append("astrolabe/vsop87d.txt");
+   astrolabe::globals::vsop87d_text_path = GetpSharedDataLocation()->fn_str();
+   astrolabe::globals::vsop87d_text_path.append("plugins/celestial_navigation/data/");
+   astrolabe::globals::vsop87d_text_path.append("vsop87d.txt");
 
    double jd = cal_to_jd(time.GetYear(), time.GetMonth()+1, time.GetDay()
                   + (time.GetHour()
@@ -429,13 +425,9 @@ bool Sight::BearingPoint(wxDateTime datetime, double elevation, double bearing,
 
           static bool first=true;
           if(first) {
-             wxString geomag_text_path = g_SData_Locn;
+             wxString geomag_text_path = *GetpSharedDataLocation();
              geomag_text_path.Append(_T("astrolabe/IGRF11.COF"));
              geomag_load(geomag_text_path.mb_str());
-             first = false;
-//             std::string geomag_text_path = g_SData_Locn.fn_str(); //dsr  .data();
-//             geomag_text_path.append("astrolabe/IGRF11.COF");
-//             geomag_load(geomag_text_path.c_str());
              first = false;
           }
 
@@ -617,12 +609,14 @@ void Sight::DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &VP, wxRealPointList &ar
       maxy = wxMax(maxy, (*it)->y);
 
       GetCanvasPixLL(&VP, &r, (*it)->x, (*it)->y);
+
       ppoints[i] = r;
    }
 
-   if(!(rear1 && rear2) &&
-      Intersect(&VP, miny, maxy,
-                minx, maxx, 0) != _OUT)
+   if(!(rear1 && rear2)
+      &&      Intersect(&VP, minx, maxx,
+                        miny, maxy, 0) != _OUT
+                                     )
       dc.DrawPolygon(n, ppoints);
 
    delete[] ppoints;

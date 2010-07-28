@@ -37,6 +37,13 @@ extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double
 extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                                 double *bearing, double *dist);
 
+#ifdef __WXMSW__
+#include <float.h>
+#include <iostream>
+#include <limits>
+#define NAN std::numeric_limits<double>::quiet_NaN ()
+#endif
+
 
 
 WX_DECLARE_LIST(wxRealPoint, wxRealPointList);

@@ -118,8 +118,10 @@ public:
 
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
+      void SetVisible(bool viz = true){ m_bIsVisible = viz; }
 
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
+
 
       float             m_lat;
       float             m_lon;

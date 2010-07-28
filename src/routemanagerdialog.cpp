@@ -309,7 +309,7 @@ void RouteManagerDialog::Create()
       m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this);
       m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this);
       m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler(RouteManagerDialog::OnWptDefaultAction), NULL, this);
-      m_pWptListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnTrkToggleVisibility), NULL, this);
+      m_pWptListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnWptToggleVisibility), NULL, this);
       itemBoxSizer4->Add(m_pWptListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
       m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 35 );
@@ -1168,7 +1168,6 @@ void RouteManagerDialog::UpdateWptButtons()
 
 void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event)
 {
-      return;
       wxPoint pos = event.GetPosition();
       int flags = 0;
       long clicked_index = m_pWptListCtrl->HitTest(pos, flags);
@@ -1177,11 +1176,11 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event)
       if (clicked_index > -1 && event.GetX() < m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE))
       {
             // Process the clicked item
-            Route *route = pRouteList->Item(m_pWptListCtrl->GetItemData(clicked_index))->GetData();
-            route->SetVisible(!route->IsVisible());
-            m_pWptListCtrl->SetItemImage(clicked_index, route->IsVisible() ? 0 : -1);
+            RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
 
-            pConfig->UpdateRoute(route);
+            wp->SetVisible(!wp->IsVisible());
+            m_pWptListCtrl->SetItemImage(clicked_index, wp->IsVisible() ?  pWayPointMan->GetIconIndex(wp->m_pbmIcon) : 0);
+
             cc1->Refresh();
       }
 
