@@ -2375,20 +2375,59 @@ int ComPortManager::WriteComPort(wxString& com_name, const wxString& string)
       else
             port_descriptor = pe->port_descriptor;
 
-#if 0
-      if(pe->n_open > 1)
-      {
-            if(wxMUTEX_NO_ERROR == s_mutexProtectingTxData.Lock())
-                  s_TxData = string.Mid(0);                 // forces a copy....
-            s_mutexProtectingTxData.Unlock();
-      }
-
-      else
-#endif
             status = WriteComPortPhysical(port_descriptor, string);
 
       return status;
 }
+
+
+int ComPortManager::WriteComPort(wxString& com_name, unsigned char *msg, int count)
+{
+      int port_descriptor;
+      int status;
+
+      OpenCommPortElement *pe = GetComPort(com_name);
+
+      if(NULL == pe)
+            port_descriptor = OpenComPort(com_name, 4800);              // defaults to 4800
+      else
+            port_descriptor = pe->port_descriptor;
+
+      status = WriteComPortPhysical(port_descriptor, msg, count);
+
+      return status;
+}
+
+int ComPortManager::ReadComPort(wxString& com_name, int *count, unsigned char *p)
+{
+      int port_descriptor;
+
+      OpenCommPortElement *pe = GetComPort(com_name);
+
+      if(NULL == pe)
+            return 0;
+      else
+            port_descriptor = pe->port_descriptor;
+
+      return ReadComPortPhysical(port_descriptor, count, p);
+
+
+}
+
+bool ComPortManager::SerialCharsAvail(wxString& com_name)
+{
+      int port_descriptor;
+
+      OpenCommPortElement *pe = GetComPort(com_name);
+
+      if(NULL == pe)
+            return false;
+      else
+            port_descriptor = pe->port_descriptor;
+
+      return CheckComPortPhysical(port_descriptor);
+}
+
 
 
 #ifdef __POSIX__
@@ -2496,6 +2535,29 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, const wxString& st
 
       return status;
 }
+
+int ComPortManager::WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count)
+{
+      ssize_t status;
+      status = write(port_descriptor, msg, count);
+
+      return status;
+}
+
+int ComPortManager::ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p)
+{
+//    Blocking, timeout protected read of one character at a time
+//    Timeout value is set by c_cc[VTIME]
+
+      return read(port_descriptor, p, *count);            // read of (count) characters
+}
+
+
+bool ComPortManager::CheckComPortPhysical(int port_descriptor)
+{
+      return false;
+}
+
 
 #endif            // __POSIX__
 
@@ -2635,4 +2697,121 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, const wxString& st
       return fRes;
 }
 
+int ComPortManager::WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count)
+{
+      return 0;
+}
+
+int ComPortManager::ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p)
+{
+      return 0;
+}
+
+
+bool ComPortManager::CheckComPortPhysical(int port_descriptor)
+{
+      return false;
+}
+
+
+
+
 #endif            // __WXMSW__
+
+
+//--------------------------------------------------------------------------------------
+//
+//          Garmin Serial Protocol Support
+//
+//--------------------------------------------------------------------------------------
+
+#define TIMEOUT 5 /* return after this number of seconds without receiving msg */
+#define MAX_LENGTH 100  /* maximum length of Garmin binary message */
+
+unsigned char gGarminMessage[MAX_LENGTH];
+
+
+bool GarminSendWithHandshake(ComPortManager *pPortMan, wxString &port_name, char *message, int length)
+{
+      //    Create the possibly DLE padded message, with checksum calculation inserted
+
+      unsigned char csum = 0;
+      unsigned char *p = gGarminMessage;
+
+      *p++ = 0x10;    /* Start of message */
+      for (int i=0; i<length; i++)
+      {
+            *p++ = message[i];
+            csum -= message[i];
+            if (message[i] == 0x10)
+                *p++ = 0x10;
+      }
+
+      *p++ = csum;
+      if (csum == 0x10)
+           *p++ = 0x10;
+      *p++ = 0x10;
+      *p++ = 0x03;
+
+      unsigned int n = (unsigned int)(p - gGarminMessage);
+
+      //    Send the message to the specified port
+
+      pPortMan->WriteComPort(port_name, gGarminMessage, n);
+
+      //    Wait for the ACK message, up to TIMEOUT seconds
+
+      int count = 1;
+
+      long time = ::wxGetLocalTime();
+
+      p = gGarminMessage;
+      int recv_length = 0;
+
+      bool b_good_response = false;
+      unsigned char c;
+      unsigned char last = 0;
+
+      for (;;)
+      {
+            if (::wxGetLocalTime() > time + TIMEOUT)
+                  break;
+
+
+            while (pPortMan->SerialCharsAvail(port_name))
+            {
+
+                  if (recv_length >= MAX_LENGTH-1)
+                        break;
+
+                  count = 1;
+                  pPortMan->ReadComPort(port_name, &count, &c);
+
+                  if (c == 0x10 && last == 0x10)
+                        last = 0;
+                  else {
+                        last = *p++ = c;
+                        ++recv_length;
+                  }
+
+                  if (*(p-1) == 0x03 && *(p-2) == 0x10)
+                  {
+                        b_good_response = true;
+                        break;
+                  }
+            }
+      }
+
+      //    Get a good response?
+      if(!b_good_response)
+            return false;
+
+      //    Check for the ACK character
+      if(gGarminMessage[1] == 0x06)
+            return true;
+      else
+            return false;
+
+}
+
+

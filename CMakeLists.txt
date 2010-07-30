@@ -457,10 +457,6 @@ INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
 # Checks for 32-bit version. And always use 32-bit time_t for compatibility
 
 
-IF(WIN32 AND NOT UNIX)
-  ADD_DEFINITIONS(-D_USE_32BIT_TIME_T)
-ENDIF(WIN32 AND NOT UNIX)
-
 #uninstall-local:
 #        rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/*
 #        rm -fr $(DESTDIR) $(pkgdatadir)/s57data/*
@@ -551,9 +547,10 @@ ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 ENDIF(NOT APPLE)
 
 
-# On Windows builds, copy the wxWidgets dlls to the executable directory
+# On Windows builds, copy the wxWidgets dlls and  to the executable directory
 IF(WIN32 AND NOT UNIX)
 INSTALL(DIRECTORY wxWidgets/ DESTINATION "." )
+INSTALL(DIRECTORY vc9/ DESTINATION ".\\\\vc9" )
 ENDIF(WIN32 AND NOT UNIX)
 
 
@@ -591,7 +588,21 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_CONTACT "http:\\\\\\\\www.opencpn.org")
 
 
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}${VERSION_MINOR}_setup" )
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}${VERSION_MINOR}_${VERSION_PATCH}_setup" )
+
+
+#  Install the VC90 Redistributable
+    SET(vc9_redist "vcredist_x86.exe")
+#    IF( vc9_redist )
+      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
+      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
+                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+#    ENDIF( vc9_redist )
 
 ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})

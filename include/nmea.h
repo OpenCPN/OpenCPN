@@ -574,6 +574,11 @@ public:
       int CloseComPort(int fd);
 
       int WriteComPort(wxString& com_name, const wxString& string);
+      int WriteComPort(wxString& com_name, unsigned char *msg, int count);
+      int ReadComPort(wxString& com_name, int *count, unsigned char *p);
+      bool SerialCharsAvail(wxString& com_name);
+
+
       bool GetLogFlag(){ return m_blog; }
       void SetLogFlag(bool flag){ m_blog = flag; }
 
@@ -581,6 +586,10 @@ private:
       int OpenComPortPhysical(wxString &com_name, int baud_rate);
       int CloseComPortPhysical(int fd);
       int WriteComPortPhysical(int port_descriptor, const wxString& string);
+      int WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count);
+
+      int ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p);
+      bool CheckComPortPhysical(int port_descriptor);
 
       ListOfOpenCommPorts     m_port_list;
 

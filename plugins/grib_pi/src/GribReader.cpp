@@ -542,7 +542,7 @@ double GribReader::computeHoursBeetweenGribRecords()
     if (ls != NULL) {
         time_t t0 = (*ls)[0]->getRecordCurrentDate();
         time_t t1 = (*ls)[1]->getRecordCurrentDate();
-        res = abs(t1-t0) / 3600.0;
+        res = abs((double)(t1-t0)) / 3600.0;
         if (res < 1)
         	res = 1;
     }
