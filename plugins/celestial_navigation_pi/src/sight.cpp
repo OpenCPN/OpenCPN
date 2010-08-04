@@ -426,7 +426,7 @@ bool Sight::BearingPoint(wxDateTime datetime, double elevation, double bearing,
           static bool first=true;
           if(first) {
              wxString geomag_text_path = *GetpSharedDataLocation();
-             geomag_text_path.Append(_T("astrolabe/IGRF11.COF"));
+             geomag_text_path.Append(_T("plugins/celestial_navigation/data/IGRF11.COF"));
              geomag_load(geomag_text_path.mb_str());
              first = false;
           }

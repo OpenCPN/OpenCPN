@@ -610,6 +610,7 @@ ENDIF(NOT APPLE)
 IF(WIN32 AND NOT UNIX)
 INSTALL(DIRECTORY wxWidgets/ DESTINATION "." )
 INSTALL(DIRECTORY vc9/ DESTINATION ".\\\\vc9" )
+INSTALL(DIRECTORY src/bitmaps/NSISBmps/ DESTINATION ".\\\\NSISBmps" )
 ENDIF(WIN32 AND NOT UNIX)
 
 
@@ -662,6 +663,10 @@ IF(WIN32 AND NOT UNIX)
                                              " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
                                              " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
 #    ENDIF( vc9_redist )
+
+#  delete the NSISBmps directory
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " ;Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\NSISBmps\\\"\\n\\n" )
 
 ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
