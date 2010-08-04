@@ -227,6 +227,8 @@ extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
 
+extern bool             g_bGarminHost;
+
 extern double           g_ownship_predictor_minutes;
 
 #ifdef USE_S57
@@ -1183,44 +1185,19 @@ bool RoutePoint::IsSame ( RoutePoint *pOtherRP )
 
 bool RoutePoint::SendToGPS ( wxString& com_name, wxGauge *pProgress )
 {
-      SENTENCE    snt;
-      NMEA0183    oNMEA0183;
-      oNMEA0183.TalkerID = _T ( "EC" );
+      bool result = false;
+      if(g_pnmea)
+            result = g_pnmea->SendWaypointToGPS(this, com_name, pProgress);
 
-      if ( pProgress )
-            pProgress->SetRange ( 100 );
-
-      int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
-
-      if ( this->m_lat < 0. )
-            oNMEA0183.Wpl.Position.Latitude.Set ( -this->m_lat, _T ( "S" ) );
+      wxString msg;
+      if(result)
+            msg = _("Waypoint(s) Uploaded successfully.");
       else
-            oNMEA0183.Wpl.Position.Latitude.Set ( this->m_lat, _T ( "N" ) );
+            msg = _("Error on Waypoint Upload.  Please check logfiles...");
 
-      if ( this->m_lon < 0. )
-            oNMEA0183.Wpl.Position.Longitude.Set ( -this->m_lon, _T ( "W" ) );
-      else
-            oNMEA0183.Wpl.Position.Longitude.Set ( this->m_lon, _T ( "E" ) );
+      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
-
-      oNMEA0183.Wpl.To = this->m_MarkName.Truncate ( 6 );
-
-      oNMEA0183.Wpl.Write ( snt );
-
-      g_pCommMan->WriteComPort ( com_name, snt.Sentence );
-
-      if ( pProgress )
-      {
-            pProgress->SetValue ( 100 );
-            pProgress->Refresh();
-            pProgress->Update();
-      }
-
-      wxMilliSleep ( 500 );
-
-      g_pCommMan->CloseComPort ( port_fd );
-
-      return true;
+      return result;
 }
 
 
@@ -1939,99 +1916,19 @@ void Route::RenameRoutePoints ( void )
 
 bool Route::SendToGPS ( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
-      SENTENCE    snt;
-      NMEA0183    oNMEA0183;
-      oNMEA0183.TalkerID = _T ( "EC" );
+      bool result = false;
+      if(g_pnmea)
+            result = g_pnmea->SendRouteToGPS(this, com_name, bsend_waypoints, pProgress);
 
-      int nProg = pRoutePointList->GetCount() + 1;
-      if ( pProgress )
-            pProgress->SetRange ( 100 );
-
-      int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
-
-      //    Send out the waypoints, in order
-      if ( bsend_waypoints )
-      {
-            wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-            int ip = 1;
-            while ( node )
-            {
-                  RoutePoint *prp = node->GetData();
-
-                  if ( prp->m_lat < 0. )
-                        oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
-                  else
-                        oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
-
-                  if ( prp->m_lon < 0. )
-                        oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
-                  else
-                        oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
-
-
-                  oNMEA0183.Wpl.To = prp->m_MarkName.Truncate ( 6 );
-
-                  oNMEA0183.Wpl.Write ( snt );
-
-                  g_pCommMan->WriteComPort ( com_name, snt.Sentence );
-
-                  if ( pProgress )
-                  {
-                        pProgress->SetValue ( ( ip * 100 ) / nProg );
-                        pProgress->Refresh();
-                        pProgress->Update();
-                  }
-
-                  wxMilliSleep ( 1000 );
-
-                  node = node->GetNext();
-
-                  ip++;
-            }
-      }
-
-      //    Create the NMEA Rte sentence
-
-      oNMEA0183.Rte.Empty();
-      oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
-
-      if ( m_RouteNameString.IsEmpty() )
-            oNMEA0183.Rte.RouteName = _T ( "1" );
+      wxString msg;
+      if(result)
+            msg = _("Route Uploaded successfully.");
       else
-            oNMEA0183.Rte.RouteName = m_RouteNameString;
+            msg = _("Error on Route Upload.  Please check logfiles...");
 
-      oNMEA0183.Rte.total_number_of_messages     = 1;
-      oNMEA0183.Rte.message_number               = 1;
+      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
-      //    add the waypoints
-      wxRoutePointListNode *node = pRoutePointList->GetFirst();
-      while ( node )
-      {
-            RoutePoint *prp = node->GetData();
-            oNMEA0183.Rte.AddWaypoint ( prp->m_MarkName.Truncate ( 6 ) );
-            node = node->GetNext();
-      }
-
-
-      oNMEA0183.Rte.Write ( snt );
-
-//      printf("%s", snt.Sentence.mb_str());
-      g_pCommMan->WriteComPort ( com_name, snt.Sentence );
-
-
-      if ( pProgress )
-      {
-            pProgress->SetValue ( 100 );
-            pProgress->Refresh();
-            pProgress->Update();
-      }
-
-      wxMilliSleep ( 500 );
-
-      g_pCommMan->CloseComPort ( port_fd );
-
-      return true;
+      return result;
 }
 
 //    Is this route equal to another, meaning,
@@ -2337,6 +2234,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "UseNMEA_RMC" ),  &g_bUseRMC, 1 );
       Read ( _T ( "UseNMEA_GLL" ),  &g_bUseGLL, 1 );
       Read ( _T ( "UseBigRedX" ),  &g_bbigred, 0 );
+
+      Read ( _T ( "UseGarminHost" ),  &g_bGarminHost, 0 );
 
       Read ( _T ( "MemFootprintMgrTimeSec" ),  &g_MemFootSec, 60 );
       Read ( _T ( "MemFootprintTargetMB" ),  &g_MemFootMB, 200 );
@@ -3452,6 +3351,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
       Write ( _T ( "GarminPersistance" ),  g_bGarminPersistance );
+      Write ( _T ( "UseGarminHost" ),  g_bGarminHost );
 
       Write ( _T ( "CM93DetailFactor" ),  g_cm93_zoom_factor );
       Write ( _T ( "CM93DetailZoomPosX" ),  g_cm93detail_dialog_x );

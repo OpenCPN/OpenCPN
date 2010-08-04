@@ -356,6 +356,8 @@ bool            g_bSatValid;
 
 bool            g_bDebugCM93;
 bool            g_bDebugS57;
+bool            g_bGarminHost;
+
 
 #ifdef USE_S57
 s52plib           *ps52plib;
@@ -1088,11 +1090,15 @@ bool MyApp::OnInit()
         //    Manage internationalization of embedded messages
         //    using wxWidgets/gettext methodology....
 
+		wxLog::SetVerbose(true);			// log all messages
+
         if(lang_list[0]){};                 // silly way to avoid compiler warnings
 
-      // Add a new prefix for search order. New prefix = .\lang,
-      // where '.' refers to the opencpn.exe directory
-        wxLocale::AddCatalogLookupPathPrefix(wxT("./lang"));
+      // Add a new prefix for search order. 
+      // where '.' refers to the opencpn.exe directory e.g.{Program Files}\OpenCPN
+#ifdef __WXMSW__
+		wxLocale::AddCatalogLookupPathPrefix(wxT("./share/locale"));
+#endif
 
         //  Get the default for info
         wxString def_lang_canonical = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT)->CanonicalName;
@@ -1134,6 +1140,8 @@ bool MyApp::OnInit()
 
       //    Always use dot as decimal
         setlocale(LC_NUMERIC,"C");
+
+     	wxLog::SetVerbose(false);			// log no verbose messages
 
         //        A special case for windows, which has some trouble finding the data files....
 #ifdef __WXMSW__
@@ -1917,9 +1925,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         //    If the selected port is the same as AIS port, override the name to force the
        //    NMEA class to expect muxed data from AIS decoder
         if(pNMEADataSource->IsSameAs(*pAIS_Port))
-              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent );
+              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
         else
-              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent );
+              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
 
 
 //        pAIS = new AIS_Decoder(ID_AIS_WINDOW, gFrame, wxString("TCP/IP:66.235.48.168"));  // a test
@@ -3675,6 +3683,8 @@ int MyFrame::DoOptionsDialog()
 
 //  Grab a copy of the current NMEA source and AP Port and AIS Port
       wxString previous_NMEA_source(*pNMEADataSource);
+      bool previous_bGarminHost = g_bGarminHost;
+
       wxString previous_NMEA_APPort(*pNMEA_AP_Port);
       wxString previous_AIS_Port(*pAIS_Port);
 
@@ -3791,7 +3801,7 @@ int MyFrame::DoOptionsDialog()
                   FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
             }
 
-            if(*pNMEADataSource != previous_NMEA_source)
+            if((*pNMEADataSource != previous_NMEA_source) || ( previous_bGarminHost != g_bGarminHost))
             {
                   if(g_pnmea)
                         g_pnmea->Close();
@@ -3800,9 +3810,9 @@ int MyFrame::DoOptionsDialog()
                   //    If the selected port is the same as AIS port, override the name to force the
                   //    NMEA class to expect muxed data from AIS decoder
                   if(pNMEADataSource->IsSameAs(*pAIS_Port))
-                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent );
+                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
                   else
-                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent );
+                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
 
                   SetbFollow();
            }

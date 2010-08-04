@@ -95,7 +95,7 @@
 #include "s52plib.h"
 
 #include "s57chart.h"
-#include "nmea.h"                               // for Pause/UnPause
+//#include "nmea.h"                               // for Pause/UnPause
 
 #include "mygeom.h"
 #include "cutil.h"

@@ -1459,20 +1459,25 @@ msgstr ""
 "Opencpn encontrou a versão %d.%d, mas é necessário pelo menos a versão 3.1"
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Excluir to&das as Derrotas..."
+#
 #
 #
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Acompanhamento Ativo)"
 #
 #
+#
 #~ msgid "Automatic Anchor Mark"
 #~ msgstr "Marca de Fundeio Automática"
+#
 #
 #
 #~ msgid ""
@@ -1483,6 +1488,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid ""
 #~ "Class:     B\n"
 #~ "\n"
@@ -1491,32 +1497,40 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid "Delete All Routes..."
 #~ msgstr "Excluir TODAS as Derrotas"
+#
 #
 #
 #~ msgid "Delete All Waypoints..."
 #~ msgstr "Excluir TODOS os Pontos da Derrota..."
 #
 #
+#
 #~ msgid "Export...."
 #~ msgstr "Exportar..."
+#
 #
 #
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Gerenciador de Derrotas..."
+#
 #
 #
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Enviar Derrota para o GPS..."
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícone GPX"
+#
 #
 #
 #~ msgid "Show GRIB dialog"

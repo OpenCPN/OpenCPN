@@ -1872,8 +1872,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Effacer toutes les routes ..."
+#
 #
 #
 #
@@ -1884,8 +1886,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Trace active)"
+#
 #
 #
 #
@@ -1900,6 +1904,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Class:     B\n"
 #~ "\n"
@@ -1910,8 +1915,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete All Waypoints..."
 #~ msgstr "Supprimer toutes les marques ..."
+#
 #
 #
 #
@@ -1922,8 +1929,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Gestionnaire de routes et de traces ..."
+#
 #
 #
 #
@@ -1934,8 +1943,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Afficher les icônes GPX"
+#
 #
 #
 #

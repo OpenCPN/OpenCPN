@@ -125,7 +125,8 @@ enum {
         ID_CM93CHECKBOX1,
         ID_COURSEUPCHECKBOX,
         ID_CHOICE_NMEA_BAUD,
-        ID_CHECK_LOOKAHEAD
+        ID_CHECK_LOOKAHEAD,
+        ID_GARMINHOST
 
 
 };
@@ -222,6 +223,7 @@ public:
 //    For GPS Page
     wxPanel*                itemPanelGPS;
     wxCheckBox              *pShowGPSWin;
+    wxCheckBox              *pGarminHost;
 
 //    For "S57" page
     wxPanel                 *ps57Ctl;

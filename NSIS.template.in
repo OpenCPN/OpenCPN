@@ -645,8 +645,9 @@ Section "-Core installation"
   ;Create shortcuts
   
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-@CPACK_NSIS_CREATE_ICONS@
-@CPACK_NSIS_CREATE_ICONS_EXTRA@
+;@CPACK_NSIS_CREATE_ICONS@
+;@CPACK_NSIS_CREATE_ICONS_EXTRA@
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_LINK_NAME@.lnk" "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Reset the config files if called for
@@ -762,6 +763,8 @@ SetShellVarContext current
 
   Delete "$DESKTOP\@CPACK_NSIS_LINK_NAME@.lnk"
   RMdir /r "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
+
+  Delete "$INSTDIR\install.log"
 
 !ifdef CPACK_NSIS_ADD_REMOVE  
   ;Remove the add/remove program

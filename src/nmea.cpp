@@ -8,6 +8,9 @@
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *   $EMAIL$   *
+ *
+ *   Garmin JEEPS Code Copyright (C) 2006 Robert Lipe                      *
+ *   GPSBabel and JEEPS code are released under GPL V2                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,6 +27,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
+
+ ***************************************************************************
+ *  Parts of this file were adapted from source code found in              *
+ *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
+ ***************************************************************************
+
  *
  */
 #include "wx/wxprec.h"
@@ -43,10 +52,11 @@
 
 #include "nmea.h"
 #include "georef.h"
+#include "garmin/jeeps/garmin_wrapper.h"
 
-#ifdef __WXOSX__              // begin rms
+#ifdef __WXOSX__
 #include "macsercomm.h"
-#endif                        // end rms
+#endif
 
 #ifdef BUILD_WITH_LIBGPS
       #ifdef __WXOSX__ // begin rdm
@@ -81,7 +91,7 @@ static      GenericPosDat     ThreadPositionData;
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
 //------------------------------------------------------------------------------
-//DEFINE_EVENT_TYPE(wxEVT_OCPN_NMEA)
+
 const wxEventType wxEVT_OCPN_NMEA = wxNewEventType();
 
 OCPN_NMEAEvent::OCPN_NMEAEvent( wxEventType commandType, int id )
@@ -121,7 +131,7 @@ BEGIN_EVENT_TABLE(NMEAWindow, wxWindow)
   END_EVENT_TABLE()
 
 // constructor
-NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& strBaudRate, wxMutex *pMutex):
+NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& strBaudRate, wxMutex *pMutex, bool bGarmin):
       wxWindow(frame, window_id,     wxPoint(20,20), wxDefaultSize, wxSIMPLE_BORDER)
 
 {
@@ -141,6 +151,10 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
       TimerNMEA.Stop();
 
       m_data_source_string = NMEADataSource;
+
+      m_bGarmin_host = bGarmin;
+      m_pPortMutex = new wxMutex;
+      m_brequest_thread_pause = false;
 
       m_gpsd_major = 0;
       m_gpsd_minor = 0;
@@ -202,14 +216,14 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
                   CloseHandle(m_hSerialComm);
 
 //    Kick off the NMEA RX thread
-            m_pSecondary_Thread = new OCP_NMEA_Thread(this, frame, pMutex, comx, g_pCommMan, strBaudRate);
+            m_pSecondary_Thread = new OCP_NMEA_Thread(this, frame, pMutex, m_pPortMutex, comx, g_pCommMan, strBaudRate);
             m_pSecondary_Thread->Run();
 
 #endif
 
 #ifdef __POSIX__
 //    Kick off the NMEA RX thread
-            m_pSecondary_Thread = new OCP_NMEA_Thread(this, frame, pMutex, comx, g_pCommMan, strBaudRate);
+            m_pSecondary_Thread = new OCP_NMEA_Thread(this, frame, pMutex, m_pPortMutex, comx, g_pCommMan, strBaudRate, true);
             m_pSecondary_Thread->Run();
 #endif
 
@@ -831,6 +845,319 @@ void NMEAWindow::OnTimerNMEA(wxTimerEvent& event)
 }
 
 
+bool NMEAWindow::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
+{
+      bool ret_bool = false;
+
+      if(m_bGarmin_host)
+      {
+            int ret_val;
+
+            //    Request that the thread should pause
+            m_brequest_thread_pause = true;
+
+            bool b_gotPort = false;
+            //    Poll, waiting for the Mutex.  Abort after 5 seconds
+            long time = ::wxGetLocalTime();
+            while(::wxGetLocalTime() < time + 5)
+            {
+                  if(wxMUTEX_BUSY != m_pPortMutex->TryLock())
+                  {
+                        b_gotPort = true;
+                        break;
+                  }
+            }
+
+            if(!b_gotPort)
+            {
+                  wxString msg(_T("Error Sending Route...could not lock Mutex on port: "));
+                  msg +=com_name;
+                  wxLogMessage(msg);
+
+                  return false;
+            }
+
+
+            //    Initialize the Garmin receiver, build required Jeeps internal data structures
+            int v_init = Garmin_GPS_Init(g_pCommMan, com_name);
+            if(v_init < 0)
+            {
+                  wxString msg(_T("Garmin GPS could not be initialized on port: "));
+                  msg +=com_name;
+                  wxString err;
+                  err.Printf(_T("  Error Code is %d"), v_init);
+                  msg += err;
+                  wxLogMessage(msg);
+
+                  ret_bool = false;
+                  goto ret_point;
+            }
+            else
+            {
+                  wxString msg(_T("Sending Route to Garmin GPS on port: "));
+                  msg +=com_name;
+                  msg += _T("\n  Unit identifies as: ");
+                  wxString GPS_Unit = Garmin_GPS_GetSaveString();
+                  msg += GPS_Unit;
+                  wxLogMessage(msg);
+            }
+
+
+            ret_val = Garmin_GPS_SendRoute(g_pCommMan, com_name, pr);
+            if(ret_val != 1)
+            {
+                  wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
+                  msg +=com_name;
+                  wxString err;
+                  err.Printf(_T("  Error Code is %d"), ret_val);
+                  msg += err;
+                  wxLogMessage(msg);
+
+                  ret_bool = false;
+                  goto ret_point;
+            }
+            else
+                  ret_bool = true;
+
+ret_point:
+            //    Release the Mutex
+            m_brequest_thread_pause = false;
+            m_pPortMutex->Unlock();
+
+            return ret_bool;
+
+      }
+      else                          // Standard NMEA mode
+      {
+
+
+            SENTENCE    snt;
+            NMEA0183    oNMEA0183;
+            oNMEA0183.TalkerID = _T ( "EC" );
+
+            int nProg = pr->pRoutePointList->GetCount() + 1;
+            if ( pProgress )
+                 pProgress->SetRange ( 100 );
+
+            int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
+
+            //    Send out the waypoints, in order
+            if ( bsend_waypoints )
+            {
+                  wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+
+                  int ip = 1;
+                  while ( node )
+                  {
+                        RoutePoint *prp = node->GetData();
+
+                        if ( prp->m_lat < 0. )
+                              oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                        else
+                              oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+
+                        if ( prp->m_lon < 0. )
+                              oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+                        else
+                        oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+
+
+                        oNMEA0183.Wpl.To = prp->m_MarkName.Truncate ( 6 );
+
+                        oNMEA0183.Wpl.Write ( snt );
+
+                        g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+                        if ( pProgress )
+                        {
+                              pProgress->SetValue ( ( ip * 100 ) / nProg );
+                              pProgress->Refresh();
+                              pProgress->Update();
+                        }
+
+                        wxMilliSleep ( 1000 );
+
+                        node = node->GetNext();
+
+                        ip++;
+                  }
+            }
+
+            //    Create the NMEA Rte sentence
+
+            oNMEA0183.Rte.Empty();
+            oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
+
+            if ( pr->m_RouteNameString.IsEmpty() )
+                  oNMEA0183.Rte.RouteName = _T ( "1" );
+            else
+                  oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+
+            oNMEA0183.Rte.total_number_of_messages     = 1;
+            oNMEA0183.Rte.message_number               = 1;
+
+            //    add the waypoints
+            wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+            while ( node )
+            {
+                  RoutePoint *prp = node->GetData();
+                  oNMEA0183.Rte.AddWaypoint ( prp->m_MarkName.Truncate ( 6 ) );
+                  node = node->GetNext();
+            }
+
+
+            oNMEA0183.Rte.Write ( snt );
+
+      //      printf("%s", snt.Sentence.mb_str());
+            g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 100 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
+
+            wxMilliSleep ( 500 );
+
+            g_pCommMan->CloseComPort ( port_fd );
+
+            return true;
+      }
+}
+
+
+bool NMEAWindow::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress)
+{
+      bool ret_bool = false;
+
+      //    Are we using Garmin Host mode for uploads?
+      if(m_bGarmin_host)
+      {
+            RoutePointList rplist;
+            int ret_val;
+
+            //    Request that the thread should pause
+            m_brequest_thread_pause = true;
+
+            bool b_gotPort = false;
+            //    Poll, waiting for the Mutex.  Abort after 5 seconds
+            long time = ::wxGetLocalTime();
+            while(::wxGetLocalTime() < time + 5)
+            {
+                  if(wxMUTEX_BUSY != m_pPortMutex->TryLock())
+                  {
+                        b_gotPort = true;
+                        break;
+                  }
+            }
+
+            if(!b_gotPort)
+            {
+                  wxString msg(_T("Error Sending waypoint(s)...could not lock Mutex on port: "));
+                  msg +=com_name;
+                  wxLogMessage(msg);
+
+                  return false;
+            }
+
+
+            //    Initialize the Garmin receiver, build required Jeeps internal data structures
+            int v_init = Garmin_GPS_Init(g_pCommMan, com_name);
+            if(v_init < 0)
+            {
+                  wxString msg(_T("Garmin GPS could not be initialized on port: "));
+                  msg +=com_name;
+                  wxString err;
+                  err.Printf(_T("  Error Code is %d"), v_init);
+                  msg += err;
+                  wxLogMessage(msg);
+
+                  ret_bool = false;
+                  goto ret_point;
+            }
+            else
+            {
+                  wxString msg(_T("Sending waypoint(s) to Garmin GPS on port: "));
+                  msg +=com_name;
+                  msg += _T("\n  Unit identifies as: ");
+                  wxString GPS_Unit = Garmin_GPS_GetSaveString();
+                  msg += GPS_Unit;
+                  wxLogMessage(msg);
+            }
+
+            //    Create a RoutePointList with one item
+            rplist.Append(prp);
+
+            ret_val = Garmin_GPS_SendWaypoints(g_pCommMan, com_name, &rplist);
+            if(ret_val != 1)
+            {
+                  wxString msg(_T("Error Sending Waypoint(s) to Garmin GPS on port: "));
+                  msg +=com_name;
+                  wxString err;
+                  err.Printf(_T("  Error Code is %d"), ret_val);
+                  msg += err;
+                  wxLogMessage(msg);
+
+                  ret_bool = false;
+                  goto ret_point;
+            }
+            else
+                  ret_bool = true;
+
+ret_point:
+            //    Release the Mutex
+            m_brequest_thread_pause = false;
+            m_pPortMutex->Unlock();
+
+            return ret_bool;
+
+      }
+      else                          // Standard NMEA mode
+      {
+            SENTENCE    snt;
+            NMEA0183    oNMEA0183;
+            oNMEA0183.TalkerID = _T ( "EC" );
+
+            if ( pProgress )
+                  pProgress->SetRange ( 100 );
+
+            int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
+
+            if ( prp->m_lat < 0. )
+                  oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+            else
+                  oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+
+            if ( prp->m_lon < 0. )
+                  oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+            else
+                  oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+
+
+            oNMEA0183.Wpl.To = prp->m_MarkName.Truncate ( 6 );
+
+            oNMEA0183.Wpl.Write ( snt );
+
+            g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 100 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
+
+            wxMilliSleep ( 500 );
+
+            g_pCommMan->CloseComPort ( port_fd );
+
+            return true;
+      }
+
+}
+
 //-------------------------------------------------------------------------------------------------------------
 //
 //    A simple thread to test host name resolution without blocking the main thread
@@ -891,14 +1218,17 @@ extern ENUM_BUFFER_STATE            rx_share_buffer_state;
 
 //    ctor
 
-OCP_NMEA_Thread::OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex,
-                                  const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate)
+OCP_NMEA_Thread::OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
+                                 const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate, bool bGarmin)
 {
       m_launcher = Launcher;                        // This thread's immediate "parent"
 
       m_pMainEventHandler = MessageTarget->GetEventHandler();
 
       m_PortName = PortName;
+
+
+      m_pPortMutex = pPortMutex;
 
       rx_buffer = new char[RX_BUFFER_SIZE + 1];
       temp_buf = new char[RX_BUFFER_SIZE + 1];
@@ -957,6 +1287,15 @@ void *OCP_NMEA_Thread::Entry()
             goto thread_exit;
       }
 
+      if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
+      {
+            wxString msg(_T("NMEA input device failed to lock Mutex on port : "));
+            msg.Append(m_PortName);
+            ThreadMessage(msg);
+            goto thread_exit;
+      }
+
+
 
 
 //    The main loop
@@ -964,132 +1303,150 @@ void *OCP_NMEA_Thread::Entry()
     while(not_done)
     {
         if(TestDestroy())
-        {
             not_done = false;                               // smooth exit
+
+        if( m_launcher->IsPauseRequested())                 // external pause requested?
+        {
+              m_pCommMan->CloseComPort(m_gps_fd);
+              m_pPortMutex->Unlock();                       // release the port
+
+              wxThread::Sleep(2000);                        // stall for a bit
+
+              //  Now try to regain the Mutex
+              while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
+
+              //  Re-initialize the port
+              if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)
+              {
+                    wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
+                    msg.Append(m_PortName);
+                    ThreadMessage(msg);
+                    goto thread_exit;
+              }
+
         }
-//    Blocking, timeout protected read of one character at a time
-//    Timeout value is set by c_cc[VTIME]
-//    Storing incoming characters in circular buffer
-//    And watching for new line character
-//     On new line character, send notification to parent
 
-        char next_byte = 0;
-        ssize_t newdata;
-        newdata = read(m_gps_fd, &next_byte, 1);            // read of one char
-                                                            // return (-1) if no data available, timeout
-        // begin rms
-#ifdef __WXOSX__
-        if (newdata < 0 )
-            wxThread::Sleep(100) ;
-#endif
-            // end rms
+      //    Blocking, timeout protected read of one character at a time
+      //    Timeout value is set by c_cc[VTIME]
+      //    Storing incoming characters in circular buffer
+      //    And watching for new line character
+      //     On new line character, send notification to parent
 
-   // Fulup patch for handling hot-plug or wakeup events
-   // from serial port drivers
-        {
-              static int maxErrorLoop;
+            char next_byte = 0;
+            ssize_t newdata;
+            newdata = read(m_gps_fd, &next_byte, 1);            // read of one char
+                                                                  // return (-1) if no data available, timeout
 
-              if (newdata > 0)
-              {
-      // we have data, so clear error
-                    maxErrorLoop =0;
-              }
-              else
-              {
-        // no need to retry every 1ms when on error
-                    sleep (1);
-
-        // if we have more no character for 5 second then try to reopen the port
-                    if (maxErrorLoop++ > 5)
-                    {
-
-          // do not retry for the next 5s
-                          maxErrorLoop = 0;
-
-         //  Turn off Open/Close logging
-                          bool blog = m_pCommMan->GetLogFlag();
-                          m_pCommMan->SetLogFlag(false);
-
-          // free old unplug current port
-                          m_pCommMan->CloseComPort(m_gps_fd);
-
-          //    Request the com port from the comm manager
-                          if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)  {
-                                wxString msg(_T("NMEA input device open failed (will retry): "));
-                                msg.Append(m_PortName);
-                                ThreadMessage(msg);
-                          } else {
-                                wxString msg(_T("NMEA input device open on hotplug OK: "));
-                          }
-
-          //      Reset the log flag
-                          m_pCommMan->SetLogFlag(blog);
-                    }
-              }
-        } // end Fulup hack
+      #ifdef __WXOSX__
+            if (newdata < 0 )
+                  wxThread::Sleep(100) ;
+      #endif
 
 
-        //  And process any character
-
-        if(newdata > 0)
-        {
-//              printf("%c", next_byte);
-
-            nl_found = false;
-
-            *put_ptr++ = next_byte;
-            if((put_ptr - rx_buffer) > RX_BUFFER_SIZE)
-                put_ptr = rx_buffer;
-
-            if(0x0a == next_byte)
-                nl_found = true;
-
-
-//    Found a NL char, thus end of message?
-            if(nl_found)
+      // Fulup patch for handling hot-plug or wakeup events
+      // from serial port drivers
             {
-                char *tptr;
-                char *ptmpbuf;
+                  static int maxErrorLoop;
+
+                  if (newdata > 0)
+                  {
+            // we have data, so clear error
+                        maxErrorLoop =0;
+                  }
+                  else
+                  {
+            // no need to retry every 1ms when on error
+                        sleep (1);
+
+            // if we have more no character for 5 second then try to reopen the port
+                        if (maxErrorLoop++ > 5)
+                        {
+
+            // do not retry for the next 5s
+                              maxErrorLoop = 0;
+
+            //  Turn off Open/Close logging
+                              bool blog = m_pCommMan->GetLogFlag();
+                              m_pCommMan->SetLogFlag(false);
+
+            // free old unplug current port
+                              m_pCommMan->CloseComPort(m_gps_fd);
+
+            //    Request the com port from the comm manager
+                              if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)  {
+                                    wxString msg(_T("NMEA input device open failed (will retry): "));
+                                    msg.Append(m_PortName);
+                                    ThreadMessage(msg);
+                              } else {
+                                    wxString msg(_T("NMEA input device open on hotplug OK: "));
+                              }
+
+            //      Reset the log flag
+                              m_pCommMan->SetLogFlag(blog);
+                        }
+                  }
+            } // end Fulup hack
 
 
-//    Copy the message into a temporary _buffer
+            //  And process any character
 
-                tptr = tak_ptr;
-                ptmpbuf = temp_buf;
+            if(newdata > 0)
+            {
+      //              printf("%c", next_byte);
 
-                while((*tptr != 0x0a) && (tptr != put_ptr))
-                {
-                   *ptmpbuf++ = *tptr++;
+                  nl_found = false;
 
-                   if((tptr - rx_buffer) > RX_BUFFER_SIZE)
-                      tptr = rx_buffer;
+                  *put_ptr++ = next_byte;
+                  if((put_ptr - rx_buffer) > RX_BUFFER_SIZE)
+                  put_ptr = rx_buffer;
 
-                   wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+                  if(0x0a == next_byte)
+                  nl_found = true;
 
-                }
 
-                if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
-                {
-                    *ptmpbuf++ = *tptr++;
-                    if((tptr - rx_buffer) > RX_BUFFER_SIZE)
-                       tptr = rx_buffer;
+      //    Found a NL char, thus end of message?
+                  if(nl_found)
+                  {
+                  char *tptr;
+                  char *ptmpbuf;
 
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
 
-                    *ptmpbuf = 0;
+      //    Copy the message into a temporary _buffer
 
-                    tak_ptr = tptr;
+                  tptr = tak_ptr;
+                  ptmpbuf = temp_buf;
 
-//    Message is ready to parse and send out
-                    wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(str_temp_buf);
-                 }
+                  while((*tptr != 0x0a) && (tptr != put_ptr))
+                  {
+                        *ptmpbuf++ = *tptr++;
 
-            }                   //if nl
-        }                       // if newdata > 0
-//        else
-//              ThreadMessage(_T("Timeout 1"));
+                        if((tptr - rx_buffer) > RX_BUFFER_SIZE)
+                        tptr = rx_buffer;
 
+                        wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+
+                  }
+
+                  if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
+                  {
+                        *ptmpbuf++ = *tptr++;
+                        if((tptr - rx_buffer) > RX_BUFFER_SIZE)
+                        tptr = rx_buffer;
+
+                        wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
+
+                        *ptmpbuf = 0;
+
+                        tak_ptr = tptr;
+
+      //    Message is ready to parse and send out
+                        wxString str_temp_buf(temp_buf, wxConvUTF8);
+                        Parse_And_Send_Posn(str_temp_buf);
+                  }
+
+                  }                   //if nl
+            }                       // if newdata > 0
+      //              ThreadMessage(_T("Timeout 1"));
 
     }                          // the big while...
 
@@ -1165,6 +1522,27 @@ void *OCP_NMEA_Thread::Entry()
       {
             if(TestDestroy())
                   not_done = false;                               // smooth exit
+
+            if( m_launcher->IsPauseRequested())                 // external pause requested?
+            {
+                  m_pCommMan->CloseComPort(m_gps_fd);
+                  m_pPortMutex->Unlock();                       // release the port
+
+                  wxThread::Sleep(2000);                        // stall for a bit
+
+              //  Now try to regain the Mutex
+                  while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
+
+              //  Re-initialize the port
+                  if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)
+                  {
+                        wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
+                        msg.Append(m_PortName);
+                        ThreadMessage(msg);
+                        goto thread_exit;
+                  }
+
+            }
 
 
             if (!fWaitingOnRead)
@@ -2398,7 +2776,7 @@ int ComPortManager::WriteComPort(wxString& com_name, unsigned char *msg, int cou
       return status;
 }
 
-int ComPortManager::ReadComPort(wxString& com_name, int *count, unsigned char *p)
+int ComPortManager::ReadComPort(wxString& com_name, int count, unsigned char *p)
 {
       int port_descriptor;
 
@@ -2431,6 +2809,11 @@ bool ComPortManager::SerialCharsAvail(wxString& com_name)
 
 
 #ifdef __POSIX__
+typedef struct {
+      int fd;         /* File descriptor */
+      struct termios gps_ttysave;
+} posix_serial_data;
+
 int ComPortManager::OpenComPortPhysical(wxString &com_name, int baud_rate)
 {
 
@@ -2544,17 +2927,32 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, unsigned char *msg
       return status;
 }
 
-int ComPortManager::ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p)
+int ComPortManager::ReadComPortPhysical(int port_descriptor, int count, unsigned char *p)
 {
 //    Blocking, timeout protected read of one character at a time
 //    Timeout value is set by c_cc[VTIME]
 
-      return read(port_descriptor, p, *count);            // read of (count) characters
+      return read(port_descriptor, p, count);            // read of (count) characters
 }
 
 
 bool ComPortManager::CheckComPortPhysical(int port_descriptor)
 {
+      fd_set rec;
+      struct timeval t;
+//      posix_serial_data *psd = (posix_serial_data *)port_descriptor;
+//      int fd = psd->fd;
+
+      int fd = port_descriptor;
+      FD_ZERO(&rec);
+      FD_SET(fd,&rec);
+
+      t.tv_sec  = 0;
+      t.tv_usec = 1000;
+      (void) select(fd+1,&rec,NULL,NULL,&t);
+      if(FD_ISSET(fd,&rec))
+            return true;
+
       return false;
 }
 
@@ -2702,7 +3100,7 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, unsigned char *msg
       return 0;
 }
 
-int ComPortManager::ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p)
+int ComPortManager::ReadComPortPhysical(int port_descriptor, int count, unsigned char *p)
 {
       return 0;
 }
@@ -2717,101 +3115,5 @@ bool ComPortManager::CheckComPortPhysical(int port_descriptor)
 
 
 #endif            // __WXMSW__
-
-
-//--------------------------------------------------------------------------------------
-//
-//          Garmin Serial Protocol Support
-//
-//--------------------------------------------------------------------------------------
-
-#define TIMEOUT 5 /* return after this number of seconds without receiving msg */
-#define MAX_LENGTH 100  /* maximum length of Garmin binary message */
-
-unsigned char gGarminMessage[MAX_LENGTH];
-
-
-bool GarminSendWithHandshake(ComPortManager *pPortMan, wxString &port_name, char *message, int length)
-{
-      //    Create the possibly DLE padded message, with checksum calculation inserted
-
-      unsigned char csum = 0;
-      unsigned char *p = gGarminMessage;
-
-      *p++ = 0x10;    /* Start of message */
-      for (int i=0; i<length; i++)
-      {
-            *p++ = message[i];
-            csum -= message[i];
-            if (message[i] == 0x10)
-                *p++ = 0x10;
-      }
-
-      *p++ = csum;
-      if (csum == 0x10)
-           *p++ = 0x10;
-      *p++ = 0x10;
-      *p++ = 0x03;
-
-      unsigned int n = (unsigned int)(p - gGarminMessage);
-
-      //    Send the message to the specified port
-
-      pPortMan->WriteComPort(port_name, gGarminMessage, n);
-
-      //    Wait for the ACK message, up to TIMEOUT seconds
-
-      int count = 1;
-
-      long time = ::wxGetLocalTime();
-
-      p = gGarminMessage;
-      int recv_length = 0;
-
-      bool b_good_response = false;
-      unsigned char c;
-      unsigned char last = 0;
-
-      for (;;)
-      {
-            if (::wxGetLocalTime() > time + TIMEOUT)
-                  break;
-
-
-            while (pPortMan->SerialCharsAvail(port_name))
-            {
-
-                  if (recv_length >= MAX_LENGTH-1)
-                        break;
-
-                  count = 1;
-                  pPortMan->ReadComPort(port_name, &count, &c);
-
-                  if (c == 0x10 && last == 0x10)
-                        last = 0;
-                  else {
-                        last = *p++ = c;
-                        ++recv_length;
-                  }
-
-                  if (*(p-1) == 0x03 && *(p-2) == 0x10)
-                  {
-                        b_good_response = true;
-                        break;
-                  }
-            }
-      }
-
-      //    Get a good response?
-      if(!b_good_response)
-            return false;
-
-      //    Check for the ACK character
-      if(gGarminMessage[1] == 0x06)
-            return true;
-      else
-            return false;
-
-}
 
 

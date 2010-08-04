@@ -55,7 +55,7 @@
 
 #include "ais.h"
 #include "chart1.h"
-#include "nmea.h"           // for DNSTestThread
+#include "nmea.h"           // for AIS Muxed data stream
 #include "navutil.h"        // for Select
 #include "georef.h"
 

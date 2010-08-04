@@ -111,6 +111,8 @@ extern wxString         *pInit_Chart_Dir;
 extern bool             g_bAutoAnchorMark;
 extern ColorScheme      global_color_scheme;
 extern bool             g_bGarminPersistance;
+extern bool             g_bGarminHost;
+
 extern wxString         g_SData_Locn;
 
 
@@ -634,6 +636,9 @@ void options::CreateControls()
       scidx = m_itemNMEABaudListBox->FindString(g_NMEABaudRate);      // entry value
       m_itemNMEABaudListBox->SetSelection(scidx);
 
+      //    Garmin Host Mode
+      pGarminHost = new wxCheckBox( itemPanelGPS, ID_GARMINHOST, _("Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."));
+      itemNMEAStaticBoxSizer->Add(pGarminHost, 1, wxALIGN_LEFT|wxALL, 2);
 
       //    NMEA Monitor window
       pShowGPSWin = new wxCheckBox( itemPanelGPS, ID_SHOWGPSWINDOW, _("Show GPS/NMEA data stream window"));
@@ -1318,6 +1323,10 @@ void options::SetInitialSettings()
       if(g_NMEALogWindow)
             pShowGPSWin->SetValue(true);
 
+      if(g_bGarminHost)
+            pGarminHost->SetValue(true);
+
+
       pPrintShowIcon->SetValue(g_bShowPrintIcon);
       pCDOOutlines->SetValue(g_bShowOutlines);
       pCDOQuilting->SetValue(pParent->GetQuiltMode());
@@ -1681,6 +1690,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
       if(m_pConfig)
            m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
+
+
+    g_bGarminHost = pGarminHost->GetValue();
 
     g_bShowPrintIcon = pPrintShowIcon->GetValue();
     g_bShowOutlines = pCDOOutlines->GetValue();

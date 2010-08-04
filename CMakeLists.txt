@@ -306,6 +306,63 @@ ELSE (USE_S57)
 	message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)
 
+OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+IF (USE_GARMINHOST)
+	message (STATUS "Garmin Host Mode support: enabled")
+	ADD_DEFINITIONS(-DUSE_GARMINHOST)
+
+	SET(SRC_GARMINHOST
+                  src/garmin/jeeps/gpsapp.c
+                  src/garmin/jeeps/gpscom.c
+	          src/garmin/jeeps/gpsmath.c
+                  src/garmin/jeeps/gpsmem.c
+	          src/garmin/jeeps/gpsprot.c
+                  src/garmin/jeeps/gpsread.c
+	          src/garmin/jeeps/gpsdevice.c
+                  src/garmin/jeeps/gpsdevice_ser.c
+                  src/garmin/jeeps/gpsdevice_usb.c
+                  src/garmin/jeeps/gpsrqst.c
+                  src/garmin/jeeps/gpssend.c
+                  src/garmin/jeeps/gpsserial.c
+                  src/garmin/jeeps/gpsutil.c
+                  src/garmin/jeeps/gpsusbread.c
+                  src/garmin/jeeps/gpsusbsend.c
+                  src/garmin/jeeps/gpsusbcommon.c
+                  src/garmin/jeeps/garmin_wrapper_utils.c
+                  src/garmin/jeeps/garmin_wrapper.cpp
+                  src/garmin/jeeps/garmin_gps.h
+                  src/garmin/jeeps/garmin_wrapper.h
+                  src/garmin/jeeps/gpsapp.h
+                  src/garmin/jeeps/gpsdatum.h
+                  src/garmin/jeeps/gpsfmt.h
+                  src/garmin/jeeps/gpsmath.h
+                  src/garmin/jeeps/gpsport.h
+                  src/garmin/jeeps/gpsprot.h
+                  src/garmin/jeeps/gpsrqst.h
+                  src/garmin/jeeps/gpsserial.h
+                  src/garmin/jeeps/gpsusbint.h
+                  src/garmin/jeeps/garminusb.h
+                  src/garmin/jeeps/garmin_wrapper_utils.h
+                  src/garmin/jeeps/gpscom.h
+                  src/garmin/jeeps/gpsdevice.h
+                  src/garmin/jeeps/gpsinput.h
+                  src/garmin/jeeps/gpsmem.h
+                  src/garmin/jeeps/gpsproj.h
+                  src/garmin/jeeps/gpsread.h
+                  src/garmin/jeeps/gpssend.h
+                  src/garmin/jeeps/gpsusbcommon.h
+                  src/garmin/jeeps/gpsutil.h
+	)
+	ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
+	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
+	SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
+        IF(WIN32)
+           ADD_DEFINITIONS(-D__WIN32__)
+        ENDIF(WIN32)
+ELSE (USE_GARMINHOST)
+	message (STATUS "Garmin Host Mode support: disabled")
+ENDIF (USE_GARMINHOST)
+
 OPTION (USE_WIFI_CLIENT "Enable wifi client" OFF) 
 IF (USE_WIFI_CLIENT)
 	message (STATUS "WiFi client support: enabled")
@@ -447,11 +504,13 @@ INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} )
 
 INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-#INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
 
-INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps )
-INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps )
-INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
+IF(UNIX)
+  INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps )
+  INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps )
+  INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
+ENDIF(UNIX)
 
 #  Fix up time_t definition
 # Checks for 32-bit version. And always use 32-bit time_t for compatibility

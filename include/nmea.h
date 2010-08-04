@@ -82,6 +82,7 @@
 
 
 #include "nmea0183.h"
+#include "navutil.h"          // for Routes and Waypoints
 
 #ifdef __POSIX__
 #include <sys/termios.h>
@@ -106,6 +107,14 @@ enum
     EVT_NMEA_DIRECT,
     EVT_NMEA_PARSE_RX
 };
+
+//          Fwd Declarations
+class     CSyncSerialComm;
+class     MyFrame;
+class     OCP_NMEA_Thread;
+class     OCP_GARMIN_Thread;
+class     ComPortManager;
+
 
 
 // Class declarations
@@ -134,13 +143,6 @@ typedef struct  {
 } MyFileTime;
 
 
-//          Fwd Declarations
-class     CSyncSerialComm;
-class     MyFrame;
-class     OCP_NMEA_Thread;
-class     OCP_GARMIN_Thread;
-class     ComPortManager;
-
 
 //----------------------------------------------------------------------------
 // NMEAEvent
@@ -164,7 +166,6 @@ class OCPN_NMEAEvent: public wxEvent
 
 
     // required for sending with wxPostEvent()
-//            wxEvent* Clone();
             wxEvent *Clone() const; // { return new OCPN_NMEAEvent(*this); }
 
       private:
@@ -174,21 +175,9 @@ class OCPN_NMEAEvent: public wxEvent
 
 };
 
-//    DECLARE_EVENT_TYPE(wxEVT_OCPN_NMEA, 6666)
-    extern /*expdecl*/ const wxEventType wxEVT_OCPN_NMEA;
+    extern  const wxEventType wxEVT_OCPN_NMEA;
 
 
-
-// code implementing the event type and the event class
-/*
-DECLARE_EVENT_MACRO( OCPN_EVT_NMEA_ACTION, -1 )
-typedef void (wxEvtHandler::*OCPN_NMEAEventFunction)(OCPN_NMEAEvent&);
-
-#define EVT_OCPN_NMEA(id, fn) \
-    DECLARE_EVENT_TABLE_ENTRY( OCPN_EVT_NMEA_ACTION, id, -1, \
-    (wxObjectEventFunction) (wxEventFunction) (wxCommandEventFunction)  \
-    wxStaticCastEvent( OCPN_NMEAEventFunction, & fn ), (wxObject *) NULL ),
-*/
 
 
 //----------------------------------------------------------------------------
@@ -198,7 +187,7 @@ typedef void (wxEvtHandler::*OCPN_NMEAEventFunction)(OCPN_NMEAEvent&);
 class NMEAWindow: public wxWindow
 {
 public:
-      NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& BaudRate, wxMutex *pMutex = 0);
+      NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& BaudRate, wxMutex *pMutex = 0, bool bGarmin = false);
       ~NMEAWindow();
 
       void GetSource(wxString& source);
@@ -213,6 +202,11 @@ public:
           //    be safely called or polled, e.g. wxThread->Destroy();
       void SetSecThreadActive(void){m_bsec_thread_active = true;}
       void SetSecThreadInActive(void){m_bsec_thread_active = false;}
+
+      bool IsPauseRequested(void){ return m_brequest_thread_pause; }
+
+      bool SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress);
+      bool SendRouteToGPS(Route *pr, wxString &com_name,  bool bsend_waypoints, wxGauge *pProgress);
 
 private:
       void OnPaint(wxPaintEvent& event);
@@ -235,6 +229,11 @@ private:
       wxEvtHandler      *m_pParentEventHandler;
       wxMutex           *m_pShareMutex;
       wxThread          *m_pSecondary_Thread;
+      wxMutex           *m_pPortMutex;
+
+      bool              m_bGarmin_host;
+
+      bool              m_brequest_thread_pause;
 
       bool              m_bsec_thread_active;
       int               m_gpsd_major;
@@ -252,6 +251,7 @@ private:
       int                (*m_fn_gps_stream)(struct gps_data_t *, unsigned int, void *);
 
 
+
 DECLARE_EVENT_TABLE()
 };
 
@@ -261,7 +261,7 @@ DECLARE_EVENT_TABLE()
 //
 //    NMEA Input Thread
 //
-//    This thread manages reading the NMEA data stream from the declared NMEA serial port
+//    This thread manages reading the NMEA data stream from the declared NMEA or Garmin serial port
 //
 //-------------------------------------------------------------------------------------------------------------
 
@@ -285,9 +285,8 @@ typedef enum ENUM_BUFFER_STATE
 
 
 //          Inter-thread communication event declaration
-//DECLARE_EVENT_TYPE(EVT_NMEA, -1)
+
 extern /*expdecl*/ const wxEventType EVT_NMEA;
-//DECLARE_EVENT_TYPE(EVT_THREADMSG, -1)
 extern /*expdecl*/ const wxEventType EVT_THREADMSG;
 
 
@@ -296,7 +295,8 @@ class OCP_NMEA_Thread: public wxThread
 
 public:
 
-      OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate);
+      OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
+                      const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate, bool bGarmin = false);
       ~OCP_NMEA_Thread(void);
       void *Entry();
 
@@ -309,6 +309,8 @@ private:
       NMEAWindow              *m_launcher;
       wxString                m_PortName;
       wxMutex                 *m_pShareMutex;
+      wxMutex                 *m_pPortMutex;
+
       char                    *put_ptr;
       char                    *tak_ptr;
 
@@ -323,6 +325,7 @@ private:
 
       int                     m_gps_fd;
       int                     m_baud;
+
 
 };
 
@@ -575,7 +578,7 @@ public:
 
       int WriteComPort(wxString& com_name, const wxString& string);
       int WriteComPort(wxString& com_name, unsigned char *msg, int count);
-      int ReadComPort(wxString& com_name, int *count, unsigned char *p);
+      int ReadComPort(wxString& com_name, int count, unsigned char *p);
       bool SerialCharsAvail(wxString& com_name);
 
 
@@ -588,7 +591,7 @@ private:
       int WriteComPortPhysical(int port_descriptor, const wxString& string);
       int WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count);
 
-      int ReadComPortPhysical(int port_descriptor, int *count, unsigned char *p);
+      int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
       bool CheckComPortPhysical(int port_descriptor);
 
       ListOfOpenCommPorts     m_port_list;

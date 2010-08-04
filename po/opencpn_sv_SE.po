@@ -1451,20 +1451,25 @@ msgstr ""
 "Opencpn hittade version %d.%d, version 3.1 eller högre krävs"
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Ra&dera alla Rutter"
+#
 #
 #
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt Spår)"
 #
 #
+#
 #~ msgid "Automatic Anchor Mark"
 #~ msgstr "Automatisk ankarmarkering"
+#
 #
 #
 #~ msgid ""
@@ -1475,6 +1480,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid ""
 #~ "Class:     B\n"
 #~ "\n"
@@ -1483,40 +1489,50 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid "Delete All Routes..."
 #~ msgstr "Radera alla Rutter"
+#
 #
 #
 #~ msgid "Delete All Waypoints..."
 #~ msgstr "Radera alla Waypoints..."
 #
 #
+#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
+#
 #
 #
 #~ msgid "Failed to create ocpCursor."
 #~ msgstr "Misslyckades att skapa ocpCursor"
 #
 #
+#
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 #~ msgid "Route Manager..."
 #~ msgstr "Rutthantering..."
 #
 #
+#
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Skicka Rutt till GPS"
+#
 #
 #
 #~ msgid "Show GPX icons"
 #~ msgstr "Aktivera GPX menyer"
 #
 #
+#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
+#
 #
 #
 #~ msgid "Övrigt"

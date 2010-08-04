@@ -1481,8 +1481,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Slet alle ruter..."
+#
 #
 #
 #
@@ -1491,8 +1493,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt spor)"
+#
 #
 #
 #
@@ -1505,6 +1509,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Class:     B\n"
 #~ "\n"
@@ -1514,8 +1519,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete All Waypoints..."
 #~ msgstr "Slet alle waypoints..."
+#
 #
 #
 #
@@ -1524,13 +1531,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Send til GPS..."
 #
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Vis GPX-data ikoner"
+#
 #
 #
 #

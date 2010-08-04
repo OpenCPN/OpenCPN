@@ -1859,8 +1859,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Smazat všechny trasy..."
+#
 #
 #
 #
@@ -1871,8 +1873,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivní stopa)"
+#
 #
 #
 #
@@ -1887,6 +1891,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Class:     B\n"
 #~ "\n"
@@ -1897,8 +1902,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete All Waypoints..."
 #~ msgstr "Smazat všechny trasové body..."
+#
 #
 #
 #
@@ -1909,8 +1916,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Správce tras..."
+#
 #
 #
 #
@@ -1921,8 +1930,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Zobrazit ikony GPX"
+#
 #
 #
 #
