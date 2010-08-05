@@ -80,6 +80,47 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
 {
       int ret_val = 0;
 
+      int route_number = 0;
+
+      //    If the device supports unique numbered waypoints,
+      //    Then we must query the device to find an empty number
+      if((gps_rte_hdr_type == pD200) || (gps_rte_hdr_type == pD201))
+      {
+      //    Retrieve <ALL> routes from the device
+            GPS_PWay *pprouteway;
+            int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
+            if(npacks < 0)
+                  return npacks;
+
+            //  Iterate on the packets, finding the first route number from [0..9] that is not present
+
+            //    An array of route numbers, set element to true as encountered
+            bool brn[10];
+            for(int i=0 ; i < 10 ; i++)
+               brn[i] = false;
+
+            for(int ip=0 ; ip < npacks ; ip++)
+            {
+                  GPS_PWay pway = pprouteway[ip];
+                  if(pway->isrte)
+                  {
+                        if((pway->rte_num < 10))
+                              brn[pway->rte_num] = true;
+                  }
+            }
+
+            //    Find the first candidate that is unused
+            for(int i=0 ; i < 10 ; i++)
+            {
+                  if(brn[i] == false)
+                  {
+                        route_number = i;
+                        break;
+                  }
+            }
+      }
+
+
       RoutePointList *wplist = pr->pRoutePointList;
       int nPoints = wplist->GetCount();
 
@@ -99,7 +140,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
 
       GPS_PWay pway = ppway[0];
       pway->isrte = true;
-      pway->rte_num = 1;
+      pway->rte_num = route_number;
       strncpy(pway->rte_ident, (pr->m_RouteNameString.Truncate ( 255 )).mb_str(), 255);
       strncpy(pway->rte_cmnt, (pr->m_RouteNameString.Truncate ( 19 )).mb_str(), 19);
 

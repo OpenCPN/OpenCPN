@@ -3758,7 +3758,7 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                     wxString ChildName = child->GetName();
                                     if ( ChildName == _T ( "wpt" ) )
                                     {
-                                          RoutePoint *pWp = ::LoadGPXTrackpoint(child);
+                                          RoutePoint *pWp = ::LoadGPXWaypoint(child, _T("circle"));
                                           RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
                                           if(!pExisting)
                                           {
@@ -4238,12 +4238,12 @@ void AppendGPXTracks ( wxXmlNode *RNode )
 
 
 
-RoutePoint *LoadGPXTrackpoint ( wxXmlNode* wptnode )
+RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
 {
       wxString LatString = wptnode->GetPropVal ( _T ( "lat" ),_T ( "0.0" ) );
       wxString LonString = wptnode->GetPropVal ( _T ( "lon" ),_T ( "0.0" ) );
 
-      wxString SymString  = _T ( "empty" );                // default icon
+      wxString SymString  = def_symbol_name; //_T ( "empty" );                // default icon
       wxString NameString;
       wxString DescString;
       wxString TypeString;
@@ -4426,55 +4426,13 @@ void GPXLoadTrack ( wxXmlNode* trknode )
 
                                     if(tpChildName == _T("trkpt"))
                                     {
-                                          pWp = ::LoadGPXTrackpoint ( tpchild );
+                                          pWp = ::LoadGPXWaypoint ( tpchild, _T("empty") );
                                           pTentTrack->AddPoint ( pWp, false );
                                           pWp->m_bIsInTrack = true;                       // pjotrc 2010.02.11
                                           pWp->m_GPXTrkSegNo = GPXSeg;                    // pjotrc 2010.02.27
 
 
-#if 0
-                              //    Don't add this point if it is geographically the same as the previous point
-                                          if(pRecentPoint)
-                                          {
-                                                if((pRecentPoint->m_lat != pWp->m_lat) || (pRecentPoint->m_lon != pWp->m_lon))
-                                                {
-                                                      pTentTrack->AddPoint ( pWp, false );      // don't auto-rename numerically
-                                                      pWp->m_bIsInTrack = true;                 // pjotrc 2010.02.11
-                                                      pWp->m_GPXTrkSegNo = GPXSeg;              // pjotrc 2010.02.27
-                                                }
-
-
-                                          }
-                                          else
-                                          {
-                                                pTentTrack->AddPoint ( pWp, false );            // add first point always
-                                                pWp->m_bIsInTrack = true;                       // pjotrc 2010.02.11
-                                                pWp->m_GPXTrkSegNo = GPXSeg;                    // pjotrc 2010.02.27
-                                          }
-
-                                          pRecentPoint = pWp;
-#endif
                                     }
-#if 0
-                                    //          This else clause loads opencpn tracks exported prior to v1.3.5 Build 1122
-                                    //          and can go away after release of 1.3.6
-                                    else
-                                    {
-                                          pWp = ::LoadGPXTrackpoint ( tschild );
-
-                              //    Don't add this point if it is geographically the same as the previous point
-                                          if(pRecentPoint)
-                                          {
-                                                if((pRecentPoint->m_lat != pWp->m_lat) || (pRecentPoint->m_lon != pWp->m_lon))
-                                                      pTentTrack->AddPoint ( pWp, false );                      // don't auto-rename numerically
-
-                                          }
-                                          else
-                                                pTentTrack->AddPoint ( pWp, false );                      // add first point always
-
-                                          pRecentPoint = pWp;
-                                    }
-#endif
                                     if (NULL != pWayPointMan )
                                           pWayPointMan->m_pWayPointList->Append ( pWp );
 
@@ -4631,7 +4589,7 @@ void GPXLoadRoute ( wxXmlNode* rtenode, int routenum )
                   wxString ChildName = child->GetName();
                   if ( ChildName == _T ( "rtept" ) )
                   {
-                        RoutePoint *pWp = LoadGPXTrackpoint ( child );
+                        RoutePoint *pWp = LoadGPXWaypoint ( child, _T("square") );
 
                         RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
 

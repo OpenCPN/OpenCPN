@@ -291,7 +291,7 @@ DECLARE_EVENT_TABLE()
 //----------------------------------------------------------------------------
 
 
-RoutePoint *LoadGPXTrackpoint(wxXmlNode* wptnode);
+RoutePoint *LoadGPXWaypoint(wxXmlNode* wptnode, wxString def_symbol_name);
 void GPXLoadTrack ( wxXmlNode* trknode );
 void GPXLoadRoute ( wxXmlNode* rtenode, int routenum );
 
