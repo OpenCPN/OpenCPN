@@ -80,7 +80,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
 {
       int ret_val = 0;
 
-      int route_number = 0;
+      int route_number = 1;
 
       //    If the device supports unique numbered waypoints,
       //    Then we must query the device to find an empty number
@@ -109,8 +109,8 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
                   }
             }
 
-            //    Find the first candidate that is unused
-            for(int i=0 ; i < 10 ; i++)
+            //    Find the first candidate within [1..9] that is unused
+            for(int i=1 ; i < 10 ; i++)
             {
                   if(brn[i] == false)
                   {

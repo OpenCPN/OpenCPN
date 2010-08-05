@@ -49,7 +49,7 @@ CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 //    Some constants
 
-char OpenCPNVersion[] = {"\n      Version 2.2 Build 803"};
+char OpenCPNVersion[] = {"\n      Version 2.2 Build 805"};
 
 
 char AboutText[] =
@@ -75,6 +75,9 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Alan Bleasby\n\
+      <--->\n\
+      Garmin jeeps module\n\n\
     Jean-Eudes Onfray\n\
       je@onfray.fr\n\
       Dialog usability enhancements\n\n\
