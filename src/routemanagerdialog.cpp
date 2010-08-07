@@ -78,7 +78,7 @@ enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
 
-// GOLBALS :0
+// GLOBALS :0
 extern RouteList *pRouteList;
 extern RouteProp *pRoutePropDialog;
 extern Routeman  *g_pRouteMan;
@@ -91,6 +91,7 @@ extern MarkProp         *pMarkPropDialog;
 extern MyFrame         *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
+extern double           gCog, gSog;
 
 // sort callback. Sort by route name.
 int wxCALLBACK SortRoutes(long item1, long item2, long list)
@@ -426,9 +427,12 @@ RouteManagerDialog::~RouteManagerDialog()
       delete btnImport;
       delete btnExport;
 
+      //    Does not need to be done here at all, since this dialog is autommatically deleted as a child of the frame.
+      //    By that time, the config has already been updated for shutdown.
+
       // Do this just once!!
-      if (m_bNeedConfigFlush)
-            pConfig->UpdateSettings();
+//      if (m_bNeedConfigFlush)
+//            pConfig->UpdateSettings();
 }
 
 void RouteManagerDialog::UpdateRouteListCtrl()
@@ -606,6 +610,10 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
       pConfig->DeleteConfigRoute ( proute_to_delete );
 
       UpdateRouteListCtrl();
+
+      //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
+      UpdateTrkListCtrl();
+
       cc1->Refresh();
 
       m_bNeedConfigFlush = true;
@@ -626,6 +634,9 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event)
 //            m_pFoundRoutePointSecond = NULL;
 
             UpdateRouteListCtrl();
+
+            //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
+            UpdateTrkListCtrl();
 
             if(pRoutePropDialog)
                   pRoutePropDialog->Hide();
@@ -758,7 +769,10 @@ void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event)
             }
 
             ZoomtoRoute(route);
-            g_pRouteMan->ActivateRoute(route);
+
+            RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
+            g_pRouteMan->ActivateRoute ( route, best_point );
+//            g_pRouteMan->ActivateRoute(route);
       }
       else
             g_pRouteMan->DeactivateRoute();
@@ -1032,6 +1046,10 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event)
 //                    }
 
       UpdateTrkListCtrl();
+
+      //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
+      UpdateRouteListCtrl();
+
       cc1->Refresh();
 
       m_bNeedConfigFlush = true;
@@ -1076,6 +1094,9 @@ void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
       }
 
       UpdateTrkListCtrl();
+
+      //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
+      UpdateRouteListCtrl();
 
       if(pRoutePropDialog)
             pRoutePropDialog->Hide();

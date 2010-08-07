@@ -782,7 +782,7 @@ public:
 
 
 //----------------------------------------------------------------------------
-// AIS Rollover Window
+// Generic Rollover Window
 //----------------------------------------------------------------------------
 class RolloverWin: public wxWindow
 {
@@ -796,6 +796,7 @@ class RolloverWin: public wxWindow
             void SetString(wxString &s){ m_string = s; }
             void SetPosition(wxPoint pt){ m_position = pt; }
             void SetBitmap(void);
+            void SetBestPosition(int x, int y, int off_x, int off_y, wxSize parent_size);
 
 
       private:

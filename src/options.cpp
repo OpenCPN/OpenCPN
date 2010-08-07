@@ -178,6 +178,8 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
+extern wxLocale         locale_def_lang;
+
 #ifdef USE_WIFI_CLIENT
 extern wxString         *pWIFIServerName;
 #endif
@@ -2174,18 +2176,52 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   m_itemLangListBox = new wxComboBox(itemPanelFont, ID_CHOICE_LANG);
 
+                  int current_language = locale_def_lang.GetLanguage();
+                  wxMB2WXbuf oldLocale = wxSetlocale(LC_ALL, wxEmptyString);
+                  wxString current_sel = wxLocale::GetLanguageName(current_language);
+
+                   // always add us english
+                  wxString eng_string = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->Description;
+                  m_itemLangListBox->Append( eng_string );
+
                   int nLang = sizeof(lang_list)/sizeof(int);
                   for( int it = 0 ; it < nLang ; it++)
                   {
-      //          if(wxLocale::GetLanguageInfo(lang_list[it]))
                         if(wxLocale::IsAvailable(lang_list[it]))
                         {
-                              wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-                              m_itemLangListBox->Append( sl );
+/*
+                              //  Look explicitely to see if .mo is available
+                              wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+                              //    simplify common sublangauges, i.e. en_EN
+                              if((lang_canonical.Len() == 5) &&
+                                    (lang_canonical.Mid(0, 2).Upper() == lang_canonical.Mid(3,2)))
+                                  lang_canonical.Truncate(2);
+                              wxString lang_dir = g_SData_Locn;
+#ifdef __WXMSW__
+                              lang_dir += _T("share/");
+#endif
+                              lang_dir += _T("locale/");
+                              lang_dir += lang_canonical;
+                              if(wxDir::Exists(lang_dir))
+*/
+                              {
+                                  wxLocale ltest(lang_list[it], 0);
+                                  ltest.AddCatalog(_T("opencpn"));
+
+                                  if(ltest.IsLoaded(_T("opencpn")))
+                                  {
+                                    wxString sl = wxLocale::GetLanguageName(lang_list[it]);
+                                    m_itemLangListBox->Append( sl );
+                                  }
+                              }
                         }
                   }
 
-                  m_itemLangListBox->SetSelection(0);
+                  //    Reset current language
+                  wxSetlocale(LC_ALL, oldLocale);
+                  wxSetlocale(LC_NUMERIC,_T("C"));
+
+                  m_itemLangListBox->SetStringSelection(current_sel); //SetSelection(0);
 
                   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxALL, border_size);
 

@@ -967,6 +967,23 @@ bool MyApp::OnInit()
         initialize_images();
 #endif
 
+//      Establish a "shared data" location
+/*  From the wxWidgets documentation...
+
+        wxStandardPaths::GetDataDir
+        wxString GetDataDir() const
+        Return the location of the applications global, i.e. not user-specific, data files.
+        * Unix: prefix/share/appname
+        * Windows: the directory where the executable file is located
+        * Mac: appname.app/Contents/SharedSupport bundle subdirectory
+*/
+        g_SData_Locn = std_path.GetDataDir();         // where the application is located
+        appendOSDirSlash(&g_SData_Locn) ;
+
+        imsg = _T("SData_Locn is ");
+        imsg += g_SData_Locn;
+        wxLogMessage(imsg);
+
 
 //      Create some static strings
         pNMEADataSource = new wxString();
@@ -1014,26 +1031,6 @@ bool MyApp::OnInit()
         file_user_id = geteuid ();
 #endif
 #endif
-
-
-//      Establish a "shared data" location
-/*  From the wxWidgets documentation...
-
-        wxStandardPaths::GetDataDir
-        wxString GetDataDir() const
-        Return the location of the applications global, i.e. not user-specific, data files.
-            * Unix: prefix/share/appname
-            * Windows: the directory where the executable file is located
-            * Mac: appname.app/Contents/SharedSupport bundle subdirectory
-*/
-        g_SData_Locn = std_path.GetDataDir();         // where the application is located
-        appendOSDirSlash(&g_SData_Locn) ;
-
-        imsg = _T("SData_Locn is ");
-        imsg += g_SData_Locn;
-        wxLogMessage(imsg);
-
-
 
 //      Establish the location of the config file
 #ifdef __WXMSW__
@@ -1094,7 +1091,7 @@ bool MyApp::OnInit()
 
         if(lang_list[0]){};                 // silly way to avoid compiler warnings
 
-      // Add a new prefix for search order. 
+      // Add a new prefix for search order.
       // where '.' refers to the opencpn.exe directory e.g.{Program Files}\OpenCPN
 #ifdef __WXMSW__
 		wxLocale::AddCatalogLookupPathPrefix(wxT("./share/locale"));

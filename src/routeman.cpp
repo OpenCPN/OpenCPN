@@ -341,7 +341,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
                 if(pRouteActivatePoint)
                         delete pRouteActivatePoint;
 
-                pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")), NULL); // Current location
+                pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")), NULL, false); // Current location
                 pRouteActivatePoint->m_bShowName = false;
 
                 pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -972,6 +972,7 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
       int i = m_itemCommListBox->GetSelection();
       wxString src(m_itemCommListBox->GetString(i));
 
+      src = m_itemCommListBox->GetValue();
 
       //    And send it out
       if(m_pRoute)

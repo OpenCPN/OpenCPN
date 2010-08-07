@@ -622,8 +622,8 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
 
 void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
 {
-      //    Look in the route list to be sure the raoute is still available
-      //    (May have been deleted by RouteMangerDialog...)
+      //    Look in the route list to be sure the route is still available
+      //    (May have been deleted by RouteManagerDialog...)
 
       bool  b_found_route = false;
       wxRouteListNode *node = pRouteList->GetFirst();
@@ -1007,6 +1007,10 @@ void MarkProp::OnMarkpropCancelClick( wxCommandEvent& event )
 
       m_pRoutePoint->m_pbmIcon = pWayPointMan->GetIconBitmap(m_IconName_save);
 
+      pSelect->ModifySelectablePoint(m_lat_save, m_lon_save, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
+
+      cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
+
       Show(false);
       event.Skip();
 }
@@ -1015,6 +1019,8 @@ void MarkProp::OnMarkpropCancelClick( wxCommandEvent& event )
 void MarkProp::OnMarkpropOkClick( wxCommandEvent& event )
 {
     SaveChanges();              // write changes to globals and update config
+
+    cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
 
     Show(false);
     event.Skip();
