@@ -76,7 +76,7 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
       return ret_val;
 }
 
-int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr)
+int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress)
 {
       int ret_val = 0;
 
@@ -91,6 +91,13 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
             if(npacks < 0)
                   return npacks;
+
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 60 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
 
             //  Iterate on the packets, finding the first route number from [0..9] that is not present
 
@@ -110,14 +117,26 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             }
 
             //    Find the first candidate within [1..9] that is unused
+            bool bfound_empty = false;
             for(int i=1 ; i < 10 ; i++)
             {
                   if(brn[i] == false)
                   {
                         route_number = i;
+                        bfound_empty = true;
                         break;
                   }
             }
+
+            //  Ask the user if it is all right to overwrite
+            if(!bfound_empty)
+            {
+                  int rv = ::wxMessageBox(_("Overwrite Garmin device route number 1?"),
+                                          _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
+                  if(rv != wxOK)
+                        return 0;
+            }
+
       }
 
 
@@ -166,6 +185,13 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             GPS_Way_Del(&ppway[i]);
 
       free(ppway);
+
+      if ( pProgress )
+      {
+            pProgress->SetValue ( 80 );
+            pProgress->Refresh();
+            pProgress->Update();
+      }
 
       return ret_val;
 }

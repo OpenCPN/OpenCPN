@@ -5568,7 +5568,11 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                               wxString s = ptarget->GetRolloverString();
                               m_pRolloverWin->SetString(s);
 
-                              m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
+                              wxSize win_size = GetSize();
+                              if(console->IsShown())
+                                    win_size.x -= console->GetSize().x;
+                              m_pRolloverWin->SetBestPosition(x, y, 16, 16, win_size);
+
                               m_pRolloverWin->SetBitmap();
                               m_pRolloverWin->Refresh();
                               m_pRolloverWin->Show();
@@ -5619,7 +5623,10 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                         m_pRolloverWin->SetString(s);
 
-                        m_pRolloverWin->SetPosition(wxPoint(x+16, y+16));
+                        wxSize win_size = GetSize();
+                        if(console->IsShown())
+                              win_size.x -= console->GetSize().x;
+                        m_pRolloverWin->SetBestPosition(x, y, 16, 16, win_size);
                         m_pRolloverWin->SetBitmap();
                         m_pRolloverWin->Refresh();
                         m_pRolloverWin->Show();
@@ -11108,8 +11115,9 @@ void RolloverWin::SetBitmap()
       mdc.SetFont(*plabelFont);
       mdc.SetTextForeground(pFontMgr->GetFontColor(_T("AISRollover")));
 
-      mdc.DrawText(m_string, 2, 2);
-
+//  MSW cannot draw multi-line text.....lame....
+//      mdc.DrawText(m_string, 2, 2);
+      mdc.DrawLabel(m_string, wxRect(2, 2, m_size.x-4, m_size.y-4));
       SetSize(m_position.x, m_position.y, m_size.x, m_size.y);           // Assumes a nominal 32 x 32 cursor
 
 
@@ -11127,6 +11135,28 @@ void RolloverWin::OnPaint(wxPaintEvent& event)
             mdc.SelectObject(*m_pbm);
             dc.Blit(0, 0, width, height, &mdc, 0,0);
       }
+}
+
+void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, wxSize parent_size)
+{
+      int xp, yp;
+      if((x + off_x + m_size.x) > parent_size.x)
+      {
+            xp = x - (off_x/2) - m_size.x;
+      }
+      else
+            xp = x + off_x;
+
+
+      if((y + off_y + m_size.y) > parent_size.y)
+      {
+            yp = y - (off_y/2) - m_size.y;
+      }
+      else
+            yp = y + off_y;
+
+      SetPosition(wxPoint(xp, yp));
+
 }
 
 //------------------------------------------------------------------------------

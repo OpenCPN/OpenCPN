@@ -878,6 +878,13 @@ bool NMEAWindow::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoi
             }
 
 
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 20 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
+
             //    Initialize the Garmin receiver, build required Jeeps internal data structures
             int v_init = Garmin_GPS_Init(g_pCommMan, com_name);
             if(v_init < 0)
@@ -902,8 +909,14 @@ bool NMEAWindow::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoi
                   wxLogMessage(msg);
             }
 
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 40 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
 
-            ret_val = Garmin_GPS_SendRoute(g_pCommMan, com_name, pr);
+            ret_val = Garmin_GPS_SendRoute(g_pCommMan, com_name, pr, pProgress);
             if(ret_val != 1)
             {
                   wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
@@ -923,6 +936,15 @@ ret_point:
             //    Release the Mutex
             m_brequest_thread_pause = false;
             m_pPortMutex->Unlock();
+
+            if ( pProgress )
+            {
+                  pProgress->SetValue ( 100 );
+                  pProgress->Refresh();
+                  pProgress->Update();
+            }
+
+            wxMilliSleep ( 500 );
 
             return ret_bool;
 
