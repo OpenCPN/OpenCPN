@@ -75,6 +75,9 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Gunther Pilz\n\
+      gunther.pilz@gmail.com\n\
+      Windows Installer enhancements\n\n\
     Alan Bleasby\n\
       <--->\n\
       Garmin jeeps module\n\n\
