@@ -89,8 +89,8 @@ struct ChartTableEntry_onDisk_16
       float       LonMin;
 
       int         Scale;
-      time_t      edition_date;
-      time_t      file_date;
+      int         edition_date;
+      int         file_date;
 
       int         nPlyEntries;
       int         nAuxPlyEntries;
