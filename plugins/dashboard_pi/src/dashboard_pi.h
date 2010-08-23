@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: dashboard_pi.h,v 1.8 2010/06/21 01:54:37 bdbcat Exp $
+ * $Id: dashboard_pi.h, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  DashBoard Plugin
@@ -42,11 +42,15 @@
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
+#include "speedometer.h"
+#include "compass.h"
+#include "wind.h"
 
 wxString toSDMM ( int NEflag, double a );
 
 class DashboardWindow;
-class DashboardInstrument;
+class DashboardInstrument_Single;
+class DashboardInstrument_Double;
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -67,15 +71,15 @@ public:
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
 
+      wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
 
 //    The optional method overrides
 
       void SetNMEASentence(wxString &sentence);
+      void SetPositionFix(PlugIn_Position_Fix &pfix);
       void OnContextMenuItemCallback(int id);
-      
-
 
 private:
       wxWindow         *m_parent_window;
@@ -86,7 +90,10 @@ private:
 
 };
 
-
+enum
+{
+      ID_DASHBOARD_WINDOW
+};
 
 class DashboardWindow : public wxMiniFrame
 {
@@ -95,27 +102,61 @@ public:
       ~DashboardWindow();
 
       void SetSentence(wxString &sentence);
+      void SetPosition(PlugIn_Position_Fix &pfix);
+      void OnFocus(wxFocusEvent& event);
+      void OnContextMenu(wxContextMenuEvent& event);
+      void ToggleInstrumentVisibility(wxCommandEvent& event);
+      /*TODO: OnKeyPress pass event to main window or disable focus*/
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
+      short                mPriPosition, mPriCOGSOG, mPriHeading, mPriVar, mPriDateTime, mPriApWind, mPriDepth;
+      double               mVar;
+      // FFU
+      double               mSatsInView;
+      double               mHdm;
+      wxDateTime           mUTCDateTime;
 
-      wxString             m_NMEASentence;
-      DashboardInstrument* m_pDBILat;
-      DashboardInstrument* m_pDBILon;
-      DashboardInstrument* m_pDBISog;
-      DashboardInstrument* m_pDBICog;
+      wxBoxSizer* itemBoxSizer;
+      DashboardInstrument_Double*      m_pDBIPosition;
+      DashboardInstrument_Single*      m_pDBISog;
+      DashboardInstrument_Speedometer* m_pDBISpeedometer;
+      DashboardInstrument_Single*      m_pDBICog;
+      DashboardInstrument_Compass*     m_pDBICompass;
+      DashboardInstrument_Wind*        m_pDBIWind;
+      DashboardInstrument_Single*      m_pDBIHdt;
+      DashboardInstrument_Single*      m_pDBIStw;
+      DashboardInstrument_Single*      m_pDBIDepth;
+
+DECLARE_EVENT_TABLE()
 };
 
-class DashboardInstrument : public wxWindow
+class DashboardInstrument_Single : public wxWindow
 {
 public:
-      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument();
+      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument_Single();
 
       void OnPaint(wxPaintEvent& event);
       void SetData(wxString data);
 
       wxString          m_label;
       wxString          m_data;
+
+DECLARE_EVENT_TABLE()
+};
+
+class DashboardInstrument_Double : public wxWindow
+{
+public:
+      DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument_Double();
+
+      void OnPaint(wxPaintEvent& event);
+      void SetData(wxString data1, wxString data2);
+
+      wxString          m_label;
+      wxString          m_data1;
+      wxString          m_data2;
 
 DECLARE_EVENT_TABLE()
 };

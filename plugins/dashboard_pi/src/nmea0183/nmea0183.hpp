@@ -99,6 +99,13 @@
 #include "vtg.hpp"
 #include "gsv.hpp"
 #include "gga.hpp"
+#include "dbt.hpp"
+#include "dpt.hpp"
+#include "mtw.hpp"
+#include "mwv.hpp"
+#include "vhw.hpp"
+#include "vwr.hpp"
+#include "zda.hpp"
 
 /*
 #include "ROT.hpp"
@@ -162,55 +169,75 @@ class NMEA0183
       BWC Bwc;
       BWR Bwr;
       BWW Bww;
+*/
       DBT Dbt;
+/*
       DCN Dcn;
+*/
       DPT Dpt;
+/*
       FSI Fsi;
+*/
       GGA Gga;
+/*
       GLC Glc;
+*/
       GLL Gll;
+      GSV Gsv;
+/*
       GXA Gxa;
+*/
+      HDM Hdm;
+      HDG Hdg;
+      HDT Hdt;
+/*
       HSC Hsc;
       LCD Lcd;
+*/
       MTW Mtw;
       MWV Mwv;
+/*
       OLN Oln;
       OSD Osd;
       P   Proprietary;
       RMA Rma;
 */
-       HDM Hdm;
-       HDG Hdg;
-       HDT Hdt;
-       RMB Rmb;
-       RMC Rmc;
-       WPL Wpl;
-       RTE Rte;
-       GLL Gll;
-       VTG Vtg;
-       GSV Gsv;
-       GGA Gga;
- /*
+      RMB Rmb;
+      RMC Rmc;
+/*
       ROT Rot;
       RPM Rpm;
       RSA Rsa;
       RSD Rsd;
+*/
+      RTE Rte;
+/*
       SFI Sfi;
       STN Stn;
       TRF Trf;
       TTM Ttm;
       VBW Vbw;
       VDR Vdr;
+*/
       VHW Vhw;
+/*
       VLW Vlw;
       VPW Vpw;
+*/
       VTG Vtg;
+      VWR Vwr;
+/*
       WCV Wcv;
       WNC Wnc;
+*/
+      WPL Wpl;
+/*
       XDR Xdr;
       XTE Xte;
       XTR Xtr;
+*/
       ZDA Zda;
+/*
       ZFO Zfo;
       ZTG Ztg;
 */

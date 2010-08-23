@@ -49,6 +49,8 @@ IF(NOT WIN32)
 
 ENDIF(NOT WIN32)
 
+SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+
 # Add some definitions to satisfy MS
 IF(WIN32)
     ADD_DEFINITIONS(-D__MSVC__)
@@ -68,9 +70,17 @@ FIND_PACKAGE(Gettext REQUIRED)
 # header files and cpp/c files and CMake will sort them out
 
 
-SET(SRC_DEMO
+SET(SRC_DASHBOARD
             dashboard_pi.h
  		dashboard_pi.cpp
+ 		compass.cpp
+ 		compass.h
+ 		dial.cpp
+ 		dial.h
+ 		speedometer.cpp
+ 		speedometer.h
+ 		wind.cpp
+ 		wind.h
  	)
 
 SET(SRC_NMEA0183
@@ -109,10 +119,25 @@ SET(SRC_NMEA0183
 		nmea0183/gga.cpp
 		nmea0183/gsv.hpp
 		nmea0183/gsv.cpp
+            nmea0183/dbt.cpp
+            nmea0183/dbt.hpp
+            nmea0183/dpt.cpp
+            nmea0183/dpt.hpp
+            nmea0183/mtw.cpp
+            nmea0183/mtw.hpp
+            nmea0183/mwv.cpp
+            nmea0183/mwv.hpp
+            nmea0183/vhw.hpp
+            nmea0183/vhw.cpp
+            nmea0183/vwr.cpp
+            nmea0183/vwr.hpp
+            nmea0183/zda.cpp
+            nmea0183/zda.hpp
+
 	)
 INCLUDE_DIRECTORIES(nmea0183)
 
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
 
 IF(WIN32)
   SET(OPENCPN_IMPORT_LIB "../../../${CMAKE_CFG_INTDIR}/${PARENT}")
