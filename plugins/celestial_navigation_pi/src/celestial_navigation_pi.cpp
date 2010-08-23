@@ -131,6 +131,12 @@ int celestial_navigation_pi::GetPlugInVersionMinor()
 }
 
 
+wxString celestial_navigation_pi::GetCommonName()
+{
+      return _("Celestial");
+}
+
+
 wxString celestial_navigation_pi::GetShortDescription()
 {
       return _("Celestial_Navigation PlugIn for OpenCPN");
@@ -138,9 +144,7 @@ wxString celestial_navigation_pi::GetShortDescription()
 
 wxString celestial_navigation_pi::GetLongDescription()
 {
-      return _("Celestial_Navigation PlugIn for OpenCPN\n\
-Celestial_Navigationnstrates PlugIn processing of NMEA messages.");
-
+      return _("Celestial_Navigation PlugIn for OpenCPN.");
 }
 
 

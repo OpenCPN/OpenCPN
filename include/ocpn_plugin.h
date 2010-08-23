@@ -130,6 +130,10 @@ public:
       virtual int GetPlugInVersionMajor();
       virtual int GetPlugInVersionMinor();
 
+      //    These three methods should produce valid, meaningful strings always
+      //    ---EVEN IF--- the PlugIn has not (yet) been initialized.
+      //    They are used by the PlugInManager GUI
+      virtual wxString GetCommonName();
       virtual wxString GetShortDescription();
       virtual wxString GetLongDescription();
 

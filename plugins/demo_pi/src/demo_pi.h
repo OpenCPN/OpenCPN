@@ -64,6 +64,7 @@ public:
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
 
+      wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
 

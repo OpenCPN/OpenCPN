@@ -98,6 +98,8 @@ int grib_pi::Init(void)
       m_pGribDialog = NULL;
       m_pGRIBOverlayFactory = NULL;
 
+      m_bToolBoxPanel = false;
+
       ::wxDisplaySize(&m_display_width, &m_display_height);
 
       //    Get a pointer to the opencpn configuration object
@@ -161,6 +163,11 @@ int grib_pi::GetPlugInVersionMinor()
       return PLUGIN_VERSION_MINOR;
 }
 
+wxString grib_pi::GetCommonName()
+{
+      return _("GRIB");
+}
+
 
 wxString grib_pi::GetShortDescription()
 {
@@ -170,18 +177,21 @@ wxString grib_pi::GetShortDescription()
 wxString grib_pi::GetLongDescription()
 {
       return _("GRIB PlugIn for OpenCPN\n\
-Provides basic GRIB file overlay capabilities for several GRIB file types.\n\
-Supported GRIB file types include wind direction and speed, wave height,\n\
-sea surface temperature, and current directions and speed.");
+Provides basic GRIB file overlay capabilities for several GRIB file types.\n\n\
+Supported GRIB file types include:\n\
+- wind direction and speed\n\
+- significant wave height\n\
+- sea surface temperature\n\
+- surface current direction and speed.\n");
 
 }
 
 
 int grib_pi::GetToolbarToolCount(void)
-{ 
+{
       return 1;
 }
-      
+
 int grib_pi::GetToolboxPanelCount(void)
 {
       return 1;
@@ -205,8 +215,7 @@ void grib_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
     wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
     itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
 
-    m_pGRIBShowIcon = new wxCheckBox( itemPanelGRIB, -1/*ID_GRIBCHECKBOX*/, _("Show GRIB icon"), wxDefaultPosition,
-                                    wxSize(-1, -1), 0 );
+    m_pGRIBShowIcon = new wxCheckBox( itemPanelGRIB, -1, _("Show GRIB icon"), wxDefaultPosition, wxSize(-1, -1), 0 );
     itemStaticBoxSizerGRIB->Add(m_pGRIBShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
 
     m_pGRIBUseHiDef = new wxCheckBox( itemPanelGRIB, -1, _("Use High Definition Graphics"));
@@ -215,6 +224,8 @@ void grib_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
     m_pGRIBShowIcon->SetValue(m_bGRIBShowIcon);
     m_pGRIBUseHiDef->SetValue(m_bGRIBUseHiDef);
 
+    m_bToolBoxPanel = true;
+
 
 }
 
@@ -222,22 +233,27 @@ void grib_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
 {
 //      printf("GRIB Onclosepanel\n");
 
-      //    Show Icon changed value?
-      if(m_bGRIBShowIcon != m_pGRIBShowIcon->GetValue())
+      if(m_bToolBoxPanel)
       {
-            m_bGRIBShowIcon= m_pGRIBShowIcon->GetValue();
+            //    Show Icon changed value?
+            if(m_bGRIBShowIcon != m_pGRIBShowIcon->GetValue())
+            {
+                  m_bGRIBShowIcon= m_pGRIBShowIcon->GetValue();
 
-            if(m_bGRIBShowIcon)
-                  m_leftclick_tool_id  = InsertPlugInTool((wxChar *)"", _img_grib, _img_grib, wxITEM_NORMAL,
-                        (wxChar *)"Grib", (wxChar *)"", NULL, GRIB_TOOL_POSITION,
-                        0, this);
-            else
-                  RemovePlugInTool(m_leftclick_tool_id);
+                  if(m_bGRIBShowIcon)
+                        m_leftclick_tool_id  = InsertPlugInTool((wxChar *)"", _img_grib, _img_grib, wxITEM_NORMAL,
+                              (wxChar *)"Grib", (wxChar *)"", NULL, GRIB_TOOL_POSITION,
+                              0, this);
+                  else
+                        RemovePlugInTool(m_leftclick_tool_id);
+            }
+
+            m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
+
+            SaveConfig();
       }
+      m_bToolBoxPanel = false;
 
-      m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
-
-      SaveConfig();
 }
 
 void grib_pi::OnToolbarToolCallback(int id)

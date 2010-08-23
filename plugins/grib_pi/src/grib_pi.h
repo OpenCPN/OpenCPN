@@ -62,6 +62,7 @@ public:
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
 
+      wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
 
@@ -112,6 +113,8 @@ private:
 
 
       //    Controls added to Toolbox->GRIB panel
+      bool              m_bToolBoxPanel;
+
       wxCheckBox              *m_pGRIBShowIcon;
       wxCheckBox              *m_pGRIBUseHiDef;
 

@@ -28,6 +28,7 @@
  */
 #include <wx/wx.h>
 #include <wx/dir.h>
+#include <wx/filename.h>
 
 #include "pluginmanager.h"
 #include "navutil.h"
@@ -64,8 +65,8 @@ PlugInManager::~PlugInManager()
 
 bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
 {
-      wxString plugin_location = shared_data_prefix + _T("plugins");
-      wxDir pi_dir(plugin_location);
+      m_plugin_location = shared_data_prefix + _T("plugins");
+      wxDir pi_dir(m_plugin_location);
 
 #ifdef __WXMSW__
       wxString pispec = _T("*_pi.dll");
@@ -79,12 +80,30 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
             bool b_more =pi_dir.GetFirst(&plugin_file, pispec);
             while(b_more)
             {
-                  wxString file_name = plugin_location + _T("/") + plugin_file;
+                  wxString file_name = m_plugin_location + _T("/") + plugin_file;
+
                   PlugInContainer *pic = LoadPlugIn(file_name);
                   if(pic)
                   {
                         plugin_array.Add(pic);
-                        pic->m_cap_flag = pic->m_pplugin->Init();
+
+                        //    The common name is available without initialization and startup of the PlugIn
+                        pic->m_common_name = pic->m_pplugin->GetCommonName();
+
+                        //    Check the config file to see if this PlugIn is user-enabled
+                        wxString config_section = ( _T ( "/PlugIns/" ) );
+                        config_section += pic->m_common_name;
+                        pConfig->SetPath ( config_section );
+                        pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
+
+                        if(pic->m_bEnabled)
+                        {
+                              pic->m_cap_flag = pic->m_pplugin->Init();
+                              pic->m_bInitState = true;
+                        }
+
+                        pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                        pic->m_long_description = pic->m_pplugin->GetLongDescription();
                   }
 
                   b_more =pi_dir.GetNext(&plugin_file);
@@ -93,6 +112,83 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
       }
       else
             return false;
+}
+
+bool PlugInManager::UpdatePlugIns()
+{
+      bool bret = false;
+
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+
+            if(pic->m_bEnabled && !pic->m_bInitState)
+            {
+                  wxString msg(_("PlugInManager: Initializing PlugIn: "));
+                  msg += pic->m_plugin_file;
+                  wxLogMessage(msg);
+
+                  pic->m_cap_flag = pic->m_pplugin->Init();
+                  pic->m_bInitState = true;
+                  pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                  pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                  bret = true;
+            }
+            else if(!pic->m_bEnabled && pic->m_bInitState)
+            {
+                  wxString msg(_("PlugInManager: Deactivating PlugIn: "));
+                  msg += pic->m_plugin_file;
+                  wxLogMessage(msg);
+
+                  pic->m_pplugin->DeInit();
+
+                  //    Deactivate (Remove) any ToolbarTools added by this PlugIn
+                  for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
+                  {
+                        PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
+                        {
+                              if(pttc->m_pplugin == pic->m_pplugin)
+                              {
+                                    m_PlugInToolbarTools.Remove(pttc);
+                                    delete pttc;
+                              }
+                        }
+                  }
+
+                 //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
+                  for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
+                  {
+                        PlugInMenuItemContainer *pimis = m_PlugInMenuItems.Item(i);
+                        {
+                              if(pimis->m_pplugin == pic->m_pplugin)
+                              {
+                                    m_PlugInMenuItems.Remove(pimis);
+                                    delete pimis;
+                              }
+                        }
+                  }
+
+                  pic->m_bInitState = false;
+                  bret = true;
+            }
+      }
+
+      return bret;
+}
+
+bool PlugInManager::UpdateConfig()
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+
+            wxString config_section = ( _T ( "/PlugIns/" ) );
+            config_section += pic->m_common_name;
+            pConfig->SetPath ( config_section );
+            pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
+      }
+
+      return true;
 }
 
 bool PlugInManager::UnLoadAllPlugIns()
@@ -108,6 +204,8 @@ bool PlugInManager::UnLoadAllPlugIns()
 
             delete pic->m_plibrary;            // This will unload the PlugIn
 
+            pic->m_bInitState = false;
+
             delete pic;
       }
       return true;
@@ -122,7 +220,12 @@ bool PlugInManager::DeactivateAllPlugIns()
             msg += pic->m_plugin_file;
             wxLogMessage(msg);
 
-            pic->m_pplugin->DeInit();
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  pic->m_pplugin->DeInit();
+                  pic->m_bInitState = false;
+            }
+
       }
       return true;
 }
@@ -204,7 +307,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *v
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            pic->m_pplugin->RenderOverlay(pmdc, &pivp);
+            if(pic->m_bEnabled && pic->m_bInitState)
+                  pic->m_pplugin->RenderOverlay(pmdc, &pivp);
       }
 
       return true;
@@ -215,8 +319,11 @@ void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            if(pic->m_cap_flag & WANTS_CURSOR_LATLON)
-                  pic->m_pplugin->SetCursorLatLon(lat, lon);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_CURSOR_LATLON)
+                        pic->m_pplugin->SetCursorLatLon(lat, lon);
+            }
       }
 }
 
@@ -225,9 +332,13 @@ void PlugInManager::AddAllPlugInToolboxPanels( wxNotebook *pnotebook)
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+            if(pic->m_bEnabled && pic->m_bInitState)
             {
-                  pic->m_pplugin->SetupToolboxPanel(0, pnotebook);
+                  if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+                  {
+                      pic->m_pplugin->SetupToolboxPanel(0, pnotebook);
+                      pic->m_bToolboxPanel = true;
+                  }
             }
       }
 }
@@ -237,9 +348,13 @@ void PlugInManager::CloseAllPlugInPanels( int ok_apply_cancel)
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+            if(pic->m_bEnabled && pic->m_bInitState)
             {
-                  pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
+                  if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) && ( pic->m_bToolboxPanel))
+                  {
+                       pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
+                       pic->m_bToolboxPanel = false;
+                  }
             }
       }
 
@@ -315,8 +430,11 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            if(pic->m_cap_flag & WANTS_NMEA_SENTENCES)
-                  pic->m_pplugin->SetNMEASentence(sentence);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_NMEA_SENTENCES)
+                        pic->m_pplugin->SetNMEASentence(sentence);
+            }
       }
 }
 
@@ -335,8 +453,11 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDat *ppos)
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            if(pic->m_cap_flag & WANTS_NMEA_EVENTS)
-                  pic->m_pplugin->SetPositionFix(pfix);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_NMEA_EVENTS)
+                        pic->m_pplugin->SetPositionFix(pfix);
+            }
       }
 }
 
@@ -580,6 +701,10 @@ int opencpn_plugin::GetPlugInVersionMajor()
 int opencpn_plugin::GetPlugInVersionMinor()
 {  return 0; }
 
+wxString opencpn_plugin::GetCommonName()
+{
+      return _("BaseClassCommonName");
+}
 
 wxString opencpn_plugin::GetShortDescription()
 {

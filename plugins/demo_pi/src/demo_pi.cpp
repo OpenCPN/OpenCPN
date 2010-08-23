@@ -137,6 +137,10 @@ int demo_pi::GetPlugInVersionMinor()
       return PLUGIN_VERSION_MINOR;
 }
 
+wxString demo_pi::GetCommonName()
+{
+      return _("Demo");
+}
 
 wxString demo_pi::GetShortDescription()
 {

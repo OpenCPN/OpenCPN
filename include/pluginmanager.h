@@ -49,12 +49,22 @@
 class PlugInContainer
 {
       public:
+            PlugInContainer(){ m_pplugin = NULL;
+                               m_bEnabled = false;
+                               m_bInitState = false;
+                               m_bToolboxPanel = false;}
+
             opencpn_plugin    *m_pplugin;
-            int               m_cap_flag;         // PlugIn Capabilities descriptor
-            wxString          m_plugin_file;
+            bool              m_bEnabled;
+            bool              m_bInitState;
+            bool              m_bToolboxPanel;
+            int               m_cap_flag;             // PlugIn Capabilities descriptor
+            wxString          m_plugin_file;          // The full file path
             destroy_t         *m_destroy_fn;
             wxDynamicLibrary  *m_plibrary;
-            wxString          m_description;
+            wxString          m_common_name;            // A common name string for the plugin
+            wxString          m_short_description;
+            wxString          m_long_description;
 };
 
 //    Declare an array of PlugIn Containers
@@ -113,7 +123,12 @@ public:
       bool LoadAllPlugIns(wxString &shared_data_prefix);
       bool UnLoadAllPlugIns();
       bool DeactivateAllPlugIns();
+      bool UpdatePlugIns();
+
+      bool UpdateConfig();
+
       PlugInContainer *LoadPlugIn(wxString plugin_file);
+      ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
       bool RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
@@ -150,6 +165,8 @@ private:
 
       ArrayOfPlugInMenuItems        m_PlugInMenuItems;
       ArrayOfPlugInToolbarTools     m_PlugInToolbarTools;
+
+      wxString          m_plugin_location;
 
       int               m_plugin_tool_id_next;
       int               m_plugin_menu_item_id_next;
