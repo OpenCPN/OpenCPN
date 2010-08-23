@@ -1646,16 +1646,17 @@ PolyTessGeoTrap::PolyTessGeoTrap(Extended_Geometry *pxGeom)
 {
       m_bOK = false;
 
-      m_pxGeom = pxGeom;
-      m_ptg_head = NULL;
+      m_ptg_head = new PolyTrapGroup(pxGeom);
+      m_nvertex_max = pxGeom->n_max_vertex;           // record the maximum number of segment vertices
 
-
+      //    All allocated buffers are owned now by the m_ptg_head
+      //    And will be freed on dtor of this object
+      delete pxGeom;
 }
 
 
 PolyTessGeoTrap::~PolyTessGeoTrap()
 {
-      delete m_pxGeom;
       delete m_ptg_head;
 }
 
@@ -1663,16 +1664,30 @@ void PolyTessGeoTrap::BuildTess()
 {
            //    Flip the passed vertex array, contour-by-contour
       int offset = 1;
-      for(int ict=0 ; ict < m_pxGeom->n_contours ; ict++)
+      for(int ict=0 ; ict < m_ptg_head->nContours ; ict++)
       {
-            int nvertex = m_pxGeom->contour_array[ict];
+            int nvertex = m_ptg_head->pn_vertex[ict];
+/*
+            for(int iv=0 ; iv < nvertex/2 ; iv++)
+            {
+                  wxPoint2DDouble a = m_ptg_head->ptrapgroup_geom[iv + offset];
+                  wxPoint2DDouble b = m_ptg_head->ptrapgroup_geom[(nvertex - 1) - iv + offset];
+                  m_ptg_head->ptrapgroup_geom[iv + offset] = b;
+                  m_ptg_head->ptrapgroup_geom[(nvertex - 1) - iv + offset] = a;
+            }
+*/
+            wxPoint2DDouble *pa = &m_ptg_head->ptrapgroup_geom[offset];
+            wxPoint2DDouble *pb = &m_ptg_head->ptrapgroup_geom[(nvertex - 1) + offset];
 
             for(int iv=0 ; iv < nvertex/2 ; iv++)
             {
-                  wxPoint2DDouble a = m_pxGeom->vertex_array[iv + offset];
-                  wxPoint2DDouble b = m_pxGeom->vertex_array[(nvertex - 1) - iv + offset];
-                  m_pxGeom->vertex_array[iv + offset] = b;
-                  m_pxGeom->vertex_array[(nvertex - 1) - iv + offset] = a;
+
+                  wxPoint2DDouble a = *pa;
+                  *pa = *pb;
+                  *pb = a;
+
+                  pa++;
+                  pb--;
             }
 
             offset += nvertex;
@@ -1683,27 +1698,12 @@ void PolyTessGeoTrap::BuildTess()
       isegment_t *iseg;
       int n_traps;
 
-      int trap_err = int_trapezate_polygon(m_pxGeom->n_contours, m_pxGeom->contour_array, (double (*)[2])m_pxGeom->vertex_array, &itr, &iseg, &n_traps);
+      int trap_err = int_trapezate_polygon(m_ptg_head->nContours, m_ptg_head->pn_vertex, (double (*)[2])m_ptg_head->ptrapgroup_geom, &itr, &iseg, &n_traps);
 
-
-        //  Create the data structures
-
-      m_nvertex_max = 0;
-
-      m_ptg_head = new PolyTrapGroup;
-
-      m_ptg_head->nContours = m_pxGeom->n_contours;
-      m_ptg_head->pn_vertex = m_pxGeom->contour_array;             // pointer to array of poly vertex counts
-      m_ptg_head->m_trap_error = trap_err;
-      m_ptg_head->ptrapgroup_geom = m_pxGeom->vertex_array;
-      m_ptg_head->ntrap_count = 0;                                // provisional
-
+     m_ptg_head->m_trap_error = trap_err;
 
       if(0 != n_traps)
       {
-
-            m_nvertex_max = m_pxGeom->n_max_vertex;             // record the maximum number of segment vertices
-
        //  Now the Trapezoid Primitives
 
       //    Iterate thru the trapezoid structure counting valid, non-empty traps
@@ -1733,28 +1733,28 @@ void PolyTessGeoTrap::BuildTess()
                   //    Fix up the trapezoid segment indices to account for ring closure points in the input vertex array
                         int i_adjust = 0;
                         int ic = 0;
-                        int pcount = m_pxGeom->contour_array[0]-1;
+                        int pcount = m_ptg_head->pn_vertex[0]-1;
                         while(itr[i].lseg > pcount)
                         {
                               i_adjust++;
                               ic++;
-                              if(ic >= m_pxGeom->n_contours)
+                              if(ic >= m_ptg_head->nContours)
                                     break;
-                              pcount += m_pxGeom->contour_array[ic]-1;
+                              pcount += m_ptg_head->pn_vertex[ic]-1;
                         }
                         prtrap->ilseg = itr[i].lseg + i_adjust;
 
 
                         i_adjust = 0;
                         ic = 0;
-                        pcount = m_pxGeom->contour_array[0]-1;
+                        pcount = m_ptg_head->pn_vertex[0]-1;
                         while(itr[i].rseg > pcount)
                         {
                               i_adjust++;
                               ic++;
-                              if(ic >=  m_pxGeom->n_contours)
+                              if(ic >=  m_ptg_head->nContours)
                                     break;
-                              pcount += m_pxGeom->contour_array[ic]-1;
+                              pcount += m_ptg_head->pn_vertex[ic]-1;
                         }
                         prtrap->irseg = itr[i].rseg + i_adjust;
 
@@ -1769,6 +1769,9 @@ void PolyTessGeoTrap::BuildTess()
 
 
       }     // n_traps_ok
+      else
+            m_nvertex_max = 0;
+
 
 
 //  Free the trapezoid structure array
@@ -1779,9 +1782,6 @@ void PolyTessGeoTrap::BuildTess()
       //    Contours should be OK, anyway, and    m_ptg_head->ntrap_count will be 0;
 
       m_bOK = true;
-
-      delete m_pxGeom;
-      m_pxGeom = NULL;
 
 }
 
@@ -1839,6 +1839,16 @@ PolyTrapGroup::PolyTrapGroup()
       trap_array = NULL;            // pointer to trapz_t array
 
       ntrap_count = 0;
+}
+
+PolyTrapGroup::PolyTrapGroup(Extended_Geometry *pxGeom)
+{
+      nContours = pxGeom->n_contours;
+      pn_vertex = pxGeom->contour_array;             // pointer to array of poly vertex counts
+      m_trap_error = 0;
+      ptrapgroup_geom = pxGeom->vertex_array;
+      ntrap_count = 0;                                // provisional
+      trap_array = NULL;                              // pointer to generated trapz_t array
 }
 
 PolyTrapGroup::~PolyTrapGroup()

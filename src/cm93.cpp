@@ -25,62 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
-
- * $Log: cm93.cpp,v $
- * Revision 1.50  2010/06/24 01:50:59  bdbcat
- * 623
- *
- * Revision 1.49  2010/06/21 01:59:39  bdbcat
- * 620
- *
- * Revision 1.48  2010/06/07 15:29:37  bdbcat
- * 607a
- *
- * Revision 1.47  2010/06/06 20:53:16  bdbcat
- * 606a
- *
- * Revision 1.46  2010/05/26 22:01:39  bdbcat
- * 526a
- *
- * Revision 1.45  2010/05/23 23:18:33  bdbcat
- * Build 523a
- *
- * Revision 1.44  2010/05/20 19:04:20  bdbcat
- * Build 520
- *
- * Revision 1.43  2010/05/19 01:03:47  bdbcat
- * Build 518
- *
- * Revision 1.42  2010/05/15 04:00:56  bdbcat
- * Build 514
- *
- * Revision 1.41  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.40  2010/05/02 20:04:50  bdbcat
- * Build 502b
- *
- * Revision 1.39  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.38  2010/04/22 00:18:43  bdbcat
- * Correct quilt in next smaller scale render
- *
- * Revision 1.37  2010/04/16 01:59:29  bdbcat
- * Correct dc type for MSW DIBSection build.
- *
- * Revision 1.36  2010/04/16 00:46:51  bdbcat
- * Correct logic for right click in quilt mode.
- *
- * Revision 1.35  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.34  2010/04/01 20:17:38  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.33  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
  */
 
 
@@ -127,6 +71,8 @@ extern int              g_cm93_zoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern bool             g_bShowCM93DetailSlider;
+extern wxString         g_PrivateDataDir;
+
 
 // TODO  These should be gotten from the ctor
 extern MyFrame          *gFrame;
@@ -137,6 +83,263 @@ WX_DEFINE_OBJARRAY(Array_Of_M_COVR_Desc);
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(List_Of_M_COVR_Desc);
+
+
+void appendOSDirSep(wxString* pString)
+{
+      wxChar sep = wxFileName::GetPathSeparator();
+      if (pString->Last() != sep)
+            pString->Append(sep);
+}
+
+
+//----------------------------------------------------------------------------
+//    M_COVR_Desc Implementation
+//----------------------------------------------------------------------------
+
+M_COVR_Desc::M_COVR_Desc()
+{
+      pvertices = NULL;
+      pPoints = NULL;
+}
+
+M_COVR_Desc::~M_COVR_Desc()
+{
+      delete[] pvertices;
+      delete[] pPoints;
+}
+
+int M_COVR_Desc::GetWKBSize()
+{
+      int size = 0;
+
+      size = sizeof(int);                             // size itself
+      size += sizeof(int);                            // m_cell_index;
+      size += sizeof(int);                            // m_nvertices;
+      size += m_nvertices * sizeof(float_2Dpt);       // pvertices;
+
+      size += sizeof(int);                            // m_npub_year;
+      size += 6 * sizeof(double);                     // all the rest
+
+      return size;
+}
+
+bool M_COVR_Desc:: WriteWKB(void *p)
+{
+      if(p)
+      {
+            int *pr = (int *)p;
+            *pr++ = GetWKBSize();
+
+            *pr++ = m_cell_index;
+
+            *pr++ = m_nvertices;
+
+            float_2Dpt *pfo = (float_2Dpt *)pr;
+            float_2Dpt *pfi = pvertices;
+            for(int i=0 ; i < m_nvertices ; i++)
+                  *pfo++ = *pfi++;
+
+            int *pi = (int *)pfo;
+            *pi++ = m_npub_year;
+
+
+            double *pd = (double *)pi;
+            *pd++ = transform_WGS84_offset_x;
+            *pd++ = transform_WGS84_offset_y;
+            *pd++ = lat_min;
+            *pd++ = lat_max;
+            *pd++ = lon_min;
+            *pd++ = lon_max;
+
+      }
+
+      return true;
+}
+
+int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
+{
+      //    Read the length of the WKB
+      int length = 0;
+      if(!ifs.Read(&length, sizeof(int)).Eof())
+      {
+            ifs.Read(&m_cell_index, sizeof(int));
+
+            ifs.Read(&m_nvertices, sizeof(int));
+
+           pvertices = new float_2Dpt[m_nvertices];
+
+            ifs.Read(pvertices,m_nvertices * sizeof(float_2Dpt));
+
+            ifs.Read(&m_npub_year, sizeof(int));
+
+            ifs.Read(&transform_WGS84_offset_x, sizeof(double));
+            ifs.Read(&transform_WGS84_offset_y, sizeof(double));
+            ifs.Read(&lat_min, sizeof(double));
+            ifs.Read(&lat_max, sizeof(double));
+            ifs.Read(&lon_min, sizeof(double));
+            ifs.Read(&lon_max, sizeof(double));
+
+            pPoints = new wxPoint[m_nvertices];
+
+      }
+      return length;
+}
+
+//----------------------------------------------------------------------------
+// cm93 covr_set object class
+// This is a helper class which holds all the known information
+// relating to cm93 cell MCOVR objects of a particular scale
+//----------------------------------------------------------------------------
+
+WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, cm93cell_hash );
+
+class covr_set
+{
+      public:
+            covr_set(cm93chart *parent);
+            ~covr_set();
+
+            bool Init(wxChar scale_char, wxString &prefix);
+            bool Load(ViewPort *vpt);
+            unsigned int GetCoverCount(){ return m_covr_array_outlines.GetCount(); }
+            M_COVR_Desc *GetCover(unsigned int im){ return &m_covr_array_outlines.Item(im); }
+            void Add_MCD(M_COVR_Desc *pmcd);
+            bool IsCovrLoaded(int cell_index);
+
+
+            cm93chart         *m_pParent;
+            wxChar            m_scale_char;
+            int               m_scale;
+
+            wxString          m_cachefile;
+
+            Array_Of_M_COVR_Desc    m_covr_array_outlines;        // array, for chart outline rendering
+
+            cm93cell_hash     m_cell_hash;
+};
+
+covr_set::covr_set(cm93chart *parent)
+{
+      m_pParent = parent;
+}
+
+covr_set::~covr_set()
+{
+      //    Create/Update the cache
+
+      if(m_covr_array_outlines.GetCount())
+      {
+            wxFFileOutputStream ofs(m_cachefile);
+            if(ofs.IsOk())
+            {
+                  for(unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++)
+                  {
+                        int wkbsize = m_covr_array_outlines[i].GetWKBSize();
+                        if(wkbsize)
+                        {
+                              char *p = new char[wkbsize];
+                              m_covr_array_outlines[i].WriteWKB(p);
+                              ofs.Write(p, wkbsize);
+                              delete p;
+
+                        }
+                  }
+                  ofs.Close();
+            }
+      }
+
+
+}
+
+bool covr_set::Init(wxChar scale_char, wxString &prefix)
+{
+      m_scale_char = scale_char;
+
+      switch(m_scale_char)
+      {
+            case 'Z': m_scale = 20000000;  break;
+            case 'A': m_scale =  3000000;  break;
+            case 'B': m_scale =  1000000;  break;
+            case 'C': m_scale =   200000;  break;
+            case 'D': m_scale =   100000;  break;
+            case 'E': m_scale =    50000;  break;
+            case 'F': m_scale =    20000;  break;
+            case 'G': m_scale =     7500;  break;
+            default:  m_scale = 20000000;  break;
+      }
+
+      //    Create the cache file name
+      wxString prefix_string = prefix;
+      wxString sep(wxFileName::GetPathSeparator());
+      prefix_string.Replace(sep, _T("_"));
+      prefix_string.Replace(_T(":"), _T("_"));                // for Windows
+
+      m_cachefile = g_PrivateDataDir;
+      appendOSDirSep(&m_cachefile);
+
+      m_cachefile += _T("cm93");
+      appendOSDirSep(&m_cachefile);
+
+      m_cachefile += prefix_string;          // include the cm93 prefix string in the cache file name
+      m_cachefile += _T("_");                // to support multiple cm93 data sets
+
+      m_cachefile += _T("coverset.");
+      m_cachefile += m_scale_char;
+
+      wxFileName fn(m_cachefile);
+      if(!fn.DirExists())
+            wxFileName::Mkdir(fn.GetPath(), 0777, wxPATH_MKDIR_FULL);
+
+
+      //    Preload the cache
+      wxFFileInputStream ifs(m_cachefile);
+      if(ifs.IsOk())
+      {
+
+            bool b_cont = true;
+            while(b_cont)
+            {
+                  M_COVR_Desc *pmcd = new M_COVR_Desc;
+                  int length = pmcd->ReadWKB(ifs);
+
+                  if(length)
+                  {
+                        m_covr_array_outlines.Add(pmcd);
+
+                        if(m_cell_hash.find( pmcd->m_cell_index ) == m_cell_hash.end())
+                              m_cell_hash[pmcd->m_cell_index] = 0;      // initialize the element
+
+                        m_cell_hash[pmcd->m_cell_index]++;        // add this M_COVR to the hash map
+
+                  }
+                  else
+                  {
+                        delete pmcd;
+                        b_cont = false;
+                  }
+            }
+
+      }
+
+      return true;
+}
+
+void covr_set::Add_MCD(M_COVR_Desc *pmcd)
+{
+      m_covr_array_outlines.Add(pmcd);
+
+      if(m_cell_hash.find( pmcd->m_cell_index ) == m_cell_hash.end())         // not present yet?
+            m_cell_hash[pmcd->m_cell_index] = 0;  // initialize
+
+      m_cell_hash[pmcd->m_cell_index]++;        // add this M_COVR to the hash map
+}
+
+bool covr_set::IsCovrLoaded(int cell_index)
+{
+      return(m_cell_hash.find( cell_index) != m_cell_hash.end());
+}
+
 
 
 
@@ -831,7 +1034,7 @@ bool Is_CM93Cell_Present(wxString &fileprefix, double lat, double lon, int scale
             case 5: scale =     50000; dval =   1; scale_char = 'E'; break;         // E
             case 6: scale =     20000; dval =   1; scale_char = 'F'; break;         // F
             case 7: scale =      7500; dval =   1; scale_char = 'G'; break;         // G
-            default: scale = 20000000; dval = 120; break;
+            default: scale = 20000000; dval = 120; scale_char = ' '; break;
       }
 
       int cellindex = Get_CM93_CellIndex(lat, lon, scale);
@@ -901,6 +1104,92 @@ bool Is_CM93Cell_Present(wxString &fileprefix, double lat, double lon, int scale
       }
       else
             return false;
+}
+
+
+int get_dval(int native_scale)
+{
+      int dval;
+      switch (native_scale)
+      {
+            case 20000000: dval = 120; break;         // Z
+            case  3000000: dval =  60; break;         // A
+            case  1000000: dval =  30; break;         // B
+            case   200000: dval =  12; break;         // C
+            case   100000: dval =   3; break;         // D
+            case    50000: dval =   1; break;         // E
+            case    20000: dval =   1; break;         // F
+            case     7500: dval =   1; break;         // G
+            default: dval =   1; break;
+      }
+      return dval;
+}
+
+ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale)
+{
+      int dval = get_dval(native_scale);
+
+      //    Fetch the lat/lon of the screen corner points
+      LLBBox box = vpt.vpBBox;
+      double ll_lon = box.GetMinX();
+      double ll_lat = box.GetMinY();
+
+      double ur_lon = box.GetMaxX();
+      double ur_lat = box.GetMaxY();
+
+      //    Adjust to always positive for easier cell calculations
+      if(ll_lon < 0)
+      {
+            ll_lon += 360;
+            ur_lon += 360;
+      }
+
+     //    Create an array of CellIndexes covering the current viewport
+      ArrayOfInts vpcells;
+
+      vpcells.Clear();
+
+      int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, native_scale);
+      vpcells.Add(lower_left_cell);                   // always add the lower left cell
+
+      if(g_bDebugCM93)
+            printf("cm93chart::GetVPCellArray   Adding %d\n", lower_left_cell);
+
+      double rlat, rlon;
+      Get_CM93_Cell_Origin(lower_left_cell, native_scale, &rlat, &rlon);
+
+
+      // Use exact integer math here
+      //    It is more obtuse, but it removes dependency on FP rounding policy
+
+      int loni_0 = (int)wxRound(rlon * 3);
+      int loni_20 = loni_0 + dval;               // already added the lower left cell
+      int lati_20 = (int)wxRound(rlat * 3);
+
+
+      while(lati_20 < (ur_lat * 3.))
+      {
+            while(loni_20 < (ur_lon * 3.))
+            {
+                  unsigned int next_lon = loni_20 + 1080;
+                  while(next_lon >= 1080)
+                        next_lon -= 1080;
+
+                  unsigned int next_cell = next_lon;
+
+                  next_cell += (lati_20 + 270) * 10000;
+
+                  vpcells.Add((int)next_cell);
+                  if(g_bDebugCM93)
+                        printf("cm93chart::GetVPCellArray   Adding %d\n", next_cell);
+
+                  loni_20 += dval;
+            }
+            lati_20 += dval;
+            loni_20 = loni_0;
+      }
+
+      return vpcells;
 }
 
 
@@ -1506,7 +1795,8 @@ cm93chart::cm93chart()
 
 
 
-
+    //  Need a covr_set
+      m_pcovr_set = new covr_set(this);
 
 
 
@@ -1527,21 +1817,25 @@ cm93chart::cm93chart()
 
 cm93chart::~cm93chart()
 {
+/*
       for(unsigned int im=0 ; im < m_covr_array.GetCount() ; im++)
       {
             M_COVR_Desc mcd = m_covr_array.Item(im);
             free(mcd.pvertices);
             free(mcd.pPoints);
       }
-
+*/
+/*
       for(unsigned int im=0 ; im < m_covr_array_outlines.GetCount() ; im++)
       {
             M_COVR_Desc mcd = m_covr_array_outlines.Item(im);
             free(mcd.pvertices);
             free(mcd.pPoints);
       }
-
+*/
       free(m_pcontour_array);
+
+      delete m_pcovr_set;
 }
 
 void  cm93chart::Unload_CM93_Cell(void)
@@ -1783,7 +2077,7 @@ ArrayOfInts cm93chart::GetVPCellArray(const ViewPort &vpt)
       //    It is more obtuse, but it removes dependency on FP rounding policy
 
       int loni_0 = (int)wxRound(rlon * 3);
-      int loni_20 = loni_0 + m_dval;               // already added the lower left cell
+      int loni_20 = loni_0 + (int)m_dval;               // already added the lower left cell
       int lati_20 = (int)wxRound(rlat * 3);
 
 
@@ -1803,9 +2097,9 @@ ArrayOfInts cm93chart::GetVPCellArray(const ViewPort &vpt)
                   if(g_bDebugCM93)
                         printf("cm93chart::GetVPCellArray   Adding %d\n", next_cell);
 
-                  loni_20 += m_dval;
+                  loni_20 += (int)m_dval;
             }
-            lati_20 += m_dval;
+            lati_20 += (int)m_dval;
             loni_20 = loni_0;
       }
 
@@ -1900,7 +2194,7 @@ void cm93chart::ProcessVectorEdges(void)
 int cm93chart::CreateObjChain()
 {
       LUPrec           *LUP;
-      LUPname          LUP_Name;
+      LUPname          LUP_Name = PAPER_CHART;
 
 
       wxStopWatch stop;
@@ -2089,6 +2383,9 @@ InitReturn cm93chart::Init( const wxString& name, ChartInitFlag flags )
       data.Append(s);
       m_Name = data;
 
+      //    Initialize the covr_set
+      m_pcovr_set->Init(m_scalechar.mb_str()[(size_t)0], m_prefix);
+
 
       if(flags == THUMB_ONLY)
       {
@@ -2168,8 +2465,6 @@ Extended_Geometry *cm93chart::BuildGeom(Object *pobject, wxFileOutputStream *pos
                   ret_ptr->n_vector_indices = nsegs;
                   ret_ptr->pvector_index = (int *)malloc(nsegs * 3 * sizeof(int));
 
-                  cm93_point start_point, cur_end_point;
-
                   //Traverse the object once to get a maximum polygon vertex count
                   int n_maxvertex = 0;
                   for(int i=0 ; i < nsegs ; i++)
@@ -2189,10 +2484,15 @@ Extended_Geometry *cm93chart::BuildGeom(Object *pobject, wxFileOutputStream *pos
                   int ncontours = 0;
                   iseg = 0;
 
+                  cm93_point start_point;
+                  start_point.x = 0; start_point.y = 0;
+
+                  cm93_point cur_end_point;
+                  cur_end_point.x = 1; cur_end_point.y = 1;
+
                   int n_max_points = -1;
                   while(iseg < nsegs)
                   {
-
                         int type_seg = psegs[iseg].segment_usage;
 
                         geometry_descriptor *pgd = (geometry_descriptor*)(psegs[iseg].pGeom_Description);
@@ -2773,7 +3073,7 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
 // printf("%d\n", iobject);
 
 
-      int npub_year;
+      int npub_year = 1993;                     // silly default
 
       int iclass = pobject->otype;
       int geomtype = pobject->geotype & 0x0f;
@@ -3128,8 +3428,8 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         bool bfound_OBJNAM = false;
                         bool bfound_INFORM = false;
 
-                        char *pszatt_name;
-                        char *psz_INFORM;
+                        char *pszatt_name = NULL;
+                        char *psz_INFORM = NULL;
                         wxString att;
 
                         while(*curr_att)
@@ -3208,7 +3508,7 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
 
                   //      Get number of exterior ring points(vertices)
                         int npta  = xgeom->contour_array[0];
-                        float_2Dpt *geoPt = (float_2Dpt*)malloc((npta + 2) * sizeof(float_2Dpt));     // vertex array
+                        float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
                         float_2Dpt *ppt = geoPt;
 
                         pmcd->lon_max = -1000.;
@@ -3236,7 +3536,8 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         }
                         pmcd->m_nvertices = npta;
                         pmcd->pvertices = geoPt;
-                        pmcd->pPoints = (wxPoint *)malloc(npta * sizeof(wxPoint));         // pre-allocate storage for later use
+//                        pmcd->pPoints = (wxPoint *)malloc(npta * sizeof(wxPoint));         // pre-allocate storage for later use
+                        pmcd->pPoints = new wxPoint[npta];
 
 
                         //    Capture and store the potential WGS transform offsets grabbed during attribute decode
@@ -3247,14 +3548,10 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         m_covr_array.Add(pmcd);
 
                         //    Also add it to the current per cell list
-                        m_CIB.m_cell_mcovr_list.Append(pmcd);
+//                        m_CIB.m_cell_mcovr_list.Append(pmcd);
                   }
 
 
-                  //    This will be a deferred tesselation.....
-                  PolyTessGeoTrap *ppg = new PolyTessGeoTrap(xgeom);
-
-                  pobj->pPolyTrapGeo = ppg;
 
                   //  Declare x/y of the object to be average of all cm93points
                   pobj->x = (xgeom->xmin + xgeom->xmax) / 2.;
@@ -3289,7 +3586,9 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->BBObj.SetMax(lon, lat);
 
-
+                  //    This will be a deferred tesselation.....
+                  PolyTessGeoTrap *ppg = new PolyTessGeoTrap(xgeom);
+                  pobj->pPolyTrapGeo = ppg;
 
 
                   break;
@@ -3587,7 +3886,7 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell(void)
 
 
       //    Check with the manager to see if a chart of this scale has been processed
-      bool bproc;
+      bool bproc = false;
       switch(m_Chart_Scale)
       {
       case 20000000: bproc = s_pcm93mgr->m_bfoundZ; break;
@@ -3658,9 +3957,232 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell(void)
       return INIT_OK;
 }
 
+#if 0
+List_Of_M_COVR_Desc cm93chart::LoadM_COVRSetList(int cell_index)
+{
+      List_Of_M_COVR_Desc ret_list;
 
+      m_loadcell_key = '0';               // starting
+
+      //    Load the subcells in sequence
+      //    On successful load, add it to the member list and process the cell
+      while(loadcell_in_sequence(cell_index))
+      {
+            //Extract the m_covr structures inline
+
+            Object *pobjectDef = m_CIB.pobject_block;           // head of object array
+
+            int iObj = 0;
+            while(iObj < m_CIB.m_nfeature_records)
+            {
+                  if((pobjectDef != NULL) )
+                  {
+                                    //    Look for and process m_covr object(s)
+                        int iclass = pobjectDef->otype;
+
+                        wxString sclass = m_pDict->GetClassName(iclass);
+
+                        if(sclass.IsSameAs(_T("_m_sor")))
+                        {
+                              Extended_Geometry *xgeom = BuildGeom(pobjectDef, NULL, iObj);
+
+                              if(NULL != xgeom)
+                              {
+                                    double lat, lon;
+
+                                    M_COVR_Desc *pmcd = new M_COVR_Desc;
+
+                              //      Get number of exterior ring points(vertices)
+                                    int npta  = xgeom->contour_array[0];
+//                                    float_2Dpt *geoPt = (float_2Dpt*)malloc((npta + 2) * sizeof(float_2Dpt));     // vertex array
+                                    float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
+                                    float_2Dpt *ppt = geoPt;
+
+                              //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
+                                    pmcd->lon_max = -1000.;
+                                    pmcd->lon_min = 1000.;
+                                    pmcd->lat_max = -1000.;
+                                    pmcd->lat_min = 1000.;
+
+
+                                    for(int ip = 0 ; ip < npta ; ip++)
+                                    {
+                                          cm93_point p;
+                                          p.x = (int)xgeom->vertex_array[ip + 1].m_x;
+                                          p.y = (int)xgeom->vertex_array[ip + 1].m_y;
+
+                                          Transform(&p, 0., 0., &lat, &lon);
+                                          ppt->x = lon;
+                                          ppt->y = lat;
+
+                                          pmcd->lon_max = wxMax(pmcd->lon_max, lon);
+                                          pmcd->lon_min = wxMin(pmcd->lon_min, lon);
+                                          pmcd->lat_max = wxMax(pmcd->lat_max, lat);
+                                          pmcd->lat_min = wxMin(pmcd->lat_min, lat);
+
+                                          ppt++;
+                                    }
+                                    pmcd->m_nvertices = npta;
+                                    pmcd->pvertices = geoPt;
+                                                      // pre-allocate storage for later use in drawing
+                                    pmcd->pPoints = (wxPoint *)malloc(npta * sizeof(wxPoint));
+
+                                    pmcd->m_cell_index = cell_index;
+
+
+                              //     Add this object to the return array
+                                    ret_list.Append(pmcd);
+
+                              //    Clean up the xgeom
+                                    free( xgeom->pvector_index );
+                                    free( xgeom->contour_array );
+                                    free( xgeom->vertex_array );
+                                    delete xgeom;
+                              }
+                        }
+                  }
+
+                  else                    // objectdef == NULL
+                        break;
+
+                  pobjectDef++;
+
+                  iObj++;
+            }
+
+            Unload_CM93_Cell();           // all done
+      }                       // while
+
+      return ret_list;
+}
+#endif
+
+bool cm93chart::UpdateCovrSet(ViewPort *vpt)
+{
+      //    Create an array of CellIndexes covering the current viewport
+      ArrayOfInts vpcells = GetVPCellArray(*vpt);
+
+      //    Check the member covr_set to see if all these viewport cells have had their m_covr loaded
+//      bool bcell_is_in;
+
+      for(unsigned int i=0 ; i < vpcells.GetCount() ; i++)
+      {
+/*
+            bcell_is_in = false;
+
+            if(m_cell_hash.find( vpcells.Item(i) ) != m_cell_hash.end())
+            {
+                  bcell_is_in = true;
+                  break;
+            }
+*/
+            //    If the cell is not in place, go load it.....
+            if(!m_pcovr_set->IsCovrLoaded(vpcells.Item(i)))
+            {
+                  m_loadcell_key = '0';               // starting
+
+      //    Load the subcells in sequence
+      //    On successful load, add it to the covr set and process the cell
+                  while(loadcell_in_sequence(vpcells.Item(i)))
+                  {
+            //Extract the m_covr structures inline
+
+                        Object *pobjectDef = m_CIB.pobject_block;           // head of object array
+
+                        int iObj = 0;
+                        while(iObj < m_CIB.m_nfeature_records)
+                        {
+                              if((pobjectDef != NULL) )
+                              {
+                                    //    Look for and process m_covr object(s)
+                                    int iclass = pobjectDef->otype;
+
+                                    wxString sclass = m_pDict->GetClassName(iclass);
+
+                                    if(sclass.IsSameAs(_T("_m_sor")))
+                                    {
+                                          Extended_Geometry *xgeom = BuildGeom(pobjectDef, NULL, iObj);
+
+                                          if(NULL != xgeom)
+                                          {
+                                                double lat, lon;
+
+                                                M_COVR_Desc *pmcd = new M_COVR_Desc;
+
+                              //      Get number of exterior ring points(vertices)
+                                                int npta  = xgeom->contour_array[0];
+//                                    float_2Dpt *geoPt = (float_2Dpt*)malloc((npta + 2) * sizeof(float_2Dpt));     // vertex array
+                                                float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
+                                                float_2Dpt *ppt = geoPt;
+
+                              //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
+                                                pmcd->lon_max = -1000.;
+                                                pmcd->lon_min = 1000.;
+                                                pmcd->lat_max = -1000.;
+                                                pmcd->lat_min = 1000.;
+
+
+                                                for(int ip = 0 ; ip < npta ; ip++)
+                                                {
+                                                      cm93_point p;
+                                                      p.x = (int)xgeom->vertex_array[ip + 1].m_x;
+                                                      p.y = (int)xgeom->vertex_array[ip + 1].m_y;
+
+                                                      Transform(&p, 0., 0., &lat, &lon);
+                                                      ppt->x = lon;
+                                                      ppt->y = lat;
+
+                                                      pmcd->lon_max = wxMax(pmcd->lon_max, lon);
+                                                      pmcd->lon_min = wxMin(pmcd->lon_min, lon);
+                                                      pmcd->lat_max = wxMax(pmcd->lat_max, lat);
+                                                      pmcd->lat_min = wxMin(pmcd->lat_min, lat);
+
+                                                      ppt++;
+                                                }
+                                                pmcd->m_nvertices = npta;
+                                                pmcd->pvertices = geoPt;
+                                                      // pre-allocate storage for later use in drawing
+//                                                pmcd->pPoints = (wxPoint *)malloc(npta * sizeof(wxPoint));
+                                                pmcd->pPoints = new wxPoint[npta];
+
+                                                pmcd->m_cell_index = vpcells.Item(i);
+
+
+                              //     Add this object to the covr_set
+                                                m_pcovr_set->Add_MCD(pmcd);
+
+                              //    Clean up the xgeom
+                                                free( xgeom->pvector_index );
+                                                free( xgeom->contour_array );
+                                                free( xgeom->vertex_array );
+                                                delete xgeom;
+                                          }
+                                    }
+                              }
+
+                              else                    // objectdef == NULL
+                                    break;
+
+                              pobjectDef++;
+
+                              iObj++;
+                        }
+
+                        Unload_CM93_Cell();           // all done
+                  }                       // while
+            }           // cell is not in
+      }                 // for cellindex array
+
+      return true;
+}
+
+
+
+#if 0
 bool cm93chart::LoadM_COVRSet(ViewPort *vpt)
 {
+      return m_pcovr_set->Load(vpt);
+
 
       //    Create an array of CellIndexes covering the current viewport
       ArrayOfInts vpcells = GetVPCellArray(*vpt);
@@ -3777,8 +4299,17 @@ bool cm93chart::LoadM_COVRSet(ViewPort *vpt)
 
       return true;
 }
+#endif
 
-
+bool cm93chart::IsPointInM_COVR(double xc, double yc)
+{
+      for(unsigned int im=0 ; im < m_covr_array.GetCount() ; im++)
+      {
+            if(G_PtInPolygon_FL(m_covr_array.Item(im).pvertices, m_covr_array.Item(im).m_nvertices, xc, yc))
+                  return true;
+      }
+      return false;
+}
 
 
 
@@ -4049,7 +4580,7 @@ cm93compchart::cm93compchart()
 
 cm93compchart::~cm93compchart()
 {
-      for(int i = 0 ; i < 7 ; i++)
+      for(int i = 0 ; i < 8 ; i++)
             delete m_pcm93chart_array[i];
 
       delete m_pDict;
@@ -4329,7 +4860,7 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   if(xc > 360.)
                         xc -= 360.;
 
-                  bool bin_mcovr = false;
+
                   if(!m_pcm93chart_current->m_covr_array.GetCount())
                   {
                         if(g_bDebugCM93)
@@ -4337,22 +4868,7 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   }
 
 
-                  for(unsigned int im=0 ; im < m_pcm93chart_current->m_covr_array.GetCount() ; im++)
-                  {
-                        M_COVR_Desc mcd = m_pcm93chart_current->m_covr_array.Item(im);
-
-                        if(G_PtInPolygon_FL(mcd.pvertices, mcd.m_nvertices, xc, yc))
-                        {
-                              bin_mcovr = true;
-
-                              //    As an assist for later, record the publish date of the cell at the ViewPort clat/clon
-                              m_current_cell_pub_date = mcd.m_npub_year;
-                              break;
-                        }
-                  }
-
-
-                  if(bin_mcovr)
+                  if(m_pcm93chart_current->IsPointInM_COVR(xc, yc))
                   {
                         if(g_bDebugCM93)
                               printf(" chart %c contains clat/clon\n", (char)('A' + cmscale -1));
@@ -4528,11 +5044,12 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
       {
             int chart_native_scale = m_pcm93chart_current->GetNativeScale();
 
+
             for(unsigned int im=0 ; im < m_pcm93chart_current->m_covr_array.GetCount() ; im++)
             {
-                  M_COVR_Desc mcd = m_pcm93chart_current->m_covr_array.Item(im);
+                  M_COVR_Desc *pmcd = &(m_pcm93chart_current->m_covr_array.Item(im));
 
-                  wxRegion rgn_covr = vp_positive.GetVPRegion( mcd.m_nvertices, (float *)mcd.pvertices, chart_native_scale, mcd.pPoints );
+                  wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, pmcd->pPoints );
 
                   if(!rgn_covr.Empty())
                   {
@@ -4838,16 +5355,18 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
                   if((psc) && (nss != 1))       // skip rendering the A scale outlines
                   {
-                        bool mcr = psc->LoadM_COVRSet(&vp);
+                        bool mcr = psc->UpdateCovrSet(&vp);
 
                         //    Render the chart outlines
                         if(mcr)
                         {
-                              for(unsigned int im=0 ; im < psc->m_covr_array_outlines.GetCount() ; im++)
-                              {
-                                    M_COVR_Desc mcd = psc->m_covr_array_outlines.Item(im);
+                              covr_set *pcover = psc->GetCoverSet();
 
-                                    wxBoundingBox mcd_box(mcd.lon_min, mcd.lat_min, mcd.lon_max, mcd.lat_max);
+                              for(unsigned int im=0 ; im < pcover->GetCoverCount() ; im++)
+                              {
+                                    M_COVR_Desc *mcd = pcover->GetCover(im); //psc->m_covr_array_outlines.Item(im);
+
+                                    wxBoundingBox mcd_box(mcd->lon_min, mcd->lat_min, mcd->lon_max, mcd->lat_max);
 
 
                                     //    Case:  vpBBox is completely inside the mcd box
@@ -4855,10 +5374,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
                                     if(!(_OUT == vp_positive.vpBBox.Intersect(mcd_box)))
                                     {
 
-                                          float_2Dpt *p = mcd.pvertices;
-                                          wxPoint *pwp = mcd.pPoints;
+                                          float_2Dpt *p = mcd->pvertices;
+                                          wxPoint *pwp = mcd->pPoints;
 
-                                          for(int ip = 0 ; ip < mcd.m_nvertices ; ip++)
+                                          for(int ip = 0 ; ip < mcd->m_nvertices ; ip++)
                                           {
 
                                                 double plon = p->x;
@@ -4887,7 +5406,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
                                           //    TODO all this mole needs to be rethought, again
                                           bool btest = true;
                                           wxPoint p0 = pwp[0];
-                                          for(int ip = 1 ; ip < mcd.m_nvertices ; ip++)
+                                          for(int ip = 1 ; ip < mcd->m_nvertices ; ip++)
                                           {
                                                 if(((p0.x > vp.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > vp.pix_width)))
                                                       btest = false;
@@ -4897,7 +5416,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
                                           if(btest)
                                           {
-                                                pdc->DrawLines(mcd.m_nvertices, pwp);
+                                                pdc->DrawLines(mcd->m_nvertices, pwp);
                                                 bdrawn = true;
                                           }
                                     }

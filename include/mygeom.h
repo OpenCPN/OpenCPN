@@ -190,6 +190,7 @@ class PolyTrapGroup
 {
       public:
             PolyTrapGroup();
+            PolyTrapGroup(Extended_Geometry *pxGeom);
             ~PolyTrapGroup();
 
             int             nContours;
@@ -271,7 +272,7 @@ class PolyTessGeoTrap
             ~PolyTessGeoTrap();
 
 
-            PolyTessGeoTrap(Extended_Geometry *pxGeom/*, double ref_lat, double ref_lon*/);  // Build this from Extended Geometry
+            PolyTessGeoTrap(Extended_Geometry *pxGeom);  // Build this from Extended Geometry
 
             void BuildTess();
 
@@ -299,10 +300,6 @@ class PolyTessGeoTrap
                                                           // optimization for malloc
             int             m_ncnt;
             int             m_nwkb;
-
-            Extended_Geometry *m_pxGeom;
-
-//            double         m_ref_lat, m_ref_lon;
 
 };
 

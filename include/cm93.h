@@ -70,11 +70,26 @@
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
+//    Static functions
+int Get_CM93_CellIndex(double lat, double lon, int scale);
+void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
+ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale);
 
+//    Fwd definitions
+class covr_set;
 
 class M_COVR_Desc
 {
    public:
+      M_COVR_Desc();
+      ~M_COVR_Desc();
+
+      int      GetWKBSize();
+      bool     WriteWKB(void *p);
+      int      ReadWKB(wxFFileInputStream &ifs);
+
+      int         m_cell_index;
+
       int         m_nvertices;
       float_2Dpt  *pvertices;
       wxPoint     *pPoints;
@@ -327,6 +342,8 @@ class cm93chart : public s57chart
             cm93chart(int scale_index);
             InitReturn Init( const wxString& name, ChartInitFlag flags );
 
+            void ResetSubcellKey(){ m_loadcell_key = '0'; }
+
             double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
             double GetNormalScaleMax(double canvas_scale_factor);
 
@@ -337,13 +354,14 @@ class cm93chart : public s57chart
 
             void SetCM93Dict(cm93_dictionary *pDict){m_pDict = pDict;}
             void SetCM93Prefix(wxString &prefix){m_prefix = prefix;}
-            bool LoadM_COVRSet(ViewPort *vpt);
+//            bool LoadM_COVRSet(ViewPort *vpt);
+//            List_Of_M_COVR_Desc LoadM_COVRSetList(int cell_index);
+            bool UpdateCovrSet(ViewPort *vpt);
+            bool IsPointInM_COVR(double xc, double yc);
+
+            covr_set *GetCoverSet(){ return m_pcovr_set; }
 
             Array_Of_M_COVR_Desc    m_covr_array;
-
-            Array_Of_M_COVR_Desc    m_covr_array_outlines;              // another array, used to precalculate covr for
-                                                                        // chart outline rendering
-            ArrayOfInts       m_covr_loaded_cell_array;                 // catalog for which cells the m_covr_array_outlines has been loaded
 
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
@@ -392,6 +410,7 @@ class cm93chart : public s57chart
             double            m_dval;
 
 
+            covr_set          *m_pcovr_set;
 
 };
 
