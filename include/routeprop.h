@@ -212,8 +212,12 @@ public:
       void SetRoutePoint(RoutePoint *pRP);
       RoutePoint *GetRoutePoint(void){return m_pRoutePoint;}
 
+      void ValidateMark(void);
+      bool UpdateProperties(void);
+
       void SetColorScheme(ColorScheme cs);
 
+private:
       void CreateControls();
 
       void OnMarkpropCancelClick( wxCommandEvent& event );
@@ -225,7 +229,6 @@ public:
     /// Should we show tooltips?
       static bool ShowToolTips();
 
-      bool UpdateProperties(void);
       bool SaveChanges(void);
 
       wxTextCtrl    *m_MarkNameCtl;

@@ -112,6 +112,7 @@ extern bool             g_bAutoAnchorMark;
 extern ColorScheme      global_color_scheme;
 extern bool             g_bGarminPersistance;
 extern bool             g_bGarminHost;
+extern PlugInManager    *g_pi_manager;
 
 extern wxString         g_SData_Locn;
 
@@ -193,6 +194,106 @@ extern wxString         g_locale;
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
+//    Inline icons for PlugIn Manager Panel
+/* XPM */
+static const char *chex[]={
+      "24 17 29 1",
+      "# c #1c5180",
+      "x c #21a121",
+      "a c #dcdcd7",
+      "b c #deded9",
+      "c c #e0e0db",
+      "r c #e2e2dd",
+      "d c #e2e2de",
+      "s c #e3e3df",
+      "t c #e5e5e1",
+      "e c #e5e5e2",
+      "u c #e7e7e3",
+      "f c #e8e8e5",
+      "v c #eaeae6",
+      "g c #ecece9",
+      ". c #eeeff2",
+      "h c #efefec",
+      "i c #f1f1ef",
+      "j c #f3f3f1",
+      "w c #f5f5f3",
+      "k c #f5f5f4",
+      "l c #f7f7f6",
+      "m c #f9f9f8",
+      "y c #fafaf9",
+      "n c #fbfbfa",
+      "z c #fcfcfb",
+      "o c #fdfdfc",
+      "A c #fdfdfd",
+      "p c #fefefe",
+      "q c #ffffff",
+      "........................",
+      "........................",
+      "......#############.....",
+      "......#rrrstuvghij#.....",
+      "......#rrstuvghijw#.....",
+      "......#rstuvghixwl#.....",
+      "......#stuvghixxlm#.....",
+      "......#tuxghixxxmy#.....",
+      "......#uvxxixxxmyz#.....",
+      "......#vgxxxxxmyzA#.....",
+      "......#ghixxxmyzAp#.....",
+      "......#hijwxmyzApq#.....",
+      "......#ijwlmyzApqq#.....",
+      "......#jwlmyzApqqq#.....",
+      "......#############.....",
+      "........................",
+      "........................"};
+
+/* XPM */
+static const char *unchex[]={
+      "24 17 29 1",
+      "# c #1c5180",
+      "x c #21a121",
+      "a c #dcdcd7",
+      "b c #deded9",
+      "c c #e0e0db",
+      "r c #e2e2dd",
+      "d c #e2e2de",
+      "s c #e3e3df",
+      "t c #e5e5e1",
+      "e c #e5e5e2",
+      "u c #e7e7e3",
+      "f c #e8e8e5",
+      "v c #eaeae6",
+      "g c #ecece9",
+      ". c #eeeff2",
+      "h c #efefec",
+      "i c #f1f1ef",
+      "j c #f3f3f1",
+      "w c #f5f5f3",
+      "k c #f5f5f4",
+      "l c #f7f7f6",
+      "m c #f9f9f8",
+      "y c #fafaf9",
+      "n c #fbfbfa",
+      "z c #fcfcfb",
+      "o c #fdfdfc",
+      "A c #fdfdfd",
+      "p c #fefefe",
+      "q c #ffffff",
+      "........................",
+      "........................",
+      "......#############.....",
+      "......#aaabcdefghi#.....",
+      "......#aabcdefghij#.....",
+      "......#abcdefghijk#.....",
+      "......#bcdefghijkl#.....",
+      "......#cdefghijklm#.....",
+      "......#defghijklmn#.....",
+      "......#efghijklmno#.....",
+      "......#fghijklmnop#.....",
+      "......#ghijklmnopq#.....",
+      "......#hijklmnopqq#.....",
+      "......#ijklmnopqqq#.....",
+      "......#############.....",
+      "........................",
+      "........................"};
 
 extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
@@ -1213,7 +1314,7 @@ void options::CreateControls()
     itemStaticBoxSizerWptDragging->Add(pWayPointPreventDragging, 1, wxALIGN_LEFT|wxALL, border_size);
 
 
-    //  Various GUI opetions
+    //  Various GUI options
     wxStaticBox* itemStaticBoxSizerGUIOptionsStatic = new wxStaticBox(itemPanelAdvanced, wxID_ANY, _("GUI Options"));
     wxStaticBoxSizer* itemStaticBoxSizerGUIOption = new wxStaticBoxSizer(itemStaticBoxSizerGUIOptionsStatic, wxVERTICAL);
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerGUIOption, 0, wxGROW|wxALL, border_size);
@@ -1262,6 +1363,68 @@ void options::CreateControls()
 
     // toh, 2009.02.14; end
 
+    //      Build the PlugIn Manager Panel
+    m_itemPanelPlugInManager = new wxPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize,
+                                     wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxBoxSizer* itemBoxSizerPIMPanel = new wxBoxSizer(wxVERTICAL);
+    m_itemPanelPlugInManager->SetSizer(itemBoxSizerPIMPanel);
+
+    itemNotebook4->AddPage(m_itemPanelPlugInManager, _("PlugIns"));
+
+    m_pPlugInCtrl = new wxListCtrl(m_itemPanelPlugInManager, -1, wxDefaultPosition, wxSize(400, -1),
+                                      wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES);
+
+    itemBoxSizerPIMPanel->Add(m_pPlugInCtrl, 1, wxEXPAND|wxALL, 5);
+
+
+    m_PlugInText = new wxTextCtrl(m_itemPanelPlugInManager, -1, _T(""),
+                                  wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    itemBoxSizerPIMPanel->Add(m_PlugInText, 1, wxEXPAND|wxALL, 5);
+
+
+    //      Connect some dynamic events
+    m_pPlugInCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnPluginClickItem), NULL, this);
+    m_pPlugInCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler(options::OnPlugInSelected), NULL, this);
+
+
+    // create an image list for the list with 2 elements as simulator for a checkbox
+    wxImageList *imglist = new wxImageList(24, 17, true, 2);
+    imglist->Add(wxBitmap(chex));
+    imglist->Add(wxBitmap(unchex));
+
+    m_pPlugInCtrl->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
+
+
+    m_pPlugInCtrl->InsertColumn( 0, _("Enable"), wxLIST_FORMAT_LEFT, 64 );
+    m_pPlugInCtrl->InsertColumn( 1, _("PlugIn Name"), wxLIST_FORMAT_LEFT, 120 );
+    m_pPlugInCtrl->InsertColumn( 2, _("Description"), wxLIST_FORMAT_LEFT, 350 );
+
+
+    //      Fill the list control
+    wxListItem li;
+    int index = 0;
+
+    ArrayOfPlugIns *pPlugInArray = g_pi_manager->GetPlugInArray();
+    for(unsigned int i=0 ; i < pPlugInArray->GetCount() ; i++)
+    {
+          li.SetId(index);
+          li.SetImage(1);
+          li.SetData(pPlugInArray->Item(i));
+
+          li.SetImage(pPlugInArray->Item(i)->m_bEnabled ? 0 : 1);
+
+          long idx = m_pPlugInCtrl->InsertItem(li);
+
+
+          wxString pi_name = pPlugInArray->Item(i)->m_common_name;
+          m_pPlugInCtrl->SetItem(idx, 1, pi_name);
+
+          wxString pi_short = pPlugInArray->Item(i)->m_short_description;
+          m_pPlugInCtrl->SetItem(idx, 2, pi_short);
+    }
+
+
+
     //      PlugIns can add panels, too
     if(g_pi_manager)
           g_pi_manager->AddAllPlugInToolboxPanels( itemNotebook4 );
@@ -1272,6 +1435,39 @@ void options::CreateControls()
     SetColorScheme((ColorScheme)0);
 
 }
+
+
+void options::OnPluginClickItem(wxMouseEvent &event)
+{
+      wxPoint pos = event.GetPosition();
+      int flags = 0;
+      long clicked_index = m_pPlugInCtrl->HitTest(pos, flags);
+
+      //    Clicking Enable column?
+      if (clicked_index > -1 && event.GetX() < m_pPlugInCtrl->GetColumnWidth(0))
+      {
+            // Process the clicked item
+            PlugInContainer *pic = (PlugInContainer *)m_pPlugInCtrl->GetItemData(clicked_index);
+
+            pic->m_bEnabled = !pic->m_bEnabled;
+
+            m_pPlugInCtrl->SetItemImage(clicked_index, pic->m_bEnabled ?  0:1);
+      }
+
+      // Allow wx to process...
+      event.Skip();
+}
+
+void options::OnPlugInSelected(wxListEvent &event)
+{
+      long clicked_index = event.m_itemIndex;
+    // Process the clicked item
+      PlugInContainer *pic = (PlugInContainer *)m_pPlugInCtrl->GetItemData(clicked_index);
+
+      m_PlugInText->Clear();
+      m_PlugInText->ChangeValue(pic->m_long_description);
+}
+
 
 void options::SetColorScheme(ColorScheme cs)
 {
@@ -1655,6 +1851,7 @@ void options::UpdateWorkArrayFromTextCtl()
 
 void options::OnXidOkClick( wxCommandEvent& event )
 {
+      int iret = 0;
 
 //    Handle Chart Tab
       wxString dirname;
@@ -1687,6 +1884,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
       else
             k_force = 0;
 
+      iret |= k_force;
 
 //    Handle Settings Tab
 
@@ -1923,9 +2121,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
 
 
-//    Language Tab
-    int k_lang = 0;
-
+//    Language Panel
     if(m_bVisitLang)
     {
             wxString lang_sel = m_itemLangListBox->GetValue();
@@ -1935,8 +2131,19 @@ void options::OnXidOkClick( wxCommandEvent& event )
             g_locale = pli->CanonicalName;
 
             if(g_locale != locale_old)
-                  k_lang = LOCALE_CHANGED;
+                  iret |= LOCALE_CHANGED;
     }
+
+    //      PlugIn Manager Panel
+
+    //      Pick up any changes to selections
+    bool bnew_settings = g_pi_manager->UpdatePlugIns();
+    if(bnew_settings)
+          iret |= TOOLBAR_CHANGED;
+
+
+    //      And keep config in sync
+    g_pi_manager->UpdateConfig();
 
     //      PlugIns may have added panels
     if(g_pi_manager)
@@ -1944,9 +2151,13 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
 
     //      Could be a lot smarter here
-    EndModal(GENERIC_CHANGED | S52_CHANGED | k_force | k_charts | k_lang);
+    iret |= GENERIC_CHANGED;
+    iret |= S52_CHANGED;
+    iret |= k_charts;
 
+    EndModal(iret);
 
+//    EndModal(GENERIC_CHANGED | S52_CHANGED | k_force | k_charts | k_lang);
 }
 
 

@@ -638,7 +638,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
                   result.Append(_T("\n"));
             t.Printf(_T("%.2fKts"), SOG); result.Append(t);
             result.Append(_T(" "));
-            t.Printf(_T("%.0f°"), COG); result.Append(t);
+            t.Printf(_T("%.0fDeg"), COG); result.Append(t);
       }
       if (g_bAISRolloverShowCPA && bCPA_Valid)
       {
@@ -3291,12 +3291,11 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                         wxString eta = _T("");
                         if((pAISTarget->ETA_Mo) && (pAISTarget->ETA_Hr < 24))
                         {
-                              //TODO ++year if ETA_Mo < now.GetMonth
                               wxDateTime now = wxDateTime::Now();
                               wxDateTime _eta(pAISTarget->ETA_Day, wxDateTime::Month(pAISTarget->ETA_Mo),
-                                              now.GetYear(), pAISTarget->ETA_Hr, pAISTarget->ETA_Min);
+                                              (pAISTarget->ETA_Mo < now.GetMonth() ? now.GetYear() : now.GetYear()+1),
+                                              pAISTarget->ETA_Hr, pAISTarget->ETA_Min);
 
-                              _eta=now;
                               eta.Append( _eta.FormatISODate());
                               eta.Append(_T(" "));
                               eta.Append( _eta.FormatISOTime());

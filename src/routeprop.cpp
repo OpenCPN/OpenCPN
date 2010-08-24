@@ -907,7 +907,7 @@ void MarkProp::SetRoutePoint(RoutePoint *pRP)
       if(m_pRoutePoint)
       {
             m_lat_save = m_pRoutePoint->m_lat;
-           m_lon_save = m_pRoutePoint->m_lon;
+            m_lon_save = m_pRoutePoint->m_lon;
             m_IconName_save = m_pRoutePoint->m_IconName;
             m_bShowName_save = m_pRoutePoint->m_bShowName;
       }
@@ -999,18 +999,20 @@ bool MarkProp::SaveChanges(void)
 
 void MarkProp::OnMarkpropCancelClick( wxCommandEvent& event )
 {
-      //    Restore saved values for lat/lon and icon
-      m_pRoutePoint->m_lat = m_lat_save;
-      m_pRoutePoint->m_lon = m_lon_save;
-      m_pRoutePoint->m_IconName = m_IconName_save;
-      m_pRoutePoint->m_bShowName = m_bShowName_save;
+      if(m_pRoutePoint)
+      {
+            //    Restore saved values for lat/lon and icon
+            m_pRoutePoint->m_lat = m_lat_save;
+            m_pRoutePoint->m_lon = m_lon_save;
+            m_pRoutePoint->m_IconName = m_IconName_save;
+            m_pRoutePoint->m_bShowName = m_bShowName_save;
 
-      m_pRoutePoint->m_pbmIcon = pWayPointMan->GetIconBitmap(m_IconName_save);
+            m_pRoutePoint->m_pbmIcon = pWayPointMan->GetIconBitmap(m_IconName_save);
 
-      pSelect->ModifySelectablePoint(m_lat_save, m_lon_save, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
+            pSelect->ModifySelectablePoint(m_lat_save, m_lon_save, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
 
-      cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
-
+            cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
+      }
       Show(false);
       event.Skip();
 }
@@ -1018,13 +1020,40 @@ void MarkProp::OnMarkpropCancelClick( wxCommandEvent& event )
 
 void MarkProp::OnMarkpropOkClick( wxCommandEvent& event )
 {
-    SaveChanges();              // write changes to globals and update config
+      if(m_pRoutePoint)
+      {
+            SaveChanges();              // write changes to globals and update config
 
-    cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
+            cc1->RefreshRect(m_pRoutePoint->CurrentRect_in_DC.Inflate(1000,100), false);
+      }
 
     Show(false);
     event.Skip();
 }
+
+void MarkProp::ValidateMark(void)
+{
+      //    Look in the master list of Waypoints to see if the currently selected waypoint is still valid
+      //    It may have been deleted as part of a route
+      wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+
+      bool b_found = false;
+      while ( node )
+      {
+            RoutePoint *rp = node->GetData();
+            if(m_pRoutePoint == rp)
+            {
+                  b_found = true;
+                  break;
+            }
+
+            node = node->GetNext();
+      }
+
+      if(!b_found)
+            m_pRoutePoint = NULL;
+}
+
 
 void MarkProp::OnIconListSelected( wxListEvent& event )
 {

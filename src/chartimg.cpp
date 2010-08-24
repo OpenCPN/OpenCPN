@@ -2686,7 +2686,10 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
                   //    We only need to adjust the VP if the cache is valid and potentially usable, i.e. the scale factor is integer...
                   //    The objective here is to ensure that the VP center falls on an exact pixel boundary within the cache
 
-                  if(cached_image_ok && (binary_scale_factor > 1.0) && (fabs(binary_scale_factor - wxRound(binary_scale_factor)) < 1e-6))
+                  double dscale = fabs(binary_scale_factor - wxRound(binary_scale_factor));
+                  if(b_cdebug)printf(" Adjust VP dscale: %g\n", dscale);
+
+                  if(cached_image_ok && (binary_scale_factor > 1.0) && (fabs(binary_scale_factor - wxRound(binary_scale_factor)) < 1e-5))
                   {
                         wxRect rprop;
                         ComputeSourceRectangle(vp_proposed, &rprop);
@@ -2718,6 +2721,8 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
                               }
 
+                              if(b_cdebug)printf(" Adjust VP dx: %d  dy:%d\n", dx, dy);
+
                               //    Check the results...if not good(i.e. VP center is not on cache pixel boundary),
                               //    then leave the vp unmodified by restoring from the saved copy...
                               if(ret_val > 0)
@@ -2728,12 +2733,17 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
                                     int dxc = (rprop_cor.x - cache_rect.x) % cs2d;
                                     int dyc = (rprop_cor.y - cache_rect.y) % cs2d;
 
+                                    if(b_cdebug)printf(" Adjust VP dxc: %d  dyc:%d\n", dxc, dyc);
                                     if(dxc || dyc)
                                     {
                                           vp_proposed.clat = vp_save.clat;
                                           vp_proposed.clon = vp_save.clon;
                                           ret_val = 0;
+                                          if(b_cdebug)printf(" Adjust VP failed\n");
                                     }
+                                    else
+                                          if(b_cdebug)printf(" Adjust VP succeeded \n");
+
                               }
 
                         }
@@ -2851,6 +2861,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       int cs1d = source.width/dest.width;
       if(abs(source.x - cache_rect.x) % cs1d)
       {
+            if(b_cdebug)printf("   source.x: %d  cache_rect.x: %d  cs1d: %d\n", source.x, cache_rect.x, cs1d);
             if(b_cdebug)printf("   MISS<<<>>>GVUC: x mismatch\n");
             return GetView( source, dest, scale_type_corrected );
       }
@@ -3709,10 +3720,11 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
       }
       else  //factor < 1, overzoom
       {
-            int i, j;
-            unsigned char *target_line_start;
-            unsigned char *target_data_x;
-            int y_offset;
+            int i=0;
+            int j=0;
+            unsigned char *target_line_start = NULL;
+            unsigned char *target_data_x = NULL;
+            int y_offset = 0;
 
 
 #ifdef __WXGTK__

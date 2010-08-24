@@ -313,7 +313,7 @@ void RouteManagerDialog::Create()
       m_pWptListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnWptToggleVisibility), NULL, this);
       itemBoxSizer4->Add(m_pWptListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
-      m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 35 );
+      m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 44 );
       m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 180 );
       m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance"), wxLIST_FORMAT_LEFT, 180 );
 
@@ -449,49 +449,30 @@ void RouteManagerDialog::UpdateRouteListCtrl()
 
       // then add routes to the listctrl
       RouteList::iterator it;
-      wxListItem li;
       int index = 0;
       for (it = (*pRouteList).begin(); it != (*pRouteList).end(); ++it, ++index)
       {
             if ((*it)->m_bIsTrack)
                   continue;
+
+            wxListItem li;
             li.SetId(index);
             li.SetImage((*it)->IsVisible() ? 0 : -1);
             li.SetData(index);
+            li.SetText(_T(""));
+            long idx = m_pRouteListCtrl->InsertItem(li);
+
             wxString name = (*it)->m_RouteNameString;
             if (name.IsEmpty())
-            {
                   name = _("(Unnamed Route)");
-            }
-//            li.SetImage(-1);
-//            li.SetColumn(rmVISIBLE);
-            //li.SetText(name);
-            long idx = m_pRouteListCtrl->InsertItem(li);
-            // m_pRouteListCtrl->SetItemData(index,index);
-            // m_pRouteListCtrl->SetItemImage(index, (*it)->IsVisible() ? 0 : -1);
             m_pRouteListCtrl->SetItem(idx, rmROUTENAME, name);
 
             wxString startend = (*it)->m_RouteStartString;
-           if (!(*it)->m_RouteEndString.IsEmpty())
+            if (!(*it)->m_RouteEndString.IsEmpty())
                   startend.append(_(" - ") + (*it)->m_RouteEndString);
-
-//           li.SetImage(-1);
-//            li.SetColumn(rmROUTEDESC);
-//            li.SetText(startend);
-
-           m_pRouteListCtrl->SetItem(idx, rmROUTEDESC,  startend);
+            m_pRouteListCtrl->SetItem(idx, rmROUTEDESC,  startend);
       }
 
-/*Seth
-      m_pRouteListCtrl->SetColumnWidth(rmROUTENAME, wxLIST_AUTOSIZE);
-      m_pRouteListCtrl->SetColumnWidth(rmROUTEDESC, wxLIST_AUTOSIZE);
-
-      if(m_pRouteListCtrl->GetColumnWidth(rmROUTENAME) < 20)
-            m_pRouteListCtrl->SetColumnWidth(rmROUTENAME, 50);
-
-      if(m_pRouteListCtrl->GetColumnWidth(rmROUTEDESC) < 20)
-            m_pRouteListCtrl->SetColumnWidth(rmROUTEDESC, 50);
-*/
       m_pRouteListCtrl->SortItems(SortRoutes, (long)m_pRouteListCtrl);
 
       // restore selection if possible
@@ -894,7 +875,6 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
       // then add routes to the listctrl
       RouteList::iterator it;
-      wxListItem li;
       int index = 0;
       for (it = (*pRouteList).begin(); it != (*pRouteList).end(); ++it, ++index)
       {
@@ -902,9 +882,20 @@ void RouteManagerDialog::UpdateTrkListCtrl()
             if (!trk->m_bIsTrack)
                   continue;
 
+            wxListItem li;
             li.SetId(index);
             li.SetImage(trk->IsVisible() ? 0 : -1);
             li.SetData(index);
+            li.SetText(_T(""));
+
+            if (g_pActiveTrack == trk)
+            {
+                  wxFont font = *wxNORMAL_FONT;
+                  font.SetWeight(wxFONTWEIGHT_BOLD);
+                  li.SetFont(font);
+            }
+            long idx = m_pTrkListCtrl->InsertItem(li);
+ 
             wxString name = trk->m_RouteNameString;
             if (name.IsEmpty())
             {
@@ -914,20 +905,11 @@ void RouteManagerDialog::UpdateTrkListCtrl()
                   else
                         name = _("(Unnamed Track)");
             }
-            //m_bRtIsActive
-            if (g_pActiveTrack == trk)
-            {
-                  wxFont font = *wxNORMAL_FONT;
-                  font.SetWeight(wxFONTWEIGHT_BOLD);
-                  li.SetFont(font);
-            }
-            long idx = m_pTrkListCtrl->InsertItem(li);
             m_pTrkListCtrl->SetItem(idx, colTRKNAME, name);
 
             wxString len;
             len.Printf(wxT("%5.2f"), trk->m_route_length);
-
-           m_pTrkListCtrl->SetItem(idx, colTRKLENGTH,  len);
+            m_pTrkListCtrl->SetItem(idx, colTRKLENGTH,  len);
       }
 
 //      m_pTrkListCtrl->SortItems(SortTracks, (long)m_pTrkListCtrl);
@@ -1120,7 +1102,6 @@ void RouteManagerDialog::UpdateWptListCtrl()
 
       wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
-      wxListItem li;
       int index = 0;
       while ( node )
       {
@@ -1132,19 +1113,25 @@ void RouteManagerDialog::UpdateWptListCtrl()
                         node = node->GetNext();
                         continue;
                   }
+
+                  wxListItem li;
                   li.SetId(index);
                   li.SetImage(pWayPointMan->GetIconIndex(rp->m_pbmIcon));
                   li.SetData(rp);
+                  li.SetText(_T(""));
+                  long idx = m_pWptListCtrl->InsertItem(li);
+ 
                   wxString name = rp->m_MarkName;
                   if (name.IsEmpty())
                         name = _("(Unnamed Waypoint)");
-                  long idx = m_pWptListCtrl->InsertItem(li);
                   m_pWptListCtrl->SetItem(idx, colWPTNAME, name);
+
                   double dst;
                   DistanceBearingMercator(rp->m_lat, rp->m_lon, gLat, gLon, NULL, &dst);
                   wxString dist;
                   dist.Printf(_T("%5.2f Nm"), dst);
                   m_pWptListCtrl->SetItem(idx, colWPTDIST,  dist);
+ 
                   index++;
             }
 

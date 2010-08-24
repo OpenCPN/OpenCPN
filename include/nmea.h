@@ -184,11 +184,11 @@ class OCPN_NMEAEvent: public wxEvent
 // NMEAWindow
 //----------------------------------------------------------------------------
 
-class NMEAWindow: public wxWindow
+class NMEAHandler: public wxEvtHandler
 {
 public:
-      NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& BaudRate, wxMutex *pMutex = 0, bool bGarmin = false);
-      ~NMEAWindow();
+      NMEAHandler(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& BaudRate, wxMutex *pMutex = 0, bool bGarmin = false);
+      ~NMEAHandler();
 
       void GetSource(wxString& source);
 
@@ -209,12 +209,9 @@ public:
       bool SendRouteToGPS(Route *pr, wxString &com_name,  bool bsend_waypoints, wxGauge *pProgress);
 
 private:
-      void OnPaint(wxPaintEvent& event);
-      void OnActivate(wxActivateEvent& event);
       void OnSocketEvent(wxSocketEvent& event);
       void OnTimerLIBGPS(wxTimerEvent& event);
       void OnTimerNMEA(wxTimerEvent& event);
-      void OnCloseWindow(wxCloseEvent& event);
 
       wxIPV4address     m_addr;
       struct gps_data_t *m_gps_data;
@@ -223,7 +220,8 @@ private:
       bool              m_busy;
       wxTimer           TimerLIBGPS;
       wxTimer           TimerNMEA;
-      wxFrame           *parent_frame;
+      wxFrame           *m_parent_frame;
+      int                     m_handler_id;
 
       wxString          m_data_source_string;
       wxEvtHandler      *m_pParentEventHandler;
@@ -295,7 +293,7 @@ class OCP_NMEA_Thread: public wxThread
 
 public:
 
-      OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
+      OCP_NMEA_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
                       const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate, bool bGarmin = false);
       ~OCP_NMEA_Thread(void);
       void *Entry();
@@ -306,7 +304,7 @@ private:
       void Parse_And_Send_Posn(wxString &str_temp_buf);
       void ThreadMessage(const wxString &msg);          // Send a wxLogMessage to main program event loop
       wxEvtHandler            *m_pMainEventHandler;
-      NMEAWindow              *m_launcher;
+      NMEAHandler             *m_launcher;
       wxString                m_PortName;
       wxMutex                 *m_pShareMutex;
       wxMutex                 *m_pPortMutex;
@@ -463,7 +461,7 @@ class OCP_GARMIN_Thread: public wxThread
 
 public:
 
-      OCP_GARMIN_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName);
+      OCP_GARMIN_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName);
       ~OCP_GARMIN_Thread(void);
       void *Entry();
 
@@ -485,7 +483,7 @@ private:
       void ThreadMsg(const wxString &msg);          // Send a wxLogMessage to main program event loop
 
       wxEvtHandler            *m_pMainEventHandler;
-      NMEAWindow              *m_launcher;
+      NMEAHandler             *m_launcher;
       wxMutex                 *m_pShareMutex;
       wxString                m_PortName;
 

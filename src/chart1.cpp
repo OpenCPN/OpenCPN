@@ -223,7 +223,7 @@ MyFrame         *gFrame;
 
 ChartCanvas     *cc1;
 ConsoleCanvas   *console;
-NMEAWindow      *g_pnmea;
+NMEAHandler     *g_pnmea;
 StatWin         *stats;
 
 //wxToolBar       *toolBar;
@@ -265,6 +265,7 @@ TCMgr           *ptcmgr;
 
 bool            bDrawCurrentValues;
 
+wxString        g_PrivateDataDir;
 wxString        g_SData_Locn;
 wxString        *pChartListFileName;
 wxString        *pTC_Dir;
@@ -805,7 +806,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(78287);
+//     _CrtSetBreakAlloc(205662);
 #endif
 
 
@@ -1048,6 +1049,20 @@ bool MyApp::OnInit()
         Config_File.Append(_T("opencpn.conf"));
 #endif
 
+
+//      Establish the prefix of the location of user specific data files
+#ifdef __WXMSW__
+        g_PrivateDataDir = *pHome_Locn;                     // should be {Documents and Settings}\......
+#elif defined __WXMAC__
+        g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
+#else
+        g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
+#endif
+
+
+
+
+
         bool b_novicemode = false;
 
         wxFileName config_test_file_name(Config_File);
@@ -1092,9 +1107,10 @@ bool MyApp::OnInit()
         if(lang_list[0]){};                 // silly way to avoid compiler warnings
 
       // Add a new prefix for search order.
-      // where '.' refers to the opencpn.exe directory e.g.{Program Files}\OpenCPN
 #ifdef __WXMSW__
-		wxLocale::AddCatalogLookupPathPrefix(wxT("./share/locale"));
+        wxString locale_location = g_SData_Locn;
+        locale_location += _T("share/locale");
+		wxLocale::AddCatalogLookupPathPrefix(locale_location);
 #endif
 
         //  Get the default for info
@@ -1922,9 +1938,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         //    If the selected port is the same as AIS port, override the name to force the
        //    NMEA class to expect muxed data from AIS decoder
         if(pNMEADataSource->IsSameAs(*pAIS_Port))
-              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
+              g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
         else
-              g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
+              g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
 
 
 //        pAIS = new AIS_Decoder(ID_AIS_WINDOW, gFrame, wxString("TCP/IP:66.235.48.168"));  // a test
@@ -3074,9 +3090,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     if(g_pnmea)
     {
-          g_pnmea->Close();
-          g_pnmea = NULL;                        // This will be a signal to TCP/IP socket event handler
-                                            // that any remaining events in queue are to be ignored
+          delete g_pnmea;
     }
 
 #ifdef USE_WIFI_CLIENT
@@ -3089,7 +3103,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     if(g_pAIS)
     {
-        delete g_pAIS;        //g_pAIS->Close();
+        delete g_pAIS;
         g_pAIS = NULL;
     }
 
@@ -3103,13 +3117,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
     stats->Destroy();
     stats = NULL;
 
-    //      This stuff causes crash SEGV on MSW, and should not really be necessary anyway,
-    //      since the toolbar is a child of the frame....
-//    m_toolBar->Hide();
-//    SetToolBar(NULL);
-//    m_toolBar->Destroy(); //DestroyMyToolbar();
-
-//    pthumbwin->Destroy();
     delete pthumbwin;
     pthumbwin = NULL;
 
@@ -3800,16 +3807,16 @@ int MyFrame::DoOptionsDialog()
 
             if((*pNMEADataSource != previous_NMEA_source) || ( previous_bGarminHost != g_bGarminHost))
             {
-                  if(g_pnmea)
-                        g_pnmea->Close();
+//                  if(g_pnmea)
+//                        g_pnmea->Close();
                   delete g_pnmea;
 
                   //    If the selected port is the same as AIS port, override the name to force the
                   //    NMEA class to expect muxed data from AIS decoder
                   if(pNMEADataSource->IsSameAs(*pAIS_Port))
-                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
+                        g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
                   else
-                        g_pnmea = new NMEAWindow(ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
+                        g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
 
                   SetbFollow();
            }
@@ -3855,7 +3862,6 @@ int MyFrame::DoOptionsDialog()
                 }
 */
                 b_refresh_after_options = true;
-
             }
 #endif
 
@@ -3867,6 +3873,9 @@ int MyFrame::DoOptionsDialog()
 
                   }
             }
+
+            if(rr & TOOLBAR_CHANGED)
+                  b_refresh_after_options = true;
 
 
             pConfig->UpdateSettings();

@@ -120,23 +120,21 @@ wxEvent* OCPN_NMEAEvent::Clone() const
 //    NMEA Window Implementation
 //------------------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(NMEAWindow, wxWindow)
-  EVT_ACTIVATE(NMEAWindow::OnActivate)
-  EVT_CLOSE(NMEAWindow::OnCloseWindow)
+BEGIN_EVENT_TABLE(NMEAHandler, wxEvtHandler)
 
-  EVT_SOCKET(SOCKET_ID, NMEAWindow::OnSocketEvent)
-  EVT_TIMER(TIMER_LIBGPS1, NMEAWindow::OnTimerLIBGPS)
-  EVT_TIMER(TIMER_NMEA1, NMEAWindow::OnTimerNMEA)
+            EVT_SOCKET(SOCKET_ID, NMEAHandler::OnSocketEvent)
+            EVT_TIMER(TIMER_LIBGPS1, NMEAHandler::OnTimerLIBGPS)
+            EVT_TIMER(TIMER_NMEA1, NMEAHandler::OnTimerNMEA)
 
   END_EVENT_TABLE()
 
 // constructor
-NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& strBaudRate, wxMutex *pMutex, bool bGarmin):
-      wxWindow(frame, window_id,     wxPoint(20,20), wxDefaultSize, wxSIMPLE_BORDER)
-
+NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& strBaudRate, wxMutex *pMutex, bool bGarmin)
 {
-      parent_frame = frame;
-      m_pParentEventHandler = parent_frame->GetEventHandler();
+      m_handler_id = handler_id;
+
+      m_parent_frame = frame;
+      m_pParentEventHandler = m_parent_frame->GetEventHandler();
 
       m_pShareMutex = pMutex;
 
@@ -206,7 +204,7 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
                   wxString msg(comx);
                   msg.Prepend(_("  Could not open serial port '"));
                   msg.Append(_("'\nSuggestion: Try closing other applications."));
-                  wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
 
                   return;
@@ -243,17 +241,15 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
             wxString NMEA_data_ip;
             NMEA_data_ip = m_data_source_string.Mid(7);         // extract the IP
 
-
 #define DYNAMIC_LOAD_LIBGPS 1
 #ifdef DYNAMIC_LOAD_LIBGPS
 
-            m_lib_handle = dlopen("libgps.so", RTLD_LAZY);
+            m_lib_handle = dlopen("libgps.so.19", RTLD_LAZY);
 
             if(!m_lib_handle)
             {
-                  wxString msg(NMEA_data_ip);
-                  msg.Prepend(_("Unable to load libgps.\n\ngpsd host is: "));
-                  wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  wxString msg(_("Unable to load libgps.so.19"));
+                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
                   return;
             }
@@ -287,7 +283,7 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
                   {
                         wxString msg(NMEA_data_ip);
                         msg.Prepend(_("Unable to initialize libgps.\n\ngpsd host is: "));
-                        wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_ERROR );
+                        wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                         md.ShowModal();
                         return;
                   }
@@ -315,7 +311,7 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
             {
                 wxString msg(NMEA_data_ip);
                 msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
-                wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_ERROR );
+                wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                 md.ShowModal();
                 return;
             }
@@ -323,6 +319,7 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
             int n_check_version = 5;            // check up to five times
             bool b_version_match = false;
             bool b_use_lib = false;
+            bool b_version_set = false;
             struct version_t check_version;
             while(n_check_version)
             {
@@ -332,6 +329,7 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
 
                   if(m_gps_data->set & VERSION_SET)
                   {
+                        b_version_set = true;
                         check_version = m_gps_data->version;
 
                         if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
@@ -347,18 +345,26 @@ NMEAWindow::NMEAWindow(int window_id, wxFrame *frame, const wxString& NMEADataSo
                   n_check_version--;
             }
 
-            if(!b_version_match)
+            if(!b_version_set)
+            {
+                  wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\n\
+                              Would you like to use this version of libgps anyway?"));
+                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
+
+                  if(wxID_YES == md.ShowModal())
+                        b_use_lib = true;
+            }
+
+            if( b_version_set && !b_version_match )
             {
                   wxString msg;
                   msg.Printf(_("libgps API version mismatch.\nOpenCPN found version %d.%d, but requires at least version 3.0\n\n\
 Would you like to use this version of libgps anyway?"),
                              check_version.proto_major, check_version.proto_minor);
-                  wxMessageDialog md(this, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
+                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
 
                   if(wxID_YES == md.ShowModal())
                         b_use_lib = true;
-
-
             }
 
             wxString msg;
@@ -437,7 +443,7 @@ Would you like to use this version of libgps anyway?"),
                 wxString msg(NMEA_data_ip);
                 msg.Prepend(_T("Could not resolve TCP/IP host '"));
                 msg.Append(_T("'\n Suggestion: Try 'xxx.xxx.xxx.xxx' notation"));
-                wxMessageDialog md(this, msg, _T("OpenCPN Message"), wxICON_ERROR );
+                wxMessageDialog md(m_parent_frame, msg, _T("OpenCPN Message"), wxICON_ERROR );
                 md.ShowModal();
 
                 m_sock->Notify(FALSE);
@@ -456,15 +462,11 @@ Would you like to use this version of libgps anyway?"),
     }
 #endif
 
-      Hide();
+
 }
 
 
-NMEAWindow::~NMEAWindow()
-{
-}
-
-void NMEAWindow::OnCloseWindow(wxCloseEvent& event)
+NMEAHandler::~NMEAHandler()
 {
 //    Kill off the libgpsd Socket if alive
 #ifdef BUILD_WITH_LIBGPS
@@ -498,18 +500,13 @@ void NMEAWindow::OnCloseWindow(wxCloseEvent& event)
 }
 
 
-void NMEAWindow::GetSource(wxString& source)
+void NMEAHandler::GetSource(wxString& source)
 {
       source = m_data_source_string;
 }
 
 
-
-void NMEAWindow::OnActivate(wxActivateEvent& event)
-{
-}
-
-void NMEAWindow::Pause(void)
+void NMEAHandler::Pause(void)
 {
       TimerNMEA.Stop();
 
@@ -517,7 +514,7 @@ void NMEAWindow::Pause(void)
             m_sock->Notify(FALSE);
 }
 
-void NMEAWindow::UnPause(void)
+void NMEAHandler::UnPause(void)
 {
     TimerNMEA.Start(TIMER_NMEA_MSEC,wxTIMER_CONTINUOUS);
 
@@ -558,7 +555,7 @@ void libgps_hook(struct gps_data_t *data, char *buf, size_t size)
 #endif
 }
 
-void NMEAWindow::OnTimerLIBGPS(wxTimerEvent& event)
+void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 {
 #ifdef BUILD_WITH_LIBGPS
       TimerLIBGPS.Stop();
@@ -574,7 +571,7 @@ void NMEAWindow::OnTimerLIBGPS(wxTimerEvent& event)
          {
                if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
                {
-                     wxCommandEvent event( EVT_NMEA,  GetId() );
+                     wxCommandEvent event( EVT_NMEA,  m_handler_id );
                      event.SetEventObject( (wxObject *)this );
                      event.SetExtraLong(EVT_NMEA_DIRECT);
                      event.SetClientData(&ThreadPositionData);
@@ -591,7 +588,7 @@ void NMEAWindow::OnTimerLIBGPS(wxTimerEvent& event)
 }
 
 
-void NMEAWindow::OnSocketEvent(wxSocketEvent& event)
+void NMEAHandler::OnSocketEvent(wxSocketEvent& event)
 {
 
 #define RD_BUF_SIZE    200
@@ -686,7 +683,7 @@ void NMEAWindow::OnSocketEvent(wxSocketEvent& event)
 
 //    Signal the main program
 
-                    wxCommandEvent event( EVT_NMEA,  GetId() );
+                    wxCommandEvent event( EVT_NMEA,  m_handler_id );
                     event.SetEventObject( (wxObject *)this );
                     event.SetExtraLong(EVT_NMEA_DIRECT);
                     event.SetClientData(&ThreadPositionData);
@@ -751,7 +748,7 @@ void NMEAWindow::OnSocketEvent(wxSocketEvent& event)
 
 extern double gCog, gLat, gLon;
 
-void NMEAWindow::OnTimerNMEA(wxTimerEvent& event)
+void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
 {
       TimerNMEA.Stop();
 
@@ -845,7 +842,7 @@ void NMEAWindow::OnTimerNMEA(wxTimerEvent& event)
 }
 
 
-bool NMEAWindow::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
+bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
 {
       bool ret_bool = false;
 
@@ -1050,7 +1047,7 @@ ret_point:
 }
 
 
-bool NMEAWindow::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress)
+bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress)
 {
       bool ret_bool = false;
 
@@ -1240,7 +1237,7 @@ extern ENUM_BUFFER_STATE            rx_share_buffer_state;
 
 //    ctor
 
-OCP_NMEA_Thread::OCP_NMEA_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
+OCP_NMEA_Thread::OCP_NMEA_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, wxMutex *pPortMutex,
                                  const wxString& PortName, ComPortManager *pComMan, const wxString& strBaudRate, bool bGarmin)
 {
       m_launcher = Launcher;                        // This thread's immediate "parent"
@@ -2094,7 +2091,7 @@ DEFINE_GUID(GARMIN_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0x
 
 //    ctor
 
-OCP_GARMIN_Thread::OCP_GARMIN_Thread(NMEAWindow *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName)
+OCP_GARMIN_Thread::OCP_GARMIN_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName)
 {
       m_launcher = Launcher;                        // This thread's immediate "parent"
 

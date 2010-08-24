@@ -54,6 +54,8 @@
 #include "wx/dirctrl.h"
 #include "wx/spinctrl.h"
 #include "scrollingdialog.h"
+#include <wx/listctrl.h>
+
 
 //      Forward Declarations
 class wxGenericDirCtrl;
@@ -114,7 +116,7 @@ enum {
         ID_AISALERTTESTSOUND,
         ID_TRACKCHECKBOX,
         ID_CM93ZOOM,
-        ID_PANELGRIB,
+        ID_PANELPIM,
         ID_GRIBCHECKBOX,
         ID_UPDCHECKBOX,
         ID_SHOWGPSWINDOW,
@@ -139,6 +141,7 @@ enum {
 #define     FORCE_UPDATE      8
 #define     VISIT_CHARTS      16
 #define     LOCALE_CHANGED    32
+#define     TOOLBAR_CHANGED   64
 
 
 #ifndef wxCLOSE_BOX
@@ -197,6 +200,9 @@ public:
     void SetControlColors(wxWindow *ctrl, ColorScheme cs);
 
     void UpdateWorkArrayFromTextCtl();
+
+    void OnPluginClickItem(wxMouseEvent &event);
+    void OnPlugInSelected(wxListEvent &event);
 
 // Should we show tooltips?
     static bool ShowToolTips();
@@ -308,6 +314,12 @@ public:
 
 //    For "AIS Options"
     wxComboBox              *m_itemAISListBox;
+
+//    For "PlugIns" Panel
+    wxPanel                 *m_itemPanelPlugInManager;
+    wxBoxSizer              *itemBoxSizerPIMPanel;
+    wxListCtrl              *m_pPlugInCtrl;
+    wxTextCtrl              *m_PlugInText;
 
 //    For "Etc." Page
     wxPanel*                itemPanelAdvanced;
