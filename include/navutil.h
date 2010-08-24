@@ -74,6 +74,7 @@ extern wxString toSDMM(int NEflag, double a);
 extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
+
 // ----------------------------------------------------------------------------
 // resources
 // ----------------------------------------------------------------------------
@@ -432,6 +433,9 @@ public:
       bool AddAllSelectableRouteSegments(Route *pr);
       bool AddAllSelectableRoutePoints(Route *pr);
       bool UpdateSelectableRouteSegments(RoutePoint *prp);
+
+      bool IsSelectableSegmentSelected(float slat, float slon, float SelectRadius, SelectItem *pFindSel);
+
 
 //    Generic Point Support
 //      e.g. Tides/Currents and AIS Targets

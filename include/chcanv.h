@@ -114,7 +114,7 @@
 #define     PAN_TIMER         2
 #define     CURTRACK_TIMER    3
 #define     ROT_TIMER         4
-
+#define     RTELEGPU_TIMER    5
 
 
 typedef enum ScaleTypeEnum
@@ -379,6 +379,7 @@ private:
       void DrawArrow(wxDC& dc, int x, int y, float rot_angle, float scale);
       void OnEvtRescale(wxCommandEvent& event);
       void OnIdleEvent(wxIdleEvent& event);
+      void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
 
       void RotateTimerEvent(wxTimerEvent& event);
       void RescaleTimerEvent(wxTimerEvent& event);
@@ -454,11 +455,14 @@ private:
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
 
       wxTimer     m_MouseWheelTimer;
+      wxTimer     m_RouteLegPopupTimer;
+
       int         m_mouse_wheel_oneshot;
       int         m_last_wheel_dir;
 
       int         m_rescale_timer_msec;
       int         m_curtrack_timer_msec;
+      int         m_routeleg_popup_timer_msec;
 
       WVSChart    *pwvs_chart;
 
@@ -505,6 +509,7 @@ private:
       wxBitmap    m_bmCurrentNight;
 
       RolloverWin *m_pRolloverWin;
+      RolloverWin *m_pAISRolloverWin;
 
       wxImage     m_os_image_green_day;
       wxImage     m_os_image_green_dusk;
@@ -520,8 +525,6 @@ private:
       wxImage     *m_pos_image_red;
       wxImage     *m_pos_image_grey;
 
-      wxArrayPtrVoid      m_OverlaySpecArray;
-
       wxImage     m_ship_pix_image;             //cached ship draw image for high overzoom
       int         m_cur_ship_pix;
       bool        m_cur_ship_pix_isgrey;
@@ -534,6 +537,9 @@ private:
       wxPoint     m_roffset;
 
       bool        m_b_rot_hidef;
+
+      SelectItem  *m_pRolloverRouteSeg;
+
 
 
 DECLARE_EVENT_TABLE()

@@ -762,7 +762,7 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
 int Quilt::GetChartdbIndexAtPix(wxPoint p)
 {
       if(m_bbusy)
-            return NULL;
+            return -1;
 
       m_bbusy = true;
 
@@ -2126,6 +2126,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
         EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
         EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
+        EVT_TIMER ( RTELEGPU_TIMER, ChartCanvas::OnRouteLegPopupTimerEvent )
         EVT_IDLE ( ChartCanvas::OnIdleEvent )
         EVT_CHAR(ChartCanvas::OnChar )
         EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
@@ -2209,6 +2210,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_bMeasure_Active = false;
         m_pMeasureRoute = NULL;
         m_pRolloverWin = NULL;
+        m_pAISRolloverWin = NULL;
+
         m_pCIWin = NULL;
         m_RescaleCandidate = NULL;
 
@@ -2221,6 +2224,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pEditRouteArray             = NULL;
         m_pFoundRoutePoint            = NULL;
         m_pFoundRoutePointSecond      = NULL;
+
+        m_pRolloverRouteSeg           = NULL;
 
 //    Build the cursors
 
@@ -2387,6 +2392,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_curtrack_timer_msec = 2;
 
         m_MouseWheelTimer.SetOwner(this);
+
+        m_RouteLegPopupTimer.SetOwner(this, RTELEGPU_TIMER);
+
+        m_routeleg_popup_timer_msec = 200;
 
         m_b_rot_hidef = true;
 
@@ -2571,6 +2580,8 @@ ChartCanvas::~ChartCanvas()
         delete pCurTrackTimer;
         delete pRotDefTimer;
         delete m_pRolloverWin;
+        delete m_pAISRolloverWin;
+
         delete m_pCIWin;
 
         delete pBM;
@@ -3047,6 +3058,84 @@ void ChartCanvas::OnIdleEvent ( wxIdleEvent& event )
         else
                 event.Skip();
 }
+
+void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
+{
+      // Route info rollover
+      // Show the route segment info
+      bool showRollover = false;
+
+      float SelectRadius;
+      int sel_rad_pix = 8;
+      SelectRadius = sel_rad_pix/ ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+
+      if(NULL == m_pRolloverRouteSeg)
+      {
+            m_pRolloverRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
+            if (m_pRolloverRouteSeg)
+            {
+                  Route *pr = (Route *)m_pRolloverRouteSeg->m_pData3;
+                  if(pr && pr->IsVisible())
+                  {
+                        showRollover = true;
+
+                        if(NULL == m_pRolloverWin)
+                        {
+                              m_pRolloverWin = new RolloverWin(this);
+                              m_pRolloverWin->Hide();
+                        }
+
+                        if(!m_pRolloverWin->IsShown())
+                        {
+                              wxString s;
+                              RoutePoint *segShow_point_a = ( RoutePoint * ) m_pRolloverRouteSeg->m_pData1;
+                              RoutePoint *segShow_point_b = ( RoutePoint * ) m_pRolloverRouteSeg->m_pData2;
+
+                              double brg, dist;
+                              DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
+                                          segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
+
+                              s.Append(_("Leg: from "));
+                              s.Append(segShow_point_a->m_MarkName);
+                              s.Append(_(" to "));
+                              s.Append(segShow_point_b->m_MarkName);
+                              s.Append(_T("\n"));
+                              wxString t;
+                              if ( dist > 0.1 )
+                                    t.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
+                              else
+                                    t.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.);
+                              s.Append(t);
+
+                              m_pRolloverWin->SetString(s);
+
+                              wxSize win_size = GetSize();
+                              if(console->IsShown())
+                                    win_size.x -= console->GetSize().x;
+                              m_pRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16, win_size);
+                              m_pRolloverWin->SetBitmap();
+                              m_pRolloverWin->Refresh();
+                              m_pRolloverWin->Show();
+                        }
+                  }
+            }
+      }
+      else
+      {
+            //    Is the cursor still in select radius?
+            if(!pSelect->IsSelectableSegmentSelected(m_cursor_lat, m_cursor_lon, SelectRadius, m_pRolloverRouteSeg))
+                  showRollover = false;
+      }
+
+
+      if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
+      {
+            m_pRolloverWin->Hide();
+            m_pRolloverRouteSeg = NULL;
+      }
+
+}
+
 
 
 void ChartCanvas::OnCursorTrackTimerEvent ( wxTimerEvent& event )
@@ -5394,6 +5483,13 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         if ( pRescaleTimer->IsRunning() )
                 pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
 
+//      Retrigger the route leg popup timer
+        if(m_pRolloverWin && m_pRolloverWin->IsShown())
+              m_RouteLegPopupTimer.Start(10, wxTIMER_ONE_SHOT);               // faster response while the rollover is turned on
+        else
+              m_RouteLegPopupTimer.Start(m_routeleg_popup_timer_msec, wxTIMER_ONE_SHOT);
+
+
 //  Retrigger the cursor tracking timer
         pCurTrackTimer->Start ( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
@@ -5555,33 +5651,37 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                     {
                         showRollover = true;
 
-                        if(NULL == m_pRolloverWin)
+                        if(NULL == m_pAISRolloverWin)
                         {
-                              m_pRolloverWin = new RolloverWin(this);
-                              m_pRolloverWin->Hide();
+                              m_pAISRolloverWin = new RolloverWin(this);
+                              m_pAISRolloverWin->Hide();
                         }
 
 
-                        if(!m_pRolloverWin->IsShown())
+                        if(!m_pAISRolloverWin->IsShown())
                         {
 
                               wxString s = ptarget->GetRolloverString();
-                              m_pRolloverWin->SetString(s);
+                              m_pAISRolloverWin->SetString(s);
 
                               wxSize win_size = GetSize();
                               if(console->IsShown())
                                     win_size.x -= console->GetSize().x;
-                              m_pRolloverWin->SetBestPosition(x, y, 16, 16, win_size);
+                              m_pAISRolloverWin->SetBestPosition(x, y, 16, 16, win_size);
 
-                              m_pRolloverWin->SetBitmap();
-                              m_pRolloverWin->Refresh();
-                              m_pRolloverWin->Show();
+                              m_pAISRolloverWin->SetBitmap();
+                              m_pAISRolloverWin->Refresh();
+                              m_pAISRolloverWin->Show();
 
                         }
                     }
               }
         }
 
+        if(m_pAISRolloverWin && m_pAISRolloverWin->IsShown() && !showRollover)
+              m_pAISRolloverWin->Hide();
+
+#if 0  //  Moved to one-shot timer event
       // Route info rollover
       // Show the route segment info
       SelectItem *pFindRouteSeg;
@@ -5633,8 +5733,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                   }
             }
       }
-      if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
-                  m_pRolloverWin->Hide();
+#endif
+
 
 //          Mouse Clicks
 
@@ -5888,7 +5988,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         wxRect pre_rect;
                         m_pRoutePointEditTarget->CalculateDCRect ( m_dc_route, &pre_rect );
                         if((lppmax > pre_rect.width/2) || (lppmax > pre_rect.height/2))
-                              pre_rect.Inflate(lppmax - (pre_rect.width/2), lppmax - (pre_rect.height/2));
+                              pre_rect.Inflate((int)(lppmax - (pre_rect.width/2)), (int)(lppmax - (pre_rect.height/2)));
 
                         m_pRoutePointEditTarget->m_lat = m_cursor_lat;     // update the RoutePoint entry
                         m_pRoutePointEditTarget->m_lon = m_cursor_lon;
@@ -5906,7 +6006,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         wxRect post_rect;
                         m_pRoutePointEditTarget->CalculateDCRect ( m_dc_route, &post_rect );
                         if((lppmax > post_rect.width/2) || (lppmax > post_rect.height/2))
-                              post_rect.Inflate(lppmax - (post_rect.width/2), lppmax - (post_rect.height/2));
+                              post_rect.Inflate((int)(lppmax - (post_rect.width/2)), (int)(lppmax - (post_rect.height/2)));
 
                         //    Invalidate the union region
                         pre_rect.Union ( post_rect );
@@ -6947,6 +7047,12 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
                               pRouteManagerDialog->UpdateRouteListCtrl();
+
+                        if ( pMarkPropDialog && pMarkPropDialog->IsShown())
+                        {
+                              pMarkPropDialog->ValidateMark();
+                              pMarkPropDialog->UpdateProperties();
+                        }
 
                         break;
 
