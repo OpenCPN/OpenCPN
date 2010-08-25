@@ -216,6 +216,7 @@ CPL_CVSID("$Id: chart1.cpp,v 1.102 2010/06/25 02:02:04 bdbcat Exp $");
 FILE            *flog;                  // log file
 wxLog           *logger;
 wxLog           *Oldlogger;
+bool            g_bFirstRun;
 
 ComPortManager  *g_pCommMan;
 
@@ -1090,6 +1091,7 @@ bool MyApp::OnInit()
         //  Send the warning message if it has never been sent before, or if the version string has changed at all
         if(!n_NavMessageShown || (vs != g_config_version_string))
         {
+              g_bFirstRun = true;
               if(wxID_CANCEL == ShowNavWarning())
                     return false;
               n_NavMessageShown = 1;
@@ -1120,6 +1122,21 @@ bool MyApp::OnInit()
         wxLogMessage(imsg);
 
 
+        //  For windows, installer may have left information in the registry defining the
+        //  user's selected install language.
+        //  If so, override the config file value and use this selection for opencpn...
+#ifdef __WXMSW__
+        if(g_bFirstRun)
+        {
+            wxRegKey *pRegKey = new wxRegKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN");
+            if( pRegKey->Exists() )
+            {
+              wxLogMessage(_("Retrieving initial language selection from Windows Registry"));
+              pRegKey->QueryValue("InstallerLanguage", g_locale);
+            }
+        delete pRegKey;
+        }
+#endif
         //  Find the language specified by the config file
         const wxLanguageInfo *pli = wxLocale::FindLanguageInfo(g_locale);
         wxString loc_lang_canonical;
@@ -1532,6 +1549,60 @@ bool MyApp::OnInit()
         if(g_bframemax)
             gFrame->Maximize(true);
 
+        //  Windows installer may have left hints regarding the initial chart dir selection
+#ifdef __WXMSW__
+        if(g_bFirstRun)
+        {
+            int ndirs = 0;
+
+            wxRegKey *pRegKey = new wxRegKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN");
+            if( pRegKey->Exists() )
+            {
+              wxLogMessage(_("Retrieving initial Chart Directory set from Windows Registry"));
+              wxString dirs;
+              pRegKey->QueryValue("ChartDirs", dirs);
+
+              wxStringTokenizer tkz(dirs, _T(";"));
+              while(tkz.HasMoreTokens())
+              {
+                  wxString token = tkz.GetNextToken();
+
+                  ChartDirInfo cdi;
+                  cdi.fullpath = token;
+                  cdi.magic_number = _T("");
+
+                  g_ChartDirArray.Add ( cdi );
+                  ndirs++;
+              }
+
+            }
+            delete pRegKey;
+
+            //    As a favor to new users, poll the database and
+            //    move the initial viewport so that a chart will come up.
+            if(ndirs)
+            {
+                  double clat, clon;
+                  if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_RASTER))
+                  {
+                        gLat = clat;
+                        gLon = clon;
+                        gFrame->ClearbFollow();
+                  }
+                  else
+                  {
+                        if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_VECTOR))
+                        {
+                              gLat = clat;
+                              gLon = clon;
+                              gFrame->ClearbFollow();
+                        }
+                  }
+            }
+
+        }
+#endif
+
 
 //      Try to load the current chart list Data file
         ChartData = new ChartDB(gFrame);
@@ -1562,7 +1633,7 @@ bool MyApp::OnInit()
                         delete pprog;
                 }
 
-                else                                            // No chart database, no config hints, so bail....
+                else            // No chart database, no config hints, so bail....
                 {
                   wxLogMessage(_T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:") +
                               *pChartListFileName);
@@ -1576,7 +1647,8 @@ bool MyApp::OnInit()
 
                   gFrame->DoOptionsDialog();
 
-                  //    As a favor to new users, poll the database and move the inital viewport so that a chart will come up.
+                  //    As a favor to new users, poll the database and
+                  //    move the initial viewport so that a chart will come up.
                   double clat, clon;
                   if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_RASTER))
                   {
