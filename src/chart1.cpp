@@ -1088,10 +1088,14 @@ bool MyApp::OnInit()
         pConfig = (MyConfig *)pCF;
         pConfig->LoadMyConfig(0);
 
+        //        Is this the first run after a clean install?
+        if(!n_NavMessageShown)
+              g_bFirstRun = true;
+
+
         //  Send the warning message if it has never been sent before, or if the version string has changed at all
         if(!n_NavMessageShown || (vs != g_config_version_string))
         {
-              g_bFirstRun = true;
               if(wxID_CANCEL == ShowNavWarning())
                     return false;
               n_NavMessageShown = 1;
@@ -1128,13 +1132,12 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
         if(g_bFirstRun)
         {
-            wxRegKey *pRegKey = new wxRegKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN");
-            if( pRegKey->Exists() )
+            wxRegKey RegKey("HKEY_CURRENT_USER\\SOFTWARE\\OpenCPN");
+            if( RegKey.Exists() )
             {
               wxLogMessage(_("Retrieving initial language selection from Windows Registry"));
-              pRegKey->QueryValue("InstallerLanguage", g_locale);
+              RegKey.QueryValue("InstallerLanguage", g_locale);
             }
-        delete pRegKey;
         }
 #endif
         //  Find the language specified by the config file
@@ -1549,18 +1552,20 @@ bool MyApp::OnInit()
         if(g_bframemax)
             gFrame->Maximize(true);
 
+        bool b_SetInitialPoint = false;
+
         //  Windows installer may have left hints regarding the initial chart dir selection
 #ifdef __WXMSW__
         if(g_bFirstRun)
         {
             int ndirs = 0;
 
-            wxRegKey *pRegKey = new wxRegKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN");
-            if( pRegKey->Exists() )
+            wxRegKey RegKey("HKEY_CURRENT_USER\\SOFTWARE\\OpenCPN");
+            if( RegKey.Exists() )
             {
               wxLogMessage(_("Retrieving initial Chart Directory set from Windows Registry"));
               wxString dirs;
-              pRegKey->QueryValue("ChartDirs", dirs);
+              RegKey.QueryValue("ChartDirs", dirs);
 
               wxStringTokenizer tkz(dirs, _T(";"));
               while(tkz.HasMoreTokens())
@@ -1576,29 +1581,11 @@ bool MyApp::OnInit()
               }
 
             }
-            delete pRegKey;
 
             //    As a favor to new users, poll the database and
             //    move the initial viewport so that a chart will come up.
             if(ndirs)
-            {
-                  double clat, clon;
-                  if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_RASTER))
-                  {
-                        gLat = clat;
-                        gLon = clon;
-                        gFrame->ClearbFollow();
-                  }
-                  else
-                  {
-                        if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_VECTOR))
-                        {
-                              gLat = clat;
-                              gLon = clon;
-                              gFrame->ClearbFollow();
-                        }
-                  }
-            }
+                  b_SetInitialPoint = true;
 
         }
 #endif
@@ -1633,7 +1620,7 @@ bool MyApp::OnInit()
                         delete pprog;
                 }
 
-                else            // No chart database, no config hints, so bail....
+                else            // No chart database, no config hints, so bail to Toolbox....
                 {
                   wxLogMessage(_T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:") +
                               *pChartListFileName);
@@ -1647,8 +1634,17 @@ bool MyApp::OnInit()
 
                   gFrame->DoOptionsDialog();
 
+                  b_SetInitialPoint = true;
+
+                }
+
+                bDBUpdateInProgress = false;
+
                   //    As a favor to new users, poll the database and
                   //    move the initial viewport so that a chart will come up.
+
+                if(b_SetInitialPoint)
+                {
                   double clat, clon;
                   if(ChartData->GetCentroidOfLargestScaleChart(&clat, &clon, CHART_FAMILY_RASTER))
                   {
@@ -1665,10 +1661,8 @@ bool MyApp::OnInit()
                               gFrame->ClearbFollow();
                         }
                   }
-
                 }
 
-                bDBUpdateInProgress = false;
         }
 
         pCurrentStack = new ChartStack;
