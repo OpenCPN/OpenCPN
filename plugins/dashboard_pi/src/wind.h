@@ -42,14 +42,6 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
-
 #include "dial.h"
 
 //+------------------------------------------------------------------------------
@@ -69,16 +61,9 @@ class DashboardInstrument_Wind: public DashboardInstrument_Dial
             ~DashboardInstrument_Wind(void){}
 
       private:
-            void OnPaint(wxPaintEvent &WXUNUSED(event));
-
-            void OnSize(wxSizeEvent& event)
-            {
-                  Refresh(false);
-                  event.Skip();
-            }
 
       protected:
-            void DrawBackground(wxDC* dc);
+            void DrawBackground(wxPaintDC* dc);
 };
 
 #endif // __Wind_H__

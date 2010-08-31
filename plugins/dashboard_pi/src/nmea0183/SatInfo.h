@@ -1,13 +1,11 @@
-/******************************************************************************
- * $Id: speedometer.cpp, v1.0 2010/08/05 SethDart Exp $
+/***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
- * Author:   Jean-Eudes Onfray
+ * Purpose:  NMEA0183 Support Classes
+ * Author:   Samuel R. Blackburn, David S. Register, Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   Copyright (C) 2010 by Samuel R. Blackburn, David S Register           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,32 +22,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
+ *
+ *   S Blackburn's original source license:                                *
+ *         "You can use it any way you like."                              *
+ *   More recent (2010) license statement:                                 *
+ *         "It is BSD license, do with it what you will"                   *
  */
 
-#include "speedometer.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
+#if ! defined( SAT_INFO_HEADER )
+#define SAT_INFO_HEADER
 
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-#endif
-
-// Not much to do here most of the default dial values are fine.
-// Note the default AngleStart = 225 and AngleRange = 270 set here.
-
-DashboardInstrument_Speedometer::DashboardInstrument_Speedometer( wxWindow *parent, wxWindowID id, wxString title,
-                                    int s_value,
-                                    int e_value) : DashboardInstrument_Dial( parent, id, title, 225, 270, s_value, e_value)
+typedef struct
 {
-      // We want the main value displayed inside the dial as well
-      // as the default arrow
-      SetOptionMainValue(_T("%5.2f Kts"), DIAL_POSITION_INSIDE);
-}
+   int SatNumber;
+   int ElevationDegrees;
+   int AzimuthDegreesTrue;
+   int SignalToNoiseRatio;
+} SAT_INFO;
 
+#endif // SAT_INFO_HEADER

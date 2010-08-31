@@ -43,13 +43,7 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
+#include "instrument.h"
 
 #define ANGLE_OFFSET            90      // 0 degrees are at 12 o´clock
 
@@ -89,7 +83,7 @@ extern double deg2rad(double angle);
 //|    This class creates a speedometer style control
 //|
 //+------------------------------------------------------------------------------
-class DashboardInstrument_Dial: public wxPanel
+class DashboardInstrument_Dial: public DashboardInstrument
 {
       public:
             DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title,
@@ -106,17 +100,9 @@ class DashboardInstrument_Dial: public wxPanel
             void SetOptionExtraValue(wxString format, DialPositionOption option)
                         { m_ExtraValueFormat = format; m_ExtraValueOption = option; }
 
-            void OnPaint(wxPaintEvent &WXUNUSED(event));
-
       private:
-            void OnSize(wxSizeEvent& event)
-            {
-                  Refresh(true);
-                  event.Skip();
-            }
 
       protected:
-            wxString m_title;
             int m_cx, m_cy, m_radius;
             int m_AngleStart, m_AngleRange;
             double m_MainValue;
@@ -132,12 +118,13 @@ class DashboardInstrument_Dial: public wxPanel
             DialLabelOption m_LabelOption;
             wxArrayString m_LabelArray;
 
-            virtual void DrawFrame(wxDC* dc);
-            virtual void DrawMarkers(wxDC* dc);
-            virtual void DrawLabels(wxDC* dc);
-            virtual void DrawBackground(wxDC* dc);
-            virtual void DrawData(wxDC* dc, double value, wxString format, DialPositionOption position);
-            virtual void DrawForeground(wxDC* dc);
+            virtual void Draw(wxBufferedDC* dc);
+            virtual void DrawFrame(wxBufferedDC* dc);
+            virtual void DrawMarkers(wxBufferedDC* dc);
+            virtual void DrawLabels(wxBufferedDC* dc);
+            virtual void DrawBackground(wxBufferedDC* dc);
+            virtual void DrawData(wxBufferedDC* dc, double value, wxString format, DialPositionOption position);
+            virtual void DrawForeground(wxBufferedDC* dc);
 };
 
 #endif // __Dial_H__

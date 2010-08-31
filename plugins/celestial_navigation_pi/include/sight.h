@@ -23,20 +23,6 @@
 
 enum OVERLAP {_IN,_ON,_OUT};
 
-#ifndef PI
-      #define PI        3.1415926535897931160E0      /* pi */
-#endif
-#define DEGREE    (PI/180.0)
-#define RADIAN    (180.0/PI)
-
-static const double WGS84_semimajor_axis_meters       = 6378137.0;           // WGS84 semimajor axis
-static const double mercator_k0                       = 0.9996;
-static const double WGSinvf                           = 298.257223563;       /* WGS84 1/f */
-
-extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double *dlat, double *dlon);
-extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
-                                double *bearing, double *dist);
-
 #ifdef __WXMSW__
 #include <float.h>
 #include <iostream>
@@ -51,67 +37,108 @@ WX_DECLARE_LIST(wxRealPoint, wxRealPointList);
 //    Sight
 //----------------------------------------------------------------------------
 
-
 class Sight : public wxObject
 {
 public:
-   enum BodyLimb {CENTER, UPPER, LOWER};
+   enum BodyLimb {LOWER, CENTER, UPPER};
 
    Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
-         double timecertainty, double elevation, double elevationcertainty,
-         double azimuth, bool magneticnorth,
-         double azimuthcertainty, double height, wxColour colour);
-      ~Sight();
+         double timecertainty, double measurement, double measurementcertainty,
+         double height, double temperature, double pressure, wxColour colour);
 
-      void SetVisible(bool visible = true); ///< set visibility and make points selectable accordingly
-      bool IsVisible() { return m_bVisible; }
+   ~Sight();
 
-      bool       m_bVisible;  // should this sight be drawn?
-      wxString   m_Body;
-      BodyLimb   m_BodyLimb;
+   void SetVisible(bool visible = true); ///< set visibility and make points selectable accordingly
+   bool IsVisible() { return m_bVisible; }
 
-      wxDateTime m_DateTime;      // Time for the sight
-      float      m_TimeCertainty;
+   virtual void RebuildPolygons(double timeoffset) {}
 
-      float      m_Elevation; // Elevation angle in degrees (NaN is valid for all)
-      float      m_ElevationCertainty;
+   bool       m_bVisible;  // should this sight be drawn?
+   wxString   m_Body;
+   BodyLimb   m_BodyLimb;
 
-      float      m_HeightCorrection, m_LimbCorrection, m_RefractionCorrection, m_ParallaxCorrection;
-      float      m_CorrectedElevation; /* after observer height, edge, refraction and parallax */
+   wxDateTime m_DateTime;      // Time for the sight
+   float      m_TimeCertainty;
 
-      float      m_Azimuth;   // azimuth angle in degrees (NaN meaning all angles)
-      bool       m_bMagneticNorth; // if azimuth angle is in magnetic coordinages
-      float      m_AzimuthCertainty;
+   float      m_Measurement; // Measurement angle in degrees (NaN is valid for all)
+   float      m_MeasurementCertainty;
 
-      float      m_Height; // Height above sea in meters
+   float      m_Height; // Height above sea in meters
+   float      m_Temperature; // Temperature in degrees celcius
+   float      m_Pressure; // Pressure in millibars
       
-      wxColour   m_Colour;     // Color of the sight
+   wxColour   m_Colour;     // Color of the sight
 
-      void ComputeTraceOneVariable(double center, double certainty, double constantangle,
-                                   double stepsize, double &min, double &max, double &step);
+   virtual void Render(wxMemoryDC& dc, PlugIn_ViewPort &pVP);
 
-      void DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &pVP, wxRealPointList &area);
-      virtual void Render(wxMemoryDC& dc, PlugIn_ViewPort &pVP);
+   void BodyLocation(wxDateTime time, double &lat, double &lon);
+
+protected:
+   wxTextCtrl *txtSightTimeOffset;
+
+   double CalcAngle(wxRealPoint p1, wxRealPoint p2);
+   double ComputeStepSize(double certainty, double stepsize, double min, double max);
+   wxRealPointList *MergePoints(wxRealPointList *p1, wxRealPointList *p2);
+   wxRealPointList *ReduceToConvexPolygon(wxRealPointList *points);
+
+   std::list<wxRealPointList*> polygons;
 
 private:
-      void BuildElevationLineOfPosition(double elevationmin, double elevationmax, double elevationstep,
-                                        double tracestep,
-                                        double timemin, double timemax, double timestep);
-      void BuildBearingLineOfPosition(double elevationmin, double elevationmax, double elevationstep,
-                                      double azimuthmin, double azimuthmax, double azimuthstep,
-                                      double timemin, double timemax, double timestep);
+   void DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &pVP, wxRealPointList &area);
+};
 
-      void BodyLocation(wxDateTime time, double &lat, double &lon);
+class AltitudeSight : public Sight
+{
+public:
+   AltitudeSight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
+                 double timecertainty, double measurement, double measurementcertainty,
+                 double height, double temperature, double pressure, wxColour colour);
 
-      wxRealPoint DistancePoint(wxDateTime datetime, double elevation, double trace);
-      bool BearingPoint(wxDateTime datetime, double elevation, double trace,
-                        double &rlat, double &rlon);
+   float      m_HeightCorrection, m_LimbCorrection, m_RefractionCorrection, m_ParallaxCorrection;
+   float      m_CorrectedAltitude; /* after observer height, edge, refraction and parallax */
 
-      double CalcAngle(wxRealPoint p1, wxRealPoint p2);
-      wxRealPointList *MergePoints(wxRealPointList *p1, wxRealPointList *p2);
-      wxRealPointList *ReduceToConvexPolygon(wxRealPointList *points);
+private:
+   virtual void RebuildPolygons(double timeoffset);
+   wxRealPoint DistancePoint(wxDateTime datetime, double altitude, double trace);
+   void BuildAltitudeLineOfPosition(double altitudemin, double altitudemax, double altitudestep,
+                                        double tracestep, double timemin, double timemax, double timestep);
+};
 
-      std::list<wxRealPointList*> polygons;
+class AzimuthSight : public Sight
+{
+public:
+   AzimuthSight(wxString body, wxDateTime datetime,
+                double timecertainty, double measurement, double measurementcertainty,
+                bool magneticnorth, wxColour colour);
+
+   virtual void RebuildPolygons(double timeoffset);
+
+   bool       m_bMagneticNorth; // if azimuth angle is in magnetic coordinates
+
+private:
+   bool BearingPoint(wxDateTime datetime, double altitude, double trace,
+                     double &rlat, double &rlon);
+   void BuildBearingLineOfPosition(double altitudestep,
+                                   double azimuthmin, double azimuthmax, double azimuthstep,
+                                   double timemin, double timemax, double timestep);
+
+};
+
+/* although traditionally called "lunar" because it involves the moon,
+   we support any 2 bodies */
+class LunarSight : public Sight
+{
+public:
+   LunarSight(wxString body1, wxString body2, BodyLimb bodylimb, wxDateTime datetime,
+              double timecertainty, double measurement, double measurementcertainty,
+              double height, double temperature, double pressure, wxColour colour);
+   
+   float timeoffset;
+
+   wxString   m_Body1, m_Body2;
+
+private:
+   double DistanceTwoPoints(double timeoffset);
 };
 
 WX_DECLARE_LIST(Sight, SightList);                    // establish class Sight as list member

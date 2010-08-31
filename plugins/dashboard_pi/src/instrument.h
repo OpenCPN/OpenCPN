@@ -1,10 +1,9 @@
 /******************************************************************************
- * $Id: compass.h, v1.0 2010/08/05 SethDart Exp $
+ * $Id: instrument.h, v1.0 2010/08/30 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  DashBoard Plugin
  * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -27,49 +26,71 @@
  ***************************************************************************
  */
 
-#ifndef __Compass_H__
-#define __Compass_H__
+#ifndef _INSTRUMENT_H_
+#define _INSTRUMENT_H_
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
+#include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
+#ifndef  WX_PRECOMP
+  #include "wx/wx.h"
+#endif //precompiled headers
 
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-#endif
+// Required GetGlobalColor and OCPNGetFont
+#include "../../../include/ocpn_plugin.h"
+#include <wx/dcbuffer.h>
 
-#include "dial.h"
+class DashboardInstrument;
+class DashboardInstrument_Single;
+class DashboardInstrument_Double;
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Compass
-//|
-//| DESCRIPTION:
-//|    This class creates a compass style control
-//|
-//+------------------------------------------------------------------------------
-class DashboardInstrument_Compass: public DashboardInstrument_Dial
+class DashboardInstrument : public wxWindow
 {
-      public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title);
+public:
+      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument();
 
-            ~DashboardInstrument_Compass(void){}
+      virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
 
-            virtual void SetMainValue(double value);
+private:
 
-      private:
+protected:
+      int m_TitleHeight;
+      wxString          m_title;
 
-      protected:
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawCompassRose(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+      virtual void Draw(wxBufferedDC* dc);
+
 };
 
-#endif // __Compass_H__
+class DashboardInstrument_Single : public DashboardInstrument
+{
+public:
+      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument_Single();
+
+      void SetData(wxString data);
+
+protected:
+      wxString          m_data;
+
+      void Draw(wxBufferedDC* dc);
+
+};
+
+class DashboardInstrument_Double : public DashboardInstrument
+{
+public:
+      DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument_Double();
+
+      void SetData(wxString data1, wxString data2);
+
+protected:
+      wxString          m_data1;
+      wxString          m_data2;
+
+      void Draw(wxBufferedDC* dc);
+
+};
+
+#endif
 

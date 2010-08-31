@@ -42,16 +42,6 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
-
-#include "../../../include/ocpn_plugin.h"
-
 double rad2deg(double angle)
 {
       return angle*180.0/M_PI;
@@ -65,9 +55,8 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
                   int s_angle,
                   int r_angle,
                   int s_value,
-                  int e_value) : wxPanel(parent, id)
+                  int e_value) : DashboardInstrument(parent, id, title)
 {
-      m_title = title;
       m_AngleStart = s_angle;
       m_AngleRange = r_angle;
       m_MainValueMin = s_value;
@@ -85,15 +74,12 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_MarkerOffset = 1;
       m_LabelOption = DIAL_LABEL_HORIZONTAL;
 
-      Connect(wxID_ANY, wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument_Dial::OnPaint));
       SetMinSize(wxSize(200, 200));
 }
 
 void DashboardInstrument_Dial::SetMainValue(double value)
 {
-      if (value < m_MainValueMin) m_MainValue = m_MainValueMin;
-      else if (value > m_MainValueMax) m_MainValue = m_MainValueMax;
-      else m_MainValue = value;
+      m_MainValue = value;
 
       Refresh(false);
 }
@@ -105,65 +91,39 @@ void DashboardInstrument_Dial::SetExtraValue(double value)
       Refresh(false);
 }
 
-void DashboardInstrument_Dial::OnPaint(wxPaintEvent &WXUNUSED(event))
+void DashboardInstrument_Dial::Draw(wxBufferedDC* dc)
 {
-      wxPaintDC dc(this);
-
-      wxRect rect = GetClientRect();
-
-      if(rect.width == 0 || rect.height == 0)
-      {
-            return;
-      }
-
-      wxBitmap bmp;
-
-      // Create a double buffer to draw the plot
-      // on screen to prevent flicker from occuring.
-      wxBufferedDC buff_dc;
-      buff_dc.Init(&dc, bmp);
-      buff_dc.Clear();
-
-      m_cx = rect.width / 2;
-      m_cy = rect.height / 2 + 10;
-      //m_radius = ((rect.height/2)*5)/6;
-      m_radius = rect.height*.4;
-
-      DrawFrame(&buff_dc);
-      DrawMarkers(&buff_dc);
-      DrawLabels(&buff_dc);
-      DrawBackground(&buff_dc);
-      DrawData(&buff_dc, m_MainValue, m_MainValueFormat, m_MainValueOption);
-      DrawData(&buff_dc, m_ExtraValue, m_ExtraValueFormat, m_ExtraValueOption);
-      DrawForeground(&buff_dc);
+      DrawFrame(dc);
+      DrawMarkers(dc);
+      DrawLabels(dc);
+      DrawBackground(dc);
+      DrawData(dc, m_MainValue, m_MainValueFormat, m_MainValueOption);
+      DrawData(dc, m_ExtraValue, m_ExtraValueFormat, m_ExtraValueOption);
+      DrawForeground(dc);
 }
 
-void DashboardInstrument_Dial::DrawFrame(wxDC* dc)
+void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
 {
+      wxRect rect = GetClientRect();
       wxColour cl;
 
-      GetGlobalColor(_T("UIBDR"), &cl);
-      dc->SetBackground(cl);
-      dc->Clear();
+      m_cx = rect.width / 2;
+      m_cy = m_TitleHeight + (rect.height - m_TitleHeight) / 2;
+      m_radius = (rect.height - m_TitleHeight)*.45;
 
-      dc->SetFont(*OCPNGetFont(_T("DashBoard Label"), 9));
-//      dc->SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
       GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
-      dc->DrawText(m_title, 5, 5);
-
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
 
       dc->DrawCircle(m_cx, m_cy, m_radius);
 }
 
-void DashboardInstrument_Dial::DrawMarkers(wxDC* dc)
+void DashboardInstrument_Dial::DrawMarkers(wxBufferedDC* dc)
 {
       if (m_MarkerOption == DIAL_MARKER_NONE)
             return;
@@ -220,7 +180,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxDC* dc)
       }
 }
 
-void DashboardInstrument_Dial::DrawLabels(wxDC* dc)
+void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
 {
       if (m_LabelOption == DIAL_LABEL_NONE)
             return;
@@ -278,13 +238,13 @@ void DashboardInstrument_Dial::DrawLabels(wxDC* dc)
       }
 }
 
-void DashboardInstrument_Dial::DrawBackground(wxDC* dc)
+void DashboardInstrument_Dial::DrawBackground(wxBufferedDC* dc)
 {
       // Nothing to do here right now, will be overwritten
       // by child classes if required
 }
 
-void DashboardInstrument_Dial::DrawData(wxDC* dc, double value,
+void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
             wxString format, DialPositionOption position)
 {
       if (position == DIAL_POSITION_NONE)
@@ -294,7 +254,7 @@ void DashboardInstrument_Dial::DrawData(wxDC* dc, double value,
       dc->SetFont(*font);
 //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
       wxColour cl;
-      GetGlobalColor(_T("BLUE1"), &cl);
+      GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
 
       wxRect rect = GetClientRect();
@@ -311,26 +271,26 @@ void DashboardInstrument_Dial::DrawData(wxDC* dc, double value,
             case DIAL_POSITION_INSIDE:
                   TextPoint.x = m_cx - (width / 2);
                   TextPoint.y = (rect.height * .75) - height;
-                  GetGlobalColor(_T("UIBDR"), &cl);
+                  GetGlobalColor(_T("DILG1"), &cl);
                   dc->SetBrush(cl);
                   // There might be a background drawn below
                   // so we must clear it first.
                   dc->DrawRectangle(TextPoint.x-2, TextPoint.y-2, width+4, height+4);
                   break;
             case DIAL_POSITION_TOPLEFT:
-                  TextPoint.x = 5;
+                  TextPoint.x = 0;
                   TextPoint.y = 20;
                   break;
             case DIAL_POSITION_TOPRIGHT:
-                  TextPoint.x = rect.width-width-5;
+                  TextPoint.x = rect.width-width;
                   TextPoint.y = 20;
                   break;
             case DIAL_POSITION_BOTTOMLEFT:
-                  TextPoint.x = 5;
+                  TextPoint.x = 0;
                   TextPoint.y = rect.height-height;
                   break;
             case DIAL_POSITION_BOTTOMRIGHT:
-                  TextPoint.x = rect.width-width-5;
+                  TextPoint.x = rect.width-width;
                   TextPoint.y = rect.height-height;
                   break;
       }
@@ -338,7 +298,7 @@ void DashboardInstrument_Dial::DrawData(wxDC* dc, double value,
       dc->DrawText(text, TextPoint);
 }
 
-void DashboardInstrument_Dial::DrawForeground(wxDC* dc)
+void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
 {
       // The default foreground is the arrow used in most dials
       wxColour cl;
@@ -363,7 +323,13 @@ void DashboardInstrument_Dial::DrawForeground(wxDC* dc)
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
-      double value = deg2rad((m_MainValue - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
+      // The arrow should stay inside fixed limits
+      double val;
+      if (m_MainValue < m_MainValueMin) val = m_MainValueMin;
+      else if (m_MainValue > m_MainValueMax) val = m_MainValueMax;
+      else val = m_MainValue;
+
+      double value = deg2rad((val - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
 
       wxPoint points[3];
       points[0].x = m_cx + (m_radius * 0.95 * cos(value));

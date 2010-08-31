@@ -76,7 +76,9 @@ enum
       ID_DBWMENU_WIND,
       ID_DBWMENU_HDT,
       ID_DBWMENU_STW,
-      ID_DBWMENU_DEPTH
+      ID_DBWMENU_DEPTH,
+      ID_DBWMENU_RUDDERANGLE,
+      ID_DBWMENU_GPS
 };// DashboardWindow menu items;
 
 
@@ -115,6 +117,13 @@ int dashboard_pi::Init(void)
            WANTS_NMEA_SENTENCES |
            WANTS_NMEA_EVENTS
             );
+      /* read config
+       * wxFileConfig * config = GetOCPNConfigObject();
+                        wxString config_section = ( _T ( "/PlugIns/Dashboard" ) );
+                        config_section += pic->m_common_name;
+                        config->SetPath ( config_section );
+                        config->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
+       */
 }
 
 bool dashboard_pi::DeInit(void)
@@ -163,7 +172,7 @@ wxString dashboard_pi::GetShortDescription()
 wxString dashboard_pi::GetLongDescription()
 {
       return _("Dashboard PlugIn for OpenCPN\n\
-Demonstrates PlugIn processing of NMEA messages.");
+Provides navigation instrument display from NMEA source.\n");
 
 }
 
@@ -229,6 +238,8 @@ BEGIN_EVENT_TABLE(DashboardWindow, wxMiniFrame)
       EVT_MENU( ID_DBWMENU_HDT, DashboardWindow::ToggleInstrumentVisibility )
       EVT_MENU( ID_DBWMENU_STW, DashboardWindow::ToggleInstrumentVisibility )
       EVT_MENU( ID_DBWMENU_DEPTH, DashboardWindow::ToggleInstrumentVisibility )
+      EVT_MENU( ID_DBWMENU_RUDDERANGLE, DashboardWindow::ToggleInstrumentVisibility )
+      EVT_MENU( ID_DBWMENU_GPS, DashboardWindow::ToggleInstrumentVisibility )
 END_EVENT_TABLE()
 
 DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id)
@@ -280,6 +291,10 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id)
       itemBoxSizer->Add(m_pDBIStw, 0, wxALL|wxEXPAND, 0);
       m_pDBIDepth = new DashboardInstrument_Single(this, id, _("Depth"));
       itemBoxSizer->Add(m_pDBIDepth, 0, wxALL|wxEXPAND, 0);
+      m_pDBIRudderAngle = new DashboardInstrument_RudderAngle(this, id, _("Rudder angle"));
+      itemBoxSizer->Add(m_pDBIRudderAngle, 0, wxALL|wxEXPAND, 0);
+      m_pDBIGPS = new DashboardInstrument_GPS(this, id, _("GPS status"));
+      itemBoxSizer->Add(m_pDBIGPS, 0, wxALL|wxEXPAND, 0);
       //m_pDBI->SetOptionMarker(5, DIAL_MARKER_REDGREEN, 2);
 
       itemBoxSizer->Hide(m_pDBISog);
@@ -288,6 +303,8 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id)
       itemBoxSizer->Hide(m_pDBIHdt);
       itemBoxSizer->Hide(m_pDBIStw);
       itemBoxSizer->Hide(m_pDBIDepth);
+      itemBoxSizer->Hide(m_pDBIRudderAngle);
+      //TODO: uncomment this//itemBoxSizer->Hide(m_pDBIGPS);
       itemBoxSizer->Fit(this);
 }
 
@@ -413,13 +430,9 @@ void DashboardWindow::SetSentence(wxString &sentence)
             {
                   if(m_NMEA0183.Parse())
                   {
-                        //TODO: Enhance GSV to display Sat status
-                        // up to 4 by sentence (Sentence NR)
-                        //+Sat PRN Number
-                        //+ElevationDegree
-                        //+AzimuthDegree
-                        //+SNR = Signal Strength
                         mSatsInView = m_NMEA0183.Gsv.SatsInView;
+                        // m_NMEA0183.Gsv.NumberOfMessages;
+                        m_pDBIGPS->SetSatInfo(m_NMEA0183.Gsv.SatsInView, m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo);
                   }
             }
 
@@ -485,17 +498,17 @@ void DashboardWindow::SetSentence(wxString &sentence)
                         {
                               mPriApWind = 1;
 
-                              if (m_NMEA0183.Mwv.IsDataValid)
+                              if (m_NMEA0183.Mwv.IsDataValid == NTrue)
                               {
                                     //  1) Wind Angle, 0 to 360 degrees
                                     m_pDBIWind->SetMainValue(m_NMEA0183.Mwv.WindAngle);
                                     //  3) Wind Speed
                                     m_pDBIWind->SetExtraValue(m_NMEA0183.Mwv.WindSpeed);
                                  /* TODO: handle Reference+Unit
-                                    //  2) Reference, R = Relative, T = True
-                                    wxString         m_NMEA0183.Mwv.Reference;
-                                    //  4) Wind Speed Units, K/M/N
-                                    wxString         m_NMEA0183.Mwv.WindSpeedUnits;
+                                  * //  2) Reference, R = Relative, T = True
+                                  * wxString         m_NMEA0183.Mwv.Reference;
+                                  * //  4) Wind Speed Units, K/M/N
+                                  * wxString         m_NMEA0183.Mwv.WindSpeedUnits;
                                   */
                               }
                         }
@@ -570,18 +583,34 @@ void DashboardWindow::SetSentence(wxString &sentence)
                   }
             }
 
+            else if(m_NMEA0183.LastSentenceIDReceived == _T("RSA"))
+            {
+                  if(m_NMEA0183.Parse())
+                  {
+                        if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue)
+                        {
+                              m_pDBIRudderAngle->SetMainValue(m_NMEA0183.Rsa.Starboard);
+                        }
+                        else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue)
+                        {
+                              m_pDBIRudderAngle->SetMainValue(- m_NMEA0183.Rsa.Port);
+                        }
+                  }
+            }
+
             else if(m_NMEA0183.LastSentenceIDReceived == _T("VHW"))
             {
                   if(m_NMEA0183.Parse())
                   {
-                        if (mPriHeading >= 4)
+                        /* Water heading!
+                         *   m_NMEA0183.Vhw.DegreesTrue;
+                         *   m_NMEA0183.Vhw.DegreesMagnetic;
+                         */
+                        if(m_NMEA0183.Vhw.Knots < 999.)
                         {
-                              mPriHeading = 4;
-                              m_pDBIHdt->SetData(wxString::Format(_("%5.0f Deg"), m_NMEA0183.Vhw.DegreesTrue));
-                              mHdm = m_NMEA0183.Vhw.DegreesMagnetic;
+                              m_pDBIStw->SetData(wxString::Format(_("%5.2f Kts"), m_NMEA0183.Vhw.Knots));
+                              m_pDBISpeedometer->SetExtraValue(m_NMEA0183.Vhw.Knots);
                         }
-                        m_pDBIStw->SetData(wxString::Format(_("%5.2f Kts"), m_NMEA0183.Vhw.Knots));
-                        m_pDBISpeedometer->SetExtraValue(m_NMEA0183.Vhw.Knots);
                   }
             }
 
@@ -719,6 +748,10 @@ void DashboardWindow::OnContextMenu(wxContextMenuEvent& event)
       item->Check(m_pDBIStw->IsShown());
       item = menu.AppendCheckItem(ID_DBWMENU_DEPTH, _T("Depth"));
       item->Check(m_pDBIDepth->IsShown());
+      item = menu.AppendCheckItem(ID_DBWMENU_RUDDERANGLE, _T("Rudder angle"));
+      item->Check(m_pDBIRudderAngle->IsShown());
+      item = menu.AppendCheckItem(ID_DBWMENU_GPS, _T("GPS status"));
+      item->Check(m_pDBIGPS->IsShown());
       PopupMenu(&menu);
 }
 
@@ -753,122 +786,16 @@ void DashboardWindow::ToggleInstrumentVisibility(wxCommandEvent& event)
       case ID_DBWMENU_DEPTH:
             itemBoxSizer->Show(m_pDBIDepth, event.IsChecked());
             break;
+      case ID_DBWMENU_RUDDERANGLE:
+            itemBoxSizer->Show(m_pDBIRudderAngle, event.IsChecked());
+            break;
+      case ID_DBWMENU_GPS:
+            itemBoxSizer->Show(m_pDBIGPS, event.IsChecked());
+            break;
       }
       itemBoxSizer->Layout();
       itemBoxSizer->Fit(this);
 }
-
-//----------------------------------------------------------------
-//
-//    Dashboard Instrument Implementation
-//
-//----------------------------------------------------------------
-
-BEGIN_EVENT_TABLE(DashboardInstrument_Single, wxWindow)
-  EVT_PAINT ( DashboardInstrument_Single::OnPaint )
-END_EVENT_TABLE()
-
-DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title)
-      :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize,
-             wxBORDER_NONE, _T("OpenCPN PlugIn"))
-{
-      m_label = title;
-      m_data = _T("---");
-
-      wxColour cl;
-      GetGlobalColor(_T("UIBDR"), &cl);
-      SetBackgroundColour(cl);    //UINFF
-//      SetTransparent(0);
-      SetMinSize(wxSize(200, 50));
-}
-
-DashboardInstrument_Single::~DashboardInstrument_Single()
-{
-}
-
-void DashboardInstrument_Single::OnPaint(wxPaintEvent& event)
-{
-      wxPaintDC dc ( this );
-
-//      dc.SetBackground(wxBrush(GetGlobalColor(_T("UIBDR")), wxSOLID));    //UINFF
-//      dc.Clear();
-
-      dc.SetFont(*OCPNGetFont(_T("DashBoard Label"), 9));
-//      dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
-      wxColour cl;
-      GetGlobalColor(_T("BLUE2"), &cl);
-      dc.SetTextForeground(cl);
-      dc.DrawText(m_label, 5, 5);
-
-      dc.SetFont(*OCPNGetFont(_T("DashBoard Data"), 16));
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Data")));
-      wxColour cd;
-      GetGlobalColor(_T("BLUE1"), &cd);
-      dc.SetTextForeground(cd);
-
-      dc.DrawText(m_data, 30, 20);
-}
-
-void DashboardInstrument_Single::SetData(wxString data)
-{
-      m_data = data;
-      Refresh(false);
-}
-
-BEGIN_EVENT_TABLE(DashboardInstrument_Double, wxWindow)
-  EVT_PAINT ( DashboardInstrument_Double::OnPaint )
-END_EVENT_TABLE()
-
-DashboardInstrument_Double::DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title)
-      :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize,
-             wxBORDER_NONE, _T("OpenCPN PlugIn"))
-{
-      m_label = title;
-      m_data1 = _T("---");
-      m_data2 = _T("---");
-
-      wxColour cl;
-      GetGlobalColor(_T("UIBDR"), &cl);
-      SetBackgroundColour(cl);    //UINFF
-//      SetTransparent(0);
-      SetMinSize(wxSize(200, 75));
-}
-
-DashboardInstrument_Double::~DashboardInstrument_Double()
-{
-}
-
-void DashboardInstrument_Double::OnPaint(wxPaintEvent& event)
-{
-      wxPaintDC dc ( this );
-
-//      dc.SetBackground(wxBrush(GetGlobalColor(_T("UIBDR")), wxSOLID));    //UINFF
-//      dc.Clear();
-
-      dc.SetFont(*OCPNGetFont(_T("DashBoard Label"), 9));
-//      dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
-      wxColour cl;
-      GetGlobalColor(_T("BLUE2"), &cl);
-      dc.SetTextForeground(cl);
-      dc.DrawText(m_label, 5, 5);
-
-      dc.SetFont(*OCPNGetFont(_T("DashBoard Data"), 16));
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Data")));
-      wxColour cd;
-      GetGlobalColor(_T("BLUE1"), &cd);
-      dc.SetTextForeground(cd);
-
-      dc.DrawText(m_data1, 30, 20);
-      dc.DrawText(m_data2, 30, 45);
-}
-
-void DashboardInstrument_Double::SetData(wxString data1, wxString data2)
-{
-      m_data1 = data1;
-      m_data2 = data2;
-      Refresh(false);
-}
-
 
 /**************************************************************************/
 /*          Some assorted utilities                                       */
@@ -923,3 +850,4 @@ wxString toSDMM ( int NEflag, double a )
       }
       return s;
 }
+

@@ -71,7 +71,7 @@ static const char *eye[]={
 "....................",
 "...................."};
 
-enum { rmVISIBLE = 0, rmBODY, rmTIME, rmELEVATION, rmAZIMUTH, rmHEIGHT_CORRECTION, rmEDGE_CORRECTION, rmREFRACTION_CORRECTION, rmPARALLAX_CORRECTION, rmCORRECTED_ELEVATION, rmCOLOR };// RMColumns;
+enum { rmVISIBLE = 0, rmTYPE, rmBODY, rmTIME, rmMEASUREMENT, rmLUNAR_TIME_OFFSET, rmCOLOR };// RMColumns;
 
 // GLOBALS :0
 wxWindow *cc1;
@@ -102,7 +102,8 @@ END_EVENT_TABLE()
 
 // implementation
 CelestialNavigationDialog::CelestialNavigationDialog(wxWindow *parent)
-      : wxDialog(parent, -1, wxString(_("Celestial Navigation Manager")), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
+      : wxDialog(parent, -1, wxString(_("Celestial Navigation Manager")),
+                 wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
       // Setup GUI
       wxBoxSizer *layout = new wxBoxSizer(wxVERTICAL);
@@ -114,8 +115,10 @@ CelestialNavigationDialog::CelestialNavigationDialog(wxWindow *parent)
       m_pSightListCtrl = new wxListCtrl(this, -1, wxDefaultPosition, wxSize(400, -1),
           wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_SORT_ASCENDING|wxLC_HRULES/*|wxLC_VRULES*/|wxBORDER_SUNKEN);
       sbsSights->Add(m_pSightListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
-      m_pSightListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler(CelestialNavigationDialog::OnSightSelected), NULL, this);
-      m_pSightListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CelestialNavigationDialog::OnSightListLeftDown), NULL, this);
+      m_pSightListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler
+                                (CelestialNavigationDialog::OnSightSelected), NULL, this);
+      m_pSightListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler
+                                (CelestialNavigationDialog::OnSightListLeftDown), NULL, this);
 
       // Columns: visibility ctrl, name
       // note that under MSW for SetColumnWidth() to work we need to create the
@@ -124,22 +127,18 @@ CelestialNavigationDialog::CelestialNavigationDialog(wxWindow *parent)
       m_pSightListCtrl->InsertColumn(rmVISIBLE, wxT(""));
       m_pSightListCtrl->SetColumnWidth(0, 28);
 
-     m_pSightListCtrl->InsertColumn(rmBODY, _("Body"));
+      m_pSightListCtrl->InsertColumn(rmTYPE, _("Type"));
+      m_pSightListCtrl->InsertColumn(rmBODY, _("Body"));
       m_pSightListCtrl->InsertColumn(rmTIME, _("Time"));
-      m_pSightListCtrl->InsertColumn(rmELEVATION, _("Elevation"));
-      m_pSightListCtrl->InsertColumn(rmAZIMUTH, _("Azimuth"));
-      m_pSightListCtrl->InsertColumn(rmHEIGHT_CORRECTION, _("Height Correction"));
-      m_pSightListCtrl->InsertColumn(rmEDGE_CORRECTION, _("Limb Correction"));
-      m_pSightListCtrl->InsertColumn(rmREFRACTION_CORRECTION, _("Refraction Correction"));
-      m_pSightListCtrl->InsertColumn(rmPARALLAX_CORRECTION, _("Parallax Correction"));
-      m_pSightListCtrl->InsertColumn(rmCORRECTED_ELEVATION, _("Corrected Elevation"));
+      m_pSightListCtrl->InsertColumn(rmMEASUREMENT, _("Measurement"));
+      m_pSightListCtrl->InsertColumn(rmLUNAR_TIME_OFFSET, _("Lunar Time Offset"));
       m_pSightListCtrl->InsertColumn(rmCOLOR, _("Color"));
 
       // Buttons
       wxBoxSizer *bsSightButtons = new wxBoxSizer(wxVERTICAL);
       sbsSights->Add(bsSightButtons, 0, wxALIGN_RIGHT);
 
-      btnNew = new wxButton(this, -1, _("&New"));
+      btnNew = new wxButton(this, -1, _("&New Sight"));
       bsSightButtons->Add(btnNew, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnNew->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(CelestialNavigationDialog::OnNewClick), NULL, this);
@@ -159,6 +158,20 @@ CelestialNavigationDialog::CelestialNavigationDialog(wxWindow *parent)
       btnDeleteAllSights->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(CelestialNavigationDialog::OnDeleteAllSightsClick), NULL, this);
 
+      wxBoxSizer *timeOffset = new wxBoxSizer(wxHORIZONTAL);
+      layout->Add(timeOffset, 0, 0, DIALOG_MARGIN);
+
+      timeOffset->Add(new wxStaticText( this, -1, _("Overall Time Offset in Seconds"),
+                                        wxDefaultPosition, wxDefaultSize, 0 ),
+                      0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxFIXED_MINSIZE, 5);
+
+      spinSightTimeOffset = new wxSpinCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+                                           wxSP_ARROW_KEYS, -10000, 10000, 0);
+      timeOffset->Add(spinSightTimeOffset, 0, wxALIGN_RIGHT);
+
+      spinSightTimeOffset->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED,
+                                  wxSpinEventHandler(CelestialNavigationDialog::OnUpdateAllSightsTimeOffset),
+                                  NULL, this);
 
       // Dialog buttons
       wxSizer *szButtons = CreateButtonSizer(wxOK);
@@ -206,18 +219,12 @@ void CelestialNavigationDialog::UpdateSightListCtrl()
             m_pSightListCtrl->SetItemImage(index, (*it)->IsVisible() ? 0 : -1);
             m_pSightListCtrl->SetItem(idx, rmBODY, (*it)->m_Body);
             m_pSightListCtrl->SetItem(idx, rmTIME, (*it)->m_DateTime.Format());
-            m_pSightListCtrl->SetItem(idx, rmELEVATION, wxString::Format(_T("%f"), (*it)->m_Elevation));
-            m_pSightListCtrl->SetItem(idx, rmAZIMUTH, wxString::Format(_T("%f"), (*it)->m_Azimuth));
-            m_pSightListCtrl->SetItem(idx, rmHEIGHT_CORRECTION,
-                                      wxString::Format(_T("%f"), (*it)->m_HeightCorrection));
-            m_pSightListCtrl->SetItem(idx, rmEDGE_CORRECTION,
-                                      wxString::Format(_T("%f"), (*it)->m_LimbCorrection));
-            m_pSightListCtrl->SetItem(idx, rmREFRACTION_CORRECTION,
-                                      wxString::Format(_T("%f"), (*it)->m_RefractionCorrection));
-            m_pSightListCtrl->SetItem(idx, rmPARALLAX_CORRECTION,
-                                      wxString::Format(_T("%f"), (*it)->m_ParallaxCorrection));
-            m_pSightListCtrl->SetItem(idx, rmCORRECTED_ELEVATION,
-                                      wxString::Format(_T("%f"), (*it)->m_CorrectedElevation));
+            m_pSightListCtrl->SetItem(idx, rmMEASUREMENT, wxString::Format(_T("%f"), (*it)->m_Measurement));
+            m_pSightListCtrl->SetItem(idx, rmLUNAR_TIME_OFFSET,
+                                      dynamic_cast<LunarSight*>(*it) ?
+                                      wxString::Format(_T("%f"),
+                                                       dynamic_cast<LunarSight*>(*it)->timeoffset)
+                                      : _T("N/A"));
             m_pSightListCtrl->SetItem(idx, rmCOLOR,
                                       wxString::Format(_T("0x%llx%llx%llx"),
                                                        (*it)->m_Colour.Red(),
@@ -267,7 +274,8 @@ void CelestialNavigationDialog::MakeAllSightsInvisible()
       {
             if ((*it)->IsVisible()) { // avoid config updating as much as possible!
                   (*it)->SetVisible(false);
-                  m_pSightListCtrl->SetItemImage(m_pSightListCtrl->FindItem(-1, index), -1); // Likely not same rder :0
+                  m_pSightListCtrl->SetItemImage(m_pSightListCtrl->FindItem(-1, index), -1);
+                  // Likely not same rder :0
             }
       }
 }
@@ -279,6 +287,9 @@ void CelestialNavigationDialog::OnNewClick(wxCommandEvent &event)
       
       if( dialog->ShowModal() == wxID_OK ) {
          Sight *s = dialog->MakeNewSight();
+
+         s->RebuildPolygons(spinSightTimeOffset->GetValue());
+
          m_SightList.Append(s);
 
          UpdateSightListCtrl();
@@ -297,11 +308,14 @@ void CelestialNavigationDialog::OnPropertiesClick(wxCommandEvent &event)
 
       SightDialog *dialog = new SightDialog(GetParent());
       dialog->ReadSight(psight);
-      
+
       if( dialog->ShowModal() == wxID_OK ) {
          m_SightList.DeleteObject(psight);
 
          Sight *s = dialog->MakeNewSight();
+
+         s->RebuildPolygons(spinSightTimeOffset->GetValue());
+
          m_SightList.Insert(selected_index, s);
 
          UpdateSightListCtrl();
@@ -327,7 +341,8 @@ void CelestialNavigationDialog::OnDeleteClick(wxCommandEvent &event)
  
 void CelestialNavigationDialog::OnDeleteAllSightsClick(wxCommandEvent &event)
 {
-   wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> sights?"), wxString(_("OpenCPN Alert"),wxYES_NO  ));
+     wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> sights?"),
+                          wxString(_("OpenCPN Alert"), wxYES_NO));
 
       m_SightList.Clear();
 
@@ -365,12 +380,17 @@ void CelestialNavigationDialog::OnSightSelected(wxListEvent &event)
     RequestRefresh(cc1);
 
     UpdateButtons();
-
 }
 
+void CelestialNavigationDialog::OnUpdateAllSightsTimeOffset(wxSpinEvent &event)
+{
+    SightList::iterator it;
+    for (it = m_SightList.begin(); it != m_SightList.end(); ++it)
+       (*it)->RebuildPolygons(spinSightTimeOffset->GetValue());
+
+    RequestRefresh(cc1);
+}
 
 //END Event handlers
 
-
 // kate: indent-width 6; space-indent on; indent-mode cstyle;
-

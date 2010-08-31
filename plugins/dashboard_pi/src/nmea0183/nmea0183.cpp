@@ -96,7 +96,9 @@ NMEA0183::NMEA0183()
 /*
    response_table.Append( (RESPONSE *) &Rot );
    response_table.Append( (RESPONSE *) &Rpm );
+*/
    response_table.Append( (RESPONSE *) &Rsa );
+/*
    response_table.Append( (RESPONSE *) &Rsd );
 */
    response_table.Append( (RESPONSE *) &Rte );

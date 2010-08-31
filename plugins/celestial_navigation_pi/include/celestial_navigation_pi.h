@@ -69,6 +69,7 @@ public:
       void OnContextMenuItemCallback(int id);
 
       bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+      void SetCursorLatLon(double lat, double lon);
 
 private:
       wxWindow         *m_parent_window;
@@ -76,11 +77,9 @@ private:
       CelestialNavigationDialog       *m_pcelestial_navigation_dialog;
       int               m_show_id;
       int               m_hide_id;
-
 };
 
+extern double celestial_navigation_pi_CursorLat();
+extern double celestial_navigation_pi_CursorLon();
 
 #endif
-
-
-

@@ -93,6 +93,7 @@
 #include "hdt.hpp"
 #include "RMB.hpp"
 #include "RMC.HPP"
+#include "rsa.hpp"
 #include "wpl.hpp"
 #include "rte.hpp"
 #include "gll.hpp"
@@ -106,11 +107,9 @@
 #include "vhw.hpp"
 #include "vwr.hpp"
 #include "zda.hpp"
-
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
-#include "RSA.hpp"
 #include "RSD.hpp"
 #include "SFI.hpp"
 #include "STN.hpp"
@@ -207,7 +206,9 @@ class NMEA0183
 /*
       ROT Rot;
       RPM Rpm;
+*/
       RSA Rsa;
+/*
       RSD Rsd;
 */
       RTE Rte;

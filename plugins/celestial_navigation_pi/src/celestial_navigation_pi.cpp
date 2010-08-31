@@ -75,6 +75,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
+extern "C" int geomag_load(const char *mdfile);
+
 int celestial_navigation_pi::Init(void)
 {
       m_pcelestial_navigation_dialog = NULL;
@@ -91,11 +93,17 @@ int celestial_navigation_pi::Init(void)
       //    The Items will be re-parented when added to the real context meenu
       wxMenu dummy_menu;
 
-      wxMenuItem *pmi = new wxMenuItem(&dummy_menu, -1, _("Show PlugIn Celestial_NavigationWindow"));
+      wxMenuItem *pmi = new wxMenuItem(&dummy_menu, -1, _("Show PlugIn CelestialNavigationWindow"));
       m_show_id = AddCanvasContextMenuItem(pmi, this );
       SetCanvasContextMenuItemViz(m_show_id, true);
 
+      /* load the geographical magnetic table */
+      wxString geomag_text_path = *GetpSharedDataLocation();
+      geomag_text_path.Append(_T("plugins/celestial_navigation/data/IGRF11.COF"));
+      geomag_load(geomag_text_path.mb_str());
+
       return (WANTS_OVERLAY_CALLBACK |
+              WANTS_CURSOR_LATLON       |
               INSTALLS_CONTEXTMENU_ITEMS);
 }
 
@@ -176,3 +184,22 @@ bool celestial_navigation_pi::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *v
    }
    return true;
 }
+
+static double s_cursor_lat, s_cursor_lon;
+
+void celestial_navigation_pi::SetCursorLatLon(double lat, double lon)
+{
+   s_cursor_lat = lat;
+   s_cursor_lon = lon;
+}
+
+double celestial_navigation_pi_CursorLat()
+{
+   return s_cursor_lat;
+}
+
+double celestial_navigation_pi_CursorLon()
+{
+   return s_cursor_lon;
+}
+

@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: sightdialog.h,v 1.10 2010/05/15 03:55:35 bdbcat Exp $
+ * $Id: findbodydialog.h,v 1.10 2010/05/15 03:55:35 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Celestial Navigation Support
@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef _SIGHTDIALOG_H_
-#define _SIGHTDIALOG_H_
+#ifndef _FINDBODYDIALOG_H_
+#define _FINDBODYDIALOG_H_
 
 /*!
  * Includes
@@ -47,18 +47,16 @@ class   wxListCtrl;
  */
 
 ////@begin control identifiers
-#define ID_SIGHTDIALOG 7000
-#define SYMBOL_SIGHTDIALOG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_SIGHTDIALOG_TITLE _("Sight Properties")
-#define SYMBOL_SIGHTDIALOG_IDNAME ID_SIGHTDIALOG
-#define SYMBOL_SIGHTDIALOG_SIZE wxSize(400, 300)
-#define SYMBOL_SIGHTDIALOG_POSITION wxDefaultPosition
+#define ID_FINDBODYDIALOG 7000
+#define SYMBOL_FINDBODYDIALOG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
+#define SYMBOL_FINDBODYDIALOG_TITLE _("Find sky location for a given Body")
+#define SYMBOL_FINDBODYDIALOG_IDNAME ID_FINDBODYDIALOG
+#define SYMBOL_FINDBODYDIALOG_SIZE wxSize(400, 300)
+#define SYMBOL_FINDBODYDIALOG_POSITION wxDefaultPosition
 
-#define ID_SIGHTDIALOG_TYPE_SET 7005
-#define ID_SIGHTDIALOG_FIND_BODY 7006
-#define ID_SIGHTDIALOG_COLOR_SET 7007
-#define ID_SIGHTDIALOG_CANCEL 7010
-#define ID_SIGHTDIALOG_OK 7011
+#define ID_FINDBODYDIALOG_UPDATE_TEXT 7005
+#define ID_FINDBODYDIALOG_UPDATE_CHECK 7006
+#define ID_FINDBODYDIALOG_DONE 7007
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -98,88 +96,56 @@ class   wxListCtrl;
 #endif
 
 /*!
- * SightDialog class declaration
+ * FindBodyDialog class declaration
  */
 
 class Sight;
 
-class SightDialog: public wxDialog
+class FindBodyDialog: public wxDialog
 {
-    DECLARE_DYNAMIC_CLASS( SightDialog )
+    DECLARE_DYNAMIC_CLASS( FindBodyDialog )
     DECLARE_EVENT_TABLE()
 
 public:
-   enum {ALTITUDE, AZIMUTH, LUNAR};
 
     /// Constructors
-    SightDialog();
-    SightDialog(wxWindow* parent, wxWindowID id = SYMBOL_SIGHTDIALOG_IDNAME,
-        const wxString& caption = SYMBOL_SIGHTDIALOG_TITLE,
-        const wxPoint& pos = SYMBOL_SIGHTDIALOG_POSITION,
-        const wxSize& size = SYMBOL_SIGHTDIALOG_SIZE,
-        long style = SYMBOL_SIGHTDIALOG_STYLE );
-    ~SightDialog( );
+    FindBodyDialog();
+    FindBodyDialog(wxWindow* parent, Sight *sight, wxWindowID id = SYMBOL_FINDBODYDIALOG_IDNAME,
+        const wxString& caption = SYMBOL_FINDBODYDIALOG_TITLE,
+        const wxPoint& pos = SYMBOL_FINDBODYDIALOG_POSITION,
+        const wxSize& size = SYMBOL_FINDBODYDIALOG_SIZE,
+        long style = SYMBOL_FINDBODYDIALOG_STYLE );
+    ~FindBodyDialog( );
 
-    wxTextCtrl *MakeTextLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                  const wchar_t *defaulttext,
-                                  const wchar_t *labelvalue);
-    wxChoice *MakeChoiceLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                  const wchar_t *labelvalue);
-
-    /// Creation
-    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_SIGHTDIALOG_IDNAME,
-                 const wxString& caption = SYMBOL_SIGHTDIALOG_TITLE,
-                 const wxPoint& pos = SYMBOL_SIGHTDIALOG_POSITION,
-                 const wxSize& size = SYMBOL_SIGHTDIALOG_SIZE,
-                 long style = SYMBOL_SIGHTDIALOG_STYLE );
+    bool Create( wxWindow* parent, Sight* sight, wxWindowID id,
+                 const wxString& caption, const wxPoint& pos,
+                 const wxSize& size, long style );
 
     void CreateControls();
 
-//    void SetColorScheme(ColorScheme cs);
     void SetDialogTitle(wxString title);
 
-    void OnSightDialogTypeSet( wxCommandEvent& event );
-    void OnSightDialogFindBodyClick( wxCommandEvent& event );
-    void OnSightDialogColorSetClick( wxCommandEvent& event );
-    void OnSightDialogCancelClick( wxCommandEvent& event );
-    void OnSightDialogOkClick( wxCommandEvent& event );
+    void OnUpdate( wxCommandEvent& event );
+    void Update();
+    void OnDoneClick( wxCommandEvent& event );
     void OnClose(wxCloseEvent& event);
-
-    wxDateTime   DateTime();
-
-    void ReadSight(Sight *s);
-    Sight *MakeNewSight();
 
     /// Should we show tooltips?
     static bool ShowToolTips();
 
-    wxChoice*   m_typeChoice;
-    wxChoice*   m_bodiesChoice;
-    wxChoice*   m_bodiesChoice2;
-    wxChoice*   m_bodyLimbChoice;
-
-    wxCalendarCtrl *m_dateCalendar;
-    wxTextCtrl*   m_timeHours, *m_timeMinutes, *m_timeSeconds;
-    wxTextCtrl*   m_timeCertaintyText;
-
-    wxTextCtrl*   m_temperatureText;
-    wxTextCtrl*   m_pressureText;
-    wxTextCtrl*   m_heightText;
-
-    wxTextCtrl*   m_measurementText, *m_measurementMinutesText, *m_measurementCertaintyText;
-
+    wxTextCtrl*   m_Latitude;
+    wxTextCtrl*   m_Longitude;
     wxCheckBox*   m_azimuthMagneticNorth;
 
-    wxButton*     m_FindBodyButton;
+    wxStaticText* m_Altitude;
+    wxStaticText* m_Azimuth;
 
-    wxStaticText* m_Color;
+    wxButton*     m_DoneButton;
 
-    wxButton*     m_ColorSetButton;
-    wxButton*     m_CancelButton;
-    wxButton*     m_OKButton;
+    Sight*        m_Sight;
 };
 
 
 
 #endif
-    // _SIGHTDIALOG_H_
+    // _FINDBODYDIALOG_H_

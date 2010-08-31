@@ -24,6 +24,7 @@
 #include <wx/dialog.h>
 #include <wx/timer.h>
 #include <wx/listctrl.h>
+#include <wx/spinctrl.h>
 
 class wxButton;
 
@@ -52,6 +53,8 @@ class CelestialNavigationDialog : public wxDialog {
 
             void OnSightSelected(wxListEvent &event);
 
+            void OnUpdateAllSightsTimeOffset(wxSpinEvent &event);
+
             // properties
             wxListCtrl *m_pSightListCtrl;
 
@@ -59,6 +62,8 @@ class CelestialNavigationDialog : public wxDialog {
             wxButton *btnProperties;
             wxButton *btnDelete;
             wxButton *btnDeleteAllSights;
+
+            wxSpinCtrl *spinSightTimeOffset;
 
             bool m_bNeedConfigFlush;  // if true, update config in destructor
 };

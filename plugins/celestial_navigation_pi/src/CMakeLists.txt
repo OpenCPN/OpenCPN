@@ -84,6 +84,8 @@ SET(SRC_CELESTIAL_NAVIGATION
 	  celestialnavigationdialog.cpp
 	  sightdialog.cpp 
           sight.cpp
+          findbodydialog.cpp
+          geodesic.c
           celestial_navigation_pi.cpp
 	)
 

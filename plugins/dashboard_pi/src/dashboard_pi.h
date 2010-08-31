@@ -42,9 +42,12 @@
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
+#include "instrument.h"
 #include "speedometer.h"
 #include "compass.h"
 #include "wind.h"
+#include "rudder_angle.h"
+#include "gps.h"
 
 wxString toSDMM ( int NEflag, double a );
 
@@ -108,6 +111,7 @@ public:
       void ToggleInstrumentVisibility(wxCommandEvent& event);
       /*TODO: OnKeyPress pass event to main window or disable focus*/
 
+private:
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeading, mPriVar, mPriDateTime, mPriApWind, mPriDepth;
       double               mVar;
@@ -126,37 +130,8 @@ public:
       DashboardInstrument_Single*      m_pDBIHdt;
       DashboardInstrument_Single*      m_pDBIStw;
       DashboardInstrument_Single*      m_pDBIDepth;
-
-DECLARE_EVENT_TABLE()
-};
-
-class DashboardInstrument_Single : public wxWindow
-{
-public:
-      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument_Single();
-
-      void OnPaint(wxPaintEvent& event);
-      void SetData(wxString data);
-
-      wxString          m_label;
-      wxString          m_data;
-
-DECLARE_EVENT_TABLE()
-};
-
-class DashboardInstrument_Double : public wxWindow
-{
-public:
-      DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument_Double();
-
-      void OnPaint(wxPaintEvent& event);
-      void SetData(wxString data1, wxString data2);
-
-      wxString          m_label;
-      wxString          m_data1;
-      wxString          m_data2;
+      DashboardInstrument_RudderAngle* m_pDBIRudderAngle;
+      DashboardInstrument_GPS*         m_pDBIGPS;
 
 DECLARE_EVENT_TABLE()
 };

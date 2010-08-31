@@ -41,6 +41,7 @@
 #include "../../../include/ocpn_plugin.h"
 
 #include "sight.h"
+#include "geodesic.h"
 
 WX_DEFINE_LIST ( SightList );
 WX_DEFINE_LIST ( wxRealPointList );
@@ -50,169 +51,17 @@ WX_DEFINE_LIST ( wxRealPointList );
 //-----------------------------------------------------------------------------
 
 Sight::Sight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
-             double timecertainty, double elevation, double elevationcertainty,
-             double azimuth, bool magneticnorth, double azimuthcertainty,
-             double height, wxColour colour)
+             double timecertainty, double measurement, double measurementcertainty,
+             double height, double temperature, double pressure, wxColour colour)
    : m_bVisible(true), m_Body(body), m_BodyLimb(bodylimb),
      m_DateTime(datetime), m_TimeCertainty(timecertainty),
-     m_Elevation(elevation), m_ElevationCertainty(elevationcertainty),
-     m_CorrectedElevation(elevation),
-     m_Azimuth(azimuth), m_bMagneticNorth(magneticnorth),
-     m_AzimuthCertainty(azimuthcertainty),
-     m_Height(height), m_Colour(colour)
-{
-   while(m_Azimuth < 0)
-      m_Azimuth += 360;
-   while(m_Azimuth >= 360)
-      m_Azimuth -= 360;
-
-   if(!wxIsNaN(m_Elevation)) {
-      /* correct for height of observer
-         The dip of the sea horizon in minutes = 1.753*sqrt(height) */
-      m_HeightCorrection = 1.753*sqrt(m_Height) * cos(M_PI/180 * m_Elevation) / 60.0;
-      
-      /* compensate for refraction */
-      if(m_CorrectedElevation >= 15)
-         m_RefractionCorrection = (.97127 / tan(M_PI/180 * m_CorrectedElevation)
-                                   - .00137 / pow(tan(M_PI/180 * m_CorrectedElevation), 3)) / 60.0;
-      else
-         m_RefractionCorrection = ((34.122 +
-                                    4.197*m_CorrectedElevation +
-                                    .00427*m_CorrectedElevation*m_CorrectedElevation)
-                                   / (1 + .505*m_CorrectedElevation
-                                      + .0845*m_CorrectedElevation*m_CorrectedElevation))
-            / 60.0;
-      
-      /* correct for limb shot */
-      m_LimbCorrection = 0;
-      if(!m_Body.Cmp(_T("Moon")) || !m_Body.Cmp(_T("Sun"))) {
-         if(m_BodyLimb == UPPER)
-            m_LimbCorrection =  .25;
-         else if(m_BodyLimb == LOWER)
-            m_LimbCorrection = -.25;
-      }
-      
-      /* correct for parallax 
-         earth radius: 6357 km
-         distance to moon: 384400 km */
-      if(!m_Body.Cmp(_T("Moon")))
-         m_ParallaxCorrection = -180/M_PI*asin(6357/384400.0)
-            * cos(M_PI/180*m_CorrectedElevation);
-      else
-         m_ParallaxCorrection = 0;
-      
-      /* apply corrections */
-      m_CorrectedElevation -= m_HeightCorrection + m_RefractionCorrection +
-         m_LimbCorrection + m_ParallaxCorrection;
-   }
-   
-   
-   m_bVisible = true;
-   
-   double azimuthmin, azimuthmax, azimuthstep;
-   ComputeTraceOneVariable(m_Azimuth, m_AzimuthCertainty, 180,
-                           1, azimuthmin, azimuthmax, azimuthstep);
-   
-   double elevationmin, elevationmax, elevationstep;
-   ComputeTraceOneVariable(m_CorrectedElevation, m_ElevationCertainty, 90,
-                           1, elevationmin, elevationmax, elevationstep);
-   if(wxIsNaN(m_Elevation))
-      elevationmin = elevationstep;
-   
-   double timemin, timemax, timestep;
-   ComputeTraceOneVariable(0, m_TimeCertainty, 1,
-                           60, timemin, timemax, timestep);
-   
-   /* draw line of latitude around celestial pole if we have an elevation */
-   if(wxIsNaN(m_Azimuth))
-      BuildElevationLineOfPosition(elevationmin, elevationmax, elevationstep,
-                                   azimuthstep,
-                                   timemin, timemax, timestep);
-
-   /* otherwise draw bearing line (compass sight) */
-   if(!wxIsNaN(m_Azimuth))
-      BuildBearingLineOfPosition(elevationmin, elevationmax, elevationstep,
-                                   azimuthmin, azimuthmax, azimuthstep,
-                                   timemin, timemax, timestep);
-
-}
-
+     m_Measurement(measurement), m_MeasurementCertainty(measurementcertainty),
+     m_Height(height), m_Temperature(temperature), m_Pressure(pressure), m_Colour(colour)
+{}
 
 Sight::~Sight ( )
 {
 }
-
-void Sight::BuildElevationLineOfPosition(double elevationmin, double elevationmax, double elevationstep,
-                                         double tracestep,
-                                         double timemin, double timemax, double timestep)
-{
-   wxRealPointList *p, *l = new wxRealPointList;
-   for(double trace=-180; trace<=180; trace+=tracestep) {
-      p = new wxRealPointList;
-      for(double elevation=elevationmin; elevation<=elevationmax
-             && fabs(elevation) <= 90; elevation+=elevationstep)
-         for(double time=timemin; time<=timemax; time+=timestep)
-            p->Append(new wxRealPoint(DistancePoint(m_DateTime + wxTimeSpan(0, 0, time),
-                                                           elevation, trace)));
-      wxRealPointList *m = MergePoints(l, p);
-      wxRealPointList *n = ReduceToConvexPolygon(m);
-      polygons.push_back(n);
-
-      m->DeleteContents(true);
-      delete m;
-      l->DeleteContents(true);
-      delete l;
-
-      l = p;
-   }
-}
-
-
-void Sight::BuildBearingLineOfPosition(double elevationmin, double elevationmax, double elevationstep,
-                                       double azimuthmin, double azimuthmax, double azimuthstep,
-                                       double timemin, double timemax, double timestep)
-{
-   wxRealPointList *p, *l = new wxRealPointList;
-   for(double elevation=elevationmax; elevation>=elevationmin
-          && fabs(elevation) <= 90;  elevation-=elevationstep) {
-      p = new wxRealPointList;
-      double lat, lon, llat = 1000, llon;
-      bool skip_this_elevation = false;
-      for(double azimuth=azimuthmin; azimuth<=azimuthmax; azimuth+=azimuthstep)
-         for(double time=timemin; time<=timemax; time+=timestep)
-            if(BearingPoint(m_DateTime + wxTimeSpan(0, 0, time),
-                            elevation, azimuth, lat, lon)) {
-               if(llat != 1000) {
-                  double d;
-                  ll_gc_ll_reverse(llat, llon, lat, lon, 0, &d);
-                  /* if we move more than 30 degrees, then this span is no good */
-                  if(d > 30*60)
-                     skip_this_elevation = true;
-               }
-               p->Append(new wxRealPoint(lat, lon));
-               llat = lat;
-               llon = lon;
-            }
-
-      wxRealPointList *m = MergePoints(l, p);
-      
-      if(!skip_this_elevation) {
-         wxRealPointList *n = ReduceToConvexPolygon(m);
-         if(n->size() > 1)
-            polygons.push_back(n);
-         else
-            delete n;
-      }
-      
-      m->DeleteContents(true);
-      delete m;
-      l->DeleteContents(true);
-      delete l;
-      
-      l = p;
-   }
-}
-
 
 void Sight::SetVisible(bool visible)
 {
@@ -240,6 +89,8 @@ void Sight::BodyLocation(wxDateTime time, double &lat, double &lon)
    astrolabe::globals::vsop87d_text_path = GetpSharedDataLocation()->fn_str();
    astrolabe::globals::vsop87d_text_path.append("plugins/celestial_navigation/data/");
    astrolabe::globals::vsop87d_text_path.append("vsop87d.txt");
+
+   time.MakeUTC(); /* convert to universal time */
 
    double jd = cal_to_jd(time.GetYear(), time.GetMonth()+1, time.GetDay()
                   + (time.GetHour()
@@ -371,94 +222,23 @@ void Sight::BodyLocation(wxDateTime time, double &lat, double &lon)
     notplanet:;
     }
 
-       // account for earth's hour angle
-       ra -= lsub;
-       ra += M_PI - M_PI/180*15*
-          (time.GetHour()
-           + (time.GetMinute()
-              + (time.GetSecond()
-                 + (time.GetMillisecond() / 1000.0))
-              / 60.0)
-           / 60.0);
+    // account for earth's hour angle
+    ra -= lsub;
+    ra += M_PI - M_PI/180*15*
+       (time.GetHour()
+        + (time.GetMinute()
+           + (time.GetSecond()
+              + (time.GetMillisecond() / 1000.0))
+           / 60.0)
+        / 60.0);
      
    lat = dec*180/M_PI;
    lon = ra*180/M_PI;
  }
 
-/* Calculate latitude and longitude position for a sight taken with time, elevation,
-    and trace angle */
- wxRealPoint Sight::DistancePoint(wxDateTime datetime, double elevation, double trace)
- {
-    double lat, lon, rlat, rlon;
-    BodyLocation(datetime, lat, lon);
-    ll_gc_ll(lat, lon, trace, 60*(90-elevation),
-             &rlat, &rlon);
-    
-    return wxRealPoint(rlat, rlon);
- }
-
-extern "C" int geomag_load(const char *mdfile);
 extern "C" int geomag_calc(double latitude, double longitude, double alt,
                 int day, int month, double year,
                            double results[14]);
-
-bool Sight::BearingPoint(wxDateTime datetime, double elevation, double bearing,
-                         double &rlat, double &rlon)
- {
-    double lat, lon;
-    BodyLocation(datetime, lat, lon);
-
-    while(bearing < 0)
-       bearing += 360;;
-    while(bearing > 360)
-       bearing -= 360;
-
-    double b, l = 1000, mdl = 1000;
-    double trace = 0, tracestep = 240;
-    while(fabs(tracestep) > m_AzimuthCertainty/16) {
-       ll_gc_ll(lat, lon, trace, 60*(90-elevation), &rlat, &rlon);
-       ll_gc_ll_reverse(rlat, rlon, lat, lon, &b, 0);
-
-       /* apply magnetic correction to bearing */
-       if(m_bMagneticNorth) {
-          double results[14];
-
-          static bool first=true;
-          if(first) {
-             wxString geomag_text_path = *GetpSharedDataLocation();
-             geomag_text_path.Append(_T("plugins/celestial_navigation/data/IGRF11.COF"));
-             geomag_load(geomag_text_path.mb_str());
-             first = false;
-          }
-
-          geomag_calc(rlat, rlon, m_Height,
-                   m_DateTime.GetDay(), m_DateTime.GetMonth(), m_DateTime.GetYear(),
-                   results);
-          b -= results[0];
-       }
-
-       double mdb = bearing - b;
-       while(mdb > 180)
-          mdb -= 360;
-       while(mdb < -180)
-          mdb += 360;
-          
-       if(mdb * mdl < 0 || fabs(mdb) >= fabs(mdl))
-          tracestep = -tracestep/2.1;
-
-       l = b;
-       mdl = mdb;
-
-       trace += tracestep;
-
-       while(trace > 180)
-          trace -= 360;
-       while(trace < -180)
-          trace += 360;
-    }
-
-    return fabs(bearing - b) < 64*fabs(tracestep);
- }
 
 /* Combine two lists of points by appending p2 to p1 */
 wxRealPointList *Sight::MergePoints(wxRealPointList *p1, wxRealPointList *p2)
@@ -623,18 +403,9 @@ void Sight::DrawPolygon(wxMemoryDC& dc, PlugIn_ViewPort &VP, wxRealPointList &ar
 }
 
 /* Compute trace areas for one dimension, given center certainty, and constant */
-void Sight::ComputeTraceOneVariable(double center, double certainty, double constant,
-                                    double stepsize, double &min, double &max, double &step)
+double Sight::ComputeStepSize(double certainty, double stepsize, double min, double max)
 {
-   if(wxIsNaN(center)) {
-      min = -constant;
-      max =  constant;
-      step = stepsize;
-   } else {
-      min =  center - certainty;
-      max =  center + certainty;
-      step = 2*certainty / (floor(certainty / stepsize) + 1);
-   }
+   return (max - min) / (floor(certainty / stepsize) + 1);
 }
 
 /* render the area of position for this sight */
@@ -653,304 +424,291 @@ void Sight::Render( wxMemoryDC& dc, PlugIn_ViewPort &VP )
       }
 }
 
+AltitudeSight::AltitudeSight(wxString body, BodyLimb bodylimb, wxDateTime datetime,
+             double timecertainty, double measurement, double measurementcertainty,
+             double height, double temperature, double pressure, wxColour colour)
+   : Sight(body, bodylimb, datetime, timecertainty, measurement, measurementcertainty,
+           height, temperature, pressure, colour)
+{      
 
-/* --------------------------------------------------------------------------------- */
-/*
-      Geodesic Forward and Reverse calculation functions
-      Abstracted and adapted from PROJ-4.5.0 by David S.Register (bdbcat@yahoo.com)
-
-      Original source code contains the following license:
-
-      Copyright (c) 2000, Frank Warmerdam
-
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
-*/
-/* --------------------------------------------------------------------------------- */
-
-
-
-
-#define DTOL                 1e-12
-
-#define HALFPI  1.5707963267948966
-#define SPI     3.14159265359
-#define TWOPI   6.2831853071795864769
-#define ONEPI   3.14159265358979323846
-#define MERI_TOL 1e-9
-
-static double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
-static int merid, signS;
-
-/*   Input/Output from geodesic functions   */
-static double al12;           /* Forward azimuth */
-static double al21;           /* Back azimuth    */
-static double geod_S;         /* Distance        */
-static double phi1, lam1, phi2, lam2;
-
-static int ellipse;
-static double geod_f;
-static double geod_a;
-static double es, onef, f, f64, f2, f4;
-
-double adjlon (double lon) {
-      if (fabs(lon) <= SPI) return( lon );
-      lon += ONEPI;  /* adjust to 0..2pi rad */
-      lon -= TWOPI * floor(lon / TWOPI); /* remove integral # of 'revolutions'*/
-      lon -= ONEPI;  /* adjust back to -pi..pi rad */
-      return( lon );
+   /* correct for height of observer
+      The dip of the sea horizon in minutes = 1.753*sqrt(height) */
+   m_HeightCorrection = 1.753*sqrt(m_Height) * cos(M_PI/180 * m_Measurement) / 60.0;
+      
+   /* compensate for refraction */
+#if 1
+   m_RefractionCorrection = (.267*m_Pressure/(m_Temperature + 273.15)) /
+      tan(M_PI/180 * (m_Measurement + .04848 / (tan(M_PI/180 * m_Measurement) + .028)));
+#else
+      if(m_Measurement >= 15)
+         m_RefractionCorrection = (.97127 / tan(M_PI/180 * m_Measurement)
+                                   - .00137 / pow(tan(M_PI/180 * m_Measurement), 3)) / 60.0;
+      else
+         m_RefractionCorrection = ((34.122 +
+                                    4.197*m_Measurement +
+                                    .00427*m_Measurement*m_Measurement)
+                                   / (1 + .505*m_Measurement
+                                      + .0845*m_Measurement*m_Measurement))
+            / 60.0;
+#endif 
+      /* correct for limb shot */
+      m_LimbCorrection = 0;
+      if(!m_Body.Cmp(_T("Moon")) || !m_Body.Cmp(_T("Sun"))) {
+         if(m_BodyLimb == UPPER)
+            m_LimbCorrection =  .25;
+         else if(m_BodyLimb == LOWER)
+            m_LimbCorrection = -.25;
+      }
+      
+      /* correct for parallax 
+         earth radius: 6357 km
+         distance to moon: 384400 km */
+      if(!m_Body.Cmp(_T("Moon")))
+         m_ParallaxCorrection = -180/M_PI*asin(6357/384400.0)
+            * cos(M_PI/180*m_Measurement);
+      else
+         m_ParallaxCorrection = 0;
+      
+      /* apply corrections */
+      m_CorrectedAltitude = m_Measurement - m_HeightCorrection - m_RefractionCorrection -
+         m_LimbCorrection - m_ParallaxCorrection;
 }
 
-
-
-void geod_inv() {
-      double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
-      sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
-
-
-            /*   Stuff the WGS84 projection parameters as necessary
-      To avoid having to include <geodesic,h>
-            */
-
-      ellipse = 1;
-      f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
-      geod_a = WGS84_semimajor_axis_meters;
-
-      es = 2 * f - f * f;
-      onef = sqrt(1. - es);
-      geod_f = 1 - onef;
-      f2 = geod_f/2;
-      f4 = geod_f/4;
-      f64 = geod_f*geod_f/64;
-
-
-      if (ellipse) {
-            th1 = atan(onef * tan(phi1));
-            th2 = atan(onef * tan(phi2));
-      } else {
-            th1 = phi1;
-            th2 = phi2;
-      }
-      thm = .5 * (th1 + th2);
-      dthm = .5 * (th2 - th1);
-      dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
-      if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
-            al12 =  al21 = geod_S = 0.;
-            return;
-      }
-      sindlamm = sin(dlamm);
-      costhm = cos(thm);      sinthm = sin(thm);
-      cosdthm = cos(dthm);    sindthm = sin(dthm);
-      L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
-                  * sindlamm * sindlamm;
-      d = acos(cosd = 1 - L - L);
-      if (ellipse) {
-            E = cosd + cosd;
-            sind = sin( d );
-            Y = sinthm * cosdthm;
-            Y *= (Y + Y) / (1. - L);
-            T = sindthm * costhm;
-            T *= (T + T) / L;
-            X = Y + T;
-            Y -= T;
-            T = d / sind;
-            D = 4. * T * T;
-            A = D * E;
-            B = D + D;
-            geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
-                        f64 * (X * (A + (T - .5 * (A - E)) * X) -
-                        Y * (B + E * Y) + D * X * Y));
-            tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
-                        (f2 * T + f64 * (32. * T - (20. * T - A)
-                        * X - (B + 4.) * Y)) * tan(dlam)));
-      } else {
-            geod_S = geod_a * d;
-            tandlammp = tan(dlamm);
-      }
-      u = atan2(sindthm , (tandlammp * costhm));
-      v = atan2(cosdthm , (tandlammp * sinthm));
-      al12 = adjlon(TWOPI + v - u);
-      al21 = adjlon(TWOPI - v - u);
-}
-
-
-
-
-void geod_pre(void) {
-
-      /*   Stuff the WGS84 projection parameters as necessary
-      To avoid having to include <geodesic,h>
-      */
-      ellipse = 1;
-      f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
-      geod_a = WGS84_semimajor_axis_meters;
-
-      es = 2 * f - f * f;
-      onef = sqrt(1. - es);
-      geod_f = 1 - onef;
-      f2 = geod_f/2;
-      f4 = geod_f/4;
-      f64 = geod_f*geod_f/64;
-
-      al12 = adjlon(al12); /* reduce to  +- 0-PI */
-      signS = fabs(al12) > HALFPI ? 1 : 0;
-      th1 = ellipse ? atan(onef * tan(phi1)) : phi1;
-      costh1 = cos(th1);
-      sinth1 = sin(th1);
-      if ((merid = fabs(sina12 = sin(al12)) < MERI_TOL)) {
-            sina12 = 0.;
-            cosa12 = fabs(al12) < HALFPI ? 1. : -1.;
-            M = 0.;
-      } else {
-            cosa12 = cos(al12);
-            M = costh1 * sina12;
-      }
-      N = costh1 * cosa12;
-      if (ellipse) {
-            if (merid) {
-                  c1 = 0.;
-                  c2 = f4;
-                  D = 1. - c2;
-                  D *= D;
-                  P = c2 / D;
-            } else {
-                  c1 = geod_f * M;
-                  c2 = f4 * (1. - M * M);
-                  D = (1. - c2)*(1. - c2 - c1 * M);
-                  P = (1. + .5 * c1 * M) * c2 / D;
-            }
-      }
-      if (merid) s1 = HALFPI - th1;
-      else {
-            s1 = (fabs(M) >= 1.) ? 0. : acos(M);
-            s1 =  sinth1 / sin(s1);
-            s1 = (fabs(s1) >= 1.) ? 0. : acos(s1);
-      }
-}
-
-
-void  geod_for(void) {
-      double d,sind,u,V,X,ds,cosds,sinds,ss,de;
-
-      ss = 0.;
-
-      if (ellipse) {
-            d = geod_S / (D * geod_a);
-            if (signS) d = -d;
-            u = 2. * (s1 - d);
-            V = cos(u + d);
-            X = c2 * c2 * (sind = sin(d)) * cos(d) * (2. * V * V - 1.);
-            ds = d + X - 2. * P * V * (1. - 2. * P * cos(u)) * sind;
-            ss = s1 + s1 - ds;
-      } else {
-            ds = geod_S / geod_a;
-            if (signS) ds = - ds;
-      }
-      cosds = cos(ds);
-      sinds = sin(ds);
-      if (signS) sinds = - sinds;
-      al21 = N * cosds - sinth1 * sinds;
-      if (merid) {
-            phi2 = atan( tan(HALFPI + s1 - ds) / onef);
-            if (al21 > 0.) {
-                  al21 = PI;
-                  if (signS)
-                        de = PI;
-                  else {
-                        phi2 = - phi2;
-                        de = 0.;
-                  }
-            } else {
-                  al21 = 0.;
-                  if (signS) {
-                        phi2 = - phi2;
-                        de = 0;
-                  } else
-                        de = PI;
-            }
-      } else {
-            al21 = atan(M / al21);
-            if (al21 > 0)
-                  al21 += PI;
-            if (al12 < 0.)
-                  al21 -= PI;
-            al21 = adjlon(al21);
-            phi2 = atan(-(sinth1 * cosds + N * sinds) * sin(al21) /
-                        (ellipse ? onef * M : M));
-            de = atan2(sinds * sina12 ,
-                       (costh1 * cosds - sinth1 * sinds * cosa12));
-            if (ellipse){
-                  if (signS)
-                        de += c1 * ((1. - c2) * ds +
-                                    c2 * sinds * cos(ss));
-                  else
-                        de -= c1 * ((1. - c2) * ds -
-                                    c2 * sinds * cos(ss));
-            }
-      }
-      lam2 = adjlon( lam1 + de );
-}
-
-
-
-
-
-
-
-/* --------------------------------------------------------------------------------- */
-/*
-// Given the lat/long of starting point, and traveling a specified distance,
-// at an initial bearing, calculates the lat/long of the resulting location.
-// using elliptic earth model.
-*/
-/* --------------------------------------------------------------------------------- */
-
-void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, double *dlon)
+void AltitudeSight::RebuildPolygons(double timeoffset)
 {
-    /*      Setup the static parameters  */
-    phi1 = lat * DEGREE;            /* Initial Position  */
-    lam1 = lon * DEGREE;
-    al12 = brg * DEGREE;            /* Forward azimuth */
-    geod_S = dist * 1852.0;         /* Distance        */
+      polygons.clear();
 
-    geod_pre();
-    geod_for();
+      double altitudemin, altitudemax, altitudestep;
+      altitudemin = m_Measurement - m_MeasurementCertainty;
+      altitudemax = m_Measurement + m_MeasurementCertainty;
+      altitudestep = ComputeStepSize(m_MeasurementCertainty, 1, altitudemin, altitudemax);
 
-    *dlat = phi2 / DEGREE;
-    *dlon = lam2 / DEGREE;
+      double timemin, timemax, timestep;
+      timemin = timeoffset - m_TimeCertainty;
+      timemax = timeoffset + m_TimeCertainty;
+      timestep = ComputeStepSize(m_TimeCertainty, 1, timemin, timemax);
+
+      BuildAltitudeLineOfPosition(1, altitudemin, altitudemax, altitudestep,
+                                  timemin, timemax, timestep);
 }
 
-void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
-                     double *bearing, double *dist)
+
+/* Calculate latitude and longitude position for a sight taken with time, altitude,
+    and trace angle */
+ wxRealPoint AltitudeSight::DistancePoint(wxDateTime datetime, double altitude, double trace)
+ {
+    double lat, lon, rlat, rlon;
+    BodyLocation(datetime, lat, lon);
+    ll_gc_ll(lat, lon, trace, 60*(90-altitude),
+             &rlat, &rlon);
+    
+    return wxRealPoint(rlat, rlon);
+ }
+
+void AltitudeSight::BuildAltitudeLineOfPosition(double tracestep,
+                                        double altitudemin, double altitudemax, double altitudestep,
+                                        double timemin, double timemax, double timestep)
 {
-    /*      Setup the static parameters  */
-    phi1 = lat1 * DEGREE;            /* Initial Position  */
-    lam1 = lon1 * DEGREE;
-    phi2 = lat2 * DEGREE;
-    lam2 = lon2 * DEGREE;
+   wxRealPointList *p, *l = new wxRealPointList;
+   for(double trace=-180; trace<=180; trace+=tracestep) {
+      p = new wxRealPointList;
+      for(double altitude=altitudemin; altitude<=altitudemax
+             && fabs(altitude) <= 90; altitude+=altitudestep)
+         for(double time=timemin; time<=timemax; time+=timestep)
+            p->Append(new wxRealPoint(DistancePoint(m_DateTime + wxTimeSpan(0, 0, time),
+                                                    altitude, trace)));
+      wxRealPointList *m = MergePoints(l, p);
+      wxRealPointList *n = ReduceToConvexPolygon(m);
+      polygons.push_back(n);
 
-    geod_inv();
-    if(al12 < 0)
-       al12 += 2*PI;
+      m->DeleteContents(true);
+      delete m;
+      l->DeleteContents(true);
+      delete l;
 
-    if(bearing)
-       *bearing = al12 / DEGREE;
-    if(dist)
-       *dist = geod_S / 1852.0;
+      l = p;
+   }
 }
 
+AzimuthSight::AzimuthSight(wxString body, wxDateTime datetime,
+                           double timecertainty, double measurement, double measurementcertainty,
+                           bool magneticnorth, wxColour colour)
+   : Sight(body, CENTER, datetime, timecertainty, measurement, measurementcertainty,
+           0, 0, 0, colour),
+     m_bMagneticNorth(magneticnorth)
+{      
+   while(m_Measurement < 0)
+      m_Measurement += 360;
+   while(m_Measurement >= 360)
+      m_Measurement -= 360;   
+}
+
+void AzimuthSight::RebuildPolygons(double timeoffset)
+{
+   polygons.clear();
+
+   double azimuthmin, azimuthmax, azimuthstep;
+   azimuthmin = m_Measurement - m_MeasurementCertainty;
+   azimuthmax = m_Measurement + m_MeasurementCertainty;
+   azimuthstep = ComputeStepSize(m_MeasurementCertainty, 1, azimuthmin, azimuthmax);
+
+   double timemin, timemax, timestep;
+   timemin = timeoffset - m_TimeCertainty;
+   timemax = timeoffset + m_TimeCertainty;
+   timestep = ComputeStepSize(m_TimeCertainty, 1, timemin, timemax);
+
+   BuildBearingLineOfPosition(1, azimuthmin, azimuthmax, azimuthstep,
+                              timemin, timemax, timestep);
+}
+
+/* find latitude and longitude which sees the body at the time, altitude and bearing
+   iterative method so we can easily support magnetic variation */
+
+bool AzimuthSight::BearingPoint(wxDateTime datetime, double altitude, double bearing,
+                                double &rlat, double &rlon)
+{
+    double lat, lon;
+
+    BodyLocation(datetime, lat, lon);
+
+    while(bearing < 0)
+       bearing += 360;
+    while(bearing > 360)
+       bearing -= 360;
+
+    double b, l = 1000, mdl = 1000;
+    double trace = 0, tracestep = 240;
+    while(fabs(tracestep) > m_MeasurementCertainty/16) {
+       ll_gc_ll(lat, lon, trace, 60*(90-altitude), &rlat, &rlon);
+       ll_gc_ll_reverse(rlat, rlon, lat, lon, &b, 0);
+
+       /* apply magnetic correction to bearing */
+       if(m_bMagneticNorth) {
+          double results[14];
+
+          geomag_calc(rlat, rlon, m_Height,
+                   m_DateTime.GetDay(), m_DateTime.GetMonth(), m_DateTime.GetYear(),
+                   results);
+          b -= results[0];
+       }
+
+       double mdb = bearing - b;
+       while(mdb > 180)
+          mdb -= 360;
+       while(mdb < -180)
+          mdb += 360;
+          
+       if(mdb * mdl < 0 || fabs(mdb) >= fabs(mdl))
+          tracestep = -tracestep/2.1;
+
+       l = b;
+       mdl = mdb;
+
+       trace += tracestep;
+
+       while(trace > 180)
+          trace -= 360;
+       while(trace < -180)
+          trace += 360;
+    }
+
+    return fabs(bearing - b) < 64*fabs(tracestep);
+ }
+
+
+void AzimuthSight::BuildBearingLineOfPosition(double altitudestep,
+                                              double azimuthmin, double azimuthmax, double azimuthstep,
+                                              double timemin, double timemax, double timestep)
+{
+   wxRealPointList *p, *l = new wxRealPointList;
+   for(double altitude=90; altitude>=0
+          && fabs(altitude) <= 90; altitude-=altitudestep) {
+      p = new wxRealPointList;
+      double lat, lon, llat = 1000, llon;
+      bool skip_this_altitude = false;
+      for(double azimuth=azimuthmin; azimuth<=azimuthmax; azimuth+=azimuthstep)
+         for(double time=timemin; time<=timemax; time+=timestep)
+            if(BearingPoint(m_DateTime + wxTimeSpan(0, 0, time),
+                            altitude, azimuth, lat, lon)) {
+               if(llat != 1000) {
+                  double d;
+                  ll_gc_ll_reverse(llat, llon, lat, lon, 0, &d);
+                  /* if we move more than 30 degrees, then this span is no good */
+                  if(d > 30*60)
+                     skip_this_altitude = true;
+               }
+               p->Append(new wxRealPoint(lat, lon));
+               llat = lat;
+               llon = lon;
+            }
+
+      wxRealPointList *m = MergePoints(l, p);
+      
+      if(!skip_this_altitude) {
+         wxRealPointList *n = ReduceToConvexPolygon(m);
+         if(n->size() > 1)
+            polygons.push_back(n);
+         else
+            delete n;
+      }
+      
+      m->DeleteContents(true);
+      delete m;
+      l->DeleteContents(true);
+      delete l;
+      
+      l = p;
+   }
+}
+
+LunarSight::LunarSight(wxString body1, wxString body2, BodyLimb bodylimb, wxDateTime datetime,
+             double timecertainty, double measurement, double measurementcertainty,
+             double height, double temperature, double pressure, wxColour colour)
+   : Sight(body1, bodylimb, datetime, timecertainty, measurement, measurementcertainty,
+           height, temperature, pressure, colour),
+     m_Body1(body1), m_Body2(body2)
+{
+   double timemin = -m_TimeCertainty;
+   double timemax = +m_TimeCertainty;
+   
+   double distancemin = DistanceTwoPoints(timemin);
+   double distancemax = DistanceTwoPoints(timemax);
+
+   if(distancemin * distancemax > 0) {
+      timeoffset = NAN;
+      ::wxMessageBox(_("Lunar shot failed to converge on time interval"),
+                     _("Lunar Shot"), wxOK | wxICON_INFORMATION);
+      return;
+   }
+
+   double timemid;
+   do {
+      timemid = (timemin + timemax) / 2;
+      double distancemid = DistanceTwoPoints(timemid);
+
+      if(distancemin * distancemid < 0)
+         timemax = timemid;
+      else if(distancemid * distancemax < 0)
+         timemin = timemid;
+      else
+         break;
+   } while (timemax - timemin > .1);
+
+   timeoffset = timemid;
+   wxString msg;
+   msg << _("Lunar shot found time offset of ") << timeoffset << _(" seconds)");
+   ::wxMessageBox(msg, _("Lunar Shot"), wxOK | wxICON_INFORMATION);
+}
+
+double LunarSight::DistanceTwoPoints(double timeoffset)
+{
+   double lat1, lon1, lat2, lon2;
+   m_Body = m_Body2;
+   BodyLocation(m_DateTime + wxTimeSpan(0, 0, timeoffset), lat2, lon2);
+   m_Body = m_Body1;
+   BodyLocation(m_DateTime + wxTimeSpan(0, 0, timeoffset), lat1, lon1);
+
+   double d;
+   ll_gc_ll_reverse(lat1, lon1, lat2, lon2, 0, &d);
+   return d * 60;
+}

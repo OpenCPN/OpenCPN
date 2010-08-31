@@ -30,8 +30,7 @@
  */
 
 
-#if ! defined( GSV_CLASS_HEADER )
-#define GSV_CLASS_HEADER
+#include "nmea0183.h"
 
 /*
 ** Author: Samuel R. Blackburn
@@ -41,39 +40,95 @@
 ** You can use it any way you like.
 */
 
-// Required for struct SAT_INFO
-#include "SatInfo.h"
+//IMPLEMENT_DYNAMIC( RSA, RESPONSE )
 
-class GSV : public RESPONSE
+RSA::RSA()
 {
+   Mnemonic = _T("RSA");
+   Empty();
+}
 
-   public:
+RSA::~RSA()
+{
+   Mnemonic.Empty();
+   Empty();
+}
 
-      GSV();
-     ~GSV();
+void RSA::Empty( void )
+{
+//   ASSERT_VALID( this );
 
-      /*
-      ** Data
-      */
+   Starboard            = 0.0;
+   IsStarboardDataValid = Unknown0183;
+   Port                 = 0.0;
+   IsPortDataValid      = Unknown0183;
+}
 
-      int NumberOfMessages;
-      int MessageNumber;
-      int   SatsInView;
-      SAT_INFO SatInfo[4];
+bool RSA::Parse( const SENTENCE& sentence )
+{
+//   ASSERT_VALID( this );
 
-      /*
-      ** Methods
-      */
+   /*
+   ** RSA - Rudder Sensor Angle
+   **
+   **        1   2 3   4 5
+   **        |   | |   | |
+   ** $--RSA,x.x,A,x.x,A*hh<CR><LF>
+   **
+   ** Field Number: 
+   **  1) Starboard (or single) rudder sensor, "-" means Turn To Port
+   **  2) Status, A means data is valid
+   **  3) Port rudder sensor
+   **  4) Status, A means data is valid
+   **  5) Checksum
+   */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
+   /*
+   ** First we check the checksum...
+   */
 
-      /*
-      ** Operators
-      */
+   if ( sentence.IsChecksumBad( 5 ) == TRUE )
+   {
+      SetErrorMessage( _T("Invalid Checksum") );
+      return( FALSE );
+   } 
 
-      virtual const GSV& operator = ( const GSV& source );
-};
+   Starboard            = sentence.Double(  1 );
+   IsStarboardDataValid = sentence.Boolean( 2 );
+   Port                 = sentence.Double(  3 );
+   IsPortDataValid      = sentence.Boolean( 4 );
 
-#endif // GSV_CLASS_HEADER
+   return( TRUE );
+}
+
+bool RSA::Write( SENTENCE& sentence )
+{
+//   ASSERT_VALID( this );
+
+   /*
+   ** Let the parent do its thing
+   */
+   
+   RESPONSE::Write( sentence );
+
+   sentence += Starboard;
+   sentence += IsStarboardDataValid;
+   sentence += Port;
+   sentence += IsPortDataValid;
+   
+   sentence.Finish();
+
+   return( TRUE );
+}
+
+const RSA& RSA::operator = ( const RSA& source )
+{
+//   ASSERT_VALID( this );
+
+   Starboard            = source.Starboard;
+   IsStarboardDataValid = source.IsStarboardDataValid;
+   Port                 = source.Port;
+   IsPortDataValid      = source.IsPortDataValid;
+
+   return( *this );
+}

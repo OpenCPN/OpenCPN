@@ -1,10 +1,9 @@
 /******************************************************************************
- * $Id: compass.h, v1.0 2010/08/05 SethDart Exp $
+ * $Id: gps.h, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  DashBoard Plugin
  * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -27,8 +26,8 @@
  ***************************************************************************
  */
 
-#ifndef __Compass_H__
-#define __Compass_H__
+#ifndef __GPS_H__
+#define __GPS_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -43,33 +42,33 @@
     #include <wx/wx.h>
 #endif
 
-#include "dial.h"
+#include "instrument.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Compass
-//|
-//| DESCRIPTION:
-//|    This class creates a compass style control
-//|
-//+------------------------------------------------------------------------------
-class DashboardInstrument_Compass: public DashboardInstrument_Dial
+// Required for struct SAT_INFO
+#include "nmea0183/SatInfo.h"
+
+class DashboardInstrument_GPS: public DashboardInstrument
 {
       public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title);
 
-            ~DashboardInstrument_Compass(void){}
+            ~DashboardInstrument_GPS(void){}
 
-            virtual void SetMainValue(double value);
+            void SetSatInfo(int cnt, int seq, SAT_INFO sats[4]);
 
       private:
 
       protected:
+            wxString m_title;
+            int m_cx, m_cy, m_radius;
+            int m_SatCount;
+            SAT_INFO m_SatInfo[12];
+
+            void Draw(wxBufferedDC* dc);
+            void DrawFrame(wxBufferedDC* dc);
             void DrawBackground(wxBufferedDC* dc);
-            void DrawCompassRose(wxBufferedDC* dc);
             void DrawForeground(wxBufferedDC* dc);
 };
 
-#endif // __Compass_H__
+#endif // __GPS_H__
 

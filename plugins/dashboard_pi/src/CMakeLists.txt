@@ -73,10 +73,16 @@ FIND_PACKAGE(Gettext REQUIRED)
 SET(SRC_DASHBOARD
             dashboard_pi.h
  		dashboard_pi.cpp
+ 		instrument.cpp
+ 		instrument.h
  		compass.cpp
  		compass.h
  		dial.cpp
  		dial.h
+            gps.cpp
+            gps.h
+            rudder_angle.cpp
+            rudder_angle.h
  		speedometer.cpp
  		speedometer.h
  		wind.cpp
@@ -133,6 +139,9 @@ SET(SRC_NMEA0183
             nmea0183/vwr.hpp
             nmea0183/zda.cpp
             nmea0183/zda.hpp
+		nmea0183/rsa.hpp
+		nmea0183/rsa.cpp
+		nmea0183/SatInfo.h
 
 	)
 INCLUDE_DIRECTORIES(nmea0183)

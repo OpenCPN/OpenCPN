@@ -41,23 +41,12 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
-
-#include "../../../include/ocpn_plugin.h"
-
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
 DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title) :
       DashboardInstrument_Dial( parent, id, title, 0, 360, 0, 360)
 {
-      Connect(this->GetId(), wxEVT_SIZE, wxSizeEventHandler(DashboardInstrument_Wind::OnSize));
       //SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
       SetOptionMarker(10, DIAL_MARKER_REDGREEN, 3);
       // Labels are set static because we've no logic to display them this way
@@ -66,7 +55,7 @@ DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID
       SetOptionExtraValue(_T("%5.2f Kts"), DIAL_POSITION_INSIDE);
 }
 
-void DashboardInstrument_Wind::DrawBackground(wxDC* dc)
+void DashboardInstrument_Wind::DrawBackground(wxPaintDC* dc)
 {
       wxPoint points[5];
 

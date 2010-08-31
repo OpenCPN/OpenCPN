@@ -1,10 +1,9 @@
 /******************************************************************************
- * $Id: compass.h, v1.0 2010/08/05 SethDart Exp $
+ * $Id: rudder_angle.h, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  DashBoard Plugin
  * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -27,8 +26,8 @@
  ***************************************************************************
  */
 
-#ifndef __Compass_H__
-#define __Compass_H__
+#ifndef __RudderAngle_H__
+#define __RudderAngle_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -45,31 +44,20 @@
 
 #include "dial.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Compass
-//|
-//| DESCRIPTION:
-//|    This class creates a compass style control
-//|
-//+------------------------------------------------------------------------------
-class DashboardInstrument_Compass: public DashboardInstrument_Dial
+class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
 {
       public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title);
+            ~DashboardInstrument_RudderAngle(void){}
 
-            ~DashboardInstrument_Compass(void){}
-
-            virtual void SetMainValue(double value);
+            void SetMainValue(double value);
 
       private:
 
       protected:
+            void DrawFrame(wxBufferedDC* dc);
             void DrawBackground(wxBufferedDC* dc);
-            void DrawCompassRose(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
 };
 
-#endif // __Compass_H__
+#endif // __RudderAngle_H__
 

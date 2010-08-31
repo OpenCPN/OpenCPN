@@ -42,16 +42,6 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
-
-#include "../../../include/ocpn_plugin.h"
-
 DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title) :
       DashboardInstrument_Dial( parent, id, title, 0, 360, 0, 360)
 {
@@ -70,16 +60,20 @@ void DashboardInstrument_Compass::SetMainValue(double value)
       Refresh(false);
 }
 
-void DashboardInstrument_Compass::DrawBackground(wxDC* dc)
+void DashboardInstrument_Compass::DrawBackground(wxBufferedDC* dc)
 {
       wxPen pen;
 
 //      wxBrush brushHatch(*wxLIGHT_GREY, wxTRANSPARENT);
 
       // Now draw the boat
+      wxColour cl;
+      GetGlobalColor(_T("GREY1"), &cl);
       pen.SetStyle(wxSOLID);
-      pen.SetColour(wxColour(*wxLIGHT_GREY));
-      dc->SetBrush(*wxMEDIUM_GREY_BRUSH);
+      pen.SetColour(cl);
+      dc->SetPen(pen);
+      GetGlobalColor(_T("GREY2"), &cl);
+      dc->SetBrush(cl);
 
       wxPoint points[7];
 
@@ -116,7 +110,7 @@ void DashboardInstrument_Compass::DrawBackground(wxDC* dc)
       DrawCompassRose(dc);
 }
 
-void DashboardInstrument_Compass::DrawCompassRose(wxDC* dc)
+void DashboardInstrument_Compass::DrawCompassRose(wxBufferedDC* dc)
 {
       wxPoint TextPoint, points[3];
       wxString Value;
@@ -133,9 +127,10 @@ void DashboardInstrument_Compass::DrawCompassRose(wxDC* dc)
       wxColour cl;
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("BLUE1"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
+      dc->SetTextForeground(cl);
       //dc->SetPen(*wxTRANSPARENT_PEN);
 
       int offset = 0;
@@ -170,7 +165,7 @@ void DashboardInstrument_Compass::DrawCompassRose(wxDC* dc)
       }
 }
 
-void DashboardInstrument_Compass::DrawForeground(wxDC* dc)
+void DashboardInstrument_Compass::DrawForeground(wxBufferedDC* dc)
 {
       // We dont want the default foreground (arrow) drawn
 }

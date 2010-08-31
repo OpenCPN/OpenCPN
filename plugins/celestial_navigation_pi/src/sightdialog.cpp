@@ -39,16 +39,23 @@
 
 #include <wx/listimpl.cpp>    // toh, 2009.02.22
 
-#include "wx/datetime.h"
-#include "wx/calctrl.h"
-#include "wx/colordlg.h"
+#include "wx/wxprec.h"
 
-#include "sightdialog.h"
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include "wx/notebook.h"
+#include "wx/datetime.h"
+#include "wx/colordlg.h"
 
 #include "../../../include/ocpn_plugin.h"
 
-#include "sight.h"
+#include "sightdialog.h"
+#include "findbodydialog.h"
 
+#include "sight.h"
 
 #define ID_CHOICE_BODY  wxID_HIGHEST + 1
 
@@ -66,10 +73,9 @@ IMPLEMENT_DYNAMIC_CLASS( SightDialog, wxDialog )
 BEGIN_EVENT_TABLE( SightDialog, wxDialog )
 
 
-    EVT_BUTTON( ID_SIGHTDIALOG_DATETIME_SET, SightDialog::OnSightDialogDateTimeSetClick )
+    EVT_CHOICE( ID_SIGHTDIALOG_TYPE_SET, SightDialog::OnSightDialogTypeSet )
+    EVT_BUTTON( ID_SIGHTDIALOG_FIND_BODY, SightDialog::OnSightDialogFindBodyClick )
     EVT_BUTTON( ID_SIGHTDIALOG_COLOR_SET, SightDialog::OnSightDialogColorSetClick )
-    EVT_CHECKBOX( ID_SIGHTDIALOG_ELEVATION_CHECK, SightDialog::OnElevationCheck )
-    EVT_CHECKBOX( ID_SIGHTDIALOG_AZIMUTH_CHECK, SightDialog::OnAzimuthCheck )
     EVT_BUTTON( ID_SIGHTDIALOG_CANCEL, SightDialog::OnSightDialogCancelClick )
     EVT_BUTTON( ID_SIGHTDIALOG_OK, SightDialog::OnSightDialogOkClick )
     EVT_CLOSE(SightDialog::OnClose )
@@ -119,23 +125,33 @@ void SightDialog::CreateControls()
 
     SightDialog* itemDialog1 = this;
 
-    wxGridSizer* itemGrid = new wxGridSizer(3);
-    itemDialog1->SetSizer(itemGrid);
+    wxBoxSizer* itemBox = new wxBoxSizer(wxVERTICAL);
+    itemDialog1->SetSizer(itemBox);
 
-    wxStaticText* itemStaticText00 = new wxStaticText( itemDialog1, wxID_STATIC, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText00, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    wxNotebook *itemNotebook = new wxNotebook( itemDialog1, wxID_STATIC, wxDefaultPosition, wxSize(-1, -1), wxNB_TOP );
+    itemBox->Add(itemNotebook, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxStaticText* itemStaticText01 = new wxStaticText( itemDialog1, wxID_STATIC, _("Value"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText01, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    wxPanel *itemPanel1 = new wxPanel( itemNotebook, wxID_STATIC, wxDefaultPosition, wxDefaultSize,
+                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    itemNotebook->AddPage(itemPanel1, _("Sight"));
 
-    wxStaticText* itemStaticText02 = new wxStaticText( itemDialog1, wxID_STATIC, _("Certainty"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText02, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    wxGridSizer* itemGrid1 = new wxGridSizer(3);
+    itemPanel1->SetSizer(itemGrid1);
 
-    wxStaticText* itemStaticText1 = new wxStaticText( itemDialog1, wxID_STATIC, _("Body"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText1, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    itemGrid1->Add(new wxStaticText( itemPanel1, wxID_STATIC, _("Type"), wxDefaultPosition, wxDefaultSize, 0 ), 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
-    m_bodiesChoice = new wxChoice( itemDialog1, ID_CHOICE_BODY );
-    itemGrid->Add(m_bodiesChoice, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    m_typeChoice = new wxChoice( itemPanel1, ID_SIGHTDIALOG_TYPE_SET );
+    itemGrid1->Add(m_typeChoice, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+
+    m_typeChoice->Append(_T("Altitude (Sextant)"));
+    m_typeChoice->Append(_T("Azimuth (Compass)"));
+    m_typeChoice->Append(_T("Lunar  (angle between 2 bodies)"));
+
+    m_typeChoice->SetSelection(0);
+
+    itemGrid1->Add(new wxStaticText( itemPanel1, wxID_STATIC, _(""), wxDefaultPosition, wxDefaultSize, 0 ), 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+
+    m_bodiesChoice = MakeChoiceLabelPair( itemPanel1, itemGrid1, _T("First Body" ));
 
     m_bodiesChoice->Append(_T("Sun"));
     m_bodiesChoice->Append(_T("Moon"));
@@ -206,89 +222,121 @@ void SightDialog::CreateControls()
     
     m_bodiesChoice->SetSelection(0);
 
-    m_bodyLimbChoice = new wxChoice( itemDialog1, ID_CHOICE_BODY );
-    itemGrid->Add(m_bodyLimbChoice, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
+    /* for secondary body must be a planet or moon */
+    m_bodiesChoice2 = MakeChoiceLabelPair( itemPanel1, itemGrid1, _T("Second Body" ));
+
+    m_bodiesChoice2->Append(_T("Sun"));
+    m_bodiesChoice2->Append(_T("Moon"));
+    m_bodiesChoice2->Append(_T("Mercury"));
+    m_bodiesChoice2->Append(_T("Venus"));
+    m_bodiesChoice2->Append(_T("Mars"));
+    m_bodiesChoice2->Append(_T("Jupiter"));
+    m_bodiesChoice2->Append(_T("Saturn"));
+    
+    m_bodiesChoice2->SetSelection(0);
+    m_bodiesChoice2->Enable(false);
+
+    m_bodyLimbChoice = MakeChoiceLabelPair( itemPanel1, itemGrid1, _T("Limb" ));
+
+    m_bodyLimbChoice->Append(_T("Lower"));
     m_bodyLimbChoice->Append(_T("Center"));
     m_bodyLimbChoice->Append(_T("Upper"));
-    m_bodyLimbChoice->Append(_T("Lower"));
 
     m_bodyLimbChoice->SetSelection(0);
 
-    wxStaticText* itemStaticText2 = new wxStaticText( itemDialog1, wxID_STATIC, _("Date Time"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText2, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    itemGrid1->Add(new wxStaticText( itemPanel1, wxID_STATIC, _("Measurement:"),
+                                     wxDefaultPosition, wxDefaultSize, 0 ),
+                   0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 
-    m_datetime = wxDateTime::Now().ToUTC();
-    m_datetimeText = new wxStaticText( itemDialog1, ID_SIGHTDIALOG_DATETIME_SET, m_datetime.Format(wxDefaultDateTimeFormat), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(m_datetimeText, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-//   wxCalendarCtrl *calendar = new wxCalendarCtrl(GetParent(), ID_SIGHTDIALOG, m_datetime);
-//   itemGrid->Add(calendar, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    wxBoxSizer* itemBoxSizerTimerUncertenty = new wxBoxSizer(wxHORIZONTAL);
-    itemGrid->Add(itemBoxSizerTimerUncertenty, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    m_timeCertaintyText = new wxTextCtrl( itemDialog1, -1, _T("1") );
-    itemBoxSizerTimerUncertenty->Add(m_timeCertaintyText, 1, wxALIGN_RIGHT, 5);
-
-    wxStaticText* itemStaticText24 = new wxStaticText( itemDialog1, wxID_STATIC, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizerTimerUncertenty->Add(itemStaticText24, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    m_elevationUsed = new wxCheckBox( itemDialog1, ID_SIGHTDIALOG_ELEVATION_CHECK, _("Elevation"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_elevationUsed->SetValue(true);
-    itemGrid->Add(m_elevationUsed, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    m_elevationText = new wxTextCtrl( itemDialog1, -1, _T("0") );
-    itemGrid->Add(m_elevationText, 1, wxALIGN_RIGHT, 5);
-
-    wxBoxSizer* itemBoxSizerElevationUncertenty = new wxBoxSizer(wxHORIZONTAL);
-    itemGrid->Add(itemBoxSizerElevationUncertenty, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    m_elevationCertaintyText = new wxTextCtrl( itemDialog1, -1, _T(".05") );
-    itemBoxSizerElevationUncertenty->Add(m_elevationCertaintyText, 1, wxALIGN_RIGHT, 5);
-
-    wxStaticText* itemStaticText34 = new wxStaticText( itemDialog1, wxID_STATIC, _("degrees"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizerElevationUncertenty->Add(itemStaticText34, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
-
-    m_azimuthUsed = new wxCheckBox( itemDialog1, ID_SIGHTDIALOG_AZIMUTH_CHECK, _("Azimuth"), wxDefaultPosition, wxDefaultSize, 0);
-    itemGrid->Add(m_azimuthUsed, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    m_measurementText = MakeTextLabelPair(itemPanel1, itemGrid1, _T("0"), _T("degrees"));
+    m_measurementMinutesText = MakeTextLabelPair(itemPanel1, itemGrid1, _T("0"), _T("minutes"));
+    m_measurementCertaintyText = MakeTextLabelPair(itemPanel1, itemGrid1, _T("1"), _T("degrees accuracy"));
 
     wxBoxSizer* itemBoxSizerAzimuth = new wxBoxSizer(wxHORIZONTAL);
-    itemGrid->Add(itemBoxSizerAzimuth, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    itemGrid1->Add(itemBoxSizerAzimuth, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL
+                   |wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 
-    m_azimuthMagneticNorth = new wxCheckBox( itemDialog1, -1, _("Magnetic North"), wxDefaultPosition, wxDefaultSize, 0);
-    itemBoxSizerAzimuth->Add(m_azimuthMagneticNorth, 1, wxALIGN_RIGHT, 5);
+    m_azimuthMagneticNorth = new wxCheckBox( itemPanel1, -1, _("Magnetic North"),
+                                             wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizerAzimuth->Add(m_azimuthMagneticNorth, 1, wxALIGN_RIGHT|wxADJUST_MINSIZE, 5);
     m_azimuthMagneticNorth->Enable(false);
 
-    m_azimuthText = new wxTextCtrl( itemDialog1, -1, _T("0") );
-    itemBoxSizerAzimuth->Add(m_azimuthText, 1, wxALIGN_RIGHT, 5);
-    m_azimuthText->Enable(false);
+    m_FindBodyButton = new wxButton( itemPanel1, ID_SIGHTDIALOG_FIND_BODY, _("Find Body"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemGrid1->Add(m_FindBodyButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxBoxSizer* itemBoxSizerAzimuthUncertenty = new wxBoxSizer(wxHORIZONTAL);
-    itemGrid->Add(itemBoxSizerAzimuthUncertenty, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    wxPanel *itemPanel2 = new wxPanel( itemNotebook, wxID_STATIC, wxDefaultPosition,
+                                       wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    itemNotebook->AddPage(itemPanel2, _("Time"));
 
-    m_azimuthCertaintyText = new wxTextCtrl( itemDialog1, -1, _T(".05") );
-    itemBoxSizerAzimuthUncertenty->Add(m_azimuthCertaintyText, 1, wxALIGN_RIGHT, 5);
-    m_azimuthCertaintyText->Enable(false);
+    wxBoxSizer* itemBox2 = new wxBoxSizer(wxVERTICAL);
+    itemPanel2->SetSizer(itemBox2);
 
-    wxStaticText* itemStaticText44 = new wxStaticText( itemDialog1, wxID_STATIC, _("degrees"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizerAzimuthUncertenty->Add(itemStaticText44, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    wxBoxSizer* itemBox21 = new wxBoxSizer(wxHORIZONTAL);
+    itemBox2->Add(itemBox21);
 
-    wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("Height"), wxDefaultPosition, wxDefaultSize, 0);
-    itemGrid->Add(itemStaticText5, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    m_dateCalendar = new wxCalendarCtrl(itemPanel2, ID_SIGHTDIALOG, wxDateTime::Now());
+    itemBox21->Add(m_dateCalendar, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL
+                   |wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 
-    m_heightText = new wxTextCtrl( itemDialog1, -1, _T("2") );
-    itemGrid->Add(m_heightText, 1, wxALIGN_RIGHT, 5);
+    wxBoxSizer* itemBox211 = new wxBoxSizer(wxVERTICAL);
+    itemBox21->Add(itemBox211);
 
-    wxStaticText* itemStaticText54 = new wxStaticText( itemDialog1, wxID_STATIC, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText54, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    m_timeHours = MakeTextLabelPair( itemPanel2, itemBox211,
+                                     wxDateTime::Now().Format(_T("%H")),
+                                     _T("hours"));
+    m_timeMinutes = MakeTextLabelPair( itemPanel2, itemBox211,
+                                       wxDateTime::Now().Format(_T("%M")),
+                                       _T("minutes"));
+    m_timeSeconds = MakeTextLabelPair( itemPanel2, itemBox211,
+                                       wxDateTime::Now().Format(_T("%S")),
+                                       _T("seconds"));
+
+    wxBoxSizer* itemBox2112 = new wxBoxSizer(wxHORIZONTAL);
+    itemBox211->Add(itemBox2112);
+
+    itemBox2112->Add(new wxStaticText( itemPanel2, wxID_STATIC, _("Time Accuracy"),
+                                       wxDefaultPosition, wxDefaultSize, 0), 0,
+                     wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 3);
+
+    m_timeCertaintyText = MakeTextLabelPair( itemPanel2, itemBox2112, _T("1"), _T("seconds"));
+
+    wxPanel *itemPanel3 = new wxPanel( itemNotebook, wxID_STATIC, wxDefaultPosition, wxDefaultSize,
+                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    itemNotebook->AddPage(itemPanel3, _("Setup"));
+
+    wxGridSizer* itemGrid3 = new wxGridSizer(2);
+    itemPanel3->SetSizer(itemGrid3);
+
+    itemGrid3->Add(new wxStaticText( itemPanel3, wxID_STATIC, _("Height of Eye"),
+                                     wxDefaultPosition, wxDefaultSize, 0), 0,
+                   wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 3);
+
+    m_heightText = MakeTextLabelPair( itemPanel3, itemGrid3, _T("2"), _T("meters"));
+
+    wxStaticText* itemStaticText5 = new wxStaticText( itemPanel3, wxID_STATIC,
+                                                      _("Temperature"), wxDefaultPosition,
+                                                      wxDefaultSize, 0);
+    itemGrid3->Add(itemStaticText5, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL
+                   |wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+
+    m_temperatureText = MakeTextLabelPair(itemPanel3, itemGrid3, _T("25"), _T("C"));
+
+    itemGrid3->Add(new wxStaticText( itemPanel3, wxID_STATIC, _("Pressure"),
+                                     wxDefaultPosition, wxDefaultSize, 0), 0,
+                   wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+
+    m_pressureText = MakeTextLabelPair(itemPanel3, itemGrid3, _T("1013"), _T("millibars"));
 
     static unsigned s_lastsightcolor;
-    wxStaticText* itemStaticText6 = new wxStaticText( itemDialog1, wxID_STATIC, _("Color"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(itemStaticText6, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    itemGrid3->Add(new wxStaticText( itemPanel3, wxID_STATIC, _("Color"),
+                                     wxDefaultPosition, wxDefaultSize, 0 ), 0,
+                   wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 
-    m_Color = new wxStaticText( itemDialog1, wxID_STATIC, _(" OOOO "), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(m_Color, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    m_Color = new wxStaticText( itemPanel3, wxID_STATIC, _(" OOOO "),
+                                wxDefaultPosition, wxDefaultSize, 0 );
+    itemGrid3->Add(m_Color, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
     const wxColour sightcolors[] =
        {wxColour(_("AQUAMARINE")), wxColour(_("BLUE")), wxColour(_("BLUE VIOLET")),
@@ -313,16 +361,20 @@ void SightDialog::CreateControls()
     if(++s_lastsightcolor == (sizeof sightcolors) / (sizeof *sightcolors))
        s_lastsightcolor=0;
 
-    m_ColorSetButton = new wxButton( itemDialog1, ID_SIGHTDIALOG_COLOR_SET, _("Set Color"),
+    m_ColorSetButton = new wxButton( itemPanel3, ID_SIGHTDIALOG_COLOR_SET, _("Set Color"),
                                      wxDefaultPosition, wxDefaultSize, 0);
-    itemGrid->Add(m_ColorSetButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemGrid3->Add(m_ColorSetButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
+    wxBoxSizer* buttonBox = new wxBoxSizer(wxHORIZONTAL);
+    itemBox->Add(buttonBox, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_CancelButton = new wxButton( itemDialog1, ID_SIGHTDIALOG_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    m_CancelButton = new wxButton( itemDialog1, ID_SIGHTDIALOG_CANCEL, _("Cancel"),
+                                   wxDefaultPosition, wxDefaultSize, 0 );
+    buttonBox->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_OKButton = new wxButton( itemDialog1, ID_SIGHTDIALOG_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGrid->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    m_OKButton = new wxButton( itemDialog1, ID_SIGHTDIALOG_OK, _("OK"),
+                               wxDefaultPosition, wxDefaultSize, 0 );
+    buttonBox->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     m_OKButton->SetDefault();
 
     // note that under MSW for SetColumnWidth() to work we need to create the
@@ -330,12 +382,41 @@ void SightDialog::CreateControls()
     wxListItem itemCol;
     itemCol.SetImage(-1);
 
-
 //    SetColorScheme((ColorScheme)0);
-
 }
 
-/*
+wxTextCtrl *SightDialog::MakeTextLabelPair(wxWindow *dialog, wxSizer *sizer,
+                                             const wchar_t *defaulttext,
+                                             const wchar_t *labelvalue)
+{
+    wxBoxSizer* text_sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(text_sizer, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+
+    wxTextCtrl *ret = new wxTextCtrl( dialog, -1, defaulttext );
+    text_sizer->Add(ret, 1, wxALIGN_RIGHT, 5);
+   
+    wxStaticText* itemStaticText = new wxStaticText( dialog, wxID_STATIC, labelvalue,
+                                                    wxDefaultPosition, wxDefaultSize, 0 );
+    text_sizer->Add(itemStaticText, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+    return ret;
+}
+
+wxChoice *SightDialog::MakeChoiceLabelPair(wxWindow *dialog, wxSizer *sizer,
+                                           const wchar_t *labelvalue)
+{
+    wxBoxSizer* choice_sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(choice_sizer, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+
+   wxStaticText* itemStaticText = new wxStaticText( dialog, wxID_STATIC, labelvalue,
+                                                    wxDefaultPosition, wxDefaultSize, 0 );
+   choice_sizer->Add(itemStaticText, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+
+   wxChoice *ret = new wxChoice( dialog, ID_CHOICE_BODY );
+   choice_sizer->Add(ret, 1, wxALIGN_RIGHT, 5);
+   return ret;
+}
+
+#if 0
 void SightDialog::SetColorScheme(ColorScheme cs)
 {
       SetBackgroundColour(GetGlobalColor(_T("DILG1")));
@@ -350,7 +431,8 @@ void SightDialog::SetColorScheme(ColorScheme cs)
       m_OKButton->SetBackgroundColour(back_color);
       m_OKButton->SetForegroundColour(text_color);
 }
-*/
+#endif
+
 /*!
  * Should we show tooltips?
  */
@@ -366,8 +448,18 @@ void SightDialog::SetDialogTitle(wxString title)
       SetTitle(title);
 }
 
-void SightDialog::OnSightDialogDateTimeSetClick( wxCommandEvent& event )
+void SightDialog::OnSightDialogTypeSet( wxCommandEvent& event )
+{   
+   m_bodiesChoice2->Enable(m_typeChoice->GetSelection() == LUNAR);
+   m_azimuthMagneticNorth->Enable(m_typeChoice->GetSelection() == AZIMUTH);
+}
+
+void SightDialog::OnSightDialogFindBodyClick( wxCommandEvent& event )
 {
+   Sight *sight = MakeNewSight();
+   FindBodyDialog *findbody_dialog = new FindBodyDialog(GetParent(), sight);
+   findbody_dialog->ShowModal();
+   delete sight;
 }
 
 void SightDialog::OnSightDialogColorSetClick( wxCommandEvent& event )
@@ -383,34 +475,6 @@ void SightDialog::OnSightDialogColorSetClick( wxCommandEvent& event )
 
 }
 
-void SightDialog::OnElevationCheck( wxCommandEvent& event )
-{
-   /* make sure we always have at least elevation or azimuth */
-   if (!(m_elevationUsed->GetValue() || m_azimuthUsed->GetValue()))
-      m_azimuthUsed->SetValue(true);
-
-   UpdateElevationAzimuth();
-}
-
-void SightDialog::OnAzimuthCheck( wxCommandEvent& event )
-{
-   /* make sure we always have at least elevation or azimuth */
-   if (!(m_elevationUsed->GetValue() || m_azimuthUsed->GetValue()))
-      m_elevationUsed->SetValue(true);
-
-   UpdateElevationAzimuth();
-}
-
-void SightDialog::UpdateElevationAzimuth()
-{
-   m_elevationText->Enable(m_elevationUsed->GetValue());
-   m_elevationCertaintyText->Enable(m_elevationUsed->GetValue());
-
-   m_azimuthText->Enable(m_azimuthUsed->GetValue());
-   m_azimuthMagneticNorth->Enable(m_azimuthUsed->GetValue());
-   m_azimuthCertaintyText->Enable(m_azimuthUsed->GetValue());
-}
-
 void SightDialog::OnSightDialogCancelClick( wxCommandEvent& event )
 {
    EndModal(wxID_CANCEL);
@@ -419,7 +483,6 @@ void SightDialog::OnSightDialogCancelClick( wxCommandEvent& event )
 
 void SightDialog::OnSightDialogOkClick( wxCommandEvent& event )
 {
-
    EndModal(wxID_OK);
 }
 
@@ -428,54 +491,109 @@ void SightDialog::OnClose(wxCloseEvent& event)
    EndModal(wxID_CANCEL);
 }
 
-void SightDialog::ReadSight(Sight *s)
+wxDateTime   SightDialog::DateTime()
 {
-   int index = m_bodiesChoice->FindString(s->m_Body);
+   wxDateTime datetime =  m_dateCalendar->GetDate();
+
+   double hours, minutes, seconds;
+   m_timeHours->GetValue().ToDouble(&hours);
+   m_timeMinutes->GetValue().ToDouble(&minutes);
+   m_timeSeconds->GetValue().ToDouble(&seconds);
+
+   double i;
+   datetime.SetHour(hours);
+   datetime.SetMinute(minutes);
+   datetime.SetSecond(seconds);
+   datetime.SetMillisecond(1000*modf(seconds, &i));
+
+   return datetime;
+}
+
+
+void SightDialog::ReadSight(Sight *sight)
+{
+   int index;
+
+   if(dynamic_cast<AltitudeSight*>(sight))
+      m_typeChoice->SetSelection(ALTITUDE);
+   else if(dynamic_cast<AzimuthSight*>(sight))
+      m_typeChoice->SetSelection(AZIMUTH);
+   else if(dynamic_cast<LunarSight*>(sight)) {
+      m_typeChoice->SetSelection(LUNAR);
+      index = m_bodiesChoice->FindString(dynamic_cast<LunarSight*>(sight)->m_Body2);
+      if(index != wxNOT_FOUND)
+         m_bodiesChoice->SetSelection(index);
+   }
+
+   index = m_bodiesChoice->FindString(sight->m_Body);
    if(index != wxNOT_FOUND)
       m_bodiesChoice->SetSelection(index);
 
-   m_bodyLimbChoice->SetSelection((int)s->m_BodyLimb);
 
-   m_datetime = s->m_DateTime;
-   m_datetimeText->SetLabel(m_datetime.Format(wxDefaultDateTimeFormat));
+   index = m_bodiesChoice2->FindString(sight->m_Body);
+   if(index != wxNOT_FOUND)
+      m_bodiesChoice2->SetSelection(index);
 
-   m_timeCertaintyText->SetValue(wxString::Format(_T("%f"), s->m_TimeCertainty));
+   m_bodyLimbChoice->SetSelection((int)sight->m_BodyLimb);
 
-   m_elevationUsed->SetValue(!wxIsNaN(s->m_Elevation));
-   if(m_elevationUsed->GetValue())
-      m_elevationText->SetValue(wxString::Format(_T("%f"), s->m_Elevation));
+   m_dateCalendar->SetDate(sight->m_DateTime);
 
-   m_elevationCertaintyText->SetValue(wxString::Format(_T("%f"), s->m_ElevationCertainty));
+   m_timeHours->SetValue(sight->m_DateTime.Format(_T("%H")));
+   m_timeMinutes->SetValue(sight->m_DateTime.Format(_T("%M")));
+   m_timeSeconds->SetValue(sight->m_DateTime.Format(_T("%S")));
+   
+   m_timeCertaintyText->SetValue(wxString::Format(_T("%f"), sight->m_TimeCertainty));
 
-   m_azimuthUsed->SetValue(!wxIsNaN(s->m_Azimuth));
-   if(m_azimuthUsed->GetValue())
-      m_azimuthText->SetValue(wxString::Format(_T("%f"), s->m_Azimuth));
+   m_heightText->SetValue(wxString::Format(_T("%f"), sight->m_Height));
+   m_temperatureText->SetValue(wxString::Format(_T("%f"), sight->m_Temperature));
+   m_pressureText->SetValue(wxString::Format(_T("%f"), sight->m_Pressure));
 
-   m_azimuthMagneticNorth->SetValue(s->m_bMagneticNorth);
+   m_measurementText->SetValue(wxString::Format(_T("%f"), sight->m_Measurement));
+   m_measurementCertaintyText->SetValue(wxString::Format(_T("%f"), sight->m_MeasurementCertainty));
 
-   UpdateElevationAzimuth();
+   AzimuthSight *azimuthsight = dynamic_cast<AzimuthSight*>(sight);
+   if(azimuthsight)
+      m_azimuthMagneticNorth->SetValue(azimuthsight->m_bMagneticNorth);
 
-   m_azimuthCertaintyText->SetValue(wxString::Format(_T("%f"), s->m_AzimuthCertainty));
-   m_heightText->SetValue(wxString::Format(_T("%f"), s->m_Height));
-
-   m_Color->SetForegroundColour(s->m_Colour);
+   m_Color->SetForegroundColour(sight->m_Colour);
 }
 
 Sight *SightDialog::MakeNewSight()
 {
-   double timecertainty, elevation, elevationcertainty, azimuth, azimuthcertainty, height;
+   double timecertainty, measurement, measurementminutes, measurementcertainty;
+   double height, temperature, pressure;
+
    m_timeCertaintyText->GetValue().ToDouble(&timecertainty);
-   m_elevationText->GetValue().ToDouble(&elevation);
-   m_elevationCertaintyText->GetValue().ToDouble(&elevationcertainty);
-   m_azimuthText->GetValue().ToDouble(&azimuth);
-   m_azimuthCertaintyText->GetValue().ToDouble(&azimuthcertainty);
    m_heightText->GetValue().ToDouble(&height);
+   m_temperatureText->GetValue().ToDouble(&temperature);
+   m_pressureText->GetValue().ToDouble(&pressure);
+   m_measurementText->GetValue().ToDouble(&measurement);
+   m_measurementMinutesText->GetValue().ToDouble(&measurementminutes);
+   measurement += measurementminutes / 60;
+   m_measurementCertaintyText->GetValue().ToDouble(&measurementcertainty);
    
-   return new Sight(m_bodiesChoice->GetStringSelection(),
-                    (Sight::BodyLimb)m_bodyLimbChoice->GetSelection(),
-                    m_datetime, timecertainty,
-                    m_elevationUsed->GetValue() ? elevation : NAN, elevationcertainty,
-                    m_azimuthUsed->GetValue() ? azimuth : NAN,
-                    m_azimuthMagneticNorth->GetValue(),
-                    azimuthcertainty, height, m_Color->GetForegroundColour());
+   switch(m_typeChoice->GetSelection()) {
+   case ALTITUDE:
+      return new AltitudeSight(m_bodiesChoice->GetStringSelection(),
+                               (Sight::BodyLimb)m_bodyLimbChoice->GetSelection(),
+                               DateTime(), timecertainty,
+                               measurement, measurementcertainty,
+                               height, temperature, pressure,
+                               m_Color->GetForegroundColour());
+   case AZIMUTH:
+      return new AzimuthSight(m_bodiesChoice->GetStringSelection(),
+                               DateTime(), timecertainty,
+                               measurement, measurementcertainty,
+                               m_azimuthMagneticNorth->GetValue(),
+                              m_Color->GetForegroundColour());
+   case LUNAR:
+      return new LunarSight(m_bodiesChoice->GetStringSelection(),
+                            m_bodiesChoice2->GetStringSelection(),
+                               (Sight::BodyLimb)m_bodyLimbChoice->GetSelection(),
+                               DateTime(), timecertainty,
+                               measurement, measurementcertainty,
+                               height, temperature, pressure,
+                               m_Color->GetForegroundColour());
+   }
+   return NULL;
 }

@@ -42,14 +42,6 @@
     #include <wx/wx.h>
 #endif
 
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/timer.h>
-#include <wx/image.h>
-#include <wx/dcbuffer.h>
-#include <wx/colordlg.h>
-#include <wx/artprov.h>
-
 #include "dial.h"
 
 //+------------------------------------------------------------------------------
@@ -71,13 +63,7 @@ class DashboardInstrument_Speedometer: public DashboardInstrument_Dial
             ~DashboardInstrument_Speedometer(void){}
 
       private:
-            void OnPaint(wxPaintEvent &WXUNUSED(event));
 
-            void OnSize(wxSizeEvent& event)
-            {
-                  Refresh(false);
-                  event.Skip();
-            }
 };
 
 #endif // __Speedometer_H__
