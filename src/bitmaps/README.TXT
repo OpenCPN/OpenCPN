@@ -1,8 +1,7 @@
-1. Run creation scripts in svg directories
-2. Run optimize png script
-3. Run png2wx.pl -C icons.cpp -H icons.h -M ICONS_H *.png
+1. Run create_all.sh
 
 Creation scripts require:
+ImageMagick
 Inkscape
 Optipng
 Icoutils

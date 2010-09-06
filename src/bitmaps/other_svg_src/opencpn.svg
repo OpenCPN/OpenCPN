@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,10 +14,13 @@
    height="128"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47pre4 r22446"
    version="1.0"
    sodipodi:docname="opencpn.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/media/WKDAT/Documents/opencpn_proj/icons/opencpn_icons/oxygen_opencpn/src/bitmaps/other_svg_src/logo.png"
+   inkscape:export-xdpi="39.742039"
+   inkscape:export-ydpi="39.742039">
   <defs
      id="defs4">
     <linearGradient
@@ -135,8 +139,9 @@
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="840"
-     inkscape:window-x="-5"
-     inkscape:window-y="-3" />
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -145,6 +150,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
