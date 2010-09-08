@@ -9,16 +9,19 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+include /usr/share/dpatch/dpatch.make
+
 %:
 	dh  $@
 
 override_dh_install:
 	mkdir -p $(CURDIR)/debian/opencpn/usr/share/pixmaps
-	convert $(CURDIR)/data/opencpn.png -resize 32x32 $(CURDIR)/debian/opencpn/usr/share/pixmaps/opencpn.xpm
+	cp $(CURDIR)/src/bitmaps/opencpn.xpm $(CURDIR)/debian/opencpn/usr/share/pixmaps/
 	
 	dh_install
 	
 	rm $(CURDIR)/debian/opencpn/usr/share/opencpn/license.txt
+	# why remove doc/ ?
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/doc
 
 
