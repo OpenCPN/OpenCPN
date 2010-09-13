@@ -386,8 +386,8 @@ void SightDialog::CreateControls()
 }
 
 wxTextCtrl *SightDialog::MakeTextLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                             const wchar_t *defaulttext,
-                                             const wchar_t *labelvalue)
+                                             wxString defaulttext,
+                                             wxString labelvalue)
 {
     wxBoxSizer* text_sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(text_sizer, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
@@ -402,7 +402,7 @@ wxTextCtrl *SightDialog::MakeTextLabelPair(wxWindow *dialog, wxSizer *sizer,
 }
 
 wxChoice *SightDialog::MakeChoiceLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                           const wchar_t *labelvalue)
+                                           wxString labelvalue)
 {
     wxBoxSizer* choice_sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(choice_sizer, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);

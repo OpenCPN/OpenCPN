@@ -121,10 +121,10 @@ public:
     ~SightDialog( );
 
     wxTextCtrl *MakeTextLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                  const wchar_t *defaulttext,
-                                  const wchar_t *labelvalue);
+                                  wxString defaulttext,
+                                  wxString labelvalue);
     wxChoice *MakeChoiceLabelPair(wxWindow *dialog, wxSizer *sizer,
-                                  const wchar_t *labelvalue);
+                                  wxString labelvalue);
 
     /// Creation
     bool Create( wxWindow* parent, wxWindowID id = SYMBOL_SIGHTDIALOG_IDNAME,

@@ -1,0 +1,20 @@
+    0 ICON "bitmaps\opencpn.ico"
+    1 VERSIONINFO
+    FILEVERSION        ${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},0
+    PRODUCTVERSION     2,2,0,0
+    BEGIN
+        BLOCK "StringFileInfo"
+        BEGIN
+            BLOCK "040904E4"
+            BEGIN
+                VALUE "CompanyName",      "OpenCPN.org"
+                VALUE "FileDescription",  "Chartplotter and Navigation Program"
+                VALUE "FileVersion",      "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+                VALUE "InternalName",     "opencpn.exe"
+                VALUE "LegalCopyright",   "GPL v2"
+                VALUE "OriginalFilename", "opencpn.exe"
+                VALUE "ProductName",      "OpenCPN"
+                VALUE "ProductVersion",   " 2.2.0 Beta"
+            END
+        END
+    END

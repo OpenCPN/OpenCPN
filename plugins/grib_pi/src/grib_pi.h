@@ -70,6 +70,9 @@ public:
       bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
 
+
+      void SetDefaults(void);
+
       int GetToolbarToolCount(void);
       
       int GetToolboxPanelCount(void);

@@ -582,9 +582,9 @@ void GRIBUIDialog::PopulateTreeControl()
       //    Get an array of GRIB file names in the target directory, not descending into subdirs
       wxArrayString file_array;
 
-//      m_n_files = wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
-//      m_n_files += wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*.grb.bz2" ), wxDIR_FILES );
-      m_n_files = wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*" ), wxDIR_FILES );
+      m_n_files = wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
+      m_n_files += wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*.grb.bz2" ), wxDIR_FILES );
+//      m_n_files = wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*" ), wxDIR_FILES );
 
       //    Sort the files by File Modification Date
       file_array.Sort ( CompareFileStringTime );
@@ -658,8 +658,10 @@ void GRIBUIDialog::PopulateTreeControlGRS ( GRIBFile *pgribfile, int file_index 
 //            wxString time_string = t.Format ( "%a %d-%b-%Y %H:%M:%S %Z", wxDateTime::UTC );
 
             // This is a hack because Windows is broke....
-            wxString time_string = t.Format ( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::UTC );
-            time_string.Append(_T("GMT"));
+            wxString time_string = t.Format ( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::Local );
+            time_string.Append(_T("Local - "));
+			time_string.Append(t.Format ( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::UTC ));
+			time_string.Append(_T("GMT"));
 
             m_pRecordTree->AppendItem ( m_pRecordTree->m_file_id_array[file_index],time_string, -1, -1, pmtid );
       }

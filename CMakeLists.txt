@@ -52,7 +52,8 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
-ADD_DEFINITIONS( "-Wall -g -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -g -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-O3 -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
 # Add some definitions to satisfy MS
@@ -725,6 +726,12 @@ IF(UNIX)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
 ENDIF(UNIX)
+
+IF(WIN32 AND NOT UNIX)
+ configure_file(${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc)
+ENDIF(WIN32 AND NOT UNIX)
+
+
 
 INCLUDE(CPack)
 

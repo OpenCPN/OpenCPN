@@ -187,6 +187,20 @@ Supported GRIB file types include:\n\
 }
 
 
+void grib_pi::SetDefaults(void)
+{
+      // If the config somehow says NOT to show the icon, override it so the user gets good feedback
+      if(!m_bGRIBShowIcon)
+      {
+            m_bGRIBShowIcon = true;
+
+            m_leftclick_tool_id  = InsertPlugInTool((wxChar *)_(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                  (wxChar *)_("Grib"), (wxChar *)_(""), NULL,
+                   GRIB_TOOL_POSITION, 0, this);
+      }
+}
+
+
 int grib_pi::GetToolbarToolCount(void)
 {
       return 1;
