@@ -1203,6 +1203,8 @@ bool read_header_and_populate_cib(FILE *stream, Cell_Info_Block *pCIB)
 
       header_struct header;
 
+      memset((void *)&header, 0, sizeof(header));
+
       read_and_decode_double(stream,&header.lon_min);
       read_and_decode_double(stream,&header.lat_min);
       read_and_decode_double(stream,&header.lon_max);
@@ -1442,7 +1444,7 @@ bool read_feature_record_table(FILE *stream, int n_features, Cell_Info_Block *pC
 
       unsigned char object_type;
       unsigned char geom_prim;
-      unsigned short obj_desc_bytes;
+      unsigned short obj_desc_bytes = 0;
 
       unsigned int t;
       unsigned short index;
@@ -1693,8 +1695,9 @@ bool Ingest_CM93_Cell(const char * cell_file_name, Cell_Info_Block *pCIB)
 
       //    Validate the itegrity of the cell file
 
-      unsigned short word0;
-      int int0, int1;
+      unsigned short word0 = 0;;
+      int int0 = 0;
+      int int1 = 0;;
 
       read_and_decode_ushort(stream, &word0);        // length of prolog + header (10 + 128)
       read_and_decode_int(stream, &int0);            // length of table 1

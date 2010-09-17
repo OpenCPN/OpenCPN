@@ -1529,7 +1529,7 @@ double ChartBaseBSB::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_
 
 double ChartBaseBSB::GetNormalScaleMax(double canvas_scale_factor, int canvas_width)
 {
-      return (canvas_scale_factor / m_ppm_avg) * 8.0;        // excessive underscale is slow, and unreadable
+      return (canvas_scale_factor / m_ppm_avg) * 4.0;        // excessive underscale is slow, and unreadable
 }
 
 
@@ -2567,11 +2567,14 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRec
     int pixxd, pixyd;
 
     //      This funny contortion is necessary to allow scale factors < 1, i.e. overzoom
-    double binary_scale_factor = (round(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
+    double binary_scale_factor = (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
+
+//    if((binary_scale_factor > 1.0) && (fabs(binary_scale_factor - wxRound(binary_scale_factor)) < 1e-2))
+//          binary_scale_factor = wxRound(binary_scale_factor);
 
     m_raster_scale_factor = binary_scale_factor;
 
-//    printf(" in ComputeSourceRect bsf %g  1_over_bsf %g   m_raster...:%g\n", binary_scale_factor, 1./binary_scale_factor, m_raster_scale_factor);
+    if(b_cdebug)printf(" ComputeSourceRect... PPM: %g  vp.view_scale_ppm: %g   m_raster_scale_factor: %g\n", GetPPM(), vp.view_scale_ppm, m_raster_scale_factor);
 
     if(bHaveEmbeddedGeoref)
     {
@@ -2818,7 +2821,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       if(b_cdebug)printf("GVUC: scale_x: %g\n", scale_x);
 
       //    Enforce a limit on bilinear scaling, for performance reasons
-      scale_type_corrected = RENDER_LODEF; //scale_type;
+      scale_type_corrected = scale_type; //RENDER_LODEF; //scale_type;
       if(scale_x > m_bilinear_limit)
             scale_type_corrected = RENDER_LODEF;
 
@@ -2835,7 +2838,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             return GetView( source, dest, scale_type_corrected );
       }
 
-      scale_type_corrected = RENDER_LODEF;
+//      scale_type_corrected = RENDER_LODEF;
 
 
       if(!cached_image_ok)
@@ -3410,6 +3413,8 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
      if((factor < 1) || (n_rect > 4) || (area_fraction < .4))
      {
+           ScaleTypeEnum ren_type = RENDER_HIDEF;
+
            if(b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
 
            PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
@@ -3422,7 +3427,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
                  wxRect rect = upd.GetRect();
                  unsigned char *ppnx = pPixCacheTemp->GetpData();
 
-                 GetAndScaleData(&ppnx, Rsrc, Rsrc.width, rect, dest.width, factor, RENDER_LODEF);
+                 GetAndScaleData(&ppnx, Rsrc, Rsrc.width, rect, dest.width, factor, ren_type);
 
                  ir++;
                  upd ++ ;
@@ -3435,14 +3440,15 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
       //    Update cache parameters
            cache_rect = Rsrc;
-           cache_scale_method = RENDER_LODEF;
+           cache_scale_method = ren_type;
            cached_image_ok = true;
 
 
 //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
 
-           Initialize_BackgroundHiDefRender(VPoint);
+           if(ren_type == RENDER_LODEF)
+                  Initialize_BackgroundHiDefRender(VPoint);
 
            return true;
      }
@@ -3452,7 +3458,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     Default is to try using the cache
      {
            if(b_cdebug)printf("  Render Region By GVUC\n");
-           bool bnewview = GetViewUsingCache(Rsrc, dest, scale_type);
+           bool bnewview = GetViewUsingCache(Rsrc, dest, RENDER_HIDEF/*scale_type*/);
 
                   //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
@@ -3874,7 +3880,7 @@ bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
     //  Set starting points
     br_target_y = 0;
 
-    if(b_cdebug)printf(" on bbr start, br_Rsrc: %d %d\n", br_Rsrc.x, br_Rsrc.y);
+    if(b_cdebug)printf("   on bbr init, br_Rsrc: %d %d\n", br_Rsrc.x, br_Rsrc.y);
 
     return true;
 }

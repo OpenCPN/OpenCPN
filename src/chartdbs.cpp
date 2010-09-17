@@ -1050,7 +1050,7 @@ bool ChartDatabase::DetectDirChange(wxString dir_path, wxString magic, wxString 
       for(int ifile=0 ; ifile < n_files ; ifile++)
       {
             if(pprog && ((((ifile * 100) / n_files) % 20) == 0))
-                  pprog->Update((ifile * 100) /n_files, dir_path);
+                  pprog->Update(wxMin((ifile * 100) /n_files, 100), dir_path);
 
             wxFileName file(FileList.Item(ifile));
 
@@ -1270,7 +1270,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
                 continue;
 
             if(pprog)
-                  pprog->Update((ifile * 100) /nFile, full_name);
+                  pprog->Update(wxMin((ifile * 100) /nFile, 100), full_name);
 
 
             //    As a speed optimization, use strcmp instead of wxString::IsSameAs()

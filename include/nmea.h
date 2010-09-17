@@ -221,7 +221,7 @@ private:
       wxTimer           TimerLIBGPS;
       wxTimer           TimerNMEA;
       wxFrame           *m_parent_frame;
-      int                     m_handler_id;
+      int               m_handler_id;
 
       wxString          m_data_source_string;
       wxEvtHandler      *m_pParentEventHandler;

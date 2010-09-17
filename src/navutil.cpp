@@ -205,6 +205,8 @@ extern int              g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
 extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
+extern bool             g_bAIS_ACK_Timeout;
+extern double           g_AckTimeout_Mins;
 
 extern bool             g_bShowPrintIcon;
 extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -705,6 +707,57 @@ bool Select::DeleteAllSelectableTrackSegments ( Route *pr )
       return true;
 }
 
+bool IsSegmentSelected(float a,float b, float c, float d,float slat, float slon, float SelectRadius)
+{
+      double adder = 0.;
+
+      if ( ( c * d ) < 0. )
+      {
+            //    Arrange for points to be increasing longitude, c to d
+            double dist, brg;
+            DistanceBearingMercator ( a, c, b, d, &brg, &dist );
+            if ( brg < 180. )             // swap points?
+            {
+                  double tmp;
+                  tmp = c; c=d; d=tmp;
+                  tmp = a; a=b; b=tmp;
+            }
+            if ( d < 0. )     // idl?
+            {
+                  d += 360.;
+                  if ( slon < 0. )
+                        adder = 360.;
+            }
+      }
+
+
+//    As a course test, use segment bounding box test
+      if ( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) ) &&
+                                     ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) ) && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) )
+      {
+      //    Use vectors to do hit test....
+            VECTOR2D va, vb, vn;
+
+      //    Assuming a Mercator projection
+            double ap, cp;
+            toSM(a, c, 0., 0., &cp, &ap);
+            double bp, dp;
+            toSM(b, d, 0., 0., &dp, &bp);
+            double slatp, slonp;
+            toSM(slat, slon + adder, 0., 0., &slonp, &slatp);
+
+            va.x = slonp - cp;
+            va.y = slatp - ap;
+            vb.x = dp - cp;
+            vb.y = bp - ap;
+
+            double delta = vGetLengthOfNormal ( &va, &vb, &vn );
+            if ( fabs ( delta ) < (SelectRadius *1852 * 60) )
+                  return true;
+      }
+      return false;
+}
+
 
 
 SelectItem *Select::FindSelection ( float slat, float slon, int fseltype, float SelectRadius )
@@ -741,45 +794,8 @@ SelectItem *Select::FindSelection ( float slat, float slon, int fseltype, float 
                               c = pFindSel->m_slon;
                               d = pFindSel->m_slon2;
 
-                              double adder = 0.;
-
-                              if ( ( c * d ) < 0. )
-                              {
-                                    //    Arrange for points to be increasing longitude, c to d
-                                    double dist, brg;
-                                    DistanceBearingMercator ( a, c, b, d, &brg, &dist );
-                                    if ( brg < 180. )             // swap points?
-                                    {
-                                          double tmp;
-                                          tmp = c; c=d; d=tmp;
-                                          tmp = a; a=b; b=tmp;
-                                    }
-                                    if ( d < 0. )     // idl?
-                                    {
-                                          d += 360.;
-                                          if ( slon < 0. )
-                                                adder = 360.;
-                                    }
-                              }
-
-
-//    As a course test, use segment bounding box test
-                              if ( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) ) &&
-                                      ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) ) && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) )
-                              {
-//    Use vectors to do hit test....
-                                    VECTOR2D va, vb, vn;
-
-                                    va.x = ( slon + adder ) - c;
-                                    va.y = slat - a;
-                                    vb.x = d - c;
-                                    vb.y = b - a;
-
-                                    double delta = vGetLengthOfNormal ( &va, &vb, &vn );
-                                    if ( fabs ( delta ) < SelectRadius )
-                                          goto find_ok;
-                              }
-
+                              if(IsSegmentSelected(a,b,c,d,slat,slon, SelectRadius))
+                                    goto find_ok;
                               break;
                         }
                         default:
@@ -803,49 +819,7 @@ bool Select::IsSelectableSegmentSelected(float slat, float slon, float SelectRad
       float c = pFindSel->m_slon;
       float d = pFindSel->m_slon2;
 
-      double adder = 0.;
-
-      if ( ( c * d ) < 0. )
-      {
-                                    //    Arrange for points to be increasing longitude, c to d
-            double dist, brg;
-            DistanceBearingMercator ( a, c, b, d, &brg, &dist );
-            if ( brg < 180. )             // swap points?
-            {
-                  double tmp;
-                  tmp = c; c=d; d=tmp;
-                  tmp = a; a=b; b=tmp;
-            }
-            if ( d < 0. )     // idl?
-            {
-                  d += 360.;
-                  if ( slon < 0. )
-                        adder = 360.;
-            }
-      }
-
-
-//    As a course test, use segment bounding box test
-      if ( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) ) &&
-             ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) ) && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) )
-      {
-//    Use vectors to do hit test....
-            VECTOR2D va, vb, vn;
-
-            va.x = ( slon + adder ) - c;
-            va.y = slat - a;
-            vb.x = d - c;
-            vb.y = b - a;
-
-            double delta = vGetLengthOfNormal ( &va, &vb, &vn );
-            if ( fabs ( delta ) < SelectRadius )
-                  return true;
-            else
-                  return false;
-      }
-      else
-            return false;
-
+      return IsSegmentSelected(a,b,c,d,slat,slon, SelectRadius);
 }
 
 
@@ -1289,8 +1263,8 @@ Route::~Route ( void )
 
 void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 {
-      pNewPoint->m_bIsInRoute = true;
       pNewPoint->m_bIsolatedMark = false;       // definitely no longer isolated
+      pNewPoint->m_bIsInRoute = true;
 
       pRoutePointList->Append ( pNewPoint );
 
@@ -2110,12 +2084,15 @@ void Track::AddPointNow()
       RoutePoint *pTrackPoint = new RoutePoint ( gLat, gLon, wxString ( _T ( "empty" ) ), wxString ( _T ( "" ) ), NULL );
       pTrackPoint->m_bShowName = false;
       pTrackPoint->m_bIsVisible  = true;                    // pjotrc 2010.02.11
-      pTrackPoint->m_bIsInTrack = true;                     // pjotrc 2010.02.11
       pTrackPoint->m_GPXTrkSegNo = 1;                       // pjotrc 2010.02.28
 
       pTrackPoint->m_CreateTime = now.ToUTC();
 
       AddPoint ( pTrackPoint );
+
+      //    This is a hack, need to undo the action of Route::AddPoint
+      pTrackPoint->m_bIsInRoute = false;
+      pTrackPoint->m_bIsInTrack = true;
 
       if ( GetnPoints() > 1 )
             pSelect->AddSelectableTrackSegment ( m_prev_glat, m_prev_glon, gLat, gLon,
@@ -2212,6 +2189,7 @@ Route *Track::RouteFromTrack(void)
 
             RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), NULL );
             route->AddPoint(pWP_dst);
+
             pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
             if (pWP_src)
@@ -2341,8 +2319,11 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "PreserveScaleOnX" ),  &g_bPreserveScaleOnX, 0 );
 
-      g_locale = _T("en_US");
-      Read ( _T ( "Locale" ), &g_locale );
+      if ( iteration == 0 )
+      {
+            g_locale = _T("en_US");
+            Read ( _T ( "Locale" ), &g_locale );
+      }
 
       SetPath ( _T ( "/Settings/GlobalState" ) );
       Read ( _T ( "bFollow" ), &st_bFollow );
@@ -2401,6 +2382,11 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
       Read ( _T ( "AISAlertAudioFile" ),  &g_sAIS_Alert_Sound_File );
       Read ( _T ( "bAISAlertSuppressMoored" ), &g_bAIS_CPA_Alert_Suppress_Moored );
+
+      Read ( _T ( "bAISAlertAckTimeout" ), &g_bAIS_ACK_Timeout, 0 );
+      Read ( _T ( "AlertAckTimeoutMinutes" ),  &s );
+      s.ToDouble ( &g_AckTimeout_Mins );
+
 
       g_ais_alert_dialog_sx = Read ( _T ( "AlertDialogSizeX" ), 200L );
       g_ais_alert_dialog_sy = Read ( _T ( "AlertDialogSizeY" ), 200L );
@@ -3524,6 +3510,9 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "bAISRolloverShowCOG" ),  g_bAISRolloverShowCOG );
       Write ( _T ( "bAISRolloverShowCPA" ),  g_bAISRolloverShowCPA );
 
+      Write ( _T ( "bAISAlertAckTimeout" ),  g_bAIS_ACK_Timeout );
+      Write ( _T ( "AlertAckTimeoutMinutes" ),  g_AckTimeout_Mins );
+
 
 #ifdef USE_S57
       SetPath ( _T ( "/Settings/GlobalState" ) );
@@ -3782,59 +3771,70 @@ void MyConfig::ImportGPX ( wxWindow* parent )
 {
 
       wxFileDialog openDialog( parent, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
-                  wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ), wxFD_OPEN );
+                               wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ), wxFD_OPEN | wxFD_MULTIPLE );
       int response = openDialog.ShowModal();
-
-      wxFileName fn ( openDialog.GetPath() );
-      m_gpx_path = fn.GetPath();
 
       if ( response == wxID_OK )
       {
-            wxString path = openDialog.GetPath();
+            wxArrayString file_array;
+            openDialog.GetPaths(file_array);
 
-            if ( ::wxFileExists ( path ) )
+            //    Record the currently selected directory for later use
+            if(file_array.GetCount())
             {
-                  wxXmlDocument *pXMLNavObj = new wxXmlDocument;
-                  if ( pXMLNavObj->Load ( path ) )
+                  wxFileName fn ( file_array[0] );
+                  m_gpx_path = fn.GetPath();
+            }
+
+            for(unsigned int i=0 ; i < file_array.GetCount() ; i++)
+            {
+
+                  wxString path = file_array[i];
+
+                  if ( ::wxFileExists ( path ) )
                   {
-                        wxXmlNode *root = pXMLNavObj->GetRoot();
-
-                        wxString RootName = root->GetName();
-                        if ( RootName == _T ( "gpx" ) )
+                        wxXmlDocument *pXMLNavObj = new wxXmlDocument;
+                        if ( pXMLNavObj->Load ( path ) )
                         {
-                              wxString RootContent = root->GetNodeContent();
+                              wxXmlNode *root = pXMLNavObj->GetRoot();
 
-                              wxXmlNode *child = root->GetChildren();
-                              while ( child )
+                              wxString RootName = root->GetName();
+                              if ( RootName == _T ( "gpx" ) )
                               {
-                                    wxString ChildName = child->GetName();
-                                    if ( ChildName == _T ( "wpt" ) )
+                                    wxString RootContent = root->GetNodeContent();
+
+                                    wxXmlNode *child = root->GetChildren();
+                                    while ( child )
                                     {
-                                          RoutePoint *pWp = ::LoadGPXWaypoint(child, _T("circle"));
-                                          RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
-                                          if(!pExisting)
+                                          wxString ChildName = child->GetName();
+                                          if ( ChildName == _T ( "wpt" ) )
                                           {
-                                                if ( NULL != pWayPointMan )
-                                                      pWayPointMan->m_pWayPointList->Append ( pWp );
+                                                RoutePoint *pWp = ::LoadGPXWaypoint(child, _T("circle"));
+                                                RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                                                if(!pExisting)
+                                                {
+                                                      if ( NULL != pWayPointMan )
+                                                            pWayPointMan->m_pWayPointList->Append ( pWp );
 
-                                                pWp->m_bIsolatedMark = true;      // This is an isolated mark
-                                                AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
-                                                pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
-                                                pWp->m_ConfigWPNum = m_NextWPNum;
-                                                m_NextWPNum++;
+                                                      pWp->m_bIsolatedMark = true;      // This is an isolated mark
+                                                      AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
+                                                      pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                                                      pWp->m_ConfigWPNum = m_NextWPNum;
+                                                      m_NextWPNum++;
+                                                }
+
                                           }
-
+                                          else if ( ChildName == _T ( "rte" ) )
+                                          {
+                                                ::GPXLoadRoute ( child, m_NextRouteNum );
+                                                m_NextRouteNum++;
+                                          }
+                                          else if ( ChildName == _T ( "trk" ) )
+                                          {
+                                                ::GPXLoadTrack ( child );
+                                          }
+                                          child = child->GetNext();
                                     }
-                                    else if ( ChildName == _T ( "rte" ) )
-                                    {
-                                          ::GPXLoadRoute ( child, m_NextRouteNum );
-                                          m_NextRouteNum++;
-                                    }
-                                    else if ( ChildName == _T ( "trk" ) )
-                                    {
-                                          ::GPXLoadTrack ( child );
-                                    }
-                                    child = child->GetNext();
                               }
                         }
                   }
@@ -4228,7 +4228,7 @@ void AppendGPXWayPoints ( wxXmlNode *RNode )
       wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
       RoutePoint *pr;
-      wxXmlNode *prev_node;
+      wxXmlNode *prev_node = NULL;
 
       bool IsFirst = true;
       while ( node )
@@ -4424,7 +4424,7 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
       pWP->m_MarkDescription = DescString;
       pWP->m_bShowName = false;
       pWP->m_bIsVisible = true;             // pjotrc 2010.02.11
-      pWP->m_bIsInTrack = true;             // pjotrc 2010.02.11
+
 
       if ( dt.IsValid() )
             pWP->m_CreateTime = dt;
@@ -4480,13 +4480,12 @@ void GPXLoadTrack ( wxXmlNode* trknode )
                                     {
                                           pWp = ::LoadGPXWaypoint ( tpchild, _T("empty") );
                                           pTentTrack->AddPoint ( pWp, false );
-                                          pWp->m_bIsInTrack = true;                       // pjotrc 2010.02.11
-                                          pWp->m_GPXTrkSegNo = GPXSeg;                    // pjotrc 2010.02.27
+                                          pWp->m_bIsInRoute = false;                      // Hack
+                                          pWp->m_bIsInTrack = true;
+                                          pWp->m_GPXTrkSegNo = GPXSeg;
 
-
-                                    }
-                                    if (NULL != pWayPointMan )
                                           pWayPointMan->m_pWayPointList->Append ( pWp );
+                                    }
 
                                     tpchild = tpchild->GetNext();
 
@@ -4570,8 +4569,8 @@ void GPXLoadTrack ( wxXmlNode* trknode )
                   //    Add the selectable points and segments
 
                   int ip = 0;
-                  float prev_rlat, prev_rlon;
-                  RoutePoint *prev_pConfPoint;
+                  float prev_rlat = 0., prev_rlon = 0.;
+                  RoutePoint *prev_pConfPoint = NULL;
 
                   wxRoutePointListNode *node = pTentTrack->pRoutePointList->GetFirst();
                   while ( node )
@@ -4654,7 +4653,9 @@ void GPXLoadRoute ( wxXmlNode* rtenode, int routenum )
                               pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
                         }
                         else
+                        {
                               pTentRoute->AddPoint ( pExisting, false );                // don't auto-rename numerically
+                        }
 
 
                         ip++;
@@ -4738,8 +4739,8 @@ void GPXLoadRoute ( wxXmlNode* rtenode, int routenum )
                   //    Add the selectable points and segments
 
                   int ip = 0;
-                  float prev_rlat, prev_rlon;
-                  RoutePoint *prev_pConfPoint;
+                  float prev_rlat = 0., prev_rlon = 0.;
+                  RoutePoint *prev_pConfPoint = NULL;;
 
                   wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
                   while ( node )
@@ -4911,7 +4912,7 @@ bool NavObjectCollection::CreateNavObjGPXRoutes ( void )
                   RoutePoint *prp;
 
                   int i=1;
-                  wxXmlNode *current_sib;
+                  wxXmlNode *current_sib = NULL;
 
                   while ( node2 )
                   {
@@ -6006,6 +6007,8 @@ void X11FontPicker::DoFontChange ( void )
 double vGetLengthOfNormal ( PVECTOR2D a, PVECTOR2D b, PVECTOR2D n )
 {
       VECTOR2D c, vNormal;
+      vNormal.x = 0;
+      vNormal.y = 0;
       //
       //Obtain projection vector.
       //

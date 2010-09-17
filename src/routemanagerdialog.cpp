@@ -564,7 +564,7 @@ void RouteManagerDialog::ZoomtoRoute(Route *route)
 
       cc1->GetSize(&ww, &wh);
 
-      ppm = wxMin(ww/(rw*1852), wh/(rh*1852))*(100-abs(clat))/90;
+      ppm = wxMin(ww/(rw*1852), wh/(rh*1852))*(100-fabs(clat))/90;
 
       ppm = wxMin(ppm, 1.0);
 
@@ -698,7 +698,9 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event)
                           _("Rename Waypoints?"), wxYES_NO);
       bool rename = (ask.ShowModal() == wxID_YES);
 
+      pSelect->DeleteAllSelectableRouteSegments ( route );
       route->Reverse(rename);
+      pSelect->AddAllSelectableRouteSegments ( route );
 
       // update column 2 - create a UpdateRouteItem(index) instead?
       wxString startend = route->m_RouteStartString;
@@ -895,7 +897,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
                   li.SetFont(font);
             }
             long idx = m_pTrkListCtrl->InsertItem(li);
- 
+
             wxString name = trk->m_RouteNameString;
             if (name.IsEmpty())
             {
@@ -1110,8 +1112,11 @@ void RouteManagerDialog::UpdateWptListCtrl()
             {
                   if (rp->m_bIsInTrack || rp->m_bIsInRoute)
                   {
-                        node = node->GetNext();
-                        continue;
+                        if(!rp->m_bKeepXRoute)
+                        {
+                              node = node->GetNext();
+                              continue;
+                        }
                   }
 
                   wxListItem li;
@@ -1120,7 +1125,7 @@ void RouteManagerDialog::UpdateWptListCtrl()
                   li.SetData(rp);
                   li.SetText(_T(""));
                   long idx = m_pWptListCtrl->InsertItem(li);
- 
+
                   wxString name = rp->m_MarkName;
                   if (name.IsEmpty())
                         name = _("(Unnamed Waypoint)");
@@ -1131,7 +1136,7 @@ void RouteManagerDialog::UpdateWptListCtrl()
                   wxString dist;
                   dist.Printf(_T("%5.2f Nm"), dst);
                   m_pWptListCtrl->SetItem(idx, colWPTDIST,  dist);
- 
+
                   index++;
             }
 
@@ -1200,7 +1205,6 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event)
 {
       RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
       pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-//      pWP->m_bKeepXRoute = true;                        // This mark should be kept
       pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
       pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
       cc1->Refresh ( false );      // Needed for MSW, why not GTK??
@@ -1272,9 +1276,11 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event)
       if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;
       else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;
 */
-      pConfig->DeleteWayPoint ( wp );
-      pSelect->DeleteSelectablePoint ( wp, SELTYPE_ROUTEPOINT );
-      delete wp;
+//      pConfig->DeleteWayPoint ( wp );
+//      pSelect->DeleteSelectablePoint ( wp, SELTYPE_ROUTEPOINT );
+//      delete wp;
+
+      pWayPointMan->DestroyWaypoint(wp);
 
       if(pMarkPropDialog)
       {

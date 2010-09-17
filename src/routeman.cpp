@@ -151,6 +151,8 @@ extern MyConfig         *pConfig;
 extern NMEA0183         *pNMEA0183;
 extern AutoPilotWindow  *pAPilot;
 extern WayPointman      *pWayPointMan;
+extern Routeman         *g_pRouteMan;
+
 extern wxRect           g_blink_rect;
 extern wxString         g_SData_Locn;     // 09.10.07; toh
 
@@ -162,6 +164,8 @@ extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
 extern Track            *g_pActiveTrack;
 extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern RoutePoint      *pAnchorWatchPoint1;
+extern RoutePoint      *pAnchorWatchPoint2;
 
 
 
@@ -197,6 +201,21 @@ Routeman::~Routeman()
         if( pRouteActivatePoint)
                 delete  pRouteActivatePoint;
 }
+
+
+bool Routeman::IsRouteValid(Route *pRoute)
+{
+      wxRouteListNode *node = pRouteList->GetFirst();
+      while(node)
+      {
+            if(pRoute == node->GetData())
+                  return true;
+            node = node->GetNext();
+      }
+      return false;
+}
+
+
 
 //    Make a 2-D search to find the route containing a given waypoint
 Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP)
@@ -1333,10 +1352,27 @@ void WayPointman::SetColorScheme(ColorScheme cs)
 }
 
 
+bool WayPointman::DoesIconExist(const wxString icon_key)
+{
+      MarkIcon *pmi;
+      unsigned int i;
+
+      for( i = 0 ; i< m_pcurrent_icon_array->GetCount() ; i++)
+      {
+            pmi = (MarkIcon *)m_pcurrent_icon_array->Item(i);
+            if(pmi->icon_name.IsSameAs(icon_key))
+                  return true;
+      }
+
+      return false;
+}
+
+
+
 wxBitmap *WayPointman::GetIconBitmap(const wxString& icon_key)
 {
       wxBitmap *pret = NULL;
-      MarkIcon *pmi;
+      MarkIcon *pmi = NULL;
       unsigned int i;
 
       for( i = 0 ; i< m_pcurrent_icon_array->GetCount() ; i++)
@@ -1498,3 +1534,46 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
 }
 
 
+void WayPointman::DestroyWaypoint(RoutePoint *pRp)
+{
+      if(pRp)
+      {
+            // Get a list of all routes containing this point
+            // and remove the point from them all
+            wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(pRp);
+            if(proute_array)
+            {
+                  for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
+                  {
+                        Route *pr = (Route *)proute_array->Item(ir);
+                        pr->RemovePoint ( pRp );
+
+                  }
+
+                  //    Scrub the routes, looking for one-point routes
+                  for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
+                  {
+                        Route *pr = (Route *)proute_array->Item(ir);
+                        if(pr->GetnPoints() < 2)
+                        {
+                              pConfig->DeleteConfigRoute ( pr );
+                              g_pRouteMan->DeleteRoute ( pr );
+                        }
+                  }
+
+                  delete proute_array;
+            }
+
+            // Now it is safe to delete the point
+            pConfig->DeleteWayPoint ( pRp );
+            pSelect->DeleteSelectablePoint ( pRp, SELTYPE_ROUTEPOINT );
+            delete pRp;
+
+            //    The RoutePoint might be currently in use as an anchor watch point
+            if(pRp == pAnchorWatchPoint1)
+                  pAnchorWatchPoint1 = NULL;
+            if(pRp == pAnchorWatchPoint2)
+                  pAnchorWatchPoint1 = NULL;
+
+      }
+}

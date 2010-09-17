@@ -130,13 +130,15 @@ public:
                                                 // undefined for starting point
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
-      bool              m_bIsInRoute;
-      bool              m_bIsInTrack;           // pjotrc 2010.02.11
 
-      bool              m_bIsolatedMark;        // This is an isolated mark,
-                                                // created by drop mark, or GPX-In, or config file load
-      bool              m_bKeepXRoute;          // This is a mark
-                                                // created by drop mark, or GPX-In, or config file load
+      bool              m_bIsInRoute;
+      bool              m_bIsInTrack;
+
+      bool              m_bIsolatedMark;        // This is an isolated mark
+
+      bool              m_bKeepXRoute;          // This is a mark which is part of a route/track
+                                                //  and is also an isolated mark, so should not be deleted with
+                                                //  route
 
       bool              m_bIsVisible;           // true if should be drawn, false if invisible
       bool              m_bIsActive;

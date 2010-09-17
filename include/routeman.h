@@ -119,6 +119,8 @@ public:
 
       void DeleteTrack(Route *pRoute);
 
+      bool IsRouteValid(Route *pRoute);
+
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
 
@@ -241,7 +243,10 @@ public:
       void SetColorScheme(ColorScheme cs);
       void DeleteAllWaypoints(bool b_delete_used);
       RoutePoint *FindRoutePointByGUID(wxString &guid);
+      void DestroyWaypoint(RoutePoint *pRp);
 
+
+      bool DoesIconExist(const wxString icon_key);
       wxBitmap *GetIconBitmap(int index);
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);

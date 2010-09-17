@@ -509,6 +509,9 @@ bool             g_bShowMoored;
 double           g_ShowMoored_Kts;
 wxString         g_sAIS_Alert_Sound_File;
 bool             g_bAIS_CPA_Alert_Suppress_Moored;
+bool             g_bAIS_ACK_Timeout;
+double           g_AckTimeout_Mins;
+
 wxToolBarToolBase *m_pAISTool;
 
 DummyTextCtrl    *g_pDummyTextCtrl;
@@ -2563,10 +2566,32 @@ bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
             PlugInToolbarToolContainer *pttc = tool_array.Item(i);
             if(pttc->position == n_tools)
             {
-                  tb->AddTool( pttc->id, wxString(pttc->label), *(pttc->bitmap), wxString(pttc->shortHelp), pttc->kind);
+                  wxBitmap *ptool_bmp;
+
+                  switch(global_color_scheme)
+                  {
+                        case GLOBAL_COLOR_SCHEME_DAY:
+                              ptool_bmp = pttc->bitmap_day;;
+                              break;
+                        case GLOBAL_COLOR_SCHEME_DUSK:
+                              ptool_bmp = pttc->bitmap_dusk;
+                              break;
+                        case GLOBAL_COLOR_SCHEME_NIGHT:
+                              ptool_bmp = pttc->bitmap_night;
+                              break;
+                        default:
+                              ptool_bmp = pttc->bitmap_day;;
+                              break;
+                  }
+
+                  tb->AddTool( pttc->id, wxString(pttc->label), *(ptool_bmp), wxString(pttc->shortHelp), pttc->kind);
                   bret = true;
             }
       }
+
+      //    If we added a tool, call again (recursively) to allow for adding adjacent tools
+      if(bret)
+            while (CheckAndAddPlugInTool(tb)) { /* nothing to do */ }
 
       return bret;
 }
@@ -2783,13 +2808,6 @@ void MyFrame::BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString 
 
         if(back_color < 200)
         {
-#if wxCHECK_VERSION(2, 8, 0)
-              wxImage img_dupG = img_dup;       //.ConvertToGreyscale();
-#else // replacement code for old version
-              wxImage img_dupG = img_dup;
-#endif
-              img_dup = img_dupG;
-
               //  Create a dimmed version of the image/bitmap
               int gimg_width = img_dup.GetWidth();
               int gimg_height = img_dup.GetHeight();
@@ -2824,12 +2842,12 @@ void MyFrame::BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString 
 
 */
         //  Make a bitmap
-        wxBitmap tbmp(img_dup.GetWidth(),img_dup.GetHeight(),-1);
-        wxMemoryDC dwxdc;
-        dwxdc.SelectObject(tbmp);
         wxBitmap *ptoolBarBitmap;
 
 #ifdef __WXMSW__
+        wxBitmap tbmp(img_dup.GetWidth(),img_dup.GetHeight(),-1);
+        wxMemoryDC dwxdc;
+        dwxdc.SelectObject(tbmp);
         ptoolBarBitmap = new wxBitmap(img_dup, (wxDC &)dwxdc);
 #else
         ptoolBarBitmap = new wxBitmap(img_dup);
@@ -3311,6 +3329,15 @@ void MyFrame::DoSetSize(void)
     GetSize(&x, &y);
     g_nframewin_x = x;
     g_nframewin_y = y;
+
+//  Force redraw if in lookahead mode
+    if(g_bLookAhead)
+    {
+          if(g_bCourseUp)
+                DoCOGSet();
+          else
+                DoChartUpdate();
+    }
 
 }
 
@@ -4705,8 +4732,8 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
             else
                   BMPRose = *(*m_phash)[wxString(_T("CompassRoseBlue"))];
 
-            if(fabs(cc1->GetVPSkew()) > .01)
-                  BMPRose = *(*m_phash)[wxString(_T("CompassRose"))];
+//            if(fabs(cc1->GetVPSkew()) > .01)
+//                  BMPRose = *(*m_phash)[wxString(_T("CompassRose"))];
 
             double rose_angle = -999.0;
             if((fabs(cc1->GetVPRotation()) > .01) || (fabs(cc1->GetVPSkew()) > .01))
@@ -5438,7 +5465,8 @@ bool MyFrame::DoChartUpdate(void)
             return false;
       if(bDBUpdateInProgress)
             return false;
-
+      if(!ChartData)
+            return false;
 
       //      If in auto-follow mode, use the current glat,glon to build chart stack.
       //      Otherwise, use vLat, vLon gotten from click on chart canvas, or other means
@@ -5453,7 +5481,7 @@ bool MyFrame::DoChartUpdate(void)
             // on lookahead mode, adjust the vp center point
             if(cc1  && g_bLookAhead)
             {
-                  double angle = g_COGAvg;
+                  double angle = g_COGAvg + (cc1->GetVPRotation() * 180. / PI);
 
                   double pixel_deltay = fabs(cos(angle * PI / 180.)) * cc1->GetCanvasHeight() / 4;
                   double pixel_deltax = fabs(sin(angle * PI / 180.)) * cc1->GetCanvasWidth() / 4;
@@ -5461,7 +5489,7 @@ bool MyFrame::DoChartUpdate(void)
 
                   double meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / cc1->GetVPScale();
 
-                  double dir_to_shift = angle;
+                  double dir_to_shift = g_COGAvg;
 
                   ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon);
             }
@@ -6598,7 +6626,7 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
       {
             double adder = COGTable[i];
 
-            if(abs(adder - g_COGAvg) > 180.)
+            if(fabs(adder - g_COGAvg) > 180.)
             {
                   if((adder - g_COGAvg) > 0.)
                         adder -= 360.;

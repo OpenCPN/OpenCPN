@@ -32,10 +32,12 @@
 
 #include "pluginmanager.h"
 #include "navutil.h"
+#include "ais.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
 extern wxString        g_SData_Locn;
+extern AIS_Decoder     *g_pAIS;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -129,6 +131,7 @@ bool PlugInManager::UpdatePlugIns()
                   wxLogMessage(msg);
 
                   pic->m_cap_flag = pic->m_pplugin->Init();
+                  pic->m_pplugin->SetDefaults();
                   pic->m_bInitState = true;
                   pic->m_short_description = pic->m_pplugin->GetShortDescription();
                   pic->m_long_description = pic->m_pplugin->GetLongDescription();
@@ -469,7 +472,11 @@ int PlugInManager::AddToolbarTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmp
 {
       PlugInToolbarToolContainer *pttc = new PlugInToolbarToolContainer;
       pttc->label = label;
-      pttc->bitmap = bitmap;
+
+      pttc->bitmap_day = bitmap;
+      pttc->bitmap_dusk = BuildDimmedToolBitmap(bitmap, 128);
+      pttc->bitmap_night = BuildDimmedToolBitmap(bitmap, 32);
+
       pttc->bmpDisabled = bmpDisabled;
       pttc->kind = kind;
       pttc->shortHelp = shortHelp;
@@ -531,7 +538,50 @@ wxString PlugInManager::GetLastError()
       return m_last_error_string;
 }
 
+wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio)
+{
+      wxImage img_dup = pbmp_normal->ConvertToImage();
 
+      if(dim_ratio < 200)
+      {
+              //  Create a dimmed version of the image/bitmap
+            int gimg_width = img_dup.GetWidth();
+            int gimg_height = img_dup.GetHeight();
+
+            double factor = (double)(dim_ratio) / 256.0;
+
+            for(int iy=0 ; iy < gimg_height ; iy++)
+            {
+                  for(int ix=0 ; ix < gimg_width ; ix++)
+                  {
+                        if(!img_dup.IsTransparent(ix, iy))
+                        {
+                              wxImage::RGBValue rgb(img_dup.GetRed(ix, iy), img_dup.GetGreen(ix, iy), img_dup.GetBlue(ix, iy));
+                              wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
+                              hsv.value = hsv.value * factor;
+                              wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
+                              img_dup.SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
+                        }
+                  }
+            }
+      }
+
+        //  Make a bitmap
+      wxBitmap *ptoolBarBitmap;
+
+#ifdef __WXMSW__
+      wxBitmap tbmp(img_dup.GetWidth(),img_dup.GetHeight(),-1);
+      wxMemoryDC dwxdc;
+      dwxdc.SelectObject(tbmp);
+
+      ptoolBarBitmap = new wxBitmap(img_dup, (wxDC &)dwxdc);
+#else
+      ptoolBarBitmap = new wxBitmap(img_dup);
+#endif
+
+        // store it
+      return ptoolBarBitmap;
+}
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -678,6 +728,30 @@ wxString *GetpSharedDataLocation(void)
       return &g_SData_Locn;
 }
 
+
+ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void)
+{
+      if ( !g_pAIS )
+            return NULL;
+
+
+      ArrayOfPlugIn_AIS_Targets *pret = new ArrayOfPlugIn_AIS_Targets;
+
+      //      Iterate over the AIS Target Hashmap
+      AIS_Target_Hash::iterator it;
+
+      AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+
+      for ( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )
+      {
+            AIS_Target_Data *td = it->second;
+            PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
+            pret->Add(ptarget);
+      }
+
+      return pret;
+}
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
@@ -748,6 +822,49 @@ bool opencpn_plugin::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
 {}
+
+void opencpn_plugin::SetDefaults(void)
+{}
+
+
+
+//          Helper and interface classes
+
+//-------------------------------------------------------------------------------
+//    PlugIn_AIS_Target Implementation
+//-------------------------------------------------------------------------------
+
+PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
+{
+      PlugIn_AIS_Target *pret = new PlugIn_AIS_Target;
+
+      pret->MMSI =            ptarget->MMSI;
+      pret->Class =           ptarget->Class;
+      pret->NavStatus =       ptarget->NavStatus;
+      pret->SOG =             ptarget->SOG;
+      pret->COG =             ptarget->COG;
+      pret->HDG =             ptarget->HDG;
+      pret->Lon =             ptarget->Lon;
+      pret->Lat =             ptarget->Lat;
+      pret->ROTAIS =          ptarget->ROTAIS;
+      pret->ShipType =        ptarget->ShipType;
+      pret->IMO =             ptarget->IMO;
+
+      pret->Range_NM =        ptarget->Range_NM;
+      pret->Brg =             ptarget->Brg;
+
+    //      Per target collision parameters
+      pret->bCPA_Valid =      ptarget->bCPA_Valid;
+      pret->TCPA =            ptarget->TCPA;                     // Minutes
+      pret->CPA =             ptarget->CPA;                      // Nautical Miles
+
+      pret->alarm_state =     (plugin_ais_alarm_type)ptarget->n_alarm_state;
+
+      strncpy(pret->CallSign, ptarget->CallSign, sizeof(ptarget->CallSign));
+      strncpy(pret->ShipName, ptarget->ShipName, sizeof(ptarget->ShipName));
+
+      return pret;
+}
 
 
 

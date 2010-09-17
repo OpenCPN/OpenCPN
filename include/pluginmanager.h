@@ -39,6 +39,12 @@
 #include "chcanv.h"                 // for ViewPort
 #include "nmea.h"                   // for GenericPosDat
 
+//    Assorted static helper routines
+
+PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
+
+
+
 
 
 //-----------------------------------------------------------------------------------------------------
@@ -90,7 +96,9 @@ class PlugInToolbarToolContainer
             opencpn_plugin    *m_pplugin;
             int               id;
             wxChar            *label;
-            wxBitmap          *bitmap;
+            wxBitmap          *bitmap_day;
+            wxBitmap          *bitmap_dusk;
+            wxBitmap          *bitmap_night;
             wxBitmap          *bmpDisabled;
             wxItemKind        kind;
             wxChar            *shortHelp;
@@ -157,6 +165,8 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
 private:
+
+      wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
 
       MyFrame                 *pParent;
 

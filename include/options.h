@@ -304,6 +304,8 @@ public:
     wxCheckBox                *m_pCheck_Rollover_Class;
     wxCheckBox                *m_pCheck_Rollover_COG;
     wxCheckBox                *m_pCheck_Rollover_CPA;
+    wxCheckBox                *m_pCheck_Ack_Timout;
+    wxTextCtrl                *m_pText_ACK_Timeout;
 
 //    For Fonts page
     wxPanel*                itemPanelFont;

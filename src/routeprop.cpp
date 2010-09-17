@@ -99,7 +99,7 @@ BEGIN_EVENT_TABLE( RouteProp, wxDialog )
     EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
     EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
     EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
-    EVT_CLOSE(RouteProp::OnClose )
+
 END_EVENT_TABLE()
 
 /*!
@@ -450,8 +450,9 @@ bool RouteProp::UpdateProperties()
         wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
 
         int i=0;
-        double slat, slon;
-        double tdis;
+        double slat = gLat;
+        double slon = gLon;;
+        double tdis = 0.;
 
         while(node)
         {
@@ -649,12 +650,6 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     cc1->Refresh(false);
 
     event.Skip();
-}
-
-void RouteProp::OnClose(wxCloseEvent& event)
-{
-//      Destroy();
-//      pRoutePropDialog = NULL;
 }
 
 void RouteProp::OnEvtColDragEnd(wxListEvent& event)

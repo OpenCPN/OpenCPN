@@ -99,6 +99,49 @@ class PlugIn_Position_Fix
       int    nSats;
 };
 
+//    Describe AIS Alarm state
+typedef enum plugin_ais_alarm_type
+{
+      PI_AIS_NO_ALARM = 0,
+      PI_AIS_ALARM_SET,
+      PI_AIS_ALARM_ACKNOWLEDGED
+
+};
+
+
+class PlugIn_AIS_Target
+{
+      public:
+
+            int                       MMSI;
+            int                       Class;
+            int                       NavStatus;
+            double                    SOG;
+            double                    COG;
+            double                    HDG;
+            double                    Lon;
+            double                    Lat;
+            int                       ROTAIS;
+            char                      CallSign[8];                // includes terminator
+            char                      ShipName[21];
+            unsigned char             ShipType;
+            int                       IMO;
+
+            double                    Range_NM;
+            double                    Brg;
+
+    //      Per target collision parameters
+            bool                      bCPA_Valid;
+            double                    TCPA;                     // Minutes
+            double                    CPA;                      // Nautical Miles
+
+            plugin_ais_alarm_type     alarm_state;
+};
+
+//    Declare an array of PlugIn_AIS_Targets
+WX_DEFINE_ARRAY_PTR(PlugIn_AIS_Target *, ArrayOfPlugIn_AIS_Targets);
+
+
 //----------------------------------------------------------------------------------------------------------
 //    The Generic PlugIn Interface Class Definition
 //
@@ -139,6 +182,9 @@ public:
 
       //    This group is optional.
       //    PlugIns may override any of these methods as required
+
+      virtual void SetDefaults(void);     //This will be called upon enabling a PlugIn via the user Dialog
+                                          //It gives a chance to setup any default options and behavior
 
       virtual int GetToolbarToolCount(void);
 
@@ -198,6 +244,8 @@ extern "C"  DECL_EXP wxWindow *GetOCPNCanvasWindow();
 extern "C"  DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size);
 
 extern "C"  DECL_EXP wxString *GetpSharedDataLocation();
+
+extern "C"  DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
 
 #endif            // _PLUGIN_H_
 

@@ -179,6 +179,10 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
+extern bool             g_bAIS_ACK_Timeout;
+extern double           g_AckTimeout_Mins;
+
+
 extern wxLocale         locale_def_lang;
 
 #ifdef USE_WIFI_CLIENT
@@ -1145,6 +1149,14 @@ void options::CreateControls()
     m_pCheck_Alert_Moored = new wxCheckBox( itemPanelAIS, -1, _("Supress Alerts for anchored/moored targets"));
     pAlertGrid->Add(m_pCheck_Alert_Moored, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
+    wxStaticText *pStatic_Dummy2 = new wxStaticText( itemPanelAIS, -1, _T(""));
+    pAlertGrid->Add(pStatic_Dummy2, 1, wxALIGN_RIGHT|wxALL, group_item_spacing);
+
+    m_pCheck_Ack_Timout = new wxCheckBox( itemPanelAIS, -1, _("Enable Target Alert Acknowledge timeout (minutes)"));
+    pAlertGrid->Add(m_pCheck_Ack_Timout, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+    m_pText_ACK_Timeout = new wxTextCtrl(itemPanelAIS, -1);
+    pAlertGrid->Add(m_pText_ACK_Timeout, 1, wxALIGN_RIGHT, group_item_spacing);
 
 
 
@@ -1615,6 +1627,10 @@ void options::SetInitialSettings()
       m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
       m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
+      m_pCheck_Ack_Timout->SetValue(g_bAIS_ACK_Timeout);
+      s.Printf(_T("%4.0f"),g_AckTimeout_Mins);
+      m_pText_ACK_Timeout->SetValue(s);
+
       m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
       // Rollover
@@ -1955,6 +1971,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
     g_bAIS_CPA_Alert_Suppress_Moored = m_pCheck_Alert_Moored->GetValue();
+
+    g_bAIS_ACK_Timeout = m_pCheck_Ack_Timout->GetValue();
+    m_pText_ACK_Timeout->GetValue().ToDouble(&g_AckTimeout_Mins);
 
       // Rollover
       g_bAISRolloverShowClass = m_pCheck_Rollover_Class->GetValue();
