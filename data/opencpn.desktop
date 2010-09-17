@@ -1,19 +1,10 @@
 [Desktop Entry]
-Comment=
-Comment[en_US]=
-Encoding=UTF-8
-Exec=opencpn
-GenericName=
-GenericName[en_US]=
-Icon=exec
-MimeType=
+Version=1.0
 Name=OpenCPN
-Name[en_US]=OpenCPN
-Path=
+Comment=Open source chart plotter / navigator
+Exec=opencpn
+Icon=opencpn
 StartupNotify=true
 Terminal=false
-TerminalOptions=
 Type=Application
-X-DCOP-ServiceType=
-X-KDE-SubstituteUID=false
-X-KDE-Username=
+Categories=Education;Science;Geography;
