@@ -357,8 +357,8 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
 
     //      Walk thru the attributes, adding interesting ones
             int hdr_len = 0;
-            char *mybuf_ptr;
-            char *hdr_end;
+            char *mybuf_ptr = NULL;
+            char *hdr_end = NULL;
 
             int prim = -1;
             int attdun = 0;
@@ -1723,7 +1723,7 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
 
     double easting_ul, northing_ul;
     double easting_lr, northing_lr;
-    double    prev_easting_ul, prev_northing_ul;
+    double    prev_easting_ul = 0., prev_northing_ul = 0.;
     double    prev_easting_lr, prev_northing_lr;
 
     if(ps52plib->GetShowS57Text() != m_blastS57TextRender)
@@ -2122,7 +2122,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     s_bInS57++;
 
 
-    InitReturn ret_value;
+    InitReturn ret_value = INIT_OK;
 
     m_FullPath = name;
     m_Description = m_FullPath;
@@ -2279,7 +2279,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                                 char buf[256];
                                 char *pbuf = buf;
                                 wxDateTime ModTime000;
-                                int size000;
+                                int size000 = 0;
                                 wxString senc_base_edtn;
 
                                 while( !dun )
@@ -4053,7 +4053,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         char *buf = (char *)malloc(MAX_LINE + 1);
 
         LUPrec           *LUP;
-        LUPname          LUP_Name;
+        LUPname          LUP_Name = PAPER_CHART;
 
         int     nGeoFeature;
 
@@ -5160,7 +5160,7 @@ void  s57chart::CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader)
 
 
       int feid = 0;
-      OGRLineString *pLS;
+      OGRLineString *pLS = NULL;
       OGRGeometry *pGeo;
       OGRFeature *pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
 

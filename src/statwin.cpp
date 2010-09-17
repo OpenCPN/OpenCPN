@@ -700,7 +700,7 @@ void WiFiStatWin::OnPaint(wxPaintEvent& event)
 
 void WiFiStatWin::DrawBars(wxDC &dc, int x, int y, int box_width, int box_height, int val, int val_max)
 {
-    int xb;
+    int xb = 0;
     //  Scale onto 0..50, so we can draw 5 bars = 50 points
     int aval = (val * 50) / val_max;
 

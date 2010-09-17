@@ -216,19 +216,9 @@ void WVSChart::RenderViewOnDC(wxMemoryDC& dc, ViewPort& VPoint)
         int lon_min = (int)floor(VPoint.vpBBox.GetMinX());
         int lon_max = (int)ceil(VPoint.vpBBox.GetMaxX());
 
-/*  Dont need today
-        if(lon_min > 180)
-        {
-              lon_min -= 360;
-              lon_max -= 360;
-        }
+        x = lon_min;
+        y = lat_min;
 
-        if(lon_min < -180)
-        {
-              lon_min += 360;
-              lon_max += 360;
-        }
-*/
 //        printf("%d %d\n", lon_min, lon_max);
 
         //  Make positive definite longitude for easier integer math

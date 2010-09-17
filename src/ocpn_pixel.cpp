@@ -1500,8 +1500,8 @@ wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_o
                                                double sx = x0 + (x + x1b) * cos_angle - (y + y1b) * msa;
                                                double sy=  y0 + (y + y1b) * cos_angle + (x + x1b) * msa;
 
-                                               const int xs = sx;
-                                               const int ys = sy;
+                                               const int xs = (int)sx;
+                                               const int ys = (int)sy;
 
 
 //                                               return wxRealPoint(p0.x + (p.x - p0.x) * cos_angle - (p.y - p0.y) * sin_angle,

@@ -833,7 +833,6 @@ Station_Data *TCMgr::find_or_load_harm_data(IDX_entry *pIDX)
 //    If reference station was recently sought, and not found, don't bother
 //            if(!strcmp(pIDX->IDX_reference_name, plast_reference_not_found->mb_str()))
             if(plast_reference_not_found->IsSameAs(wxString(pIDX->IDX_reference_name, wxConvUTF8)))
-
             {
                   return NULL;
             }
@@ -1333,6 +1332,9 @@ char * TCMgr::nojunk (char *linrec)
 int TCMgr::slackcmp (char *a, char *b)
 {
   int c, cmp, n;
+//  if(!strncmp("Cuxh", a, 4))
+//        int yyp = 5;
+
   n = strlen (b);
   if ((int)(strlen (a)) < n)
     return 1;
@@ -1364,6 +1366,19 @@ int TCMgr::next_line (FILE *fp, char linrec[linelen], int end_ok)
       }
     }
   } while (linrec[0] == '#' || linrec[0] == '\r' || linrec[0] == '\n');
+
+//  if(!strncmp("Cuxh", linrec, 4))
+//        int yyp = 5;
+
+  // Scrub the line for invalid characters
+  int i_scrub = 0;
+  while(linrec[i_scrub])
+  {
+        if((signed char)linrec[i_scrub] < 0)
+              linrec[i_scrub] = '?';
+        i_scrub++;
+  }
+
   return 1;
 }
 
@@ -1521,6 +1536,9 @@ char *str;
 // Read master until EOF then read user file.
      case IFF_READ :
        str = fgets( index_line, 1024, IndexFile);
+
+//       if(!strncmp("Cuxh", index_line, 4))
+//             int yyp = 5;
 
        if (str != NULL)
        {
@@ -1714,7 +1732,7 @@ char stz[80];
             &pIDX->IDX_type,&pIDX->IDX_zone[0],&pIDX->IDX_lon,&pIDX->IDX_lat,&TZHr,&TZMin,
             &pIDX->IDX_station_name[0])) return(1);
 
-//      if(!strncmp(pIDX->IDX_station_name, "Rivi", 4))
+//      if(!strncmp(pIDX->IDX_station_name, "Cuxh", 4))
 //            int hhk = 4;
 
       pIDX->IDX_time_zone = TZHr*60 + TZMin;

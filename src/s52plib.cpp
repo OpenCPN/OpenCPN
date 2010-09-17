@@ -2069,7 +2069,7 @@ void s52plib::SetPLIBColorScheme ( wxString scheme )
 
 S52color *s52plib::S52_getColor ( const char *colorName )
 {
-      S52color *c;
+      S52color *c = NULL;
 
       unsigned int i;
       colTable *ct;
@@ -2806,13 +2806,13 @@ bool s52plib::RenderHPGLtoDC ( char *str, char *col, wxDC *pdc, wxPoint &r, wxPo
       int    tessObj       = FALSE;
       int    polyMode      = FALSE;
       int    inBegEnd      = FALSE;
-      S52color *newColor;
+      S52color *newColor = NULL;
       float trans = 1.0;
 
-      int x1, x2, y1, y2;
+      int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
       int x,y;
 
-      float sin_rot, cos_rot;
+      float sin_rot = 0., cos_rot = 1.;
 
       if ( rot_angle )
       {
@@ -2823,7 +2823,7 @@ bool s52plib::RenderHPGLtoDC ( char *str, char *col, wxDC *pdc, wxPoint &r, wxPo
 
 #define MAX_POINTS 100
       wxPoint PointArray[MAX_POINTS];
-      int vIdx;
+      int vIdx = 1;
 
 
       float fsf = 100 / canvas_pix_per_mm;
@@ -5066,7 +5066,7 @@ int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, 
           r = fc & 0xff;
       */
 
-      int color_int;
+      int color_int = 0;
       if ( NULL != c )
             color_int = ( ( r ) << 16 ) + ( ( g ) << 8 ) + ( b );
 
@@ -5305,8 +5305,8 @@ int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, 
 
       unsigned char *pix_buff = pb_spec->pix_buff;
 
-      int patt_size_x, patt_size_y, patt_pitch;
-      unsigned char *patt_s0;
+      int patt_size_x = 0, patt_size_y = 0, patt_pitch = 0;
+      unsigned char *patt_s0 = NULL;
       if ( pPatt_spec )
       {
             patt_size_y = pPatt_spec->height;
@@ -5535,7 +5535,7 @@ __asm__ __volatile__ ( \
 //----------------------------------------------------------------------------------
 inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int ybot, S52color *c, render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec )
 {
-      unsigned char r, g, b;
+      unsigned char r = 0, g = 0, b = 0;
 
       if ( NULL != c )
       {
@@ -5560,7 +5560,7 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
 //      int debug = 0;
       int ret_val = 0;
 
-      int color_int;
+      int color_int = 0;
       if ( NULL != c )
             color_int = ( ( r ) << 16 ) + ( ( g ) << 8 ) + ( b );
 
@@ -5764,8 +5764,10 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
 
       unsigned char *pix_buff = pb_spec->pix_buff;
 
-      int patt_size_x, patt_size_y, patt_pitch;
-      unsigned char *patt_s0;
+      int patt_size_x = 0;
+      int patt_size_y = 0;
+      int patt_pitch = 0;
+      unsigned char *patt_s0 = NULL;
       if ( pPatt_spec )
       {
             patt_size_y = pPatt_spec->height;

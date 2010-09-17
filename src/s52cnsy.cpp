@@ -1292,7 +1292,7 @@ static void *LIGHTS05 (void *param)
     bool     flare_at_45       = false;
     double   sectr1            = UNKNOWN_DOUBLE;
     double   sectr2            = UNKNOWN_DOUBLE;
-    double   sweep;
+    double   sweep = 0.;
     char     colist[LISTSIZE]  = {'\0'};   // colour list
     bool     b_isflare = false;
 
@@ -2476,7 +2476,7 @@ static void *_RESCSP01(void *param)
 //    GString *restrnstr        = S57_getAttVal(geo, "RESTRN");
     char     restrn[LISTSIZE] = {'\0'};   // restriction list
     wxString symb;
-    char    *r;
+    char    *r = NULL;
 
     if ( restrnstr->Len()) {
           _parseList(restrnstr->mb_str(), restrn, sizeof(restrn));
