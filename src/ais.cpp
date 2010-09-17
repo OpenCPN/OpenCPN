@@ -59,6 +59,9 @@
 #include "navutil.h"        // for Select
 #include "georef.h"
 
+extern AISTargetQueryDialog    *g_pais_query_dialog_active;
+extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
+
 extern  OCP_AIS_Thread  *pAIS_Thread;
 extern  wxString        *pAISDataSource;
 extern  int             s_dns_test_flag;
@@ -106,9 +109,13 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
+extern bool             g_bAIS_ACK_Timeout;
+extern double           g_AckTimeout_Mins;
+
+
 //    A static structure storing generic position data
-//    Used to communicate from NMEA threads to main application thread
-//static      GenericPosDat     AISPositionMuxData;
+//    Used to communicate  AIVDO events to main application loop
+static      GenericPosDat     AISPositionData;
 
 //-------------------------------------------------------------------------------------------------------------
 //    OCP_AIS_Thread Static data store
@@ -393,7 +400,17 @@ AIS_Target_Data::AIS_Target_Data()
     b_positionValid = false;
     b_nameValid = false;
 
+    Euro_Length = 0;            // Extensions for European Inland AIS
+    Euro_Beam = 0;
+    Euro_Draft = 0;
+    strncpy(Euro_VIN, "       ", 8);
+    UN_shiptype = 0;
 
+    b_isEuroInland = false;
+    b_blue_paddle = false;
+
+    b_OwnShip = false;
+    b_in_ack_timeout = false;
 }
 
 wxString AIS_Target_Data::BuildQueryResult( void )
@@ -401,111 +418,150 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
       wxString line;
       wxString result;
+      wxDateTime now = wxDateTime::Now();
 
-      line.Printf(_("ShipName:  "));
-      if(b_nameValid)
-            line.Append( trimAISField(ShipName) );
-      line.Append(_T("\n\n"));
-      result.Append(line);
-
+      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      {
+            line.Printf(_("ShipName:  "));
+            if(b_nameValid)
+                  line.Append( trimAISField(ShipName) );
+            line.Append(_T("\n\n"));
+            result.Append(line);
+      }
       line.Printf(_T("MMSI:      %d\n"), MMSI);
       result.Append(line);
 
-      line.Printf(_("CallSign:  "));
-      line.Append( trimAISField(CallSign) );
-      line.Append(_T("\n"));
-      result.Append(line);
+      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      {
+            line.Printf(_("CallSign:  "));
+            line.Append( trimAISField(CallSign) );
+            line.Append(_T("\n"));
+            result.Append(line);
 
-      if(IMO > 0)
-            line.Printf(_T("IMO:        %8d\n"), IMO);
-      else
-            line.Printf(_T("IMO:\n"));
-      result.Append(line);
+            if(IMO > 0)
+                  line.Printf(_T("IMO:        %8d\n"), IMO);
+            else
+                  line.Printf(_T("IMO:\n"));
+            result.Append(line);
+      }
 
       line.Printf(_("Class:     "));
       line.Append(Get_class_string(false));
       line.Append(_T("\n"));
       result.Append(line);
 
-    //      Nav Status
-      line.Printf(_("Navigational Status:  "));
-      if((NavStatus <= 8) && (NavStatus >= 0))
-            line.Append( wxString::From8BitData(&ais_status[NavStatus][0]) );
-      line.Append(_T("\n"));
-      result.Append(line);
-
-
-    //      Ship type
-      line.Printf(_("Ship Type:            "));
-      line.Append( Get_vessel_type_string() );
-      line.Append(_T("\n"));
-      result.Append(line);
-
-    //  Destination
-      line.Printf(_("Destination:          "));
-      line.Append( trimAISField(Destination) );
-      line.Append(_T("\n"));
-      result.Append(line);
-
-      wxDateTime now = wxDateTime::Now();
-
-    //  ETA
-      if((ETA_Mo) && (ETA_Hr < 24))
+      if((Class != AIS_ATON) && (Class != AIS_BASE))
       {
-            wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo), now.GetYear(), ETA_Hr, ETA_Min);
-            line.Printf(_("ETA:                  "));
-            line.Append( eta.FormatISODate());
-            line.Append(_T("  "));
-            line.Append( eta.FormatISOTime());
+
+            //      Nav Status
+            line.Printf(_("Navigational Status:  "));
+            if((NavStatus <= 8) && (NavStatus >= 0))
+                  line.Append( wxString::From8BitData(&ais_status[NavStatus][0]) );
             line.Append(_T("\n"));
-      }
-      else
-      {
-            line.Printf(_("ETA:                  Unknown"));
+            result.Append(line);
+
+
+      //      Ship type
+            line.Printf(_("Ship Type:            "));
+            line.Append( Get_vessel_type_string() );
             line.Append(_T("\n"));
-      }
+            result.Append(line);
 
-      result.Append(line);
+      //  Destination
+            line.Printf(_("Destination:          "));
+            line.Append( trimAISField(Destination) );
+            line.Append(_T("\n"));
+            result.Append(line);
 
-    //  Dimensions
 
-      if((DimA + DimB + DimC + DimD) == 0)
-      {
-            if(Draft > 0.01)
-                  line.Printf(_("Size:                ---m x ---m x %4.1fm\n\n"),  Draft);
+      //  ETA
+            if((ETA_Mo) && (ETA_Hr < 24))
+            {
+                  wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
+                  line.Printf(_("ETA:                  "));
+                  line.Append( eta.FormatISODate());
+                  line.Append(_T("  "));
+                  line.Append( eta.FormatISOTime());
+                  line.Append(_T("\n"));
+            }
             else
-                  line.Printf(_("Size:                ---m x ---m x ---m\n\n"));
+            {
+                  line.Printf(_("ETA:                  Unknown"));
+                  line.Append(_T("\n"));
+            }
+
+            result.Append(line);
+
+      //  Dimensions
+
+            if((DimA + DimB + DimC + DimD) == 0)
+            {
+                  if(b_isEuroInland)
+                  {
+                        if(Euro_Length == 0.0)
+                        {
+                              if(Euro_Draft > 0.01)
+                                    line.Printf(_("Size:                ---m x ---m x %4.1fm\n\n"),  Euro_Draft);
+                              else
+                                    line.Printf(_("Size:                ---m x ---m x ---m\n\n"));
+                        }
+                        else
+                        {
+                              if(Euro_Draft > 0.01)
+                                    line.Printf(_("Size:                %4.1fm x %4.1fm x %4.1fm\n\n"), Euro_Length, Euro_Beam, Euro_Draft);
+                              else
+                                    line.Printf(_("Size:                %4.1fm x %4.1fm x ---m\n\n"), Euro_Length, Euro_Beam);
+                        }
+                  }
+                  else
+                  {
+                        if(Draft > 0.01)
+                              line.Printf(_("Size:                ---m x ---m x %4.1fm\n\n"),  Draft);
+                        else
+                              line.Printf(_("Size:                ---m x ---m x ---m\n\n"));
+                  }
+            }
+            else if(Draft < 0.01)
+                  line.Printf(_("Size:                %5dm x %dm x ---m\n\n"), (DimA + DimB), (DimC + DimD));
+            else
+                  line.Printf(_("Size:                %5dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
+
+            result.Append(line);
+
+            line.Printf(_("Course:               %5.0f Deg.\n"), COG);
+            result.Append(line);
+
+            if(SOG <= 102.2)
+                  line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
+            else
+                  line.Printf(_("Speed:            Unavailable\n"));
+            result.Append(line);
+
       }
-      else if(Draft < 0.01)
-            line.Printf(_("Size:                %5dm x %dm x ---m\n\n"), (DimA + DimB), (DimC + DimD));
-      else
-            line.Printf(_("Size:                %5dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
-
+	  if(b_positionValid)
+			line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
+	  else
+			line.Printf(_("Range:            Unavailable\n"));
       result.Append(line);
 
-      line.Printf(_("Course:               %5.0f Deg.\n"), COG);
-      result.Append(line);
-
-      if(SOG <= 102.2)
-            line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
-      else
-            line.Printf(_("Speed:            Unavailable\n"));
-      result.Append(line);
-
-      line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
-      result.Append(line);
-
-      line.Printf(_("Bearing:              %5.0f Deg.\n"), Brg);
+	  if(b_positionValid)
+			line.Printf(_("Bearing:              %5.0f Deg.\n"), Brg);
+	  else
+			line.Printf(_("Bearing:          Unavailable\n"));
       result.Append(line);
 
       line.Printf(_("Position:              "));
-
-      wxString pos_st;
-      pos_st += toSDMM(1, Lat);
-      pos_st <<_T("\n                       ");
-      pos_st += toSDMM(2, Lon);
-      pos_st << _T("\n\n");
-      line << pos_st;
+	  if(b_positionValid)
+	  {
+		  wxString pos_st;
+		  pos_st += toSDMM(1, Lat);
+		  pos_st <<_T("\n                       ");
+		  pos_st += toSDMM(2, Lon);
+		  pos_st << _T("\n\n");
+		  line << pos_st;
+	  }
+	  else
+		  line << _("   Unknown\n\n");
       result.Append(line);
 
 
@@ -624,15 +680,18 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T("["));
             result.Append(Get_class_string(false));
             result.Append(_T("] "));
-            result.Append(Get_vessel_type_string(false));
-            if((NavStatus <= 8) && (NavStatus >= 0))
+            if((Class != AIS_ATON) && (Class != AIS_BASE))
             {
-                  result.Append(_T(" ("));
-                  result.Append(wxString::From8BitData(&ais_status[NavStatus][0]));
-                  result.Append(_T(")"));
+                  result.Append(Get_vessel_type_string(false));
+                  if((NavStatus <= 8) && (NavStatus >= 0) )
+                  {
+                        result.Append(_T(" ("));
+                        result.Append(wxString::From8BitData(&ais_status[NavStatus][0]));
+                        result.Append(_T(")"));
+                  }
             }
       }
-      if(g_bAISRolloverShowCOG && (SOG <= 102.2))
+      if(g_bAISRolloverShowCOG && (SOG <= 102.2) && ((Class != AIS_ATON) && (Class != AIS_BASE)))
       {
             if (result.Len())
                   result.Append(_T("\n"));
@@ -728,6 +787,8 @@ wxString AIS_Target_Data::Get_class_string(bool b_short)
             return _("B");
       case AIS_ATON:
             return b_short ? _("AtoN") : _("Aid to Navigation");
+      case AIS_BASE:
+            return b_short ? _("Base") : _("Base Station");
       default:
             return b_short ? _("Unk") : _("Unknown");
       }
@@ -864,9 +925,11 @@ static int rx_ticks;
 
 
 
-AIS_Decoder::AIS_Decoder(int window_id, wxFrame *pParent, const wxString& AISDataSource, wxMutex *pGPSMutex)
+AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDataSource, wxMutex *pGPSMutex)
 
 {
+      m_handler_id = handler_id;
+
       AISTargetList = new AIS_Target_Hash;
 
       m_pShareGPSMutex = pGPSMutex;
@@ -951,12 +1014,37 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
 
             int nr = 0;
             if(!message.IsEmpty())
-                nr = Decode(message);
+            {
+                  if(message.Mid(3,3).IsSameAs(_T("VDM")) || message.Mid(3,3).IsSameAs(_T("VDO")))
+                  {
+                        nr = Decode(message);
+                        if(message.Mid(3,3).IsSameAs(_T("VDO")))
+                        {
+                              //    This is an ownship message, presumably from a transponder
+                              //    Simulate an ownship GPS position report upstream
 
+                              if(m_pLatestTargetData && (nr == AIS_NoError) && g_bGPSAISMux && m_pLatestTargetData->b_positionValid)
+                              {
+                                    AISPositionData.kLat = m_pLatestTargetData->Lat;
+                                    AISPositionData.kLon = m_pLatestTargetData->Lon;
+                                    AISPositionData.kCog = m_pLatestTargetData->COG;
+                                    AISPositionData.kSog = m_pLatestTargetData->SOG;
 
-            if(g_bGPSAISMux)
-                  Parse_And_Send_Posn(message);
-
+//                                    printf("ownship Lat %g\n",AISPositionData.kLat);
+                                    wxCommandEvent event( EVT_NMEA,  m_handler_id );
+                                    event.SetEventObject( (wxObject *)this );
+                                    event.SetExtraLong(EVT_NMEA_DIRECT);
+                                    event.SetClientData(&AISPositionData);
+                                    m_pMainEventHandler->AddPendingEvent(event);
+                              }
+                        }
+                  }
+                  else
+                  {
+                        if(g_bGPSAISMux)
+                              Parse_And_Send_Posn(message);
+                  }
+            }
             break;
         }       //case
     }           // switch
@@ -990,48 +1078,6 @@ void AIS_Decoder::Parse_And_Send_Posn(wxString &message)
 
       return;
 
-#if 0
-   // Send the NMEA string to the decoder
-      m_NMEA0183 << str_temp_buf;
-
-      if (true == m_NMEA0183.PreParse())
-      {
-            {
-//    Signal the main program thread with raw sentence
-                  wxCommandEvent event( EVT_NMEA);
-                  event.SetEventObject( (wxObject *)this );
-                  event.SetExtraLong(EVT_NMEA_PARSE_RX);
-
-                  wxMutexLocker stateLocker(*m_pShareGPSMutex);          // scope is right here
-                  if(stateLocker.IsOk() )
-                  {
-                        if(RX_BUFFER_EMPTY == rx_share_buffer_state)
-                        {
-                              strcpy(rx_share_buffer, str_temp_buf.mb_str());
-                              rx_share_buffer_state = RX_BUFFER_FULL;
-                              rx_share_buffer_length = str_temp_buf.Len();
-
-                              m_pMainEventHandler->AddPendingEvent(event);
-                        }
-                  }
-                  else
-                  {
-                        // Cant get mutex, so punt
-                  }
-            }
-      }
-      else
-      {
-            if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
-            {
-                  g_total_NMEAerror_messages++;
-                  wxString msg(_T("   AIS.Unrecognized NMEA Sentence..."));
-                  msg.Append(str_temp_buf);
-                  ThreadMessage(msg);
-            }
-      }
-
-#endif
 }
 
 
@@ -1039,66 +1085,10 @@ void AIS_Decoder::Parse_And_Send_Posn(wxString &message)
 
 
 
-#if 0
-void AIS_Decoder::Parse_And_Send_Posn(wxString &str_temp_buf)
-{
-
-   // Send the NMEA string to the decoder
-      m_NMEA0183 << str_temp_buf;
-
-   // we must check the return from parse, as some usb to serial adaptors on the MAC spew
-   // junk if there is not a serial data cable connected.
-      if (true == m_NMEA0183.Parse())
-      {
-            if(m_NMEA0183.LastSentenceIDReceived == wxString(_T("RMC")))
-            {
-
-                  if(m_NMEA0183.Rmc.IsDataValid == NTrue)
-                  {
-
-                        if(m_pShareGPSMutex)
-                              m_pShareGPSMutex->Lock();
-
-                        float llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                        int lat_deg_int = (int)(llt / 100);
-                        float lat_deg = lat_deg_int;
-                        float lat_min = llt - (lat_deg * 100);
-                        AISPositionMuxData.kLat = lat_deg + (lat_min/60.);
-                        if(m_NMEA0183.Rmc.Position.Latitude.Northing == South)
-                              AISPositionMuxData.kLat = -AISPositionMuxData.kLat;
-
-                        float lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                        int lon_deg_int = (int)(lln / 100);
-                        float lon_deg = lon_deg_int;
-                        float lon_min = lln - (lon_deg * 100);
-                        AISPositionMuxData.kLon = lon_deg + (lon_min/60.);
-                        if(m_NMEA0183.Rmc.Position.Longitude.Easting == West)
-                              AISPositionMuxData.kLon = -AISPositionMuxData.kLon;
-
-                        AISPositionMuxData.kSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                        AISPositionMuxData.kCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-                        AISPositionMuxData.FixTime = 0;
-
-                        if(m_pShareGPSMutex)
-                              m_pShareGPSMutex->Unlock();
-
-
- //    Signal the main program thread
-                        wxCommandEvent event( EVT_NMEA );
-                        event.SetEventObject( (wxObject *)this );
-                        event.SetExtraLong(EVT_NMEA_DIRECT);
-                        event.SetClientData(&AISPositionMuxData);
-                        m_pMainEventHandler->AddPendingEvent(event);
-                  }
-            }
-      }
-}
-
-#endif
 
 
 //----------------------------------------------------------------------------------
-//      Decode NMEA VDM sentence to AIS Target(s)
+//      Decode NMEA VDM/VDO sentence to AIS Target(s)
 //----------------------------------------------------------------------------------
 AIS_Error AIS_Decoder::Decode(const wxString& str)
 {
@@ -1110,7 +1100,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 //    int nlen = str.Len();
 
     if(str.Len() > 100)
-        return AIS_NMEAVDM_TOO_LONG;
+        return AIS_NMEAVDX_TOO_LONG;
 
     if(!NMEACheckSumOK(str))
     {
@@ -1124,13 +1114,12 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
                   ThreadMessage(msg);
             }
             else
-            return AIS_NMEAVDM_CHECKSUM_BAD;
+            return AIS_NMEAVDX_CHECKSUM_BAD;
     }
 
-    if(!str.Mid(3,3).IsSameAs(_T("VDM")))
+    if(!str.Mid(3,2).IsSameAs(_T("VD")))
     {
-//          printf("Not VDM at n_msgs:%d\n", n_msgs);
-          return AIS_NMEAVDM_BAD;
+          return AIS_NMEAVDX_BAD;
     }
 
     //  OK, looks like the sentence is OK
@@ -1140,7 +1129,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
     wxStringTokenizer tkz(string, _T(","));
 
     wxString token;
-    token = tkz.GetNextToken();         // !xxVDM
+    token = tkz.GetNextToken();         // !xxVDx
 
     token = tkz.GetNextToken();
     nsentences = atoi(token.mb_str());
@@ -1195,6 +1184,10 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
         //  Extract the MMSI
         int mmsi = strbit.GetInt(9, 30);
 
+        //  Here is some debug code to capture/filter to on MMSI number
+//        if(mmsi != 244670456)
+//             return AIS_NoError;
+
 //        int message_ID = strbit.GetInt(1, 6);
 
         AIS_Target_Data *pTargetData;
@@ -1232,33 +1225,44 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
         if(pStaleTarget)
             pSelectAIS->DeleteSelectablePoint((void *)mmsi, SELTYPE_AISTARGET);
 
-      bool bhad_name = false;
-      if(pStaleTarget)
+        bool bhad_name = false;
+        if(pStaleTarget)
             bhad_name =  pStaleTarget->b_nameValid;
 
+        //  pTargetData is valid, either new or existing. Continue processing
 
-        bool bdecode_result = Parse_VDMBitstring(&strbit, pTargetData);            // Parse the new data
+        m_pLatestTargetData = pTargetData;
+
+        if(str.Mid(3,3).IsSameAs(_T("VDO")))
+              pTargetData->b_OwnShip = true;
+
+        bool bdecode_result = Parse_VDXBitstring(&strbit, pTargetData);            // Parse the new data
 
         if((bdecode_result) && (pTargetData->b_nameValid) && (pStaleTarget))
            if(!bhad_name)
                     n_newname++;
 
-        //  If the message was decoded correctly, Update the AIS Target in the Selectable list, and update the TargetData
+        //  If the message was decoded correctly
+        //  Update the AIS Target information
         if(bdecode_result)
         {
-              (*AISTargetList)[mmsi] = pTargetData;            // update the entry
+              (*AISTargetList)[mmsi] = pTargetData;            // update the hash table entry
 
-              if(pTargetData->b_positionValid)
-              {
-                    SelectItem *pSel = pSelectAIS->AddSelectablePoint(pTargetData->Lat, pTargetData->Lon, (void *)mmsi, SELTYPE_AISTARGET);
-                    pSel->SetUserData(mmsi);
-              }
-
-        //     Update the most recent report period
+              //     Update the most recent report period
               pTargetData->RecentPeriod = pTargetData->ReportTicks - last_report_ticks;
 
+              //  If this is not an ownship message, update the AIS Target in the Selectable list, and update the CPA info
+              if(!pTargetData->b_OwnShip)
+              {
+                    if(pTargetData->b_positionValid)
+                    {
+                          SelectItem *pSel = pSelectAIS->AddSelectablePoint(pTargetData->Lat, pTargetData->Lon, (void *)mmsi, SELTYPE_AISTARGET);
+                          pSel->SetUserData(mmsi);
+                    }
+
             //    Calculate CPA info for this target immediately
-              UpdateOneCPA(pTargetData);
+                    UpdateOneCPA(pTargetData);
+              }
         }
         else
         {
@@ -1270,17 +1274,18 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
              }
         }
 
+
         ret = AIS_NoError;
 
-            if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) ) // debug pjotrc
-            {
+        if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) ) // debug pjotrc
+        {
                   g_total_NMEAerror_messages++;
                   wxString msg(_T("   AIS sentence decoded..."));
-			wxString item;
-      		item.Printf(_T("MMSI: %d"), pTargetData->MMSI);
+                  wxString item;
+                  item.Printf(_T("MMSI: %d"), pTargetData->MMSI);
                   msg.Append(item);
                   ThreadMessage(msg);
-            }
+        }
 
 
     }
@@ -1308,9 +1313,9 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 
 
 //----------------------------------------------------------------------------
-//      Parse a NMEA VDM Bitstring
+//      Parse a NMEA VDM/VDO Bitstring
 //----------------------------------------------------------------------------
-bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
+bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 {
     bool parse_result = false;
 
@@ -1393,6 +1398,11 @@ bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                   }
             }
+
+            //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
+            int blue_paddle = bstr->GetInt(144, 2);
+            ptd->b_blue_paddle = (blue_paddle == 2);             // paddle is set
+
             parse_result = true;                // so far so good
 
 
@@ -1448,8 +1458,12 @@ bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
               ptd->Class = AIS_CLASS_A;
 
 
-            int DSI = bstr->GetInt(39, 2);
-            if(0 == DSI)
+//          Get the AIS Version indicator
+//          0 = station compliant with Recommendation ITU-R M.1371-1
+//          1 = station compliant with Recommendation ITU-R M.1371-3
+//          2-3 = station compliant with future editions
+            int AIS_version_indicator = bstr->GetInt(39, 2);
+            if(AIS_version_indicator < 2)
             {
                   ptd->IMO = bstr->GetInt(41, 30);
 
@@ -1475,6 +1489,12 @@ bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
 
                   bstr->GetStr(303,120, &ptd->Destination[0], 20);
+
+                  if(AIS_version_indicator > 0)
+                  {
+                        int blue_paddle = bstr->GetInt(143, 2);
+                        ptd->b_blue_paddle = (blue_paddle == 2);             // paddle is set
+                  }
 
                   parse_result = true;
             }
@@ -1512,6 +1532,32 @@ bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
          }
      case 4:                                    // base station
           {
+                ptd->Class = AIS_BASE;
+
+//                ptd->m_utc_year = bstr->GetInt(39, 14);
+//                ptd->m_utc_month =  bstr->GetInt(53,  4);
+//                ptd->m_utc_day =    bstr->GetInt(57,  5);
+                ptd->m_utc_hour =   bstr->GetInt(62,  5);
+                ptd->m_utc_min    = bstr->GetInt(67,  6);
+                ptd->m_utc_sec    = bstr->GetInt(73,  6);
+                //                              (79,  1);
+                int lon = bstr->GetInt(80, 28);
+                if(lon & 0x08000000)                    // negative?
+                      lon |= 0xf0000000;
+                ptd->Lon = lon / 600000.;
+
+                int lat = bstr->GetInt(108, 27);
+                if(lat & 0x04000000)                    // negative?
+                      lat |= 0xf8000000;
+                ptd->Lat = lat / 600000.;
+
+                ptd->COG = 0.;
+                ptd->HDG = 511;
+                ptd->SOG = 0.;
+
+                ptd->b_positionValid = true;
+                parse_result = true;
+
                 break;
           }
      case 9:                                    // Special Position Report (Standard SAR Aircraft Position Report)
@@ -1574,6 +1620,29 @@ bool AIS_Decoder::Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
           }
      case 8:                                    // Binary Broadcast
           {
+                int dac = bstr->GetInt(41, 10);
+                int fi = bstr->GetInt(51, 6);
+                if(dac == 200)                  // European inland
+                {
+                      if(fi == 10)              // "Inland ship static and voyage related data"
+                      {
+                            ptd->b_isEuroInland = true;
+
+                            bstr->GetStr(57, 48, &ptd->Euro_VIN[0], 8);
+                            ptd->Euro_Length = ((double)bstr->GetInt(105, 13))/10.0;
+                            ptd->Euro_Beam = ((double)bstr->GetInt(118, 10))/10.0;
+                            ptd->UN_shiptype = bstr->GetInt(128, 14);
+//                            int hazcargo = bstr->GetInt(142, 3);
+                            ptd->Euro_Draft = ((double)bstr->GetInt(145, 11))/100.0;
+//                            int load = bstr->GetInt(156, 2);
+//                            int qualspd = bstr->GetInt(158, 1);
+//                            int qualcrs = bstr->GetInt(159, 1);
+//                            int qualhead = bstr->GetInt(160, 1);
+//                            spare = bstr->GetInt(161, 8);
+                            parse_result = true;
+
+                      }
+                }
                 break;
           }
      case 6:                                    // Addressed Binary Message
@@ -1714,14 +1783,32 @@ void AIS_Decoder::UpdateAllAlarms(void)
                         }
                   }
 
-                  //    If the alarm has been acknowledged, we can only turn it off
-                  if(td->n_alarm_state == AIS_ALARM_ACKNOWLEDGED)
+                  //    Maintain the timer for in_ack flag
+                  if(g_bAIS_ACK_Timeout)
+                  {
+                        if(td->b_in_ack_timeout)
+                        {
+                              wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
+                              if(delta.GetMinutes() > g_AckTimeout_Mins)
+                                   td->b_in_ack_timeout = false;
+                        }
+                  }
+                  else
+                        td->b_in_ack_timeout = false;
+
+
+/*
+                  //          If the target is in_ack state, we can only turn it off
+                  if(td->b_in_ack_timeout)
                   {
                         if(AIS_NO_ALARM == this_alarm)
                               td->n_alarm_state = AIS_NO_ALARM;
                   }
                   else
                         td->n_alarm_state = this_alarm;
+*/
+
+                  td->n_alarm_state = this_alarm;
 
             }
       }
@@ -2208,7 +2295,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
                         {
                               if(td->b_active)
                               {
-                                    if(AIS_ALARM_SET == td->n_alarm_state)
+                                    if((AIS_ALARM_SET == td->n_alarm_state) && !td->b_in_ack_timeout)
                                     {
                                           if(td->TCPA < tcpa_min)
                                           {
@@ -2246,7 +2333,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 
                   if(palert_target)
                   {
-                        if(AIS_ALARM_SET == palert_target->n_alarm_state)
+                        if((AIS_ALARM_SET == palert_target->n_alarm_state) && !palert_target->b_in_ack_timeout)
                         {
                               g_pais_alert_dialog_active->UpdateText();
                         }
@@ -2521,10 +2608,14 @@ void *OCP_AIS_Thread::Entry()
      A special test for a user defined FIFO
      To use this method, do the following:
      a.  Create a fifo            $mkfifo /tmp/aisfifo
-     b.  netcat into the fifo     $nc {ip} {port} > /tmp/aisfifo                   sample {ip} {port} could be  nc 82.182.117.51 6401 > /tmp/aisfifo
+     b.  netcat into the fifo     $nc {ip} {port} > /tmp/aisfifo
+                     sample {ip} {port} could be  nc 82.182.117.51 6401 > /tmp/aisfifo
      c.  hand edit opencpn.conf and make AIS data source like this:
           [Settings/AISPort]
           Port=Serial:/tmp/aisfifo
+
+    This also works if you have an ascii ais log
+    for which you can simply $cat ais.log > /tmp/aisfifo
     */
     if(m_pPortName->Contains(_T("fifo")))
           goto port_ready;
@@ -3107,7 +3198,11 @@ void AISTargetAlertDialog::OnIdAckClick( wxCommandEvent& event )
             if(td)
             {
                   if(AIS_ALARM_SET == td->n_alarm_state)
-                        td->n_alarm_state = AIS_ALARM_ACKNOWLEDGED;
+                  {
+//                        td->n_alarm_state = AIS_ALARM_ACKNOWLEDGED;
+                        td->m_ack_time = wxDateTime::Now();
+                        td->b_in_ack_timeout = true;
+                  }
             }
       }
       Destroy();
@@ -3155,9 +3250,9 @@ IMPLEMENT_CLASS ( AISTargetListDialog, wxDialog )
 // AISTargetListDialog event table definition
 
             BEGIN_EVENT_TABLE ( AISTargetListDialog, wxDialog )
+			EVT_LIST_ITEM_ACTIVATED(ID_AIS_TARGET_LIST, AISTargetListDialog::OnActivateItem)
             EVT_CLOSE(AISTargetListDialog::OnClose)
             END_EVENT_TABLE()
-
 
 AISTargetListDialog::AISTargetListDialog( )
 {
@@ -3215,7 +3310,7 @@ void AISTargetListDialog::CreateControls()
 //      wxBoxSizer* boxSizer = new wxBoxSizer ( wxVERTICAL );
 //      topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2 );
 
-      m_pListCtrlAISTargets = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(-1, 100),
+      m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxSize(-1, 100),
                                              wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES);
       m_pListCtrlAISTargets->InsertColumn( tlNAME, _("Name"), wxLIST_FORMAT_LEFT, 105 );
       m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, 55);
@@ -3250,6 +3345,30 @@ void AISTargetListDialog::OnClose(wxCloseEvent& event)
       g_pAISTargetList = NULL;
 }
 
+/*
+** When an item is activated in AIS TArget List then opens the AIS Target Query Dialog
+*/
+void AISTargetListDialog::OnActivateItem(wxListEvent& event)
+{
+// Flav: 8/10/2010 changed the way to get the data (less function calls)
+      long mmsi_no;
+
+      if ((mmsi_no = event.GetData()))
+	{
+      	if(NULL == g_pais_query_dialog_active)
+		{
+			g_pais_query_dialog_active = new AISTargetQueryDialog();
+			g_pais_query_dialog_active->Create ( this, -1, _( "AIS Target Query" ), wxPoint(g_ais_query_dialog_x, g_ais_query_dialog_y));
+		}
+
+		g_pais_query_dialog_active->SetMMSI(mmsi_no);
+		g_pais_query_dialog_active->UpdateText();
+		g_pais_query_dialog_active->Show();
+	}
+}
+
+
+
 void AISTargetListDialog::UpdateAISTargetList(void)
 {
       if(m_pdecoder)
@@ -3270,6 +3389,12 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                   {
                         long idx = m_pListCtrlAISTargets->InsertItem(item);
                         wxString data;
+
+				// Puts the MMSI No in the item data (to be used be activation event)
+				item.m_itemId = idx;
+				item.m_data = pAISTarget->MMSI;
+				item.m_mask = wxLIST_MASK_DATA;
+				m_pListCtrlAISTargets->SetItem(item);
 
                         m_pListCtrlAISTargets->SetItem(idx, tlNAME,
                                     trimAISField(pAISTarget->ShipName));
@@ -3292,7 +3417,7 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                         if((pAISTarget->ETA_Mo) && (pAISTarget->ETA_Hr < 24))
                         {
                               wxDateTime now = wxDateTime::Now();
-                              wxDateTime _eta(pAISTarget->ETA_Day, wxDateTime::Month(pAISTarget->ETA_Mo),
+                              wxDateTime _eta(pAISTarget->ETA_Day, wxDateTime::Month(pAISTarget->ETA_Mo-1),
                                               (pAISTarget->ETA_Mo < now.GetMonth() ? now.GetYear() : now.GetYear()+1),
                                               pAISTarget->ETA_Hr, pAISTarget->ETA_Min);
 
@@ -3305,7 +3430,10 @@ void AISTargetListDialog::UpdateAISTargetList(void)
 
                         m_pListCtrlAISTargets->SetItem(idx, tlETA, eta);
 
-                        data.Printf(_T("%5.0f"), pAISTarget->Brg);
+						if(pAISTarget->b_positionValid)
+							data.Printf(_T("%5.0f"), pAISTarget->Brg);
+						else
+							data = _("-");
                         m_pListCtrlAISTargets->SetItem(idx, tlBRG, data);
 
                         if( pAISTarget->COG > 360.)
@@ -3324,13 +3452,14 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                               m_pListCtrlAISTargets->SetItem(idx, tlSOG, data);
                         }
 
-                        if(pAISTarget->Range_NM > 100.)
-                              m_pListCtrlAISTargets->SetItem(idx, tlRNG, _("-"));
-                        else
+                        if(pAISTarget->b_positionValid)
                         {
                               data.Printf(_T("%5.2f"), pAISTarget->Range_NM);
                               m_pListCtrlAISTargets->SetItem(idx, tlRNG, data);
                         }
+						else
+                              m_pListCtrlAISTargets->SetItem(idx, tlRNG, _("-"));
+
                   }
                   item.Clear();
             }

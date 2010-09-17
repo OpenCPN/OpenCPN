@@ -24,31 +24,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- * 2010/02/01 17:30 pjotrc
- * - implement AIS AtoN
- *
- * $Log: ais.h,v $
- * Revision 1.35  2010/06/16 03:50:51  bdbcat
- * 615a
- *
- * Revision 1.34  2010/06/12 02:21:08  bdbcat
- * 611b
- *
- * Revision 1.33  2010/06/12 00:45:19  bdbcat
- * 611b
- *
- * Revision 1.32  2010/05/15 03:55:04  bdbcat
- * Build 514
- *
- * Revision 1.31  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.30  2010/03/29 03:17:36  bdbcat
- * 2.1.0 Beta Initial
- *
- * Revision 1.29  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
  *
  */
 
@@ -95,14 +70,15 @@
 
 #define ID_ACKNOWLEDGE        10001
 #define ID_SILENCE            10002
+#define ID_AIS_TARGET_LIST    10003
 
 typedef enum AIS_Error
 {
     AIS_NoError = 0,
     AIS_Partial,
-    AIS_NMEAVDM_TOO_LONG,
-    AIS_NMEAVDM_CHECKSUM_BAD,
-    AIS_NMEAVDM_BAD,
+    AIS_NMEAVDX_TOO_LONG,
+    AIS_NMEAVDX_CHECKSUM_BAD,
+    AIS_NMEAVDX_BAD,
     AIS_NO_SERIAL,
     AIS_NO_TCP
 }_AIS_Error;
@@ -129,7 +105,8 @@ typedef enum ais_transponder_class
 {
       AIS_CLASS_A = 0,
       AIS_CLASS_B,
-	AIS_ATON		// Aid to Navigation   pjotrc 2010/02/01
+      AIS_ATON,    // Aid to Navigation   pjotrc 2010/02/01
+      AIS_BASE     // Base station
 
 }_ais_transponder_class;
 
@@ -138,7 +115,7 @@ typedef enum ais_alarm_type
 {
       AIS_NO_ALARM = 0,
       AIS_ALARM_SET,
-      AIS_ALARM_ACKNOWLEDGED
+//      AIS_ALARM_ACKNOWLEDGED
 
 }_ais_alarm_type;
 
@@ -181,6 +158,14 @@ public:
     int                       DimC;
     int                       DimD;
 
+    double                    Euro_Length;            // Extensions for European Inland AIS
+    double                    Euro_Beam;
+    double                    Euro_Draft;
+    char                      Euro_VIN[8];
+    int                       UN_shiptype;
+    bool                      b_isEuroInland;
+    bool                      b_blue_paddle;
+
     int                       ETA_Mo;
     int                       ETA_Day;
     int                       ETA_Hr;
@@ -197,10 +182,13 @@ public:
     bool                      b_suppress_audio;
     bool                      b_positionValid;
     bool                      b_nameValid;
+    bool                      b_OwnShip;
 
     int                       m_utc_hour;
     int                       m_utc_min;
     int                       m_utc_sec;
+    wxDateTime                m_ack_time;
+    bool                      b_in_ack_timeout;
 
     double                    Range_NM;
     double                    Brg;
@@ -323,7 +311,7 @@ private:
     void OnTimerAISAudio(wxTimerEvent& event);
 
     bool NMEACheckSumOK(const wxString& str);
-    bool Parse_VDMBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
+    bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
     void UpdateAllCPA(void);
     void UpdateOneCPA(AIS_Target_Data *ptarget);
     void UpdateAllAlarms(void);
@@ -339,6 +327,7 @@ private:
     bool              m_busy;
     wxTimer           TimerAIS;
     wxFrame           *m_parent_frame;
+    int               m_handler_id;
 
     wxString          m_data_source_string;
 
@@ -347,6 +336,7 @@ private:
     wxString          sentence_accumulator;
     bool              m_OK;
 
+    AIS_Target_Data   *m_pLatestTargetData;
 
     NMEA0183         m_NMEA0183;
     wxMutex          *m_pShareGPSMutex;
@@ -489,6 +479,7 @@ class AISTargetListDialog: public wxDialog
       private:
             void CreateControls();
             void OnClose( wxCloseEvent& event );
+			void OnActivateItem( wxListEvent& event );
             wxWindow          *m_pparent;
             wxListCtrl        *m_pListCtrlAISTargets;
             AIS_Decoder       *m_pdecoder;

@@ -407,6 +407,7 @@ private:
 
       void TargetFrame(wxDC &dc, wxPen pen, int x, int y, int radius);   // pjotrc 2010.02.01
       void AtoN_Diamond(wxDC &dc, wxPen pen, int x, int y, int radius);  // pjotrc 2010.02.01
+      void Base_Square(wxDC &dc, wxPen pen, int x, int y, int radius);
 
       void ScaleBarDraw( wxDC& dc, int x_origin, int y_origin );
 
@@ -524,6 +525,8 @@ private:
       wxImage     *m_pos_image_green;
       wxImage     *m_pos_image_red;
       wxImage     *m_pos_image_grey;
+
+      wxImage     *m_pos_image_user;
 
       wxImage     m_ship_pix_image;             //cached ship draw image for high overzoom
       int         m_cur_ship_pix;
