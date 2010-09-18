@@ -2434,13 +2434,13 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "bShowLightDescription" ), &read_int, 0 );
             ps52plib->SetShowLdisText ( ! ( read_int == 0 ) );
 
-            Read ( _T ( "nDisplayCategory" ), &read_int, ( enum _DisCat ) OTHER );
+            Read ( _T ( "nDisplayCategory" ), &read_int, ( enum _DisCat ) STANDARD );
             ps52plib->m_nDisplayCategory = ( enum _DisCat ) read_int;
 
             Read ( _T ( "nSymbolStyle" ), &read_int, ( enum _LUPname ) PAPER_CHART );
             ps52plib->m_nSymbolStyle = ( LUPname ) read_int;
 
-            Read ( _T ( "nBoundaryStyle" ), &read_int, 0 );
+            Read ( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
             ps52plib->m_nBoundaryStyle = ( LUPname ) read_int;
 
             Read ( _T ( "bShowSoundg" ), &read_int, 0 );

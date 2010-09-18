@@ -1576,7 +1576,7 @@ bool MyApp::OnInit()
                   wxString token = tkz.GetNextToken();
 
                   ChartDirInfo cdi;
-                  cdi.fullpath = token;
+                  cdi.fullpath = token.Trim();
                   cdi.magic_number = _T("");
 
                   g_ChartDirArray.Add ( cdi );
@@ -1584,6 +1584,9 @@ bool MyApp::OnInit()
               }
 
             }
+
+            if(ndirs)
+                  pConfig->UpdateChartDirs(g_ChartDirArray);
 
             //    As a favor to new users, poll the database and
             //    move the initial viewport so that a chart will come up.
@@ -1604,16 +1607,17 @@ bool MyApp::OnInit()
                 {
 //              Create and Save a new Chart Database based on the hints given in the config file
 
+/*
                         wxString msg1(_("OpenCPN needs to update the chart database from config file entries...."));
 
                         wxMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),wxICON_INFORMATION | wxOK );
                         int dlg_ret;
                         dlg_ret = mdlg.ShowModal();
-
+*/
                         delete ChartData;
                         ChartData = new ChartDB(gFrame);
 
-                        wxString line(_T("Example of a long line which will make the dialog big enough to show chart paths"));
+                        wxString line(_("Rebuilding chart database from configuration file entries..."));
                         wxProgressDialog *pprog = new wxProgressDialog (  _("OpenCPN Chart Update"), line, 100, NULL,
                                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 

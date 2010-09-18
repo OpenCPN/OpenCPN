@@ -615,8 +615,8 @@ ENDIF(NOT APPLE)
 # On Windows builds, copy the wxWidgets dlls and  to the executable directory
 IF(WIN32 AND NOT UNIX)
 INSTALL(DIRECTORY wxWidgets/ DESTINATION "." )
-INSTALL(DIRECTORY vc9/ DESTINATION ".\\\\vc9" )
-INSTALL(DIRECTORY src/bitmaps/NSISBmps/ DESTINATION ".\\\\NSISBmps" )
+INSTALL(DIRECTORY buildwin/vc9/ DESTINATION ".\\\\vc9" )
+INSTALL(DIRECTORY buildwin/NSIS_Unicode/Bitmaps/ DESTINATION ".\\\\NSISBmps" )
 ENDIF(WIN32 AND NOT UNIX)
 
 

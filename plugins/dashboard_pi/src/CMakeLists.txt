@@ -49,7 +49,7 @@ IF(NOT WIN32)
 
 ENDIF(NOT WIN32)
 
-SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+#SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
 
 # Add some definitions to satisfy MS
 IF(WIN32)
