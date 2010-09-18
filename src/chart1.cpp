@@ -5489,7 +5489,20 @@ bool MyFrame::DoChartUpdate(void)
 
                   double pixel_deltay = fabs(cos(angle * PI / 180.)) * cc1->GetCanvasHeight() / 4;
                   double pixel_deltax = fabs(sin(angle * PI / 180.)) * cc1->GetCanvasWidth() / 4;
-                  double pixel_delta = sqrt((pixel_deltay * pixel_deltay) + ( pixel_deltax * pixel_deltax));
+
+                  double pixel_delta_tent = sqrt((pixel_deltay * pixel_deltay) + ( pixel_deltax * pixel_deltax));
+
+                  double pixel_delta;
+
+                  //    The idea here is to cancel the effect of LookAhead for slow gSog, to avoid
+                  //    jumping of the vp center point during slow maneuvering, or at anchor....
+                  if(gSog < 1.0)
+                       pixel_delta = 0.;
+                  else if(gSog >= 3.0)
+                        pixel_delta = pixel_delta_tent;
+                  else
+                        pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
+
 
                   double meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / cc1->GetVPScale();
 

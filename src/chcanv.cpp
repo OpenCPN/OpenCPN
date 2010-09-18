@@ -4056,7 +4056,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
                         }
 
                         // and if that did not work, chose stack entry 0
-                        if(candidate_stack_index >= pCurrentStack->nEntry)
+                        if((candidate_stack_index >= pCurrentStack->nEntry) || (candidate_stack_index < 0))
                               candidate_stack_index = 0;
 
                         int new_ref_index = pCurrentStack->GetDBIndex(candidate_stack_index);
