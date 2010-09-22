@@ -3,9 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
 Uploaders: Anton Martchukov <anton@martchukov.com>
-Build-Depends: debhelper (>= 7.0.50~), dpatch, cmake, libglu-dev,
-   libwxbase2.8-dev, libwxgtk2.8-dev, libgtk2.0-dev, zlib1g-dev,
-   libbz2-dev, libgps-dev
+Build-Depends: debhelper (>= 7.0.50~), cmake, libglu-dev, libwxbase2.8-dev,
+   libwxgtk2.8-dev, libgtk2.0-dev, zlib1g-dev, libbz2-dev, libgps-dev
 Standards-Version: 3.8.4
 Homepage: http://www.opencpn.org/
 
