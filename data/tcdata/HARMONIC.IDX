@@ -390,9 +390,9 @@ TAsi:Jpn:: 139.083 35.05 9:0 Aziro (Sizuoka), Sizuoka, Japan
 TNAA:Can:Qbc: -78.3167 60.7667 -5:0 Babs Bay, Hudson Bay, Quebec
 TNAA:Can:Newb: -66.8667 45.05 -4:0 Back Bay, Letite Harbour, New Brunswick
 TNAA:Can:Nun: -84.0333 69.9833 -5:0 Baffin, Nunavut
-CNAG:US:FL: -81.2883 24.6567 -5:0 Bah� Honda Harbor (Bridge) Florida Current
-TNAG:US:FL: -81.2817 24.655 -5:0 Bah� Honda Key (Bridge), Florida
-TCAP:Pan:: -78.1833 8.3 -5:0 Bah� Pinas, Panama
+CNAG:US:FL: -81.2883 24.6567 -5:0 Bahia Honda Harbor (Bridge) Florida Current
+TNAG:US:FL: -81.2817 24.655 -5:0 Bahia Honda Key (Bridge), Florida
+TCAP:Pan:: -78.1833 8.3 -5:0 Bahia Pinas, Panama
 TNAA:Can:Qbc: -57.2667 51.4667 -4:0 Baie De Brador, Quebec
 TNAA:Can:Qbc: -59.0333 50.7667 -4:0 Baie Des Moutons, Quebec
 TNAA:Can:Qbc: -62.8 50.2833 -4:0 Baie Johan-Beetz, Quebec
@@ -429,7 +429,7 @@ TAuA:Aus:: 115.55 -20.8167 8:0 Barrow Island - Tkr Mrg, Australia
 TAuA:Aus:: 115.4667 -20.7167 8:0 Barrow Island, Australia
 TAuA:PNGu:: 151.05 -10.6167 10:0 Basilaki, Pitt Bay, Papua New Guinea
 TNAA:Can:Qbc: -70.0833 59.9833 -5:0 Basking Island, Quebec
-TNAA:Can:Qbc: -71.2 46.8167 -5:0 Bassin De La Rivi�re St-Charles, Quebec
+TNAA:Can:Qbc: -71.2 46.8167 -5:0 Bassin De La Rivière St-Charles, Quebec
 TAuA:Aus:: 150.2167 -35.7167 10:0 Batemans Bay, Australia
 TAsi:Jpn:: 127.783 26.1833 9:0 Baten, Okinawa, Japan
 TNAA:US:ME: -69.8133 43.9183 -5:0 Bath, Kennebec River, Maine
@@ -587,7 +587,7 @@ TNAA:Can:Labr: -63.85 59.4167 -4:0 Brownell Point, Labrador
 TAuA:Aus:: 123.55 -14.1 8:0 Browse Island, Australia
 TNAP:Can:BC: -130.85 54.6167 -8:0 Brundige Inlet, British Columbia
 TNAP:Can:BC: -130.85 54.6167 -8:0 Brundige Inlet, British Columbia (2)
-TEur:Ger:: 9.133 53.883 1:0 Brunsbuttel, Germany
+TEur:Ger:: 9.133 53.883 1:0 Brunsbüttel, Germany
 TAuA:Aus:: 153.6167 -28.5333 10:0 Brunswick Heads, Australia
 TNAA:US:FL: -81.6817 29.595 -5:0 Buffalo Bluff, St. Johns River, Florida
 TNAA:US:FL: -81.6817 29.595 -5:0 Buffalo Bluff, St. Johns River, Florida (2)
@@ -845,7 +845,7 @@ TNAP:Can:BC: -122.8833 49.0333 -8:0 Crescent Beach, British Columbia (2)
 TNAP:US:CA: -124.1833 41.745 -8:0 Crescent City, California
 TNAP:US:CA: -124.1833 41.745 -8:0 Crescent City, California (2) (expired 1989-12-31)
 TNAA:Can:NovS: -61.9 45.75 -4:0 Cribbons Point, Nova Scotia
-TCAP:Pan:: -79.9 9.35 -5:0 Crist�al, Panama
+TCAP:Pan:: -79.9 9.35 -5:0 Cristóbal, Panama
 TNAP:Can:BC: -123.65 48.8667 -8:0 Crofton, British Columbia
 TNAP:Can:BC: -123.6333 48.85 -8:0 Crofton, British Columbia (2)
 TEur:Eng:: 1.3035 52.9339 0:0 Cromer, England - READ flaterco.com/pol.html
@@ -989,8 +989,8 @@ TNAP:Can:BC: -127.8333 51.25 -8:0 Egg Island, British Columbia (2)
 TNAP:Can:BC: -123.9333 49.75 -8:0 Egmont, British Columbia
 TNAP:Can:BC: -123.9333 49.75 -8:0 Egmont, British Columbia (2)
 TAsi:Jpn:: 134.817 34.4667 9:0 Ei, Hyogo, Japan
-TAtl:Faer:: -6.4713 62.3033 0:0 Eisv�, Faroe Islands
-TAtl:Faer:: -7.09 62.2958 0:0 Ei�, Faroe Islands
+TAtl:Faer:: -6.4713 62.3033 0:0 Eidsvik, Faroe Islands
+TAtl:Faer:: -7.09 62.2958 0:0 Ejde, Faroe Islands
 TAtl:Grn:: -46.0167 60.7333 -3:0 Ekalugarsuit, Greenland
 TNAP:Mex:: -114.5833 31.65 -7:0 El Golfo de Santa Clara, Sonora, Mexico
 TCar:Bahm:: -80.4667 23.95 -5:0 Elbow Cay, Cay Sal Bank, Bahamas
@@ -1130,7 +1130,7 @@ TNAG:US:TX: -94.7867 29.3133 -6:0 Galveston (Galveston Channel), Texas (2) (expi
 TNAG:US:TX: -94.79 29.2867 -6:0 Galveston (Pleasure Pier), Texas
 CNAG:US:TX: -94.705 29.3467 -6:0 Galveston Bay Entrance, Texas Current
 TAsi:Jpn:: 137.233 34.8167 9:0 Gamagori, Aichi, Japan
-TAtl:Faer:: -6.823 61.9642 0:0 Gamlag�t, Faroe Islands
+TAtl:Faer:: -6.823 61.9642 0:0 Gamlagætt, Faroe Islands
 TNAP:Can:BC: -123.5 48.85 -8:0 Ganges Harbour, British Columbia
 TNAP:Can:BC: -123.5 48.85 -8:0 Ganges Harbour, British Columbia (2)
 TAuA:Aus:: 152.4667 -21.9833 10:0 Gannet Cay, Australia
@@ -1139,7 +1139,7 @@ TNAG:US:FL: -82.8717 24.6267 -5:0 Garden Key, Dry Tortugas, Florida
 TNAP:US:OR: -123.9117 45.5583 -8:0 Garibaldi, Oregon
 TNAA:US:ME: -67.1167 44.9167 -4:0 Garnet Point, Maine
 TNAA:Can:Nun: -135.75 69.05 -8:0 Garry Island, Nunavut/NWT
-TNAA:Can:Qbc: -64.4833 48.8333 -5:0 Gasp�Bay, Quebec
+TNAA:Can:Qbc: -64.4833 48.8333 -5:0 Gaspé Bay, Quebec
 TAuA:Aus:: 151.3833 -23.8833 10:0 Gatcombe Head, Australia
 TNAA:US:MA: -70.83 41.3533 -5:0 Gay Head, Martha's Vineyard, Massachusetts
 TAsi:Jpn:: 129.55 29.9 9:0 Gazya Sima, Kagosima, Japan
@@ -1175,7 +1175,7 @@ TNAA:US:MA: -70.665 42.6033 -5:0 Gloucester Harbor (Ten Pound Island), Massachus
 TNAA:US:VA: -76.5 37.2467 -5:0 Gloucester Point, York River, Virginia
 TAuA:PNGu:: 144.2 -7.75 10:0 Goaribari Island, Papua New Guinea
 TNAP:Can:BC: -130.2333 54.0167 -8:0 Godfrey Point, British Columbia
-TAtl:Grn:: -51.75 64.1833 -3:0 Godth�, Greenland
+TAtl:Grn:: -51.75 64.1833 -3:0 Godthaab, Greenland
 TAsi:Jpn:: 132.683 33.9167 9:0 Gogo Sima, Ehime, Japan
 TAsi:Jpn:: 136.667 34.3167 9:0 Gokasyo, Mie, Japan
 TAuA:Aus:: 153.4333 -27.95 10:0 Gold Coast Seaway, Australia
@@ -1208,9 +1208,9 @@ TNAA:Can:NovS: -66.2 44.4 -4:0 Grand Eddy, Nova Scotia
 TNAG:US:LA: -89.9567 29.2633 -6:0 Grand Isle, USCG Station, East Point, Louisiana
 CNAA:Can:NovS: -66.9317 44.7533 -4:0 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 TNAA:Can:NovS: -61.55 47.55 -4:0 Grande Entree, Nova Scotia
-TNAA:Can:Qbc: -69.8667 47.6167 -5:0 Grande �e, Quebec
-TNAA:Can:Qbc: -64.5 48.4 -5:0 Grande-Rivi�re, Quebec
-TNAA:Can:Qbc: -65.1333 49.2333 -5:0 Grande-Vall�, Quebec
+TNAA:Can:Qbc: -69.8667 47.6167 -5:0 Grande Île, Quebec
+TNAA:Can:Qbc: -64.5 48.4 -5:0 Grande-Rivière, Quebec
+TNAA:Can:Qbc: -65.1333 49.2333 -5:0 Grande-Vallée, Quebec
 TNAG:US:FL: -80.9333 24.7667 -5:0 Grassy Key (North), Florida
 TNAG:US:FL: -80.9583 24.755 -5:0 Grassy Key, south side, Hawk Channel, Florida
 TAuA:Aus:: 144.0833 -40.0667 10:0 Grassy, King Island, Tasmania
@@ -1236,8 +1236,8 @@ TNAA:Can:Nun: -83.0833 76.4167 -5:0 Grise Fiord, Nunavut
 TNAA:Can:Qbc: -71.9 46.65 -5:0 Grist Mill, Quebec
 TNAA:Can:Qbc: -72.0333 46.5833 -5:0 Grondines, Quebec
 TNAA:Can:Qbc: -69.5167 47.9333 -5:0 Gros Cacouna, Quebec
-TNAA:Can:Qbc: -70.6667 47.0333 -5:0 Grosse-�e, Quebec
-TAtl:Icel:: -23.15 64.56 0:0 Grundarfj��r, Iceland
+TNAA:Can:Qbc: -70.6667 47.0333 -5:0 Grosse-Île, Quebec
+TAtl:Icel:: -23.15 64.56 0:0 Grundarfjörður,JVComm32 Iceland
 TPac:Mari:: 144.66 13.33 10:0 Guam, Marianas
 TNAP:Mex:: -110.8917 27.925 -7:0 Guaymas, Sonora, Mexico
 TNAP:Mex:: -110.8833 27.9167 -7:0 Guaymas, Sonora, Mexico (2)
@@ -1246,7 +1246,7 @@ TCar:Bahm:: -78.1167 22.75 -5:0 Guinchos Cay, Bahamas
 TNAG:US:MS: -89.0817 30.36 -6:0 Gulfport, Gulfport Harbor, Mississippi
 TNAA:Can:Newf: -52.7833 47.2667 -3:30 Gull Island, Newfoundland
 TAuA:Aus:: 136.3833 -11.5167 9:30 Guluwuru Island, Australia
-TAtl:Faer:: -6.7405 62.1968 0:0 Gta, Faroe Islands
+TAtl:Faer:: -6.7405 62.1968 0:0 Gøta, Faroe Islands
 TAsi:Jpn:: 133.2 34.2667 9:0 Habu (In-No-Sima), Hirosima, Japan
 TAsi:Jpn:: 139.433 34.6833 9:0 Habu (Izu-O Sima), Tokyo, Japan
 TAsi:Jpn:: 141.533 40.5333 9:0 Hachinohe, Aomori, Japan
@@ -1399,7 +1399,7 @@ TNAA:Can:Labr: -60.2167 55.45 -4:0 Hopedale, Labrador
 TAuA:Aus:: 136.5 -11.4333 9:30 Hopeful Bay, Australia
 TNAA:Can:Qbc: -69.6333 59.35 -5:0 Hopes Advance Bay, Ungava Bay, Quebec
 TNAA:Can:Newb: -64.5833 45.85 -4:0 Hopewell Cape, New Brunswick
-TAtl:Icel:: -15.12 64.15 0:0 Hornafj��r, Iceland
+TAtl:Icel:: -15.12 64.15 0:0 Hornafjörður, Iceland
 TNAP:Can:BC: -124.6833 49.5 -8:0 Hornby Island, British Columbia
 TNAP:Can:BC: -124.6833 49.5 -8:0 Hornby Island, British Columbia (2)
 TAsi:Jpn:: 140.55 41.2167 9:0 Horozuki, Aomori, Japan
@@ -1452,8 +1452,8 @@ TAtl:Faer:: -6.9417 61.6 0:0 Hvalba, Faroe Islands
 TNAA:US:MA: -70.305 41.6317 -5:0 Hyannis Port, Nantucket Sound, Massachusetts
 TNAA:Can:Nun: -97.2167 76.4833 -6:0 Hyde Parker Island, Nunavut
 TNAA:Can:Nun: -88.8833 78.1333 -6:0 Hyperite Point, Nunavut
-TAtl:Icel:: -21.435 65.423 0:0 H�mav�, Iceland
-TAtl:Icel:: -17.215 66.027 0:0 Hsav�, Iceland
+TAtl:Icel:: -21.435 65.423 0:0 Hólmavík, Iceland
+TAtl:Icel:: -17.215 66.027 0:0 Húsavík, Iceland
 TEur:Neth:: 4.5833 52.4667 1:0 IJmuiden, Netherlands
 TNAA:Can:Nun: -86.0167 80.4167 -5:0 Iceberg Point, Nunavut
 TAsi:Jpn:: 127.8 26.7 9:0 Ie (Okinawa), Okinawa, Japan
@@ -1555,7 +1555,7 @@ CNAP:Can:BC: -126.1367 50.4717 -8:0 Johnstone Strait Central, British Columbia C
 TNAA:Can:NovS: -60.75 45.8 -4:0 Johnstown, Nova Scotia
 TNAA:Can:Labr: -58.2333 54.2167 -3:30 Jordans Point, Labrador
 CNAP:Can:BC: -123.53 48.2317 -8:0 Juan De Fuca Strait (East), British Columbia Current
-TAtl:Grn:: -46.0333 60.7167 -3:0 Julianeh�, Greenland
+TAtl:Grn:: -46.0333 60.7167 -3:0 Julianehaab, Greenland
 TNAA:US:FL: -81.63 30.135 -5:0 Julington Creek, Florida
 TNAA:US:FL: -81.63 30.135 -5:0 Julington Creek, Florida (2)
 TNAA:US:FL: -81.63 30.135 -5:0 Julington Creek, Florida (3)
@@ -1676,7 +1676,7 @@ TNAP:Can:BC: -130.35 53.8 -8:0 Kitkatla Islands, British Columbia
 TNAP:Can:BC: -130.35 53.8 -8:0 Kitkatla Islands, British Columbia (2)
 TNAA:Can:Nun: -64.9333 67.9333 -4:0 Kivitoo, Baffin Island, Nunavut
 TAsi:Jpn:: 140 41.5333 9:0 Kiyobe, Hokkaido, Japan
-TAtl:Faer:: -6.5813 62.254 0:0 Klakksv�, Faroe Islands
+TAtl:Faer:: -6.5813 62.254 0:0 Klakksvik, Faroe Islands
 TNAP:Can:BC: -130.0833 54.0833 -8:0 Klaxton Creek, British Columbia
 TNAP:Can:BC: -130.0833 54.0833 -8:0 Klaxton Creek, British Columbia (2)
 TNAP:Can:BC: -128.5167 52.6 -8:0 Klemtu, British Columbia
@@ -1743,8 +1743,8 @@ TNAP:Can:BC: -127.5667 50.5167 -8:0 Kwokwesta Creek, British Columbia
 TNAP:Can:BC: -127.5667 50.5167 -8:0 Kwokwesta Creek, British Columbia (2)
 TNAP:Can:BC: -127.3667 50.0333 -8:0 Kyuquot, British Columbia
 TNAP:Can:BC: -127.3667 50.0333 -8:0 Kyuquot, British Columbia (2)
-TAtl:Icel:: -16.28 66.18 0:0 K�asker, Iceland
-TNAA:Can:Qbc: -78.9167 53.8167 -5:0 La Grande Rivi�re, Quebec
+TAtl:Icel:: -16.28 66.18 0:0 Kópasker, Iceland
+TNAA:Can:Qbc: -78.9167 53.8167 -5:0 La Grande Rivière, Quebec
 TNAA:Can:NovS: -64.2333 42.9 -4:0 La Have Bank, Nova Scotia
 TNAP:US:CA: -117.2567 32.8667 -8:0 La Jolla, Scripps Pier, California
 TNAP:US:CA: -117.2567 32.8667 -8:0 La Jolla, Scripps Pier, California (2)
@@ -1753,7 +1753,7 @@ TNAP:Mex:BCS: -110.3 24.15 -7:0 La Paz, Baja California Sur, Mexico (2)
 TNAP:Mex:BCS: -110.345 24.1617 -7:0 La Paz, Baja California Sur, Mexico (3)
 TNAA:Can:NovS: -61.05 46.6 -4:0 La Pointe, Nova Scotia
 TNAA:Can:Newf: -55.6 49.9667 -3:30 La Scie, Newfoundland
-TNAA:Can:Qbc: -58.9667 50.8333 -4:0 La Tabati�e, Quebec
+TNAA:Can:Qbc: -58.9667 50.8333 -4:0 La Tabatière, Quebec
 TNAA:Can:Qbc: -72.9 46.1833 -5:0 Lac St-Pierre, Quebec
 TAuA:Aus:: 128.3333 -14.75 8:0 Lacrosse Island, Australia
 TAua:Tasm:: 148.25 -40.2167 10:0 Lady Barron Harbour, Tasmania
@@ -1949,8 +1949,8 @@ TNAA:US:FL: -81.4317 30.3917 -5:0 Mayport (ferry dock), Florida (5)
 TNAA:US:FL: -81.4317 30.3917 -5:0 Mayport (ferry dock), Florida (6)
 TNAA:US:FL: -81.4317 30.3917 -5:0 Mayport (ferry dock), Florida (7)
 TNAA:US:FL: -81.4317 30.3917 -5:0 Mayport (ferry dock), Florida (8)
-TNAP:Mex:: -106.4217 23.1983 -7:0 Mazatl�, Sinaloa, Mexico
-TNAP:Mex:: -106.4217 23.1983 -7:0 Mazatl�, Sinaloa, Mexico (2)
+TNAP:Mex:: -106.4217 23.1983 -7:0 Mazatlán, Sinaloa, Mexico
+TNAP:Mex:: -106.4217 23.1983 -7:0 Mazatlán, Sinaloa, Mexico (2)
 TNAA:Can:Newb: -66.05 45.7167 -4:0 Mc Donald Point, New Brunswick
 TNAP:Can:BC: -129.4833 52.65 -8:0 McKenney Islands, British Columbia
 TNAP:Can:BC: -129.4833 52.65 -8:0 McKenney Islands, British Columbia (2)
@@ -2196,10 +2196,10 @@ TAsi:Jpn:: 141.3 24.8 9:0 Nisi (Io-Sima), Tokyo, Japan
 TAsi:Jpn:: 131.583 33.25 9:0 Nisi-Oita, Oita, Japan
 TAsi:Jpn:: 129.167 28.25 9:0 Nisikomi Wan, Kagosima, Japan
 TAsi:Jpn:: 131 30.7333 9:0 Nisinoomote, Kagosima, Japan
-TAtl:Icel:: -22.32 63.59 0:0 Njar��, Iceland
+TAtl:Icel:: -22.32 63.59 0:0 Njarðvík, Iceland
 TNAA:US:MA: -70.8183 41.2617 -5:0 No Man's Land, Massachusetts
 CNAG:US:FL: -81.3133 24.705 -5:0 No Name Key (northeast of), Florida Current
-TNAG:US:FL: -81.3183 24.6983 -5:0 No Name Key, east side, Bah� Honda Channel, Florida
+TNAG:US:FL: -81.3183 24.6983 -5:0 No Name Key, east side, Bahia Honda Channel, Florida
 TAsi:Jpn:: 138 37.1 9:0 No0, Niigata, Japan
 TAsi:Jpn:: 141.15 38.35 9:0 Nobiru Wan, Miyagi, Japan
 TAsi:Jpn:: 141.117 40.8667 9:0 Nohezi, Aomori, Japan
@@ -2362,7 +2362,7 @@ TNAP:Can:BC: -125.2167 50.3167 -8:0 Owen Bay, British Columbia
 TNAP:Can:BC: -125.2167 50.3167 -8:0 Owen Bay, British Columbia (2)
 TNAA:Can:NovS: -63.9167 44.5833 -4:0 Owls Head, Nova Scotia
 TAsi:Jpn:: 129.35 34.3333 9:0 Oyama Ura, Nagasaki, Japan
-TAtl:Faer:: -7.1667 62.1167 0:0 Oyragj�v, Faroe Islands
+TAtl:Faer:: -7.1667 62.1167 0:0 Oyragjógv, Faroe Islands
 TNAP:US:CA: -122.3767 37.665 -8:0 Oyster Point Marina, San Francisco Bay, California
 TNAP:US:CA: -122.3833 37.6667 -8:0 Oyster Point Marina, San Francisco Bay, California (2)
 CNAP:US:CA: -122.3233 37.665 -8:0 Oyster Point, California Current
@@ -2398,7 +2398,7 @@ TNAA:Can:Newb: -66.05 45.2333 -4:0 Partridge Island, New Brunswick
 TNAA:Can:Qbc: -65.2333 48.0167 -5:0 Paspebiac, Quebec
 TNAA:US:NJ: -74.12 40.8483 -5:0 Passaic, Passaic River, New Jersey
 TNAP:US:WA: -122.9667 48.7833 -8:0 Patos Island, Washington
-TAtl:Icel:: -24 65.35 0:0 Patreksfj��r, Iceland
+TAtl:Icel:: -24 65.35 0:0 Patreksfjörður, Iceland
 TNAP:Can:BC: -123.45 48.65 -8:0 Patricia Bay, British Columbia
 TNAP:Can:BC: -123.45 48.65 -8:0 Patricia Bay, British Columbia (2)
 TNAA:Can:Nun: -124.0667 69.35 -7:0 Paulatuk, Nunavut/NWT
@@ -2424,7 +2424,7 @@ TAuA:Aus:: 141.7833 -12.2167 10:0 Pennefather River, Australia
 TAuA:Aus:: 149.9 -21 10:0 Penrith Island, Australia
 TNAG:US:FL: -87.2133 30.4033 -6:0 Pensacola, Florida
 TNAA:Can:NovS: -60.9667 45.5 -4:0 Petit De Grat, Nova Scotia
-TNAA:Can:Qbc: -64.4131 48.4106 -5:0 Petite Rivi�re, Quebec
+TNAA:Can:Qbc: -64.4131 48.4106 -5:0 Petite Rivière, Quebec
 TEur:Neth:: 4.65 52.7667 1:0 Petten zuid, Netherlands
 TNAA:US:DE: -75.1417 39.9333 -5:0 Philadelphia, Delaware River
 TNAA:US:PA: -75.135 39.9517 -5:0 Philadelphia, Municipal Pier 11, Pennsylvania
@@ -2621,7 +2621,7 @@ TNAA:Can:Nun: -93 63.9167 -6:0 Primrose Island, Nunavut
 TNAP:Can:BC: -130.3333 54.3167 -8:0 Prince Rupert, British Columbia
 TNAP:Can:BC: -130.3333 54.3167 -8:0 Prince Rupert, British Columbia (2)
 CNAP:Can:BC: -123.85 50.1667 -8:0 Princess Louisa Inlet, British Columbia Current
-TNAG:Mex:: -83.325 21.3 -6:0 Progreso, Yucat�, Mexico
+TNAG:Mex:: -83.325 21.3 -6:0 Progreso, Yucatán, Mexico
 TNAA:Can:NovS: -63.7833 44.45 -4:0 Prospect, Nova Scotia
 TAuA::: 141.4833 -10.5167 10:0 Proudfoot Shoal, Torres Strait
 TNAA:US:RI: -71.4017 41.8067 -5:0 Providence, Rhode Island
@@ -2712,9 +2712,9 @@ TNAA:Can:Qbc: -68.55 48.4333 -5:0 Rimouski, Quebec
 TNAP:US:CA: -119.4433 34.3483 -8:0 Rincon Island, California
 TNAP:US:CA: -121.6917 38.145 -8:0 Rio Vista, Sacramento River, California
 TSAA:Brz:: -43.2 -22.9 -3:0 Rio de Janeiro, Brazil
-TNAA:Can:Qbc: -64.7833 50.2833 -5:0 Rivi�re Au Tonnerre, Quebec
-TNAA:Can:Qbc: -64.3833 49 -5:0 Rivi�re-Au-Renard, Quebec
-TNAA:Can:Qbc: -69.5667 47.85 -5:0 Rivi�re-Du-Loup, Quebec
+TNAA:Can:Qbc: -64.7833 50.2833 -5:0 Rivière Au Tonnerre, Quebec
+TNAA:Can:Qbc: -64.3833 49 -5:0 Rivière-Au-Renard, Quebec
+TNAA:Can:Qbc: -69.5667 47.85 -5:0 Rivière-Du-Loup, Quebec
 TAuA:Aus:: 139.5167 -37.2 9:30 Robe (offshore), Australia
 TNAP:Can:BC: -123.6333 49.4167 -8:0 Roberts Creek, British Columbia
 TNAP:Can:BC: -123.6333 49.4167 -8:0 Roberts Creek, British Columbia (2)
@@ -2818,7 +2818,7 @@ TNAG:US:FL: -81.8767 24.4533 -5:0 Sand Key Lighthouse, Sand Key Channel, Florida
 TNAA:Can:NovS: -61.2667 45.5167 -4:0 Sand Point, Nova Scotia
 TNAP:US:AK: -160.5017 55.3367 -9:0 Sand Point, Popof Island, Alaska
 TAuA:Solm:: 160.1167 -9 10:0 Sandfly Passage, Solomon Islands
-TAtl:Icel:: -22.429 64.023 0:0 Sandger�, Iceland
+TAtl:Icel:: -22.429 64.023 0:0 Sandgerði, Iceland
 TNAA:Can:Nun: -90.0667 63.4333 -6:0 Sandpiper Island, Nunavut
 TNAA:Can:Labr: -57.1667 53.5667 -3:30 Sandwich Bay (East Arm), Labrador
 TNAA:Can:Qbc: -64.4289 48.8194 -5:0 Sandy Beach Centre, Quebec
@@ -2843,7 +2843,7 @@ TAsi:Jpn:: 129.4 34.6333 9:0 Sasuna, Nagasaki, Japan
 TAsi:Jpn:: 129.85 29.8333 9:0 Satomura (Naka-No-Sima), Kagosima, Japan
 TNAA:Can:Qbc: -70.6333 47.2 -5:0 Sault-Au-Cochon, Quebec
 TNAP:US:CA: -122.4833 37.85 -8:0 Sausalito, California
-TAtl:Icel:: -19.388 65.454 0:0 Sau�rkr�ur, Iceland
+TAtl:Icel:: -19.388 65.454 0:0 Sauðárkrókur, Iceland
 TNAA:Can:Newf: -56.7 51.3333 -3:30 Savage Cove, Newfoundland
 TNAA:Can:NovS: -62.85 46.4333 -4:0 Savage Harbour, Prince Edward Island
 TNAA:US:GA: -81.0917 32.0817 -5:0 Savannah (Bull Street), Georgia
@@ -2889,7 +2889,7 @@ TNAP:US:AK: -151.72 59.44 -9:0 Seldovia, Alaska
 TNAA:US:FL: -80.1583 27.1833 -5:0 Seminole Shores, Florida
 TAsi:Jpn:: 130.217 31.85 9:0 Sendai (Kagosima), Kagosima, Japan
 TAuA:PNGu:: 144.5667 -3.85 10:0 Sepik River, Papua New Guinea
-TNAA:Can:Qbc: -66.4 50.2167 -5:0 Sept-�es, Quebec
+TNAA:Can:Qbc: -66.4 50.2167 -5:0 Sept-Îles, Quebec
 CNAP:US:AK: -135.6267 57.4067 -9:0 Sergius Narrows, Peril Strait, Alaska Current
 TAuA:Aus:: 114.6833 -21.6 8:0 Serrurier Island, Australia
 TAsi:Jpn:: 139.85 42.4667 9:0 Setana, Hokkaido, Japan
@@ -2901,7 +2901,7 @@ TNAP:US:AK: -149.4267 60.12 -9:0 Seward, Resurrection Bay, Alaska
 TNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia
 TNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia (2)
 CNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia Current
-TAtl:Icel:: -13.59 65.16 0:0 Sey�sfj��r, Iceland
+TAtl:Icel:: -13.59 65.16 0:0 Seyðisfjörður, Iceland
 TAuA:Aus:: 124.3333 -16.3833 8:0 Shale Island, Australia
 TAuA:PNGu:: 152.55 -9.25 10:0 Sharp Island, Papua New Guinea
 TAuA:Aus:: 149.0667 -20.5 10:0 Shaw Island, Australia
@@ -2941,7 +2941,7 @@ TNAP:Can:BC: -125.5833 50.5167 -8:0 Sidney Bay, British Columbia
 TNAP:Can:BC: -125.5833 50.5167 -8:0 Sidney Bay, British Columbia (2)
 TNAP:Can:BC: -123.4 48.65 -8:0 Sidney, British Columbia
 TNAP:Can:BC: -123.4 48.65 -8:0 Sidney, British Columbia (2)
-TAtl:Icel:: -18.54 66.09 0:0 Siglufj��r, Iceland
+TAtl:Icel:: -18.54 66.09 0:0 Siglufjörður, Iceland
 TAsi:Jpn:: 135.2 35.55 9:0 Siizaki, Kyoto, Japan
 TAsi:Jpn:: 139.217 34.3167 9:0 Sikine Sima, Tokyo, Japan
 TNAP:Can:BC: -123.7 49.15 -8:0 Silva Bay, British Columbia
@@ -2978,7 +2978,7 @@ TAsi:Jpn:: 133.233 35.5667 9:0 Sitirui, Simane, Japan
 TNAP:US:AK: -135.3417 57.0517 -9:0 Sitka, Alaska
 TAsi:Jpn:: 129.383 33.2 9:0 Siziki Wan, Nagasaki, Japan
 TAsi:Jpn:: 141.45 38.6667 9:0 Sizugawa, Miyagi, Japan
-TAtl:Icel:: -20.2 65.49 0:0 Skagastr�d, Iceland
+TAtl:Icel:: -20.2 65.49 0:0 Skagaströnd, Iceland
 TNAP:US:AK: -135.325 59.45 -9:0 Skagway, Alaska
 TNAP:Can:BC: -124.2333 49.05 -8:0 Skerry Bay, British Columbia
 TNAA:Can:NovS: -63.05 45.8 -4:0 Skinner Cove, Nova Scotia
@@ -3027,7 +3027,7 @@ TNAA:US:MA: -70.7683 41.3117 -5:0 Squibnocket Point, Martha's Vineyard, Massachu
 TNAP:Can:BC: -124.0167 49.45 -8:0 Squitty Bay, British Columbia
 TNAA:Can:Qbc: -70.3667 47.45 0:0 St-Bernard-de-l'ile-, Quebec
 TNAA:Can:Qbc: -70.8167 47 -5:0 St-Francois, Quebec
-TNAA:Can:Qbc: -70.0167 47.5167 -5:0 St-Ir��, Quebec
+TNAA:Can:Qbc: -70.0167 47.5167 -5:0 St-Irénée, Quebec
 TNAA:Can:Qbc: -70.9 46.9167 -5:0 St-Jean-D'orleans, Quebec
 TNAA:Can:Qbc: -70.2667 47.2167 -5:0 St-Jean-Port-Joli, Quebec
 TNAA:Can:Qbc: -70.85 47.05 -5:0 St-Joachim, Quebec
@@ -3088,7 +3088,7 @@ TNAP:Can:BC: -124.8167 49.1833 -8:0 Stamp Narrows, British Columbia
 TAua:Tasm:: 145.3 -40.7667 10:0 Stanley, Tasmania
 TNAP:Can:BC: -123 49.2833 -8:0 Stanovan, British Columbia
 TEur:Neth:: 4.0167 51.6 1:0 Stavenisse, Netherlands
-TNAA:Can:Qbc: -70.9333 47.0167 -5:0 Ste-Anne-De-Beaupr� Quebec
+TNAA:Can:Qbc: -70.9333 47.0167 -5:0 Ste-Anne-De-Beaupré Quebec
 TNAA:Can:Qbc: -69.0833 48.6333 -5:0 Ste-Anne-De-Portneuf, Quebec
 TNAA:Can:Qbc: -66.4833 49.1333 -5:0 Ste-Anne-Des-Monts, Quebec
 TAuA:Aus:: 116.0667 -20.8167 8:0 Steamboat Island, Australia
@@ -3158,7 +3158,7 @@ TAuA:Aus:: 151.2333 -33.85 0:0 Sydney, Australia
 TAuA:Aus:: 151.2333 -33.85 10:0 Sydney, Australia (2)
 TNAA:Can:NovS: -60.2 46.15 -4:0 Sydney, Nova Scotia
 TAsi:Jpn:: 143.283 42.0167 9:0 Syoya, Hokkaido, Japan
-TAtl:Faer:: -7.3333 62.071 0:0 Srv�ur, Faroe Islands
+TAtl:Faer:: -7.3333 62.071 0:0 Sørvágur, Faroe Islands
 TNAA:Can:NovS: -60.3667 46.3333 -4:0 Table Head Point, Nova Scotia
 TNAA:Can:Newf: -54.2 47.5833 -3:30 Tacks Beach, Newfoundland
 TAsi:Jpn:: 133 34.3333 9:0 Tadanoumi, Hirosima, Japan
@@ -3305,7 +3305,7 @@ TNAA:US:FL: -80.5933 28.415 -5:0 Trident Pier, Port Canaveral, Florida
 TAuA:Aus:: 115.55 -20.3833 8:0 Trimouille Island, Australia
 TNAA:Can:Newf: -53.35 48.3667 -3:30 Trinity, Newfoundland
 TNAA:Can:Qbc: -69.1833 48.1333 -5:0 Trois-Pistoles, Quebec
-TNAA:Can:Qbc: -72.55 46.35 -5:0 Trois-Rivi�res, Quebec
+TNAA:Can:Qbc: -72.55 46.35 -5:0 Trois-Rivières, Quebec
 TAuA:Aus:: 126.1333 -13.75 8:0 Troughton Island, Australia
 TNAP:Can:BC: -132.3167 53.15 -8:0 Trounce Inlet, British Columbia
 TNAP:Can:BC: -132.3167 53.15 -8:0 Trounce Inlet, British Columbia (2)
@@ -3352,8 +3352,8 @@ TAuA:Aus:: 115.5833 -31.5 8:0 Two Rocks Marina, Australia
 TAsi:Jpn:: 131 34.0167 9:0 Tyohu, Yamaguti, Japan
 TAsi:Jpn:: 140.867 35.7333 9:0 Tyosi-Gyoko, Tiba, Japan
 TNAA:Can:Nun: -120.7833 69.6167 -7:0 Tysoe Point, Nunavut/NWT
-TNAA:Can:Qbc: -59.2333 50.6833 -4:0 T�e-�la-Baleine, Quebec
-TAtl:Faer:: -6.775 62.01 0:0 T�shavn, Faroe Islands
+TNAA:Can:Qbc: -59.2333 50.6833 -4:0 Tête-à-la-Baleine, Quebec
+TAtl:Faer:: -6.775 62.01 0:0 Tórshavn, Faroe Islands
 TNAA:US:MD: -76.48 38.9833 -5:0 U.S. Naval Academy, Annapolis, Maryland
 TAsi:Jpn:: 131.25 33.9333 9:0 Ube, Yamaguti, Japan
 TNAP:Can:BC: -125.05 49.0167 -8:0 Uchucklesit Inlet, British Columbia
@@ -3435,8 +3435,8 @@ TAuA:Solm:: 157.75 -8.5 11:0 Viru, Solomon Islands
 TAuA:Aus:: 137.1833 -36 9:30 Vivonne Bay, Australia
 TEur:Neth:: 5.1 53.3 1:0 Vlieland haven, Netherlands
 TEur:Neth:: 3.6 51.45 1:0 Vlissingen, Netherlands
-TAtl:Icel:: -14.5 65.45 0:0 Vopnafj��r, Iceland
-TAtl:Faer:: -6.8 61.47 0:0 V�ur, Faroe Islands
+TAtl:Icel:: -14.5 65.45 0:0 Vopnafjörður, Iceland
+TAtl:Faer:: -6.8 61.47 0:0 Vágur, Faroe Islands
 TNAA:US:FL: -80.425 27.755 -5:0 Wabasso, Indian River, Florida
 TNAA:US:VA: -75.6867 37.6067 -5:0 Wachapreague, Wachapreague Channel, Virginia
 TAsi:Jpn:: 135.583 35.5 9:0 Wada, Hukui, Japan
@@ -3606,15 +3606,15 @@ TAsi:Jpn:: 137.35 37.5 9:0 Zige, Ishikawa, Japan
 TAsi:Jpn:: 134.233 34.4333 9:0 Zizo Saki, Kagawa, Japan
 TAsi:Jpn:: 130.467 32.5833 9:0 Zozo-No-Seto, Kumamoto, Japan
 TAsi:Jpn:: 139.617 35.1333 9:0 Zyo-Ga-Sima, Kanagawa, Japan
-TAtl:Icel:: -23.07 66.04 0:0 �afj��r, Iceland
-TNAA:Can:Qbc: -61.5 47.7833 0:0 �e Brion, Magdalen, Quebec
-TNAA:Can:NovS: -61.7167 47.2833 -4:0 �e D'entree, Nova Scotia
-TNAA:Can:NovS: -64.9667 45.25 -4:0 �e Haute, Nova Scotia
-TNAA:Can:Qbc: -69.4167 48.05 -5:0 �e Verte, Quebec
-TNAA:Can:Qbc: -70.5453 47.0579 -5:0 �e-Aux-Grues, Quebec
-TNAA:Can:Qbc: -69.6833 47.9 -5:0 �e-Aux-Lievres, Quebec
-TAtl:Icel:: -18.39 66.045 0:0 �afsfj��r, Iceland
-TAtl:Icel:: -23.29 65.52 0:0 �ngeyri, Iceland
+TAtl:Icel:: -23.07 66.04 0:0 Ísafjörður, Iceland
+TNAA:Can:Qbc: -61.5 47.7833 0:0 Île Brion, Magdalen, Quebec
+TNAA:Can:NovS: -61.7167 47.2833 -4:0 Île D'entree, Nova Scotia
+TNAA:Can:NovS: -64.9667 45.25 -4:0 Île Haute, Nova Scotia
+TNAA:Can:Qbc: -69.4167 48.05 -5:0 Île Verte, Quebec
+TNAA:Can:Qbc: -70.5453 47.0579 -5:0 Île-Aux-Grues, Quebec
+TNAA:Can:Qbc: -69.6833 47.9 -5:0 Île-Aux-Lievres, Quebec
+TAtl:Icel:: -18.39 66.045 0:0 Ólafsfjörður, Iceland
+TAtl:Icel:: -23.29 65.52 0:0 Þingeyri, Iceland
 
 Subreg d:\misc\navigation\tides\substa\subreg.21 file start - - - - - - - - -
 IAtl:Grn:: 0 0 0:0        GREENLAND, E. Coast
@@ -6988,25 +6988,25 @@ tCAP:Nica:: -83.7 10.9167 -6:0 San Juan del Norte (Greytown)
 &243 0.28 0 243 0.28 0 3871 1 Hampton Roads, Virginia
 ICAP:CosR:: 0 0 0:0        COSTA RICA
 tCAP:CosR:: -83.0333 10 -6:0 Limon
-&-32 1 0 -29 1 0 3873 1 Crist�al, Panama
+&-32 1 0 -29 1 0 3873 1 Cristóbal, Panama
 ICAP:Pan:: 0 0 0:0          PANAMA
 tCAP:Pan:: -82.25 9.35 -5:0 Bocas del Toro, Almirante Bay
-&21 1.14 0 24 1.14 0 3875 1 Crist�al, Panama
+&21 1.14 0 24 1.14 0 3875 1 Cristóbal, Panama
 tCAP:Pan:: -77.6833 8.9 -5:0 Bahia de Caledonia
-&12 1 0 0 1 0 3879 1 Crist�al, Panama
+&12 1 0 0 1 0 3879 1 Cristóbal, Panama
 ISAC:Col:: 0 0 0:0         COLOMBIA
 tSAC:Col:: -81.3833 13.3333 -5:0 Isla de Providencia
 &473 0.28 0 473 0.28 0 4067 1 Hampton Roads, Virginia
 tSAC:Col:: -75.6667 9.3333 -5:0 Covenas
-&-66 1.14 0 -46 1.14 0 4071 1 Crist�al, Panama
+&-66 1.14 0 -46 1.14 0 4071 1 Cristóbal, Panama
 tSAC:Col:: -75.55 10.4 -5:0 Cartagena
-&-76 1 0 48 1 0 4073 1 Crist�al, Panama
+&-76 1 0 48 1 0 4073 1 Cristóbal, Panama
 tSAC:Col:: -74.9667 11 -5:0 Puerto Colombia
-&-52 1.29 0 -68 1.29 0 4075 1 Crist�al, Panama
+&-52 1.29 0 -68 1.29 0 4075 1 Cristóbal, Panama
 tSAC:Col:: -74.2 11.3 -5:0 Santa Marta
-&-79 1 0 -68 1 0 4077 1 Crist�al, Panama
+&-79 1 0 -68 1 0 4077 1 Cristóbal, Panama
 tSAC:Col:: -72.9167 11.55 -5:0 Riohacha
-&-114 1 0 -69 1 0 4079 1 Crist�al, Panama
+&-114 1 0 -69 1 0 4079 1 Cristóbal, Panama
 
 Subreg d:\misc\navigation\tides\substa\subreg.34 file start - - - - - - - - -
 IAtl:Berm:: 0 0 0:0      BERMUDA ISLANDS
@@ -7185,7 +7185,7 @@ tCar:Gren:: -61.75 12.0667 -4:0 Grenada
 tCar:Tobag:: -60.7333 11.1833 -4:0 Scarborough, Tobago
 &-400 1.6 0 -382 1.6 0 4061 1 Key West (Naval Base), Florida
 tCar:Cura:: -68.9333 12.1167 -4:0 Schottegat, Curacao
-&25 0.82 0 69 0.82 0 4063 1 Crist�al, Panama
+&25 0.82 0 69 0.82 0 4063 1 Cristóbal, Panama
 
 ICAP:Pan:: 0 0 0:0               PANAMA
 tCAP:Pan:: -78.1833 7.5667 -5:0 Bahia Pina
@@ -7233,22 +7233,22 @@ ICAP:Nica:: 0 0 0:0               NICARAGUA
 tCAP:Nica:: -86.7667 12.2 -6:0 Puerto Somoza
 &11 1 -1.7 22 1 -0.1 355 1 Puntarenas, Costa Rica
 tCAP:Nica:: -85.8833 11.25 -6:0 San Juan del Sur
-&-27 0.77 0 -5 0.77 0 357 2 La Union, El Salvador
-tCAP:Nica:: -87.1667 12.4833 -6:0 Corinto, Isla Cardon
-&-18 1 -2.1 0 1 -0.1 359 2 La Union, El Salvador
-ICAP:Hond:: 0 0 0:0               HONDURAS
-tCAP:Hond:: -87.65 13.3 -6:0 Amapala
-&-7 1 -0.1 -6 1 0 361 2 La Union, El Salvador
-ICAP:ElSa:: 0 0 0:0               EL SALVADOR
-tCAP:ElSa:: -89.3167 13.4833 -6:0 La Libertad
-&-26 0.67 0 0 0.67 0 365 2 La Union, El Salvador
-tCAP:ElSa:: -89.85 13.5833 -6:0 Acajutla
-&-25 0.64 0 -3 0.64 0 367 2 La Union, El Salvador
-ICAP:Guat:: 0 0 0:0               GUATEMALA
-tCAP:Guat:: -90.8333 13.9167 -6:0 Puerto de San Jose
-&-27 0.61 0 -3 0.61 0 369 2 La Union, El Salvador
-tCAP:Guat:: -91.9333 14.3 -6:0 Champerico
-&-27 0.61 0 -3 0.61 0 371 2 La Union, El Salvador
+#&-27 0.77 0 -5 0.77 0 357 2 La Union, El Salvador
+#tCAP:Nica:: -87.1667 12.4833 -6:0 Corinto, Isla Cardon
+#&-18 1 -2.1 0 1 -0.1 359 2 La Union, El Salvador
+#ICAP:Hond:: 0 0 0:0               HONDURAS
+#tCAP:Hond:: -87.65 13.3 -6:0 Amapala
+#&-7 1 -0.1 -6 1 0 361 2 La Union, El Salvador
+#ICAP:ElSa:: 0 0 0:0               EL SALVADOR
+#tCAP:ElSa:: -89.3167 13.4833 -6:0 La Libertad
+#&-26 0.67 0 0 0.67 0 365 2 La Union, El Salvador
+#tCAP:ElSa:: -89.85 13.5833 -6:0 Acajutla
+#&-25 0.64 0 -3 0.64 0 367 2 La Union, El Salvador
+#ICAP:Guat:: 0 0 0:0               GUATEMALA
+#tCAP:Guat:: -90.8333 13.9167 -6:0 Puerto de San Jose
+#&-27 0.61 0 -3 0.61 0 369 2 La Union, El Salvador
+#tCAP:Guat:: -91.9333 14.3 -6:0 Champerico
+#&-27 0.61 0 -3 0.61 0 371 2 La Union, El Salvador
 INAP:Mex:: 0 0 0:0               MEXICO
 tNAP:Mex:: -96.5 15.65 -6:0 Puerto Angel
 &-4 1 -0.7 -4 1 0 373 1 Salina Cruz, Oaxaca, Mexico
