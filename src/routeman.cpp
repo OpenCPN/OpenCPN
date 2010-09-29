@@ -25,46 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: routeman.cpp,v $
- * Revision 1.38  2010/06/23 23:45:01  bdbcat
- * 623
- *
- * Revision 1.37  2010/06/21 01:56:40  bdbcat
- * 620
- *
- * Revision 1.36  2010/06/06 20:52:53  bdbcat
- * 606a
- *
- * Revision 1.35  2010/06/04 22:35:51  bdbcat
- * 604
- *
- * Revision 1.34  2010/05/19 01:06:05  bdbcat
- * Build 518
- *
- * Revision 1.33  2010/04/27 01:43:17  bdbcat
- * Build 426
- *
- * Revision 1.32  2010/04/16 23:18:11  bdbcat
- * Updates.
- *
- * Revision 1.31  2010/04/16 23:16:52  bdbcat
- * Updates.
- *
- * Revision 1.30  2010/04/16 23:12:50  bdbcat
- * Updates.
- *
- * Revision 1.29  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.28  2010/04/01 20:17:38  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.27  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * 2010.02.15 pjotrc
- * - implement anchorwatch
- *
  */
 
 #include "wx/wxprec.h"
@@ -1514,11 +1474,11 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
       {
             RoutePoint *prp = node->GetData();
 
-            if ( b_delete_used || ((!prp->m_bIsInRoute)              // if argument is false, then only delete non-route waypoints
+            if ( b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
                  && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) )  )
             {
-                  if (prp == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;             // pjotrc 2010.02.15
-                  else if (prp == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;          // pjotrc 2010.02.15
+                  if (prp == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;
+                  else if (prp == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;
 
                   pConfig->DeleteWayPoint ( prp );
                   pSelect->DeleteSelectablePoint ( prp, SELTYPE_ROUTEPOINT );
@@ -1573,7 +1533,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp)
             if(pRp == pAnchorWatchPoint1)
                   pAnchorWatchPoint1 = NULL;
             if(pRp == pAnchorWatchPoint2)
-                  pAnchorWatchPoint1 = NULL;
+                  pAnchorWatchPoint2 = NULL;
 
       }
 }
