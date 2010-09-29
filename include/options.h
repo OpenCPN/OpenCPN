@@ -128,6 +128,7 @@ enum {
         ID_COURSEUPCHECKBOX,
         ID_CHOICE_NMEA_BAUD,
         ID_CHECK_LOOKAHEAD,
+        ID_SKEWCOMPBOX,
         ID_GARMINHOST
 
 
@@ -225,6 +226,7 @@ public:
     wxCheckBox              *pCBCourseUp;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
+    wxCheckBox              *pSkewComp;
 
 //    For GPS Page
     wxPanel*                itemPanelGPS;

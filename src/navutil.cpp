@@ -167,6 +167,7 @@ extern ComPortManager   *g_pCommMan;
 extern bool             s_bSetSystemTime;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
+extern bool             g_bskew_comp;
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
@@ -2282,6 +2283,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "COGUPAvgSeconds" ),  &g_COGAvgSec, 15 );
       g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
+      Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
 
       Read ( _T ( "AnchorWatch1GUID" ),  &g_AW1GUID, _T(""));
       Read ( _T ( "AnchorWatch2GUID" ),  &g_AW2GUID, _T(""));
@@ -3396,6 +3398,8 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "CM93DetailZoomPosY" ),  g_cm93detail_dialog_y );
       Write ( _T ( "ShowCM93DetailSlider" ), g_bShowCM93DetailSlider );
       Write ( _T ( "AllowExtremeOverzoom" ), g_b_overzoom_x );
+
+      Write ( _T ( "SkewToNorthUp" ), g_bskew_comp );
 
       if(cc1)
             Write ( _T ( "ChartQuilting" ), cc1->GetQuiltMode());

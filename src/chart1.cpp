@@ -435,6 +435,7 @@ bool             g_bCourseUp;
 int              g_COGAvgSec;                   // COG average period (sec.) for Course Up Mode
 double           g_COGAvg;
 bool             g_bLookAhead;
+bool             g_bskew_comp;
 
 int              g_nCOMPortCheck;
 
@@ -875,13 +876,17 @@ bool MyApp::OnInit()
         std_path.Get();
 
         pHome_Locn= new wxString;
-        pHome_Locn->Append(std_path.GetUserConfigDir());          // on w98, produces "/windows/Application Data"
+#ifdef __WXMSW__
+        pHome_Locn->Append(std_path.GetConfigDir());          // on w98, produces "/windows/Application Data"
+#else
+        pHome_Locn->Append(std_path.GetUserConfigDir());
+#endif
         appendOSDirSlash(pHome_Locn) ;
 
 //        wxString loc = std_path.GetLocalizedResourcesDir(loc_lang_canonical, wxStandardPaths::ResourceCat_Messages);
 //        wxLogMessage(loc);
 
-#if defined( __WXMAC__) || defined ( __WXMSW__ )
+#if defined( __WXMAC__) //|| defined ( __WXMSW__ )
         pHome_Locn->Append(_T("opencpn"));
         appendOSDirSlash(pHome_Locn) ;
 #endif
@@ -896,14 +901,12 @@ bool MyApp::OnInit()
                   }
 
 //      Establish Log File location
-        wxString log;
-        log.Append(std_path.GetUserConfigDir());
-        appendOSDirSlash(&log);
+        wxString log = *pHome_Locn;
 
 #ifdef __WXMAC__
         log.Append(_T("Logs/"));
-#elif defined __WXMSW__
-        log.Append(_T("opencpn\\"));
+//#elif defined __WXMSW__
+//        log.Append(_T("opencpn\\"));
 #endif
 
         // create the opencpn "log" directory if we need to
@@ -1135,11 +1138,11 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
         if(g_bFirstRun)
         {
-            wxRegKey RegKey("HKEY_CURRENT_USER\\SOFTWARE\\OpenCPN");
+            wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
             if( RegKey.Exists() )
             {
               wxLogMessage(_("Retrieving initial language selection from Windows Registry"));
-              RegKey.QueryValue("InstallerLanguage", g_locale);
+              RegKey.QueryValue(wxString(_T("InstallerLanguage")), g_locale);
             }
         }
 #endif
@@ -1563,12 +1566,12 @@ bool MyApp::OnInit()
         {
             int ndirs = 0;
 
-            wxRegKey RegKey("HKEY_CURRENT_USER\\SOFTWARE\\OpenCPN");
+            wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
             if( RegKey.Exists() )
             {
               wxLogMessage(_("Retrieving initial Chart Directory set from Windows Registry"));
               wxString dirs;
-              RegKey.QueryValue("ChartDirs", dirs);
+              RegKey.QueryValue(wxString(_T("ChartDirs")), dirs);
 
               wxStringTokenizer tkz(dirs, _T(";"));
               while(tkz.HasMoreTokens())
@@ -3656,6 +3659,17 @@ void MyFrame::TrackOff(void)
 void MyFrame::ToggleCourseUp(void)
 {
       g_bCourseUp = !g_bCourseUp;
+
+      if(g_bCourseUp)
+      {
+            //    Stuff the COGAvg table in case COGUp is selected
+
+            for(int i = 0 ; i < g_COGAvgSec ; i++)
+                  COGTable[i] = gCog;
+
+            g_COGAvg = gCog;
+      }
+
       DoCOGSet();
       m_rose_angle = -1000.;               // force new render
       UpdateToolbarStatusBox();
@@ -4060,8 +4074,8 @@ void MyFrame::SetupQuiltMode(void)
 {
 
 //      stats->Show(!cc1->GetQuiltMode());                   // no status/piano widow on quilting....
-      stats->Show(true);
-      DoSetSize();
+//      stats->Show(true);
+//      DoSetSize();
 
       if(cc1->GetQuiltMode())                               // going to quilt mode
       {
@@ -4648,8 +4662,8 @@ void MyFrame::DoCOGSet(void)
       {
             g_VPRotate = -g_COGAvg * PI / 180.;
 
-            if(Current_Ch)
-                  g_VPRotate -= Current_Ch->GetChartSkew() * PI / 180.;
+//            if(Current_Ch)
+//                  g_VPRotate -= Current_Ch->GetChartSkew() * PI / 180.;
       }
       else
             g_VPRotate = 0.;
@@ -4745,7 +4759,11 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
                   wxPoint rot_ctr(BMPRose.GetWidth()/2, BMPRose.GetHeight()/2);
                   wxImage rose_img = BMPRose.ConvertToImage();
 
-                  rose_angle = -(cc1->GetVPSkew() + cc1->GetVPRotation());
+                  rose_angle = -cc1->GetVPRotation();
+
+                  if(!g_bCourseUp && !g_bskew_comp)
+                        rose_angle = -cc1->GetVPRotation() - cc1->GetVPSkew();
+
                   wxPoint after_rotate;
                   wxImage rot_image = rose_img.Rotate(rose_angle, rot_ctr, true, &after_rotate);
                   wxBitmap rot_bm(rot_image);
@@ -5261,8 +5279,9 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
                 new_sample_mode = FORCE_SUBSAMPLE;
 
             double best_scale = GetBestVPScale(Current_Ch);
-            cc1->SetViewPoint(zLat, zLon, best_scale/*cc1->GetCanvasScaleFactor() / proposed_scale_onscreen*/,
-                              Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation(), new_sample_mode);
+
+            cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
+                              cc1->GetVPRotation(), new_sample_mode);
 
             UpdateToolbarStatusBox();           // Pick up the rotation
 
@@ -5809,7 +5828,7 @@ bool MyFrame::DoChartUpdate(void)
 
         else                                                                    // No change in Chart Stack
         {
-                if(cc1->m_bFollow)
+              if((cc1->m_bFollow) && Current_Ch)
                       cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation(),CURRENT_RENDER);
         }
 
@@ -7191,6 +7210,15 @@ FILE *f;
       // Try first 16 possible COM ports, check for a default configuration
       for (int i=1; i<g_nCOMPortCheck; i++)
       {
+#ifdef _UNICODE
+            wxString s;
+            s.Printf(_T("COM%d"), i);
+
+            COMMCONFIG cc;
+            DWORD dwSize = sizeof(COMMCONFIG);
+            if (GetDefaultCommConfig(s.fn_str(), &cc, &dwSize))
+                  preturn->Add(wxString(s));
+#else
             char s[20];
             sprintf(s, "COM%d", i);
 
@@ -7198,6 +7226,8 @@ FILE *f;
             DWORD dwSize = sizeof(COMMCONFIG);
             if (GetDefaultCommConfig(s, &cc, &dwSize))
                   preturn->Add(wxString(s));
+#endif
+
       }
 
 

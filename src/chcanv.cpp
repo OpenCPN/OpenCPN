@@ -319,7 +319,7 @@ extern wxString         g_sAIS_Alert_Sound_File;
 
 extern PlugInManager    *g_pi_manager;
 
-
+extern bool             g_bskew_comp;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1957,27 +1957,15 @@ wxPoint ViewPort::GetMercatorPixFromLL(double lat, double lon) const
 
       double epix = easting  * view_scale_ppm;
       double npix = northing * view_scale_ppm;
-
-      double dx = epix * cos ( skew ) + npix * sin ( skew );
-      double dy = npix * cos ( skew ) - epix * sin ( skew );
+      double dxr = epix;
+      double dyr = npix;
 
       //    Apply VP Rotation
-      double dxr = dx;
-      double dyr = dy;
-
       if(g_bCourseUp)
       {
-            dxr = dx * cos ( rotation ) + dy * sin ( rotation );
-            dyr = dy * cos ( rotation ) - dx * sin ( rotation );
+            dxr = epix * cos ( rotation ) + npix * sin ( rotation );
+            dyr = npix * cos ( rotation ) - epix * sin ( rotation );
       }
-
-       double angle = skew;
-       if(g_bCourseUp)
-             angle += rotation;
-
-      dxr = epix * cos ( angle ) + npix * sin ( angle );
-      dyr = npix * cos ( angle ) - epix * sin ( angle );
-
       wxPoint r;
       //    We definitely need a round() function here
       r.x = ( int ) wxRound ( ( pix_width  / 2 ) + dxr );
@@ -1994,18 +1982,16 @@ void ViewPort::GetMercatorLLFromPix(const wxPoint &p, double *lat, double *lon)
 
       double xpr = dx;
       double ypr = dy;
+
       //    Apply VP Rotation
       if(g_bCourseUp)
       {
             xpr = ( dx * cos ( rotation ) ) - ( dy * sin ( rotation ) );
             ypr = ( dy * cos ( rotation ) ) + ( dx * sin ( rotation ) );
       }
+      double d_east = xpr / view_scale_ppm;
+      double d_north = ypr / view_scale_ppm;
 
-      double xp = ( xpr * cos ( skew ) ) - ( ypr * sin ( skew ) );
-      double yp = ( ypr * cos ( skew ) ) + ( xpr * sin ( skew ) );
-
-      double d_east = xp / view_scale_ppm;
-      double d_north = yp / view_scale_ppm;
 
       //TODO  This could be fromSM_ECC to better match some Raster charts
       //      However, it seems that cm93 (and S57) prefer no eccentricity correction
@@ -2270,6 +2256,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pFoundRoutePointSecond      = NULL;
 
         m_pRolloverRouteSeg           = NULL;
+
 
 //    Build the cursors
 
@@ -3260,7 +3247,7 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && ( fabs(VPoint.rotation) < .01) )
+                if ( Current_Ch && ( fabs(VPoint.rotation) < .01) && !g_bskew_comp)
                 {
                   if(Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER)
                   {
@@ -3302,7 +3289,7 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && ( fabs(VPoint.rotation) < .01))
+                if ( Current_Ch && ( fabs(VPoint.rotation) < .01) && !g_bskew_comp)
                 {
                       if ( ( Current_Ch->m_ChartType == CHART_TYPE_GEO ) || ( Current_Ch->m_ChartType == CHART_TYPE_KAP ) )
                         {
@@ -3771,7 +3758,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         VPoint.rv_rect = wxRect(0, 0, VPoint.pix_width, VPoint.pix_height);
 
         //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
-        if((fabs(skew) > .001) || (fabs(rotation) > .001))
+        if(( g_bskew_comp && (fabs(skew) > .001)) || (fabs(rotation) > .001))
         {
               //  Get four reference "corner" points in rotated space
 
@@ -3784,6 +3771,8 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
               //Rotate the 4 corner points, and get the max rectangle enclosing it
               double rotator = VPoint.rotation;
+              if(g_bskew_comp)
+                    rotator += skew;
 
               double a_east = pix_l * cos ( phi + rotator ) ;
               double a_north = pix_l * sin ( phi + rotator ) ;
@@ -8304,8 +8293,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxMemoryDC *pChartDC = &temp_dc;
         wxMemoryDC rotd_dc;
 
-
-            if(g_bCourseUp && (fabs(VPoint.rotation) > 0.01))
+        if((/*g_bCourseUp && */(fabs(VPoint.rotation) > 0.01)) || (g_bskew_comp && (fabs(VPoint.skew) > 0.01)))
             {
 
                   //  Can we use the current rotated image cache?
@@ -8329,13 +8317,20 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                         //    Especially, on GTK the wxRound and wxRealPoint functions are very expensive.....
                         double angle;
                         angle = -VPoint.rotation;
+//                        if(1)
+                              angle += VPoint.skew;
+
 
                         wxImage ri;
                         bool b_rot_ok = false;
                         if(base_image.IsOk())
                         {
                               ViewPort rot_vp = VPoint;
+
                               m_b_rot_hidef = false;
+//                              if(g_bskew_comp && (fabs(VPoint.skew) > 0.01))
+//                                    m_b_rot_hidef = true;
+
                               ri = Image_Rotate(base_image, angle, wxPoint(VPoint.rv_rect.width/2, VPoint.rv_rect.height/2), m_b_rot_hidef, &m_roffset);
 
                               if((rot_vp.view_scale_ppm == VPoint.view_scale_ppm)
@@ -9185,9 +9180,10 @@ wxBitmap *ChartCanvas::DrawTCCBitmap ( wxDC *pbackground_dc, bool bAddNewSelpoin
 //    Maybe draw the current arrows
         if ( m_bShowCurrent )
         {
-              double angle = VPoint.skew;
-              if(g_bCourseUp)
-                    angle += VPoint.rotation;
+              double angle = GetVPRotation();
+
+              if(!g_bCourseUp && !g_bskew_comp)
+                    angle = GetVPRotation() + GetVPSkew();
 
                 if ( bShowingCurrent )
                 {
@@ -10043,7 +10039,9 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         char sbuf[5];
                         sprintf ( sbuf, "%02d", i );
 #ifdef __WXMSW__
-                        dc.DrawRotatedText ( wxString ( sbuf ), xd + ( x_graph_w/25 ) /2, y_graph + y_graph_h + 8, 270. );
+                        wxString sst;
+                        sst.Printf(_T("%02d"), i);
+                        dc.DrawRotatedText ( sst, xd + ( x_graph_w/25 ) /2, y_graph + y_graph_h + 8, 270. );
 #else
                         int x_shim = -12;
                         dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), xd + x_shim + ( x_graph_w/25 ) /2, y_graph + y_graph_h + 8 );
@@ -10070,6 +10068,8 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         tcmax = -10;
                         tcmin = 10;
 
+                        wxBeginBusyCursor();
+
                         for ( i=0 ; i<25 ; i++ )
                         {
                                 int tt = t_graphday_00_at_station + ( i * 3600 );
@@ -10080,6 +10080,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                         tcmin = tcv[i];
                         }
 
+                        wxEndBusyCursor();
 
 
 //    Set up the vertical parameters based on Tide or Current plot
@@ -10202,6 +10203,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
                         dc.SetFont ( *pMFont );
                         wxString mref ( pIDX->IDX_reference_name, wxConvUTF8 );
+
                         dc.GetTextExtent ( mref, &w, &h );
                         int y_master_reference = y_graph - h - 2;
                         dc.DrawText ( mref, x - w, y_master_reference );

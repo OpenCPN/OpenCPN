@@ -24,51 +24,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- * pjotrc 2010.02.09
- * - implement ships bells
- *
- * $Log: options.cpp,v $
- * Revision 1.52  2010/06/16 03:55:02  bdbcat
- * 615a
- *
- * Revision 1.51  2010/06/13 21:05:29  bdbcat
- * 613a
- *
- * Revision 1.50  2010/06/12 03:01:23  bdbcat
- * 611b
- *
- * Revision 1.49  2010/06/12 02:21:29  bdbcat
- * 611b
- *
- * Revision 1.48  2010/06/11 16:20:53  bdbcat
- * 611a
- *
- * Revision 1.47  2010/06/11 16:11:59  bdbcat
- * 611a
- *
- * Revision 1.46  2010/06/04 22:35:56  bdbcat
- * 604
- *
- * Revision 1.45  2010/05/29 17:30:48  bdbcat
- * 529a
- *
- * Revision 1.44  2010/05/25 00:12:32  bdbcat
- * libgps
- *
- * Revision 1.43  2010/05/19 01:06:16  bdbcat
- * Build 518
- *
- * Revision 1.42  2010/05/02 03:01:58  bdbcat
- * Build 501
- *
- * Revision 1.41  2010/04/27 01:42:24  bdbcat
- * Build 426
- *
- * Revision 1.40  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.39  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
  *
  *
  */
@@ -102,6 +57,8 @@
 extern bool             g_bShowPrintIcon;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
+extern bool             g_bskew_comp;
+
 extern wxString         *pNMEADataSource;
 extern wxString         g_NMEABaudRate;
 extern wxString         *pNMEA_AP_Port;
@@ -527,6 +484,12 @@ void options::CreateControls()
     //  Depth Unit checkbox
     pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits"));
     itemStaticBoxSizerCDO->Add(pSDepthUnits, 1, wxALIGN_LEFT|wxALL, 2);
+
+    //  Skewed Raster compenstation checkbox
+    pSkewComp = new wxCheckBox( itemPanel5, ID_SKEWCOMPBOX, _("Show skewed raster charts as North-Up"));
+    itemStaticBoxSizerCDO->Add(pSkewComp, 1, wxALIGN_LEFT|wxALL, 2);
+
+
 
 
     //  Auto Anchor Mark
@@ -1541,6 +1504,7 @@ void options::SetInitialSettings()
       pCDOOutlines->SetValue(g_bShowOutlines);
       pCDOQuilting->SetValue(pParent->GetQuiltMode());
       pSDepthUnits->SetValue(g_bShowDepthUnits);
+      pSkewComp->SetValue(g_bskew_comp);
 //      pAutoAnchorMark->SetValue(g_bAutoAnchorMark);
 
       pCBCourseUp->SetValue(g_bCourseUp);
@@ -1914,6 +1878,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowOutlines = pCDOOutlines->GetValue();
     pParent->SetQuiltMode(pCDOQuilting->GetValue());
     g_bShowDepthUnits = pSDepthUnits->GetValue();
+    g_bskew_comp = pSkewComp->GetValue();
 //    g_bAutoAnchorMark = pAutoAnchorMark->GetValue();
 
     g_bCourseUp = pCBCourseUp->GetValue();
