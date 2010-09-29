@@ -110,6 +110,8 @@
 #include <wx/listimpl.cpp>
 #include <wx/datetime.h>
 #include <wx/textfile.h>
+#include <wx/tokenzr.h>
+
 #include "tcmgr.h"
 
 
@@ -369,13 +371,16 @@ void TCMgr::LoadMRU(void)
             if(mru_file.GetLineCount())
                   str = mru_file.GetFirstLine();                  //Signature
 
+            if(str != _T("Signature928"))
+               return;
+
             while(!mru_file.Eof())
             {
                   str = mru_file.GetNextLine();
                   while(((str[0] == '#') || (str.IsEmpty())) && !mru_file.Eof())
                           str = mru_file.GetNextLine();
 
-                  if(!mru_file.Eof())
+                  if(mru_file.Eof())
                       break;
 
                   pmru_entry = (mru_entry *)malloc(sizeof(mru_entry));
@@ -401,6 +406,7 @@ void TCMgr::LoadMRU(void)
                   char temp[40];
                   float tf, tfa, tfe;
                   str = mru_file.GetNextLine();
+
                   sscanf(str.mb_str(), "%f %s", &tf, &temp[0]);
                   psd->DATUM = tf;
                   strcpy( psd->unit, temp );
@@ -514,7 +520,7 @@ void TCMgr::SaveMRU(void)
             wxTextFile mru_file(*pmru_file_name);
             mru_file.Create();
 
-            mru_file.AddLine(wxString(_T("Signature")));
+            mru_file.AddLine(wxString(_T("Signature928")));
 
             mru_entry *pmru = pmru_head;
 
@@ -532,10 +538,10 @@ void TCMgr::SaveMRU(void)
                   str_sbuf.Printf(_T("%d"), psd->meridian);
                   mru_file.AddLine(str_sbuf);
 //    Datum, Units
-                  str_sbuf.Printf(_T("%8.4f  %s"), psd->DATUM, psd->unit);
+                  wxString unit(psd->unit, wxConvUTF8);
+                  str_sbuf.Printf(_T("%8.4f  "), psd->DATUM);
+                  str_sbuf += unit;
                   mru_file.AddLine(str_sbuf);
-
-
 //    Data
                   for(int i=0 ; i<num_csts ; i++)
                   {
@@ -833,6 +839,7 @@ Station_Data *TCMgr::find_or_load_harm_data(IDX_entry *pIDX)
 //    If reference station was recently sought, and not found, don't bother
 //            if(!strcmp(pIDX->IDX_reference_name, plast_reference_not_found->mb_str()))
             if(plast_reference_not_found->IsSameAs(wxString(pIDX->IDX_reference_name, wxConvUTF8)))
+
             {
                   return NULL;
             }
@@ -1332,9 +1339,6 @@ char * TCMgr::nojunk (char *linrec)
 int TCMgr::slackcmp (char *a, char *b)
 {
   int c, cmp, n;
-//  if(!strncmp("Cuxh", a, 4))
-//        int yyp = 5;
-
   n = strlen (b);
   if ((int)(strlen (a)) < n)
     return 1;
@@ -1366,19 +1370,6 @@ int TCMgr::next_line (FILE *fp, char linrec[linelen], int end_ok)
       }
     }
   } while (linrec[0] == '#' || linrec[0] == '\r' || linrec[0] == '\n');
-
-//  if(!strncmp("Cuxh", linrec, 4))
-//        int yyp = 5;
-
-  // Scrub the line for invalid characters
-  int i_scrub = 0;
-  while(linrec[i_scrub])
-  {
-        if((signed char)linrec[i_scrub] < 0)
-              linrec[i_scrub] = '?';
-        i_scrub++;
-  }
-
   return 1;
 }
 
@@ -1537,9 +1528,7 @@ char *str;
      case IFF_READ :
        str = fgets( index_line, 1024, IndexFile);
 
-//       if(!strncmp("Cuxh", index_line, 4))
-//             int yyp = 5;
-
+/*
        if (str != NULL)
        {
 // Scrub the index_line[] for invalid characters
@@ -1553,7 +1542,7 @@ char *str;
 
             return(1);
        }
-
+*/
  //      if (UserFile)
  //        str = fgets( index_line, 1024, UserFile);
        if (str != NULL)
@@ -1732,7 +1721,7 @@ char stz[80];
             &pIDX->IDX_type,&pIDX->IDX_zone[0],&pIDX->IDX_lon,&pIDX->IDX_lat,&TZHr,&TZMin,
             &pIDX->IDX_station_name[0])) return(1);
 
-//      if(!strncmp(pIDX->IDX_station_name, "Cuxh", 4))
+//      if(!strncmp(pIDX->IDX_station_name, "Rivi", 4))
 //            int hhk = 4;
 
       pIDX->IDX_time_zone = TZHr*60 + TZMin;
