@@ -2007,7 +2007,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
           comx.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
 //  As a quick check, verify that the specified port is available
-            HANDLE m_hSerialComm = CreateFile(comx.mb_str(),       // Port Name
+            HANDLE m_hSerialComm = CreateFile(comx.c_str(),       // Port Name
                                              GENERIC_READ,
                                              0,
                                              NULL,
@@ -2844,7 +2844,7 @@ void *OCP_AIS_Thread::Entry()
 
 //    Set up the serial port
 
-      m_hSerialComm = CreateFile(m_pPortName->mb_str(),      // Port Name
+      m_hSerialComm = CreateFile(m_pPortName->fn_str(),      // Port Name
                                              GENERIC_READ,              // Desired Access
                                              0,                         // Shared Mode
                                              NULL,                      // Security
