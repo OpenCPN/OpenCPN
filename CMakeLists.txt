@@ -26,6 +26,8 @@ ENDIF (COMMAND cmake_policy)
 
 PROJECT(OpenCPN)
 
+#SET(CMAKE_VERBOSE_MAKEFILE ON)
+
 SET(PACKAGE_NAME opencpn)
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
@@ -67,7 +69,7 @@ SET(wxWidgets_USE_LIBS base core net xml html adv)
 
 # These options can be used to set the linux widgets build type
 #SET( wxWidgets_USE_DEBUG ON)
-#SET( wxWidgets_USE_UNICODE ON)
+SET( wxWidgets_USE_UNICODE ON)
 #SET( wxWidgets_USE_UNIVERSAL OFF)
 #SET( wxWidgets_USE_STATIC OFF)
 
