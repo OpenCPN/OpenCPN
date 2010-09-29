@@ -79,9 +79,9 @@ void GPS_Serial_Error(const char *mb, ...)
 	*s++ = ':';
 	*s++ = ' ';
 
-	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0,
-			GetLastError(), 0, s, sizeof(msg) - b - 2, 0 );
-	GPS_Error(msg);
+//	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0,
+//			GetLastError(), 0, s, sizeof(msg) - b - 2, 0 );
+//	GPS_Error(msg);
 }
 
 int32 GPS_Serial_On(const char *port, gpsdevh **dh)
@@ -93,8 +93,7 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 	win_serial_data *wsd = xcalloc(sizeof (win_serial_data), 1);
 	*dh = (gpsdevh*) wsd;
 	GPS_Diag("Opening %s\n", xname);
-	comport = CreateFile(xname, GENERIC_READ|GENERIC_WRITE, 0, NULL,
-					  OPEN_EXISTING, 0, NULL);
+	comport = INVALID_HANDLE_VALUE;//CreateFile(xname, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
 	if (comport == INVALID_HANDLE_VALUE) {
 		GPS_Serial_Error("CreateFile on '%s' failed", xname);

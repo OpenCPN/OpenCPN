@@ -172,7 +172,7 @@ void *CPLGetSymbol( const char * pszLibrary, const char * pszSymbolName )
     void        *pLibrary;
     void        *pSymbol;
 
-    pLibrary = LoadLibrary(pszLibrary);
+    pLibrary = NULL; //LoadLibrary(pszLibrary);
     if( pLibrary == NULL )
     {
         CPLError( CE_Failure, CPLE_AppDefined,
