@@ -191,7 +191,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
           scomx.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
 //  As a quick check, verify that the specified port is available
-            HANDLE m_hSerialComm = CreateFile(scomx.mb_str(),       // Port Name
+            HANDLE m_hSerialComm = CreateFile(scomx.fn_str(),       // Port Name
                                              GENERIC_READ,
                                              0,
                                              NULL,
@@ -321,6 +321,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             bool b_use_lib = false;
             bool b_version_set = false;
             struct version_t check_version;
+            check_version.proto_major =0; check_version.proto_minor = 0;
+
             while(n_check_version)
             {
             //    Check library version
@@ -1699,7 +1701,7 @@ HandleASuccessfulRead:
 
                               if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                                     tptr = rx_buffer;
-                              wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, "temp_buf overrun");
+                              wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, _T("temp_buf overrun"));
                         }
 
                         if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -1707,7 +1709,7 @@ HandleASuccessfulRead:
                               *ptmpbuf++ = *tptr++;
                               if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                                     tptr = rx_buffer;
-                              wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, "temp_buf overrun");
+                              wxASSERT_MSG((ptmpbuf - temp_buf) < RX_BUFFER_SIZE, _T("temp_buf overrun"));
 
                               *ptmpbuf = 0;
 
@@ -2992,7 +2994,7 @@ int ComPortManager::OpenComPortPhysical(wxString &com_name, int baud_rate)
       DWORD open_flags = 0;
 #endif
 
-      HANDLE hSerialComm = CreateFile(xcom_name.mb_str(),      // Port Name
+      HANDLE hSerialComm = CreateFile(xcom_name.fn_str(),      // Port Name
                                  GENERIC_READ | GENERIC_WRITE,     // Desired Access
                                  0,                               // Shared Mode
                                  NULL,                            // Security
