@@ -174,6 +174,7 @@ wxString grib_pi::GetShortDescription()
       return _("GRIB PlugIn for OpenCPN");
 }
 
+
 wxString grib_pi::GetLongDescription()
 {
       return _("GRIB PlugIn for OpenCPN\n\
