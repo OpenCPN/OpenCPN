@@ -94,7 +94,7 @@ extern double           gLat, gLon;
 extern double           gCog, gSog;
 
 // sort callback. Sort by route name.
-int wxCALLBACK SortRoutes(long item1, long item2, long list)
+int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
 {
       wxListCtrl *lc = (wxListCtrl*)list;
 
@@ -110,9 +110,6 @@ int wxCALLBACK SortRoutes(long item1, long item2, long list)
       lc->GetItem(it1);
       lc->GetItem(it2);
 
-//      wxString s1 = it1.GetText();
-//      wxString s2 = it2.GetText();
-//      int res = s1.Cmp(s2);
       return it1.GetText().Cmp(it2.GetText());
 }
 
@@ -473,7 +470,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
             m_pRouteListCtrl->SetItem(idx, rmROUTEDESC,  startend);
       }
 
-      m_pRouteListCtrl->SortItems(SortRoutes, (long)m_pRouteListCtrl);
+      m_pRouteListCtrl->SortItems(SortRoutesOnName, (long)m_pRouteListCtrl);
 
       // restore selection if possible
       // NOTE this will select a different item, if one is deleted
@@ -903,7 +900,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
             {
                   RoutePoint *rp = trk->GetPoint(1);
                   if (rp)
-                        name = rp->m_CreateTime.Format();
+                        name = rp->m_CreateTime.FormatISODate() + _T(" ") + rp->m_CreateTime.FormatISOTime();   //name = rp->m_CreateTime.Format();
                   else
                         name = _("(Unnamed Track)");
             }
@@ -914,7 +911,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
             m_pTrkListCtrl->SetItem(idx, colTRKLENGTH,  len);
       }
 
-//      m_pTrkListCtrl->SortItems(SortTracks, (long)m_pTrkListCtrl);
+      m_pTrkListCtrl->SortItems(SortRoutesOnName, (long)m_pTrkListCtrl);
 
       // restore selection if possible
       // NOTE this will select a different item, if one is deleted
