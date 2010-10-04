@@ -670,8 +670,8 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
             for ( unsigned int iLUPAtt = 0 ; iLUPAtt < LUPCandidate->ATTCArray->GetCount() ; iLUPAtt++ )
             {
 
-                  wxString LATTC;
-                  LATTC = LUPCandidate->ATTCArray->Item ( iLUPAtt );
+                  wxString LATTC = LUPCandidate->ATTCArray->Item ( iLUPAtt );
+                  wxString LATTValue(LATTC.Mid(6));
 
                   // debug
 //                        char *lupatt = ( char * ) ( LATTC.mb_str() + 6);
@@ -708,7 +708,10 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                                     case OGR_INT:     // S57 attribute type 'E' enumerated, 'I' integer
                                     {
                                           int a;
-                                          sscanf ( LATTC.mb_str() + 6, "%d", &a );
+                                          char ss[40];
+                                          strncpy(ss, LATTValue.mb_str(), 39);
+                                          sscanf ( ss, "%d", &a );
+//                                          sscanf ( LATTC.mb_str() + 6, "%d", &a );
                                           if ( a == * ( int* ) ( v->value ) )
                                                 attValMatch = TRUE;
                                           break;
@@ -717,7 +720,11 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                                     case OGR_INT_LST:    // S57 attribute type 'L' list: comma separated integer
                                     {
                                           int a;
-                                          char *s = ( char * ) ( LATTC.mb_str() + 6 );
+                                          char ss[40];
+                                          strncpy(ss, LATTValue.mb_str(), 39);
+                                          char *s = &ss[0];
+
+//                                          char *s = ( char * ) ( LATTC.mb_str() + 6 );
                                           int *b = ( int* ) v->value;
                                           sscanf ( s, "%d", &a );
 
@@ -740,9 +747,15 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                                           float a;
                                           if ( LATTC[6] != '?' )
                                           {
-                                                sscanf ( LATTC.mb_str() + 6, "%f", &a );
-                                                if ( a == * ( float* ) ( v->value ) )
+                                                if(LATTValue.Len())
+                                                {
+                                                    char ss[40];
+                                                    strncpy(ss, LATTValue.mb_str(), 39);
+                                                    sscanf ( ss, "%f", &a );
+//                                                sscanf ( LATTC.mb_str() + 6, "%f", &a );
+                                                    if ( a == * ( float* ) ( v->value ) )
                                                       attValMatch = TRUE;
+                                                }
                                           }
                                           break;
                                     }
@@ -753,12 +766,17 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                                           //    Strings must be exact match
                                           //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
 
+                                          wxString cs(( char * ) v->value, wxConvUTF8);                // Attribute from object
+                                          if ( LATTValue.Len() == cs.Len() )
+                                                if ( LATTValue == cs )
+                                                      attValMatch = TRUE;
+/*
                                           char *s = ( char * ) ( LATTC.mb_str() + 6 );   // attribute from LUP candidate
                                           char *c = ( char * ) v->value;                // Attribute from object
                                           if ( strlen ( s ) == strlen ( c ) )
                                                 if ( !strcmp ( s,c ) )
                                                       attValMatch = TRUE;
-
+*/
 
                                           break;
                                     }
