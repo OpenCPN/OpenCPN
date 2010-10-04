@@ -70,7 +70,7 @@
 
 
 extern bool LogMessageOnce(wxString &msg);
-extern wxString toSDMM(int NEflag, double a);
+extern wxString toSDMM(int NEflag, double a, bool hi_precision = false);
 extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
@@ -124,9 +124,9 @@ public:
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
 
-      float             m_lat;
-      float             m_lon;
-      float             m_seg_len;              // length in NMI to this point
+      double             m_lat;
+      double             m_lon;
+      double             m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
@@ -179,7 +179,7 @@ public:
       void AddTentativePoint(const wxString& GUID);
       RoutePoint *GetPoint(int nPoint);
       int GetIndexOf(RoutePoint *prp);
-      RoutePoint *InsertPointBefore(RoutePoint *pRP, float rlat, float rlon, bool bRenamePoints = false);
+      RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       void DrawPointWhich(wxDC& dc, int iPoint, wxPoint *rpn);
       void DrawSegment(wxDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
       virtual void Draw(wxDC& dc, ViewPort &pVP);
@@ -331,6 +331,7 @@ public:
 
       virtual bool UpdateChartDirs(ArrayOfCDI& dirarray);
       virtual void UpdateSettings();
+      virtual void UpdateNavObj();
 
       void ExportGPX(wxWindow* parent);
       void ImportGPX(wxWindow* parent);
@@ -348,7 +349,7 @@ public:
       int m_NextRouteNum;
       int m_NextWPNum;
 
-      float st_lat, st_lon, st_view_scale;            // startup values
+      double st_lat, st_lon, st_view_scale;            // startup values
       bool  st_bFollow;
 
       wxString    m_gpx_path;

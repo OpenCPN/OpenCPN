@@ -151,7 +151,7 @@ extern wxString         g_NMEABaudRate;
 extern wxString         *pNMEA_AP_Port;
 extern wxString         *pWIFIServerName;
 extern wxString         *g_pcsv_locn;
-extern wxString         *g_pSENCPrefix;
+extern wxString         g_SENCPrefix;
 extern wxString         g_PresLibData;
 
 extern bool             g_bShowPrintIcon;
@@ -1589,7 +1589,7 @@ void Route::ClearHighlights ( void )
 }
 
 
-RoutePoint *Route::InsertPointBefore ( RoutePoint *pRP, float rlat, float rlon, bool bRenamePoints )
+RoutePoint *Route::InsertPointBefore ( RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints )
 {
       RoutePoint *newpoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), GetNewMarkSequenced(), NULL );
       newpoint->m_bIsInRoute = true;
@@ -2512,7 +2512,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( strs, &vals );              // Get the Directory name
 
       if ( iteration == 0 )
-            *g_pSENCPrefix = vals;
+            g_SENCPrefix = vals;
 
 #endif
 
@@ -2563,7 +2563,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       if ( Read ( _T ( "VPLatLon" ), &st ) )
       {
-            sscanf ( st.mb_str ( wxConvUTF8 ), "%f,%f", &st_lat, &st_lon );
+            sscanf ( st.mb_str ( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
 
             //    Sanity check the lat/lon...both have to be reasonable.
             if ( fabs ( st_lon ) < 360. )
@@ -2586,7 +2586,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       if ( Read ( wxString ( _T ( "VPScale" ) ), &st ) )
       {
-            sscanf ( st.mb_str ( wxConvUTF8 ), "%f", &st_view_scale );
+            sscanf ( st.mb_str ( wxConvUTF8 ), "%lf", &st_view_scale );
 //    Sanity check the scale
             st_view_scale = fmax ( st_view_scale, .001/32 );
             st_view_scale = fmin ( st_view_scale, 4 );
@@ -2595,12 +2595,10 @@ int MyConfig::LoadMyConfig ( int iteration )
 
 
       wxString sll;
-      float lat, lon;
+      double lat, lon;
       if ( Read ( _T ( "OwnShipLatLon" ), &sll ) )
       {
-            sscanf ( sll.mb_str ( wxConvUTF8 ), "%f,%f", &lat, &lon );
-//            gLat = lat;
-//            gLon = lon;
+            sscanf ( sll.mb_str ( wxConvUTF8 ), "%lf,%lf", &lat, &lon );
 
             //    Sanity check the lat/lon...both have to be reasonable.
             if ( fabs ( lon ) < 360. )
@@ -3541,7 +3539,7 @@ void MyConfig::UpdateSettings()
 
       SetPath ( _T ( "/Directories" ) );
       Write ( _T ( "S57DataLocation" ), *g_pcsv_locn );
-      Write ( _T ( "SENCFileLocation" ), *g_pSENCPrefix );
+      Write ( _T ( "SENCFileLocation" ), g_SENCPrefix );
       Write ( _T ( "PresentationLibraryData" ), g_PresLibData );
       Write ( _T ( "CM93DictionaryLocation" ), g_CM93DictDir );
 
@@ -3637,7 +3635,12 @@ void MyConfig::UpdateSettings()
       Flush();
 
 
-      //    Create the NavObjectCollection, and save to specified file
+
+}
+
+void MyConfig::UpdateNavObj(void)
+{
+ //    Create the NavObjectCollection, and save to specified file
 
       NavObjectCollection *pNavObjectSet = new NavObjectCollection( _T ( "gpx" ), _T ( "1.0" ), _T ( "opencpn" ) );
 
@@ -3648,7 +3651,6 @@ void MyConfig::UpdateSettings()
       pNavObjectSet->Save ( m_sNavObjSetFile, 2 );
 
       delete pNavObjectSet;
-
 }
 
 bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
@@ -4096,9 +4098,9 @@ wxXmlNode *CreateGPXPointNode ( RoutePoint *pr, const wxString &root_name )
       wxXmlNode *GPXPoint_node = new wxXmlNode ( wxXML_ELEMENT_NODE, root_name );
 
       wxString str_lat;
-      str_lat.Printf ( _T ( "%.6f" ), pr->m_lat );
+      str_lat.Printf ( _T ( "%.9f" ), pr->m_lat );
       wxString str_lon;
-      str_lon.Printf ( _T ( "%.6f" ), pr->m_lon );
+      str_lon.Printf ( _T ( "%.9f" ), pr->m_lon );
       GPXPoint_node->AddProperty ( _T ( "lat" ),str_lat );
       GPXPoint_node->AddProperty ( _T ( "lon" ),str_lon );
 
@@ -4554,8 +4556,11 @@ void GPXLoadTrack ( wxXmlNode* trknode )
 
                   if ( proute->IsEqualTo ( pTentTrack ) )
                   {
-                        bAddtrack = false;
-                        break;
+                        if(proute->m_bIsTrack)
+                        {
+                              bAddtrack = false;
+                              break;
+                        }
                   }
                   route_node = route_node->GetNext();                         // next route
             }
@@ -6118,7 +6123,7 @@ bool LogMessageOnce ( wxString &msg )
 /*          Some assorted utilities                                       */
 /**************************************************************************/
 
-wxString toSDMM ( int NEflag, double a )
+wxString toSDMM ( int NEflag, double a, bool hi_precision )
 {
       short neg = 0;
       int d;
@@ -6138,31 +6143,44 @@ wxString toSDMM ( int NEflag, double a )
       wxString s;
 
       if ( !NEflag )
-            s.Printf ( _T ( "%d %02ld.%03ld'" ), d, m / 1000, m % 1000 );
+      {
+            if(hi_precision)
+                  s.Printf ( _T ( "%d %02ld.%06ld'" ), d, m / 1000, m % 1000 );
+            else
+                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 1000, m % 1000 );
+      }
       else
       {
+            bool b_print = false;
+            char c;
             if ( NEflag == 1 )
             {
-                  char c = 'N';
+                  c = 'N';
 
                   if ( neg )
                   {
                         d = -d;
                         c = 'S';
                   }
-
-                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
+                  b_print = true;
             }
             else if ( NEflag == 2 )
             {
-                  char c = 'E';
+                  c = 'E';
 
                   if ( neg )
                   {
                         d = -d;
                         c = 'W';
                   }
-                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
+                  b_print = true;
+            }
+            if(b_print)
+            {
+                  if(hi_precision)
+                        s.Printf ( _T ( "%03d %02ld.%06ld %c" ), d, m / 1000, ( m % 1000 ), c );
+                  else
+                        s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 1000, ( m % 1000 ), c );
             }
       }
       return s;
