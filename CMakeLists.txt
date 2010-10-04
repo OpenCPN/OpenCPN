@@ -449,10 +449,11 @@ IF(WIN32)
 ENDIF(WIN32)
 
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-	${wxWidgets_LIBRARIES}
-	NMEA0183
-	${EXTRA_LIBS}
+      ${wxWidgets_LIBRARIES}
+      NMEA0183
+      ${EXTRA_LIBS}
 )
+
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	setupapi.lib
@@ -460,12 +461,24 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	glu32.lib
 )
 ENDIF(WIN32)
+
 IF(UNIX)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-	${OPENGL_LIBRARIES}
-	${GETTEXT_LIBRARY}
+      ${OPENGL_LIBRARIES}
+      ${GETTEXT_LIBRARY}
 )
 ENDIF(UNIX)
+
+#   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
+#   So, add them manually.
+IF(UNIX)
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+      dl
+      gobject-2.0
+)
+ENDIF(UNIX)
+
+
 
 IF(NOT APPLE)
 
