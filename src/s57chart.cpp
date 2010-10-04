@@ -135,7 +135,7 @@ const char *MyCSVGetField( const char * pszFilename,
 extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
 extern wxString          *g_pcsv_locn;
-extern wxString          *g_pSENCPrefix;
+extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
@@ -2140,7 +2140,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     // Look for Thumbnail
     // Set the proper directory for the SENC/BMP files
-        wxString SENCdir = *g_pSENCPrefix;
+        wxString SENCdir = g_SENCPrefix;
 
         if(SENCdir.Last() != fn.GetPathSeparator())
             SENCdir.Append(fn.GetPathSeparator());
@@ -2233,7 +2233,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
     m_SENCFileName.SetExt(_T("S57"));
 
     //      Set the proper directory for the SENC files
-    wxString SENCdir = *g_pSENCPrefix;
+    wxString SENCdir = g_SENCPrefix;
 
     if(SENCdir.Last() != m_SENCFileName.GetPathSeparator())
          SENCdir.Append(m_SENCFileName.GetPathSeparator());
@@ -2444,7 +2444,7 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 //      Going to be in the global (user) SENC file directory
 
 
-        wxString SENCdir = *g_pSENCPrefix;
+        wxString SENCdir = g_SENCPrefix;
         if(SENCdir.Last() != m_SENCFileName.GetPathSeparator())
               SENCdir.Append(m_SENCFileName.GetPathSeparator());
 
