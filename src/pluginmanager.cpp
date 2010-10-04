@@ -29,6 +29,7 @@
 #include <wx/wx.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include <wx/aui/aui.h>
 
 #include "pluginmanager.h"
 #include "navutil.h"
@@ -38,6 +39,7 @@ extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
 extern wxString        g_SData_Locn;
 extern AIS_Decoder     *g_pAIS;
+extern wxAuiManager    *g_pauimgr;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -495,6 +497,25 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDat *ppos)
       }
 }
 
+void PlugInManager::SendResizeEventToAllPlugIns(int x, int y)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+                  pic->m_pplugin->ProcessParentResize(x, y);
+      }
+}
+
+void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+                  pic->m_pplugin->SetColorScheme((PI_ColorScheme)cs);
+      }
+}
 
 
 int PlugInManager::AddToolbarTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
@@ -790,6 +811,13 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void)
       return pret;
 }
 
+
+wxAuiManager *GetFrameAuiManager(void)
+{
+      return g_pauimgr;
+}
+
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
@@ -864,6 +892,11 @@ void opencpn_plugin::SetCursorLatLon(double lat, double lon)
 void opencpn_plugin::SetDefaults(void)
 {}
 
+void opencpn_plugin::ProcessParentResize(int x, int y)
+{}
+
+void opencpn_plugin::SetColorScheme(PI_ColorScheme cs)
+{}
 
 
 //          Helper and interface classes

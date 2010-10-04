@@ -163,6 +163,10 @@ public:
       void SendNMEASentenceToAllPlugIns(wxString &sentence);
       void SendPositionFixToAllPlugIns(GenericPosDat *ppos);
 
+      void SendResizeEventToAllPlugIns(int x, int y);
+      void SetColorSchemeForAllPlugIns(ColorScheme cs);
+
+
       wxString GetLastError();
       MyFrame *GetParentFrame(){ return pParent; }
 

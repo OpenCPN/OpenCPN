@@ -44,7 +44,7 @@
 class       wxFileConfig;
 class       wxNotebook;
 class       wxFont;
-
+class       wxAUIManager;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -65,6 +65,15 @@ class       wxFont;
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
+typedef enum PI_ColorScheme
+{
+      PI_GLOBAL_COLOR_SCHEME_RGB,
+      PI_GLOBAL_COLOR_SCHEME_DAY,
+      PI_GLOBAL_COLOR_SCHEME_DUSK,
+      PI_GLOBAL_COLOR_SCHEME_NIGHT,
+      PI_N_COLOR_SCHEMES
+};
+
 class PlugIn_ViewPort
 {
       public:
@@ -198,6 +207,9 @@ public:
       virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
       virtual void SetNMEASentence(wxString &sentence);
 
+      virtual void ProcessParentResize(int x, int y);
+      virtual void SetColorScheme(PI_ColorScheme cs);
+
       virtual void OnToolbarToolCallback(int id);
       virtual void OnContextMenuItemCallback(int id);
 
@@ -246,6 +258,8 @@ extern "C"  DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size)
 extern "C"  DECL_EXP wxString *GetpSharedDataLocation();
 
 extern "C"  DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
+
+extern "C"  DECL_EXP wxAUIManager *GetFrameAUIManager(void);
 
 #endif            // _PLUGIN_H_
 

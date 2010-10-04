@@ -137,7 +137,7 @@
 #include "scrollingdialog.h"
 #include <wx/intl.h>
 #include <wx/listctrl.h>
-
+#include <wx/aui/aui.h>
 
 
 #include "dychart.h"
@@ -274,7 +274,7 @@ wxString        *pHome_Locn;
 wxString        *pWVS_Locn;
 wxString        *pInit_Chart_Dir;
 wxString        *g_pcsv_locn;
-wxString        *g_pSENCPrefix;
+wxString        g_SENCPrefix;
 wxString        g_PresLibData;
 
 int             user_user_id;
@@ -577,6 +577,10 @@ bool              g_bquiting;
 int               g_BSBImgDebug;
 
 AISTargetListDialog   *g_pAISTargetList;
+
+wxAuiManager      *g_pauimgr;
+wxAuiDefaultDockArt  *g_pauidockart;
+wxTextCtrl *g_text;
 
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
@@ -1000,7 +1004,6 @@ bool MyApp::OnInit()
         pAIS_Port = new wxString();
         g_pcsv_locn = new wxString();
         pInit_Chart_Dir = new wxString();
-        g_pSENCPrefix = new wxString();
 
 //      Create an array string to hold repeating messages, so they don't
 //      overwhelm the log
@@ -1291,12 +1294,12 @@ bool MyApp::OnInit()
         }
 
 //      If the config file contains an entry for SENC file prefix, use it.
-//      Otherwise, default to std_path.GetUserDataDir()
-        if(g_pSENCPrefix->IsEmpty())
+//      Otherwise, default to PrivateDataDir
+        if(g_SENCPrefix.IsEmpty())
         {
-              g_pSENCPrefix->Append(std_path.GetUserDataDir());
-              appendOSDirSlash(g_pSENCPrefix);
-              g_pSENCPrefix->Append(_T("SENC"));
+              g_SENCPrefix = g_PrivateDataDir;
+              appendOSDirSlash(&g_SENCPrefix);
+              g_SENCPrefix.Append(_T("SENC"));
         }
 
         // S52RAZDS.RLE
@@ -1497,6 +1500,13 @@ bool MyApp::OnInit()
         gFrame = new MyFrame(NULL, _T("OpenCPN"), wxPoint(0, 0), new_frame_size, app_style );
 
 
+        g_pauimgr = new wxAuiManager;
+        g_pauidockart= new wxAuiDefaultDockArt;
+        g_pauimgr->SetArtProvider(g_pauidockart);
+
+// tell wxAuiManager to manage the frame
+        g_pauimgr->SetManagedWindow(gFrame);
+
 //      Create Children of Frame
 //              n.b.  if only one child exists, wxWindows expands the child
 //                        to the parent client area automatically, (as a favor?)
@@ -1506,18 +1516,62 @@ bool MyApp::OnInit()
         gFrame->SetCanvasWindow(cc1);
 
         cc1->SetQuiltMode(pConfig->m_bQuilt);                     // set initial quilt mode
-
-        if(cc1)
-        {
-            cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-            cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0., CURRENT_RENDER );
-        }
-
+        cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
+        cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0., CURRENT_RENDER );
 
         cc1->SetFocus();
 
+#if(0)// __USEAUI__
+        g_pauimgr->AddPane(cc1);
+        g_pauimgr->GetPane(cc1).Fixed();
+        g_pauimgr->GetPane(cc1).CaptionVisible(false);
+        g_pauimgr->GetPane(cc1).Center();
+        g_pauimgr->Update();
+#endif
+
+#if 0
+        g_text = new wxTextCtrl(gFrame,wxID_ANY, _T("Text"), wxPoint(200,200), wxSize(150,90), wxNO_BORDER | wxTE_MULTILINE);
+        g_pauimgr->AddPane(g_text);
+
+        g_pauimgr->GetPane(g_text).Float();
+        g_pauimgr->GetPane(g_text).FloatingPosition(300,300);
+//        g_pauimgr->GetPane(g_text).Dock();
+
+        g_pauimgr->GetPane(g_text).CaptionVisible();
+        g_pauimgr->GetPane(g_text).GripperTop();
+        g_pauimgr->GetPane(g_text).CloseButton();
+        g_pauimgr->GetPane(g_text).Show();
+
+        g_pauimgr->Update();
+#endif
+
 
         console = new ConsoleCanvas(gFrame);                    // the console
+/*
+        g_pauimgr->AddPane(console);
+
+        g_pauimgr->GetPane(console).Dockable(true);
+
+        g_pauimgr->GetPane(console).FloatingSize(console->GetSize());
+        g_pauimgr->GetPane(console).MinSize(console->GetSize());
+        g_pauimgr->GetPane(console).FloatingPosition(600,300);
+        g_pauimgr->GetPane(console).CaptionVisible(true);
+        g_pauimgr->GetPane(console).Caption(_T("Caption"));
+        g_pauimgr->GetPane(console).Fixed();
+        g_pauimgr->GetPane(console).CloseButton(false);
+        g_pauimgr->GetPane(console).PaneBorder(false);
+
+        g_pauimgr->GetPane(console).Float();
+
+        g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetColour( wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
+
+        g_pauimgr->GetPane(console).Show(0);
+        g_pauimgr->Update();
+*/
+
 
         stats = new StatWin(gFrame);
 
@@ -1677,7 +1731,6 @@ bool MyApp::OnInit()
 
         pCurrentStack = new ChartStack;
 
-
 //      All set to go.....
 
 #ifndef __WXMSW__
@@ -1720,6 +1773,8 @@ bool MyApp::OnInit()
 
 
         gFrame->DoChartUpdate();
+
+        gFrame->RequestNewToolbar();
 
 //      Start up the ticker....
         gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
@@ -1794,7 +1849,6 @@ int MyApp::OnExit()
         delete pChartListFileName;
         delete pHome_Locn;
         delete g_pcsv_locn;
-        delete g_pSENCPrefix;
         delete pTC_Dir;
         delete phost_name;
         delete pInit_Chart_Dir;
@@ -1973,7 +2027,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
         PrepareToolbarBitmaps();
 
-//        m_pStatBmp = NULL;
 
         //      Redirect the global heartbeat timer to this frame
         FrameTimer1.SetOwner(this, FRAME_TIMER_1);
@@ -2189,7 +2242,11 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
             stats->SetColorScheme(cs);
 
       if(console)
+      {
             console->SetColorScheme(cs);
+//            g_pauimgr->GetPane(console).Show(1);
+//            g_pauimgr->Update();
+      }
 
       if(g_pRouteMan)
             g_pRouteMan->SetColorScheme(cs);
@@ -2226,6 +2283,10 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
       ApplyGlobalColorSchemetoStatusBar();
 
       UpdateToolbar(cs);
+
+      if(g_pi_manager)
+            g_pi_manager->SetColorSchemeForAllPlugIns(cs);
+
 //      UpdateToolbarStatusWindow(Current_Ch, true);
 }
 
@@ -2361,14 +2422,15 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     x += pitch_tool;
 
 
-
-    CheckAndAddPlugInTool(tb);
-    tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
-    x += pitch_tool;
-    CheckAndAddPlugInTool(tb);
-    tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
-    x += pitch_tool;
-
+    if(pCurrentStack && pCurrentStack->b_valid && (pCurrentStack->nEntry > 1))
+    {
+          CheckAndAddPlugInTool(tb);
+          tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
+          x += pitch_tool;
+          CheckAndAddPlugInTool(tb);
+          tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
+          x += pitch_tool;
+    }
 
 
     CheckAndAddPlugInTool(tb);
@@ -3155,6 +3217,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
             g_restore_stackindex = pCurrentStack->CurrentStackEntry;
 
       pConfig->UpdateSettings();
+      pConfig->UpdateNavObj();
+
 
       delete g_printData;
       delete g_pageSetupData;
@@ -3242,6 +3306,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     DeleteToolbarBitmaps();               // delete the originals, too
 
+    g_pauimgr->UnInit();
 
     this->Destroy();
 
@@ -3336,6 +3401,11 @@ void MyFrame::DoSetSize(void)
     GetSize(&x, &y);
     g_nframewin_x = x;
     g_nframewin_y = y;
+
+//  Inform the PlugIns
+    if(g_pi_manager)
+          g_pi_manager->SendResizeEventToAllPlugIns(x, y);
+
 
 //  Force redraw if in lookahead mode
     if(g_bLookAhead)
@@ -3988,7 +4058,6 @@ int MyFrame::DoOptionsDialog()
             if(rr & TOOLBAR_CHANGED)
                   b_refresh_after_options = true;
 
-
             pConfig->UpdateSettings();
 
             if(g_pActiveTrack)
@@ -4573,8 +4642,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
 //  Possibly save the current configuration
       if(0 == (g_tick % (g_nautosave_interval_seconds)))
+      {
              pConfig->UpdateSettings();
-
+             pConfig->UpdateNavObj();
+      }
 
 //  Force own-ship drawing parameters
       cc1->SetOwnShipState(SHIP_NORMAL);
@@ -5264,7 +5335,7 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
 
 
 //      Setup the view
-            float zLat, zLon;
+            double zLat, zLon;
             if(cc1->m_bFollow)
                 { zLat = gLat; zLon = gLon;}
             else
@@ -5408,11 +5479,15 @@ void MyFrame::UpdateControlBar(void)
             return;
 
       ArrayOfInts piano_chart_index_array;
+      ArrayOfInts empty_piano_chart_index_array;
 
       if (cc1->GetQuiltMode())
       {
             piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-            stats->pPiano->SetKeyArray(piano_chart_index_array);
+            if(piano_chart_index_array.GetCount() > 1)
+                  stats->pPiano->SetKeyArray(piano_chart_index_array);
+            else
+                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
 
             ArrayOfInts piano_active_chart_index_array = cc1->GetQuiltCandidatedbIndexArray();
             stats->pPiano->SetActiveKeyArray(piano_active_chart_index_array);
@@ -5426,7 +5501,11 @@ void MyFrame::UpdateControlBar(void)
       else
       {
             piano_chart_index_array = ChartData->GetCSArray(pCurrentStack);
-            stats->pPiano->SetKeyArray(piano_chart_index_array);
+            if(piano_chart_index_array.GetCount() > 1)
+                  stats->pPiano->SetKeyArray(piano_chart_index_array);
+            else
+                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
+
 
             ArrayOfInts piano_active_chart_index_array;
             piano_active_chart_index_array.Add(pCurrentStack->GetCurrentEntrydbIndex());
@@ -5484,12 +5563,25 @@ bool MyFrame::DoChartUpdate(void)
       double tLat, tLon;           // Chart Stack location
       double vpLat, vpLon;         // ViewPort location
 
+      bool bNewChart = false;
+      bool bNewPiano = false;
+      bool bOpenSpecified;
+      ChartStack LastStack;
+      ChartBase *pLast_Ch;
+
+      ChartStack WorkStack;
+
       if(!cc1)
             return false;
       if(bDBUpdateInProgress)
             return false;
       if(!ChartData)
             return false;
+
+      int last_nEntry = -1;
+      if(pCurrentStack)
+            last_nEntry = pCurrentStack->nEntry;
+
 
       //      If in auto-follow mode, use the current glat,glon to build chart stack.
       //      Otherwise, use vLat, vLon gotten from click on chart canvas, or other means
@@ -5607,18 +5699,16 @@ bool MyFrame::DoChartUpdate(void)
                   bFirstAuto = false;                           // Auto open on program start
             }
 
+
             if(cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER))
-                  return true;
-            else
-                  return false;
+                  bNewChart = true;
+
+            goto update_finish;
 
         }
 
         //  Single Chart Mode from here....
-        ChartStack LastStack;
-        bool bNewChart = false;
-        bool bNewPiano = false;
-        ChartBase *pLast_Ch = Current_Ch;
+        pLast_Ch = Current_Ch;
         ChartTypeEnum new_open_type;
         ChartFamilyEnum new_open_family;
         if(pLast_Ch)
@@ -5633,7 +5723,7 @@ bool MyFrame::DoChartUpdate(void)
         }
 
 
-        bool bOpenSpecified =  bFirstAuto;
+        bOpenSpecified =  bFirstAuto;
         bFirstAuto = false;                           // Auto open specified index once, on program start
         bAutoOpen = true;                             // debugging
 
@@ -5643,10 +5733,7 @@ bool MyFrame::DoChartUpdate(void)
                pCurrentStack = new ChartStack;
 
         // Build a chart stack based on tLat, tLon
-        ChartStack *pWorkStack = new ChartStack;
-        int l = ChartData->BuildChartStack(pWorkStack, tLat, tLon);
-
-        if(l == 0)                                    // Bogus Lat, Lon?
+        if(0 == ChartData->BuildChartStack(&WorkStack, tLat, tLon))       // Bogus Lat, Lon?
         {
                 if(NULL == pDummyChart)
                 {
@@ -5668,21 +5755,21 @@ bool MyFrame::DoChartUpdate(void)
                 cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation(), CURRENT_RENDER);
 
         //      If the chart stack has just changed, there is new status
-                if(!ChartData->EqualStacks(pWorkStack, pCurrentStack))
+                if(!ChartData->EqualStacks(&WorkStack, pCurrentStack))
                 {
                   bNewPiano = true;
                   bNewChart = true;
                 }
 
         //      Copy the new (by definition empty) stack into the target stack
-                ChartData->CopyStack(pCurrentStack, pWorkStack);
+                ChartData->CopyStack(pCurrentStack, &WorkStack);
 
                 goto update_finish;
         }
 
 
         //              Check to see if Chart Stack has changed
-        if(!ChartData->EqualStacks(pWorkStack, pCurrentStack))
+        if(!ChartData->EqualStacks(&WorkStack, pCurrentStack))
         {
         //      New chart stack, so...
                 bNewPiano = true;
@@ -5691,7 +5778,7 @@ bool MyFrame::DoChartUpdate(void)
                 ChartData->CopyStack(&LastStack, pCurrentStack);
 
         //      Copy the new stack into the target stack
-                ChartData->CopyStack(pCurrentStack, pWorkStack);
+                ChartData->CopyStack(pCurrentStack, &WorkStack);
 
         //  Is Current Chart in new stack?
 
@@ -5835,13 +5922,16 @@ bool MyFrame::DoChartUpdate(void)
 
 
 update_finish:
+
+            //    Ask for a new tool bar if the stack is going to or coming from only one entry.
+            if(pCurrentStack && ((pCurrentStack->nEntry == 1) && (last_nEntry != 1)) || ((pCurrentStack->nEntry != 1) && (last_nEntry == 1)))
+                  gFrame->RequestNewToolbar();
+
         if(bNewChart)
             UpdateToolbarStatusWindow(Current_Ch, false);
 
         if(bNewPiano)
-        {
               UpdateControlBar();
-        }
 
         //  Update the ownship position on thumbnail chart, if shown
         if(pthumbwin->IsShown())
@@ -5851,7 +5941,6 @@ update_finish:
                         pthumbwin->Refresh(TRUE);
         }
 
-        delete pWorkStack;
         return bNewChart;
 }
 
@@ -6287,18 +6376,18 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                               if(m_NMEA0183.Rmc.IsDataValid == NTrue)
                               {
-                                    float llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
+                                    double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
                                     int lat_deg_int = (int)(llt / 100);
-                                    float lat_deg = lat_deg_int;
-                                    float lat_min = llt - (lat_deg * 100);
+                                    double lat_deg = lat_deg_int;
+                                    double lat_min = llt - (lat_deg * 100);
                                     gLat = lat_deg + (lat_min/60.);
                                     if(m_NMEA0183.Rmc.Position.Latitude.Northing == South)
                                           gLat = -gLat;
 
-                                    float lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
+                                    double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
                                     int lon_deg_int = (int)(lln / 100);
-                                    float lon_deg = lon_deg_int;
-                                    float lon_min = lln - (lon_deg * 100);
+                                    double lon_deg = lon_deg_int;
+                                    double lon_min = lln - (lon_deg * 100);
                                     gLon = lon_deg + (lon_min/60.);
                                     if(m_NMEA0183.Rmc.Position.Longitude.Easting == West)
                                           gLon = -gLon;
@@ -6440,18 +6529,18 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(m_NMEA0183.Gll.IsDataValid == NTrue)
                               {
-                                    float llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
+                                    double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
                                     int lat_deg_int = (int)(llt / 100);
-                                    float lat_deg = lat_deg_int;
-                                    float lat_min = llt - (lat_deg * 100);
+                                    double lat_deg = lat_deg_int;
+                                    double lat_min = llt - (lat_deg * 100);
                                     gLat = lat_deg + (lat_min/60.);
                                     if(m_NMEA0183.Gll.Position.Latitude.Northing == South)
                                           gLat = -gLat;
 
-                                    float lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
+                                    double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
                                     int lon_deg_int = (int)(lln / 100);
-                                    float lon_deg = lon_deg_int;
-                                    float lon_min = lln - (lon_deg * 100);
+                                    double lon_deg = lon_deg_int;
+                                    double lon_min = lln - (lon_deg * 100);
                                     gLon = lon_deg + (lon_min/60.);
                                     if(m_NMEA0183.Gll.Position.Longitude.Easting == West)
                                           gLon = -gLon;
@@ -6479,18 +6568,18 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(m_NMEA0183.Gga.GPSQuality > 0)
                               {
-                                    float llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
+                                    double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
                                     int lat_deg_int = (int)(llt / 100);
-                                    float lat_deg = lat_deg_int;
-                                    float lat_min = llt - (lat_deg * 100);
+                                    double lat_deg = lat_deg_int;
+                                    double lat_min = llt - (lat_deg * 100);
                                     gLat = lat_deg + (lat_min/60.);
                                     if(m_NMEA0183.Gga.Position.Latitude.Northing == South)
                                           gLat = -gLat;
 
-                                    float lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
+                                    double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
                                     int lon_deg_int = (int)(lln / 100);
-                                    float lon_deg = lon_deg_int;
-                                    float lon_min = lln - (lon_deg * 100);
+                                    double lon_deg = lon_deg_int;
+                                    double lon_min = lln - (lon_deg * 100);
                                     gLon = lon_deg + (lon_min/60.);
                                     if(m_NMEA0183.Gga.Position.Longitude.Easting == West)
                                           gLon = -gLon;
