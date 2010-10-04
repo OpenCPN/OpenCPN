@@ -87,25 +87,55 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                   PlugInContainer *pic = LoadPlugIn(file_name);
                   if(pic)
                   {
-                        plugin_array.Add(pic);
+    //    Verify the PlugIn API Version
 
-                        //    The common name is available without initialization and startup of the PlugIn
-                        pic->m_common_name = pic->m_pplugin->GetCommonName();
-
-                        //    Check the config file to see if this PlugIn is user-enabled
-                        wxString config_section = ( _T ( "/PlugIns/" ) );
-                        config_section += pic->m_common_name;
-                        pConfig->SetPath ( config_section );
-                        pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
-
-                        if(pic->m_bEnabled)
+                        int api_major = pic->m_pplugin->GetAPIVersionMajor();
+                        int api_minor = pic->m_pplugin->GetAPIVersionMinor();
+                        int ver = (api_major * 100) + api_minor;
+                        bool bver_ok = false;
+                        switch(ver)
                         {
-                              pic->m_cap_flag = pic->m_pplugin->Init();
-                              pic->m_bInitState = true;
+                              case 101:                                 // TODO add more valid API versions to this case as necessary
+                                    bver_ok = true;
+                                    break;
+                              default:
+                                    break;
                         }
 
-                        pic->m_short_description = pic->m_pplugin->GetShortDescription();
-                        pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                        if(bver_ok)
+                        {
+                              plugin_array.Add(pic);
+
+                              pic->m_api_version = ver;                 // record the PlugIn's API version
+
+                              //    The common name is available without initialization and startup of the PlugIn
+                              pic->m_common_name = pic->m_pplugin->GetCommonName();
+
+                              //    Check the config file to see if this PlugIn is user-enabled
+                              wxString config_section = ( _T ( "/PlugIns/" ) );
+                              config_section += pic->m_common_name;
+                              pConfig->SetPath ( config_section );
+                              pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
+
+                              if(pic->m_bEnabled)
+                              {
+                                    pic->m_cap_flag = pic->m_pplugin->Init();
+                                    pic->m_bInitState = true;
+                              }
+
+                              pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                              pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                        }
+                        else
+                        {
+                              wxString msg;
+                              msg.Printf(_("PlugInManager: Unloading PlugIn with invalid API version %d.%d: "), api_major, api_minor );
+                              msg += pic->m_plugin_file;
+                              wxLogMessage(msg);
+
+                              delete pic->m_plibrary;            // This will unload the PlugIn
+                              delete pic;
+                        }
                   }
 
                   b_more =pi_dir.GetNext(&plugin_file);
@@ -273,6 +303,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             wxLogMessage(msg);
             return NULL;
       }
+
 
     // create an instance of the plugin class
       opencpn_plugin* plug_in = create_plugin(this);
@@ -749,6 +780,13 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void)
             pret->Add(ptarget);
       }
 
+//  Test one alarm target
+#if 0
+      AIS_Target_Data td;
+      td.n_alarm_state = AIS_ALARM_SET;
+      PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(&td);
+      pret->Add(ptarget);
+#endif
       return pret;
 }
 

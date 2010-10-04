@@ -1232,6 +1232,15 @@ wxImageList *WayPointman::Getpmarkicon_image_list(void)
             pmi = (MarkIcon *)m_pcurrent_icon_array->Item(i);
             w = wxMax(w, pmi->picon_bitmap->GetWidth());
             h = wxMax(h, pmi->picon_bitmap->GetHeight());
+
+            // toh, 10.09.29
+            // User defined icons won't be displayed in the list if they are larger than 32x32 pixels (why???)
+            // Work-around: limit size
+            if (w > 32)
+                  w = 32;
+            if (h > 32)
+                  h = 32;
+
       }
 
       //Build an image list large enough
@@ -1248,7 +1257,34 @@ wxImageList *WayPointman::Getpmarkicon_image_list(void)
       {
             pmi = (MarkIcon *)m_pcurrent_icon_array->Item(ii);
             wxImage icon_image = pmi->picon_bitmap->ConvertToImage();
-            wxImage icon_larger = icon_image.Resize(wxSize(h,w), wxPoint(0,0));
+
+            // toh, 10.09.29
+            // After limiting size user defined icons will be cut off
+            // Work-around: rescale in one or both directions
+            int h0 = icon_image.GetHeight();
+            int w0 = icon_image.GetWidth();
+
+            wxImage icon_larger;
+            if (h0 <= h && w0 <= w)
+            {
+                        // Just resize
+                  icon_larger = icon_image.Resize(wxSize(h,w), wxPoint(0,0));
+            }
+            else
+            {
+                        // rescale in one or two directions to avoid cropping, then resize to fit to cell
+                  int h1 = h;
+                  int w1 = w;
+                  if (h0 > h)
+                        w1 = wxRound((double)w0 * ((double)h/(double)h0));
+
+                  else if (w0 > w)
+                        h1 = wxRound((double)h0 * ((double)w/(double)w0));
+
+                  icon_larger = icon_image.Rescale(w1, h1);
+                  icon_larger = icon_larger.Resize(wxSize(h,w), wxPoint(0,0));
+            }
+
             pmarkicon_image_list->Add(icon_larger);
        }
 

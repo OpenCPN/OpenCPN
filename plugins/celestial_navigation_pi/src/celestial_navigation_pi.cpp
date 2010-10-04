@@ -120,12 +120,12 @@ bool celestial_navigation_pi::DeInit(void)
 
 int celestial_navigation_pi::GetAPIVersionMajor()
 {
-      return API_VERSION_MAJOR;
+      return MY_API_VERSION_MAJOR;
 }
 
 int celestial_navigation_pi::GetAPIVersionMinor()
 {
-      return API_VERSION_MINOR;
+      return MY_API_VERSION_MINOR;
 }
 
 int celestial_navigation_pi::GetPlugInVersionMajor()

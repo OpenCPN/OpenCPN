@@ -140,12 +140,12 @@ bool dashboard_pi::DeInit(void)
 
 int dashboard_pi::GetAPIVersionMajor()
 {
-      return API_VERSION_MAJOR;
+      return MY_API_VERSION_MAJOR;
 }
 
 int dashboard_pi::GetAPIVersionMinor()
 {
-      return API_VERSION_MINOR;
+      return MY_API_VERSION_MINOR;
 }
 
 int dashboard_pi::GetPlugInVersionMajor()

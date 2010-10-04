@@ -61,7 +61,7 @@
 #define new DEBUG_NEW
 #endif
 
-extern wxString         *g_pSENCPrefix;
+extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
 extern cm93manager      *s_pcm93mgr;
 extern MyConfig         *pConfig;
@@ -2212,8 +2212,7 @@ int cm93chart::CreateObjChain()
 
       while(iObj < m_CIB.m_nfeature_records)
       {
-
-            if((pobjectDef != NULL) /*&& (iObj <= 1390)*/)
+            if((pobjectDef != NULL))
             {
 
                   Extended_Geometry *xgeom = BuildGeom(pobjectDef, NULL, iObj);
@@ -2387,7 +2386,8 @@ InitReturn cm93chart::Init( const wxString& name, ChartInitFlag flags )
       m_Name = data;
 
       //    Initialize the covr_set
-      m_pcovr_set->Init(m_scalechar.mb_str()[(size_t)0], m_prefix);
+      if(scale != 20000000)
+            m_pcovr_set->Init(m_scalechar.mb_str()[(size_t)0], m_prefix);
 
 
       if(flags == THUMB_ONLY)
@@ -4640,6 +4640,12 @@ InitReturn cm93compchart::Init( const wxString& name, ChartInitFlag flags )
       //    Load the cm93 dictionary if necessary
       if(!m_pDict)
       {
+            if(pConfig)
+            {
+                  pConfig->SetPath ( _T ( "/Directories" ) );
+                  pConfig->Read ( _T ( "CM93DictionaryLocation" ), &g_CM93DictDir );
+            }
+
             if(g_CM93DictDir.Len())                 // a hint...
                   m_pDict = FindAndLoadDictFromDir(g_CM93DictDir);
 
@@ -5330,7 +5336,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
             //    So, stop the loop after we have rendered "something"
             //    But don't stop at all if the viewport scale is less than 3 million.
             //    This will have the effect of bringing in outlines of isolated large scale cells
-            //    embeded within small scale cells, like isolated islands in the Pacific.
+            //    embedded within small scale cells, like isolated islands in the Pacific.
             bool bdrawn = false;
             nss_max = 7;
             while(nss <= nss_max && (!bdrawn || (vp.chart_scale < 3e6)))

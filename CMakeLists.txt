@@ -65,7 +65,7 @@ IF(WIN32)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
 ENDIF(WIN32)
  
-SET(wxWidgets_USE_LIBS base core net xml html adv)
+SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
 # These options can be used to set the linux widgets build type
 #SET( wxWidgets_USE_DEBUG ON)

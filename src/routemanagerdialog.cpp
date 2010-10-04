@@ -1066,6 +1066,10 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
       Route *route = track->RouteFromTrack();
       pRouteList->Append(route);
 
+      pConfig->UpdateRoute(route);
+
+      cc1->Refresh();
+
       UpdateRouteListCtrl();
 }
 
@@ -1121,7 +1125,8 @@ void RouteManagerDialog::UpdateWptListCtrl()
 
                   wxListItem li;
                   li.SetId(index);
-                  li.SetImage(pWayPointMan->GetIconIndex(rp->m_pbmIcon));
+//                  li.SetImage(pWayPointMan->GetIconIndex(rp->m_pbmIcon));
+                  li.SetImage( rp->IsVisible() ? pWayPointMan->GetIconIndex(rp->m_pbmIcon) : 0);
                   li.SetData(rp);
                   li.SetText(_T(""));
                   long idx = m_pWptListCtrl->InsertItem(li);
@@ -1194,8 +1199,11 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event)
             wp->SetVisible(!wp->IsVisible());
             m_pWptListCtrl->SetItemImage(clicked_index, wp->IsVisible() ?  pWayPointMan->GetIconIndex(wp->m_pbmIcon) : 0);
 
+            pConfig->UpdateWayPoint(wp);
+
             cc1->Refresh();
       }
+
 
       // Allow wx to process...
       event.Skip();

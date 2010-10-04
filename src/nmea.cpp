@@ -548,7 +548,7 @@ void libgps_hook(struct gps_data_t *data, char *buf, size_t size)
       {
             ThreadPositionData.kSog = 0.;
             if(!wxIsNaN(data->fix.speed))
-                  ThreadPositionData.kSog = data->fix.speed;
+                  ThreadPositionData.kSog = data->fix.speed * 3600. / 1852.;      // convert from m/s to knots
       }
 
       if(data->set & SATELLITE_SET)
@@ -564,7 +564,7 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 
       m_fn_gps_set_raw_hook(m_gps_data, libgps_hook);
 
-      if(m_fn_gps_waiting(m_gps_data))
+      while(m_fn_gps_waiting(m_gps_data))
       {
          m_fn_gps_poll(m_gps_data);
 

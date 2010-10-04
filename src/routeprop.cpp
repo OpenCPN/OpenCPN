@@ -986,7 +986,7 @@ bool MarkProp::SaveChanges(void)
             else
                   pConfig->UpdateWayPoint(m_pRoutePoint);
 
-            pConfig->UpdateSettings();
+//  No general settings need be saved            pConfig->UpdateSettings();
       }
     return true;
 }

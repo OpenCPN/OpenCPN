@@ -71,6 +71,8 @@ class PlugInContainer
             wxString          m_common_name;            // A common name string for the plugin
             wxString          m_short_description;
             wxString          m_long_description;
+            int               m_api_version;
+
 };
 
 //    Declare an array of PlugIn Containers

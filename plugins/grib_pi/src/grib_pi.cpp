@@ -145,12 +145,12 @@ bool grib_pi::DeInit(void)
 
 int grib_pi::GetAPIVersionMajor()
 {
-      return API_VERSION_MAJOR;
+      return MY_API_VERSION_MAJOR;
 }
 
 int grib_pi::GetAPIVersionMinor()
 {
-      return API_VERSION_MINOR;
+      return MY_API_VERSION_MINOR;
 }
 
 int grib_pi::GetPlugInVersionMajor()

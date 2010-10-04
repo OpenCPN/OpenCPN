@@ -38,6 +38,9 @@
 #define     PLUGIN_VERSION_MAJOR    1
 #define     PLUGIN_VERSION_MINOR    0
 
+#define     MY_API_VERSION_MAJOR    1
+#define     MY_API_VERSION_MINOR    1
+
 #include <wx/minifram.h>
 #include "../../../include/ocpn_plugin.h"
 
