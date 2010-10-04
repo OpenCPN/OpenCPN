@@ -162,7 +162,6 @@ char test_str[24][79] = {
 
 
 char ais_status[][40] = {
-
       "Underway",
       "At Anchor",
       "Not Under Command",
@@ -171,7 +170,14 @@ char ais_status[][40] = {
       "Moored",
       "Aground",
       "Engaged in Fishing",
-      "Under way sailing"
+      "Under way sailing",
+      "High Speed Craft",
+      "Wing In Ground Effect",
+      "Reserved 11",
+      "Reserved 12",
+      "Reserved 13",
+      "Reserved 14",
+      "Undefined"
 };
 
 char ais_type[][80] = {
@@ -353,12 +359,12 @@ AIS_Target_Data::AIS_Target_Data()
 {
     strncpy(ShipName, "Unknown             ", 21);
     strncpy(CallSign, "       ", 8);
-    strncpy(Destination, "Unknown             ", 21);
+    strncpy(Destination, "                    ", 21);
 
     SOG = 555.;
     COG = 666.;
     HDG = 511.;
-    ROTAIS = 0;                     // pjotrc 2010.02.07
+    ROTAIS = -128;                     // pjotrc 2010.02.07
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
@@ -367,7 +373,7 @@ AIS_Target_Data::AIS_Target_Data()
     IMO = 0;                       // pjotrc 2010.02.07
     MID = 555;
     MMSI = 666;
-    NavStatus = 777;
+    NavStatus = 15;
     SyncState = 888;
     SlotTO = 999;
     ShipType = 19;	// "Unknown"        // pjotrc 2010.02.10
@@ -428,24 +434,24 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Append(_T("\n\n"));
             result.Append(line);
       }
-      line.Printf(_T("MMSI:      %d\n"), MMSI);
+      line.Printf(_T("MMSI:                 %09d\n"), MMSI);
       result.Append(line);
 
       if((Class != AIS_ATON) && (Class != AIS_BASE))
       {
-            line.Printf(_("CallSign:  "));
+            line.Printf(_("CallSign:             "));
             line.Append( trimAISField(CallSign) );
             line.Append(_T("\n"));
             result.Append(line);
 
             if(IMO > 0)
-                  line.Printf(_T("IMO:        %8d\n"), IMO);
+                  line.Printf(_T("IMO:                 %8d\n"), IMO);
             else
                   line.Printf(_T("IMO:\n"));
             result.Append(line);
       }
 
-      line.Printf(_("Class:     "));
+      line.Printf(_("Class:                "));
       line.Append(Get_class_string(false));
       line.Append(_T("\n"));
       result.Append(line);
@@ -455,7 +461,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
-            if((NavStatus <= 8) && (NavStatus >= 0))
+            if((NavStatus <= 15) && (NavStatus >= 0))
                   line.Append( wxString::From8BitData(&ais_status[NavStatus][0]) );
             line.Append(_T("\n"));
             result.Append(line);
@@ -467,30 +473,6 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Append(_T("\n"));
             result.Append(line);
 
-      //  Destination
-            line.Printf(_("Destination:          "));
-            line.Append( trimAISField(Destination) );
-            line.Append(_T("\n"));
-            result.Append(line);
-
-
-      //  ETA
-            if((ETA_Mo) && (ETA_Hr < 24))
-            {
-                  wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
-                  line.Printf(_("ETA:                  "));
-                  line.Append( eta.FormatISODate());
-                  line.Append(_T("  "));
-                  line.Append( eta.FormatISOTime());
-                  line.Append(_T("\n"));
-            }
-            else
-            {
-                  line.Printf(_("ETA:                  Unknown"));
-                  line.Append(_T("\n"));
-            }
-
-            result.Append(line);
 
       //  Dimensions
 
@@ -501,72 +483,129 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         if(Euro_Length == 0.0)
                         {
                               if(Euro_Draft > 0.01)
-                                    line.Printf(_("Size:                ---m x ---m x %4.1fm\n\n"),  Euro_Draft);
+                                    line.Printf(_("Size:                 ---m x ---m x %4.1fm\n\n"),  Euro_Draft);
                               else
-                                    line.Printf(_("Size:                ---m x ---m x ---m\n\n"));
+                                    line.Printf(_("Size:                 ---m x ---m x ---m\n\n"));
                         }
                         else
                         {
                               if(Euro_Draft > 0.01)
-                                    line.Printf(_("Size:                %4.1fm x %4.1fm x %4.1fm\n\n"), Euro_Length, Euro_Beam, Euro_Draft);
+                                    line.Printf(_("Size:               %5.1fm x %4.1fm x %4.1fm\n\n"), Euro_Length, Euro_Beam, Euro_Draft);
                               else
-                                    line.Printf(_("Size:                %4.1fm x %4.1fm x ---m\n\n"), Euro_Length, Euro_Beam);
+                                    line.Printf(_("Size:               %5.1fm x %4.1fm x ---m\n\n"), Euro_Length, Euro_Beam);
                         }
                   }
                   else
                   {
                         if(Draft > 0.01)
-                              line.Printf(_("Size:                ---m x ---m x %4.1fm\n\n"),  Draft);
+                              line.Printf(_("Size:                 ---m x ---m x %4.1fm\n\n"),  Draft);
                         else
-                              line.Printf(_("Size:                ---m x ---m x ---m\n\n"));
+                              line.Printf(_("Size:                 ---m x ---m x ---m\n\n"));
                   }
             }
             else if(Draft < 0.01)
-                  line.Printf(_("Size:                %5dm x %dm x ---m\n\n"), (DimA + DimB), (DimC + DimD));
+                  line.Printf(_("Size:                 %dm x %dm x ---m\n\n"), (DimA + DimB), (DimC + DimD));
             else
-                  line.Printf(_("Size:                %5dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
+                  line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
             result.Append(line);
-
-            line.Printf(_("Course:               %5.0f Deg.\n"), COG);
-            result.Append(line);
-
-            if(SOG <= 102.2)
-                  line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
-            else
-                  line.Printf(_("Speed:            Unavailable\n"));
-            result.Append(line);
-
       }
-	  if(b_positionValid)
-			line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
-	  else
-			line.Printf(_("Range:            Unavailable\n"));
+
+
+
+           //  Destination
+      line.Printf(_("Destination:          "));
+      line.Append( trimAISField(Destination) );
+      line.Append(_T("\n"));
       result.Append(line);
 
-	  if(b_positionValid)
-			line.Printf(_("Bearing:              %5.0f Deg.\n"), Brg);
-	  else
-			line.Printf(_("Bearing:          Unavailable\n"));
+
+      //  ETA
+      if((ETA_Mo) && (ETA_Hr < 24))
+      {
+            wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
+            line.Printf(_("ETA:                  "));
+            line.Append( eta.FormatISODate());
+            line.Append(_T("  "));
+            line.Append( eta.FormatISOTime());
+            line.Append(_T("\n"));
+      }
+      else
+      {
+            line.Printf(_("ETA:"));
+            line.Append(_T("\n"));
+      }
+
+      result.Append(line);
+      result.Append(_T("\n"));
+
+      int crs = wxRound(COG);
+      if(b_positionValid)
+            line.Printf(_("Course:                 %03d Deg.\n"), crs);
+      else
+            line.Printf(_("Course:                 Unavailable\n"));
       result.Append(line);
 
-      line.Printf(_("Position:              "));
-	  if(b_positionValid)
-	  {
-		  wxString pos_st;
-		  pos_st += toSDMM(1, Lat);
-		  pos_st <<_T("\n                       ");
-		  pos_st += toSDMM(2, Lon);
-		  pos_st << _T("\n\n");
-		  line << pos_st;
-	  }
-	  else
-		  line << _("   Unknown\n\n");
+      if(SOG <= 102.2)
+            line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
+      else
+            line.Printf(_("Speed:                  Unavailable\n"));
+      result.Append(line);
+
+      if(ROTAIS != -128)
+      {
+            if(ROTIND > 0)
+                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
+            else if(ROTIND < 0)
+                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), ROTIND);
+            else
+                  line.Printf(_("Rate Of Turn            %3d Deg./Min.\n"), ROTIND);
+
+            result.Append(line);
+      }
+
+      if(b_positionValid)
+                  line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
+      else
+            line.Printf(_("Range:                  Unavailable\n"));
+      result.Append(line);
+
+      int brg = wxRound(Brg);
+      if(b_positionValid)
+            line.Printf(_("Bearing:                %03d Deg.\n"), brg);
+      else
+            line.Printf(_("Bearing:                Unavailable\n"));
+      result.Append(line);
+
+      if(blue_paddle == 1)
+      {
+            line.Printf(_("Inland Blue Flag        Clear\n"));
+            result.Append(line);
+      }
+      else if(blue_paddle == 2)
+      {
+            line.Printf(_("Inland Blue Flag        Set\n"));
+            result.Append(line);
+      }
+
+
+      line.Printf(_("Position:               "));
+      if(b_positionValid)
+      {
+            wxString pos_st;
+            pos_st += toSDMM(1, Lat);
+            pos_st <<_T("\n                        ");
+            pos_st += toSDMM(2, Lon);
+            pos_st << _T("\n\n");
+            line << pos_st;
+      }
+      else
+            line << _("\n\n\n");
       result.Append(line);
 
 
       wxDateTime rt(ReportTicks);
-      line.Printf(_("Latest Report Time:       "));
+      line.Printf(_("Latest Report Time:      "));
       line << rt.FormatISOTime();
       line << _T(" ");
       line << _("UTC");
@@ -578,10 +617,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       int target_age = now.GetTicks() - ReportTicks;
 
 
-      line.Printf(_("Report Age:               %3d Sec.\n"), target_age);
+      line.Printf(_("Report Age:             %3d Sec.\n"), target_age);
       result.Append(line);
 
-      line.Printf(_("Recent Report Period:     %3d Sec.\n\n"), RecentPeriod);
+      line.Printf(_("Recent Report Period:   %3d Sec.\n\n"), RecentPeriod);
       result.Append(line);
 
       double hours = floor(TCPA / 60.);
@@ -665,7 +704,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(trimAISField(ShipName));
             result.Append(_T("\" "));
       }
-      t.Printf(_T("%d"), MMSI); result.Append(t);
+      t.Printf(_T("%09d"), MMSI); result.Append(t);
       t = trimAISField(CallSign);
       if (t.Len())
       {
@@ -683,7 +722,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
             if((Class != AIS_ATON) && (Class != AIS_BASE))
             {
                   result.Append(Get_vessel_type_string(false));
-                  if((NavStatus <= 8) && (NavStatus >= 0) )
+                  if((NavStatus <= 15) && (NavStatus >= 0) )
                   {
                         result.Append(_T(" ("));
                         result.Append(wxString::From8BitData(&ais_status[NavStatus][0]));
@@ -1282,7 +1321,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
                   g_total_NMEAerror_messages++;
                   wxString msg(_T("   AIS sentence decoded..."));
                   wxString item;
-                  item.Printf(_T("MMSI: %d"), pTargetData->MMSI);
+                  item.Printf(_T("MMSI: %09d"), pTargetData->MMSI);
                   msg.Append(item);
                   ThreadMessage(msg);
         }
@@ -1367,9 +1406,11 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
             ptd->ROTAIS = bstr->GetInt(43, 8);
             if(ptd->ROTAIS == 128)
-                  ptd->ROTAIS = 0;                      // not available codes as zero
-            if((ptd->ROTAIS & 0x80) == 0x80)
+                  ptd->ROTAIS = -128;                     // not available codes as -128
+            else if((ptd->ROTAIS & 0x80) == 0x80)
                   ptd->ROTAIS = ptd->ROTAIS - 256;       // convert to twos complement
+
+            ptd->ROTIND = wxRound(pow((((double)ptd->ROTAIS) / 4.733), 2));      // Convert to indicated ROT
 
             ptd->m_utc_sec = bstr->GetInt(138, 6);
 
@@ -1400,8 +1441,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             }
 
             //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
-            int blue_paddle = bstr->GetInt(144, 2);
-            ptd->b_blue_paddle = (blue_paddle == 2);             // paddle is set
+            ptd->blue_paddle = bstr->GetInt(144, 2);
+            ptd->b_blue_paddle = (ptd->blue_paddle == 2);             // paddle is set
 
             parse_result = true;                // so far so good
 
@@ -1588,7 +1629,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->SOG = 0;
                   ptd->HDG = 0;
                   ptd->COG = 0;
-                  ptd->ROTAIS = 0;			// i.e. not available
+                  ptd->ROTAIS = -128;                 // i.e. not available
                   ptd->DimA = bstr->GetInt(220, 9);
                   ptd->DimB = bstr->GetInt(229, 9);
                   ptd->DimC = bstr->GetInt(238, 6);
@@ -1610,7 +1651,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   g_total_NMEAerror_messages++;
                   wxString msg(_T("   AIS type 21...(MMSI, lon, lat:"));
 			wxString item;
-      		item.Printf(_T("%d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat);
+      		item.Printf(_T("%09d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat);
                   msg.Append(item);
 			msg.Append(_T(" ) "));
                   ThreadMessage(msg);
@@ -3390,21 +3431,21 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                         long idx = m_pListCtrlAISTargets->InsertItem(item);
                         wxString data;
 
-				// Puts the MMSI No in the item data (to be used be activation event)
-				item.m_itemId = idx;
-				item.m_data = pAISTarget->MMSI;
-				item.m_mask = wxLIST_MASK_DATA;
-				m_pListCtrlAISTargets->SetItem(item);
+                        // Puts the MMSI No in the item data (to be used be activation event)
+                        item.m_itemId = idx;
+                        item.m_data = pAISTarget->MMSI;
+                        item.m_mask = wxLIST_MASK_DATA;
+                        m_pListCtrlAISTargets->SetItem(item);
 
                         m_pListCtrlAISTargets->SetItem(idx, tlNAME,
                                     trimAISField(pAISTarget->ShipName));
                         m_pListCtrlAISTargets->SetItem(idx, tlCALL,
                                     trimAISField(pAISTarget->CallSign));
-                        data.Printf(_T("%d"), pAISTarget->MMSI); m_pListCtrlAISTargets->SetItem(idx, tlMMSI, data);
+                        data.Printf(_T("%09d"), pAISTarget->MMSI); m_pListCtrlAISTargets->SetItem(idx, tlMMSI, data);
 //                        data.Printf(_T("%d"), pAISTarget->IMO); m_pListCtrlAISTargets->SetItem(idx, tlIMO, data);
                         m_pListCtrlAISTargets->SetItem(idx, tlCLASS, pAISTarget->Get_class_string(true));
                         m_pListCtrlAISTargets->SetItem(idx, tlTYPE, pAISTarget->Get_vessel_type_string(false));
-                        if((pAISTarget->NavStatus <= 8) && (pAISTarget->NavStatus >= 0))
+                        if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
                         {
                               m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS,
                                           wxString::From8BitData(&ais_status[pAISTarget->NavStatus][0]));

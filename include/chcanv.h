@@ -543,6 +543,10 @@ private:
 
       SelectItem  *m_pRolloverRouteSeg;
 
+      double      m_wheel_lat, m_wheel_lon;
+      int         m_wheel_x,m_wheel_y;
+
+
 
 
 DECLARE_EVENT_TABLE()

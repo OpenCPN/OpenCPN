@@ -3590,12 +3590,16 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       vLat = dlat;
       vLon = dlon;
 
-      if(VPoint.b_quilt && (m_pQuilt->GetRefChartdbIndex() != cur_ref_dbIndex))
+      if(VPoint.b_quilt)
       {
+            int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
+            if((new_ref_dbIndex != cur_ref_dbIndex) && (new_ref_dbIndex != -1))
+            {
             //Tweak the scale slightly for a new ref chart
-            ChartBase *pc = ChartData->OpenChartFromDB(m_pQuilt->GetRefChartdbIndex(), FULL_INIT);
-            double tweak_scale_ppm = pc->GetNearestPreferredScalePPM(VPoint.view_scale_ppm);
-            SetVPScale (tweak_scale_ppm);
+                  ChartBase *pc = ChartData->OpenChartFromDB(new_ref_dbIndex, FULL_INIT);
+                  double tweak_scale_ppm = pc->GetNearestPreferredScalePPM(VPoint.view_scale_ppm);
+                  SetVPScale (tweak_scale_ppm);
+            }
       }
 
       ClearbFollow();      // update the follow flag
@@ -5124,7 +5128,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
 
                                 //      Draw RateOfTurn Vector
-                              if ( td->ROTAIS && td->b_active)   // pjotrc 2010.02.01
+                              if ( (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
                               {
                                     double nv = 10;
                                     double theta2 = theta;
@@ -5158,7 +5162,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                               if (( res != Invisible ) && (td->b_active)) dc.DrawCircle ( PredPoint.x, PredPoint.y, 5 );  // pjotrc 2010.02.01
 
                                 //      Draw RateOfTurn Vector
-                              if ( td->ROTAIS && td->b_active)   // pjotrc 2010.02.01
+                              if ( (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
                               {
                                     double nv = 10;
                                     double theta2 = theta;
@@ -5238,17 +5242,15 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                               if(td->b_blue_paddle)
                               {
                                     wxPoint ais_flag_icon[4];
-                                    ais_flag_icon[0].x = -20;
-                                    ais_flag_icon[0].y = -8;
+                                    ais_flag_icon[0].x = -8;
+                                    ais_flag_icon[0].y = -6;
+                                    ais_flag_icon[1].x = -2;
+                                    ais_flag_icon[1].y =  18;
+                                    ais_flag_icon[2].x = -2;
+                                    ais_flag_icon[2].y =  0;
+                                    ais_flag_icon[3].x = -2;
+                                    ais_flag_icon[3].y = -6;
 
-                                    ais_flag_icon[1].x =  -8;
-                                    ais_flag_icon[1].y = -8;
-
-                                    ais_flag_icon[2].x =  -8;
-                                    ais_flag_icon[2].y = -20;
-
-                                    ais_flag_icon[3].x =  -20;
-                                    ais_flag_icon[3].y = -20;
 
                                     for ( int i=0; i<4 ; i++ )
                                     {
@@ -5260,7 +5262,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
 
                                     pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "BLUE2" ) ) ) );
-                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UWHIT" )), 5) );
+                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UWHIT" )), 2) );
 
                                     wxGraphicsPath gpathb = pgc->CreatePath();
 
@@ -5321,17 +5323,15 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         if(td->b_blue_paddle)
                         {
                               wxPoint ais_flag_icon[4];
-                              ais_flag_icon[0].x = -20;
-                              ais_flag_icon[0].y = -8;
 
-                              ais_flag_icon[1].x =  -8;
-                              ais_flag_icon[1].y = -8;
-
-                              ais_flag_icon[2].x =  -8;
-                              ais_flag_icon[2].y = -20;
-
-                              ais_flag_icon[3].x =  -20;
-                              ais_flag_icon[3].y = -20;
+                              ais_flag_icon[0].x = -8;
+                              ais_flag_icon[0].y = -6;
+                              ais_flag_icon[1].x = -2;
+                              ais_flag_icon[1].y =  18;
+                              ais_flag_icon[2].x = -2;
+                              ais_flag_icon[2].y =  0;
+                              ais_flag_icon[3].x = -2;
+                              ais_flag_icon[3].y = -6;
 
                              for ( int i=0; i<4 ; i++ )
                               {
@@ -6005,17 +6005,53 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                   if(g_bEnableZoomToCursor)
                   {
                         bool b_zoom_moved = false;
-                        if(wheel_dir > 0)
-                              b_zoom_moved = ZoomCanvasIn(m_cursor_lat, m_cursor_lon);
-                        else if(wheel_dir < 0)
-                              b_zoom_moved = ZoomCanvasOut(m_cursor_lat, m_cursor_lon);
 
-                        if(b_zoom_moved)
+                        if((m_wheel_x == x) && (m_wheel_y == y))
+                        {
+                              if(wheel_dir > 0)
+                                    b_zoom_moved = ZoomCanvasIn(m_wheel_lat, m_wheel_lon);
+                              else if(wheel_dir < 0)
+                                    b_zoom_moved = ZoomCanvasOut(m_wheel_lat, m_wheel_lon);
+                        }
+                        else
+                        {
+                              if(wheel_dir > 0)
+                                    b_zoom_moved = ZoomCanvasIn(m_cursor_lat, m_cursor_lon);
+                              else if(wheel_dir < 0)
+                                    b_zoom_moved = ZoomCanvasOut(m_cursor_lat, m_cursor_lon);
+
+                              m_wheel_lat = m_cursor_lat;
+                              m_wheel_lon = m_cursor_lon;
+                              m_wheel_x = x;
+                              m_wheel_y = y;
+                        }
+
+
+
+/*
+                        bool b_zoom_moved = false;
+
+                        double wheel_lat = m_cursor_lat;
+                        double wheel_lon = m_cursor_lon;
+
+                        if(warp_flag)           // there may be an unprocessed deferred warp...
+                        {
+                              wheel_lat = 0.;
+                              wheel_lon = 0.;
+                        }
+
+                        if(wheel_dir > 0)
+                              b_zoom_moved = ZoomCanvasIn(wheel_lat, wheel_lon);
+                        else if(wheel_dir < 0)
+                              b_zoom_moved = ZoomCanvasOut(wheel_lat, wheel_lon);
+
+                        if(b_zoom_moved && !warp_flag)
                         {
                               WarpPointerDeferred(m_canvas_width/2, m_canvas_height/2);          // move the mouse pointer to zoomed location
                               vLat = m_cursor_lat;
                               vLon = m_cursor_lon;
                         }
+*/
 
                         ClearbFollow();      // update the follow flag
 
@@ -6210,7 +6246,11 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                               if(dlg_return == wxID_YES)
                               {
                                     pMousePoint = pNearbyPoint;
-                                    pMousePoint->m_bKeepXRoute = true;
+
+                                    // check all other routes to see if this point appears in any other route
+                                    // If it appears in NO other route, then it should e considered an isolated mark
+                                    if(!g_pRouteMan->FindRouteContainingWaypoint(pMousePoint))
+                                          pMousePoint->m_bKeepXRoute = true;
                               }
                         }
 
@@ -6593,7 +6633,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 else                                                  // General Right Click
                 {
                                               // Look for selectable objects
-                      float slat, slon;
+                      double slat, slon;
                       slat = m_cursor_lat;
                       slon = m_cursor_lon;
 //                      SelectItem *pFind;
@@ -9499,10 +9539,10 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, wxBoundingBox& BBox,
                         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
                         if ( ( type == 't' ) || ( type == 'T' ) )  // only Tides
                         {
-                                float lon = pIDX->IDX_lon;
-                                float lat = pIDX->IDX_lat;
+                              double lon = pIDX->IDX_lon;
+                              double lat = pIDX->IDX_lat;
                                 bool b_inbox = false;
-                                float nlon;
+                                double nlon;
 
                                 if ( BBox.PointInBox ( lon, lat, 0 ) )
                                     {nlon = lon ; b_inbox = true;}
@@ -9550,8 +9590,8 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, wxBoundingBox& BBox, double 
         bool bnew_val;
         char sbuf[20];
         wxFont *pTCFont;
-        float lon_last = 0.;
-        float lat_last = 0.;
+        double lon_last = 0.;
+        double lat_last = 0.;
 
         wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
         wxPen *porange_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFO" ) ), 1, wxSOLID );
@@ -9590,8 +9630,8 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, wxBoundingBox& BBox, double 
                 for ( int i=1 ; i<ptcmgr->Get_max_IDX() +1 ; i++ )
                 {
                         IDX_entry *pIDX = ptcmgr->GetIDX_entry ( i );
-                        float lon = pIDX->IDX_lon;
-                        float lat = pIDX->IDX_lat;
+                        double lon = pIDX->IDX_lon;
+                        double lat = pIDX->IDX_lat;
 
                         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
                         if ( ( type == 'c' ) && (pIDX->IDX_Useable) )        // only subordinate currents are useful
@@ -9977,8 +10017,8 @@ void TCWin::Resize ( void )
 void TCWin::RePosition ( void )
 {
 //    Position the window
-        float lon = pIDX->IDX_lon;
-        float lat = pIDX->IDX_lat;
+      double lon = pIDX->IDX_lon;
+      double lat = pIDX->IDX_lat;
 
         wxPoint r;
         pParent->GetCanvasPointPix ( lat, lon, &r );
@@ -11098,7 +11138,11 @@ bool AISTargetQueryDialog::Create ( wxWindow* parent,
 //      SetBackgroundColour ( back_color );
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetQuery"), 12);
-      SetFont ( *dFont );
+
+      wxFont *fp_font = wxTheFontList->FindOrCreateFont(dFont->GetPointSize(),
+                  wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight());
+
+      SetFont ( *fp_font );
 
 //      SetForegroundColour(pFontMgr->GetFontColor(_("AISTargetQuery")));
 

@@ -148,6 +148,7 @@ public:
     double                    Lon;
     double                    Lat;
     int                       ROTAIS;
+    int                       ROTIND;
     char                      CallSign[8];                // includes terminator
     char                      ShipName[21];
     unsigned char             ShipType;
@@ -165,6 +166,7 @@ public:
     int                       UN_shiptype;
     bool                      b_isEuroInland;
     bool                      b_blue_paddle;
+    int                       blue_paddle;
 
     int                       ETA_Mo;
     int                       ETA_Day;
