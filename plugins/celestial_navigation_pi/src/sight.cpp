@@ -86,7 +86,7 @@ using namespace astrolabe::vsop87d;
 /* calculate what longitude the body for this sight is directly over at a given time */ 
 void Sight::BodyLocation(wxDateTime time, double &lat, double &lon)
 {
-   astrolabe::globals::vsop87d_text_path = (char *)GetpSharedDataLocation()->fn_str();
+   astrolabe::globals::vsop87d_text_path = (const char *)GetpSharedDataLocation()->fn_str();
    astrolabe::globals::vsop87d_text_path.append("plugins/celestial_navigation/data/");
    astrolabe::globals::vsop87d_text_path.append("vsop87d.txt");
 
