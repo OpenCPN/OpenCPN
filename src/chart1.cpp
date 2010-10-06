@@ -881,19 +881,24 @@ bool MyApp::OnInit()
 
         pHome_Locn= new wxString;
 #ifdef __WXMSW__
-        pHome_Locn->Append(std_path.GetConfigDir());          // on w98, produces "/windows/Application Data"
+        pHome_Locn->Append(std_path.GetUserConfigDir());          // on w98, produces "/windows/Application Data"
+        appendOSDirSlash(pHome_Locn) ;
+        pHome_Locn->Append(_T("opencpn"));
+        appendOSDirSlash(pHome_Locn) ;
+
 #else
         pHome_Locn->Append(std_path.GetUserConfigDir());
 #endif
         appendOSDirSlash(pHome_Locn) ;
 
-//        wxString loc = std_path.GetLocalizedResourcesDir(loc_lang_canonical, wxStandardPaths::ResourceCat_Messages);
-//        wxLogMessage(loc);
 
-#if defined( __WXMAC__) //|| defined ( __WXMSW__ )
+#ifdef  __WXMAC__
         pHome_Locn->Append(_T("opencpn"));
         appendOSDirSlash(pHome_Locn) ;
 #endif
+
+//        wxString loc = std_path.GetLocalizedResourcesDir(loc_lang_canonical, wxStandardPaths::ResourceCat_Messages);
+//        wxLogMessage(loc);
 
         // create the opencpn "home" directory if we need to
         wxFileName wxHomeFiledir(*pHome_Locn) ;
