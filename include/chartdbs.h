@@ -70,6 +70,7 @@
 #include "wx/filename.h"
 
 #include "chartbase.h"
+#include "chart1.h"
 
 class wxProgressDialog;
 ///////////////////////////////////////////////////////////////////////

@@ -25,101 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: wvschart.cpp,v $
- * Revision 1.13  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.12  2009/08/22 01:24:41  bdbcat
- * Improve render calculations
- *
- * Revision 1.11  2009/07/16 02:45:44  bdbcat
- * Cleanup.
- *
- * Revision 1.10  2009/06/21 03:19:43  bdbcat
- * Update for southern latitudes.
- *
- * Revision 1.9  2008/12/09 03:14:52  bdbcat
- * Cleanup
- *
- * Revision 1.8  2008/10/23 23:25:19  bdbcat
- * Correct file name buffer overflow
- *
- * Revision 1.7  2008/08/26 13:46:25  bdbcat
- * Better color scheme support
- *
- * Revision 1.6  2008/03/30 22:26:40  bdbcat
- * Update for Mac OSX/Unicode
- *
- * $Log: wvschart.cpp,v $
- * Revision 1.13  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.12  2009/08/22 01:24:41  bdbcat
- * Improve render calculations
- *
- * Revision 1.11  2009/07/16 02:45:44  bdbcat
- * Cleanup.
- *
- * Revision 1.10  2009/06/21 03:19:43  bdbcat
- * Update for southern latitudes.
- *
- * Revision 1.9  2008/12/09 03:14:52  bdbcat
- * Cleanup
- *
- * Revision 1.8  2008/10/23 23:25:19  bdbcat
- * Correct file name buffer overflow
- *
- * Revision 1.7  2008/08/26 13:46:25  bdbcat
- * Better color scheme support
- *
- * Revision 1.6  2008/03/30 22:26:40  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.5  2008/01/12 06:22:12  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.4  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.3  2007/03/02 01:59:01  dsr
- * Convert to UTM Projection
- *
- * Revision 1.2  2006/09/21 01:37:37  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.6  2006/08/04 11:42:03  dsr
- * no message
- *
- * Revision 1.5  2006/07/28 20:42:59  dsr
- * Cleanup
- *
- * Revision 1.4  2006/05/28 00:54:51  dsr
- * Cleanup
- *
- * Revision 1.3  2006/05/19 19:30:42  dsr
- * Cleanup
- *
- * Revision 1.2  2006/04/23 03:58:14  dsr
- * Cleanup dialogs/messages
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.6  2006/04/19 00:51:46  dsr
- * *** empty log message ***
- *
- * Revision 1.5  2006/03/16 03:08:25  dsr
- * Cleanup tabs
- *
- * Revision 1.4  2006/03/13 05:09:32  dsr
- * Cleanup
- *
- * Revision 1.3  2006/02/23 01:54:12  dsr
- * Cleanup
- *
  *
  *
  */
@@ -134,6 +39,7 @@
 #include "wvschart.h"
 #include "cutil.h"
 #include "georef.h"
+#include "chart1.h"
 
 CPL_CVSID("$Id: wvschart.cpp,v 1.13 2010/04/27 01:44:02 bdbcat Exp $");
 

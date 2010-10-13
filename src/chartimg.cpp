@@ -99,12 +99,9 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include "wx/dir.h"
-
-#include "chartimg.h"
-#include "ocpn_pixel.h"
 
 //  Why are these not in wx/prec.h?
+#include "wx/dir.h"
 #include "wx/stream.h"
 #include "wx/wfstream.h"
 #include "wx/tokenzr.h"
@@ -113,16 +110,31 @@
 
 #include <sys/stat.h>
 
+#include "chartimg.h"
+#include "ocpn_pixel.h"
+
 #ifndef __WXMSW__
 #include <signal.h>
 #include <setjmp.h>
 
-      extern struct sigaction sa_all;
-      extern struct sigaction sa_all_old;
+struct sigaction sa_all_chart;
+struct sigaction sa_all_previous;
 
-      extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
+sigjmp_buf           env_chart;                 // the context saved by sigsetjmp();
 
-      extern void catch_signals(int signo);
+
+void catch_signals_chart(int signo)
+{
+      switch(signo)
+      {
+            case SIGSEGV:
+                  siglongjmp(env_chart, 1);     // jump back to the setjmp() point
+                  break;
+
+            default:
+                  break;
+      }
+}
 
 #endif
 
@@ -131,13 +143,12 @@
 // Random Prototypes
 // ----------------------------------------------------------------------------
 
-extern void *x_malloc(size_t t);
-extern "C"  double     round_msvc (double flt);
-extern int g_BSBImgDebug;
-int b_cdebug;
+#ifdef OCPN_USE_CONFIG
+class MyConfig;
+extern MyConfig        *pConfig;
+#endif
 
 
-CPL_CVSID("$Id: chartimg.cpp,v 1.57 2010/06/25 13:28:46 bdbcat Exp $");
 
 // ----------------------------------------------------------------------------
 // private classes
@@ -391,7 +402,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
             return INIT_FAIL_REMOVE;
 
       int nPlypoint = 0;
-      Plypoint *pPlyTable = (Plypoint *)x_malloc(sizeof(Plypoint));
+      Plypoint *pPlyTable = (Plypoint *)malloc(sizeof(Plypoint));
 
       m_FullPath = name;
       m_Description = m_FullPath;
@@ -808,8 +819,6 @@ found_uclc_file:
 ChartKAP::ChartKAP()
 {
      m_ChartType = CHART_TYPE_KAP;
-     b_cdebug = g_BSBImgDebug;
-
 }
 
 
@@ -823,7 +832,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       #define BUF_LEN_MAX 4000
 
       int nPlypoint = 0;
-      Plypoint *pPlyTable = (Plypoint *)x_malloc(sizeof(Plypoint));
+      Plypoint *pPlyTable = (Plypoint *)malloc(sizeof(Plypoint));
 
       PreInit(name, init_flags, GLOBAL_COLOR_SCHEME_DAY);
 
@@ -1403,7 +1412,7 @@ ChartBaseBSB::ChartBaseBSB()
 
       cached_image_ok = 0;
 
-      pRefTable = (Refpoint *)x_malloc(sizeof(Refpoint));
+      pRefTable = (Refpoint *)malloc(sizeof(Refpoint));
       nRefpoint = 0;
       cPoints.status = 0;
       bHaveEmbeddedGeoref = false;
@@ -1454,6 +1463,13 @@ ChartBaseBSB::ChartBaseBSB()
       br_target_y = -1;
       m_br_bpending = false;
 
+      m_b_cdebug = 0;
+
+#ifdef OCPN_USE_CONFIG
+      wxFileConfig *pfc = pConfig;
+      pfc->SetPath ( _T ( "/Settings" ) );
+      pfc->Read ( _T ( "DebugBSBImg" ),  &m_b_cdebug, 0 );
+#endif
 
 }
 
@@ -1667,7 +1683,7 @@ InitReturn ChartBaseBSB::PostInit(void)
 
       //    Allocate memory for ifs file buffering
       ifs_bufsize = Size_X * 4;
-      ifs_buf = (unsigned char *)x_malloc(ifs_bufsize);
+      ifs_buf = (unsigned char *)malloc(ifs_bufsize);
       if(!ifs_buf)
             return INIT_FAIL_REMOVE;
 
@@ -1678,7 +1694,7 @@ InitReturn ChartBaseBSB::PostInit(void)
 
       //    Create and load the line offset index table
       pline_table = NULL;
-      pline_table = (int *)x_malloc((Size_Y+1) * sizeof(int) );               //Ugly....
+      pline_table = (int *)malloc((Size_Y+1) * sizeof(int) );               //Ugly....
       if(!pline_table)
             return INIT_FAIL_REMOVE;
 
@@ -1792,7 +1808,7 @@ InitReturn ChartBaseBSB::PostInit(void)
       //    Allocate the Line Cache
       if(bUseLineCache)
       {
-            pLineCache = (CachedLine *)x_malloc(Size_Y * sizeof(CachedLine));
+            pLineCache = (CachedLine *)malloc(Size_Y * sizeof(CachedLine));
             CachedLine *pt;
 
             for(int ylc = 0 ; ylc < Size_Y ; ylc++)
@@ -2114,11 +2130,11 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
 
       int this_bpp = 24;                       // for wxImage
 //    Allocate the pixel storage needed for one line of chart bits
-      unsigned char *pLineT = (unsigned char *)x_malloc((Size_X+1) * BPP/8);
+      unsigned char *pLineT = (unsigned char *)malloc((Size_X+1) * BPP/8);
 
 
 //    Scale the data quickly
-      unsigned char *pPixTN = (unsigned char *)x_malloc(des_width * des_height * this_bpp/8 );
+      unsigned char *pPixTN = (unsigned char *)malloc(des_width * des_height * this_bpp/8 );
 
       int ix = 0;
       int iy = 0;
@@ -2574,7 +2590,7 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRec
 
     m_raster_scale_factor = binary_scale_factor;
 
-    if(b_cdebug)printf(" ComputeSourceRect... PPM: %g  vp.view_scale_ppm: %g   m_raster_scale_factor: %g\n", GetPPM(), vp.view_scale_ppm, m_raster_scale_factor);
+    if(m_b_cdebug)printf(" ComputeSourceRect... PPM: %g  vp.view_scale_ppm: %g   m_raster_scale_factor: %g\n", GetPPM(), vp.view_scale_ppm, m_raster_scale_factor);
 
     if(bHaveEmbeddedGeoref)
     {
@@ -2690,7 +2706,7 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
                   //    The objective here is to ensure that the VP center falls on an exact pixel boundary within the cache
 
                   double dscale = fabs(binary_scale_factor - wxRound(binary_scale_factor));
-                  if(b_cdebug)printf(" Adjust VP dscale: %g\n", dscale);
+                  if(m_b_cdebug)printf(" Adjust VP dscale: %g\n", dscale);
 
                   if(cached_image_ok && (binary_scale_factor > 1.0) && (fabs(binary_scale_factor - wxRound(binary_scale_factor)) < 1e-5))
                   {
@@ -2724,7 +2740,7 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
                               }
 
-                              if(b_cdebug)printf(" Adjust VP dx: %d  dy:%d\n", dx, dy);
+                              if(m_b_cdebug)printf(" Adjust VP dx: %d  dy:%d\n", dx, dy);
 
                               //    Check the results...if not good(i.e. VP center is not on cache pixel boundary),
                               //    then leave the vp unmodified by restoring from the saved copy...
@@ -2736,16 +2752,16 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
                                     int dxc = (rprop_cor.x - cache_rect.x) % cs2d;
                                     int dyc = (rprop_cor.y - cache_rect.y) % cs2d;
 
-                                    if(b_cdebug)printf(" Adjust VP dxc: %d  dyc:%d\n", dxc, dyc);
+                                    if(m_b_cdebug)printf(" Adjust VP dxc: %d  dyc:%d\n", dxc, dyc);
                                     if(dxc || dyc)
                                     {
                                           vp_proposed.clat = vp_save.clat;
                                           vp_proposed.clon = vp_save.clon;
                                           ret_val = 0;
-                                          if(b_cdebug)printf(" Adjust VP failed\n");
+                                          if(m_b_cdebug)printf(" Adjust VP failed\n");
                                     }
                                     else
-                                          if(b_cdebug)printf(" Adjust VP succeeded \n");
+                                          if(m_b_cdebug)printf(" Adjust VP succeeded \n");
 
                               }
 
@@ -2806,19 +2822,19 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       ScaleTypeEnum scale_type_corrected;
 //      int xsoff, ysoff;
 
-      if(b_cdebug)printf(" source:  %d %d\n", source.x, source.y);
-      if(b_cdebug)printf(" cache:   %d %d\n", cache_rect.x, cache_rect.y);
+      if(m_b_cdebug)printf(" source:  %d %d\n", source.x, source.y);
+      if(m_b_cdebug)printf(" cache:   %d %d\n", cache_rect.x, cache_rect.y);
 
 //    Anything to do?
       if((source == cache_rect) /*&& (cache_scale_method == scale_type)*/ && (cached_image_ok) )
       {
-            if(b_cdebug)printf("    GVUC: Nothing to do\n");
+            if(m_b_cdebug)printf("    GVUC: Nothing to do\n");
             return false;
       }
 
       double scale_x = (double)source.width / (double)dest.width;
 
-      if(b_cdebug)printf("GVUC: scale_x: %g\n", scale_x);
+      if(m_b_cdebug)printf("GVUC: scale_x: %g\n", scale_x);
 
       //    Enforce a limit on bilinear scaling, for performance reasons
       scale_type_corrected = scale_type; //RENDER_LODEF; //scale_type;
@@ -2834,7 +2850,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       //    Using the cache only works for pure binary scale factors......
       if((fabs(scale_x - wxRound(scale_x))) > .0001)
       {
-            if(b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 1\n");
+            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 1\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
@@ -2843,20 +2859,20 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
 
       if(!cached_image_ok)
       {
-            if(b_cdebug)printf("    MISS<<<>>>GVUC:  Cache NOk\n");
+            if(m_b_cdebug)printf("    MISS<<<>>>GVUC:  Cache NOk\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
       if(scale_x <= 1.0)                                        // overzoom
       {
-            if(b_cdebug)printf("    MISS<<<>>>GVUC:  Overzoom\n");
+            if(m_b_cdebug)printf("    MISS<<<>>>GVUC:  Overzoom\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
       //    Scale must be exactly digital...
       if((int)(source.width/dest.width) != (int)wxRound(scale_x))
       {
-            if(b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 2\n");
+            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 2\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
@@ -2864,19 +2880,19 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       int cs1d = source.width/dest.width;
       if(abs(source.x - cache_rect.x) % cs1d)
       {
-            if(b_cdebug)printf("   source.x: %d  cache_rect.x: %d  cs1d: %d\n", source.x, cache_rect.x, cs1d);
-            if(b_cdebug)printf("   MISS<<<>>>GVUC: x mismatch\n");
+            if(m_b_cdebug)printf("   source.x: %d  cache_rect.x: %d  cs1d: %d\n", source.x, cache_rect.x, cs1d);
+            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: x mismatch\n");
             return GetView( source, dest, scale_type_corrected );
       }
       if(abs(source.y - cache_rect.y) % cs1d)
       {
-            if(b_cdebug)printf("   MISS<<<>>>GVUC: y mismatch\n");
+            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: y mismatch\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
       if(pPixCache && ((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height)))
       {
-            if(b_cdebug)printf("   MISS<<<>>>GVUC: dest size mismatch\n");
+            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: dest size mismatch\n");
             return GetView( source, dest, scale_type_corrected );
       }
 
@@ -2894,7 +2910,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       if(abs(stride_pixels) >= source.width)                      // Pan more than one screen
             return GetView( source, dest, scale_type_corrected );
 
-      if(b_cdebug)printf("    GVUC Using raster data cache\n");
+      if(m_b_cdebug)printf("    GVUC Using raster data cache\n");
 
       ScaleTypeEnum pan_scale_type_x = scale_type_corrected;
       ScaleTypeEnum pan_scale_type_y = scale_type_corrected;
@@ -2958,7 +2974,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       {
             if(abs(scaled_stride_rows) < 4)
             {
-                  if(b_cdebug)printf("    GVUC Filling cache(y) at HIDEF %d rows\n", abs(scaled_stride_rows));
+                  if(m_b_cdebug)printf("    GVUC Filling cache(y) at HIDEF %d rows\n", abs(scaled_stride_rows));
                   pan_scale_type_y = RENDER_HIDEF;
             }
 
@@ -2973,7 +2989,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             sub_dest.y = 0;
                   sub_dest.height = abs(scaled_stride_rows);
 
-            unsigned char *ppnx = (unsigned char *) x_malloc( dest.width*(dest.height+2)*BPP/8 );
+            unsigned char *ppnx = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
             GetAndScaleData(&ppnx, s1, source.width, sub_dest, dest.width, cs1d, pan_scale_type_y);
 
 //    Now, concatenate the data
@@ -3040,7 +3056,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             sub_dest.y = 0;
             sub_dest.height = abs(scaled_stride_rows);
 */
-//            unsigned char *ppnx = (unsigned char *) x_malloc( pPixCache->GetWidth()*(pPixCache->GetHeight()+2)*BPP/8 );
+//            unsigned char *ppnx = (unsigned char *) malloc( pPixCache->GetWidth()*(pPixCache->GetHeight()+2)*BPP/8 );
             unsigned char *ppn = pPixCache->GetpData();
             GetAndScaleData(&ppn, source, source.width, sub_dest, width, cs1d, pan_scale_type_y);
 /*
@@ -3102,7 +3118,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       {
             if(abs(scaled_stride_pixels) < 4)
             {
-                  if(b_cdebug)printf("    GVUC Filling cache(x) at HIDEF %d columns\n",abs(scaled_stride_pixels) );
+                  if(m_b_cdebug)printf("    GVUC Filling cache(x) at HIDEF %d columns\n",abs(scaled_stride_pixels) );
                   pan_scale_type_x = RENDER_HIDEF;
             }
             //    Move the data in the cache out of the way
@@ -3163,7 +3179,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             sub_dest.x = 0;
             sub_dest.width = abs(scaled_stride_pixels);
 
-            unsigned char *ppnx = (unsigned char *) x_malloc( dest.width*(dest.height+2)*BPP/8 );
+            unsigned char *ppnx = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
             GetAndScaleData(&ppnx, s1, source.width, sub_dest, abs(scaled_stride_pixels), cs1d, pan_scale_type_x);
 
 
@@ -3309,7 +3325,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
       wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
 //      double factor = ((double)Rsrc.width)/((double)dest.width);
       double factor = m_raster_scale_factor;
-      if(b_cdebug)printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, scale_type, factor );
+      if(m_b_cdebug)printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, scale_type, factor );
 
             //    Invalidate the cache if the scale has changed or the viewport size has changed....
       if((fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9) || (m_last_vprect != dest))
@@ -3339,7 +3355,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      if((bsame_region) && (Rsrc == cache_rect)  && (cached_image_ok) )
      {
               pPixCache->SelectIntoDC(dc);
-              if(b_cdebug)printf("  Using Current PixelCache\n");
+              if(m_b_cdebug)printf("  Using Current PixelCache\n");
               return false;
      }
 
@@ -3352,7 +3368,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     If so, then go ahead and do a HIDEF render to this viewport, and return same
      if(m_br_bpending && (0 != br_target_y) && (fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) < 1e-9))
      {
-           if(b_cdebug)printf("  Underway bbr interrupted, creating new HIDEF render\n");
+           if(m_b_cdebug)printf("  Underway bbr interrupted, creating new HIDEF render\n");
 
            PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
@@ -3415,7 +3431,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      {
            ScaleTypeEnum ren_type = RENDER_HIDEF;
 
-           if(b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
+           if(m_b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
 
            PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
@@ -3457,7 +3473,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
      //     Default is to try using the cache
      {
-           if(b_cdebug)printf("  Render Region By GVUC\n");
+           if(m_b_cdebug)printf("  Render Region By GVUC\n");
            bool bnewview = GetViewUsingCache(Rsrc, dest, RENDER_HIDEF/*scale_type*/);
 
                   //    Select the data into the dc
@@ -3471,6 +3487,25 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
       return true;
 }
 
+wxImage *ChartBaseBSB::GetImage()
+{
+      wxImage *img = new wxImage( Size_X, Size_Y, false);
+
+      unsigned char *ppnx = img->GetData();
+
+
+      for(int i=0 ; i < Size_Y ; i++)
+      {
+            wxRect source_rect(0,i,Size_X, 1);
+            wxRect dest_rect(0,0,Size_X, 1);
+
+            GetAndScaleData(&ppnx, source_rect, Size_X, dest_rect, Size_X, 1.0, RENDER_HIDEF);
+
+            ppnx += Size_X * 3;
+      }
+
+      return img;
+}
 
 
 bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type )
@@ -3565,9 +3600,9 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 
       else                                            // else get a buffer here (and return it)
       {
-//            data = (unsigned char *) x_malloc( target_width*(target_height+2)*BPP/8 );
+//            data = (unsigned char *) malloc( target_width*(target_height+2)*BPP/8 );
             malloc_size = dest.width*(dest.height+2)*BPP/8;
-            data = (unsigned char *) x_malloc( dest.width*(dest.height+2)*BPP/8 );
+            data = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
             target_data = data;
             *ppn = data;
       }
@@ -3583,7 +3618,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 //    Allocate a working buffer based on scale factor
                   int blur_factor = wxMax(2, Factor);
                   int wb_size = (source.width) * (blur_factor * 2) * BPP/8 ;
-                  s_data = (unsigned char *) x_malloc( wb_size ); // work buffer
+                  s_data = (unsigned char *) malloc( wb_size ); // work buffer
                   unsigned char *pixel;
                   int y_offset;
 
@@ -3657,7 +3692,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
                               scaler = 8;
 
                         int wb_size = (Size_X) * ((/*Factor +*/ 1) * 2) * BPP/8 ;
-                        s_data = (unsigned char *) x_malloc( wb_size ); // work buffer
+                        s_data = (unsigned char *) malloc( wb_size ); // work buffer
 
                         long x_delta = (source.width<<scaler) / target_width;
                         long y_delta = (source.height<<scaler) / target_height;
@@ -3734,22 +3769,22 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 
 
 #ifdef __WXGTK__
-            sigaction(SIGSEGV, NULL, &sa_all_old);             // save existing action for this signal
+            sigaction(SIGSEGV, NULL, &sa_all_previous);             // save existing action for this signal
 
             struct sigaction temp;
             sigaction(SIGSEGV, NULL,  &temp);             // inspect existing action for this signal
 
-            temp.sa_handler = catch_signals ;             // point to my handler
-            sigemptyset(&temp.sa_mask);                  // make the blocking set
+            temp.sa_handler = catch_signals_chart ;     // point to my handler
+            sigemptyset(&temp.sa_mask);                 // make the blocking set
                                                         // empty, so that all
                                                         // other signals will be
                                                         // unblocked during my handler
             temp.sa_flags = 0;
             sigaction(SIGSEGV, &temp, NULL);
 
-            if(sigsetjmp(env, 1))             //  Something in the below code block faulted....
+            if(sigsetjmp(env_chart, 1))                 //  Something in the below code block faulted....
             {
-                  sigaction(SIGSEGV, &sa_all_old, NULL);        // reset signal handler
+                  sigaction(SIGSEGV, &sa_all_previous, NULL);        // reset signal handler
 
                   wxString msg;
                   msg.Printf(_T("   Caught SIGSEGV on GetandScaleData, Factor < 1"));
@@ -3822,7 +3857,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 
             }
 #ifdef __WXGTK__
-            sigaction(SIGSEGV, &sa_all_old, NULL);        // reset signal handler
+            sigaction(SIGSEGV, &sa_all_previous, NULL);        // reset signal handler
 #endif
 
       }
@@ -3839,7 +3874,7 @@ bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
 {
     if(br_Rsrc == Rsrc)
     {
-          if(b_cdebug)printf("    %d No Init bbr due to Rsrc == br_Rsrc \n",s_dc++);
+          if(m_b_cdebug)printf("    %d No Init bbr due to Rsrc == br_Rsrc \n",s_dc++);
           return false;;
     }
 
@@ -3847,7 +3882,7 @@ bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
     {
           if(cached_image_ok && (cache_rect == Rsrc))
           {
-                if(b_cdebug)printf("    %d No Init bbr due to good cache \n",s_dc++);
+                if(m_b_cdebug)printf("    %d No Init bbr due to good cache \n",s_dc++);
                 return false;;
           }
     }
@@ -3872,7 +3907,7 @@ bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
     pPixCacheBackground = NULL;     //new PixelCache(dest.width, dest.height, BPP);
 
     free(background_work_buffer);
-    background_work_buffer = NULL; //(unsigned char *) x_malloc( bwb_size ); // work buffer
+    background_work_buffer = NULL; //(unsigned char *) malloc( bwb_size ); // work buffer
 
     //  And the scale....
     m_br_scale = VPoint.view_scale_ppm;
@@ -3880,14 +3915,14 @@ bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
     //  Set starting points
     br_target_y = 0;
 
-    if(b_cdebug)printf("   on bbr init, br_Rsrc: %d %d\n", br_Rsrc.x, br_Rsrc.y);
+    if(m_b_cdebug)printf("   on bbr init, br_Rsrc: %d %d\n", br_Rsrc.x, br_Rsrc.y);
 
     return true;
 }
 
 bool ChartBaseBSB::Finish_BackgroundHiDefRender(void)
 {
-    if(b_cdebug)printf("    ......Finish bbr\n");
+    if(m_b_cdebug)printf("    ......Finish bbr\n");
     cache_scale_method= RENDER_HIDEF;             // the cache is set
     cache_rect = br_Rsrc; //Rsrc;
 
@@ -3913,7 +3948,7 @@ int ChartBaseBSB::Continue_BackgroundHiDefRender(void)
 {
     if(!m_br_bpending)
     {
-          if(b_cdebug)printf("bbr Continue reports nothing in process\n");
+          if(m_b_cdebug)printf("bbr Continue reports nothing in process\n");
           return BR_DONE_NOP;
     }
 
@@ -3922,7 +3957,7 @@ int ChartBaseBSB::Continue_BackgroundHiDefRender(void)
 
     if(!pPixCacheBackground)
     {
-          if(b_cdebug)printf("    ......bbr Continue creates new PixelCache\n");
+          if(m_b_cdebug)printf("    ......bbr Continue creates new PixelCache\n");
           pPixCacheBackground = new PixelCache(br_target_width, br_target_height, BPP);
           br_target_data = pPixCacheBackground->GetpData();
     }
@@ -3930,7 +3965,7 @@ int ChartBaseBSB::Continue_BackgroundHiDefRender(void)
     if(!background_work_buffer)
     {
       int bwb_size = (int)((Rsrc.width) * ((br_factor + 1) * 2) * BPP/8 );
-      background_work_buffer = (unsigned char *) x_malloc( bwb_size ); // work buffer
+      background_work_buffer = (unsigned char *) malloc( bwb_size ); // work buffer
     }
 
     if (br_target_y < br_target_height)
@@ -4249,13 +4284,13 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
             {
                   if(pt->pPix)
                         free(pt->pPix);
-                  pt->pPix = (unsigned char *)x_malloc(Size_X);
+                  pt->pPix = (unsigned char *)malloc(Size_X);
             }
 
             xtemp_line = pt->pPix;
       }
       else
-            xtemp_line = (unsigned char *)x_malloc(Size_X);
+            xtemp_line = (unsigned char *)malloc(Size_X);
 
 
       if((bUseLineCache && !pt->bValid) || (!bUseLineCache))
@@ -4515,15 +4550,15 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
 //          Build the Control Point Structure, etc
         cPoints.count = nRefpoint;
 
-        cPoints.tx  = (double *)x_malloc(nRefpoint * sizeof(double));
-        cPoints.ty  = (double *)x_malloc(nRefpoint * sizeof(double));
-        cPoints.lon = (double *)x_malloc(nRefpoint * sizeof(double));
-        cPoints.lat = (double *)x_malloc(nRefpoint * sizeof(double));
+        cPoints.tx  = (double *)malloc(nRefpoint * sizeof(double));
+        cPoints.ty  = (double *)malloc(nRefpoint * sizeof(double));
+        cPoints.lon = (double *)malloc(nRefpoint * sizeof(double));
+        cPoints.lat = (double *)malloc(nRefpoint * sizeof(double));
 
-        cPoints.pwx = (double *)x_malloc(12 * sizeof(double));
-        cPoints.wpx = (double *)x_malloc(12 * sizeof(double));
-        cPoints.pwy = (double *)x_malloc(12 * sizeof(double));
-        cPoints.wpy = (double *)x_malloc(12 * sizeof(double));
+        cPoints.pwx = (double *)malloc(12 * sizeof(double));
+        cPoints.wpx = (double *)malloc(12 * sizeof(double));
+        cPoints.pwy = (double *)malloc(12 * sizeof(double));
+        cPoints.wpy = (double *)malloc(12 * sizeof(double));
 
 
         //  Find the two REF points that are farthest apart

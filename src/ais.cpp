@@ -1405,12 +1405,17 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             ptd->b_positionValid = true;
 
             ptd->ROTAIS = bstr->GetInt(43, 8);
+            double rot_dir = 1.0;
+
             if(ptd->ROTAIS == 128)
                   ptd->ROTAIS = -128;                     // not available codes as -128
             else if((ptd->ROTAIS & 0x80) == 0x80)
+            {
                   ptd->ROTAIS = ptd->ROTAIS - 256;       // convert to twos complement
+                  rot_dir = -1.0;
+            }
 
-            ptd->ROTIND = wxRound(pow((((double)ptd->ROTAIS) / 4.733), 2));      // Convert to indicated ROT
+            ptd->ROTIND = wxRound(rot_dir * pow((((double)ptd->ROTAIS) / 4.733), 2));      // Convert to indicated ROT
 
             ptd->m_utc_sec = bstr->GetInt(138, 6);
 

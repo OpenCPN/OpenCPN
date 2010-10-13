@@ -26,59 +26,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: tcmgr.h,v $
- * Revision 1.7  2010/04/27 01:45:32  bdbcat
- * Build 426
- *
- * Revision 1.6  2009/07/29 20:05:06  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.5  2008/08/09 23:36:46  bdbcat
- * *** empty log message ***
- *
- * Revision 1.4  2008/03/30 23:24:57  bdbcat
- * *** empty log message ***
- *
- * $Log: tcmgr.h,v $
- * Revision 1.7  2010/04/27 01:45:32  bdbcat
- * Build 426
- *
- * Revision 1.6  2009/07/29 20:05:06  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.5  2008/08/09 23:36:46  bdbcat
- * *** empty log message ***
- *
- * Revision 1.4  2008/03/30 23:24:57  bdbcat
- * *** empty log message ***
- *
- * Revision 1.3  2008/01/12 06:19:53  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.2  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.3  2006/08/04 11:43:37  dsr
- * no message
- *
- * Revision 1.2  2006/04/23 04:05:23  dsr
- * Fix internal names
- *
- * Revision 1.1.1.1  2006/04/19 03:23:27  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.5  2006/03/16 03:28:12  dsr
- * Cleanup tabs
- *
- * Revision 1.4  2006/02/23 01:27:29  dsr
- * Cleanup, eliminate some statics and awkward (short int) types
- *
- * Revision 1.3  2006/02/10 03:19:06  dsr
- * *** empty log message ***
- *
+ **
  *
  */
 
@@ -209,9 +157,11 @@ public:
       float     Value15;
       float     Dir15;
       bool      Ret15;
+      bool      b_is_secondary;
       char     *IDX_tzname;                    // Timezone name
       int       IDX_ref_file_num;              // # of reference file where reference station is
       char      IDX_reference_name[MAXNAMELEN];// Name of reference station
+      int       IDX_ref_dbIndex;               // tcd index of reference station
       Station_Data   *pref_sta_data;           // Pointer to the Reference Station Data
 };
 
@@ -261,12 +211,15 @@ public:
       bool IsReady(void){return bTCMReady;}
       bool GetTideOrCurrent(time_t t, int idx, float &value, float& dir);
       bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bool &bnew_val);
+      int GetStationTimeOffset(IDX_entry *pIDX);
 
       int Get_max_IDX(){ return max_IDX;}
       IDX_entry *GetIDX_entry(int i){ return paIDX[i];}
 
 
 private:
+
+      bool init_idx_array(void);
 
       void LoadMRU(void);
       void SaveMRU(void);

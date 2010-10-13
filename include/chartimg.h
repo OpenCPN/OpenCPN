@@ -144,7 +144,7 @@ class  ChartBaseBSB     :public ChartBase
       //    Public methods
 
       ChartBaseBSB();
-      virtual ~ChartBaseBSB() = 0;
+      virtual ~ChartBaseBSB();
 
       //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
@@ -182,6 +182,7 @@ class  ChartBaseBSB     :public ChartBase
 
       virtual int Continue_BackgroundHiDefRender(void);
 
+      wxImage *GetImage();
 
 protected:
 //    Methods
@@ -330,7 +331,7 @@ protected:
 
       wxRegion  m_last_region;
 
-
+      int       m_b_cdebug;
 
       double    m_proj_lat, m_proj_lon;
 };

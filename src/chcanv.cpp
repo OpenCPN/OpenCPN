@@ -9537,7 +9537,7 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, wxBoundingBox& BBox,
                         IDX_entry *pIDX = ptcmgr->GetIDX_entry ( i );
 
                         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
-                        if ( ( type == 't' ) || ( type == 'T' ) )  // only Tides
+                        if ( ( type == 't' ) ||  ( type == 'T' ) )  // only Tides
                         {
                               double lon = pIDX->IDX_lon;
                               double lat = pIDX->IDX_lat;
@@ -9634,9 +9634,8 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, wxBoundingBox& BBox, double 
                         double lat = pIDX->IDX_lat;
 
                         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
-                        if ( ( type == 'c' ) && (pIDX->IDX_Useable) )        // only subordinate currents are useful
+                        if ( (( type == 'c' ) ||  ( type == 'C' )) && (1/*pIDX->IDX_Useable*/) )
                         {
-                                // with directions known
 
 //  TODO This is a ---HACK---
 //  try to avoid double current arrows.  Select the first in the list only
@@ -9676,7 +9675,6 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, wxBoundingBox& BBox, double 
 //    Get the display pixel location of the current station
                                                                 int pixxc, pixyc;
                                                                 wxPoint cpoint;
-//                                                Current_Ch->latlong_to_pix_vp(lat, lon, pixxc, pixyc, VPoint);
                                                                 GetCanvasPointPix ( lat, lon, &cpoint );
                                                                 pixxc = cpoint.x;
                                                                 pixyc = cpoint.y;
@@ -9818,12 +9816,12 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 //    Set up plot type
         if ( strchr ( "Tt", pIDX->IDX_type ) )
         {
-                plot_type = TIDE_PLOT;
+                m_plot_type = TIDE_PLOT;
                 SetTitle ( wxString ( _( "Tide" ) ) );
         }
         else
         {
-                plot_type = CURRENT_PLOT;
+                m_plot_type = CURRENT_PLOT;
                 SetTitle ( wxString ( _( "Current" ) ) );
         }
 
@@ -9868,21 +9866,25 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
         int diff_mins = diff.GetMinutes();
 
-        int station_offset = pIDX->IDX_time_zone;
-        if ( this_now.IsDST() )
-                station_offset += 60;
-        corr_mins = station_offset - diff_mins;
+        int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
 
-        int h = pIDX->IDX_time_zone / 60;
-        int m = pIDX->IDX_time_zone - (h * 60);
+//        if ( this_now.IsDST() )
+//                station_offset += 60;
+        m_corr_mins = station_offset - diff_mins;
+        if ( this_now.IsDST() )
+              m_corr_mins += 60;
+
+        int h = station_offset / 60;
+        int m = station_offset - (h * 60);
         if ( this_now.IsDST() )
             h += 1;
         m_stz.Printf(_T("Z %+03d:%02d"), h, m);
 
 
+
 //    Make the "nice" (for the US) station time-zone string, brutally by hand
         wxString mtz;
-        switch ( pIDX->IDX_time_zone )
+        switch ( ptcmgr->GetStationTimeOffset(pIDX) )
         {
                 case -240:
                         mtz = _T( "AST" );
@@ -9905,15 +9907,15 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
 
 //    Establish the inital drawing day as today
-        graphday = wxDateTime::Now();
+        m_graphday = wxDateTime::Now();
         wxDateTime graphday_00 = wxDateTime::Today();
         time_t t_graphday_00 = graphday_00.GetTicks();
 
         //    Correct a Bug in wxWidgets time support
-        if ( !graphday_00.IsDST() && graphday.IsDST() )
+        if ( !graphday_00.IsDST() && m_graphday.IsDST() )
                 t_graphday_00 -= 3600;
 
-        t_graphday_00_at_station = t_graphday_00 - ( corr_mins * 60 );
+        m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
         m_bForceTCRedraw = true;
         btc_valid = false;
@@ -9978,11 +9980,11 @@ void TCWin::NXEvent ( wxCommandEvent& event )
         wxTimeSpan dt ( 24,0,0,0 );
         dm = dt;
 
-        graphday += dm;
+        m_graphday += dm;
 
-        wxDateTime graphday_00 = graphday.ResetTime();
+        wxDateTime graphday_00 = m_graphday.ResetTime();
         time_t t_graphday_00 = graphday_00.GetTicks();
-        t_graphday_00_at_station = t_graphday_00 - ( corr_mins * 60 );
+        m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
 
         m_bForceTCRedraw = true;
@@ -9997,11 +9999,11 @@ void TCWin::PREvent ( wxCommandEvent& event )
         wxTimeSpan dt ( -24,0,0,0 );
         dm = dt;
 
-        graphday += dm;
+        m_graphday += dm;
 
-        wxDateTime graphday_00 = graphday.ResetTime();
+        wxDateTime graphday_00 = m_graphday.ResetTime();
         time_t t_graphday_00 = graphday_00.GetTicks();
-        t_graphday_00_at_station = t_graphday_00 - ( corr_mins * 60 );
+        m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
 
         m_bForceTCRedraw = true;
@@ -10052,6 +10054,8 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
                 wxFont *pSFont = wxTheFontList->FindOrCreateFont ( 8, wxFONTFAMILY_SWISS,wxNORMAL,  wxFONTWEIGHT_NORMAL,
                                  FALSE, wxString ( _T ( "Arial" ) ) );
+                wxFont *pSMFont = wxTheFontList->FindOrCreateFont ( 10, wxFONTFAMILY_SWISS,wxNORMAL,  wxFONTWEIGHT_NORMAL,
+                            FALSE, wxString ( _T ( "Arial" ) ) );
                 wxFont *pMFont = wxTheFontList->FindOrCreateFont ( 14, wxFONTFAMILY_SWISS,wxNORMAL,  wxFONTWEIGHT_NORMAL,
                                  FALSE, wxString ( _T ( "Arial" ) ) );
                 wxFont *pLFont = wxTheFontList->FindOrCreateFont ( 18, wxFONTFAMILY_SWISS,wxNORMAL, wxBOLD,
@@ -10091,7 +10095,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 //    Make a line for "right now"
                 time_t t_now = wxDateTime::Now().GetTicks();       // now, in ticks
 
-                float t_ratio = x_graph_w * ( t_now - t_graphday_00_at_station ) / ( 25 * 3600 );
+                float t_ratio = x_graph_w * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
 
                 int xnow = x_graph + ( int ) t_ratio;
                 dc.SetPen ( *pred_2 );
@@ -10112,7 +10116,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
                         for ( i=0 ; i<25 ; i++ )
                         {
-                                int tt = t_graphday_00_at_station + ( i * 3600 );
+                                int tt = m_t_graphday_00_at_station + ( i * 3600 );
                                 ptcmgr->GetTideOrCurrent ( tt, pIDX->IDX_rec_num, tcv[i], dir );
                                 if ( tcv[i] > tcmax )
                                         tcmax = tcv[i];
@@ -10124,13 +10128,13 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
 //    Set up the vertical parameters based on Tide or Current plot
-                        if ( CURRENT_PLOT == plot_type )
+                        if ( CURRENT_PLOT == m_plot_type )
                         {
                                 ib = ( int ) tcmin -  1;
                                 it = ( int ) tcmax  + 1;
 
                                 im = 2 * __max ( abs ( ib ), abs ( it ) );
-                                plot_y_offset = y_graph_h/2;
+                                m_plot_y_offset = y_graph_h/2;
                                 val_off = 0;
                         }
                         else
@@ -10141,7 +10145,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                 it = ( int ) tcmax  + 1;
 
                                 im =  it - ib; //abs ( ib ) + abs ( it );
-                                plot_y_offset = ( y_graph_h * (it - ib) ) /im;
+                                m_plot_y_offset = ( y_graph_h * (it - ib) ) /im;
                                 val_off = ib;
                         }
 
@@ -10160,7 +10164,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         {
                                 wxPoint *pp = new wxPoint;
                                 pp->x =  x_graph + ( ( i ) * x_graph_w / 25 );
-                                pp->y = y_graph + ( plot_y_offset ) - ( int ) ( (tcv[i]- val_off) * y_graph_h / im );
+                                pp->y = y_graph + ( m_plot_y_offset ) - ( int ) ( (tcv[i]- val_off) * y_graph_h / im );
 
                                 psList->Append ( pp );
                         }
@@ -10184,9 +10188,9 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 i = ib;
                 while ( i < it + 1 )
                 {
-                        int yd = y_graph + ( plot_y_offset ) - (( i- val_off) * y_graph_h / im );
+                        int yd = y_graph + ( m_plot_y_offset ) - (( i- val_off) * y_graph_h / im );
 
-                        if ( ( plot_y_offset + y_graph ) == yd )
+                        if ( ( m_plot_y_offset + y_graph ) == yd )
                                 dc.SetPen ( *pblack_2 );
                         else
                                 dc.SetPen ( *pblack_1 );
@@ -10230,18 +10234,20 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         dc.GetTextExtent ( locna, &w, &h );
                 }
 
-                dc.DrawText ( locna, ( ( x/4 - w/2 ) < 0 ) ? 12: ( x/4 - w/2 ) , y_first_line );
+                int x_locna = (( x/4 - w/2 ) < 0 ) ? 12: ( x/4 - w/2 );
+
+                dc.DrawText ( locna, x_locna, y_first_line );
 
                 int y_second_line = y_first_line + h + 2;
                 dc.SetFont ( *pMFont );
                 dc.GetTextExtent ( locnb, &w, &h );
-                dc.DrawText ( locnb, x/2 - w/2, y_second_line );
+                dc.DrawText ( locnb, x_locna + 4, y_second_line );
 
 //    Reference to the master station
                 if ( 't' == pIDX->IDX_type )
                 {
 
-                        dc.SetFont ( *pMFont );
+                        dc.SetFont ( *pSMFont );
                         wxString mref ( pIDX->IDX_reference_name, wxConvUTF8 );
 
                         dc.GetTextExtent ( mref, &w, &h );
@@ -10275,8 +10281,8 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 //  Hack this.....
                 //  Find and use the longest "sprintf" result......
                 wxString sdate;
-                wxString s1 = graphday.Format ( _T ( "%#x" ) );
-                wxString s2 = graphday.Format ( _T ( "%x" ) );
+                wxString s1 = m_graphday.Format ( _T ( "%#x" ) );
+                wxString s2 = m_graphday.Format ( _T ( "%x" ) );
 
                 if ( s2.Len() > s1.Len() )
                         sdate = s2;
@@ -10315,15 +10321,15 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 wxString sday;
                 wxDateTime this_now = wxDateTime::Now();
 
-                int day = graphday.GetDayOfYear();
-                if ( graphday.GetYear() == this_now.GetYear() )
+                int day = m_graphday.GetDayOfYear();
+                if ( m_graphday.GetYear() == this_now.GetYear() )
                 {
                        if ( day ==  this_now.GetDayOfYear() )
                                sday.Append ( _( "Today" ) );
                        else if ( day == this_now.GetDayOfYear() + 1 )
                                sday.Append ( _( "Tomorrow" ) );
                  }
-                 else if ( graphday.GetYear() == this_now.GetYear() + 1 && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() )
+                 else if ( m_graphday.GetYear() == this_now.GetYear() + 1 && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() )
                        sday.Append ( _( "Tomorrow" ) );
 
 

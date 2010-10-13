@@ -501,12 +501,12 @@ class MyFontDesc
 {
 public:
 
-      MyFontDesc(const char *DialogString, const char *ConfigString, wxFont *pFont, wxColour color);
+      MyFontDesc(wxString DialogString, wxString ConfigString, wxFont *pFont, wxColour color);
       ~MyFontDesc();
 
-      wxString    *m_dialogstring;
-      wxString    *m_configstring;
-      wxString    *m_nativeInfo;
+      wxString    m_dialogstring;
+      wxString    m_configstring;
+      wxString    m_nativeInfo;
       wxFont      *m_font;
       wxColour    m_color;
 };
@@ -533,6 +533,7 @@ public:
       bool SetFont(wxString &TextElement, wxFont *pFont, wxColour color);
 
 private:
+      wxString GetSimpleNativeFont(int size);
 
       FontList          *m_fontlist;
       wxFont            *pDefFont;

@@ -213,6 +213,11 @@ bool PlugInManager::UpdatePlugIns()
 
 bool PlugInManager::UpdateConfig()
 {
+      pConfig->SetPath(_T("/"));
+      if(pConfig->HasGroup( _T ( "PlugIns" )))
+               pConfig->DeleteGroup( _T ( "PlugIns" ) );
+
+
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);

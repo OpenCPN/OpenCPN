@@ -117,11 +117,6 @@
 #define     RTELEGPU_TIMER    5
 
 
-typedef enum ScaleTypeEnum
-{
-      RENDER_LODEF = 0,
-      RENDER_HIDEF,
-}_ScaleTypeEnum;
 
 
 enum                                //  specify the render behaviour of SetViewPoint()
@@ -150,49 +145,6 @@ typedef enum ownship_state_t
 enum {
       ID_S57QUERYTREECTRL =            10000,
       ID_AISDIALOGOK
-};
-
-
-//----------------------------------------------------------------------------
-// ViewPort
-//----------------------------------------------------------------------------
-class ViewPort
-{
-  public:
-//  ctor
-    ViewPort()  { bValid = false; skew = 0.; view_scale_ppm = 1; rotation = 0.; b_quilt = false;}
-
-    wxPoint GetMercatorPixFromLL(double lat, double lon) const;
-    void GetMercatorLLFromPix(const wxPoint &p, double *lat, double *lon);
-
-    wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
-
-//  Accessors
-    void Invalidate() { bValid = false; }
-    bool IsValid() { return bValid; }
-    void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
-    void SetProjectionType(int type){ m_projection_type = type; }
-//  Generic
-    double   clat;                   // center point
-    double   clon;
-    double   view_scale_ppm;
-    double   skew;
-    double   rotation;
-
-
-    LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
-                                    // which contains the entire vieport
-
-    float    chart_scale;            // conventional chart displayed scale
-
-    int      pix_width;
-    int      pix_height;
-    wxRect   rv_rect;
-    bool     b_quilt;
-    int      m_projection_type;
-
-    bool     bValid;                 // This VP is valid
-
 };
 
 
@@ -593,8 +545,7 @@ public:
       bool        m_bForceTCRedraw;
 
 private:
-
-      int         plot_type;
+      int         m_plot_type;
 
       IDX_entry   *pIDX;
       wxButton    *OK_button;
@@ -611,11 +562,11 @@ private:
       float       tcv[24];
       bool        btc_valid;
       ChartCanvas *pParent;
-      int         corr_mins;
+      int         m_corr_mins;
       wxString    m_stz;
-      int         t_graphday_00_at_station;
-      wxDateTime  graphday;
-      int         plot_y_offset;
+      int         m_t_graphday_00_at_station;
+      wxDateTime  m_graphday;
+      int         m_plot_y_offset;
 
 DECLARE_EVENT_TABLE()
 };

@@ -796,6 +796,18 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
       return(true); // Got it!
 }
 
+int TCMgr::GetStationTimeOffset(IDX_entry *pIDX)
+{
+      if(0/*pIDX->b_is_secondary*/)
+      {
+            IDX_entry *pIDXM = paIDX[pIDX->IDX_ref_dbIndex];
+            return pIDXM->IDX_time_zone;
+      }
+      else
+            return pIDX->IDX_time_zone;
+}
+
+
 
 Station_Data *TCMgr::find_or_load_harm_data(IDX_entry *pIDX)
 {
@@ -954,7 +966,6 @@ Station_Data *TCMgr::find_or_load_harm_data(IDX_entry *pIDX)
 //            return NULL;
 
 }
-
 
 
 

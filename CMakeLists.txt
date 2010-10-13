@@ -168,6 +168,7 @@ ENDIF (NOT WIN32)
 
 #FILE(GLOB_RECURSE SRCS *.cpp *.c)
 SET(HDRS
+                include/ocpn_types.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -631,7 +632,7 @@ ENDIF(NOT APPLE)
 IF(WIN32 AND NOT UNIX)
 INSTALL(DIRECTORY wxWidgets/ DESTINATION "." )
 INSTALL(DIRECTORY buildwin/vc9/ DESTINATION ".\\\\vc9" )
-INSTALL(DIRECTORY buildwin/NSIS_Unicode/Bitmaps/ DESTINATION ".\\\\NSISBmps" )
+#INSTALL(DIRECTORY buildwin/NSIS_Unicode/Bitmaps/ DESTINATION ".\\\\NSISBmps" ) #Gunther
 ENDIF(WIN32 AND NOT UNIX)
 
 
@@ -669,24 +670,28 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_CONTACT "http:\\\\\\\\www.opencpn.org")
 
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup" )
-
-
+  
+  SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
+  SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
+  
 #  Install the VC90 Redistributable
     SET(vc9_redist "vcredist_x86.exe")
 #    IF( vc9_redist )
+#Gunther Start
       STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
       GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q/a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME} /q:a /c:msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
+#                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+#                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
+#                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
                                              " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+#Gunther End
 #    ENDIF( vc9_redist )
 
 #  delete the NSISBmps directory
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " ;Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\NSISBmps\\\"\\n\\n" )
+#      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+#                                             " ;Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\NSISBmps\\\"\\n\\n" )
 
 ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
@@ -744,9 +749,10 @@ ENDIF(UNIX)
 
 IF(WIN32 AND NOT UNIX)
  configure_file(${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc)
+ configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_GERMAN.nsh" @ONLY) #Gunther
 ENDIF(WIN32 AND NOT UNIX)
 
-
+configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther
 
 INCLUDE(CPack)
 

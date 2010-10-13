@@ -53,8 +53,9 @@
 
 //#include "ocpn_pixel.h"
 #include "bbox.h"
-#include "chcanv.h"         // for enums
-#include "chart1.h"
+//#include "chcanv.h"         // for enums
+//#include "chart1.h"
+#include "ocpn_types.h"
 
 
 

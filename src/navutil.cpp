@@ -5015,12 +5015,12 @@ bool NavObjectCollection::LoadAllGPXTracks()
 #include "wx/encinfo.h"
 #include "wx/fontutil.h"
 
-MyFontDesc::MyFontDesc ( const char *DialogString, const char *ConfigString, wxFont *pFont, wxColour color )
+MyFontDesc::MyFontDesc ( wxString DialogString, wxString ConfigString, wxFont *pFont, wxColour color )
 {
-      m_dialogstring = new wxString ( DialogString,  wxConvUTF8 );
-      m_configstring = new wxString ( ConfigString,  wxConvUTF8 );
+      m_dialogstring =  DialogString;
+      m_configstring =  ConfigString;
 
-      m_nativeInfo = new wxString ( pFont->GetNativeFontInfoDesc() );
+      m_nativeInfo = pFont->GetNativeFontInfoDesc();
 
       m_font = pFont;
       m_color = color;
@@ -5028,9 +5028,6 @@ MyFontDesc::MyFontDesc ( const char *DialogString, const char *ConfigString, wxF
 
 MyFontDesc::~MyFontDesc()
 {
-      delete m_dialogstring;
-      delete m_configstring;
-      delete m_nativeInfo;
       delete m_font;
 }
 
@@ -5097,8 +5094,6 @@ wxFont *FontMgr::GetFont ( const wxString &TextElement, int default_size )
       }
 
       //    Now create a benign, always present native string
-      wxString nativefont;
-
       //    Optional user requested default size
       int new_size;
       if ( 0 == default_size )
@@ -5106,20 +5101,41 @@ wxFont *FontMgr::GetFont ( const wxString &TextElement, int default_size )
       else
             new_size = default_size;
 
+      wxString nativefont = GetSimpleNativeFont(new_size);
+
+      wxFont *nf0 = new wxFont();
+      wxFont *nf = nf0->New ( nativefont );
+
+      wxColor color(*wxBLACK);
+
+      MyFontDesc *pnewfd = new MyFontDesc ( TextElement, configstring, nf, color );
+      m_fontlist->Append ( pnewfd );
+
+      return pnewfd->m_font;
+
+}
+
+
+wxString FontMgr::GetSimpleNativeFont(int size)
+{
+            //    Now create a benign, always present native string
+      wxString nativefont;
+
+
 //    For those platforms which have no native font description string format
       nativefont.Printf ( _T ( "%d;%d;%d;%d;%d;%d;%s;%d" ),
                           0,                                 // version
-                          new_size,
+                          size,
                           wxFONTFAMILY_DEFAULT,
                           ( int ) wxFONTSTYLE_NORMAL,
-                          ( int ) wxFONTWEIGHT_NORMAL,
-                          false,
-                          "",
-                          ( int ) wxFONTENCODING_DEFAULT );
+                            ( int ) wxFONTWEIGHT_NORMAL,
+                              false,
+                              "",
+                              ( int ) wxFONTENCODING_DEFAULT );
 
 //    If we know of a detailed description string format, use it.
 #ifdef __WXGTK__
-      nativefont.Printf ( _T ( "Fixed %2d" ), new_size );
+      nativefont.Printf ( _T ( "Fixed %2d" ), size );
 #endif
 
 #ifdef __WXX11__
@@ -5133,38 +5149,28 @@ wxFont *FontMgr::GetFont ( const wxString &TextElement, int default_size )
       ::wxDisplaySize(&w, &h);            // pixels
       ::wxDisplaySizeMM(&wm, &hm);        // MM
       double pix_per_inch_v = (h / hm) *  25.4;
-      int lfHeight = -(int)((new_size * (pix_per_inch_v/72.0)) + 0.5);
+      int lfHeight = -(int)((size * (pix_per_inch_v/72.0)) + 0.5);
 
-      nativefont.Printf(_T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;%s"),
-               0,                   // version, in case we want to change the format later
-               lfHeight,            //lf.lfHeight
-               0,                   //lf.lfWidth,
-               0,                   //lf.lfEscapement,
-               0,                   //lf.lfOrientation,
-               400,                 //lf.lfWeight,
-               0,                   //lf.lfItalic,
-               0,                   //lf.lfUnderline,
-               0,                   //lf.lfStrikeOut,
-               0,                   //lf.lfCharSet,
-               0,                   //lf.lfOutPrecision,
-               0,                   //lf.lfClipPrecision,
-               0,                   //lf.lfQuality,
-               0,                   //lf.lfPitchAndFamily,
-               "MS Sans Serif");      //lf.lfFaceName
+      nativefont.Printf(_T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"),
+                        0,                   // version, in case we want to change the format later
+                        lfHeight,            //lf.lfHeight
+                        0,                   //lf.lfWidth,
+                        0,                   //lf.lfEscapement,
+                        0,                   //lf.lfOrientation,
+                        400,                 //lf.lfWeight,
+                        0,                   //lf.lfItalic,
+                        0,                   //lf.lfUnderline,
+                        0,                   //lf.lfStrikeOut,
+                        0,                   //lf.lfCharSet,
+                        0,                   //lf.lfOutPrecision,
+                        0,                   //lf.lfClipPrecision,
+                        0,                   //lf.lfQuality,
+                        0);                    //lf.lfPitchAndFamily,
 
+      nativefont.Append(_T("MS Sans Serif"));
 #endif
 
-
-      wxFont *nf0 = new wxFont();
-      wxFont *nf = nf0->New ( nativefont );
-
-      wxColor color(*wxBLACK);
-
-      MyFontDesc *pnewfd = new MyFontDesc ( TextElement.mb_str(), configstring.mb_str(), nf, color );
-      m_fontlist->Append ( pnewfd );
-
-      return pnewfd->m_font;
-
+      return nativefont;
 }
 
 
@@ -5175,7 +5181,7 @@ bool FontMgr::SetFont ( wxString &TextElement, wxFont *pFont, wxColour color )
       wxNode *node = ( wxNode * ) ( m_fontlist->GetFirst() );  while ( node )
       {
             pmfd = ( MyFontDesc * ) node->GetData();
-            if ( *pmfd->m_dialogstring == TextElement )
+            if ( pmfd->m_dialogstring == TextElement )
             {
                   // Todo Think about this
                   //
@@ -5185,10 +5191,9 @@ bool FontMgr::SetFont ( wxString &TextElement, wxFont *pFont, wxColour color )
 
 
 //              delete pmfd->m_font;                            // purge any old value
-                  delete pmfd->m_nativeInfo;
 
                   pmfd->m_font = pFont;
-                  pmfd->m_nativeInfo = new wxString ( pFont->GetNativeFontInfoDesc() );
+                  pmfd->m_nativeInfo =  pFont->GetNativeFontInfoDesc() ;
                   pmfd->m_color = color;
 
                   return true;
@@ -5209,21 +5214,21 @@ int FontMgr::GetNumFonts ( void )
 wxString *FontMgr::GetConfigString ( int i )
 {
       MyFontDesc *pfd = ( MyFontDesc * ) ( m_fontlist->Item ( i )->GetData() );
-      wxString *ret = pfd->m_configstring;
+      wxString *ret = &pfd->m_configstring;
       return ret;
 }
 
 wxString *FontMgr::GetDialogString ( int i )
 {
       MyFontDesc *pfd = ( MyFontDesc * ) ( m_fontlist->Item ( i )->GetData() );
-      wxString *ret = pfd->m_dialogstring;
+      wxString *ret = &pfd->m_dialogstring;
       return ret;
 }
 
 wxString *FontMgr::GetNativeDesc ( int i )
 {
       MyFontDesc *pfd = ( MyFontDesc * ) ( m_fontlist->Item ( i )->GetData() );
-      wxString *ret = pfd->m_nativeInfo;
+      wxString *ret = &pfd->m_nativeInfo;
       return ret;
 }
 
@@ -5268,8 +5273,8 @@ void FontMgr::LoadFontNative ( wxString *pConfigString, wxString *pNativeDesc )
             pmfd = ( MyFontDesc * ) node->GetData();
             if ( *pmfd->m_configstring == *pConfigString )
             {
-                  pmfd->m_nativeInfo = new wxString ( nativefont );
-                  wxFont *nf = pmfd->m_font->New ( *pmfd->m_nativeInfo );
+                  pmfd->m_nativeInfo = nativefont ;
+                  wxFont *nf = pmfd->m_font->New ( pmfd->m_nativeInfo );
                   pmfd->m_font = nf;
                   break;
             }
@@ -5282,9 +5287,21 @@ void FontMgr::LoadFontNative ( wxString *pConfigString, wxString *pNativeDesc )
 
             wxFont *nf0 = new wxFont();
             wxFont *nf = nf0->New ( nativefont );
+
+            //    Scrub the native font string for bad unicode conversion
+#ifdef __WXMSW__
+            wxString face = nf->GetFaceName();
+            const wxChar *t = face.c_str();
+            if(*t > 255)
+            {
+                  delete nf;
+                  wxString substitute_native = GetSimpleNativeFont(12);
+                  nf = nf0->New ( substitute_native );
+            }
+#endif
             delete nf0;
 
-            MyFontDesc *pnewfd = new MyFontDesc ( dialogstring.mb_str(), pConfigString->mb_str(), nf, color );
+            MyFontDesc *pnewfd = new MyFontDesc ( dialogstring, *pConfigString, nf, color );
             m_fontlist->Append ( pnewfd );
 
       }
@@ -6134,8 +6151,14 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
             a = -a;
             neg = 1;
       }
+
+      double mpy = 600000.0;
+
+      if(hi_precision)
+            mpy = mpy * 100.;
+
       d = ( int ) a;
-      m = ( long ) ( ( a - ( double ) d ) * 60000.0 );
+      m = ( long ) ( ( a - ( double ) d ) * mpy );
 
       if ( neg )
             d = -d;
@@ -6145,9 +6168,9 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
       if ( !NEflag )
       {
             if(hi_precision)
-                  s.Printf ( _T ( "%d %02ld.%06ld'" ), d, m / 1000, m % 1000 );
+                  s.Printf ( _T ( "%d %02ld.%06ld'" ), d, m / 1000000, m % 1000000 );
             else
-                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 1000, m % 1000 );
+                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 10000,   m % 10000 );
       }
       else
       {
@@ -6178,9 +6201,9 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
             if(b_print)
             {
                   if(hi_precision)
-                        s.Printf ( _T ( "%03d %02ld.%06ld %c" ), d, m / 1000, ( m % 1000 ), c );
+                        s.Printf ( _T ( "%03d %02ld.%06ld %c" ), d, m / 1000000, ( m % 1000000 ), c );
                   else
-                        s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 1000, ( m % 1000 ), c );
+                        s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000,   ( m % 10000 ), c );
             }
       }
       return s;

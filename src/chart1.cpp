@@ -138,7 +138,7 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-
+#include <version.h> //Gunther
 
 #include "dychart.h"
 
@@ -592,7 +592,9 @@ char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 static char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 static int tick_idx;
 
-extern char     OpenCPNVersion[];
+//extern char     OpenCPNVersion[]; //Gunther
+extern wxString OpenCPNVersion; //Gunther
+
 
 int             n_NavMessageShown;
 wxString        g_config_version_string;
@@ -881,10 +883,10 @@ bool MyApp::OnInit()
 
         pHome_Locn= new wxString;
 #ifdef __WXMSW__
-        pHome_Locn->Append(std_path.GetUserConfigDir());          // on w98, produces "/windows/Application Data"
-        appendOSDirSlash(pHome_Locn) ;
-        pHome_Locn->Append(_T("opencpn"));
-        appendOSDirSlash(pHome_Locn) ;
+        pHome_Locn->Append(std_path.GetConfigDir());          // on w98, produces "/windows/Application Data"
+//        appendOSDirSlash(pHome_Locn) ;
+//        pHome_Locn->Append(_T("opencpn"));
+//        appendOSDirSlash(pHome_Locn) ;
 
 #else
         pHome_Locn->Append(std_path.GetUserConfigDir());
@@ -964,7 +966,8 @@ bool MyApp::OnInit()
         imsg = _T(" -------Starting opencpn-------");
         wxLogMessage(imsg);
 
-        wxString version(OpenCPNVersion,  wxConvUTF8);
+        //wxString version(OpenCPNVersion,  wxConvUTF8); //Gunther
+		wxString version = OpenCPNVersion; //Gunther
         wxString vs = version.Trim(true);
         vs = vs.Trim(false);
         wxLogMessage(vs);
@@ -1502,9 +1505,14 @@ bool MyApp::OnInit()
         app_style |= wxWANTS_CHARS;
 
 // Create the main frame window
-        gFrame = new MyFrame(NULL, _T("OpenCPN"), wxPoint(0, 0), new_frame_size, app_style );
+extern wxString str_version_major; //Gunther
+extern wxString str_version_minor; //Gunther
+extern wxString str_version_patch; //Gunther
+wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
-
+        //gFrame = new MyFrame(NULL, _T("OpenCPN"), wxPoint(0, 0), new_frame_size, app_style ); //Gunther
+		gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(0, 0), new_frame_size, app_style ); //Gunther
+		//frame->SetTitle(myframe_window_title); //Gunther
         g_pauimgr = new wxAuiManager;
         g_pauidockart= new wxAuiDefaultDockArt;
         g_pauimgr->SetArtProvider(g_pauidockart);

@@ -39,7 +39,7 @@
 
 #include "wx/textfile.h"
 #include <wx/html/htmlwin.h>
-
+#include <version.h> //Gunther
 
 #include "about.h"
 #include "chart1.h"
@@ -49,9 +49,15 @@ CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 //    Some constants
 
-char OpenCPNVersion[] = {"\n      Version 2.2 Build 1007"};
-
-
+//char OpenCPNVersion[] = {"\n      Version 2.2 Build 1007"}; //Gunther
+//Gunther Start
+wxString str_version_start = wxT("\n      Version ");
+wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
+wxString str_version_minor = wxString::Format(wxT("%i"),VERSION_MINOR);
+wxString str_version_patch = wxString::Format(wxT("%i"),VERSION_PATCH);
+wxString str_version_date(VERSION_DATE, wxConvUTF8);
+wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch + wxT(" Build ") + str_version_date;
+//Gunther End
 char AboutText[] =
 {
   "\n                                         OpenCPN\n\n\
@@ -258,8 +264,8 @@ void about::CreateControls()
 
   wxString *pAboutString = new wxString(AboutText,  wxConvUTF8);
 
-  pAboutString->Append(wxString(OpenCPNVersion,  wxConvUTF8));
-
+  //pAboutString->Append(wxString(OpenCPNVersion,  wxConvUTF8)); //Gunther
+  pAboutString->Append(OpenCPNVersion); //Gunther
   pAboutString->Append(wxString(OpenCPNInfo,  wxConvUTF8));
 
   pAboutTextCtl->WriteText(*pAboutString);

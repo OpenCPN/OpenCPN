@@ -70,6 +70,8 @@
 #include "wx/msw/private.h"
 #endif
 
+#include "ocpn_types.h"
+
 #include "cpl_error.h"
 
 #include "nmea0183.h"
@@ -158,37 +160,6 @@ enum
 
     ID_COMBO = 1000
 };
-
-//    ChartType constants
-typedef enum ChartTypeEnum
-{
-      CHART_TYPE_UNKNOWN = 0,
-      CHART_TYPE_DUMMY,
-      CHART_TYPE_DONTCARE,
-      CHART_TYPE_KAP,
-      CHART_TYPE_GEO,
-      CHART_TYPE_S57,
-      CHART_TYPE_CM93,
-      CHART_TYPE_CM93COMP,
-}_ChartTypeEnum;
-
-//    ChartFamily constants
-typedef enum ChartFamilyEnum
-{
-      CHART_FAMILY_UNKNOWN = 0,
-      CHART_FAMILY_RASTER,
-      CHART_FAMILY_VECTOR,
-      CHART_FAMILY_DONTCARE
-}_ChartFamilyEnum;
-
-typedef enum ColorScheme
-{
-      GLOBAL_COLOR_SCHEME_RGB,
-      GLOBAL_COLOR_SCHEME_DAY,
-      GLOBAL_COLOR_SCHEME_DUSK,
-      GLOBAL_COLOR_SCHEME_NIGHT,
-      N_COLOR_SCHEMES
-}_ColorScheme;
 
 
 
