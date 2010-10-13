@@ -711,7 +711,7 @@ catch_signals(int signo)
 
 int ShowNavWarning()
 {
-      wxString msg0(_T("\n\
+      wxString msg0(_("\n\
 OpenCPN is distributed in the hope that it will be useful,\n\
 but WITHOUT ANY WARRANTY; without even the implied\n\
 warranty of MERCHANTABILITY or FITNESS FOR A\n\
@@ -722,7 +722,7 @@ paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
 Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 
-      wxMessageDialog odlg(gFrame, msg0, _T("Welcome to OpenCPN"), wxCANCEL | wxOK );
+      wxMessageDialog odlg(gFrame, msg0, _("Welcome to OpenCPN"), wxCANCEL | wxOK );
 
       return(odlg.ShowModal());
 }
