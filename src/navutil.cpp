@@ -5062,7 +5062,7 @@ wxColour FontMgr::GetFontColor ( const wxString &TextElement )
       wxNode *node = ( wxNode * ) ( m_fontlist->GetFirst() );  while ( node )
       {
             pmfd = ( MyFontDesc * ) node->GetData();
-            if ( *pmfd->m_dialogstring == TextElement )
+            if ( pmfd->m_dialogstring == TextElement )
                   return pmfd->m_color;
             node = node->GetNext();
       }
@@ -5077,7 +5077,7 @@ wxFont *FontMgr::GetFont ( const wxString &TextElement, int default_size )
       wxNode *node = ( wxNode * ) ( m_fontlist->GetFirst() );  while ( node )
       {
             pmfd = ( MyFontDesc * ) node->GetData();
-            if ( *pmfd->m_dialogstring == TextElement )
+            if ( pmfd->m_dialogstring == TextElement )
                   return pmfd->m_font;
             node = node->GetNext();
       }
@@ -5235,9 +5235,9 @@ wxString *FontMgr::GetNativeDesc ( int i )
 wxString FontMgr::GetFullConfigDesc ( int i )
 {
       MyFontDesc *pfd = ( MyFontDesc * ) ( m_fontlist->Item ( i )->GetData() );
-      wxString ret =  *(pfd->m_dialogstring);
+      wxString ret =  pfd->m_dialogstring;
       ret.Append ( _T ( ":" ) );
-      ret.Append( *(pfd->m_nativeInfo) );
+      ret.Append( pfd->m_nativeInfo );
       ret.Append ( _T ( ":" ) );
 
       wxString cols(_T("rgb(0,0,0)"));
@@ -5271,7 +5271,7 @@ void FontMgr::LoadFontNative ( wxString *pConfigString, wxString *pNativeDesc )
       while ( node )
       {
             pmfd = ( MyFontDesc * ) node->GetData();
-            if ( *pmfd->m_configstring == *pConfigString )
+            if ( pmfd->m_configstring == *pConfigString )
             {
                   pmfd->m_nativeInfo = nativefont ;
                   wxFont *nf = pmfd->m_font->New ( pmfd->m_nativeInfo );
