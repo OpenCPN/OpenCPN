@@ -320,7 +320,7 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
 TCMgr::~TCMgr()
 {
-   SaveMRU();
+//   SaveMRU();
 
    FreeMRU();
 
