@@ -522,6 +522,15 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs)
       }
 }
 
+void PlugInManager::NotifyAuiPlugIns(void)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState && (pic->m_cap_flag & USES_AUI_MANAGER))
+                  pic->m_pplugin->UpdateAuiStatus();
+      }
+}
 
 int PlugInManager::AddToolbarTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
                                       wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
@@ -903,6 +912,8 @@ void opencpn_plugin::ProcessParentResize(int x, int y)
 void opencpn_plugin::SetColorScheme(PI_ColorScheme cs)
 {}
 
+void opencpn_plugin::UpdateAuiStatus(void)
+{}
 
 //          Helper and interface classes
 

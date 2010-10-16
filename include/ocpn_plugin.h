@@ -61,6 +61,7 @@ class       wxAuiManager;
 #define     WANTS_NMEA_SENTENCES                0x00000080
 #define     WANTS_NMEA_EVENTS                   0x00000100
 #define     WANTS_AIS_SENTENCES                 0x00000200
+#define     USES_AUI_MANAGER                    0x00000400
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -213,6 +214,7 @@ public:
       virtual void OnToolbarToolCallback(int id);
       virtual void OnContextMenuItemCallback(int id);
 
+      virtual void UpdateAuiStatus(void);
  };
 
 

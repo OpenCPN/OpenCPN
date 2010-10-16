@@ -1524,8 +1524,11 @@ bool MyApp::OnInit()
         pConfig->SetPath ( _T ( "/AUI" ) );
         pConfig->Read ( _T ( "AUIPerspective" ), &perspective );
 
-//       g_pauimgr->LoadPerspective(perspective);
+       g_pauimgr->LoadPerspective(perspective, false);
        g_pauimgr->Update();
+
+       //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+       g_pi_manager->NotifyAuiPlugIns();
 
         bool b_SetInitialPoint = false;
 
@@ -1713,10 +1716,6 @@ bool MyApp::OnInit()
 
 int MyApp::OnExit()
 {
-      pConfig->SetPath ( _T ( "/AUI" ) );
-      pConfig->Write ( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
-
-
       //  Send current nav status data to log file   // pjotrc 2010.02.09
 
       wxDateTime lognow = wxDateTime::Now();
@@ -3045,6 +3044,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       b_inCloseWindow = true;
 
       ::wxSetCursor(wxCURSOR_WAIT);
+
+      pConfig->SetPath ( _T ( "/AUI" ) );
+      pConfig->Write ( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
+
 
       g_bquiting = true;
       if(cc1)

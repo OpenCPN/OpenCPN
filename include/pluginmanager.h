@@ -165,6 +165,7 @@ public:
 
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
+      void NotifyAuiPlugIns(void);
 
 
       wxString GetLastError();
