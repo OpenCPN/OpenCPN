@@ -211,6 +211,8 @@ public:
 
       virtual void ForceEdgePriorityEvaluate(void);
 
+      void ClearRenderedTextCache();
+
 // Public data
 //Todo Accessors here
       //  Object arrays used by S52PLIB TOPMAR rendering logic

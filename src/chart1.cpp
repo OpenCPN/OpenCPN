@@ -25,104 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: chart1.cpp,v $
- * Revision 1.102  2010/06/25 02:02:04  bdbcat
- * 624
- *
- * Revision 1.101  2010/06/24 02:02:04  bdbcat
- * 623
- *
- * Revision 1.100  2010/06/21 02:04:57  bdbcat
- * 620
- *
- * Revision 1.99  2010/06/16 03:52:44  bdbcat
- * 615a
- *
- * Revision 1.98  2010/06/13 21:04:48  bdbcat
- * 613a
- *
- * Revision 1.97  2010/06/12 02:21:19  bdbcat
- * 611b
- *
- * Revision 1.96  2010/06/12 00:48:56  bdbcat
- * 611b
- *
- * Revision 1.95  2010/06/11 16:24:50  bdbcat
- * 611a
- *
- * Revision 1.94  2010/06/07 15:29:12  bdbcat
- * 607a
- *
- * Revision 1.93  2010/06/06 20:50:27  bdbcat
- * 606a
- *
- * Revision 1.92  2010/06/04 22:32:43  bdbcat
- * 604
- *
- * Revision 1.91  2010/05/31 00:43:04  bdbcat
- * 530
- *
- * Revision 1.90  2010/05/29 17:33:11  bdbcat
- * 529a
- *
- * Revision 1.89  2010/05/27 18:57:03  bdbcat
- * 527a
- *
- * Revision 1.88  2010/05/26 21:59:31  bdbcat
- * 526a
- *
- * Revision 1.87  2010/05/23 23:07:42  bdbcat
- * Build 523a
- *
- * Revision 1.86  2010/05/20 19:03:51  bdbcat
- * Build 520
- *
- * Revision 1.85  2010/05/19 01:07:28  bdbcat
- * Build 518
- *
- * Revision 1.84  2010/05/15 03:57:04  bdbcat
- * Build 514
- *
- * Revision 1.83  2010/05/04 04:56:04  bdbcat
- * Build 504
- *
- * Revision 1.82  2010/05/04 04:44:57  bdbcat
- * Build 504
- *
- * Revision 1.81  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.80  2010/05/02 20:04:50  bdbcat
- * Build 502b
- *
- * Revision 1.79  2010/05/02 03:03:04  bdbcat
- * Build 501
- *
- * Revision 1.78  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.77  2010/04/15 15:49:17  bdbcat
- * Build 415.
- *
- * Revision 1.76  2010/04/01 20:17:37  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.75  2010/03/29 18:39:01  bdbcat
- * Correct for Unicode build
- *
- * Revision 1.74  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * 2010-02-15 pjotrc
- * - implement anchor watch
- *
- * 2010-02-09 pjotrc
- * - implement logbook
- * - implement ships bells (the bells count code comes from wxTides by Michael Hopper)
- * - rename old log file on overfill
- * - implement ShowAIS button
- *
- *
  */
 #include "wx/wxprec.h"
 
@@ -276,6 +178,10 @@ wxString        *pInit_Chart_Dir;
 wxString        *g_pcsv_locn;
 wxString        g_SENCPrefix;
 wxString        g_PresLibData;
+
+extern wxString        str_version_major; //Gunther
+extern wxString        str_version_minor; //Gunther
+extern wxString        str_version_patch; //Gunther
 
 int             user_user_id;
 int             file_user_id;
@@ -1501,21 +1407,16 @@ bool MyApp::OnInit()
             new_frame_size.Set(cw * 7/10, ch * 7/10);
 #endif
 
-
         app_style |= wxWANTS_CHARS;
 
 // Create the main frame window
-extern wxString str_version_major; //Gunther
-extern wxString str_version_minor; //Gunther
-extern wxString str_version_patch; //Gunther
-wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
+        wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
-        //gFrame = new MyFrame(NULL, _T("OpenCPN"), wxPoint(0, 0), new_frame_size, app_style ); //Gunther
-		gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(0, 0), new_frame_size, app_style ); //Gunther
-		//frame->SetTitle(myframe_window_title); //Gunther
+          gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(0, 0), new_frame_size, app_style ); //Gunther
+
         g_pauimgr = new wxAuiManager;
-        g_pauidockart= new wxAuiDefaultDockArt;
-        g_pauimgr->SetArtProvider(g_pauidockart);
+//        g_pauidockart= new wxAuiDefaultDockArt;
+//        g_pauimgr->SetArtProvider(g_pauidockart);
 
 // tell wxAuiManager to manage the frame
         g_pauimgr->SetManagedWindow(gFrame);
@@ -1534,56 +1435,7 @@ wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") +
 
         cc1->SetFocus();
 
-#if(0)// __USEAUI__
-        g_pauimgr->AddPane(cc1);
-        g_pauimgr->GetPane(cc1).Fixed();
-        g_pauimgr->GetPane(cc1).CaptionVisible(false);
-        g_pauimgr->GetPane(cc1).Center();
-        g_pauimgr->Update();
-#endif
-
-#if 0
-        g_text = new wxTextCtrl(gFrame,wxID_ANY, _T("Text"), wxPoint(200,200), wxSize(150,90), wxNO_BORDER | wxTE_MULTILINE);
-        g_pauimgr->AddPane(g_text);
-
-        g_pauimgr->GetPane(g_text).Float();
-        g_pauimgr->GetPane(g_text).FloatingPosition(300,300);
-//        g_pauimgr->GetPane(g_text).Dock();
-
-        g_pauimgr->GetPane(g_text).CaptionVisible();
-        g_pauimgr->GetPane(g_text).GripperTop();
-        g_pauimgr->GetPane(g_text).CloseButton();
-        g_pauimgr->GetPane(g_text).Show();
-
-        g_pauimgr->Update();
-#endif
-
-
-        console = new ConsoleCanvas(gFrame);                    // the console
-/*
-        g_pauimgr->AddPane(console);
-
-        g_pauimgr->GetPane(console).Dockable(true);
-
-        g_pauimgr->GetPane(console).FloatingSize(console->GetSize());
-        g_pauimgr->GetPane(console).MinSize(console->GetSize());
-        g_pauimgr->GetPane(console).FloatingPosition(600,300);
-        g_pauimgr->GetPane(console).CaptionVisible(true);
-        g_pauimgr->GetPane(console).Caption(_T("Caption"));
-        g_pauimgr->GetPane(console).Fixed();
-        g_pauimgr->GetPane(console).CloseButton(false);
-        g_pauimgr->GetPane(console).PaneBorder(false);
-
-        g_pauimgr->GetPane(console).Float();
-
-        g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0,0,0));
-        g_pauidockart->SetColour( wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
-        g_pauidockart->SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
-        g_pauidockart->SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
-
-        g_pauimgr->GetPane(console).Show(0);
-        g_pauimgr->Update();
-*/
+        console = new ConsoleCanvas(cc1/*gFrame*/);                    // the console
 
 
         stats = new StatWin(gFrame);
@@ -1613,17 +1465,67 @@ wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") +
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
 
+        //  The position and size of the static frame children (i.e. the canvas, and the status bar) are now set
+        //  So now we can establish the AUI panes for them.
+        //  It is important to have set the chartcanvas and status bar sizes before this point,
+        //  so that the pane.BestSize values are correctly captured by the AuiManager.
+
+#if 1// __USEAUI__
+        g_pauimgr->AddPane(cc1);
+        g_pauimgr->GetPane(cc1).Name(_T("ChartCanvas"));
+        g_pauimgr->GetPane(cc1).Fixed();
+        g_pauimgr->GetPane(cc1).CaptionVisible(false);
+        g_pauimgr->GetPane(cc1).CenterPane();
+        g_pauimgr->GetPane(cc1).BestSize(cc1->GetSize());
+
+
+      //  Status bar is set up to be fixed, unmovable, and docked at the bottom.
+        g_pauimgr->AddPane(stats);
+        g_pauimgr->GetPane(stats).Name(_T("PianoStats"));
+        g_pauimgr->GetPane(stats).Fixed();
+        g_pauimgr->GetPane(stats).Bottom();
+        g_pauimgr->GetPane(stats).Dock();
+        g_pauimgr->GetPane(stats).CaptionVisible(false);
+        g_pauimgr->GetPane(stats).GripperTop(false);
+        g_pauimgr->GetPane(stats).CloseButton(false);
+#endif
+
+
+        //  AUI Test code for a simple managed control (Window)
+#if 0
+      g_text = new wxTextCtrl(cc1,wxID_ANY, _T("Text"), wxPoint(200,200), wxSize(150,90), wxNO_BORDER | wxTE_MULTILINE);
+      g_pauimgr->AddPane(g_text);
+      g_pauimgr->GetPane(g_text).Name(_T("Text"));
+      g_pauimgr->GetPane(g_text).Float();
+      g_pauimgr->GetPane(g_text).FloatingPosition(300,300);
+      g_pauimgr->GetPane(g_text).CaptionVisible();
+      g_pauimgr->GetPane(g_text).GripperTop();
+      g_pauimgr->GetPane(g_text).CloseButton();
+      g_pauimgr->GetPane(g_text).Show();
+#endif
+
+
+
+
 //      Load and initialize any PlugIns
         g_pi_manager = new PlugInManager(gFrame);
         g_pi_manager->LoadAllPlugIns(g_SData_Locn);
 
 
 // Show the frame
+
         gFrame->ClearBackground();
         gFrame->Show(TRUE);
 
         if(g_bframemax)
             gFrame->Maximize(true);
+
+        wxString perspective;
+        pConfig->SetPath ( _T ( "/AUI" ) );
+        pConfig->Read ( _T ( "AUIPerspective" ), &perspective );
+
+//       g_pauimgr->LoadPerspective(perspective);
+       g_pauimgr->Update();
 
         bool b_SetInitialPoint = false;
 
@@ -1803,6 +1705,7 @@ wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") +
 
 
         cc1->ReloadVP();                  // once more, and good to go
+
         return TRUE;
 }
 
@@ -1810,6 +1713,10 @@ wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") +
 
 int MyApp::OnExit()
 {
+      pConfig->SetPath ( _T ( "/AUI" ) );
+      pConfig->Write ( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
+
+
       //  Send current nav status data to log file   // pjotrc 2010.02.09
 
       wxDateTime lognow = wxDateTime::Now();
@@ -3275,11 +3182,13 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
         g_pAIS = NULL;
     }
 
+/*  Console is child of chartcanvas, so already killed
     if(NULL != console)
     {
           console->Destroy();
           console = NULL;
     }
+*/
 
     SetStatusBar(NULL);
     stats->Destroy();
@@ -3353,11 +3262,7 @@ void MyFrame::DoSetSize(void)
 
         int stat_height = 0;
         if(stats)
-        {
-//              int yt = stats->GetFontHeight();
-//              stat_height = (yt + 6) * stats->GetRows();
               stat_height = 22 * stats->GetRows();
-        }
 
 
         int cccw = x;
@@ -3376,7 +3281,12 @@ void MyFrame::DoSetSize(void)
                 int cur_width, cur_height;
                 cc1->GetSize(&cur_width, &cur_height);
                 if((cur_width != cccw) || (cur_height != ccch))
-                    cc1->SetSize(0,0,cccw, ccch);
+                {
+                      if(g_pauimgr->GetPane(cc1).IsOk())
+                            g_pauimgr->GetPane(cc1).BestSize(cccw, ccch);
+                      else
+                            cc1->SetSize(0,0,cccw, ccch);
+                }
 
         }
 
@@ -3390,7 +3300,11 @@ void MyFrame::DoSetSize(void)
                 stats->Size_Y = stat_height;
                 stats->Pos_X = 0;
                 stats->Pos_Y = ccch;
-                stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+                if(g_pauimgr->GetPane(stats).IsOk())
+                      g_pauimgr->GetPane(stats).BestSize(stats->Size_X, stats->Size_Y);
+                else
+                      stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+
                 if(stats->IsShown())
                 {
                    stats->FormatStat();
@@ -3399,16 +3313,13 @@ void MyFrame::DoSetSize(void)
         }
 
         if(pthumbwin)
-        {
               pthumbwin->SetMaxSize(cc1->GetSize());
-        }
+
 
 
 //  Rebuild the Toolbar
     if(m_toolBar)
-    {
           ReSizeToolbar();
-    }
 
 //  Update the stored window size
     GetSize(&x, &y);
@@ -3429,10 +3340,13 @@ void MyFrame::DoSetSize(void)
                 DoChartUpdate();
     }
 
+
 }
 
 void MyFrame::PositionConsole(void)
 {
+      if(NULL == cc1)
+            return;
       //    Reposition console based on its size and chartcanvas size
       int ccx, ccy, consx, consy;
       cc1->GetSize(&ccx, &ccy);

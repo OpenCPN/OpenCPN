@@ -203,7 +203,6 @@ void dashboard_pi::OnContextMenuItemCallback(int id)
       {
             m_pdashboard_window = new DashboardWindow(m_parent_window, wxID_ANY);
             m_pdashboard_window->Show();
-
             SetCanvasContextMenuItemViz(m_hide_id, true);
             SetCanvasContextMenuItemViz(m_show_id, false);
       }

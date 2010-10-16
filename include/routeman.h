@@ -155,6 +155,8 @@ public:
       wxBrush * GetActiveRoutePointBrush(void){return m_pActiveRoutePointBrush;}
       wxBrush * GetRoutePointBrush(void){return m_pRoutePointBrush;}
 
+      wxString GetRouteReverseMessage(void);
+
       bool        m_bDataValid;
 
 private:

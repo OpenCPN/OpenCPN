@@ -1353,6 +1353,45 @@ void s57chart::FreeObjectsAndRules()
     }
  }
 
+ void s57chart::ClearRenderedTextCache()
+ {
+       ObjRazRules *top;
+       for (int i=0; i<PRIO_NUM; ++i)
+       {
+             for(int j=0 ; j<LUPNAME_NUM ; j++)
+             {
+                   top = razRules[i][j];
+                   while ( top != NULL)
+                   {
+                         if(top->obj->bFText_Added)
+                         {
+                              top->obj->bFText_Added = false;
+                              delete top->obj->FText;
+                              top->obj->FText = NULL;
+                         }
+
+                         if(top->child)
+                         {
+                               ObjRazRules *ctop = top->child;
+                               while(ctop)
+                               {
+                                     if(ctop->obj->bFText_Added)
+                                     {
+                                           ctop->obj->bFText_Added = false;
+                                           delete ctop->obj->FText;
+                                           ctop->obj->FText = NULL;
+                                     }
+                                     ctop = ctop->next;
+                               }
+                         }
+
+
+                         top = top->next;
+                   }
+             }
+       }
+ }
+
  double s57chart::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom)
  {
        double ppm = canvas_scale_factor /m_Chart_Scale;        // true_chart_scale_on_display   = m_canvas_scale_factor / pixels_per_meter of displayed chart
@@ -1628,6 +1667,8 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
       {
             m_bLinePrioritySet = false;                     // need to reset line priorities
             UpdateLUPs(this);                               // and update the LUPs
+            ClearRenderedTextCache();                       // and reset the text renderer,
+                                                            //for the case where depth(height) units change
       }
 
       SetLinePriorities();
@@ -1697,6 +1738,7 @@ bool s57chart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeE
     {
           m_bLinePrioritySet = false;                     // need to reset line priorities
           UpdateLUPs(this);                               // and update the LUPs
+          ClearRenderedTextCache();                       // and reset the text renderer
     }
 
     SetLinePriorities();
@@ -5716,7 +5758,8 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                               {
                                     switch(ps52plib->m_nDepthUnitDisplay)
                                     {
-                                          case 0:
+                                          case 0:                       // feet
+                                          case 2:                       // fathoms
                                                 dval = dval * 3 * 39.37 / 36;              // feet
                                                 val_suffix = _T("(ft)");
                                                 break;

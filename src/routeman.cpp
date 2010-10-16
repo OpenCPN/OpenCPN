@@ -826,6 +826,11 @@ void Routeman::SetColorScheme(ColorScheme cs)
  }
 
 
+ wxString Routeman::GetRouteReverseMessage(void)
+ {
+       return wxString(_("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"));
+ }
+
 
 //-------------------------------------------------------------------------------
 //

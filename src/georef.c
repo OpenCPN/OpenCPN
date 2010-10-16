@@ -367,6 +367,9 @@ void toDMM(double a, char *bufp, int bufplen)
     todmm(0, a, bufp, bufplen);
     return;
 }
+
+/* Moved to navutil.cpp */
+#if 0
 /****************************************************************************/
 /* Convert dd mm.mmm' (DMM-Format) to degree.                               */
 /****************************************************************************/
@@ -375,6 +378,7 @@ double fromDMM(char *dms)
     int d = 0;
     double m = 0.0;
     char buf[20];
+
     char r[20];
 
     buf[0] = r[0] = '\0';
@@ -388,7 +392,7 @@ double fromDMM(char *dms)
       return -m;
 }
 
-
+#endif
 
 
 /* --------------------------------------------------------------------------------- */

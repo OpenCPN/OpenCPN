@@ -3247,15 +3247,16 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && ( fabs(VPoint.rotation) < .01) && !g_bskew_comp)
+                if ( Current_Ch && (Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER) &&
+                     ((( fabs(VPoint.rotation) < .01) && !g_bskew_comp) ||
+                     (Current_Ch->GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR)) )
+
                 {
-                  if(Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER)
-                  {
                         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *> ( Current_Ch );
-                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
-                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
-                        bInside = true;
-                        if ( bInside )
+//                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
+//                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
+//                        bInside = true;
+//                        if ( bInside )
                         {
                               int  rpixxd, rpixyd;
                               if ( 0 == Cur_BSB_Ch->latlong_to_pix_vp ( rlat, rlon, rpixxd, rpixyd, VPoint ) )
@@ -3265,7 +3266,6 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
                                         bUseMercator = false;
                               }
                         }
-                  }
                 }
 
                 //    if needed, use the Mercator scaling estimator,
@@ -3289,32 +3289,33 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && ( fabs(VPoint.rotation) < .01) && !g_bskew_comp)
+                if ( Current_Ch && (Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER) &&
+                     ((( fabs(VPoint.rotation) < .01) && !g_bskew_comp) ||
+                     (Current_Ch->GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR)) )
+
                 {
-                      if ( ( Current_Ch->m_ChartType == CHART_TYPE_GEO ) || ( Current_Ch->m_ChartType == CHART_TYPE_KAP ) )
-                        {
                         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *> ( Current_Ch );
 
                         // TODO     maybe need iterative process to validate bInside
                         //          first pass is mercator, then check chart boundaries
-                        bool bInside = true;
-                        if ( bInside )
+//                        bool bInside = true;
+//                        if ( bInside )
                         {
-                                double slat, slon;
-                                if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
-                                {
-                                        lat = slat;
+                              double slat, slon;
+                              if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
+                              {
+                                    lat = slat;
 
-                                        if(slon < -180.)
-                                              slon += 360.;
-                                        else if(slon > 180.)
-                                              slon -= 360.;
+                                    if(slon < -180.)
+                                          slon += 360.;
+                                    else if(slon > 180.)
+                                          slon -= 360.;
 
-                                        lon = slon;
-                                        bUseMercator = false;
-                                }
-                          }
+                                    lon = slon;
+                                    bUseMercator = false;
+                              }
                         }
+
                 }
 
                 //    if needed, use the Mercator scaling estimator
@@ -5520,6 +5521,9 @@ void ChartCanvas::UpdateShips()
         //  Use this dc
         wxClientDC dc ( this );
 
+        if(!dc.IsOk())
+              return;
+
         // Get dc boundary
         int sx, sy;
         dc.GetSize ( &sx, &sy );
@@ -5684,6 +5688,11 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
 
         GetClientSize ( &m_canvas_width, &m_canvas_height );
 
+//        Constrain the active width to be mod 4
+
+        int wr = m_canvas_width/4;
+        m_canvas_width = wr*4;
+
 //    Get some canvas metrics
 
 //          Rescale to current value, in order to rebuild VPoint data structures
@@ -5699,6 +5708,8 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
                 ps52plib->SetPPMM ( pix_per_mm );
 #endif
 
+        //  Set the position of the console
+        PositionConsole();
 
 //    Set up the scroll margins
         xr_margin = m_canvas_width  * 95/100;
@@ -5735,6 +5746,14 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         ReloadVP();
 }
 
+void ChartCanvas::PositionConsole(void)
+{
+      //    Reposition console based on its size and chartcanvas size
+      int ccx, ccy, consx, consy;
+      GetSize(&ccx, &ccy);
+      console->GetSize(&consx, &consy);
+      console->SetSize(ccx - consx, 0, -1, -1);
+}
 
 void ChartCanvas::ShowChartInfoWindow(int x, int y, int dbIndex)
 {
@@ -7049,7 +7068,11 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                     if(pChartTest && (pChartTest->m_ChartFamily == CHART_FAMILY_VECTOR ))
                         pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
 
-                    pdef_menu->Append ( ID_DEF_MENU_QUILTREMOVE,  _( "Remove this chart from quilt." ) );
+                    if((VPoint.b_quilt) &&
+                            (pCurrentStack && pCurrentStack->b_valid && (pCurrentStack->nEntry > 1)))
+                    {
+                          pdef_menu->Append ( ID_DEF_MENU_QUILTREMOVE,  _( "Remove this chart from quilt." ) );
+                    }
 
               }
 
@@ -7479,9 +7502,15 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
               }
 
                 case ID_RT_MENU_REVERSE:
+                {
 
                         pSelect->DeleteAllSelectableRouteSegments ( m_pSelectedRoute );
-                        m_pSelectedRoute->Reverse();
+
+                        wxMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
+                                            _("Rename Waypoints?"), wxYES_NO);
+
+                        m_pSelectedRoute->Reverse(ask.ShowModal() == wxID_YES);
+
                         pSelect->AddAllSelectableRouteSegments ( m_pSelectedRoute );
 
                         pConfig->UpdateRoute ( m_pSelectedRoute );
@@ -7494,7 +7523,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         break;
 
-
+                }
                 case ID_RT_MENU_DELETE:
                       if ( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute )
                             g_pRouteMan->DeactivateRoute();
@@ -8888,6 +8917,13 @@ void ChartCanvas::RenderGeorefErrorMap( wxMemoryDC *pmdc, ViewPort *vp)
 
 
 #endif
+
+void ChartCanvas::CancelMouseRoute()
+{
+      parent_frame->nRoute_State = 0;
+      m_pMouseRoute = NULL;
+}
+
 
 int ChartCanvas::GetNextContextMenuId()
 {

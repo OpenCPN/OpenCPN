@@ -183,6 +183,8 @@ public:
       void SetMyCursor(wxCursor *c);
       void LostMouseCapture(wxMouseCaptureLostEvent& event);
 
+      void CancelMouseRoute();
+
       bool Do_Hotkeys(wxKeyEvent &event);
 
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, int sample_mode);
@@ -264,6 +266,8 @@ public:
 
 
 private:
+      void        PositionConsole(void);
+
       ChInfoWin   *m_pCIWin;
 
       bool        m_bShowCurrent;

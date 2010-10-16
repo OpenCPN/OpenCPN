@@ -2361,6 +2361,24 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 //            PRINTF("ERROR: chopping attribut value !? \n");
             }
 
+            //    Special case for conversion of some vertical (height) attributes to feet
+            if (( !strncmp ( buf, "VERCLR", 6 ) ) || ( !strncmp ( buf, "VERCCL", 6 ) ))
+            {
+                  switch(ps52plib->m_nDepthUnitDisplay)
+                  {
+                        case 0:                       // feet
+                        case 2:                       // fathoms
+                              double ft_val;
+                              value.ToDouble(&ft_val);
+                              ft_val = ft_val * 3 * 39.37 / 36;              // feet
+                              value.Printf(_T("%5.1f"), ft_val);
+                              vallen = value.Len();
+                              break;
+                        default:
+                              break;
+                  }
+            }
+
             // special case when ENC returns an index for particular attribute types
             if ( !strncmp ( buf, "NATSUR", 6 ) )
             {

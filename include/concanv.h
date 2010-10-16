@@ -135,7 +135,7 @@ DECLARE_EVENT_TABLE()
 class ConsoleCanvas: public wxWindow
 {
 public:
-      ConsoleCanvas(wxFrame *frame);
+      ConsoleCanvas(wxWindow *frame);
       ~ConsoleCanvas();
       void UpdateRouteData();
       void ShowWithFreshFonts(void);
@@ -145,7 +145,7 @@ public:
       void MouseEvent(wxMouseEvent& event);
       void MouseLostCaptureEvent(wxMouseCaptureLostEvent& event);
 
-      wxFrame           *m_pParent;
+      wxWindow          *m_pParent;
       wxStaticBox       *pThisLegBox;
       wxStaticBoxSizer  *m_pitemStaticBoxSizerLeg;
 

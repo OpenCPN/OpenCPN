@@ -583,6 +583,8 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
       if (!proute_to_delete) return;
 
+      cc1->CancelMouseRoute();
+
       g_pRouteMan->DeleteRoute(proute_to_delete);
 
       pConfig->DeleteConfigRoute ( proute_to_delete );
@@ -604,6 +606,8 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event)
       {
             if ( g_pRouteMan->GetpActiveRoute() )
                   g_pRouteMan->DeactivateRoute();
+
+            cc1->CancelMouseRoute();
 
             g_pRouteMan->DeleteAllRoutes();
 // TODO Seth
@@ -691,7 +695,7 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event)
 
       if (!route) return;
 
-      wxMessageDialog ask(this, _("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"),
+      wxMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
                           _("Rename Waypoints?"), wxYES_NO);
       bool rename = (ask.ShowModal() == wxID_YES);
 

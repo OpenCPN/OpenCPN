@@ -138,9 +138,13 @@ void StatWin::OnSize(wxSizeEvent& event)
       int x,y;
       GetPosition(&x, &y);
 
-      if(width) pPiano->SetSize(0,0, width *6/10, height*1/m_rows);
- //     if(width) pTStat1->SetSize(0,height * 1/m_rows, width, height*1/m_rows);
- //     if(width) pTStat2->SetSize(0,height * 2/m_rows, width, height*1/m_rows);
+      if(width)
+      {
+            pPiano->SetSize(0,0, width *6/10, height*1/m_rows);
+            pPiano->FormatKeys();
+      }
+
+
 
 #ifdef USE_WIFI_CLIENT
       if(width) pWiFi->SetSize(width * 6/10, 0, width *4/10, height*1/m_rows);

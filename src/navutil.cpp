@@ -6209,6 +6209,33 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
       return s;
 }
 
+/****************************************************************************/
+/* Convert dd mm.mmm' (DMM-Format) to degree.                               */
+/****************************************************************************/
+double fromDMM(char *dms)
+{
+      int d = 0;
+      double m = 0.0;
+      char buf[20];
+      char buf1[20];
+
+      buf[0] = buf1[0] = '\0';
+
+//      sscanf(dms, "%d%[ ]%lf%[ 'NSWEnswe]", &d, buf, &m, buf);
+      sscanf(dms, "%d%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
+      wxString min(buf1,  wxConvUTF8);
+      min.Replace(_T(","), _T("."));
+      min.ToDouble(&m);
+
+      m = (double) (abs(d)) + m / 60.0;
+
+      if (d >= 0 && strpbrk(buf, "SWsw") == NULL)
+            return m;
+      else
+            return -m;
+}
+
+
 void AlphaBlending ( wxDC &dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency )
 {

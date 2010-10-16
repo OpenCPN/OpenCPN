@@ -89,7 +89,7 @@ BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
-ConsoleCanvas::ConsoleCanvas(wxFrame *frame):
+ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
             wxWindow(frame, wxID_ANY,   wxPoint(20,20), wxSize(5,5),wxNO_BORDER/*wxSUNKEN_BORDER | wxCLIP_CHILDREN*/ )
 {
       m_pParent = frame;

@@ -44,7 +44,7 @@
 class       wxFileConfig;
 class       wxNotebook;
 class       wxFont;
-class       wxAUIManager;
+class       wxAuiManager;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -259,7 +259,7 @@ extern "C"  DECL_EXP wxString *GetpSharedDataLocation();
 
 extern "C"  DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
 
-extern "C"  DECL_EXP wxAUIManager *GetFrameAUIManager(void);
+extern "C"  DECL_EXP wxAuiManager *GetFrameAuiManager(void);
 
 #endif            // _PLUGIN_H_
 

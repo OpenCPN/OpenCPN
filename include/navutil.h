@@ -74,6 +74,7 @@ extern wxString toSDMM(int NEflag, double a, bool hi_precision = false);
 extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
+extern double fromDMM(char *dms);
 
 // ----------------------------------------------------------------------------
 // resources
