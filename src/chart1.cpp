@@ -488,6 +488,8 @@ wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
 wxTextCtrl *g_text;
 
+bool              g_blocale_changed;
+
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
 { "1bells.wav","2bells.wav","3bells.wav","4bells.wav","5bells.wav","6bells.wav","7bells.wav","8bells.wav"   // pjotrc 2010.02.09
@@ -872,8 +874,7 @@ bool MyApp::OnInit()
         imsg = _T(" -------Starting opencpn-------");
         wxLogMessage(imsg);
 
-        //wxString version(OpenCPNVersion,  wxConvUTF8); //Gunther
-		wxString version = OpenCPNVersion; //Gunther
+        wxString version = OpenCPNVersion; //Gunther
         wxString vs = version.Trim(true);
         vs = vs.Trim(false);
         wxLogMessage(vs);
@@ -1015,23 +1016,12 @@ bool MyApp::OnInit()
         if(!n_NavMessageShown)
               g_bFirstRun = true;
 
-
-        //  Send the warning message if it has never been sent before, or if the version string has changed at all
-        if(!n_NavMessageShown || (vs != g_config_version_string))
-        {
-              if(wxID_CANCEL == ShowNavWarning())
-                    return false;
-              n_NavMessageShown = 1;
-        }
-
-        g_config_version_string = vs;
-
         //  Now we can set the locale
 
         //    Manage internationalization of embedded messages
         //    using wxWidgets/gettext methodology....
 
-		wxLog::SetVerbose(true);			// log all messages
+        wxLog::SetVerbose(true);            // log all messages
 
         if(lang_list[0]){};                 // silly way to avoid compiler warnings
 
@@ -1039,7 +1029,7 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
         wxString locale_location = g_SData_Locn;
         locale_location += _T("share/locale");
-		wxLocale::AddCatalogLookupPathPrefix(locale_location);
+           wxLocale::AddCatalogLookupPathPrefix(locale_location);
 #endif
 
         //  Get the default for info
@@ -1097,7 +1087,22 @@ bool MyApp::OnInit()
       //    Always use dot as decimal
         setlocale(LC_NUMERIC,"C");
 
-     	wxLog::SetVerbose(false);			// log no verbose messages
+        wxLog::SetVerbose(false);           // log no verbose messages
+
+
+//  Send the Welcome/warning message if it has never been sent before,
+//  or if the version string has changed at all
+//  We defer until here to allow for localization of the message
+
+        if(!n_NavMessageShown || (vs != g_config_version_string))
+        {
+              if(wxID_CANCEL == ShowNavWarning())
+                    return false;
+              n_NavMessageShown = 1;
+        }
+
+        g_config_version_string = vs;
+
 
         //        A special case for windows, which has some trouble finding the data files....
 #ifdef __WXMSW__
@@ -1997,24 +2002,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
         //  Create/connect a dynamic event handler slot for OCPN_NMEAEvent(s) coming from NMEA or AIS threads
         Connect(wxEVT_OCPN_NMEA, (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtOCPN_NMEA);
-
-//  Initialize the Printer data structures
-
-//wxGTK 2.8.0 enables gnomeprint by default.  No workee under KDevelop....
-
-#ifdef __WXDEBUG
-        if( wxPORT_GTK != g_pPlatform->GetPortId())
-        {
-            g_printData = new wxPrintData;
-            g_printData->SetOrientation(wxLANDSCAPE);
-            g_pageSetupData = new wxPageSetupDialogData;
-        }
-#else
-        g_printData = new wxPrintData;
-        g_printData->SetOrientation(wxLANDSCAPE);
-        g_pageSetupData = new wxPageSetupDialogData;
-
-#endif
 
         bFirstAuto = true;
 
@@ -3981,6 +3968,7 @@ int MyFrame::DoOptionsDialog()
                   if(prev_locale != g_locale)
                   {
                         ::wxMessageBox(_("Please restart OpenCPN to activate new language selection."), _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
+                        g_blocale_changed = true;
 
                   }
             }
@@ -6145,6 +6133,13 @@ Hugepagesize:     4096 kB
 
 void MyFrame::DoPrint(void)
 {
+      if( NULL == g_printData)
+      {
+            g_printData = new wxPrintData;
+            g_printData->SetOrientation(wxLANDSCAPE);
+            g_pageSetupData = new wxPageSetupDialogData;
+      }
+
 
     wxPrintDialogData printDialogData(* g_printData);
     printDialogData.EnablePageNumbers(false);

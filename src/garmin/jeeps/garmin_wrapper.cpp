@@ -24,9 +24,21 @@
 #include "gpsapp.h"
 #include "garmin_gps.h"
 
+#define GPS_DEBUG
+
 /*  Wrapped interface from higher level objects   */
 int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
 {
+#ifdef GPS_DEBUG
+      if (getenv("OPENCPN_GPS_ERROR") != NULL)
+	GPS_Enable_Error();
+      if (getenv("OPENCPN_GPS_WARNING") != NULL)
+	GPS_Enable_Warning();
+      if (getenv("OPENCPN_GPS_USER") != NULL)
+	GPS_Enable_User();
+      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
+	GPS_Enable_Diagnose();
+#endif
       return GPS_Init(port_name.mb_str());
 }
 
@@ -63,8 +75,9 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
 
       }
 
+
       //    Transmit the list to the GPS receiver
-      int xfer_result = GPS_A100_Send(port_name.mb_str(), ppway, nPoints, 0 /*int (*cb)(GPS_PWay *)*/);
+      int xfer_result = GPS_Command_Send_Waypoint(port_name.mb_str(), ppway, nPoints, 0 /*int (*cb)(GPS_PWay *)*/);
       ret_val = xfer_result;
 
       //  Free all the memory
@@ -74,6 +87,133 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
       free(ppway);
 
       return ret_val;
+}
+
+// This routine creates an array of waypoint structures for an A200 route
+// transfer according to the "Garmin GPS Interface Specification" page 20.
+// The returned array contains the following packets:
+//
+//    route header packet
+//    waypoint packet
+//    ...
+//    waypoint packet
+//
+// The total number of elements in the array (route header packet and
+// all waypoint packets) is returned in the "size" argument.
+ 
+GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
+{
+      RoutePointList *wplist = pr->pRoutePointList;
+      int nPoints = wplist->GetCount();
+
+      // Create the array of GPS_PWays
+      // There will be one extra for the route header
+
+      *size = nPoints + 1;
+
+      GPS_SWay **ppway = (GPS_SWay **)malloc((*size) * sizeof(GPS_PWay));
+
+      //    and the GPS_Oways themselves
+      for(int i=0 ; i < nPoints+1 ; i++)
+            ppway[i] = GPS_Way_New();
+
+
+      //    Now fill in the useful elements
+
+      //    Element 0 is a route record
+
+      GPS_PWay pway = ppway[0];
+      pway->isrte = true;
+      pway->rte_num = route_number;
+      strncpy(pway->rte_ident, (pr->m_RouteNameString.Truncate ( 255 )).mb_str(), 255);
+      strncpy(pway->rte_cmnt, (pr->m_RouteNameString.Truncate ( 19 )).mb_str(), 19);
+
+
+      //    Elements 1..n are waypoints
+      for(int i=1 ; i < *size ; i++)
+      {
+            GPS_PWay pway = ppway[i];
+            wxRoutePointListNode *node = wplist->Item(i-1);
+            RoutePoint *prp = node->GetData();
+
+            pway->lat = prp->m_lat;
+            pway->lon = prp->m_lon;
+            strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
+      }
+
+      return ppway;
+}
+
+// This routine creates an array of waypoint structures for an A201 route
+// transfer according to the "Garmin GPS Interface Specification" page 21.
+// The returned array contains the following packets:
+//
+//    route header packet
+//    waypoint packet
+//    link packet
+//    waypoint packet
+//    link packet
+//    ...
+//    waypoint packet
+//
+// The total number of elements in the array (route header packet, link
+// packets and waypoint packets) is returned in the "size" argument.
+ 
+GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
+{
+      RoutePointList *wplist = pr->pRoutePointList;
+      int nPoints = wplist->GetCount();
+
+      // Create the array of GPS_PWays
+      // There will be one for the route header, n for each way point
+      //  and n-1 for each link
+
+      *size = 1 + nPoints + (nPoints - 1);
+
+      GPS_SWay **ppway = (GPS_SWay **)malloc((*size) * sizeof(GPS_PWay));
+
+      //    and the GPS_Oways themselves
+      for(int i=0 ; i < *size ; i++)
+            ppway[i] = GPS_Way_New();
+
+
+      //    Now fill in the useful elements
+
+      //    Element 0 is a route record
+
+      GPS_PWay pway = ppway[0];
+      pway->isrte = true;
+      pway->rte_num = route_number;
+      strncpy(pway->rte_ident, (pr->m_RouteNameString.Truncate ( 255 )).mb_str(), 255);
+      strncpy(pway->rte_cmnt, (pr->m_RouteNameString.Truncate ( 19 )).mb_str(), 19);
+
+
+      //    Odd elements 1,3,5... are waypoints
+      //    Even elements 2,4,6... are links
+      for(int i=1 ; i < *size ; i++)
+      {
+	    if (i % 2 == 1) /* Odd */ 
+	    {
+	          GPS_PWay pway = ppway[i];
+                  wxRoutePointListNode *node = wplist->Item((i-1)/2);
+                  RoutePoint *prp = node->GetData();
+
+                  pway->lat = prp->m_lat;
+                  pway->lon = prp->m_lon;
+                  strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
+	    }
+	    else  /* Even */
+	    {
+	          /* Apparently, 0 filled links are OK */
+	          GPS_PWay pway = ppway[i];
+		  pway->islink = true;
+		  pway->rte_link_class = 0;
+		  memset(pway->rte_link_subclass, 0, sizeof(pway->rte_link_subclass));
+		  memset(pway->rte_link_ident, 0 , sizeof(pway->rte_link_ident));
+	    }
+      }
+
+      return ppway;
 }
 
 int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress)
@@ -140,51 +280,25 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
       }
 
 
-      RoutePointList *wplist = pr->pRoutePointList;
-      int nPoints = wplist->GetCount();
+      // Based on the route transfer protocol create the array of transfer packets
+      GPS_SWay **ppway;
+      int elements = 0;
+      if (gps_route_transfer == pA201)
+	ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
+      else
+	ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
 
-      // Create the array of GPS_PWays
-      // There will be one extra for the route header
-
-      GPS_SWay **ppway = (GPS_SWay **)malloc((nPoints+1) * sizeof(GPS_PWay));
-
-      //    and the GPS_Oways themselves
-      for(int i=0 ; i < nPoints+1 ; i++)
-            ppway[i] = GPS_Way_New();
-
-
-      //    Now fill in the useful elements
-
-      //    Element 0 is a route record
-
-      GPS_PWay pway = ppway[0];
-      pway->isrte = true;
-      pway->rte_num = route_number;
-      strncpy(pway->rte_ident, (pr->m_RouteNameString.Truncate ( 255 )).mb_str(), 255);
-      strncpy(pway->rte_cmnt, (pr->m_RouteNameString.Truncate ( 19 )).mb_str(), 19);
-
-
-      //    Elements 1..n are waypoints
-      for(int i=1 ; i < nPoints+1 ; i++)
-      {
-            GPS_PWay pway = ppway[i];
-            wxRoutePointListNode *node = wplist->Item(i-1);
-            RoutePoint *prp = node->GetData();
-
-            pway->lat = prp->m_lat;
-            pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
-      }
 
       //    Transmit the Route to the GPS receiver
-      int xfer_result = GPS_A200_Send(port_name.mb_str(), ppway, nPoints+1);
+      int xfer_result = GPS_Command_Send_Route(port_name.mb_str(), ppway, elements);
       ret_val = xfer_result;
 
       //  Free all the memory
-      for(int i=0 ; i < nPoints ; i++)
+      for(int i=0 ; i < elements ; i++)
             GPS_Way_Del(&ppway[i]);
 
       free(ppway);
+
 
       if ( pProgress )
       {

@@ -100,6 +100,7 @@ class M_COVR_Desc
       double      lat_max;
       double      lon_min;
       double      lon_max;
+      wxBoundingBox m_bbox;
 };
 
 WX_DECLARE_OBJARRAY(M_COVR_Desc, Array_Of_M_COVR_Desc);

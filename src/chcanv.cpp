@@ -3113,9 +3113,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
 
       if(NULL == m_pRolloverRouteSeg)
       {
+
             m_pRolloverRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
             if (m_pRolloverRouteSeg)
             {
+
                   Route *pr = (Route *)m_pRolloverRouteSeg->m_pData3;
                   if(pr && pr->IsVisible())
                   {
@@ -3161,6 +3163,8 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
                               showRollover = true;
                         }
                   }
+                  else
+                        m_pRolloverRouteSeg = NULL;
             }
       }
       else
@@ -6697,7 +6701,10 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       if ( pFindAIS )
                       {
                             m_FoundAIS_MMSI = pFindAIS->GetUserData();
-                            seltype |= SELTYPE_AISTARGET;
+
+                            //      Make sure the target data is available
+                            if(g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI))
+                                  seltype |= SELTYPE_AISTARGET;
                       }
 
 
@@ -6706,50 +6713,74 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       m_pFoundRoutePoint = NULL;
                       if ( pFindRP )
                       {
-                            m_pFoundRoutePoint = ( RoutePoint * ) pFindRP->m_pData1;
-                            if(m_pFoundRoutePoint->IsVisible())
+                            RoutePoint *pFirstVizPoint = NULL;
+                            RoutePoint *pFoundActiveRoutePoint = NULL;
+                            RoutePoint *pFoundVizRoutePoint = NULL;
+                            Route *pSelectedActiveRoute = NULL;
+                            Route *pSelectedVizRoute = NULL;
+
+                            //There is at least one routepoint, so get the whole list
+                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,SELTYPE_ROUTEPOINT,SelectRadius );
+                            wxSelectableItemListNode *node = SelList.GetFirst();
+                            while ( node )
                             {
-                              m_pFoundRoutePoint->m_bPtIsSelected = true;
-                              m_pFoundRoutePoint->Draw( dc );
+                                  SelectItem *pFindSel = node->GetData();
 
-                              //    Get an array of all routes using this point and use it to choose the appropriate route
-                              //    Give preference to any active route, otherwise select the first visible route in the array
-                              wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(m_pFoundRoutePoint);
-                              m_pSelectedRoute = NULL;
-                              if(proute_array)
-                              {
-                                    for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
-                                    {
-                                          Route *pr = (Route *)proute_array->Item(ir);
-                                          if(pr->m_bRtIsActive)
-                                          {
-                                                m_pSelectedRoute = pr;
-                                                break;
-                                          }
-                                    }
+                                  RoutePoint *prp = ( RoutePoint * ) pFindSel->m_pData1;        //candidate
 
-                                    if(NULL == m_pSelectedRoute)
-                                    {
-                                          for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
-                                          {
-                                                Route *pr = (Route *)proute_array->Item(ir);
-                                                if(pr->IsVisible())
-                                                {
-                                                      m_pSelectedRoute = pr;
-                                                      break;
-                                                }
-                                          }
-                                    }
+                                  if(NULL == pFirstVizPoint)
+                                        pFirstVizPoint = prp;
 
-                                    //    Final fallback is to select the first in the array
-                                    if(NULL == m_pSelectedRoute)
-                                          m_pSelectedRoute = (Route *)proute_array->Item(0);
+                              //    Get an array of all routes using this point and use it to choose the appropriate route and point
+                              //    Give preference to any active route, otherwise select the first visible route in the array for this point
+                                  wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(prp);
+                                  m_pSelectedRoute = NULL;
+                                  if(proute_array)
+                                  {
+                                        for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
+                                        {
+                                              Route *pr = (Route *)proute_array->Item(ir);
+                                              if(pr->m_bRtIsActive)
+                                              {
+                                                    pSelectedActiveRoute = pr;
+                                                    pFoundActiveRoutePoint = prp;
+                                                    break;
+                                              }
+                                        }
 
-                                    delete proute_array;
-                              }
+                                        if(NULL == pSelectedVizRoute)
+                                        {
+                                              for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
+                                              {
+                                                    Route *pr = (Route *)proute_array->Item(ir);
+                                                    if(pr->IsVisible())
+                                                    {
+                                                          pSelectedVizRoute = pr;
+                                                          pFoundVizRoutePoint = prp;
+                                                          break;
+                                                    }
+                                              }
+                                        }
 
-                              if(NULL == m_pSelectedRoute)
-                                    m_pSelectedRoute = g_pRouteMan->FindRouteContainingWaypoint ( m_pFoundRoutePoint );
+                                        delete proute_array;
+                                  }
+
+                                  node = node->GetNext();
+                            }
+
+                            //      Now choose the "best" selections
+                            if(pFoundActiveRoutePoint)
+                            {
+                                  m_pFoundRoutePoint = pFoundActiveRoutePoint;
+                                  m_pSelectedRoute  = pSelectedActiveRoute;
+                            }
+                            else if(pFoundVizRoutePoint)
+                            {
+                                  m_pFoundRoutePoint = pFoundVizRoutePoint;
+                                  m_pSelectedRoute  = pSelectedVizRoute;
+                            }
+                            else                                              // default is first visible point in list
+                                  m_pFoundRoutePoint = pFirstVizPoint;
 
                               if ( m_pSelectedRoute )
                               {
@@ -6758,7 +6789,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                               }
                               else
                                     seltype |= SELTYPE_MARKPOINT;
-                            }
                       }
 
 
@@ -9904,12 +9934,11 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
         int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
 
-//        if ( this_now.IsDST() )
-//                station_offset += 60;
         m_corr_mins = station_offset - diff_mins;
         if ( this_now.IsDST() )
               m_corr_mins += 60;
 
+#if 0
         int h = station_offset / 60;
         int m = station_offset - (h * 60);
         if ( this_now.IsDST() )
@@ -9940,7 +9969,7 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
               m_stz = mtz;
         }
-
+#endif
 
 //    Establish the inital drawing day as today
         m_graphday = wxDateTime::Now();
@@ -9950,6 +9979,8 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         //    Correct a Bug in wxWidgets time support
         if ( !graphday_00.IsDST() && m_graphday.IsDST() )
                 t_graphday_00 -= 3600;
+        if ( graphday_00.IsDST() && !m_graphday.IsDST() )
+                t_graphday_00 += 3600;
 
         m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
@@ -10012,16 +10043,17 @@ void TCWin::OnCloseWindow ( wxCloseEvent& event )
 
 void TCWin::NXEvent ( wxCommandEvent& event )
 {
-        wxTimeSpan dm;
         wxTimeSpan dt ( 24,0,0,0 );
-        dm = dt;
+        m_graphday.Add(dt);
+        wxDateTime dm=m_graphday;
 
-        m_graphday += dm;
-
-        wxDateTime graphday_00 = m_graphday.ResetTime();
+        wxDateTime graphday_00 = dm.ResetTime();
         time_t t_graphday_00 = graphday_00.GetTicks();
+        if ( !graphday_00.IsDST() && m_graphday.IsDST() )
+             t_graphday_00 -= 3600;
+        if ( graphday_00.IsDST() && !m_graphday.IsDST() )
+             t_graphday_00 += 3600;
         m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
-
 
         m_bForceTCRedraw = true;
         btc_valid = false;
@@ -10029,18 +10061,22 @@ void TCWin::NXEvent ( wxCommandEvent& event )
 
 }
 
+
 void TCWin::PREvent ( wxCommandEvent& event )
 {
-        wxTimeSpan dm;
         wxTimeSpan dt ( -24,0,0,0 );
-        dm = dt;
+        m_graphday.Add(dt);
+        wxDateTime dm=m_graphday;
 
-        m_graphday += dm;
-
-        wxDateTime graphday_00 = m_graphday.ResetTime();
+        wxDateTime graphday_00 = dm.ResetTime();
         time_t t_graphday_00 = graphday_00.GetTicks();
-        m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
+        if ( !graphday_00.IsDST() && m_graphday.IsDST() )
+              t_graphday_00 -= 3600;
+        if ( graphday_00.IsDST() && !m_graphday.IsDST() )
+              t_graphday_00 += 3600;
+
+        m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
         m_bForceTCRedraw = true;
         btc_valid = false;
@@ -10308,6 +10344,39 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 #endif
                 //  More Info
 
+///
+                int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
+                int h = station_offset / 60;
+                int m = station_offset - (h * 60);
+                if ( m_graphday.IsDST() )
+                      h += 1;
+                m_stz.Printf(_T("Z %+03d:%02d"), h, m);
+
+
+//    Make the "nice" (for the US) station time-zone string, brutally by hand
+                wxString mtz;
+                switch ( ptcmgr->GetStationTimeOffset(pIDX) )
+                {
+                      case -240:
+                            mtz = _T( "AST" );
+                            break;
+                      case -300:
+                            mtz = _T( "EST" );
+                            break;
+                      case -360:
+                            mtz = _T( "CST" );
+                            break;
+                }
+
+                if(mtz.Len())
+                {
+                      if ( m_graphday.IsDST() )
+                            mtz[1] = 'D';
+
+                      m_stz = mtz;
+                }
+
+///
                 dc.SetFont ( *pSFont );
                 dc.GetTextExtent ( m_stz, &w, &h );
                 dc.DrawText ( m_stz, x/2 - w/2, y * 88/100 );

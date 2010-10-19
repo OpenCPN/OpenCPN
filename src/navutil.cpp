@@ -288,6 +288,8 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
+extern bool              g_blocale_changed;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -844,9 +846,6 @@ SelectableItemList Select::FindSelectionList(float slat, float slon, int fseltyp
                         case SELTYPE_TIDEPOINT:
                         case SELTYPE_CURRENTPOINT:
                         case SELTYPE_AISTARGET:
-                              a = fabs ( slat - pFindSel->m_slat );
-                              b = fabs ( slon - pFindSel->m_slon );
-
                               if ( ( fabs ( slat - pFindSel->m_slat ) < SelectRadius ) &&
                                      ( fabs ( slon - pFindSel->m_slon ) < SelectRadius ) )
                               {
@@ -913,6 +912,7 @@ SelectableItemList Select::FindSelectionList(float slat, float slon, int fseltyp
 
             node = node->GetNext();
       }
+
 
       return ret_list;
 }
@@ -3580,36 +3580,42 @@ void MyConfig::UpdateSettings()
       }
 
 
-//    Fonts
+      //    Fonts
+      wxString font_path;
 #ifdef __WXX11__
-      SetPath ( _T ( "/Settings/X11Fonts" ) );
+      font_path = ( _T ( "/Settings/X11Fonts" ) );
 #endif
 
 #ifdef __WXGTK__
-      SetPath ( _T ( "/Settings/GTKFonts" ) );
+      font_path = ( _T ( "/Settings/GTKFonts" ) );
 #endif
 
 #ifdef __WXMSW__
-      SetPath ( _T ( "/Settings/MSWFonts" ) );
+      font_path = ( _T ( "/Settings/MSWFonts" ) );
 #endif
 
 #ifdef __WXMAC__
-      SetPath ( _T ( "/Settings/MacFonts" ) );
+      font_path = ( _T ( "/Settings/MacFonts" ) );
 #endif
 
-      int nFonts = pFontMgr->GetNumFonts();
-
-      for ( int i=0 ; i<nFonts ; i++ )
+      if(!g_blocale_changed)
       {
-            wxString cfstring ( *pFontMgr->GetConfigString ( i ) );
+            SetPath(font_path);
 
-/*
-            wxString valstring ( *pFontMgr->GetDialogString ( i ) );
-            valstring.Append ( _T ( ":" ) );
-            valstring.Append ( *pFontMgr->GetNativeDesc ( i ) );
-*/
-            wxString valstring = pFontMgr->GetFullConfigDesc ( i );
-            Write ( cfstring, valstring );
+            int nFonts = pFontMgr->GetNumFonts();
+
+            for ( int i=0 ; i<nFonts ; i++ )
+            {
+                  wxString cfstring ( *pFontMgr->GetConfigString ( i ) );
+                  wxString valstring = pFontMgr->GetFullConfigDesc ( i );
+                  Write ( cfstring, valstring );
+            }
+      }
+      else
+      {
+            SetPath(_T("/"));
+            if(HasGroup( font_path))
+                  pConfig->DeleteGroup( font_path );
       }
 
 

@@ -3212,16 +3212,15 @@ void s57chart::GetChartNameFromTXT(const wxString& FullPath, wxString &Name)
       wxFileName fn(FullPath);
 
       wxString target_name = fn.GetName();
- //     target_name.SetChar(target_name.Len()-1, 'E');
-      target_name.RemoveLast();                             // Todo is this OK to use, eg US2EC03 ??
+      target_name.RemoveLast();
 
       wxString dir_name = fn.GetPath();
 
       wxDir dir(dir_name);                                  // The directory containing the file
 
-      wxArrayString *pFileList = new wxArrayString();
+      wxArrayString FileList;
 
-      dir.GetAllFiles(fn.GetPath(), pFileList);             // list all the files
+      dir.GetAllFiles(fn.GetPath(), &FileList);             // list all the files
 
       //    Iterate on the file list...
 
@@ -3229,30 +3228,47 @@ void s57chart::GetChartNameFromTXT(const wxString& FullPath, wxString &Name)
       wxString name;
       name.Clear();
 
-      for(unsigned int j=0 ; j<pFileList->GetCount() ; j++)
+      for(unsigned int j=0 ; j<FileList.GetCount() ; j++)
       {
-            wxFileName file(pFileList->Item(j));
+            wxFileName file(FileList.Item(j));
             if(((file.GetExt()).MakeUpper()) == _T("TXT"))
             {
               //  Look for the line beginning with the name of the .000 file
               wxTextFile text_file(file.GetFullPath());
-              text_file.Open();
 
-              wxString str = text_file.GetFirstLine();
-              while(!text_file.Eof())
+              bool file_ok = true;
+              //  Suppress log messages on bad file reads
               {
-                if(0 == target_name.CmpNoCase(str.Mid(0, target_name.Len())))
-                {                                                       // found it
-                  wxString tname = str.AfterFirst('-');
-                  name = tname.AfterFirst(' ');
-                  found_name = true;
-                  break;
-                }
-                else
-                {
-                  str = text_file.GetNextLine();
-                }
+                  wxLogNull logNo;
+                  if(!text_file.Open())
+                        file_ok = false;
               }
+
+              if(file_ok)
+              {
+                  wxString str = text_file.GetFirstLine();
+                  while(!text_file.Eof())
+                  {
+                        if(0 == target_name.CmpNoCase(str.Mid(0, target_name.Len())))
+                        {                                                       // found it
+                              wxString tname = str.AfterFirst('-');
+                              name = tname.AfterFirst(' ');
+                              found_name = true;
+                              break;
+                        }
+                        else
+                        {
+                              str = text_file.GetNextLine();
+                        }
+                  }
+              }
+              else
+              {
+                    wxString msg(_T("   Error Reading ENC .TXT file: "));
+                    msg.Append(file.GetFullPath());
+                    wxLogMessage(msg);
+              }
+
 
               text_file.Close();
 
@@ -3262,8 +3278,6 @@ void s57chart::GetChartNameFromTXT(const wxString& FullPath, wxString &Name)
       }
 
       Name = name;
-
-      delete pFileList;
 
 }
 
@@ -5754,7 +5768,9 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                               wxString val_suffix = _T("(m)");
 
                               //    As a special case, convert some attribute values to feet.....
-                              if(att == _T("VERCLR"))
+                              if((att == _T("VERCLR")) ||
+                                  (att = _T("VERCLL")) ||
+                                  (att = _T("HORCLR")) )
                               {
                                     switch(ps52plib->m_nDepthUnitDisplay)
                                     {

@@ -1487,7 +1487,6 @@ thread_exit:
 #endif          //__POSIX__
 
 
-
 #ifdef __WXMSW__
 
 //    Entry Point
@@ -1508,6 +1507,10 @@ void *OCP_NMEA_Thread::Entry()
       {
             wxString msg(_T("NMEA input device open failed: "));
             msg.Append(m_PortName);
+            wxString msg_error;
+            msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
+            msg.Append(msg_error);
+
             ThreadMessage(msg);
             goto thread_exit;
       }
@@ -1519,14 +1522,33 @@ void *OCP_NMEA_Thread::Entry()
 //    Set up read event specification
 
       if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
+      {
+            wxString msg(_T("NMEA input device (overlapped) SetCommMask failed: "));
+            msg.Append(m_PortName);
+            wxString msg_error;
+            msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
+            msg.Append(msg_error);
+
+            ThreadMessage(msg);
             goto thread_exit;
+      }
 
 // Create the overlapped event. Must be closed before exiting
 // to avoid a handle leak.
       osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
       if (osReader.hEvent == NULL)
+      {
+            wxString msg(_T("NMEA input device (overlapped) CreateEvent failed: "));
+            msg.Append(m_PortName);
+            wxString msg_error;
+            msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
+            msg.Append(msg_error);
+
+            ThreadMessage(msg);
             goto thread_exit;
+      }
+
 
       not_done = true;
       bool nl_found;
@@ -3003,10 +3025,15 @@ int ComPortManager::OpenComPortPhysical(wxString &com_name, int baud_rate)
                                  NULL);
 
       if(hSerialComm == INVALID_HANDLE_VALUE)
-            return (-1);
+      {
+            return (0 - abs((int)::GetLastError()));
+      }
 
       if(!SetupComm(hSerialComm, 1024, 1024))
-            return (-1);
+      {
+            return (0 - abs((int)::GetLastError()));
+      }
+
 
       DCB dcbConfig;
 
@@ -3021,28 +3048,28 @@ int ComPortManager::OpenComPortPhysical(wxString &com_name, int baud_rate)
       }
 
       else
-            return (::GetLastError());
+      {
+            return (0 - abs((int)::GetLastError()));
+      }
 
       if(!SetCommState(hSerialComm, &dcbConfig))
-            return (::GetLastError());
+      {
+            return (0 - abs((int)::GetLastError()));
+      }
 
       COMMTIMEOUTS commTimeout;
       int TimeOutInSec = 2;
+      commTimeout.ReadIntervalTimeout = 1000*TimeOutInSec;
+      commTimeout.ReadTotalTimeoutConstant = 1000*TimeOutInSec;
+      commTimeout.ReadTotalTimeoutMultiplier = 0;
+      commTimeout.WriteTotalTimeoutConstant = 1000*TimeOutInSec;
+      commTimeout.WriteTotalTimeoutMultiplier = 0;
 
-      if(GetCommTimeouts(hSerialComm, &commTimeout)) // Configuring Read & Write Time Outs
-      {
-            commTimeout.ReadIntervalTimeout = 1000*TimeOutInSec;
-            commTimeout.ReadTotalTimeoutConstant = 1000*TimeOutInSec;
-            commTimeout.ReadTotalTimeoutMultiplier = 0;
-            commTimeout.WriteTotalTimeoutConstant = 1000*TimeOutInSec;
-            commTimeout.WriteTotalTimeoutMultiplier = 0;
-      }
-
-      else
-            return (::GetLastError());
 
       if(!SetCommTimeouts(hSerialComm, &commTimeout))
-            return (::GetLastError());
+      {
+            return (0 - abs((int)::GetLastError()));
+      }
 
 
       return (int)hSerialComm;

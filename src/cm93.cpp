@@ -182,6 +182,8 @@ int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
 
             pPoints = new wxPoint[m_nvertices];
 
+            m_bbox = wxBoundingBox(lon_min, lat_min, lon_max, lat_max);
+
       }
       return length;
 }
@@ -1820,22 +1822,6 @@ cm93chart::cm93chart()
 
 cm93chart::~cm93chart()
 {
-/*
-      for(unsigned int im=0 ; im < m_covr_array.GetCount() ; im++)
-      {
-            M_COVR_Desc mcd = m_covr_array.Item(im);
-            free(mcd.pvertices);
-            free(mcd.pPoints);
-      }
-*/
-/*
-      for(unsigned int im=0 ; im < m_covr_array_outlines.GetCount() ; im++)
-      {
-            M_COVR_Desc mcd = m_covr_array_outlines.Item(im);
-            free(mcd.pvertices);
-            free(mcd.pPoints);
-      }
-*/
       free(m_pcontour_array);
 
       delete m_pcovr_set;
@@ -3539,7 +3525,6 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         }
                         pmcd->m_nvertices = npta;
                         pmcd->pvertices = geoPt;
-//                        pmcd->pPoints = (wxPoint *)malloc(npta * sizeof(wxPoint));         // pre-allocate storage for later use
                         pmcd->pPoints = new wxPoint[npta];
 
 
@@ -3550,8 +3535,6 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                        //     Add this geometry to the class M_COVR array
                         m_covr_array.Add(pmcd);
 
-                        //    Also add it to the current per cell list
-//                        m_CIB.m_cell_mcovr_list.Append(pmcd);
                   }
 
 
@@ -5373,14 +5356,12 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
                               for(unsigned int im=0 ; im < pcover->GetCoverCount() ; im++)
                               {
-                                    M_COVR_Desc *mcd = pcover->GetCover(im); //psc->m_covr_array_outlines.Item(im);
+                                    M_COVR_Desc *mcd = pcover->GetCover(im);
 
-                                    wxBoundingBox mcd_box(mcd->lon_min, mcd->lat_min, mcd->lon_max, mcd->lat_max);
 
 
                                     //    Case:  vpBBox is completely inside the mcd box
-//                                    if(_IN == mcd_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
-                                    if(!(_OUT == vp_positive.vpBBox.Intersect(mcd_box)))
+                                    if(!(_OUT == vp_positive.vpBBox.Intersect(mcd->m_bbox)) || !(_OUT == vp.vpBBox.Intersect(mcd->m_bbox)))
                                     {
 
                                           float_2Dpt *p = mcd->pvertices;

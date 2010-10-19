@@ -69,7 +69,9 @@
 
 #define SYMBOL_ABOUT_TITLE _("About OpenCPN")
 
-#define xID_OK 10009
+#define xID_OK          10009
+#define ID_DONATE       10010
+
 #define ID_NOTEBOOK_HELP 10002
 
 class wxHtmlWindow;
@@ -98,6 +100,7 @@ class about: public wxDialog
     void CreateControls();
     void OnXidOkClick( wxCommandEvent& event );
     void OnPageChange(wxNotebookEvent& event);
+    void OnDonateClick( wxCommandEvent& event );
 
     wxString          *m_pDataLocn;
     wxWindow          *m_parent;

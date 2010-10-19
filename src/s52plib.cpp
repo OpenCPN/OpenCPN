@@ -2371,7 +2371,7 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
                               double ft_val;
                               value.ToDouble(&ft_val);
                               ft_val = ft_val * 3 * 39.37 / 36;              // feet
-                              value.Printf(_T("%5.1f"), ft_val);
+                              value.Printf(_T("%4.1f"), ft_val);
                               vallen = value.Len();
                               break;
                         default:
@@ -5428,7 +5428,7 @@ int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, 
 
                               else                    // No Pattern
                               {
-#ifdef __WXGTK__
+#if defined( __WXGTK__) && defined(__INTEL__)
 #define memset3(dest, value, count) \
 __asm__ __volatile__ ( \
 "cmp $0,%2\n\t" \
@@ -5873,7 +5873,7 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
 
                               else                    // No Pattern
                               {
-#ifdef __WXGTK__WITH_OPTIMIZE_0
+#if defined(__WXGTK__WITH_OPTIMIZE_0) && defined(__INTEL__)
 #define memset3d(dest, value, count) \
                                     __asm__ __volatile__ ( \
                                     "cmp $0,%2\n\t" \

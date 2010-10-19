@@ -586,7 +586,11 @@ bool ChartDatabase::Read(const wxString &filePath)
     m_dbversion = atoi(&vbo[1]);
     s_dbVersion = m_dbversion;                  // save the static copy
 
-    wxLogVerbose(wxT("Reading %d directory entries, %d table entries"), cth.GetDirEntries(), cth.GetTableEntries());
+    wxLogVerbose(wxT("Chartdb:Reading %d directory entries, %d table entries"), cth.GetDirEntries(), cth.GetTableEntries());
+    wxLogMessage(_T("Chartdb: Chart directory list follows"));
+    if(0 == cth.GetDirEntries())
+          wxLogMessage(_T("  Nil"));
+
     for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
         wxString dir;
         int dirlen;
@@ -599,7 +603,7 @@ bool ChartDatabase::Read(const wxString &filePath)
             dirlen -= alen;
             dir.Append(wxString(dirbuf, wxConvUTF8));
         }
-        wxString msg = wxT("Chart directory ");
+        wxString msg = wxT("  Chart directory ");
         msg.Append(dir);
         wxLogMessage(msg);
         chartDirs.Add(dir);

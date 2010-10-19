@@ -98,7 +98,7 @@ LangString BT_DeleteAll_SetConfig_Text ${LANG_GERMAN} "ALLE löschen"
 LangString BT_Delete_SetConfig_Text ${LANG_GERMAN} "Löschen"
 
 #LangString GB_ChartDir_SetConfig_Text ${LANG_ENGLISH} "Add Chart Directory"
-LangString GB_ChartDir_SetConfig_Text ${LANG_GERMAN} "Verzeichnis hinzufügen"
+LangString GB_ChartDir_SetConfig_Text ${LANG_GERMAN} "Kartenverzeichnisse hinzufügen"
 
 #LangString CB_Language_SetConfig_Text ${LANG_ENGLISH} "Set OpenCPN program language to $LANG_NAME"
 LangString CB_Language_SetConfig_Text ${LANG_GERMAN} "OpenCPN Programmsprache auf $LANG_NAME einstellen"
@@ -155,7 +155,7 @@ LangString not_selected ${LANG_GERMAN} "nicht ausgewählt"
 LangString text_none ${LANG_GERMAN} "keine"
 
 #LangString SecGrpResetConfig_Text ${LANG_ENGLISH} "Reset ALL OpenCPN configuration files"
-LangString SecGrpResetConfig_Text ${LANG_GERMAN} "ALLE OpenCPN Konfigurationsdateien löschen"
+LangString SecGrpResetConfig_Text ${LANG_GERMAN} "ALLE OpenCPN Konfig.-Dateien löschen"
 
 #LangString SecDeleteConfigFile_Text ${LANG_ENGLISH} "Delete config file (opencpn.ini)"
 LangString SecDeleteConfigFile_Text ${LANG_GERMAN} "Konfigurationsdatei (opencpn.ini) löschen"
@@ -284,28 +284,52 @@ LangString Msg_UAC_Admin_Retry ${LANG_GERMAN} "Dieses $Inst_Or_Uninst benötigt 
 LangString Msg_UAC_Admin_Abort ${LANG_GERMAN} "Dieses $Inst_Or_Uninst benötigt Administratorrechte - Abbruch!"
 
 #LangString Msg_UAC_Logon_Abort ${LANG_ENGLISH} "Logon service not running, aborting!"
-LangString Msg_UAC_Logon_Abort ${LANG_GERMAN} "Logon service not running, aborting!"
+LangString Msg_UAC_Logon_Abort ${LANG_GERMAN} "Der erforderliche Dienst wurde nicht gestartet - Abbruch!"
 
 #LangString Msg_UAC_No_Elevation ${LANG_ENGLISH} "Unable to elevate , error $0"
-LangString Msg_UAC_No_Elevation ${LANG_GERMAN} "Unable to elevate, error $0"
+LangString Msg_UAC_No_Elevation ${LANG_GERMAN} "Anmeldung als Administrator nicht möglich - Fehler $0"
 
 #LangString Msg_Error_Remove_InstDir ${LANG_ENGLISH} "The installation directory$\r$\n'$INSTDIR'$\r$\ncould not be removed because it is not empty."
-LangString Msg_Error_Remove_InstDir ${LANG_GERMAN} "The installation directory$\r$\n'$INSTDIR'$\r$\ncould not be removed because it is not empty."
+LangString Msg_Error_Remove_InstDir ${LANG_GERMAN} "Das Installationsverzeichnis$\r$\n'$INSTDIR'$\r$\nkonnte nicht gelöscht werden, weil es nicht leer ist."
 
 #LangString Msg_Path_Invalid ${LANG_ENGLISH} "The entered path is invalid!$\r$\n$\r$\nPlease check your input."
-LangString Msg_Path_Invalid ${LANG_GERMAN} "The entered path is invalid!$\r$\n$\r$\nPlease check your input."
+LangString Msg_Path_Invalid ${LANG_GERMAN} "Der angegebene Pfad ist ungültig!$\r$\n$\r$\nBitte überprüfen Sie Ihre Eingabe."
 
 #LangString Msg_Path_Installation_Exists ${LANG_ENGLISH} "There already exists an installation of OpenCPN in the given path.$\r$\nIf you wish to use this path, first uninstall the version. Or select another path for this installation."
-LangString Msg_Path_Installation_Exists ${LANG_GERMAN} "There already exists an installation of OpenCPN in the given path.$\r$\nIf you wish to use this path, first uninstall the version. Or select another path for this installation."
+LangString Msg_Path_Installation_Exists ${LANG_GERMAN} "In dem angegebenen Pfad existiert bereits eine Installation von OpenCPN.$\r$\nWenn Sie diesen Pfad verwenden wollen, deinstallieren Sie zuerst die vorhandene Version. Oder wählen Sie einen anderen Pfad für diese Installation."
 
 #LangString Msg_Uninstall_Old_Versions ${LANG_ENGLISH} "Setup has detected at least one older version of OpenCPN which is not compatible with the new version control.$\r$\nIt is recommended to first uninstall all of these installations (this does not affect your Config files) and clean-up the Registry.$\r$\nIf you click Yes on the next page a listbox with all installation locations will be shown and you will have the possibility to select the installations you wish to uninstall.$\r$\nIf you are unsure about possible other previous installations than those shown in the listbox, you can also perform a scan of the entire Harddisk (ATTENTION: This may take several minutes) to find all install locations (recommended).$\r$\n$\r$\nDo you want to uninstall the old version(s)?"
-LangString Msg_Uninstall_Old_Versions ${LANG_GERMAN} "Setup has detected at least one older version of OpenCPN which is not compatible with the new version control.$\r$\nIt is recommended to first uninstall all of these installations (this does not affect your Config files) and clean-up the Registry.$\r$\nIf you click Yes on the next page a listbox with all installation locations will be shown and you will have the possibility to select the installations you wish to uninstall.$\r$\nIf you are unsure about possible other previous installations than those shown in the listbox, you can also perform a scan of the entire Harddisk (ATTENTION: This may take several minutes) to find all install locations (recommended).$\r$\n$\r$\nDo you want to uninstall the old version(s)?"
+LangString Msg_Uninstall_Old_Versions ${LANG_GERMAN} "Setup hat mindestens eine ältere Version von OpenCPN entdeckt, die zu der neuen Versionskontrolle nicht kompatibel ist.$\r$\nEs wird empfohlen zuerst alle alten Installationen zu deinstallieren (das betrifft nicht Ihre Konfigurationsdateien) und die Registrierung zu säubern.$\r$\nWenn Sie auf 'Ja' klicken, erscheint auf der nächsten Seite ein Listenauswahlfeld mit allen alten Installationen. Dort können Sie die Installationen auswählen, die Sie deinstallieren möchten.$\r$\nWenn Sie sich unsicher sind, ob wirklich alle alten Installationen in dem Listenauswahlfeld aufgeführt sind, können Sie auch einen Scan der gesamten Festplatte durchführen (ACHTUNG: Dieser Vorgang kann mehrere Minuten dauern!), um alle Installationen zu finden (empfohlen).$\r$\n$\r$\nMöchten Sie die alte(n) Version(en) jetzt deinstallieren?"
 
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
-LangString Msg_Not_All_Old_Uninstalled ${LANG_GERMAN} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
+LangString Msg_Not_All_Old_Uninstalled ${LANG_GERMAN} "Sie haben nicht alle alten Installationen deinstalliert.$\r$\n$\r$\nMöchten Sie trotzdem fortfahren?"
 
 #LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
 LangString Msg_Uninstaller_Param_Help ${LANG_GERMAN} "Deinstallationsprogramm Hilfe$\r$\n$\r$\nVerwenden Sie die Kommandozeile oder eine Verknüpfung, um das Deinstallationsprogramm zu starten:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameter:$\r$\n/?$\tzeigt diese Dialog-Box an$\r$\n/S$\tführt das Deinstallationsprogramm im 'Silent' Modus aus$\r$\n$\tführt eine komplette Deinstallation aus, wenn kein Parameter 'type' angegeben wird$\r$\n/type=X$\tX muss eine Zahl zwischen 1 und 5 sein$\r$\n$\t1 = Entfernt nur das Programmverzeichnis$\r$\n$\t2 = Entfernt nur das Programmverzeichnis + Vorkonfigurations-RegKey$\r$\n$\t3 = Entfernt nur das Programmverzeichnis + Konfigurationsordner$\r$\n$\tbehält den Vorkonfigurations-RegKey$\r$\n$\t4 = Löscht nur den Konfigurationsordner$\r$\n$\t5 = Löscht nur den Vorkonfigurations-RegKey$\r$\n$\r$\nDie Angabe jeder anderen Zahle oder Wertes veranlasst das Deinstallationsprogramm sich mit einer entsprechenden Dialog-Box zu beenden, ohne irgendetwas zu löschen/ deinstallieren."
 
 #LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
 LangString Msg_Unknown_Type_Param ${LANG_GERMAN} "Der angegebene Wert '$9' für den Parameter /type ist ungültig!$\r$\nVerwenden Sie $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\num eine Liste der gültigen Werte angezeigt zu bekommen."
+
+#LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
+LangString SecGrpShortcuts_Text ${LANG_GERMAN} "Verknüpfungen erstellen"
+
+#LangString SecShortcutStartmenu_Text ${LANG_ENGLISH} "Add Shortcuts to the Start Menu"
+LangString SecShortcutStartmenu_Text ${LANG_GERMAN} "Verknüpfungen zum Startmenü hinzufügen"
+
+#LangString SecShortcutDesktop_Text ${LANG_ENGLISH} "Create Shortcut on the Desktop"
+LangString SecShortcutDesktop_Text ${LANG_GERMAN} "Verknüpfung aus dem Desktop erstellen"
+
+#LangString Installation_Delete_Config ${LANG_ENGLISH} "Delete (existing) Config Subdirectories/ Files"
+LangString Installation_Delete_Config ${LANG_GERMAN} "Lösche (vorhandene) Konfigurationsdateien/ -unterverzeichnisse"
+
+#LangString Banner_Scan_Drive ${LANG_ENGLISH} "Scanning Drive $9"
+LangString Banner_Scan_Drive ${LANG_GERMAN} "Scanne Laufwerk $9"
+
+#LangString Banner_Installation_Found_Singular ${LANG_ENGLISH} "Found $counter_tmp installation"
+LangString Banner_Installation_Found_Singular ${LANG_GERMAN} "$counter_tmp Installation gefunden"
+
+#LangString Banner_Installation_Found_Plural ${LANG_ENGLISH} "Found $counter_tmp installations"
+LangString Banner_Installation_Found_Plural ${LANG_GERMAN} "$counter_tmp Installationen gefunden"
+
+#LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
+LangString UnSecDeleteConfigFolder_Text ${LANG_GERMAN} "Konfigurations-Ordner löschen"

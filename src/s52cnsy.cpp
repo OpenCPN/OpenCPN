@@ -3483,7 +3483,11 @@ static wxString _LITDSN01(S57Obj *obj)
       if(UNKNOWN != sigper)
       {
             wxString s;
-            s.Printf(_T("%2.0fs"), sigper);
+            if(fabs(wxRound(sigper) - sigper) > 0.01)
+                  s.Printf(_T("%4.1fs"), sigper);
+            else
+                  s.Printf(_T("%2.0fs"), sigper);
+
             s.Trim(false);          // remove leading spaces
             s.Prepend(_T(" "));
             return_value.Append(s);
@@ -3497,7 +3501,17 @@ static wxString _LITDSN01(S57Obj *obj)
       if(UNKNOWN != height)
       {
             wxString s;
-            s.Printf(_T("%3.0fm"), height);
+            switch(ps52plib->m_nDepthUnitDisplay)
+            {
+                  case 0:                       // feet
+                  case 2:                       // fathoms
+                        s.Printf(_T("%3.0fft"), height* 3 * 39.37 / 36);
+                        break;
+                  default:
+                        s.Printf(_T("%3.0fm"), height);
+                        break;
+            }
+
             s.Trim(false);          // remove leading spaces
             s.Prepend(_T(" "));
             return_value.Append(s);

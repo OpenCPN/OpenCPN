@@ -2375,16 +2375,18 @@ void options::OnPageChange(wxNotebookEvent& event)
                   wxMB2WXbuf oldLocale = wxSetlocale(LC_ALL, wxEmptyString);
                   wxString current_sel = wxLocale::GetLanguageName(current_language);
 
+                  wxArrayString lang_array;
+
                    // always add us english
                   wxString eng_string = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->Description;
-                  m_itemLangListBox->Append( eng_string );
+                  lang_array.Add(_T("en_US"));
 
                   int nLang = sizeof(lang_list)/sizeof(int);
                   for( int it = 0 ; it < nLang ; it++)
                   {
                         if(wxLocale::IsAvailable(lang_list[it]))
                         {
-/*
+#ifdef __WXMSW__
                               //  Look explicitely to see if .mo is available
                               wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
                               //    simplify common sublangauges, i.e. en_EN
@@ -2392,25 +2394,30 @@ void options::OnPageChange(wxNotebookEvent& event)
                                     (lang_canonical.Mid(0, 2).Upper() == lang_canonical.Mid(3,2)))
                                   lang_canonical.Truncate(2);
                               wxString lang_dir = g_SData_Locn;
-#ifdef __WXMSW__
                               lang_dir += _T("share/");
-#endif
                               lang_dir += _T("locale/");
                               lang_dir += lang_canonical;
                               if(wxDir::Exists(lang_dir))
-*/
+#endif
                               {
                                   wxLocale ltest(lang_list[it], 0);
                                   ltest.AddCatalog(_T("opencpn"));
 
                                   if(ltest.IsLoaded(_T("opencpn")))
                                   {
+                                    wxString s0 = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
                                     wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-                                    m_itemLangListBox->Append( sl );
+                                    if(wxNOT_FOUND == lang_array.Index(s0))
+                                          lang_array.Add(s0);
+
                                   }
                               }
                         }
                   }
+
+                  for(unsigned int i=0 ; i < lang_array.GetCount() ; i++)
+                        m_itemLangListBox->Append( wxLocale:: FindLanguageInfo(lang_array[i])->Description);
+
 
                   //    Reset current language
                   wxSetlocale(LC_ALL, oldLocale);

@@ -44,6 +44,9 @@
 #include "about.h"
 #include "chart1.h"
 
+#include "bitmaps/paypal_donate.xpm"
+
+
 CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 
@@ -59,6 +62,8 @@ wxString str_version_date(VERSION_DATE, wxConvUTF8);
 wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch + wxT(" Build ") + str_version_date;
 //Gunther End
 
+extern wxString        *pHome_Locn;
+
 char AboutText[] =
 {
   "\n                                         OpenCPN\n\n\
@@ -67,14 +72,12 @@ char AboutText[] =
 
 char OpenCPNInfo[] = {"\n\n\
       OpenCPN is a Free Software project, built by sailors.\n\
-      It is freely available to download and distribute\n\
-      without charge at Opencpn.org.\n\n\
-      If you use OpenCPN, please consider contributing\n\
-      to the project or donating funds to the developers.\n\n\
+       It is freely available to download and distribute\n\
+               without charge at Opencpn.org.\n\n\
+       If you use OpenCPN, please consider contributing\n\
+                or donating funds to the project.\n\n\
       Documentation\n\
-           http://Opencpn.org\n\n\
-      Donations\n\
-           https://sourceforge.net/donate/index.php?group_id=180842"
+           http://Opencpn.org\n\n"
 };
 
 char AuthorText[] =
@@ -199,6 +202,7 @@ IMPLEMENT_DYNAMIC_CLASS( about, wxDialog )
 BEGIN_EVENT_TABLE( about, wxDialog )
     EVT_BUTTON( xID_OK, about::OnXidOkClick )
     EVT_NOTEBOOK_PAGE_CHANGED(ID_NOTEBOOK_HELP, about::OnPageChange)
+    EVT_BUTTON( ID_DONATE, about::OnDonateClick)
 
 END_EVENT_TABLE()
 
@@ -247,9 +251,17 @@ void about::CreateControls()
   pST1->SetLabel(_("\n         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"));
   itemBoxSizer2->Add(pST1);
 
+  //   "Donate" Button
+  wxImage pimg((char **)paypal_donate);
+  wxBitmap paypal_donate_bmp(pimg);
 
+  wxButton* donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, paypal_donate_bmp, wxDefaultPosition, wxDefaultSize, 0 );
+  donateButton->SetDefault();
+  itemBoxSizer2->Add(donateButton, 0, wxALIGN_RIGHT|wxRIGHT, 5);
+
+  //  Main Notebook
   wxNotebook* itemNotebook4 = new wxNotebook( itemDialog1, ID_NOTEBOOK_HELP, wxDefaultPosition, wxSize(-1, -1), wxNB_TOP );
-  itemBoxSizer2->Add(itemNotebook4, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5);
+  itemBoxSizer2->Add(itemNotebook4, 0, wxALIGN_CENTER_VERTICAL|wxEXPAND|wxALL, 5);
 
   //    About Panel
   wxPanel* itemPanelAbout = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
@@ -265,12 +277,18 @@ void about::CreateControls()
 
   wxString *pAboutString = new wxString(AboutText,  wxConvUTF8);
 
-  //pAboutString->Append(wxString(OpenCPNVersion,  wxConvUTF8)); //Gunther
   pAboutString->Append(OpenCPNVersion); //Gunther
   pAboutString->Append(wxString(OpenCPNInfo,  wxConvUTF8));
 
   pAboutTextCtl->WriteText(*pAboutString);
   delete pAboutString;
+
+  // Show the user where the log file is going to be
+  wxString log = _T("\n    Logfile location: ");
+  log.Append(*pHome_Locn);
+  log.Append(_T("opencpn.log"));
+
+  pAboutTextCtl->WriteText(log);
 
   //     Authors Panel
   wxPanel* itemPanelAuthors = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
@@ -361,6 +379,11 @@ void about::CreateControls()
 void about::OnXidOkClick( wxCommandEvent& event )
 {
   Close();
+}
+
+void about::OnDonateClick( wxCommandEvent& event )
+{
+      wxLaunchDefaultBrowser(_T("https://sourceforge.net/donate/index.php?group_id=180842"));
 }
 
 void about::OnPageChange(wxNotebookEvent& event)
