@@ -831,6 +831,12 @@ Section "-Install Section" SecInstall
 		WriteRegStr SHCTX "${REG_KEY_UN}" "InstallAdminUser" "$USERNAME"
 	${EndIf}
 
+	;# Create the config folder if it does not exist and set full access rights to it
+	${IfNot} ${FileExists} "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
+		CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
+	${EndIf}
+	AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "FullAccess"
+	
 	;# Save the log file
 	StrCpy $0 "$INSTDIR\install.log"
 	Push $0
