@@ -971,7 +971,8 @@ const char *OGRFeature::GetFieldAsString( int iField )
 
 {
     OGRFieldDefn        *poFDefn = poDefn->GetFieldDefn( iField );
-    static char         szTempBuffer[80];
+    static char         szTempBuffer[160];
+    unsigned int max_line = 80;
 
     CPLAssert( poFDefn != NULL || iField == -1 );
     if( poFDefn == NULL )
@@ -1018,7 +1019,7 @@ const char *OGRFeature::GetFieldAsString( int iField )
         {
             sprintf( szItem, "%d", pauFields[iField].IntegerList.paList[i] );
             if( strlen(szTempBuffer) + strlen(szItem) + 6 + 1
-                > sizeof(szTempBuffer) )
+                > max_line/*sizeof(szTempBuffer)*/ )
             {
                 break;
             }
@@ -1055,7 +1056,7 @@ const char *OGRFeature::GetFieldAsString( int iField )
         {
             sprintf( szItem, szFormat, pauFields[iField].RealList.paList[i] );
             if( strlen(szTempBuffer) + strlen(szItem) + 6 + 1
-                > sizeof(szTempBuffer) )
+                > max_line/*sizeof(szTempBuffer)*/ )
             {
                 break;
             }
@@ -1083,7 +1084,7 @@ const char *OGRFeature::GetFieldAsString( int iField )
             const char  *pszItem = pauFields[iField].StringList.paList[i];
 
             if( strlen(szTempBuffer) + strlen(pszItem)  + 6 + 1
-                > sizeof(szTempBuffer) )
+                > max_line/*sizeof(szTempBuffer)*/ )
             {
                 break;
             }
