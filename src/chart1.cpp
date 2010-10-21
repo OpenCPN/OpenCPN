@@ -2336,6 +2336,17 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
           CheckAndAddPlugInTool(tb);
           tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
           x += pitch_tool;
+          m_toolbar_scale_shown = true;
+    }
+    else
+    {
+          CheckAndAddPlugInTool(tb);
+          tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin_grey"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
+          x += pitch_tool;
+          CheckAndAddPlugInTool(tb);
+          tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout_grey"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
+          x += pitch_tool;
+          m_toolbar_scale_shown = false;
     }
 
 
@@ -2725,6 +2736,21 @@ void MyFrame::PrepareToolbarBitmaps(void)
           delete pimg;
     }
 
+    //      Make greyscale bitmaps of scale-in/out buttons
+    wxString index = _T("scin_grey");
+    wxBitmap *px1 = (wxBitmap*)tool_xpm_hash[_T("scin")];
+    wxImage imgs = px1->ConvertToImage();
+    BuildGreyScaleTool(&imgs, 32, index, tool_bitmap_hash_day);
+    BuildGreyScaleTool(&imgs, 16, index, tool_bitmap_hash_dusk);
+    BuildGreyScaleTool(&imgs,  8, index, tool_bitmap_hash_night);
+
+    index = _T("scout_grey");
+    px1 = (wxBitmap*)tool_xpm_hash[_T("scout")];
+    imgs = px1->ConvertToImage();
+    BuildGreyScaleTool(&imgs, 32, index, tool_bitmap_hash_day);
+    BuildGreyScaleTool(&imgs, 16, index, tool_bitmap_hash_dusk);
+    BuildGreyScaleTool(&imgs,  8, index, tool_bitmap_hash_night);
+
 
 #else
     // Load up all the toolbar bitmap xpm data pointers into a hash map
@@ -2777,9 +2803,13 @@ void MyFrame::PrepareToolbarBitmaps(void)
 
 }
 
-void MyFrame::BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString &index, string_to_pbitmap_hash &hash)
+void MyFrame::BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString &index, string_to_pbitmap_hash &hash, bool grey)
 {
-        wxImage img_dup = pimg->Copy();
+      wxImage img_dup;
+      if(grey)
+            img_dup = pimg->ConvertToGreyscale();
+      else
+            img_dup = pimg->Copy();
 
         if(back_color < 200)
         {
@@ -2830,6 +2860,25 @@ void MyFrame::BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString 
 
         // store it
         hash[index] = ptoolBarBitmap;
+}
+
+void MyFrame::BuildGreyScaleTool(wxImage *pimg, unsigned char grey_val, wxString &index, string_to_pbitmap_hash &hash)
+{
+      wxImage img_dup = pimg->Copy();
+      unsigned char *pa = (unsigned char *)malloc(img_dup.GetHeight() * img_dup.GetWidth());
+      memset(pa, grey_val, img_dup.GetHeight() * img_dup.GetWidth());
+      img_dup.SetAlpha(pa);
+      wxBitmap *ptoolBarBitmap;
+
+#ifdef __WXMSW__
+      wxBitmap tbmp(img_dup.GetWidth(),img_dup.GetHeight(),-1);
+      wxMemoryDC dwxdc;
+      dwxdc.SelectObject(tbmp);
+      ptoolBarBitmap = new wxBitmap(img_dup, (wxDC &)dwxdc);
+#else
+      ptoolBarBitmap = new wxBitmap(img_dup);
+#endif
+      hash[index] = ptoolBarBitmap;
 }
 
 void MyFrame::ReSizeToolbar(void)
@@ -5402,10 +5451,10 @@ void MyFrame::UpdateControlBar(void)
       if (cc1->GetQuiltMode())
       {
             piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-            if(piano_chart_index_array.GetCount() > 1)
+//            if(piano_chart_index_array.GetCount() > 1)
                   stats->pPiano->SetKeyArray(piano_chart_index_array);
-            else
-                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
+//            else
+//                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
 
             ArrayOfInts piano_active_chart_index_array = cc1->GetQuiltCandidatedbIndexArray();
             stats->pPiano->SetActiveKeyArray(piano_active_chart_index_array);
@@ -5419,10 +5468,10 @@ void MyFrame::UpdateControlBar(void)
       else
       {
             piano_chart_index_array = ChartData->GetCSArray(pCurrentStack);
-            if(piano_chart_index_array.GetCount() > 1)
+//            if(piano_chart_index_array.GetCount() > 1)
                   stats->pPiano->SetKeyArray(piano_chart_index_array);
-            else
-                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
+//            else
+//                  stats->pPiano->SetKeyArray(empty_piano_chart_index_array);
 
 
             ArrayOfInts piano_active_chart_index_array;
@@ -5842,7 +5891,7 @@ bool MyFrame::DoChartUpdate(void)
 update_finish:
 
             //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-            if(pCurrentStack && ((pCurrentStack->nEntry == 1) && (last_nEntry != 1)) || ((pCurrentStack->nEntry != 1) && (last_nEntry == 1)))
+            if(pCurrentStack && ((pCurrentStack->nEntry == 1) && m_toolbar_scale_shown) || ((pCurrentStack->nEntry != 1) && !m_toolbar_scale_shown))
                   gFrame->RequestNewToolbar();
 
         if(bNewChart)

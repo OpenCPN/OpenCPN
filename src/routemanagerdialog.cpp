@@ -457,6 +457,14 @@ void RouteManagerDialog::UpdateRouteListCtrl()
             li.SetImage((*it)->IsVisible() ? 0 : -1);
             li.SetData(index);
             li.SetText(_T(""));
+
+            if((*it)->m_bRtIsActive)
+            {
+                  wxFont font = *wxNORMAL_FONT;
+                  font.SetWeight(wxFONTWEIGHT_BOLD);
+                  li.SetFont(font);
+            }
+
             long idx = m_pRouteListCtrl->InsertItem(li);
 
             wxString name = (*it)->m_RouteNameString;
@@ -761,11 +769,13 @@ void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event)
       else
             g_pRouteMan->DeactivateRoute();
 
+      UpdateRouteListCtrl();
+
       pConfig->UpdateRoute(route);
-//       pConfig->UpdateSettings(); // NOTE is this really nessecary??
+
       cc1->Refresh();
 
-      btnRteActivate->SetLabel(route->m_bRtIsActive ? _("Deactivate") : _("Activate"));
+//      btnRteActivate->SetLabel(route->m_bRtIsActive ? _("Deactivate") : _("Activate"));
 
       m_bNeedConfigFlush = true;
 }

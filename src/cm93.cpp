@@ -147,10 +147,10 @@ bool M_COVR_Desc:: WriteWKB(void *p)
             double *pd = (double *)pi;
             *pd++ = transform_WGS84_offset_x;
             *pd++ = transform_WGS84_offset_y;
-            *pd++ = lat_min;
-            *pd++ = lat_max;
-            *pd++ = lon_min;
-            *pd++ = lon_max;
+            *pd++ = m_covr_lat_min;
+            *pd++ = m_covr_lat_max;
+            *pd++ = m_covr_lon_min;
+            *pd++ = m_covr_lon_max;
 
       }
 
@@ -175,14 +175,14 @@ int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
 
             ifs.Read(&transform_WGS84_offset_x, sizeof(double));
             ifs.Read(&transform_WGS84_offset_y, sizeof(double));
-            ifs.Read(&lat_min, sizeof(double));
-            ifs.Read(&lat_max, sizeof(double));
-            ifs.Read(&lon_min, sizeof(double));
-            ifs.Read(&lon_max, sizeof(double));
+            ifs.Read(&m_covr_lat_min, sizeof(double));
+            ifs.Read(&m_covr_lat_max, sizeof(double));
+            ifs.Read(&m_covr_lon_min, sizeof(double));
+            ifs.Read(&m_covr_lon_max, sizeof(double));
 
             pPoints = new wxPoint[m_nvertices];
 
-            m_bbox = wxBoundingBox(lon_min, lat_min, lon_max, lat_max);
+            m_covr_bbox = wxBoundingBox(m_covr_lon_min, m_covr_lat_min, m_covr_lon_max, m_covr_lat_max);
 
       }
       return length;
@@ -295,6 +295,9 @@ bool covr_set::Init(wxChar scale_char, wxString &prefix)
 
 
       //    Preload the cache
+      if(!wxFileName::FileExists(m_cachefile))
+         return true;
+
       wxFFileInputStream ifs(m_cachefile);
       if(ifs.IsOk())
       {
@@ -3500,10 +3503,10 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
                         float_2Dpt *ppt = geoPt;
 
-                        pmcd->lon_max = -1000.;
-                        pmcd->lon_min = 1000.;
-                        pmcd->lat_max = -1000.;
-                        pmcd->lat_min = 1000.;
+                        pmcd->m_covr_lon_max = -1000.;
+                        pmcd->m_covr_lon_min = 1000.;
+                        pmcd->m_covr_lat_max = -1000.;
+                        pmcd->m_covr_lat_min = 1000.;
 
 //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
                         for(int ip = 0 ; ip < npta ; ip++)
@@ -3516,16 +3519,18 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                               ppt->x = lon;
                               ppt->y = lat;
 
-                              pmcd->lon_max = wxMax(pmcd->lon_max, lon);
-                              pmcd->lon_min = wxMin(pmcd->lon_min, lon);
-                              pmcd->lat_max = wxMax(pmcd->lat_max, lat);
-                              pmcd->lat_min = wxMin(pmcd->lat_min, lat);
+                              pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
+                              pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
+                              pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
+                              pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
 
                               ppt++;
                         }
                         pmcd->m_nvertices = npta;
                         pmcd->pvertices = geoPt;
                         pmcd->pPoints = new wxPoint[npta];
+
+                        pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
 
 
                         //    Capture and store the potential WGS transform offsets grabbed during attribute decode
@@ -4102,10 +4107,10 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt)
                                                 float_2Dpt *ppt = geoPt;
 
                               //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
-                                                pmcd->lon_max = -1000.;
-                                                pmcd->lon_min = 1000.;
-                                                pmcd->lat_max = -1000.;
-                                                pmcd->lat_min = 1000.;
+                                                pmcd->m_covr_lon_max = -1000.;
+                                                pmcd->m_covr_lon_min = 1000.;
+                                                pmcd->m_covr_lat_max = -1000.;
+                                                pmcd->m_covr_lat_min = 1000.;
 
 
                                                 for(int ip = 0 ; ip < npta ; ip++)
@@ -4118,10 +4123,10 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt)
                                                       ppt->x = lon;
                                                       ppt->y = lat;
 
-                                                      pmcd->lon_max = wxMax(pmcd->lon_max, lon);
-                                                      pmcd->lon_min = wxMin(pmcd->lon_min, lon);
-                                                      pmcd->lat_max = wxMax(pmcd->lat_max, lat);
-                                                      pmcd->lat_min = wxMin(pmcd->lat_min, lat);
+                                                      pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
+                                                      pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
+                                                      pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
+                                                      pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
 
                                                       ppt++;
                                                 }
@@ -4132,6 +4137,8 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt)
                                                 pmcd->pPoints = new wxPoint[npta];
 
                                                 pmcd->m_cell_index = vpcells.Item(i);
+
+                                                pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
 
 
                               //     Add this object to the covr_set
@@ -5361,7 +5368,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
 
                                     //    Case:  vpBBox is completely inside the mcd box
-                                    if(!(_OUT == vp_positive.vpBBox.Intersect(mcd->m_bbox)) || !(_OUT == vp.vpBBox.Intersect(mcd->m_bbox)))
+                                    if(!(_OUT == vp_positive.vpBBox.Intersect(mcd->m_covr_bbox)) || !(_OUT == vp.vpBBox.Intersect(mcd->m_covr_bbox)))
                                     {
 
                                           float_2Dpt *p = mcd->pvertices;

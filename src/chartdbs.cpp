@@ -178,7 +178,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
 {
     Clear();
 
-    char *pt = (char *)malloc(theChart.GetFullPath().Len() + 1);
+    char *pt = (char *)malloc(strlen(theChart.GetFullPath().mb_str(wxConvUTF8)) + 1);
     strcpy(pt, theChart.GetFullPath().mb_str(wxConvUTF8));
     pFullPath = pt;
 
@@ -639,7 +639,7 @@ bool ChartDatabase::Write(const wxString &filePath)
         wxString &dir = chartDirs[iDir];
         int dirlen = dir.length();
         ofs.Write(&dirlen, sizeof(int));
-        ofs.Write(dir.mb_str(), dirlen);
+        ofs.Write(dir.fn_str(), dirlen);
     }
 
     for (UINT32 iTable = 0; iTable < chartTable.size(); iTable++)
@@ -1278,8 +1278,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
 
 
             //    As a speed optimization, use strcmp instead of wxString::IsSameAs()
-            char path_test_str[512];
-            strncpy(path_test_str, full_name.mb_str(), 511);
+ //           char path_test_str[512];
+ //           strncpy(path_test_str, (const char *)full_name.fn_str(), 511);
 
 
             ChartTableEntry *pnewChart = NULL;
@@ -1298,8 +1298,11 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
                   int nEntry = chartTable.GetCount();
                   for(int i=0 ; i<nEntry ; i++)
                   {
+                        wxString table_file_name(chartTable[isearch].GetpFullPath(), wxConvUTF8);
+
                         //    If the chart file paths are exactly the same, select the newer one
-                        if(bthis_dir_in_dB && !strcmp(path_test_str, chartTable[isearch].GetpFullPath()))
+//                        if(bthis_dir_in_dB && !strcmp(path_test_str, chartTable[isearch].GetpFullPath()))
+                        if(bthis_dir_in_dB && full_name.IsSameAs(table_file_name))
                         {
                               //    Check the file modification time
                               time_t t_oldFile = chartTable[isearch].GetFileTime();
@@ -1326,7 +1329,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
                   //  Look at the chart file name for a further check for duplicates
                   //  This catches the case in which the "same" chart is in different locations,
                   //  and one may be newer than the other.
-                        wxFileName table_file(wxString(chartTable[isearch].GetpFullPath(), wxConvUTF8));
+                        wxFileName table_file(table_file_name);
 
                         if( table_file.GetFullName() == file_name )
                         {

@@ -96,11 +96,11 @@ class M_COVR_Desc
       int         m_npub_year;
       double      transform_WGS84_offset_x;
       double      transform_WGS84_offset_y;
-      double      lat_min;
-      double      lat_max;
-      double      lon_min;
-      double      lon_max;
-      wxBoundingBox m_bbox;
+      double      m_covr_lat_min;
+      double      m_covr_lat_max;
+      double      m_covr_lon_min;
+      double      m_covr_lon_max;
+      wxBoundingBox m_covr_bbox;
 };
 
 WX_DECLARE_OBJARRAY(M_COVR_Desc, Array_Of_M_COVR_Desc);

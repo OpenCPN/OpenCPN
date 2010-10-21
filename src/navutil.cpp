@@ -860,47 +860,8 @@ SelectableItemList Select::FindSelectionList(float slat, float slon, int fseltyp
                               c = pFindSel->m_slon;
                               d = pFindSel->m_slon2;
 
-                              double adder = 0.;
-
-                              if ( ( c * d ) < 0. )
-                              {
-                                    //    Arrange for points to be increasing longitude, c to d
-                                    double dist, brg;
-                                    DistanceBearingMercator ( a, c, b, d, &brg, &dist );
-                                    if ( brg < 180. )             // swap points?
-                                    {
-                                          double tmp;
-                                          tmp = c; c=d; d=tmp;
-                                          tmp = a; a=b; b=tmp;
-                                    }
-                                    if ( d < 0. )     // idl?
-                                    {
-                                          d += 360.;
-                                          if ( slon < 0. )
-                                                adder = 360.;
-                                    }
-                              }
-
-
-//    As a course test, use segment bounding box test
-                              if ( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) ) &&
-                                     ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) ) && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) )
-                              {
-//    Use vectors to do hit test....
-                                    VECTOR2D va, vb, vn;
-
-                                    va.x = ( slon + adder ) - c;
-                                    va.y = slat - a;
-                                    vb.x = d - c;
-                                    vb.y = b - a;
-
-                                    double delta = vGetLengthOfNormal ( &va, &vb, &vn );
-                                    if ( fabs ( delta ) < SelectRadius )
-                                    {
-                                          ret_list.Append(pFindSel);
-                                          break;
-                                    }
-                              }
+                              if(IsSegmentSelected(a,b,c,d,slat,slon, SelectRadius))
+                                    ret_list.Append(pFindSel);
 
                               break;
                         }

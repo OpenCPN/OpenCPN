@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chart1.h,v 1.43 2010/06/11 16:31:22 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  OpenCP Main wxWidgets Program
@@ -24,38 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: chart1.h,v $
- * Revision 1.43  2010/06/11 16:31:22  bdbcat
- * 611a
- *
- * Revision 1.42  2010/06/04 22:36:10  bdbcat
- * 604
- *
- * Revision 1.41  2010/05/27 19:00:18  bdbcat
- * 527a
- *
- * Revision 1.40  2010/05/19 01:05:26  bdbcat
- * Build 518
- *
- *
- * Revision 1.39  2010/05/15 03:55:04  bdbcat
- * Build 514
- *
- * Revision 1.38  2010/05/04 01:34:04  bdbcat
- * Build 503
- *
- * Revision 1.37  2010/05/02 03:04:05  bdbcat
- * Build 501
- *
- * Revision 1.36  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.35  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.34  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  *
  */
@@ -329,7 +296,10 @@ class MyFrame: public wxFrame
     void ReSizeToolbar(void);
     void PrepareToolbarBitmaps(void);
     void BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString &index,
+                         string_to_pbitmap_hash &hash, bool grey = false);
+    void BuildGreyScaleTool(wxImage *pimg, unsigned char grey_val, wxString &index,
                          string_to_pbitmap_hash &hash);
+
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
     void UpdateToolbarStatusWindow(ChartBase *pchart, bool bSendSize = true);
@@ -384,8 +354,8 @@ class MyFrame: public wxFrame
 
     wxToolBarToolBase *m_pStatDummyTool;
     wxStaticBitmap    *m_ptool_ct_dummyStaticBmp;
-//    wxBitmapButton      *m_ptool_ct_dummy_bb;
 
+    bool              m_toolbar_scale_shown;
 
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
