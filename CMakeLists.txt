@@ -31,11 +31,37 @@ PROJECT(OpenCPN)
 SET(PACKAGE_NAME opencpn)
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+
+
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
+
+SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+
+# Find wxWidgets here, and the setting get inherited by all plugins.
+# These options can be used to set the linux widgets build type
+SET( wxWidgets_USE_DEBUG OFF)
+SET( wxWidgets_USE_UNICODE ON)
+SET( wxWidgets_USE_UNIVERSAL OFF)
+SET( wxWidgets_USE_STATIC OFF)
+
+FIND_PACKAGE(wxWidgets REQUIRED)
+INCLUDE(${wxWidgets_USE_FILE})
+#INCLUDE_DIRECTORIES(${wxWidgets_INCLUDE_DIRS})
+#ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
+
+#  Search for wxWidgets 2.9
+STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
+
+MESSAGE (STATUS "")
+
+
 
 IF(NOT SKIP_PLUGINS)
  add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
+
+MESSAGE (STATUS "")
+MESSAGE (STATUS "*** Building ${PACKAGE_NAME}  ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
@@ -64,19 +90,7 @@ IF(WIN32)
     ADD_DEFINITIONS(-D__MSVC__)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
 ENDIF(WIN32)
- 
-SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
-# These options can be used to set the linux widgets build type
-#SET( wxWidgets_USE_DEBUG ON)
-SET( wxWidgets_USE_UNICODE ON)
-#SET( wxWidgets_USE_UNIVERSAL OFF)
-#SET( wxWidgets_USE_STATIC OFF)
-
-FIND_PACKAGE(wxWidgets REQUIRED)
-INCLUDE(${wxWidgets_USE_FILE})
-#INCLUDE_DIRECTORIES(${wxWidgets_INCLUDE_DIRS})
-#ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
 
 # Location where cmake first looks for cmake modules.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
@@ -191,10 +205,10 @@ SET(HDRS
 		include/about.h
 		include/ais.h
 		include/cm93.h
-		include/scrollingdialog.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 )
+
 SET(SRCS 
 		src/chart1.cpp
 		src/bbox.cpp
@@ -218,9 +232,15 @@ SET(SRCS
 		src/about.cpp
 		src/ais.cpp
 		src/cm93.cpp
-		src/scrollingdialog.cpp
                 src/pluginmanager.cpp
     )
+
+IF(wx_Version MATCHES "2.9")
+ELSE(wx_Version MATCHES "2.9")
+  SET(HDRS ${HDRS} include/scrollingdialog.h )
+  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
+ENDIF(wx_Version MATCHES "2.9")
+
 SET(PACKAGE_HEADERS ""
 #	include/ais.h
 )
@@ -744,6 +764,7 @@ IF(WIN32 AND NOT UNIX)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESE.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_PORTUGUESE.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_RUSSIAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_RUSSIAN.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SWEDISH.nsh" @ONLY)
+ configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
 ENDIF(WIN32 AND NOT UNIX)
 
 configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther
