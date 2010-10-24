@@ -333,3 +333,6 @@ LangString Banner_Installation_Found_Plural ${LANG_GERMAN} "$counter_tmp Install
 
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_GERMAN} "Konfigurations-Ordner löschen"
+
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_GERMAN} "Deinstallation"

@@ -665,6 +665,8 @@ CMake variables
 	!include /NONFATAL "Langstrings_RUSSIAN.nsh"
 	!insertmacro MUI_LANGUAGE "Swedish"
 	!include /NONFATAL "Langstrings_SWEDISH.nsh"
+	!insertmacro MUI_LANGUAGE "Finnish"
+	!include /NONFATAL "Langstrings_FINNISH.nsh"
 
 ;-------------------------------- 
 ;# Reserve Files
@@ -771,8 +773,8 @@ SectionGroup /e "!Shortcuts Section Group" SecGrpShortcuts
 			;# Create shortcuts
 			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@.lnk" "$INSTDIR\opencpn.exe"
-			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall"
-			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall\$(Uninstall_Link).lnk" "$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe"
+			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)"
+			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)\$(Uninstall_Link).lnk" "$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe"
 		!insertmacro MUI_STARTMENU_WRITE_END
 	SectionEnd
 	
@@ -834,8 +836,9 @@ Section "-Install Section" SecInstall
 	;# Create the config folder if it does not exist and set full access rights to it
 	${IfNot} ${FileExists} "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 		CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
+		Sleep 250 
 	${EndIf}
-	AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "FullAccess"
+	AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 	
 	;# Save the log file
 	StrCpy $0 "$INSTDIR\install.log"
@@ -2615,13 +2618,13 @@ Function Check_Config_Exists
 	${IfNot} ${FileExists} "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 		${If} ${FileExists} "$USERS_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 			CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
-			;AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "ListDirectory + AddFile + AddSubdirectory + ReadEA + WriteEA + Traverse + DeleteChild + ReadAttributes + WriteAttributes + Delete + ReadControl + WriteDAC + Synchronize + GenericRead + GenericWrite"
-			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "FullAccess"
+			Sleep 250
+			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 			CopyFiles /SILENT "$USERS_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*" "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" 
 		${ElseIf} ${FileExists} "$ADMIN_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 			CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
-			;AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "ListDirectory + AddFile + AddSubdirectory + ReadEA + WriteEA + Traverse + DeleteChild + ReadAttributes + WriteAttributes + Delete + ReadControl + WriteDAC + Synchronize + GenericRead + GenericWrite"
-			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "FullAccess"
+			Sleep 250
+			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 			CopyFiles /SILENT "$ADMIN_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*" "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 		${EndIf}
 		
@@ -3281,6 +3284,10 @@ FunctionEnd
 
 Function ExecAppFile    
     !insertmacro UAC_AsUser_ExecShell 'open' '$INSTDIR\opencpn.exe' '' '$INSTDIR' ''
+	loop:
+    System::Call user32::GetForegroundWindow()i.r0
+    Sleep 200
+    IntCmpU $0 $hwndparent loop 
 FunctionEnd
 
 
@@ -4177,6 +4184,34 @@ Var explArrCount
 !insertmacro Explodes_Macro ""
 !insertmacro Explodes_Macro "un."
 
+
+!macro isEmptyDir_Macro un
+	Function ${un}isEmptyDir
+	# Stack ->                    # Stack: <directory>
+	Exch $0                       # Stack: $0
+	Push $1                       # Stack: $1, $0
+	FindFirst $0 $1 "$0\*.*"
+	StrCmp $1 "." 0 _notempty
+	FindNext $0 $1
+	StrCmp $1 ".." 0 _notempty
+	ClearErrors
+	FindNext $0 $1
+	IfErrors 0 _notempty
+	FindClose $0
+	Pop $1                  # Stack: $0
+	StrCpy $0 1
+	Exch $0                 # Stack: 1 (true)
+	Goto _end
+	_notempty:
+	FindClose $0
+	Pop $1                   # Stack: $0
+	StrCpy $0 0
+	Exch $0                  # Stack: 0 (false)
+	_end:
+	FunctionEnd
+!macroend
+!insertmacro isEmptyDir_Macro ""
+!insertmacro isEmptyDir_Macro "un."
 ;--------------------------------------------------------------------------------------------------
 ;##################################################################################################
 ;#                                  D E S C R I P T I O N S                                       #
@@ -4518,4 +4553,8 @@ Var explArrCount
 	LangString Banner_Installation_Found_Singular ${LANG_ENGLISH} "Found $counter_tmp installation"
 	
 	LangString Banner_Installation_Found_Plural ${LANG_ENGLISH} "Found $counter_tmp installations"
+	
+  ;added on 2010-10-21
+	LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+	
 ;#EOF

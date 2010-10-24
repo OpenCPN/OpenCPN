@@ -336,3 +336,7 @@ LangString Banner_Installation_Found_Plural ${LANG_PORTUGUESE} "Found $counter_t
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESE} "Delete Config folder"
+
+;added on 2010-10-21
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_PORTUGUESE} "Uninstall"

@@ -325,14 +325,18 @@ LangString Installation_Delete_Config ${LANG_PORTUGUESEBR} "Deletar (existente) 
 
 ;added on 2010-10-17
 #LangString Banner_Scan_Drive ${LANG_ENGLISH} "Scanning Drive $9"
-LangString Banner_Scan_Drive ${LANG_PORTUGUESEBR} "Scanning Drive $9"
+LangString Banner_Scan_Drive ${LANG_PORTUGUESEBR} "Mapeando Drive $9"
 
 #LangString Banner_Installation_Found_Singular ${LANG_ENGLISH} "Found $counter_tmp installation"
-LangString Banner_Installation_Found_Singular ${LANG_PORTUGUESEBR} "Found $counter_tmp installation"
+LangString Banner_Installation_Found_Singular ${LANG_PORTUGUESEBR} "Encontrado $counter_tmp installation"
 
 #LangString Banner_Installation_Found_Plural ${LANG_ENGLISH} "Found $counter_tmp installations"
-LangString Banner_Installation_Found_Plural ${LANG_PORTUGUESEBR} "Found $counter_tmp installations"
+LangString Banner_Installation_Found_Plural ${LANG_PORTUGUESEBR} "Encontrado $counter_tmp installations"
 
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
-LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESEBR} "Delete Config folder"
+LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESEBR} "Deletar Pasta Config"
+
+;added on 2010-10-21
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_PORTUGUESEBR} "Uninstall"
