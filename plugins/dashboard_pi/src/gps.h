@@ -2,7 +2,7 @@
  * $Id: gps.h, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -54,12 +54,13 @@ class DashboardInstrument_GPS: public DashboardInstrument
 
             ~DashboardInstrument_GPS(void){}
 
+            void SetInstrumentWidth(int width);
+            void SetData(int, double, wxString) {};
             void SetSatInfo(int cnt, int seq, SAT_INFO sats[4]);
 
       private:
 
       protected:
-            wxString m_title;
             int m_cx, m_cy, m_radius;
             int m_SatCount;
             SAT_INFO m_SatInfo[12];

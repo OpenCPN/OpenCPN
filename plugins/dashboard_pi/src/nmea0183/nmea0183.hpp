@@ -251,9 +251,9 @@ class NMEA0183
 
 //      MANUFACTURER_LIST Manufacturers;
 
-      virtual bool IsGood( void ) const;
-      virtual bool Parse( void );
-      virtual bool PreParse( void );
+      bool IsGood( void ) const;
+      bool Parse( void );
+      bool PreParse( void );
 
       NMEA0183& operator << ( wxString& source );
       NMEA0183& operator >> ( wxString& destination );

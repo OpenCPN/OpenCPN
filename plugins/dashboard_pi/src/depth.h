@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: speedometer.h, v1.0 2010/08/05 SethDart Exp $
+ * $Id: depth.h, v1.0 2010/08/30 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin
@@ -26,8 +26,8 @@
  ***************************************************************************
  */
 
-#ifndef __Speedometer_H__
-#define __Speedometer_H__
+#ifndef __DEPTH_H__
+#define __DEPTH_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -42,28 +42,33 @@
     #include <wx/wx.h>
 #endif
 
-#include "dial.h"
+// Warn: div by 0 if count == 1
+#define DEPTH_RECORD_COUNT 30
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Speedometer
-//|
-//| DESCRIPTION:
-//|    This class creates a speedometer style control
-//|
-//+------------------------------------------------------------------------------
-class DashboardInstrument_Speedometer: public DashboardInstrument_Dial
+#include "instrument.h"
+
+class DashboardInstrument_Depth: public DashboardInstrument
 {
       public:
-            DashboardInstrument_Speedometer( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
-                                    int s_value, int e_value);
+            DashboardInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title);
 
-            ~DashboardInstrument_Speedometer(void){}
+            ~DashboardInstrument_Depth(void){}
+
+            void SetInstrumentWidth(int width);
+            void SetData(int, double, wxString);
 
       private:
 
+      protected:
+            double m_ArrayDepth[DEPTH_RECORD_COUNT];
+            double m_MaxDepth;
+            double m_Depth;
+            wxString m_Temp;
+
+            void Draw(wxBufferedDC* dc);
+            void DrawBackground(wxBufferedDC* dc);
+            void DrawForeground(wxBufferedDC* dc);
 };
 
-#endif // __Speedometer_H__
+#endif // __DEPTH_H__
 

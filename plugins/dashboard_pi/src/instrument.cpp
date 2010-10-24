@@ -2,7 +2,7 @@
  * $Id: instrument.cpp, v1.0 2010/08/30 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -42,21 +42,42 @@
 //
 //----------------------------------------------------------------
 
-DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title)
+DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag)
       :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, title)
 {
       m_title = title;
+      m_width = 10;
+      m_height = 10;
+      m_cap_flag = cap_flag;
+
+      wxClientDC dc(this);
+      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
+      int width;
+      dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, font);
 
       Connect(this->GetId(), wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
 }
 
-DashboardInstrument::~DashboardInstrument()
+int DashboardInstrument::GetCapacity()
 {
+      return m_cap_flag;
 }
 
 void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
       wxPaintDC dc(this);
+
+      if(!dc.IsOk())
+            return;
+
+      wxBitmap bmp;
+
+      // Create a double buffer to draw the plot
+      // on screen to prevent flicker from occuring.
+      wxBufferedDC buff_dc;
+      buff_dc.Init(&dc, bmp);
+
+      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
 
       wxRect rect = GetClientRect();
 
@@ -65,23 +86,11 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
             return;
       }
 
-      wxBitmap bmp;
-
-      // Create a double buffer to draw the plot
-      // on screen to prevent flicker from occuring.
-      wxBufferedDC buff_dc;
-      buff_dc.Init(&dc, bmp);
-      buff_dc.Clear();
-
       wxColour cl;
 
       GetGlobalColor(_T("DILG1"), &cl);
       buff_dc.SetBackground(cl);
       buff_dc.Clear();
-
-      wxFont *font = OCPNGetFont(_T("DashBoard Label"), 9);
-      int width;
-      buff_dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, font);
 
       GetGlobalColor(_T("UIBDR"), &cl);
       // With wxTRANSPARENT_PEN the borders are ugly so lets use the same color for both
@@ -93,16 +102,12 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
       buff_dc.DrawRoundedRectangle(0, 0, rect.width, m_TitleHeight, 3);
 
       buff_dc.SetFont(*font);
-      //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
+      //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
       GetGlobalColor(_T("DILG3"), &cl);
       buff_dc.SetTextForeground(cl);
       buff_dc.DrawText(m_title, 5, 0);
 
       Draw(&buff_dc);
-}
-
-void DashboardInstrument::Draw(wxBufferedDC* dc)
-{
 }
 
 //----------------------------------------------------------------
@@ -111,74 +116,155 @@ void DashboardInstrument::Draw(wxBufferedDC* dc)
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title)
-      :DashboardInstrument(pparent, id, title)
+DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag, wxString format)
+      :DashboardInstrument(pparent, id, title, cap_flag)
 {
-      m_data = _T("---");
+      m_format = format;
 
-      SetMinSize(wxSize(200, 50));
+      m_data = _T("---");
+      wxClientDC dc(this);
+      wxFont *font = OCPNGetFont(_T("Dashboard Data"), 16);
+      int width;
+      dc.GetTextExtent(_T("000"), &width, &m_DataHeight, 0, 0, font);
+
+      SetInstrumentWidth(200);
 }
 
-DashboardInstrument_Single::~DashboardInstrument_Single()
+void DashboardInstrument_Single::SetInstrumentWidth(int width)
 {
+      m_width = width;
+      m_height = m_TitleHeight+m_DataHeight;
+      SetMinSize(wxSize(m_width, m_height));
 }
 
 void DashboardInstrument_Single::Draw(wxBufferedDC* dc)
 {
       wxColour cl;
 
-      dc->SetFont(*OCPNGetFont(_T("DashBoard Data"), 16));
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Data")));
+      dc->SetFont(*OCPNGetFont(_T("Dashboard Data"), 16));
+      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
       GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
 
-      dc->DrawText(m_data, 30, 20);
+      dc->DrawText(m_data, 10, m_TitleHeight);
 }
 
-void DashboardInstrument_Single::SetData(wxString data)
+void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
-      m_data = data;
+      if (m_cap_flag & st)
+      {
+            m_data = wxString::Format(m_format, data);
 
-      Refresh(false);
+            Refresh(false);
+      }
 }
 
 //----------------------------------------------------------------
 //
-//    DashboardInstrument_Double Implementation
+//    DashboardInstrument_Position Implementation
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_Double::DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title)
-      :DashboardInstrument(pparent, id, title)
+DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title)
+      :DashboardInstrument(pparent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON)
 {
+
       m_data1 = _T("---");
       m_data2 = _T("---");
+      wxClientDC dc(this);
+      wxFont *font = OCPNGetFont(_T("Dashboard Data"), 16);
+      int width;
+      dc.GetTextExtent(_T("000"), &width, &m_DataHeight, 0, 0, font);
 
-      SetMinSize(wxSize(200, 75));
+      SetInstrumentWidth(200);
 }
 
-DashboardInstrument_Double::~DashboardInstrument_Double()
+void DashboardInstrument_Position::SetInstrumentWidth(int width)
 {
+      m_width = width;
+      m_height = m_TitleHeight+m_DataHeight*2;
+      SetMinSize(wxSize(m_width, m_height));
 }
 
-void DashboardInstrument_Double::Draw(wxBufferedDC* dc)
+void DashboardInstrument_Position::Draw(wxBufferedDC* dc)
 {
       wxColour cl;
 
-      dc->SetFont(*OCPNGetFont(_T("DashBoard Data"), 16));
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Data")));
+      dc->SetFont(*OCPNGetFont(_T("Dashboard Data"), 16));
+      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
       GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
 
-      dc->DrawText(m_data1, 30, 20);
-      dc->DrawText(m_data2, 30, 45);
+      dc->DrawText(m_data1, 10, m_TitleHeight);
+      dc->DrawText(m_data2, 10, m_TitleHeight+m_DataHeight);
 }
 
-void DashboardInstrument_Double::SetData(wxString data1, wxString data2)
+void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
 {
-      m_data1 = data1;
-      m_data2 = data2;
+      if (st == OCPN_DBP_STC_LAT)
+      {
+            m_data1 = toSDMM(1, data);
+      }
+      else if (st == OCPN_DBP_STC_LON)
+      {
+            m_data2 = toSDMM(2, data);
+      }
+      else return;
 
       Refresh(false);
+}
+
+/**************************************************************************/
+/*          Some assorted utilities                                       */
+/**************************************************************************/
+
+wxString toSDMM ( int NEflag, double a )
+{
+      short neg = 0;
+      int d;
+      long m;
+
+      if ( a < 0.0 )
+      {
+            a = -a;
+            neg = 1;
+      }
+      d = ( int ) a;
+      m = ( long ) ( ( a - ( double ) d ) * 60000.0 );
+
+      if ( neg )
+            d = -d;
+
+      wxString s;
+
+      if ( !NEflag )
+            s.Printf ( _T ( "%d %02ld.%03ld'" ), d, m / 1000, m % 1000 );
+      else
+      {
+            if ( NEflag == 1 )
+            {
+                  char c = 'N';
+
+                  if ( neg )
+                  {
+                        d = -d;
+                        c = 'S';
+                  }
+
+                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
+            }
+            else if ( NEflag == 2 )
+            {
+                  char c = 'E';
+
+                  if ( neg )
+                  {
+                        d = -d;
+                        c = 'W';
+                  }
+                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
+            }
+      }
+      return s;
 }
 

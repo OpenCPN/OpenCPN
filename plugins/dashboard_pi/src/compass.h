@@ -2,7 +2,7 @@
  * $Id: compass.h, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *           (Inspired by original work from Andreas Heiming)
  *
@@ -57,11 +57,11 @@
 class DashboardInstrument_Compass: public DashboardInstrument_Dial
 {
       public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title, int cap_flag);
 
             ~DashboardInstrument_Compass(void){}
 
-            virtual void SetMainValue(double value);
+            void SetData(int, double, wxString);
 
       private:
 

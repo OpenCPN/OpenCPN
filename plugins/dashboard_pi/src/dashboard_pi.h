@@ -2,7 +2,7 @@
  * $Id: dashboard_pi.h, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -41,7 +41,11 @@
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    1
 
-#include <wx/minifram.h>
+#include <wx/notebook.h>
+#include <wx/fileconf.h>
+#include <wx/listctrl.h>
+#include <wx/imaglist.h>
+#include <wx/aui/aui.h>
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
@@ -51,19 +55,37 @@
 #include "wind.h"
 #include "rudder_angle.h"
 #include "gps.h"
-
-wxString toSDMM ( int NEflag, double a );
+#include "depth.h"
 
 class DashboardWindow;
-class DashboardInstrument_Single;
-class DashboardInstrument_Double;
+class DashboardInstrumentContainer;
+
+#define DASHBOARD_TOOL_POSITION 13
+
+class DashboardInstrumentContainer
+{
+      public:
+            DashboardInstrumentContainer(int id, DashboardInstrument *instrument, int capa){
+                  m_ID = id; m_pInstrument = instrument; m_cap_flag = capa; }
+
+            DashboardInstrument    *m_pInstrument;
+            int                     m_ID;
+            int                     m_cap_flag;
+};
+
+//    Dynamic arrays of pointers need explicit macros in wx261
+#ifdef __WX261
+WX_DEFINE_ARRAY_PTR(DashboardInstrumentContainer *, wxArrayOfInstrument);
+#else
+WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
+#endif
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
 
-class dashboard_pi : public opencpn_plugin
+class dashboard_pi : public wxEvtHandler, opencpn_plugin
 {
 public:
       dashboard_pi(void *ppimgr):opencpn_plugin(ppimgr){}
@@ -85,36 +107,36 @@ public:
 
       void SetNMEASentence(wxString &sentence);
       void SetPositionFix(PlugIn_Position_Fix &pfix);
-      void OnContextMenuItemCallback(int id);
+      int GetToolbarToolCount(void);
+      void OnToolbarToolCallback(int id);
+      int GetToolboxPanelCount(void);
+      void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
+      void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+      void SetColorScheme(PI_ColorScheme cs);
+
+      void OnInstrumentSelected(wxListEvent& event);
+      void OnInstrumentAdd(wxCommandEvent& event);
+      void OnInstrumentEdit(wxCommandEvent& event);
+      void OnInstrumentDelete(wxCommandEvent& event);
+      void OnInstrumentUp(wxCommandEvent& event);
+      void OnInstrumentDown(wxCommandEvent& event);
+      void UpdateAuiStatus(void);
 
 private:
-      wxWindow         *m_parent_window;
+      bool LoadConfig(void);
+      bool SaveConfig(void);
+      void ApplyConfig(void);
+      void UpdateButtonsState(void);
+
+      wxFileConfig     *m_pconfig;
+      wxAuiManager     *m_pauimgr;
+      int              m_toolbar_item_id;
+      bool             m_btoolbox_panel_is_setup;
 
       DashboardWindow       *m_pdashboard_window;
       int               m_show_id;
       int               m_hide_id;
 
-};
-
-enum
-{
-      ID_DASHBOARD_WINDOW
-};
-
-class DashboardWindow : public wxMiniFrame
-{
-public:
-      DashboardWindow(wxWindow *pparent, wxWindowID id);
-      ~DashboardWindow();
-
-      void SetSentence(wxString &sentence);
-      void SetPosition(PlugIn_Position_Fix &pfix);
-      void OnFocus(wxFocusEvent& event);
-      void OnContextMenu(wxContextMenuEvent& event);
-      void ToggleInstrumentVisibility(wxCommandEvent& event);
-      /*TODO: OnKeyPress pass event to main window or disable focus*/
-
-private:
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeading, mPriVar, mPriDateTime, mPriApWind, mPriDepth;
       double               mVar;
@@ -123,20 +145,59 @@ private:
       double               mHdm;
       wxDateTime           mUTCDateTime;
 
-      wxBoxSizer* itemBoxSizer;
-      DashboardInstrument_Double*      m_pDBIPosition;
-      DashboardInstrument_Single*      m_pDBISog;
-      DashboardInstrument_Speedometer* m_pDBISpeedometer;
-      DashboardInstrument_Single*      m_pDBICog;
-      DashboardInstrument_Compass*     m_pDBICompass;
-      DashboardInstrument_Wind*        m_pDBIWind;
-      DashboardInstrument_Single*      m_pDBIHdt;
-      DashboardInstrument_Single*      m_pDBIStw;
-      DashboardInstrument_Single*      m_pDBIDepth;
-      DashboardInstrument_RudderAngle* m_pDBIRudderAngle;
-      DashboardInstrument_GPS*         m_pDBIGPS;
+      // Config dialog items
+      wxListCtrl*                   m_pListCtrlInstruments;
+      wxTextCtrl*                   m_pInstrumentWidth;
+      int                           m_iInstrumentWidth;
+      int                           m_iInstrumentCount; // Warning: should be size_t for wxArray.GetCount()
+      wxArrayInt                    m_aInstrumentList;
+      wxButton*                     m_pButtonAdd;
+      wxButton*                     m_pButtonEdit;
+      wxButton*                     m_pButtonDelete;
+      wxButton*                     m_pButtonUp;
+      wxButton*                     m_pButtonDown;
 
-DECLARE_EVENT_TABLE()
+//protected:
+//      DECLARE_EVENT_TABLE();
+};
+
+class AddInstrumentDlg : public wxDialog
+{
+public:
+      AddInstrumentDlg(wxWindow *pparent, wxWindowID id);
+      ~AddInstrumentDlg() {}
+
+      unsigned int GetInstrumentAdded();
+
+private:
+      wxListCtrl*                   m_pListCtrlInstruments;
+};
+
+enum
+{
+      ID_DASHBOARD_WINDOW
+};
+
+class DashboardWindow : public wxWindow
+{
+public:
+      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
+      ~DashboardWindow(){}
+
+      void SetColorScheme(PI_ColorScheme cs);
+      void OnSize(wxSizeEvent& evt);
+      void SetInstrumentList(wxArrayInt list);
+      void SetInstrumentWidth(int width);
+      void SendSentenceToAllInstruments(int st, double value, wxString unit);
+      void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
+      //const wxSize DoGetBestSize();
+      /*TODO: OnKeyPress pass event to main window or disable focus*/
+
+private:
+      wxAuiManager         *m_pauimgr;
+
+      wxBoxSizer*          itemBoxSizer;
+      wxArrayOfInstrument  m_ArrayOfInstrument;
 };
 
 #endif

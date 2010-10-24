@@ -2,7 +2,7 @@
  * $Id: dial.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *           (Inspired by original work from Andreas Heiming)
  *
@@ -51,16 +51,14 @@ double deg2rad(double angle)
       return angle/180.0*M_PI;
 }
 
-DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title,
-                  int s_angle,
-                  int r_angle,
-                  int s_value,
-                  int e_value) : DashboardInstrument(parent, id, title)
+DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
+                  int s_angle, int r_angle, int s_value, int e_value) : DashboardInstrument(parent, id, title, cap_flag)
 {
       m_AngleStart = s_angle;
       m_AngleRange = r_angle;
       m_MainValueMin = s_value;
       m_MainValueMax = e_value;
+      m_MainValueCap = cap_flag;
 
       m_MainValue = s_value;
       m_ExtraValue = 0;
@@ -74,19 +72,22 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_MarkerOffset = 1;
       m_LabelOption = DIAL_LABEL_HORIZONTAL;
 
-      SetMinSize(wxSize(200, 200));
+      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_Dial::SetMainValue(double value)
+void DashboardInstrument_Dial::SetInstrumentWidth(int width)
 {
-      m_MainValue = value;
-
-      Refresh(false);
+      m_width = width;
+      m_height = m_TitleHeight+width;
+      SetMinSize(wxSize(m_width, m_height));
 }
 
-void DashboardInstrument_Dial::SetExtraValue(double value)
+void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
-      m_ExtraValue = value;
+      if (st == m_MainValueCap)
+            m_MainValue = data;
+      else if (st == m_ExtraValueCap)
+            m_ExtraValue = data;
 
       Refresh(false);
 }
@@ -108,14 +109,56 @@ void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
       wxColour cl;
 
       m_cx = rect.width / 2;
-      m_cy = m_TitleHeight + (rect.height - m_TitleHeight) / 2;
-      m_radius = (rect.height - m_TitleHeight)*.45;
+      int availableHeight = rect.height - m_TitleHeight - 6;
+      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
+      int width, height;
+      dc->GetTextExtent(_("000"), &width, &height, 0, 0, font);
+      m_cy = m_TitleHeight + 2;
+      if (m_MainValueOption == DIAL_POSITION_TOPLEFT || m_MainValueOption == DIAL_POSITION_TOPRIGHT ||
+                m_ExtraValueOption == DIAL_POSITION_TOPLEFT || m_ExtraValueOption == DIAL_POSITION_TOPRIGHT)
+      {
+            availableHeight -= height;
+            m_cy += height;
+      }
+      if (m_MainValueOption == DIAL_POSITION_BOTTOMLEFT || m_MainValueOption == DIAL_POSITION_BOTTOMRIGHT ||
+                m_ExtraValueOption == DIAL_POSITION_BOTTOMLEFT || m_ExtraValueOption == DIAL_POSITION_BOTTOMRIGHT)
+            availableHeight -= height;
+      m_cy += availableHeight / 2;
+      m_radius = availableHeight / 2;
 
       GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
+      // This is a special case: wee need to draw the bar below
+      // to ensure correct visibility
+      if (m_MarkerOption == DIAL_MARKER_REDGREENBAR)
+      {
+            pen.SetWidth(2);
+            cl = *wxRED;
+            pen.SetColour(cl);
+            dc->SetPen(pen);
+            double angle1 = deg2rad(270); // 305-ANGLE_OFFSET
+            double angle2 = deg2rad(90); // 55-ANGLE_OFFSET
+            wxCoord x1 = m_cx + ((m_radius-1) * cos(angle1));
+            wxCoord y1 = m_cy + ((m_radius-1) * sin(angle1));
+            wxCoord x2 = m_cx + ((m_radius-1) * cos(angle2));
+            wxCoord y2 = m_cy + ((m_radius-1) * sin(angle2));
+            dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
+            cl = *wxGREEN;
+            pen.SetColour(cl);
+            dc->SetPen(pen);
+            angle1 = deg2rad(90); // 305-ANGLE_OFFSET
+            angle2 = deg2rad(270); // 55-ANGLE_OFFSET
+            x1 = m_cx + ((m_radius-1) * cos(angle1));
+            y1 = m_cy + ((m_radius-1) * sin(angle1));
+            x2 = m_cx + ((m_radius-1) * cos(angle2));
+            y2 = m_cy + ((m_radius-1) * sin(angle2));
+            dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
+            GetGlobalColor(_T("BLUE2"), &cl);
+            pen.SetWidth(1);
+      }
       pen.SetStyle(wxSOLID);
       pen.SetColour(cl);
       dc->SetPen(pen);
@@ -209,7 +252,7 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       for(double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle; angle += abm)
       {
             wxString label = (m_LabelArray.GetCount() ? m_LabelArray.Item(offset) : wxString::Format(_T("%d"), value));
-            dc->GetTextExtent(label.c_str(), &width, &height, 0, 0, &font);
+            dc->GetTextExtent(label, &width, &height, 0, 0, &font);
 
             double halfW = width / 2;
             if (m_LabelOption == DIAL_LABEL_HORIZONTAL)
@@ -250,9 +293,9 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
       if (position == DIAL_POSITION_NONE)
             return;
 
-      wxFont *font = OCPNGetFont(_T("DashBoard Label"), 9);
+      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
       dc->SetFont(*font);
-//      dc->SetTextForeground(pFontMgr->GetFontColor(_T("DashBoard Label")));
+//      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
       wxColour cl;
       GetGlobalColor(_T("BLUE2"), &cl);
       dc->SetTextForeground(cl);
@@ -279,11 +322,11 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
                   break;
             case DIAL_POSITION_TOPLEFT:
                   TextPoint.x = 0;
-                  TextPoint.y = 20;
+                  TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_TOPRIGHT:
                   TextPoint.x = rect.width-width;
-                  TextPoint.y = 20;
+                  TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_BOTTOMLEFT:
                   TextPoint.x = 0;

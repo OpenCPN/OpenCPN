@@ -2,7 +2,7 @@
  * $Id: rudder_angle.h, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -50,7 +50,8 @@ class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
             DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title);
             ~DashboardInstrument_RudderAngle(void){}
 
-            void SetMainValue(double value);
+            void SetInstrumentWidth(int width);
+            void SetData(int, double, wxString);
 
       private:
 

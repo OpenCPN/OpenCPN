@@ -2,7 +2,7 @@
  * $Id: instrument.h, v1.0 2010/08/30 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -39,54 +39,86 @@
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 
+wxString toSDMM ( int NEflag, double a );
+
 class DashboardInstrument;
 class DashboardInstrument_Single;
-class DashboardInstrument_Double;
+class DashboardInstrument_Position;
+
+enum
+{
+    OCPN_DBP_STC_LAT = 1 << 0,
+    OCPN_DBP_STC_LON = 1 << 1,
+    OCPN_DBP_STC_SOG = 1 << 2,
+    OCPN_DBP_STC_COG = 1 << 3,
+    OCPN_DBP_STC_STW = 1 << 4,
+    OCPN_DBP_STC_HDG = 1 << 5,
+    OCPN_DBP_STC_BRG = 1 << 6,
+    OCPN_DBP_STC_AWA = 1 << 7,
+    OCPN_DBP_STC_AWS = 1 << 8,
+    OCPN_DBP_STC_TWA = 1 << 9,
+    OCPN_DBP_STC_TWS = 1 << 10,
+    OCPN_DBP_STC_DPT = 1 << 11,
+    OCPN_DBP_STC_TMP = 1 << 12,
+    OCPN_DBP_STC_VMG = 1 << 13,
+    OCPN_DBP_STC_RSA = 1 << 14,
+    OCPN_DBP_STC_SAT = 1 << 15,
+    OCPN_DBP_STC_GPS = 1 << 16
+};
 
 class DashboardInstrument : public wxWindow
 {
 public:
-      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument();
+      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag);
+      ~DashboardInstrument(){}
 
+      int GetCapacity();
+      virtual void SetInstrumentWidth(int width) = 0;
       virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
+      virtual void SetData(int st, double data, wxString unit) = 0;
 
 private:
 
 protected:
-      int m_TitleHeight;
+      int               m_cap_flag;
+      int               m_TitleHeight, m_width, m_height;
       wxString          m_title;
 
-      virtual void Draw(wxBufferedDC* dc);
+      virtual void Draw(wxBufferedDC* dc) = 0;
 
 };
 
 class DashboardInstrument_Single : public DashboardInstrument
 {
 public:
-      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument_Single();
+      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
+      ~DashboardInstrument_Single(){}
 
-      void SetData(wxString data);
+      void SetInstrumentWidth(int width);
+      void SetData(int st, double data, wxString unit);
 
 protected:
       wxString          m_data;
+      wxString          m_format;
+      int               m_DataHeight;
 
       void Draw(wxBufferedDC* dc);
 
 };
 
-class DashboardInstrument_Double : public DashboardInstrument
+class DashboardInstrument_Position : public DashboardInstrument
 {
 public:
-      DashboardInstrument_Double(wxWindow *pparent, wxWindowID id, wxString title);
-      ~DashboardInstrument_Double();
+      DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title);
+      ~DashboardInstrument_Position(){}
 
-      void SetData(wxString data1, wxString data2);
+      void SetInstrumentWidth(int width);
+      void SetData(int st, double data, wxString unit);
 
 protected:
       wxString          m_data1;
       wxString          m_data2;
+      int               m_DataHeight;
 
       void Draw(wxBufferedDC* dc);
 

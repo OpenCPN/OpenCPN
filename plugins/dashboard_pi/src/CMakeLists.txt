@@ -18,6 +18,7 @@ PROJECT(dashboard_pi)
 
 SET(PACKAGE_NAME dashboard_pi)
 SET(PLUGIN_SOURCE_DIR .)
+MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
@@ -58,9 +59,11 @@ IF(WIN32)
 ENDIF(WIN32)
 
  
-SET(wxWidgets_USE_LIBS base core net xml html adv)
-SET(BUILD_SHARED_LIBS TRUE)
-FIND_PACKAGE(wxWidgets REQUIRED)
+#SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+#SET(BUILD_SHARED_LIBS TRUE)
+#SET( wxWidgets_USE_DEBUG OFF)
+#SET( wxWidgets_USE_UNICODE ON)
+#FIND_PACKAGE(wxWidgets REQUIRED)
 
 INCLUDE(${wxWidgets_USE_FILE})
 
@@ -87,6 +90,10 @@ SET(SRC_DASHBOARD
  		speedometer.h
  		wind.cpp
  		wind.h
+            depth.cpp
+            depth.h
+            icons.cpp
+            icons.h
  	)
 
 SET(SRC_NMEA0183

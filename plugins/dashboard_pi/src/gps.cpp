@@ -2,7 +2,7 @@
  * $Id: gps.cpp, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -45,9 +45,9 @@
 #include "dial.h"
 
 DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title)
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS)
 {
-      m_cx = 100;
+      m_cx = 35;
       m_cy = 57;
       m_radius = 35;
 
@@ -60,7 +60,15 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
             m_SatInfo[idx].SignalToNoiseRatio = 0;
       }
 
-      SetMinSize(wxSize(200, 155));
+      SetInstrumentWidth(200);
+}
+
+void DashboardInstrument_GPS::SetInstrumentWidth(int width)
+{
+      m_cx = width/2;
+      m_width = width;
+      m_height = m_TitleHeight+140;
+      SetMinSize(wxSize(m_width, m_height));
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])

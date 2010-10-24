@@ -2,7 +2,7 @@
  * $Id: wind.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -44,15 +44,16 @@
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
-DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument_Dial( parent, id, title, 0, 360, 0, 360)
+DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       //SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
-      SetOptionMarker(10, DIAL_MARKER_REDGREEN, 3);
+      SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
       // Labels are set static because we've no logic to display them this way
       wxString labels[] = {_T(""), _("30"), _("60"), _("90"), _("120"), _("150"), _T(""), _("150"), _("120"), _("90"), _("60"), _("30")};
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
-      SetOptionExtraValue(_T("%5.2f Kts"), DIAL_POSITION_INSIDE);
+
+      SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_Wind::DrawBackground(wxPaintDC* dc)

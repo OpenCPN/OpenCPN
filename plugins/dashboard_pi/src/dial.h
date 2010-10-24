@@ -2,7 +2,7 @@
  * $Id: dial.h, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *           (Inspired by original work from Andreas Heiming)
  *
@@ -58,7 +58,8 @@ typedef enum
 {
       DIAL_MARKER_NONE,
       DIAL_MARKER_SIMPLE,
-      DIAL_MARKER_REDGREEN
+      DIAL_MARKER_REDGREEN,
+      DIAL_MARKER_REDGREENBAR
 } DialMarkerOption;
 
 typedef enum
@@ -86,19 +87,19 @@ extern double deg2rad(double angle);
 class DashboardInstrument_Dial: public DashboardInstrument
 {
       public:
-            DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title,
+            DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
                         int s_angle, int r_angle, int s_value, int e_value);
 
             ~DashboardInstrument_Dial(void){}
 
-            virtual void SetMainValue(double value);
-            virtual void SetExtraValue(double value);
+            virtual void SetInstrumentWidth(int width);
+            void SetData(int, double, wxString);
             void SetOptionMarker(double step, DialMarkerOption option, int offset) { m_MarkerStep = step; m_MarkerOption = option; m_MarkerOffset = offset; }
-            void SetOptionLabel(double step, DialLabelOption option, wxArrayString labels=NULL) { m_LabelStep = step; m_LabelOption = option; m_LabelArray = labels; }
+            void SetOptionLabel(double step, DialLabelOption option, wxArrayString labels=wxArrayString()) { m_LabelStep = step; m_LabelOption = option; m_LabelArray = labels; }
             void SetOptionMainValue(wxString format, DialPositionOption option)
                         { m_MainValueFormat = format; m_MainValueOption = option; }
-            void SetOptionExtraValue(wxString format, DialPositionOption option)
-                        { m_ExtraValueFormat = format; m_ExtraValueOption = option; }
+            void SetOptionExtraValue(int cap, wxString format, DialPositionOption option)
+                        { m_ExtraValueCap = cap; m_cap_flag |= cap; m_ExtraValueFormat = format; m_ExtraValueOption = option; }
 
       private:
 
@@ -106,10 +107,12 @@ class DashboardInstrument_Dial: public DashboardInstrument
             int m_cx, m_cy, m_radius;
             int m_AngleStart, m_AngleRange;
             double m_MainValue;
+            int m_MainValueCap;
             double m_MainValueMin, m_MainValueMax;
             wxString m_MainValueFormat;
             DialPositionOption m_MainValueOption;
             double m_ExtraValue;
+            int m_ExtraValueCap;
             wxString m_ExtraValueFormat;
             DialPositionOption m_ExtraValueOption;
             DialMarkerOption m_MarkerOption;

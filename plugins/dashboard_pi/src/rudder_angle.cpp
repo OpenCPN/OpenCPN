@@ -2,7 +2,7 @@
  * $Id: rudder_angle.cpp, v1.0 2010/08/26 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -42,7 +42,7 @@
 #endif
 
 DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument_Dial( parent, id, title, 100, 160, -40, +40)
+      DashboardInstrument_Dial( parent, id, title, OCPN_DBP_STC_RSA, 100, 160, -40, +40)
 {
       // Default Rudder position is centered
       m_MainValue = 0;
@@ -53,18 +53,34 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
       wxString labels[] = {_T("40"), _("30"), _("20"), _("10"), _T("0"), _("10"), _("20"), _("30"), _("40")};
       SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
-      SetMinSize(wxSize(200, 150));
+
+      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_RudderAngle::SetMainValue(double value)
+void DashboardInstrument_RudderAngle::SetInstrumentWidth(int width)
 {
-      // Dial works clockwise but Rudder has negative values for left
-      // and positive for right so we must inverse it.
-      value = -value;
+      m_width = width;
+      m_height = m_TitleHeight+width*.7;
+      SetMinSize(wxSize(m_width, m_height));
+}
 
-      if (value < m_MainValueMin) m_MainValue = m_MainValueMin;
-      else if (value > m_MainValueMax) m_MainValue = m_MainValueMax;
-      else m_MainValue = value;
+void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
+{
+      if (st == m_MainValueCap)
+      {
+            // Dial works clockwise but Rudder has negative values for left
+            // and positive for right so we must inverse it.
+            data = -data;
+
+            if (data < m_MainValueMin) m_MainValue = m_MainValueMin;
+            else if (data > m_MainValueMax) m_MainValue = m_MainValueMax;
+            else m_MainValue = data;
+      }
+      else if (st == m_ExtraValueCap)
+      {
+            m_ExtraValue = data;
+      }
+      else return;
 
       Refresh(false);
 }

@@ -2,7 +2,7 @@
  * $Id: wind.h, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DashBoard Plugin
+ * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
@@ -56,7 +56,7 @@
 class DashboardInstrument_Wind: public DashboardInstrument_Dial
 {
       public:
-            DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, int cap_flag);
 
             ~DashboardInstrument_Wind(void){}
 
