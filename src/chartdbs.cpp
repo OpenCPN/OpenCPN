@@ -567,6 +567,9 @@ const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const
 
 bool ChartDatabase::Read(const wxString &filePath)
 {
+    ChartTableEntry entry;
+    int entries;
+
     bValid = false;
 
     wxFileName file(filePath);
@@ -598,26 +601,31 @@ bool ChartDatabase::Read(const wxString &filePath)
         while (dirlen > 0) {
             char dirbuf[1024];
             int alen = dirlen > 1023 ? 1023 : dirlen;
-            ifs.Read(&dirbuf, alen);
+            if(ifs.Read(&dirbuf, alen).Eof())
+                goto read_error;
             dirbuf[alen] = 0;
             dirlen -= alen;
             dir.Append(wxString(dirbuf, wxConvUTF8));
         }
-        wxString msg = wxT("  Chart directory ");
+        wxString msg;
+        msg.Printf(wxT("  Chart directory #%d: "), iDir);
         msg.Append(dir);
         wxLogMessage(msg);
         chartDirs.Add(dir);
     }
 
-    int entries = cth.GetTableEntries();
+    entries = cth.GetTableEntries();
     chartTable.Alloc(entries);
-    ChartTableEntry entry;
     while (entries-- && entry.Read(this, ifs))
         chartTable.Add(entry);
 
     entry.Clear();
     bValid = true;
     return true;
+
+read_error:
+    bValid = false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -638,8 +646,12 @@ bool ChartDatabase::Write(const wxString &filePath)
     for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
         wxString &dir = chartDirs[iDir];
         int dirlen = dir.length();
+        char s[200];
+        strncpy(s, dir.mb_str(wxConvUTF8), 199);
+        dirlen = strlen(s);
         ofs.Write(&dirlen, sizeof(int));
-        ofs.Write(dir.fn_str(), dirlen);
+//        ofs.Write(dir.fn_str(), dirlen);
+        ofs.Write(s, dirlen);
     }
 
     for (UINT32 iTable = 0; iTable < chartTable.size(); iTable++)

@@ -2160,7 +2160,11 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 {
       //    Use a static semaphore flag to prevent recursion
     if(s_bInS57)
+    {
+          printf("s57chart::Init() recursion..., retry\n");
           return INIT_FAIL_RETRY;
+    }
+
     s_bInS57++;
 
 
@@ -2366,7 +2370,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                                                       i = tkz.GetPosition();
                                                       wxString str(&pbuf[i],  wxConvUTF8);
                                                       str.Trim();                               // gets rid of newline, etc...
-                                                      if(!ModTime000.ParseFormat(str, (const wxChar *)"%Y%m%d"))
+                                                      if(!ModTime000.ParseFormat(str, _T("%Y%m%d")/*(const wxChar *)"%Y%m%d"*/))
                                                             ModTime000.SetToCurrent();
                                                       ModTime000.ResetTime();                   // to midnight
                                                 }
@@ -3094,13 +3098,13 @@ bool s57chart::CreateHeaderDataFromSENC(void)
 
  //   Decide on pub date to show
 
-      int d000 = atoi((wxString(date_000, wxConvUTF8).Mid(0,4)).mb_str());
-      int dupd = atoi((wxString(date_upd, wxConvUTF8).Mid(0,4)).mb_str());
+      int d000 = atoi((date_000/*(wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid(0,4)).mb_str());
+      int dupd = atoi((date_upd/*(wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(0,4)).mb_str());
 
       if(dupd > d000)
-           m_PubYear = wxString(date_upd, wxConvUTF8).Mid(0,4);
+            m_PubYear = date_upd/*wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(0,4);
       else
-           m_PubYear = wxString(date_000, wxConvUTF8).Mid(0,4);
+            m_PubYear = date_000/*wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid(0,4);
 
       wxDateTime dt;
       dt.ParseDate(date_000);
@@ -4460,13 +4464,13 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
  //   Decide on pub date to show
 
-      int d000 = atoi((wxString(date_000, wxConvUTF8).Mid(0,4)).mb_str());
-      int dupd = atoi((wxString(date_upd, wxConvUTF8).Mid(0,4)).mb_str());
+        int d000 = atoi((date_000/*(wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid(0,4)).mb_str());
+        int dupd = atoi((date_upd/*(wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(0,4)).mb_str());
 
       if(dupd > d000)
-          m_PubYear = wxString(date_upd, wxConvUTF8).Mid(0,4);
+            m_PubYear = date_upd/*wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(0,4);
       else
-          m_PubYear = wxString(date_000, wxConvUTF8).Mid(0,4);
+            m_PubYear = date_000/*wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid(0,4);
 
       //    Set some base class values
       wxDateTime upd;
@@ -5769,8 +5773,8 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
 
                               //    As a special case, convert some attribute values to feet.....
                               if((att == _T("VERCLR")) ||
-                                  (att = _T("VERCLL")) ||
-                                  (att = _T("HORCLR")) )
+                                  (att == _T("VERCLL")) ||
+                                  (att == _T("HORCLR")) )
                               {
                                     switch(ps52plib->m_nDepthUnitDisplay)
                                     {

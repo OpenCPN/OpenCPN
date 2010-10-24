@@ -53,8 +53,13 @@
 #include "wx/notebook.h"
 #include "wx/dirctrl.h"
 #include "wx/spinctrl.h"
-#include "scrollingdialog.h"
 #include <wx/listctrl.h>
+
+#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/dialog.h>
+#else
+#include "scrollingdialog.h"
+#endif
 
 
 //      Forward Declarations
@@ -152,8 +157,11 @@ enum {
 #define wxFIXED_MINSIZE 0
 #endif
 
-
+#if wxCHECK_VERSION(2, 9, 0)
+class options: public wxDialog
+#else
 class options: public wxScrollingDialog
+#endif
 {
     DECLARE_DYNAMIC_CLASS( options )
     DECLARE_EVENT_TABLE()

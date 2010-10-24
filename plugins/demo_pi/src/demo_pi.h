@@ -38,6 +38,9 @@
 #define     PLUGIN_VERSION_MAJOR    1
 #define     PLUGIN_VERSION_MINOR    0
 
+#define     MY_API_VERSION_MAJOR    1
+#define     MY_API_VERSION_MINOR    1
+
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
@@ -72,6 +75,7 @@ public:
 
       void SetNMEASentence(wxString &sentence);
       void OnContextMenuItemCallback(int id);
+      void UpdateAuiStatus(void);
       
 
 
@@ -79,6 +83,7 @@ private:
       wxWindow         *m_parent_window;
 
       DemoWindow       *m_pdemo_window;
+      wxAuiManager     *m_AUImgr;
       int               m_show_id;
       int               m_hide_id;
 
@@ -94,6 +99,7 @@ public:
 
       void OnPaint(wxPaintEvent& event);
       void SetSentence(wxString &sentence);
+      void OnSize(wxSizeEvent& event);
 
       NMEA0183        m_NMEA0183;                 // Used to parse NMEA Sentences
 

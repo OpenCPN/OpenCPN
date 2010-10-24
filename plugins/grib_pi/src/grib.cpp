@@ -34,6 +34,7 @@
 #include <wx/dir.h>
 #include <wx/filename.h>
 #include <wx/debug.h>
+#include <wx/graphics.h>
 
 #include <stdlib.h>
 #include <math.h>

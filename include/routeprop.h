@@ -44,7 +44,12 @@
 #include "wx/listctrl.h"
 #include "chart1.h"                 // for ColorScheme
 #include "wx/hyperlink.h"           // toh, 2009.02.08
+
+#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/dialog.h>
+#else
 #include "scrollingdialog.h"
+#endif
 
 
 WX_DECLARE_LIST(wxHyperlinkCtrl, HyperlinkCtrlList);// establish class as list member
@@ -185,8 +190,11 @@ public:
 /*!
  * MarkProp class declaration
  */
-
+#if wxCHECK_VERSION(2, 9, 0)
+class MarkProp: public wxDialog
+#else
 class MarkProp: public wxScrollingDialog
+#endif
 {
     DECLARE_DYNAMIC_CLASS( MarkProp )
     DECLARE_EVENT_TABLE()

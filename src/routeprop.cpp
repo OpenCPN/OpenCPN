@@ -703,15 +703,23 @@ MarkProp::MarkProp( )
 MarkProp::MarkProp(  wxWindow* parent, wxWindowID id,
                      const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
 {
+#if wxCHECK_VERSION(2, 9, 0)
+#else
       wxScrollingDialog::Init();
 
       SetLayoutAdaptation(true);
+#endif
+
       SetLayoutAdaptationLevel(2);
 
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
-      wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
 
-//    Create(parent, id, caption, pos, size, style);
+#if wxCHECK_VERSION(2, 9, 0)
+      wxDialog::Create( parent, id, caption, pos, size,wstyle );
+#else
+      wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
+#endif
+
       CreateControls();
       GetSizer()->SetSizeHints(this);
       Centre();

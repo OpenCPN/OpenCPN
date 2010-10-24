@@ -431,7 +431,7 @@ public:
 
 #define TOOLTIPON_TIMER       10000
 
-class WXDLLEXPORT wxMemoryDC;
+//class WXDLLEXPORT wxMemoryDC;
 class ToolTipWin;
 class ocpnToolBarTool;
 
@@ -554,6 +554,7 @@ class ocpnToolBarSimple : public wxToolBarBase
                         wxObject *clientData,
                         const wxString& shortHelp,
                         const wxString& longHelp);
+            virtual wxToolBarToolBase *CreateTool(wxControl *control, const wxString& label);
             virtual wxToolBarToolBase *CreateTool(wxControl *control);
 
     // helpers

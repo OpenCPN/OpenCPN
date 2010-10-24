@@ -93,8 +93,13 @@ extern Select           *pSelect;
 extern double           gLat, gLon;
 extern double           gCog, gSog;
 
+
 // sort callback. Sort by route name.
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortRoutesOnName(long item1, long item2, wxIntPtr list)
+#else
 int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
+#endif
 {
       wxListCtrl *lc = (wxListCtrl*)list;
 
@@ -114,7 +119,12 @@ int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
 }
 
 // sort callback. Sort by wpt name.
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortWaypoints(long item1, long item2, wxIntPtr list)
+#else
 int wxCALLBACK SortWaypoints(long item1, long item2, long list)
+#endif
+
 {
       wxListCtrl *lc = (wxListCtrl*)list;
 

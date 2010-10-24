@@ -40,6 +40,7 @@
 #include "wx/sound.h"
 #include <wx/radiobox.h>
 #include <wx/listbox.h>
+#include <wx/imaglist.h>
 
 #include "dychart.h"
 #include "chart1.h"
@@ -292,7 +293,11 @@ options::options( )
 options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
 {
       Init();
+#if wxCHECK_VERSION(2, 9, 0)
+//      wxDialog::Init();
+#else
       wxScrollingDialog::Init();
+#endif
 
       pParent = parent;
 
@@ -306,13 +311,21 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 //      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
 //            wstyle |= (wxNO_BORDER);
 
+#if wxCHECK_VERSION(2, 9, 0)
+#else
       SetLayoutAdaptation(true);
+#endif
       SetLayoutAdaptationLevel(2);
 
 //      Create(parent, id, caption, pos, size, wstyle);
 
       SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
+
+#if wxCHECK_VERSION(2, 9, 0)
+      wxDialog::Create( parent, id, caption, pos, size,wstyle );
+#else
       wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
+#endif
 
       CreateControls();
       if (GetSizer())
@@ -578,6 +591,19 @@ void options::CreateControls()
       itemNMEAStaticBoxSizer->Add(itemNMEASourceStaticBoxSizer, 0, wxEXPAND|wxALL, 4);
 
       m_itemNMEAListBox = new wxComboBox(itemPanelGPS, ID_CHOICE_NMEA);
+      itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
+
+#ifndef OCPN_DISABLE_SOCKETS
+//    Add NMEA TCP/IP Server address
+      m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
+      m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
+      itemNMEAStaticBoxSizer->Add(m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, 4);
+
+      m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
+      m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
+#endif
+
+
       m_itemNMEAListBox->Append( _T("None"));
 
       //    Fill in the listbox with all detected serial ports
@@ -665,17 +691,17 @@ void options::CreateControls()
 
 
       m_itemNMEAListBox->SetSelection(scidx);
-      itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
+ ///     itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
 
 #ifndef OCPN_DISABLE_SOCKETS
 
 //    Add NMEA TCP/IP Server address
-      m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
-      m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
-      itemNMEAStaticBoxSizer->Add(m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, 4);
+//      m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
+//      m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
+//      itemNMEAStaticBoxSizer->Add(m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, 4);
 
-      m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
-      m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
+//      m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
+//      m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
 
       m_itemNMEA_TCPIP_StaticBox->Enable(tcp_en);
       m_itemNMEA_TCPIP_Source->Enable(tcp_en);
@@ -2372,17 +2398,13 @@ void options::OnPageChange(wxNotebookEvent& event)
                   m_itemLangListBox = new wxComboBox(itemPanelFont, ID_CHOICE_LANG);
 
                   int current_language = locale_def_lang.GetLanguage();
-                  wxMB2WXbuf oldLocale = wxSetlocale(LC_ALL, wxEmptyString);
+                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
                   wxString current_sel = wxLocale::GetLanguageName(current_language);
 
-                  wxArrayString lang_array;
-
-                   // always add us english
-                  wxString eng_string = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->Description;
-                  lang_array.Add(_T("en_US"));
-
                   int nLang = sizeof(lang_list)/sizeof(int);
-                  for( int it = 0 ; it < nLang ; it++)
+
+#if 0
+                 for( int it = 0 ; it < nLang ; it++)
                   {
                         if(wxLocale::IsAvailable(lang_list[it]))
                         {
@@ -2417,11 +2439,84 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   for(unsigned int i=0 ; i < lang_array.GetCount() ; i++)
                         m_itemLangListBox->Append( wxLocale:: FindLanguageInfo(lang_array[i])->Description);
+#endif
+
+#ifdef __WXMSW__
+                   // always add us english
+                  m_itemLangListBox->Append(_T("English"));
+
+                  wxString lang_dir = g_SData_Locn + _T("share/locale/");
+                  for( int it = 0 ; it < nLang ; it++)
+                  {
+                        if(wxLocale::IsAvailable(lang_list[it]))
+                        {
+                              wxLocale ltest(lang_list[it], 0);
+                              ltest.AddCatalog(_T("opencpn"));
+                              if(!ltest.IsLoaded(_T("opencpn")))
+                                    continue;
+
+            // Defaults
+                              wxString loc_lang_name = wxLocale::GetLanguageName(lang_list[it]);
+                              wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+            // Make some known substitutions here
+                              {
+                                    if     (lang_canonical == _T("cs_CZ")) {lang_canonical = _T("cs");    loc_lang_name = wxString("Ceština", wxConvUTF8);}
+                                    else if(lang_canonical == _T("da_DK")) {lang_canonical = _T("da");    loc_lang_name = wxString("Dansk", wxConvUTF8);}
+                                    else if(lang_canonical == _T("de_DE")) {lang_canonical = _T("de");    loc_lang_name = wxString("Deutsch", wxConvUTF8);}
+                                    else if(lang_canonical == _T("et_EE")) {lang_canonical = _T("et");    loc_lang_name = wxString("Eesti", wxConvUTF8);}
+                                    else if(lang_canonical == _T("es_ES")) {lang_canonical = _T("es");    loc_lang_name = wxString("Español", wxConvUTF8);}
+                                    else if(lang_canonical == _T("fr_FR")) {lang_canonical = _T("fr");    loc_lang_name = wxString("Français", wxConvUTF8);}
+                                    else if(lang_canonical == _T("it_IT")) {lang_canonical = _T("it");    loc_lang_name = wxString("Italiano", wxConvUTF8);}
+                                    else if(lang_canonical == _T("nl_NL")) {lang_canonical = _T("nl");    loc_lang_name = wxString("Nederlands", wxConvUTF8);}
+                                    else if(lang_canonical == _T("pl_PL")) {lang_canonical = _T("pl");    loc_lang_name = wxString("Polski", wxConvUTF8);}
+                                    else if(lang_canonical == _T("pt_PT")) {lang_canonical = _T("pt_PT"); loc_lang_name = wxString("Português", wxConvUTF8);}
+                                    else if(lang_canonical == _T("pt_BR")) {lang_canonical = _T("pt_BR"); loc_lang_name = wxString("Português Brasileiro", wxConvUTF8);}
+                                    else if(lang_canonical == _T("ru_RU")) {lang_canonical = _T("ru");    loc_lang_name = wxString("Русский", wxConvUTF8);}
+                                    else if(lang_canonical == _T("sv_SE")) {lang_canonical = _T("sv");    loc_lang_name = wxString("Svenska", wxConvUTF8);}
+//                                    else continue;
+                              }
+
+
+            //  Look explicitely to see if .mo is available
+                              wxString test_dir = lang_dir + lang_canonical;
+                              if(!wxDir::Exists(test_dir))
+                                    continue;
+
+                              m_itemLangListBox->Append(loc_lang_name);
+                        }
+                  }
+#else
+                  wxArrayString lang_array;
+
+                   // always add us english
+                  lang_array.Add(_T("en_US"));
+
+                  for( int it = 0 ; it < nLang ; it++)
+                  {
+                        if(wxLocale::IsAvailable(lang_list[it]))
+                        {
+                              wxLocale ltest(lang_list[it], 0);
+                              ltest.AddCatalog(_T("opencpn"));
+
+                              if(ltest.IsLoaded(_T("opencpn")))
+                              {
+                                    wxString s0 = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+                                    wxString sl = wxLocale::GetLanguageName(lang_list[it]);
+                                    if(wxNOT_FOUND == lang_array.Index(s0))
+                                          lang_array.Add(s0);
+
+                              }
+                        }
+                  }
+
+                  for(unsigned int i=0 ; i < lang_array.GetCount() ; i++)
+                        m_itemLangListBox->Append( wxLocale::FindLanguageInfo(lang_array[i])->Description);
+#endif
 
 
                   //    Reset current language
                   wxSetlocale(LC_ALL, oldLocale);
-                  wxSetlocale(LC_NUMERIC,_T("C"));
+                  wxSetlocale(LC_NUMERIC,wxString(_T("C")));
 
                   m_itemLangListBox->SetStringSelection(current_sel); //SetSelection(0);
 

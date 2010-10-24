@@ -696,6 +696,7 @@ bool cm93_dictionary::LoadDictionary(wxString dictionary_dir)
                               if(!line.StartsWith((const wxChar *)wxT(";")))
                               {
                                     wxStringTokenizer tkz(line, wxT("|"));
+                                    if(tkz.CountTokens())
                                     {
                   //  6 attribute label
                                           wxString class_name = tkz.GetNextToken();
@@ -746,6 +747,7 @@ bool cm93_dictionary::LoadDictionary(wxString dictionary_dir)
                               if(!line.StartsWith((const wxChar *)wxT(";")))
                               {
                                     wxStringTokenizer tkz(line, wxT("|\r\n"));
+                                    if(tkz.CountTokens() >= 3)
                                     {
                   //  6 char class name
                                           wxString attr_name = tkz.GetNextToken();
@@ -4368,7 +4370,11 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
       file.Prepend(fileroot);
 
       if(g_bDebugCM93)
-            printf("    filename: %s\n", (char *)file.c_str());
+      {
+            char sfile[200];
+            strncpy(sfile, file.mb_str(), 199);
+            printf("    filename: %s\n", sfile);
+      }
 
       if(!::wxFileExists(file))
       {
@@ -4389,7 +4395,11 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
             file1.Prepend(fileroot);
 
             if(g_bDebugCM93)
-                  printf("    alternate filename: %s\n", (char *)file1.c_str());
+            {
+                  char sfile[200];
+                  strncpy(sfile, file1.mb_str(), 199);
+                  printf("    alternate filename: %s\n", sfile);
+            }
 
             if(!::wxFileExists(file1))
             {

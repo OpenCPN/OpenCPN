@@ -66,7 +66,7 @@ class       wxAuiManager;
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
-typedef enum PI_ColorScheme
+enum PI_ColorScheme
 {
       PI_GLOBAL_COLOR_SCHEME_RGB,
       PI_GLOBAL_COLOR_SCHEME_DAY,
@@ -110,7 +110,7 @@ class PlugIn_Position_Fix
 };
 
 //    Describe AIS Alarm state
-typedef enum plugin_ais_alarm_type
+enum plugin_ais_alarm_type
 {
       PI_AIS_NO_ALARM = 0,
       PI_AIS_ALARM_SET,
@@ -233,8 +233,8 @@ public:
 //----------------------------------------------------------------------------------------------------------
 
 
-extern "C"  DECL_EXP int InsertPlugInTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                          wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
+extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+                                          wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                           int tool_sel, opencpn_plugin *pplugin);
 extern "C"  DECL_EXP void RemovePlugInTool(int tool_id);
 extern "C"  DECL_EXP void SetToolbarToolViz(int item, bool viz);      // Temporarily change toolbar tool viz

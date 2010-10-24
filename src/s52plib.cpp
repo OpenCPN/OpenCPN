@@ -688,7 +688,7 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                               BOOL attValMatch = FALSE;
 
                               // special case (i)
-                              if ( LATTC[6] == ' ' )  // use any value
+                              if ( LATTC.Mid(6,1) == ' ' )  // use any value
                                     attValMatch = TRUE;
 
                               // special case (ii)
@@ -745,7 +745,7 @@ LUPrec *s52plib::FindBestLUP ( wxArrayPtrVoid *nameMatch, char *objAtt,
                                     case OGR_REAL:               // S57 attribute type'F' float
                                     {
                                           float a;
-                                          if ( LATTC[6] != '?' )
+                                          if ( LATTC.Mid(6,1) != '?' )
                                           {
                                                 if(LATTValue.Len())
                                                 {
@@ -1584,7 +1584,11 @@ int s52plib::ParseSYMB ( FILE *fp, RuleHash *pHash )
 int CompareLUPObjects ( LUPrec *item1, LUPrec *item2 )
 {
       // sort the items by their name...
+#if wxCHECK_VERSION(2, 9, 0)
+      int ir = wxStricmp ( item1->OBCL, item2->OBCL );
+#else
       int ir = Stricmp ( item1->OBCL, item2->OBCL );
+#endif
       if ( ir == 0 )
             return item1->nSequence - item2->nSequence;
       else
@@ -2385,7 +2389,7 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
                   wxString natsur_att ( _T ( "NATSUR" ) );
                   wxString result;
-                  wxString svalue ( value, wxConvUTF8 );
+                  wxString svalue  = value;
                   wxStringTokenizer tkz ( svalue, _T ( "," ) );
 
                   int icomma = 0;

@@ -97,14 +97,14 @@ class PlugInToolbarToolContainer
       public:
             opencpn_plugin    *m_pplugin;
             int               id;
-            wxChar            *label;
+            wxString          label;
             wxBitmap          *bitmap_day;
             wxBitmap          *bitmap_dusk;
             wxBitmap          *bitmap_night;
             wxBitmap          *bmpDisabled;
             wxItemKind        kind;
-            wxChar            *shortHelp;
-            wxChar            *longHelp;
+            wxString          shortHelp;
+            wxString          longHelp;
             wxObject          *clientData;
             int               position;
             bool              b_viz;
@@ -147,8 +147,8 @@ public:
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
-      int AddToolbarTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                        wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
+      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+                                        wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                         int tool_sel, opencpn_plugin *pplugin );
       void RemoveToolbarTool(int tool_id);
       void SetToolbarToolViz(int tool_id, bool viz);

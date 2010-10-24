@@ -56,9 +56,9 @@ IF(WIN32)
 ENDIF(WIN32)
 
  
-SET(wxWidgets_USE_LIBS base core net xml html adv)
-SET(BUILD_SHARED_LIBS TRUE)
-FIND_PACKAGE(wxWidgets REQUIRED)
+#SET(wxWidgets_USE_LIBS base core net xml html adv)
+#SET(BUILD_SHARED_LIBS TRUE)
+#FIND_PACKAGE(wxWidgets REQUIRED)
 
 INCLUDE(${wxWidgets_USE_FILE})
 

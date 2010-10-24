@@ -33,6 +33,7 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/aui/aui.h>
 
 #include "demo_pi.h"
 
@@ -99,32 +100,52 @@ int demo_pi::Init(void)
       m_hide_id = AddCanvasContextMenuItem(pmih, this );
       SetCanvasContextMenuItemViz(m_hide_id, false);
 
+        m_pdemo_window = new DemoWindow(m_parent_window, wxID_ANY);
+
+        m_AUImgr = GetFrameAuiManager();
+        m_AUImgr->AddPane(m_pdemo_window);
+        m_AUImgr->GetPane(m_pdemo_window).Name(_T("Demo Window Name"));
+
+        m_AUImgr->GetPane(m_pdemo_window).Float();
+        m_AUImgr->GetPane(m_pdemo_window).FloatingPosition(300,30);
+
+        m_AUImgr->GetPane(m_pdemo_window).Caption(_T("AUI Managed Demo Window"));
+        m_AUImgr->GetPane(m_pdemo_window).CaptionVisible(true);
+        m_AUImgr->GetPane(m_pdemo_window).GripperTop(true);
+        m_AUImgr->GetPane(m_pdemo_window).CloseButton(true);
+        m_AUImgr->GetPane(m_pdemo_window).Show(false);
+        m_AUImgr->Update();
+
       return (
            INSTALLS_CONTEXTMENU_ITEMS     |
-           WANTS_NMEA_SENTENCES
+           WANTS_NMEA_SENTENCES           |
+           USES_AUI_MANAGER
             );
 }
 
 bool demo_pi::DeInit(void)
 {
 //      printf("demo_pi DeInit()\n");
+      m_AUImgr->DetachPane(m_pdemo_window);
+
       if(m_pdemo_window)
       {
             m_pdemo_window->Close();
             m_pdemo_window->Destroy();
       }
+
       
       return true;
 }
 
 int demo_pi::GetAPIVersionMajor()
 {
-      return API_VERSION_MAJOR;
+      return MY_API_VERSION_MAJOR;
 }
 
 int demo_pi::GetAPIVersionMinor()
 {
-      return API_VERSION_MINOR;
+      return MY_API_VERSION_MINOR;
 }
 
 int demo_pi::GetPlugInVersionMajor()
@@ -169,11 +190,37 @@ void demo_pi::OnContextMenuItemCallback(int id)
       wxLogMessage(_T("demo_pi OnContextMenuCallBack()"));
      ::wxBell();
 
+      //  Note carefully that this is a "reference to a wxAuiPaneInfo classs instance"
+      //  Copy constructor (i.e. wxAuiPaneInfo pane = m_AUImgr->GetPane(m_pdemo_window);) will not work
 
+      wxAuiPaneInfo &pane = m_AUImgr->GetPane(m_pdemo_window);
+      if(!pane.IsOk())
+            return;
+
+      if(!pane.IsShown())
+      {
+//            printf("show\n");
+            SetCanvasContextMenuItemViz(m_hide_id, true);
+            SetCanvasContextMenuItemViz(m_show_id, false);
+
+            pane.Show(true);
+            m_AUImgr->Update();
+
+      }
+      else
+      {
+//            printf("hide\n");
+            SetCanvasContextMenuItemViz(m_hide_id, false);
+            SetCanvasContextMenuItemViz(m_show_id, true);
+
+            pane.Show(false);
+            m_AUImgr->Update();
+      }
+
+/*
       if(NULL == m_pdemo_window)
       {
             m_pdemo_window = new DemoWindow(m_parent_window, wxID_ANY);
-
 
             SetCanvasContextMenuItemViz(m_hide_id, true);
             SetCanvasContextMenuItemViz(m_show_id, false);
@@ -187,6 +234,27 @@ void demo_pi::OnContextMenuItemCallback(int id)
             SetCanvasContextMenuItemViz(m_hide_id, false);
             SetCanvasContextMenuItemViz(m_show_id, true);
       }      
+*/
+}
+
+void demo_pi::UpdateAuiStatus(void)
+{
+      //    This method is called after the PlugIn is initialized
+      //    and the frame has done its initial layout, possibly from a saved wxAuiManager "Perspective"
+      //    It is a chance for the PlugIn to syncronize itself internally with the state of any Panes that
+      //    were added to the frame in the PlugIn ctor.
+
+      //    We use this callback here to keep the context menu selection in sync with the window state
+
+  
+      wxAuiPaneInfo &pane = m_AUImgr->GetPane(m_pdemo_window);
+      if(!pane.IsOk())
+            return;
+
+      printf("update %d\n",pane.IsShown());
+
+      SetCanvasContextMenuItemViz(m_hide_id, pane.IsShown());
+      SetCanvasContextMenuItemViz(m_show_id, !pane.IsShown());
 
 }
 
@@ -199,6 +267,9 @@ void demo_pi::OnContextMenuItemCallback(int id)
 
 BEGIN_EVENT_TABLE(DemoWindow, wxWindow)
   EVT_PAINT ( DemoWindow::OnPaint )
+  EVT_SIZE(DemoWindow::OnSize)
+
+
 END_EVENT_TABLE()
 
 DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
@@ -210,12 +281,17 @@ DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
       mSog = 2.0;
       mCog = 3.0;
       mVar = 4.0;
-
 }
 
 DemoWindow::~DemoWindow()
 {
 }
+
+void DemoWindow::OnSize(wxSizeEvent& event)
+{
+      printf("DemoWindow OnSize()\n");
+}
+
 
 void DemoWindow::SetSentence(wxString &sentence)
 {

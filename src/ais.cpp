@@ -1714,16 +1714,19 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
 
 
-bool AIS_Decoder::NMEACheckSumOK(const wxString& str)
+bool AIS_Decoder::NMEACheckSumOK(const wxString& str_in)
 {
 
    unsigned char checksum_value = 0;
    int sentence_hex_sum;
 
-   int string_length = str.Len();
+   char str_ascii[AIS_MAX_MESSAGE_LEN];
+   strncpy(str_ascii, str_in.mb_str(), AIS_MAX_MESSAGE_LEN);
+
+   int string_length = strlen(str_ascii);
 
    int payload_length = 0;                       // pjotrc 2010.02.07
-   while ((payload_length<string_length) && (str[payload_length]!='*')) // look for '*'
+   while ((payload_length<string_length) && (str_ascii[payload_length]!='*')) // look for '*'
 	payload_length++;
 
    if (payload_length == string_length) return false; // '*' not found at all, no checksum
@@ -1732,15 +1735,15 @@ bool AIS_Decoder::NMEACheckSumOK(const wxString& str)
 
    while( index < payload_length )                 // pjotrc 2010.02.07
    {                                               // pjotrc 2010.02.07
-      checksum_value ^= str[ index ];
-      index++;
+         checksum_value ^= str_ascii[ index ];
+         index++;
    }
 
    if(string_length > 4)
    {
         char scanstr[3];
-        scanstr[0] = str[payload_length+1];       // pjotrc 2010.02.07
-        scanstr[1] = str[payload_length+2];       // pjotrc 2010.02.07
+        scanstr[0] = str_ascii[payload_length+1];       // pjotrc 2010.02.07
+        scanstr[1] = str_ascii[payload_length+2];       // pjotrc 2010.02.07
         scanstr[2] = 0;
         sscanf(scanstr, "%2x", &sentence_hex_sum);
 
@@ -2642,7 +2645,7 @@ void *OCP_AIS_Thread::Entry()
 
     // Open the requested port.
     //   using O_NDELAY to force ignore of DCD (carrier detect) MODEM line
-    if ((m_ais_fd = open(m_pPortName->mb_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
+    if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
     {
         wxString msg(_T("AIS input device open failed: "));
         msg.Append(*m_pPortName);
@@ -2676,7 +2679,7 @@ void *OCP_AIS_Thread::Entry()
         wxLogMessage(msg);
 
            close(m_ais_fd);
-         if ((m_ais_fd = open(m_pPortName->mb_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
+         if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
            {
                wxString msg(_T("AIS tty input device open failed on retry, aborting.  "));
                msg.Append(*m_pPortName);
@@ -2706,7 +2709,7 @@ void *OCP_AIS_Thread::Entry()
           wxLogMessage(msg);
 
         close(m_ais_fd);
-        if ((m_ais_fd = open(m_pPortName->mb_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
+        if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
           {
               wxString msg(_T("AIS tty input device open failed on retry, aborting.  "));
               msg.Append(*m_pPortName);

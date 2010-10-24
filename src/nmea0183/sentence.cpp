@@ -129,20 +129,21 @@ COMMUNICATIONS_MODE SENTENCE::CommunicationsMode( int field_number ) const
 
 unsigned char SENTENCE::ComputeChecksum( void ) const
 {
-//   ASSERT_VALID( this );
-
    unsigned char checksum_value = 0;
 
-   int string_length = Sentence.Len();
+   char str_ascii[100];
+   strncpy(str_ascii, (const char *)Sentence.fn_str(), 99);
+
+   int string_length = strlen(str_ascii);
    int index = 1; // Skip over the $ at the begining of the sentence
 
    while( index < string_length    &&
-          Sentence[ index ] != '*' &&
-          Sentence[ index ] != CARRIAGE_RETURN &&
-          Sentence[ index ] != LINE_FEED )
+          str_ascii[ index ] != '*' &&
+          str_ascii[ index ] != CARRIAGE_RETURN &&
+          str_ascii[ index ] != LINE_FEED )
    {
-      checksum_value ^= Sentence[ index ];
-      index++;
+         checksum_value ^= str_ascii[ index ];
+         index++;
    }
 
    return( checksum_value );

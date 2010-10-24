@@ -77,7 +77,11 @@ enum { rmVISIBLE = 0, rmTYPE, rmBODY, rmTIME, rmMEASUREMENT, rmLUNAR_TIME_OFFSET
 wxWindow *cc1;
 
 // sort callback. Sort by body.
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortSights(long item1, long item2, wxIntPtr list)
+#else
 int wxCALLBACK SortSights(long item1, long item2, long list)
+#endif            
 {
       wxListCtrl *lc = (wxListCtrl*)list;
 

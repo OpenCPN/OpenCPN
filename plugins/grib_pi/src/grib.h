@@ -73,6 +73,7 @@ class GribRecordSet;
 
 class wxFileConfig;
 class grib_pi;
+class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY(GribRecordSet, ArrayOfGribRecordSets);
 WX_DECLARE_OBJARRAY(GribRecord *, ArrayOfGribRecordPtrs);

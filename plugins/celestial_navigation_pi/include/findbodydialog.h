@@ -35,7 +35,7 @@
  */
 #include "wx/listctrl.h"
 #include "wx/calctrl.h"
-#include "scrollingdialog.h"
+//#include "scrollingdialog.h"
 
 /*!
  * Forward declarations

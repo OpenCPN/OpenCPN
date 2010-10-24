@@ -1701,7 +1701,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
 
             //    Funny case here....On MSW, the dc is Ok(), even if no bitmap is mapped.....
             //    So, resort to checking rendered_base
-            if(dc.Ok())
+            if(dc.IsOk())
             {
                   if(!rendered_base)            // nothing rendered, nothing mapped.
                         SubstituteClearDC(dc, vp);
@@ -1858,7 +1858,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             }
 
 
-            if(!dc.Ok())                  // some error, probably bad charts, to be disabled on next compose
+            if(!dc.IsOk())                  // some error, probably bad charts, to be disabled on next compose
             {
                   SubstituteClearDC(dc, vp);
 /*
@@ -3602,8 +3602,11 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
             {
             //Tweak the scale slightly for a new ref chart
                   ChartBase *pc = ChartData->OpenChartFromDB(new_ref_dbIndex, FULL_INIT);
-                  double tweak_scale_ppm = pc->GetNearestPreferredScalePPM(VPoint.view_scale_ppm);
-                  SetVPScale (tweak_scale_ppm);
+                  if(pc)
+                  {
+                        double tweak_scale_ppm = pc->GetNearestPreferredScalePPM(VPoint.view_scale_ppm);
+                        SetVPScale (tweak_scale_ppm);
+                  }
             }
       }
 
@@ -8356,7 +8359,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               Current_Ch->RenderViewOnDC(temp_dc, svp, current_scale_method);
         }
 
-        if(!temp_dc.Ok())
+        if(!temp_dc.IsOk())
             { return;}
 
 
@@ -9350,10 +9353,12 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, wxBoundingBox& BltBBox, const 
                 if ( pRouteDraw )
                 {
                       if ( BltBBox.Intersect ( pRouteDraw->RBBox, 0 ) != _OUT ) // Route is not wholly outside window
+                      {
                             if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
                                   active_route = pRouteDraw;
                             else
                                   pRouteDraw->Draw ( dc, VPoint );
+                      }
                 }
 
                 node = node->GetNext();
@@ -9987,8 +9992,6 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         m_bForceTCRedraw = true;
         btc_valid = false;
 
-        psList = NULL;
-
         OK_button = new wxButton ( this, wxID_OK, _( "OK" ),
                                    wxPoint ( sx - 100, sy - 32 ), wxDefaultSize );
         OK_button->SetBackgroundColour ( GetGlobalColor ( _T ( "UIBCK" ) ) );
@@ -10011,13 +10014,14 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
 TCWin::~TCWin()
 {
+ /*
         if ( psList )
         {
                 psList->DeleteContents ( TRUE );
                 psList->Clear();
                 delete psList;
         }
-
+*/
 //      pParent->m_bForceReDraw = true;
         pParent->Refresh ( false );
 
@@ -10176,6 +10180,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
                 //    Build the array of values, capturing max and min
+                SplineList sList;
 
                 if ( !btc_valid )
                 {
@@ -10223,6 +10228,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
 //    Build spline list of points
+/*
                         if ( psList )                 // destroy any current list
                         {
                                 psList->DeleteContents ( TRUE );
@@ -10231,6 +10237,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         }
 
                         psList = new SplineList;;
+*/
 
                         for ( i = 0 ; i<25 ; i++ )
                         {
@@ -10238,7 +10245,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                 pp->x =  x_graph + ( ( i ) * x_graph_w / 25 );
                                 pp->y = y_graph + ( m_plot_y_offset ) - ( int ) ( (tcv[i]- val_off) * y_graph_h / im );
 
-                                psList->Append ( pp );
+                                sList.Append ( pp );
                         }
 
                         btc_valid = true;
@@ -10335,12 +10342,18 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
                 //    Draw the Value curve
+#if wxCHECK_VERSION(2, 9, 0)
+                wxPointList *list = (wxPointList *)&sList;
+#else
+                wxList *list = (wxList *)&sList;
+#endif
+
 
                 dc.SetPen ( *pblack_2 );
 #if wxUSE_SPLINES
-                dc.DrawSpline ( ( wxList * ) psList );
+                dc.DrawSpline ( list );
 #else
-                dc.DrawLines ( ( wxList * ) psList );
+                dc.DrawLines ( list );
 #endif
                 //  More Info
 
@@ -10441,8 +10454,10 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
                 dc.SetFont ( *pSFont );
-                dc.GetTextExtent ( wxString ( sday, wxConvUTF8 ), &w, &h );
-                dc.DrawText ( wxString ( sday, wxConvUTF8 ), 55 - w/2, y * 88/100 );
+//                dc.GetTextExtent ( wxString ( sday, wxConvUTF8 ), &w, &h );       2.9.1
+//                dc.DrawText ( wxString ( sday, wxConvUTF8 ), 55 - w/2, y * 88/100 );    2.9.1
+                dc.GetTextExtent ( sday, &w, &h );
+                dc.DrawText ( sday, 55 - w/2, y * 88/100 );
 
                 m_bForceTCRedraw = false;
         }

@@ -556,7 +556,6 @@ private:
       wxButton    *NX_button;
       wxButton    *PR_button;
 
-      SplineList  *psList;
       int         im;
       int         ib;
       int         it;

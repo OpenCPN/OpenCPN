@@ -561,9 +561,9 @@ public:
  */
 #include <wx/fontdlg.h>
 
-class WXDLLEXPORT wxChoice;
+class wxChoice;
 class WXDLLEXPORT wxText;
-class WXDLLEXPORT wxCheckBox;
+class wxCheckBox;
 class WXDLLEXPORT MyFontPreviewer;
 
 /*

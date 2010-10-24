@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "chcanv.h"
 //#include "cutil.h"
 //#include "georef.h"
+#include <wx/graphics.h>
 
 #include "IsoLine.h"
 

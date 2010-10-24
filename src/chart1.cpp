@@ -36,11 +36,18 @@
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
 #include "wx/stdpaths.h"
-#include "scrollingdialog.h"
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
 #include <version.h> //Gunther
+#include <wx/dialog.h>
+
+#if wxCHECK_VERSION(2, 9, 0)
+  #include <wx/dialog.h>
+#else
+//  #include "scrollingdialog.h"
+#endif
+
 
 #include "dychart.h"
 
@@ -1060,13 +1067,13 @@ bool MyApp::OnInit()
 
         if(pli)
         {
-              b_initok = locale_def_lang.Init( pli->Language, wxLOCALE_CONV_ENCODING );
+              b_initok = locale_def_lang.Init( pli->Language, wxLOCALE_LOAD_DEFAULT );
               loc_lang_canonical = pli->CanonicalName;
         }
 
         if(!pli || !b_initok)
         {
-              locale_def_lang.Init( wxLANGUAGE_ENGLISH_US, wxLOCALE_CONV_ENCODING );
+              locale_def_lang.Init( wxLANGUAGE_ENGLISH_US, wxLOCALE_LOAD_DEFAULT );
               loc_lang_canonical = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->CanonicalName;
         }
 
@@ -1380,6 +1387,7 @@ bool MyApp::OnInit()
               g_ShowCOG_Mins = 6;
               g_bShowMoored = true;
               g_ShowMoored_Kts = 0.2;
+              g_bShowTrackIcon = true;
 
               g_PlanSpeed = 6.;
         }
@@ -4878,9 +4886,14 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
 
                   m_pStatBoxToolStaticBmp = new wxStaticBitmap(m_toolBar, ID_TBSTATBOX, m_StatBmp,
                               wxPoint(2000,10), wxSize(m_StatBmp.GetWidth(),DUMMY_HEIGHT),wxSIMPLE_BORDER, _T("staticBitmap"));
-      //      Insert the new control
-                  delete m_pStatBoxTool;        // needs to be deleted since it was only removed above
-                  m_pStatBoxTool = m_toolBar->InsertControl(ct_pos, m_pStatBoxToolStaticBmp);
+
+#if wxCHECK_VERSION(2, 9, 0)
+#else
+                 delete m_pStatBoxTool;        // needs to be deleted since it was only removed above
+#endif
+
+                  //      Insert the new control
+                 m_pStatBoxTool = m_toolBar->InsertControl(ct_pos, m_pStatBoxToolStaticBmp);
 
             //      Re-insert the EXIT tool
                   if(g_bbigred)
@@ -7270,10 +7283,9 @@ FILE *f;
 
 
       //    Method 1:  Use GetDefaultCommConfig()
-      // Try first 16 possible COM ports, check for a default configuration
+      // Try first {g_nCOMPortCheck} possible COM ports, check for a default configuration
       for (int i=1; i<g_nCOMPortCheck; i++)
       {
-#ifdef _UNICODE
             wxString s;
             s.Printf(_T("COM%d"), i);
 
@@ -7281,16 +7293,6 @@ FILE *f;
             DWORD dwSize = sizeof(COMMCONFIG);
             if (GetDefaultCommConfig(s.fn_str(), &cc, &dwSize))
                   preturn->Add(wxString(s));
-#else
-            char s[20];
-            sprintf(s, "COM%d", i);
-
-            COMMCONFIG cc;
-            DWORD dwSize = sizeof(COMMCONFIG);
-            if (GetDefaultCommConfig(s, &cc, &dwSize))
-                  preturn->Add(wxString(s));
-#endif
-
       }
 
 
@@ -7814,10 +7816,9 @@ class ocpnToolBarTool : public wxToolBarToolBase
                           {
                           }
 
-                          ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control)
-      : wxToolBarToolBase(tbar, control)
-                          {
-                          }
+                          ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control, const wxString& label);
+
+                          ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control);
 
                           void SetSize(const wxSize& size)
                           {
@@ -7840,7 +7841,35 @@ class ocpnToolBarTool : public wxToolBarToolBase
 };
 
 // ----------------------------------------------------------------------------
-// wxWin macros
+
+ocpnToolBarTool::ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control, const wxString& label)
+{
+      m_tbar = tbar;
+      m_control = control;
+      m_id = control->GetId();
+
+      m_kind = wxITEM_MAX;    // invalid value
+
+      m_enabled = true;
+      m_toggled = false;
+
+      m_toolStyle = wxTOOL_STYLE_CONTROL;
+}
+
+ocpnToolBarTool::ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control)
+{
+      m_tbar = tbar;
+      m_control = control;
+      m_id = control->GetId();
+
+      m_kind = wxITEM_MAX;    // invalid value
+
+      m_enabled = true;
+      m_toggled = false;
+
+      m_toolStyle = wxTOOL_STYLE_CONTROL;
+}
+
 // ----------------------------------------------------------------------------
 
 IMPLEMENT_DYNAMIC_CLASS(ocpnToolBarSimple, wxControl)
@@ -7883,6 +7912,11 @@ wxToolBarToolBase *ocpnToolBarSimple::CreateTool(int id,
 wxToolBarToolBase *ocpnToolBarSimple::CreateTool(wxControl *control)
 {
       return new ocpnToolBarTool(this, control);
+}
+
+wxToolBarToolBase *ocpnToolBarSimple::CreateTool(wxControl *control, const wxString& label)
+{
+      return new ocpnToolBarTool(this, control, label);
 }
 
 // ----------------------------------------------------------------------------

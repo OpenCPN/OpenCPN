@@ -72,6 +72,10 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
       m_plugin_location = shared_data_prefix + _T("plugins");
       wxDir pi_dir(m_plugin_location);
 
+      wxString msg(_("PlugInManager searching for PlugIns in location "));
+      msg += m_plugin_location;
+      wxLogMessage(msg);
+
 #ifdef __WXMSW__
       wxString pispec = _T("*_pi.dll");
 #else
@@ -532,8 +536,8 @@ void PlugInManager::NotifyAuiPlugIns(void)
       }
 }
 
-int PlugInManager::AddToolbarTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                      wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
+int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+                                      wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                       int tool_sel, opencpn_plugin *pplugin )
 {
       PlugInToolbarToolContainer *pttc = new PlugInToolbarToolContainer;
@@ -656,8 +660,8 @@ wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned c
 //----------------------------------------------------------------------------------------------------------
 
 
-int InsertPlugInTool(wxChar *label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                          wxChar *shortHelp, wxChar *longHelp, wxObject *clientData, int position,
+int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+                                          wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                           int tool_sel, opencpn_plugin *pplugin)
 {
       if(s_ppim)
