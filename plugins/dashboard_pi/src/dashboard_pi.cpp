@@ -142,9 +142,8 @@ wxString getInstrumentCaption(unsigned int id)
       return _T("");
 }
 
-wxListItem getListItemForInstrument(unsigned int id)
+void getListItemForInstrument(wxListItem item, unsigned int id)
 {
-      wxListItem item;
       item.SetData(id);
       item.SetText(getInstrumentCaption(id));
       switch (id)
@@ -175,7 +174,6 @@ wxListItem getListItemForInstrument(unsigned int id)
             item.SetImage(1);
             break;
       }
-      return item;
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -778,7 +776,8 @@ void dashboard_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
 
       for (size_t i = 0; i < m_aInstrumentList.GetCount(); i++)
       {
-            wxListItem item = getListItemForInstrument(m_aInstrumentList.Item(i));
+            wxListItem item;
+            getListItemForInstrument(item, m_aInstrumentList.Item(i));
             item.SetId(m_pListCtrlInstruments->GetItemCount());
             m_pListCtrlInstruments->InsertItem(item);
       }
@@ -837,7 +836,8 @@ void dashboard_pi::OnInstrumentAdd(wxCommandEvent& event)
 
       if (pdlg.ShowModal() == wxID_OK)
       {
-            wxListItem item = getListItemForInstrument(pdlg.GetInstrumentAdded());
+            wxListItem item;
+            getListItemForInstrument(item, pdlg.GetInstrumentAdded());
             item.SetId(m_pListCtrlInstruments->GetItemCount());
             m_pListCtrlInstruments->InsertItem(item);
             m_pListCtrlInstruments->SetColumnWidth(0, wxLIST_AUTOSIZE);
@@ -866,14 +866,11 @@ void dashboard_pi::OnInstrumentUp(wxCommandEvent& event)
 
       wxListItem item;
       item.SetId(itemID);
+      item.SetMask(wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA);
       m_pListCtrlInstruments->GetItem(item);
-      wxListItem item2;
-      item2.SetData(item.GetData());
-      item2.SetImage(item.GetImage());
-      item2.SetText(item.GetText());
-      item2.SetId(itemID-1);
+      item.SetId(itemID-1);
       m_pListCtrlInstruments->DeleteItem(itemID);
-      m_pListCtrlInstruments->InsertItem(item2);
+      m_pListCtrlInstruments->InsertItem(item);
       m_pListCtrlInstruments->SetItemState(itemID-1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
       UpdateButtonsState();
 }
@@ -885,14 +882,11 @@ void dashboard_pi::OnInstrumentDown(wxCommandEvent& event)
 
       wxListItem item;
       item.SetId(itemID);
+      item.SetMask(wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA);
       m_pListCtrlInstruments->GetItem(item);
-      wxListItem item2;
-      item2.SetData(item.GetData());
-      item2.SetImage(item.GetImage());
-      item2.SetText(item.GetText());
-      item2.SetId(itemID+1);
+      item.SetId(itemID+1);
       m_pListCtrlInstruments->DeleteItem(itemID);
-      m_pListCtrlInstruments->InsertItem(item2);
+      m_pListCtrlInstruments->InsertItem(item);
       m_pListCtrlInstruments->SetItemState(itemID+1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
       UpdateButtonsState();
 }
@@ -1020,7 +1014,8 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
 
       for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_D_GPS; i++)
       {
-            wxListItem item = getListItemForInstrument(i);
+            wxListItem item;
+            getListItemForInstrument(item, i);
             item.SetId(i);
             m_pListCtrlInstruments->InsertItem(item);
       }
