@@ -142,7 +142,7 @@ wxString getInstrumentCaption(unsigned int id)
       return _T("");
 }
 
-void getListItemForInstrument(wxListItem item, unsigned int id)
+void getListItemForInstrument(wxListItem &item, unsigned int id)
 {
       item.SetData(id);
       item.SetText(getInstrumentCaption(id));
