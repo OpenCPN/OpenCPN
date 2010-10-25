@@ -817,7 +817,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             event.SetEventObject( (wxObject *)this );
             event.SetExtraLong(EVT_NMEA_DIRECT);
             event.SetClientData(&ThreadPositionData);
-            m_pParentEventHandler->AddPendingEvent(event);
+///            m_pParentEventHandler->AddPendingEvent(event);
 
             // or parsable NMEA string
             wxString buf = _T("$IIGLL,3932.39,N,00320.12,E,,A\r\n");
@@ -829,11 +829,11 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             buf = _T("$APHDM,323.5,M*34\r\n");
             buf = _T("$GPRMC,043047.000,A,4715.3472,N,12217.9889,W,0.00,,180510,,,A*69\r\n");
 
-//            buf = _T("$GPGGA,153006.0,4936.950097,N,12400.449524,W,0,05,1.0,0.0,M,,,,*1E\r\n");
-
+            buf = _T("$GPGGA,153006.0,4936.950097,N,12400.449524,W,0,05,1.0,0.0,M,,,,*1E\r\n");
+            buf = _T("$GPGGA,153856.000,5006.0230,N,01425.8313,E,1,05,1.5,252.6,M,44.3,M,,0000*58\r\n");
             OCPN_NMEAEvent Nevent(wxEVT_OCPN_NMEA, 0);
             Nevent.SetNMEAString(buf);
-//            m_pParentEventHandler->AddPendingEvent(Nevent);
+///            m_pParentEventHandler->AddPendingEvent(Nevent);
 
       }
 #endif

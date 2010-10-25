@@ -2464,7 +2464,7 @@ void options::OnPageChange(wxNotebookEvent& event)
                   m_itemLangListBox->Append(_T("English (U.S.)"));
 
                   wxString lang_dir = g_SData_Locn + _T("share/locale/");
-                  for( int it = 0 ; it < nLang ; it++)
+                  for( int it = 1 ; it < nLang ; it++)
                   {
                         if(wxLocale::IsAvailable(lang_list[it]))
                         {
@@ -2673,7 +2673,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
       wxString dir_suffix;
 
       if     (lang_canonical == _T("en_US")) {dir_suffix = _T("en");    return_string = wxString("English (U.S.)", wxConvUTF8);}
-      else if(lang_canonical == _T("cs_CZ")) {dir_suffix = _T("cs");    return_string = wxString("Ceština", wxConvUTF8);}
+      else if(lang_canonical == _T("cs_CZ")) {dir_suffix = _T("cs");    return_string = wxString("Čeština", wxConvUTF8);}
       else if(lang_canonical == _T("da_DK")) {dir_suffix = _T("da");    return_string = wxString("Dansk", wxConvUTF8);}
       else if(lang_canonical == _T("de_DE")) {dir_suffix = _T("de");    return_string = wxString("Deutsch", wxConvUTF8);}
       else if(lang_canonical == _T("et_EE")) {dir_suffix = _T("et");    return_string = wxString("Eesti", wxConvUTF8);}
