@@ -1067,13 +1067,13 @@ bool MyApp::OnInit()
 
         if(pli)
         {
-              b_initok = locale_def_lang.Init( pli->Language, wxLOCALE_LOAD_DEFAULT );
+              b_initok = locale_def_lang.Init( pli->Language, 0 );
               loc_lang_canonical = pli->CanonicalName;
         }
 
         if(!pli || !b_initok)
         {
-              locale_def_lang.Init( wxLANGUAGE_ENGLISH_US, wxLOCALE_LOAD_DEFAULT );
+              locale_def_lang.Init( wxLANGUAGE_ENGLISH_US, 0 );
               loc_lang_canonical = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->CanonicalName;
         }
 

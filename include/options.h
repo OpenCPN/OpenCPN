@@ -552,7 +552,7 @@ static int lang_list[] = {
             wxLANGUAGE_SPANISH_GUATEMALA,
             wxLANGUAGE_SPANISH_HONDURAS,
             wxLANGUAGE_SPANISH_MEXICAN,
-            wxLANGUAGE_SPANISH_MODERN,
+//            wxLANGUAGE_SPANISH_MODERN,
             wxLANGUAGE_SPANISH_NICARAGUA,
             wxLANGUAGE_SPANISH_PANAMA,
             wxLANGUAGE_SPANISH_PARAGUAY,

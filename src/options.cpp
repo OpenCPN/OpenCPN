@@ -55,6 +55,9 @@
 #include "s52utils.h"
 #endif
 
+wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
+
+
 extern bool             g_bShowPrintIcon;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
@@ -2134,11 +2137,23 @@ void options::OnXidOkClick( wxCommandEvent& event )
 //    Language Panel
     if(m_bVisitLang)
     {
+            wxString new_canon = _T("en_US");
             wxString lang_sel = m_itemLangListBox->GetValue();
-            const wxLanguageInfo *pli = wxLocale::FindLanguageInfo(lang_sel);
+
+            int nLang = sizeof(lang_list)/sizeof(int);
+            for( int it = 0 ; it < nLang ; it++)
+            {
+                  wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+                  wxString test_string = GetOCPNKnownLanguage(lang_canonical, NULL);
+                  if(lang_sel == test_string)
+                  {
+                        new_canon = lang_canonical;
+                        break;
+                  }
+            }
 
             wxString locale_old = g_locale;
-            g_locale = pli->CanonicalName;
+            g_locale = new_canon;
 
             if(g_locale != locale_old)
                   iret |= LOCALE_CHANGED;
@@ -2401,6 +2416,9 @@ void options::OnPageChange(wxNotebookEvent& event)
                   wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
                   wxString current_sel = wxLocale::GetLanguageName(current_language);
 
+                  current_sel = GetOCPNKnownLanguage(g_locale, NULL);
+
+
                   int nLang = sizeof(lang_list)/sizeof(int);
 
 #if 0
@@ -2443,7 +2461,7 @@ void options::OnPageChange(wxNotebookEvent& event)
 
 #ifdef __WXMSW__
                    // always add us english
-                  m_itemLangListBox->Append(_T("English"));
+                  m_itemLangListBox->Append(_T("English (U.S.)"));
 
                   wxString lang_dir = g_SData_Locn + _T("share/locale/");
                   for( int it = 0 ; it < nLang ; it++)
@@ -2457,28 +2475,15 @@ void options::OnPageChange(wxNotebookEvent& event)
 
             // Defaults
                               wxString loc_lang_name = wxLocale::GetLanguageName(lang_list[it]);
+                              wxString widgets_lang_name = loc_lang_name;
                               wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
-            // Make some known substitutions here
-                              {
-                                    if     (lang_canonical == _T("cs_CZ")) {lang_canonical = _T("cs");    loc_lang_name = wxString("Ceština", wxConvUTF8);}
-                                    else if(lang_canonical == _T("da_DK")) {lang_canonical = _T("da");    loc_lang_name = wxString("Dansk", wxConvUTF8);}
-                                    else if(lang_canonical == _T("de_DE")) {lang_canonical = _T("de");    loc_lang_name = wxString("Deutsch", wxConvUTF8);}
-                                    else if(lang_canonical == _T("et_EE")) {lang_canonical = _T("et");    loc_lang_name = wxString("Eesti", wxConvUTF8);}
-                                    else if(lang_canonical == _T("es_ES")) {lang_canonical = _T("es");    loc_lang_name = wxString("Español", wxConvUTF8);}
-                                    else if(lang_canonical == _T("fr_FR")) {lang_canonical = _T("fr");    loc_lang_name = wxString("Français", wxConvUTF8);}
-                                    else if(lang_canonical == _T("it_IT")) {lang_canonical = _T("it");    loc_lang_name = wxString("Italiano", wxConvUTF8);}
-                                    else if(lang_canonical == _T("nl_NL")) {lang_canonical = _T("nl");    loc_lang_name = wxString("Nederlands", wxConvUTF8);}
-                                    else if(lang_canonical == _T("pl_PL")) {lang_canonical = _T("pl");    loc_lang_name = wxString("Polski", wxConvUTF8);}
-                                    else if(lang_canonical == _T("pt_PT")) {lang_canonical = _T("pt_PT"); loc_lang_name = wxString("Português", wxConvUTF8);}
-                                    else if(lang_canonical == _T("pt_BR")) {lang_canonical = _T("pt_BR"); loc_lang_name = wxString("Português Brasileiro", wxConvUTF8);}
-                                    else if(lang_canonical == _T("ru_RU")) {lang_canonical = _T("ru");    loc_lang_name = wxString("Русский", wxConvUTF8);}
-                                    else if(lang_canonical == _T("sv_SE")) {lang_canonical = _T("sv");    loc_lang_name = wxString("Svenska", wxConvUTF8);}
-//                                    else continue;
-                              }
 
+            //  Make opencpn substitutions
+                              wxString lang_suffix;
+                              loc_lang_name = GetOCPNKnownLanguage(lang_canonical, &lang_suffix);
 
             //  Look explicitely to see if .mo is available
-                              wxString test_dir = lang_dir + lang_canonical;
+                              wxString test_dir = lang_dir + lang_suffix;
                               if(!wxDir::Exists(test_dir))
                                     continue;
 
@@ -2554,7 +2559,7 @@ void options::OnPageChange(wxNotebookEvent& event)
                   if(pli)
                   {
                         wxString clang = pli->Description;
-                        m_itemLangListBox->SetValue(clang);
+//                        m_itemLangListBox->SetValue(clang);
                   }
 
                   m_bVisitLang = true;
@@ -2661,3 +2666,38 @@ void options::OnButtonTestSound(wxCommandEvent& event)
             AIS_Sound.Play();
 
 }
+
+wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
+{
+      wxString return_string;
+      wxString dir_suffix;
+
+      if     (lang_canonical == _T("en_US")) {dir_suffix = _T("en");    return_string = wxString("English (U.S.)", wxConvUTF8);}
+      else if(lang_canonical == _T("cs_CZ")) {dir_suffix = _T("cs");    return_string = wxString("Ceština", wxConvUTF8);}
+      else if(lang_canonical == _T("da_DK")) {dir_suffix = _T("da");    return_string = wxString("Dansk", wxConvUTF8);}
+      else if(lang_canonical == _T("de_DE")) {dir_suffix = _T("de");    return_string = wxString("Deutsch", wxConvUTF8);}
+      else if(lang_canonical == _T("et_EE")) {dir_suffix = _T("et");    return_string = wxString("Eesti", wxConvUTF8);}
+      else if(lang_canonical == _T("es_ES")) {dir_suffix = _T("es");    return_string = wxString("Español", wxConvUTF8);}
+      else if(lang_canonical == _T("fr_FR")) {dir_suffix = _T("fr");    return_string = wxString("Français", wxConvUTF8);}
+      else if(lang_canonical == _T("it_IT")) {dir_suffix = _T("it");    return_string = wxString("Italiano", wxConvUTF8);}
+      else if(lang_canonical == _T("nl_NL")) {dir_suffix = _T("nl");    return_string = wxString("Nederlands", wxConvUTF8);}
+      else if(lang_canonical == _T("pl_PL")) {dir_suffix = _T("pl");    return_string = wxString("Polski", wxConvUTF8);}
+      else if(lang_canonical == _T("pt_PT")) {dir_suffix = _T("pt_PT"); return_string = wxString("Português", wxConvUTF8);}
+      else if(lang_canonical == _T("pt_BR")) {dir_suffix = _T("pt_BR"); return_string = wxString("Português Brasileiro", wxConvUTF8);}
+      else if(lang_canonical == _T("ru_RU")) {dir_suffix = _T("ru");    return_string = wxString("Русский", wxConvUTF8);}
+      else if(lang_canonical == _T("sv_SE")) {dir_suffix = _T("sv");    return_string = wxString("Svenska", wxConvUTF8);}
+
+      else
+      {
+            dir_suffix = lang_canonical;
+            const wxLanguageInfo *info = wxLocale::FindLanguageInfo(lang_canonical);
+            return_string = info->Description;
+      }
+
+      if(NULL != lang_dir)
+            *lang_dir = dir_suffix;
+
+      return return_string;
+      //
+}
+
