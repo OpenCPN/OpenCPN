@@ -207,12 +207,12 @@ int dashboard_pi::Init(void)
       LoadConfig();
 
       //    This PlugIn needs a toolbar icon
-      m_toolbar_item_id  = InsertPlugInTool(_(""), _img_dashboard, _img_dashboard, wxITEM_NORMAL,
+      m_toolbar_item_id  = InsertPlugInTool(_(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
             _("Dashboard"), _(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
       m_btoolbox_panel_is_setup = false;
 
-      m_pdashboard_window = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr);
+      m_pdashboard_window = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, m_toolbar_item_id);
       m_pauimgr->AddPane(m_pdashboard_window, wxAuiPaneInfo().Name(_T("Dashboard")).Caption(_("Dashboard")).CaptionVisible(true).Float().FloatingPosition(0,0).TopDockable(false).BottomDockable(false).Show(false));
       m_pauimgr->Update();
       ApplyConfig();
@@ -901,6 +901,9 @@ void dashboard_pi::OnToolbarToolCallback(int id)
             return;
 
       pane.Show(!pane.IsShown());
+      // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
+      // to actual status to ensure right status upon toolbar rebuild
+      SetToolbarItemState(m_toolbar_item_id, pane.IsShown());
       m_pauimgr->Update();
 }
 
@@ -918,6 +921,7 @@ void dashboard_pi::UpdateAuiStatus(void)
       if(!pane.IsOk())
             return;
 
+      SetToolbarItemState(m_toolbar_item_id, pane.IsShown());
 }
 
 bool dashboard_pi::LoadConfig(void)
@@ -1040,10 +1044,11 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 //----------------------------------------------------------------
 
 // wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
-DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr)
+DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, int tbitem)
       :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, _T("Dashboard"))
 {
       m_pauimgr = auimgr;
+      m_toolbar_item_id = tbitem;
 
       wxColour cl;
       GetGlobalColor(_T("DILG1"), &cl);
@@ -1053,6 +1058,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
       SetSizer(itemBoxSizer);
 
       Connect(this->GetId(), wxEVT_SIZE, wxSizeEventHandler(DashboardWindow::OnSize));
+      Connect(this->GetId(), wxEVT_SHOW, wxShowEventHandler(DashboardWindow::OnShow));
 }
 
 void DashboardWindow::SetColorScheme(PI_ColorScheme cs)
@@ -1097,6 +1103,12 @@ void DashboardWindow::OnSize(wxSizeEvent& evt)
             //pi.FloatingSize(GetMinSize());
       }
  */
+}
+
+void DashboardWindow::OnShow(wxShowEvent& event)
+{
+      // This work if we have only one Dashboard. TODO: Find a workaround when we have several.
+      SetToolbarItemState(m_toolbar_item_id, IsShown());
 }
 
 bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)

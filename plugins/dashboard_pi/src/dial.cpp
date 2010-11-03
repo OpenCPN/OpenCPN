@@ -77,9 +77,14 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
 
 void DashboardInstrument_Dial::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
       m_width = width;
       m_height = m_TitleHeight+width;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
@@ -112,7 +117,7 @@ void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
       int availableHeight = rect.height - m_TitleHeight - 6;
       wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
       int width, height;
-      dc->GetTextExtent(_("000"), &width, &height, 0, 0, font);
+      dc->GetTextExtent(_T("000"), &width, &height, 0, 0, font);
       m_cy = m_TitleHeight + 2;
       if (m_MainValueOption == DIAL_POSITION_TOPLEFT || m_MainValueOption == DIAL_POSITION_TOPRIGHT ||
                 m_ExtraValueOption == DIAL_POSITION_TOPLEFT || m_ExtraValueOption == DIAL_POSITION_TOPRIGHT)
@@ -231,10 +236,8 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       wxPoint TextPoint;
       wxPen pen;
 
-      wxFont font;
-      font.SetFamily(wxFONTFAMILY_ROMAN);
-      font.SetPointSize(8);
-      dc->SetFont(font);
+      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
+      dc->SetFont(*font);
 
       wxColor cl;
       GetGlobalColor(_T("BLUE2"), &cl);
@@ -252,7 +255,7 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       for(double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle; angle += abm)
       {
             wxString label = (m_LabelArray.GetCount() ? m_LabelArray.Item(offset) : wxString::Format(_T("%d"), value));
-            dc->GetTextExtent(label, &width, &height, 0, 0, &font);
+            dc->GetTextExtent(label, &width, &height, 0, 0, font);
 
             double halfW = width / 2;
             if (m_LabelOption == DIAL_LABEL_HORIZONTAL)

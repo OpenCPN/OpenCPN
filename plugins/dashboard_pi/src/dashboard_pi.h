@@ -60,7 +60,7 @@
 class DashboardWindow;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION 13
+#define DASHBOARD_TOOL_POSITION 14
 
 class DashboardInstrumentContainer
 {
@@ -181,11 +181,12 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
+      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, int tbitem);
       ~DashboardWindow(){}
 
       void SetColorScheme(PI_ColorScheme cs);
       void OnSize(wxSizeEvent& evt);
+      void OnShow(wxShowEvent& event);
       void SetInstrumentList(wxArrayInt list);
       void SetInstrumentWidth(int width);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
@@ -195,6 +196,7 @@ public:
 
 private:
       wxAuiManager         *m_pauimgr;
+      int                  m_toolbar_item_id;
 
       wxBoxSizer*          itemBoxSizer;
       wxArrayOfInstrument  m_ArrayOfInstrument;

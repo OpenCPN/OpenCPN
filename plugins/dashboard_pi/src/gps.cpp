@@ -65,10 +65,15 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
 
 void DashboardInstrument_GPS::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
       m_cx = width/2;
       m_width = width;
       m_height = m_TitleHeight+140;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
@@ -140,10 +145,8 @@ void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
 
 void DashboardInstrument_GPS::DrawBackground(wxBufferedDC* dc)
 {
-      wxFont font;
-      font.SetFamily(wxFONTFAMILY_ROMAN);
-      font.SetPointSize(8);
-      dc->SetFont(font);
+      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
+      dc->SetFont(*font);
       // Draw SatID
       for (int idx = 0; idx < 12; idx++)
       {

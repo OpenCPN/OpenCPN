@@ -59,9 +59,14 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
 
 void DashboardInstrument_RudderAngle::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
       m_width = width;
       m_height = m_TitleHeight+width*.7;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)

@@ -57,9 +57,14 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
 
 void DashboardInstrument_Depth::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
       m_width = width;
       m_height = m_TitleHeight+140;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
@@ -111,10 +116,8 @@ void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
       dc->DrawLine(3, 90, rect.width-3, 90);
       dc->DrawLine(3, 115, rect.width-3, 115);
 
-      wxFont font;
-      font.SetFamily(wxFONTFAMILY_ROMAN);
-      font.SetPointSize(8);
-      dc->SetFont(font);
+      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
+      dc->SetFont(*font);
 
       m_MaxDepth = 0;
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
@@ -128,11 +131,11 @@ void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
       wxString label;
       label.Printf(_T("%5.0f m"), 0.0);
       int width, height;
-      dc->GetTextExtent(label, &width, &height, 0, 0, &font);
+      dc->GetTextExtent(label, &width, &height, 0, 0, font);
       dc->DrawText(label, rect.width-width, 40-height);
 
       label.Printf(_T("%5.0f m"), m_MaxDepth);
-      dc->GetTextExtent(label, &width, &height, 0, 0, &font);
+      dc->GetTextExtent(label, &width, &height, 0, 0, font);
       dc->DrawText(label, rect.width-width, rect.height-height);
 }
 

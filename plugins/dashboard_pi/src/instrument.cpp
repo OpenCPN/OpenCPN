@@ -51,7 +51,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       m_cap_flag = cap_flag;
 
       wxClientDC dc(this);
-      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, font);
 
@@ -77,8 +77,6 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
       wxBufferedDC buff_dc;
       buff_dc.Init(&dc, bmp);
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
-
       wxRect rect = GetClientRect();
 
       if(rect.width == 0 || rect.height == 0)
@@ -101,6 +99,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
       buff_dc.SetBrush(cl);
       buff_dc.DrawRoundedRectangle(0, 0, rect.width, m_TitleHeight, 3);
 
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
       buff_dc.SetFont(*font);
       //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
       GetGlobalColor(_T("DILG3"), &cl);
@@ -122,19 +121,22 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWind
       m_format = format;
 
       m_data = _T("---");
-      wxClientDC dc(this);
-      wxFont *font = OCPNGetFont(_T("Dashboard Data"), 16);
-      int width;
-      dc.GetTextExtent(_T("000"), &width, &m_DataHeight, 0, 0, font);
-
       SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_Single::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
+      font = OCPNGetFont(_T("Dashboard Data"), 16);
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, font);
+
       m_width = width;
       m_height = m_TitleHeight+m_DataHeight;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_Single::Draw(wxBufferedDC* dc)
@@ -171,19 +173,22 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wx
 
       m_data1 = _T("---");
       m_data2 = _T("---");
-      wxClientDC dc(this);
-      wxFont *font = OCPNGetFont(_T("Dashboard Data"), 16);
-      int width;
-      dc.GetTextExtent(_T("000"), &width, &m_DataHeight, 0, 0, font);
-
       SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_Position::SetInstrumentWidth(int width)
 {
+      wxClientDC dc(this);
+      int w;
+      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
+      font = OCPNGetFont(_T("Dashboard Data"), 16);
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, font);
+
       m_width = width;
       m_height = m_TitleHeight+m_DataHeight*2;
       SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
 }
 
 void DashboardInstrument_Position::Draw(wxBufferedDC* dc)
