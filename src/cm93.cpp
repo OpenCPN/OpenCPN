@@ -542,6 +542,11 @@ bool cm93_dictionary::LoadDictionary(wxString dictionary_dir)
       wxString sfa(dir);
       sfa.Append(_T("ATTRLUT.DIC"));
 
+      if(!wxFileName::FileExists(sfa)) {
+            sfa = dir;
+            sfa.Append(_T("attrlut.dic"));
+      }
+
       if(wxFileName::FileExists(sfa))
       {
             wxFileInputStream filea(sfa);
@@ -672,6 +677,11 @@ bool cm93_dictionary::LoadDictionary(wxString dictionary_dir)
       {
             sfa = dir;
             sfa.Append(_T("CM93ATTR.DIC"));
+
+            if(!wxFileName::FileExists(sfa)) {
+                  sfa = dir;
+                  sfa.Append(_T("cm93attr.dic"));
+            }
 
             if(wxFileName::FileExists(sfa))
             {
