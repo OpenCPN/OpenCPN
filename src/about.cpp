@@ -85,6 +85,9 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Flavius Bindea\n\
+      dev@wikisail.org\n\
+      CM93 Offset and minor AIS enhancements\n\n\
     Gunther Pilz\n\
       gunther.pilz@gmail.com\n\
       Windows Installer enhancements\n\n\
@@ -93,7 +96,7 @@ char AuthorText[] =
       Garmin jeeps module\n\n\
     Jean-Eudes Onfray\n\
       je@onfray.fr\n\
-      Dialog usability enhancements\n\n\
+      Dashboard and Dialog enhancements\n\n\
     Pavel Kalian\n\
       pavel@kalian.cz\n\
       S52 Rasterization Improvements\n\n\

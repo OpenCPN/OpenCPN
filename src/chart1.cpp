@@ -274,6 +274,11 @@ bool            g_bDebugCM93;
 bool            g_bDebugS57;
 bool            g_bGarminHost;
 
+// Flav add for CM9Offset manual setup
+double          g_CM93Maps_Offset_x;
+double          g_CM93Maps_Offset_y;
+bool            g_CM93Maps_Offset_on;
+bool            g_CM93Maps_Offset_Enable;
 
 #ifdef USE_S57
 s52plib           *ps52plib;
@@ -3902,9 +3907,6 @@ int MyFrame::DoOptionsDialog()
                   if(rr & FORCE_UPDATE)
                         b_force = true;
 
-                  //    Disable Toolbar
-//                  EnableToolbar(false);
-
                   ::wxBeginBusyCursor();
 
                   pSetDlg->Hide();
@@ -3932,35 +3934,11 @@ int MyFrame::DoOptionsDialog()
 
                   ::wxEndBusyCursor();
 
-                  //    Re Enable Toolbar
-//                  EnableToolbar(true);
 
                   pConfig->UpdateChartDirs(g_ChartDirArray);
 
-                  ChartData->PurgeCache();
+                  ChartsRefresh();
 
-                  //    Build a new ChartStack
-                  pCurrentStack = new ChartStack;
-                  ChartData->BuildChartStack(pCurrentStack, vLat, vLon);
-
-                  //    Select reference chart from the stack, as though clicked by user
-                  //    Make it the smallest scale chart on the stack
-                  pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry-1;
-                  int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
-                  cc1->SetQuiltRefChart(selected_index);
-
-
-                  //    Choose the correct single chart, or set the quilt mode as appropriate
-                  SetupQuiltMode();
-
-                  cc1->ReloadVP();
-
-                  UpdateControlBar();
-
-                  UpdateToolbarStatusBox(true);
-
-                  cc1->SetCursor(wxCURSOR_ARROW);
-                  FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
             }
 
             if((*pNMEADataSource != previous_NMEA_source) || ( previous_bGarminHost != g_bGarminHost))
@@ -3998,30 +3976,15 @@ int MyFrame::DoOptionsDialog()
 #ifdef USE_S57
             if(rr & S52_CHANGED)
             {
-
-/*
-                //      All this is handled by the chart object now based on the plib state hash
-
-                // Traverse the database of open charts.
-                // Finding S57 chart, execute UpdateLUPs to link objects
-                // to possibly new symbology style.
-                unsigned int nCache = ChartData->GetChartCache()->GetCount();
-                for(unsigned int i=0 ; i<nCache ; i++)
-                {
-                    CacheEntry *pce = (CacheEntry *)(ChartData->GetChartCache()->Item(i));
-                    ChartBase *Ch = (ChartBase *)pce->pChart;
-                    if(Ch->m_ChartFamily == CHART_FAMILY_VECTOR)
-                    {
-                        s57chart *S57_Ch = dynamic_cast<s57chart *>(Ch);
-                        S57_Ch->UpdateLUPs(S57_Ch);
-                        S57_Ch->ForceEdgePriorityEvaluate();             // force re-evaluation of line segment (edge) priorities
-                        b_refresh_after_options = true;
-                    }
-                }
-*/
                 b_refresh_after_options = true;
             }
 #endif
+
+// Flav: for CM93Offset refreshes all maps
+            if(rr & CM93OFFSET_CHANGED)
+            {
+                  ChartsRefresh();
+            }
 
             if(rr & LOCALE_CHANGED)
             {
@@ -4095,6 +4058,51 @@ int MyFrame::DoOptionsDialog()
       return false;
 }
 
+// Flav: This method reloads all charts for convenience
+void MyFrame::ChartsRefresh(void)
+{
+      ::wxBeginBusyCursor();
+
+      FrameTimer1.Stop();                  // stop other asynchronous activity
+
+      cc1->FlushBackgroundRender();
+
+      cc1->InvalidateQuilt();
+      cc1->SetQuiltRefChart(-1);
+
+      Current_Ch = NULL;
+
+      delete pCurrentStack;
+      pCurrentStack = NULL;
+
+
+      ChartData->PurgeCache();
+
+      //    Build a new ChartStack
+      pCurrentStack = new ChartStack;
+      ChartData->BuildChartStack(pCurrentStack, vLat, vLon);
+
+      //    Select reference chart from the stack, as though clicked by user
+      //    Make it the smallest scale chart on the stack
+      pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry-1;
+      int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+      cc1->SetQuiltRefChart(selected_index);
+
+      //    Choose the correct single chart, or set the quilt mode as appropriate
+      SetupQuiltMode();
+
+      cc1->ReloadVP();
+
+      UpdateControlBar();
+
+      UpdateToolbarStatusBox(true);
+
+      cc1->SetCursor(wxCURSOR_ARROW);
+      FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
+
+      ::wxEndBusyCursor();
+
+}
 
 void MyFrame::ToggleQuiltMode(void)
 {

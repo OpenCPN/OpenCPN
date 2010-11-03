@@ -73,6 +73,12 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern bool             g_bShowCM93DetailSlider;
 extern wxString         g_PrivateDataDir;
 
+// Flav add for CM93Offset manual setup
+extern double           g_CM93Maps_Offset_x;
+extern double           g_CM93Maps_Offset_y;
+extern bool             g_CM93Maps_Offset_on;
+
+
 
 // TODO  These should be gotten from the ctor
 extern MyFrame          *gFrame;
@@ -3079,6 +3085,13 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
       double trans_WGS84_offset_x = 0.;
       double trans_WGS84_offset_y = 0.;
 
+	  // Flav : CM93Offset add here set of tmp_transform
+	  if(g_CM93Maps_Offset_on)
+	  {
+		tmp_transform_x = -g_CM93Maps_Offset_x;
+		tmp_transform_y = -g_CM93Maps_Offset_y;
+	  }
+
 //        if(geomtype == 2)
 //              return;
 
@@ -3675,8 +3688,10 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         trans_WGS84_offset_x = offset.m_x;
                         trans_WGS84_offset_y = offset.m_y;
 
-                        *pdd++ = p.x - trans_WGS84_offset_x;
-                        *pdd++ = p.y - trans_WGS84_offset_y;
+						// Flav: CM93Offset for soundings do not transform: transform is done by origin, 
+						// if not tranform is done twice
+                        *pdd++ = p.x; // - trans_WGS84_offset_x;
+                        *pdd++ = p.y; // - trans_WGS84_offset_y;
                         *pdd++ = depth;
 
                         //  Save lat/lon of point in obj->geoPtMulti for later use in decomposed bboxes
@@ -3811,8 +3826,18 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
 //    And return the WGS84 offsets contained within
 wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon)
 {
-      wxPoint2DDouble ret(0., 0.);
-      return ret;                   // Stub return for now, no offsets ever used after 2.1.0 Build 331.....
+	  wxPoint2DDouble ret(0., 0.);
+	  // Flav here returns the offset applyed to all the CM93 maps
+	  if(g_CM93Maps_Offset_on)
+	  {
+		  ret.m_x = -g_CM93Maps_Offset_x;
+		  ret.m_y = -g_CM93Maps_Offset_y;
+          return ret;  
+	  }
+	  else
+	  {
+		  return ret;                   // Stub return for now, no offsets ever used after 2.1.0 Build 331.....
+	  }
 
       //    Default is to use the first M_COVR, the usual case
       wxList_Of_M_COVR_DescNode *node0 = m_CIB.m_cell_mcovr_list.GetFirst();

@@ -337,6 +337,10 @@ private:
       void CreateOZEmbossMapData(ColorScheme cs);
       void EmbossOverzoomIndicator ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
 
+// Flav: for CM93Offset
+	  void CreateCM93OffsetEmbossMapData(ColorScheme cs);
+      void EmbossCM93Offset ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
+
       void EmbossCanvas ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, emboss_data *pemboss, int x, int y);
 
       void JaggyCircle(wxDC &dc, wxPen pen, int x, int y, int radius);
@@ -407,6 +411,7 @@ private:
       emboss_data *m_pEM_Fathoms;
 
       emboss_data *m_pEM_OverZoom;
+	  emboss_data *m_pEM_CM93Offset;	// Flav
 
 
       double      m_pix_per_mm;     // pixels per millimeter on the screen
@@ -419,6 +424,11 @@ private:
       bool        m_bMeasure_Active;
       int         m_nMeasureState;
       Route       *m_pMeasureRoute;
+
+// Flav CM93Offset Tool
+      bool        m_bCM93MeasureOffset_Active;
+      int         m_nCM93MeasureOffsetState;
+      Route       *m_pCM93MeasureOffsetRoute;
 
       wxBitmap    m_bmTideDay;
       wxBitmap    m_bmTideDusk;

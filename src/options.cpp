@@ -77,6 +77,11 @@ extern PlugInManager    *g_pi_manager;
 
 extern wxString         g_SData_Locn;
 
+// Flav add for CM93 offset manual setup
+extern double           g_CM93Maps_Offset_x;
+extern double           g_CM93Maps_Offset_y;
+extern bool             g_CM93Maps_Offset_on;
+extern bool             g_CM93Maps_Offset_Enable;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -545,8 +550,34 @@ void options::CreateControls()
     pOSDisplayGrid->Add(m_pText_OSCOG_Predictor, 1, wxALIGN_RIGHT, group_item_spacing);
 
 
-///
+    // Flav: for CM93Offset
+    //      CM93Offset Display options
+    if(g_CM93Maps_Offset_Enable)
+    {
+      wxStaticBox* itemStaticBoxCM93OffsetDisplay = new wxStaticBox(itemPanel5, wxID_ANY, _("CM93 Offset Display"));
+      wxStaticBoxSizer* itemStaticBoxSizerCM93OffsetDisplay= new wxStaticBoxSizer(itemStaticBoxCM93OffsetDisplay, wxVERTICAL);
+      itemBoxSizer6->Add(itemStaticBoxSizerCM93OffsetDisplay, 0, wxTOP|wxALL|wxEXPAND, border_size);
 
+      //  Activate CM93Offset checkbox
+      pSActivateCM93Offset = new wxCheckBox( itemPanel5, ID_ACTIVATECM93OFFSET, _("Activate CM93 Offset"));
+      itemStaticBoxSizerCM93OffsetDisplay->Add(pSActivateCM93Offset, 1, wxALIGN_LEFT|wxALL, 2);
+
+            wxFlexGridSizer *pCM93OffsetDisplayGrid = new wxFlexGridSizer(2);
+      pCM93OffsetDisplayGrid->AddGrowableCol(1);
+      itemStaticBoxSizerCM93OffsetDisplay->Add(pCM93OffsetDisplayGrid, 0, wxALL|wxEXPAND, border_size);
+
+      wxStaticText *pStatic_CM93OffsetX = new wxStaticText( itemPanel5, -1, _("X Offset (Positive moves map to East) (NMi/cos(lat)) :"));
+      pCM93OffsetDisplayGrid->Add(pStatic_CM93OffsetX, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+      m_pText_CM93OffsetX = new wxTextCtrl(itemPanel5, -1);
+      pCM93OffsetDisplayGrid->Add(m_pText_CM93OffsetX, 1, wxALIGN_RIGHT, group_item_spacing);
+
+            wxStaticText *pStatic_CM93OffsetY = new wxStaticText( itemPanel5, -1, _("Y Offset (Positive moves map to North) (NMi/cos(lat)) :"));
+      pCM93OffsetDisplayGrid->Add(pStatic_CM93OffsetY, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+      m_pText_CM93OffsetY = new wxTextCtrl(itemPanel5, -1);
+      pCM93OffsetDisplayGrid->Add(m_pText_CM93OffsetY, 1, wxALIGN_RIGHT, group_item_spacing);
+    }
 
 #ifdef USE_WIFI_CLIENT
 //    Add WiFi Options Box
@@ -950,6 +981,16 @@ void options::CreateControls()
     pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Chart Depth Units"), wxDefaultPosition, wxDefaultSize,
                                3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
     pdepth_sizer->Add(pDepthUnitSelect, 0, wxALIGN_TOP | wxALL, 2);
+
+
+       //      CM93Offset Enable
+    wxStaticBox* itemStaticBoxCM93OffsetEnable = new wxStaticBox(ps57Ctl, wxID_ANY, _("CM93 Offsets"));
+    wxStaticBoxSizer* itemStaticBoxSizerCM93OffsetEnable= new wxStaticBoxSizer(itemStaticBoxCM93OffsetEnable, wxVERTICAL);
+    itemBoxSizer25->Add(itemStaticBoxSizerCM93OffsetEnable, 0, wxTOP|wxALL|wxEXPAND, border_size);
+
+    //  Activate CM93Offset checkbox
+    pSEnableCM93Offset = new wxCheckBox( ps57Ctl, ID_ENABLECM93OFFSET, _("Enable Manual CM93 Offsets"));
+    itemStaticBoxSizerCM93OffsetEnable->Add(pSEnableCM93Offset, 1, wxALIGN_LEFT|wxALL, 2);
 
 
     itemNotebook4->AddPage(ps57Ctl, _("Vector Charts"));
@@ -1543,6 +1584,17 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
       m_pText_OSCOG_Predictor->SetValue(s);
 
+// Flav for CM93Offset (convert meters to NM for diplay)
+      if(g_CM93Maps_Offset_Enable)
+      {
+            pSActivateCM93Offset->SetValue(g_CM93Maps_Offset_on);
+            s.Printf(_T("%1.4f"), g_CM93Maps_Offset_x/1852);
+            m_pText_CM93OffsetX->SetValue(s);
+            s.Printf(_T("%1.4f"), g_CM93Maps_Offset_y/1852);
+            m_pText_CM93OffsetY->SetValue(s);
+      }
+      pSEnableCM93Offset->SetValue(g_CM93Maps_Offset_Enable);
+
       pNavAidShowRadarRings->SetValue(g_bNavAidShowRadarRings);   // toh, 2009.02.24
       wxString buf;
       buf.Printf(_T("%d"),g_iNavAidRadarRingsNumberVisible);
@@ -1914,6 +1966,32 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bLookAhead = pCBLookAhead->GetValue();
 
     m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
+
+	// Flav for CM93Offset: prints in NM (values in m)
+	bool old_CM93Maps_Offset_on = g_CM93Maps_Offset_on;
+	double old_CM93Maps_Offset_x = g_CM93Maps_Offset_x;
+	double old_CM93Maps_Offset_y = g_CM93Maps_Offset_y;
+
+      if(g_CM93Maps_Offset_Enable)
+      {
+            g_CM93Maps_Offset_on = pSActivateCM93Offset->GetValue();
+            m_pText_CM93OffsetX->GetValue().ToDouble(&g_CM93Maps_Offset_x);
+            m_pText_CM93OffsetY->GetValue().ToDouble(&g_CM93Maps_Offset_y);
+
+            g_CM93Maps_Offset_x *= 1852;
+	      g_CM93Maps_Offset_y *= 1852;
+      }
+
+      bool old_CM93Maps_Offset_Enable = g_CM93Maps_Offset_Enable;
+      g_CM93Maps_Offset_Enable = pSEnableCM93Offset->GetValue();
+
+	if(old_CM93Maps_Offset_on != g_CM93Maps_Offset_on ||
+              old_CM93Maps_Offset_Enable != g_CM93Maps_Offset_Enable ||
+              old_CM93Maps_Offset_x != g_CM93Maps_Offset_x ||
+	        old_CM93Maps_Offset_y != g_CM93Maps_Offset_y)
+	{
+         iret |= CM93OFFSET_CHANGED;
+	}
 
     g_bNavAidShowRadarRings = pNavAidShowRadarRings->GetValue();
     wxString buf = pNavAidRadarRingsNumberVisible->GetValue();

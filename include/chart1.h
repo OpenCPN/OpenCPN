@@ -265,6 +265,8 @@ class MyFrame: public wxFrame
     void OnFrameCOGTimer(wxTimerEvent& event);
     void SetupQuiltMode(void);
 
+    void ChartsRefresh(void);
+
     wxStatusBar         *m_pStatusBar;
     int                 nRoute_State;
     int                 nBlinkerTick;

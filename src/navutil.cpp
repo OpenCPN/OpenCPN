@@ -182,6 +182,12 @@ extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
 
+// Flav add for CM93 offset manual setup
+extern double           g_CM93Maps_Offset_x;
+extern double           g_CM93Maps_Offset_y;
+extern bool             g_CM93Maps_Offset_on;
+extern bool             g_CM93Maps_Offset_Enable;
+
 //    AIS Global configuration
 extern bool             g_bCPAMax;
 extern double           g_CPAMax_NM;
@@ -2283,6 +2289,12 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );
 
+      // Flav CM93Offset reads values from ini file
+      Read ( _T ( "CM93DisplayOffsetX" ),  &g_CM93Maps_Offset_x, 0 );
+      Read ( _T ( "CM93DisplayOffsetY" ),  &g_CM93Maps_Offset_y, 0 );
+      Read ( _T ( "CM93DisplayOffsetOn" ),  &g_CM93Maps_Offset_on, 0 );
+      Read ( _T ( "CM93DisplayOffsetEnable" ),  &g_CM93Maps_Offset_Enable, 0 );
+
       Read ( _T ( "StartWithTrackActive" ),  &g_bTrackCarryOver, 0 );
 
       wxString stps;
@@ -3380,6 +3392,11 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "LookAheadMode" ), g_bLookAhead );
       Write ( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
       Write ( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
+      // Flav CM93Offset: writes values to ini file
+      Write ( _T ( "CM93DisplayOffsetX" ),  g_CM93Maps_Offset_x);
+      Write ( _T ( "CM93DisplayOffsetY" ),  g_CM93Maps_Offset_y);
+      Write ( _T ( "CM93DisplayOffsetOn" ),  g_CM93Maps_Offset_on);
+      Write ( _T ( "CM93DisplayOffsetEnable" ),  g_CM93Maps_Offset_Enable);
 
       Write ( _T ( "NMEALogWindowSizeX" ),  g_NMEALogWindow_sx );
       Write ( _T ( "NMEALogWindowSizeY" ),  g_NMEALogWindow_sy );
