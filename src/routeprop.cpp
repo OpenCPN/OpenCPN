@@ -128,8 +128,6 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
       Create(parent, id, caption, pos, size, style);
       GetSizer()->SetSizeHints(this);
       Centre();
-
-
 }
 
 void RouteProp::OnRoutepropListClick( wxListEvent& event )
@@ -236,8 +234,8 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC, _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add(itemStaticText11, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
-    wxStaticText* itemStaticText12 = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer6a->Add(itemStaticText12, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer6a->Add(m_PlanSpeedLabel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
     wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add(itemStaticText12a, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
@@ -256,7 +254,7 @@ void RouteProp::CreateControls()
     wxStaticBoxSizer* itemStaticBoxSizer14 = new wxStaticBoxSizer(itemStaticBoxSizer14Static, wxVERTICAL);
     itemBoxSizer2->Add(itemStaticBoxSizer14, 1, wxEXPAND|wxALL, 5);
 
-    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize(-1, 200),
+    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize(800, 200),
                                wxLC_REPORT|wxLC_HRULES|wxLC_VRULES|wxLC_EDIT_LABELS );
     itemStaticBoxSizer14->Add(m_wpList, 2, wxEXPAND|wxALL, 5);
 
@@ -287,12 +285,12 @@ void RouteProp::CreateControls()
     itemCol.SetText(_("To Waypoint"));
     itemCol.SetAlign(wxLIST_FORMAT_LEFT);
     m_wpList->InsertColumn(1, itemCol);
-    m_wpList->SetColumnWidth( 1,   150 );
+    m_wpList->SetColumnWidth( 1,   120 );
 
     itemCol.SetText(_("Distance"));
     itemCol.SetAlign(wxLIST_FORMAT_RIGHT);
     m_wpList->InsertColumn(2, itemCol);
-    m_wpList->SetColumnWidth( 2,   100 );
+    m_wpList->SetColumnWidth( 2,   80 );
 
     itemCol.SetText(_("Bearing"));
     itemCol.SetAlign(wxLIST_FORMAT_LEFT);
@@ -302,17 +300,22 @@ void RouteProp::CreateControls()
     itemCol.SetText(_("Latitude"));
     itemCol.SetAlign(wxLIST_FORMAT_LEFT);
     m_wpList->InsertColumn(4, itemCol);
-    m_wpList->SetColumnWidth( 4,  95 );
+    m_wpList->SetColumnWidth( 4,  110 );
 
     itemCol.SetText(_("Longitude"));
     itemCol.SetAlign(wxLIST_FORMAT_LEFT);
     m_wpList->InsertColumn(5, itemCol);
-    m_wpList->SetColumnWidth( 5,   95 );
+    m_wpList->SetColumnWidth( 5,   110 );
 
     itemCol.SetText(_("ETE/Timestamp"));        // pjotrc 2010.02.13
     itemCol.SetAlign(wxLIST_FORMAT_LEFT);
     m_wpList->InsertColumn(6, itemCol);
-    m_wpList->SetColumnWidth( 6,  130 );
+    m_wpList->SetColumnWidth( 6,  170 );
+
+    itemCol.SetText(_("Speed (Kts)"));
+    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
+    m_wpList->InsertColumn(7, itemCol);
+    m_wpList->SetColumnWidth( 7,  80 );
 
 //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
@@ -375,8 +378,44 @@ void RouteProp::SetDialogTitle(wxString title)
 
 void RouteProp::SetRouteAndUpdate(Route *pR)
 {
+      //  Fetch any config file values
+      m_planspeed = g_PlanSpeed;
+
+// Reorganize dialog for route or track display
+      if(pR)
+      {
+            if(pR->m_bIsTrack)
+            {
+                  m_PlanSpeedLabel->SetLabel(_("Avg. speed (Kts)"));
+                        m_PlanSpeedCtl->SetEditable(false);
+            }
+            else
+            {
+                  m_PlanSpeedLabel->SetLabel(_("Plan speed (Kts)"));
+                  m_PlanSpeedCtl->SetEditable(true);
+            }
+      }
       m_pRoute = pR;
       m_wpList->DeleteAllItems();
+
+      if(pR)
+      {
+            //    Update the "ETE/Timestamp" column header
+            wxListItem column_info;
+            if(m_wpList->GetColumn(6, column_info))
+            {
+                  if(m_pRoute->m_bIsTrack)
+                  {
+                        column_info.SetText(_T("Timestamp"));
+                        m_wpList->SetColumn(6, column_info);
+                  }
+                  else
+                  {
+                        column_info.SetText(_T("ETE"));
+                        m_wpList->SetColumn(6, column_info);
+                  }
+            }
+      }
 
 //  Iterate on Route Points, inserting blank fields starting with index 0
       if(pR)
@@ -399,9 +438,12 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
             m_RouteNameCtl->SetFocus();
 
             //      Update the plan speed control
-            wxString s;
-            s.Printf(_T("%5.2f"), m_planspeed);
-            m_PlanSpeedCtl->SetValue(s);
+            if(!m_pRoute->m_bIsTrack)
+            {
+                  wxString s;
+                  s.Printf(_T("%5.2f"), m_planspeed);
+                  m_PlanSpeedCtl->SetValue(s);
+            }
       }
       else
       {
@@ -410,141 +452,194 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
             m_RouteDestCtl->Clear();
             m_PlanSpeedCtl->Clear();
       }
+	  UpdateProperties();
 }
 
 
 
 bool RouteProp::UpdateProperties()
 {
-    m_TotalDistCtl->SetValue(_T(""));
-    m_TimeEnrouteCtl->SetValue(_T(""));
+      m_TotalDistCtl->SetValue(_T(""));
+      m_TimeEnrouteCtl->SetValue(_T(""));
 
-    if(m_pRoute)
-    {
-        m_pRoute->UpdateSegmentDistances();           // get segment and total distance
+      if(m_pRoute)
+      {
+            m_pRoute->UpdateSegmentDistances();           // get segment and total distance
 
-    //  Total length
-        wxString slen;
-        slen.Printf(wxT("%5.2f"), m_pRoute->m_route_length);
+                  double total_seconds = 0.;
 
-        m_TotalDistCtl->SetValue(slen);
-
-        wxString time_form;
-        double total_seconds = 0.;
-
-        if((0.1 < m_planspeed) && (m_planspeed < 1000.0))
-              total_seconds= 3600 * m_pRoute->m_route_length / m_planspeed;     // in seconds
-
-    //  Time
-
-        wxTimeSpan time(0,0, (int)total_seconds, 0);
-        if(total_seconds > 3600. * 24.)
-              time_form = time.Format(_(" %D Days  %H Hours  %M Minutes"));
-        else
-              time_form = time.Format(_(" %H Hours  %M Minutes"));
-
-        m_TimeEnrouteCtl->SetValue(time_form);
-
-
-    //  Iterate on Route Points
-        wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
-
-        int i=0;
-        double slat = gLat;
-        double slon = gLon;;
-        double tdis = 0.;
-
-        while(node)
-        {
-                RoutePoint *prp = node->GetData();
-                long item_line_index = i;
-
-    //  Leg
-                wxString t;
-                t.Printf(_T("%d"), i);
-                if(i == 0)
-                    t = _T("---");
-                m_wpList->SetItem(item_line_index, 0, t);
-
-
-    //  Mark Name
-                m_wpList->SetItem(item_line_index, 1, prp->m_MarkName);
-
-    //  Distance
-    //  Note that Distance/Bearing for Leg 000 is as from current position
-
-                if(i == 0)
-                {
-                    slat = gLat;
-                    slon = gLon;
-                }
-
-                double brg, leg_dist;
-                DistanceBearingMercator(prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist);
-
-                t.Printf(_T("%6.2f nm"),leg_dist);
-                m_wpList->SetItem(item_line_index, 2, t);
-
-    //  Bearing
-                t.Printf(_T("%03.0f Deg. T"),brg);
-                m_wpList->SetItem(item_line_index, 3, t);
-
-    //  Lat/Lon
-                wxString tlat = toSDMM(1, prp->m_lat);
-                m_wpList->SetItem(item_line_index, 4, tlat);
-
-                wxString tlon = toSDMM(2, prp->m_lon);
-                m_wpList->SetItem(item_line_index, 5, tlon);
-
-    // Time to each waypoint or creation date for tracks
-                if (!prp->m_bIsInTrack) {   //if it is a route point...    pjotrc 2010.02.11
-                  if ( i == 0 )
-                  {
-                        time_form.Printf(_("Start"));
-                        tdis = 0;
-                  }
-                  else
-                  {
-                        tdis += leg_dist;
-                        if (m_planspeed)
+            // Calculate AVG speed if we are showing a track and total time
+            if(m_pRoute->m_bIsTrack)
+            {
+                        total_seconds = m_pRoute->GetLastPoint()->m_CreateTime.Subtract(m_pRoute->GetPoint(1)->m_CreateTime).GetSeconds().ToDouble();
+                        if(total_seconds != 0)
                         {
-                        double seconds = 3600 * tdis / m_planspeed;     // in seconds
-                        wxTimeSpan time(0,0, (int)seconds, 0);
-
-                        if(total_seconds > 3600. * 24.)
-                              time_form = time.Format(_T(" %D D  %H H  %M M"));
-                        else
-                              time_form = time.Format(_T(" %H H  %M M"));
+                              m_avgspeed = m_pRoute->m_route_length / total_seconds * 3600;
                         }
+                        else
+                        {
+                              m_avgspeed = 0;
+                        }
+                        wxString s;
+                        s.Printf(_T("%5.2f"), m_avgspeed);
+                        m_PlanSpeedCtl->SetValue(s);
+            }
+            else
+            {
+                        if((0.1 < m_planspeed) && (m_planspeed < 1000.0))
+                              total_seconds= 3600 * m_pRoute->m_route_length / m_planspeed;     // in seconds
+            }
+
+      //  Total length
+            wxString slen;
+            slen.Printf(wxT("%5.2f"), m_pRoute->m_route_length);
+
+            m_TotalDistCtl->SetValue(slen);
+
+            wxString time_form;
+
+      //  Time
+
+            wxTimeSpan time(0,0, (int)total_seconds, 0);
+            if(total_seconds > 3600. * 24.)
+                  time_form = time.Format(_(" %D Days  %H Hours  %M Minutes"));
+            else
+                  time_form = time.Format(_(" %H Hours  %M Minutes"));
+
+            m_TimeEnrouteCtl->SetValue(time_form);
+
+      //  Iterate on Route Points
+            wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+
+            int i=0;
+            double slat = gLat;
+            double slon = gLon;;
+            double tdis = 0.;
+
+            while(node)
+            {
+                  RoutePoint *prp = node->GetData();
+                  long item_line_index = i;
+
+      //  Leg
+                  wxString t;
+                  t.Printf(_T("%d"), i);
+                  if(i == 0)
+                        t = _T("---");
+                  m_wpList->SetItem(item_line_index, 0, t);
+
+
+      //  Mark Name
+                  m_wpList->SetItem(item_line_index, 1, prp->m_MarkName);
+
+      //  Distance
+      //  Note that Distance/Bearing for Leg 000 is as from current position
+
+                  if(i == 0)
+                  {
+                        slat = gLat;
+                        slon = gLon;
+                  }
+
+                  double brg, leg_dist;
+                  DistanceBearingMercator(prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist);
+
+                  t.Printf(_T("%6.2f nm"),leg_dist);
+                  m_wpList->SetItem(item_line_index, 2, t);
+
+      //  Bearing
+                  t.Printf(_T("%03.0f Deg. T"),brg);
+                  m_wpList->SetItem(item_line_index, 3, t);
+
+      //  Lat/Lon
+                  wxString tlat = toSDMM(1, prp->m_lat);
+                  m_wpList->SetItem(item_line_index, 4, tlat);
+
+                  wxString tlon = toSDMM(2, prp->m_lon);
+                  m_wpList->SetItem(item_line_index, 5, tlon);
+
+      // Time to each waypoint or creation date for tracks
+                  if (!prp->m_bIsInTrack) {   //if it is a route point...    pjotrc 2010.02.11
+                        if ( i == 0 )
+                        {
+                              time_form.Printf(_("Start"));
+                              tdis = 0;
+                        }
+                        else
+                        {
+                              tdis += leg_dist;
+                              if (m_planspeed)
+                              {
+                                    double seconds = 3600 * tdis / m_planspeed;     // in seconds
+                                    wxTimeSpan time(0,0, (int)seconds, 0);
+
+                                    if(total_seconds > 3600. * 24.)
+                                          time_form = time.Format(_T(" %D D  %H H  %M M"));
+                                    else
+                                          time_form = time.Format(_T(" %H H  %M M"));
+                              }
+
+                        }
+                  }
+                  else {          // it is a track point...     pjotrc 2010.02.11
+                        wxDateTime local_time = prp->m_CreateTime;
+                        time_form = local_time.FormatISODate();
+                        time_form += _T(" ");
+                        time_form += local_time.FormatISOTime();
+                        time_form += _T(" UTC");
+
 
                   }
-                }
-                else {          // it is a track point...     pjotrc 2010.02.11
-                      time_form = prp->m_CreateTime.Format();
-                }
 
-                m_wpList->SetItem(item_line_index, 6, time_form);
+                  m_wpList->SetItem(item_line_index, 6, time_form);
 
-    //  Save for iterating distance/bearing calculation
-                slat = prp->m_lat;
-                slon = prp->m_lon;
+                        //Leg speed
+                        wxString s;
+                        if(m_pRoute->m_bIsTrack)
+                        {
+                              if(i > 0)
+                              {
+                                    double speed;
+                                    if(!m_pRoute->GetPoint(i+1)->m_CreateTime.IsEqualTo(m_pRoute->GetPoint(i)->m_CreateTime))
+                                    {
+                                          speed = leg_dist / m_pRoute->GetPoint(i+1)->m_CreateTime.Subtract(m_pRoute->GetPoint(i)->m_CreateTime).GetSeconds().ToDouble() * 3600;
+                                    }
+                                    else
+                                    {
+                                          speed = 0;
+                                    }
+                                    s.Printf(_T("%5.2f"), speed );
+                              }
+                              else
+                              {
+                                    s = _("--");
+                              }
+                        }
+                        else
+                        {
+                              s.Printf(_T("%5.2f"), m_planspeed);
+                        }
+                        m_wpList->SetItem(item_line_index, 7, s);
 
-                i++;
-                node = node->GetNext();
-          }
+      //  Save for iterating distance/bearing calculation
+                  slat = prp->m_lat;
+                  slon = prp->m_lon;
 
-#if 0
-          m_wpList->SetColumnWidth( 0, wxLIST_AUTOSIZE/* 35 */);
-          m_wpList->SetColumnWidth( 1,  wxLIST_AUTOSIZE/* 150*/ );
-          m_wpList->SetColumnWidth( 2,  wxLIST_AUTOSIZE/* 80*/ );
-          m_wpList->SetColumnWidth( 3,  wxLIST_AUTOSIZE/* 80*/ );
-          m_wpList->SetColumnWidth( 4,  wxLIST_AUTOSIZE/* 95*/ );
-          m_wpList->SetColumnWidth( 5,  wxLIST_AUTOSIZE/* 95*/ );
-          m_wpList->SetColumnWidth( 6,  wxLIST_AUTOSIZE/* 120*/ );
-#endif
+                  i++;
+                  node = node->GetNext();
+            }
 
-    }
-    return true;
+      #if 0
+            m_wpList->SetColumnWidth( 0, wxLIST_AUTOSIZE/* 35 */);
+            m_wpList->SetColumnWidth( 1,  wxLIST_AUTOSIZE/* 150*/ );
+            m_wpList->SetColumnWidth( 2,  wxLIST_AUTOSIZE/* 80*/ );
+            m_wpList->SetColumnWidth( 3,  wxLIST_AUTOSIZE/* 80*/ );
+            m_wpList->SetColumnWidth( 4,  wxLIST_AUTOSIZE/* 95*/ );
+            m_wpList->SetColumnWidth( 5,  wxLIST_AUTOSIZE/* 95*/ );
+            m_wpList->SetColumnWidth( 6,  wxLIST_AUTOSIZE/* 120*/ );
+      #endif
+      }
+      return true;
 }
 
 bool RouteProp::SaveChanges(void)
@@ -574,7 +669,7 @@ void RouteProp::OnPlanSpeedCtlUpdated( wxCommandEvent& event )
     wxString spd = m_PlanSpeedCtl->GetValue();
     double s;
     spd.ToDouble(&s);
-    if((0.1 < s) && (s < 1000.0))
+	if((0.1 < s) && (s < 1000.0) && !m_pRoute->m_bIsTrack)
     {
         m_planspeed = s;
 
@@ -985,13 +1080,14 @@ bool MarkProp::SaveChanges(void)
             else
                   m_pRoutePoint->m_bDynamicName = false;
 
-
+/*
             if(m_pRoutePoint->m_bIsInRoute)
             {
                   Route *pRoute = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePoint);
                   pConfig->UpdateRoute(pRoute);
             }
             else
+*/
                   pConfig->UpdateWayPoint(m_pRoutePoint);
 
 //  No general settings need be saved            pConfig->UpdateSettings();

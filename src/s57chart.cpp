@@ -2161,8 +2161,9 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
       //    Use a static semaphore flag to prevent recursion
     if(s_bInS57)
     {
-          printf("s57chart::Init() recursion..., retry\n");
-          return INIT_FAIL_RETRY;
+//          printf("s57chart::Init() recursion..., retry\n");
+//          wxLogMessage(_T("Recursion"));
+          return INIT_FAIL_NOERROR;
     }
 
     s_bInS57++;
@@ -5343,10 +5344,8 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon, float 
 
       ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
 
-
 //    Iterate thru the razRules array, by object/rule type
 
-    ObjRazRules *crnt;
     ObjRazRules *top;
 
     for (int i=0; i<PRIO_NUM; ++i)
@@ -5358,15 +5357,33 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon, float 
 
         while ( top != NULL)
         {
-            crnt = top;
-            top  = top->next;
-
-            if(ps52plib->ObjectRenderCheck(crnt, VPoint))
+            if(top->obj->npt == 1)       // Do not select Multipoint objects (SOUNDG) yet.
             {
-                if(DoesLatLonSelectObject(lat, lon, select_radius, crnt->obj))
-                    ret_ptr->Append(crnt);
+                  if(ps52plib->ObjectRenderCheck(top, VPoint))
+                  {
+                        if(DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
+                              ret_ptr->Append(top);
+                  }
             }
 
+            //    Check the child branch, if any.
+            //    This is where Multipoint soundings are captured individually
+            if(top->child)
+            {
+                  ObjRazRules *child_item = top->child;
+                  while(child_item != NULL)
+                  {
+                        if(ps52plib->ObjectRenderCheck(child_item, VPoint))
+                        {
+                              if(DoesLatLonSelectObject(lat, lon, select_radius, child_item->obj))
+                                    ret_ptr->Append(child_item);
+                        }
+
+                        child_item = child_item->next;
+                  }
+            }
+
+            top  = top->next;
         }
 
 
@@ -5376,13 +5393,13 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon, float 
         top = razRules[i][area_boundary_type];           // Area nnn Boundaries
         while ( top != NULL)
         {
-            crnt = top;
-            top  = top->next;
-            if(ps52plib->ObjectRenderCheck(crnt, VPoint))
+            if(ps52plib->ObjectRenderCheck(top, VPoint))
             {
-                if(DoesLatLonSelectObject(lat, lon, select_radius, crnt->obj))
-                    ret_ptr->Append(crnt);
+                  if(DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
+                        ret_ptr->Append(top);
             }
+
+            top  = top->next;
         }         // while
 
 
@@ -5391,13 +5408,13 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon, float 
 
           while ( top != NULL)
           {
-            crnt = top;
-            top  = top->next;
-            if(ps52plib->ObjectRenderCheck(crnt, VPoint))
+            if(ps52plib->ObjectRenderCheck(top, VPoint))
             {
-                if(DoesLatLonSelectObject(lat, lon, select_radius, crnt->obj))
-                ret_ptr->Append(crnt);
+                  if(DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
+                        ret_ptr->Append(top);
             }
+
+            top  = top->next;
           }
       }
 
@@ -5774,6 +5791,7 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                               //    As a special case, convert some attribute values to feet.....
                               if((att == _T("VERCLR")) ||
                                   (att == _T("VERCLL")) ||
+                                  (att == _T("HEIGHT")) ||
                                   (att == _T("HORCLR")) )
                               {
                                     switch(ps52plib->m_nDepthUnitDisplay)
@@ -5787,6 +5805,27 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                                 break;
                                     }
                               }
+
+                              else if((att == _T("VALSOU")) ||
+                                      (att == _T("DRVAL1")) ||
+                                      (att == _T("DRVAL2")) )
+                              {
+                                    switch(ps52plib->m_nDepthUnitDisplay)
+                                    {
+                                          case 0:                       // feet
+                                                 dval = dval * 3 * 39.37 / 36;              // feet
+                                                 val_suffix = _T("(ft)");
+                                                 break;
+                                          case 2:                       // fathoms
+                                                 dval = dval * 3 * 39.37 / 36;              // fathoms
+                                                 dval /= 6.0;
+                                                 val_suffix = _T("(fathoms)");
+                                                 break;
+                                          default:
+                                                break;
+                                    }
+                              }
+
 
                               else if(att == _T("SECTR1"))
                                     val_suffix = _T("(Deg.)");

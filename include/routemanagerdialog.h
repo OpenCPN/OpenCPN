@@ -59,6 +59,7 @@ class RouteManagerDialog : public wxDialog {
             void OnRteSelected(wxListEvent &event);
             void OnRteSendToGPSClick(wxCommandEvent &event);
             void OnRteDefaultAction(wxListEvent &event);
+            void OnRteColumnClicked(wxListEvent &event);
             void OnTrkDefaultAction(wxListEvent &event);
             void OnTrkNewClick(wxCommandEvent &event);
             void OnTrkPropertiesClick(wxCommandEvent &event);
@@ -68,6 +69,7 @@ class RouteManagerDialog : public wxDialog {
             void OnTrkDeleteAllClick(wxCommandEvent &event);
             void OnTrkSelected(wxListEvent &event);
             void OnTrkToggleVisibility(wxMouseEvent &event);
+            void OnTrkColumnClicked(wxListEvent &event);
             void OnWptDefaultAction(wxListEvent &event);
             void OnWptNewClick(wxCommandEvent &event);
             void OnWptPropertiesClick(wxCommandEvent &event);
@@ -79,6 +81,7 @@ class RouteManagerDialog : public wxDialog {
             void OnWptDeleteAllClick(wxCommandEvent &event);
             void OnWptSelected(wxListEvent &event);
             void OnWptToggleVisibility(wxMouseEvent &event);
+            void OnWptColumnClicked(wxListEvent &event);
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
 

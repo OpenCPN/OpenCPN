@@ -87,6 +87,7 @@ extern double fromDMM(char *dms);
 
 class Route;
 class NavObjectCollection;
+class wxProgressDialog;
 
 //    class declarations
 
@@ -263,7 +264,7 @@ class Track : public wxEvtHandler, public Route
 
             void Draw(wxDC& dc, ViewPort &VP);
 
-            Route *RouteFromTrack(void);
+            Route *RouteFromTrack(wxProgressDialog *pprog);
 
 
       private:

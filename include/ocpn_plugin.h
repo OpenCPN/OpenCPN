@@ -238,6 +238,7 @@ extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBi
                                           int tool_sel, opencpn_plugin *pplugin);
 extern "C"  DECL_EXP void RemovePlugInTool(int tool_id);
 extern "C"  DECL_EXP void SetToolbarToolViz(int item, bool viz);      // Temporarily change toolbar tool viz
+extern "C"  DECL_EXP void SetToolbarItemState(int item, bool toggle);
 
 extern "C"  DECL_EXP  int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin );
 extern "C"  DECL_EXP void RemoveCanvasContextMenuItem(int item);      // Fully remove this item

@@ -2277,7 +2277,7 @@ int cm93chart::CreateObjChain()
                          }
 
 // Debug hooks
-//        if(!strncmp(obj->FeatureName, "CTRPNT", 6))
+//        if(!strncmp(obj->FeatureName, "RESARE", 6))
 //            int ffl = 4;
 //    if(obj->Index == 2173)
 //        int rrt = 5;

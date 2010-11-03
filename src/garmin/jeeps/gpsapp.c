@@ -204,10 +204,16 @@ static int32 GPS_A000(const char *port)
 
     GPS_Make_Packet(&tra, LINK_ID[0].Pid_Product_Rqst,NULL,0);
     if(!GPS_Write_Packet(fd,tra))
-	return SERIAL_ERROR;
+    {
+          GPS_Error("GPS_Write_Packet error");
+          return SERIAL_ERROR;
+    }
 
     if(!GPS_Get_Ack(fd, &tra, &rec))
-	return SERIAL_ERROR;
+    {
+          GPS_Error("GPS_Get_Ack error");
+          return SERIAL_ERROR;
+    }
 
     GPS_Packet_Read(fd, &rec);
     GPS_Send_Ack(fd, &tra, &rec);

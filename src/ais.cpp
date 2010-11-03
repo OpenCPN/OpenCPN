@@ -557,7 +557,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             if(ROTIND > 0)
                   line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
             else if(ROTIND < 0)
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), ROTIND);
+                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
             else
                   line.Printf(_("Rate Of Turn            %3d Deg./Min.\n"), ROTIND);
 

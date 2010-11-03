@@ -108,6 +108,7 @@
 #include <time.h>
 
 #include <wx/listimpl.cpp>
+#include <wx/generic/progdlgg.h>
 
 #include "chart1.h"
 #include "navutil.h"
@@ -922,7 +923,7 @@ RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, con
       m_bIsInRoute = false;
       m_bIsInTrack = false;              // pjotrc 2010.02.11
       wxDateTime now = wxDateTime::Now();      // pjotrc 2010.02.19
-      m_CreateTime = now.ToUTC();        // pjotrc 2010.02.19
+      m_CreateTime = now.ToUTC();
       m_GPXTrkSegNo = 1;                       // pjotrc 2010.02.27
       m_bIsolatedMark = false;
       m_bShowName = true;
@@ -2140,11 +2141,15 @@ void Track::Draw ( wxDC& dc, ViewPort &VP )
       }
 }
 
-Route *Track::RouteFromTrack(void)
+Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 {
+
       Route *route = new Route();
       RoutePoint *pWP_src = NULL;
       wxRoutePointListNode *prpnode = pRoutePointList->GetFirst();
+      int ic = 0;
+      int nPoints = pRoutePointList->GetCount();
+
       while ( prpnode )
       {
             RoutePoint *prp = prpnode->GetData();
@@ -2159,6 +2164,10 @@ Route *Track::RouteFromTrack(void)
             pWP_src = pWP_dst;
 
             prpnode = prpnode->GetNext(); //RoutePoint
+
+            ic++;
+            if(pprog)
+                pprog->Update((ic * 100) /nPoints);
       }
 
       route->m_RouteNameString = m_RouteNameString;
@@ -4058,6 +4067,14 @@ wxXmlNode *CreateGPXTrackStatic ( Route *pRoute )
 
 
 
+// This function formats the input date/time into a valid GPX ISO 8601
+// time string specified in the UTC time zone.
+
+wxString FormatGPXDateTime(wxDateTime dt)
+{
+//      return dt.Format(wxT("%Y-%m-%dT%TZ"), wxDateTime::GMT0);
+      return dt.Format(wxT("%Y-%m-%dT%H:%M:%SZ"));
+}
 
 
 wxXmlNode *CreateGPXPointNode ( RoutePoint *pr, const wxString &root_name )
@@ -4082,10 +4099,8 @@ wxXmlNode *CreateGPXPointNode ( RoutePoint *pr, const wxString &root_name )
       if ( pr->m_CreateTime.IsValid() )
       {
             wxString dt;
-            dt = pr->m_CreateTime.FormatISODate();
-            dt += _T ( "T" );
-            dt += pr->m_CreateTime.FormatISOTime();
-            dt += _T ( "Z" );
+
+	    dt = FormatGPXDateTime(pr->m_CreateTime);
 
             node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "time" ) );
             GPXPoint_node->AddChild ( node );
@@ -4260,7 +4275,102 @@ void AppendGPXTracks ( wxXmlNode *RNode )
 }
 
 
+// This function parses a string containing a GPX time representation
+// and returns a wxDateTime containing the UTC corresponding to the
+// input. The function return value is a pointer past the last valid
+// character parsed (if successful) or NULL (if the string is invalid).
+//
+// Valid GPX time strings are in ISO 8601 format as follows:
+//
+//   [-]<YYYY>-<MM>-<DD>T<hh>:<mm>:<ss>Z|(+|-<hh>:<mm>)
+//
+// For example, 2010-10-30T14:34:56Z and 2010-10-30T14:34:56-04:00
+// are the same time. The first is UTC and the second is EDT.
 
+const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime)
+{
+      long sign, hrs_west, mins_west;
+      const wxChar *end;
+
+      // Skip any leading whitespace
+      while (isspace(*datetime))
+            datetime++;
+
+      // Skip (and ignore) leading hyphen
+      if (*datetime == wxT('-'))
+            datetime++;
+
+      // Parse and validate ISO 8601 date/time string
+      if ((end = dt.ParseFormat(datetime, wxT("%Y-%m-%dT%T"))) != NULL)
+      {
+
+            // Invalid date/time
+            if (*end == 0)
+                  return NULL;
+
+            // ParseFormat outputs in UTC if the controlling
+            // wxDateTime class instance has not been initialized.
+
+            // Date/time followed by UTC time zone flag, so we are done
+            else if (*end == wxT('Z'))
+            {
+                  end++;
+                  return end;
+            }
+
+            // Date/time followed by given number of hrs/mins west of UTC
+            else if (*end == wxT('+') || *end == wxT('-'))
+            {
+
+                  // Save direction from UTC
+                  if (*end == wxT('+'))
+                      sign = 1;
+                  else
+                      sign = -1;
+                  end++;
+
+                  // Parse hrs west of UTC
+                  if (isdigit(*end) && isdigit(*(end+1)) && *(end+2) == wxT(':'))
+                  {
+
+                  // Extract and validate hrs west of UTC
+                  wxString(end).ToLong(&hrs_west);
+                  if (hrs_west > 12)
+                        return NULL;
+                  end += 3;
+
+                  // Parse mins west of UTC
+                  if (isdigit(*end) && isdigit(*(end+1)))
+                        {
+
+                        // Extract and validate mins west of UTC
+                        wxChar mins[3];
+                        mins[0] = *end; mins[1] = *(end+1); mins[2] = 0;
+                        wxString(mins).ToLong(&mins_west);
+                        if (mins_west > 59)
+                              return NULL;
+
+                        // Apply correction
+                        dt -= sign * wxTimeSpan(hrs_west, mins_west, 0, 0);
+                        return end + 2;
+                  }
+                  else
+                        // Missing mins digits
+                        return NULL;
+            }
+              else
+                    // Missing hrs digits or colon
+                    return NULL;
+          }
+          else
+          // Unknown field after date/time (not UTC, not hrs/mins
+          //  west of UTC)
+                return NULL;
+      }
+      else
+            // Invalid ISO 8601 date/time
+            return NULL;
+}
 
 
 RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
@@ -4319,8 +4429,9 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
                         wxString TimeString = child1->GetContent();
                         if ( TimeString.Len() )
                         {
-                              TimeString.Replace(_T("T"), _T(" "));             // make ParseDateTime work
-                              dt.ParseDateTime ( TimeString );
+			      // Parse time string
+			      ParseGPXDateTime(dt, TimeString);
+
                         }
                   }
             }
@@ -6345,7 +6456,4 @@ void TTYWindow::Add(wxString &line)
       if(m_pScroll)
             m_pScroll->Add(line);
 }
-
-
-
 

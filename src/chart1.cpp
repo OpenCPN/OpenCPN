@@ -159,6 +159,7 @@ MarkProp        *pMarkPropDialog;
 RouteProp       *pRoutePropDialog;
 MarkInfo        *pMarkInfoDialog;
 RouteManagerDialog *pRouteManagerDialog;
+GoToPositionDialog *pGoToPositionDialog;
 
 
 double          gLat, gLon, gCog, gSog, gHdt, gHDg, gVar;
@@ -2579,6 +2580,8 @@ bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
                   }
 
                   tb->AddTool( pttc->id, wxString(pttc->label), *(ptool_bmp), wxString(pttc->shortHelp), pttc->kind);
+                  if (pttc->kind == wxITEM_CHECK)
+                        tb->ToggleTool(pttc->id, pttc->b_toggle);
                   bret = true;
             }
       }
@@ -5219,9 +5222,13 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
                   if(CHART_TYPE_CM93COMP != cte.GetChartType())
                   {
                         cc1->ShowChartInfoWindow(key_location.x, sy + key_location.y-250, selected_dbIndex);
-
                         cc1->ReloadVP();
                   }
+                  else if((-1 == selected_index) && (-1 == selected_dbIndex))
+                  {
+                        cc1->ShowChartInfoWindow(key_location.x, sy + key_location.y-250, selected_dbIndex);
+                  }
+
             }
       }
 }

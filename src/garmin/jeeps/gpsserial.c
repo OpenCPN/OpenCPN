@@ -89,11 +89,22 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 	DCB tio;
 	COMMTIMEOUTS timeout;
 	HANDLE comport;
+#ifdef _UNICODE
+	wchar_t    wport[80];
+	LPCWSTR cstr;
+#endif
+
 	const char *xname = fix_win_serial_name(port);
 	win_serial_data *wsd = xcalloc(sizeof (win_serial_data), 1);
 	*dh = (gpsdevh*) wsd;
 	GPS_Diag("Opening %s\n", xname);
-	comport = INVALID_HANDLE_VALUE;//CreateFile(xname, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+#ifdef _UNICODE
+	MultiByteToWideChar( 0, 0, xname, -1, wport, 80);
+    cstr = wport;
+	comport = CreateFile(cstr, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+#else
+	comport = CreateFile(xname, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+#endif
 
 	if (comport == INVALID_HANDLE_VALUE) {
 		GPS_Serial_Error("CreateFile on '%s' failed", xname);

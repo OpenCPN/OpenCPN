@@ -108,6 +108,7 @@ class PlugInToolbarToolContainer
             wxObject          *clientData;
             int               position;
             bool              b_viz;
+            bool              b_toggle;
             int               tool_sel;
 
 };
@@ -152,6 +153,7 @@ public:
                                         int tool_sel, opencpn_plugin *pplugin );
       void RemoveToolbarTool(int tool_id);
       void SetToolbarToolViz(int tool_id, bool viz);
+      void SetToolbarItemState(int tool_id, bool toggle);
 
 
       ArrayOfPlugInMenuItems &GetPluginContextMenuItemArray(){ return m_PlugInMenuItems; }

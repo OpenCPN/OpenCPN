@@ -1213,7 +1213,7 @@ int s52plib::ParseLUPT ( FILE *fp )
       sscanf ( pBuf+11, "%d", &LUP->RCID );
 
       //   Debug hook
-//   if(LUP->RCID == 855)
+//   if(LUP->RCID == 92668)
 //      int uuip = 8;
 
       strncpy ( LUP->OBCL, pBuf+19, 6 );
@@ -4303,6 +4303,7 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   //  Touchup the new items
                   point_rzRules->obj->bCS_Added = false;
                   point_rzRules->obj->bIsClone = true;
+                  point_rzRules->obj->npt = 1;
 
                   point_rzRules->next = previous_rzRules;
                   Rules *ru = StringToRules ( _T ( "CS(SOUNDG03;" ) );
@@ -7118,5 +7119,4 @@ void DrawWuLine ( wxDC *pDC, int X0, int Y0, int X1, int Y1, wxColour clrLine, i
 //        pDC->SetPen ( wxPen ( clrLine ) );
 //        pDC->DrawPoint ( X1, Y1 );
 }
-
 

@@ -985,7 +985,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDia
             unsigned int dir_path_count = fn_dir.GetDirCount();
 
             if(pprog)
-                  pprog->SetTitle(_T("OpenCPN Chart Scan...."));
+                  pprog->SetTitle(_("OpenCPN Chart Scan...."));
 
             int nEntries = chartTable.GetCount();
 
@@ -1040,7 +1040,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDia
 bool ChartDatabase::DetectDirChange(wxString dir_path, wxString magic, wxString &new_magic, wxProgressDialog *pprog)
 {
       if(pprog)
-            pprog->SetTitle(_T("OpenCPN Directory Scan...."));
+            pprog->SetTitle(_("OpenCPN Directory Scan...."));
 
       //    parse the magic number
       long long unsigned int nmagic;
@@ -1272,7 +1272,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
                                           // indexing the DB starting from the last found item
 
       if(pprog)
-            pprog->SetTitle(_T("OpenCPN Chart Add...."));
+            pprog->SetTitle(_("OpenCPN Chart Add...."));
 
       for(int ifile=0 ; ifile < nFile ; ifile++)
       {

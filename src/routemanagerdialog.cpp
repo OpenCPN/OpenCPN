@@ -31,6 +31,7 @@
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 #include <wx/notebook.h>
+#include <wx/generic/progdlgg.h>
 
 #include <iostream>
 
@@ -95,6 +96,7 @@ extern double           gCog, gSog;
 
 
 // sort callback. Sort by route name.
+int sort_route_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortRoutesOnName(long item1, long item2, wxIntPtr list)
 #else
@@ -115,14 +117,114 @@ int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
       lc->GetItem(it1);
       lc->GetItem(it2);
 
-      return it1.GetText().Cmp(it2.GetText());
+      if(sort_route_name_dir & 1)
+            return it2.GetText().Cmp(it1.GetText());
+      else
+            return it1.GetText().Cmp(it2.GetText());
+
+}
+
+// sort callback. Sort by route Destination.
+int sort_route_to_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortRoutesOnTo(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortRoutesOnTo(long item1, long item2, long list)
+#endif
+{
+      wxListCtrl *lc = (wxListCtrl*)list;
+
+      wxListItem it1, it2;
+      it1.SetId(lc->FindItem(-1, item1));
+      it1.SetColumn(2);
+      it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+      it2.SetId(lc->FindItem(-1, item2));
+      it2.SetColumn(2);
+      it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+      lc->GetItem(it1);
+      lc->GetItem(it2);
+
+      if(sort_route_to_dir & 1)
+            return it2.GetText().Cmp(it1.GetText());
+      else
+            return it1.GetText().Cmp(it2.GetText());
+}
+
+// sort callback. Sort by track name.
+int sort_track_name_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortTracksOnName(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortTracksOnName(long item1, long item2, long list)
+#endif
+{
+      wxListCtrl *lc = (wxListCtrl*)list;
+
+      wxListItem it1, it2;
+      it1.SetId(lc->FindItem(-1, item1));
+      it1.SetColumn(1);
+      it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+      it2.SetId(lc->FindItem(-1, item2));
+      it2.SetColumn(1);
+      it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+      lc->GetItem(it1);
+      lc->GetItem(it2);
+
+      if(sort_track_name_dir & 1)
+            return it2.GetText().Cmp(it1.GetText());
+      else
+            return it1.GetText().Cmp(it2.GetText());
+
+}
+
+// sort callback. Sort by track length.
+int sort_track_len_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortTracksOnDistance(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
+#endif
+{
+      wxListCtrl *lc = (wxListCtrl*)list;
+
+      wxListItem it1, it2;
+      it1.SetId(lc->FindItem(-1, item1));
+      it1.SetColumn(2);
+      it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+      it2.SetId(lc->FindItem(-1, item2));
+      it2.SetColumn(2);
+	  it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+      lc->GetItem(it1);
+      lc->GetItem(it2);
+
+      char s1b[20];
+      strncpy(s1b,it1.GetText().mb_str(), 19);
+      char s2b[20];
+      strncpy(s2b,it2.GetText().mb_str(), 19);
+
+      wxString s1, s2;
+      s1.Printf(_T("%11s"), s1b);
+      s2.Printf(_T("%11s"), s2b);
+
+      if(sort_track_len_dir & 1)
+            return s2.Cmp(s1);
+      else
+            return s1.Cmp(s2);
+
 }
 
 // sort callback. Sort by wpt name.
+int sort_wp_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortWaypoints(long item1, long item2, wxIntPtr list)
+int wxCALLBACK SortWaypointsOnName(long item1, long item2, wxIntPtr list)
 #else
-int wxCALLBACK SortWaypoints(long item1, long item2, long list)
+int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
 #endif
 
 {
@@ -140,7 +242,48 @@ int wxCALLBACK SortWaypoints(long item1, long item2, long list)
       lc->GetItem(it1);
       lc->GetItem(it2);
 
-      return it1.GetText().Cmp(it2.GetText());
+      if(sort_wp_name_dir & 1)
+            return it2.GetText().Cmp(it1.GetText());
+      else
+            return it1.GetText().Cmp(it2.GetText());
+}
+
+// sort callback. Sort by wpt distance.
+int sort_wp_len_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
+#endif
+
+{
+      wxListCtrl *lc = (wxListCtrl*)list;
+
+      wxListItem it1, it2;
+      it1.SetId(lc->FindItem(-1, item1));
+      it1.SetColumn(2);
+      it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+      it2.SetId(lc->FindItem(-1, item2));
+      it2.SetColumn(2);
+      it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+      lc->GetItem(it1);
+      lc->GetItem(it2);
+
+      char s1b[20];
+      strncpy(s1b,it1.GetText().mb_str(), 19);
+      char s2b[20];
+      strncpy(s2b,it2.GetText().mb_str(), 19);
+
+      wxString s1, s2;
+      s1.Printf(_T("%11s"), s1b);
+      s2.Printf(_T("%11s"), s2b);
+
+      if(sort_wp_len_dir & 1)
+            return it2.GetText().Cmp(it1.GetText());
+      else
+            return it1.GetText().Cmp(it2.GetText());
 }
 
 
@@ -174,6 +317,13 @@ void RouteManagerDialog::Create()
       itemPanel1->SetSizer(sbsRoutes);
       itemNotebook1->AddPage(itemPanel1, _("Routes"));
 
+      sort_wp_len_dir = 0;
+      sort_wp_name_dir = 0;
+      sort_track_len_dir = 0;
+      sort_route_to_dir = 0;
+      sort_track_name_dir = 0;
+      sort_route_name_dir = 0;
+
       // Setup GUI
       m_pRouteListCtrl = new wxListCtrl(itemPanel1, -1, wxDefaultPosition, wxSize(400, -1),
           wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_SORT_ASCENDING|wxLC_HRULES/*|wxLC_VRULES*/);
@@ -181,6 +331,7 @@ void RouteManagerDialog::Create()
       m_pRouteListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler(RouteManagerDialog::OnRteSelected), NULL, this);
       m_pRouteListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler(RouteManagerDialog::OnRteDefaultAction), NULL, this);
       m_pRouteListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnRteToggleVisibility), NULL, this);
+	  m_pRouteListCtrl->Connect(wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler(RouteManagerDialog::OnRteColumnClicked), NULL, this);
       sbsRoutes->Add(m_pRouteListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
       // Columns: visibility ctrl, name
@@ -264,6 +415,7 @@ void RouteManagerDialog::Create()
       m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler(RouteManagerDialog::OnTrkSelected), NULL, this);
       m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler(RouteManagerDialog::OnTrkDefaultAction), NULL, this);
       m_pTrkListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnTrkToggleVisibility), NULL, this);
+	  m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler(RouteManagerDialog::OnTrkColumnClicked), NULL, this);
       itemBoxSizer3->Add(m_pTrkListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
       m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
@@ -318,6 +470,7 @@ void RouteManagerDialog::Create()
       m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this);
       m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler(RouteManagerDialog::OnWptDefaultAction), NULL, this);
       m_pWptListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnWptToggleVisibility), NULL, this);
+	  m_pWptListCtrl->Connect(wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler(RouteManagerDialog::OnWptColumnClicked), NULL, this);
       itemBoxSizer4->Add(m_pWptListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
       m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 44 );
@@ -601,11 +754,15 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
       if (!proute_to_delete) return;
 
+      ::wxBeginBusyCursor();
+
       cc1->CancelMouseRoute();
 
       g_pRouteMan->DeleteRoute(proute_to_delete);
 
       pConfig->DeleteConfigRoute ( proute_to_delete );
+
+      ::wxEndBusyCursor();
 
       UpdateRouteListCtrl();
 
@@ -804,8 +961,13 @@ void RouteManagerDialog::OnRteToggleVisibility(wxMouseEvent &event)
             route->SetVisible(!route->IsVisible());
             m_pRouteListCtrl->SetItemImage(clicked_index, route->IsVisible() ? 0 : -1);
 
+            ::wxBeginBusyCursor();
+
             pConfig->UpdateRoute(route);
             cc1->Refresh();
+
+            ::wxEndBusyCursor();
+
       }
 
       // Allow wx to process...
@@ -845,11 +1007,25 @@ void RouteManagerDialog::OnRteSelected(wxListEvent &event)
     Route *route = pRouteList->Item(m_pRouteListCtrl->GetItemData(clicked_index))->GetData();
 //    route->SetVisible(!route->IsVisible());
     m_pRouteListCtrl->SetItemImage(clicked_index, route->IsVisible() ? 0 : -1);
-    pConfig->UpdateRoute(route);
+//    pConfig->UpdateRoute(route);
     cc1->Refresh();
 
     UpdateRteButtons();
 
+}
+
+void RouteManagerDialog::OnRteColumnClicked(wxListEvent &event)
+{
+      if(event.m_col == 1)
+      {
+            m_pRouteListCtrl->SortItems(SortRoutesOnName, (long)m_pRouteListCtrl);
+            sort_route_name_dir++;
+      }
+      else if(event.m_col == 2)
+      {
+            m_pRouteListCtrl->SortItems(SortRoutesOnTo, (long)m_pRouteListCtrl);
+            sort_route_to_dir++;
+      }
 }
 
 void RouteManagerDialog::OnRteSendToGPSClick(wxCommandEvent &event)
@@ -954,6 +1130,20 @@ void RouteManagerDialog::OnTrkSelected(wxListEvent &event)
     UpdateTrkButtons();
 }
 
+void RouteManagerDialog::OnTrkColumnClicked(wxListEvent &event)
+{
+      if(event.m_col == 1)
+      {
+            m_pTrkListCtrl->SortItems(SortTracksOnName, (long)m_pTrkListCtrl);
+            sort_track_name_dir++;
+      }
+      else if(event.m_col == 2)
+      {
+            m_pTrkListCtrl->SortItems(SortTracksOnDistance, (long)m_pTrkListCtrl);
+            sort_track_len_dir++;
+      }
+}
+
 void RouteManagerDialog::UpdateTrkButtons()
 {
       long item = -1;
@@ -980,7 +1170,7 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event)
             route->SetVisible(!route->IsVisible());
             m_pTrkListCtrl->SetItemImage(clicked_index, route->IsVisible() ? 0 : -1);
 
-            pConfig->UpdateRoute(route);
+//            pConfig->UpdateRoute(route);
             cc1->Refresh();
       }
 
@@ -1084,14 +1274,28 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
 
       if (!track) return;
 
-      Route *route = track->RouteFromTrack();
+      wxProgressDialog *pprog = new wxProgressDialog(_("OpenCPN Converting Track to Route...."),
+                  _("Processing Waypoints..."), 200, NULL,
+                    wxPD_AUTO_HIDE | wxPD_SMOOTH |wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |wxPD_REMAINING_TIME);
+
+      ::wxBeginBusyCursor();
+
+      Route *route = track->RouteFromTrack(pprog);
+
       pRouteList->Append(route);
 
+      pprog->Update(150, _("Saving new Route..."));
       pConfig->UpdateRoute(route);
+      pprog->Update(200, _("Done."));
+      delete pprog;
 
+
+      pRouteList->Append(route);
       cc1->Refresh();
 
       UpdateRouteListCtrl();
+
+      ::wxEndBusyCursor();
 }
 
 void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
@@ -1169,7 +1373,7 @@ void RouteManagerDialog::UpdateWptListCtrl()
             node = node->GetNext();
       }
 
-      m_pWptListCtrl->SortItems(SortWaypoints, (long)m_pWptListCtrl);
+      m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
 
       if (selected_id > -1)
       {
@@ -1189,6 +1393,20 @@ void RouteManagerDialog::OnWptDefaultAction(wxListEvent &event)
 void RouteManagerDialog::OnWptSelected(wxListEvent &event)
 {
     UpdateWptButtons();
+}
+
+void RouteManagerDialog::OnWptColumnClicked(wxListEvent &event)
+{
+      if(event.m_col == 1)
+      {
+            m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
+            sort_wp_name_dir++;
+      }
+      else if(event.m_col == 2)
+      {
+            m_pWptListCtrl->SortItems(SortWaypointsOnDistance, (long)m_pWptListCtrl);
+            sort_wp_len_dir++;
+      }
 }
 
 void RouteManagerDialog::UpdateWptButtons()

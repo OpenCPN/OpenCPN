@@ -946,7 +946,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
 
                   }
-                  else if(INIT_FAIL_RETRY == ir)                  // recoverable problem in chart Init()
+                  else if((INIT_FAIL_RETRY == ir) || (INIT_FAIL_NOERROR == ir))   // recoverable problem in chart Init()
                   {
                         delete Ch;
                         Ch = NULL;
@@ -955,13 +955,15 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
                   if(INIT_OK != ir)
                   {
-
-                        wxString fp = ChartFullPath;
-                        fp.Prepend(_T("   OpenChartFromStack...Error opening chart "));
-                        wxString id;
-                        id.Printf(_T("... return code %d"),  ir);
-                        fp.Append(id);
-                        wxLogMessage(fp);
+                        if(INIT_FAIL_NOERROR != ir)
+                        {
+                              wxString fp = ChartFullPath;
+                              fp.Prepend(_T("   OpenChartFromStack...Error opening chart "));
+                              wxString id;
+                              id.Printf(_T("... return code %d"),  ir);
+                              fp.Append(id);
+                              wxLogMessage(fp);
+                        }
                   }
 
             }

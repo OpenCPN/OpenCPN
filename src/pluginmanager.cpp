@@ -556,6 +556,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
       pttc->m_pplugin = pplugin;
       pttc->tool_sel = tool_sel;
       pttc->b_viz = true;
+      pttc->b_toggle = false;
       pttc->id = m_plugin_tool_id_next;
 
 
@@ -602,6 +603,21 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz)
       }
 }
 
+void PlugInManager::SetToolbarItemState(int item, bool toggle)
+{
+      for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
+      {
+            PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
+            {
+                  if(pttc->id == item)
+                  {
+                        pttc->b_toggle = toggle;
+                        pParent->SetToolbarItemState(item, toggle);
+                        break;
+                  }
+            }
+      }
+}
 
 wxString PlugInManager::GetLastError()
 {
@@ -685,6 +701,11 @@ void SetToolbarToolViz(int item, bool viz)
             s_ppim->SetToolbarToolViz(item, viz);
 }
 
+void SetToolbarItemState(int item, bool toggle)
+{
+      if(s_ppim)
+            s_ppim->SetToolbarItemState(item, toggle);
+}
 
 int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
 {

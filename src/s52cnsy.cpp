@@ -2279,10 +2279,12 @@ static void *RESARE02(void *param)
     wxString line;
     wxString prio;
 
+    if (NULL != catreastr)
+          _parseList(catreastr->mb_str(), catrea, sizeof(catrea));
+
     if ( NULL != restrnstr) {
           _parseList(restrnstr->mb_str(), restrn, sizeof(restrn));
 
-          if (NULL != catreastr) _parseList(catreastr->mb_str(), catrea, sizeof(catrea));
 
         if (strpbrk(restrn, "\007\010\016")) {                          // entry restrictions
             // Continuation A
@@ -2387,7 +2389,7 @@ static void *RESARE02(void *param)
                     symb = _T(";SY(CTYARE51)");
             } else {
                 if (strpbrk(catrea, "\004\005\006\007\012\022\024\026\027\030"))
-                    symb = _T(";SY(INFARE71)");
+                    symb = _T(";SY(INFARE51)");
                 else
                     symb = _T(";SY(RSRDEF51)");
             }
@@ -3021,6 +3023,8 @@ static void *WRECKS02 (void *param)
     GetIntAttr(obj, "WATLEV", watlev);
     int catwrk = -9;
     GetIntAttr(obj, "CATWRK", catwrk);
+	int quasou = -9;
+    GetIntAttr(obj, "QUASOU", quasou);
 
     double safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
 
@@ -3102,8 +3106,10 @@ static void *WRECKS02 (void *param)
 
 
     }
-
-    udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+	if (7 != quasou) //Fixes FS 165
+		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+	else 
+		udwhaz03str = new wxString();
     quapnt01str = CSQUAPNT01(obj);
 
     if (GEO_POINT == obj->Primitive_type) {
@@ -3134,6 +3140,9 @@ static void *WRECKS02 (void *param)
                       wrecks02str = wxString(_T(";SY(DANGER51)"));
                 else
                       wrecks02str = wxString(_T(";SY(DANGER52)"));
+				wrecks02str.Append(_T(";TX('Wk',2,1,2,'15110',1,0,CHBLK,21)"));
+				if ( 7 == quasou ) //Fixes FS 165
+					wrecks02str.Append(_T(";SY(WRECKS07)"));
 
                 if (NULL != sndfrm02str)                          // always show valsou depth
                         wrecks02str.Append(*sndfrm02str);

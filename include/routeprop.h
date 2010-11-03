@@ -70,7 +70,7 @@ class   RoutePoint;
 #define SYMBOL_ROUTEPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
 #define SYMBOL_ROUTEPROP_TITLE _("Route Properties")
 #define SYMBOL_ROUTEPROP_IDNAME ID_ROUTEPROP
-#define SYMBOL_ROUTEPROP_SIZE wxSize(400, 300)
+#define SYMBOL_ROUTEPROP_SIZE wxSize(450, 300)
 #define SYMBOL_ROUTEPROP_POSITION wxDefaultPosition
 
 #define ID_TEXTCTRL 7001
@@ -173,6 +173,8 @@ public:
     wxTextCtrl  *m_PlanSpeedCtl;
     wxTextCtrl  *m_TimeEnrouteCtl;
 
+	wxStaticText *m_PlanSpeedLabel;
+
     wxTextCtrl  *m_RouteNameCtl;
     wxTextCtrl  *m_RouteStartCtl;
     wxTextCtrl  *m_RouteDestCtl;
@@ -184,6 +186,7 @@ public:
 
     Route       *m_pRoute;
     double      m_planspeed;
+    double      m_avgspeed;
 };
 
 
