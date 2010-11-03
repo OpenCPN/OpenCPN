@@ -24,112 +24,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- * $Log: chcanv.cpp,v $
- * Revision 1.107  2010/06/25 02:03:34  bdbcat
- * 624
- *
- * Revision 1.106  2010/06/21 02:03:43  bdbcat
- * 620
- *
- * Revision 1.105  2010/06/16 03:52:55  bdbcat
- * 615a
- *
- * Revision 1.104  2010/06/13 21:05:15  bdbcat
- * 613a
- *
- * Revision 1.103  2010/06/12 00:49:06  bdbcat
- * 611b
- *
- * Revision 1.102  2010/06/11 16:29:57  bdbcat
- * 611a
- *
- * Revision 1.101  2010/06/07 15:29:27  bdbcat
- * 607a
- *
- * Revision 1.100  2010/06/06 20:53:23  bdbcat
- * 606a
- *
- * Revision 1.99  2010/06/04 22:35:23  bdbcat
- * 604
- *
- * Revision 1.98  2010/05/27 18:59:31  bdbcat
- * 527a
- *
- * Revision 1.97  2010/05/26 22:14:33  bdbcat
- * 526a
- *
- * Revision 1.96  2010/05/26 22:06:11  bdbcat
- * 526a
- *
- * Revision 1.95  2010/05/25 01:54:58  bdbcat
- * Build 524b
- *
- * Revision 1.94  2010/05/25 01:16:00  bdbcat
- * Build 524b
- *
- * Revision 1.93  2010/05/23 23:26:15  bdbcat
- * Build 523a
- *
- * Revision 1.91  2010/05/20 19:04:11  bdbcat
- * Build 520
- *
- * Revision 1.90  2010/05/19 01:06:53  bdbcat
- * Build 518
- *
- * Revision 1.89  2010/05/15 04:00:32  bdbcat
- * Build 514
- *
- * Revision 1.88  2010/05/04 04:44:57  bdbcat
- * Build 504
- *
- * Revision 1.87  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.86  2010/05/02 20:04:50  bdbcat
- * Build 502b
- *
- * Revision 1.85  2010/05/02 15:44:51  bdbcat
- * Always rebuild ChartStack on set VP in quilt mode.
- *
- * Revision 1.84  2010/05/02 03:03:46  bdbcat
- * Build 501
- *
- * Revision 1.83  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.82  2010/04/16 00:46:51  bdbcat
- * Correct logic for right click in quilt mode.
- *
- * Revision 1.81  2010/04/15 23:52:19  bdbcat
- * Correct logic for high speed limit
- *
- * Revision 1.80  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.79  2010/04/01 20:17:37  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.78  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * 2010=02-16 pjotrc
- * - show measured distance in meters below 1 cable
- *
- * 2010-02-15 pjotrc
- * - implement anchor watch
- *
- * 2010/02/07 17:30 pjotrc
- * - implement switching offf/on of AIS display
- *
- * 2010/02/01 17:30 pjotrc
- * - implement drawing of AIS AtoN
- *
- * 2010/01/31 16:07:00 pjotrc
- * - change icon shape for Class B AIS targets
- * - mark moored/anchored targets with blue dot
- * - skip displaying moored/anchored only if NavStatus says so explicitly
- * - mark lost targets according to IMO NAV 48-16
- * - mark selected targets according to IMO NAV 48-16
  *
  */
 
@@ -165,6 +59,7 @@
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 #include "ocpn_pixel.h"
+
 
 #ifdef USE_S57
 #include "s57chart.h"               // for ArrayOfS57Obj
@@ -240,7 +135,7 @@ extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 
 extern RouteManagerDialog *pRouteManagerDialog;
-
+extern GoToPositionDialog *pGoToPositionDialog;
 
 extern bool             bDrawCurrentValues;
 extern wxString         *pWVS_Locn;
@@ -358,6 +253,7 @@ enum
         ID_DEF_MENU_MOVE_BOAT_HERE,
         ID_DEF_MENU_GOTO_HERE,
         ID_DEF_MENU_CM93ZOOM,
+	  ID_DEF_MENU_GOTOPOSITION,
 
         ID_WP_MENU_GOTO,
         ID_WP_MENU_DELPOINT,
@@ -2169,6 +2065,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_DEF_MENU_DROP_WP,            ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_MOVE_BOAT_HERE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_GOTO_HERE,          ChartCanvas::PopupMenuHandler )
+	  EVT_MENU ( ID_DEF_MENU_GOTOPOSITION,       ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_RT_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_RT_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
@@ -2919,6 +2816,12 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               b_proc = true;
                               break;
 
+                  case 20:                       // Ctrl T
+                              if ( NULL == pGoToPositionDialog )          // There is one global instance of the Go To Position Dialog
+                                pGoToPositionDialog = new GoToPositionDialog ( this );
+                              pGoToPositionDialog->Show();
+                              break;
+
                   case 27:                       // Generic break
                         if(m_bMeasure_Active)
                         {
@@ -3113,14 +3016,19 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
 
       if(NULL == m_pRolloverRouteSeg)
       {
+            //    Get a list of all selectable sgements, and search for the first visible segment as the rollover target.
 
-            m_pRolloverRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
-            if (m_pRolloverRouteSeg)
+            SelectableItemList SelList = pSelect->FindSelectionList(m_cursor_lat, m_cursor_lon,SELTYPE_ROUTESEGMENT,SelectRadius );
+            wxSelectableItemListNode *node = SelList.GetFirst();
+            while ( node )
             {
+                  SelectItem *pFindSel = node->GetData();
 
-                  Route *pr = (Route *)m_pRolloverRouteSeg->m_pData3;
+                  Route *pr = ( Route * ) pFindSel->m_pData3;        //candidate
+
                   if(pr && pr->IsVisible())
                   {
+                        m_pRolloverRouteSeg = pFindSel;
                         showRollover = true;
 
                         if(NULL == m_pRolloverWin)
@@ -3161,10 +3069,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
                               m_pRolloverWin->Refresh();
                               m_pRolloverWin->Show();
                               showRollover = true;
+                              break;
                         }
                   }
                   else
-                        m_pRolloverRouteSeg = NULL;
+                        node=node->GetNext();
             }
       }
       else
@@ -5136,7 +5045,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
 
                                 //      Draw RateOfTurn Vector
-                              if ( (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
+                              if ( (td->ROTAIS != 0) && (td->ROTAIS != -128) && td->b_active)
                               {
                                     double nv = 10;
                                     double theta2 = theta;
@@ -5170,7 +5079,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                               if (( res != Invisible ) && (td->b_active)) dc.DrawCircle ( PredPoint.x, PredPoint.y, 5 );  // pjotrc 2010.02.01
 
                                 //      Draw RateOfTurn Vector
-                              if ( (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
+                              if ( (td->ROTAIS != 0) && (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
                               {
                                     double nv = 10;
                                     double theta2 = theta;
@@ -5706,13 +5615,13 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
 //          for new canvas size
         SetVPScale ( GetVPScale() );
 
-        double display_size_meters =  wxGetDisplaySizeMM().GetWidth() / 1000.;         // gives client width in meters
-        m_canvas_scale_factor = m_canvas_width / display_size_meters;
+        double display_size_meters =  wxGetDisplaySizeMM().GetWidth() / 1000.;         // gives screen size(width) in meters
+//        m_canvas_scale_factor = m_canvas_width / display_size_meters;
+        m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
 
 #ifdef USE_S57
-        float pix_per_mm = m_canvas_width / (display_size_meters * 1000.);
         if ( ps52plib )
-                ps52plib->SetPPMM ( pix_per_mm );
+              ps52plib->SetPPMM ( m_canvas_scale_factor / 1000. );
 #endif
 
         //  Set the position of the console
@@ -6338,22 +6247,43 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                 m_pFoundPoint = pFind;
 
 
-                         //    Get an array of all routes using this point and use it to rubberband all affected routes
+                         //    Get an array of all routes using this point
                                 m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(frp);
 
-                                if ( m_pEditRouteArray )                       // Editing Waypoint as part of route
+                        // Use route array to determine actual visibility for the point
+                                bool brp_viz = false;
+                                if(m_pEditRouteArray)
                                 {
                                       for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
                                       {
                                             Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                            pr->m_bIsBeingEdited = true;
+                                            if(pr->IsVisible())
+                                            {
+                                                  brp_viz = true;
+                                                  break;
+                                            }
                                       }
-                                      m_bRouteEditing = true;
                                 }
-                                else                                      // editing Mark
+                                else
+                                      brp_viz = frp->IsVisible();               // isolated point
+
+                                if(brp_viz)
                                 {
-                                        frp->m_bIsBeingEdited = true;
-                                        m_bMarkEditing = true;
+                              //    Use route array to rubberband all affected routes
+                                    if ( m_pEditRouteArray )                       // Editing Waypoint as part of route
+                                    {
+                                          for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
+                                          {
+                                                Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                                                pr->m_bIsBeingEdited = true;
+                                          }
+                                          m_bRouteEditing = true;
+                                    }
+                                    else                                      // editing Mark
+                                    {
+                                          frp->m_bIsBeingEdited = true;
+                                          m_bMarkEditing = true;
+                                    }
                                 }
                         }
 
@@ -6541,7 +6471,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                     pr->UpdateSegmentDistances();
                                     pr->m_bIsBeingEdited = false;
 
-                                    pConfig->UpdateRoute ( pr );
+//                                    pConfig->UpdateRoute ( pr );
+                                    pConfig->UpdateWayPoint ( m_pRoutePointEditTarget );
                               }
                         }
 
@@ -6727,16 +6658,37 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                             wxSelectableItemListNode *node = SelList.GetFirst();
                             while ( node )
                             {
-                                  SelectItem *pFindSel = node->GetData();
+                             SelectItem *pFindSel = node->GetData();
 
-                                  RoutePoint *prp = ( RoutePoint * ) pFindSel->m_pData1;        //candidate
+                             RoutePoint *prp = ( RoutePoint * ) pFindSel->m_pData1;        //candidate
 
-                                  if(NULL == pFirstVizPoint)
-                                        pFirstVizPoint = prp;
+                              //    Get an array of all routes using this point
+                              wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(prp);
 
-                              //    Get an array of all routes using this point and use it to choose the appropriate route and point
-                              //    Give preference to any active route, otherwise select the first visible route in the array for this point
-                                  wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(prp);
+                              // Use route array (if any) to determine actual visibility for this point
+                              bool brp_viz = false;
+                              if(proute_array)
+                              {
+                                    for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
+                                    {
+                                          Route *pr = (Route *)proute_array->Item(ir);
+                                          if(pr->IsVisible())
+                                          {
+                                                brp_viz = true;
+                                                break;
+                                          }
+                                    }
+                              }
+                              else
+                                    brp_viz = prp->IsVisible();               // isolated point
+
+
+                              if((NULL == pFirstVizPoint) && brp_viz)
+                                    pFirstVizPoint = prp;
+
+
+                              // Use route array to choose the appropriate route
+                              // Give preference to any active route, otherwise select the first visible route in the array for this point
                                   m_pSelectedRoute = NULL;
                                   if(proute_array)
                                   {
@@ -6785,12 +6737,12 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                             else                                              // default is first visible point in list
                                   m_pFoundRoutePoint = pFirstVizPoint;
 
-                              if ( m_pSelectedRoute )
-                              {
+                            if ( m_pSelectedRoute )
+                            {
                                     if(m_pSelectedRoute->IsVisible())
                                           seltype |= SELTYPE_ROUTEPOINT;
-                              }
-                              else
+                            }
+                            else if ( m_pFoundRoutePoint )
                                     seltype |= SELTYPE_MARKPOINT;
                       }
 
@@ -7136,6 +7088,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         //        Add invariant items
         pdef_menu->Append ( ID_DEF_MENU_DROP_WP,    _( "Drop Mark Here" ) );
         pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+	pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
 
 //        if ( !g_pRouteMan->GetpActiveRoute() )
         if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
@@ -7329,7 +7282,13 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
                    }
 
-                case ID_WP_MENU_DELPOINT:
+                case ID_DEF_MENU_GOTOPOSITION:
+                        if ( NULL == pGoToPositionDialog )          // There is one global instance of the Go To Position Dialog
+                        pGoToPositionDialog = new GoToPositionDialog ( this );
+                        pGoToPositionDialog->Show();
+                        break;
+
+		case ID_WP_MENU_DELPOINT:
                 {
                        if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
                        else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15
@@ -7714,12 +7673,13 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                           //  Check for 1 point routes
                           if ( m_pSelectedRoute->GetnPoints() > 1 )
                           {
+/*    All this is done by Route::RemovePoint()
                                 pSelect->AddAllSelectableRouteSegments ( m_pSelectedRoute );
                                 pSelect->AddAllSelectableRoutePoints ( m_pSelectedRoute );
 
                                 pConfig->UpdateRoute ( m_pSelectedRoute );
                                 m_pSelectedRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
-
+*/
                           }
                           else
                           {
@@ -8572,7 +8532,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                               chart_native_ppm = m_true_scale_ppm;
 
                         double zoom_factor = VPoint.view_scale_ppm / chart_native_ppm;
-
                         if(Current_Ch)
                         {
                   //    Special case for cm93
@@ -8806,7 +8765,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 pCwin->Show();
                 if ( m_bTCupdate )
                 {
-                        pCwin->m_bForceTCRedraw = true;
                         pCwin->Refresh();
                         pCwin->Update();
                 }
@@ -9989,7 +9947,6 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
         m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
-        m_bForceTCRedraw = true;
         btc_valid = false;
 
         OK_button = new wxButton ( this, wxID_OK, _( "OK" ),
@@ -10041,7 +9998,6 @@ void TCWin::OnCloseWindow ( wxCloseEvent& event )
 {
         Hide();
         pParent->pCwin = NULL;
-//      pParent->m_bForceReDraw = true;
         Destroy();                          // that hurts
 }
 
@@ -10059,7 +10015,6 @@ void TCWin::NXEvent ( wxCommandEvent& event )
              t_graphday_00 += 3600;
         m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
-        m_bForceTCRedraw = true;
         btc_valid = false;
         Refresh();
 
@@ -10082,7 +10037,6 @@ void TCWin::PREvent ( wxCommandEvent& event )
 
         m_t_graphday_00_at_station = t_graphday_00 - ( m_corr_mins * 60 );
 
-        m_bForceTCRedraw = true;
         btc_valid = false;
         Refresh();
 }
@@ -10180,7 +10134,6 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
                 //    Build the array of values, capturing max and min
-                SplineList sList;
 
                 if ( !btc_valid )
                 {
@@ -10228,16 +10181,9 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
 
 //    Build spline list of points
-/*
-                        if ( psList )                 // destroy any current list
-                        {
-                                psList->DeleteContents ( TRUE );
-                                psList->Clear();
-                                delete psList;
-                        }
 
-                        psList = new SplineList;;
-*/
+                        m_sList.DeleteContents(true);
+                        m_sList.Clear();
 
                         for ( i = 0 ; i<25 ; i++ )
                         {
@@ -10245,7 +10191,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                 pp->x =  x_graph + ( ( i ) * x_graph_w / 25 );
                                 pp->y = y_graph + ( m_plot_y_offset ) - ( int ) ( (tcv[i]- val_off) * y_graph_h / im );
 
-                                sList.Append ( pp );
+                                m_sList.Append ( pp );
                         }
 
                         btc_valid = true;
@@ -10343,9 +10289,9 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
                 //    Draw the Value curve
 #if wxCHECK_VERSION(2, 9, 0)
-                wxPointList *list = (wxPointList *)&sList;
+                wxPointList *list = (wxPointList *)&m_sList;
 #else
-                wxList *list = (wxList *)&sList;
+                wxList *list = (wxList *)&m_sList;
 #endif
 
 
@@ -10459,7 +10405,6 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 dc.GetTextExtent ( sday, &w, &h );
                 dc.DrawText ( sday, 55 - w/2, y * 88/100 );
 
-                m_bForceTCRedraw = false;
         }
 }
 
@@ -11264,20 +11209,11 @@ bool AISTargetQueryDialog::Create ( wxWindow* parent,
 //      SetBackgroundColour ( back_color );
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetQuery"), 12);
-
-      wxFont *fp_font = wxTheFontList->FindOrCreateFont(dFont->GetPointSize(),
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxFont *fp_font = wxTheFontList->FindOrCreateFont(font_size,
                   wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight());
 
       SetFont ( *fp_font );
-
-//      SetForegroundColour(pFontMgr->GetFontColor(_("AISTargetQuery")));
-
-
-//      wxColour back_color =GetGlobalColor ( _T ( "UIBCK" ) );
-//      SetBackgroundColour ( back_color );
-
-//      wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );          // or UINFD
-//      SetForegroundColour ( text_color );
 
       CreateControls();
 
@@ -11832,9 +11768,12 @@ void RolloverWin::SetBitmap()
       wxClientDC cdc(GetParent());
 
 
-      wxFont *plabelFont = pFontMgr->GetFont(_T("AISRollover"));
-      cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+      wxFont *dFont = pFontMgr->GetFont(_("AISRollover"), 12);
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
+                  dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
 
+      cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
       m_size.x = w + 4;
       m_size.y = h + 4;
 
@@ -12033,6 +11972,179 @@ void ChInfoWin::SetBitmap()
 
 
       SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
+}
+
+//-------------------------------------------------------------------------------
+//
+//    Go To Position Dialog Implementation
+//
+//-------------------------------------------------------------------------------
+/*!
+ * GoToPositionDialog type definition
+ */
+
+IMPLEMENT_DYNAMIC_CLASS( GoToPositionDialog, wxDialog )
+
+/*!
+ * GoToPositionDialog event table definition
+ */
+
+            BEGIN_EVENT_TABLE( GoToPositionDialog, wxDialog )
+
+////@begin GoToPositionDialog event table entries
+
+            EVT_BUTTON( ID_GOTOPOS_CANCEL, GoToPositionDialog::OnGoToPosCancelClick )
+            EVT_BUTTON( ID_GOTOPOS_OK, GoToPositionDialog::OnGoToPosOkClick )
+            EVT_COMMAND(ID_LATCTRL, EVT_LLCHANGE, GoToPositionDialog::OnPositionCtlUpdated)
+            EVT_COMMAND(ID_LONCTRL, EVT_LLCHANGE, GoToPositionDialog::OnPositionCtlUpdated)
+
+////@end GoToPositionDialog event table entries
+
+            END_EVENT_TABLE()
+
+/*!
+ * GoToPositionDialog constructors
+ */
+
+            GoToPositionDialog::GoToPositionDialog( )
+{
+}
+
+GoToPositionDialog::GoToPositionDialog(  wxWindow* parent, wxWindowID id,
+                                         const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
+{
+
+      long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+      wxDialog::Create( parent, id, caption, pos, size,wstyle );
+
+      CreateControls();
+      GetSizer()->SetSizeHints(this);
+      Centre();
+
+}
+
+GoToPositionDialog::~GoToPositionDialog( )
+{
+      delete m_MarkLatCtl;
+      delete m_MarkLonCtl;
+}
+
+/*!
+ * GoToPositionDialog creator
+ */
+
+bool GoToPositionDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
+{
+      SetExtraStyle(GetExtraStyle()|wxWS_EX_BLOCK_EVENTS);
+      wxDialog::Create( parent, id, caption, pos, size, style );
+
+      CreateControls();
+      GetSizer()->SetSizeHints(this);
+      Centre();
+
+      return TRUE;
+}
+
+/*!
+ * Control creation for GoToPositionDialog
+ */
+
+void GoToPositionDialog::CreateControls()
+{
+      GoToPositionDialog* itemDialog1 = this;
+
+      wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
+      itemDialog1->SetSizer(itemBoxSizer2);
+
+      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox(itemDialog1, wxID_ANY, _("Position"));
+
+      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer(itemStaticBoxSizer4Static, wxVERTICAL);
+      itemBoxSizer2->Add(itemStaticBoxSizer4, 0, wxEXPAND|wxALL, 5);
+
+      wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("Latitude"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemStaticBoxSizer4->Add(itemStaticText5, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+
+      m_MarkLatCtl = new LatLonTextCtrl( itemDialog1, ID_LATCTRL, _T(""), wxDefaultPosition, wxSize(180, -1), 0 );
+      itemStaticBoxSizer4->Add(m_MarkLatCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
+
+
+      wxStaticText* itemStaticText6 = new wxStaticText( itemDialog1, wxID_STATIC, _("Longitude"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemStaticBoxSizer4->Add(itemStaticText6, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
+
+      m_MarkLonCtl = new LatLonTextCtrl( itemDialog1, ID_LONCTRL, _T(""), wxDefaultPosition, wxSize(180, -1), 0 );
+      itemStaticBoxSizer4->Add(m_MarkLonCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
+
+      wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
+      itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT|wxALL, 5);
+
+      m_CancelButton = new wxButton( itemDialog1, ID_GOTOPOS_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+      m_OKButton = new wxButton( itemDialog1, ID_GOTOPOS_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+      m_OKButton->SetDefault();
+
+      SetColorScheme((ColorScheme)0);
+}
+
+
+void GoToPositionDialog::SetColorScheme(ColorScheme cs)
+{
+      SetBackgroundColour(GetGlobalColor(_T("DILG1")));
+
+      wxColour back_color =GetGlobalColor(_T("DILG2"));
+      wxColour text_color = GetGlobalColor(_T("DILG3"));
+
+      m_MarkLatCtl->SetBackgroundColour(back_color);
+      m_MarkLatCtl->SetForegroundColour(text_color);
+
+      m_MarkLonCtl->SetBackgroundColour(back_color);
+      m_MarkLonCtl->SetForegroundColour(text_color);
+
+      m_CancelButton->SetBackgroundColour(back_color);
+      m_CancelButton->SetForegroundColour(text_color);
+
+      m_OKButton->SetBackgroundColour(back_color);
+      m_OKButton->SetForegroundColour(text_color);
+}
+
+bool GoToPositionDialog::ShowToolTips()
+{
+      return TRUE;
+}
+
+
+void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
+{
+      Hide();
+      event.Skip();
+}
+
+
+void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
+{
+      char str[50];
+      wxString l;
+
+    //    Fetch the control values, convert to degrees
+      l = m_MarkLatCtl->GetValue();
+      strncpy(str, l.mb_str(), 49);
+      double lat = fromDMM(str);
+
+      l = m_MarkLonCtl->GetValue();
+      strncpy(str, l.mb_str(), 49);
+      double lon = fromDMM(str);
+
+      cc1->SetViewPoint(lat, lon);
+      cc1->Refresh();
+
+      Hide();
+      event.Skip();
+}
+
+void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
+{
+      // We do not want to change the position on lat/lon now
 }
 
 

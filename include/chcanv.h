@@ -25,46 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: chcanv.h,v $
- * Revision 1.52  2010/06/21 01:54:16  bdbcat
- * 620
- *
- * Revision 1.51  2010/06/13 21:03:02  bdbcat
- * 613a
- *
- * Revision 1.50  2010/06/12 00:45:34  bdbcat
- * 611b
- *
- * Revision 1.49  2010/06/06 20:49:45  bdbcat
- * 606a
- *
- * Revision 1.48  2010/05/27 19:00:35  bdbcat
- * 527a
- *
- * Revision 1.47  2010/05/23 23:27:02  bdbcat
- * Build 523a
- *
- * Revision 1.46  2010/05/19 01:05:13  bdbcat
- * Build 518
- *
- * Revision 1.45  2010/05/15 03:55:04  bdbcat
- * Build 514
- *
- * Revision 1.44  2010/05/04 01:34:04  bdbcat
- * Build 503
- *
- * Revision 1.43  2010/05/02 03:04:35  bdbcat
- * Build 501
- *
- * Revision 1.42  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.41  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.40  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
  *
  */
 
@@ -238,6 +198,8 @@ public:
       bool PanCanvas(int dx, int dy);
 
       void ShowAISTargetList(void);
+
+      void ShowGoToPosition(void);
 
       ChartBase *GetLargestScaleQuiltChart();
       ChartBase *GetFirstQuiltChart();
@@ -546,7 +508,6 @@ public:
 
       void RePosition(void);
 
-      bool        m_bForceTCRedraw;
 
 private:
       int         m_plot_type;
@@ -570,6 +531,8 @@ private:
       int         m_t_graphday_00_at_station;
       wxDateTime  m_graphday;
       int         m_plot_y_offset;
+
+      SplineList  m_sList;
 
 DECLARE_EVENT_TABLE()
 };
@@ -858,6 +821,89 @@ class ChInfoWin: public wxWindow
 
             DECLARE_EVENT_TABLE()
 };
+
+//-------------------------------------------------------------------------------
+//
+//    Go To Position Dialog Implementation
+//
+//-------------------------------------------------------------------------------
+
+
+/*!
+ * Control identifiers
+ */
+
+////@begin control identifiers
+#define ID_GOTOPOS 8100
+#define SYMBOL_GOTOPOS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
+#define SYMBOL_GOTOPOS_TITLE _("Jump To Position")
+#define SYMBOL_GOTOPOS_IDNAME ID_GOTOPOS
+#define SYMBOL_GOTOPOS_SIZE wxSize(200, 300)
+#define SYMBOL_GOTOPOS_POSITION wxDefaultPosition
+#define ID_GOTOPOS_CANCEL 8101
+#define ID_GOTOPOS_OK 8102
+
+
+////@end control identifiers
+
+/*!
+ * Compatibility
+ */
+
+#ifndef wxCLOSE_BOX
+#define wxCLOSE_BOX 0x1000
+#endif
+#ifndef wxFIXED_MINSIZE
+#define wxFIXED_MINSIZE 0
+#endif
+
+/*!
+ * GoToPositionDialog class declaration
+ */
+
+class GoToPositionDialog: public wxDialog
+{
+      DECLARE_DYNAMIC_CLASS( GoToPositionDialog )
+                  DECLARE_EVENT_TABLE()
+
+      public:
+    /// Constructors
+            GoToPositionDialog( );
+            GoToPositionDialog( wxWindow* parent, wxWindowID id = SYMBOL_GOTOPOS_IDNAME,
+                                const wxString& caption = SYMBOL_GOTOPOS_TITLE,
+                                const wxPoint& pos = SYMBOL_GOTOPOS_POSITION,
+                                const wxSize& size = SYMBOL_GOTOPOS_SIZE,
+                                long style = SYMBOL_GOTOPOS_STYLE );
+
+            ~GoToPositionDialog();
+
+    /// Creation
+            bool Create( wxWindow* parent, wxWindowID id = SYMBOL_GOTOPOS_IDNAME,
+                         const wxString& caption = SYMBOL_GOTOPOS_TITLE,
+                         const wxPoint& pos = SYMBOL_GOTOPOS_POSITION,
+                         const wxSize& size = SYMBOL_GOTOPOS_SIZE, long style = SYMBOL_GOTOPOS_STYLE );
+
+            void SetColorScheme(ColorScheme cs);
+
+            void CreateControls();
+
+            void OnGoToPosCancelClick( wxCommandEvent& event );
+            void OnGoToPosOkClick( wxCommandEvent& event );
+            void OnPositionCtlUpdated( wxCommandEvent& event );
+
+      /// Should we show tooltips?
+            static bool ShowToolTips();
+
+            wxTextCtrl*   m_MarkLatCtl;
+            wxTextCtrl*   m_MarkLonCtl;
+            wxButton*     m_CancelButton;
+            wxButton*     m_OKButton;
+
+            double        m_lat_save;
+            double        m_lon_save;
+};
+
+
 
 
 #endif
