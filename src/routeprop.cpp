@@ -25,26 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: routeprop.cpp,v $
- * Revision 1.23  2010/06/11 16:27:15  bdbcat
- * 611a
- *
- * Revision 1.22  2010/06/04 22:35:44  bdbcat
- * 604
- *
- * Revision 1.21  2010/05/20 19:05:13  bdbcat
- * Build 520
- *
- * Revision 1.20  2010/05/19 01:05:56  bdbcat
- * Build 518
- *
- * Revision 1.19  2010/05/15 04:02:19  bdbcat
- * Build 514
- *
- * Revision 1.18  2010/04/27 01:43:17  bdbcat
- * Build 426
- *
- *
  */
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -581,13 +561,10 @@ bool RouteProp::UpdateProperties()
 
                         }
                   }
-                  else {          // it is a track point...     pjotrc 2010.02.11
-                        wxDateTime local_time = prp->m_CreateTime;
-                        time_form = local_time.FormatISODate();
-                        time_form += _T(" ");
-                        time_form += local_time.FormatISOTime();
-                        time_form += _T(" UTC");
-
+                  else
+                  {          // it is a track point...     pjotrc 2010.02.11
+                        wxDateTime local_time = prp->m_CreateTime.FromTimezone(wxDateTime::UTC);
+                        time_form = local_time.Format(_T("%Y-%m-%d %H:%M:%S %Z"), wxDateTime::Local);
 
                   }
 

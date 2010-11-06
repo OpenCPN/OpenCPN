@@ -96,8 +96,8 @@ extern bool             g_bRemoveLost;
 extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
-extern bool             g_bShowTracks;
-extern double           g_ShowTracks_Mins;
+extern bool             g_bAISShowTracks;
+extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAIS_CPA_Alert;
@@ -1115,19 +1115,18 @@ void options::CreateControls()
     m_pText_COG_Predictor = new wxTextCtrl(itemPanelAIS, -1);
     pDisplayGrid->Add(m_pText_COG_Predictor, 1, wxALIGN_RIGHT, group_item_spacing);
 
-#if 0
     m_pCheck_Show_Tracks = new wxCheckBox( itemPanelAIS, -1, _("Show target tracks"));
     pDisplayGrid->Add(m_pCheck_Show_Tracks, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
-    wxStaticText *pStatic_Dummy2 = new wxStaticText( itemPanelAIS, -1, _T(""));
-    pDisplayGrid->Add(pStatic_Dummy2, 1, wxALIGN_RIGHT|wxALL, group_item_spacing);
+    wxStaticText *pStatic_Dummy7 = new wxStaticText( itemPanelAIS, -1, _T(""));
+    pDisplayGrid->Add(pStatic_Dummy7, 1, wxALIGN_RIGHT|wxALL, group_item_spacing);
 
     wxStaticText *pStatic_Track_Length = new wxStaticText( itemPanelAIS, -1, _("      Target track length (Minutes):"));
     pDisplayGrid->Add(pStatic_Track_Length, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
     m_pText_Track_Length = new wxTextCtrl(itemPanelAIS, -1);
-                                                                            pDisplayGrid->Add(m_pText_Track_Length, 1, wxALIGN_RIGHT, group_item_spacing);
-#endif
+    pDisplayGrid->Add(m_pText_Track_Length, 1, wxALIGN_RIGHT, group_item_spacing);
+
 
     m_pCheck_Show_Moored = new wxCheckBox( itemPanelAIS, -1, _("Supress anchored/moored targets"));
     pDisplayGrid->Add(m_pCheck_Show_Moored, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
@@ -1655,12 +1654,12 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.0f"),g_ShowCOG_Mins);
       m_pText_COG_Predictor->SetValue(s);
 
-#if 0
-      m_pCheck_Show_Tracks->SetValue(g_bShowTracks);
 
-      s.Printf(_T("%4.0f"),g_ShowTracks_Mins);
+      m_pCheck_Show_Tracks->SetValue(g_bAISShowTracks);
+
+      s.Printf(_T("%4.0f"),g_AISShowTracks_Mins);
       m_pText_Track_Length->SetValue(s);
-#endif
+
 
       m_pCheck_Show_Moored->SetValue(!g_bShowMoored);
 
@@ -2032,10 +2031,10 @@ void options::OnXidOkClick( wxCommandEvent& event )
    //      Display
     g_bShowCOG = m_pCheck_Show_COG->GetValue();
     m_pText_COG_Predictor->GetValue().ToDouble(&g_ShowCOG_Mins);
-#if 0
-    g_bShowTracks = m_pCheck_Show_Tracks->GetValue();
-    m_pText_Track_Length->GetValue().ToDouble(&g_ShowTracks_Mins);
-#endif
+
+    g_bAISShowTracks = m_pCheck_Show_Tracks->GetValue();
+    m_pText_Track_Length->GetValue().ToDouble(&g_AISShowTracks_Mins);
+
     g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
     m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 

@@ -423,14 +423,15 @@ bool             g_bRemoveLost;
 double           g_RemoveLost_Mins;
 bool             g_bShowCOG;
 double           g_ShowCOG_Mins;
-bool             g_bShowTracks;
-double           g_ShowTracks_Mins;
+bool             g_bAISShowTracks;
+double           g_AISShowTracks_Mins;
 bool             g_bShowMoored;
 double           g_ShowMoored_Kts;
 wxString         g_sAIS_Alert_Sound_File;
 bool             g_bAIS_CPA_Alert_Suppress_Moored;
 bool             g_bAIS_ACK_Timeout;
 double           g_AckTimeout_Mins;
+
 
 wxToolBarToolBase *m_pAISTool;
 

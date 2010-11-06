@@ -175,6 +175,7 @@ extern bool             g_bShowTracks;
 extern double           g_ShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
+extern bool             g_bAISShowTracks;
 
 extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -5303,6 +5304,82 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                   }  // ship class A or B
 #endif
 
+            //  Draw tracks if enabled
+                  if(g_bAISShowTracks)
+                  {
+                        wxPoint TrackPointA;
+                        wxPoint TrackPointB;
+
+#if wxUSE_GRAPHICS_CONTEXT
+                        if(pgc)
+                        {
+//                              pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "CHMGD" ) ) ) );
+                              pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "CHMGD" )), 2) );
+
+                              wxGraphicsPath gpathc = pgc->CreatePath();
+
+                        //    First point
+                              wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                              if(node)
+                              {
+                                    AISTargetTrackPoint *ptrack_point = node->GetData();
+                                    GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
+
+                                    gpathc.MoveToPoint(TrackPointA.x, TrackPointA.y);
+                                    dc.CalcBoundingBox(TrackPointA.x, TrackPointA.y); // keep dc dirty box up-to-date
+
+                                    node = node->GetNext();
+                              }
+                              while(node)
+                              {
+                                    AISTargetTrackPoint *ptrack_point = node->GetData();
+
+                                    GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
+
+                                    gpathc.AddLineToPoint(TrackPointB.x, TrackPointB.y);
+                                    dc.CalcBoundingBox(TrackPointB.x, TrackPointB.y); // keep dc dirty box up-to-date
+
+                                    node = node->GetNext();
+                              }
+
+                              pgc->StrokePath(gpathc);
+                       }
+#else
+                        wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), 2 ) ;
+
+
+                        //    First point
+                        wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                        if(node)
+                        {
+                              AISTargetTrackPoint *ptrack_point = node->GetData();
+                              GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
+                              node = node->GetNext();
+                        }
+                        while(node)
+                        {
+                              AISTargetTrackPoint *ptrack_point = node->GetData();
+
+                              GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
+
+                              wxPoint TrackPointClipA = TrackPointA;
+                              wxPoint TrackPointClipB = TrackPointB;
+
+                              ClipResult ores = cohen_sutherland_line_clip_i ( &TrackPointClipA.x, &TrackPointClipA.y,
+                                          &TrackPointClipB.x, &TrackPointClipB.y,
+                                          0, VPoint.pix_width, 0, VPoint.pix_height );
+
+                              if ( ores != Invisible )
+                                    dc.DrawLine (  TrackPointClipA.x, TrackPointClipA.y, TrackPointClipB.x, TrackPointClipB.y );
+
+                              TrackPointA = TrackPointB;
+                              node = node->GetNext();
+                        }
+#endif
+                  }           // Draw tracks
+
+
+
 #if wxUSE_GRAPHICS_CONTEXT
                   delete pgc;
 #endif
@@ -6314,13 +6391,13 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                             if(!g_CM93Maps_Offset_on)
                             {
                                   g_CM93Maps_Offset_x = deltax*1852.*60;
-                                  g_CM93Maps_Offset_y = (m_cursor_lat - m_prev_rlat)*1852.*60/cos(abs(m_cursor_lat + m_prev_rlat)/360.*PI);
+                                  g_CM93Maps_Offset_y = (m_cursor_lat - m_prev_rlat)*1852.*60/cos(fabs(m_cursor_lat + m_prev_rlat)/360.*PI);
                                   g_CM93Maps_Offset_on = true;
                             }
                             else
                             {
                                   g_CM93Maps_Offset_x += deltax*1852.*60;
-                                  g_CM93Maps_Offset_y += (m_cursor_lat - m_prev_rlat)*1852.*60/cos(abs(m_cursor_lat + m_prev_rlat)/360.*PI);
+                                  g_CM93Maps_Offset_y += (m_cursor_lat - m_prev_rlat)*1852.*60/cos(fabs(m_cursor_lat + m_prev_rlat)/360.*PI);
                             }
                             gFrame->ChartsRefresh();
                             m_nCM93MeasureOffsetState = 1;

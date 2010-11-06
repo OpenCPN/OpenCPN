@@ -119,6 +119,17 @@ typedef enum ais_alarm_type
 
 }_ais_alarm_type;
 
+class AISTargetTrackPoint
+{
+      public:
+            double      m_lat;
+            double      m_lon;
+            time_t      m_time;
+};
+
+
+WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
+
 //---------------------------------------------------------------------------------
 //
 //  AIS_Decoder Helpers
@@ -130,6 +141,8 @@ class AIS_Target_Data
 public:
 
     AIS_Target_Data();
+    ~AIS_Target_Data();
+
     wxString BuildQueryResult(void);
     wxString GetRolloverString(void);
     wxString Get_vessel_type_string(bool b_short = false);
@@ -200,7 +213,7 @@ public:
     double                    TCPA;                     // Minutes
     double                    CPA;                      // Nautical Miles
 
-
+    AISTargetTrackList        *m_ptrack;
 };
 
 
@@ -317,6 +330,8 @@ private:
     void UpdateAllCPA(void);
     void UpdateOneCPA(AIS_Target_Data *ptarget);
     void UpdateAllAlarms(void);
+    void UpdateAllTracks(void);
+    void UpdateOneTrack(AIS_Target_Data *ptarget);
     void Parse_And_Send_Posn(wxString &str_temp_buf);
     void ThreadMessage(const wxString &msg);
 

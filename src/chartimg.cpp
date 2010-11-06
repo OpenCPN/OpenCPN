@@ -3489,7 +3489,8 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
 wxImage *ChartBaseBSB::GetImage()
 {
-      wxImage *img = new wxImage( Size_X, Size_Y, false);
+      int img_size_x = ((Size_X >> 2) * 4) + 4;
+      wxImage *img = new wxImage( img_size_x, Size_Y, false);
 
       unsigned char *ppnx = img->GetData();
 
@@ -3501,7 +3502,7 @@ wxImage *ChartBaseBSB::GetImage()
 
             GetAndScaleData(&ppnx, source_rect, Size_X, dest_rect, Size_X, 1.0, RENDER_HIDEF);
 
-            ppnx += Size_X * 3;
+            ppnx += img_size_x * 3;
       }
 
       return img;

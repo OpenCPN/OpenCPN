@@ -84,8 +84,8 @@ extern bool             g_bRemoveLost;
 extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
-extern bool             g_bShowTracks;
-extern double           g_ShowTracks_Mins;
+extern bool             g_bAISShowTracks;
+extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 
@@ -127,7 +127,8 @@ static      GenericPosDat     AISPositionData;
 
 
 
-CPL_CVSID("$Id: ais.cpp,v 1.46 2010/06/24 02:02:47 bdbcat Exp $");
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST(AISTargetTrackList);
 
 // the first string in this list produces a 6 digit MMSI... BUGBUG
 
@@ -417,6 +418,13 @@ AIS_Target_Data::AIS_Target_Data()
 
     b_OwnShip = false;
     b_in_ack_timeout = false;
+
+    m_ptrack = new AISTargetTrackList;
+}
+
+AIS_Target_Data::~AIS_Target_Data()
+{
+      delete m_ptrack;
 }
 
 wxString AIS_Target_Data::BuildQueryResult( void )
@@ -1301,6 +1309,10 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 
             //    Calculate CPA info for this target immediately
                     UpdateOneCPA(pTargetData);
+
+            //    Update this target's track
+                    if(g_bAISShowTracks)
+                        UpdateOneTrack(pTargetData);
               }
         }
         else
@@ -1768,6 +1780,58 @@ void AIS_Decoder::UpdateAllCPA(void)
                   UpdateOneCPA(td);
       }
 }
+
+void AIS_Decoder::UpdateAllTracks(void)
+{
+           //    Iterate thru all the targets
+      AIS_Target_Hash::iterator it;
+      AIS_Target_Hash *current_targets = GetTargetList();
+
+      for( it = (*current_targets).begin(); it != (*current_targets).end(); ++it )
+      {
+            AIS_Target_Data *td = it->second;
+
+            if(NULL != td)
+                 UpdateOneTrack(td);
+      }
+}
+
+void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget)
+{
+      //    Add the newest point
+      AISTargetTrackPoint *ptrackpoint = new AISTargetTrackPoint;
+      ptrackpoint->m_lat = ptarget->Lat;
+      ptrackpoint->m_lon = ptarget->Lon;
+      ptrackpoint->m_time = wxDateTime::Now().GetTicks();
+
+      ptarget->m_ptrack->Append(ptrackpoint);
+
+      //    Walk the list, removing any track points that are older than the stipulated time
+
+      time_t test_time = wxDateTime::Now().GetTicks() - (g_AISShowTracks_Mins * 60);
+
+      wxAISTargetTrackListNode *node = ptarget->m_ptrack->GetFirst();
+      while(node)
+      {
+            AISTargetTrackPoint *ptrack_point = node->GetData();
+
+            if(ptrack_point->m_time < test_time)
+            {
+                  if(ptarget->m_ptrack->DeleteObject(ptrack_point))
+                  {
+                        delete ptrack_point;
+                        node = ptarget->m_ptrack->GetFirst();                // restart the list
+                  }
+            }
+            else
+                  node = node->GetNext();
+      }
+
+}
+
+
+
+
 void AIS_Decoder::UpdateAllAlarms(void)
 {
       bool bshould_alert = false;

@@ -201,9 +201,9 @@ extern bool             g_bRemoveLost;
 extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
-extern bool             g_bShowTracks;
+extern bool             g_bAISShowTracks;
 extern bool             g_bTrackCarryOver;
-extern double           g_ShowTracks_Mins;
+extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAIS_CPA_Alert;
@@ -2351,10 +2351,16 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "CogArrowMinutes" ),  &s );
       s.ToDouble ( &g_ShowCOG_Mins );
 
-      Read ( _T ( "bShowTargetTracks" ), &g_bShowTracks );
+      Read ( _T ( "bShowTargetTracks" ), &g_bAISShowTracks, 0 );
 
-      Read ( _T ( "TargetTracksMinutes" ),  &s );
-      s.ToDouble ( &g_ShowTracks_Mins );
+      if(Read ( _T ( "TargetTracksMinutes" ),  &s ))
+      {
+            s.ToDouble ( &g_AISShowTracks_Mins );
+            g_AISShowTracks_Mins = wxMax(1.0, g_AISShowTracks_Mins);
+            g_AISShowTracks_Mins = wxMin(60.0, g_AISShowTracks_Mins);
+      }
+      else
+            g_AISShowTracks_Mins = 20;
 
       Read ( _T ( "bShowMooredTargets" ), &g_bShowMoored );
 
@@ -3479,8 +3485,8 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "RemoveLost_Minutes" ),  g_RemoveLost_Mins );
       Write ( _T ( "bShowCOGArrows" ), g_bShowCOG );
       Write ( _T ( "CogArrowMinutes" ),  g_ShowCOG_Mins );
-      Write ( _T ( "bShowTargetTracks" ), g_bShowTracks );
-      Write ( _T ( "TargetTracksMinutes" ),  g_ShowTracks_Mins );
+      Write ( _T ( "bShowTargetTracks" ), g_bAISShowTracks );
+      Write ( _T ( "TargetTracksMinutes" ),  g_AISShowTracks_Mins );
       Write ( _T ( "bShowMooredTargets" ), g_bShowMoored );
       Write ( _T ( "MooredTargetMaxSpeedKnots" ),  g_ShowMoored_Kts );
       Write ( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );
@@ -6253,7 +6259,7 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
             mpy = mpy * 100.;
 
       d = ( int ) a;
-      m = ( long ) ( ( a - ( double ) d ) * mpy );
+      m = ( long ) wxRound( ( a - ( double ) d ) * mpy );
 
       if ( neg )
             d = -d;
