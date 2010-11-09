@@ -499,6 +499,8 @@ NMEAHandler::~NMEAHandler()
           wxSleep(1);
       }
 
+      delete m_pPortMutex;
+
 }
 
 

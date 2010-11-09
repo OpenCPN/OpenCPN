@@ -1574,13 +1574,15 @@ void options::SetInitialSettings()
       pCDOQuilting->SetValue(pParent->GetQuiltMode());
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
-//      pAutoAnchorMark->SetValue(g_bAutoAnchorMark);
 
       pCBCourseUp->SetValue(g_bCourseUp);
       pCBLookAhead->SetValue(g_bLookAhead);
 
 
-      s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
+      if(fabs(wxRound(g_ownship_predictor_minutes) - g_ownship_predictor_minutes) > 1e-4)
+            s.Printf(_T("%6.2f"), g_ownship_predictor_minutes);
+      else
+            s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
       m_pText_OSCOG_Predictor->SetValue(s);
 
 // Flav for CM93Offset (convert meters to NM for diplay)

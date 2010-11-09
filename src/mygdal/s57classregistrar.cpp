@@ -322,6 +322,7 @@ int S57ClassRegistrar::LoadInfo( const char * pszDirectory,
 
         if( CSLCount(papszTokens) < 5 )
         {
+            CSLDestroy( papszTokens );
             CPLAssert( FALSE );
             continue;
         }
@@ -330,6 +331,7 @@ int S57ClassRegistrar::LoadInfo( const char * pszDirectory,
         if( iAttr < 0 || iAttr >= nAttrMax
             || papszAttrNames[iAttr] != NULL )
         {
+            CSLDestroy( papszTokens );
             CPLAssert( FALSE );
             continue;
         }

@@ -292,6 +292,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             wxString msg(_("   PlugInManager: Cannot load library: "));
             msg += plugin_file;
             wxLogMessage(msg);
+            delete plugin;
+            delete pic;
             return NULL;
       }
 
@@ -303,6 +305,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             wxString msg(_("   PlugInManager: Cannot load symbol create_pi: "));
             msg += plugin_file;
             wxLogMessage(msg);
+            delete plugin;
+            delete pic;
             return NULL;
       }
 
@@ -312,6 +316,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             wxString msg(_("   PlugInManager: Cannot load symbol destroy_pi: "));
             msg += plugin_file;
             wxLogMessage(msg);
+            delete plugin;
+            delete pic;
             return NULL;
       }
 

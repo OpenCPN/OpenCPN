@@ -439,6 +439,8 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
 
 bool RouteProp::UpdateProperties()
 {
+      ::wxBeginBusyCursor();
+
       m_TotalDistCtl->SetValue(_T(""));
       m_TimeEnrouteCtl->SetValue(_T(""));
 
@@ -616,6 +618,9 @@ bool RouteProp::UpdateProperties()
             m_wpList->SetColumnWidth( 6,  wxLIST_AUTOSIZE/* 120*/ );
       #endif
       }
+
+      ::wxEndBusyCursor();
+
       return true;
 }
 
@@ -1057,14 +1062,14 @@ bool MarkProp::SaveChanges(void)
             else
                   m_pRoutePoint->m_bDynamicName = false;
 
-/*
+
             if(m_pRoutePoint->m_bIsInRoute)
             {
                   Route *pRoute = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePoint);
                   pConfig->UpdateRoute(pRoute);
             }
             else
-*/
+
                   pConfig->UpdateWayPoint(m_pRoutePoint);
 
 //  No general settings need be saved            pConfig->UpdateSettings();
@@ -1250,6 +1255,10 @@ MarkInfo::~MarkInfo( )
       delete m_MarkNameCtl;
       delete m_MarkLatCtl;
       delete m_MarkLonCtl;
+
+      m_HyperlinkCtrlList->DeleteContents(true);
+      delete m_HyperlinkCtrlList;
+
 }
 
 
