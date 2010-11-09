@@ -112,6 +112,8 @@ extern bool             g_bAISRolloverShowCPA;
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
 
+extern bool             bGPSValid;
+
 
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
@@ -572,14 +574,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             result.Append(line);
       }
 
-      if(b_positionValid)
+      if(b_positionValid && bGPSValid)
                   line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
       else
             line.Printf(_("Range:                  Unavailable\n"));
       result.Append(line);
 
       int brg = wxRound(Brg);
-      if(b_positionValid)
+      if(b_positionValid && bGPSValid)
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
             line.Printf(_("Bearing:                Unavailable\n"));
@@ -1808,7 +1810,7 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget)
 
       //    Walk the list, removing any track points that are older than the stipulated time
 
-      time_t test_time = wxDateTime::Now().GetTicks() - (g_AISShowTracks_Mins * 60);
+      time_t test_time = wxDateTime::Now().GetTicks() - (time_t)(g_AISShowTracks_Mins * 60);
 
       wxAISTargetTrackListNode *node = ptarget->m_ptrack->GetFirst();
       while(node)
@@ -1935,6 +1937,12 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
 {
       if(!ptarget->b_positionValid)
             return;
+
+      if(!bGPSValid)
+      {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
 
             //    Express the SOGs as meters per hour
       double v0 = gSog         * 1852.;
