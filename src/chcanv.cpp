@@ -4128,7 +4128,12 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 
         double pred_lat, pred_lon;
 
-        ll_gc_ll ( gLat, gLon, gCog, gSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+        //  COG may be undefined in NMEA data stream
+        double pCog = gCog;
+        if(pCog == 999.0)
+              pCog = 0.0;
+
+        ll_gc_ll ( gLat, gLon, pCog, gSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
 
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( pred_lat, pred_lon, &lPredPoint );
@@ -4148,6 +4153,10 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         double icon_hdt = gCog;
         if(g_bHDxValid)
              icon_hdt = gHdt;
+
+        //  COG may be undefined in NMEA data stream
+        if(gCog == 999.0)
+              icon_hdt = 0.0;
 
 //    Calculate the ownship drawing angle icon_rad using an assumed 1.0 minute predictor
         double osd_head_lat, osd_head_lon;
