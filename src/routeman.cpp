@@ -320,7 +320,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
                 if(pRouteActivatePoint)
                         delete pRouteActivatePoint;
 
-                pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")), NULL, false); // Current location
+                pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")), GPX_EMPTY_STRING, false); // Current location
                 pRouteActivatePoint->m_bShowName = false;
 
                 pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -608,6 +608,8 @@ void Routeman::DeleteRoute(Route *pRoute)
 {
       if(pRoute)
       {
+            ::wxBeginBusyCursor();
+
             if ( GetpActiveRoute() == pRoute )
                   DeactivateRoute();
 
@@ -629,24 +631,11 @@ void Routeman::DeleteRoute(Route *pRoute)
                         prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
                         if(!prp->m_bKeepXRoute)
                         {
-                              pConfig->DeleteWayPoint(prp);
+//    This does not need to be done with navobj.xml storage, since the waypoints are stored with the route
+//                              pConfig->DeleteWayPoint(prp);
+
                               pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
 
-/*                              pRoute->pRoutePointList->DeleteNode(pnode);
-                              pnode = NULL;
-                              delete prp;
-
-                              //    Remove any duplicates in the list
-                              bool done = false;
-                              while(!done)
-                              {
-                                    wxRoutePointListNode *pdnode = pRoute->pRoutePointList->Find(prp);
-                                    if(pdnode)
-                                          pRoute->pRoutePointList->DeleteNode(pdnode);
-                                    else
-                                          done = true;
-                              }
-*/
                               // Remove all instances of this point from the list.
                               wxRoutePointListNode *pdnode = pnode;
                               while(pdnode)
@@ -666,14 +655,18 @@ void Routeman::DeleteRoute(Route *pRoute)
                         pnode = pRoute->pRoutePointList->GetFirst();                // restart the list
             }
 
-
             delete pRoute;
+
+            ::wxEndBusyCursor();
+
       }
 }
 
 void Routeman::DeleteAllRoutes(void)
 {
-            //    Iterate on the RouteList
+      ::wxBeginBusyCursor();
+
+      //    Iterate on the RouteList
       wxRouteListNode *node = pRouteList->GetFirst();
       while(node)
       {
@@ -681,19 +674,25 @@ void Routeman::DeleteAllRoutes(void)
 
             if(!proute->m_bIsTrack)
             {
+                  pConfig->m_bIsImporting = true;
                   pConfig->DeleteConfigRoute ( proute );
                   DeleteRoute(proute);
                   node = pRouteList->GetFirst();                   // Route
+                  pConfig->m_bIsImporting = false;
             }
             else
                   node = node->GetNext();
       }
 
+      ::wxEndBusyCursor();
+
 }
 
 void Routeman::DeleteAllTracks(void)
 {
-            //    Iterate on the RouteList
+      ::wxBeginBusyCursor();
+
+      //    Iterate on the RouteList
       wxRouteListNode *node = pRouteList->GetFirst();
       while(node)
       {
@@ -701,13 +700,17 @@ void Routeman::DeleteAllTracks(void)
 
             if(proute->m_bIsTrack)
             {
+                  pConfig->m_bIsImporting = true;
                   pConfig->DeleteConfigRoute ( proute );
                   DeleteTrack(proute);
                   node = pRouteList->GetFirst();                   // Route
+                  pConfig->m_bIsImporting = false;
             }
             else
                   node = node->GetNext();
       }
+
+      ::wxEndBusyCursor();
 
 }
 
@@ -739,6 +742,7 @@ void Routeman::DeleteTrack(Route *pRoute)
 {
       if(pRoute)
       {
+           ::wxBeginBusyCursor();
 
             //    Remove the route from associated lists
             pSelect->DeleteAllSelectableTrackSegments(pRoute);
@@ -758,8 +762,10 @@ void Routeman::DeleteTrack(Route *pRoute)
                         prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
                         if(!prp->m_bKeepXRoute)
                         {
+                              pConfig->m_bIsImporting = true;
                               pConfig->DeleteWayPoint(prp);
                               pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
+                              pConfig->m_bIsImporting = false;
 
                               // Remove all instances of this point from the list.
                               wxRoutePointListNode *pdnode = pnode;
@@ -788,6 +794,8 @@ void Routeman::DeleteTrack(Route *pRoute)
             }
 
             delete pRoute;
+
+            ::wxEndBusyCursor();
 
       }
 }
@@ -1458,14 +1466,16 @@ int WayPointman::GetIconIndex(const wxBitmap *pbm)
 
 wxString WayPointman::CreateGUID(RoutePoint *pRP)
 {
-      wxDateTime now = wxDateTime::Now();
+      //FIXME: this method is not needed at all (if GetUUID works...)
+      /*wxDateTime now = wxDateTime::Now();
       time_t ticks = now.GetTicks();
       wxString GUID;
       GUID.Printf(_T("%d-%d-%d-%d"), ((int)fabs(pRP->m_lat * 1e4)), ((int)fabs(pRP->m_lon * 1e4)), (int)ticks, m_nGUID);
 
       m_nGUID++;
 
-      return GUID;
+      return GUID;*/
+      return GpxDocument::GetUUID();
 }
 
 RoutePoint *WayPointman::FindRoutePointByGUID(wxString &guid)
@@ -1518,14 +1528,16 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
             if ( b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
                  && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) )  )
             {
-                  if (prp == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;
-                  else if (prp == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;
-
+                  if (prp == pAnchorWatchPoint1)
+                        pAnchorWatchPoint1 = NULL;
+                  else if (prp == pAnchorWatchPoint2)
+                        pAnchorWatchPoint2 = NULL;
+                  pConfig->m_bIsImporting = true;
                   pConfig->DeleteWayPoint ( prp );
                   pSelect->DeleteSelectablePoint ( prp, SELTYPE_ROUTEPOINT );
                   delete prp;
                   node = m_pWayPointList->GetFirst();
-
+                  pConfig->m_bIsImporting = false;
             }
             else
                   node = node->GetNext();
@@ -1557,8 +1569,10 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp)
                         Route *pr = (Route *)proute_array->Item(ir);
                         if(pr->GetnPoints() < 2)
                         {
+                              pConfig->m_bIsImporting = true;
                               pConfig->DeleteConfigRoute ( pr );
                               g_pRouteMan->DeleteRoute ( pr );
+                              pConfig->m_bIsImporting = false;
                         }
                   }
 

@@ -35,7 +35,7 @@ SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
-SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+SET(wxWidgets_USE_LIBS base core net html adv aui)
 
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
@@ -207,6 +207,9 @@ SET(HDRS
 		include/cm93.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
+		include/tinystr.h
+		include/tinyxml.h
+		include/gpxdocument.h
 )
 
 SET(SRCS 
@@ -233,6 +236,11 @@ SET(SRCS
 		src/ais.cpp
 		src/cm93.cpp
                 src/pluginmanager.cpp
+		src/tinyxml.cpp
+		src/tinyxmlerror.cpp
+		src/tinyxmlparser.cpp
+		src/tinystr.cpp
+		src/gpxdocument.cpp
     )
 
 IF(wx_Version MATCHES "2.9")

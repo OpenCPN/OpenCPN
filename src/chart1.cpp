@@ -32,6 +32,10 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#ifdef __WXMSW__
+//#include <vld.h>
+#endif
+
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -739,7 +743,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(205662);
+//     _CrtSetBreakAlloc(338998);
 #endif
 
 
@@ -892,8 +896,6 @@ bool MyApp::OnInit()
         wxString vs = version.Trim(true);
         vs = vs.Trim(false);
         wxLogMessage(vs);
-
-
 
 #ifdef USE_CPL
 //      Set up a useable CPL library error handler
@@ -1763,7 +1765,7 @@ int MyApp::OnExit()
       wxLogMessage(navmsg);
       g_loglast_time = lognow;
 
-      wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
+	  wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
         delete pConfig;
         delete pSelect;
         delete pSelectTC;
@@ -1840,7 +1842,7 @@ int MyApp::OnExit()
 #endif
 
     delete g_pPlatform;
-
+    delete g_pauimgr;
     return TRUE;
 }
 
@@ -3033,6 +3035,7 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_ship_green;
     delete _img_ship_red;
+    delete _img_ship_grey;
 
     delete _img_redX;
     delete _img_viz;
@@ -3044,6 +3047,13 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_polyprj;
     delete _img_ais;
+
+    delete _img_dashboard;
+    delete _img_gpx_import;
+    delete _img_gpx_export;
+
+
+
 
 #endif
 }
@@ -3173,7 +3183,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
                   wxString name = now.Format();
                   name.Prepend(_T("Anchorage created "));
-                  RoutePoint *pWP = new RoutePoint(gLat, gLon, wxString(_T("anchorage")), name, NULL);
+                  RoutePoint *pWP = new RoutePoint(gLat, gLon, wxString(_T("anchorage")), name, GPX_EMPTY_STRING);
                   pWP->m_bShowName = false;
 
                   pConfig->AddNewWayPoint(pWP, -1);       // use auto next num
@@ -3195,6 +3205,13 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       pConfig->UpdateSettings();
       pConfig->UpdateNavObj();
 
+      pConfig->m_pNavObjectChangesSet->Clear();
+      delete pConfig->m_pNavObjectChangesSet;
+
+	  //Remove any leftover Routes and Waypoints from config file as they were saved to navobj before
+	  pConfig->DeleteGroup( _T ( "/Routes" ) );
+	  pConfig->DeleteGroup( _T ( "/Marks" ) );
+	  pConfig->Flush();
 
       delete g_printData;
       delete g_pageSetupData;
@@ -3626,7 +3643,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_MOB:
     {
-          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), NULL );
+          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
           pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
           pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
          break;
@@ -6000,7 +6017,7 @@ void MyFrame::PianoPopupMenu ( int x, int y, int selected_index, int selected_db
             Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                      wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
       }
-      else
+      else if(pCurrentStack->nEntry > 1)
       {
             pctx_menu->Append(ID_PIANO_DISABLE_QUILT_CHART, _("Remove this chart from quilt."));
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
@@ -6014,7 +6031,8 @@ void MyFrame::PianoPopupMenu ( int x, int y, int selected_index, int selected_db
 
 
 //        Invoke the drop-down menu
-      PopupMenu ( pctx_menu, sx + key_location.x, sy + key_location.y - 50 );
+      if(pctx_menu->GetMenuItems().GetCount())
+            PopupMenu ( pctx_menu, sx + key_location.x, sy + key_location.y - 50 );
 
       cc1->HideChartInfoWindow();
       stats->pPiano->ResetRollover();

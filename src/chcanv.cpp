@@ -2565,6 +2565,7 @@ ChartCanvas::~ChartCanvas()
         delete m_pEM_Fathoms;
 
         delete m_pEM_OverZoom;
+        delete m_pEM_CM93Offset;
 
         delete m_pQuilt;
 
@@ -2819,7 +2820,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case 13:                     // Ctrl M                      //    Drop Marker;
                               {
-                                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "triangle" ) ), wxString ( _( "New Mark" ) ), NULL );
+                                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "triangle" ) ), wxString ( _( "New Mark" ) ), GPX_EMPTY_STRING );
                                     pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
                                     pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
                                     Refresh ( false );
@@ -2831,7 +2832,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         {
                               if ( event.GetModifiers() == wxMOD_CONTROL )
                               {
-                                          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), NULL );
+                                          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
                                           pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
                                           pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
                                           Refresh ( false );
@@ -4148,6 +4149,21 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         if(g_bHDxValid)
              icon_hdt = gHdt;
 
+//    Calculate the ownship drawing angle icon_rad using an assumed 1.0 minute predictor
+        double osd_head_lat, osd_head_lon;
+        wxPoint osd_head_point;
+
+        ll_gc_ll ( gLat, gLon, icon_hdt, gSog * 1.0 / 60., &osd_head_lat, &osd_head_lon );
+
+        GetCanvasPointPix ( gLat, gLon, &lShipPoint );
+        GetCanvasPointPix ( osd_head_lat, osd_head_lon, &osd_head_point );
+
+        double icon_rad = atan2 ( (double)( osd_head_point.y - lShipPoint.y ), (double)( osd_head_point.x - lShipPoint.x ) );
+        icon_rad += PI;
+
+        if(gSog < 0.2)
+              icon_rad = ((icon_hdt + 90.) * PI / 180.) + VPoint.skew;
+
 
 //    Calculate ownship Heading pointer as a predictor
         double hdg_pred_lat, hdg_pred_lon;
@@ -4157,19 +4173,15 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
-        double icon_rad = atan2 ( (double)( lHeadPoint.y - lShipPoint.y ), (double)( lHeadPoint.x - lShipPoint.x ) );
-        icon_rad += PI;
 
-        if(gSog < 0.2)
-              icon_rad = ((icon_hdt + 90.) * PI / 180.) + VPoint.skew;
-
+//    Should we draw the Head vector?
 //    Compare the points lHeadPoint and lPredPoint
-//    If they differ by more than n pixels, then render the head vector
+//    If they differ by more than n pixels, and the head vector is valid, then render the head vector
 
         double ndelta_pix = 10.;
         bool b_render_hdt = false;
         double dist = sqrt(pow((double)(lHeadPoint.x - lPredPoint.x), 2) + pow((double)(lHeadPoint.y - lPredPoint.y), 2));
-        if(dist > ndelta_pix)
+        if((dist > ndelta_pix) && g_bHDxValid)
               b_render_hdt = true;
 
 //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
@@ -6313,7 +6325,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                         if(NULL == pMousePoint)                   // need a new point
                         {
-                              pMousePoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), NULL );
+                              pMousePoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                               pConfig->AddNewWayPoint ( pMousePoint, -1 );    // use auto next num
                               pSelect->AddSelectableRoutePoint ( rlat, rlon, pMousePoint );
                         }
@@ -6343,7 +6355,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       r_rband.x = x;
                       r_rband.y = y;
 
-                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), NULL );
+                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                       pMousePoint->m_bShowName = false;
 
                       m_pMeasureRoute->AddPoint ( pMousePoint );
@@ -6367,7 +6379,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                             r_rband.x = x;
                             r_rband.y = y;
 
-                            RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), NULL );
+                            RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                             pMousePoint->m_bShowName = false;
 
                             m_pCM93MeasureOffsetRoute->AddPoint ( pMousePoint );
@@ -6642,8 +6654,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                     pr->UpdateSegmentDistances();
                                     pr->m_bIsBeingEdited = false;
 
-//                                    pConfig->UpdateRoute ( pr );
-                                    pConfig->UpdateWayPoint ( m_pRoutePointEditTarget );
+                                    pConfig->UpdateRoute ( pr );
+//                                    pConfig->UpdateWayPoint ( m_pRoutePointEditTarget );
                               }
                         }
 
@@ -7401,10 +7413,10 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_DEF_MENU_GOTO_HERE:
               {
-                    RoutePoint *pWP_dest = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+                    RoutePoint *pWP_dest = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                     pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_dest );
 
-                    RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+                    RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                     pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
 
                     Route *temp_route = new Route();
@@ -7433,7 +7445,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_DEF_MENU_DROP_WP:
                 {
-                        RoutePoint *pWP = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+                        RoutePoint *pWP = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
                         pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP );
                         pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
@@ -7451,7 +7463,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_WP_MENU_GOTO:
                   {
-                        RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+                        RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
                         pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
 
                         Route *temp_route = new Route();
@@ -7996,7 +8008,9 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                     if((Track *)(m_pSelectedTrack) == g_pActiveTrack)
                         parent_frame->TrackOff();
 
-                    g_pRouteMan->DeleteTrack ( m_pSelectedTrack );
+                    pConfig->DeleteConfigRoute(m_pSelectedTrack);
+
+                    g_pRouteMan->DeleteTrack (m_pSelectedTrack);
                     m_pSelectedRoute = NULL;
                     m_pSelectedTrack = NULL;
                     m_pFoundRoutePoint = NULL;

@@ -121,6 +121,8 @@
 #include "s52utils.h"
 #include "chartbase.h"
 #include "cm93.h"
+#include "tinyxml.h"
+#include "gpxdocument.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -327,9 +329,6 @@ void  SelectItem::SetUserData ( int data )
 {
       m_Data4 = data;
 }
-
-
-
 
 //-----------------------------------------------------------------------------
 //          Select
@@ -906,7 +905,7 @@ SelectableItemList Select::FindSelectionList(float slat, float slon, int fseltyp
 //-----------------------------------------------------------------------------
 //          WayPoint Implementation
 //-----------------------------------------------------------------------------
-RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, const wxString& name, wxString *pGUID, bool bAddToList )
+RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID, bool bAddToList )
 {
       //  Establish points
       m_lat = lat;
@@ -945,18 +944,10 @@ RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, con
       m_HyperlinkList = NULL;
       m_HyperlinkList = new HyperlinkList;
 
-      wxString GUID = pWayPointMan->CreateGUID ( this );
-
-      if ( NULL != pGUID )
-      {
-            if ( pGUID->IsEmpty() )
-                  m_GUID = GUID;
-
-            else
-                  m_GUID = *pGUID;
-      }
+      if ( !pGUID.IsEmpty() )
+            m_GUID = pGUID;
       else
-            m_GUID = GUID;
+            m_GUID = pWayPointMan->CreateGUID ( this );
 
       //      Get Icon bitmap
       m_IconName = icon_ident;
@@ -1217,6 +1208,7 @@ Route::Route ( void )
 
       pRoutePointList = new RoutePointList;
       m_pLastAddedPoint = NULL;
+      m_GUID = pWayPointMan->CreateGUID ( NULL );
 
       RBBox.Reset();
 }
@@ -1281,6 +1273,23 @@ RoutePoint *Route::GetPoint ( int nWhichPoint )
                   return prp;
 
             i++;
+            node = node->GetNext();
+      }
+
+      return ( NULL );
+}
+
+RoutePoint *Route::GetPoint ( const wxString &guid )
+{
+      RoutePoint *prp;
+      wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+      while ( node )
+      {
+            prp = node->GetData();
+            if ( guid == prp->m_GUID )
+                  return prp;
+
             node = node->GetNext();
       }
 
@@ -1559,7 +1568,7 @@ void Route::ClearHighlights ( void )
 
 RoutePoint *Route::InsertPointBefore ( RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints )
 {
-      RoutePoint *newpoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), GetNewMarkSequenced(), NULL );
+      RoutePoint *newpoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), GetNewMarkSequenced(), GPX_EMPTY_STRING );
       newpoint->m_bIsInRoute = true;
       newpoint->m_bDynamicName = true;
 
@@ -2050,7 +2059,7 @@ void Track::AddPointNow()
       if(m_prev_time == now)                                            // avoid zero time segs
             return;
 
-      RoutePoint *pTrackPoint = new RoutePoint ( gLat, gLon, wxString ( _T ( "empty" ) ), wxString ( _T ( "" ) ), NULL );
+      RoutePoint *pTrackPoint = new RoutePoint ( gLat, gLon, wxString ( _T ( "empty" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
       pTrackPoint->m_bShowName = false;
       pTrackPoint->m_bIsVisible  = true;                    // pjotrc 2010.02.11
       pTrackPoint->m_GPXTrkSegNo = 1;                       // pjotrc 2010.02.28
@@ -2160,8 +2169,10 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
       {
             RoutePoint *prp = prpnode->GetData();
 
-            RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), NULL );
+            RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon,  _T ( "xmblue" ) , _T ( "" ) , GPX_EMPTY_STRING );
             route->AddPoint(pWP_dst);
+
+            pWP_dst->m_bShowName = false;
 
             pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
@@ -2200,9 +2211,12 @@ MyConfig::MyConfig ( const wxString &appName, const wxString &vendorName, const 
       wxFileName config_file ( LocalFileName );
       m_sNavObjSetFile = config_file.GetPath ( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
       m_sNavObjSetFile += _T ( "navobj.xml" );
+      m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
 
       m_pNavObjectInputSet = NULL;
-//      m_pNavObjectOutputSet = NULL;
+      m_pNavObjectChangesSet = new NavObjectCollection();
+
+      m_bIsImporting = false;
 }
 
 
@@ -2904,7 +2918,7 @@ int MyConfig::LoadMyConfig ( int iteration )
                         else if ( rlon > 180. )
                               rlon -= 360.;
 
-                        RoutePoint *pWP = new RoutePoint ( rlat, rlon, icon_name, mark_name, &str_GUID );
+                        RoutePoint *pWP = new RoutePoint ( rlat, rlon, icon_name, mark_name, str_GUID );
                         pWP->m_MarkDescription = mark_description;
 
                         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
@@ -3008,40 +3022,128 @@ int MyConfig::LoadMyConfig ( int iteration )
       if ( 0 == iteration )
       {
             if ( NULL == m_pNavObjectInputSet )
-                  m_pNavObjectInputSet = new NavObjectCollection ( _T ( "gpx" ), _T ( "1.0" ), _T ( "opencpn" ) );
+		      m_pNavObjectInputSet = new NavObjectCollection (  );
 
             if ( ::wxFileExists ( m_sNavObjSetFile ) )
             {
-                  m_pNavObjectInputSet->Load ( m_sNavObjSetFile );
-                  m_pNavObjectInputSet->LoadAllGPXTracks();
+		      m_pNavObjectInputSet->LoadFile ( m_sNavObjSetFile.ToUTF8() );
+                  m_pNavObjectInputSet->LoadAllGPXObjects();
             }
 
+            m_pNavObjectInputSet->Clear();
             delete m_pNavObjectInputSet;
-      }
 
-      //XML
-
-      /*
-            SetPath(_T("/Settings/XML"));
-            wxString xml_file_string;
-            Read(_T("XMLNavObjectFile"), &xml_file_string);
-      */
-
-      /*
-      if(0 == iteration)
-      {
-            wxString xml_file_string(_T("test.xml"));
-
-            if(::wxFileExists(xml_file_string))
+            if ( ::wxFileExists ( m_sNavObjSetChangesFile ) )
             {
-                  m_pXMLNavObj = new wxXmlDocument;
-                  if(m_pXMLNavObj->Load(xml_file_string))
+                  //We crashed last time :(
+                  //That's why this file still exists...
+                  //Let's reconstruct the unsaved changes
+                  NavObjectCollection *pNavObjectChangesSet = new NavObjectCollection();
+                  pNavObjectChangesSet->LoadFile ( m_sNavObjSetChangesFile.ToUTF8() );
+                  //reconstruct route changes
+                  TiXmlElement *gpx_element = pNavObjectChangesSet->RootElement()->FirstChildElement("rte");
+                  while (gpx_element)
                   {
-                        int i=9;
+                        Route *pRt = ::LoadGPXRoute((GpxRteElement *)gpx_element, 0);
+                        wxString action = wxString::FromUTF8( gpx_element->FirstChildElement("extensions")->FirstChildElement("opencpn:action")->GetText());
+                        Route *pExisting = RouteExists( pRt->m_GUID );
+                        if (action == _T("add"))
+                        {
+                              m_bIsImporting = true;
+                              ::InsertRoute(pRt, -1);
+                              m_bIsImporting = false;
+                        }
+                        else if (action == _T("update"))
+                        {
+                              m_bIsImporting = true;
+                              ::UpdateRoute(pRt);
+                              m_bIsImporting = false;
+                        }
+                        else if (action == _T("delete"))
+                        {
+                              m_bIsImporting = true;
+                              if(pExisting)
+                              {
+                                    g_pRouteMan->DeleteRoute(pExisting);
+                              }
+                              m_bIsImporting = false;
+                        }
+                        gpx_element = gpx_element->NextSiblingElement("rte");
                   }
+                  //reconstruct tracks
+                  gpx_element = pNavObjectChangesSet->RootElement()->FirstChildElement("trk");
+                  while (gpx_element)
+                  {
+                        Route *pTrk = ::LoadGPXTrack((GpxTrkElement *)gpx_element);
+                        wxString action = wxString::FromUTF8( gpx_element->FirstChildElement("extensions")->FirstChildElement("opencpn:action")->GetText());
+                        Route *pExisting = RouteExists( pTrk->m_GUID );
+                        //no adds here - the only possible way is logging the gps data
+                        if (action == _T("update"))
+                        {
+                              m_bIsImporting = true;
+                              if(pExisting)
+                              {
+                                    pExisting->m_RouteNameString = pTrk->m_RouteNameString;
+                                    pExisting->m_RouteStartString = pTrk->m_RouteStartString;
+                                    pExisting->m_RouteEndString = pTrk->m_RouteEndString;
+                              }
+                              m_bIsImporting = false;
+                        }
+                        else if (action == _T("delete"))
+                        {
+                              m_bIsImporting = true;
+                              if(pExisting)
+                              {
+                                    g_pRouteMan->DeleteTrack(pExisting);
+                              }
+                              m_bIsImporting = false;
+                        }
+                        gpx_element = gpx_element->NextSiblingElement("trk");
+                  }
+                  //reconstruct wpt changes
+                  gpx_element = pNavObjectChangesSet->RootElement()->FirstChildElement("wpt");
+                  while (gpx_element)
+                  {
+                        RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)gpx_element, wxString( _T("triangle") ));
+                        wxString action = wxString::FromUTF8( gpx_element->FirstChildElement("extensions")->FirstChildElement("opencpn:action")->GetText());
+                        RoutePoint *pExisting = WaypointExists( pWp->m_GUID );
+                        if (action == wxString(_T("add")))
+                        {
+                              m_bIsImporting = true;
+                              if(!pExisting) //Should not be needed...
+                                    if ( NULL != pWayPointMan )
+                                          pWayPointMan->m_pWayPointList->Append ( pWp );
+                              pWp->m_bIsolatedMark = true;
+                              AddNewWayPoint ( pWp,m_NextWPNum );
+                              pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                              m_bIsImporting = false;
+                        }
+                        else if (action == wxString(_T("update")))
+                        {
+                              m_bIsImporting = true;
+                              if(pExisting)
+                                    pWayPointMan->m_pWayPointList->DeleteObject(pExisting);
+                              pWayPointMan->m_pWayPointList->Append ( pWp );
+                              pWp->m_bIsolatedMark = true;
+                              AddNewWayPoint ( pWp,m_NextWPNum );
+                              pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                              m_bIsImporting = false;
+                        }
+                        else if (action == wxString(_T("delete")))
+                        {
+                              m_bIsImporting = true;
+                              if(pExisting)
+                              {
+                                    pWayPointMan->DestroyWaypoint(pExisting);
+                              }
+                              m_bIsImporting = false;
+                        }
+                        gpx_element = gpx_element->NextSiblingElement("wpt");
+                  }
+                  UpdateNavObj(); //We save the data before we throw away the log
+                  delete pNavObjectChangesSet;
             }
       }
-      */
 
       SetPath ( _T ( "/Settings/Others" ) );
 
@@ -3111,46 +3213,19 @@ bool MyConfig::AddNewRoute ( Route *pr, int crm )
       else
             acrm = m_NextRouteNum;
 
-
-//    Build the Group Name
-      wxString t ( _T ( "/Routes/RouteDefn" ) );
-      str_buf.Printf ( _T ( "%d" ), acrm );
-      t.Append ( str_buf );
-
-      SetPath ( t );
-
-      str_buf.Printf ( _T ( "%d" ), pr->GetnPoints() );
-      Write ( _T ( "RoutePoints" ), str_buf );
-
-      Write ( _T ( "RouteName" ), pr->m_RouteNameString );
-      Write ( _T ( "RouteStart" ), pr->m_RouteStartString );
-      Write ( _T ( "RouteEnd" ), pr->m_RouteEndString );
-
-      wxString Props;
-      Props.Printf ( _T ( "%d,%d" ), pr->m_bIsTrack, pr->IsVisible() );
-      Write ( _T ( "Properties" ), Props );
-
-      //    Points
-      for ( int ip=1 ; ip < pr->GetnPoints() +1 ; ip++ )
-      {
-            str_buf.Printf ( _T ( "RoutePointID%d" ), ip );
-            RoutePoint *prp = pr->GetPoint ( ip );
-            Write ( str_buf, prp->m_GUID );
-      }
-
-      for ( int ip1=1 ; ip1 < pr->GetnPoints() +1 ; ip1++ )
-      {
-            RoutePoint *prp = pr->GetPoint ( ip1 );
-            UpdateWayPoint ( prp );
-      }
-
-      Flush();
-
       pr->m_ConfigRouteNum = acrm;
 
       if ( crm == -1 )
             m_NextRouteNum +=1;             // auto increment for next time
 
+      if (!m_bIsImporting)
+      {
+            GpxRteElement * rte = ::CreateGPXRte( pr );
+            rte->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("add")));
+            GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+            rt->AddRoute(rte);
+            StoreNavObjChanges();
+      }
       return true;
 }
 
@@ -3158,7 +3233,17 @@ bool MyConfig::AddNewRoute ( Route *pr, int crm )
 bool MyConfig::UpdateRoute ( Route *pr )
 {
       if ( pr->m_bIsTrack )
+      {
+            if (!m_bIsImporting)
+            {
+                  GpxTrkElement * trk = ::CreateGPXTrk( pr );
+                  trk->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("update")));
+                  GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+                  rt->AddTrack(trk);
+                  StoreNavObjChanges();
+            }
             return false;
+      }
 
       wxString str_buf;
 
@@ -3168,17 +3253,21 @@ bool MyConfig::UpdateRoute ( Route *pr )
       t.Append ( str_buf );
 
       DeleteGroup ( t );
-
-      AddNewRoute ( pr, pr->m_ConfigRouteNum );
-
-      return true;
+      if (!m_bIsImporting)
+      {
+            GpxRteElement * rte = ::CreateGPXRte( pr );
+            rte->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("update")));
+            GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+            rt->AddRoute(rte);
+            StoreNavObjChanges();
+      }
+	return true;
 }
 
 
 bool MyConfig::DeleteConfigRoute ( Route *pr )
 {
       wxString str_buf;
-//      assert ( pr->m_ConfigRouteNum );
 
 //    Build the Group Name
       wxString t ( _T ( "/Routes/RouteDefn" ) );
@@ -3188,7 +3277,25 @@ bool MyConfig::DeleteConfigRoute ( Route *pr )
       DeleteGroup ( t );
 
       Flush();
+      if (!m_bIsImporting)
+      {
+            if(!pr->m_bIsTrack)
+            {
+                  GpxRteElement * rte = ::CreateGPXRte( pr );
+                  rte->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("delete")));
+                  GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+                  rt->AddRoute(rte);
+            }
+            else
+            {
+                  GpxTrkElement * trk = ::CreateGPXTrk( pr );
+                  trk->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("delete")));
+                  GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+                  rt->AddTrack(trk);
+            }
 
+            StoreNavObjChanges();
+      }
       return true;
 }
 
@@ -3202,85 +3309,18 @@ bool MyConfig::AddNewWayPoint ( RoutePoint *pWP, int crm )
             acrm = crm;
       else
             acrm = m_NextWPNum;
-
-//    Build the Group Name
-      wxString t ( _T ( "/Marks/MarkDefn" ) );
-      str_buf.Printf ( _T ( "%d" ), acrm );
-      t.Append ( str_buf );
-
-      SetPath ( t );
-
-//          add the GUID here
-      str_buf.Printf ( _T ( "RoutePoint" ) );
-      wxString str_buf1;
-      str_buf1.Printf ( _T ( "%f,%f" ), pWP->m_lat, pWP->m_lon );
-      Write ( str_buf, str_buf1 );
-
-      str_buf.Printf ( _T ( "RoutePointName" ) );
-      Write ( str_buf, pWP->m_MarkName );
-
-      str_buf.Printf ( _T ( "RoutePointDescription" ) );
-      Write ( str_buf, pWP->m_MarkDescription );
-
-      str_buf.Printf ( _T ( "RoutePointIcon" ) );
-      Write ( str_buf, pWP->m_IconName );
-
-      str_buf.Printf ( _T ( "RoutePointGUID" ) );
-      Write ( str_buf, pWP->m_GUID );
-
-      str_buf.Printf ( _T ( "RoutePointProp" ) );
-      str_buf1 = pWP->CreatePropString();
-      Write ( str_buf, str_buf1 );
-
-      str_buf.Printf ( _T ( "RoutePointNameLocationOffset" ) );
-      str_buf1.Printf ( _T ( "%d,%d" ), pWP->m_NameLocationOffsetX, pWP->m_NameLocationOffsetY );
-      Write ( str_buf, str_buf1 );
-
-      // toh, 2009.02.23
-      if( pWP->m_HyperlinkList)
-      {
-            int NbrLinks = pWP->m_HyperlinkList->GetCount();
-            if ( NbrLinks > 0 )
-            {
-                  wxHyperlinkListNode *linknode = pWP->m_HyperlinkList->GetFirst();
-
-                  int i=1;
-                  while ( linknode )
-                  {
-                        Hyperlink *link = linknode->GetData();
-                        wxString Link = link->Link;
-                        wxString Descr = link->DescrText;
-                        linknode = linknode->GetNext();
-
-                        wxString t ( _T ( "RoutePointLink" ) );
-                        str_buf.Printf ( _T ( "%d" ), i );
-                        t.Append ( str_buf );
-
-                        str_buf1 = _T ( "" );
-                        str_buf1.Append ( link->Link );
-                        if ( link->DescrText.Length() > 0 )
-                        {
-                              str_buf1.Append ( _T ( "^" ) );
-                              str_buf1.Append ( link->DescrText );
-                        }
-                        if ( link->Type.Length() > 0 )
-                        {
-                              str_buf1.Append ( _T ( "^" ) );
-                              str_buf1.Append ( link->Type );
-                        }
-                        Write ( t, str_buf1 );
-                        i++;
-                  }
-            }
-      }
-
-      Flush();
-
       pWP->m_ConfigWPNum = acrm;
 
       if ( crm == -1 )
             m_NextWPNum +=1;             // auto increment for next time
-
+      if (!m_bIsImporting)
+      {
+            GpxWptElement * wpt = ::CreateGPXWpt( pWP, GPX_WPT_WAYPOINT );
+            wpt->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("add")));
+            GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+            rt->AddWaypoint(wpt);
+            StoreNavObjChanges();
+      }
       return true;
 }
 
@@ -3295,18 +3335,21 @@ bool MyConfig::UpdateWayPoint ( RoutePoint *pWP )
       t.Append ( str_buf );
 
       DeleteGroup ( t );
-
-      AddNewWayPoint ( pWP, pWP->m_ConfigWPNum );
-
-      return true;
+      if (!m_bIsImporting)
+      {
+            GpxWptElement * wpt = ::CreateGPXWpt( pWP, GPX_WPT_WAYPOINT );
+            wpt->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("update")));
+            GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+            rt->AddWaypoint(wpt);
+            StoreNavObjChanges();
+      }
+	return true;
 }
 
 
 bool MyConfig::DeleteWayPoint ( RoutePoint *pWP )
 {
       wxString str_buf;
-
-//      assert(pWP->m_ConfigWPNum);
 
 //    Build the Group Name
       wxString t ( _T ( "/Marks/MarkDefn" ) );
@@ -3316,7 +3359,14 @@ bool MyConfig::DeleteWayPoint ( RoutePoint *pWP )
       DeleteGroup ( t );
 
       Flush();
-
+      if (!m_bIsImporting)
+      {
+            GpxWptElement * wpt = ::CreateGPXWpt( pWP, GPX_WPT_WAYPOINT );
+            wpt->SetSimpleExtension(wxString(_T("opencpn:action")), wxString(_T("delete")));
+            GpxRootElement * rt = (GpxRootElement *) m_pNavObjectChangesSet->RootElement();
+            rt->AddWaypoint(wpt);
+            StoreNavObjChanges();
+      }
       return true;
 }
 
@@ -3632,29 +3682,37 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "EnableTrackByDistance" ), g_bTrackDistance );
 
       Flush();
-
-
-
 }
 
 void MyConfig::UpdateNavObj(void)
 {
- //    Create the NavObjectCollection, and save to specified file
+ //   Create the NavObjectCollection, and save to specified file
+      NavObjectCollection *pNavObjectSet = new NavObjectCollection (  );
 
-      NavObjectCollection *pNavObjectSet = new NavObjectCollection( _T ( "gpx" ), _T ( "1.0" ), _T ( "opencpn" ) );
-
-//      pNavObjectSet->CreateNavObjGPXPoints();
-//      pNavObjectSet->CreateNavObjGPXRoutes();
+      pNavObjectSet->CreateNavObjGPXPoints();
+      pNavObjectSet->CreateNavObjGPXRoutes();
       pNavObjectSet->CreateNavObjGPXTracks();
 
-      pNavObjectSet->Save ( m_sNavObjSetFile, 2 );
+	pNavObjectSet->SaveFile( m_sNavObjSetFile.ToUTF8() );
 
+      pNavObjectSet->Clear();
       delete pNavObjectSet;
+
+      ::wxRemoveFile(m_sNavObjSetChangesFile);
+      m_pNavObjectChangesSet->Clear();
+      delete m_pNavObjectChangesSet;
+      m_pNavObjectChangesSet = new NavObjectCollection();
+
+}
+
+void MyConfig::StoreNavObjChanges(void)
+{
+      m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile.ToUTF8() );
 }
 
 bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
 {
-
+      //FIXME: get rid of the Dialogs and unite with the other
       wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
                   wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
@@ -3676,21 +3734,21 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
                         return false;
             }
 
-            CreateExportGPXNavObj();
-
+            GpxDocument *gpx = new GpxDocument();
+            GpxRootElement *gpxroot = (GpxRootElement *)gpx->RootElement();
             // TODO this is awkward
             if ( !pRoute->m_bIsTrack )
             {
-                  wxXmlNode *track_node = CreateGPXRouteStatic ( pRoute );
-                  m_XMLrootnode->AddChild ( track_node );
+                  gpxroot->AddRoute(CreateGPXRte ( pRoute ));
             }
             else
             {
-                  wxXmlNode *track_node = CreateGPXTrackStatic ( pRoute );
-                  m_XMLrootnode->AddChild ( track_node );
+                  gpxroot->AddTrack(CreateGPXTrk ( pRoute ));
             }
 
-            WriteXMLNavObj ( fn.GetFullPath() );
+            gpx->SaveFile ( fn.GetFullPath().ToUTF8() );
+            gpx->Clear();
+            delete gpx;
             return true;
       }
       else
@@ -3699,6 +3757,7 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
 
 bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
 {
+      //FIXME: get rid of the Dialogs and unite with the other
       wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
                   wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
@@ -3720,27 +3779,26 @@ bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
                         return false;
             }
 
-            CreateExportGPXNavObj();
-//            ::AppendGPXWayPoints(m_XMLrootnode);
+            GpxDocument *gpx = new GpxDocument();
+            GpxRootElement *gpxroot = (GpxRootElement *)gpx->RootElement();
 //          This should not be necessary
             if ( !WptIsInRouteList ( pRoutePoint ) )
             {
-                  wxXmlNode *mark_node = ::CreateGPXPointNode ( pRoutePoint, _T("wpt") );
-                  m_XMLrootnode->AddChild ( mark_node );
+                  gpxroot->AddWaypoint(::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ));
             }
-            WriteXMLNavObj ( fn.GetFullPath() );
+            gpx->SaveFile ( fn.GetFullPath().ToUTF8() );
+
+            gpx->Clear();
+            delete gpx;
             return true;
       }
       else
             return false;
 }
 
-
-
-
 void MyConfig::ExportGPX ( wxWindow* parent )
 {
-
+      //FIXME: get rid of the Dialogs and unite with the other
       wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
                   wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
@@ -3752,7 +3810,6 @@ void MyConfig::ExportGPX ( wxWindow* parent )
 
       if ( response == wxID_OK )
       {
-
             fn.SetExt ( _T ( "gpx" ) );
 
             if(wxFileExists(fn.GetFullPath()))
@@ -3763,18 +3820,143 @@ void MyConfig::ExportGPX ( wxWindow* parent )
                         return;
             }
 
-            CreateExportGPXNavObj();
-            ::AppendGPXWayPoints(m_XMLrootnode);
-            ::AppendGPXRoutes(m_XMLrootnode);
-            ::AppendGPXTracks(m_XMLrootnode);
-            WriteXMLNavObj ( fn.GetFullPath() );
+            GpxDocument *gpx = new GpxDocument();
+            GpxRootElement *gpxroot = (GpxRootElement *)gpx->RootElement();
+            //WPTs
+            wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+            RoutePoint *pr;
+            while ( node )
+            {
+                  pr = node->GetData();
+                  if ( !WptIsInRouteList ( pr ) )
+                  {
+                        gpxroot->AddWaypoint(CreateGPXWpt(pr, GPX_WPT_WAYPOINT));
+                  }
+                  node = node->GetNext();
+            }
+            //RTEs and TRKs
+            wxRouteListNode *node1 = pRouteList->GetFirst();
+            while ( node1 )
+            {
+                  Route *pRoute = node1->GetData();
+                  if ( !pRoute->m_bIsTrack )
+                  {
+                        gpxroot->AddRoute(CreateGPXRte ( pRoute ));
+                  }
+                  else
+                  {
+                        gpxroot->AddTrack(CreateGPXTrk ( pRoute ));
+                  }
+                  node1 = node1->GetNext();
+            }
+
+            gpx->SaveFile(fn.GetFullPath().ToUTF8());
+            gpx->Clear();
+            delete gpx;
       }
 }
 
+GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type)
+{
+      GpxExtensionsElement *exts = new GpxExtensionsElement();
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:prop")), wxString(pr->CreatePropString())));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pr->m_GUID));
+
+      ListOfGpxLinks lnks;
+      lnks.DeleteContents(false);
+
+      // Hyperlinks
+      HyperlinkList *linklist = pr->m_HyperlinkList;
+      if(linklist && linklist->GetCount())
+      {
+            wxHyperlinkListNode *linknode = linklist->GetFirst();
+            while ( linknode )
+            {
+                  Hyperlink *link = linknode->GetData();
+                  lnks.Append(new GpxLinkElement(link->Link, link->DescrText, link->Type));
+                  linknode = linknode->GetNext();
+            }
+      }
+
+      return new GpxWptElement(waypoint_type, pr->m_lat, pr->m_lon,
+            0, &pr->m_CreateTime, 0, -1, pr->m_MarkName, GPX_EMPTY_STRING,
+            pr->m_MarkDescription, GPX_EMPTY_STRING, &lnks,
+            pr->m_IconName, wxString(_T("WPT")), fix_undefined,
+            -1, -1, -1, -1, -1, -1, exts);
+
+}
+
+GpxRteElement *CreateGPXRte ( Route *pRoute )
+{
+      GpxExtensionsElement *exts = new GpxExtensionsElement();
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:start")), pRoute->m_RouteStartString));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+
+      GpxRteElement *rte = new GpxRteElement(pRoute->m_RouteNameString, GPX_EMPTY_STRING, GPX_EMPTY_STRING, GPX_EMPTY_STRING, NULL, -1, GPX_EMPTY_STRING, exts, NULL);
+
+      //rtepts
+      RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+      wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+      RoutePoint *prp;
+      int i=1;
+      while ( node2 )
+      {
+            prp = node2->GetData();
+
+            rte->AppendRtePoint(::CreateGPXWpt(prp, GPX_WPT_ROUTEPOINT));
+
+            node2=node2->GetNext();
+            i++;
+      }
+
+      return rte;
+}
+
+GpxTrkElement *CreateGPXTrk ( Route *pRoute )
+{
+      GpxExtensionsElement *exts = new GpxExtensionsElement();
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:start")), pRoute->m_RouteStartString));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
+      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+
+      GpxTrkElement *trk = new GpxTrkElement(pRoute->m_RouteNameString, GPX_EMPTY_STRING, GPX_EMPTY_STRING, GPX_EMPTY_STRING, NULL, -1, GPX_EMPTY_STRING, exts, NULL);
+
+      RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+      wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+      RoutePoint *prp;
+
+      unsigned short int GPXTrkSegNo1 = 1;
+
+      do {
+            unsigned short int GPXTrkSegNo2 = GPXTrkSegNo1;
+            GpxTrksegElement *trkseg = new GpxTrksegElement();
+            trk->AppendTrkSegment(trkseg);
+
+            int i=1;
+            while ( node2 && (GPXTrkSegNo2 == GPXTrkSegNo1))
+            {
+                  prp = node2->GetData();
+                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT));
+                  node2=node2->GetNext();
+                  if (node2) {
+                        prp = node2->GetData();
+                        GPXTrkSegNo2 = prp->m_GPXTrkSegNo;
+                  }
+                  i++;
+            }
+            GPXTrkSegNo1 = GPXTrkSegNo2;
+      } while (node2);
+
+      return trk;
+}
 
 void MyConfig::ImportGPX ( wxWindow* parent )
 {
-
+      m_bIsImporting = true;
+      //FIXME: unite the loading itself with NavObjectCollection::LoadAllGPXObjects()
       wxFileDialog openDialog( parent, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
                                wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ), wxFD_OPEN | wxFD_MULTIPLE );
       int response = openDialog.ShowModal();
@@ -3793,28 +3975,27 @@ void MyConfig::ImportGPX ( wxWindow* parent )
 
             for(unsigned int i=0 ; i < file_array.GetCount() ; i++)
             {
-
                   wxString path = file_array[i];
 
                   if ( ::wxFileExists ( path ) )
                   {
-                        wxXmlDocument *pXMLNavObj = new wxXmlDocument;
-                        if ( pXMLNavObj->Load ( path ) )
+                        GpxDocument *pXMLNavObj = new GpxDocument();
+				if ( pXMLNavObj->LoadFile ( path.ToUTF8() ) )
                         {
-                              wxXmlNode *root = pXMLNavObj->GetRoot();
+					TiXmlElement *root = pXMLNavObj->RootElement();
 
-                              wxString RootName = root->GetName();
+					wxString RootName = wxString::FromUTF8( root->Value() );
                               if ( RootName == _T ( "gpx" ) )
                               {
-                                    wxString RootContent = root->GetNodeContent();
+                                    //wxString RootContent = root->GetNodeContent();
 
-                                    wxXmlNode *child = root->GetChildren();
-                                    while ( child )
+                                    TiXmlNode *child;
+                                    for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
                                     {
-                                          wxString ChildName = child->GetName();
+										  wxString ChildName = wxString::FromUTF8( child->Value());
                                           if ( ChildName == _T ( "wpt" ) )
                                           {
-                                                RoutePoint *pWp = ::LoadGPXWaypoint(child, _T("circle"));
+                                                RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"));
                                                 RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
                                                 if(!pExisting)
                                                 {
@@ -3831,50 +4012,23 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                           }
                                           else if ( ChildName == _T ( "rte" ) )
                                           {
-                                                ::GPXLoadRoute ( child, m_NextRouteNum );
+                                                ::GPXLoadRoute ( (GpxRteElement *)child, m_NextRouteNum );
                                                 m_NextRouteNum++;
                                           }
                                           else if ( ChildName == _T ( "trk" ) )
                                           {
-                                                ::GPXLoadTrack ( child );
+                                                ::GPXLoadTrack ( (GpxTrkElement *)child );
                                           }
-                                          child = child->GetNext();
                                     }
                               }
                         }
+                        pXMLNavObj->Clear();
+                        delete pXMLNavObj;
                   }
             }
       }
+      m_bIsImporting = false;
 }
-
-
-//---------------------------------------------------------------------------------
-//    GPX XML Support for Navigation Objects
-//---------------------------------------------------------------------------------
-
-void MyConfig::CreateExportGPXNavObj ( void )
-{
-      m_pXMLNavObj = new wxXmlDocument;
-      m_XMLrootnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "gpx" ) );
-      m_pXMLNavObj->SetRoot ( m_XMLrootnode );
-
-      m_XMLrootnode->AddProperty ( _T ( "version" ),_T ( "1.1" ) );
-      m_XMLrootnode->AddProperty ( _T ( "creator" ),_T ( "OpenCPN" ) );
-      m_XMLrootnode->AddProperty( _T ( "xmlns:xsi" ), _T("http://www.w3.org/2001/XMLSchema-instance") );
-      m_XMLrootnode->AddProperty( _T ( "xmlns" ), _T("http://www.topografix.com/GPX/1/1") );
-      m_XMLrootnode->AddProperty( _T ( "xsi:schemaLocation" ), _T("http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd") );
-      m_XMLrootnode->AddProperty( _T ( "xmlns:opencpn" ), _T("http://www.opencpn.org") );
-}
-
-
-
-void MyConfig::WriteXMLNavObj ( const wxString& file )
-{
-      m_pXMLNavObj->Save ( file, 2 );
-}
-
-
-
 
 //-------------------------------------------------------------------------
 //
@@ -3904,6 +4058,24 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon)
       }
 
       return pret;
+}
+
+RoutePoint *WaypointExists( const wxString& guid)
+{
+      wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+
+      while ( node )
+      {
+            RoutePoint *pr = node->GetData();
+
+            if ( guid == pr->m_GUID )
+            {
+                  return pr;
+            }
+            node = node->GetNext();
+      }
+
+      return NULL;
 }
 
 
@@ -3939,8 +4111,42 @@ bool WptIsInRouteList ( RoutePoint *pr )
       return IsInList;
 }
 
+Route *RouteExists( const wxString& guid )
+{
+      wxRouteListNode *route_node = pRouteList->GetFirst();
+      while ( route_node )
+       {
+            Route *proute = route_node->GetData();
+
+            if ( guid == proute->m_GUID )
+                  return proute;
+
+            route_node = route_node->GetNext();
+       }
+      return NULL;
+}
+
+Route *RouteExists( Route * pTentRoute )
+ {
+      wxRouteListNode *route_node = pRouteList->GetFirst();
+      while ( route_node )
+      {
+            Route *proute = route_node->GetData();
+
+            if ( proute->IsEqualTo ( pTentRoute ) )
+            {
+                  if(!proute->m_bIsTrack)
+                        return proute;
+            }
+
+            route_node = route_node->GetNext();       // next route
+       }
+      return NULL;
+ }
 
 
+
+#if 0
 wxXmlNode *CreateGPXRouteStatic ( Route *pRoute )
 {
       wxXmlNode *GPXRte_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "rte" ) );
@@ -4088,7 +4294,7 @@ wxXmlNode *CreateGPXTrackStatic ( Route *pRoute )
       return GPXTrk_node;
 }
 
-
+#endif
 
 // This function formats the input date/time into a valid GPX ISO 8601
 // time string specified in the UTC time zone.
@@ -4100,6 +4306,7 @@ wxString FormatGPXDateTime(wxDateTime dt)
 }
 
 
+#if 0
 wxXmlNode *CreateGPXPointNode ( RoutePoint *pr, const wxString &root_name )
 {
       wxXmlNode *GPXPoint_node = new wxXmlNode ( wxXML_ELEMENT_NODE, root_name );
@@ -4229,7 +4436,9 @@ wxXmlNode *CreateGPXPointNode ( RoutePoint *pr, const wxString &root_name )
 
       return ( GPXPoint_node );
 }
+#endif
 
+#if 0
 void AppendGPXWayPoints ( wxXmlNode *RNode )
 {
 
@@ -4297,6 +4506,7 @@ void AppendGPXTracks ( wxXmlNode *RNode )
       }
 }
 
+#endif
 
 // This function parses a string containing a GPX time representation
 // and returns a wxDateTime containing the UTC corresponding to the
@@ -4396,10 +4606,14 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime)
 }
 
 
-RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
+
+RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
 {
-      wxString LatString = wptnode->GetPropVal ( _T ( "lat" ),_T ( "0.0" ) );
-      wxString LonString = wptnode->GetPropVal ( _T ( "lon" ),_T ( "0.0" ) );
+//      wxString LatString = wptnode->GetPropVal ( _T ( "lat" ),_T ( "0.0" ) );
+//      wxString LonString = wptnode->GetPropVal ( _T ( "lon" ),_T ( "0.0" ) );
+//FIXME: implement the parsing in GpxWptElement and get rid of it here!
+      wxString LatString = wxString::FromUTF8 ( wptnode->Attribute( "lat" ) );
+      wxString LonString = wxString::FromUTF8 ( wptnode->Attribute( "lon" ) );
 
       wxString SymString  = def_symbol_name; //_T ( "empty" );                // default icon
       wxString NameString;
@@ -4407,6 +4621,7 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
       wxString TypeString;
       wxString ChildName;
       wxString PropString;
+      wxString GuidString;
       wxDateTime dt;
 
       HyperlinkList *linklist = NULL;
@@ -4415,45 +4630,63 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
       wxString HrefTextString = _T ( "" );
       wxString HrefTypeString = _T ( "" );
 
-      wxXmlNode *child = wptnode->GetChildren();
-      while ( child )
+//      wxXmlNode *child = wptnode->GetChildren();
+//      while ( child )
+      TiXmlNode *child;
+      for ( child = wptnode->FirstChild(); child != 0; child = child->NextSibling())
       {
-            ChildName = child->GetName();
+//            ChildName = child->GetName();
+            ChildName = wxString::FromUTF8(child->Value());
+
             if ( ChildName == _T ( "sym" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+//                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
-                        SymString = child1->GetContent();
-            }
+ //                       SymString = child1->GetContent();
+                          SymString = wxString::FromUTF8( child1->ToText()->Value() );
+             }
             else if ( ChildName == _T ( "name" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+//                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
-                        NameString = child1->GetContent();
+                       NameString = wxString::FromUTF8( child1->ToText()->Value() );
+//                        NameString = child1->GetContent();
             }
             else if ( ChildName == _T ( "desc" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+//                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
-                        DescString = child1->GetContent();
+//                        DescString = child1->GetContent();
+                        DescString = wxString::FromUTF8( child1->ToText()->Value() );
+
             }
             else if ( ChildName == _T ( "type" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+//                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
+
                   if ( child1 != NULL )
-                        TypeString = child1->GetContent();
+//                        TypeString = child1->GetContent();
+                        TypeString = wxString::FromUTF8( child1->ToText()->Value() );
+
             }
 
             else if ( ChildName == _T ( "time" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+//                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
                   {
-                        wxString TimeString = child1->GetContent();
+//                        wxString TimeString = child1->GetContent();
+                        wxString TimeString = wxString::FromUTF8( child1->ToText()->Value() );
+
                         if ( TimeString.Len() )
                         {
-			      // Parse time string
-			      ParseGPXDateTime(dt, TimeString);
+                              // Parse time string
+                              ParseGPXDateTime(dt, TimeString);
 
                         }
                   }
@@ -4463,26 +4696,26 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
             {
                   if(linklist == NULL)
                         linklist = new HyperlinkList;
+                  TiXmlAttribute * attr = ((TiXmlElement*)child)->FirstAttribute();
+                  if (attr)
+                        HrefString = wxString::FromUTF8( attr->Value() );
 
-                  HrefString = child->GetPropVal ( _T ( "href" ),_T ( "" ) );
-
-                  wxXmlNode *child1 = child->GetChildren();
-                  while ( child1 )
+                  TiXmlNode *child1;
+                  for ( child1 = child->FirstChild(); child1 != 0; child1 = child1->NextSibling())
                   {
-                        wxString LinkString = child1->GetName();
+                        wxString LinkString = wxString::FromUTF8( child1->Value() );
 
                         if ( LinkString == _T ( "text" ) )
                         {
-                              wxXmlNode *child1a = child1->GetChildren();
-                              HrefTextString = child1a->GetContent();
+					              TiXmlNode *child1a = child1->FirstChild();
+                              HrefTextString = wxString::FromUTF8(child1a->ToText()->Value());
                         }
 
                         if ( LinkString == _T ( "type" ) )
                         {
-                              wxXmlNode *child1a = child1->GetChildren();
-                              HrefTypeString = child1a->GetContent();
+                              TiXmlNode *child1a = child1->FirstChild();
+                              HrefTypeString = wxString::FromUTF8(child1a->ToText()->Value());
                         }
-                        child1 = child1->GetNext();
                   }
 
                   Hyperlink *link = new Hyperlink;
@@ -4492,33 +4725,35 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
                   linklist->Append ( link );
             }
 
-                        //    Old invalid format, not written in opencpn 1.3.6 and above.
+            //    Old invalid format, not written in opencpn 1.3.6 and above.
             else if ( ChildName == _T ( "prop" ) )
             {
-                  wxXmlNode *child1 = child->GetChildren();
+                  TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
-                        PropString = child1->GetContent();
+                        PropString = wxString::FromUTF8(child1->ToText()->Value());
             }
 
             //    New Proper GPX Format....
             else if ( ChildName == _T ( "extensions" ) )
             {
-                  wxXmlNode *ext_child = child->GetChildren();
-                  while(ext_child)
+                  TiXmlNode *ext_child;
+                  for ( ext_child = child->FirstChild(); ext_child != 0; ext_child = ext_child->NextSibling())
                   {
-                        wxString ext_name = ext_child->GetName();
+                        wxString ext_name = wxString::FromUTF8(ext_child->Value());
                         if ( ext_name == _T ( "opencpn:prop" ) )
                         {
-                              wxXmlNode *prop_child = ext_child->GetChildren();
+                              TiXmlNode *prop_child = ext_child->FirstChild();
                               if ( prop_child != NULL )
-                                    PropString = prop_child->GetContent();
+                                    PropString = wxString::FromUTF8(prop_child->ToText()->Value());
                         }
-
-                        ext_child = ext_child->GetNext();
+                        else if ( ext_name == _T ( "opencpn:guid" ) )
+                        {
+                              TiXmlNode *prop_child = ext_child->FirstChild();
+                              if ( prop_child != NULL )
+                                    GuidString = wxString::FromUTF8(prop_child->ToText()->Value());
+                        }
                   }
             }
-
-            child = child->GetNext();
       }
 
       // Create waypoint
@@ -4527,7 +4762,7 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
       LatString.ToDouble ( &rlat );
       LonString.ToDouble ( &rlon );
 
-      RoutePoint *pWP = new RoutePoint ( rlat, rlon, SymString, NameString, NULL, false );      // do not add to global WP list yet...
+      RoutePoint *pWP = new RoutePoint ( rlat, rlon, SymString, NameString, GuidString, false );      // do not add to global WP list yet...
       pWP->m_MarkDescription = DescString;
       pWP->m_bShowName = false;
       pWP->m_bIsVisible = true;             // pjotrc 2010.02.11
@@ -4544,105 +4779,93 @@ RoutePoint *LoadGPXWaypoint ( wxXmlNode* wptnode, wxString def_symbol_name )
             pWP->m_HyperlinkList = linklist;
       }
 
-
-
       return ( pWP );
 }
 
 
-
-void GPXLoadTrack ( wxXmlNode* trknode )
+void GPXLoadTrack ( GpxTrkElement* trknode )
 {
+      //FIXME: This should be moved to GpxTrkElement
       wxString RouteName;
       unsigned short int GPXSeg;                   // pjotrc 2010.02.27
 
-      wxString Name = trknode->GetName();
+      wxString Name = wxString::FromUTF8(trknode->Value());
       if ( Name == _T ( "trk" ) )
       {
             Track *pTentTrack = new Track();
             GPXSeg = 0;                                     // pjotrc 2010.02.27
 
-            wxXmlNode *tschild = trknode->GetChildren();
+		TiXmlNode *tschild;
 
-//            RoutePoint *pRecentPoint = NULL;
             RoutePoint *pWp = NULL;
 
-            while ( tschild )
+            for ( tschild = trknode->FirstChild(); tschild != 0; tschild = tschild->NextSibling())
             {
-                  wxString ChildName = tschild->GetName();
+                  wxString ChildName = wxString::FromUTF8(tschild->Value());
                   if ( ChildName == _T ( "trkseg" ) )
                   {
                         GPXSeg += 1;                                          // pjotrc 2010.02.27
 
                         //    Official GPX spec calls for trkseg to have children trkpt
-                        wxXmlNode *tpchild = tschild->GetChildren();
-                        if(tpchild)
+				TiXmlNode *tpchild;
+                        for ( tpchild = tschild->FirstChild(); tpchild != 0; tpchild = tpchild->NextSibling())
                         {
-                              while(tpchild)
+                              wxString tpChildName = wxString::FromUTF8(tpchild->Value());
+                              if(tpChildName == _T("trkpt"))
                               {
-                                    wxString tpChildName = tpchild->GetName();
-
-
-                                    if(tpChildName == _T("trkpt"))
-                                    {
-                                          pWp = ::LoadGPXWaypoint ( tpchild, _T("empty") );
-                                          pTentTrack->AddPoint ( pWp, false );
-                                          pWp->m_bIsInRoute = false;                      // Hack
-                                          pWp->m_bIsInTrack = true;
-                                          pWp->m_GPXTrkSegNo = GPXSeg;
-
-                                          pWayPointMan->m_pWayPointList->Append ( pWp );
-                                    }
-
-                                    tpchild = tpchild->GetNext();
-
-                              }
+                                    pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty") );
+						pTentTrack->AddPoint ( pWp, false );
+                                    pWp->m_bIsInRoute = false;                      // Hack
+                                    pWp->m_bIsInTrack = true;
+                                    pWp->m_GPXTrkSegNo = GPXSeg;
+                                    pWayPointMan->m_pWayPointList->Append ( pWp );
+                               }
                         }
                   }
                   else if ( ChildName == _T ( "name" ) )
                   {
-                        wxXmlNode *child1 = tschild->GetChildren();
+                        TiXmlNode *child1 = tschild->FirstChild();
                         if( child1 )                                    // name will always be in first child??
-                              RouteName = child1->GetContent();
+                              RouteName = wxString::FromUTF8 ( child1->ToText()->Value() );
                   }
 
                   else if ( ChildName == _T ( "extensions" ) )
                   {
-                        wxXmlNode *ext_child = tschild->GetChildren();
-                        while(ext_child)
+                        TiXmlNode *ext_child;
+                        for ( ext_child = tschild->FirstChild(); ext_child != 0; ext_child = ext_child->NextSibling())
                         {
-                              wxString ext_name = ext_child->GetName();
+                              wxString ext_name = wxString::FromUTF8 ( ext_child->Value() );
                               if ( ext_name == _T ( "opencpn:start" ) )
                               {
-                                    wxXmlNode *s_child = ext_child->GetChildren();
+								    TiXmlNode *s_child = ext_child->FirstChild();
                                     if ( s_child != NULL )
-                                          pTentTrack->m_RouteStartString = s_child->GetContent();
+                                          pTentTrack->m_RouteStartString = wxString::FromUTF8( s_child->ToText()->Value() );
                               }
-                              if ( ext_name == _T ( "opencpn:end" ) )
+                              else if ( ext_name == _T ( "opencpn:end" ) )
                               {
-                                    wxXmlNode *e_child = ext_child->GetChildren();
+                                    TiXmlNode *e_child = ext_child->FirstChild();
                                     if ( e_child != NULL )
-                                          pTentTrack->m_RouteEndString = e_child->GetContent();
+                                          pTentTrack->m_RouteEndString = wxString::FromUTF8 ( e_child->ToText()->Value() );
                               }
 
-                              if ( ext_name == _T ( "opencpn:viz" ) )
+                              else if ( ext_name == _T ( "opencpn:viz" ) )
                               {
-                                    wxXmlNode *v_child = ext_child->GetChildren();
+                                    TiXmlNode *v_child = ext_child->FirstChild();
                                     if ( v_child != NULL )
                                     {
-                                          wxString viz = v_child->GetContent();
+                                          wxString viz = wxString::FromUTF8 ( v_child->ToText()->Value() );
                                           if(viz == _T("0"))
-                                             pTentTrack->SetVisible(false);
+                                                pTentTrack->SetVisible(false);
                                     }
                               }
-
-                              ext_child = ext_child->GetNext();
+                              else if ( ext_name == _T ( "opencpn:guid" ) )
+                              {
+						TiXmlNode *g_child = ext_child->FirstChild();
+                                    if ( g_child != NULL )
+                                          pTentTrack->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
+                              }
                         }
                   }
-
-
-                  tschild = tschild->GetNext();
-
             }
 
             pTentTrack->m_RouteNameString = RouteName;
@@ -4730,151 +4953,249 @@ void GPXLoadTrack ( wxXmlNode* trknode )
       }
 }
 
-
-
-
-void GPXLoadRoute ( wxXmlNode* rtenode, int routenum )
+Route *LoadGPXTrack (GpxTrkElement *trknode)
 {
+      //FIXME: This should be moved to GpxRteElement
+      Route *pTentRoute = new Route();
 
-      wxString Name = rtenode->GetName();
-
-      if ( Name == _T ( "rte" ) )
+      int ip = 0;
+      TiXmlElement *child;
+      for ( child = trknode->FirstChildElement(); child != 0; child = child->NextSiblingElement())
       {
-            Route *pTentRoute = new Route();
-
-            wxXmlNode *child = rtenode->GetChildren();
-            int ip = 0;
-
-            while ( child )
+            wxString ChildName = wxString::FromUTF8 ( child->Value() );
+            if ( ChildName == _T ( "rtept" ) )
             {
-                  wxString ChildName = child->GetName();
-                  if ( ChildName == _T ( "rtept" ) )
+                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square") );
+
+                  RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+
+                  if(!pExisting)
                   {
-                        RoutePoint *pWp = LoadGPXWaypoint ( child, _T("square") );
+                        if ( NULL != pWayPointMan )
+                              pWayPointMan->m_pWayPointList->Append ( pWp );
 
-                        RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
-
-                        if(!pExisting)
-                        {
-                              if ( NULL != pWayPointMan )
-                                    pWayPointMan->m_pWayPointList->Append ( pWp );
-
-                              pTentRoute->AddPoint ( pWp, false );                      // don't auto-rename numerically
-                              pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
-                        }
-                        else
-                        {
-                              pTentRoute->AddPoint ( pExisting, false );                // don't auto-rename numerically
-                        }
-
-
-                        ip++;
+                        pTentRoute->AddPoint ( pWp, false );                      // don't auto-rename numerically
+                        //pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
                   }
-
-                  else if ( ChildName == _T ( "name" ) )
+                  else
                   {
-                        wxXmlNode *namechild = child->GetChildren();
-                        while(namechild)
-                        {
-                              pTentRoute->m_RouteNameString = namechild->GetContent();
-                              namechild = namechild->GetNext();
-                        }
+                        pTentRoute->AddPoint ( pExisting, false );                // don't auto-rename numerically
                   }
-
-                  else if ( ChildName == _T ( "extensions" ) )
-                  {
-                        wxXmlNode *ext_child = child->GetChildren();
-                        while(ext_child)
-                        {
-                              wxString ext_name = ext_child->GetName();
-                              if ( ext_name == _T ( "opencpn:start" ) )
-                              {
-                                    wxXmlNode *s_child = ext_child->GetChildren();
-                                    if ( s_child != NULL )
-                                          pTentRoute->m_RouteStartString = s_child->GetContent();
-                              }
-                              if ( ext_name == _T ( "opencpn:end" ) )
-                              {
-                                    wxXmlNode *e_child = ext_child->GetChildren();
-                                    if ( e_child != NULL )
-                                          pTentRoute->m_RouteEndString = e_child->GetContent();
-                              }
-
-                              if ( ext_name == _T ( "opencpn:viz" ) )
-                              {
-                                    wxXmlNode *v_child = ext_child->GetChildren();
-                                    if ( v_child != NULL )
-                                    {
-                                          wxString viz = v_child->GetContent();
-                                          if(viz == _T("0"))
-                                                pTentRoute->SetVisible(false);
-                                    }
-                              }
-
-                              ext_child = ext_child->GetNext();
-                        }
-                  }
-
-
-
-                  child = child->GetNext();
+                  ip++;
             }
 
-            //    Search for an identical route already in place.  If found, discard this one
-
-            bool  routeExists = false;
-            wxRouteListNode *route_node = pRouteList->GetFirst();
-            while ( route_node )
+            else if ( ChildName == _T ( "name" ) )
             {
-                  Route *proute = route_node->GetData();
-
-                  if ( proute->IsEqualTo ( pTentRoute ) )
+                  TiXmlNode *namechild;
+                  for ( namechild = child->FirstChild(); namechild != 0; namechild = namechild->NextSibling())
                   {
-                        routeExists = true;
-                        break;
+                        pTentRoute->m_RouteNameString = wxString::FromUTF8 ( namechild->ToText()->Value() );
                   }
-                  route_node = route_node->GetNext();                         // next route
             }
+
+            else if ( ChildName == _T ( "extensions" ) )
+            {
+                  TiXmlNode *ext_child;
+                  for ( ext_child = child->FirstChild(); ext_child != 0; ext_child = ext_child->NextSibling())
+                  {
+                        wxString ext_name = wxString::FromUTF8 ( ext_child->Value() );
+                        if ( ext_name == _T ( "opencpn:start" ) )
+                        {
+                              TiXmlNode *s_child = ext_child->FirstChild();
+                              if ( s_child != NULL )
+					      pTentRoute->m_RouteStartString = wxString::FromUTF8 ( s_child->ToText()->Value() );
+                        }
+                        else if ( ext_name == _T ( "opencpn:end" ) )
+                        {
+					TiXmlNode *e_child = ext_child->FirstChild();
+                              if ( e_child != NULL )
+                                    pTentRoute->m_RouteEndString = wxString::FromUTF8 ( e_child->ToText()->Value() );
+                        }
+                        else if ( ext_name == _T ( "opencpn:viz" ) )
+                        {
+					TiXmlNode *v_child = ext_child->FirstChild();
+                              if ( v_child != NULL )
+                              {
+                                    wxString viz = wxString::FromUTF8 ( v_child->ToText()->Value() );
+                                    if(viz == _T("0"))
+                                          pTentRoute->SetVisible(false);
+                              }
+                        }
+                        else if ( ext_name == _T ( "opencpn:guid" ) )
+                        {
+					TiXmlNode *g_child = ext_child->FirstChild();
+                              if ( g_child != NULL )
+                              {
+                                    pTentRoute->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
+                              }
+                        }
+                  }
+            }
+      }
+      pTentRoute->m_bIsTrack = true;
+      return pTentRoute;
+}
+
+Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum)
+{
+      //FIXME: This should be moved to GpxRteElement
+      Route *pTentRoute = new Route();
+
+      int ip = 0;
+      TiXmlElement *child;
+      for ( child = rtenode->FirstChildElement(); child != 0; child = child->NextSiblingElement())
+      {
+            wxString ChildName = wxString::FromUTF8 ( child->Value() );
+            if ( ChildName == _T ( "rtept" ) )
+            {
+                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square") );
+
+                  RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+
+                  if(!pExisting)
+                  {
+                        if ( NULL != pWayPointMan )
+                              pWayPointMan->m_pWayPointList->Append ( pWp );
+
+                        pTentRoute->AddPoint ( pWp, false );                      // don't auto-rename numerically
+                        pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
+                  }
+                  else
+                  {
+                        pTentRoute->AddPoint ( pExisting, false );                // don't auto-rename numerically
+                  }
+                  ip++;
+            }
+
+            else if ( ChildName == _T ( "name" ) )
+            {
+                  TiXmlNode *namechild;
+                  for ( namechild = child->FirstChild(); namechild != 0; namechild = namechild->NextSibling())
+                  {
+                        pTentRoute->m_RouteNameString = wxString::FromUTF8 ( namechild->ToText()->Value() );
+                  }
+            }
+
+            else if ( ChildName == _T ( "extensions" ) )
+            {
+                  TiXmlNode *ext_child;
+                  for ( ext_child = child->FirstChild(); ext_child != 0; ext_child = ext_child->NextSibling())
+                  {
+                        wxString ext_name = wxString::FromUTF8 ( ext_child->Value() );
+                        if ( ext_name == _T ( "opencpn:start" ) )
+                        {
+                              TiXmlNode *s_child = ext_child->FirstChild();
+                              if ( s_child != NULL )
+					      pTentRoute->m_RouteStartString = wxString::FromUTF8 ( s_child->ToText()->Value() );
+                        }
+                        else if ( ext_name == _T ( "opencpn:end" ) )
+                        {
+					TiXmlNode *e_child = ext_child->FirstChild();
+                              if ( e_child != NULL )
+                                    pTentRoute->m_RouteEndString = wxString::FromUTF8 ( e_child->ToText()->Value() );
+                        }
+                        else if ( ext_name == _T ( "opencpn:viz" ) )
+                        {
+					TiXmlNode *v_child = ext_child->FirstChild();
+                              if ( v_child != NULL )
+                              {
+                                    wxString viz = wxString::FromUTF8 ( v_child->ToText()->Value() );
+                                    if(viz == _T("0"))
+                                          pTentRoute->SetVisible(false);
+                              }
+                        }
+                        else if ( ext_name == _T ( "opencpn:guid" ) )
+                        {
+					TiXmlNode *g_child = ext_child->FirstChild();
+                              if ( g_child != NULL )
+                              {
+                                    pTentRoute->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
+                              }
+                        }
+                  }
+            }
+      }
+      return pTentRoute;
+}
+
+void UpdateRoute(Route *pTentRoute)
+{
+      Route * rt = ::RouteExists(pTentRoute->m_GUID);
+      if(rt)
+      {
+            wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
+            while ( node )
+            {
+                  RoutePoint *prp = node->GetData();
+                  RoutePoint *ex_rp = rt->GetPoint(prp->m_GUID);
+                  if(ex_rp)
+                  {
+                        ex_rp->m_lat = prp->m_lat;
+                        ex_rp->m_lon = prp->m_lon;
+                        ex_rp->m_IconName = prp->m_IconName;
+                        ex_rp->m_MarkDescription = prp->m_MarkDescription;
+                        ex_rp->m_MarkName = prp->m_MarkName;
+                  }
+                  else
+                  {
+                        pSelect->AddSelectableRoutePoint ( prp->m_lat,prp->m_lon, prp );
+                  }
+                  node = node->GetNext();
+            }
+      }
+      else
+      {
+            ::InsertRoute(pTentRoute, pTentRoute->m_ConfigRouteNum);
+      }
+}
+
+void InsertRoute(Route *pTentRoute, int routenum)
+{
+      pRouteList->Append ( pTentRoute );
+      pTentRoute->m_ConfigRouteNum = routenum;
+
+      pTentRoute->RebuildGUIDList();                  // ensure the GUID list is intact
+
+      //    Add the selectable points and segments
+      int ip = 0;
+      float prev_rlat = 0., prev_rlon = 0.;
+      RoutePoint *prev_pConfPoint = NULL;;
+
+      wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
+      while ( node )
+      {
+            RoutePoint *prp = node->GetData();
+
+            pSelect->AddSelectableRoutePoint ( prp->m_lat,prp->m_lon, prp );
+
+            if ( ip )
+                  pSelect->AddSelectableRouteSegment ( prev_rlat, prev_rlon, prp->m_lat, prp->m_lon,prev_pConfPoint, prp, pTentRoute );
+
+            prev_rlat = prp->m_lat;
+            prev_rlon = prp->m_lon;
+            prev_pConfPoint = prp;
+
+            ip++;
+
+            node = node->GetNext();
+      }
+}
+
+void GPXLoadRoute ( GpxRteElement* rtenode, int routenum )
+{
+      wxString Name = wxString::FromUTF8 ( rtenode->Value() );
+
+      if ( Name == _T ( "rte" ) ) //FIXME: should not be here
+      {
+            Route *pTentRoute = ::LoadGPXRoute(rtenode, routenum);
 
 //    TODO  All this trouble for a tentative route.......Should make some Route methods????
-            if ( !routeExists )
+            if ( !::RouteExists(pTentRoute->m_GUID) && !::RouteExists(pTentRoute))
             {
-                  pRouteList->Append ( pTentRoute );
-                  pConfig->AddNewRoute ( pTentRoute,routenum );   // use auto next num
-                  pTentRoute->m_ConfigRouteNum = routenum;
-
-                  pConfig->UpdateRoute ( pTentRoute );
-                  pTentRoute->RebuildGUIDList();                  // ensure the GUID list is intact
-
-                  //    Add the selectable points and segments
-
-                  int ip = 0;
-                  float prev_rlat = 0., prev_rlon = 0.;
-                  RoutePoint *prev_pConfPoint = NULL;;
-
-                  wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
-                  while ( node )
-                  {
-
-                        RoutePoint *prp = node->GetData();
-
-                        pSelect->AddSelectableRoutePoint ( prp->m_lat,prp->m_lon, prp );
-
-                        if ( ip )
-                              pSelect->AddSelectableRouteSegment ( prev_rlat, prev_rlon, prp->m_lat, prp->m_lon,prev_pConfPoint, prp, pTentRoute );
-
-                        prev_rlat = prp->m_lat;
-                        prev_rlon = prp->m_lon;
-                        prev_pConfPoint = prp;
-
-                        ip++;
-
-                        node = node->GetNext();
-                  }
+                  ::InsertRoute(pTentRoute, routenum);
             }
             else
             {
-
                   // walk the route, deleting points used only by this route
                   wxRoutePointListNode *pnode = ( pTentRoute->pRoutePointList )->GetFirst();
                   while ( pnode )
@@ -4896,38 +5217,18 @@ void GPXLoadRoute ( wxXmlNode* rtenode, int routenum )
 
                         pnode = pnode->GetNext();
                   }
-
                   delete pTentRoute;
             }
       }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //---------------------------------------------------------------------------------
 //    XML Support for Navigation Objects
 //---------------------------------------------------------------------------------
 
-NavObjectCollection::NavObjectCollection ( wxString RootName, wxString Version, wxString Creator )
+NavObjectCollection::NavObjectCollection() : GpxDocument()
 {
-      m_pXMLrootnode = new wxXmlNode ( wxXML_ELEMENT_NODE, RootName );
-      m_pXMLrootnode->AddProperty ( _T ( "version" ), Version );
-      m_pXMLrootnode->AddProperty ( _T ( "creator" ), Creator );
-      SetRoot ( m_pXMLrootnode );
-      m_proot_next = NULL;
+	m_pXMLrootnode = (GpxRootElement *)RootElement();
 }
 
 NavObjectCollection::~NavObjectCollection()
@@ -4940,6 +5241,7 @@ bool NavObjectCollection::CreateNavObjGPXPoints ( void )
 
       //    Iterate over the Routepoint list, creating Nodes for
       //    Routepoints that are not in any Route
+      //    as indicated by m_bIsolatedMark == false
 
       wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
@@ -4949,17 +5251,9 @@ bool NavObjectCollection::CreateNavObjGPXPoints ( void )
       {
             pr = node->GetData();
 
-            if ( !pr->m_bIsInRoute )
+            if ( pr->m_bIsolatedMark) //( !WptIsInRouteList ( pr ) )
             {
-                  wxXmlNode *mark_node = ::CreateGPXPointNode ( pr, _T("wpt") );
-
-                  if( m_proot_next == NULL )
-                        m_pXMLrootnode->AddChild ( mark_node );
-                  else
-                        m_proot_next->SetNext( mark_node );
-
-                  m_proot_next = mark_node;
-
+                  m_pXMLrootnode->AddWaypoint ( CreateGPXWpt(pr, GPX_WPT_WAYPOINT) );
             }
             node = node->GetNext();
       }
@@ -4970,8 +5264,6 @@ bool NavObjectCollection::CreateNavObjGPXPoints ( void )
 bool NavObjectCollection::CreateNavObjGPXRoutes ( void )
 {
       // Routes
-      wxXmlNode *node;
-      wxXmlNode *tnode;
       wxRouteListNode *node1 = pRouteList->GetFirst();
       while ( node1 )
       {
@@ -4979,67 +5271,7 @@ bool NavObjectCollection::CreateNavObjGPXRoutes ( void )
 
             if ( !pRoute->m_bIsTrack )                            // Not tracks
             {
-                  RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-
-                  wxXmlNode *GPXRte_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "rte" ) );
-
-                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "name" ) );
-                  GPXRte_node->AddChild ( node );
-                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pRoute->m_RouteNameString );
-                  node->AddChild ( tnode );
-
-                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "number" ) );
-                  GPXRte_node->AddChild ( node );
-                  wxString strnum;
-                  strnum.Printf ( _T ( "%d" ),pRoute->m_ConfigRouteNum );
-                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), strnum );
-                  node->AddChild ( tnode );
-
-                  //    Extensions
-                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "extensions" ) );
-                  GPXRte_node->AddChild ( node );
-
-                  wxXmlNode *s_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "opencpn:start" ) );
-                  node->AddChild ( s_node );
-                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pRoute->m_RouteStartString );
-                  s_node->AddChild ( tnode );
-
-                  wxXmlNode *e_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "opencpn:end" ) );
-                  node->AddChild ( e_node );
-                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pRoute->m_RouteEndString );
-                  e_node->AddChild ( tnode );
-
-
-
-                  if(m_proot_next == NULL)
-                        m_pXMLrootnode->AddChild ( GPXRte_node );
-                  else
-                        m_proot_next->SetNext( GPXRte_node );
-
-                  m_proot_next = GPXRte_node;
-
-                  wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
-                  RoutePoint *prp;
-
-                  int i=1;
-                  wxXmlNode *current_sib = NULL;
-
-                  while ( node2 )
-                  {
-                        prp = node2->GetData();
-
-                        wxXmlNode *rpt_node = ::CreateGPXPointNode ( prp, _T("rtept") );
-
-                        if(i == 1)
-                              GPXRte_node->AddChild ( rpt_node );
-                        else
-                              current_sib->SetNext(rpt_node);
-
-                        current_sib = rpt_node;
-
-                        node2=node2->GetNext();
-                        i++;
-                  }
+                  m_pXMLrootnode->AddRoute(CreateGPXRte(pRoute));
             }
             node1 = node1->GetNext();
       }
@@ -5054,20 +5286,14 @@ bool NavObjectCollection::CreateNavObjGPXTracks ( void )
       while ( node1 )
       {
             Route *pRoute = node1->GetData();
-            RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+            RoutePointList *pRoutePointList = pRoute->pRoutePointList;//->GetCount(); do if
 
             if ( pRoutePointList->GetCount() )
             {
                   if ( pRoute->m_bIsTrack )                            // Tracks only
                   {
-
-                        wxXmlNode *Track_Node = ::CreateGPXTrackStatic ( pRoute );
-                        if(m_proot_next == NULL)
-                              m_pXMLrootnode->AddChild ( Track_Node );
-                        else
-                              m_proot_next->SetNext( Track_Node );
-
-                        m_proot_next = Track_Node;
+                        //Redundant - RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+                        m_pXMLrootnode->AddTrack(CreateGPXTrk(pRoute));
                   }
             }
             node1 = node1->GetNext();
@@ -5076,37 +5302,45 @@ bool NavObjectCollection::CreateNavObjGPXTracks ( void )
       return true;
 }
 
-
-
-bool NavObjectCollection::LoadAllGPXTracks()
+bool NavObjectCollection::LoadAllGPXObjects()
 {
-      wxXmlNode *root = GetRoot();
+      //FIXME: unite with MyConfig::ImportGPX
+	TiXmlNode *root = RootElement();
 
-      wxString RootName = root->GetName();
+      wxString RootName = wxString::FromUTF8( root->Value() );
       if ( RootName == _T ( "gpx" ) )
       {
-            wxString RootContent = root->GetNodeContent();
-
-            wxXmlNode *child = root->GetChildren();
-            while ( child )
+            TiXmlNode *child;
+            for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
             {
-                  wxString ChildName = child->GetName();
+		      wxString ChildName = wxString::FromUTF8( child->Value());
                   if ( ChildName == _T ( "trk" ) )
-                        ::GPXLoadTrack ( child );
-
-                  child = child->GetNext();
+                        ::GPXLoadTrack ( (GpxTrkElement *)child );
+                  else if ( ChildName == _T ( "rte" ) )
+                  {
+                        int m_NextRouteNum = 0; //FIXME: we do not need it for GPX
+                        ::GPXLoadRoute ( (GpxRteElement *)child, m_NextRouteNum );
+			}
+			else if ( ChildName == _T ( "wpt" ) )
+                  {
+			      int m_NextWPNum = 0; //FIXME: we do not need it for GPX
+                        RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"));
+                        RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                        if(!pExisting)
+                        {
+                              if ( NULL != pWayPointMan )
+                                    pWayPointMan->m_pWayPointList->Append ( pWp );
+                              pWp->m_bIsolatedMark = true;      // This is an isolated mark
+                              pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                              pWp->m_ConfigWPNum = m_NextWPNum;
+                              m_NextWPNum++;
+                        }
+			}
             }
       }
 
       return true;
 }
-
-
-
-
-
-
-
 
 //---------------------------------------------------------------------------------
 //          Private Font Manager and Helpers

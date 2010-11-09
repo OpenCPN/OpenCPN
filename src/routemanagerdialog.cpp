@@ -758,9 +758,9 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
       cc1->CancelMouseRoute();
 
-      g_pRouteMan->DeleteRoute(proute_to_delete);
-
       pConfig->DeleteConfigRoute ( proute_to_delete );
+
+      g_pRouteMan->DeleteRoute(proute_to_delete);
 
       ::wxEndBusyCursor();
 
@@ -1226,9 +1226,10 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event)
 //                        parent_frame->TrackOff();
       if (!track) return;
 
+      pConfig->DeleteConfigRoute(track);
+
       g_pRouteMan->DeleteTrack(track);
 
-      pConfig->DeleteConfigRoute(track);
 //                    m_pSelectedRoute = NULL;
 //                    m_pSelectedTrack = NULL;
 //                    m_pFoundRoutePoint = NULL;
@@ -1275,7 +1276,7 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
       if (!track) return;
 
       wxProgressDialog *pprog = new wxProgressDialog(_("OpenCPN Converting Track to Route...."),
-                  _("Processing Waypoints..."), 200, NULL,
+                  _("Processing Waypoints..."), 101, NULL,
                     wxPD_AUTO_HIDE | wxPD_SMOOTH |wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |wxPD_REMAINING_TIME);
 
       ::wxBeginBusyCursor();
@@ -1284,13 +1285,9 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
 
       pRouteList->Append(route);
 
-      pprog->Update(150, _("Saving new Route..."));
-      pConfig->UpdateRoute(route);
-      pprog->Update(200, _("Done."));
+      pprog->Update(101, _("Done."));
       delete pprog;
 
-
-      pRouteList->Append(route);
       cc1->Refresh();
 
       UpdateRouteListCtrl();
@@ -1450,7 +1447,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event)
 
 void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event)
 {
-      RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+      RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
       pWP->m_bIsolatedMark = true;                      // This is an isolated mark
       pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
       pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
@@ -1549,7 +1546,7 @@ void RouteManagerDialog::OnWptGoToClick(wxCommandEvent &event)
 
       if (!wp) return;
 
-      RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), NULL );
+      RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
       pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
 
       Route *temp_route = new Route();
