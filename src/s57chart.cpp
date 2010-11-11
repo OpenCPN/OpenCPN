@@ -2239,6 +2239,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if(fn.GetExt() == _T("000"))
     {
+         ::wxBeginBusyCursor();
+
           if(GetBaseFileAttr(fn))
           {
                 int sret = FindOrCreateSenc(name);
@@ -2255,12 +2257,19 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
           else
                 ret_value = INIT_FAIL_REMOVE;
 
+          ::wxEndBusyCursor();
+
     }
 
     else if(fn.GetExt() == _T("S57"))
     {
+          ::wxBeginBusyCursor();
+
           m_SENCFileName = name;
           ret_value = PostInit(flags, m_global_color_scheme);
+
+          ::wxEndBusyCursor();
+
     }
 
     s_bInS57--;
@@ -2406,13 +2415,15 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                                 if(senc_file_version != CURRENT_SENC_FORMAT_VERSION)
                                       bbuild_new_senc = true;
 
-                                //  Senc EDTN must be the same as base EDTN.  This test catches the usual case of ENC web update
+                                //  Senc EDTN must be the same as .000 file EDTN.
+                                //  This test catches the usual case where the .000 file is updated from the web,
+                                //  and all updates (.001, .002, etc.)  are subsumed.
                                 else if(!senc_base_edtn.IsSameAs(m_edtn000))
                                       bbuild_new_senc = true;
 
                                 else
                                 {
-
+                                    //    See if there are any new update files  in the ENC directory
                                     int most_recent_update_file = GetUpdateFileArray(FileName000, NULL);
 
                                     if(last_update != most_recent_update_file)
