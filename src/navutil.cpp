@@ -4761,7 +4761,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
-                                          bviz = (bool)v;
+                                          bviz = (v != 0);
                               }
                         }
                         else if ( ext_name == _T ( "opencpn:viz_name" ) )
@@ -4772,7 +4772,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
-                                          bviz_name = (bool)v;
+                                          bviz_name = (v != 0);
                               }
                         }
                         else if ( ext_name == _T ( "opencpn:auto_name" ) )
@@ -4783,7 +4783,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
-                                          bauto_name = (bool)v;
+                                          bauto_name = (v != 0);
                               }
                         }
                         else if ( ext_name == _T ( "opencpn:shared" ) )
@@ -4794,7 +4794,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
-                                          bshared = (bool)v;
+                                          bshared = (v != 0);
                               }
                         }
                   }
