@@ -3859,8 +3859,18 @@ void MyConfig::ExportGPX ( wxWindow* parent )
 GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type)
 {
       GpxExtensionsElement *exts = new GpxExtensionsElement();
-      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:prop")), wxString(pr->CreatePropString())));
+ //     exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:prop")), wxString(pr->CreatePropString())));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pr->m_GUID));
+
+//      if(!pr->m_bIsVisible)
+            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
+      if(pr->m_bShowName)
+            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
+      if(pr->m_bDynamicName)
+            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
+      if(pr->m_bKeepXRoute)
+            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
+
 
       ListOfGpxLinks lnks;
       lnks.DeleteContents(false);
@@ -4609,11 +4619,14 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime)
 
 RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
 {
-//      wxString LatString = wptnode->GetPropVal ( _T ( "lat" ),_T ( "0.0" ) );
-//      wxString LonString = wptnode->GetPropVal ( _T ( "lon" ),_T ( "0.0" ) );
 //FIXME: implement the parsing in GpxWptElement and get rid of it here!
       wxString LatString = wxString::FromUTF8 ( wptnode->Attribute( "lat" ) );
       wxString LonString = wxString::FromUTF8 ( wptnode->Attribute( "lon" ) );
+
+      bool bviz = false;
+      bool bviz_name = false;
+      bool bauto_name = false;
+      bool bshared = false;
 
       wxString SymString  = def_symbol_name; //_T ( "empty" );                // default icon
       wxString NameString;
@@ -4630,57 +4643,44 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
       wxString HrefTextString = _T ( "" );
       wxString HrefTypeString = _T ( "" );
 
-//      wxXmlNode *child = wptnode->GetChildren();
-//      while ( child )
       TiXmlNode *child;
       for ( child = wptnode->FirstChild(); child != 0; child = child->NextSibling())
       {
-//            ChildName = child->GetName();
             ChildName = wxString::FromUTF8(child->Value());
 
             if ( ChildName == _T ( "sym" ) )
             {
-//                  wxXmlNode *child1 = child->GetChildren();
                   TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
- //                       SymString = child1->GetContent();
                           SymString = wxString::FromUTF8( child1->ToText()->Value() );
              }
             else if ( ChildName == _T ( "name" ) )
             {
-//                  wxXmlNode *child1 = child->GetChildren();
                   TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
                        NameString = wxString::FromUTF8( child1->ToText()->Value() );
-//                        NameString = child1->GetContent();
             }
             else if ( ChildName == _T ( "desc" ) )
             {
-//                  wxXmlNode *child1 = child->GetChildren();
                   TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
-//                        DescString = child1->GetContent();
                         DescString = wxString::FromUTF8( child1->ToText()->Value() );
 
             }
             else if ( ChildName == _T ( "type" ) )
             {
-//                  wxXmlNode *child1 = child->GetChildren();
                   TiXmlNode *child1 = child->FirstChild();
 
                   if ( child1 != NULL )
-//                        TypeString = child1->GetContent();
                         TypeString = wxString::FromUTF8( child1->ToText()->Value() );
 
             }
 
             else if ( ChildName == _T ( "time" ) )
             {
-//                  wxXmlNode *child1 = child->GetChildren();
                   TiXmlNode *child1 = child->FirstChild();
                   if ( child1 != NULL )
                   {
-//                        wxString TimeString = child1->GetContent();
                         wxString TimeString = wxString::FromUTF8( child1->ToText()->Value() );
 
                         if ( TimeString.Len() )
@@ -4752,6 +4752,51 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                               if ( prop_child != NULL )
                                     GuidString = wxString::FromUTF8(prop_child->ToText()->Value());
                         }
+
+                        else if ( ext_name == _T ( "opencpn:viz" ) )
+                        {
+                              TiXmlNode *prop_child = ext_child->FirstChild();
+                              if ( prop_child != NULL )
+                              {
+                                    wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
+                                    long v = 0;
+                                    if(s.ToLong(&v))
+                                          bviz = (bool)v;
+                              }
+                        }
+                        else if ( ext_name == _T ( "opencpn:viz_name" ) )
+                        {
+                              TiXmlNode *prop_child = ext_child->FirstChild();
+                              if ( prop_child != NULL )
+                              {
+                                    wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
+                                    long v = 0;
+                                    if(s.ToLong(&v))
+                                          bviz_name = (bool)v;
+                              }
+                        }
+                        else if ( ext_name == _T ( "opencpn:auto_name" ) )
+                        {
+                              TiXmlNode *prop_child = ext_child->FirstChild();
+                              if ( prop_child != NULL )
+                              {
+                                    wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
+                                    long v = 0;
+                                    if(s.ToLong(&v))
+                                          bauto_name = (bool)v;
+                              }
+                        }
+                        else if ( ext_name == _T ( "opencpn:shared" ) )
+                        {
+                              TiXmlNode *prop_child = ext_child->FirstChild();
+                              if ( prop_child != NULL )
+                              {
+                                    wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
+                                    long v = 0;
+                                    if(s.ToLong(&v))
+                                          bshared = (bool)v;
+                              }
+                        }
                   }
             }
       }
@@ -4764,14 +4809,16 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
 
       RoutePoint *pWP = new RoutePoint ( rlat, rlon, SymString, NameString, GuidString, false );      // do not add to global WP list yet...
       pWP->m_MarkDescription = DescString;
-      pWP->m_bShowName = false;
-      pWP->m_bIsVisible = true;             // pjotrc 2010.02.11
 
+      pWP->m_bShowName = bviz_name;
+      pWP->m_bIsVisible = bviz;
+      pWP->m_bKeepXRoute = bshared;
+      pWP->m_bDynamicName = bauto_name;
 
       if ( dt.IsValid() )
             pWP->m_CreateTime = dt;
 
-      pWP->SetPropFromString ( PropString );
+//      pWP->SetPropFromString ( PropString );
 
       if(linklist)
       {
