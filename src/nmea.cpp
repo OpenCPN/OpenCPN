@@ -32,7 +32,6 @@
  *  Parts of this file were adapted from source code found in              *
  *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
  ***************************************************************************
-
  *
  */
 #include "wx/wxprec.h"
@@ -159,6 +158,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
       m_bgot_version = false;
 
       m_gps_data = NULL;
+      m_bgps_present = false;
 
       ThreadPositionData.FixTime = 0;
       ThreadPositionData.kLat = 0.;
@@ -248,7 +248,16 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
             if(!m_lib_handle)
             {
-                  wxString msg(_("Unable to load libgps.so.19"));
+                  wxLogMessage(_("Failed to load libgps.so.19"));
+                  wxLogMessage(_("Attempting to load libgps.so"));
+                  m_lib_handle = dlopen("libgps.so", RTLD_LAZY);
+            }
+
+
+            if(!m_lib_handle)
+            {
+                  wxLogMessage(_("Failed to load libgps.so"));
+                  wxString msg(_("Unable to load libgps.so"));
                   wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
                   return;
@@ -377,6 +386,7 @@ Would you like to use this version of libgps anyway?"),
             {
                   m_fn_gps_stream(m_gps_data, WATCH_ENABLE, NULL);
                   TimerLIBGPS.Start(TIMER_LIBGPS_MSEC,wxTIMER_CONTINUOUS);
+                  m_bgps_present = true;              // assume this for now....
             }
             else
             {
@@ -564,24 +574,71 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 #ifdef BUILD_WITH_LIBGPS
       TimerLIBGPS.Stop();
 
+
       m_fn_gps_set_raw_hook(m_gps_data, libgps_hook);
 
+      int np = 0;
       while(m_fn_gps_waiting(m_gps_data))
       {
-         m_fn_gps_poll(m_gps_data);
+       m_fn_gps_poll(m_gps_data);
+       printf("Poll %d %0X\n", np++, m_gps_data->set);
 
-         //    Maybe signal the main program
-//         if((m_gps_data->set & ONLINE_SET) && (m_gps_data->online > 0))       // GPS must be online
-         {
-               if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
-               {
-                     wxCommandEvent event( EVT_NMEA,  m_handler_id );
-                     event.SetEventObject( (wxObject *)this );
-                     event.SetExtraLong(EVT_NMEA_DIRECT);
-                     event.SetClientData(&ThreadPositionData);
-                     m_pParentEventHandler->AddPendingEvent(event);
-               }
-         }
+      if (!(m_gps_data->set & PACKET_SET))
+      {
+            printf("Probably lost GPSD\n");
+            m_bgps_present = false;
+
+            break;                  // this is what happens when gpsd is killed or dies
+      }
+
+
+      if (m_gps_data->set & (DEVICE_SET))
+      {
+            if (m_gps_data->dev.activated < 1.0)
+                 m_bgps_present = false;
+            else
+                  m_bgps_present = true;
+      }
+
+      if (m_gps_data->set & DEVICELIST_SET)
+      {
+            if (m_gps_data->devices.ndevices == 1)
+            {
+                  if (m_gps_data->devices.list[0].activated < 1.0)
+                        m_bgps_present = false;
+                  else
+                        m_bgps_present = true;
+            }
+      }
+
+      if(!m_bgps_present)
+
+            printf("no gps device\n");
+      else
+            printf("GPS!\n");
+
+
+      if((m_bgps_present) /*&& (m_gps_data->set & ONLINE_SET) && (m_gps_data->online > 0)*/)  // GPS must be online
+      {
+//            while(m_fn_gps_waiting(m_gps_data))
+            {
+//            m_fn_gps_poll(m_gps_data);
+
+            //    Maybe signal the main program
+      //         if((m_gps_data->set & ONLINE_SET) && (m_gps_data->online > 0))       // GPS must be online
+            {
+                  if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
+                  {
+                        wxCommandEvent event( EVT_NMEA,  m_handler_id );
+                        event.SetEventObject( (wxObject *)this );
+                        event.SetExtraLong(EVT_NMEA_DIRECT);
+                        event.SetClientData(&ThreadPositionData);
+                        m_pParentEventHandler->AddPendingEvent(event);
+                        printf("...Event\n");
+                  }
+            }
+            }
+      }
       }
 
 //      if((m_gps_data->set & ONLINE_SET)/* && (m_gps_data->online > 0)*/)       // GPS must be online
