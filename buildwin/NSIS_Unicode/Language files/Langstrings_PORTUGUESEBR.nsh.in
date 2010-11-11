@@ -23,7 +23,7 @@ LangString LangDialog_Text ${LANG_PORTUGUESEBR} "Por favor selecione um idioma:"
 LangString text_please_wait_1 ${LANG_PORTUGUESEBR} "... Por favor aguarde!"
 
 #LangString Scanning_HDD ${LANG_ENGLISH} "Scanning HDD ..."
-LangString Scanning_HDD ${LANG_PORTUGUESEBR} "Scanning HDD ..."
+LangString Scanning_HDD ${LANG_PORTUGUESEBR} "Mapeando HDD ..."
 
 #LangString OCPN_Scanning_HDD ${LANG_ENGLISH} "OpenCPN: Scan HDD ..., please wait!"
 LangString OCPN_Scanning_HDD ${LANG_PORTUGUESEBR} "OpenCPN: Mapeando HDD ..., por favor aguarde!"
@@ -107,7 +107,7 @@ LangString CB_Language_SetConfig_Text ${LANG_PORTUGUESEBR} "Ajuste o idioma do O
 LangString GB_Language_SetConfig_Text ${LANG_PORTUGUESEBR} "Ajuste o idioma do OpenCPN"
 
 #LangString Label_SetConfig_Text ${LANG_ENGLISH} "Configure preconfig settings for the OpenCPN program.$\r$\nThese settings are saved in the file opencpn.ini."
-LangString Label_SetConfig_Text ${LANG_PORTUGUESEBR} "Configure preconfig settings for the OpenCPN program.$\r$\nThese settings are saved in the file opencpn.ini."
+LangString Label_SetConfig_Text ${LANG_PORTUGUESEBR} "Configure preconfig settings for the OpenCPN program.$\r$\nEsses ajustes serão salvos no arquivo opencpn.ini."
 
 #LangString Page_Confirm_Title ${LANG_ENGLISH} "Ready to Install"
 LangString Page_Confirm_Title ${LANG_PORTUGUESEBR} "Pronto para instalarl"
@@ -227,7 +227,7 @@ LangString Uninstall_Link ${LANG_PORTUGUESEBR} "Desinstalar @CPACK_PACKAGE_NAME@
 LangString Page_TypeInst_Title ${LANG_PORTUGUESEBR} "Instalação Anterior"
 
 #LangString Page_TypeInst_Subtitle ${LANG_ENGLISH} "$MULTIPLE_INSTALLS installations of OpenCPN found.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle ${LANG_PORTUGUESEBR} "$MULTIPLE_INSTALLS installations of OpenCPN found.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle ${LANG_PORTUGUESEBR} "$MULTIPLE_INSTALLS installations of OpenCPN found.$\r$\nEscolha como voce deseja instalar OpenCPN."
 
 #LangString Page_TypeInst_Title_1 ${LANG_ENGLISH} "Already Installed"
 LangString Page_TypeInst_Title_1 ${LANG_PORTUGUESEBR} "Já esta Instalado"
@@ -296,10 +296,10 @@ LangString Msg_Error_Remove_InstDir ${LANG_PORTUGUESEBR} "A pasta de instalaçã
 LangString Msg_Path_Invalid ${LANG_PORTUGUESEBR} "O caminho informado é inválido!$\r$\n$\r$\nPor favor verifique sua entrada."
 
 #LangString Msg_Path_Installation_Exists ${LANG_ENGLISH} "There already exists an installation of OpenCPN in the given path.$\r$\nIf you wish to use this path, first uninstall the version. Or select another path for this installation."
-#LangString Msg_Path_Installation_Exists ${LANG_PORTUGUESEBR} "Já existe uma instalação do OpenCPN no trajeto dado.$\r$\nSe você deseja usar este caminho, primeiro desinstale a versão ou selecione outro caminho para colocar esta instalação."
+LangString Msg_Path_Installation_Exists ${LANG_PORTUGUESEBR} "Já existe uma instalação do OpenCPN no trajeto dado.$\r$\nSe você deseja usar este caminho, primeiro desinstale a versão ou selecione outro caminho para colocar esta instalação."
 
 #LangString Msg_Uninstall_Old_Versions ${LANG_ENGLISH} "Setup has detected at least one older version of OpenCPN which is not compatible with the new version control.$\r$\nIt is recommended to first uninstall all of these installations (this does not affect your Config files) and clean-up the Registry.$\r$\nIf you click Yes on the next page a listbox with all installation locations will be shown and you will have the possibility to select the installations you wish to uninstall.$\r$\nIf you are unsure about possible other previous installations than those shown in the listbox, you can also perform a scan of the entire Harddisk (ATTENTION: This may take several minutes) to find all install locations (recommended).$\r$\n$\r$\nDo you want to uninstall the old version(s)?"
-LangString Msg_Uninstall_Old_Versions ${LANG_PORTUGUESEBR} "A Instalação detectou pelo menos uma versão anterior do OpenCPN a qual não é compativel com a nova versão.$\r$\nÉ recomendado que primeiro seja desinstalado todas estas versões (Isto não afeta seu arquivo de configuração) e limpa seu Registro.$\r$\nSe você clicar Yes na próxima página um listbox com todas as instalções será mostrado e você tera a possibilidade de selecionar a instalações que você deseja desinstalar."
+LangString Msg_Uninstall_Old_Versions ${LANG_PORTUGUESEBR} "A Instalação detectou pelo menos uma versão anterior do OpenCPN a qual não é compativel com a nova versão.$\r$\nÉ recomendado que primeiro seja desinstalado todas essas versões (Isto não afeta seu arquivo de configuração) e limpa seu Registro.$\r$\nSe você clicar Sim na próxima página um listbox com todas as instalacões será mostrado e você tera a possibilidade de selecionar as instalações que você deseja desinstalar."
 
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_PORTUGUESEBR} "Você não desinstalou todas as instalações anteriores.$\r$\n$\r$\nVocê deseja continuar assim mesmo?"
@@ -321,7 +321,7 @@ LangString SecShortcutStartmenu_Text ${LANG_PORTUGUESEBR} "Adicionar atalhos par
 LangString SecShortcutDesktop_Text ${LANG_PORTUGUESEBR} "Criar Atalho na Área de Trabalho"
 
 #LangString Installation_Delete_Config ${LANG_ENGLISH} "Delete (existing) Config Subdirectories/ Files"
-LangString Installation_Delete_Config ${LANG_PORTUGUESEBR} "Deletar (existente) Config Subdirectories/ Files"
+LangString Installation_Delete_Config ${LANG_PORTUGUESEBR} "Deletar (existente) Sub pasta Config / Arquivos"
 
 ;added on 2010-10-17
 #LangString Banner_Scan_Drive ${LANG_ENGLISH} "Scanning Drive $9"
@@ -339,4 +339,4 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESEBR} "Deletar Pasta Conf
 
 ;added on 2010-10-21
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
-LangString Uninstall_Folder_Name ${LANG_PORTUGUESEBR} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_PORTUGUESEBR} "Desinstalar"

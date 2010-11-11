@@ -35,7 +35,7 @@ SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
-SET(wxWidgets_USE_LIBS base core net html adv aui)
+SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
@@ -774,6 +774,7 @@ IF(WIN32 AND NOT UNIX)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_RUSSIAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_RUSSIAN.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SWEDISH.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
+ configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_NORWEGIAN.nsh" @ONLY)
 ENDIF(WIN32 AND NOT UNIX)
 
 configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther

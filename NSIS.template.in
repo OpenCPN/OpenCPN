@@ -667,6 +667,9 @@ CMake variables
 	!include /NONFATAL "Langstrings_SWEDISH.nsh"
 	!insertmacro MUI_LANGUAGE "Finnish"
 	!include /NONFATAL "Langstrings_FINNISH.nsh"
+	!insertmacro MUI_LANGUAGE "Norwegian"
+	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
+
 
 ;-------------------------------- 
 ;# Reserve Files
@@ -1088,7 +1091,7 @@ Function myGuiInit
 			StrCpy $REG_LANG "it_IT"
 			${Break}
 		${Case} ${LANG_DUTCH}
-			StrCpy $LANG_NAME "Nederlands"
+			StrCpy $LANG_NAME "Nederlandse"
 			StrCpy $REG_LANG "nl_NL"
 			${Break}
 		${Case} ${LANG_POLISH}
@@ -1110,6 +1113,14 @@ Function myGuiInit
 		${Case} ${LANG_RUSSIAN}
 			StrCpy $LANG_NAME "Русский"
 			StrCpy $REG_LANG "ru_RU"
+			${Break}
+		${Case} ${LANG_NORWEGIAN}
+			StrCpy $LANG_NAME "Norske"
+			StrCpy $REG_LANG "nb_NO"
+			${Break}
+		${Case} ${LANG_FINNISH}
+			StrCpy $LANG_NAME "Suomalainen"
+			StrCpy $REG_LANG "fi_FI"
 			${Break}
 		${Default}
 			${Break}
@@ -1240,41 +1251,16 @@ FunctionEnd
 
 
 Function .OnInstFailed
-	/*
-	Delete "$TEMP\opencpn_*.tmp"
-	${If} $EnumHKU_counter > 0
-		${ForEach} $1 $EnumHKU_counter 0 - 1
-			System::Call "advapi32::RegUnLoadKeyW(i ${HKEY_USERS}, t '$key_$1')"
-		${Next}
-	${Endif}
-	*/
 	Call InstallerEnd
 FunctionEnd
 
 
 Function .OnInstSuccess
-	/*
-	Delete "$TEMP\opencpn_*.tmp"
-	${If} $EnumHKU_counter > 0
-		${ForEach} $1 $EnumHKU_counter 0 - 1
-			System::Call "advapi32::RegUnLoadKeyW(i ${HKEY_USERS}, t '$key_$1')"
-		${Next}
-	${Endif}
-	*/
 	Call InstallerEnd
 FunctionEnd
 
 	
 Function .onGUIEnd
-	/*
-	;# Delete all temporary files created during the installation
-	Delete "$TEMP\opencpn_*.tmp"
-	${If} $EnumHKU_counter > 0
-		${ForEach} $1 $EnumHKU_counter 0 - 1
-			System::Call "advapi32::RegUnLoadKeyW(i ${HKEY_USERS}, t '$key_$1')"
-		${Next}
-	${Endif}
-	*/
 	Call InstallerEnd
 FunctionEnd
 
@@ -4233,6 +4219,8 @@ Var explArrCount
 	LicenseLangString license ${LANG_PORTUGUESEBR} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_RUSSIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_SWEDISH} "@CPACK_RESOURCE_FILE_LICENSE@"
+	LicenseLangString license ${LANG_FINNISH} "@CPACK_RESOURCE_FILE_LICENSE@"
+	LicenseLangString license ${LANG_NORWEGIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 	
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

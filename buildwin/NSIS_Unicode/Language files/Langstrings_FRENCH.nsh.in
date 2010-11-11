@@ -5,7 +5,7 @@ LangString Installer ${LANG_FRENCH} "installation"
 LangString Uninstaller ${LANG_FRENCH} "désinstallation"
 
 #LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_FRENCH} "Votre version Windows est trop ancienne!$\r$\nVous devez utiliser au moins Windows NT/2000."
+LangString Installer_Unsupported_Windows_Version ${LANG_FRENCH} "Votre version Windows est trop ancienne !$\r$\nVous devez utiliser au moins Windows NT/2000."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_FRENCH} "L'installation est déjà en cours."
@@ -17,7 +17,7 @@ LangString Uninstaller_Running ${LANG_FRENCH} "La désinstallation déjà est en
 LangString LangDialog_Title ${LANG_FRENCH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
-LangString LangDialog_Text ${LANG_FRENCH} "Sélectionnez une langue:"
+LangString LangDialog_Text ${LANG_FRENCH} "Veuillez sélectionner une langue:"
 
 #LangString text_please_wait_1 ${LANG_ENGLISH} "... please wait!"
 LangString text_please_wait_1 ${LANG_FRENCH} "... Patientez!"
@@ -32,13 +32,13 @@ LangString OCPN_Scanning_HDD ${LANG_FRENCH} "OpenCPN: balayage disque ...,patien
 LangString Search_old_installations ${LANG_FRENCH} "Recherche anciennes versions"
 
 #LangString Install_Location_Default ${LANG_ENGLISH} "Install Locations by default paths (may not find all)"
-LangString Install_Location_Default ${LANG_FRENCH} "Détection par adresse par défaut (Peut être incomplète)"
+LangString Install_Location_Default ${LANG_FRENCH} "Détection dans l'emplacement  par défaut (Peut être incomplète)"
 
 #LangString Install_Location_HDD_Scan ${LANG_ENGLISH} "Install Location by full HDD scan (most reliable)"
 LangString Install_Location_HDD_Scan ${LANG_FRENCH} "Détection par balayage du disque (Plus fiable)"
 
 #LangString Label_CleanUp_Text ${LANG_ENGLISH} "Click on a list-item to select/ unselect it or Select ALL (recommended) and then Uninstall selected."
-LangString Label_CleanUp_Text ${LANG_FRENCH} "Choisir les éléments à désinstaller ou Sélectionner TOUT (recommandé) puis lancer la désinstallation."
+LangString Label_CleanUp_Text ${LANG_FRENCH} "Cliquer sur chaque éléments à désinstaller ou sur 'Sélectionner TOUT' (recommandé) puis lancer la désinstallation "
 
 #LangString BT_Uninstall_Selected_CleanUp ${LANG_ENGLISH} "Uninstall Selected"
 LangString BT_Uninstall_Selected_CleanUp ${LANG_FRENCH} "Désinstallation sélectionnée"
@@ -56,7 +56,7 @@ LangString LB_CleanUp ${LANG_FRENCH} "Texte"
 LangString BT_FullScan_CleanUp ${LANG_FRENCH} "Balayage disque ..."
 
 #LangString LAB_FullScan_CleanUp ${LANG_ENGLISH} "Scan the HDD for the most reliable detection.$\r$\nATTENTION: may last several minutes!"
-LangString LAB_FullScan_CleanUp ${LANG_FRENCH} "Balayage du disque pour une détection plus fiable.$\r$\nATTENTION: peut durer plusieurs minutes!"
+LangString LAB_FullScan_CleanUp ${LANG_FRENCH} "Balayage du disque pour une détection plus fiable.$\r$\nATTENTION: celà peut durer plusieurs minutes!"
 
 #LangString Page_CleanUp_Title ${LANG_ENGLISH} "Uninstall older Version"
 LangString Page_CleanUp_Title ${LANG_FRENCH} "Désinstalle l'ancienne version"
@@ -71,7 +71,7 @@ LangString CP_HEADER_TEXT ${LANG_FRENCH} "Paramétrage de l'installation"
 LangString CP_HEADER_SUBTEXT ${LANG_FRENCH} "Choisir les paramètres pour l'installation"
 
 #LangString CP_TOP ${LANG_ENGLISH} "Check or uncheck the options for the installation.$\r$\nClick 'Next' to continue."
-LangString CP_TOP ${LANG_FRENCH} "Choisir les options pour l'installation.$\r$\nCliquer 'Next' pour continuer."
+LangString CP_TOP ${LANG_FRENCH} "Choisir les options pour l'installation.$\r$\nCliquer 'Suivant' pour continuer."
 
 #LangString CP_INSTTYPE ${LANG_ENGLISH} "Installation type:"
 LangString CP_INSTTYPE ${LANG_FRENCH} "Options d'Installation:"
@@ -101,13 +101,13 @@ LangString BT_Delete_SetConfig_Text ${LANG_FRENCH} "Supprimer"
 LangString GB_ChartDir_SetConfig_Text ${LANG_FRENCH} "Ajouter un répertoire de cartes"
 
 #LangString CB_Language_SetConfig_Text ${LANG_ENGLISH} "Set OpenCPN program language to $LANG_NAME"
-LangString CB_Language_SetConfig_Text ${LANG_FRENCH} "Indiquer une langue à $LANG_NAME"
+LangString CB_Language_SetConfig_Text ${LANG_FRENCH} "Conserver cette langue :  $LANG_NAME"
 
 #LangString GB_Language_SetConfig_Text ${LANG_ENGLISH} "Set OpenCPN program language"
 LangString GB_Language_SetConfig_Text ${LANG_FRENCH} "Définir la langue pour OpenCPN"
 
 #LangString Label_SetConfig_Text ${LANG_ENGLISH} "Configure preconfig settings for the OpenCPN program.$\r$\nThese settings are saved in the file opencpn.ini."
-LangString Label_SetConfig_Text ${LANG_FRENCH} "Prédéfinir les paramètres pour OpenCPN.$\r$\nCes paramètres sont sauvegardés dans le fichier opencpn.ini."
+LangString Label_SetConfig_Text ${LANG_FRENCH} "Prédéfinir les paramètres pour OpenCPN.$\r$\nCes paramètres seront sauvegardés dans le fichier opencpn.ini."
 
 #LangString Page_Confirm_Title ${LANG_ENGLISH} "Ready to Install"
 LangString Page_Confirm_Title ${LANG_FRENCH} "Prêt pour l'installation"
@@ -116,7 +116,7 @@ LangString Page_Confirm_Title ${LANG_FRENCH} "Prêt pour l'installation"
 LangString Page_Confirm_Subtitle ${LANG_FRENCH} "Verifier les options d'installation"
 
 #LangString Installation_Type ${LANG_ENGLISH} "Setup type"
-LangString Installation_Type ${LANG_FRENCH} "Reglage"
+LangString Installation_Type ${LANG_FRENCH} "Type d'installation"
 
 #LangString Installation_Directory ${LANG_ENGLISH} "Destination location"
 LangString Installation_Directory ${LANG_FRENCH} "Adresse d'installation"
@@ -155,31 +155,31 @@ LangString not_selected ${LANG_FRENCH} "non sélectionné"
 LangString text_none ${LANG_FRENCH} "aucun"
 
 #LangString SecGrpResetConfig_Text ${LANG_ENGLISH} "Reset ALL OpenCPN configuration files"
-LangString SecGrpResetConfig_Text ${LANG_FRENCH} "Annuler tous les fichiers de configuration OpenCPN"
+LangString SecGrpResetConfig_Text ${LANG_FRENCH} "Annuler tous les fichiers de config. OpenCPN"
 
 #LangString SecDeleteConfigFile_Text ${LANG_ENGLISH} "Delete config file (opencpn.ini)"
-LangString SecDeleteConfigFile_Text ${LANG_FRENCH} "Supprimer le fichier configuration (opencpn.ini)"
+LangString SecDeleteConfigFile_Text ${LANG_FRENCH} "Supprime le fichier config. (opencpn.ini)"
 
 #LangString SecDeleteChartDB_Text ${LANG_ENGLISH} "Delete Chart Database file (CHRTLIST.DAT)"
-LangString SecDeleteChartDB_Text ${LANG_FRENCH} "Supprimer le fichier base cartes (CHRTLIST.DAT)"
+LangString SecDeleteChartDB_Text ${LANG_FRENCH} "Supprime le fichier base carte (CHRTLIST.DAT)"
 
 #LangString SecDeleteSENC_Text ${LANG_ENGLISH} "Delete SENC directory"
-LangString SecDeleteSENC_Text ${LANG_FRENCH} "Supprimer le répertoire SENC"
+LangString SecDeleteSENC_Text ${LANG_FRENCH} "Supprime le répertoire SENC"
 
 #LangString SecDeleteCM93_Text ${LANG_ENGLISH} "Delete CM93 Directory"
-LangString SecDeleteCM93_Text ${LANG_FRENCH} "Supprimer le répertoire CM93"
+LangString SecDeleteCM93_Text ${LANG_FRENCH} "Supprime le répertoire CM93"
 
 #LangString SecDeleteLogFile_Text ${LANG_ENGLISH} "Delete Log file (opencpn.log)"
-LangString SecDeleteLogFile_Text ${LANG_FRENCH} "Supprimer le fichier journal (opencpn.log)"
+LangString SecDeleteLogFile_Text ${LANG_FRENCH} "Supprime le fichier journal (opencpn.log)"
 
 #LangString SecDeleteNavobjFile_Text ${LANG_ENGLISH} "Delete Navobject file (navobj.xml)"
-LangString SecDeleteNavobjFile_Text ${LANG_FRENCH} "Supprimer le fichier Navobject (navobj.xml)"
+LangString SecDeleteNavobjFile_Text ${LANG_FRENCH} "Supprime le fichier Navobject (navobj.xml)"
 
 #LangString SecSetConfig_Text ${LANG_ENGLISH} "OpenCPN Configuration Settings"
 LangString SecSetConfig_Text ${LANG_FRENCH} "Configuration de OpenCPN"
 
 #LangString SecSetConfigLang_Text ${LANG_ENGLISH} "Set language to $LANG_NAME"
-LangString SecSetConfigLang_Text ${LANG_FRENCH} "Choisir la langue pour $LANG_NAME"
+LangString SecSetConfigLang_Text ${LANG_FRENCH} "Langue sélectionnée :  $LANG_NAME"
 
 #LangString SecSetConfigChartDir_Text ${LANG_ENGLISH} "Select Chart Directories"
 LangString SecSetConfigChartDir_Text ${LANG_FRENCH} "Sélectionner un répertoire de cartes"
@@ -209,19 +209,19 @@ LangString SecDeleteLogFile_Desc ${LANG_FRENCH} "Supprime le fichier journal de 
 LangString SecGrpShortcuts_Desc ${LANG_FRENCH} "Crée un raccourci dans le Menu Démarrage et sur le Bureau."
 
 #LangString SecShortcutStartmenu_Desc ${LANG_ENGLISH} "Creates shortcuts for OpenCPN and the Uninstaller in the Start Menu - configurable on the next page."
-LangString SecShortcutStartmenu_Desc ${LANG_FRENCH} "Crée un raccourci pour OpenCPN et pour le Désinstalleur dans la Menu Démarrage - configurable page suivante."
+LangString SecShortcutStartmenu_Desc ${LANG_FRENCH} "Crée un raccourci pour OpenCPN et pour la désinstallation dans la Menu Démarrage - configurable page suivante."
 
 #LangString SecShortcutDesktop_Desc ${LANG_ENGLISH} "Creates a shortcut for OpenCPN on the Desktop."
 LangString SecShortcutDesktop_Desc ${LANG_FRENCH} "Crée un raccourci pour OpenCPN sur le Bureau."
 
 #LangString SecSetConfig_Desc ${LANG_ENGLISH} "Preconfigure the language setting and the chart dir(s) for OpenCPN. When selected a separate page is shown for configuration."
-LangString SecSetConfig_Desc ${LANG_FRENCH} "Prédéfinir la langue et le(s) répertoire(s) des cartes pour OpenCPN. Après sélection, une page de configuration sera proposée."
+LangString SecSetConfig_Desc ${LANG_FRENCH} "Prédéfinit la langue et le(s) répertoire(s) des cartes pour OpenCPN. Après sélection, une page de configuration sera proposée."
 
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_FRENCH} "Supprime le répertoire de configuration et tous son contenu."
 
 #LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
-LangString Uninstall_Link ${LANG_FRENCH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
+LangString Uninstall_Link ${LANG_FRENCH} "Désinstalle  @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_FRENCH} "Installations précédentes"
@@ -239,28 +239,28 @@ LangString Page_TypeInst_Subtitle_1 ${LANG_FRENCH} "OpenCPN déjà installé.$\r
 LangString Page_TypeInst_Title_Exists ${LANG_FRENCH} "Version déjà installé"
 
 #LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_FRENCH} "OpenCPN @CPACK_PACKAGE_VERSION@ est déjà installée.$\r$\nChoisir comment vous voulez installer OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_FRENCH} "OpenCPN @CPACK_PACKAGE_VERSION@ est déjà installé.$\r$\nChoisir comment vous voulez installer OpenCPN."
 
 #LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_FRENCH} "OpenCPN @CPACK_PACKAGE_VERSION@ est déjà installée. Vous pouvez réinstaller cette version en utilisant les paramètres existants. Si vous voulez changer les paramètres , arrêtez l'installation et commencez par désinstaller la version existante . cliquez 'Next' pour continuer."
+LangString Label_TypeInst_Reinstall_Text ${LANG_FRENCH} "OpenCPN @CPACK_PACKAGE_VERSION@ est déjà installé. Vous pouvez réinstaller cette version en utilisant les paramètres existants. Si vous voulez changer les paramètres , arrêtez l'installation et commencez par désinstaller la version existante . cliquez 'Suivant' pour continuer."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_FRENCH} "Réinstaller avec les paramètres existants"
 
 #LangString Label_TypeInst_Upgrade_Text ${LANG_ENGLISH} "An older version of OpenCPN is installed on your system. Select the installation type you want to perform and click Next to continue."
-LangString Label_TypeInst_Upgrade_Text ${LANG_FRENCH} "Une ancienne version de OpenCPN est installée . Choisir l'option d'installation que vous désirez puis cliquer 'Next' pour continuer."
+LangString Label_TypeInst_Upgrade_Text ${LANG_FRENCH} "Une ancienne version de OpenCPN est installée . Choisir l'option d'installation que vous désirez puis cliquer 'Suivant' pour continuer."
 
 #LangString RB_Upgrade_TypeInst_Text ${LANG_ENGLISH} "Upgrade OpenCPN using previous settings (recommended)"
 LangString RB_Upgrade_TypeInst_Text ${LANG_FRENCH} "Mise à jour OpenCPN avec les paramètres existants (recommandé)"
 
 #LangString Label_TypeInst_Downgrade_Text ${LANG_ENGLISH} "A newer version of OpenCPN is installed on your system. It is not recommended to downgrade to an older version. Select the installation type you want to perform and click Next to continue."
-LangString Label_TypeInst_Downgrade_Text ${LANG_FRENCH} "Une version plus récente d'OpenCPN est installée.Le retour à une  ancienne version n'est pas recommandé . Choisir l'option d'installation que vous désirez puis cliquer 'Next' pour continuer."
+LangString Label_TypeInst_Downgrade_Text ${LANG_FRENCH} "Une version plus récente d'OpenCPN est installée.Le retour à une  ancienne version n'est pas recommandé . Choisir l'option d'installation que vous désirez puis cliquer 'Suivant' pour continuer."
 
 #LangString RB_Downgrade_TypeInst_Text ${LANG_ENGLISH} "Downgrade OpenCPN using previous settings (recommended)"
 LangString RB_Downgrade_TypeInst_Text ${LANG_FRENCH} "Revenir à la version précédente avec les paramètres existants (recommandé)"
 
 #LangString Label_TypeInst_Parallel_Text ${LANG_ENGLISH} "Setup has detected several installed versions of OpenCPN on your system. It is recommended to have only one version of OpenCPN installed at a time. Select the operation you want to perform and click Next to continue."
-LangString Label_TypeInst_Parallel_Text ${LANG_FRENCH} "Plusieurs versions ont été détectées. Il est recommandé de n'avoir qu'une seule version installée. Choisir l'opération que vous voulez lancer puis cliquer Next pour continuer."
+LangString Label_TypeInst_Parallel_Text ${LANG_FRENCH} "Plusieurs versions ont été détectées. Il est recommandé de n'avoir qu'une seule version installée. Choisir l'opération que vous voulez lancer puis cliquer 'Suivant' pour continuer."
 
 #LangString RB_Parallel_TypeInst_Text ${LANG_ENGLISH} "Parallel Installation (advanced users)"
 LangString RB_Parallel_TypeInst_Text ${LANG_FRENCH} "Installation parallèle (utilisateurs avertis!)"
@@ -272,10 +272,10 @@ LangString EmptyString ${LANG_FRENCH} ""
 LangString Show_Readme_Text ${LANG_FRENCH} "Montrer le journal d'installation"
 
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
-LangString Finish_Link_Text ${LANG_FRENCH} "OpenCPN Site Internet (Une connexion est requise)"
+LangString Finish_Link_Text ${LANG_FRENCH} "Site internet OpenCPN   (Une connexion est requise)"
 
 #LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
-LangString Finish_Link_URL ${LANG_FRENCH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+LangString Finish_Link_URL ${LANG_FRENCH} "http://opencpn.info/?ref=installer&utilisateurr=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_FRENCH} "Cette $Inst_Ou_Desinst nécessite un accès administrateur!$\r$\nConnectez vous en tant qu'administrateur puis reéssayez."
@@ -299,7 +299,7 @@ LangString Msg_Path_Invalid ${LANG_FRENCH} "L'adresse est invalide!$\r$\n$\r$\Ve
 LangString Msg_Path_Installation_Exists ${LANG_FRENCH} "Une version d'OpenCPN existe à l'adresse indiquée.$\r$\nSi vous voulez utiliser cette adresse, vous devez d'abords désinstaller la version existante. Sinon choisir une autre adresse."
 
 #LangString Msg_Uninstall_Old_Versions ${LANG_ENGLISH} "Setup has detected at least one older version of OpenCPN which is not compatible with the new version control.$\r$\nIt is recommended to first uninstall all of these installations (this does not affect your Config files) and clean-up the Registry.$\r$\nIf you click Yes on the next page a listbox with all installation locations will be shown and you will have the possibility to select the installations you wish to uninstall.$\r$\nIf you are unsure about possible other previous installations than those shown in the listbox, you can also perform a scan of the entire Harddisk (ATTENTION: This may take several minutes) to find all install locations (recommended).$\r$\n$\r$\nDo you want to uninstall the old version(s)?"
-LangString Msg_Uninstall_Old_Versions ${LANG_FRENCH}  "Au moins une ancienne version d'OpenCPN incompatible avec la nouvelle version à été détectée.$\r$\nnIl est recommandé de commencer par la ou les désinstaller (Vos fichiers de configuration seront conservés)  et de nettoyer le registre.$\r$\nnSi vous cliquez 'Yes'  les installations seront affichées sur la page suivante. Vous pourrez choisir celles que vous voulez désinstaller.$\r$\nSi vous pensez qu'il puisse y avoir d'autres versions que celles affichées Vous pouvez exécuter un balayage complet du disque dur (ATTENTION: Célà peut prendre plusieurs minutes) pour trouver toutes les versions (recommandé)?"
+LangString Msg_Uninstall_Old_Versions ${LANG_FRENCH}  "Au moins une ancienne version d'OpenCPN incompatible avec la nouvelle version à été détectée.$\r$\nIl est recommandé de commencer par la ou les désinstaller (Vos fichiers de configuration seront conservés)  et de nettoyer le registre.$\r$\nSi vous cliquer 'Oui'  les installations seront affichées sur la page suivante. Vous pourrez choisir celles que vous voulez désinstaller.$\r$\nSi vous pensez qu'il puisse y avoir d'autres versions que celles affichées Vous pouvez exécuter un balayage complet du disque dur (ATTENTION: Cela peut prendre plusieurs minutes) pour trouver toutes les versions (recommandé)?"
 
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_FRENCH} "Les anciennes versions ne sont pas toutes désinstallées.$\r$\n$\r$\nVoulez vous continuer?"
@@ -336,7 +336,3 @@ LangString Banner_Installation_Found_Plural ${LANG_FRENCH} "$counter_tmp install
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_FRENCH} "Supprimer le répertoire de configuration"
-
-;added on 2010-10-21
-#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
-LangString Uninstall_Folder_Name ${LANG_FRENCH} "Désinstaller"
