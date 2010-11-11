@@ -43,8 +43,8 @@
 
 PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 
-
-
+class PluginListPanel;
+class PluginPanel;
 
 
 //-----------------------------------------------------------------------------------------------------
@@ -58,7 +58,8 @@ class PlugInContainer
             PlugInContainer(){ m_pplugin = NULL;
                                m_bEnabled = false;
                                m_bInitState = false;
-                               m_bToolboxPanel = false;}
+                               m_bToolboxPanel = false;
+                               m_bitmap = NULL; }
 
             opencpn_plugin    *m_pplugin;
             bool              m_bEnabled;
@@ -72,6 +73,9 @@ class PlugInContainer
             wxString          m_short_description;
             wxString          m_long_description;
             int               m_api_version;
+            int               m_version_major;
+            int               m_version_minor;
+            wxBitmap         *m_bitmap;
 
 };
 
@@ -195,6 +199,46 @@ private:
 
 };
 
+WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
+
+class PluginListPanel: public wxPanel
+{
+public:
+      PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray );
+      ~PluginListPanel();
+
+      void SelectPlugin( PluginPanel *pi );
+
+private:
+      ArrayOfPlugIns     *m_pPluginArray;
+      ArrayOfPluginPanel  m_PluginItems;
+      PluginPanel        *m_PluginSelected;
+};
+
+class PluginPanel: public wxPanel
+{
+public:
+      PluginPanel( PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
+      ~PluginPanel();
+
+      void OnPluginSelected( wxMouseEvent &event );
+      void SetSelected( bool selected );
+      void OnPluginPreferences( wxCommandEvent& event );
+      void OnPluginEnable( wxCommandEvent& event );
+      void SetEnabled( bool enabled );
+
+private:
+      PluginListPanel *m_PluginListPanel;
+      bool             m_bSelected;
+      PlugInContainer *m_pPlugin;
+      wxStaticText    *m_pName;
+      wxStaticText    *m_pVersion;
+      wxStaticText    *m_pDescription;
+//      wxBoxSizer      *m_pButtons; 
+      wxFlexGridSizer      *m_pButtons; 
+      wxButton        *m_pButtonEnable;
+      wxButton        *m_pButtonPreferences;
+};
 
 
 

@@ -37,14 +37,6 @@
 #include "dashboard_pi.h"
 #include "icons.h"
 
-#ifndef DECL_EXP
-#ifdef __WXMSW__
-#  define DECL_EXP     __declspec(dllexport)
-#else
-#  define DECL_EXP
-#endif
-#endif
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -182,6 +174,16 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
 //
 //---------------------------------------------------------------------------------------------------------
 
+dashboard_pi::dashboard_pi(void *ppimgr)
+      :opencpn_plugin(ppimgr)
+{
+      // Create the PlugIn icons
+      initialize_images();
+
+      m_pdashboard_window = NULL;
+
+}
+
 int dashboard_pi::Init(void)
 {
       mVar = 0;
@@ -192,11 +194,6 @@ int dashboard_pi::Init(void)
       mPriDateTime = 99;
       mPriApWind = 99;
       mPriDepth = 99;
-
-      // Create the PlugIn icons
-      initialize_images();
-
-      m_pdashboard_window = NULL;
 
       m_pauimgr = GetFrameAuiManager();
 
@@ -210,8 +207,6 @@ int dashboard_pi::Init(void)
       m_toolbar_item_id  = InsertPlugInTool(_(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
             _("Dashboard"), _(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
-      m_btoolbox_panel_is_setup = false;
-
       m_pdashboard_window = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, m_toolbar_item_id);
       m_pauimgr->AddPane(m_pdashboard_window, wxAuiPaneInfo().Name(_T("Dashboard")).Caption(_("Dashboard")).CaptionVisible(true).Float().FloatingPosition(0,0).TopDockable(false).BottomDockable(false).Show(false));
       m_pauimgr->Update();
@@ -220,7 +215,7 @@ int dashboard_pi::Init(void)
       return (
            WANTS_TOOLBAR_CALLBACK    |
            INSTALLS_TOOLBAR_TOOL     |
-           INSTALLS_TOOLBOX_PAGE     |
+           WANTS_PREFERENCES         |
            WANTS_CONFIG              |
            WANTS_NMEA_SENTENCES      |
            WANTS_NMEA_EVENTS         |
@@ -260,6 +255,11 @@ int dashboard_pi::GetPlugInVersionMinor()
       return PLUGIN_VERSION_MINOR;
 }
 
+wxBitmap *dashboard_pi::GetPlugInBitmap()
+{
+      return _img_dashboard_pi;
+}
+
 wxString dashboard_pi::GetCommonName()
 {
       return _("Dashboard");
@@ -274,7 +274,7 @@ wxString dashboard_pi::GetShortDescription()
 wxString dashboard_pi::GetLongDescription()
 {
       return _("Dashboard PlugIn for OpenCPN\n\
-Provides navigation instrument display from NMEA source.\n");
+Provides navigation instrument display from NMEA source.");
 
 }
 
@@ -694,38 +694,30 @@ int dashboard_pi::GetToolbarToolCount(void)
       return 1;
 }
 
-int dashboard_pi::GetToolboxPanelCount(void)
+void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-      return 1;
-}
-
-void dashboard_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
-{
+      wxDialog *dialog = new wxDialog( parent, wxID_ANY, _("Dashboard preferences"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
       //      Build Dashboard Page for Toolbox
       int border_size = 4;
 
-      wxPanel *itemMainPanel = new wxPanel( pnotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                                wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
       wxBoxSizer* itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
-      itemMainPanel->SetSizer(itemBoxSizerMainPanel);
-
-      pnotebook->AddPage(itemMainPanel, _("Dashboard"));
+      dialog->SetSizer(itemBoxSizerMainPanel);
 
       //  Grib toolbox icon checkbox
-      wxStaticBox* itemStaticBox01 = new wxStaticBox( itemMainPanel, wxID_ANY, _("General") );
+      wxStaticBox* itemStaticBox01 = new wxStaticBox( dialog, wxID_ANY, _("General") );
       wxStaticBoxSizer* itemStaticBoxSizer01 = new wxStaticBoxSizer(itemStaticBox01, wxVERTICAL);
       itemBoxSizerMainPanel->Add(itemStaticBoxSizer01, 0, wxEXPAND|wxALL, border_size);
 
-      wxStaticBox* itemStaticBox02 = new wxStaticBox( itemMainPanel, wxID_ANY, _("Dashboard") );
+      wxStaticBox* itemStaticBox02 = new wxStaticBox( dialog, wxID_ANY, _("Dashboard") );
       wxStaticBoxSizer* itemStaticBoxSizer02 = new wxStaticBoxSizer(itemStaticBox02, wxHORIZONTAL);
       itemBoxSizerMainPanel->Add(itemStaticBoxSizer02, 0, wxEXPAND|wxALL, border_size);
       wxFlexGridSizer *itemFlexGridSizer = new wxFlexGridSizer(2);
       itemFlexGridSizer->AddGrowableCol(1);
       itemStaticBoxSizer02->Add(itemFlexGridSizer, 1, wxEXPAND|wxALL, 0);
 
-      wxStaticText* itemStaticText02 = new wxStaticText( itemMainPanel, wxID_ANY, _("Instrument width:"), wxDefaultPosition, wxDefaultSize, 0 );
+      wxStaticText* itemStaticText02 = new wxStaticText( dialog, wxID_ANY, _("Instrument width:"), wxDefaultPosition, wxDefaultSize, 0 );
       itemFlexGridSizer->Add(itemStaticText02, 0, wxEXPAND|wxALL, border_size);
-      m_pInstrumentWidth = new wxTextCtrl( itemMainPanel, wxID_ANY, wxString::Format(_T("%d"), m_iInstrumentWidth), wxDefaultPosition, wxDefaultSize );
+      m_pInstrumentWidth = new wxTextCtrl( dialog, wxID_ANY, wxString::Format(_T("%d"), m_iInstrumentWidth), wxDefaultPosition, wxDefaultSize );
       itemFlexGridSizer->Add(m_pInstrumentWidth, 0, wxALIGN_RIGHT|wxALL, border_size);
       // velocity range
       // rudder range
@@ -737,11 +729,11 @@ void dashboard_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
       imglist->Add(*_img_instrument);
       imglist->Add(*_img_dial);
 
-      wxStaticBox* itemStaticBox03 = new wxStaticBox( itemMainPanel, wxID_ANY, _("Instruments") );
+      wxStaticBox* itemStaticBox03 = new wxStaticBox( dialog, wxID_ANY, _("Instruments") );
       wxStaticBoxSizer* itemStaticBoxSizer03 = new wxStaticBoxSizer(itemStaticBox03, wxHORIZONTAL);
       itemBoxSizer03->Add(itemStaticBoxSizer03, 1, wxEXPAND|wxALL, border_size);
 
-      m_pListCtrlInstruments = new wxListCtrl( itemMainPanel, wxID_ANY, wxDefaultPosition, wxSize(-1, 200), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL );
+      m_pListCtrlInstruments = new wxListCtrl( dialog, wxID_ANY, wxDefaultPosition, wxSize(-1, 200), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL );
       itemStaticBoxSizer03->Add(m_pListCtrlInstruments, 1, wxEXPAND|wxALL, border_size);
       m_pListCtrlInstruments->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
       m_pListCtrlInstruments->InsertColumn(0, _("Instruments"));
@@ -752,27 +744,29 @@ void dashboard_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
 
       wxBoxSizer* itemBoxSizer04 = new wxBoxSizer(wxVERTICAL);
       itemStaticBoxSizer03->Add(itemBoxSizer04, 0, wxALIGN_TOP|wxALL, border_size);
-      m_pButtonAdd = new wxButton( itemMainPanel, wxID_ANY, _("Add"), wxDefaultPosition, wxSize(20, -1) );
+      m_pButtonAdd = new wxButton( dialog, wxID_ANY, _("Add"), wxDefaultPosition, wxSize(20, -1) );
       itemBoxSizer04->Add(m_pButtonAdd, 0, wxEXPAND|wxALL, border_size);
       m_pButtonAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(dashboard_pi::OnInstrumentAdd), NULL, this);
-      m_pButtonEdit = new wxButton( itemMainPanel, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize );
+      m_pButtonEdit = new wxButton( dialog, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize );
       itemBoxSizer04->Add(m_pButtonEdit, 0, wxEXPAND|wxALL, border_size);
       m_pButtonEdit->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(dashboard_pi::OnInstrumentEdit), NULL, this);
-      m_pButtonDelete = new wxButton( itemMainPanel, wxID_ANY, _("Delete"), wxDefaultPosition, wxSize(20, -1) );
+      m_pButtonDelete = new wxButton( dialog, wxID_ANY, _("Delete"), wxDefaultPosition, wxSize(20, -1) );
       itemBoxSizer04->Add(m_pButtonDelete, 0, wxEXPAND|wxALL, border_size);
       m_pButtonDelete->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(dashboard_pi::OnInstrumentDelete), NULL, this);
       itemBoxSizer04->AddSpacer(10);
-      m_pButtonUp = new wxButton( itemMainPanel, wxID_ANY, _("Up"), wxDefaultPosition, wxDefaultSize );
+      m_pButtonUp = new wxButton( dialog, wxID_ANY, _("Up"), wxDefaultPosition, wxDefaultSize );
       itemBoxSizer04->Add(m_pButtonUp, 0, wxEXPAND|wxALL, border_size);
       m_pButtonUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(dashboard_pi::OnInstrumentUp), NULL, this);
-      m_pButtonDown = new wxButton( itemMainPanel, wxID_ANY, _("Down"), wxDefaultPosition, wxDefaultSize );
+      m_pButtonDown = new wxButton( dialog, wxID_ANY, _("Down"), wxDefaultPosition, wxDefaultSize );
       itemBoxSizer04->Add(m_pButtonDown, 0, wxEXPAND|wxALL, border_size);
       m_pButtonDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(dashboard_pi::OnInstrumentDown), NULL, this);
+      wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
+      itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
       for (size_t i = 0; i < m_aInstrumentList.GetCount(); i++)
       {
@@ -785,13 +779,10 @@ void dashboard_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
       m_pListCtrlInstruments->SetColumnWidth(0, wxLIST_AUTOSIZE);
 
       UpdateButtonsState();
-      m_btoolbox_panel_is_setup = true;
+      dialog->SetMinSize(wxSize(350, -1));
+      dialog->Fit();
 
-}
-
-void dashboard_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
-{
-      if(m_btoolbox_panel_is_setup)
+      if(dialog->ShowModal() == wxID_OK)
       {
             m_iInstrumentWidth = wxAtoi(m_pInstrumentWidth->GetValue());
             m_iInstrumentCount = m_pListCtrlInstruments->GetItemCount();
@@ -804,8 +795,6 @@ void dashboard_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
             SaveConfig();
             ApplyConfig();
       }
-      m_btoolbox_panel_is_setup = false;
-
 }
 void dashboard_pi::SetColorScheme(PI_ColorScheme cs)
 {
@@ -832,7 +821,7 @@ void dashboard_pi::UpdateButtonsState()
 
 void dashboard_pi::OnInstrumentAdd(wxCommandEvent& event)
 {
-      AddInstrumentDlg pdlg(GetOCPNCanvasWindow(), wxID_ANY);
+      AddInstrumentDlg pdlg((wxWindow *)event.GetEventObject(), wxID_ANY);
 
       if (pdlg.ShowModal() == wxID_OK)
       {
@@ -934,6 +923,7 @@ bool dashboard_pi::LoadConfig(void)
             pConf->Read( _T("InstrumentWidth"), &m_iInstrumentWidth, 150 );
             int cnt;
             pConf->Read( _T("InstrumentCount"), &cnt, -1 );
+            m_aInstrumentList.Clear();
             if (cnt == -1)
             {
                   // This is the default instrument list
@@ -1054,6 +1044,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
       GetGlobalColor(_T("DILG1"), &cl);
       SetBackgroundColour(cl);
 
+//wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
       itemBoxSizer = new wxBoxSizer(wxVERTICAL);
       SetSizer(itemBoxSizer);
 
@@ -1265,7 +1256,7 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sat
       for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++)
       {
             if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_GPS) &&
-                        typeid(*(m_ArrayOfInstrument.Item(i)->m_pInstrument)) == typeid(DashboardInstrument_GPS))
+                        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_GPS)))
                   ((DashboardInstrument_GPS*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetSatInfo(cnt, seq, sats);
       }
 }

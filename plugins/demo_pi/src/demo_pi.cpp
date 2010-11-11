@@ -37,14 +37,6 @@
 
 #include "demo_pi.h"
 
-#ifndef DECL_EXP
-#ifdef __WXMSW__
-#  define DECL_EXP     __declspec(dllexport)
-#else
-#  define DECL_EXP
-#endif
-#endif
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 

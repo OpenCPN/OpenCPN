@@ -2703,7 +2703,6 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("colorscheme")]            = (char *)_img_colscheme;
     tool_xpm_hash[_T("route_manager")]          = (char *)_img_route_manager;
     tool_xpm_hash[_T("track")]                  = (char *)_img_track;
-    tool_xpm_hash[_T("grib")]                   = (char *)_img_grib;
     tool_xpm_hash[_T("mob")]                    = (char *)_img_mob;
     tool_xpm_hash[_T("mob_btn")]                = (char *)_img_mob_btn;
 

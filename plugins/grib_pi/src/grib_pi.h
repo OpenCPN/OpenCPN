@@ -39,7 +39,7 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    1
+#define     MY_API_VERSION_MINOR    2
 
 #include "../../../include/ocpn_plugin.h"
 
@@ -54,7 +54,7 @@
 class grib_pi : public opencpn_plugin
 {
 public:
-      grib_pi(void *ppimgr):opencpn_plugin(ppimgr){}
+      grib_pi(void *ppimgr);
 
 //    The required PlugIn Methods
       int Init(void);
@@ -64,7 +64,7 @@ public:
       int GetAPIVersionMinor();
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
-
+      wxBitmap *GetPlugInBitmap();
       wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
@@ -78,9 +78,7 @@ public:
 
       int GetToolbarToolCount(void);
       
-      int GetToolboxPanelCount(void);
-      void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
-      void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+      void ShowPreferencesDialog( wxWindow* parent );
 
       void OnToolbarToolCallback(int id);
       
@@ -118,9 +116,7 @@ private:
       bool              m_bGRIBShowIcon;
 
 
-      //    Controls added to Toolbox->GRIB panel
-      bool              m_bToolBoxPanel;
-
+      //    Controls added to Preferences panel
       wxCheckBox              *m_pGRIBShowIcon;
       wxCheckBox              *m_pGRIBUseHiDef;
 

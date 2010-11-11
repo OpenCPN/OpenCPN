@@ -41,14 +41,6 @@
 #include "grib_pi.h"
 #include "grib.h"
 
-#ifndef DECL_EXP
-#ifdef __WXMSW__
-#  define DECL_EXP     __declspec(dllexport)
-#else
-#  define DECL_EXP
-#endif
-#endif
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -72,7 +64,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
-#include "icons.cpp"
+#include "icons.h"
 
 
 
@@ -82,13 +74,18 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
+grib_pi::grib_pi(void *ppimgr)
+      :opencpn_plugin(ppimgr)
+{
+      // Create the PlugIn icons
+      initialize_images();
+
+}
+
 int grib_pi::Init(void)
 {
 //      printf("grib_pi Init()\n");
 
-
-      // Create the PlugIn icons
-      initialize_images();
 
       // Set some default private member parameters
       m_grib_dialog_x = 0;
@@ -97,8 +94,6 @@ int grib_pi::Init(void)
       m_grib_dialog_sy = 200;
       m_pGribDialog = NULL;
       m_pGRIBOverlayFactory = NULL;
-
-      m_bToolBoxPanel = false;
 
       ::wxDisplaySize(&m_display_width, &m_display_height);
 
@@ -129,7 +124,7 @@ int grib_pi::Init(void)
            WANTS_TOOLBAR_CALLBACK    |
            INSTALLS_TOOLBAR_TOOL     |
            WANTS_CONFIG              |
-           INSTALLS_TOOLBOX_PAGE
+           WANTS_PREFERENCES
             );
 }
 
@@ -163,6 +158,11 @@ int grib_pi::GetPlugInVersionMinor()
       return PLUGIN_VERSION_MINOR;
 }
 
+wxBitmap *grib_pi::GetPlugInBitmap()
+{
+      return _img_grib_pi;
+}
+
 wxString grib_pi::GetCommonName()
 {
       return _("GRIB");
@@ -183,7 +183,7 @@ Supported GRIB file types include:\n\
 - wind direction and speed\n\
 - significant wave height\n\
 - sea surface temperature\n\
-- surface current direction and speed.\n");
+- surface current direction and speed.");
 
 }
 
@@ -207,48 +207,36 @@ int grib_pi::GetToolbarToolCount(void)
       return 1;
 }
 
-int grib_pi::GetToolboxPanelCount(void)
+void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-      return 1;
-}
+      wxDialog *dialog = new wxDialog( parent, wxID_ANY, _("GRIB Preferences"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
 
-void grib_pi::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
-{
     //      Build GRIB. Page for Toolbox
     int border_size = 4;
 
-    wxPanel *itemPanelGRIB = new wxPanel( pnotebook, -1/*ID_PANELGRIB*/, wxDefaultPosition, wxDefaultSize,
-                                     wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
     wxBoxSizer* itemBoxSizerGRIBPanel = new wxBoxSizer(wxVERTICAL);
-    itemPanelGRIB->SetSizer(itemBoxSizerGRIBPanel);
-
-    pnotebook->AddPage(itemPanelGRIB, _("GRIB"));
-
+    dialog->SetSizer(itemBoxSizerGRIBPanel);
 
     //  Grib toolbox icon checkbox
-    wxStaticBox* itemStaticBoxSizerGRIBStatic = new wxStaticBox(itemPanelGRIB, wxID_ANY, _("GRIB"));
+    wxStaticBox* itemStaticBoxSizerGRIBStatic = new wxStaticBox(dialog, wxID_ANY, _("GRIB"));
     wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
     itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
 
-    m_pGRIBShowIcon = new wxCheckBox( itemPanelGRIB, -1, _("Show GRIB icon"), wxDefaultPosition, wxSize(-1, -1), 0 );
+    m_pGRIBShowIcon = new wxCheckBox( dialog, -1, _("Show GRIB icon"), wxDefaultPosition, wxSize(-1, -1), 0 );
     itemStaticBoxSizerGRIB->Add(m_pGRIBShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    m_pGRIBUseHiDef = new wxCheckBox( itemPanelGRIB, -1, _("Use High Definition Graphics"));
+    m_pGRIBUseHiDef = new wxCheckBox( dialog, -1, _("Use High Definition Graphics"));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
 
     m_pGRIBShowIcon->SetValue(m_bGRIBShowIcon);
     m_pGRIBUseHiDef->SetValue(m_bGRIBUseHiDef);
 
-    m_bToolBoxPanel = true;
+      wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
+      itemBoxSizerGRIBPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
+      dialog->Fit();
 
-}
-
-void grib_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
-{
-//      printf("GRIB Onclosepanel\n");
-
-      if(m_bToolBoxPanel)
+      if(dialog->ShowModal() == wxID_OK)
       {
             //    Show Icon changed value?
             if(m_bGRIBShowIcon != m_pGRIBShowIcon->GetValue())
@@ -267,7 +255,6 @@ void grib_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
 
             SaveConfig();
       }
-      m_bToolBoxPanel = false;
 
 }
 

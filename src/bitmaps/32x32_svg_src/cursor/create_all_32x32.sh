@@ -19,3 +19,7 @@ do
   echo "done."
 done
 
+for pic in default_pi
+do
+      rm $output/$pic.png
+done

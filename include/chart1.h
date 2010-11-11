@@ -433,7 +433,6 @@ public:
 
 #define TOOLTIPON_TIMER       10000
 
-//class WXDLLEXPORT wxMemoryDC;
 class ToolTipWin;
 class ocpnToolBarTool;
 

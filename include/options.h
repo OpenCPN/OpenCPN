@@ -54,6 +54,7 @@
 #include "wx/dirctrl.h"
 #include "wx/spinctrl.h"
 #include <wx/listctrl.h>
+#include "pluginmanager.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -212,9 +213,6 @@ public:
 
     void UpdateWorkArrayFromTextCtl();
 
-    void OnPluginClickItem(wxMouseEvent &event);
-    void OnPlugInSelected(wxListEvent &event);
-
 // Should we show tooltips?
     static bool ShowToolTips();
 
@@ -335,10 +333,7 @@ public:
     wxComboBox              *m_itemAISListBox;
 
 //    For "PlugIns" Panel
-    wxPanel                 *m_itemPanelPlugInManager;
-    wxBoxSizer              *itemBoxSizerPIMPanel;
-    wxListCtrl              *m_pPlugInCtrl;
-    wxTextCtrl              *m_PlugInText;
+    PluginListPanel         *m_pPlugInCtrl;
 
 //    For "Etc." Page
     wxPanel*                itemPanelAdvanced;

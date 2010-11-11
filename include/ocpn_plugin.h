@@ -28,6 +28,7 @@
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
+
 #ifndef DECL_EXP
 #ifdef __WXMSW__
 #  define DECL_EXP     __declspec(dllexport)
@@ -37,8 +38,15 @@
 #endif
 
 
+#ifdef __GNUC__
+#undef  DECL_EXP
+#define DECL_EXP       __attribute__((visibility("default")))
+#endif
+
+
+
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           0
+#define API_VERSION_MINOR           2
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -62,6 +70,7 @@ class       wxAuiManager;
 #define     WANTS_NMEA_EVENTS                   0x00000100
 #define     WANTS_AIS_SENTENCES                 0x00000200
 #define     USES_AUI_MANAGER                    0x00000400
+#define     WANTS_PREFERENCES                   0x00000800
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -182,6 +191,7 @@ public:
       virtual int GetAPIVersionMinor();
       virtual int GetPlugInVersionMajor();
       virtual int GetPlugInVersionMinor();
+      virtual wxBitmap *GetPlugInBitmap();
 
       //    These three methods should produce valid, meaningful strings always
       //    ---EVEN IF--- the PlugIn has not (yet) been initialized.
@@ -201,6 +211,8 @@ public:
       virtual int GetToolboxPanelCount(void);
       virtual void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
       virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+
+      virtual void ShowPreferencesDialog( wxWindow* parent );
 
       virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);

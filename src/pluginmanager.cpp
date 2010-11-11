@@ -30,10 +30,12 @@
 #include <wx/dir.h>
 #include <wx/filename.h>
 #include <wx/aui/aui.h>
+#include <wx/statline.h>
 
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"
+#include "bitmaps/default_pi.xpm"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -101,7 +103,8 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                         bool bver_ok = false;
                         switch(ver)
                         {
-                              case 101:                                 // TODO add more valid API versions to this case as necessary
+                              case 101:
+                              case 102:                                 // TODO add more valid API versions to this case as necessary
                                     bver_ok = true;
                                     break;
                               default:
@@ -131,6 +134,9 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
 
                               pic->m_short_description = pic->m_pplugin->GetShortDescription();
                               pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                              pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
+                              pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+                              pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
                         }
                         else
                         {
@@ -171,6 +177,9 @@ bool PlugInManager::UpdatePlugIns()
                   pic->m_bInitState = true;
                   pic->m_short_description = pic->m_pplugin->GetShortDescription();
                   pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                  pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
+                  pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+                  pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
                   bret = true;
             }
             else if(!pic->m_bEnabled && pic->m_bInitState)
@@ -218,8 +227,8 @@ bool PlugInManager::UpdatePlugIns()
 bool PlugInManager::UpdateConfig()
 {
       pConfig->SetPath(_T("/"));
-      if(pConfig->HasGroup( _T ( "PlugIns" )))
-               pConfig->DeleteGroup( _T ( "PlugIns" ) );
+//      if(pConfig->HasGroup( _T ( "PlugIns" )))
+//               pConfig->DeleteGroup( _T ( "PlugIns" ) );
 
 
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
@@ -886,6 +895,9 @@ int opencpn_plugin::GetPlugInVersionMajor()
 int opencpn_plugin::GetPlugInVersionMinor()
 {  return 0; }
 
+wxBitmap *opencpn_plugin::GetPlugInBitmap()
+{  return new wxBitmap(default_pi); }
+
 wxString opencpn_plugin::GetCommonName()
 {
       return _("BaseClassCommonName");
@@ -920,6 +932,9 @@ void opencpn_plugin::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook)
 {}
 
 void opencpn_plugin::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel)
+{}
+
+void opencpn_plugin::ShowPreferencesDialog( wxWindow* parent )
 {}
 
 void opencpn_plugin::OnToolbarToolCallback(int id)
@@ -984,5 +999,165 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
       return pret;
 }
 
+//-------------------------------------------------------------------------------
+//    PluginListPanel & PluginPanel Implementation
+//-------------------------------------------------------------------------------
 
+PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
+      :wxPanel( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL )
+{
+      m_pPluginArray = pPluginArray;
+      m_PluginSelected = NULL;
+
+      wxBoxSizer* itemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
+      SetSizer( itemBoxSizer01 );
+
+      for( unsigned int i=0 ; i < pPluginArray->GetCount() ; i++ )
+      {
+            PluginPanel *pPluginPanel = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item(i) );
+            itemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND|wxALL, 0 );
+            m_PluginItems.Add( pPluginPanel );
+
+            wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+            itemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+      }
+}
+
+PluginListPanel::~PluginListPanel()
+{
+}
+
+void PluginListPanel::SelectPlugin( PluginPanel *pi )
+{
+      if (m_PluginSelected == pi)
+            return;
+
+      if (m_PluginSelected)
+            m_PluginSelected->SetSelected(false);
+
+      m_PluginSelected = pi;
+      Layout();
+      Refresh(false);
+}
+
+PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
+      :wxPanel(parent, id, pos, size, wxBORDER_NONE)
+{
+      m_PluginListPanel = parent;
+      m_pPlugin = p_plugin;
+      m_bSelected = false;
+
+      wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
+      SetSizer(itemBoxSizer01);
+      Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(PluginPanel::OnPluginSelected), NULL, this);
+
+      wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, *m_pPlugin->m_bitmap);
+      itemBoxSizer01->Add(itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
+      itemStaticBitmap->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+      wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
+      itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
+      wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
+      itemBoxSizer02->Add(itemBoxSizer03);
+      m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
+      m_pName->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+      wxFont font = *wxNORMAL_FONT;
+      font.SetWeight(wxFONTWEIGHT_BOLD);
+      m_pName->SetFont(font);
+      itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
+      m_pVersion = new wxStaticText( this, wxID_ANY,
+            wxString::Format(_T("%d.%d"), m_pPlugin->m_version_major, m_pPlugin->m_version_minor) );
+      itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
+      m_pVersion->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+      m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
+      itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+      m_pDescription->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+
+    m_pButtons = new wxFlexGridSizer(2);
+    m_pButtons->AddGrowableCol(1);
+
+//      m_pButtons = new wxBoxSizer(wxHORIZONTAL);
+      itemBoxSizer02->Add( m_pButtons, 1, wxEXPAND|wxALL, 0 );
+      m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
+      m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+      m_pButtonEnable = new wxButton( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+      m_pButtons->Add(m_pButtonEnable, 0, wxALIGN_RIGHT|wxALL, 2);
+      m_pButtonPreferences->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginPreferences), NULL, this);
+      m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
+
+      SetSelected( m_bSelected );
+}
+
+PluginPanel::~PluginPanel()
+{
+}
+
+void PluginPanel::OnPluginSelected( wxMouseEvent &event )
+{
+      SetSelected( true );
+      m_PluginListPanel->SelectPlugin( this );
+}
+
+void PluginPanel::SetSelected( bool selected )
+{
+      m_bSelected = selected;
+      if (selected)
+      {
+            SetBackgroundColour(GetGlobalColor(_T("DILG1")));
+            m_pDescription->SetLabel( m_pPlugin->m_long_description );
+            m_pButtons->Show(true);
+            Layout();
+            //FitInside();
+      }
+      else
+      {
+            SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+            m_pDescription->SetLabel( m_pPlugin->m_short_description );
+            m_pButtons->Show(false);
+            Layout();
+            //FitInside();
+      }
+      // StaticText color change upon selection
+      SetEnabled( m_pPlugin->m_bEnabled );
+}
+
+void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
+{
+      if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) )
+      {
+            m_pPlugin->m_pplugin->ShowPreferencesDialog( this );
+      }
+}
+
+void PluginPanel::OnPluginEnable( wxCommandEvent& event )
+{
+      SetEnabled(!m_pPlugin->m_bEnabled);
+}
+
+void PluginPanel::SetEnabled( bool enabled )
+{
+      if (m_pPlugin->m_bEnabled != enabled)
+      {
+            m_pPlugin->m_bEnabled = enabled;
+            if(s_ppim)
+                  s_ppim->UpdatePlugIns();
+      }
+      if (!enabled && !m_bSelected)
+      {
+            m_pName->SetForegroundColour(*wxLIGHT_GREY);
+            m_pVersion->SetForegroundColour(*wxLIGHT_GREY);
+            m_pDescription->SetForegroundColour(*wxLIGHT_GREY);
+            m_pButtonEnable->SetLabel(_("Enable"));
+      }
+      else
+      {
+            m_pName->SetForegroundColour(*wxBLACK);
+            m_pVersion->SetForegroundColour(*wxBLACK);
+            m_pDescription->SetForegroundColour(*wxBLACK);
+            if ( enabled )
+                  m_pButtonEnable->SetLabel(_("Disable"));
+            else
+                  m_pButtonEnable->SetLabel(_("Enable"));
+      }
+      m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
+}
 

@@ -39,13 +39,14 @@
 #define     PLUGIN_VERSION_MINOR    0
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    1
+#define     MY_API_VERSION_MINOR    2
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include <wx/aui/aui.h>
+//wx2.9 #include <wx/wrapsizer.h>
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
@@ -88,7 +89,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 class dashboard_pi : public wxEvtHandler, opencpn_plugin
 {
 public:
-      dashboard_pi(void *ppimgr):opencpn_plugin(ppimgr){}
+      dashboard_pi(void *ppimgr);
 
 //    The required PlugIn Methods
       int Init(void);
@@ -98,7 +99,7 @@ public:
       int GetAPIVersionMinor();
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
-
+      wxBitmap *GetPlugInBitmap();
       wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
@@ -109,9 +110,7 @@ public:
       void SetPositionFix(PlugIn_Position_Fix &pfix);
       int GetToolbarToolCount(void);
       void OnToolbarToolCallback(int id);
-      int GetToolboxPanelCount(void);
-      void SetupToolboxPanel(int page_sel, wxNotebook* pnotebook);
-      void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+      void ShowPreferencesDialog( wxWindow* parent );
       void SetColorScheme(PI_ColorScheme cs);
 
       void OnInstrumentSelected(wxListEvent& event);
@@ -131,7 +130,6 @@ private:
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;
       int              m_toolbar_item_id;
-      bool             m_btoolbox_panel_is_setup;
 
       DashboardWindow       *m_pdashboard_window;
       int               m_show_id;
@@ -198,6 +196,7 @@ private:
       wxAuiManager         *m_pauimgr;
       int                  m_toolbar_item_id;
 
+//wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;
       wxArrayOfInstrument  m_ArrayOfInstrument;
 };

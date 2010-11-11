@@ -247,7 +247,7 @@ private:
       bool               (*m_fn_gps_waiting)(struct gps_data_t *);
       void               (*m_fn_gps_set_raw_hook)(struct gps_data_t *, void (*)(struct gps_data_t *, char *, size_t));
       int                (*m_fn_gps_stream)(struct gps_data_t *, unsigned int, void *);
-
+      bool               m_bgps_present;
 
 
 DECLARE_EVENT_TABLE()

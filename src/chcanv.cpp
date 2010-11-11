@@ -7876,40 +7876,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         {
                               pWayPointMan->DestroyWaypoint(m_pFoundRoutePoint);
                               m_pFoundRoutePoint = NULL;
-/*
-                             // Get a list of all routes containing this point
-                             // and remove the point from them all
-                              wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining(m_pFoundRoutePoint);
-                              if(proute_array)
-                              {
-                                    for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
-                                    {
-                                          Route *pr = (Route *)proute_array->Item(ir);
-                                          pr->RemovePoint ( m_pFoundRoutePoint );
 
-                                    }
-
-                              //    Scrub the routes, looking for one-point routes
-                                    for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
-                                    {
-                                          Route *pr = (Route *)proute_array->Item(ir);
-                                          if(pr->GetnPoints() < 2)
-                                          {
-                                                pConfig->DeleteConfigRoute ( pr );
-                                                g_pRouteMan->DeleteRoute ( pr );
-                                                m_pSelectedRoute = NULL;
-                                          }
-                                    }
-
-                                    delete proute_array;
-                              }
-
-                              // Now it is safe to delete the point
-                              pConfig->DeleteWayPoint ( m_pFoundRoutePoint );
-                              pSelect->DeleteSelectablePoint ( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
-                              delete m_pFoundRoutePoint;
-                              m_pFoundRoutePoint = NULL;
-*/
                               //    Selected route may have been deleted as one-point route, so check it
                               if(!g_pRouteMan->IsRouteValid(m_pSelectedRoute))
                                     m_pSelectedRoute = NULL;
@@ -7919,6 +7886,10 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                                   pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                                   pRoutePropDialog->UpdateProperties();
                               }
+
+                              if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                                    pRouteManagerDialog->UpdateWptListCtrl();
+
                         }
 
                         break;

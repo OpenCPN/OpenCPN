@@ -48,7 +48,6 @@
 #include "cm93.h"
 
 #include "navutil.h"
-#include "pluginmanager.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -163,107 +162,6 @@ extern wxString         g_locale;
 
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
-
-//    Inline icons for PlugIn Manager Panel
-/* XPM */
-static const char *chex[]={
-      "24 17 29 1",
-      "# c #1c5180",
-      "x c #21a121",
-      "a c #dcdcd7",
-      "b c #deded9",
-      "c c #e0e0db",
-      "r c #e2e2dd",
-      "d c #e2e2de",
-      "s c #e3e3df",
-      "t c #e5e5e1",
-      "e c #e5e5e2",
-      "u c #e7e7e3",
-      "f c #e8e8e5",
-      "v c #eaeae6",
-      "g c #ecece9",
-      ". c #eeeff2",
-      "h c #efefec",
-      "i c #f1f1ef",
-      "j c #f3f3f1",
-      "w c #f5f5f3",
-      "k c #f5f5f4",
-      "l c #f7f7f6",
-      "m c #f9f9f8",
-      "y c #fafaf9",
-      "n c #fbfbfa",
-      "z c #fcfcfb",
-      "o c #fdfdfc",
-      "A c #fdfdfd",
-      "p c #fefefe",
-      "q c #ffffff",
-      "........................",
-      "........................",
-      "......#############.....",
-      "......#rrrstuvghij#.....",
-      "......#rrstuvghijw#.....",
-      "......#rstuvghixwl#.....",
-      "......#stuvghixxlm#.....",
-      "......#tuxghixxxmy#.....",
-      "......#uvxxixxxmyz#.....",
-      "......#vgxxxxxmyzA#.....",
-      "......#ghixxxmyzAp#.....",
-      "......#hijwxmyzApq#.....",
-      "......#ijwlmyzApqq#.....",
-      "......#jwlmyzApqqq#.....",
-      "......#############.....",
-      "........................",
-      "........................"};
-
-/* XPM */
-static const char *unchex[]={
-      "24 17 29 1",
-      "# c #1c5180",
-      "x c #21a121",
-      "a c #dcdcd7",
-      "b c #deded9",
-      "c c #e0e0db",
-      "r c #e2e2dd",
-      "d c #e2e2de",
-      "s c #e3e3df",
-      "t c #e5e5e1",
-      "e c #e5e5e2",
-      "u c #e7e7e3",
-      "f c #e8e8e5",
-      "v c #eaeae6",
-      "g c #ecece9",
-      ". c #eeeff2",
-      "h c #efefec",
-      "i c #f1f1ef",
-      "j c #f3f3f1",
-      "w c #f5f5f3",
-      "k c #f5f5f4",
-      "l c #f7f7f6",
-      "m c #f9f9f8",
-      "y c #fafaf9",
-      "n c #fbfbfa",
-      "z c #fcfcfb",
-      "o c #fdfdfc",
-      "A c #fdfdfd",
-      "p c #fefefe",
-      "q c #ffffff",
-      "........................",
-      "........................",
-      "......#############.....",
-      "......#aaabcdefghi#.....",
-      "......#aabcdefghij#.....",
-      "......#abcdefghijk#.....",
-      "......#bcdefghijkl#.....",
-      "......#cdefghijklm#.....",
-      "......#defghijklmn#.....",
-      "......#efghijklmno#.....",
-      "......#fghijklmnop#.....",
-      "......#ghijklmnopq#.....",
-      "......#hijklmnopqq#.....",
-      "......#ijklmnopqqq#.....",
-      "......#############.....",
-      "........................",
-      "........................"};
 
 extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
@@ -668,7 +566,6 @@ void options::CreateControls()
 #ifdef BUILD_WITH_LIBGPS
       m_itemNMEAListBox->Append( _T("Network LIBGPS"));
 #endif
-
 
 #ifndef OCPN_DISABLE_SOCKETS
       m_itemNMEAListBox->Append( _T("Network GPSD"));
@@ -1408,65 +1305,8 @@ void options::CreateControls()
     // toh, 2009.02.14; end
 
     //      Build the PlugIn Manager Panel
-    m_itemPanelPlugInManager = new wxPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize,
-                                     wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizerPIMPanel = new wxBoxSizer(wxVERTICAL);
-    m_itemPanelPlugInManager->SetSizer(itemBoxSizerPIMPanel);
-
-    itemNotebook4->AddPage(m_itemPanelPlugInManager, _("PlugIns"));
-
-    m_pPlugInCtrl = new wxListCtrl(m_itemPanelPlugInManager, -1, wxDefaultPosition, wxSize(400, -1),
-                                      wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES);
-
-    itemBoxSizerPIMPanel->Add(m_pPlugInCtrl, 1, wxEXPAND|wxALL, 5);
-
-
-    m_PlugInText = new wxTextCtrl(m_itemPanelPlugInManager, -1, _T(""),
-                                  wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    itemBoxSizerPIMPanel->Add(m_PlugInText, 1, wxEXPAND|wxALL, 5);
-
-
-    //      Connect some dynamic events
-    m_pPlugInCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnPluginClickItem), NULL, this);
-    m_pPlugInCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler(options::OnPlugInSelected), NULL, this);
-
-
-    // create an image list for the list with 2 elements as simulator for a checkbox
-    wxImageList *imglist = new wxImageList(24, 17, true, 2);
-    imglist->Add(wxBitmap(chex));
-    imglist->Add(wxBitmap(unchex));
-
-    m_pPlugInCtrl->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
-
-
-    m_pPlugInCtrl->InsertColumn( 0, _("Enable"), wxLIST_FORMAT_LEFT, 64 );
-    m_pPlugInCtrl->InsertColumn( 1, _("PlugIn Name"), wxLIST_FORMAT_LEFT, 120 );
-    m_pPlugInCtrl->InsertColumn( 2, _("Description"), wxLIST_FORMAT_LEFT, 350 );
-
-
-    //      Fill the list control
-    wxListItem li;
-    int index = 0;
-
-    ArrayOfPlugIns *pPlugInArray = g_pi_manager->GetPlugInArray();
-    for(unsigned int i=0 ; i < pPlugInArray->GetCount() ; i++)
-    {
-          li.SetId(index);
-          li.SetImage(1);
-          li.SetData(pPlugInArray->Item(i));
-
-          li.SetImage(pPlugInArray->Item(i)->m_bEnabled ? 0 : 1);
-
-          long idx = m_pPlugInCtrl->InsertItem(li);
-
-
-          wxString pi_name = pPlugInArray->Item(i)->m_common_name;
-          m_pPlugInCtrl->SetItem(idx, 1, pi_name);
-
-          wxString pi_short = pPlugInArray->Item(i)->m_short_description;
-          m_pPlugInCtrl->SetItem(idx, 2, pi_short);
-    }
-
+    m_pPlugInCtrl = new PluginListPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize, g_pi_manager->GetPlugInArray() );
+    itemNotebook4->AddPage( m_pPlugInCtrl, _("PlugIns") );
 
 
     //      PlugIns can add panels, too
@@ -1478,38 +1318,6 @@ void options::CreateControls()
 
     SetColorScheme((ColorScheme)0);
 
-}
-
-
-void options::OnPluginClickItem(wxMouseEvent &event)
-{
-      wxPoint pos = event.GetPosition();
-      int flags = 0;
-      long clicked_index = m_pPlugInCtrl->HitTest(pos, flags);
-
-      //    Clicking Enable column?
-      if (clicked_index > -1 && event.GetX() < m_pPlugInCtrl->GetColumnWidth(0))
-      {
-            // Process the clicked item
-            PlugInContainer *pic = (PlugInContainer *)m_pPlugInCtrl->GetItemData(clicked_index);
-
-            pic->m_bEnabled = !pic->m_bEnabled;
-
-            m_pPlugInCtrl->SetItemImage(clicked_index, pic->m_bEnabled ?  0:1);
-      }
-
-      // Allow wx to process...
-      event.Skip();
-}
-
-void options::OnPlugInSelected(wxListEvent &event)
-{
-      long clicked_index = event.m_itemIndex;
-    // Process the clicked item
-      PlugInContainer *pic = (PlugInContainer *)m_pPlugInCtrl->GetItemData(clicked_index);
-
-      m_PlugInText->Clear();
-      m_PlugInText->ChangeValue(pic->m_long_description);
 }
 
 
@@ -2765,8 +2573,8 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
       else if(lang_canonical == _T("pt_BR")) {dir_suffix = _T("pt_BR"); return_string = wxString("Português Brasileiro", wxConvUTF8);}
       else if(lang_canonical == _T("ru_RU")) {dir_suffix = _T("ru");    return_string = wxString("Русский", wxConvUTF8);}
       else if(lang_canonical == _T("sv_SE")) {dir_suffix = _T("sv");    return_string = wxString("Svenska", wxConvUTF8);}
-      else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norwegian Bokmål", wxConvUTF8);}
-
+	  else if(lang_canonical == _T("fi_FI")) {dir_suffix = _T("fi");   return_string = wxString("Suomalainen", wxConvUTF8);}
+	  else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norske", wxConvUTF8);}
       else
       {
             dir_suffix = lang_canonical;
