@@ -103,7 +103,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                         bool bver_ok = false;
                         switch(ver)
                         {
-                              case 101:
+//                              case 101:
                               case 102:                                 // TODO add more valid API versions to this case as necessary
                                     bver_ok = true;
                                     break;
