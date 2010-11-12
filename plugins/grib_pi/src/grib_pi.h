@@ -49,7 +49,7 @@
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-#define GRIB_TOOL_POSITION    15
+#define GRIB_TOOL_POSITION    13
 
 class grib_pi : public opencpn_plugin
 {

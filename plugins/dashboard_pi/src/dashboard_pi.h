@@ -61,7 +61,7 @@
 class DashboardWindow;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION 14
+#define DASHBOARD_TOOL_POSITION 12
 
 class DashboardInstrumentContainer
 {
