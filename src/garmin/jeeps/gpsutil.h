@@ -40,6 +40,7 @@ void   GPS_Diag(const char *fmt, ...);
 
 void   GPS_Enable_Diagnose(void);
 void   GPS_Disable_Diagnose(void);
+char * GetDeviceLastError(void);
 
 
 #endif

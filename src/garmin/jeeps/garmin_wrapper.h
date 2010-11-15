@@ -43,5 +43,7 @@ wxString Garmin_GPS_GetSaveString();
 int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, RoutePointList *wplist);
 int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress);
 
+wxString GetLastGarminError(void);
+
 #endif      /* garmin_wrapper_h */
 

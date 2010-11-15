@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include <time.h>
 
+extern char last_error[];
+
 #if 0
 #define GARMULATOR 1
 char *rxdata[] = {
@@ -52,6 +54,16 @@ char *rxdata[] = {
 	"10 0c 02 07 00 eb 10 03" /* XFERCMP */
 };
 #endif
+
+gpsdevh *g_gps_devh;
+
+void VerifySerialPortClosed()
+{
+      if(g_gps_devh)
+            GPS_Device_Off(g_gps_devh);
+}
+
+
 /*
  * termio on Cygwin is apparently broken, so we revert to Windows serial.
  */
@@ -68,6 +80,12 @@ typedef struct {
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
+      va_list argp;
+      va_start(argp, mb);
+      sprintf(last_error, mb, argp);
+      va_end(argp);
+
+/*
 	va_list ap;
 	char msg[200];
 	char *s;
@@ -79,9 +97,10 @@ void GPS_Serial_Error(const char *mb, ...)
 	*s++ = ':';
 	*s++ = ' ';
 
-//	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0,
-//			GetLastError(), 0, s, sizeof(msg) - b - 2, 0 );
-//	GPS_Error(msg);
+	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0,
+			GetLastError(), 0, s, sizeof(msg) - b - 2, 0 );
+	GPS_Error(msg);
+*/
 }
 
 int32 GPS_Serial_On(const char *port, gpsdevh **dh)
@@ -97,6 +116,8 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 	const char *xname = fix_win_serial_name(port);
 	win_serial_data *wsd = xcalloc(sizeof (win_serial_data), 1);
 	*dh = (gpsdevh*) wsd;
+      g_gps_devh = (gpsdevh*) wsd;        // save a global copy
+
 	GPS_Diag("Opening %s\n", xname);
 #ifdef _UNICODE
 	MultiByteToWideChar( 0, 0, xname, -1, wport, 80);
@@ -107,11 +128,10 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 #endif
 
 	if (comport == INVALID_HANDLE_VALUE) {
-		GPS_Serial_Error("CreateFile on '%s' failed", xname);
+		GPS_Serial_Error("CreateFile failed");
 		gps_errno = SERIAL_ERROR;
 		return 0;
 	}
-
 	tio.DCBlength = sizeof(DCB);
 	GetCommState (comport, &tio);
 	tio.BaudRate = CBR_9600;
@@ -170,6 +190,8 @@ int32 GPS_Serial_Off(gpsdevh *dh)
 	CloseHandle(wsd->comport);
 	wsd->comport = INVALID_HANDLE_VALUE;
 	xfree(wsd);
+      g_gps_devh = NULL;        // save a global copy
+
 	return 1;
 }
 
@@ -305,6 +327,14 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
+      va_list argp;
+      va_start(argp, mb);
+
+      sprintf(last_error, mb, argp);
+
+      va_end(argp);
+
+//      GPS_Error(mb);
 /*dsr
 	va_list ap;
 	char msg[200];
@@ -501,6 +531,7 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 {
     posix_serial_data *psd = xcalloc(sizeof (posix_serial_data), 1);
     *dh = (gpsdevh*) psd;
+    g_gps_devh = (gpsdevh*) psd;        // save a global copy
 
     if(!GPS_Serial_Open((gpsdevh *) psd,port))
     {
@@ -534,6 +565,8 @@ int32 GPS_Serial_Off(gpsdevh *dh)
 	return 0;
     }
     dh = NULL;
+
+    g_gps_devh = NULL;        // save a global copy
 
     return 1;
 }

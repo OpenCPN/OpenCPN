@@ -9,6 +9,8 @@ extern "C"
 
 #include "garmin_gps.h"
 
+void VerifyPortClosed();
+
 int32  GPS_Init(const char *port);
 
 int32  GPS_A100_Get(const char *port, GPS_PWay **way, int (*cb)(int ct, GPS_PWay *));

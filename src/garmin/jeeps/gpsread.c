@@ -164,7 +164,7 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 			GPS_Diag(" ");
 			for (i = 0; i < (*packet)->n; i++) {
 			   char c = (*packet)->data[i];
-		   	   GPS_Diag("%c", isalnum(c) ? c  : '.');
+		   	   GPS_Diag("%c", c); //isalnum(c) ? c  : '.');
 			}
 			GPS_Diag(" ");
 		    }
@@ -209,13 +209,13 @@ int32 GPS_Serial_Get_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec)
 
     if(LINK_ID[0].Pid_Ack_Byte != (*rec)->type)
     {
-	gps_error = FRAMING_ERROR;
+          gps_errno = FRAMING_ERROR;
 /* rjl	return 0; */
     }
 
     if(*(*rec)->data != (*tra)->type)
     {
-	gps_error = FRAMING_ERROR;
+          gps_errno = FRAMING_ERROR;
 	return 0;
     }
 

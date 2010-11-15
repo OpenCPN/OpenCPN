@@ -35,6 +35,15 @@ int32 gps_user    = 0;
 int32 gps_show_bytes = 0;
 int32 gps_errno = 0;
 
+char last_error[256];
+
+
+char * GetDeviceLastError(void)
+{
+      return last_error;
+}
+
+
 /* @func GPS_Util_Little ***********************************************
 **
 ** Determine endian nature of host
@@ -511,6 +520,8 @@ void GPS_Error(char *fmt, ...)
     fprintf(stderr, "[ERROR] ");
     vfprintf(stderr, fmt, argp);
     fprintf(stderr, "\n");
+
+    sprintf(last_error, fmt, argp);
 
     va_end(argp);
     return;

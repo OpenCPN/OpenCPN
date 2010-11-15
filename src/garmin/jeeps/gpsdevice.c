@@ -42,7 +42,10 @@ int32  GPS_Device_On(const char *port, gpsdevh **fd)
 
 int32  GPS_Device_Off(gpsdevh * fd)
 {
-	return (ops->Device_Off)(fd);
+      if(ops)
+	     return (ops->Device_Off)(fd);
+      else
+            return -1;
 }
 
 int32  GPS_Device_Wait(gpsdevh * fd)

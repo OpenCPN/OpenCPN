@@ -903,6 +903,7 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             //    Request that the thread should pause
             m_brequest_thread_pause = true;
 
+            ::wxSleep(1);
             bool b_gotPort = false;
             //    Poll, waiting for the Mutex.  Abort after 5 seconds
             long time = ::wxGetLocalTime();
@@ -941,6 +942,10 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
                   wxString err;
                   err.Printf(_T("  Error Code is %d"), v_init);
                   msg += err;
+
+                  msg += _T("\n  LastGarminError is: ");
+                  msg += GetLastGarminError();
+
                   wxLogMessage(msg);
 
                   ret_bool = false;
@@ -948,11 +953,12 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             }
             else
             {
-                  wxString msg(_T("Sending Route to Garmin GPS on port: "));
+                  wxString msg(_T("Sent Route to Garmin GPS on port: "));
                   msg +=com_name;
                   msg += _T("\n  Unit identifies as: ");
                   wxString GPS_Unit = Garmin_GPS_GetSaveString();
                   msg += GPS_Unit;
+
                   wxLogMessage(msg);
             }
 
@@ -970,6 +976,10 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
                   msg +=com_name;
                   wxString err;
                   err.Printf(_T("  Error Code is %d"), ret_val);
+
+                  msg += _T("\n  LastGarminError is: ");
+                  msg += GetLastGarminError();
+
                   msg += err;
                   wxLogMessage(msg);
 
@@ -1141,14 +1151,18 @@ bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGaug
                   wxString err;
                   err.Printf(_T("  Error Code is %d"), v_init);
                   msg += err;
-                  wxLogMessage(msg);
+
+                  msg += _T("\n  LastGarminError is: ");
+                  msg += GetLastGarminError();
+
+                   wxLogMessage(msg);
 
                   ret_bool = false;
                   goto ret_point;
             }
             else
             {
-                  wxString msg(_T("Sending waypoint(s) to Garmin GPS on port: "));
+                  wxString msg(_T("Sent waypoint(s) to Garmin GPS on port: "));
                   msg +=com_name;
                   msg += _T("\n  Unit identifies as: ");
                   wxString GPS_Unit = Garmin_GPS_GetSaveString();
@@ -1167,6 +1181,10 @@ bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGaug
                   wxString err;
                   err.Printf(_T("  Error Code is %d"), ret_val);
                   msg += err;
+
+                  msg += _T("\n  LastGarminError is: ");
+                  msg += GetLastGarminError();
+
                   wxLogMessage(msg);
 
                   ret_bool = false;
@@ -1597,6 +1615,13 @@ void *OCP_NMEA_Thread::Entry()
             goto thread_exit;
       }
 
+      if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
+      {
+            wxString msg(_T("NMEA input device failed to lock Mutex on port : "));
+            msg.Append(m_PortName);
+            ThreadMessage(msg);
+            goto thread_exit;
+      }
 
       not_done = true;
       bool nl_found;

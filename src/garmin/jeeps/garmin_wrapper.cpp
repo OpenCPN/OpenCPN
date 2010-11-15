@@ -26,9 +26,24 @@
 
 #define GPS_DEBUG
 
+extern char last_error[];
+extern gpsdevh *g_gps_devh;
+
+
+wxString GetLastGarminError(void)
+{
+      return wxString(GetDeviceLastError(),  wxConvUTF8);
+}
+
+/*
+      Verify and force port closure after every called routine.
+      This is necessary for aborts in Windows environment, since ports cannot be multiply opened.
+*/
+
 /*  Wrapped interface from higher level objects   */
 int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
 {
+      int ret;
 #ifdef GPS_DEBUG
       if (getenv("OPENCPN_GPS_ERROR") != NULL)
 	GPS_Enable_Error();
@@ -39,7 +54,17 @@ int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
       if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
 	GPS_Enable_Diagnose();
 #endif
-      return GPS_Init(port_name.mb_str());
+//      GPS_Enable_Diagnose();
+      GPS_Enable_Error();
+      char m[1];
+      m[0] = '\0';
+
+      GPS_Error(m);
+
+      ret = GPS_Init(port_name.mb_str());
+      VerifyPortClosed();
+
+      return ret;
 }
 
 wxString Garmin_GPS_GetSaveString()
@@ -86,6 +111,7 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
 
       free(ppway);
 
+      VerifyPortClosed();
       return ret_val;
 }
 
@@ -100,7 +126,7 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
 //
 // The total number of elements in the array (route header packet and
 // all waypoint packets) is returned in the "size" argument.
- 
+
 GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
 {
       RoutePointList *wplist = pr->pRoutePointList;
@@ -158,7 +184,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
 //
 // The total number of elements in the array (route header packet, link
 // packets and waypoint packets) is returned in the "size" argument.
- 
+
 GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
 {
       RoutePointList *wplist = pr->pRoutePointList;
@@ -192,7 +218,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       //    Even elements 2,4,6... are links
       for(int i=1 ; i < *size ; i++)
       {
-	    if (i % 2 == 1) /* Odd */ 
+	    if (i % 2 == 1) /* Odd */
 	    {
 	          GPS_PWay pway = ppway[i];
                   wxRoutePointListNode *node = wplist->Item((i-1)/2);
@@ -307,6 +333,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             pProgress->Update();
       }
 
+      VerifyPortClosed();
       return ret_val;
 }
 

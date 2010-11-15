@@ -112,6 +112,14 @@ int	gps_is_usb;
 double	gps_save_version;
 char	gps_save_string[GPS_ARB_LEN];
 
+void  VerifySerialPortClosed(void);  /*  In gpsserial.c  */
+
+void VerifyPortClosed()
+{
+      VerifySerialPortClosed();
+}
+
+
 /*
  * Internal function to copy what Garmin describes as a "Character Array".
  * Dest buffer is padded with spaces and must not contain nulls.  Optionally
@@ -206,13 +214,13 @@ static int32 GPS_A000(const char *port)
     if(!GPS_Write_Packet(fd,tra))
     {
           GPS_Error("GPS_Write_Packet error");
-          return SERIAL_ERROR;
+          goto carry_out;
     }
 
     if(!GPS_Get_Ack(fd, &tra, &rec))
     {
           GPS_Error("GPS_Get_Ack error");
-          return SERIAL_ERROR;
+          goto carry_out;
     }
 
     GPS_Packet_Read(fd, &rec);
@@ -288,7 +296,7 @@ static int32 GPS_A000(const char *port)
 	GPS_Warning("A001 protocol not supported");
 	id = GPS_Protocol_Version_Change(id,version);
 	if(GPS_Protocol_Table_Set(id)<0)
-	    return GPS_UNSUPPORTED;
+            goto carry_out;
     }
     else
     {
@@ -351,6 +359,7 @@ carry_on:
     if(gps_pvt_transfer != -1)
 	GPS_A800_Off(port,&fd);
 
+carry_out:
     GPS_Packet_Del(&tra);
     GPS_Packet_Del(&rec);
 
