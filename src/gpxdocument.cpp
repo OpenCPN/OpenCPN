@@ -49,8 +49,18 @@ WX_DEFINE_LIST(ListOfGpxTracks);
 
 GpxDocument::GpxDocument(const wxString &filename)
 {
-      LoadFile(filename.ToUTF8());
+      LoadFile(filename);
       //FIXME: we should probably validate if the file is GPX DTD compliant and die if not... BUT we would need a dependency to some validating parser.
+}
+
+bool GpxDocument::LoadFile(const wxString &filename)
+{
+      return TiXmlDocument::LoadFile((const char*)filename.mb_str());
+}
+
+bool GpxDocument::SaveFile(const wxString &filename)
+{
+      return TiXmlDocument::SaveFile((const char*)filename.mb_str());
 }
 
 GpxDocument::GpxDocument()

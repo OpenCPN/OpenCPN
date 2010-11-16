@@ -3028,7 +3028,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
             if ( ::wxFileExists ( m_sNavObjSetFile ) )
             {
-		      m_pNavObjectInputSet->LoadFile ( m_sNavObjSetFile.ToUTF8() );
+		      m_pNavObjectInputSet->LoadFile ( m_sNavObjSetFile );
                   m_pNavObjectInputSet->LoadAllGPXObjects();
             }
 
@@ -3041,7 +3041,7 @@ int MyConfig::LoadMyConfig ( int iteration )
                   //That's why this file still exists...
                   //Let's reconstruct the unsaved changes
                   NavObjectCollection *pNavObjectChangesSet = new NavObjectCollection();
-                  pNavObjectChangesSet->LoadFile ( m_sNavObjSetChangesFile.ToUTF8() );
+                  pNavObjectChangesSet->LoadFile ( m_sNavObjSetChangesFile );
                   //reconstruct route changes
                   TiXmlElement *gpx_element = pNavObjectChangesSet->RootElement()->FirstChildElement("rte");
                   while (gpx_element)
@@ -3695,7 +3695,7 @@ void MyConfig::UpdateNavObj(void)
       pNavObjectSet->CreateNavObjGPXRoutes();
       pNavObjectSet->CreateNavObjGPXTracks();
 
-	pNavObjectSet->SaveFile( m_sNavObjSetFile.ToUTF8() );
+	pNavObjectSet->SaveFile( m_sNavObjSetFile );
 
       pNavObjectSet->Clear();
       delete pNavObjectSet;
@@ -3709,7 +3709,7 @@ void MyConfig::UpdateNavObj(void)
 
 void MyConfig::StoreNavObjChanges(void)
 {
-      m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile.ToUTF8() );
+      m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile );
 }
 
 bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
@@ -3748,7 +3748,7 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
                   gpxroot->AddTrack(CreateGPXTrk ( pRoute ));
             }
 
-            gpx->SaveFile ( fn.GetFullPath().ToUTF8() );
+            gpx->SaveFile ( fn.GetFullPath() );
             gpx->Clear();
             delete gpx;
             return true;
@@ -3788,7 +3788,7 @@ bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
             {
                   gpxroot->AddWaypoint(::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ));
             }
-            gpx->SaveFile ( fn.GetFullPath().ToUTF8() );
+            gpx->SaveFile ( fn.GetFullPath() );
 
             gpx->Clear();
             delete gpx;
@@ -3852,7 +3852,7 @@ void MyConfig::ExportGPX ( wxWindow* parent )
                   node1 = node1->GetNext();
             }
 
-            gpx->SaveFile(fn.GetFullPath().ToUTF8());
+            gpx->SaveFile(fn.GetFullPath());
             gpx->Clear();
             delete gpx;
       }
@@ -3992,7 +3992,7 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                   if ( ::wxFileExists ( path ) )
                   {
                         GpxDocument *pXMLNavObj = new GpxDocument();
-				if ( pXMLNavObj->LoadFile ( path.ToUTF8() ) )
+				if ( pXMLNavObj->LoadFile ( path ) )
                         {
 					TiXmlElement *root = pXMLNavObj->RootElement();
 
@@ -4004,7 +4004,7 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                     TiXmlNode *child;
                                     for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
                                     {
-										  wxString ChildName = wxString::FromUTF8( child->Value());
+                                           wxString ChildName = wxString::FromUTF8( child->Value());
                                           if ( ChildName == _T ( "wpt" ) )
                                           {
                                                 RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"));

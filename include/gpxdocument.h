@@ -46,6 +46,8 @@ class GpxDocument : public TiXmlDocument
 public:
       GpxDocument();
       GpxDocument(const wxString &filename);
+      bool LoadFile(const wxString &filename);
+      bool SaveFile(const wxString &filename);
       void AddCustomNamespace(const wxString &name, const wxString &url);
 
       virtual ~GpxDocument();
