@@ -450,17 +450,16 @@ void options::CreateControls()
 
     // Flav: for CM93Offset
     //      CM93Offset Display options
-    if(g_CM93Maps_Offset_Enable)
     {
       wxStaticBox* itemStaticBoxCM93OffsetDisplay = new wxStaticBox(itemPanel5, wxID_ANY, _("CM93 Offset Display"));
-      wxStaticBoxSizer* itemStaticBoxSizerCM93OffsetDisplay= new wxStaticBoxSizer(itemStaticBoxCM93OffsetDisplay, wxVERTICAL);
+      wxStaticBoxSizer *itemStaticBoxSizerCM93OffsetDisplay= new wxStaticBoxSizer(itemStaticBoxCM93OffsetDisplay, wxVERTICAL);
       itemBoxSizer6->Add(itemStaticBoxSizerCM93OffsetDisplay, 0, wxTOP|wxALL|wxEXPAND, border_size);
 
       //  Activate CM93Offset checkbox
       pSActivateCM93Offset = new wxCheckBox( itemPanel5, ID_ACTIVATECM93OFFSET, _("Activate CM93 Offset"));
       itemStaticBoxSizerCM93OffsetDisplay->Add(pSActivateCM93Offset, 1, wxALIGN_LEFT|wxALL, 2);
 
-            wxFlexGridSizer *pCM93OffsetDisplayGrid = new wxFlexGridSizer(2);
+      wxFlexGridSizer *pCM93OffsetDisplayGrid = new wxFlexGridSizer(2);
       pCM93OffsetDisplayGrid->AddGrowableCol(1);
       itemStaticBoxSizerCM93OffsetDisplay->Add(pCM93OffsetDisplayGrid, 0, wxALL|wxEXPAND, border_size);
 
@@ -470,11 +469,13 @@ void options::CreateControls()
       m_pText_CM93OffsetX = new wxTextCtrl(itemPanel5, -1);
       pCM93OffsetDisplayGrid->Add(m_pText_CM93OffsetX, 1, wxALIGN_RIGHT, group_item_spacing);
 
-            wxStaticText *pStatic_CM93OffsetY = new wxStaticText( itemPanel5, -1, _("Y Offset (Positive moves map to North) (NMi/cos(lat)) :"));
+      wxStaticText *pStatic_CM93OffsetY = new wxStaticText( itemPanel5, -1, _("Y Offset (Positive moves map to North) (NMi/cos(lat)) :"));
       pCM93OffsetDisplayGrid->Add(pStatic_CM93OffsetY, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
       m_pText_CM93OffsetY = new wxTextCtrl(itemPanel5, -1);
       pCM93OffsetDisplayGrid->Add(m_pText_CM93OffsetY, 1, wxALIGN_RIGHT, group_item_spacing);
+
+      itemStaticBoxSizerCM93OffsetDisplay->Show(g_CM93Maps_Offset_Enable);
     }
 
 #ifdef USE_WIFI_CLIENT
@@ -1578,7 +1579,6 @@ void options::SetInitialSettings()
 
 }
 
-
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
       if(!pShowGPSWin->GetValue())
@@ -1781,6 +1781,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
 	double old_CM93Maps_Offset_x = g_CM93Maps_Offset_x;
 	double old_CM93Maps_Offset_y = g_CM93Maps_Offset_y;
 
+      bool old_CM93Maps_Offset_Enable = g_CM93Maps_Offset_Enable;
+      g_CM93Maps_Offset_Enable = pSEnableCM93Offset->GetValue();
+
       if(g_CM93Maps_Offset_Enable)
       {
             g_CM93Maps_Offset_on = pSActivateCM93Offset->GetValue();
@@ -1790,9 +1793,10 @@ void options::OnXidOkClick( wxCommandEvent& event )
             g_CM93Maps_Offset_x *= 1852;
 	      g_CM93Maps_Offset_y *= 1852;
       }
-
-      bool old_CM93Maps_Offset_Enable = g_CM93Maps_Offset_Enable;
-      g_CM93Maps_Offset_Enable = pSEnableCM93Offset->GetValue();
+      else
+      {
+            g_CM93Maps_Offset_on = false;
+      }
 
 	if(old_CM93Maps_Offset_on != g_CM93Maps_Offset_on ||
               old_CM93Maps_Offset_Enable != g_CM93Maps_Offset_Enable ||
