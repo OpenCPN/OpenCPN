@@ -298,6 +298,7 @@ extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
 extern bool              g_blocale_changed;
+extern bool             g_bDebugGPSD;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2246,6 +2247,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "DebugCM93" ),  &g_bDebugCM93, 0 );
       Read ( _T ( "DebugS57" ),  &g_bDebugS57, 0 );         // Show LUP and Feature info in object query
       Read ( _T ( "DebugBSBImg" ),  &g_BSBImgDebug, 0 );
+      Read ( _T ( "DebugGPSD" ),  &g_bDebugGPSD, 0 );
 
       Read ( _T ( "UseGreenShipIcon" ),  &g_bUseGreenShip, 0 );
       Read ( _T ( "AllowExtremeOverzoom" ),  &g_b_overzoom_x, 1 );

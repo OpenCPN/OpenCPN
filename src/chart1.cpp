@@ -370,6 +370,8 @@ bool             g_bAISRolloverShowClass;
 bool             g_bAISRolloverShowCOG;
 bool             g_bAISRolloverShowCPA;
 
+bool             g_bDebugGPSD;
+
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
 //-----------------------------------------------------------------------------------------------------

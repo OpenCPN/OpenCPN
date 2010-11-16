@@ -85,6 +85,7 @@ int                      s_dns_test_flag;
 //    Used to communicate from NMEA threads to main application thread
 static      GenericPosDat     ThreadPositionData;
 
+extern bool             g_bDebugGPSD;
 
 
 //------------------------------------------------------------------------------
@@ -536,56 +537,25 @@ void NMEAHandler::UnPause(void)
             m_sock->Notify(TRUE);
 }
 
-void libgps_hook(struct gps_data_t *data, char *buf, size_t size)
-{
-#ifdef BUILD_WITH_LIBGPS
 
-      if(data->set & TIME_SET)
-            ThreadPositionData.FixTime = (time_t)data->fix.time;
-
-      if(data->set & LATLON_SET)
-      {
-            ThreadPositionData.kLat = data->fix.latitude;
-            ThreadPositionData.kLon = data->fix.longitude;
-      }
-
-      if(data->set & TRACK_SET)
-      {
-            ThreadPositionData.kCog = 0.;
-                  if(!wxIsNaN(data->fix.track))
-                  ThreadPositionData.kCog = data->fix.track;
-      }
-
-      if(data->set & SPEED_SET)
-      {
-            ThreadPositionData.kSog = 0.;
-            if(!wxIsNaN(data->fix.speed))
-                  ThreadPositionData.kSog = data->fix.speed * 3600. / 1852.;      // convert from m/s to knots
-      }
-
-      if(data->set & SATELLITE_SET)
-            ThreadPositionData.nSats = data->satellites_visible;
-
-#endif
-}
-
+int ic;
 void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 {
 #ifdef BUILD_WITH_LIBGPS
       TimerLIBGPS.Stop();
 
+      if(g_bDebugGPSD) printf("%d\n", ic++);
 
-      m_fn_gps_set_raw_hook(m_gps_data, libgps_hook);
-
-//      int np = 0;
       while(m_fn_gps_waiting(m_gps_data))
       {
+            m_gps_data->set = 0;
+
             m_fn_gps_poll(m_gps_data);
-//            printf("Poll %d %0X\n", np++, m_gps_data->set);
+            if(g_bDebugGPSD) printf("  Poll Set: %0X\n", m_gps_data->set);
 
             if (!(m_gps_data->set & PACKET_SET))
             {
- //                 printf("Probably lost GPSD\n");
+                  if(g_bDebugGPSD)  printf("Probably lost GPSD\n");
                   m_bgps_present = false;
 
                   break;                  // this is what happens when gpsd is killed or dies
@@ -611,16 +581,63 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
                   }
             }
 
-/*
-            if(!m_bgps_present)
 
-                  printf("no gps device\n");
+            if(!m_bgps_present)
+            {
+                  if(g_bDebugGPSD)printf("  no gps device\n");
+            }
             else
-                  printf("GPS!\n");
-*/
+            {
+                  if(g_bDebugGPSD)printf("  GPS!\n");
+            }
+
+
+            if(m_gps_data->set & TIME_SET)
+                  ThreadPositionData.FixTime = (time_t)m_gps_data->fix.time;
+
+            if(m_gps_data->set & LATLON_SET)
+            {
+                  if(g_bDebugGPSD) printf("  LATLON  %g  %g \n", m_gps_data->fix.latitude, m_gps_data->fix.longitude );
+                  ThreadPositionData.kLat = m_gps_data->fix.latitude;
+                  ThreadPositionData.kLon = m_gps_data->fix.longitude;
+            }
+
+            if(m_gps_data->set & TRACK_SET)
+            {
+                  if(g_bDebugGPSD) printf("  TRACK_SET\n");
+                  ThreadPositionData.kCog = 0.;
+                  if(!wxIsNaN(m_gps_data->fix.track))
+                        ThreadPositionData.kCog = m_gps_data->fix.track;
+            }
+
+            if(m_gps_data->set & SPEED_SET)
+            {
+                  if(g_bDebugGPSD) printf("  SPEED_SET\n");
+                  ThreadPositionData.kSog = 0.;
+                  if(!wxIsNaN(m_gps_data->fix.speed))
+                        ThreadPositionData.kSog = m_gps_data->fix.speed * 3600. / 1852.;      // convert from m/s to knots
+            }
+
+            if(m_gps_data->set & SATELLITE_SET)
+            {
+                  if(g_bDebugGPSD) printf("  SATELLITE_SET  %d\n", m_gps_data->satellites_visible);
+                  ThreadPositionData.nSats = m_gps_data->satellites_visible;
+            }
+
+            if(m_gps_data->set & ERROR_SET)
+            {
+                  if(g_bDebugGPSD)
+                  {
+                        char error[sizeof(m_gps_data->error) + 1];
+                        strncpy(error, m_gps_data->error, sizeof(m_gps_data->error));
+                        printf("  ERROR_SET  %s\n", error);
+                  }
+
+            }
 
             if(m_bgps_present)  // GPS must be online
             {
+                  if(g_bDebugGPSD) printf("  STATUS_SET: %d status %d\n", (m_gps_data->set & STATUS_SET) != 0, m_gps_data->status);
                   if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
                   {
                         wxCommandEvent event( EVT_NMEA,  m_handler_id );
@@ -628,7 +645,7 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
                         event.SetExtraLong(EVT_NMEA_DIRECT);
                         event.SetClientData(&ThreadPositionData);
                         m_pParentEventHandler->AddPendingEvent(event);
-//                        printf("...Event\n");
+                        if(g_bDebugGPSD)  printf(" Sending Event\n");
                    }
             }
       }
