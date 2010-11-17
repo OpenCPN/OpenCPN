@@ -12110,20 +12110,7 @@ RolloverWin::~RolloverWin()
 
 void RolloverWin::SetBitmap()
 {
-      int h, w;
-
       wxClientDC cdc(GetParent());
-
-
-      wxFont *dFont = pFontMgr->GetFont(_("AISRollover"), 12);
-      int font_size = wxMax(8, dFont->GetPointSize());
-      wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
-                  dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
-
-      cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
-      m_size.x = w + 4;
-      m_size.y = h + 4;
-
       wxMemoryDC mdc;
 
       delete m_pbm;
@@ -12133,6 +12120,11 @@ void RolloverWin::SetBitmap()
       mdc.Blit(0, 0, m_size.x, m_size.y, &cdc, m_position.x, m_position.y);
 
       AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+
+      wxFont *dFont = pFontMgr->GetFont(_("AISRollover"), 12);
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
+                  dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
 
       //    Draw the text
       mdc.SetFont(*plabelFont);
@@ -12162,6 +12154,18 @@ void RolloverWin::OnPaint(wxPaintEvent& event)
 
 void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, wxSize parent_size)
 {
+      int h, w;
+      wxClientDC cdc(GetParent());
+
+      wxFont *dFont = pFontMgr->GetFont(_("AISRollover"), 12);
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
+                  dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
+
+      cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+      m_size.x = w + 4;
+      m_size.y = h + 4;
+
       int xp, yp;
       if((x + off_x + m_size.x) > parent_size.x)
       {
