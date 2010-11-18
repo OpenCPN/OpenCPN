@@ -474,29 +474,19 @@ class AISTargetAlertDialog: public wxDialog
 //----------------------------------------------------------------------------------------------------------
 //    AISTargetListDialog Specification
 //----------------------------------------------------------------------------------------------------------
-class AISTargetListDialog: public wxDialog
+class AISTargetListDialog: public wxPanel
 {
       DECLARE_CLASS( AISTargetListDialog )
       DECLARE_EVENT_TABLE()
 
       public:
-            AISTargetListDialog( );
+            AISTargetListDialog( wxWindow *parent, AIS_Decoder *pdecoder );
            ~AISTargetListDialog( );
-
-            bool Create ( wxWindow *parent,
-                          AIS_Decoder *pdecoder,
-                          wxWindowID id = wxID_ANY,
-                          const wxString& caption = _("AIS target list"),
-                          const wxPoint& pos = wxDefaultPosition,
-                          const wxSize& size = wxDefaultSize,
-                          long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 
             void UpdateAISTargetList( );     // Rebuild AIS target list
 
       private:
-            void CreateControls();
-            void OnClose( wxCloseEvent& event );
-			void OnActivateItem( wxListEvent& event );
+            void OnActivateItem( wxListEvent& event );
             wxWindow          *m_pparent;
             wxListCtrl        *m_pListCtrlAISTargets;
             AIS_Decoder       *m_pdecoder;

@@ -37,6 +37,7 @@
 #include "wx/image.h"
 #include <wx/graphics.h>
 #include <wx/sound.h>
+#include <wx/aui/aui.h>
 
 #include "dychart.h"
 
@@ -221,6 +222,8 @@ extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
 
 extern PlugInManager    *g_pi_manager;
+
+extern wxAuiManager      *g_pauimgr;
 
 extern bool             g_bskew_comp;
 
@@ -6425,40 +6428,42 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 }
                 else                                // Not creating Route
                 {
-                        // So look for selectable route point
+                        // So look for selectable and visible route point
+                      m_pRoutePointEditTarget = NULL;
+                      m_pFoundPoint = NULL;
 
-                        SelectItem *pFind = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT, SelectRadius );
+                      SelectItem *pFind = NULL;
+                      SelectableItemList SelList = pSelect->FindSelectionList(m_cursor_lat, m_cursor_lon,SELTYPE_ROUTEPOINT,SelectRadius );
+                      wxSelectableItemListNode *node = SelList.GetFirst();
+                      while ( node )
+                      {
+                            pFind = node->GetData();
 
-                        if ( pFind )
-                        {
-                                RoutePoint *frp = ( RoutePoint * ) pFind->m_pData1;
-                                m_pRoutePointEditTarget = frp;
-                                m_pFoundPoint = pFind;
+                            RoutePoint *frp = ( RoutePoint * ) pFind->m_pData1;
 
+                              //    Get an array of all routes using this point
+                            m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(frp);
 
-                         //    Get an array of all routes using this point
-                                m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(frp);
+                              // Use route array to determine actual visibility for the point
+                            bool brp_viz = false;
+                            if(m_pEditRouteArray)
+                            {
+                                    for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
+                                    {
+                                          Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                                          if(pr->IsVisible())
+                                          {
+                                                brp_viz = true;
+                                                break;
+                                          }
+                                    }
+                             }
+                             else
+                                   brp_viz = frp->IsVisible();               // isolated point
 
-                        // Use route array to determine actual visibility for the point
-                                bool brp_viz = false;
-                                if(m_pEditRouteArray)
-                                {
-                                      for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
-                                      {
-                                            Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                            if(pr->IsVisible())
-                                            {
-                                                  brp_viz = true;
-                                                  break;
-                                            }
-                                      }
-                                }
-                                else
-                                      brp_viz = frp->IsVisible();               // isolated point
-
-                                if(brp_viz)
-                                {
-                              //    Use route array to rubberband all affected routes
+                             if(brp_viz)
+                             {
+                                    //    Use route array to rubberband all affected routes
                                     if ( m_pEditRouteArray )                       // Editing Waypoint as part of route
                                     {
                                           for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
@@ -6473,8 +6478,15 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                           frp->m_bIsBeingEdited = true;
                                           m_bMarkEditing = true;
                                     }
-                                }
-                        }
+
+                                    m_pRoutePointEditTarget = frp;
+                                    m_pFoundPoint = pFind;
+
+                                    break;            // out of the while(node)
+                              }
+
+                              node=node->GetNext();
+                      }       // while (node)
 
                 }                                   // else
         }
@@ -8108,15 +8120,12 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 void ChartCanvas::ShowAISTargetList(void)
 {
       if ( NULL == g_pAISTargetList ) {         // There is one global instance of the Dialog
-            g_pAISTargetList = new AISTargetListDialog ( );
-            g_pAISTargetList->Create ( this, g_pAIS, wxID_ANY,
-                                       wxString(_("AIS target list")),
-                                        wxDefaultPosition, wxSize( -1, -1 ),
-                                        wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
+            g_pAISTargetList = new AISTargetListDialog( this, g_pAIS );
+            g_pauimgr->AddPane( g_pAISTargetList, wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose().Float().FloatingPosition(0, 0).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true) );
+            g_pauimgr->Update();
      }
 
       g_pAISTargetList->UpdateAISTargetList();
-      g_pAISTargetList->Show();
 }
 
 

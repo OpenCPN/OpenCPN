@@ -303,8 +303,8 @@ enum {
       tlCLASS,
       tlTYPE,
       tlNAVSTATUS,
-      tlDESTINATION,
-      tlETA,
+//      tlDESTINATION,
+//      tlETA,
       tlBRG,
       tlRNG,
       tlCOG,
@@ -3365,47 +3365,57 @@ void AISTargetAlertDialog::OnSize( wxSizeEvent& event )
 //---------------------------------------------------------------------------------------
 //          AISTargetListDialog Implementation
 //---------------------------------------------------------------------------------------
-IMPLEMENT_CLASS ( AISTargetListDialog, wxDialog )
+IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
 
 // AISTargetListDialog event table definition
 
-            BEGIN_EVENT_TABLE ( AISTargetListDialog, wxDialog )
-			EVT_LIST_ITEM_ACTIVATED(ID_AIS_TARGET_LIST, AISTargetListDialog::OnActivateItem)
-            EVT_CLOSE(AISTargetListDialog::OnClose)
-            END_EVENT_TABLE()
+      BEGIN_EVENT_TABLE ( AISTargetListDialog, wxPanel )
+            EVT_LIST_ITEM_ACTIVATED(ID_AIS_TARGET_LIST, AISTargetListDialog::OnActivateItem)
+      END_EVENT_TABLE()
 
-AISTargetListDialog::AISTargetListDialog( )
+AISTargetListDialog::AISTargetListDialog( wxWindow *parent, AIS_Decoder *pdecoder)
+      :wxPanel( parent, wxID_ANY, wxDefaultPosition, wxSize( 670, 250 ), wxBORDER_NONE )
 {
-      m_pparent = NULL;
-}
-
-AISTargetListDialog::~AISTargetListDialog( )
-{
-      delete m_pListCtrlAISTargets;
-}
-
-bool AISTargetListDialog::Create ( wxWindow *parent, AIS_Decoder *pdecoder, wxWindowID id, const wxString& caption,
-                                   const wxPoint& pos, const wxSize& size, long style )
-{
-      m_size_min = size;
-
-      int display_width, display_height;
-      wxDisplaySize(&display_width, &display_height);
-
-      if(display_width < 1000)
-            m_size_min.IncTo(wxSize(790,300));
-      else
-            m_size_min.IncTo(wxSize(950,300));
-
-
-      if ( !wxDialog::Create ( parent, id, caption, pos, m_size_min, style ) )
-            return false;
-
       m_pparent = parent;
       m_pdecoder = pdecoder;
 
-      CreateControls();
+// A top-level sizer
+      wxBoxSizer* topSizer = new wxBoxSizer ( wxVERTICAL );
+      SetSizer( topSizer );
+
+// A second box sizer to give more space around the controls
+//      wxBoxSizer* boxSizer = new wxBoxSizer ( wxVERTICAL );
+//      topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2 );
+
+      m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
+                                             wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES);
+      m_pListCtrlAISTargets->InsertColumn( tlNAME, _("Name"), wxLIST_FORMAT_LEFT, 105 );
+      m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, 55);
+      m_pListCtrlAISTargets->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, 80 );
+//      m_pListCtrlAISTargets->InsertColumn( tlIMO, _("IMO/AIS#"), wxLIST_FORMAT_LEFT, 70 );
+      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, 50 );
+      m_pListCtrlAISTargets->InsertColumn( tlTYPE, _("Type"), wxLIST_FORMAT_LEFT, 80 );
+      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, 82 );
+
+/*
+      if(m_size_min.x < 900)
+            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 80 );
+      else
+            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 120 );
+
+      if(m_size_min.x < 900)
+            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 40 );
+      else
+            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 140 );
+*/
+
+      m_pListCtrlAISTargets->InsertColumn( tlBRG, _("Brg"), wxLIST_FORMAT_RIGHT, 45 );
+      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, 55 );
+      m_pListCtrlAISTargets->InsertColumn( tlCOG, _("CoG"), wxLIST_FORMAT_RIGHT, 50 );
+      m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, 50 );
+
+      topSizer->Add( m_pListCtrlAISTargets, 1, wxEXPAND|wxALL, 0 );
 
 /*
       //    This needs to be done, but column headings are not affected,
@@ -3417,52 +3427,11 @@ bool AISTargetListDialog::Create ( wxWindow *parent, AIS_Decoder *pdecoder, wxWi
       wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );          // or UINFD
       m_pListCtrlAISTargets->SetForegroundColour ( text_color );
 */
-      return true;
 }
 
-void AISTargetListDialog::CreateControls()
+AISTargetListDialog::~AISTargetListDialog( )
 {
-
-// A top-level sizer
-      wxBoxSizer* topSizer = new wxBoxSizer ( wxVERTICAL );
-      SetSizer ( topSizer );
-
-// A second box sizer to give more space around the controls
-//      wxBoxSizer* boxSizer = new wxBoxSizer ( wxVERTICAL );
-//      topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2 );
-
-      m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxSize(-1, 100),
-                                             wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES);
-      m_pListCtrlAISTargets->InsertColumn( tlNAME, _("Name"), wxLIST_FORMAT_LEFT, 105 );
-      m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, 55);
-      m_pListCtrlAISTargets->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, 80 );
-//      m_pListCtrlAISTargets->InsertColumn( tlIMO, _("IMO/AIS#"), wxLIST_FORMAT_LEFT, 70 );
-      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, 50 );
-      m_pListCtrlAISTargets->InsertColumn( tlTYPE, _("Type"), wxLIST_FORMAT_LEFT, 80 );
-      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, 82 );
-
-      if(m_size_min.x < 900)
-            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 80 );
-      else
-            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 120 );
-
-      if(m_size_min.x < 900)
-            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 40 );
-      else
-            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 140 );
-
-      m_pListCtrlAISTargets->InsertColumn( tlBRG, _("Brg"), wxLIST_FORMAT_RIGHT, 45 );
-      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, 55 );
-      m_pListCtrlAISTargets->InsertColumn( tlCOG, _("CoG"), wxLIST_FORMAT_RIGHT, 50 );
-      m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, 50 );
-
-      topSizer->Add ( m_pListCtrlAISTargets, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2 );
-
-}
-
-void AISTargetListDialog::OnClose(wxCloseEvent& event)
-{
-      Destroy();
+      delete m_pListCtrlAISTargets;
       g_pAISTargetList = NULL;
 }
 
@@ -3494,6 +3463,17 @@ void AISTargetListDialog::UpdateAISTargetList(void)
 {
       if(m_pdecoder)
       {
+            int sb_position = m_pListCtrlAISTargets->GetScrollPos(wxVERTICAL);
+            //int sb_thumbSize = m_pListCtrlAISTargets->GetScrollThumb(wxVERTICAL);
+            //int sb_range = m_pListCtrlAISTargets->GetScrollRange(wxVERTICAL);
+            long selItemID = -1;
+            selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+            long selItemMMSI = -1;
+            if (selItemID != -1)
+                  selItemMMSI = m_pListCtrlAISTargets->GetItemData(selItemID);
+            selItemID = -1;
+
+            m_pListCtrlAISTargets->Freeze();
             m_pListCtrlAISTargets->DeleteAllItems();
 
             AIS_Target_Hash::iterator it;
@@ -3532,6 +3512,7 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                         }
                         else
                               m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS, _("-"));
+/*
                         m_pListCtrlAISTargets->SetItem(idx, tlDESTINATION,
                                     trimAISField(pAISTarget->Destination));
                         wxString eta = _T("");
@@ -3550,11 +3531,11 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                               eta = _("-");
 
                         m_pListCtrlAISTargets->SetItem(idx, tlETA, eta);
-
-						if(pAISTarget->b_positionValid)
-							data.Printf(_T("%5.0f"), pAISTarget->Brg);
-						else
-							data = _("-");
+*/
+                        if(pAISTarget->b_positionValid)
+                              data.Printf(_T("%5.0f"), pAISTarget->Brg);
+                        else
+                              data = _("-");
                         m_pListCtrlAISTargets->SetItem(idx, tlBRG, data);
 
                         if( pAISTarget->COG > 360.)
@@ -3578,12 +3559,19 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                               data.Printf(_T("%5.2f"), pAISTarget->Range_NM);
                               m_pListCtrlAISTargets->SetItem(idx, tlRNG, data);
                         }
-						else
+                        else
                               m_pListCtrlAISTargets->SetItem(idx, tlRNG, _("-"));
 
+                        if (selItemMMSI == pAISTarget->MMSI)
+                              selItemID = idx;
                   }
                   item.Clear();
             }
+            //m_pListCtrlAISTargets->SetScrollbar(wxVERTICAL, sb_position, sb_thumbSize, sb_range, false);
+            m_pListCtrlAISTargets->SetScrollPos(wxVERTICAL, sb_position, false);
+            if (selItemID != -1)
+                  m_pListCtrlAISTargets->SetItemState(selItemID, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
+            m_pListCtrlAISTargets->Thaw();
 
             //    Testing format and column widths
 #if 0
