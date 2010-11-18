@@ -314,7 +314,7 @@ void options::CreateControls()
     int width, height;
     ::wxDisplaySize(&width, &height);
 
-    if(height < 700)
+    if(height < 800)
     {
           border_size = 2;
           check_spacing = 2;
@@ -848,25 +848,25 @@ void options::CreateControls()
 
     wxStaticBox* itemStaticBoxSizer27Static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Depth Settings(m)"));
     wxStaticBoxSizer* itemStaticBoxSizer27 = new wxStaticBoxSizer(itemStaticBoxSizer27Static, wxVERTICAL);
-    pdepth_sizer/*itemBoxSizer25*/->Add(itemStaticBoxSizer27, 0, wxTOP|wxALL|wxEXPAND, 2);
+    pdepth_sizer/*itemBoxSizer25*/->Add(itemStaticBoxSizer27, 0, wxTOP|wxALL|wxEXPAND, group_item_spacing);
 
     wxStaticText* itemStaticText4 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Shallow Depth"));
-    itemStaticBoxSizer27->Add(itemStaticText4, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 2);
+    itemStaticBoxSizer27->Add(itemStaticText4, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, group_item_spacing);
 
-    m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(110, -1), 0 );
-    itemStaticBoxSizer27->Add(m_ShallowCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, 2);
+    m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(120, -1), 0 );
+    itemStaticBoxSizer27->Add(m_ShallowCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, group_item_spacing);
 
     wxStaticText* itemStaticText5 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Safety Depth"));
-    itemStaticBoxSizer27->Add(itemStaticText5, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 2);
+    itemStaticBoxSizer27->Add(itemStaticText5, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, group_item_spacing);
 
-    m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(110, -1), 0 );
-    itemStaticBoxSizer27->Add(m_SafetyCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, 2);
+    m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(120, -1), 0 );
+    itemStaticBoxSizer27->Add(m_SafetyCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, group_item_spacing);
 
     wxStaticText* itemStaticText6 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Deep Depth"));
-    itemStaticBoxSizer27->Add(itemStaticText6, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 2);
+    itemStaticBoxSizer27->Add(itemStaticText6, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, group_item_spacing);
 
-    m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(110, -1), 0 );
-    itemStaticBoxSizer27->Add(m_DeepCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, 2);
+    m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(120, -1), 0 );
+    itemStaticBoxSizer27->Add(m_DeepCtl, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, group_item_spacing);
 
 
 
@@ -878,8 +878,7 @@ void options::CreateControls()
 
     pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Chart Depth Units"), wxDefaultPosition, wxDefaultSize,
                                3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
-    pdepth_sizer->Add(pDepthUnitSelect, 0, wxALIGN_TOP | wxALL, 2);
-
+    pdepth_sizer->Add(pDepthUnitSelect, 0, wxALIGN_TOP | wxALL, group_item_spacing);
 
        //      CM93Offset Enable
     wxStaticBox* itemStaticBoxCM93OffsetEnable = new wxStaticBox(ps57Ctl, wxID_ANY, _("CM93 Offsets"));
@@ -889,7 +888,6 @@ void options::CreateControls()
     //  Activate CM93Offset checkbox
     pSEnableCM93Offset = new wxCheckBox( ps57Ctl, ID_ENABLECM93OFFSET, _("Enable Manual CM93 Offsets"));
     itemStaticBoxSizerCM93OffsetEnable->Add(pSEnableCM93Offset, 1, wxALIGN_LEFT|wxALL, 2);
-
 
     itemNotebook4->AddPage(ps57Ctl, _("Vector Charts"));
 
