@@ -6020,7 +6020,7 @@ bool MyFrame::DoChartUpdate(void)
 update_finish:
 
             //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-            if(pCurrentStack && ((pCurrentStack->nEntry == 1) && m_toolbar_scale_shown) || ((pCurrentStack->nEntry != 1) && !m_toolbar_scale_shown))
+            if(pCurrentStack && ((pCurrentStack->nEntry <= 1) && m_toolbar_scale_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_shown))
                   gFrame->RequestNewToolbar();
 
         if(bNewChart)
