@@ -90,7 +90,7 @@ wxString GpxDocument::GetUUID(void)
       /* Fill with random. Miliseconds hopefully good enough for our usage, reading /dev/random would be much better on linux and system guid function on Windows as well */
       wxDateTime x = wxDateTime::UNow();
       long seed = x.GetMillisecond();
-      seed += x.GetTicks()*1000;
+      seed *= x.GetTicks();
       srand(seed);
       uuid.time_low = GetRandomNumber(0, 2147483647);//FIXME: the max should be set to something like MAXINT32, but it doesn't compile un gcc...
       uuid.time_mid = GetRandomNumber(0, 65535);
@@ -122,7 +122,7 @@ wxString GpxDocument::GetUUID(void)
 
 int GpxDocument::GetRandomNumber(int range_min, int range_max)
 {
-      int u = wxRound((double)rand() / (RAND_MAX + 1)) * (range_max - range_min) + range_min;
+      int u = wxRound((double)rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min);
       return u;
 }
 
