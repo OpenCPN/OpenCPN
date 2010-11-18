@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Version 2.1.0 Build 623\n"
+"Project-Id-Version: Version 2.2 Build 1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 21:53-0400\n"
-"PO-Revision-Date: 2010-06-24 23:47+0100\n"
+"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"PO-Revision-Date: 2010-11-12 23:15+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "MIME-Version: 1.0\n"
@@ -16,17 +16,17 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 #
-#
 msgid "\n"
 msgstr "\n"
-#
 #
 msgid ""
 "\n"
 "\n"
 "\n"
 msgstr ""
-#
+"\n"
+"\n"
+"\n"
 #
 msgid ""
 "\n"
@@ -34,7 +34,6 @@ msgid ""
 msgstr ""
 "\n"
 "         OpenCPN. Ett Open Source program för navigering"
-#
 #
 msgid ""
 "\n"
@@ -51,7 +50,20 @@ msgid ""
 "\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr ""
-#
+"\n"
+"OpenCPN distribueras med hopp om att det ska vara användbart,\n"
+"men UTAN NÅGON GARANTI, och utan underförstådd\n"
+"garanti om SÄLJBARHET eller LÄMPLIGHET FÖR ETT\n"
+"VISST ÄNDAMÅL.\n"
+"Se GNU General Public License för fler detaljer.\n"
+"\n"
+"OpenCPN får endast användas tillsammans med godkända\n"
+"papperssjökort och traditionella metoder för navigering.\n"
+"\n"
+"Lita inte på OpenCPN för säkerheten för liv eller egendom.\n"
+"\n"
+"Klicka på \"OK\" för att acceptera och gå vidare, \"Avbryt\" för att "
+"avsluta.\n"
 #
 msgid ""
 "           No Charts Installed.\n"
@@ -60,75 +72,57 @@ msgstr ""
 "           Inga sjökort finns installerade.\n"
 "Välj mapp för sjökort i meny under Verktygslåda->Sjökort"
 #
-#
 msgid "      \"Ship Name\" MMSI (Call Sign)"
-msgstr ""
-#
+msgstr "      \"Fartygsnamn\" MMSI (Anropssignal)"
 #
 msgid "      COG arrow predictor length (Minutes):"
 msgstr "     kurspilens längd visar beräknad position efter (Minuter):"
 #
-#
 msgid "      Max moored target speed (Kts.):"
 msgstr "      vid maximal målhastighet (Knop):"
-#
 #
 msgid "      Target track length (Minutes):"
 msgstr "      Längd på målspår (Minuter):"
 #
-#
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   Sjökortets RLL data är felaktigt "
-#
 #
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "   Sjökortet innehåller färre än 3 referenspunkter: "
 #
-#
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   Sjökortet är felaktigt i PostInit()"
-#
 #
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "   Sjökortet saknar BSB header, kortet inaktiveras."
 #
-#
 msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 msgstr "   Okänd kartprojektion, använder Mercator: "
-#
 #
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr "   Första %d byte från sjökortets header är ej läsbart: "
 #
-#
 msgid "   Error creating Line Index for chart "
 msgstr "   Misslyckades att skapa Index för sjökortet"
-#
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Line Index är korrupt, skapar nytt index "
 #
-#
 msgid "   PlugInManager: Cannot load library: "
-msgstr ""
-#
+msgstr " PlugInHanterarer: Kan inte aktivera bibliotek: "
 #
 msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr ""
-#
+msgstr "PlugInHanterare: Kan inte aktivera symbol create_pi: "
 #
 msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr ""
-#
+msgstr " PlugInHanterare: Kan inte aktivera destroy_pi: "
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Resultat: OK, Internt beräknat referenssystem används."
 #
-#
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   Försöker igen med internt beräknat referenssystem"
-#
 #
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
@@ -137,200 +131,145 @@ msgstr ""
 "   VP slutkontrol med intern beräkning: Sjökortets referenssystem är "
 "felaktigt "
 #
-#
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP slutkontroll: Sjökortets referenssystem är felaktigt "
-#
 #
 msgid "  ..And TCPA is less than (Minutes):"
 msgstr "  ..och TCPA är mindre än (Minuter):"
 #
-#
 msgid "  Could not open AIS serial port '"
 msgstr "  AIS serie port kan inte öppnas'"
-#
 #
 msgid "  Could not open serial port '"
 msgstr "  Serie port kan inte öppnas'"
 #
-#
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Dagar %H Timmar %M Minuter"
-#
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Timmar %M Minuter"
 #
-#
 msgid " - "
 msgstr " - "
-#
 #
 msgid " ChartFile:  "
 msgstr " Sjökortsfil:  "
 #
-#
 msgid " Datum:  "
 msgstr " Datum:  "
-#
 #
 msgid " Depth Units:  "
 msgstr "Enhet för djup:  "
 #
-#
 msgid " ID:  "
 msgstr " ID:  "
-#
 #
 msgid " Name:  "
 msgstr "Båtnamn:  "
 #
-#
 msgid " Projection:  "
 msgstr " Projektion:  "
-#
 #
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Skala:  1:%d"
 #
-#
 msgid " Ship: "
 msgstr " Båt: "
-#
 #
 msgid " Soundings:  "
 msgstr "Djupinformation:  "
 #
-#
 msgid " Source Edition:  "
 msgstr " Utgåva:  "
 #
-#
 msgid " Updated:  "
 msgstr " Uppdaterad:  "
-#
 #
 #, c-format
 msgid " is %5g"
 msgstr "är %5g"
 #
-#
 msgid " to "
-msgstr ""
-#
+msgstr " till "
 #
 msgid "&Acknowledge"
 msgstr "&Bekräfta"
 #
-#
 msgid "&Activate"
 msgstr "&Aktivera"
-#
 #
 msgid "&Cancel"
 msgstr "A&vsluta"
 #
-#
 msgid "&Close"
 msgstr "Avsluta"
-#
 #
 msgid "&Delete"
 msgstr "Ra&dera"
 #
-#
-#, fuzzy
 msgid "&Delete All"
-msgstr "Ra&dera"
+msgstr "Ra&dera alla"
 #
-#
-#, fuzzy
 msgid "&Export Route..."
-msgstr "Exportera Rutt...."
+msgstr "Exportera Rutt..."
 #
-#
-#, fuzzy
 msgid "&Export Track..."
-msgstr "Exportera Spår...."
+msgstr "Exportera Spår..."
 #
-#
-#, fuzzy
 msgid "&Export Wpt..."
-msgstr "E&xportera...."
-#
+msgstr "E&xportera Waypoint..."
 #
 msgid "&Font family:"
 msgstr "Teckensnitt:"
 #
-#
-#, fuzzy
 msgid "&Go To"
-msgstr "Gå till denna position"
-#
+msgstr "Gå till"
 #
 msgid "&Kilometers"
 msgstr "&Kilometer"
 #
-#
 msgid "&Nautical miles"
 msgstr "Sjö&mil"
 #
-#
 msgid "&New"
-msgstr ""
-#
+msgstr "Ny"
 #
 msgid "&OK"
 msgstr "&OK"
 #
-#
 msgid "&Point size:"
 msgstr "&Punktstorlek:"
 #
-#
-#, fuzzy
 msgid "&Properties"
 msgstr "Egenskaper"
-#
 #
 msgid "&Properties..."
 msgstr "&Egenskaper"
 #
-#
 msgid "&Reverse"
 msgstr "&Reversera rutt"
 #
-#
-#, fuzzy
 msgid "&Send to GPS"
 msgstr "Skicka till GPS"
-#
 #
 msgid "&Silence Alert"
 msgstr "&Tysta Larm"
 #
-#
-#, fuzzy
 msgid "&Start Track"
-msgstr "Visa målspår"
-#
+msgstr "Starta Spår"
 #
 msgid "&Style:"
 msgstr "Textstil:"
 #
-#
 msgid "&Underline"
 msgstr "&Understruken:"
-#
 #
 msgid "&Weight:"
 msgstr "Text&vikt:"
 #
-#
 msgid "&Zoom to"
 msgstr "&Zooma till"
-#
 #
 msgid ""
 "'\n"
@@ -339,7 +278,6 @@ msgstr ""
 "'\n"
 " Förslag: Försök med 'xxx.xxx.xxx.xxx' formatet"
 #
-#
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
@@ -347,239 +285,208 @@ msgstr ""
 "'\n"
 "Förslag: Stäng andra aktiva program"
 #
-#
 msgid "(Unnamed Route)"
 msgstr "(Ej namngiven Rutt)"
-#
 #
 msgid "(Unnamed Track)"
 msgstr "(Ej namngivet Spår)"
 #
-#
-#, fuzzy
 msgid "(Unnamed Waypoint)"
-msgstr "Namnändra Waypoints?"
-#
+msgstr "(Waypoint namn)"
 #
 msgid "-"
 msgstr "-"
 #
+msgid "--"
+msgstr "--"
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Varning:  Sjökortets referenssystem är bristfällig. >>>---"
 #
-#
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Varning:  Sjökortets referenssystem är bristfälligt. >>>---"
-#
 #
 msgid "2 Color"
 msgstr "2 Färger"
 #
-#
 msgid "4 Color"
 msgstr "4 Färger"
-#
 #
 msgid "A"
 msgstr "A"
 #
-#
 msgid "AIS"
 msgstr "AIS"
-#
 #
 msgid "AIS Alert"
 msgstr "AIS Alarm"
 #
-#
 msgid "AIS Data Port"
 msgstr "AIS Data Port"
-#
 #
 msgid "AIS General"
 msgstr "AIS Allmänt"
 #
-#
 msgid "AIS Target Query"
 msgstr "AIS mål"
-#
 #
 msgid "AIS target list"
 msgstr "AIS mållista"
 #
+msgid "AISRollover"
+msgstr "AIS Rulla över"
 #
 msgid "AISTargetQuery"
 msgstr "AIS målegenskaper"
 #
-#
 msgid "About"
 msgstr "Om"
-#
 #
 msgid "About OpenCPN"
 msgstr "Om OpenCPN"
 #
-#
 msgid "Activate"
 msgstr "Aktivera"
 #
+msgid "Activate CM93 Offset"
+msgstr "Aktivera CM93 korrektion"
 #
 msgid "Activate Next in Route"
 msgstr "Aktivera nästa i Rutt"
 #
-#
 msgid "Activate Route"
 msgstr "Aktivera Rutt"
-#
 #
 msgid "Activate Waypoint"
 msgstr "Aktivera Waypoint"
 #
-#
 msgid "Active Chart Directories"
 msgstr "Valda mappar för sjökort"
-#
 #
 msgid "Add Selection"
 msgstr "Lägg till markerad mapp"
 #
-#
 msgid "Add this chart to quilt."
 msgstr "Inkludera sjökortet i sömlös visning"
-#
 #
 msgid "Additional information"
 msgstr "Ytterligare information"
 #
-#
-#, fuzzy
 msgid "Aid to Navigation"
-msgstr ""
-"Navigationshjälp\n"
-"\n"
-#
+msgstr "Navigationshjälp"
 #
 msgid "All files (*.*)|*.*"
 msgstr "Alla filer (*.*)|*.*"
 #
-#
 msgid "Append Waypoint"
 msgstr "Lägg till Waypoint"
-#
 #
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "Vill du radera <ALLA> rutter?"
 #
-#
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Vill du radera <ALLA> Spår?"
-#
 #
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Vill du radera <ALLA> waypoints?"
 #
-#
 msgid "AtoN"
 msgstr "AtoN"
 #
+msgid "Attempting to load libgps.so"
+msgstr "libgps kan inte laddas"
 #
 msgid "Authors"
 msgstr "Upphovsmän"
 #
-#
 msgid "Auto Follow"
 msgstr "Följ båt automatiskt"
-#
 #
 msgid "Autopilot Output Port"
 msgstr "Autopilot utgående port"
 #
-#
 msgid "Available Chart Directories"
 msgstr "Välj mapp för sjökort"
 #
+msgid "Avg. speed (Kts)"
+msgstr "Medelhastighet (Knop)"
 #
 msgid "B"
 msgstr "B"
 #
-#
 msgid "Base"
 msgstr "Enkel"
 #
-#
-#, fuzzy
 msgid "Base Station"
-msgstr "Destination"
-#
+msgstr "Basstation"
 #
 msgid "BaseClassCommonName"
-msgstr ""
-#
+msgstr "BaseClassCommonName"
 #
 msgid "Bearing"
 msgstr "Bäring"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Bearing:                %03d Deg.\n"
-msgstr "Bäring:              %5.0f °\n"
+msgstr "Bäring:                %03d Deg.\n"
 #
-#
-#, fuzzy
 msgid "Bearing:                Unavailable\n"
-msgstr "Speed:            Saknas\n"
-#
+msgstr "Bäring:                 Saknas\n"
 #
 msgid "Boundaries"
 msgstr "Gränser"
 #
-#
 msgid "Brg"
 msgstr "Brg"
-#
 #
 msgid "C&olour:"
 msgstr "Textf&ärg:"
 #
-#
 msgid "CM93"
 msgstr "CM93"
 #
+msgid "CM93 Offset Display"
+msgstr "CM93 korrektion"
+#
+msgid "CM93 Offset Off"
+msgstr "CM93 korrektion av"
+#
+msgid "CM93 Offset On"
+msgstr "CM93 korrektion på"
+#
+msgid "CM93 Offset Tool Off"
+msgstr "CM93 korrektionsinställning"
+#
+msgid "CM93 Offset Tool....."
+msgstr "Ställ in CM93 korrektion....."
+#
+msgid "CM93 Offsets"
+msgstr "CM93 korrektion"
 #
 msgid "CM93 Zoom Detail"
 msgstr "CM93 detaljnivå"
 #
-#
 msgid "CPA"
-msgstr ""
-#
+msgstr "CPA"
 #
 msgid "CPA Calculation"
 msgstr "CPA beräkning"
 #
-#
-#, fuzzy
 msgid "CPA TCPA"
-msgstr "CPA/TCPA varning"
-#
+msgstr "CPA/TCPA"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA varning"
 #
-#
 msgid "CPA:       \n"
 msgstr "CPA:       \n"
-#
 #
 #, c-format
 msgid "CPA:                 %6.1f NM\n"
 msgstr "CPA:                 %6.1f NM\n"
 #
-#
 msgid "Call"
 msgstr "Anrop"
-#
 #
 msgid ""
 "Call to gps_open failed.\n"
@@ -592,747 +499,588 @@ msgstr ""
 "\n"
 "gpsd host är: "
 #
-#
-#, fuzzy
 msgid "CallSign:             "
-msgstr "Position:              "
-#
+msgstr "Anropssignal:              "
 #
 msgid "Cancel"
 msgstr "Avbryt"
 #
-#
 msgid "Change Color Scheme"
 msgstr "Skärminställning Dag/Skymning/Natt"
-#
 #
 msgid "Chart"
 msgstr "Sjökort"
 #
-#
 msgid "Chart Depth Units"
 msgstr "Enhet för djup"
-#
 #
 msgid "Chart Display Filters"
 msgstr "Inställning för Sjökortsvisning"
 #
-#
 msgid "Chart Display Options"
 msgstr "Anpassa visning av sjökort"
-#
 #
 msgid "Chart Display Style"
 msgstr "Tema för sjökortsvisning"
 #
-#
 msgid "Chart Print"
 msgstr "Skriv ut sjökort"
-#
 #
 msgid "Chart file corrupt.. disabling this chart \n"
 msgstr "Sjökortet går ej att läsa, kortet inaktiveras \n"
 #
-#
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Sjökort1::Händelse...TCMgr inte tillgänglig"
-#
 #
 msgid "Charts"
 msgstr "Sjökort"
 #
-#
 msgid "Choose Font..."
 msgstr "Välj Teckensnitt..."
-#
 #
 msgid "Class"
 msgstr "Klass"
 #
-#
-#, fuzzy
 msgid "Class:                "
-msgstr "ETA:                  "
-#
+msgstr "Klass:                  "
 #
 msgid "Clear All"
 msgstr "Rensa alla"
 #
-#
 msgid "Clear Anchor Watch"
 msgstr "Avaktivera ankarvakt"
-#
 #
 msgid "Click to cancel the font selection."
 msgstr "Klicka för att avbryta val av Teckensnitt."
 #
-#
 msgid "Click to confirm the font selection."
 msgstr "Klicka för att bekräfta valet av Teckensnitt."
-#
 #
 msgid "Close"
 msgstr "Avsluta"
 #
-#
 msgid "CoG"
 msgstr "CoG"
-#
 #
 msgid "Colors"
 msgstr "Färger"
 #
-#
 msgid "Console Legend"
-msgstr ""
-#
+msgstr "Console Legend"
 #
 msgid "Console Value"
-msgstr ""
-#
+msgstr "Console Value"
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Kan inte tolka TCP/IP datornamn '"
 #
-#
 msgid "Course UP Mode"
 msgstr "Aktivera Kurs Upp"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Course:                 %03d Deg.\n"
-msgstr "Kurs:               %5.0f °\n"
+msgstr "Kurs:                 %03d Deg.\n"
 #
-#
-#, fuzzy
 msgid "Course:                 Unavailable\n"
-msgstr "Speed:            Saknas\n"
-#
+msgstr "Kurs:            Saknas\n"
 #
 msgid "Create Route"
 msgstr "Skapa rutt"
 #
-#
 msgid "Current"
 msgstr "Strömmar"
-#
 #
 msgid "Current Velocity, Kts."
 msgstr "Strömhastighet, Knop."
 #
-#
 msgid "Cursor: "
 msgstr "Position: "
-#
 #
 msgid "De-Clutter Text (exp.)"
 msgstr "Rensa överlappande text"
 #
-#
 msgid "Deactivate"
 msgstr "Inaktivera"
-#
 #
 msgid "Deactivate Route"
 msgstr "Inaktivera Rutt"
 #
-#
 msgid "Deep Depth"
 msgstr "Djupt vatten"
 #
-#
-#, fuzzy
 msgid "Delete All"
-msgstr "Välj alla"
-#
+msgstr "Radera alla"
 #
 msgid "Delete Mark"
 msgstr "Radera Waypoint"
 #
-#
 msgid "Delete Route"
 msgstr "Radera Rutt"
-#
 #
 msgid "Delete Selection"
 msgstr "Radera markerad mapp"
 #
-#
 msgid "Delete Track"
 msgstr "Radera Spår"
-#
 #
 msgid "Delete Waypoint"
 msgstr "Radera Waypoint"
 #
-#
 msgid "Depart From"
 msgstr "Avfärd från"
-#
 #
 msgid "Depth Settings"
 msgstr "Djupinställning"
 #
-#
 msgid "Depth Settings(m)"
 msgstr "Inställning för"
-#
 #
 msgid "Description"
 msgstr "Beskrivning"
 #
-#
 msgid "Destination"
 msgstr "Destination"
-#
 #
 msgid "Destination:          "
 msgstr "Destination:          "
 #
+msgid "Disable"
+msgstr "Avaktivera"
 #
 msgid "Display"
 msgstr "Visa"
 #
-#
 msgid "Display Category"
 msgstr "Grundinställning"
-#
 #
 msgid "Distance"
 msgstr "Distans"
 #
-#
 msgid "Distance between rings"
 msgstr "Avstånd mellan ringar"
 #
+msgid "Done."
+msgstr "Klar."
 #
 msgid "Drop MOB Marker"
 msgstr "Markera MOB"
 #
-#
 msgid "Drop Mark Here"
 msgstr "Markera position"
 #
-#
-#, fuzzy
 msgid "E&xport All..."
-msgstr "E&xportera...."
-#
+msgstr "E&xportera alla..."
 #
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
-#
 msgid "ETA"
 msgstr "ETA"
-#
 #
 msgid "ETA          "
 msgstr "ETA          "
 #
-#
-#, fuzzy
 msgid "ETA:"
-msgstr "ETA"
-#
+msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                  "
 #
-#
 msgid "ETE/Timestamp"
 msgstr "ETE/Tidmarkering"
 #
-#
 msgid "Enable"
-msgstr ""
-#
+msgstr "Aktivera"
 #
 msgid "Enable CM93 Detail Slider"
 msgstr "Aktivera CM93 detaljinställning"
 #
-#
 msgid "Enable Chart Quilting"
 msgstr "Aktivera sömlös visning"
 #
+msgid "Enable Manual CM93 Offsets"
+msgstr "Aktivera manuell CM93 korrektion"
 #
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr ""
-#
+msgstr "Aktivera max tid för kvittens av Målvarning(minuter)"
 #
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Aktivera zoom-med-mushjulet"
 #
-#
 msgid "End Route"
 msgstr "Avsluta Rutt"
 #
-#
 msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
-#
+msgstr "Fel vid uppladdning av Rutt. Kontrollera loggfiler..."
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
-#
+msgstr "Fel vid uppladdning av Waypoint.  Kontrollera loggfiler..."
 #
 msgid "Etc."
 msgstr "Övrigt"
 #
-#
 msgid "Exit OpenCPN"
 msgstr "Avsluta OpenCPN"
-#
 #
 msgid "Export GPX file"
 msgstr "Exportera GPXfil"
 #
+msgid "Failed to load libgps.so"
+msgstr "libgps kan inte laddas"
+#
+msgid "Failed to load libgps.so.19"
+msgstr "libgps kan inte laddas"
 #
 msgid "Fathoms"
 msgstr "Famnar"
 #
-#
 msgid "Feet"
 msgstr "Fot"
-#
 #
 msgid "Font Options"
 msgstr "Alternativ för Teckensnitt"
 #
-#
 msgid "Force Full Database Rebuild"
 msgstr "Tvinga fullständig databasuppdatering"
-#
 #
 #, c-format
 msgid "From Ownship: %03d Deg  %6.2f NMi"
 msgstr "EBL: %03d °  %6.2f NM"
 #
-#
 msgid "GPS"
 msgstr "GPS"
-#
 #
 msgid "GPS/Plotter Port"
 msgstr "GPS/Plotter Port"
 #
-#
 msgid "GPSD Data Server"
 msgstr "GPSD Data Server"
-#
 #
 msgid "GRIB"
 msgstr "Väder"
 #
-#
 msgid "GRIB Data"
 msgstr "Väderdata"
-#
 #
 msgid "GRIB Display Control"
 msgstr "Inställning för väder"
 #
-#
 msgid "GRIB File Directory"
 msgstr "Mapp för väderfiler"
-#
 #
 msgid "GUI Options"
 msgstr "Användarinställningar"
 #
-#
 msgid "Go To Here"
 msgstr "Gå till denna position"
 #
-#
-#, fuzzy
 msgid "Go To Mark/WP"
-msgstr "Gå till denna position"
+msgstr "Gå till Waypoint"
 #
-#
-#, fuzzy
 msgid "Go to "
-msgstr "Gå till denna position"
-#
+msgstr "Gå till "
 #
 msgid "Help"
 msgstr "Hjälp"
 #
-#
 msgid "Here"
 msgstr "Här"
-#
 #
 msgid "I&mport..."
 msgstr "&Importera...."
 #
-#
 msgid "Icon"
 msgstr "Symbol"
-#
 #
 msgid "Import GPX file"
 msgstr "Importera GPXfil"
 #
-#
 msgid "Inland Blue Flag        Clear\n"
-msgstr ""
-#
+msgstr "Inland Blue Flag        avaktivera\n"
 #
 msgid "Inland Blue Flag        Set\n"
-msgstr ""
-#
+msgstr "Inland Blue Flag        Aktivera\n"
 #
 msgid "Insert Waypoint"
 msgstr "Infoga Waypoint"
 #
+msgid "Jump To Position"
+msgstr "Gå till position"
+#
+msgid "Jump To Position..."
+msgstr "Gå till position..."
 #
 msgid "Language"
 msgstr "Språk"
 #
-#
 msgid "Language/Fonts"
 msgstr "Språk/Teckensnitt"
 #
-#
-#, fuzzy
 msgid "Latest Report Time:      "
 msgstr "Senaste rapporttid:       "
-#
 #
 msgid "Latitude"
 msgstr "Latitud"
 #
-#
 msgid "Leg"
 msgstr "Ben"
-#
 #
 msgid "Leg/Route"
 msgstr "Ben/Rutt"
 #
-#
-#, fuzzy
 msgid "Leg: from "
-msgstr "Ben:"
+msgstr "Ben: från "
 #
-#
-#, fuzzy
 msgid "Length"
-msgstr "Ben"
-#
+msgstr "Längd"
 #
 msgid "License"
 msgstr "Licens"
 #
-#
 msgid "Links"
 msgstr "Länkar"
-#
 #
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
 msgstr "Lås alla waypoints om inte menyn för egenskaper visas"
 #
-#
 msgid "Longitude"
 msgstr "Longitud"
-#
 #
 msgid "Look Ahead Mode"
 msgstr "Aktivera Titta Framåt"
 #
-#
 msgid "Lost Targets"
 msgstr "Förlorade mål"
-#
 #
 msgid "MAN OVERBOARD"
 msgstr "Man överbord"
 #
-#
 msgid "META Objects"
 msgstr "META objekt"
-#
 #
 msgid "MMSI"
 msgstr "MMSI"
 #
-#
 msgid "Mariner's Standard"
 msgstr "Marinstandard"
-#
 #
 msgid "MarinersStandard"
 msgstr "Marinstandard"
 #
-#
 msgid "Mark Icon"
 msgstr "Waypoint symbol"
-#
 #
 msgid "Mark Information"
 msgstr "Waypoint symbol"
 #
-#
 msgid "Mark Name"
 msgstr "Waypoint namn"
-#
 #
 msgid "Mark Properties"
 msgstr "Waypoint egenskaper"
 #
-#
 msgid "Mark targets as lost after (Minutes:):"
 msgstr "Markera mål som förlorade efter (Minuter):"
-#
 #
 msgid "Mark/WP Properties"
 msgstr "Waypoint egenskaper"
 #
-#
-#, fuzzy
 msgid "Marks"
-msgstr "Ny Waypoint"
-#
+msgstr "Waypoints"
 #
 msgid "Max Detail Here"
 msgstr "Maximal detaljeringsgrad"
 #
-#
 msgid "Measure Off"
 msgstr "Avbryt mätning"
-#
 #
 msgid "Measure....."
 msgstr "Aktivera mätning"
 #
-#
 msgid "Mercator"
 msgstr "Mercator"
-#
 #
 msgid "Meters"
 msgstr "Meter"
 #
-#
 msgid "Metres"
 msgstr "Meter"
-#
 #
 msgid "Move Boat Here"
 msgstr "Flytta båt till position"
 #
-#
 msgid "NMEA Baud Rate"
 msgstr "NMEA Baud Rate"
-#
 #
 msgid "NMEA Data Source"
 msgstr "NMEA datakälla"
 #
-#
 msgid "NMEA Options"
 msgstr "NMEA inställningar"
-#
 #
 msgid "Name"
 msgstr "Namn"
 #
-#
 msgid "Nav Status"
 msgstr "Nav Status"
-#
 #
 msgid "Navigation Data"
 msgstr "Navigationsdata"
 #
-#
 msgid "Navigational Status:  "
 msgstr "Navigationsstatus:  "
-#
 #
 msgid "New Mark"
 msgstr "Ny Waypoint"
 #
-#
 msgid "Next"
 msgstr "Nästa"
-#
 #
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr "Ingen CPA beräkning om målavstånd är större än (NM):"
 #
-#
 msgid "No Chart Available"
 msgstr "Inget sjökort tillgängligt"
-#
 #
 msgid "Number of radar rings shown"
 msgstr "Antal radarringar som visas"
 #
-#
 msgid "OK"
 msgstr "OK"
-#
 #
 msgid "Object Query"
 msgstr "Objektegenskaper"
 #
-#
 msgid "Ok"
 msgstr "Ok"
-#
 #
 msgid "OpenCPN Alert"
 msgstr "OpenCPN Varning"
 #
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN lägger till sjökort..."
+#
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN Sjökortsuppdatering..."
 #
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Sjökortsuppdatering"
 #
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN konverterar Spår till Rutt...."
+#
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN scannar mappar...."
 #
 msgid "OpenCPN Info"
 msgstr "OpenCPN Information"
 #
-#
 msgid "OpenCPN Message"
 msgstr "OpenCPN meddelande"
 #
-#
 msgid "OpenCPN PlugIn Base Class"
-msgstr ""
-#
+msgstr "OpenCPN PlugIn Base Class"
 #
 msgid ""
 "OpenCPN PlugIn Base Class\n"
 "PlugInManager created this base class"
 msgstr ""
-#
+"OpenCPN PlugIn Base Class\n"
+"PlugInHanterare skapade denna base class"
 #
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Skapa rutt"
 #
-#
 msgid "Options"
 msgstr "Användarinställningar"
-#
 #
 msgid "Other"
 msgstr "Annan"
 #
-#
 msgid "OverZoom"
 msgstr "Överzoom"
-#
 #
 msgid "Overwrite existing file?"
 msgstr "Skriv över befintlig fil?"
 #
-#
 msgid "OwnShip COG arrow predictor length (Minutes):"
 msgstr "     kurspilens längd visar beräknad position efter (Minuter):"
-#
 #
 msgid "OwnShip Display Options"
 msgstr "Anpassa båtsymbol"
 #
-#
 msgid "Paper Chart"
 msgstr "Tryckt sjökort"
-#
 #
 msgid "Place Trackpoints at distance interval (NMi):"
 msgstr "Placera spårpunkter med avståndsintervall (NM):"
 #
-#
 msgid "Place Trackpoints at time interval (Seconds):"
 msgstr "Placera spårpunkter med tidsintervall (Sekunder):"
-#
 #
 msgid "Plain"
 msgstr "Enkel"
 #
-#
 msgid "Plan Speed"
 msgstr "Aktuell fart"
 #
+msgid "Plan speed (Kts)"
+msgstr "Aktuell fart (Knop)"
 #
 msgid "Play Sound on CPA/TCPA Alerts"
 msgstr "Ljudsignal vid CPA/TCPA varning"
 #
-#
 msgid "Play ships bells"
 msgstr "Aktivera Sjövakt"
-#
 #
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Öka skalan eller zooma ut för att visa regndata"
 #
-#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Öka skalan eller zooma ut för att visa signifikant våghöjd"
-#
 #
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Öka skalan eller zooma ut för att visa GRIB strömmar"
 #
-#
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Öka skalan eller zooma ut för att visa GRIB vattentemperatur"
-#
 #
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Starta om programmet för att aktivera ny språkinställning"
 #
-#
-msgid "PlugIn Name"
-msgstr ""
-#
 msgid "PlugInManager searching for PlugIns in location "
-msgstr ""
-#
+msgstr "PlugInManager searching for PlugIns in location "
 #
 msgid "PlugInManager: Deactivating PlugIn: "
-msgstr ""
-#
+msgstr "PlugInHanterare: avaktiverar PlugIn: "
 #
 msgid "PlugInManager: Initializing PlugIn: "
-msgstr ""
-#
+msgstr "PlugInHanterare: Initialiserar PlugIn: "
 #
 msgid "PlugInManager: Loading PlugIn: "
-msgstr ""
-#
+msgstr "PlugInHanterare: Aktiverar PlugIn: "
 #
 msgid "PlugInManager: UnLoading PlugIn: "
-msgstr ""
-#
+msgstr "PlugInHanterare: stänger PlugIn: "
 #
 #, c-format
 msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr ""
-#
+msgstr "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #
 msgid "PlugIns"
-msgstr ""
-#
+msgstr "PlugIns"
 #
 msgid "Points"
 msgstr "Utseende"
 #
-#
 msgid "Polyconic"
 msgstr "Polykonisk"
-#
 #
 msgid "Position"
 msgstr "Position"
 #
-#
-#, fuzzy
 msgid "Position:               "
 msgstr "Position:              "
-#
 #
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -1341,479 +1089,382 @@ msgid ""
 "                              Would you like to use this version of libgps "
 "anyway?"
 msgstr ""
+"Felaktig libgps API version.\n"
+"\n"
+"                              Vill du starta med aktuell version av libgps?"
 #
+msgid "Preferences"
+msgstr "Inställningar"
 #
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr "Ställ in GPS för uppladdning av Rutt/Waypoint och klicka Skicka..."
 #
-#
 msgid "Preserve scale when switching charts"
 msgstr "Bibehåll skala vid växling till nytt sjökort"
-#
 #
 msgid "Pressure, mBar"
 msgstr "Barometertryck, mBar"
 #
-#
 msgid "Prev"
 msgstr "Föregående"
-#
 #
 msgid "Preview:"
 msgstr "Förhandsgranska:"
 #
-#
 msgid "Print Chart"
 msgstr "Skriv ut sjökort"
-#
 #
 msgid "Printing"
 msgstr "Utskrift"
 #
+msgid "Processing Waypoints..."
+msgstr "Bearbetar Waypoints..."
 #
 msgid "Progress..."
 msgstr "Skickar data..."
 #
-#
 msgid "Properties"
 msgstr "Egenskaper"
-#
 #
 msgid "Radar rings"
 msgstr "Radarringar"
 #
-#
 msgid "Range"
 msgstr "Avstånd"
 #
-#
-#, fuzzy
 msgid "Range:                  Unavailable\n"
-msgstr "Speed:            Saknas\n"
-#
+msgstr "Avstånd:                  Saknas\n"
 #
 #, c-format
 msgid "Range:                %5.1f NM\n"
 msgstr "Avstånd:                %5.1f NM\n"
 #
-#
 msgid "Raster"
 msgstr "Raster"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Rapportålder:               %3d Sek.\n"
+msgstr "Girhastighet            %3d Deg./Min.\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Rapportålder:               %3d Sek.\n"
+msgstr "Girhastighet            %3d Deg./Min. Left\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Rapportålder:               %3d Sek.\n"
+msgstr "Girhastighet            %3d Deg./Min. Right\n"
 #
-#
-#, fuzzy
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "OpenCPN behöver uppdatera databasen med inställningar från "
 "konfigurationsfilen...."
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Recent Report Period:   %3d Sec.\n"
 "\n"
 msgstr ""
-"Senaste rapportperiod:     %3d Sek.\n"
+"Senaste rapportperiod:   %3d Sek.\n"
 "\n"
-#
 #
 msgid "Reference Station:"
 msgstr "Referens Station:"
 #
-#
 msgid "Remove Waypoint from Route"
 msgstr "Radera Waypoint från Rutt"
-#
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Ta bort förlorade mål efter (Minuter):"
 #
-#
 msgid "Remove this chart from quilt."
 msgstr "Exkludera sjökortet från sömlös visning"
-#
 #
 msgid "Rename Waypoints?"
 msgstr "Namnändra Waypoints?"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Report Age:             %3d Sec.\n"
 msgstr "Rapportålder:               %3d Sek.\n"
 #
-#
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr ""
-#
+msgstr "Hämtar inställning för sjökortsmappar från Windows Registry"
 #
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr ""
-#
+msgstr "Hämtar språkinställning från Windows Registry"
 #
 msgid "Reverse Route"
 msgstr "Reversera rutt"
 #
-#
 msgid "Rollover"
-msgstr ""
-#
+msgstr "Rulla över"
 #
 msgid "Route"
 msgstr "Rutt"
 #
-#
 msgid "Route Manager"
 msgstr "Rutthantering"
-#
 #
 msgid "Route Name"
 msgstr "Ruttnamn"
 #
-#
 msgid "Route Properties"
 msgstr "Ruttegenskaper"
 #
-#
 msgid "Route Uploaded successfully."
-msgstr ""
-#
+msgstr "Rutt uppladdad ok."
 #
 msgid "Route from Track"
-msgstr ""
+msgstr "Rutt från Spår"
 #
-#
-#, fuzzy
 msgid "Routes"
-msgstr "Rutt"
-#
+msgstr "Rutter"
 #
 msgid "SOG COG"
-msgstr ""
-#
+msgstr "SOG COG"
 #
 msgid "Safety Depth"
 msgstr "Säkert djup"
 #
-#
 msgid "Scale In"
 msgstr "Minska skalan"
-#
 #
 msgid "Scale Out"
 msgstr "Öka skalan"
 #
-#
 msgid "Sea Surface Temp, C"
 msgstr "Vattentemperatur, C"
-#
 #
 msgid "Select Alert Sound"
 msgstr "Välj ljud"
 #
-#
 msgid "Select All"
 msgstr "Välj alla"
-#
 #
 msgid "Select Chart Types for Quilting"
 msgstr "Välj sjökort för sömlös visning"
 #
-#
 msgid "Select GRIB Directory"
 msgstr "Välj mapp för väderfiler"
-#
 #
 msgid "Select Sound File"
 msgstr "Välj ljudfil"
 #
-#
 msgid "Send"
 msgstr "Skicka"
-#
 #
 msgid "Send Route To GPS"
 msgstr "Skicka Rutt till GPS"
 #
-#
 msgid "Send To GPS..."
 msgstr "Skicka till GPS"
-#
 #
 msgid "Set Anchor Watch"
 msgstr "Aktivera ankarvakt"
 #
+msgid "Set CM93 Offset"
+msgstr "Ange CM93 korrektion"
 #
 msgid "Settings"
 msgstr "Inställningar"
 #
-#
 msgid "Shallow Depth"
 msgstr "Grunt vatten"
-#
 #
 msgid "Shift to Larger Scale Chart"
 msgstr "Växla till sjökort i större skala"
 #
-#
 msgid "Shift to Smaller Scale Chart"
 msgstr "Växla till sjökort i mindre skala"
-#
 #
 msgid "Ship Type:            "
 msgstr "Båttyp:            "
 #
-#
 msgid "ShipName:  "
 msgstr "Båtnamn:   "
-#
 #
 msgid "Show AIS Targets"
 msgstr "Visa AIS-mål"
 #
-#
 msgid "Show ATON labels"
 msgstr "Visa AtoN etiketter"
-#
 #
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Visa varningsmeny för CPA/TCPA"
 #
-#
 msgid "Show Chart Outlines"
 msgstr "Visa sjökortsgränser"
-#
 #
 msgid "Show Currents"
 msgstr "Visa strömmar"
 #
-#
 msgid "Show DepthUnits"
 msgstr "Visa enhet för djup"
-#
 #
 msgid "Show ENC Text"
 msgstr "Visa ENC text"
 #
-#
 msgid "Show GPS/NMEA data stream window"
 msgstr "Visa fönster för GPS/NMEA dataström"
-#
 #
 msgid "Show GRIB icon"
 msgstr "Aktivera vädermeny"
 #
-#
 msgid "Show Important Text Only"
 msgstr "Visa enbart viktig text"
-#
 #
 msgid "Show Light Descriptions"
 msgstr "Visa fyrkaraktärer"
 #
-#
 msgid "Show Name"
 msgstr "Visa namn"
-#
 #
 msgid "Show Printing Icon"
 msgstr "Aktivera utskriftsmeny"
 #
-#
 msgid "Show Status Bar"
 msgstr "Visa statusfält"
-#
 #
 msgid "Show Tides"
 msgstr "Visa tidvatten"
 #
-#
 msgid "Show Track icon"
 msgstr "Aktivera spårmeny"
-#
 #
 msgid "Show radar rings"
 msgstr "Visa radarringar"
 #
-#
 msgid "Show skewed raster charts as North-Up"
-msgstr ""
-#
+msgstr "Visa skeva rasterkort som Norr-Upp"
 #
 msgid "Show target COG arrows"
 msgstr "Visa målets kurspil"
 #
-#
 msgid "Show target tracks"
 msgstr "Visa målspår"
-#
 #
 msgid "ShowSoundings"
 msgstr "Visa djupinformation"
 #
-#
 msgid "Shows the font preview."
 msgstr "Förhandsgranska teckensnitt."
-#
 #
 msgid "Significant Wave Height, m"
 msgstr "Signifikant våghöjd, m"
 #
-#
 msgid "Simplified"
 msgstr "Förenklad"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
 "\n"
 msgstr ""
-"Storlek:                %5dm x %dm x %4.1fm\n"
+"Storlek:                 %dm x %dm x %4.1fm\n"
 "\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm x ---m\n"
 "\n"
 msgstr ""
-"Storlek:                %5dm x %dm x ---m\n"
+"Storlek:                 %dm x %dm x ---m\n"
 "\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 ---m x ---m x %4.1fm\n"
 "\n"
 msgstr ""
-"Storlek:                ---m x ---m x %4.1fm\n"
+"Storlek:                 ---m x ---m x %4.1fm\n"
 "\n"
 #
-#
-#, fuzzy
 msgid ""
 "Size:                 ---m x ---m x ---m\n"
 "\n"
 msgstr ""
-"Storlek:                ---m x ---m x ---m\n"
+"Storlek:                 ---m x ---m x ---m\n"
 "\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 msgstr ""
-"Storlek:                %5dm x %dm x %4.1fm\n"
+"Storlek:               %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x ---m\n"
 "\n"
 msgstr ""
-"Storlek:                %5dm x %dm x ---m\n"
+"Storlek:               %5.1fm x %4.1fm x ---m\n"
 "\n"
-#
 #
 msgid "SoG"
 msgstr "SoG"
 #
+msgid "Speed (Kts)"
+msgstr "Hastighet, knop"
 #
-#, fuzzy
 msgid "Speed:                  Unavailable\n"
-msgstr "Speed:            Saknas\n"
-#
+msgstr "Fart:            Saknas\n"
 #
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Fart:                %5.2f Knop\n"
 #
-#
 msgid "Standard"
 msgstr "Standard"
-#
 #
 msgid "Start"
 msgstr "Start"
 #
-#
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Varna inte för ankrade/förtöjda mål"
-#
 #
 msgid "Supress anchored/moored targets"
 msgstr "Dölj ankrade/förtöjda mål"
 #
-#
 msgid "Symbolized"
 msgstr "Med symboler"
-#
 #
 msgid "TCP/IP WiFi Data Server"
 msgstr "TCP/IP WiFi Data Server"
 #
-#
 msgid "TCPA:  \n"
 msgstr "TCPA:  \n"
-#
 #
 #, c-format
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Tim:Min\n"
 #
-#
 msgid "Temporary GOTO Route"
 msgstr "Temporär GOTO Rutt"
-#
 #
 msgid "Test Alert Sound"
 msgstr "Testa ljud"
 #
-#
 msgid "Text Element"
 msgstr "Symboler och Text"
-#
 #
 msgid "The font colour."
 msgstr "Textens färg."
 #
-#
 msgid "The font family."
 msgstr "Teckensnitt."
-#
 #
 msgid "The font point size."
 msgstr "Textens punktstorlek."
 #
-#
 msgid "The font style."
 msgstr "Textens stil."
-#
 #
 msgid "The font weight."
 msgstr "Textens vikt."
 #
-#
 msgid "There"
 msgstr "Där"
-#
 #
 msgid ""
 "There was a problem printing.\n"
@@ -1822,90 +1473,68 @@ msgstr ""
 "Det gick inte att skriva ut.\n"
 "Kontrollera dina skrivarinställningar!"
 #
-#
 msgid "This Leg"
 msgstr "Ben"
-#
 #
 msgid "Tide"
 msgstr "Tidvatten"
 #
-#
 msgid "Time Enroute"
 msgstr "Återstående tid till destination"
-#
 #
 msgid "To"
 msgstr "Till"
 #
-#
 msgid "To Waypoint"
 msgstr "Till Waypoint"
-#
 #
 msgid "Today"
 msgstr "Idag"
 #
-#
 msgid "Toggle Tracking"
 msgstr "Visa båtens spår"
-#
 #
 msgid "Tomorrow"
 msgstr "Imorgon"
 #
-#
 msgid "ToolBox"
 msgstr "Verktygslåda"
 #
-#
 msgid "ToolTips"
-msgstr ""
-#
+msgstr "Verktygstips"
 #
 msgid "Total Distance"
 msgstr "Total distans"
 #
-#
-#, fuzzy
 msgid "Track Name"
-msgstr "Waypoint namn"
-#
+msgstr "Spårets namn"
 #
 msgid "Track Properties"
 msgstr "Spåregenskaper"
 #
-#
 msgid "Tracks"
 msgstr "Spår"
 #
-#
 msgid "Transverse Mercator"
 msgstr "Transverse Mercator"
-#
 #
 #, c-format
 msgid "TrueScale: %8.0f             "
 msgstr "Skala 1:%8.0f"
 #
-#
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
 msgstr "Skala 1:%8.0f  Zoom %4.1fx"
-#
 #
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "Skala 1:%8.0f  Zoom %4.2fx"
 #
-#
 msgid "Type"
 msgstr "Typ"
 #
-#
 msgid "UTC"
 msgstr "UTC"
-#
 #
 msgid ""
 "Unable to initialize libgps.\n"
@@ -1916,80 +1545,61 @@ msgstr ""
 "\n"
 "gpsd host är: "
 #
-#
-#, fuzzy
-msgid "Unable to load libgps.so.19"
-msgstr ""
-"libgps kan inte laddas.\n"
-"\n"
-"gpsd host är: "
-#
+msgid "Unable to load libgps.so"
+msgstr "libgps kan inte laddas"
 #
 msgid "Units"
 msgstr "Enheter"
 #
-#
 msgid "Unk"
 msgstr "Okänd"
-#
 #
 msgid "Unknown"
 msgstr "Okänd"
 #
+msgid "Update CM93 Offset"
+msgstr "Uppdatera CM93 korrektion"
 #
 msgid "Update Control"
 msgstr "Inställning för uppdatering"
 #
-#
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
-#
+"Använd Garmin GRMN/GRMN (Host) Mode för Waypoint och Rutt uppladdningar."
 #
 msgid "Use High Definition Graphics"
 msgstr "Använd högupplöst grafik"
 #
-#
 msgid "Use SCAMIN"
 msgstr "Använd SCAMIN"
-#
 #
 msgid "Use nearby waypoint?"
 msgstr "Använd närmaste waypoint?"
 #
-#
 msgid "Vector Charts"
 msgstr "Vektorsjökort"
-#
 #
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
 #
-#
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV filer (*.wav)|*.wav|Alla filer (*.*)|*.*"
-#
 #
 msgid "Warn if CPA less than (NMi):"
 msgstr "Varna om CPA är mindre än (NM):"
 #
-#
 msgid "Waypoint Locking"
 msgstr "Lås waypoint"
 #
-#
-#, fuzzy
 msgid "Waypoint Name"
-msgstr "Waypoints"
-#
+msgstr "Waypoint namn"
 #
 msgid "Waypoint(s) Uploaded successfully."
-msgstr ""
-#
+msgstr "Waypoint(s) uppladdning ok."
 #
 msgid "Waypoints"
 msgstr "Waypoints"
-#
 #
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
@@ -2002,53 +1612,48 @@ msgstr ""
 "\n"
 "Vill du ändra namnen?"
 #
-#
-#, fuzzy
 msgid "Welcome to OpenCPN"
-msgstr "Om OpenCPN"
-#
+msgstr "Välkommen till OpenCPN"
 #
 msgid "Whether the font is underlined."
 msgstr "Understruken text."
 #
-#
 msgid "WiFi Options"
 msgstr "WiFi inställningar"
-#
 #
 msgid "Wind Direction"
 msgstr "Vindriktning"
 #
-#
 msgid "Wind Speed, Kts."
 msgstr "Vindhastighet, knop"
 #
+msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
+msgstr ""
+"X korrektion (Positiva värden justerar sjökortet österut) (NM/cos(lat)) :"
 #
 msgid "XTE         L"
 msgstr "XTE         V"
 #
-#
 msgid "XTE         R"
 msgstr "XTE         H"
 #
+msgid "Y Offset (Positive moves map to North) (NMi/cos(lat)) :"
+msgstr ""
+"Y korrektion (Positiva värden justerar sjökortet norrut) (NM/cos(lat)) :"
 #
 msgid "Zoom In"
 msgstr "Zooma in"
 #
-#
 msgid "Zoom Out"
 msgstr "Zooma ut"
 #
-#
 msgid "[Class] Type (Status)"
-msgstr ""
-#
+msgstr "[Klass] Typ (Status)"
 #
 msgid "cm93 Detail"
 msgstr "cm93 Detaljer"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
@@ -2056,50 +1661,23 @@ msgid ""
 "Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API Version felaktig.\n"
-"Opencpn hittade version %d.%d, version 3.1 eller högre krävs"
-#
-#
-#
-#
-#
+"Opencpn hittade version %d.%d, version 3.0 eller högre krävs\n"
+"Vill du starta med aktuell version ändå?"
 #
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Ra&dera alla Rutter"
 #
-#
-#
-#
-#
-#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
-#
-#
-#
-#
-#
 #
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt Spår)"
 #
-#
-#
-#
-#
-#
 #~ msgid "Automatic Anchor Mark"
 #~ msgstr "Automatisk ankarmarkering"
 #
-#
-#
-#
 #~ msgid "CallSign:  "
 #~ msgstr "Anropssignal:  "
-#
-#
-#
-#
-#
 #
 #~ msgid ""
 #~ "Class unknown\n"
@@ -2108,19 +1686,8 @@ msgstr ""
 #~ "Okänd klass\n"
 #~ "\n"
 #
-#
-#
-#
-#, fuzzy
 #~ msgid "Class:     "
-#~ msgstr ""
-#~ "Klass:     A\n"
-#~ "\n"
-#
-#
-#
-#
-#
+#~ msgstr "Klass:     "
 #
 #~ msgid ""
 #~ "Class:     B\n"
@@ -2129,88 +1696,35 @@ msgstr ""
 #~ "Klass:     B\n"
 #~ "\n"
 #
-#
-#
-#
-#
-#
 #~ msgid "Delete All Routes..."
 #~ msgstr "Radera alla Rutter"
-#
-#
-#
-#
-#
-#
-#~ msgid "Delete All Waypoints..."
-#~ msgstr "Radera alla Waypoints..."
-#
-#
-#
 #
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Okänd"
 #
-#
-#
-#
-#
-#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
-#
-#
-#
-#
-#
 #
 #~ msgid "Failed to create ocpCursor."
 #~ msgstr "Misslyckades att skapa ocpCursor"
 #
-#
-#
-#
-#
-#
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
-#
-#
-#
-#
+#~ msgid "PlugIn Name"
+#~ msgstr "PlugIn Namn"
 #
 #~ msgid "Route Manager..."
 #~ msgstr "Rutthantering..."
 #
-#
-#
-#
-#
-#
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Skicka Rutt till GPS"
-#
-#
-#
-#
-#
 #
 #~ msgid "Show GPX icons"
 #~ msgstr "Aktivera GPX menyer"
 #
-#
-#
-#
-#
-#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
-#
-#
-#
-#
-#
 #
 #~ msgid "Övrigt"
 #~ msgstr "Etc."

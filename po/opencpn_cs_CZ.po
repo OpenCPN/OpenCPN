@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 21:52-0400\n"
-"PO-Revision-Date: 2010-10-14 13:43+0100\n"
+"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"PO-Revision-Date: 2010-11-15 07:54+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,12 +17,12 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 #
-# 
-# 
+#
+#
 msgid "\n"
 msgstr "\n"
 #
-# 
+#
 msgid ""
 "\n"
 "\n"
@@ -32,8 +32,8 @@ msgstr ""
 "\n"
 "\n"
 #
-# 
-# 
+#
+#
 msgid ""
 "\n"
 "         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
@@ -41,7 +41,7 @@ msgstr ""
 "\n"
 "         OpenCPN...Pěkný malý Open Source Chart Plotter/ Navigator"
 #
-# 
+#
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -71,8 +71,8 @@ msgstr ""
 "\n"
 "Prosím klikni \"OK\" pro souhlas a pokračování, \"Zrušit\" pro konec.\n"
 #
-# 
-# 
+#
+#
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
@@ -80,89 +80,89 @@ msgstr ""
 "           Nejsou instalovány mapy.\n"
 "Vyber prosím složky map v Nastavení->Mapy."
 #
-# 
+#
 msgid "      \"Ship Name\" MMSI (Call Sign)"
 msgstr "      \"Jméno lodi\" MMSI (Volací znak)"
 #
-# 
-# 
+#
+#
 msgid "      COG arrow predictor length (Minutes):"
 msgstr "      Délka šipky předpovědi COG (minut):"
 #
-# 
-# 
+#
+#
 msgid "      Max moored target speed (Kts.):"
 msgstr "      Max rychlost vyvázaného cíle (uzle):"
 #
-# 
-# 
+#
+#
 msgid "      Target track length (Minutes):"
 msgstr "      Délka stopy cíle (minut):"
 #
-# 
-# 
+#
+#
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "  RLL data souboru s mapou poškozena na mapě "
 #
-# 
-# 
+#
+#
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr " Mapový soubor obsahuje méně než 3 PLY body:"
 #
-# 
-# 
+#
+#
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "  Soubor s mapou poškozen v PosInit() na mapě "
 #
-# 
-# 
+#
+#
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "  Mapový soubor nemá žádnou BSB hlavičku, nelze inicializovat."
 #
-# 
+#
 msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr "   Nemohu načíst prvních %d bytů hlavičky mapového souboru: "
 #
-# 
-# 
+#
+#
 msgid "   Error creating Line Index for chart "
 msgstr "  Chyba při vytváření indexu řádků mapy"
 #
-# 
-# 
+#
+#
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "  Index řádků je poškozen, znovuvytvářím index mapy."
 #
-# 
+#
 msgid "   PlugInManager: Cannot load library: "
 msgstr "   PlugInManager: Nemohu načíst knihovnu: "
 #
-# 
+#
 msgid "   PlugInManager: Cannot load symbol create_pi: "
 msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
 #
-# 
+#
 msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
 #
-# 
-# 
+#
+#
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Výsledek: OK, použito interní řešení georef."
 #
-# 
-# 
+#
+#
 msgid "   Trying again with internally calculated georef solution "
 msgstr "  Zkouším znovu s interně vypočítaným georef řešením"
 #
-# 
-# 
+#
+#
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
 "chart "
@@ -170,238 +170,238 @@ msgstr ""
 "   VP konečná kontrola s interním georef: Georeference Chart_Error_Factor na "
 "mapě"
 #
-# 
-# 
+#
+#
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP konečná kontrola: Georeference Chart_Error_Factor na mapě"
 #
-# 
-# 
+#
+#
 msgid "  ..And TCPA is less than (Minutes):"
 msgstr " ..A TCPA je méně než (minut)"
 #
-# 
-# 
+#
+#
 msgid "  Could not open AIS serial port '"
 msgstr "  Nemohu otevřít sériový port AIS '"
 #
-# 
-# 
+#
+#
 msgid "  Could not open serial port '"
 msgstr "  Nemohu otevří sériový port '"
 #
-# 
-# 
+#
+#
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Dnů  %H Hodin %M Minut"
 #
-# 
-# 
+#
+#
 msgid " %H Hours  %M Minutes"
 msgstr " %H Hodin  %M Minut"
 #
-# 
-# 
+#
+#
 msgid " - "
 msgstr " - "
 #
-# 
-# 
+#
+#
 msgid " ChartFile:  "
 msgstr " SouborMapy:"
 #
-# 
-# 
+#
+#
 msgid " Datum:  "
 msgstr " Datum:"
 #
-# 
-# 
+#
+#
 msgid " Depth Units:  "
 msgstr "Jednotky hloubky:"
 #
-# 
-# 
+#
+#
 msgid " ID:  "
 msgstr " ID:"
 #
-# 
-# 
+#
+#
 msgid " Name:  "
 msgstr " Jméno:"
 #
-# 
-# 
+#
+#
 msgid " Projection:  "
 msgstr " Projekce:"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Měřítko:  1:%d"
 #
-# 
-# 
+#
+#
 msgid " Ship: "
 msgstr " Loď: "
 #
-# 
-# 
+#
+#
 msgid " Soundings:  "
 msgstr " Hloubky:"
 #
-# 
-# 
+#
+#
 msgid " Source Edition:  "
 msgstr " Zdrojové vydání:"
 #
-# 
-# 
+#
+#
 msgid " Updated:  "
 msgstr " Aktualizováno:"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid " is %5g"
 msgstr " je %5g"
 #
-# 
+#
 msgid " to "
 msgstr " do "
 #
-# 
-# 
+#
+#
 msgid "&Acknowledge"
 msgstr "&Potvrdit"
 #
-# 
-# 
+#
+#
 msgid "&Activate"
 msgstr "&Aktivovat"
 #
-# 
-# 
+#
+#
 msgid "&Cancel"
 msgstr "&Zrušit"
 #
-# 
-# 
+#
+#
 msgid "&Close"
 msgstr "&Zavřít"
 #
-# 
-# 
+#
+#
 msgid "&Delete"
 msgstr "&Smazat"
 #
-# 
-# 
+#
+#
 msgid "&Delete All"
 msgstr "S&mazat vše"
 #
-# 
-# 
+#
+#
 msgid "&Export Route..."
 msgstr "&Export trasy...."
 #
-# 
-# 
+#
+#
 msgid "&Export Track..."
 msgstr "&Export stopy...."
 #
-# 
-# 
+#
+#
 msgid "&Export Wpt..."
 msgstr "&Export tras. bodu...."
 #
-# 
-# 
+#
+#
 msgid "&Font family:"
 msgstr "Rodina &fontů:"
 #
-# 
-# 
+#
+#
 msgid "&Go To"
 msgstr "Navi&govat na"
 #
-# 
-# 
+#
+#
 msgid "&Kilometers"
 msgstr "&Kilometry"
 #
-# 
-# 
+#
+#
 msgid "&Nautical miles"
 msgstr "&Námořní míle"
 #
-# 
+#
 msgid "&New"
 msgstr "&Nový"
 #
-# 
-# 
+#
+#
 msgid "&OK"
 msgstr "&OK"
 #
-# 
-# 
+#
+#
 msgid "&Point size:"
 msgstr "Velik&ost bodů:"
 #
-# 
-# 
+#
+#
 msgid "&Properties"
 msgstr "Vlas&tnosti"
 #
-# 
-# 
+#
+#
 msgid "&Properties..."
 msgstr "&Vlastnosti"
 #
-# 
-# 
+#
+#
 msgid "&Reverse"
 msgstr "&Otočit"
 #
-# 
-# 
+#
+#
 msgid "&Send to GPS"
 msgstr "Ode&slat do GPS"
 #
-# 
-# 
+#
+#
 msgid "&Silence Alert"
 msgstr "Potlačit vý&strahu"
 #
-# 
-# 
+#
+#
 msgid "&Start Track"
 msgstr "Zahájit &stopu"
 #
-# 
-# 
+#
+#
 msgid "&Style:"
 msgstr "&Styl:"
 #
-# 
-# 
+#
+#
 msgid "&Underline"
 msgstr "Podtrhno&ut"
 #
-# 
-# 
+#
+#
 msgid "&Weight:"
 msgstr "&Váha:"
 #
-# 
-# 
+#
+#
 msgid "&Zoom to"
 msgstr "&Zoom na"
 #
-# 
-# 
+#
+#
 msgid ""
 "'\n"
 " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
@@ -409,8 +409,8 @@ msgstr ""
 "'\n"
 " Doporučení: Zkus 'xxx.xxx.xxx.xxx' notaci"
 #
-# 
-# 
+#
+#
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
@@ -418,283 +418,319 @@ msgstr ""
 "'\n"
 "Doporučení: Zkus zavřít ostatní aplikace."
 #
-# 
-# 
+#
+#
 msgid "(Unnamed Route)"
 msgstr "(Nepojmenovaná trasa)"
 #
-# 
-# 
+#
+#
 msgid "(Unnamed Track)"
 msgstr "(Nepojmenovaná stopa)"
 #
-# 
-# 
+#
+#
 msgid "(Unnamed Waypoint)"
 msgstr "(Nepojmenovaný trasový bod)"
 #
-# 
+#
 msgid "-"
 msgstr "-"
 #
-# 
-# 
+#
+msgid "--"
+msgstr "--"
+#
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
 #
-# 
-# 
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
 #
-# 
-# 
+#
+#
 msgid "2 Color"
 msgstr "2 barvy"
 #
-# 
-# 
+#
+#
 msgid "4 Color"
 msgstr "4 barvy"
 #
-# 
+#
 msgid "A"
 msgstr "A"
 #
-# 
-# 
+#
+#
 msgid "AIS"
 msgstr "AIS"
 #
-# 
-# 
+#
+#
 msgid "AIS Alert"
 msgstr "Výstraha AIS "
 #
-# 
-# 
+#
+#
 msgid "AIS Data Port"
 msgstr "Datový port AIS"
 #
-# 
-# 
+#
+#
 msgid "AIS General"
 msgstr "AIS obecné"
 #
-# 
-# 
+#
+#
 msgid "AIS Target Query"
 msgstr "Dotaz na cíl AIS"
 #
-# 
-# 
+#
+#
 msgid "AIS target list"
 msgstr "Seznam cílů AIS"
 #
-# 
-# 
+#
+msgid "AISRollover"
+msgstr "AISRollover"
+#
+#
+#
 msgid "AISTargetQuery"
 msgstr "AISTargetQuery"
 #
-# 
-# 
+#
+#
 msgid "About"
 msgstr "O programu"
 #
-# 
-# 
+#
+#
 msgid "About OpenCPN"
 msgstr "O OpenCPN"
 #
-# 
-# 
+#
+#
 msgid "Activate"
 msgstr "Aktivovat"
 #
-# 
-# 
+msgid "Activate CM93 Offset"
+msgstr "Aktivovat posuny CM93"
+#
+#
+#
 msgid "Activate Next in Route"
 msgstr "Aktivovat další v trase"
 #
-# 
-# 
+#
+#
 msgid "Activate Route"
 msgstr "Aktivovat trasu"
 #
-# 
-# 
+#
+#
 msgid "Activate Waypoint"
 msgstr "Aktivovat trasový bod"
 #
-# 
-# 
+#
+#
 msgid "Active Chart Directories"
 msgstr "Aktivní složky map"
 #
-# 
-# 
+#
+#
 msgid "Add Selection"
 msgstr "Přidat výběr"
 #
-# 
-# 
+#
+#
 msgid "Add this chart to quilt."
 msgstr "Přidat tuto mapu do sestavy."
 #
-# 
-# 
+#
+#
 msgid "Additional information"
 msgstr "Další informace"
 #
-# 
-# 
+#
+#
 msgid "Aid to Navigation"
 msgstr "Pomůcka pro navigaci"
 #
-# 
-# 
+#
+#
 msgid "All files (*.*)|*.*"
 msgstr "Všechny soubory (*.*)|*.*"
 #
-# 
-# 
+#
+#
 msgid "Append Waypoint"
 msgstr "Přidat trasový bod"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasy?"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
 #
-# 
+#
 msgid "AtoN"
 msgstr "AdoN"
 #
-# 
-# 
+#
+msgid "Attempting to load libgps.so"
+msgstr "Pokouším se nahrát libgps.so"
+#
+#
+#
 msgid "Authors"
 msgstr "Autoři"
 #
-# 
-# 
+#
+#
 msgid "Auto Follow"
 msgstr "Automaticky následovat"
 #
-# 
-# 
+#
+#
 msgid "Autopilot Output Port"
 msgstr "Port výstupu autopilota"
 #
-# 
-# 
+#
+#
 msgid "Available Chart Directories"
 msgstr "Dostupné složky map"
 #
-# 
+msgid "Avg. speed (Kts)"
+msgstr "Průměrná rychlost (Kts)"
+#
+#
 msgid "B"
 msgstr "B"
 #
-# 
-# 
+#
+#
 msgid "Base"
 msgstr "Základní"
 #
-# 
-# 
+#
+#
 msgid "Base Station"
 msgstr "Základnová stanice"
 #
-# 
+#
 msgid "BaseClassCommonName"
 msgstr "BaseClassCommonName"
 #
-# 
-# 
+#
+#
 msgid "Bearing"
 msgstr "Kurs"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Bearing:                %03d Deg.\n"
 msgstr "Kurs:              %03d St.\n"
 #
-# 
-# 
+#
+#
 msgid "Bearing:                Unavailable\n"
 msgstr "Kurs:            Nedostupný\n"
 #
-# 
-# 
+#
+#
 msgid "Boundaries"
 msgstr "Hranice"
 #
-# 
-# 
+#
+#
 msgid "Brg"
 msgstr "Kurs"
 #
-# 
-# 
+#
+#
 msgid "C&olour:"
 msgstr "B&arva:"
 #
-# 
-# 
+#
+#
 msgid "CM93"
 msgstr "CM93"
 #
-# 
-# 
+msgid "CM93 Offset Display"
+msgstr "Zobrazení posunu CM93"
+#
+msgid "CM93 Offset Off"
+msgstr "Posun CM93 vyp."
+#
+msgid "CM93 Offset On"
+msgstr "Posun CM93 zap."
+#
+msgid "CM93 Offset Tool Off"
+msgstr "Nástroj Posun CM93 vypnut"
+#
+msgid "CM93 Offset Tool....."
+msgstr "Nástroj Posun CM93...."
+#
+msgid "CM93 Offsets"
+msgstr "Posuny  CM93"
+#
+#
+#
 msgid "CM93 Zoom Detail"
 msgstr "Detail přiblížení CM93"
 #
-# 
+#
 msgid "CPA"
 msgstr "CPA"
 #
-# 
-# 
+#
+#
 msgid "CPA Calculation"
 msgstr "Výpočet CPA"
 #
-# 
-# 
+#
+#
 msgid "CPA TCPA"
 msgstr "CPA/TCPA"
 #
-# 
-# 
+#
+#
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA výstrahy"
 #
-# 
-# 
+#
+#
 msgid "CPA:       \n"
 msgstr "CPA:       \n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "CPA:                 %6.1f NM\n"
 msgstr "CPA:                 %6.1f nm\n"
 #
-# 
-# 
+#
+#
 msgid "Call"
 msgstr "Volání"
 #
-# 
+#
 msgid ""
 "Call to gps_open failed.\n"
 "Is gpsd running?\n"
@@ -706,742 +742,785 @@ msgstr ""
 "\n"
 "gpsd hostitel je: "
 #
-# 
-# 
+#
+#
 msgid "CallSign:             "
 msgstr "Volací znak:              "
 #
-# 
-# 
+#
+#
 msgid "Cancel"
 msgstr "Zrušit"
 #
-# 
-# 
+#
+#
 msgid "Change Color Scheme"
 msgstr "Změň barevné schéma"
 #
-# 
-# 
+#
+#
 msgid "Chart"
 msgstr "Mapa"
 #
-# 
-# 
+#
+#
 msgid "Chart Depth Units"
 msgstr "Jednotky hloubky na mapě"
 #
-# 
-# 
+#
+#
 msgid "Chart Display Filters"
 msgstr "Filtry zobrazení map"
 #
-# 
-# 
+#
+#
 msgid "Chart Display Options"
 msgstr "Volby mapového zobrazení"
 #
-# 
-# 
+#
+#
 msgid "Chart Display Style"
 msgstr "Styl zobrazení map"
 #
-# 
-# 
+#
+#
 msgid "Chart Print"
 msgstr "Tisk mapy"
 #
-# 
-# 
+#
+#
 msgid "Chart file corrupt.. disabling this chart \n"
 msgstr "Soubor s mapou poškozen... vypínám tuto mapu \n"
 #
-# 
-# 
+#
+#
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr Není k dispozici"
 #
-# 
-# 
+#
+#
 msgid "Charts"
 msgstr "Mapy"
 #
-# 
-# 
+#
+#
 msgid "Choose Font..."
 msgstr "Vybrat font..."
 #
-# 
-# 
+#
+#
 msgid "Class"
 msgstr "Třída"
 #
-# 
-# 
+#
+#
 msgid "Class:                "
 msgstr "Třída:                  "
 #
-# 
-# 
+#
+#
 msgid "Clear All"
 msgstr "Vyčistit vše"
 #
-# 
-# 
+#
+#
 msgid "Clear Anchor Watch"
 msgstr "Smazat kotevní alarm"
 #
-# 
-# 
+#
+#
 msgid "Click to cancel the font selection."
 msgstr "Klikni pro zrušení výběru fontu."
 #
-# 
-# 
+#
+#
 msgid "Click to confirm the font selection."
 msgstr "Klikni pro potvrzení výběru fontu."
 #
-# 
-# 
+#
+#
 msgid "Close"
 msgstr "Zavřít"
 #
-# 
+#
 msgid "CoG"
 msgstr "CoG"
 #
-# 
-# 
+#
+#
 msgid "Colors"
 msgstr "Barvy"
 #
-# 
+#
 msgid "Console Legend"
 msgstr "Legenda konzole"
 #
-# 
+#
 msgid "Console Value"
 msgstr "Hodnota konzole"
 #
-# 
-# 
+#
+#
 msgid "Could not resolve TCP/IP host '"
 msgstr "Nemohu rozpoznat TCP/IP hostitele '"
 #
-# 
-# 
+#
+#
 msgid "Course UP Mode"
 msgstr "Mód kurs nahoru"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Course:                 %03d Deg.\n"
 msgstr "Kurs:               %03d Deg.\n"
 #
-# 
-# 
+#
+#
 msgid "Course:                 Unavailable\n"
 msgstr "Kurs:            Nedostupný\n"
 #
-# 
-# 
+#
+#
 msgid "Create Route"
 msgstr "Vytvořit trasu"
 #
-# 
-# 
+#
+#
 msgid "Current"
 msgstr "Proud"
 #
-# 
-# 
+#
+#
 msgid "Current Velocity, Kts."
 msgstr "Rychlost proudu, Kts."
 #
-# 
-# 
+#
+#
 msgid "Cursor: "
 msgstr "Kurzor:"
 #
-# 
-# 
+#
+#
 msgid "De-Clutter Text (exp.)"
 msgstr "Uspořádat text (exp.)"
 #
-# 
-# 
+#
+#
 msgid "Deactivate"
 msgstr "Deaktivovat"
 #
-# 
-# 
+#
+#
 msgid "Deactivate Route"
 msgstr "Deaktivovat trasu"
 #
-# 
-# 
+#
+#
 msgid "Deep Depth"
 msgstr "Velká hloubka"
 #
-# 
-# 
+#
+#
 msgid "Delete All"
 msgstr "Smazat vše"
 #
-# 
-# 
+#
+#
 msgid "Delete Mark"
 msgstr "Smazat značku"
 #
-# 
-# 
+#
+#
 msgid "Delete Route"
 msgstr "Smazat trasu"
 #
-# 
-# 
+#
+#
 msgid "Delete Selection"
 msgstr "Smazat výběr"
 #
-# 
-# 
+#
+#
 msgid "Delete Track"
 msgstr "Smazat trasu"
 #
-# 
-# 
+#
+#
 msgid "Delete Waypoint"
 msgstr "Smazat trasový bod"
 #
-# 
-# 
+#
+#
 msgid "Depart From"
 msgstr "Odplutí z"
 #
-# 
-# 
+#
+#
 msgid "Depth Settings"
 msgstr "Nastavení hloubky"
 #
-# 
-# 
+#
+#
 msgid "Depth Settings(m)"
 msgstr "Nastavení hloubky(m)"
 #
-# 
-# 
+#
+#
 msgid "Description"
 msgstr "Popis"
 #
-# 
-# 
+#
+#
 msgid "Destination"
 msgstr "Cíl"
 #
-# 
-# 
+#
+#
 msgid "Destination:          "
 msgstr "Cíl:"
 #
-# 
-# 
+#
+#
+msgid "Disable"
+msgstr "Deaktivovat"
+#
+#
+#
 msgid "Display"
 msgstr "Zobrazení"
 #
-# 
-# 
+#
+#
 msgid "Display Category"
 msgstr "Kategorie zobrazení"
 #
-# 
-# 
+#
+#
 msgid "Distance"
 msgstr "Vzdálenost"
 #
-# 
-# 
+#
+#
 msgid "Distance between rings"
 msgstr "Vzdálenost mezi kruhy"
 #
-# 
-# 
+msgid "Done."
+msgstr "Hotovo."
+#
+#
+#
 msgid "Drop MOB Marker"
 msgstr "Umístit zde značku MOB"
 #
-# 
-# 
+#
+#
 msgid "Drop Mark Here"
 msgstr "Umístit zde značku"
 #
-# 
-# 
+#
+#
 msgid "E&xport All..."
 msgstr "E&xportovat vše...."
 #
-# 
-# 
+#
+#
 msgid "ENC/Vector"
 msgstr "ENC/Vector"
 #
-# 
+#
 msgid "ETA"
 msgstr "ETA"
 #
-# 
-# 
+#
+#
 msgid "ETA          "
 msgstr "ETA"
 #
-# 
+#
 msgid "ETA:"
 msgstr "ETA:"
 #
-# 
-# 
+#
+#
 msgid "ETA:                  "
 msgstr "ETA:                  "
 #
-# 
-# 
+#
+#
 msgid "ETE/Timestamp"
 msgstr "ETE/časová značka"
 #
-# 
+#
 msgid "Enable"
 msgstr "Povolit"
 #
-# 
-# 
+#
+#
 msgid "Enable CM93 Detail Slider"
 msgstr "Povolit posuvník detailu CM93"
 #
-# 
-# 
+#
+#
 msgid "Enable Chart Quilting"
 msgstr "Povolit skládání map"
 #
-# 
+msgid "Enable Manual CM93 Offsets"
+msgstr "Povolit manuální posuny  CM93"
+#
+#
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr "Povolit vypršení potvrzení upozornění na cíl (minut)"
 #
-# 
-# 
+#
+#
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Povolit přibližování ke kurzoru kolečkem"
 #
-# 
-# 
+#
+#
 msgid "End Route"
 msgstr "Ukončit trasu"
 #
-# 
+#
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Chyba při nahrávání trasy. Prosím zkontroluj log..."
 #
-# 
+#
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
 #
-# 
-# 
+#
+#
 msgid "Etc."
 msgstr "Atd."
 #
-# 
-# 
+#
+#
 msgid "Exit OpenCPN"
 msgstr "Ukonči OpenCPN"
 #
-# 
-# 
+#
+#
 msgid "Export GPX file"
 msgstr "Exportuj GPX soubor"
 #
-# 
-# 
+#
+msgid "Failed to load libgps.so"
+msgstr "Nemohu nahrát libgps.so"
+#
+#
+msgid "Failed to load libgps.so.19"
+msgstr "Nemohu nahrát libgps.so.19"
+#
+#
+#
 msgid "Fathoms"
 msgstr "Fathomy (Sáhy)"
 #
-# 
-# 
+#
+#
 msgid "Feet"
 msgstr "Stopy"
 #
-# 
-# 
+#
+#
 msgid "Font Options"
 msgstr "Volby fontu"
 #
-# 
-# 
+#
+#
 msgid "Force Full Database Rebuild"
 msgstr "Vynutit uplné znovuvytvoření databáze"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "From Ownship: %03d Deg  %6.2f NMi"
 msgstr "Od vlastní lodi: %03d Deg  %6.2f nm"
 #
-# 
-# 
+#
+#
 msgid "GPS"
 msgstr "GPS"
 #
-# 
-# 
+#
+#
 msgid "GPS/Plotter Port"
 msgstr "Port GPS/Ploteru"
 #
-# 
-# 
+#
+#
 msgid "GPSD Data Server"
 msgstr "GPSD Data Server"
 #
-# 
-# 
+#
+#
 msgid "GRIB"
 msgstr "GRIB"
 #
-# 
-# 
+#
+#
 msgid "GRIB Data"
 msgstr "Data GRIB"
 #
-# 
-# 
+#
+#
 msgid "GRIB Display Control"
 msgstr "Ovládání zobrazení GRIB"
 #
-# 
-# 
+#
+#
 msgid "GRIB File Directory"
 msgstr "Složka souborů GRIB"
 #
-# 
-# 
+#
+#
 msgid "GUI Options"
 msgstr "Volby grafického rozhraní"
 #
-# 
-# 
+#
+#
 msgid "Go To Here"
 msgstr "Navigovat sem"
 #
-# 
-# 
+#
+#
 msgid "Go To Mark/WP"
 msgstr "Navigovat na značku/WP"
 #
-# 
-# 
+#
+#
 msgid "Go to "
 msgstr "Navigovat na"
 #
-# 
-# 
+#
+#
 msgid "Help"
 msgstr "Nápověda"
 #
-# 
-# 
+#
+#
 msgid "Here"
 msgstr "Tady"
 #
-# 
-# 
+#
+#
 msgid "I&mport..."
 msgstr "I&mport...."
 #
-# 
-# 
+#
+#
 msgid "Icon"
 msgstr "Ikona"
 #
-# 
-# 
+#
+#
 msgid "Import GPX file"
 msgstr "Importuj GPX soubor"
 #
-# 
+#
 msgid "Inland Blue Flag        Clear\n"
 msgstr "Pozemní modrá vlajka Smaž\n"
 #
-# 
+#
 msgid "Inland Blue Flag        Set\n"
 msgstr "Pozemní modrá vlajka Nastav\n"
 #
-# 
-# 
+#
+#
 msgid "Insert Waypoint"
 msgstr "Vložit trasový bod"
 #
-# 
-# 
+#
+#
+msgid "Jump To Position"
+msgstr "Skok na pozici"
+#
+msgid "Jump To Position..."
+msgstr "Skočit na pozici...."
+#
+#
+#
 msgid "Language"
 msgstr "Jazyk"
 #
-# 
-# 
+#
+#
 msgid "Language/Fonts"
 msgstr "Jazyk/fonty"
 #
-# 
-# 
+#
+#
 msgid "Latest Report Time:      "
 msgstr "Čas posledního hlášení:      "
 #
-# 
-# 
+#
+#
 msgid "Latitude"
 msgstr "Zem. šířka"
 #
-# 
-# 
+#
+#
 msgid "Leg"
 msgstr "Úsek"
 #
-# 
-# 
+#
+#
 msgid "Leg/Route"
 msgstr "Úsek/Trasa"
 #
-# 
-# 
+#
+#
 msgid "Leg: from "
 msgstr "Úsek: z"
 #
-# 
-# 
+#
+#
 msgid "Length"
 msgstr "Délka"
 #
-# 
-# 
+#
+#
 msgid "License"
 msgstr "Licence"
 #
-# 
-# 
+#
+#
 msgid "Links"
 msgstr "Odkazy"
 #
-# 
-# 
+#
+#
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
 msgstr ""
 "Zamknout všechny trasové body dokud je zobrazen dialog vlastností trasového "
 "bodu"
 #
-# 
-# 
+#
+#
 msgid "Longitude"
 msgstr "Zem. délka"
 #
-# 
-# 
+#
+#
 msgid "Look Ahead Mode"
 msgstr "Mód Pohled dopředu"
 #
-# 
-# 
+#
+#
 msgid "Lost Targets"
 msgstr "Ztracené cíle"
 #
-# 
-# 
+#
+#
 msgid "MAN OVERBOARD"
 msgstr "MUŽ PŘES PALUBU"
 #
-# 
-# 
+#
+#
 msgid "META Objects"
 msgstr "META Objekty"
 #
-# 
+#
 msgid "MMSI"
 msgstr "MMSI"
 #
-# 
-# 
+#
+#
 msgid "Mariner's Standard"
 msgstr "Mariner's Standard"
 #
-# 
-# 
+#
+#
 msgid "MarinersStandard"
 msgstr "MarinersStandard"
 #
-# 
-# 
+#
+#
 msgid "Mark Icon"
 msgstr "Ikona značky"
 #
-# 
-# 
+#
+#
 msgid "Mark Information"
 msgstr "Info o značce"
 #
-# 
-# 
+#
+#
 msgid "Mark Name"
 msgstr "Jméno značky"
 #
-# 
-# 
+#
+#
 msgid "Mark Properties"
 msgstr "Vlastnosti TB"
 #
-# 
-# 
+#
+#
 msgid "Mark targets as lost after (Minutes:):"
 msgstr "Označit cíle za ztracené po (minut)"
 #
-# 
-# 
+#
+#
 msgid "Mark/WP Properties"
 msgstr "Označit/Vlastnosti TB"
 #
-# 
-# 
+#
+#
 msgid "Marks"
 msgstr "Značky"
 #
-# 
-# 
+#
+#
 msgid "Max Detail Here"
 msgstr "Maximální detail zde"
 #
-# 
-# 
+#
+#
 msgid "Measure Off"
 msgstr "Vypnout měření"
 #
-# 
-# 
+#
+#
 msgid "Measure....."
 msgstr "Měřit....."
 #
-# 
-# 
+#
+#
 msgid "Mercator"
 msgstr "Mercator"
 #
-# 
-# 
+#
+#
 msgid "Meters"
 msgstr "Metry"
 #
-# 
-# 
+#
+#
 msgid "Metres"
 msgstr "Metry"
 #
-# 
-# 
+#
+#
 msgid "Move Boat Here"
 msgstr "Posunout sem loď"
 #
-# 
+#
 msgid "NMEA Baud Rate"
 msgstr "Rychlost NMEA"
 #
-# 
-# 
+#
+#
 msgid "NMEA Data Source"
 msgstr "Datový zdroj NMEA"
 #
-# 
-# 
+#
+#
 msgid "NMEA Options"
 msgstr "Volby NMEA"
 #
-# 
-# 
+#
+#
 msgid "Name"
 msgstr "Jméno"
 #
-# 
-# 
+#
+#
 msgid "Nav Status"
 msgstr "Nav status"
 #
-# 
-# 
+#
+#
 msgid "Navigation Data"
 msgstr "Navigační data"
 #
-# 
-# 
+#
+#
 msgid "Navigational Status:  "
 msgstr "Navigační status"
 #
-# 
-# 
+#
+#
 msgid "New Mark"
 msgstr "Nová značka"
 #
-# 
-# 
+#
+#
 msgid "Next"
 msgstr "Další"
 #
-# 
-# 
+#
+#
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm):"
 #
-# 
-# 
+#
+#
 msgid "No Chart Available"
 msgstr "Žádná mapa není k dispozici"
 #
-# 
-# 
+#
+#
 msgid "Number of radar rings shown"
 msgstr "Počet zobrazených radarových kruhů"
 #
-# 
-# 
+#
+#
 msgid "OK"
 msgstr "OK"
 #
-# 
-# 
+#
+#
 msgid "Object Query"
 msgstr "Dotaz na objekt"
 #
-# 
-# 
+#
+#
 msgid "Ok"
 msgstr "Ok"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Alert"
 msgstr "Výstraha OpenCPN"
 #
-# 
-# 
+#
+#
+msgid "OpenCPN Chart Add...."
+msgstr "Přidávání map OpenCPN...."
+#
+#
+#
+msgid "OpenCPN Chart Scan...."
+msgstr "Sken map OpenCPN...."
+#
+#
+#
 msgid "OpenCPN Chart Update"
 msgstr "Aktualizace map OpenCPN"
 #
-# 
-# 
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN převádí stopu na trasu...."
+#
+msgid "OpenCPN Directory Scan...."
+msgstr "Sken složek OpenCPN...."
+#
+#
+#
 msgid "OpenCPN Info"
 msgstr "Informace OpenCPN"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Message"
 msgstr "Zpráva OpenCPN"
 #
-# 
+#
 msgid "OpenCPN PlugIn Base Class"
 msgstr "OpenCPN základní třída modulu"
 #
-# 
+#
 msgid ""
 "OpenCPN PlugIn Base Class\n"
 "PlugInManager created this base class"
@@ -1449,155 +1528,155 @@ msgstr ""
 "OpenCPN základní třída modulu\n"
 "PlugInManager vytvořil tuto základní třídu"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "Vytvořit OpenCPN Trasu"
 #
-# 
-# 
+#
+#
 msgid "Options"
 msgstr "Nasatvení"
 #
-# 
-# 
+#
+#
 msgid "Other"
 msgstr "Jiný"
 #
-# 
-# 
+#
+#
 msgid "OverZoom"
 msgstr "OverZoom"
 #
-# 
-# 
+#
+#
 msgid "Overwrite existing file?"
 msgstr "Přepsat existující soubor?"
 #
-# 
-# 
+#
+#
 msgid "OwnShip COG arrow predictor length (Minutes):"
 msgstr "Délka šipky předpovědi COG (minut):"
 #
-# 
-# 
+#
+#
 msgid "OwnShip Display Options"
 msgstr "Volby zobrazení vlastní lodi"
 #
-# 
-# 
+#
+#
 msgid "Paper Chart"
 msgstr "Papírová mapa"
 #
-# 
-# 
+#
+#
 msgid "Place Trackpoints at distance interval (NMi):"
 msgstr "Umístit stopové body v intervalu (nm)"
 #
-# 
-# 
+#
+#
 msgid "Place Trackpoints at time interval (Seconds):"
 msgstr "Umístit stopové body v intervalu (sekund):"
 #
-# 
-# 
+#
+#
 msgid "Plain"
 msgstr "Obyčejný"
 #
-# 
-# 
+#
+#
 msgid "Plan Speed"
 msgstr "Plánovaná rychlost"
 #
-# 
-# 
+#
+#
+msgid "Plan speed (Kts)"
+msgstr "Plánovaná rychlost (Kts)"
+#
+#
+#
 msgid "Play Sound on CPA/TCPA Alerts"
 msgstr "Hrát zvuk pří výstraze CPA/TCPA"
 #
-# 
-# 
+#
+#
 msgid "Play ships bells"
 msgstr "Hraj lodní zvony"
 #
-# 
-# 
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
 #
-# 
-# 
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
 #
-# 
-# 
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení OCEAN CURRENT GRIB"
 #
-# 
-# 
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
 #
-# 
-# 
+#
+#
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Prosím restartuj OpenCPN pro aktivaci nového jazyka."
 #
-# 
-msgid "PlugIn Name"
-msgstr "Jméno modulu"
 #
-# 
-#, fuzzy
 msgid "PlugInManager searching for PlugIns in location "
-msgstr "PlugInManager: Deaktivuji modul: "
+msgstr "PlugInManager: hledá moduly v umístění  "
 #
-# 
+#
 msgid "PlugInManager: Deactivating PlugIn: "
 msgstr "PlugInManager: Deaktivuji modul: "
 #
-# 
+#
 msgid "PlugInManager: Initializing PlugIn: "
 msgstr "PlugInManager: Inicializuji modul: "
 #
-# 
+#
 msgid "PlugInManager: Loading PlugIn: "
 msgstr "PlugInManager: Zavádím modul: "
 #
-# 
+#
 msgid "PlugInManager: UnLoading PlugIn: "
 msgstr "PlugInManager: Odstraňuji modul: "
 #
-# 
+#
 #, c-format
 msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "
 #
-# 
+#
 msgid "PlugIns"
 msgstr "Zásuvné moduly"
 #
-# 
-# 
+#
+#
 msgid "Points"
 msgstr "Body"
 #
-# 
+#
 msgid "Polyconic"
 msgstr "Polyconic"
 #
-# 
-# 
+#
+#
 msgid "Position"
 msgstr "Pozice"
 #
-# 
-# 
+#
+#
 msgid "Position:               "
 msgstr "Pozice:             "
 #
-# 
+#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -1610,102 +1689,110 @@ msgstr ""
 "\n"
 "                              Chceš přesto použít tuto verzi libgps?"
 #
-# 
-# 
+msgid "Preferences"
+msgstr "Preference"
+#
+#
+#
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr "Připrav GPS pro Nahrání tras/trasových bodů a stiskni Poslat..."
 #
-# 
-# 
+#
+#
 msgid "Preserve scale when switching charts"
 msgstr "Zachovat měřítko při změně mapy"
 #
-# 
-# 
+#
+#
 msgid "Pressure, mBar"
 msgstr "Tlak, mBar"
 #
-# 
-# 
+#
+#
 msgid "Prev"
 msgstr "Předchozí"
 #
-# 
-# 
+#
+#
 msgid "Preview:"
 msgstr "Náhled:"
 #
-# 
-# 
+#
+#
 msgid "Print Chart"
 msgstr "Vytiskni mapu"
 #
-# 
-# 
+#
+#
 msgid "Printing"
 msgstr "Tisk"
 #
-# 
-# 
+#
+#
+msgid "Processing Waypoints..."
+msgstr "Zpracovávám trasové body..."
+#
+#
+#
 msgid "Progress..."
 msgstr "Průběh..."
 #
-# 
-# 
+#
+#
 msgid "Properties"
 msgstr "Vlastnosti"
 #
-# 
-# 
+#
+#
 msgid "Radar rings"
 msgstr "Radarové kruhy"
 #
-# 
-# 
+#
+#
 msgid "Range"
 msgstr "Rozsah"
 #
-# 
-# 
+#
+#
 msgid "Range:                  Unavailable\n"
 msgstr "Vzdálenost:            Nedostupná\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Range:                %5.1f NM\n"
 msgstr "Vzdálenost:                %5.1f NM\n"
 #
-# 
-# 
+#
+#
 msgid "Raster"
 msgstr "Rastr"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min.\n"
 msgstr "Tempo obratu:           %3d St./Min.\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Tempo obratu:           %3d St./Min.Vpravo\n"
 #
-# 
-# 
+#
+#
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Aktualizovat databázi map ze záznamů v konfiguračním souboru...."
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Recent Report Period:   %3d Sec.\n"
@@ -1714,308 +1801,310 @@ msgstr ""
 "Perioda nedávného reportu:   %3d sek.\n"
 "\n"
 #
-# 
-# 
+#
+#
 msgid "Reference Station:"
 msgstr "Referenční stanice:"
 #
-# 
-# 
+#
+#
 msgid "Remove Waypoint from Route"
 msgstr "Odstranit bod z trasy"
 #
-# 
-# 
+#
+#
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Odstranit ztracené cíle po (minut)"
 #
-# 
-# 
+#
+#
 msgid "Remove this chart from quilt."
 msgstr "Odstranit tuto mapu ze sestavy."
 #
-# 
-# 
+#
+#
 msgid "Rename Waypoints?"
 msgstr "Přejmenovat trasové body"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Report Age:             %3d Sec.\n"
 msgstr "Stáří reportu:            %3d Sec.\n"
 #
-# 
+#
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Získávám úvodní nastavení složky map z registru Windows."
 #
-# 
+#
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Získávám úvodní nastavení jazyka z registru Windows"
 #
-# 
-# 
+#
+#
 msgid "Reverse Route"
 msgstr "Otočit trasu"
 #
-# 
-#, fuzzy
+#
 msgid "Rollover"
 msgstr "Rollover"
 #
-# 
-# 
+#
+#
 msgid "Route"
 msgstr "Trasa"
 #
-# 
-# 
+#
+#
 msgid "Route Manager"
 msgstr "Správce tras"
 #
-# 
-# 
+#
+#
 msgid "Route Name"
 msgstr "Název trasy"
 #
-# 
-# 
+#
+#
 msgid "Route Properties"
 msgstr "Vlastnosti trasy"
 #
-# 
+#
 msgid "Route Uploaded successfully."
 msgstr "Trasa nahrána úspěšně."
 #
-# 
+#
 msgid "Route from Track"
 msgstr "Trasa ze stopy"
 #
-# 
-# 
+#
+#
 msgid "Routes"
 msgstr "Trasy"
 #
-# 
+#
 msgid "SOG COG"
 msgstr "SOG COG"
 #
-# 
-# 
+#
+#
 msgid "Safety Depth"
 msgstr "Bezpečná hloubka"
 #
-# 
-# 
+#
+#
 msgid "Scale In"
 msgstr "Přiblížit"
 #
-# 
-# 
+#
+#
 msgid "Scale Out"
 msgstr "Oddálit"
 #
-# 
-# 
+#
+#
 msgid "Sea Surface Temp, C"
 msgstr "Povrchová teplota moře, C"
 #
-# 
-# 
+#
+#
 msgid "Select Alert Sound"
 msgstr "Vybrat zvuk výstrah"
 #
-# 
-# 
+#
+#
 msgid "Select All"
 msgstr "Vybrat vše"
 #
-# 
-# 
+#
+#
 msgid "Select Chart Types for Quilting"
 msgstr "Vyber typy map pro skládání"
 #
-# 
-# 
+#
+#
 msgid "Select GRIB Directory"
 msgstr "Složka souborů GRIB"
 #
-# 
-# 
+#
+#
 msgid "Select Sound File"
 msgstr "Vybrat zvukový soubor"
 #
-# 
-# 
+#
+#
 msgid "Send"
 msgstr "Poslat"
 #
-# 
-# 
+#
+#
 msgid "Send Route To GPS"
 msgstr "Odeslat trasu do GPS"
 #
-# 
-# 
+#
+#
 msgid "Send To GPS..."
 msgstr "Odeslat do GPS..."
 #
-# 
-# 
+#
+#
 msgid "Set Anchor Watch"
 msgstr "Nastavit kotevní alarm"
 #
-# 
-# 
+msgid "Set CM93 Offset"
+msgstr "Nastav posun CM93"
+#
+#
+#
 msgid "Settings"
 msgstr "Nastavení"
 #
-# 
-# 
+#
+#
 msgid "Shallow Depth"
 msgstr "Mělčina"
 #
-# 
-# 
+#
+#
 msgid "Shift to Larger Scale Chart"
 msgstr "Posun na mapu většího měřítka"
 #
-# 
-# 
+#
+#
 msgid "Shift to Smaller Scale Chart"
 msgstr "Posun na mapu menšího měřítka"
 #
-# 
-# 
+#
+#
 msgid "Ship Type:            "
 msgstr "Typ lodě:"
 #
-# 
-# 
+#
+#
 msgid "ShipName:  "
 msgstr "Jméno lodě:"
 #
-# 
-# 
+#
+#
 msgid "Show AIS Targets"
 msgstr "Zobrazit AIS cíle"
 #
-# 
-# 
+#
+#
 msgid "Show ATON labels"
 msgstr "Zobrazit popisky ATON"
 #
-# 
-# 
+#
+#
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Zobrazit dialog výstrah CPA/TCPA"
 #
-# 
-# 
+#
+#
 msgid "Show Chart Outlines"
 msgstr "Zobrazit obrysy mapy"
 #
-# 
-# 
+#
+#
 msgid "Show Currents"
 msgstr "Ukaž proudy"
 #
-# 
-# 
+#
+#
 msgid "Show DepthUnits"
 msgstr "Zobrazit jednotky hloubky"
 #
-# 
-# 
+#
+#
 msgid "Show ENC Text"
 msgstr "Ukaž ENC text"
 #
-# 
-# 
+#
+#
 msgid "Show GPS/NMEA data stream window"
 msgstr "Zobrazit okno toku dat GPS/NMEA"
 #
-# 
-# 
+#
+#
 msgid "Show GRIB icon"
 msgstr "Zobrazit ikonu GRIB"
 #
-# 
-# 
+#
+#
 msgid "Show Important Text Only"
 msgstr "Zobrazit pouze důležitý text"
 #
-# 
-# 
+#
+#
 msgid "Show Light Descriptions"
 msgstr "Zobrazit popisy světel"
 #
-# 
-# 
+#
+#
 msgid "Show Name"
 msgstr "Zobraz jméno"
 #
-# 
-# 
+#
+#
 msgid "Show Printing Icon"
 msgstr "Zobrazit ikonu tisku"
 #
-# 
-# 
+#
+#
 msgid "Show Status Bar"
 msgstr "Zobrazit stavovou řádku"
 #
-# 
-# 
+#
+#
 msgid "Show Tides"
 msgstr "Ukaž přílivy"
 #
-# 
-# 
+#
+#
 msgid "Show Track icon"
 msgstr "Zobrazit ikonu stopy"
 #
-# 
-# 
+#
+#
 msgid "Show radar rings"
 msgstr "Zobrazit radarové kruhy"
 #
-# 
+#
 msgid "Show skewed raster charts as North-Up"
 msgstr "Zobrazit zkosené rasterové mapy jako Sever-Nahoru"
 #
-# 
-# 
+#
+#
 msgid "Show target COG arrows"
 msgstr "Ukázat šipky COG cílů"
 #
-# 
-# 
+#
+#
 msgid "Show target tracks"
 msgstr "Zobrazit stopy cílů"
 #
-# 
-# 
+#
+#
 msgid "ShowSoundings"
 msgstr "Zobrazit hloubky"
 #
-# 
-# 
+#
+#
 msgid "Shows the font preview."
 msgstr "Ukázat náhled fontu."
 #
-# 
-# 
+#
+#
 msgid "Significant Wave Height, m"
 msgstr "Signifikantní výška vln, m"
 #
-# 
-# 
+#
+#
 msgid "Simplified"
 msgstr "Zjednodušený"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
@@ -2024,8 +2113,8 @@ msgstr ""
 "Velikost:                %dm x %dm x %4.1fm\n"
 "\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x ---m\n"
@@ -2034,8 +2123,8 @@ msgstr ""
 "Velikost:                %dm x %dm x ---m\n"
 "\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Size:                 ---m x ---m x %4.1fm\n"
@@ -2044,8 +2133,8 @@ msgstr ""
 "Velikost:            ---m x ---m x %4.1fm\n"
 "\n"
 #
-# 
-# 
+#
+#
 msgid ""
 "Size:                 ---m x ---m x ---m\n"
 "\n"
@@ -2053,8 +2142,8 @@ msgstr ""
 "Velikost:           ---m x ---m x ---m\n"
 "\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x %4.1fm\n"
@@ -2063,8 +2152,8 @@ msgstr ""
 "Velikost:          %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x ---m\n"
@@ -2073,108 +2162,113 @@ msgstr ""
 "Velikost:          %5.1fm x %4.1fm x ---m\n"
 "\n"
 #
-# 
+#
 msgid "SoG"
 msgstr "SoG"
 #
-# 
-# 
+#
+#
+msgid "Speed (Kts)"
+msgstr "Rychlost (Kts)"
+#
+#
+#
 msgid "Speed:                  Unavailable\n"
 msgstr "Rychlost:            Nedostupná\n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Rychlost:                %5.2f Kts.\n"
 #
-# 
-# 
+#
+#
 msgid "Standard"
 msgstr "Standardní"
 #
-# 
-# 
+#
+#
 msgid "Start"
 msgstr "Start"
 #
-# 
-# 
+#
+#
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Potlačit výstrahy pro zakotvené/vyvázané cíle"
 #
-# 
-# 
+#
+#
 msgid "Supress anchored/moored targets"
 msgstr "Potlačit zakotvené/vyvázané cíle"
 #
-# 
-# 
+#
+#
 msgid "Symbolized"
 msgstr "Symbolizovaný"
 #
-# 
-# 
+#
+#
 msgid "TCP/IP WiFi Data Server"
 msgstr "TCP/IP WiFi Data Server"
 #
-# 
-# 
+#
+#
 msgid "TCPA:  \n"
 msgstr "TCPA:  \n"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Hod:Min\n"
 #
-# 
+#
 msgid "Temporary GOTO Route"
 msgstr "Dočasná trasa"
 #
-# 
-# 
+#
+#
 msgid "Test Alert Sound"
 msgstr "Otestovat zvuk výstrahy"
 #
-# 
-# 
+#
+#
 msgid "Text Element"
 msgstr "Prvek text"
 #
-# 
-# 
+#
+#
 msgid "The font colour."
 msgstr "Barva fontu."
 #
-# 
-# 
+#
+#
 msgid "The font family."
 msgstr "Rodina fontů."
 #
-# 
-# 
+#
+#
 msgid "The font point size."
 msgstr "Velikost fontu v bodech."
 #
-# 
-# 
+#
+#
 msgid "The font style."
 msgstr "Styl fontu"
 #
-# 
-# 
+#
+#
 msgid "The font weight."
 msgstr "Váha fontu."
 #
-# 
-# 
+#
+#
 msgid "There"
 msgstr "Tam"
 #
-# 
-# 
+#
+#
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -2182,108 +2276,108 @@ msgstr ""
 "Problém s tiskem.\n"
 "Možná není tvá tiskárna správně nastavena?"
 #
-# 
-# 
+#
+#
 msgid "This Leg"
 msgstr "Tento úsek"
 #
-# 
-# 
+#
+#
 msgid "Tide"
 msgstr "Příliv"
 #
-# 
-# 
+#
+#
 msgid "Time Enroute"
 msgstr "Čas na cestě"
 #
-# 
-# 
+#
+#
 msgid "To"
 msgstr "Do"
 #
-# 
-# 
+#
+#
 msgid "To Waypoint"
 msgstr "K trasovému bodu"
 #
-# 
-# 
+#
+#
 msgid "Today"
 msgstr "Dnes"
 #
-# 
-# 
+#
+#
 msgid "Toggle Tracking"
 msgstr "Přepni záznam stopy"
 #
-# 
-# 
+#
+#
 msgid "Tomorrow"
 msgstr "Zítra"
 #
-# 
-# 
+#
+#
 msgid "ToolBox"
 msgstr "Nástroje"
 #
-# 
+#
 msgid "ToolTips"
 msgstr "ToolTipy"
 #
-# 
-# 
+#
+#
 msgid "Total Distance"
 msgstr "Celková vzdálenost"
 #
-# 
-# 
+#
+#
 msgid "Track Name"
 msgstr "Jméno trasy"
 #
-# 
-# 
+#
+#
 msgid "Track Properties"
 msgstr "Vlastnosti trasy"
 #
-# 
-# 
+#
+#
 msgid "Tracks"
 msgstr "Stopy"
 #
-# 
-# 
+#
+#
 msgid "Transverse Mercator"
 msgstr "Transverse Mercator"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "TrueScale: %8.0f             "
 msgstr "Skut. měřítko: %8.0f"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
 msgstr "Skut. měřítko: %8.0f  Zvět. %4.1fx"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "Skut. měřítko: %8.0f  Zvět. %4.2fx"
 #
-# 
+#
 msgid "Type"
 msgstr "Typ"
 #
-# 
-# 
+#
+#
 msgid "UTC"
 msgstr "UTC"
 #
-# 
+#
 msgid ""
 "Unable to initialize libgps.\n"
 "\n"
@@ -2293,91 +2387,94 @@ msgstr ""
 "\n"
 "gpsd hostitel je: "
 #
-# 
-msgid "Unable to load libgps.so.19"
-msgstr "Nemohu nahrát libgps.so.19"
 #
-# 
-# 
+msgid "Unable to load libgps.so"
+msgstr "Nemohu nahrát libgps.so"
+#
+#
+#
 msgid "Units"
 msgstr "Jednotky"
 #
-# 
-# 
+#
+#
 msgid "Unk"
 msgstr "Neznámý"
 #
-# 
-# 
+#
+#
 msgid "Unknown"
 msgstr "Neznámý"
 #
-# 
-# 
+msgid "Update CM93 Offset"
+msgstr "Aktualizuj posun CM93"
+#
+#
+#
 msgid "Update Control"
 msgstr "Aktualizovat ovládací prvek"
 #
-# 
+#
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Použít Garmin GRMN/GRMN (Host) mód pro nahrávání tras a trasových bodů."
 #
-# 
-# 
+#
+#
 msgid "Use High Definition Graphics"
 msgstr "Použít grafiku ve velkém rozlišení"
 #
-# 
-# 
+#
+#
 msgid "Use SCAMIN"
 msgstr "Použít SCAMIN"
 #
-# 
-# 
+#
+#
 msgid "Use nearby waypoint?"
 msgstr "Použít blízký trasový bod?"
 #
-# 
-# 
+#
+#
 msgid "Vector Charts"
 msgstr "Vektorové mapy"
 #
-# 
-# 
+#
+#
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "VAROVÁNÍ:  QuickScat GRIB data jsou %d hodin stará."
 #
-# 
-# 
+#
+#
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Soubory WAV(*.wav)|*.wav|Všechny soubory(*.*)|*.*"
 #
-# 
-# 
+#
+#
 msgid "Warn if CPA less than (NMi):"
 msgstr "Varuj, pokud CPA je méně než (nm):"
 #
-# 
-# 
+#
+#
 msgid "Waypoint Locking"
 msgstr "Zamykání trasových bodů"
 #
-# 
-# 
+#
+#
 msgid "Waypoint Name"
 msgstr "Jméno tras. bodu"
 #
-# 
+#
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Trasové body úspěšně nahrány."
 #
-# 
-# 
+#
+#
 msgid "Waypoints"
 msgstr "Trasové body"
 #
-# 
-# 
+#
+#
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -2389,61 +2486,67 @@ msgstr ""
 "\n"
 "Chceš přejmenovat všechny trasové body?"
 #
-# 
-# 
+#
+#
 msgid "Welcome to OpenCPN"
 msgstr "Vítejte v OpenCPN"
 #
-# 
-# 
+#
+#
 msgid "Whether the font is underlined."
 msgstr "Zda je font podtržen"
 #
-# 
-# 
+#
+#
 msgid "WiFi Options"
 msgstr "Volby WiFi"
 #
-# 
-# 
+#
+#
 msgid "Wind Direction"
 msgstr "Směr větru"
 #
-# 
-# 
+#
+#
 msgid "Wind Speed, Kts."
 msgstr "Rychlost větru, Uzly"
 #
-# 
-# 
+msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
+msgstr "X posun (Kladný posunuje mapu na východ) (NMi/cos(lat)) :"
+#
+#
+#
 msgid "XTE         L"
 msgstr "XTE         L"
 #
-# 
-# 
+#
+#
 msgid "XTE         R"
 msgstr "XTE         P"
 #
-# 
-# 
+msgid "Y Offset (Positive moves map to North) (NMi/cos(lat)) :"
+msgstr "Y posun (Kladný posunuje mapu na sever) (NMi/cos(lat)) :"
+#
+#
+#
 msgid "Zoom In"
 msgstr "Zvětšit"
 #
-# 
-# 
+#
+#
 msgid "Zoom Out"
 msgstr "Zmenšit"
 #
-# 
+#
 msgid "[Class] Type (Status)"
 msgstr "[Třída] Typ (Stav)"
 #
-# 
-# 
+#
+#
 msgid "cm93 Detail"
 msgstr "Detail cm93"
 #
-# 
+#
 #, c-format
 msgid ""
 "libgps API version mismatch.\n"
