@@ -2438,6 +2438,9 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     tb->AddTool( ID_HELP, _T(""), *(*phash)[wxString(_T("help"))], _("About OpenCPN"), wxITEM_NORMAL);
     x += pitch_tool;
 
+    //      Add any PlugIn toolbar tools that request default positioning
+    AddDefaultPositionPlugInTools(tb);
+
     int xpr = tool_margin.x + (tb->GetToolsCount() * pitch_tool);
 
     x = xpr;
@@ -2600,6 +2603,49 @@ bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
       if(bret)
             while (CheckAndAddPlugInTool(tb)) { /* nothing to do */ }
 
+      return bret;
+}
+
+bool MyFrame::AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb)
+{
+      if(!g_pi_manager)
+            return false;
+
+      bool bret = false;
+
+      //    Walk the PlugIn tool spec array, checking the requested position
+      //    If a tool has been requested by a plugin at this position, add it
+      ArrayOfPlugInToolbarTools  tool_array = g_pi_manager->GetPluginToolbarToolArray();
+
+      for(unsigned int i=0; i < tool_array.GetCount(); i++)
+      {
+            PlugInToolbarToolContainer *pttc = tool_array.Item(i);
+            if(pttc->position == -1)                  // PlugIn has requested default positioning
+            {
+                  wxBitmap *ptool_bmp;
+
+                  switch(global_color_scheme)
+                  {
+                        case GLOBAL_COLOR_SCHEME_DAY:
+                              ptool_bmp = pttc->bitmap_day;;
+                              break;
+                        case GLOBAL_COLOR_SCHEME_DUSK:
+                              ptool_bmp = pttc->bitmap_dusk;
+                              break;
+                        case GLOBAL_COLOR_SCHEME_NIGHT:
+                              ptool_bmp = pttc->bitmap_night;
+                              break;
+                        default:
+                              ptool_bmp = pttc->bitmap_day;;
+                              break;
+                  }
+
+                  tb->AddTool( pttc->id, wxString(pttc->label), *(ptool_bmp), wxString(pttc->shortHelp), pttc->kind);
+                  if (pttc->kind == wxITEM_CHECK)
+                        tb->ToggleTool(pttc->id, pttc->b_toggle);
+                  bret = true;
+            }
+      }
       return bret;
 }
 
@@ -3644,9 +3690,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_MOB:
     {
-          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
-          pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
-          pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
+          ActivateMOB();
+//          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
+//          pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
+//          pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
          break;
     }
 
@@ -3687,6 +3734,38 @@ void MyFrame::ToggleColorScheme()
       SetAndApplyColorScheme(s);
 }
 
+void MyFrame::ActivateMOB(void)
+{
+      //    The MOB point
+      RoutePoint *pWP_MOB = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
+      pWP_MOB->m_bKeepXRoute = true;
+      pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_MOB );
+
+      //    Create a point that is one mile along the present course
+      double zlat, zlon;
+      ll_gc_ll(gLat, gLon, gCog, 1.0, &zlat, &zlon);
+
+      RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+      pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_src );
+
+      Route *temp_route = new Route();
+      pRouteList->Append ( temp_route );
+
+      temp_route->AddPoint(pWP_src);
+      temp_route->AddPoint(pWP_MOB);
+
+      pSelect->AddSelectableRouteSegment ( gLat, gLon, zlat, zlon, pWP_src, pWP_MOB, temp_route );
+
+      temp_route->m_RouteNameString = _("Temporary MOB Route");
+      temp_route->m_RouteStartString = _("Assumed 1 Mile Point");;
+      temp_route->m_RouteEndString = _("MOB");
+
+      temp_route->m_bDeleteOnArrival = false;
+
+      temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
+      g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+
+}
 void MyFrame::TrackOn(void)
 {
       g_bTrackActive = true;
@@ -7823,8 +7902,8 @@ void SetSystemColors ( ColorScheme cs )
                     i++;
                     pcspec++;
               }
-                pSetSysColors ( i, ( unsigned long * ) &element[0], ( unsigned long * ) &rgbcolor[0] );
 
+                pSetSysColors ( i, ( unsigned long * ) &element[0], ( unsigned long * ) &rgbcolor[0] );
 
         }
         else

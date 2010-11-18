@@ -211,6 +211,9 @@ public:
 
       bool SendToGPS(wxString& com_name, bool bsend_waypoints, wxGauge *pProgress);
 
+      double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
+      void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
+
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
       bool        m_bRtIsActive;
@@ -238,7 +241,7 @@ private:
       int         m_nm_sequence;
       bool        m_bVisible; // should this route be drawn?
 
-
+      double      m_ArrivalRadius;
 
 };
 

@@ -2832,10 +2832,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         {
                               if ( event.GetModifiers() == wxMOD_CONTROL )
                               {
-                                          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
-                                          pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
-                                          pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
-                                          Refresh ( false );
+                                    parent_frame->ActivateMOB();
                               }
                               b_proc = true;
                               break;

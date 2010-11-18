@@ -49,7 +49,7 @@
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-#define GRIB_TOOL_POSITION    13
+#define GRIB_TOOL_POSITION    -1          // Request default positioning of toolbar tool
 
 class grib_pi : public opencpn_plugin
 {

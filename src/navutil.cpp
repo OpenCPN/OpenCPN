@@ -1211,6 +1211,8 @@ Route::Route ( void )
       m_pLastAddedPoint = NULL;
       m_GUID = pWayPointMan->CreateGUID ( NULL );
 
+      m_ArrivalRadius = .05;        // default, Miles
+
       RBBox.Reset();
 }
 

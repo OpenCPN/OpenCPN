@@ -466,12 +466,11 @@ bool Routeman::UpdateProgress()
 
 
 //      Determine Arrival
-                double ArrivalRadius = .05;
 
                 bool bDidArrival = false;
 
 
-                if(CurrentRangeToActiveNormalCrossing <= ArrivalRadius)
+                if(CurrentRangeToActiveNormalCrossing <= pActiveRoute->GetRouteArrivalRadius())
                 {
                   m_bArrival = true;
                   UpdateAutopilot();

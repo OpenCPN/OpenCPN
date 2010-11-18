@@ -61,7 +61,7 @@
 class DashboardWindow;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION 12
+#define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
 class DashboardInstrumentContainer
 {

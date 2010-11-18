@@ -287,6 +287,8 @@ class MyFrame: public wxFrame
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
     void RequestNewToolbar();
 
+    void ActivateMOB(void);
+
   private:
     void DoSetSize(void);
     void DoCOGSet(void);
@@ -309,6 +311,7 @@ class MyFrame: public wxFrame
     void UpdateToolbarStatusBox(bool bupdate_toolbar = true);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
+    bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
 
 
 
