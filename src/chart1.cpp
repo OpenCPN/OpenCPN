@@ -3691,10 +3691,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_MOB:
     {
           ActivateMOB();
-//          RoutePoint *pWP = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
-//          pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
-//          pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
-         break;
+          break;
     }
 
         default:
@@ -3737,7 +3734,12 @@ void MyFrame::ToggleColorScheme()
 void MyFrame::ActivateMOB(void)
 {
       //    The MOB point
-      RoutePoint *pWP_MOB = new RoutePoint ( gLat, gLon, wxString ( _T ( "mob" ) ), wxString ( _( "MAN OVERBOARD" ) ), GPX_EMPTY_STRING );
+      wxDateTime mob_time = wxDateTime::Now();
+      wxString mob_label(_( "MAN OVERBOARD" ));
+      mob_label += _T(" at ");
+      mob_label += mob_time.FormatTime();
+
+      RoutePoint *pWP_MOB = new RoutePoint ( gLat, gLon,  _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
       pWP_MOB->m_bKeepXRoute = true;
       pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_MOB );
 
@@ -3758,12 +3760,13 @@ void MyFrame::ActivateMOB(void)
 
       temp_route->m_RouteNameString = _("Temporary MOB Route");
       temp_route->m_RouteStartString = _("Assumed 1 Mile Point");;
-      temp_route->m_RouteEndString = _("MOB");
+      temp_route->m_RouteEndString = mob_label;
 
       temp_route->m_bDeleteOnArrival = false;
 
       temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
       g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+      cc1->Refresh(false);
 
 }
 void MyFrame::TrackOn(void)
