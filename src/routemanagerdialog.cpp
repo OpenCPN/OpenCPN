@@ -212,10 +212,14 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
       s1.Printf(_T("%11s"), s1b);
       s2.Printf(_T("%11s"), s2b);
 
+      double l1, l2;
+      s1.ToDouble(&l1);
+      s2.ToDouble(&l2);
+
       if(sort_track_len_dir & 1)
-            return s2.Cmp(s1);
+            return(l1 < l2);
       else
-            return s1.Cmp(s2);
+            return(l2 < l1);
 
 }
 
@@ -280,10 +284,15 @@ int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
       s1.Printf(_T("%11s"), s1b);
       s2.Printf(_T("%11s"), s2b);
 
+      double l1, l2;
+      s1.ToDouble(&l1);
+      s2.ToDouble(&l2);
+
       if(sort_wp_len_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return(l1 < l2);
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return(l2 < l1);
+
 }
 
 
