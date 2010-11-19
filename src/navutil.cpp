@@ -4009,7 +4009,7 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                            wxString ChildName = wxString::FromUTF8( child->Value());
                                           if ( ChildName == _T ( "wpt" ) )
                                           {
-                                                RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"));
+                                                RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"), true);          // Full Viz
                                                 RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
                                                 if(!pExisting)
                                                 {
@@ -4017,8 +4017,6 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                                             pWayPointMan->m_pWayPointList->Append ( pWp );
 
                                                       pWp->m_bIsolatedMark = true;      // This is an isolated mark
-                                                      pWp->m_bIsVisible = true;         // And it should default to "visible"
-                                                      pWp->m_bShowName = true;          // as should the name
                                                       AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
                                                       pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
                                                       pWp->m_ConfigWPNum = m_NextWPNum;
@@ -4623,7 +4621,7 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime)
 
 
 
-RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
+RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, bool b_fullviz)
 {
 //FIXME: implement the parsing in GpxWptElement and get rid of it here!
       wxString LatString = wxString::FromUTF8 ( wptnode->Attribute( "lat" ) );
@@ -4633,6 +4631,8 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
       bool bviz_name = false;
       bool bauto_name = false;
       bool bshared = false;
+      bool b_propvizname = false;
+      bool b_propviz = false;
 
       wxString SymString  = def_symbol_name; //_T ( "empty" );                // default icon
       wxString NameString;
@@ -4764,6 +4764,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                               TiXmlNode *prop_child = ext_child->FirstChild();
                               if ( prop_child != NULL )
                               {
+                                    b_propviz = true;
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
@@ -4775,6 +4776,7 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
                               TiXmlNode *prop_child = ext_child->FirstChild();
                               if ( prop_child != NULL )
                               {
+                                    b_propvizname = true;
                                     wxString s = wxString::FromUTF8(prop_child->ToText()->Value());
                                     long v = 0;
                                     if(s.ToLong(&v))
@@ -4816,8 +4818,16 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name)
       RoutePoint *pWP = new RoutePoint ( rlat, rlon, SymString, NameString, GuidString, false );      // do not add to global WP list yet...
       pWP->m_MarkDescription = DescString;
 
-      pWP->m_bShowName = bviz_name;
-      pWP->m_bIsVisible = bviz;
+      if(b_propvizname)
+            pWP->m_bShowName = bviz_name;
+      else if(b_fullviz)
+            pWP->m_bShowName = true;
+
+      if(b_propviz)
+            pWP->m_bIsVisible = bviz;
+      else if(b_fullviz)
+            pWP->m_bIsVisible = true;
+
       pWP->m_bKeepXRoute = bshared;
       pWP->m_bDynamicName = bauto_name;
 
@@ -4841,6 +4851,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
       //FIXME: This should be moved to GpxTrkElement
       wxString RouteName;
       unsigned short int GPXSeg;                   // pjotrc 2010.02.27
+
+      bool b_propviz = false;
+      bool b_viz = true;
 
       wxString Name = wxString::FromUTF8(trknode->Value());
       if ( Name == _T ( "trk" ) )
@@ -4866,15 +4879,10 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                               wxString tpChildName = wxString::FromUTF8(tpchild->Value());
                               if(tpChildName == _T("trkpt"))
                               {
-                                    pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty") );
+                                    pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty"), b_fullviz );
 						pTentTrack->AddPoint ( pWp, false );
                                     pWp->m_bIsInRoute = false;                      // Hack
                                     pWp->m_bIsInTrack = true;
-                                    if(b_fullviz)
-                                    {
-                                          pWp->m_bIsVisible = true;         // And it should default to "visible"
-                                          pWp->m_bShowName = true;          // as should the name
-                                    }
                                     pWp->m_GPXTrkSegNo = GPXSeg;
                                     pWayPointMan->m_pWayPointList->Append ( pWp );
                                }
@@ -4911,9 +4919,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                                     TiXmlNode *v_child = ext_child->FirstChild();
                                     if ( v_child != NULL )
                                     {
+                                          b_propviz = true;
                                           wxString viz = wxString::FromUTF8 ( v_child->ToText()->Value() );
-                                          if(viz == _T("0"))
-                                                pTentTrack->SetVisible(false);
+                                          b_viz = (viz == _T("1"));
                                     }
                               }
                               else if ( ext_name == _T ( "opencpn:guid" ) )
@@ -4957,7 +4965,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
             {
                   pRouteList->Append ( pTentTrack );
 
-                  if(b_fullviz)
+                  if(b_propviz)
+                        pTentTrack->SetVisible(b_viz);
+                  else if(b_fullviz)
                         pTentTrack->SetVisible();
 
                   //    Add the selectable points and segments
@@ -5026,7 +5036,7 @@ Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
             wxString ChildName = wxString::FromUTF8 ( child->Value() );
             if ( ChildName == _T ( "rtept" ) )
             {
-                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square") );
+                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square"), b_fullviz );
 
                   RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
 
@@ -5036,11 +5046,6 @@ Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
                               pWayPointMan->m_pWayPointList->Append ( pWp );
 
                         pTentRoute->AddPoint ( pWp, false );                      // don't auto-rename numerically
-                        if(b_fullviz)
-                        {
-                              pWp->m_bIsVisible = true;
-                              pWp->m_bShowName = true;
-                        }
 
                         //pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
                   }
@@ -5105,6 +5110,9 @@ Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
 
 Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
 {
+      bool b_propviz = false;
+      bool b_viz = true;
+
       //FIXME: This should be moved to GpxRteElement
       Route *pTentRoute = new Route();
 
@@ -5115,7 +5123,7 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
             wxString ChildName = wxString::FromUTF8 ( child->Value() );
             if ( ChildName == _T ( "rtept" ) )
             {
-                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square") );
+                  RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square"), b_fullviz );
 
                   RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
 
@@ -5125,11 +5133,6 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                               pWayPointMan->m_pWayPointList->Append ( pWp );
 
                         pTentRoute->AddPoint ( pWp, false );                      // don't auto-rename numerically
-                        if(b_fullviz)
-                        {
-                              pWp->m_bIsVisible = true;
-                              pWp->m_bShowName = true;
-                        }
                         pWp->m_ConfigWPNum = 1000 + ( routenum * 100 ) + ip;  // dummy mark number
                   }
                   else
@@ -5171,9 +5174,9 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
 					TiXmlNode *v_child = ext_child->FirstChild();
                               if ( v_child != NULL )
                               {
+                                    b_propviz = true;
                                     wxString viz = wxString::FromUTF8 ( v_child->ToText()->Value() );
-                                    if(viz == _T("0"))
-                                          pTentRoute->SetVisible(false);
+                                    b_viz = (viz == _T("1"));
                               }
                         }
                         else if ( ext_name == _T ( "opencpn:guid" ) )
@@ -5187,6 +5190,13 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                   }
             }
       }
+
+      if(b_propviz)
+            pTentRoute->SetVisible(b_viz);
+      else if(b_fullviz)
+            pTentRoute->SetVisible();
+
+
       return pTentRoute;
 }
 
@@ -5265,8 +5275,6 @@ void GPXLoadRoute ( GpxRteElement* rtenode, int routenum, bool b_fullviz )
             if ( !::RouteExists(pTentRoute->m_GUID) && !::RouteExists(pTentRoute))
             {
                   ::InsertRoute(pTentRoute, routenum);
-                  if(b_fullviz)
-                        pTentRoute->SetVisible();
 
             }
             else

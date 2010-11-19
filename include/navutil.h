@@ -300,7 +300,7 @@ DECLARE_EVENT_TABLE()
 //    Static XML Helpers
 //----------------------------------------------------------------------------
 
-RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name);
+RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, bool b_fullviz = false );
 Route *LoadGPXRoute (GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
 Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz = false );
 void GPXLoadTrack ( GpxTrkElement *trknode, bool b_fullviz = false  );
