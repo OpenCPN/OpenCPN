@@ -301,10 +301,10 @@ DECLARE_EVENT_TABLE()
 //----------------------------------------------------------------------------
 
 RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name);
-Route *LoadGPXRoute (GpxRteElement *rtenode, int routenum);
-Route *LoadGPXTrack (GpxTrkElement *trknode);
-void GPXLoadTrack ( GpxTrkElement *trknode );
-void GPXLoadRoute ( GpxRteElement *rtenode, int routenum );
+Route *LoadGPXRoute (GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
+Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz = false );
+void GPXLoadTrack ( GpxTrkElement *trknode, bool b_fullviz = false  );
+void GPXLoadRoute ( GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
 void InsertRoute(Route *pTentRoute, int routenum);
 void UpdateRoute(Route *pTentRoute);
 
