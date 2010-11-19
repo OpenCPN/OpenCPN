@@ -3768,6 +3768,15 @@ void MyFrame::ActivateMOB(void)
       g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
       cc1->Refresh(false);
 
+      wxString mob_message(_( "MAN OVERBOARD" ));
+      mob_message += _T(" Time: ");
+      mob_message += mob_time.Format();
+      mob_message += _T("  Position: ");
+      mob_message += toSDMM(1, gLat);
+      mob_message += _T("   ");
+      mob_message += toSDMM(2, gLon);
+      wxLogMessage(mob_message);
+
 }
 void MyFrame::TrackOn(void)
 {
