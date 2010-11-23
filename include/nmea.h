@@ -481,6 +481,7 @@ private:
 #endif
 
       void ThreadMsg(const wxString &msg);          // Send a wxLogMessage to main program event loop
+      bool ResetGarminUSBDriver();
 
       wxEvtHandler            *m_pMainEventHandler;
       NMEAHandler             *m_launcher;
@@ -495,6 +496,7 @@ private:
       int                     m_receive_state;
       cpo_sat_data            m_sat_data[12];
       unit_info_type          grmin_unit_info[2];
+      int                     m_nSats;
 };
 
 

@@ -2231,6 +2231,8 @@ void OCP_GARMIN_Thread::OnExit(void)
 {
 }
 
+
+
 //    Entry Point
 void *OCP_GARMIN_Thread::Entry()
 {
@@ -2252,8 +2254,11 @@ void *OCP_GARMIN_Thread::Entry()
 
       int n_short_read = 0;
 
+      ResetGarminUSBDriver();
+
       //    Search for the Garmin Device Interface Class
 thread_retry:
+
       bool bgarmin_unit_found = false;
       int nmsg = 1;
 
@@ -2280,7 +2285,7 @@ thread_retry:
 
             if((!bgarmin_unit_found) && (nmsg > 0))
             {
-                  ThreadMsg(_T("   SetupDiEnumDeviceInterfaces failed for Garmin DeviceInterface..."));
+//                  ThreadMsg(_T("   SetupDiEnumDeviceInterfaces failed for Garmin DeviceInterface..."));
                   ThreadMsg(_T("   Is the Garmin USB unit powered up and connected?"));
 
             }
@@ -2295,13 +2300,16 @@ thread_retry:
                   wxSleep(1);
       }
 
+      ThreadMsg(_T("Garmin USB unit found."));
+
+      ResetGarminUSBDriver();
 
       /* Now start the specific unit. */
       m_usb_handle = garmin_usb_start(hdevinfo, &devinterface);
 
       if(!m_usb_handle)
       {
-            ThreadMsg(_T("   Garmin USB handle is NULL..."));
+//            ThreadMsg(_T("   Garmin USB handle is NULL..."));
             nmsg = 1;
             goto thread_retry;
       }
@@ -2338,7 +2346,15 @@ thread_retry:
             if(st.Time() < 100)
             {
                   if(++n_short_read > 20)         // device unplugged?
+                  {
+                        if (m_usb_handle != INVALID_HANDLE_VALUE)
+                        {
+                              CloseHandle(m_usb_handle);
+                              m_usb_handle = INVALID_HANDLE_VALUE;
+                        }
+                        ThreadMsg(_T("   Garmin USB interface lost..."));
                         goto thread_retry;        // so start over
+                  }
             }
             else
                   n_short_read = 0;
@@ -2356,6 +2372,13 @@ thread_retry:
                         m_sat_data[i].elev =  *t++;
                         m_sat_data[i].azmth = ((*t)<<8) + *(t+1); t += 2;
                         m_sat_data[i].status = *t++;
+                  }
+
+                  m_nSats = 0;
+                  for(int i=0 ; i < 12 ; i++)
+                  {
+                        if(m_sat_data[i].svid != 255)
+                              m_nSats++;
                   }
             }
 
@@ -2382,6 +2405,7 @@ thread_retry:
                   ThreadPositionData.kCog = course * 180 / PI;
 
                   ThreadPositionData.FixTime = 0;
+                  ThreadPositionData.nSats = m_nSats;
 
                   if(m_pShareMutex)
                         delete pStateLocker ;
@@ -2411,6 +2435,7 @@ thread_retry:
 
 
 thread_exit:
+      ThreadMsg(_T("Garmin USB thread exit."));
       m_launcher->SetSecThreadInActive();             // I am dead
       return 0;
 }
@@ -2419,36 +2444,41 @@ thread_exit:
 HANDLE OCP_GARMIN_Thread::garmin_usb_start(HDEVINFO hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
 {
       DWORD size = 0;
-      PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
-      SP_DEVINFO_DATA devinfo;
-
-      SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
-                  NULL, 0, &size, NULL);
-
-      pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA)malloc(size);
-      pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
-
-      devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
-      if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
-            pdd, size, NULL, &devinfo))
+      if((m_usb_handle == INVALID_HANDLE_VALUE) || (m_usb_handle == 0))
       {
-            ThreadMsg(_T("   SetupDiGetDeviceInterfaceDetail failed for Garmin Device..."));
+            PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
+            SP_DEVINFO_DATA devinfo;
+
+            SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
+                        NULL, 0, &size, NULL);
+
+            pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA)malloc(size);
+            pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
+
+            devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
+            if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
+                  pdd, size, NULL, &devinfo))
+            {
+                  ThreadMsg(_T("   SetupDiGetDeviceInterfaceDetail failed for Garmin Device..."));
+                        return NULL;
+            }
+
+            /* Whew.  All that just to get something we can open... */
+//            wxString msg;
+//            msg.Printf(_T("Windows GUID for interface is %s"),pdd->DevicePath);
+//            ThreadMsg(msg);
+
+            m_usb_handle = CreateFile(pdd->DevicePath, GENERIC_READ|GENERIC_WRITE,
+                        0, NULL, OPEN_EXISTING, 0, NULL );
+            if (m_usb_handle == INVALID_HANDLE_VALUE)
+            {
+                  wxString msg;
+                  msg.Printf(_T("(usb) CreateFile on '%s' failed"), pdd->DevicePath);
+                  ThreadMsg(msg);
                   return NULL;
-      }
+            }
 
-      /* Whew.  All that just to get something we can open... */
-      wxString msg;
-      msg.Printf(_T("Windows GUID for interface is %s"),pdd->DevicePath);
-      ThreadMsg(msg);
-
-      m_usb_handle = CreateFile(pdd->DevicePath, GENERIC_READ|GENERIC_WRITE,
-                  0, NULL, OPEN_EXISTING, 0, NULL );
-      if (m_usb_handle == INVALID_HANDLE_VALUE)
-      {
-            wxString msg;
-            msg.Printf(_T("(usb) CreateFile on '%s' failed"), pdd->DevicePath);
-            ThreadMsg(msg);
-            return NULL;
+            free(pdd);
       }
 
       if(!DeviceIoControl(m_usb_handle, IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE,
@@ -2465,7 +2495,6 @@ HANDLE OCP_GARMIN_Thread::garmin_usb_start(HDEVINFO hdevinfo, SP_DEVICE_INTERFAC
             m_usb_handle = NULL;
       }
 
-      free(pdd);
       return m_usb_handle;
 }
 
@@ -2480,6 +2509,8 @@ bool OCP_GARMIN_Thread::gusb_syncup(void)
       /*
        * This is our first communication with the unit.
        */
+
+
       m_receive_state = rs_fromintr;
 
       for(i = 0; i < 25; i++) {
@@ -2487,28 +2518,25 @@ bool OCP_GARMIN_Thread::gusb_syncup(void)
             le_write32(&iresp.gusb_pkt.datasz[0], 0);
             le_write32(&iresp.gusb_pkt.databuf[0], 0);
 
-            if(!gusb_cmd_send((const garmin_usb_packet *) oinit, sizeof(oinit)))
+            if(gusb_cmd_send((const garmin_usb_packet *) oinit, sizeof(oinit)))
             {
-                  ThreadMsg(_T("   Unable to establish USB syncup due to TX error."));
-                  return false;;
-            }
+                  gusb_cmd_get(&iresp, sizeof(iresp));
 
-            gusb_cmd_get(&iresp, sizeof(iresp));
+                  if ((le_read16(iresp.gusb_pkt.pkt_id) == GUSB_SESSION_ACK) &&
+                        (le_read32(iresp.gusb_pkt.datasz) == 4))
+                  {
+      //                unsigned serial_number = le_read32(iresp.gusb_pkt.databuf);
+      //                garmin_unit_info[unit_number].serial_number = serial_number;
+      //                gusb_id_unit(&garmin_unit_info[unit_number]);
 
-            if ((le_read16(iresp.gusb_pkt.pkt_id) == GUSB_SESSION_ACK) &&
-                  (le_read32(iresp.gusb_pkt.datasz) == 4))
-            {
-//                unsigned serial_number = le_read32(iresp.gusb_pkt.databuf);
-//                garmin_unit_info[unit_number].serial_number = serial_number;
-//                gusb_id_unit(&garmin_unit_info[unit_number]);
+                        unit_number++;
 
-                  unit_number++;
-
-                  ThreadMsg(_T("Successful Garmin USB syncup."));
-                  return true;;
+                        ThreadMsg(_T("Successful Garmin USB syncup."));
+                        return true;;
+                  }
             }
       }
-      ThreadMsg(_T("   Unable to establish USB syncup."));
+      ThreadMsg(_T("   Unable to establish Garmin USB syncup."));
       return false;
 }
 
@@ -2676,6 +2704,43 @@ void OCP_GARMIN_Thread::ThreadMsg(const wxString &msg)
      m_pMainEventHandler->AddPendingEvent(event);
 
 }
+
+bool OCP_GARMIN_Thread::ResetGarminUSBDriver()
+{
+      HDEVINFO devs;
+      SP_DEVINFO_DATA devInfo;
+      SP_PROPCHANGE_PARAMS pchange;
+
+      devs = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+                                   DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+      if (devs == INVALID_HANDLE_VALUE)
+            return false;
+
+      devInfo.cbSize = sizeof(devInfo);
+      SetupDiEnumDeviceInfo(devs,0,&devInfo);
+
+      pchange.ClassInstallHeader.cbSize = sizeof(SP_CLASSINSTALL_HEADER);
+      pchange.ClassInstallHeader.InstallFunction = DIF_PROPERTYCHANGE;
+      pchange.StateChange = DICS_PROPCHANGE;
+      pchange.Scope = DICS_FLAG_CONFIGSPECIFIC;
+      pchange.HwProfile = 0;
+
+      if(!SetupDiSetClassInstallParams(devs,&devInfo,&pchange.ClassInstallHeader,sizeof(pchange)))
+      {
+            ThreadMsg(_T("   GarminUSBDriver Reset1 failed..."));
+            return false;
+      }
+
+      if(!SetupDiCallClassInstaller(DIF_PROPERTYCHANGE,devs,&devInfo))
+      {
+            ThreadMsg(_T("   GarminUSBDriver Reset2 failed..."));
+            return false;
+      }
+
+      ThreadMsg(_T("GarminUSBDriver Reset succeeded."));
+      return true;
+}
+
 #endif            // __WXMSW__
 
 //-------------------------------------------------------------------------------------------------------------
