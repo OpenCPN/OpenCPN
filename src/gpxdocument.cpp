@@ -55,6 +55,7 @@ GpxDocument::GpxDocument(const wxString &filename)
 
 bool GpxDocument::LoadFile(const wxString &filename)
 {
+      SeedRandom();
       return TiXmlDocument::LoadFile((const char*)filename.mb_str());
 }
 
@@ -67,6 +68,16 @@ GpxDocument::GpxDocument()
 {
       PopulateEmptyDocument(_T("OpenCPN"));
       AddCustomNamespace(_T("xmlns:opencpn"), _T("http://www.opencpn.org"));
+      SeedRandom();
+}
+
+void GpxDocument::SeedRandom()
+{
+      /* Fill with random. Miliseconds hopefully good enough for our usage, reading /dev/random would be much better on linux and system guid function on Windows as well */
+      wxDateTime x = wxDateTime::UNow();
+      long seed = x.GetMillisecond();
+      seed *= x.GetTicks();
+      srand(seed);
 }
 
 GpxDocument::~GpxDocument()
@@ -87,11 +98,6 @@ wxString GpxDocument::GetUUID(void)
       int node_low;
       } uuid;
 
-      /* Fill with random. Miliseconds hopefully good enough for our usage, reading /dev/random would be much better on linux and system guid function on Windows as well */
-      wxDateTime x = wxDateTime::UNow();
-      long seed = x.GetMillisecond();
-      seed *= x.GetTicks();
-      srand(seed);
       uuid.time_low = GetRandomNumber(0, 2147483647);//FIXME: the max should be set to something like MAXINT32, but it doesn't compile un gcc...
       uuid.time_mid = GetRandomNumber(0, 65535);
       uuid.time_hi_and_version = GetRandomNumber(0, 65535);

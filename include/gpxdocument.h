@@ -56,6 +56,7 @@ public:
 private:
       static int GetRandomNumber(int min, int max);
       void PopulateEmptyDocument(const wxString &creator);
+      void SeedRandom();
 };
 
 //Utility class for the simple types
