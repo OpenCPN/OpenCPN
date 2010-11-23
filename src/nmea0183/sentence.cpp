@@ -31,6 +31,20 @@
 
 
 #include "nmea0183.h"
+#include <math.h>
+
+#if !defined(NAN)
+
+//static const long long lNaN = 0x7fffffffffffffff;
+
+//#define NaN (*(double*)&lNaN)
+//#else
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+
+#endif
+
+
 
 /*
 ** Author: Samuel R. Blackburn
@@ -153,7 +167,7 @@ double SENTENCE::Double( int field_number ) const
 {
  //  ASSERT_VALID( this );
       if(Field( field_number ).Len() == 0)
-            return 999.;
+            return (NAN);
 
       return( ::atof( Field( field_number ).mb_str() ) );
 }
