@@ -1944,6 +1944,12 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             return;
       }
 
+      if(wxIsNaN(gSog) || wxIsNaN(gCog))
+      {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
+
             //    Express the SOGs as meters per hour
       double v0 = gSog         * 1852.;
       double v1 = ptarget->SOG * 1852.;

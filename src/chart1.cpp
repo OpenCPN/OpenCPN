@@ -284,6 +284,11 @@ double          g_CM93Maps_Offset_y;
 bool            g_CM93Maps_Offset_on;
 bool            g_CM93Maps_Offset_Enable;
 
+bool            g_bfilter_cogsog;
+int             g_COGFilterSec;
+int             g_SOGFilterSec;
+
+
 #ifdef USE_S57
 s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
@@ -1400,6 +1405,16 @@ bool MyApp::OnInit()
               g_ShowMoored_Kts = 0.2;
               g_bShowTrackIcon = true;
 
+              if(ps52plib->m_bOK)
+              {
+                  ps52plib->m_bShowSoundg = true;
+                  ps52plib->m_nDisplayCategory = ( enum _DisCat ) STANDARD;
+                  ps52plib->m_nSymbolStyle = ( LUPname ) PAPER_CHART;
+                  ps52plib->m_nBoundaryStyle = ( LUPname ) PLAIN_BOUNDARIES;
+                  ps52plib->m_bUseSCAMIN = true;
+                  ps52plib->m_bShowAtonText = true;
+              }
+
               g_PlanSpeed = 6.;
         }
 
@@ -2052,6 +2067,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
         m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
+        m_COGFilterLast = 0.;
 }
 
 MyFrame::~MyFrame()
@@ -3825,11 +3841,13 @@ void MyFrame::ToggleCourseUp(void)
       if(g_bCourseUp)
       {
             //    Stuff the COGAvg table in case COGUp is selected
+            double stuff = 0.;
+            if(!wxIsNaN(gCog))
+                  stuff = gCog;
 
             for(int i = 0 ; i < g_COGAvgSec ; i++)
-                  COGTable[i] = gCog;
-
-            g_COGAvg = gCog;
+                  COGTable[i] = stuff;
+            g_COGAvg = stuff;
       }
 
       DoCOGSet();
@@ -4125,11 +4143,13 @@ int MyFrame::DoOptionsDialog()
             if(g_bCourseUp)
             {
             //    Stuff the COGAvg table in case COGUp is selected
-
+                  double stuff = 0.;
+                  if(!wxIsNaN(gCog))
+                        stuff = gCog;
                   for(int i = 0 ; i < g_COGAvgSec ; i++)
-                        COGTable[i] = gCog;
+                        COGTable[i] = stuff;
 
-                  g_COGAvg = gCog;
+                  g_COGAvg = stuff;
 
             //    Short circuit the COG timer to force immediate refresh of canvas in case COGUp is selected
                   FrameCOGTimer.Stop();
@@ -5708,17 +5728,19 @@ bool MyFrame::DoChartUpdate(void)
 
                   double pixel_delta_tent = sqrt((pixel_deltay * pixel_deltay) + ( pixel_deltax * pixel_deltax));
 
-                  double pixel_delta;
+                  double pixel_delta = 0;
 
                   //    The idea here is to cancel the effect of LookAhead for slow gSog, to avoid
                   //    jumping of the vp center point during slow maneuvering, or at anchor....
-                  if(gSog < 1.0)
-                       pixel_delta = 0.;
-                  else if(gSog >= 3.0)
-                        pixel_delta = pixel_delta_tent;
-                  else
-                        pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
-
+                  if(!wxIsNaN(gSog))
+                  {
+                        if(gSog < 1.0)
+                              pixel_delta = 0.;
+                        else if(gSog >= 3.0)
+                              pixel_delta = pixel_delta_tent;
+                        else
+                              pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
+                  }
 
                   double meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / cc1->GetVPScale();
 
@@ -6489,30 +6511,37 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                               if(m_NMEA0183.Rmc.IsDataValid == NTrue)
                               {
-                                    double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                                    int lat_deg_int = (int)(llt / 100);
-                                    double lat_deg = lat_deg_int;
-                                    double lat_min = llt - (lat_deg * 100);
-                                    gLat = lat_deg + (lat_min/60.);
-                                    if(m_NMEA0183.Rmc.Position.Latitude.Northing == South)
-                                          gLat = -gLat;
+                                    if(!wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude))
+                                    {
+                                          double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
+                                          int lat_deg_int = (int)(llt / 100);
+                                          double lat_deg = lat_deg_int;
+                                          double lat_min = llt - (lat_deg * 100);
+                                          gLat = lat_deg + (lat_min/60.);
+                                          if(m_NMEA0183.Rmc.Position.Latitude.Northing == South)
+                                                gLat = -gLat;
+                                    }
 
-                                    double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                                    int lon_deg_int = (int)(lln / 100);
-                                    double lon_deg = lon_deg_int;
-                                    double lon_min = lln - (lon_deg * 100);
-                                    gLon = lon_deg + (lon_min/60.);
-                                    if(m_NMEA0183.Rmc.Position.Longitude.Easting == West)
+                                    if(!wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude))
+                                    {
+                                          double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
+                                          int lon_deg_int = (int)(lln / 100);
+                                          double lon_deg = lon_deg_int;
+                                          double lon_min = lln - (lon_deg * 100);
+                                          gLon = lon_deg + (lon_min/60.);
+                                          if(m_NMEA0183.Rmc.Position.Longitude.Easting == West)
                                           gLon = -gLon;
-
+                                    }
                                     gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                                     gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
 
-                                    if(m_NMEA0183.Rmc.MagneticVariationDirection == East)
-                                          gVar =  m_NMEA0183.Rmc.MagneticVariation;
-                                    else if(m_NMEA0183.Rmc.MagneticVariationDirection == West)
-                                          gVar = -m_NMEA0183.Rmc.MagneticVariation;
-
+                                    if(!wxIsNaN(m_NMEA0183.Rmc.MagneticVariation))
+                                    {
+                                          if(m_NMEA0183.Rmc.MagneticVariationDirection == East)
+                                                gVar =  m_NMEA0183.Rmc.MagneticVariation;
+                                          else if(m_NMEA0183.Rmc.MagneticVariationDirection == West)
+                                                gVar = -m_NMEA0183.Rmc.MagneticVariation;
+                                    }
 
                                     sfixtime = m_NMEA0183.Rmc.UTCTime;
 
@@ -6536,9 +6565,12 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                         if(m_NMEA0183.Parse())
                         {
-                              gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                              g_bHDxValid = true;
-                              gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                              if(!wxIsNaN(m_NMEA0183.Hdt.DegreesTrue))
+                              {
+                                    gHdt = m_NMEA0183.Hdt.DegreesTrue;
+                                    g_bHDxValid = true;
+                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                              }
                         }
                         else if(g_nNMEADebug)
                         {
@@ -6556,14 +6588,19 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                         if(m_NMEA0183.Parse())
                         {
-                              gHdt = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                              if(m_NMEA0183.Hdg.MagneticVariationDirection == East)
-                                    gHdt += m_NMEA0183.Hdg.MagneticVariationDegrees;
-                              else if(m_NMEA0183.Hdg.MagneticVariationDirection == West)
-                                    gHdt -= m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                              g_bHDxValid = true;
-                              gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                              if(!wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
+                              {
+                                    gHdt = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                                    if(!wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees))
+                                    {
+                                          if(m_NMEA0183.Hdg.MagneticVariationDirection == East)
+                                                gHdt += m_NMEA0183.Hdg.MagneticVariationDegrees;
+                                          else if(m_NMEA0183.Hdg.MagneticVariationDirection == West)
+                                                gHdt -= m_NMEA0183.Hdg.MagneticVariationDegrees;
+                                    }
+                                    g_bHDxValid = true;
+                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                              }
                         }
                         else if(g_nNMEADebug)
                         {
@@ -6580,11 +6617,14 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                         if(m_NMEA0183.Parse())
                         {
-                              gHdt = m_NMEA0183.Hdm.DegreesMagnetic;
-                              gHdt += gVar;
+                              if(!wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic))
+                              {
+                                    gHdt = m_NMEA0183.Hdm.DegreesMagnetic;
+                                    gHdt += gVar;
 
-                              g_bHDxValid = true;
-                              gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                                    g_bHDxValid = true;
+                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                              }
                         }
                         else if(g_nNMEADebug)
                         {
@@ -6601,11 +6641,8 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                         if(m_NMEA0183.Parse())
                         {
-                              //    Special check for unintialized values, as opposed to zero values
-                              if(m_NMEA0183.Vtg.SpeedKnots < 999.)
-                                    gSog = m_NMEA0183.Vtg.SpeedKnots;
-                              if(m_NMEA0183.Vtg.TrackDegreesTrue < 999.)
-                                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                              gSog = m_NMEA0183.Vtg.SpeedKnots;
+                              gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                         }
                         else if(g_nNMEADebug)
                         {
@@ -6642,21 +6679,27 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(m_NMEA0183.Gll.IsDataValid == NTrue)
                               {
-                                    double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
-                                    int lat_deg_int = (int)(llt / 100);
-                                    double lat_deg = lat_deg_int;
-                                    double lat_min = llt - (lat_deg * 100);
-                                    gLat = lat_deg + (lat_min/60.);
-                                    if(m_NMEA0183.Gll.Position.Latitude.Northing == South)
-                                          gLat = -gLat;
+                                    if(!wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude))
+                                    {
+                                          double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
+                                          int lat_deg_int = (int)(llt / 100);
+                                          double lat_deg = lat_deg_int;
+                                          double lat_min = llt - (lat_deg * 100);
+                                          gLat = lat_deg + (lat_min/60.);
+                                          if(m_NMEA0183.Gll.Position.Latitude.Northing == South)
+                                                gLat = -gLat;
+                                    }
 
-                                    double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
-                                    int lon_deg_int = (int)(lln / 100);
-                                    double lon_deg = lon_deg_int;
-                                    double lon_min = lln - (lon_deg * 100);
-                                    gLon = lon_deg + (lon_min/60.);
-                                    if(m_NMEA0183.Gll.Position.Longitude.Easting == West)
-                                          gLon = -gLon;
+                                    if(!wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude))
+                                    {
+                                          double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
+                                          int lon_deg_int = (int)(lln / 100);
+                                          double lon_deg = lon_deg_int;
+                                          double lon_min = lln - (lon_deg * 100);
+                                          gLon = lon_deg + (lon_min/60.);
+                                          if(m_NMEA0183.Gll.Position.Longitude.Easting == West)
+                                                gLon = -gLon;
+                                    }
 
                                     sfixtime = m_NMEA0183.Gll.UTCTime;
 
@@ -6681,21 +6724,27 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(m_NMEA0183.Gga.GPSQuality > 0)
                               {
-                                    double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
-                                    int lat_deg_int = (int)(llt / 100);
-                                    double lat_deg = lat_deg_int;
-                                    double lat_min = llt - (lat_deg * 100);
-                                    gLat = lat_deg + (lat_min/60.);
-                                    if(m_NMEA0183.Gga.Position.Latitude.Northing == South)
-                                          gLat = -gLat;
+                                    if(!wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude))
+                                    {
+                                          double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
+                                          int lat_deg_int = (int)(llt / 100);
+                                          double lat_deg = lat_deg_int;
+                                          double lat_min = llt - (lat_deg * 100);
+                                          gLat = lat_deg + (lat_min/60.);
+                                          if(m_NMEA0183.Gga.Position.Latitude.Northing == South)
+                                                gLat = -gLat;
+                                    }
 
-                                    double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
-                                    int lon_deg_int = (int)(lln / 100);
-                                    double lon_deg = lon_deg_int;
-                                    double lon_min = lln - (lon_deg * 100);
-                                    gLon = lon_deg + (lon_min/60.);
-                                    if(m_NMEA0183.Gga.Position.Longitude.Easting == West)
-                                          gLon = -gLon;
+                                    if(!wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude))
+                                    {
+                                          double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
+                                          int lon_deg_int = (int)(lln / 100);
+                                          double lon_deg = lon_deg_int;
+                                          double lon_min = lln - (lon_deg * 100);
+                                          gLon = lon_deg + (lon_min/60.);
+                                          if(m_NMEA0183.Gga.Position.Longitude.Easting == West)
+                                                gLon = -gLon;
+                                    }
 
                                     sfixtime = m_NMEA0183.Gga.UTCTime;
 
@@ -6750,11 +6799,14 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
                 wxMutexLocker stateLocker(m_mutexNMEAEvent);          // scope is this case
 
                 GenericPosDat *pGPSData = (GenericPosDat *)event.GetClientData();
-                gLat = pGPSData->kLat;
-                gLon = pGPSData->kLon;
+                if(!wxIsNaN(pGPSData->kLat))
+                      gLat = pGPSData->kLat;
+                if(!wxIsNaN(pGPSData->kLon))
+                      gLon = pGPSData->kLon;
                 gCog = pGPSData->kCog;
                 gSog = pGPSData->kSog;
-                gVar = pGPSData->kVar;
+                if(!wxIsNaN(pGPSData->kVar))
+                      gVar = pGPSData->kVar;
 
                 fixtime = pGPSData->FixTime;
 
@@ -6794,6 +6846,8 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
 
 void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
 {
+      FilterCogSog();
+
       //    If gSog is greater than some threshold, we determine that we are "cruising"
       if(gSog > 3.0)
             g_bCruising = true;
@@ -6847,13 +6901,13 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
             SetStatusText ( s1, STAT_FIELD_TICK );
 
             wxString sogcog;
-            if(gSog == 999.0)
+            if(wxIsNaN(gSog))
                   sogcog.Printf(_T("SOG: ----- kts  "));
             else
                   sogcog.Printf(_T("SOG: %5.2f kts  "), gSog);
 
             wxString cogs;
-            if(gCog == 999.0)
+            if(wxIsNaN(gCog))
                   cogs.Printf(_T("COG: ----- Deg"));
             else
                   cogs.Printf(_T("COG: %5.0f Deg"), gCog);
@@ -6864,37 +6918,39 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
 
 //    Maintain average COG for Course Up Mode
 
-      //    Make a hole
-      for(int i = g_COGAvgSec-1 ; i > 0 ; i--)
-            COGTable[i] = COGTable[i-1];
-      COGTable[0] = gCog;
-
-      //
-      double sum = 0.;
-      for(int i = 0 ; i < g_COGAvgSec ; i++)
+      if(!wxIsNaN(gCog))
       {
-            double adder = COGTable[i];
+            //    Make a hole
+            for(int i = g_COGAvgSec-1 ; i > 0 ; i--)
+                  COGTable[i] = COGTable[i-1];
+            COGTable[0] = gCog;
 
-            if(fabs(adder - g_COGAvg) > 180.)
+            //
+            double sum = 0.;
+            for(int i = 0 ; i < g_COGAvgSec ; i++)
             {
-                  if((adder - g_COGAvg) > 0.)
-                        adder -= 360.;
-                  else
-                        adder += 360.;
+                  double adder = COGTable[i];
+
+                  if(fabs(adder - g_COGAvg) > 180.)
+                  {
+                        if((adder - g_COGAvg) > 0.)
+                              adder -= 360.;
+                        else
+                              adder += 360.;
+                  }
+
+                  sum += adder;
             }
+            sum /= g_COGAvgSec;
 
-            sum += adder;
+
+            if(sum < 0.)
+                  sum += 360.;
+            else if(sum >= 360.)
+                  sum -= 360.;
+
+            g_COGAvg = sum;
       }
-      sum /= g_COGAvgSec;
-
-
-      if(sum < 0.)
-            sum += 360.;
-      else if(sum >= 360.)
-            sum -= 360.;
-
-      g_COGAvg = sum;
-
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
 //      Use the fix time to update the local system clock, only once per session
@@ -6997,6 +7053,72 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
 #endif            //ocpnUPDATE_SYSTEM_TIME
 }
 
+
+void MyFrame::FilterCogSog(void)
+{
+      if(g_bfilter_cogsog)
+      {
+            //    If the data are undefined, leave the array intact
+            if (!wxIsNaN(gCog))
+            {
+                  //    Simple averaging filter for COG
+                  double cog_last = gCog;       // most recent reported value
+
+                  //    Make a hole in array
+                  for(int i = g_COGFilterSec-1 ; i > 0 ; i--)
+                        COGFilterTable[i] = COGFilterTable[i-1];
+                  COGFilterTable[0] = cog_last;
+
+                  //
+                  double sum = 0.;
+                  for(int i = 0 ; i < g_COGFilterSec ; i++)
+                  {
+                        double adder = COGFilterTable[i];
+
+                        if(fabs(adder - m_COGFilterLast) > 180.)
+                        {
+                              if((adder - m_COGFilterLast) > 0.)
+                                    adder -= 360.;
+                              else
+                                    adder += 360.;
+                        }
+
+                        sum += adder;
+                  }
+                  sum /= g_COGFilterSec;
+
+
+                  if(sum < 0.)
+                        sum += 360.;
+                  else if(sum >= 360.)
+                        sum -= 360.;
+
+                  gCog = sum;
+                  m_COGFilterLast = sum;
+            }
+
+            //    If the data are undefined, leave the array intact
+            if (!wxIsNaN(gSog))
+            {
+                  //    Simple averaging filter for SOG
+                  double sog_last = gSog;       // most recent reported value
+
+                  //    Make a hole in array
+                  for(int i = g_SOGFilterSec-1 ; i > 0 ; i--)
+                        SOGFilterTable[i] = SOGFilterTable[i-1];
+                  SOGFilterTable[0] = sog_last;
+
+                  double sum = 0.;
+                  for(int i = 0 ; i < g_SOGFilterSec ; i++)
+                  {
+                        sum += SOGFilterTable[i];
+                  }
+                  sum /= g_SOGFilterSec;
+
+                  gSog = sum;
+            }
+      }
+}
 
 
 void MyFrame::StopSockets(void)

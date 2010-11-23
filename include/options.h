@@ -137,7 +137,8 @@ enum {
         ID_SKEWCOMPBOX,
         ID_GARMINHOST,
         ID_ACTIVATECM93OFFSET, // Flav for CM93Offset
-        ID_ENABLECM93OFFSET
+        ID_ENABLECM93OFFSET,
+        ID_FILTERNMEA
 
 };
 
@@ -244,6 +245,8 @@ public:
     wxPanel*                itemPanelGPS;
     wxCheckBox              *pShowGPSWin;
     wxCheckBox              *pGarminHost;
+    wxCheckBox              *pFilterNMEA;
+    wxTextCtrl              *pFilterSecs;
 
 //    For "S57" page
     wxPanel                 *ps57Ctl;

@@ -146,7 +146,8 @@ enum
 //    So maybe 5 minute updates should provide sufficient oversampling
 #define TIMER_TC_VALUE_SECONDS      300
 
-#define MAX_COG_AVERAGE_SECONDS      60
+#define MAX_COG_AVERAGE_SECONDS        60
+#define MAX_COGSOG_FILTER_SECONDS      60
 //----------------------------------------------------------------------------
 // fwd class declarations
 //----------------------------------------------------------------------------
@@ -312,6 +313,7 @@ class MyFrame: public wxFrame
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
+    void FilterCogSog(void);
 
 
 
@@ -365,6 +367,9 @@ class MyFrame: public wxFrame
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
 
+    double              m_COGFilterLast;
+    double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
+    double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 
     DECLARE_EVENT_TABLE()
 };

@@ -72,6 +72,10 @@ extern bool             g_bAutoAnchorMark;
 extern ColorScheme      global_color_scheme;
 extern bool             g_bGarminPersistance;
 extern bool             g_bGarminHost;
+extern bool             g_bfilter_cogsog;
+extern int              g_COGFilterSec;
+extern int              g_SOGFilterSec;
+
 extern PlugInManager    *g_pi_manager;
 
 extern wxString         g_SData_Locn;
@@ -378,7 +382,6 @@ void options::CreateControls()
     pPrintShowIcon->SetValue(FALSE);
     itemStaticBoxSizerPrint->Add(pPrintShowIcon, 1, wxALIGN_LEFT|wxALL, 2);
 
-///
     // Chart Display Options Box
     wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Chart Display Options"));
     wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer(itemStaticBoxSizerCDOStatic, wxVERTICAL);
@@ -431,7 +434,7 @@ void options::CreateControls()
     itemStaticBoxSizerTypes->Add(pCBCM93, 1, wxALIGN_LEFT|wxALL, 2);
 #endif
 
-///
+
       //      OwnShip Display options
     wxStaticBox* itemStaticBoxOSDisplay = new wxStaticBox(itemPanel5, wxID_ANY, _("OwnShip Display Options"));
     wxStaticBoxSizer* itemStaticBoxSizerOSDisplay= new wxStaticBoxSizer(itemStaticBoxOSDisplay, wxVERTICAL);
@@ -672,6 +675,19 @@ void options::CreateControls()
       pShowGPSWin = new wxCheckBox( itemPanelGPS, ID_SHOWGPSWINDOW, _("Show GPS/NMEA data stream window"));
       itemNMEAStaticBoxSizer->Add(pShowGPSWin, 1, wxALIGN_LEFT|wxALL, 2);
 
+      //    NMEA Data Filtering
+      pFilterNMEA = new wxCheckBox( itemPanelGPS, ID_FILTERNMEA, _("Filter NMEA Course and Speed data"));
+      itemNMEAStaticBoxSizer->Add(pFilterNMEA, 1, wxALIGN_LEFT|wxALL, 2);
+
+      wxFlexGridSizer *pFilterGrid = new wxFlexGridSizer(2);
+      pFilterGrid->AddGrowableCol(1);
+      itemNMEAStaticBoxSizer->Add(pFilterGrid, 0, wxALL|wxEXPAND, border_size);
+
+      wxStaticText* itemStaticTextFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC, _("Filter Period (Sec.)"));
+      pFilterGrid->Add(itemStaticTextFilterSecs, 0, wxALIGN_LEFT|wxADJUST_MINSIZE, border_size);
+
+      pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1), 0 );
+      pFilterGrid->Add(pFilterSecs, 0, wxALIGN_RIGHT, 2);
 
 //    Add Autopilot serial output port controls
       wxStaticBox* itemNMEAAutoStaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("Autopilot Output Port"));
@@ -1375,6 +1391,10 @@ void options::SetInitialSettings()
       if(g_bGarminHost)
             pGarminHost->SetValue(true);
 
+      pFilterNMEA->SetValue(g_bfilter_cogsog);
+
+      s.Printf(_T("%d"), g_COGFilterSec);
+      pFilterSecs->SetValue(s);
 
       pPrintShowIcon->SetValue(g_bShowPrintIcon);
       pCDOOutlines->SetValue(g_bShowOutlines);
@@ -1767,6 +1787,15 @@ void options::OnXidOkClick( wxCommandEvent& event )
     pParent->SetQuiltMode(pCDOQuilting->GetValue());
     g_bShowDepthUnits = pSDepthUnits->GetValue();
     g_bskew_comp = pSkewComp->GetValue();
+
+    g_bfilter_cogsog = pFilterNMEA->GetValue();
+
+    long filter_val = 1;
+    pFilterSecs->GetValue().ToLong(&filter_val);
+    g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
+    g_COGFilterSec = wxMax(g_COGFilterSec, 1);
+    g_SOGFilterSec = g_COGFilterSec;
+
 //    g_bAutoAnchorMark = pAutoAnchorMark->GetValue();
 
     g_bCourseUp = pCBCourseUp->GetValue();

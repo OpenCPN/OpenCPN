@@ -2238,7 +2238,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
                 if ( ICursorPencil.Ok() )
                 {
                         ICursorPencil.SetOption ( wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 );
-                        ICursorPencil.SetOption ( wxIMAGE_OPTION_CUR_HOTSPOT_Y, 20 );
+                        ICursorPencil.SetOption ( wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16);
                         pCursorPencil =  new wxCursor ( ICursorPencil );
                 }
                 else
@@ -4128,12 +4128,15 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 
         double pred_lat, pred_lon;
 
-        //  COG may be undefined in NMEA data stream
+        //  COG/SOG may be undefined in NMEA data stream
         double pCog = gCog;
-        if(pCog == 999.0)
+        if(wxIsNaN(pCog))
               pCog = 0.0;
+        double pSog = gSog;
+        if(wxIsNaN(pSog))
+              pSog = 0.0;
 
-        ll_gc_ll ( gLat, gLon, pCog, gSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+        ll_gc_ll ( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
 
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( pred_lat, pred_lon, &lPredPoint );
@@ -4150,19 +4153,19 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 
         //  Draw the icon rotated to the COG
         //  or to the Hdt if available
-        double icon_hdt = gCog;
+        double icon_hdt = pCog;
         if(g_bHDxValid)
              icon_hdt = gHdt;
 
         //  COG may be undefined in NMEA data stream
-        if(gCog == 999.0)
+        if(wxIsNaN(icon_hdt))
               icon_hdt = 0.0;
 
 //    Calculate the ownship drawing angle icon_rad using an assumed 1.0 minute predictor
         double osd_head_lat, osd_head_lon;
         wxPoint osd_head_point;
 
-        ll_gc_ll ( gLat, gLon, icon_hdt, gSog * 1.0 / 60., &osd_head_lat, &osd_head_lon );
+        ll_gc_ll ( gLat, gLon, icon_hdt, pSog * 1.0 / 60., &osd_head_lat, &osd_head_lon );
 
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( osd_head_lat, osd_head_lon, &osd_head_point );
@@ -4170,14 +4173,14 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         double icon_rad = atan2 ( (double)( osd_head_point.y - lShipPoint.y ), (double)( osd_head_point.x - lShipPoint.x ) );
         icon_rad += PI;
 
-        if(gSog < 0.2)
+        if(pSog < 0.2)
               icon_rad = ((icon_hdt + 90.) * PI / 180.) + VPoint.skew;
 
 
 //    Calculate ownship Heading pointer as a predictor
         double hdg_pred_lat, hdg_pred_lon;
 
-        ll_gc_ll ( gLat, gLon, icon_hdt, gSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat, &hdg_pred_lon );
+        ll_gc_ll ( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat, &hdg_pred_lon );
 
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
@@ -5236,8 +5239,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                                     }
 
 
-                                    pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "BLUE2" ) ) ) );
-                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UWHIT" )), 2) );
+                                    pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UINFB" ) ) ) );
+                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "CHWHT" )), 2) );
 
                                     wxGraphicsPath gpathb = pgc->CreatePath();
 
@@ -5316,8 +5319,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                                     ais_flag_icon[i].y = (int) round( py );
                               }
 
-                              dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "BLUE2" ) ) ) );
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UWHIT" )), 2) );
+                              dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UINFB" ) ) ) );
+                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "CHWHT" )), 2) );
 
                               dc.DrawPolygon ( 4, ais_flag_icon, TargetPoint.x, TargetPoint.y );         // pjotrc 2010.01.31
 
@@ -7067,7 +7070,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         cursor_region = CENTER;
                 }
         }
-        else if (m_bMeasure_Active || m_bCM93MeasureOffset_Active ) // If Measure tool or CM93Offset tool use Pencil Cursor
+        else if (m_bMeasure_Active || m_bCM93MeasureOffset_Active || parent_frame->nRoute_State ) // If Measure tool or CM93Offset tool use Pencil Cursor
               ptarget_cursor = pCursorPencil;
 
         SetMyCursor ( ptarget_cursor );
@@ -7302,7 +7305,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         //        Add invariant items
         pdef_menu->Append ( ID_DEF_MENU_DROP_WP,    _( "Drop Mark Here" ) );
         pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
-	pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
+        pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
 
 //        if ( !g_pRouteMan->GetpActiveRoute() )
         if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
@@ -7314,18 +7317,25 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         else if(m_bMeasure_Active)
               pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
 
+        if ( g_pAIS )
+              pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
+
 // Flav add CM93Offset Tool on right click menu
         if(g_CM93Maps_Offset_Enable)
         {
+            pdef_menu->AppendSeparator();
+
             if(!m_bCM93MeasureOffset_Active && !m_bMeasure_Active)
                   pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_CM93OFFSET, _( "CM93 Offset Tool....." ) );
+
+            else if(m_bCM93MeasureOffset_Active)
+                   pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_CM93OFFSET, _( "CM93 Offset Tool Off" ) );
+
             if( g_CM93Maps_Offset_on )
                   pdef_menu->Append ( ID_DEF_MENU_CM93OFFSET_TOGGLE, _( "CM93 Offset Off" ) );
             else
                   pdef_menu->Append ( ID_DEF_MENU_CM93OFFSET_TOGGLE, _( "CM93 Offset On" ) );
         }
-        if ( g_pAIS )
-              pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
 
 
 #ifdef __WXMSW__

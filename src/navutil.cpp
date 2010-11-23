@@ -297,8 +297,12 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
-extern bool              g_blocale_changed;
+extern bool             g_blocale_changed;
 extern bool             g_bDebugGPSD;
+
+extern bool             g_bfilter_cogsog;
+extern int              g_COGFilterSec;
+extern int              g_SOGFilterSec;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -857,8 +861,8 @@ SelectableItemList Select::FindSelectionList(float slat, float slon, int fseltyp
                                      ( fabs ( slon - pFindSel->m_slon ) < SelectRadius ) )
                               {
                                     ret_list.Append(pFindSel);
-                                    break;
                               }
+                              break;
                         case SELTYPE_ROUTESEGMENT:
                         case SELTYPE_TRACKSEGMENT:
                         {
@@ -1948,6 +1952,9 @@ bool Route::IsEqualTo ( Route *ptargetroute )
       if ( NULL == pthisnode )
             return false;
 
+      if (this->GetnPoints() != ptargetroute->GetnPoints())
+           return false;
+
       while ( pthisnode )
       {
             if ( NULL == pthatnode )
@@ -2047,6 +2054,11 @@ void Track::OnTimerTrack ( wxTimerEvent& event )
 
       if ( b_addpoint )
             AddPointNow();
+      else if ( ( GetnPoints() < 2 )&& (delta < m_DeltaDistance) )  //continuously update track beginning point timestamp if no movement.
+      {
+            wxDateTime now = wxDateTime::Now();
+            pRoutePointList->GetFirst()->GetData()->m_CreateTime = now.ToUTC();
+      }
 
       m_TimerTrack.Start ( 1000, wxTIMER_CONTINUOUS );
 }
@@ -2261,6 +2273,13 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "UseBigRedX" ),  &g_bbigred, 0 );
 
       Read ( _T ( "UseGarminHost" ),  &g_bGarminHost, 0 );
+
+      Read ( _T ( "FilterNMEA_Avg" ),  &g_bfilter_cogsog, 0 );
+      Read ( _T ( "FilterNMEA_Sec" ),  &g_COGFilterSec, 1 );
+      g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
+      g_COGFilterSec = wxMax(g_COGFilterSec, 1);
+      g_SOGFilterSec = g_COGFilterSec;
+
 
       Read ( _T ( "MemFootprintMgrTimeSec" ),  &g_MemFootSec, 60 );
       Read ( _T ( "MemFootprintTargetMB" ),  &g_MemFootMB, 200 );
@@ -3432,6 +3451,9 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
       Write ( _T ( "GarminPersistance" ),  g_bGarminPersistance );
       Write ( _T ( "UseGarminHost" ),  g_bGarminHost );
+
+      Write ( _T ( "FilterNMEA_Avg" ),  g_bfilter_cogsog );
+      Write ( _T ( "FilterNMEA_Sec" ),  g_COGFilterSec );
 
       Write ( _T ( "CM93DetailFactor" ),  g_cm93_zoom_factor );
       Write ( _T ( "CM93DetailZoomPosX" ),  g_cm93detail_dialog_x );
@@ -4822,6 +4844,8 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, b
             pWP->m_bShowName = bviz_name;
       else if(b_fullviz)
             pWP->m_bShowName = true;
+      else
+            pWP->m_bShowName = false;
 
       if(b_propviz)
             pWP->m_bIsVisible = bviz;
