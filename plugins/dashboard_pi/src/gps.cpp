@@ -121,6 +121,8 @@ void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
       dc->SetPen(pen);
 
       dc->DrawCircle(m_cx, m_cy, m_radius);
+      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
+      dc->SetFont(*font);
       dc->DrawText(_("N"), m_cx-3, m_cy-m_radius-6);
       dc->DrawText(_("E"), m_cx+m_radius-4, m_cy-5);
       dc->DrawText(_("S"), m_cx-3, m_cy+m_radius-6);
