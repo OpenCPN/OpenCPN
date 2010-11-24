@@ -508,6 +508,10 @@ bool              g_bquiting;
 int               g_BSBImgDebug;
 
 AISTargetListDialog   *g_pAISTargetList;
+wxString          g_AisTargetList_perspective;
+int               g_AisTargetList_range;
+int               g_AisTargetList_sortColumn;
+bool              g_bAisTargetList_sortReverse;
 
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
@@ -2221,6 +2225,9 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
                   g_pais_query_dialog_active->Show();
       }
 
+      if ( g_pAISTargetList )
+            g_pAISTargetList->SetColorScheme();
+
       ApplyGlobalColorSchemetoStatusBar();
 
       UpdateToolbar(cs);
@@ -3111,7 +3118,6 @@ void MyFrame::DeleteToolbarBitmaps()
     delete _img_polyprj;
     delete _img_ais;
 
-    delete _img_dashboard;
     delete _img_gpx_import;
     delete _img_gpx_export;
 
@@ -3170,6 +3176,14 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       b_inCloseWindow = true;
 
       ::wxSetCursor(wxCURSOR_WAIT);
+
+      // We save perspective before closing to restore position next time
+      // Pane is not closed so the child is not notified (OnPaneClose)
+      if ( g_pAISTargetList )
+      {
+            wxAuiPaneInfo &pane = g_pauimgr->GetPane( g_pAISTargetList );
+            g_AisTargetList_perspective = g_pauimgr->SavePaneInfo( pane );
+      }
 
       pConfig->SetPath ( _T ( "/AUI" ) );
       pConfig->Write ( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );

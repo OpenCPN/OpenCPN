@@ -8130,12 +8130,11 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 void ChartCanvas::ShowAISTargetList(void)
 {
       if ( NULL == g_pAISTargetList ) {         // There is one global instance of the Dialog
-            g_pAISTargetList = new AISTargetListDialog( this, g_pAIS );
-            g_pauimgr->AddPane( g_pAISTargetList, wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose().Float().FloatingPosition(0, 0).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true) );
-            g_pauimgr->Update();
+            g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
      }
 
-      g_pAISTargetList->UpdateAISTargetList();
+     g_pAISTargetList->UpdateAISTargetList();
+
 }
 
 
@@ -11573,8 +11572,12 @@ bool AISTargetQueryDialog::Create ( wxWindow* parent,
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetQuery"), 12);
       int font_size = wxMax(8, dFont->GetPointSize());
+      wxString face;
+#ifdef __WXGTK__
+      face = _T("Monospace");
+#endif
       wxFont *fp_font = wxTheFontList->FindOrCreateFont(font_size,
-                  wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight());
+                  wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face);
 
       SetFont ( *fp_font );
 

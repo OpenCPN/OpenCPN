@@ -217,6 +217,10 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
+extern wxString         g_AisTargetList_perspective;
+extern int              g_AisTargetList_range;
+extern int              g_AisTargetList_sortColumn;
+extern bool             g_bAisTargetList_sortReverse;
 
 extern bool             g_bShowPrintIcon;
 extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -2432,6 +2436,11 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_ais_query_dialog_y < 0) || (g_ais_query_dialog_y > display_height))
             g_ais_query_dialog_y = 5;
 
+      Read ( _T ( "AISTargetListPerspective" ), g_AisTargetList_perspective );
+      g_AisTargetList_range = Read ( _T ( "AISTargetListRange" ),  40L );
+      g_AisTargetList_sortColumn = Read ( _T ( "AISTargetListSortColumn" ), 2L ); // Column #2 is MMSI
+      Read ( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse, false );
+
       Read ( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
       Read ( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
       Read ( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
@@ -3576,6 +3585,10 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AlertDialogPosY" ),  g_ais_alert_dialog_y );
       Write ( _T ( "QueryDialogPosX" ),  g_ais_query_dialog_x );
       Write ( _T ( "QueryDialogPosY" ),  g_ais_query_dialog_y );
+      Write ( _T ( "AISTargetListPerspective" ),  g_AisTargetList_perspective );
+      Write ( _T ( "AISTargetListRange" ),  g_AisTargetList_range );
+      Write ( _T ( "AISTargetListSortColumn" ),  g_AisTargetList_sortColumn );
+      Write ( _T ( "bAISTargetListSortReverse" ),  g_bAisTargetList_sortReverse );
 
       Write ( _T ( "bAISRolloverShowClass" ),  g_bAISRolloverShowClass );
       Write ( _T ( "bAISRolloverShowCOG" ),  g_bAISRolloverShowCOG );

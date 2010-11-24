@@ -35,6 +35,8 @@
 
 #include <wx/datetime.h>
 #include <wx/listctrl.h>
+#include <wx/spinctrl.h>
+#include <wx/aui/aui.h>
 
 ////////////TH//////////////////
 #ifdef __WXGTK__
@@ -480,15 +482,31 @@ class AISTargetListDialog: public wxPanel
       DECLARE_EVENT_TABLE()
 
       public:
-            AISTargetListDialog( wxWindow *parent, AIS_Decoder *pdecoder );
+            AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder );
            ~AISTargetListDialog( );
 
+            void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
+            void OnSize( wxSizeEvent& event );
 
       private:
-            void OnActivateItem( wxListEvent& event );
+            void OnPaneClose( wxAuiManagerEvent& event );
+            void UpdateButtons();
+            void OnTargetSelected( wxListEvent &event );
+            void DoTargetQuery( long mmsi );
+            void OnTargetDefaultAction( wxListEvent& event );
+            void OnTargetQuery( wxCommandEvent& event );
+            void OnTargetListColumnClicked( wxListEvent &event );
+            void OnTargetScrollTo( wxCommandEvent& event );
+            void OnLimitRange( wxCommandEvent& event );
+
             wxWindow          *m_pparent;
+            wxAuiManager      *m_pAuiManager;
             wxListCtrl        *m_pListCtrlAISTargets;
+            wxButton          *m_pButtonInfo;
+            wxButton          *m_pButtonScroll;
+            wxStaticText      *m_pStaticTextRange;
+            wxSpinCtrl        *m_pSpinCtrlRange;
             AIS_Decoder       *m_pdecoder;
             wxSize            m_size_min;
 
