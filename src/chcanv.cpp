@@ -3520,22 +3520,25 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       double dlat, dlon;
       wxPoint p;
 
-//      double saved_vp_rotation = VPoint.rotation;                      // save a copy
-//      VPoint.SetRotationAngle(0.);
       GetCanvasPointPix ( VPoint.clat, VPoint.clon, &p );
       GetCanvasPixPoint ( p.x + dx, p.y + dy, dlat, dlon );
-//      VPoint.SetRotationAngle(saved_vp_rotation);
-
 
       if(dlon > 360.) dlon -= 360.;
       if(dlon < -360.) dlon += 360.;
 
+
       //    This should not really be necessary, but round-trip georef on some charts is not perfect,
       //    So we can get creep on repeated unidimensional pans, and corrupt chart cacheing.......
-      if(dx == 0)
-            dlon = VPoint.clon;
-      if(dy == 0)
-            dlat = VPoint.clat;
+
+      //    But this only works on north-up projections
+      if(( (fabs(VPoint.skew) < .001)) && (fabs(VPoint.rotation) < .001))
+      {
+
+            if(dx == 0)
+                  dlon = VPoint.clon;
+            if(dy == 0)
+                  dlat = VPoint.clat;
+      }
 
       int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
       SetViewPoint ( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, RENDER_LODEF/*FORCE_SUBSAMPLE*/ );
@@ -3626,94 +3629,10 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         if((VPoint.pix_width < 0) || (VPoint.pix_height < 0))           // Canvas parameters not yet set
               return true;
 
-#if 0
-               //      Calculate and store some metrics
-        if((fabs(skew) > .001) || (fabs(rotation) > .001))
-            int ggp = 4;
-
-        //  Compute Viewport reference points for co-ordinate hit testing
-        double lat_ul, lat_ur, lat_lr, lat_ll;
-        double lon_ul, lon_ur, lon_lr, lon_ll;
 
 
-        VPoint.GetMercatorLLFromPix(wxPoint(0,                0),                 &lat_ul, &lon_ul);
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.pix_width, 0),                 &lat_ur, &lon_ur);
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.pix_width, VPoint.pix_height), &lat_lr, &lon_lr);
-        VPoint.GetMercatorLLFromPix(wxPoint(0,                VPoint.pix_height), &lat_ll, &lon_ll);
-
-
-        if(lon < 0.)
-        {
-              if((lon_ul > 0.)  &&  (lon_ur < 0.) ){ lon_ul -= 360.;  lon_ll -= 360.;}
-        }
-        else
-        {
-              if((lon_ul > 0.)  &&  (lon_ur < 0.) ){ lon_ur += 360.;  lon_lr += 360.;}
-        }
-
-        if(lon_ur < lon_ul)
-        {
-              lon_ur += 360.;
-              lon_lr += 360.;
-        }
-
-        if(lon_ur > 360.)
-        {
-              lon_ur -= 360.;
-              lon_lr -= 360.;
-              lon_ul -= 360.;
-              lon_ll -= 360.;
-        }
-
-        double dlat_min = lat_ul;
-        dlat_min = fmin ( dlat_min, lat_ur );
-        dlat_min = fmin ( dlat_min, lat_lr );
-        dlat_min = fmin ( dlat_min, lat_ll );
-
-        double dlon_min = lon_ul;
-        dlon_min = fmin ( dlon_min, lon_ur );
-        dlon_min = fmin ( dlon_min, lon_lr );
-        dlon_min = fmin ( dlon_min, lon_ll );
-
-        double dlat_max = lat_ul;
-        dlat_max = fmax ( dlat_max, lat_ur );
-        dlat_max = fmax ( dlat_max, lat_lr );
-        dlat_max = fmax ( dlat_max, lat_ll );
-
-        double dlon_max = lon_ur;
-        dlon_max = fmax ( dlon_max, lon_ul );
-        dlon_max = fmax ( dlon_max, lon_lr );
-        dlon_max = fmax ( dlon_max, lon_ll );
-
-
-        VPoint.vpBBox.SetMin ( dlon_min,  dlat_min );
-        VPoint.vpBBox.SetMax ( dlon_max,  dlat_max );
-
-//        printf("lon:%8g %8g %8g          %8g  %8g\n", lon, lon_min, lon_max, dlon_min, dlon_max);
-
-
-        //  Calculate a "virtual" screen size rectangle which will encompass all of a potentially rotated canvas
-
-        double rot_angle_save = VPoint.rotation;
-        VPoint.rotation = 0.;
-        wxPoint p1, p2;
-        p1 = VPoint.GetMercatorPixFromLL( dlat_max, dlon_min);
-        p2 = VPoint.GetMercatorPixFromLL( dlat_min, dlon_max);
-        VPoint.rotation = rot_angle_save;
-
-//        printf("virtual rect  p1.x:%d  p1.y: %d  width: %d  height: %d\n", p1.x, p1.y, p2.x-p1.x, p2.y-p1.y);
-
-        VPoint.rv_rect = wxRect(p1.x, p1.y, p2.x-p1.x, p2.y-p1.y);
-
-        /*
-        if(VPoint.rv_rect.height < 0)
-              VPoint.rv_rect.height = VPoint.pix_height;
-
-        if(VPoint.rv_rect.width < 0)
-             VPoint.rv_rect.width = VPoint.pix_width;
-*/
-
-#endif
+        //  In the case where canvas rotation is applied, we need to define a larger "virtual" pixel window size to ensure that
+        //  enough chart data is fatched and available to fill the rotated screen.
         VPoint.rv_rect = wxRect(0, 0, VPoint.pix_width, VPoint.pix_height);
 
         //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
@@ -3730,7 +3649,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
               //Rotate the 4 corner points, and get the max rectangle enclosing it
               double rotator = VPoint.rotation;
-              if(g_bskew_comp)
+ //             if(g_bskew_comp)
                     rotator += skew;
 
               double a_east = pix_l * cos ( phi + rotator ) ;
@@ -3771,17 +3690,17 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
         //  This must be done in unrotated space with respect to full unrotated screen space calculated above
         double rotation_save = VPoint.rotation;
-        VPoint.SetRotationAngle(0.);
+              VPoint.SetRotationAngle(0.);
+
 
         double lat_ul, lat_ur, lat_lr, lat_ll;
         double lon_ul, lon_ur, lon_lr, lon_ll;
 
 
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.rv_rect.x,                        VPoint.rv_rect.y),                         &lat_ul, &lon_ul);
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y),                         &lat_ur, &lon_ur);
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y + VPoint.rv_rect.height), &lat_lr, &lon_lr);
-        VPoint.GetMercatorLLFromPix(wxPoint(VPoint.rv_rect.x,                        VPoint.rv_rect.y + VPoint.rv_rect.height), &lat_ll, &lon_ll);
-
+        GetCanvasPixPoint(VPoint.rv_rect.x,                        VPoint.rv_rect.y,                         lat_ul, lon_ul);
+        GetCanvasPixPoint(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y,                         lat_ur, lon_ur);
+        GetCanvasPixPoint(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y + VPoint.rv_rect.height, lat_lr, lon_lr);
+        GetCanvasPixPoint(VPoint.rv_rect.x,                        VPoint.rv_rect.y + VPoint.rv_rect.height, lat_ll, lon_ll);
 
         if(lon < 0.)
         {
@@ -3831,6 +3750,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         VPoint.vpBBox.SetMin ( dlon_min,  dlat_min );
         VPoint.vpBBox.SetMax ( dlon_max,  dlat_max );
 
+        // Restore the rotation angle
         VPoint.SetRotationAngle(rotation_save);
 
         m_RescaleCandidate = NULL;
@@ -8130,7 +8050,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 void ChartCanvas::ShowAISTargetList(void)
 {
       if ( NULL == g_pAISTargetList ) {         // There is one global instance of the Dialog
-            g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
+            g_pAISTargetList = new AISTargetListDialog( parent_frame, g_pauimgr, g_pAIS );
      }
 
      g_pAISTargetList->UpdateAISTargetList();
