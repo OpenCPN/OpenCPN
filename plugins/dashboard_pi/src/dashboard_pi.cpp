@@ -37,6 +37,10 @@
 #include "dashboard_pi.h"
 #include "icons.h"
 
+wxFont *g_pFontTitle;
+wxFont *g_pFontData;
+wxFont *g_pFontLabel;
+wxFont *g_pFontSmall;
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -197,6 +201,11 @@ int dashboard_pi::Init(void)
       mPriApWind = 99;
       mPriDepth = 99;
 
+      g_pFontTitle = new wxFont( 10, wxFONTFAMILY_ROMAN, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
+      g_pFontData = new wxFont( 14, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+      g_pFontLabel = new wxFont( 9, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+      g_pFontSmall = new wxFont( 8, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+
       m_pauimgr = GetFrameAuiManager();
 
       //    Get a pointer to the opencpn configuration object
@@ -233,6 +242,11 @@ bool dashboard_pi::DeInit(void)
             m_pdashboard_window->Close();
             m_pdashboard_window->Destroy();
       }
+
+      delete g_pFontTitle;
+      delete g_pFontData;
+      delete g_pFontLabel;
+      delete g_pFontSmall;
       
       return true;
 }
@@ -719,6 +733,29 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
       // velocity range
       // rudder range
 
+      wxStaticBox* itemStaticBox01 = new wxStaticBox( dialog, wxID_ANY, _("Fonts") );
+      wxStaticBoxSizer* itemStaticBoxSizer01 = new wxStaticBoxSizer(itemStaticBox01, wxHORIZONTAL);
+      itemBoxSizerMainPanel->Add(itemStaticBoxSizer01, 0, wxEXPAND|wxALL, border_size);
+      wxFlexGridSizer *itemFlexGridSizer03 = new wxFlexGridSizer(2);
+      itemFlexGridSizer03->AddGrowableCol(1);
+      itemStaticBoxSizer01->Add(itemFlexGridSizer03, 1, wxEXPAND|wxALL, 0);
+      wxStaticText* itemStaticText03 = new wxStaticText( dialog, wxID_ANY, _("Title:"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemFlexGridSizer03->Add(itemStaticText03, 0, wxEXPAND|wxALL, border_size);
+      m_pFontPickerTitle = new wxFontPickerCtrl( dialog, wxID_ANY, *g_pFontTitle, wxDefaultPosition, wxDefaultSize );
+      itemFlexGridSizer03->Add(m_pFontPickerTitle, 0, wxALIGN_RIGHT|wxALL, 0);
+      wxStaticText* itemStaticText04 = new wxStaticText( dialog, wxID_ANY, _("Data:"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemFlexGridSizer03->Add(itemStaticText04, 0, wxEXPAND|wxALL, border_size);
+      m_pFontPickerData = new wxFontPickerCtrl( dialog, wxID_ANY, *g_pFontData, wxDefaultPosition, wxDefaultSize );
+      itemFlexGridSizer03->Add(m_pFontPickerData, 0, wxALIGN_RIGHT|wxALL, 0);
+      wxStaticText* itemStaticText05 = new wxStaticText( dialog, wxID_ANY, _("Label:"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemFlexGridSizer03->Add(itemStaticText05, 0, wxEXPAND|wxALL, border_size);
+      m_pFontPickerLabel = new wxFontPickerCtrl( dialog, wxID_ANY, *g_pFontLabel, wxDefaultPosition, wxDefaultSize );
+      itemFlexGridSizer03->Add(m_pFontPickerLabel, 0, wxALIGN_RIGHT|wxALL, 0);
+      wxStaticText* itemStaticText06 = new wxStaticText( dialog, wxID_ANY, _("Small:"), wxDefaultPosition, wxDefaultSize, 0 );
+      itemFlexGridSizer03->Add(itemStaticText06, 0, wxEXPAND|wxALL, border_size);
+      m_pFontPickerSmall = new wxFontPickerCtrl( dialog, wxID_ANY, *g_pFontSmall, wxDefaultPosition, wxDefaultSize );
+      itemFlexGridSizer03->Add(m_pFontPickerSmall, 0, wxALIGN_RIGHT|wxALL, 0);
+
       wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
       itemBoxSizerMainPanel->Add(itemBoxSizer03, 0, wxEXPAND|wxALL, 0);
 
@@ -782,6 +819,14 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
       if(dialog->ShowModal() == wxID_OK)
       {
             m_iInstrumentWidth = wxAtoi(m_pInstrumentWidth->GetValue());
+            delete g_pFontTitle;
+            g_pFontTitle = new wxFont( m_pFontPickerTitle->GetSelectedFont() );
+            delete g_pFontData;
+            g_pFontData = new wxFont( m_pFontPickerData->GetSelectedFont() );
+            delete g_pFontLabel;
+            g_pFontLabel = new wxFont( m_pFontPickerLabel->GetSelectedFont() );
+            delete g_pFontSmall;
+            g_pFontSmall = new wxFont( m_pFontPickerSmall->GetSelectedFont() );
             m_iInstrumentCount = m_pListCtrlInstruments->GetItemCount();
             m_aInstrumentList.Clear();
             for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
@@ -917,6 +962,21 @@ bool dashboard_pi::LoadConfig(void)
       if(pConf)
       {
             pConf->SetPath( _T("/PlugIns/Dashboard") );
+
+            wxString config;
+            pConf->Read( _T("FontTitle"), &config, wxEmptyString );
+            if ( !config.IsEmpty() )
+                  g_pFontTitle->SetNativeFontInfo( config );
+            pConf->Read( _T("FontData"), &config, wxEmptyString );
+            if ( !config.IsEmpty() )
+                  g_pFontData->SetNativeFontInfo( config );
+            pConf->Read( _T("FontLabel"), &config, wxEmptyString );
+            if ( !config.IsEmpty() )
+                  g_pFontLabel->SetNativeFontInfo( config );
+            pConf->Read( _T("FontSmall"), &config, wxEmptyString );
+            if ( !config.IsEmpty() )
+                  g_pFontSmall->SetNativeFontInfo( config );
+
             pConf->Read( _T("InstrumentWidth"), &m_iInstrumentWidth, 150 );
             int cnt;
             pConf->Read( _T("InstrumentCount"), &cnt, -1 );
@@ -956,6 +1016,10 @@ bool dashboard_pi::SaveConfig(void)
       if(pConf)
       {
             pConf->SetPath( _T( "/PlugIns/Dashboard" ) );
+            pConf->Write( _T( "FontTitle" ), g_pFontTitle->GetNativeFontInfoDesc() );
+            pConf->Write( _T( "FontData" ), g_pFontData->GetNativeFontInfoDesc() );
+            pConf->Write( _T( "FontLabel" ), g_pFontLabel->GetNativeFontInfoDesc() );
+            pConf->Write( _T( "FontSmall" ), g_pFontSmall->GetNativeFontInfoDesc() );
             pConf->Write( _T( "InstrumentWidth" ), m_iInstrumentWidth );
             pConf->Write( _T( "InstrumentCount" ), m_iInstrumentCount );
             //pConf->Write( _T( "InstrumentCount" ), m_aInstrumentList.GetCount() );

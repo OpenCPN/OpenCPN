@@ -35,9 +35,14 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-// Required GetGlobalColor and OCPNGetFont
+// Required GetGlobalColor
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
+
+extern wxFont *g_pFontTitle;
+extern wxFont *g_pFontData;
+extern wxFont *g_pFontLabel;
+extern wxFont *g_pFontSmall;
 
 wxString toSDMM ( int NEflag, double a );
 

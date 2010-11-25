@@ -129,8 +129,7 @@ void DashboardInstrument_Compass::DrawCompassRose(wxBufferedDC* dc)
 
       int tmpradius = m_radius * 0.75;
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
-      dc->SetFont(*font);
+      dc->SetFont(*g_pFontSmall);
 
       wxColour cl;
       wxPen pen;
@@ -146,7 +145,7 @@ void DashboardInstrument_Compass::DrawCompassRose(wxBufferedDC* dc)
                         tmpangle <= m_AngleStart + 360 - ANGLE_OFFSET; tmpangle+=45)
       {
             Value = CompassArray[offset];
-            dc->GetTextExtent(Value, &width, &height, 0, 0, font);
+            dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
             double x = width/2;
             long double anglefortext = asin((x/tmpradius));
             anglefortext = tmpangle - rad2deg(anglefortext);

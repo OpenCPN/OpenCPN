@@ -79,8 +79,7 @@ void DashboardInstrument_Dial::SetInstrumentWidth(int width)
 {
       wxClientDC dc(this);
       int w;
-      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       m_width = width;
       m_height = m_TitleHeight+width;
       SetMinSize(wxSize(m_width, m_height));
@@ -115,9 +114,8 @@ void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
 
       m_cx = rect.width / 2;
       int availableHeight = rect.height - m_TitleHeight - 6;
-      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
       int width, height;
-      dc->GetTextExtent(_T("000"), &width, &height, 0, 0, font);
+      dc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
       m_cy = m_TitleHeight + 2;
       if (m_MainValueOption == DIAL_POSITION_TOPLEFT || m_MainValueOption == DIAL_POSITION_TOPRIGHT ||
                 m_ExtraValueOption == DIAL_POSITION_TOPLEFT || m_ExtraValueOption == DIAL_POSITION_TOPRIGHT)
@@ -236,8 +234,7 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       wxPoint TextPoint;
       wxPen pen;
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
-      dc->SetFont(*font);
+      dc->SetFont(*g_pFontSmall);
 
       wxColor cl;
       GetGlobalColor(_T("BLUE2"), &cl);
@@ -255,7 +252,7 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       for(double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle; angle += abm)
       {
             wxString label = (m_LabelArray.GetCount() ? m_LabelArray.Item(offset) : wxString::Format(_T("%d"), value));
-            dc->GetTextExtent(label, &width, &height, 0, 0, font);
+            dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
 
             double halfW = width / 2;
             if (m_LabelOption == DIAL_LABEL_HORIZONTAL)
@@ -296,8 +293,7 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
       if (position == DIAL_POSITION_NONE)
             return;
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
-      dc->SetFont(*font);
+      dc->SetFont(*g_pFontLabel);
 //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
       wxColour cl;
       GetGlobalColor(_T("BLUE2"), &cl);
@@ -306,7 +302,7 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
       wxRect rect = GetClientRect();
       wxString text = wxString::Format(format, value);
       int width, height;
-      dc->GetTextExtent(text, &width, &height, 0, 0, font);
+      dc->GetTextExtent(text, &width, &height, 0, 0, g_pFontLabel);
       wxPoint TextPoint;
       switch (position)
       {

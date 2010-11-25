@@ -46,6 +46,7 @@
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include <wx/aui/aui.h>
+#include <wx/fontpicker.h>
 //wx2.9 #include <wx/wrapsizer.h>
 #include "../../../include/ocpn_plugin.h"
 
@@ -146,6 +147,10 @@ private:
       // Config dialog items
       wxListCtrl*                   m_pListCtrlInstruments;
       wxTextCtrl*                   m_pInstrumentWidth;
+      wxFontPickerCtrl             *m_pFontPickerTitle;
+      wxFontPickerCtrl             *m_pFontPickerData;
+      wxFontPickerCtrl             *m_pFontPickerLabel;
+      wxFontPickerCtrl             *m_pFontPickerSmall;
       int                           m_iInstrumentWidth;
       int                           m_iInstrumentCount; // Warning: should be size_t for wxArray.GetCount()
       wxArrayInt                    m_aInstrumentList;

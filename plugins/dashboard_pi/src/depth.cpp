@@ -59,8 +59,7 @@ void DashboardInstrument_Depth::SetInstrumentWidth(int width)
 {
       wxClientDC dc(this);
       int w;
-      wxFont *font = OCPNGetFont(_T("Dashboard Title"), 9);
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, font);
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       m_width = width;
       m_height = m_TitleHeight+140;
       SetMinSize(wxSize(m_width, m_height));
@@ -116,8 +115,7 @@ void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
       dc->DrawLine(3, 90, rect.width-3, 90);
       dc->DrawLine(3, 115, rect.width-3, 115);
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Small"), 8);
-      dc->SetFont(*font);
+      dc->SetFont(*g_pFontSmall);
 
       m_MaxDepth = 0;
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
@@ -131,24 +129,23 @@ void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
       wxString label;
       label.Printf(_T("%5.0f m"), 0.0);
       int width, height;
-      dc->GetTextExtent(label, &width, &height, 0, 0, font);
+      dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
       dc->DrawText(label, rect.width-width, 40-height);
 
       label.Printf(_T("%5.0f m"), m_MaxDepth);
-      dc->GetTextExtent(label, &width, &height, 0, 0, font);
+      dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
       dc->DrawText(label, rect.width-width, rect.height-height);
 }
 
 void DashboardInstrument_Depth::DrawForeground(wxBufferedDC* dc)
 {
       wxRect rect = GetClientRect();
-      dc->SetFont(*OCPNGetFont(_T("Dashboard Data"), 16));
+      dc->SetFont(*g_pFontData);
       dc->DrawText(wxString::Format(_T("%5.1f m"), m_Depth), 10, m_TitleHeight);
 
-      wxFont *font = OCPNGetFont(_T("Dashboard Label"), 9);
-      dc->SetFont(*font);
+      dc->SetFont(*g_pFontLabel);
       int width, height;
-      dc->GetTextExtent(m_Temp, &width, &height, 0, 0, font);
+      dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
       dc->DrawText(m_Temp, 0, rect.height-height);
 
       wxColour cl;
