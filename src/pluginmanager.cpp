@@ -42,6 +42,7 @@ extern FontMgr         *pFontMgr;
 extern wxString        g_SData_Locn;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
+extern wxLocale         locale_def_lang;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -871,6 +872,10 @@ wxAuiManager *GetFrameAuiManager(void)
       return g_pauimgr;
 }
 
+bool AddLocaleCatalog( wxString catalog )
+{
+      return locale_def_lang.AddCatalog( catalog );
+}
 
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation

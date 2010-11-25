@@ -186,6 +186,8 @@ dashboard_pi::dashboard_pi(void *ppimgr)
 
 int dashboard_pi::Init(void)
 {
+      AddLocaleCatalog( _T("opencpn-dashboard_pi") );
+
       mVar = 0;
       mPriPosition = 99;
       mPriCOGSOG = 99;
@@ -204,8 +206,8 @@ int dashboard_pi::Init(void)
       LoadConfig();
 
       //    This PlugIn needs a toolbar icon
-      m_toolbar_item_id  = InsertPlugInTool(_(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
-            _("Dashboard"), _(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
+      m_toolbar_item_id  = InsertPlugInTool(_T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
+            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
       m_pdashboard_window = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, m_toolbar_item_id);
       m_pauimgr->AddPane(m_pdashboard_window, wxAuiPaneInfo().Name(_T("Dashboard")).Caption(_("Dashboard")).CaptionVisible(true).Float().FloatingPosition(0,0).TopDockable(false).BottomDockable(false).Show(false));
@@ -702,11 +704,6 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 
       wxBoxSizer* itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
       dialog->SetSizer(itemBoxSizerMainPanel);
-
-      //  Grib toolbox icon checkbox
-      wxStaticBox* itemStaticBox01 = new wxStaticBox( dialog, wxID_ANY, _("General") );
-      wxStaticBoxSizer* itemStaticBoxSizer01 = new wxStaticBoxSizer(itemStaticBox01, wxVERTICAL);
-      itemBoxSizerMainPanel->Add(itemStaticBoxSizer01, 0, wxEXPAND|wxALL, border_size);
 
       wxStaticBox* itemStaticBox02 = new wxStaticBox( dialog, wxID_ANY, _("Dashboard") );
       wxStaticBoxSizer* itemStaticBoxSizer02 = new wxStaticBoxSizer(itemStaticBox02, wxHORIZONTAL);

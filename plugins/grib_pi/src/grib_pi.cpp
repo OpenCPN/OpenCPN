@@ -85,7 +85,7 @@ grib_pi::grib_pi(void *ppimgr)
 int grib_pi::Init(void)
 {
 //      printf("grib_pi Init()\n");
-
+      AddLocaleCatalog( _T("opencpn-grib_pi") );
 
       // Set some default private member parameters
       m_grib_dialog_x = 0;
@@ -108,8 +108,8 @@ int grib_pi::Init(void)
 
       //    This PlugIn needs a toolbar icon, so request its insertion if enabled locally
       if(m_bGRIBShowIcon)
-            m_leftclick_tool_id  = InsertPlugInTool(_(""), _img_grib, _img_grib, wxITEM_NORMAL,
-                  _("Grib"), _(""), NULL,
+            m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                  _("Grib"), _T(""), NULL,
                    GRIB_TOOL_POSITION, 0, this);
 
       // Create the drawing factory
@@ -195,8 +195,8 @@ void grib_pi::SetDefaults(void)
       {
             m_bGRIBShowIcon = true;
 
-            m_leftclick_tool_id  = InsertPlugInTool(_(""), _img_grib, _img_grib, wxITEM_NORMAL,
-                  _("Grib"), _(""), NULL,
+            m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                  _("Grib"), _T(""), NULL,
                    GRIB_TOOL_POSITION, 0, this);
       }
 }
@@ -244,8 +244,8 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                   m_bGRIBShowIcon= m_pGRIBShowIcon->GetValue();
 
                   if(m_bGRIBShowIcon)
-                        m_leftclick_tool_id  = InsertPlugInTool(_(""), _img_grib, _img_grib, wxITEM_NORMAL,
-                              _("Grib"), _(""), NULL, GRIB_TOOL_POSITION,
+                        m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                              _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION,
                               0, this);
                   else
                         RemovePlugInTool(m_leftclick_tool_id);

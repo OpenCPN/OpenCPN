@@ -276,5 +276,7 @@ extern "C"  DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
 
 extern "C"  DECL_EXP wxAuiManager *GetFrameAuiManager(void);
 
+extern "C"  DECL_EXP bool AddLocaleCatalog( wxString catalog );
+
 #endif            // _PLUGIN_H_
 

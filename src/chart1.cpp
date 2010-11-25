@@ -3262,6 +3262,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
                   name.Prepend(_T("Anchorage created "));
                   RoutePoint *pWP = new RoutePoint(gLat, gLon, wxString(_T("anchorage")), name, GPX_EMPTY_STRING);
                   pWP->m_bShowName = false;
+                  pWP->m_bIsolatedMark = true;
 
                   pConfig->AddNewWayPoint(pWP, -1);       // use auto next num
             }

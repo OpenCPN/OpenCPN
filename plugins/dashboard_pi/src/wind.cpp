@@ -50,7 +50,7 @@ DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID
       //SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
       // Labels are set static because we've no logic to display them this way
-      wxString labels[] = {_T(""), _("30"), _("60"), _("90"), _("120"), _("150"), _T(""), _("150"), _("120"), _("90"), _("60"), _("30")};
+      wxString labels[] = {_T(""), _T("30"), _T("60"), _T("90"), _T("120"), _T("150"), _T(""), _T("150"), _T("120"), _T("90"), _T("60"), _T("30")};
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
 
       SetInstrumentWidth(200);

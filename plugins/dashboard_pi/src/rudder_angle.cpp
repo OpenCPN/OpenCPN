@@ -50,7 +50,7 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
       //SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
       SetOptionMarker(5, DIAL_MARKER_REDGREEN, 2);
       // Labels are set static because we've no logic to display them this way
-      wxString labels[] = {_T("40"), _("30"), _("20"), _("10"), _T("0"), _("10"), _("20"), _("30"), _("40")};
+      wxString labels[] = {_T("40"), _T("30"), _T("20"), _T("10"), _T("0"), _T("10"), _T("20"), _T("30"), _T("40")};
       SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
 

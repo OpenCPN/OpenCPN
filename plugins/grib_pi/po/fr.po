@@ -1,0 +1,165 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-24 02:27+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+
+#
+#
+#: src/grib.h:116 src/grib_pi.cpp:270
+msgid "GRIB Display Control"
+msgstr "Gestionnaire d'affichage des fichiers Grib"
+
+#: src/grib_pi.cpp:112 src/grib_pi.cpp:199 src/grib_pi.cpp:248
+msgid "Grib"
+msgstr ""
+
+#
+#
+#: src/grib_pi.cpp:168 src/grib_pi.cpp:221
+msgid "GRIB"
+msgstr "GRIB"
+
+#: src/grib_pi.cpp:174
+msgid "GRIB PlugIn for OpenCPN"
+msgstr ""
+
+#: src/grib_pi.cpp:180
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"\n"
+"Supported GRIB file types include:\n"
+"- wind direction and speed\n"
+"- significant wave height\n"
+"- sea surface temperature\n"
+"- surface current direction and speed."
+msgstr ""
+
+#: src/grib_pi.cpp:212
+#, fuzzy
+msgid "GRIB Preferences"
+msgstr "Préférences"
+
+#
+#
+#: src/grib_pi.cpp:225
+msgid "Show GRIB icon"
+msgstr "Afficher l'icône GRIB "
+
+#
+#
+#: src/grib_pi.cpp:228
+msgid "Use High Definition Graphics"
+msgstr "Utiliser le graphisme haute définition"
+
+#
+#
+#: src/grib.cpp:211
+msgid "GRIB File Directory"
+msgstr "Dossier des fichiers GRIB"
+
+#
+#
+#: src/grib.cpp:237
+msgid "GRIB Data"
+msgstr "Données GRIB"
+
+#
+#
+#: src/grib.cpp:250
+msgid "Wind Speed, Kts."
+msgstr "Vitesse du vent, Noeuds "
+
+#
+#
+#: src/grib.cpp:260
+msgid "Wind Direction"
+msgstr "Direction du vent"
+
+#
+#
+#: src/grib.cpp:270
+msgid "Pressure, mBar"
+msgstr "Pression, hPa"
+
+#
+#
+#: src/grib.cpp:280
+msgid "Significant Wave Height, m"
+msgstr "Haut. signif. vagues, m"
+
+#
+#
+#: src/grib.cpp:291
+msgid "Sea Surface Temp, C"
+msgstr "Temp.de surface de la mer, °C"
+
+#
+#
+#: src/grib.cpp:301
+msgid "Current Velocity, Kts."
+msgstr "Vitesse du courant, noeuds."
+
+#
+#
+#: src/grib.cpp:316
+msgid "&Close"
+msgstr "F&ermer"
+
+#
+#
+#: src/grib.cpp:518
+msgid "Select GRIB Directory"
+msgstr "Sélectionner le dossier des fichiers GRIB"
+
+#
+#
+#: src/grib.cpp:1110
+#, c-format
+msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgstr ""
+"Attention : Les fichiers GRIB de vitesse du vent sont obsolètes de %d   "
+"heures."
+
+#
+#
+#: src/grib.cpp:1230
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues "
+"non visibles"
+
+#
+#
+#: src/grib.cpp:1403
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non "
+"visibles"
+
+#
+#
+#: src/grib.cpp:1520
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les température de "
+"l'eau non visibles"
+
+#
+#
+#: src/grib.cpp:1640
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les vitesses de "
+"courants non visibles"
+
