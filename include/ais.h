@@ -479,7 +479,6 @@ class AISTargetAlertDialog: public wxDialog
 class AISTargetListDialog: public wxPanel
 {
       DECLARE_CLASS( AISTargetListDialog )
-      DECLARE_EVENT_TABLE()
 
       public:
             AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder );
@@ -487,7 +486,6 @@ class AISTargetListDialog: public wxPanel
 
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
-            void OnSize( wxSizeEvent& event );
 
       private:
             void OnPaneClose( wxAuiManagerEvent& event );

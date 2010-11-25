@@ -3382,10 +3382,6 @@ void AISTargetAlertDialog::OnSize( wxSizeEvent& event )
 //---------------------------------------------------------------------------------------
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
-            BEGIN_EVENT_TABLE ( AISTargetListDialog, wxPanel )
-            EVT_SIZE( AISTargetListDialog::OnSize )
-            END_EVENT_TABLE()
-
 
 AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder)
       :wxPanel( parent, wxID_ANY, wxDefaultPosition, wxSize( 780, 250 ), wxBORDER_NONE )
@@ -3469,24 +3465,15 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       UpdateButtons();
 
 
-      wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose(true).Float().FloatingPosition( 50, 200 ).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true);
-      m_pAuiManager->AddPane( this, pane );
-
-//      m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
-/*
-      if(g_AisTargetList_perspective.IsEmpty())
-            m_pAuiManager->AddPane( this, pane );
-      else
+      if(m_pAuiManager)
       {
-            wxAuiPaneInfo pane_saved;
-            m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane_saved );
-            m_pAuiManager->AddPane( this, pane_saved );
+            wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose(true).Float().FloatingPosition( 50, 200 ).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true);
+            m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
+            m_pAuiManager->AddPane( this, pane );
 
+            m_pAuiManager->Connect( wxEVT_AUI_PANE_CLOSE, wxAuiManagerEventHandler( AISTargetListDialog::OnPaneClose ), NULL, this );
+            m_pAuiManager->Update();
       }
-  */
-
-      m_pAuiManager->Connect( wxEVT_AUI_PANE_CLOSE, wxAuiManagerEventHandler( AISTargetListDialog::OnPaneClose ), NULL, this );
-      m_pAuiManager->Update();
 }
 
 
@@ -3647,12 +3634,6 @@ void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
 {
       g_AisTargetList_range = m_pSpinCtrlRange->GetValue();
       UpdateAISTargetList();
-}
-
-void AISTargetListDialog::OnSize( wxSizeEvent& event )
-{
-      UpdateAISTargetList();
-      event.Skip();
 }
 
 void AISTargetListDialog::UpdateAISTargetList(void)
