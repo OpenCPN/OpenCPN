@@ -2493,8 +2493,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -2515,6 +2517,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
@@ -2526,8 +2529,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
 #
 #
 #
@@ -2549,11 +2554,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -2564,8 +2571,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB Data"
 #~ msgstr "Dati GRIB"
+#
 #
 #
 #
@@ -2576,8 +2585,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Cartella dei File GRIB"
+#
 #
 #
 #
@@ -2588,8 +2599,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere HTSGW GRIB soppressi"
+#
 #
 #
 #
@@ -2600,13 +2613,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere SEATEMP soppressi"
 #
 #
 #
+#
 #~ msgid "PlugIn Name"
 #~ msgstr "Nome PlugIn"
+#
 #
 #
 #
@@ -2617,8 +2633,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Temperatura Acqua (°C)"
+#
 #
 #
 #
@@ -2629,14 +2647,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Onda, Altezza Signific. (m)"
 #
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Attenzione:  Dati QuickScat GRIB sono vecchi di %d ore."
+#
 #
 #
 #

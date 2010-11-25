@@ -1668,24 +1668,30 @@ msgstr ""
 "OpenCPN fant versjon %d.%d, men krever minst versjon 3.1"
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Lukk"
+#
 #
 #
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Slett alle ruter..."
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slett alle slepestrek..."
+#
 #
 #
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktiv Slepestrek)"
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Kallesignal:"
+#
 #
 #
 #~ msgid ""
@@ -1696,12 +1702,14 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid ""
 #~ "Class:     A\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Klasse:     A\n"
 #~ "\n"
+#
 #
 #
 #~ msgid ""
@@ -1712,40 +1720,50 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Fart, Knop"
+#
 #
 #
 #~ msgid "ETA"
 #~ msgstr "ETA"
 #
 #
+#
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Ukjent"
+#
 #
 #
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
 #
+#
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB visningskontroll"
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede CRAIN GRIB"
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede HTSGW GRIB"
+#
 #
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
@@ -1753,48 +1771,60 @@ msgstr ""
 #~ "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØSTRØM GRIB"
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØTEMP GRIB"
+#
 #
 #
 #~ msgid "Pressure, mBar"
 #~ msgstr "Lufttrykk, mb"
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Rute Behandling..."
+#
 #
 #
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Sjøoverflate temp, C"
 #
 #
+#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Velg GRIB Katalog"
+#
 #
 #
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Send rute til GPS"
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Vis GPX ikoner"
+#
 #
 #
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Vis GRIB dialog"
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Vesentlig bølgehøyde, m"
+#
 #
 #
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
 #
 #
+#
 #~ msgid "Wind Direction"
 #~ msgstr "Vindretning"
+#
 #
 #
 #~ msgid "Wind Speed, Kts."

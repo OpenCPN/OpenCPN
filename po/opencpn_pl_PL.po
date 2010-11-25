@@ -2998,12 +2998,14 @@ msgid ""
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Zamknij"
+#
 #
 #
 # 
@@ -3019,6 +3021,7 @@ msgstr ""
 #~ msgstr "Usuń wszystkie drogi"
 #
 #
+#
 # 
 # 
 # 
@@ -3030,6 +3033,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Usuń wszystkie drogi"
+#
 #
 #
 # 
@@ -3045,6 +3049,7 @@ msgstr ""
 #~ msgstr "Usuń ślad"
 #
 #
+#
 # 
 # 
 # 
@@ -3052,6 +3057,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Znak wywoławczy:"
+#
 #
 #
 # 
@@ -3070,6 +3076,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3080,6 +3087,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Klasa:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3096,6 +3104,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Klasa:     B\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3118,6 +3127,7 @@ msgstr ""
 #~ msgstr "Usuń wszystkie drogi"
 #
 #
+#
 # 
 # 
 # 
@@ -3125,6 +3135,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  nieznany"
+#
 #
 #
 # 
@@ -3152,6 +3163,7 @@ msgstr ""
 #~ msgstr "ETE/Datownik"
 #
 #
+#
 # 
 # 
 # 
@@ -3172,6 +3184,7 @@ msgstr ""
 #~ msgstr "Eksportuj..."
 #
 #
+#
 # 
 # 
 # 
@@ -3184,11 +3197,13 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Dane GRIB"
+#
 #
 #
 # 
@@ -3198,11 +3213,13 @@ msgstr ""
 #~ msgstr "Ustawienia prezentacji GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Katalog plików GRIB"
+#
 #
 #
 # 
@@ -3214,6 +3231,7 @@ msgstr ""
 #~ "opadów deszczu"
 #
 #
+#
 # 
 # 
 # 
@@ -3221,6 +3239,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 #~ "wysokości fali znacznej"
+#
 #
 #
 # 
@@ -3233,6 +3252,7 @@ msgstr ""
 #~ "opadów deszczu"
 #
 #
+#
 # 
 # 
 # 
@@ -3243,11 +3263,13 @@ msgstr ""
 #~ "wysokości fali znacznej"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Ciśnienie, mBar"
+#
 #
 #
 # 
@@ -3256,6 +3278,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Katalog plików GRIB"
+#
 #
 #
 # 
@@ -3270,6 +3293,7 @@ msgstr ""
 #~ msgstr "Wyślij drogę do GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -3280,6 +3304,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Pokaż ikony GPX"
+#
 #
 #
 # 
@@ -3294,11 +3319,13 @@ msgstr ""
 #~ msgstr "Pokaż dialog GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Wysokość fali znacznej, m"
+#
 #
 #
 # 
@@ -3308,11 +3335,13 @@ msgstr ""
 #~ msgstr "UWAGA: Dane QuickScat GRIB pochodzą sprzed %d godzin."
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 # 

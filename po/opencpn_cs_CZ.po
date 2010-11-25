@@ -2507,8 +2507,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Zavřít"
+#
 #
 #
 #
@@ -2518,8 +2520,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 #
@@ -2530,8 +2534,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB Display Control"
 #~ msgstr "Ovládání zobrazení GRIB"
+#
 #
 #
 #
@@ -2542,8 +2548,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
+#
 #
 #
 #
@@ -2554,8 +2562,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Prosím zmenši měřítko pro zobrazení OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -2566,8 +2576,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Pressure, mBar"
 #~ msgstr "Tlak, mBar"
+#
 #
 #
 #
@@ -2578,8 +2590,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Složka souborů GRIB"
+#
 #
 #
 #
@@ -2590,14 +2604,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROVÁNÍ:  QuickScat GRIB data jsou %d hodin stará."
 #
 #
 #
 #
+#
 #~ msgid "Wind Direction"
 #~ msgstr "Směr větru"
+#
 #
 #
 #

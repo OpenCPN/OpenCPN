@@ -2993,12 +2993,14 @@ msgid ""
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 # 
@@ -3014,6 +3016,7 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+#
 # 
 # 
 # 
@@ -3027,6 +3030,7 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+#
 # 
 # 
 # 
@@ -3038,6 +3042,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "(Active Track)"
 #~ msgstr "Удалить трек"
+#
 #
 #
 # 
@@ -3064,6 +3069,7 @@ msgstr ""
 #~ msgstr "Автоматические якорные метки"
 #
 #
+#
 # 
 # 
 # 
@@ -3071,6 +3077,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Позывной:  "
+#
 #
 #
 # 
@@ -3083,6 +3090,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3099,6 +3107,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3121,6 +3130,7 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+#
 # 
 # 
 # 
@@ -3135,6 +3145,7 @@ msgstr ""
 #~ msgstr "Время прибытия"
 #
 #
+#
 # 
 # 
 # 
@@ -3142,6 +3153,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "Ожидаемое время прибытия:                  Неизвестно"
+#
 #
 #
 # 
@@ -3164,6 +3176,7 @@ msgstr ""
 #~ msgstr "Экспорт...."
 #
 #
+#
 # 
 # 
 # 
@@ -3176,11 +3189,13 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Данные GRIB"
+#
 #
 #
 # 
@@ -3190,11 +3205,13 @@ msgstr ""
 #~ msgstr "Настройки отображения информации GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 # 
@@ -3204,11 +3221,13 @@ msgstr ""
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 # 
@@ -3219,12 +3238,14 @@ msgstr ""
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 # 
@@ -3234,12 +3255,14 @@ msgstr ""
 #~ msgstr "Давление, мБар"
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 # 
@@ -3255,6 +3278,7 @@ msgstr ""
 #~ msgstr "Отправить в устройство GPS"
 #
 #
+#
 # 
 # 
 # 
@@ -3265,6 +3289,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Показать иконку GPX"
+#
 #
 #
 # 
@@ -3279,11 +3304,13 @@ msgstr ""
 #~ msgstr "Показать диалог GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Характерная высота волны, м"
+#
 #
 #
 # 
@@ -3293,11 +3320,13 @@ msgstr ""
 #~ msgstr "ВНИМАНИЕ: данные QuickScat GRIB актуальны на %d часов назад"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 # 

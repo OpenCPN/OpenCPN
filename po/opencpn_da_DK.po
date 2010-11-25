@@ -2625,10 +2625,12 @@ msgstr ""
 "Opencpn fandt version %d.%d, men kræver mindst version 3.1"
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 # 
@@ -2642,6 +2644,7 @@ msgstr ""
 #~ msgstr "&Slet alle ruter..."
 #
 #
+#
 # 
 # 
 # 
@@ -2651,6 +2654,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 #
 # 
@@ -2664,12 +2668,14 @@ msgstr ""
 #~ msgstr "(Aktivt spor)"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Kaldesignal:"
+#
 #
 #
 # 
@@ -2687,6 +2693,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -2696,6 +2703,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Klasse:    A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -2713,10 +2721,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Hastighed, knob"
+#
 #
 #
 # 
@@ -2727,10 +2737,12 @@ msgstr ""
 #~ msgstr "FREMME KL:         Ukendt"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 # 
@@ -2739,10 +2751,12 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB) visning"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
+#
 #
 #
 # 
@@ -2751,10 +2765,12 @@ msgstr ""
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 # 
@@ -2763,16 +2779,19 @@ msgstr ""
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Tryk, mBar"
+#
 #
 #
 # 
@@ -2786,16 +2805,19 @@ msgstr ""
 #~ msgstr "Rute manager..."
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Havoverflade temperatur, C"
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
+#
 #
 #
 # 
@@ -2809,6 +2831,7 @@ msgstr ""
 #~ msgstr "Send til GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -2818,6 +2841,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Vis GPX-data ikoner"
+#
 #
 #
 # 
@@ -2831,10 +2855,12 @@ msgstr ""
 #~ msgstr "Vis meteorologi(GRIB)dialog"
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant bølgehøjde, m"
+#
 #
 #
 # 
@@ -2843,10 +2869,12 @@ msgstr ""
 #~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Vindretning"
+#
 #
 #
 # 

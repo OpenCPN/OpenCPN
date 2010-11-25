@@ -2612,10 +2612,12 @@ msgstr ""
 "Opencpn encontrou a versão %d.%d, mas é necessário pelo menos a versão 3.1"
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 # 
@@ -2628,6 +2630,7 @@ msgstr ""
 #~ msgstr "Excluir to&das as Derrotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -2636,6 +2639,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 #
 # 
@@ -2648,6 +2652,7 @@ msgstr ""
 #~ msgstr "(Acompanhamento Ativo)"
 #
 #
+#
 # 
 # 
 # 
@@ -2658,12 +2663,14 @@ msgstr ""
 #~ msgstr "Marca de Fundeio Automática"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Indicativo de Chamada:"
+#
 #
 #
 # 
@@ -2680,6 +2687,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -2689,6 +2697,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -2705,10 +2714,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 #
 # 
@@ -2721,10 +2732,12 @@ msgstr ""
 #~ msgstr "Excluir TODAS as Derrotas"
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "TEC"
+#
 #
 #
 # 
@@ -2733,6 +2746,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                 Desconhecido"
+#
 #
 #
 # 
@@ -2745,6 +2759,7 @@ msgstr ""
 #~ msgstr "Exportar..."
 #
 #
+#
 # 
 # 
 # 
@@ -2755,10 +2770,12 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Dados GRIB"
+#
 #
 #
 # 
@@ -2767,10 +2784,12 @@ msgstr ""
 #~ msgstr "Controle da Apresentação GRIB"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Diretório de Arquivos GRIB"
+#
 #
 #
 # 
@@ -2779,10 +2798,12 @@ msgstr ""
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver CRAIN GRIB suprimido"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 #
 # 
@@ -2792,16 +2813,19 @@ msgstr ""
 #~ "Por favor Afaste ou Diminua a Escala para ver OCEAN CURRENT GRIB suprimido"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pressão, hPa"
+#
 #
 #
 # 
@@ -2814,16 +2838,19 @@ msgstr ""
 #~ msgstr "Gerenciador de Derrotas..."
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Temperatura da Superfície do Mar, C"
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 #
 # 
@@ -2836,6 +2863,7 @@ msgstr ""
 #~ msgstr "Enviar Derrota para o GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -2844,6 +2872,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícone GPX"
+#
 #
 #
 # 
@@ -2856,10 +2885,12 @@ msgstr ""
 #~ msgstr "Mostrar Janela GRIB"
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura Significativa das Ondas, m"
+#
 #
 #
 # 
@@ -2868,10 +2899,12 @@ msgstr ""
 #~ msgstr "AVISO: Dados GRIB são de %d horas atrás."
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 #
 # 

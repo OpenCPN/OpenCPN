@@ -3019,12 +3019,14 @@ msgid ""
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 # 
@@ -3040,6 +3042,7 @@ msgstr ""
 #~ msgstr "Apagar todas as Rotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -3053,6 +3056,7 @@ msgstr ""
 #~ msgstr "Apagar todas as Rotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -3064,6 +3068,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "(Active Track)"
 #~ msgstr "Apagar Rastro"
+#
 #
 #
 # 
@@ -3092,6 +3097,7 @@ msgstr ""
 #~ msgstr "Marca de Ancoragem Automática"
 #
 #
+#
 # 
 # 
 # 
@@ -3099,6 +3105,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Indicativo Estação VHF:  "
+#
 #
 #
 # 
@@ -3111,6 +3118,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3127,6 +3135,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3149,6 +3158,7 @@ msgstr ""
 #~ msgstr "Apagar todas as Rotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -3165,6 +3175,7 @@ msgstr ""
 #~ msgstr "ETE"
 #
 #
+#
 # 
 # 
 # 
@@ -3172,6 +3183,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  Desconhecida"
+#
 #
 #
 # 
@@ -3194,6 +3206,7 @@ msgstr ""
 #~ msgstr "Exportar...."
 #
 #
+#
 # 
 # 
 # 
@@ -3206,11 +3219,13 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Dados GRIB"
+#
 #
 #
 # 
@@ -3220,11 +3235,13 @@ msgstr ""
 #~ msgstr "Controlo Visualização GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 # 
@@ -3234,11 +3251,13 @@ msgstr ""
 #~ msgstr "Ajuste Zoom ou Escala para ver CRAIN GRIB escondido"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 # 
@@ -3249,12 +3268,14 @@ msgstr ""
 #~ msgstr "Ajuste Zoom ou Escala para ver CRAIN GRIB escondido"
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 # 
@@ -3264,12 +3285,14 @@ msgstr ""
 #~ msgstr "Pressão, mBar"
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 # 
@@ -3285,6 +3308,7 @@ msgstr ""
 #~ msgstr "Enviar para GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -3295,6 +3319,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícones GPX"
+#
 #
 #
 # 
@@ -3309,11 +3334,13 @@ msgstr ""
 #~ msgstr "Mostrar Janela GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura de Vaga Significativa, m"
+#
 #
 #
 # 
@@ -3323,11 +3350,13 @@ msgstr ""
 #~ msgstr "ATENÇÃO:  Os dados GRIB QuickScat já têm %d horas atraso."
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 #
 # 

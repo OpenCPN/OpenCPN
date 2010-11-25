@@ -2596,10 +2596,12 @@ msgstr ""
 "Opencpn leidis versiooni %d.%d, kuid nõutud vähemalt versioon 3.1"
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulge"
+#
 #
 #
 # 
@@ -2609,11 +2611,13 @@ msgstr ""
 #~ msgstr "&Kustuta kõik teekonnad..."
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Kustuta kõik jäljed..."
+#
 #
 #
 # 
@@ -2623,11 +2627,13 @@ msgstr ""
 #~ msgstr "(Aktiivne jälg)"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Kutsung:"
+#
 #
 #
 # 
@@ -2641,6 +2647,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -2650,6 +2657,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Liik:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -2663,16 +2671,19 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Praegune kiirus, sõlme"
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 # 
@@ -2682,11 +2693,13 @@ msgstr ""
 #~ msgstr "ETA:                  Teadmata"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 # 
@@ -2695,10 +2708,12 @@ msgstr ""
 #~ msgstr "GRIB-i andmed"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-i ekraani kontroll"
+#
 #
 #
 # 
@@ -2707,10 +2722,12 @@ msgstr ""
 #~ msgstr "GRIB faili asukoht"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
+#
 #
 #
 # 
@@ -2719,10 +2736,12 @@ msgstr ""
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud HTSGW ILMA"
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
+#
 #
 #
 # 
@@ -2731,10 +2750,12 @@ msgstr ""
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Õhurõhk, mBar"
+#
 #
 #
 # 
@@ -2744,16 +2765,19 @@ msgstr ""
 #~ msgstr "Teekonna haldur"
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Veepinna temperatuur, C"
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Vali GRIB-i asukoht"
+#
 #
 #
 # 
@@ -2763,11 +2787,13 @@ msgstr ""
 #~ msgstr "Saada teekond GPS-i"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Näita GPX ikooni"
+#
 #
 #
 # 
@@ -2777,10 +2803,12 @@ msgstr ""
 #~ msgstr "Näita GRIB akent"
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Oluline laine kõrgus, m"
+#
 #
 #
 # 
@@ -2789,10 +2817,12 @@ msgstr ""
 #~ msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Tuule suund"
+#
 #
 #
 # 

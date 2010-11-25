@@ -3020,11 +3020,13 @@ msgstr ""
 "Opencpn encontró versión %d.%d, pero requiere al menos la versión 3.1"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 # 
@@ -3039,6 +3041,7 @@ msgstr ""
 #~ msgstr "&Borrar Todas Las Rutas..."
 #
 #
+#
 # 
 # 
 # 
@@ -3049,6 +3052,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 # 
@@ -3063,6 +3067,7 @@ msgstr ""
 #~ msgstr "(Derrota Activa)"
 #
 #
+#
 # 
 # 
 # 
@@ -3070,6 +3075,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
 #
 #
 # 
@@ -3088,6 +3094,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3098,6 +3105,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3116,11 +3124,13 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidad Actual, Nds."
+#
 #
 #
 # 
@@ -3130,6 +3140,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "Tiempo estimado llegada:                  Desconocido"
+#
 #
 #
 # 
@@ -3144,11 +3155,13 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Datos GRIB"
+#
 #
 #
 # 
@@ -3158,11 +3171,13 @@ msgstr ""
 #~ msgstr "Control Visualización GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Carpeta Ficheros GRIB"
+#
 #
 #
 # 
@@ -3172,11 +3187,13 @@ msgstr ""
 #~ msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver HTSGW GRIB eliminado"
+#
 #
 #
 # 
@@ -3186,6 +3203,7 @@ msgstr ""
 #~ msgstr "Ajuste Zoom o Escala para ver OCEAN CURRENT GRIB eliminado"
 #
 #
+#
 # 
 # 
 # 
@@ -3193,11 +3211,13 @@ msgstr ""
 #~ msgstr "Ajuste Zoom o Escala para ver SEATEMP GRIB eliminado"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Presión, mBar"
+#
 #
 #
 # 
@@ -3212,6 +3232,7 @@ msgstr ""
 #~ msgstr "Gestor Rutas..."
 #
 #
+#
 # 
 # 
 # 
@@ -3219,11 +3240,13 @@ msgstr ""
 #~ msgstr "Temperatura Superficie Mar, C"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Seleccionar Carpeta GRIB"
+#
 #
 #
 # 
@@ -3238,6 +3261,7 @@ msgstr ""
 #~ msgstr "Enviar Ruta a GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -3248,6 +3272,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar iconos GPX"
+#
 #
 #
 # 
@@ -3262,11 +3287,13 @@ msgstr ""
 #~ msgstr "Mostrar diálogo GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura de Ola Significativa, m"
+#
 #
 #
 # 
@@ -3276,11 +3303,13 @@ msgstr ""
 #~ msgstr "ATENCION:  Los datos QuickScat GRIB tienen ya %d horas."
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Dirección Viento"
+#
 #
 #
 # 

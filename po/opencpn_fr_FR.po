@@ -3021,11 +3021,13 @@ msgstr ""
 "Opencpn a trouvé la version %d.%d, mais requiert au moins la version 3.1"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "F&ermer"
+#
 #
 #
 # 
@@ -3040,6 +3042,7 @@ msgstr ""
 #~ msgstr "&Effacer toutes les routes ..."
 #
 #
+#
 # 
 # 
 # 
@@ -3050,6 +3053,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Effacer toutes les traces ..."
+#
 #
 #
 # 
@@ -3064,6 +3068,7 @@ msgstr ""
 #~ msgstr "(Trace active)"
 #
 #
+#
 # 
 # 
 # 
@@ -3071,6 +3076,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Indicatif d'appel : "
+#
 #
 #
 # 
@@ -3089,6 +3095,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3099,6 +3106,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe :   A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3117,6 +3125,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3124,10 +3133,12 @@ msgstr ""
 #~ msgstr "Vitesse du courant, noeuds."
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 # 
@@ -3137,6 +3148,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "Heure d'arrivée :  Inconnue"
+#
 #
 #
 # 
@@ -3151,11 +3163,13 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Données GRIB"
+#
 #
 #
 # 
@@ -3165,11 +3179,13 @@ msgstr ""
 #~ msgstr "Ecran de contrôle des fichiers Grib"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB dossier-cible"
+#
 #
 #
 # 
@@ -3181,6 +3197,7 @@ msgstr ""
 #~ "supprimés"
 #
 #
+#
 # 
 # 
 # 
@@ -3188,6 +3205,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB HTSGW "
 #~ "supprimés"
+#
 #
 #
 # 
@@ -3199,6 +3217,7 @@ msgstr ""
 #~ "de courants supprimés"
 #
 #
+#
 # 
 # 
 # 
@@ -3208,11 +3227,13 @@ msgstr ""
 #~ "supprimés"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pression, hPa"
+#
 #
 #
 # 
@@ -3227,6 +3248,7 @@ msgstr ""
 #~ msgstr "Gestionnaire de routes et de traces ..."
 #
 #
+#
 # 
 # 
 # 
@@ -3234,11 +3256,13 @@ msgstr ""
 #~ msgstr "Temp.de surface de la mer, °C"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Sélectionner le dossier des fichiers GRIB"
+#
 #
 #
 # 
@@ -3253,6 +3277,7 @@ msgstr ""
 #~ msgstr "Envoyer la route au GPS"
 #
 #
+#
 # 
 # 
 # 
@@ -3263,6 +3288,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Afficher les icônes GPX"
+#
 #
 #
 # 
@@ -3277,11 +3303,13 @@ msgstr ""
 #~ msgstr "Afficher la fenêtre GRIB"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Haut. signif. vagues, m"
+#
 #
 #
 # 
@@ -3291,11 +3319,13 @@ msgstr ""
 #~ msgstr "Attention : les fichiers GRIB de vent Quickscat ont  %d   heures."
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direction du vent"
+#
 #
 #
 # 

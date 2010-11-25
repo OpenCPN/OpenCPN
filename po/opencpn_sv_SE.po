@@ -1640,28 +1640,35 @@ msgstr ""
 "Vill du starta med aktuell version ändå?"
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "Avsluta"
+#
 #
 #
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Ra&dera alla Rutter"
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
+#
 #
 #
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt Spår)"
 #
 #
+#
 #~ msgid "Automatic Anchor Mark"
 #~ msgstr "Automatisk ankarmarkering"
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Anropssignal:  "
+#
 #
 #
 #~ msgid ""
@@ -1672,8 +1679,10 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid "Class:     "
 #~ msgstr "Klass:     "
+#
 #
 #
 #~ msgid ""
@@ -1684,108 +1693,135 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Strömhastighet, Knop."
+#
 #
 #
 #~ msgid "Delete All Routes..."
 #~ msgstr "Radera alla Rutter"
 #
 #
+#
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Okänd"
 #
 #
+#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
+#
 #
 #
 #~ msgid "Failed to create ocpCursor."
 #~ msgstr "Misslyckades att skapa ocpCursor"
 #
 #
+#
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 #~ msgid "GRIB Data"
 #~ msgstr "Väderdata"
 #
 #
+#
 #~ msgid "GRIB Display Control"
 #~ msgstr "Inställning för väder"
+#
 #
 #
 #~ msgid "GRIB File Directory"
 #~ msgstr "Mapp för väderfiler"
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa regndata"
+#
 #
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa signifikant våghöjd"
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB strömmar"
+#
 #
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB vattentemperatur"
 #
 #
+#
 #~ msgid "PlugIn Name"
 #~ msgstr "PlugIn Namn"
+#
 #
 #
 #~ msgid "Pressure, mBar"
 #~ msgstr "Barometertryck, mBar"
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Rutthantering..."
+#
 #
 #
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Vattentemperatur, C"
 #
 #
+#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Välj mapp för väderfiler"
+#
 #
 #
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Skicka Rutt till GPS"
 #
 #
+#
 #~ msgid "Show GPX icons"
 #~ msgstr "Aktivera GPX menyer"
+#
 #
 #
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant våghöjd, m"
+#
 #
 #
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
 #
 #
+#
 #~ msgid "Wind Direction"
 #~ msgstr "Vindriktning"
 #
 #
+#
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Vindhastighet, knop"
+#
 #
 #
 #~ msgid "Övrigt"

@@ -2592,10 +2592,12 @@ msgstr ""
 "Möchten Sie diese Version von libgps trotzdem verwenden?"
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 #
 # 
@@ -2604,6 +2606,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Rufzeichen:  "
+#
 #
 #
 # 
@@ -2617,10 +2620,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
 #
 #
 # 
@@ -2629,10 +2634,12 @@ msgstr ""
 #~ msgstr "ETA"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB-Daten"
+#
 #
 #
 # 
@@ -2641,10 +2648,12 @@ msgstr ""
 #~ msgstr "GRIB-Anzeige Einstellungen"
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
+#
 #
 #
 # 
@@ -2655,12 +2664,14 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 # 
@@ -2671,6 +2682,7 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
@@ -2679,10 +2691,12 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Plugin Name"
+#
 #
 #
 # 
@@ -2691,10 +2705,12 @@ msgstr ""
 #~ msgstr "Luftdruck, mBar"
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Wassertemp. (Oberfl.), °C"
+#
 #
 #
 # 
@@ -2703,10 +2719,12 @@ msgstr ""
 #~ msgstr "GRIB-Verzeichnis auswählen"
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifik. Wellenhöhe, m"
+#
 #
 #
 # 
@@ -2715,10 +2733,12 @@ msgstr ""
 #~ msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 #
 # 
