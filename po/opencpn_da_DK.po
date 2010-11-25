@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"POT-Creation-Date: 2010-11-24 23:11-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -270,11 +270,6 @@ msgstr "&Aktiver rute"
 # 
 msgid "&Cancel"
 msgstr "&Annuller"
-#
-# 
-# 
-msgid "&Close"
-msgstr "&Luk"
 #
 # 
 # 
@@ -596,6 +591,9 @@ msgstr "Er du sikker på at <ALLE> ruter skal slettes"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Er du sikker på at <ALLE> waypoints skal slettes"
 #
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
 # 
 # 
 msgid "AtoN"
@@ -709,6 +707,9 @@ msgid "CM93 Offset Tool....."
 msgstr ""
 #
 msgid "CM93 Offsets"
+msgstr ""
+#
+msgid "CM93 Offsets On"
 msgstr ""
 #
 # 
@@ -928,11 +929,6 @@ msgstr "Strømforhold"
 #
 # 
 # 
-msgid "Current Velocity, Kts."
-msgstr "Hastighed, knob"
-#
-# 
-# 
 msgid "Cursor: "
 msgstr "Markør: "
 #
@@ -1070,11 +1066,6 @@ msgstr ""
 #
 # 
 # 
-msgid "ETA"
-msgstr ""
-#
-# 
-# 
 msgid "ETA          "
 msgstr "FREMME KL."
 #
@@ -1180,6 +1171,12 @@ msgstr "Favne"
 msgid "Feet"
 msgstr "Fod"
 #
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 msgid "Font Options"
@@ -1215,21 +1212,6 @@ msgstr "GPSD vært"
 # 
 msgid "GRIB"
 msgstr "Meteorologi(GRIB)"
-#
-# 
-# 
-msgid "GRIB Data"
-msgstr "Meteorologi(GRIB)"
-#
-# 
-# 
-msgid "GRIB Display Control"
-msgstr "Meteorologi(GRIB) visning"
-#
-# 
-# 
-msgid "GRIB File Directory"
-msgstr "Meteorologi(GRIB) folder"
 #
 # 
 # 
@@ -1294,6 +1276,9 @@ msgstr ""
 msgid "Insert Waypoint"
 msgstr "Tilføj waypoint"
 #
+msgid "Jump To"
+msgstr ""
+#
 msgid "Jump To Position"
 msgstr ""
 #
@@ -1347,6 +1332,9 @@ msgstr "Ben"
 # 
 msgid "License"
 msgstr "Licens"
+#
+msgid "Limit range: NM"
+msgstr ""
 #
 # 
 # 
@@ -1679,26 +1667,6 @@ msgstr " Ring med skibsklokker"
 #
 # 
 # 
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
-#
-# 
-# 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Genstart OpenCPN for at aktivere nyt sprog."
 #
@@ -1780,11 +1748,6 @@ msgstr "Klargør GPS til Rute/waypoint upload og tryk 'Send'..."
 # 
 msgid "Preserve scale when switching charts"
 msgstr "Fasthold kortmålestok ved skift til andet kort"
-#
-# 
-# 
-msgid "Pressure, mBar"
-msgstr "Tryk, mBar"
 #
 # 
 # 
@@ -2001,11 +1964,6 @@ msgstr "Skaler op"
 #
 # 
 # 
-msgid "Sea Surface Temp, C"
-msgstr "Havoverflade temperatur, C"
-#
-# 
-# 
 msgid "Select Alert Sound"
 msgstr "Vælg lydsignal for alarm"
 #
@@ -2018,11 +1976,6 @@ msgstr "Vælg alle"
 # 
 msgid "Select Chart Types for Quilting"
 msgstr "Vælg korttyper for quiltning"
-#
-# 
-# 
-msgid "Select GRIB Directory"
-msgstr "Meteorologi(GRIB) folder"
 #
 # 
 # 
@@ -2199,11 +2152,6 @@ msgstr "Viser skrifttype."
 #
 # 
 # 
-msgid "Significant Wave Height, m"
-msgstr "Signifikant bølgehøjde, m"
-#
-# 
-# 
 msgid "Simplified"
 msgstr "Simplificeret"
 #
@@ -2331,9 +2279,18 @@ msgstr "Tid til korteste afstand (TCPA):     \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "Tid til korteste afstand (TCPA):     %02d:%02d Tim:Min\n"
 #
+msgid "Target info"
+msgstr ""
+#
 # 
 # 
 msgid "Temporary GOTO Route"
+msgstr "Midlertidig GOTO rute"
+#
+# 
+# 
+#, fuzzy
+msgid "Temporary MOB Route"
 msgstr "Midlertidig GOTO rute"
 #
 # 
@@ -2562,12 +2519,6 @@ msgstr "Vektor kort"
 #
 # 
 # 
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
-#
-# 
-# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Lydfiler (*.wav)|*.wav|Alle filer (*.*)|*.*"
 #
@@ -2625,16 +2576,6 @@ msgstr "Understreget"
 msgid "WiFi Options"
 msgstr "Valgmuligheder for trådløs forbindelse"
 #
-# 
-# 
-msgid "Wind Direction"
-msgstr "Vindretning"
-#
-# 
-# 
-msgid "Wind Speed, Kts."
-msgstr "Vindhastighed, knob"
-#
 msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
 msgstr ""
 #
@@ -2683,6 +2624,13 @@ msgstr ""
 "'libgps' API Version uoverensstemmelse.\n"
 "Opencpn fandt version %d.%d, men kræver mindst version 3.1"
 #
+#
+# 
+# 
+#~ msgid "&Close"
+#~ msgstr "&Luk"
+#
+#
 # 
 # 
 # 
@@ -2692,6 +2640,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Slet alle ruter..."
+#
 #
 # 
 # 
@@ -2703,6 +2652,7 @@ msgstr ""
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
 #
+#
 # 
 # 
 # 
@@ -2713,12 +2663,14 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt spor)"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Kaldesignal:"
+#
 #
 # 
 # 
@@ -2734,6 +2686,7 @@ msgstr ""
 #~ "Ukendt klasse\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -2743,6 +2696,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Klasse:    A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -2758,12 +2712,68 @@ msgstr ""
 #~ "Klasse:    B\n"
 #~ "\n"
 #
+#
+# 
+# 
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Hastighed, knob"
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "FREMME KL:         Ukendt"
+#
+#
+# 
+# 
+#~ msgid "GRIB Data"
+#~ msgstr "Meteorologi(GRIB)"
+#
+#
+# 
+# 
+#~ msgid "GRIB Display Control"
+#~ msgstr "Meteorologi(GRIB) visning"
+#
+#
+# 
+# 
+#~ msgid "GRIB File Directory"
+#~ msgstr "Meteorologi(GRIB) folder"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
+#
+# 
+# 
+#~ msgid "Pressure, mBar"
+#~ msgstr "Tryk, mBar"
+#
 #
 # 
 # 
@@ -2775,6 +2785,19 @@ msgstr ""
 #~ msgid "Route Manager..."
 #~ msgstr "Rute manager..."
 #
+#
+# 
+# 
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Havoverflade temperatur, C"
+#
+#
+# 
+# 
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Meteorologi(GRIB) folder"
+#
+#
 # 
 # 
 # 
@@ -2784,6 +2807,7 @@ msgstr ""
 # 
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Send til GPS..."
+#
 #
 # 
 # 
@@ -2795,6 +2819,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Vis GPX-data ikoner"
 #
+#
 # 
 # 
 # 
@@ -2804,3 +2829,27 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Vis meteorologi(GRIB)dialog"
+#
+#
+# 
+# 
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Signifikant bølgehøjde, m"
+#
+#
+# 
+# 
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
+#
+#
+# 
+# 
+#~ msgid "Wind Direction"
+#~ msgstr "Vindretning"
+#
+#
+# 
+# 
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Vindhastighed, knob"

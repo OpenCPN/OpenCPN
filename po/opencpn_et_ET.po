@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"POT-Creation-Date: 2010-11-24 23:11-0500\n"
 "PO-Revision-Date: 2010-09-06 23:34-0500\n"
 "Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -273,11 +273,6 @@ msgstr "&Aktiveeri"
 # 
 msgid "&Cancel"
 msgstr "&Tühista"
-#
-# 
-# 
-msgid "&Close"
-msgstr "&Sulge"
 #
 # 
 # 
@@ -594,6 +589,9 @@ msgstr "Kas oled kindel, et tahad kustutada <KÕIK> jäljed?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Oled kindel, et tahad kustutada <KÕIK> vahepunktid?"
 #
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
 # 
 # 
 msgid "AtoN"
@@ -705,6 +703,9 @@ msgid "CM93 Offset Tool....."
 msgstr ""
 #
 msgid "CM93 Offsets"
+msgstr ""
+#
+msgid "CM93 Offsets On"
 msgstr ""
 #
 # 
@@ -918,11 +919,6 @@ msgstr "Hoovus"
 #
 # 
 # 
-msgid "Current Velocity, Kts."
-msgstr "Praegune kiirus, sõlme"
-#
-# 
-# 
 msgid "Cursor: "
 msgstr "Kursor:"
 #
@@ -1059,11 +1055,6 @@ msgstr "ENC/Vektor"
 #
 # 
 # 
-msgid "ETA"
-msgstr "ETA"
-#
-# 
-# 
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1169,6 +1160,12 @@ msgstr "Süld"
 msgid "Feet"
 msgstr "Jalg"
 #
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 msgid "Font Options"
@@ -1204,21 +1201,6 @@ msgstr "GPSD andmete server"
 # 
 msgid "GRIB"
 msgstr "GRIB"
-#
-# 
-# 
-msgid "GRIB Data"
-msgstr "GRIB-i andmed"
-#
-# 
-# 
-msgid "GRIB Display Control"
-msgstr "GRIB-i ekraani kontroll"
-#
-# 
-# 
-msgid "GRIB File Directory"
-msgstr "GRIB faili asukoht"
 #
 # 
 # 
@@ -1285,6 +1267,12 @@ msgstr "Sisesta vahepunkt"
 # 
 # 
 #, fuzzy
+msgid "Jump To"
+msgstr "Asukoht"
+#
+# 
+# 
+#, fuzzy
 msgid "Jump To Position"
 msgstr "Asukoht"
 #
@@ -1338,6 +1326,9 @@ msgstr "Reis"
 # 
 msgid "License"
 msgstr "Litsents"
+#
+msgid "Limit range: NM"
+msgstr ""
 #
 # 
 # 
@@ -1663,26 +1654,6 @@ msgstr "Mängi laevakellasid"
 #
 # 
 # 
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Palun vähenda mõõtkava nägemaks peidetud HTSGW ILMA"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
-#
-# 
-# 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Palun taaskäivita OpenCPN, et aktiveeruks keelefail"
 #
@@ -1764,11 +1735,6 @@ msgstr "Valmista GPS teekonnaks/Kohapunkt laetakse ja vajuta Saada..."
 # 
 msgid "Preserve scale when switching charts"
 msgstr "Säilita skaala kui vahetab kaarte"
-#
-# 
-# 
-msgid "Pressure, mBar"
-msgstr "Õhurõhk, mBar"
 #
 # 
 # 
@@ -1977,11 +1943,6 @@ msgstr "Vähenda"
 #
 # 
 # 
-msgid "Sea Surface Temp, C"
-msgstr "Veepinna temperatuur, C"
-#
-# 
-# 
 msgid "Select Alert Sound"
 msgstr "Vali alarmi heli"
 #
@@ -1994,11 +1955,6 @@ msgstr "Vali kõik"
 # 
 msgid "Select Chart Types for Quilting"
 msgstr "Märgi kaardi tübid kihistamiseks"
-#
-# 
-# 
-msgid "Select GRIB Directory"
-msgstr "Vali GRIB-i asukoht"
 #
 # 
 # 
@@ -2170,11 +2126,6 @@ msgstr "Näita fondi eelvaadet."
 #
 # 
 # 
-msgid "Significant Wave Height, m"
-msgstr "Oluline laine kõrgus, m"
-#
-# 
-# 
 msgid "Simplified"
 msgstr "Lihtsustatud"
 #
@@ -2302,9 +2253,18 @@ msgstr "TCPA:  \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
+msgid "Target info"
+msgstr ""
+#
 # 
 # 
 msgid "Temporary GOTO Route"
+msgstr "Ajutiselt MINE teekonnale"
+#
+# 
+# 
+#, fuzzy
+msgid "Temporary MOB Route"
 msgstr "Ajutiselt MINE teekonnale"
 #
 # 
@@ -2530,12 +2490,6 @@ msgstr "Vektor kaardid"
 #
 # 
 # 
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
-#
-# 
-# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV failid (*.wav)|*.wav|Kõik failid (*.*)|*.*"
 #
@@ -2593,16 +2547,6 @@ msgstr "Kui font on allajoonitud"
 msgid "WiFi Options"
 msgstr "WIFI seaded"
 #
-# 
-# 
-msgid "Wind Direction"
-msgstr "Tuule suund"
-#
-# 
-# 
-msgid "Wind Speed, Kts."
-msgstr "Tuule kiirus, sõlmedes"
-#
 msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
 msgstr ""
 #
@@ -2651,11 +2595,19 @@ msgstr ""
 "libgps API Version sobimatu.\n"
 "Opencpn leidis versiooni %d.%d, kuid nõutud vähemalt versioon 3.1"
 #
+#
+# 
+# 
+#~ msgid "&Close"
+#~ msgstr "&Sulge"
+#
+#
 # 
 # 
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Kustuta kõik teekonnad..."
+#
 #
 # 
 # 
@@ -2663,17 +2615,20 @@ msgstr ""
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Kustuta kõik jäljed..."
 #
+#
 # 
 # 
 # 
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktiivne jälg)"
 #
+#
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Kutsung:"
+#
 #
 # 
 # 
@@ -2685,6 +2640,7 @@ msgstr ""
 #~ "Liik tundmatu\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -2694,6 +2650,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Liik:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -2705,11 +2662,25 @@ msgstr ""
 #~ "Liik:     B\n"
 #~ "\n"
 #
+#
+# 
+# 
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Praegune kiirus, sõlme"
+#
+#
+# 
+# 
+#~ msgid "ETA"
+#~ msgstr "ETA"
+#
+#
 # 
 # 
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Teadmata"
+#
 #
 # 
 # 
@@ -2717,11 +2688,73 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
+# 
+# 
+#~ msgid "GRIB Data"
+#~ msgstr "GRIB-i andmed"
+#
+#
+# 
+# 
+#~ msgid "GRIB Display Control"
+#~ msgstr "GRIB-i ekraani kontroll"
+#
+#
+# 
+# 
+#~ msgid "GRIB File Directory"
+#~ msgstr "GRIB faili asukoht"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr "Palun vähenda mõõtkava nägemaks peidetud HTSGW ILMA"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
+#
+#
+# 
+# 
+#~ msgid "Pressure, mBar"
+#~ msgstr "Õhurõhk, mBar"
+#
+#
 # 
 # 
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "Teekonna haldur"
+#
+#
+# 
+# 
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Veepinna temperatuur, C"
+#
+#
+# 
+# 
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Vali GRIB-i asukoht"
+#
 #
 # 
 # 
@@ -2729,14 +2762,40 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Saada teekond GPS-i"
 #
+#
 # 
 # 
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Näita GPX ikooni"
 #
+#
 # 
 # 
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näita GRIB akent"
+#
+#
+# 
+# 
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Oluline laine kõrgus, m"
+#
+#
+# 
+# 
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
+#
+#
+# 
+# 
+#~ msgid "Wind Direction"
+#~ msgstr "Tuule suund"
+#
+#
+# 
+# 
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Tuule kiirus, sõlmedes"

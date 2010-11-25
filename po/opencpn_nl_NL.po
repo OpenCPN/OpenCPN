@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"POT-Creation-Date: 2010-11-24 23:11-0500\n"
 "PO-Revision-Date: 2010-09-30 19:34+0100\n"
 "Last-Translator: FJB <fj.bonig@kpnplanet.nl>\n"
 "Language-Team:  <bart@gmail.com>\n"
@@ -279,11 +279,6 @@ msgstr "&Activeren"
 # 
 msgid "&Cancel"
 msgstr "&Annuleren"
-#
-# 
-# 
-msgid "&Close"
-msgstr "&Sluiten"
 #
 # 
 # 
@@ -603,6 +598,9 @@ msgstr "Weet u zeker dat u <ALLE> tracks wilt verwijderen?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Weet u zeker dat u <ALLE> routepunten wilt verwijderen?"
 #
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
 # 
 # 
 msgid "AtoN"
@@ -714,6 +712,9 @@ msgid "CM93 Offset Tool....."
 msgstr ""
 #
 msgid "CM93 Offsets"
+msgstr ""
+#
+msgid "CM93 Offsets On"
 msgstr ""
 #
 # 
@@ -927,11 +928,6 @@ msgstr "Stroom"
 #
 # 
 # 
-msgid "Current Velocity, Kts."
-msgstr "Stroomsnelheid (knopen)"
-#
-# 
-# 
 msgid "Cursor: "
 msgstr "Cursor: "
 #
@@ -1068,11 +1064,6 @@ msgstr "ENC/Vector"
 #
 # 
 # 
-msgid "ETA"
-msgstr "ETA"
-#
-# 
-# 
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1178,6 +1169,12 @@ msgstr "vadems"
 msgid "Feet"
 msgstr "voeten"
 #
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 msgid "Font Options"
@@ -1213,21 +1210,6 @@ msgstr "GPSD data server"
 # 
 msgid "GRIB"
 msgstr "GRIB"
-#
-# 
-# 
-msgid "GRIB Data"
-msgstr "GRIB gegevens"
-#
-# 
-# 
-msgid "GRIB Display Control"
-msgstr "GRIB weergaveoptie"
-#
-# 
-# 
-msgid "GRIB File Directory"
-msgstr "Map voor GRIB bestand"
 #
 # 
 # 
@@ -1294,6 +1276,12 @@ msgstr "Routepunt tussenvoegen"
 # 
 # 
 #, fuzzy
+msgid "Jump To"
+msgstr "Positie"
+#
+# 
+# 
+#, fuzzy
 msgid "Jump To Position"
 msgstr "Positie"
 #
@@ -1347,6 +1335,9 @@ msgstr "Routedeel"
 # 
 msgid "License"
 msgstr "Licentie"
+#
+msgid "Limit range: NM"
+msgstr ""
 #
 # 
 # 
@@ -1674,26 +1665,6 @@ msgstr "Hoorbaar glazen slaan"
 #
 # 
 # 
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte OCEAN CURRENT GRIB te zien."
-#
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-# 
-# 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Start OpenCPN opnieuw om de nieuwe taalkeuze te activeren."
 #
@@ -1777,11 +1748,6 @@ msgstr ""
 # 
 msgid "Preserve scale when switching charts"
 msgstr "Behoud schaal wanneer kaart wordt gewisseld"
-#
-# 
-# 
-msgid "Pressure, mBar"
-msgstr "Luchtdruk (hPa)"
 #
 # 
 # 
@@ -1992,11 +1958,6 @@ msgstr "Verklein schaal"
 #
 # 
 # 
-msgid "Sea Surface Temp, C"
-msgstr "Zeewatertemperatuur (°C)"
-#
-# 
-# 
 msgid "Select Alert Sound"
 msgstr "Selecteer waarschuwinggeluid"
 #
@@ -2009,11 +1970,6 @@ msgstr "Selecteer alles"
 # 
 msgid "Select Chart Types for Quilting"
 msgstr "Selecteer kaarttypen voor samenvoeging"
-#
-# 
-# 
-msgid "Select GRIB Directory"
-msgstr "Map voor GRIB bestand"
 #
 # 
 # 
@@ -2185,11 +2141,6 @@ msgstr "Laat voorbeeld van lettertype zien"
 #
 # 
 # 
-msgid "Significant Wave Height, m"
-msgstr "Significante golfhoogte (m)"
-#
-# 
-# 
 msgid "Simplified"
 msgstr "vereenvoudigd"
 #
@@ -2317,9 +2268,18 @@ msgstr "TCPA:  \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d uur:min\n"
 #
+msgid "Target info"
+msgstr ""
+#
 # 
 # 
 msgid "Temporary GOTO Route"
+msgstr "Tijdelijke GOTO route"
+#
+# 
+# 
+#, fuzzy
+msgid "Temporary MOB Route"
 msgstr "Tijdelijke GOTO route"
 #
 # 
@@ -2545,12 +2505,6 @@ msgstr "Vectorkaarten"
 #
 # 
 # 
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "WAARSCHUWING: QuickScat GRIB gegevens zijn %d uur oud"
-#
-# 
-# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV bestanden (*.wav)|*.wav|Alle bestanden (*.*)|*.*"
 #
@@ -2609,16 +2563,6 @@ msgstr "Of het lettertype onderstreept is"
 msgid "WiFi Options"
 msgstr "WiFi opties"
 #
-# 
-# 
-msgid "Wind Direction"
-msgstr "Windrichting"
-#
-# 
-# 
-msgid "Wind Speed, Kts."
-msgstr "Windsnelheid (knopen)"
-#
 msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
 msgstr ""
 #
@@ -2667,12 +2611,20 @@ msgstr ""
 "libgps API versie verschil\n"
 "OpenCPN heeft versie %d.%d gevonden, maar vereist tenminste versie 3.1"
 #
+#
+# 
+# 
+#~ msgid "&Close"
+#~ msgstr "&Sluiten"
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Wis alle routes ..."
+#
 #
 # 
 # 
@@ -2681,6 +2633,7 @@ msgstr ""
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Wis alle tracks ..."
 #
+#
 # 
 # 
 # 
@@ -2688,12 +2641,14 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Actieve track)"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Roepnaam: "
+#
 #
 # 
 # 
@@ -2706,6 +2661,7 @@ msgstr ""
 #~ "Klasse onbekend\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -2716,6 +2672,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Klasse:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -2728,12 +2685,26 @@ msgstr ""
 #~ "Klasse:     B\n"
 #~ "\n"
 #
+#
+# 
+# 
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Stroomsnelheid (knopen)"
+#
+#
+# 
+# 
+#~ msgid "ETA"
+#~ msgstr "ETA"
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA: onbekend"
+#
 #
 # 
 # 
@@ -2742,12 +2713,75 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
+# 
+# 
+#~ msgid "GRIB Data"
+#~ msgstr "GRIB gegevens"
+#
+#
+# 
+# 
+#~ msgid "GRIB Display Control"
+#~ msgstr "GRIB weergaveoptie"
+#
+#
+# 
+# 
+#~ msgid "GRIB File Directory"
+#~ msgstr "Map voor GRIB bestand"
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr ""
+#~ "Zoom uit of verklein schaal om onderdrukte OCEAN CURRENT GRIB te zien."
+#
+#
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
+#
+# 
+# 
+#~ msgid "Pressure, mBar"
+#~ msgstr "Luchtdruk (hPa)"
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "Routepunt-, track en routemanager ..."
+#
+#
+# 
+# 
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Zeewatertemperatuur (°C)"
+#
+#
+# 
+# 
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Map voor GRIB bestand"
+#
 #
 # 
 # 
@@ -2756,6 +2790,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Zend route naar GPS ..."
 #
+#
 # 
 # 
 # 
@@ -2763,9 +2798,34 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Toon GPX-iconen"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Toon GRIB dialoog"
+#
+#
+# 
+# 
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Significante golfhoogte (m)"
+#
+#
+# 
+# 
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "WAARSCHUWING: QuickScat GRIB gegevens zijn %d uur oud"
+#
+#
+# 
+# 
+#~ msgid "Wind Direction"
+#~ msgstr "Windrichting"
+#
+#
+# 
+# 
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Windsnelheid (knopen)"

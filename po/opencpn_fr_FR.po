@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"POT-Creation-Date: 2010-11-24 23:11-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -317,12 +317,6 @@ msgstr "&Activer la route"
 # 
 msgid "&Cancel"
 msgstr "&Annuler"
-#
-# 
-# 
-# 
-msgid "&Close"
-msgstr "F&ermer"
 #
 # 
 # 
@@ -697,6 +691,9 @@ msgstr "Êtes vous certain de vouloir effacer <TOUTES> les traces ?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Êtes vous sûr de vouloir effacer <TOUTES> les marques ?"
 #
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
 # 
 # 
 msgid "AtoN"
@@ -821,6 +818,9 @@ msgid "CM93 Offset Tool....."
 msgstr ""
 #
 msgid "CM93 Offsets"
+msgstr ""
+#
+msgid "CM93 Offsets On"
 msgstr ""
 #
 # 
@@ -1069,12 +1069,6 @@ msgstr "Afficher les courants"
 # 
 # 
 # 
-msgid "Current Velocity, Kts."
-msgstr "Vitesse du courant, noeuds."
-#
-# 
-# 
-# 
 msgid "Cursor: "
 msgstr "Curseur : "
 #
@@ -1236,11 +1230,6 @@ msgstr "ENC/Vectorielle"
 #
 # 
 # 
-msgid "ETA"
-msgstr "ETA"
-#
-# 
-# 
 # 
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
@@ -1358,6 +1347,12 @@ msgstr "Brasses"
 msgid "Feet"
 msgstr "Pieds"
 #
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1400,24 +1395,6 @@ msgstr "Serveur de données GPS différentiel"
 # 
 msgid "GRIB"
 msgstr "GRIB"
-#
-# 
-# 
-# 
-msgid "GRIB Data"
-msgstr "Données GRIB"
-#
-# 
-# 
-# 
-msgid "GRIB Display Control"
-msgstr "Ecran de contrôle des fichiers Grib"
-#
-# 
-# 
-# 
-msgid "GRIB File Directory"
-msgstr "GRIB dossier-cible"
 #
 # 
 # 
@@ -1495,6 +1472,13 @@ msgstr "Insérer un waypoint à la route"
 # 
 # 
 #, fuzzy
+msgid "Jump To"
+msgstr "Position"
+#
+# 
+# 
+# 
+#, fuzzy
 msgid "Jump To Position"
 msgstr "Position"
 #
@@ -1557,6 +1541,9 @@ msgstr "Segment"
 # 
 msgid "License"
 msgstr "Licence"
+#
+msgid "Limit range: NM"
+msgstr ""
 #
 # 
 # 
@@ -1944,36 +1931,6 @@ msgstr "Activer la cloche de bord."
 # 
 # 
 # 
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB CRAIN supprimés"
-#
-# 
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB HTSGW supprimés"
-#
-# 
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB de vitesse de "
-"courants supprimés"
-#
-# 
-# 
-# 
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB SEATEMP "
-"supprimés"
-#
-# 
-# 
-# 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Redémarrer OpenCPN pour mettre à jour la langue"
 #
@@ -2062,12 +2019,6 @@ msgstr ""
 # 
 msgid "Preserve scale when switching charts"
 msgstr "Conserver l'échelle lors d'un changement de cartes"
-#
-# 
-# 
-# 
-msgid "Pressure, mBar"
-msgstr "Pression, hPa"
 #
 # 
 # 
@@ -2315,12 +2266,6 @@ msgstr "Diminuer l'échelle"
 # 
 # 
 # 
-msgid "Sea Surface Temp, C"
-msgstr "Temp.de surface de la mer, °C"
-#
-# 
-# 
-# 
 msgid "Select Alert Sound"
 msgstr "Choisir votre signal d'alarme sonore"
 #
@@ -2335,12 +2280,6 @@ msgstr "Tout sélectionner    "
 # 
 msgid "Select Chart Types for Quilting"
 msgstr "Sélectionner les types de cartes pour l'affichage en mosaïque"
-#
-# 
-# 
-# 
-msgid "Select GRIB Directory"
-msgstr "Sélectionner le dossier des fichiers GRIB"
 #
 # 
 # 
@@ -2545,12 +2484,6 @@ msgstr "Afficher la pré-visualisation de police"
 # 
 # 
 # 
-msgid "Significant Wave Height, m"
-msgstr "Haut. signif. vagues, m"
-#
-# 
-# 
-# 
 msgid "Simplified"
 msgstr "Simplifiés"
 #
@@ -2695,9 +2628,18 @@ msgstr "TCPA:  \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA :                %02d:%02d Hr:Min\n"
 #
+msgid "Target info"
+msgstr ""
+#
 # 
 # 
 msgid "Temporary GOTO Route"
+msgstr "Route temporaire automatique"
+#
+# 
+# 
+#, fuzzy
+msgid "Temporary MOB Route"
 msgstr "Route temporaire automatique"
 #
 # 
@@ -2959,13 +2901,6 @@ msgstr "Cartes vectorielles"
 # 
 # 
 # 
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "Attention : les fichiers GRIB de vent Quickscat ont  %d   heures."
-#
-# 
-# 
-# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Fichiers WAV (*.wav)|*.wav|Tous les fichiers (*.*)|*.*"
 #
@@ -3032,18 +2967,6 @@ msgstr "Polices soulignées ou non."
 msgid "WiFi Options"
 msgstr "Options Wifi"
 #
-# 
-# 
-# 
-msgid "Wind Direction"
-msgstr "Direction du vent"
-#
-# 
-# 
-# 
-msgid "Wind Speed, Kts."
-msgstr "Vitesse du vent, Noeuds "
-#
 msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
 msgstr ""
 #
@@ -3097,6 +3020,14 @@ msgstr ""
 "Erreur de version de l'API libgps.\n"
 "Opencpn a trouvé la version %d.%d, mais requiert au moins la version 3.1"
 #
+#
+# 
+# 
+# 
+#~ msgid "&Close"
+#~ msgstr "F&ermer"
+#
+#
 # 
 # 
 # 
@@ -3107,6 +3038,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Effacer toutes les routes ..."
+#
 #
 # 
 # 
@@ -3119,6 +3051,7 @@ msgstr ""
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Effacer toutes les traces ..."
 #
+#
 # 
 # 
 # 
@@ -3130,6 +3063,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Trace active)"
 #
+#
 # 
 # 
 # 
@@ -3137,6 +3071,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Indicatif d'appel : "
+#
 #
 # 
 # 
@@ -3153,6 +3088,7 @@ msgstr ""
 #~ "Classe inconnue\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3163,6 +3099,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe :   A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -3179,6 +3116,20 @@ msgstr ""
 #~ "Classe :   B\n"
 #~ "\n"
 #
+#
+# 
+# 
+# 
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Vitesse du courant, noeuds."
+#
+#
+# 
+# 
+#~ msgid "ETA"
+#~ msgstr "ETA"
+#
+#
 # 
 # 
 # 
@@ -3186,6 +3137,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "Heure d'arrivée :  Inconnue"
+#
 #
 # 
 # 
@@ -3198,6 +3150,71 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
+# 
+# 
+# 
+#~ msgid "GRIB Data"
+#~ msgstr "Données GRIB"
+#
+#
+# 
+# 
+# 
+#~ msgid "GRIB Display Control"
+#~ msgstr "Ecran de contrôle des fichiers Grib"
+#
+#
+# 
+# 
+# 
+#~ msgid "GRIB File Directory"
+#~ msgstr "GRIB dossier-cible"
+#
+#
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB CRAIN "
+#~ "supprimés"
+#
+#
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB HTSGW "
+#~ "supprimés"
+#
+#
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB de vitesse "
+#~ "de courants supprimés"
+#
+#
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB SEATEMP "
+#~ "supprimés"
+#
+#
+# 
+# 
+# 
+#~ msgid "Pressure, mBar"
+#~ msgstr "Pression, hPa"
+#
+#
 # 
 # 
 # 
@@ -3208,6 +3225,21 @@ msgstr ""
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "Gestionnaire de routes et de traces ..."
+#
+#
+# 
+# 
+# 
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Temp.de surface de la mer, °C"
+#
+#
+# 
+# 
+# 
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Sélectionner le dossier des fichiers GRIB"
+#
 #
 # 
 # 
@@ -3220,6 +3252,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Envoyer la route au GPS"
 #
+#
 # 
 # 
 # 
@@ -3231,6 +3264,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Afficher les icônes GPX"
 #
+#
 # 
 # 
 # 
@@ -3241,3 +3275,31 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Afficher la fenêtre GRIB"
+#
+#
+# 
+# 
+# 
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Haut. signif. vagues, m"
+#
+#
+# 
+# 
+# 
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "Attention : les fichiers GRIB de vent Quickscat ont  %d   heures."
+#
+#
+# 
+# 
+# 
+#~ msgid "Wind Direction"
+#~ msgstr "Direction du vent"
+#
+#
+# 
+# 
+# 
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Vitesse du vent, Noeuds "

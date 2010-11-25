@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:53-0500\n"
+"POT-Creation-Date: 2010-11-24 23:11-0500\n"
 "PO-Revision-Date: 2010-11-15 07:54+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -285,11 +285,6 @@ msgstr "&Aktivovat"
 #
 msgid "&Cancel"
 msgstr "&Zrušit"
-#
-#
-#
-msgid "&Close"
-msgstr "&Zavřít"
 #
 #
 #
@@ -587,6 +582,9 @@ msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
 #
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
 #
 msgid "AtoN"
 msgstr "AdoN"
@@ -689,6 +687,10 @@ msgstr "Nástroj Posun CM93...."
 #
 msgid "CM93 Offsets"
 msgstr "Posuny  CM93"
+#
+#, fuzzy
+msgid "CM93 Offsets On"
+msgstr "Posun CM93 zap."
 #
 #
 #
@@ -892,11 +894,6 @@ msgstr "Proud"
 #
 #
 #
-msgid "Current Velocity, Kts."
-msgstr "Rychlost proudu, Kts."
-#
-#
-#
 msgid "Cursor: "
 msgstr "Kurzor:"
 #
@@ -1029,10 +1026,6 @@ msgid "ENC/Vector"
 msgstr "ENC/Vector"
 #
 #
-msgid "ETA"
-msgstr "ETA"
-#
-#
 #
 msgid "ETA          "
 msgstr "ETA"
@@ -1123,6 +1116,12 @@ msgstr "Fathomy (Sáhy)"
 msgid "Feet"
 msgstr "Stopy"
 #
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
 #
 #
 msgid "Font Options"
@@ -1158,21 +1157,6 @@ msgstr "GPSD Data Server"
 #
 msgid "GRIB"
 msgstr "GRIB"
-#
-#
-#
-msgid "GRIB Data"
-msgstr "Data GRIB"
-#
-#
-#
-msgid "GRIB Display Control"
-msgstr "Ovládání zobrazení GRIB"
-#
-#
-#
-msgid "GRIB File Directory"
-msgstr "Složka souborů GRIB"
 #
 #
 #
@@ -1234,6 +1218,12 @@ msgstr "Vložit trasový bod"
 #
 #
 #
+#, fuzzy
+msgid "Jump To"
+msgstr "Skok na pozici"
+#
+#
+#
 msgid "Jump To Position"
 msgstr "Skok na pozici"
 #
@@ -1284,6 +1274,9 @@ msgstr "Délka"
 #
 msgid "License"
 msgstr "Licence"
+#
+msgid "Limit range: NM"
+msgstr ""
 #
 #
 #
@@ -1605,26 +1598,6 @@ msgstr "Hraj lodní zvony"
 #
 #
 #
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
-#
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
-#
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Prosím zmenši měřítko pro zobrazení OCEAN CURRENT GRIB"
-#
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
-#
-#
-#
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Prosím restartuj OpenCPN pro aktivaci nového jazyka."
 #
@@ -1701,11 +1674,6 @@ msgstr "Připrav GPS pro Nahrání tras/trasových bodů a stiskni Poslat..."
 #
 msgid "Preserve scale when switching charts"
 msgstr "Zachovat měřítko při změně mapy"
-#
-#
-#
-msgid "Pressure, mBar"
-msgstr "Tlak, mBar"
 #
 #
 #
@@ -1903,11 +1871,6 @@ msgstr "Oddálit"
 #
 #
 #
-msgid "Sea Surface Temp, C"
-msgstr "Povrchová teplota moře, C"
-#
-#
-#
 msgid "Select Alert Sound"
 msgstr "Vybrat zvuk výstrah"
 #
@@ -1920,11 +1883,6 @@ msgstr "Vybrat vše"
 #
 msgid "Select Chart Types for Quilting"
 msgstr "Vyber typy map pro skládání"
-#
-#
-#
-msgid "Select GRIB Directory"
-msgstr "Složka souborů GRIB"
 #
 #
 #
@@ -2095,11 +2053,6 @@ msgstr "Ukázat náhled fontu."
 #
 #
 #
-msgid "Significant Wave Height, m"
-msgstr "Signifikantní výška vln, m"
-#
-#
-#
 msgid "Simplified"
 msgstr "Zjednodušený"
 #
@@ -2223,8 +2176,16 @@ msgstr "TCPA:  \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Hod:Min\n"
 #
+msgid "Target info"
+msgstr ""
+#
 #
 msgid "Temporary GOTO Route"
+msgstr "Dočasná trasa"
+#
+#
+#, fuzzy
+msgid "Temporary MOB Route"
 msgstr "Dočasná trasa"
 #
 #
@@ -2440,12 +2401,6 @@ msgstr "Vektorové mapy"
 #
 #
 #
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "VAROVÁNÍ:  QuickScat GRIB data jsou %d hodin stará."
-#
-#
-#
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Soubory WAV(*.wav)|*.wav|Všechny soubory(*.*)|*.*"
 #
@@ -2501,16 +2456,6 @@ msgstr "Zda je font podtržen"
 msgid "WiFi Options"
 msgstr "Volby WiFi"
 #
-#
-#
-msgid "Wind Direction"
-msgstr "Směr větru"
-#
-#
-#
-msgid "Wind Speed, Kts."
-msgstr "Rychlost větru, Uzly"
-#
 msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
 msgstr "X posun (Kladný posunuje mapu na východ) (NMi/cos(lat)) :"
 #
@@ -2558,3 +2503,104 @@ msgstr ""
 "Opencpn nalezlo verzi %d.%d, ale potřebuje alespoň verzi 3.0\n"
 "\n"
 "Chceš přesto použít tuto verzi libgps?"
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Zavřít"
+#
+#
+#
+#
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Rychlost proudu, Kts."
+#
+#
+#
+#~ msgid "ETA"
+#~ msgstr "ETA"
+#
+#
+#
+#
+#~ msgid "GRIB Data"
+#~ msgstr "Data GRIB"
+#
+#
+#
+#
+#~ msgid "GRIB Display Control"
+#~ msgstr "Ovládání zobrazení GRIB"
+#
+#
+#
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "Složka souborů GRIB"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr "Prosím zmenši měřítko pro zobrazení OCEAN CURRENT GRIB"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
+#
+#
+#
+#
+#~ msgid "Pressure, mBar"
+#~ msgstr "Tlak, mBar"
+#
+#
+#
+#
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Povrchová teplota moře, C"
+#
+#
+#
+#
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Složka souborů GRIB"
+#
+#
+#
+#
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Signifikantní výška vln, m"
+#
+#
+#
+#
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "VAROVÁNÍ:  QuickScat GRIB data jsou %d hodin stará."
+#
+#
+#
+#
+#~ msgid "Wind Direction"
+#~ msgstr "Směr větru"
+#
+#
+#
+#
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Rychlost větru, Uzly"
