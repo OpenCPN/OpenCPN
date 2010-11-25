@@ -23,6 +23,8 @@
 
 #include <wx/dialog.h>
 #include <wx/timer.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
 #include <wx/listctrl.h>
 
 class wxButton;
@@ -34,6 +36,7 @@ class RouteManagerDialog : public wxDialog {
       public:
             RouteManagerDialog(wxWindow *parent);
             ~RouteManagerDialog();
+            void SetColorScheme();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
             void UpdateWptListCtrl();
@@ -86,6 +89,10 @@ class RouteManagerDialog : public wxDialog {
             void OnExportClick(wxCommandEvent &event);
 
             // properties
+            wxNotebook *m_pNotebook;
+            wxPanel    *m_pPanelRte;
+            wxPanel    *m_pPanelTrk;
+            wxPanel    *m_pPanelWpt;
             wxListCtrl *m_pRouteListCtrl;
             wxListCtrl *m_pTrkListCtrl;
             wxListCtrl *m_pWptListCtrl;
@@ -97,16 +104,21 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnRteDelete;
             wxButton *btnRteExport;
             wxButton *btnRteSendToGPS;
+            wxButton *btnRteDeleteAll;
+            wxButton *btnTrkNew;
             wxButton *btnTrkProperties;
             wxButton *btnTrkDelete;
             wxButton *btnTrkExport;
             wxButton *btnTrkRouteFromTrack;
+            wxButton *btnTrkDeleteAll;
+            wxButton *btnWptNew;
             wxButton *btnWptProperties;
             wxButton *btnWptZoomto;
             wxButton *btnWptDelete;
             wxButton *btnWptGoTo;
             wxButton *btnWptExport;
             wxButton *btnWptSendToGPS;
+            wxButton *btnWptDeleteAll;
             wxButton *btnImport;
             wxButton *btnExport;
 

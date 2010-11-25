@@ -2225,6 +2225,9 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
                   g_pais_query_dialog_active->Show();
       }
 
+      if ( pRouteManagerDialog )
+            pRouteManagerDialog->SetColorScheme();
+
       if ( g_pAISTargetList )
             g_pAISTargetList->SetColorScheme();
 

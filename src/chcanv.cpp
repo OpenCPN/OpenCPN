@@ -9397,9 +9397,9 @@ void ChartCanvas::CreateCM93OffsetEmbossMapData(ColorScheme cs)
       wxFont font ( 40, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
       wxClientDC dc(this);
       dc.SetFont(font);
-      dc.GetTextExtent(_("CM93 Offset On"), &w, &h);
+      dc.GetTextExtent(_("CM93 Offsets On"), &w, &h);
 
-      m_pEM_CM93Offset    = CreateEmbossMapData ( font, w + 10, h + 10, _("CM93 Offset On"), cs);
+      m_pEM_CM93Offset    = CreateEmbossMapData ( font, w + 10, h + 10, _("CM93 Offsets On"), cs);
 }
 
 
