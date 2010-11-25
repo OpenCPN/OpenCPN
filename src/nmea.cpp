@@ -855,7 +855,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
             float kSog = 8.5;
-            float kCog = 45.;//gCog;// 28.0;                // gCog to simulate, see hotkey arrows
+            float kCog = 345.;//gCog;// 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
@@ -882,7 +882,9 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             event.SetEventObject( (wxObject *)this );
             event.SetExtraLong(EVT_NMEA_DIRECT);
             event.SetClientData(&ThreadPositionData);
-///            m_pParentEventHandler->AddPendingEvent(event);
+            m_pParentEventHandler->AddPendingEvent(event);
+
+
 
             // or parsable NMEA string
             wxString buf = _T("$IIGLL,3932.39,N,00320.12,E,,A\r\n");

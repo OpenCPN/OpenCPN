@@ -1051,10 +1051,6 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
       unsigned char transparency = 100;
 
       cc1->GetCanvasPointPix ( m_lat, m_lon, &r );
-//      printf(" x: %d     y: %d\n", r.x, r.y);
-
-//      r = cc1->VPoint.GetMercatorPixFromLL(m_lat, m_lon);
-//      printf("      vpx: %d     vpy: %d\n", r.x, r.y);
 
       //  return the home point in this dc to allow "connect the dots"
       if ( NULL != rpn )
