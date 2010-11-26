@@ -2014,6 +2014,15 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         m_ptool_ct_dummyStaticBmp = NULL;
         m_pStatDummyTool = NULL;
 
+        //    Clear the NMEA Filter tables
+        for(int i = 0 ; i < MAX_COGSOG_FILTER_SECONDS ; i++)
+        {
+              COGFilterTable[i] = 0.;
+              SOGFilterTable[i] = 0.;
+        }
+        m_COGFilterLast = 0.;
+
+
 
 
 //    Establish my children
@@ -4176,7 +4185,21 @@ int MyFrame::DoOptionsDialog()
                   b_refresh_after_options = true;
             }
 
+            //    Stuff the Filter tables
+            double stuffcog = 0.;
+            double stuffsog = 0.;
+            if(!wxIsNaN(gCog))
+                  stuffcog = gCog;
+            if(!wxIsNaN(gSog))
+                  stuffsog = gSog;
 
+
+            for(int i = 0 ; i < MAX_COGSOG_FILTER_SECONDS ; i++)
+            {
+                  COGFilterTable[i] = stuffcog;
+                  SOGFilterTable[i] = stuffsog;
+            }
+            m_COGFilterLast = stuffcog;
 
       }
 
