@@ -3891,21 +3891,31 @@ void MyConfig::ExportGPX ( wxWindow* parent )
       }
 }
 
-GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type)
+GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit)
 {
       GpxExtensionsElement *exts = new GpxExtensionsElement();
  //     exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:prop")), wxString(pr->CreatePropString())));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pr->m_GUID));
 
-//      if(!pr->m_bIsVisible)
+      //    Create all opencpn extension properties explicitely
+      if(b_props_explicit)
+      {
             exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
-      if(pr->m_bShowName)
             exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
-      if(pr->m_bDynamicName)
             exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
-      if(pr->m_bKeepXRoute)
             exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
-
+       }
+      else
+      {
+      //      if(!pr->m_bIsVisible)
+                  exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
+            if(pr->m_bShowName)
+                  exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
+            if(pr->m_bDynamicName)
+                  exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
+            if(pr->m_bKeepXRoute)
+                  exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
+      }
 
       ListOfGpxLinks lnks;
       lnks.DeleteContents(false);
@@ -3984,7 +3994,7 @@ GpxTrkElement *CreateGPXTrk ( Route *pRoute )
             while ( node2 && (GPXTrkSegNo2 == GPXTrkSegNo1))
             {
                   prp = node2->GetData();
-                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT));
+                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT, true));
                   node2=node2->GetNext();
                   if (node2) {
                         prp = node2->GetData();

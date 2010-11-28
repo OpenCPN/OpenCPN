@@ -308,7 +308,7 @@ void GPXLoadRoute ( GpxRteElement *rtenode, int routenum, bool b_fullviz = false
 void InsertRoute(Route *pTentRoute, int routenum);
 void UpdateRoute(Route *pTentRoute);
 
-GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type );
+GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false );
 GpxRteElement *CreateGPXRte ( Route *pRoute );
 GpxTrkElement *CreateGPXTrk ( Route *pRoute );
 
