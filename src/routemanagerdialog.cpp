@@ -201,14 +201,9 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
       lc->GetItem(it1);
       lc->GetItem(it2);
 
-      char s1b[20];
-      strncpy(s1b,it1.GetText().mb_str(), 19);
-      char s2b[20];
-      strncpy(s2b,it2.GetText().mb_str(), 19);
-
       wxString s1, s2;
-      s1.Printf(_T("%11s"), s1b);
-      s2.Printf(_T("%11s"), s2b);
+      s1.Printf(_T("%11s"), it1.GetText().c_str());
+      s2.Printf(_T("%11s"), it2.GetText().c_str());
 
       double l1, l2;
       s1.ToDouble(&l1);
@@ -218,6 +213,7 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
             return(l1 < l2);
       else
             return(l2 < l1);
+
 
 }
 
@@ -273,14 +269,9 @@ int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
       lc->GetItem(it1);
       lc->GetItem(it2);
 
-      char s1b[20];
-      strncpy(s1b,it1.GetText().mb_str(), 19);
-      char s2b[20];
-      strncpy(s2b,it2.GetText().mb_str(), 19);
-
       wxString s1, s2;
-      s1.Printf(_T("%11s"), s1b);
-      s2.Printf(_T("%11s"), s2b);
+      s1.Printf(_T("%11s"), it1.GetText().c_str());
+      s2.Printf(_T("%11s"), it2.GetText().c_str());
 
       double l1, l2;
       s1.ToDouble(&l1);
