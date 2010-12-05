@@ -38,7 +38,7 @@
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
-//#include "chartimg.h"               // for ChartBaseBSB
+#include "nmea.h"
 
 #define DIALOG_MARGIN 3
 
@@ -91,6 +91,7 @@ extern MyFrame         *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
 extern double           gCog, gSog;
+extern NMEAHandler      *g_pnmea;
 
 
 // sort callback. Sort by route name.
@@ -1094,7 +1095,11 @@ void RouteManagerDialog::OnRteSendToGPSClick(wxCommandEvent &event)
       SendToGpsDlg *pdlg = new SendToGpsDlg();
       pdlg->SetRoute(route);
 
-      pdlg->Create ( NULL, -1, _( "Send To GPS..." ) );
+      wxString source;
+      if(g_pnmea)
+            g_pnmea->GetSource(source);
+
+      pdlg->Create ( NULL, -1, _( "Send To GPS..." ), source );
       pdlg->ShowModal();
 
       delete pdlg;
@@ -1653,7 +1658,11 @@ void RouteManagerDialog::OnWptSendToGPSClick(wxCommandEvent &event)
       SendToGpsDlg *pdlg = new SendToGpsDlg();
       pdlg->SetWaypoint(wp);
 
-      pdlg->Create ( NULL, -1, _( "Send To GPS..." ) );
+      wxString source;
+      if(g_pnmea)
+            g_pnmea->GetSource(source);
+
+      pdlg->Create ( NULL, -1, _( "Send To GPS..." ), source );
       pdlg->ShowModal();
 
       delete pdlg;

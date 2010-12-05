@@ -866,9 +866,9 @@ SendToGpsDlg::SendToGpsDlg( )
  }
 
  SendToGpsDlg::SendToGpsDlg(  wxWindow* parent, wxWindowID id,
-                      const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
+                      const wxString& caption, const wxString& hint, const wxPoint& pos, const wxSize& size, long style )
 {
-      Create(parent, id, caption, pos, size, style);
+      Create(parent, id, caption, hint, pos, size, style);
 }
 
 SendToGpsDlg::~SendToGpsDlg( )
@@ -882,12 +882,12 @@ SendToGpsDlg::~SendToGpsDlg( )
 
 
 
-bool SendToGpsDlg::Create( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
+bool SendToGpsDlg::Create( wxWindow* parent, wxWindowID id, const wxString& caption, const wxString& hint, const wxPoint& pos, const wxSize& size, long style )
 {
       SetExtraStyle(GetExtraStyle()|wxWS_EX_BLOCK_EVENTS);
       wxDialog::Create( parent, id, caption, pos, size, style );
 
-      CreateControls();
+      CreateControls(hint);
       GetSizer()->Fit(this);
       GetSizer()->SetSizeHints(this);
       Centre();
@@ -896,7 +896,7 @@ bool SendToGpsDlg::Create( wxWindow* parent, wxWindowID id, const wxString& capt
 }
 
 
-void SendToGpsDlg::CreateControls()
+void SendToGpsDlg::CreateControls(const wxString& hint)
 {
       SendToGpsDlg* itemDialog1 = this;
 
@@ -923,6 +923,14 @@ void SendToGpsDlg::CreateControls()
 
       //    Make the proper inital selection
       int sidx = 0;
+      if(hint.Upper().Contains(_T("SERIAL")))
+      {
+            wxString sourcex = hint.Mid(7);
+            sidx = m_itemCommListBox->FindString(sourcex);
+      }
+      else
+            sidx = m_itemCommListBox->FindString(hint);
+
       m_itemCommListBox->SetSelection(sidx);
 
       comm_box_sizer->Add(m_itemCommListBox, 0, wxEXPAND|wxALL, 5);

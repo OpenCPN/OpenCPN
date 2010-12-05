@@ -202,17 +202,17 @@ class SendToGpsDlg : public wxDialog
 
  public:
        SendToGpsDlg();
-       SendToGpsDlg(  wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style );
+       SendToGpsDlg(  wxWindow* parent, wxWindowID id, const wxString& caption, const wxString& hint, const wxPoint& pos, const wxSize& size, long style );
        ~SendToGpsDlg( );
 
-       bool Create( wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME, const wxString& caption = SYMBOL_STG_TITLE,
+       bool Create( wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME, const wxString& caption = SYMBOL_STG_TITLE, const wxString& hint = SYMBOL_STG_TITLE,
                     const wxPoint& pos = SYMBOL_STG_POSITION, const wxSize& size = SYMBOL_STG_SIZE,
                     long style = SYMBOL_STG_STYLE);
        void SetRoute(Route *pRoute){m_pRoute = pRoute;}
        void SetWaypoint(RoutePoint *pRoutePoint){m_pRoutePoint = pRoutePoint;}
 
 private:
-      void CreateControls();
+      void CreateControls(const wxString& hint);
 
       void OnCancelClick( wxCommandEvent& event );
       void OnSendClick( wxCommandEvent& event );
