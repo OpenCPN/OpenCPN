@@ -161,7 +161,7 @@ enum {
 #define wxFIXED_MINSIZE 0
 #endif
 
-#if wxCHECK_VERSION(2, 9, 0)
+#ifndef bert// wxCHECK_VERSION(2, 9, 0)
 class options: public wxDialog
 #else
 class options: public wxScrollingDialog
@@ -182,6 +182,8 @@ public:
              long style = SYMBOL_OPTIONS_STYLE);
 
     void Init();
+
+    wxWindow* GetContentWindow() const;
 
     void CreateControls();
     void SetColorScheme(ColorScheme cs);
@@ -213,6 +215,8 @@ public:
     void SetControlColors(wxWindow *ctrl, ColorScheme cs);
 
     void UpdateWorkArrayFromTextCtl();
+    void CreateChartsPage();
+    void PopulateChartsPage();
 
 // Should we show tooltips?
     static bool ShowToolTips();
@@ -222,7 +226,7 @@ public:
     wxButton*               m_CancelButton;
 
 //    For General Options
-    wxPanel*                itemPanel5;
+    wxScrolledWindow        *itemPanel5;
     wxCheckBox              *pDebugShowStat;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
@@ -242,14 +246,14 @@ public:
     wxTextCtrl              *m_pText_CM93OffsetY;
 
 //    For GPS Page
-    wxPanel*                itemPanelGPS;
+    wxScrolledWindow        *itemPanelGPS;
     wxCheckBox              *pShowGPSWin;
     wxCheckBox              *pGarminHost;
     wxCheckBox              *pFilterNMEA;
     wxTextCtrl              *pFilterSecs;
 
 //    For "S57" page
-    wxPanel                 *ps57Ctl;
+    wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
     wxRadioBox              *pDispCat;
     wxButton                *itemButtonClearList;
@@ -272,12 +276,12 @@ public:
     wxCheckBox              *pSEnableCM93Offset;
 
 //    For "Charts" page
-    wxPanel* itemPanel9;
+    wxScrolledWindow          *itemPanel9;
     wxStaticBoxSizer          *itemStaticBoxSizer11;
     wxBoxSizer                *itemBoxSizer10;
     wxGenericDirCtrl          *pDirCtl;
     wxTextCtrl                *pSelCtl;
-    wxListBox                *pListBox;
+    wxListBox                 *pListBox;
     wxStaticBox               *itemActiveChartStaticBox;
     wxCheckBox                *pUpdateCheckBox;
     int                       k_charts;
@@ -298,7 +302,7 @@ public:
 #endif
 
 //    For "AIS" Page
-    wxPanel                   *itemPanelAIS;
+    wxScrolledWindow          *itemPanelAIS;
 
     wxCheckBox                *m_pCheck_CPA_Max;
     wxTextCtrl                *m_pText_CPA_Max;
@@ -326,7 +330,7 @@ public:
     wxTextCtrl                *m_pText_ACK_Timeout;
 
 //    For Fonts page
-    wxPanel*                itemPanelFont;
+    wxScrolledWindow        *itemPanelFont;
     wxBoxSizer              *m_itemBoxSizerFontPanel;
     wxComboBox              *m_itemFontElementListBox;
     wxComboBox              *m_itemLangListBox;
@@ -339,7 +343,7 @@ public:
     PluginListPanel         *m_pPlugInCtrl;
 
 //    For "Etc." Page
-    wxPanel*                itemPanelAdvanced;
+    wxScrolledWindow        *itemPanelAdvanced;
     wxCheckBox              *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;

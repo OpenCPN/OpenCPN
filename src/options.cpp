@@ -41,6 +41,7 @@
 #include <wx/radiobox.h>
 #include <wx/listbox.h>
 #include <wx/imaglist.h>
+#include <wx/display.h>
 
 #include "dychart.h"
 #include "chart1.h"
@@ -203,7 +204,7 @@ options::options( )
 options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
 {
       Init();
-#if wxCHECK_VERSION(2, 9, 0)
+#ifndef bert// wxCHECK_VERSION(2, 9, 0)
 //      wxDialog::Init();
 #else
       wxScrollingDialog::Init();
@@ -217,31 +218,66 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       //    This way, any window decorations set by external themes, etc
       //    will not detract from night-vision
 
-      long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
+      long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;//| wxVSCROLL;
 //      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
 //            wstyle |= (wxNO_BORDER);
 
-#if wxCHECK_VERSION(2, 9, 0)
+#ifndef bert// wxCHECK_VERSION(2, 9, 0)
 #else
       SetLayoutAdaptation(true);
 #endif
-      SetLayoutAdaptationLevel(2);
+//      SetLayoutAdaptationLevel(2);
 
 //      Create(parent, id, caption, pos, size, wstyle);
 
       SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-#if wxCHECK_VERSION(2, 9, 0)
+#ifndef bert// (2, 9, 0)
       wxDialog::Create( parent, id, caption, pos, size,wstyle );
 #else
       wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
 #endif
 
       CreateControls();
-      if (GetSizer())
+
+      //    Figure out the "best" size for the dialog.
+      //    Logic:  Find the minimum size of each page as if it were not a scrolling dialog.
+      //            Then, set the virtual size of all of the pages to be that size
+      //            Result is that if space allows, no scrolling will happen.
+      //            On a smaller physical screen, all pages will have scrolling enabled if necessary
+      //            depending, of course, on their content.
+      wxSize largest_unscrolled_page_size(0,0);
+      wxSize pagesize(0,0);
+
+      for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
-            GetSizer()->SetSizeHints(this);
+            wxWindow* page = itemNotebook4->GetPage(i);
+
+            wxScrolledWindow* scrolledWindow = wxDynamicCast(page, wxScrolledWindow);
+            if (scrolledWindow)
+            {
+                  scrolledWindow->SetScrollRate(0, 0);
+                  pagesize = scrolledWindow->GetBestSize();
+                  scrolledWindow->SetScrollRate(1, 1);
+            }
+            else
+                  pagesize = page->GetBestSize();
+
+            largest_unscrolled_page_size = wxSize(wxMax(largest_unscrolled_page_size.x, pagesize.x), wxMax(largest_unscrolled_page_size.y, pagesize.y));
+
       }
+
+      for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
+      {
+            wxWindow* page = itemNotebook4->GetPage(i);
+            wxSizer* pageSizer = page->GetSizer();
+            pageSizer->SetMinSize(largest_unscrolled_page_size);
+            pageSizer->SetVirtualSizeHints(page);
+      }
+
+      SetMaxSize(wxDisplay(wxDisplay::GetFromWindow(this)).GetClientArea().GetSize());
+
+      Fit();
       Centre();
 }
 
@@ -276,6 +312,7 @@ void options::Init()
 
     m_pSerialArray = EnumerateSerialPorts();
 
+    itemNotebook4 = NULL;
 }
 
 
@@ -288,10 +325,38 @@ bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, c
 
     CreateControls();
 
+
     Fit();
     Centre();
 
     return TRUE;
+}
+
+wxWindow* options::GetContentWindow() const
+{
+      return NULL;//itemNotebook4;
+}
+
+wxScrolledWindow *CreatePanel(wxNotebook *parent, wxString title)
+{
+#if 0
+      wxPanel *ppanel = new wxPanel( parent, ID_PANELAIS, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+      parent->AddPage(ppanel, title);
+      wxSizer* newSizer1 = new wxBoxSizer(wxVERTICAL);
+      ppanel->SetSizer(newSizer1);
+
+      wxScrolledWindow *Window = new wxScrolledWindow( ppanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, /*wxSUNKEN_BORDER|*/wxTAB_TRAVERSAL|wxVSCROLL );
+      Window->SetScrollRate(0, 1);
+      newSizer1->Add(Window,1, wxEXPAND, 0);
+#endif
+      wxScrolledWindow *Window = new wxScrolledWindow( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, /*wxSUNKEN_BORDER|*/wxTAB_TRAVERSAL|wxVSCROLL );
+      Window->SetScrollRate(1, 1);
+      parent->AddPage(Window, title);
+
+//      newSizer1->Add(Window,1, wxEXPAND, 0);
+
+
+      return Window;
 }
 
 
@@ -346,30 +411,28 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer28 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer2->Add(itemBoxSizer28, 0, wxALIGN_RIGHT|wxALL, border_size);
 
-    m_OKButton = new wxButton( itemDialog1, xID_OK, _("Ok"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_OKButton = new wxButton( itemDialog1, xID_OK, _("Ok") );
     m_OKButton->SetDefault();
     itemBoxSizer28->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
 
-    m_CancelButton = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_CancelButton = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel") );
     itemBoxSizer28->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
 
 
     //  Create "Settings" panel
 
-    itemPanel5 = new wxPanel( itemNotebook4, ID_PANEL2, wxDefaultPosition, wxDefaultSize,
-                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    itemPanel5 = CreatePanel(itemNotebook4, _("Settings"));
+
+
     wxBoxSizer* itemBoxSizer6 = new wxBoxSizer(wxVERTICAL);
     itemPanel5->SetSizer(itemBoxSizer6);
-    itemNotebook4->AddPage(itemPanel5, _("Settings"));
-
 
 
     //  Debug checkbox
     wxStaticBox* itemStaticBoxSizerDebugStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Navigation Data"));
     wxStaticBoxSizer* itemStaticBoxSizerDebug = new wxStaticBoxSizer(itemStaticBoxSizerDebugStatic, wxVERTICAL);
     itemBoxSizer6->Add(itemStaticBoxSizerDebug, 0, wxEXPAND|wxALL, border_size);
-    pDebugShowStat = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Status Bar"), wxDefaultPosition,
-                             wxSize(-1, -1), 0 );
+    pDebugShowStat = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
     pDebugShowStat->SetValue(FALSE);
     itemStaticBoxSizerDebug->Add(pDebugShowStat, 1, wxALIGN_LEFT|wxALL, 2);
 
@@ -377,8 +440,7 @@ void options::CreateControls()
     wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Printing"));
     wxStaticBoxSizer* itemStaticBoxSizerPrint = new wxStaticBoxSizer(itemStaticBoxSizerPrintStatic, wxVERTICAL);
     itemBoxSizer6->Add(itemStaticBoxSizerPrint, 0, wxEXPAND|wxALL, 5);
-    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_PRINTCHECKBOX1, _("Show Printing Icon"), wxDefaultPosition,
-                             wxSize(-1, -1), 0 );
+    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_PRINTCHECKBOX1, _("Show Printing Icon"));
     pPrintShowIcon->SetValue(FALSE);
     itemStaticBoxSizerPrint->Add(pPrintShowIcon, 1, wxALIGN_LEFT|wxALL, 2);
 
@@ -507,12 +569,13 @@ void options::CreateControls()
 
     //  Create "GPS" panel
 
+      wxScrolledWindow *itemPanelGPS = CreatePanel(itemNotebook4,  _("GPS"));
 
-      itemPanelGPS = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+//      itemPanelGPS = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+//      itemNotebook4->AddPage(itemPanelGPS, _("GPS"));
+
       wxBoxSizer* itemBoxSizerGPS = new wxBoxSizer(wxVERTICAL);
       itemPanelGPS->SetSizer(itemBoxSizerGPS);
-      itemNotebook4->AddPage(itemPanelGPS, _("GPS"));
-
 
 
 //    Add NMEA Options Box
@@ -686,7 +749,7 @@ void options::CreateControls()
       wxStaticText* itemStaticTextFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC, _("Filter Period (Sec.)"));
       pFilterGrid->Add(itemStaticTextFilterSecs, 0, wxALIGN_LEFT|wxADJUST_MINSIZE, border_size);
 
-      pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1), 0 );
+      pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) );
       pFilterGrid->Add(pFilterSecs, 0, wxALIGN_RIGHT, 2);
 
 //    Add Autopilot serial output port controls
@@ -719,24 +782,17 @@ void options::CreateControls()
 
 //    Build "Charts" page
 
-    itemPanel9 = new wxPanel( itemNotebook4, ID_PANEL, wxDefaultPosition, wxDefaultSize,
-                              wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    itemBoxSizer10 = new wxBoxSizer(wxVERTICAL);
-    itemPanel9->SetSizer(itemBoxSizer10);
+      itemPanel9 = CreatePanel(itemNotebook4,  _("Charts"));
 
-    //      Linux wxUNIVERSAL wxGenericDirCtrl is --very-- slow.
-    //      Slowness is in ArtProvider, generating the proper icons
-    //      So....
-    //      Move the dir tree control out of the ctor, and only build it if "CHART" panel is selected.
-    //      See this::OnPageChange event handler
+      itemBoxSizer10 = new wxBoxSizer(wxVERTICAL);
+      itemPanel9->SetSizer(itemBoxSizer10);
 
-
-    itemNotebook4->AddPage(itemPanel9, _("Charts"));
-
+      CreateChartsPage();
 
     //      Build S57 Options page
 
-    ps57Ctl = new wxPanel( itemNotebook4, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxScrolledWindow *ps57Ctl = CreatePanel(itemNotebook4, _("Vector Charts"));
+
     wxBoxSizer* itemBoxSizer25 = new wxBoxSizer(wxVERTICAL);
     ps57Ctl->SetSizer(itemBoxSizer25);
 
@@ -785,38 +841,31 @@ void options::CreateControls()
 
 
 
-    pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("ShowSoundings"), wxDefaultPosition,
-                                     wxSize(-1, -1), 0 );
+    pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("ShowSoundings"));
     pCheck_SOUNDG->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_SOUNDG, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_META = new wxCheckBox( ps57Ctl, ID_METACHECKBOX, _("META Objects"), wxDefaultPosition,
-            wxSize(-1, -1), 0 );
+    pCheck_META = new wxCheckBox( ps57Ctl, ID_METACHECKBOX, _("META Objects"));
     pCheck_META->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_META, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_SHOWIMPTEXT = new wxCheckBox( ps57Ctl, ID_IMPTEXTCHECKBOX, _("Show Important Text Only"), wxDefaultPosition,
-                                      wxSize(-1, -1), 0 );
+    pCheck_SHOWIMPTEXT = new wxCheckBox( ps57Ctl, ID_IMPTEXTCHECKBOX, _("Show Important Text Only") );
     pCheck_SHOWIMPTEXT->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_SHOWIMPTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_SCAMIN = new wxCheckBox( ps57Ctl, ID_SCAMINCHECKBOX, _("Use SCAMIN"), wxDefaultPosition,
-            wxSize(-1, -1), 0 );
+    pCheck_SCAMIN = new wxCheckBox( ps57Ctl, ID_SCAMINCHECKBOX, _("Use SCAMIN"));
     pCheck_SCAMIN->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_SCAMIN, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_ATONTEXT = new wxCheckBox( ps57Ctl, ID_ATONTEXTCHECKBOX, _("Show ATON labels"), wxDefaultPosition,
-                                    wxSize(-1, -1), 0 );
+    pCheck_ATONTEXT = new wxCheckBox( ps57Ctl, ID_ATONTEXTCHECKBOX, _("Show ATON labels"));
     pCheck_SCAMIN->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_ATONTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_LDISTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Show Light Descriptions"), wxDefaultPosition,
-                                      wxSize(-1, -1), 0 );
+    pCheck_LDISTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Show Light Descriptions"));
     pCheck_LDISTEXT->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_LDISTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Clutter Text (exp.)"), wxDefaultPosition,
-                                      wxSize(-1, -1), 0 );
+    pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Clutter Text (exp.)"));
     pCheck_DECLTEXT->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_DECLTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
@@ -905,17 +954,15 @@ void options::CreateControls()
     pSEnableCM93Offset = new wxCheckBox( ps57Ctl, ID_ENABLECM93OFFSET, _("Enable Manual CM93 Offsets"));
     itemStaticBoxSizerCM93OffsetEnable->Add(pSEnableCM93Offset, 1, wxALIGN_LEFT|wxALL, 2);
 
-    itemNotebook4->AddPage(ps57Ctl, _("Vector Charts"));
 
 
         //  Create "AIS" panel
 
-    itemPanelAIS = new wxPanel( itemNotebook4, ID_PANELAIS, wxDefaultPosition, wxDefaultSize,
-                              wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxScrolledWindow *itemPanelAIS = CreatePanel(itemNotebook4, _("AIS"));
+
     wxBoxSizer* itemBoxSizer6AIS = new wxBoxSizer(wxVERTICAL);
     itemPanelAIS->SetSizer(itemBoxSizer6AIS);
 
-    itemNotebook4->AddPage(itemPanelAIS, _("AIS"));
 
    //      General
     wxStaticBox* itemStaticBoxAISGeneral = new wxStaticBox(itemPanelAIS, wxID_ANY, _("AIS General"));
@@ -1106,106 +1153,28 @@ void options::CreateControls()
 
     //      Build Language/Fonts panel
 
+    itemPanelFont = CreatePanel(itemNotebook4,  _("Language/Fonts"));
 
-    itemPanelFont = new wxPanel( itemNotebook4, ID_PANELFONT, wxDefaultPosition, wxDefaultSize,
-                                          wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
     m_itemBoxSizerFontPanel = new wxBoxSizer(wxVERTICAL);
     itemPanelFont->SetSizer(m_itemBoxSizerFontPanel);
 
-/*
-    wxStaticBox* itemLangStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Language"));
-    wxStaticBoxSizer* itemLangStaticBoxSizer = new wxStaticBoxSizer(itemLangStaticBox, wxVERTICAL);
-    itemBoxSizerFontPanel->Add(itemLangStaticBoxSizer, 0, wxEXPAND|wxALL, border_size);
-
-    m_itemLangListBox = new wxComboBox(itemPanelFont, ID_CHOICE_LANG);
-
-    int nLang = sizeof(lang_list)/sizeof(int);
-    for( int it = 0 ; it < nLang ; it++)
-    {
-//          if(wxLocale::GetLanguageInfo(lang_list[it]))
-          if(wxLocale::IsAvailable(lang_list[it]))
-          {
-                wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-                m_itemLangListBox->Append( sl );
-          }
-    }
-
-    m_itemLangListBox->SetSelection(0);
-
-    itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxALL, border_size);
-
-
-    wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Font Options"));
-    wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, wxVERTICAL);
-    itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND|wxALL, border_size);
-
-    wxStaticBox* itemFontElementStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Text Element"));
-    wxStaticBoxSizer* itemFontElementStaticBoxSizer = new wxStaticBoxSizer(itemFontElementStaticBox, wxVERTICAL);
-    itemFontStaticBoxSizer->Add(itemFontElementStaticBoxSizer, 0, wxEXPAND|wxALL, border_size);
-
-    m_itemFontElementListBox = new wxComboBox(itemPanelFont, ID_CHOICE_FONTELEMENT);
-
-    int nFonts = pFontMgr->GetNumFonts();
-    for( int it = 0 ; it < nFonts ; it++)
-    {
-          wxString *t = pFontMgr->GetDialogString(it);
-          m_itemFontElementListBox->Append( *t );
-    }
-
-    if(nFonts)
-          m_itemFontElementListBox->SetSelection(0);
-
-    itemFontElementStaticBoxSizer->Add(m_itemFontElementListBox, 0, wxEXPAND|wxALL, border_size);
-
-    wxButton* itemFontChooseButton = new wxButton( itemPanelFont, ID_BUTTONFONTCHOOSE, _("Choose Font..."),
-                wxDefaultPosition, wxDefaultSize, 0 );
-    itemFontElementStaticBoxSizer->Add(itemFontChooseButton, 0, wxEXPAND|wxALL, border_size);
-
-*/
-    itemNotebook4->AddPage(itemPanelFont, _("Language/Fonts"));
-
-#if 0
-    //      Build GRIB. Page
-
-    itemPanelGRIB = new wxPanel( itemNotebook4, ID_PANELGRIB, wxDefaultPosition, wxDefaultSize,
-                                     wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizerGRIBPanel = new wxBoxSizer(wxVERTICAL);
-    itemPanelGRIB->SetSizer(itemBoxSizerGRIBPanel);
-
-    itemNotebook4->AddPage(itemPanelGRIB, _("GRIB"));
-
-    //  Grib toolbox icon checkbox
-    wxStaticBox* itemStaticBoxSizerGRIBStatic = new wxStaticBox(itemPanelGRIB, wxID_ANY, _("GRIB"));
-    wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
-    itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
-
-    pGRIBShowIcon = new wxCheckBox( itemPanelGRIB, ID_GRIBCHECKBOX, _("Show GRIB icon"), wxDefaultPosition,
-                                    wxSize(-1, -1), 0 );
-    itemStaticBoxSizerGRIB->Add(pGRIBShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
-
-    pGRIBUseHiDef = new wxCheckBox( itemPanelGRIB, -1, _("Use High Definition Graphics"));
-    itemStaticBoxSizerGRIB->Add(pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
-#endif
 
     //      Build Etc. Page
 
-    itemPanelAdvanced = new wxPanel( itemNotebook4, ID_PANELADVANCED, wxDefaultPosition, wxDefaultSize,
-                                     wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxScrolledWindow *itemPanelAdvanced = CreatePanel(itemNotebook4, _("Etc."));
+
     wxBoxSizer* itemBoxSizerAdvancedPanel = new wxBoxSizer(wxVERTICAL);
     itemPanelAdvanced->SetSizer(itemBoxSizerAdvancedPanel);
-
-    itemNotebook4->AddPage(itemPanelAdvanced, _("Etc."));
 
     //  Tracks
     wxStaticBox* itemStaticBoxSizerTrackStatic = new wxStaticBox(itemPanelAdvanced, wxID_ANY, _("Tracks"));
     wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer(itemStaticBoxSizerTrackStatic, wxVERTICAL);
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerTrack, 0, wxGROW|wxALL, border_size);
-    pTrackShowIcon = new wxCheckBox( itemPanelAdvanced, ID_TRACKCHECKBOX, _("Show Track icon"), wxDefaultPosition,
-                                    wxSize(-1, -1), 0 );
+    pTrackShowIcon = new wxCheckBox( itemPanelAdvanced, ID_TRACKCHECKBOX, _("Show Track icon"));
     itemStaticBoxSizerTrack->Add(pTrackShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
 
 
-///////////////
+
     wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer(2);
     pTrackGrid->AddGrowableCol(1);
     itemStaticBoxSizerTrack->Add(pTrackGrid, 0, wxALL|wxEXPAND, border_size);
@@ -1220,7 +1189,7 @@ void options::CreateControls()
     m_pCheck_Trackpoint_distance = new wxRadioButton( itemPanelAdvanced, -1, _("Place Trackpoints at distance interval (NMi):"));
     pTrackGrid->Add(m_pCheck_Trackpoint_distance, 0, wxALIGN_LEFT|wxALL, 2);
 
-    m_pText_TP_Dist = new wxTextCtrl(itemPanelAdvanced, -1, _T(""), wxDefaultPosition, wxSize(-1, -1));
+    m_pText_TP_Dist = new wxTextCtrl(itemPanelAdvanced, -1, _T(""));
     pTrackGrid->Add(m_pText_TP_Dist, 0, wxALIGN_RIGHT, 2);
 
     // Radar rings
@@ -1228,8 +1197,7 @@ void options::CreateControls()
     wxStaticBoxSizer* itemStaticBoxSizerRadarRings = new wxStaticBoxSizer(itemStaticBoxSizerRadarRingsStatic, wxVERTICAL);
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerRadarRings, 0, wxGROW|wxALL, border_size);
 
-    pNavAidShowRadarRings = new wxCheckBox( itemPanelAdvanced, ID_GPXCHECKBOX, _("Show radar rings"), wxDefaultPosition,
-                                            wxSize(-1, -1), 0 );
+    pNavAidShowRadarRings = new wxCheckBox( itemPanelAdvanced, ID_GPXCHECKBOX, _("Show radar rings") );
     pNavAidShowRadarRings->SetValue(FALSE);
     itemStaticBoxSizerRadarRings->Add(pNavAidShowRadarRings, 1, wxALIGN_LEFT|wxALL, border_size);
 
@@ -1264,8 +1232,7 @@ void options::CreateControls()
     wxStaticBox* itemStaticBoxSizerWptDraggingStatic = new wxStaticBox(itemPanelAdvanced, wxID_ANY, _("Waypoint Locking"));
     wxStaticBoxSizer* itemStaticBoxSizerWptDragging = new wxStaticBoxSizer(itemStaticBoxSizerWptDraggingStatic, wxVERTICAL);
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerWptDragging, 0, wxGROW|wxALL, border_size);
-    pWayPointPreventDragging = new wxCheckBox( itemPanelAdvanced, ID_DRAGGINGCHECKBOX, _("Lock all waypoints unless a waypoint property dialog is visible"),
-                                               wxDefaultPosition, wxSize(-1, -1), 0 );
+    pWayPointPreventDragging = new wxCheckBox( itemPanelAdvanced, ID_DRAGGINGCHECKBOX, _("Lock all waypoints unless a waypoint property dialog is visible"));
     pWayPointPreventDragging->SetValue(FALSE);
     itemStaticBoxSizerWptDragging->Add(pWayPointPreventDragging, 1, wxALIGN_LEFT|wxALL, border_size);
 
@@ -1275,8 +1242,7 @@ void options::CreateControls()
     wxStaticBoxSizer* itemStaticBoxSizerGUIOption = new wxStaticBoxSizer(itemStaticBoxSizerGUIOptionsStatic, wxVERTICAL);
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerGUIOption, 0, wxGROW|wxALL, border_size);
 
-    pEnableZoomToCursor = new wxCheckBox( itemPanelAdvanced, ID_ZTCCHECKBOX, _("Enable Wheel-Zoom-to-Cursor"),
-                                               wxDefaultPosition, wxSize(-1, -1), 0 );
+    pEnableZoomToCursor = new wxCheckBox( itemPanelAdvanced, ID_ZTCCHECKBOX, _("Enable Wheel-Zoom-to-Cursor") );
     pEnableZoomToCursor->SetValue(FALSE);
     itemStaticBoxSizerGUIOption->Add(pEnableZoomToCursor, 1, wxALIGN_LEFT|wxALL, border_size);
 
@@ -1291,8 +1257,7 @@ void options::CreateControls()
 /*    wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Printing"));
     wxStaticBoxSizer* itemStaticBoxSizerPrint = new wxStaticBoxSizer(itemStaticBoxSizerPrintStatic, wxVERTICAL);
     itemBoxSizer6->Add(itemStaticBoxSizerPrint, 0, wxGROW|wxALL, border_size);
-    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Printing Icon"), wxDefaultPosition,
-    wxSize(-1, -1), 0 );
+    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Printing Icon") );
     pPrintShowIcon->SetValue(FALSE);
     itemStaticBoxSizerPrint->Add(pPrintShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
 
@@ -1302,15 +1267,13 @@ void options::CreateControls()
     itemBoxSizer6->Add(itemStaticBoxSizerCDO, 0, wxGROW|wxALL, border_size);
 
     //  Chart Outlines checkbox
-    pCDOOutlines = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Chart Outlines"), wxDefaultPosition,
-    wxSize(-1, -1), 0 );
+    pCDOOutlines = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Chart Outlines") );
     pCDOOutlines->SetValue(FALSE);
     itemStaticBoxSizerCDO->Add(pCDOOutlines, 1, wxALIGN_LEFT|wxALL, border_size);
 
 
     //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits"), wxDefaultPosition,
-    wxSize(-1, -1), 0 );
+    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits") );
     pSDepthUnits->SetValue(FALSE);
     itemStaticBoxSizerCDO->Add(pSDepthUnits, 1, wxALIGN_LEFT|wxALL, border_size);
 */
@@ -1348,9 +1311,9 @@ void options::SetColorScheme(ColorScheme cs)
       SetControlColors(itemPanel9, cs);
       SetControlColors(ps57Ctl, cs);
       SetControlColors(itemPanelFont, cs);
-      SetControlColors(pDirCtl, cs);
-      SetControlColors(pSelCtl, cs);
-      SetControlColors(pListBox, cs);
+//      SetControlColors(pDirCtl, cs);
+//      SetControlColors(pSelCtl, cs);
+//      SetControlColors(pListBox, cs);
 
       SetControlColors(m_CancelButton, cs);
       SetControlColors(m_OKButton, cs);
@@ -2100,7 +2063,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     EndModal(iret);
 
-//    EndModal(GENERIC_CHANGED | S52_CHANGED | k_force | k_charts | k_lang);
 }
 
 
@@ -2201,6 +2163,118 @@ void options::OnChooseFont( wxCommandEvent& event )
 }
 
 
+void options::CreateChartsPage()
+{
+      int display_width, display_height;
+      wxDisplaySize(&display_width, &display_height);
+
+      itemBoxSizer10->Clear(true);
+      pSelCtl = NULL;
+      pDirCtl = NULL;
+
+          //    "Available" tree control and selection
+      wxStaticBox* itemStaticBoxSizer11Static = new wxStaticBox(itemPanel9, wxID_ANY,
+                  _("Available Chart Directories"));
+      itemStaticBoxSizer11 = new wxStaticBoxSizer(itemStaticBoxSizer11Static, wxVERTICAL);
+      itemBoxSizer10->Add(itemStaticBoxSizer11, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
+
+      if(display_height < 800)
+            itemStaticBoxSizer11->SetMinSize(wxSize(-1, 220));
+      else
+            itemStaticBoxSizer11->SetMinSize(wxSize(-1, 260));
+
+
+          //    "Active" list
+      itemActiveChartStaticBox = new wxStaticBox(itemPanel9, wxID_ANY, _("Active Chart Directories"));
+      wxStaticBoxSizer* itemStaticBoxSizer16 = new wxStaticBoxSizer(itemActiveChartStaticBox, wxVERTICAL);
+      itemBoxSizer10->Add(itemStaticBoxSizer16, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
+
+
+      wxString* pListBoxStrings = NULL;
+      pListBox = new wxListBox(itemPanel9, ID_LISTBOX, wxDefaultPosition, wxSize(-1, -1), 0,
+                               pListBoxStrings, wxLB_MULTIPLE);
+
+      if(display_height < 1024)
+            pListBox->SetMinSize(wxSize(-1, 100));
+      else
+            pListBox->SetMinSize(wxSize(-1, 150));
+
+      itemStaticBoxSizer16->Add(pListBox, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2);
+
+      wxButton* itemButton18 = new wxButton( itemPanel9, ID_BUTTONDELETE, _("Delete Selection") );
+      itemStaticBoxSizer16->Add(itemButton18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 2);
+
+
+      wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox(itemPanel9, wxID_ANY, _("Update Control"));
+      wxStaticBoxSizer* itemStaticBoxSizerUpdate = new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
+      itemBoxSizer10->Add(itemStaticBoxSizerUpdate, 0, wxGROW|wxALL, 5);
+      pUpdateCheckBox = new wxCheckBox( itemPanel9, ID_UPDCHECKBOX, _("Force Full Database Rebuild") );
+      itemStaticBoxSizerUpdate->Add(pUpdateCheckBox, 1, wxALIGN_LEFT|wxALL, 5);
+
+
+          //      Establish control colors on deferred creation
+      SetControlColors(pSelCtl, (ColorScheme)0);
+      SetControlColors(pListBox, (ColorScheme)0);
+
+      itemBoxSizer10->Layout();
+}
+
+void options::PopulateChartsPage()
+{
+      itemStaticBoxSizer11->Clear(true);
+
+
+      pDirCtl = new wxGenericDirCtrl( itemPanel9, ID_DIRCTRL, m_init_chart_dir, wxDefaultPosition,
+                                      wxDefaultSize, 0, _("All files (*.*)|*.*"), 0 );
+      itemStaticBoxSizer11->Add(pDirCtl, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
+
+
+      pSelCtl = new wxTextCtrl( itemPanel9, ID_TEXTCTRL1, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+      itemStaticBoxSizer11->Add(pSelCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2);
+
+      wxBoxSizer* itemBoxSizer14 = new wxBoxSizer(wxHORIZONTAL);
+      itemStaticBoxSizer11->Add(itemBoxSizer14, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+      wxButton* itemButton15 = new wxButton( itemPanel9, ID_BUTTONADD, _("Add Selection") );
+      itemBoxSizer14->Add(itemButton15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
+
+
+          //      Establish control colors on deferred creation
+      SetControlColors(pDirCtl, (ColorScheme)0);
+
+          //        Fill in the control variable data
+
+          //        Currently selected chart dirs
+      wxString dirname;
+      if(m_pCurrentDirList)
+      {
+            int nDir = m_pCurrentDirList->GetCount();
+            for(int i=0 ; i<nDir ; i++)
+            {
+                  dirname = m_pCurrentDirList->Item(i).fullpath;
+                  if(!dirname.IsEmpty())
+                  {
+                        if (pListBox)
+                        {
+                              pListBox->Append(dirname);
+                        }
+                  }
+            }
+      }
+
+          //        Selected Directory
+      wxString SelDir;
+      SelDir = pDirCtl->GetPath();
+      pSelCtl->Clear();
+      pSelCtl->SetInsertionPoint(0);
+ //     pSelCtl->AppendText(SelDir);
+
+      itemBoxSizer10->Layout();
+}
+
+
+
+
+
 void options::OnPageChange(wxNotebookEvent& event)
 {
       int i = event.GetSelection();
@@ -2209,110 +2283,10 @@ void options::OnPageChange(wxNotebookEvent& event)
       //    If so, build the "Charts" page variants
       if(2 == i)                        // 2 is the index of "Charts" page
       {
+            if(!k_charts)
+                  PopulateChartsPage();
 
-          k_charts = VISIT_CHARTS;
-
-          int display_width, display_height;
-          wxDisplaySize(&display_width, &display_height);
-
-          itemBoxSizer10->Clear(true);
-          pSelCtl = NULL;
-          pDirCtl = NULL;
-
-          //    "Available" tree control and selection
-          wxStaticBox* itemStaticBoxSizer11Static = new wxStaticBox(itemPanel9, wxID_ANY,
-                  _("Available Chart Directories"));
-          itemStaticBoxSizer11 = new wxStaticBoxSizer(itemStaticBoxSizer11Static, wxVERTICAL);
-          itemBoxSizer10->Add(itemStaticBoxSizer11, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
-          pDirCtl = new wxGenericDirCtrl( itemPanel9, ID_DIRCTRL, m_init_chart_dir, wxDefaultPosition,
-                                          wxDefaultSize, 0, _("All files (*.*)|*.*"), 0 );
-          if(display_height < 800)
-                pDirCtl->SetMinSize(wxSize(-1, 120));
-          else
-                pDirCtl->SetMinSize(wxSize(-1, 160));
-
-          itemStaticBoxSizer11->Add(pDirCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
-
-
-          pSelCtl = new wxTextCtrl( itemPanel9, ID_TEXTCTRL1, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
-          itemStaticBoxSizer11->Add(pSelCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2);
-
-          wxBoxSizer* itemBoxSizer14 = new wxBoxSizer(wxHORIZONTAL);
-          itemStaticBoxSizer11->Add(itemBoxSizer14, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
-          wxButton* itemButton15 = new wxButton( itemPanel9, ID_BUTTONADD, _("Add Selection"), wxDefaultPosition, wxDefaultSize, 0 );
-          itemBoxSizer14->Add(itemButton15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
-
-
-          //    "Active" list
-          itemActiveChartStaticBox = new wxStaticBox(itemPanel9, wxID_ANY, _("Active Chart Directories"));
-          wxStaticBoxSizer* itemStaticBoxSizer16 = new wxStaticBoxSizer(itemActiveChartStaticBox, wxVERTICAL);
-          itemBoxSizer10->Add(itemStaticBoxSizer16, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
-
-
-          wxString* pListBoxStrings = NULL;
-          pListBox = new wxListBox(itemPanel9, ID_LISTBOX, wxDefaultPosition, wxSize(-1, -1), 0,
-                                   pListBoxStrings, wxLB_MULTIPLE);
-
-          if(display_height < 1024)
-                pListBox->SetMinSize(wxSize(-1, 100));
-          else
-                pListBox->SetMinSize(wxSize(-1, 150));
-
-          itemStaticBoxSizer16->Add(pListBox, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2);
-
-          wxButton* itemButton18 = new wxButton( itemPanel9, ID_BUTTONDELETE, _("Delete Selection"), wxDefaultPosition, wxDefaultSize, 0 );
-          itemStaticBoxSizer16->Add(itemButton18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 2);
-
-
-/*
-          wxArrayString rba;
-          rba.Add(_T("Auto Update"));
-          rba.Add(_T("Force Full Reload"));
-
-          pUpdateCheckBox = new wxRadioBox(itemPanel9, -1, _T("Update Control"), wxDefaultPosition, wxDefaultSize, rba);
-          itemBoxSizer10->Add(pUpdateRadioBox, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
-          pUpdateRadioBox->Show();
-*/
-          wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox(itemPanel9, wxID_ANY, _("Update Control"));
-          wxStaticBoxSizer* itemStaticBoxSizerUpdate = new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
-          itemBoxSizer10->Add(itemStaticBoxSizerUpdate, 0, wxGROW|wxALL, 5);
-          pUpdateCheckBox = new wxCheckBox( itemPanel9, ID_UPDCHECKBOX, _("Force Full Database Rebuild"), wxDefaultPosition,
-                                          wxSize(-1, -1), 0 );
-          itemStaticBoxSizerUpdate->Add(pUpdateCheckBox, 1, wxALIGN_LEFT|wxALL, 5);
-
-
-          //      Establish control colors on deferred creation
-          SetControlColors(pDirCtl, (ColorScheme)0);
-          SetControlColors(pSelCtl, (ColorScheme)0);
-          SetControlColors(pListBox, (ColorScheme)0);
-
-          //        Fill in the control variable data
-
-          //        Currently selected chart dirs
-          wxString dirname;
-          if(m_pCurrentDirList)
-          {
-              int nDir = m_pCurrentDirList->GetCount();
-              for(int i=0 ; i<nDir ; i++)
-              {
-                  dirname = m_pCurrentDirList->Item(i).fullpath;
-                  if(!dirname.IsEmpty())
-                  {
-                      if (pListBox)
-                      {
-                          pListBox->Append(dirname);
-                      }
-                  }
-              }
-          }
-
-          //        Selected Directory
-          wxString SelDir;
-          SelDir = pDirCtl->GetPath();
-          pSelCtl->Clear();
-          pSelCtl->AppendText(SelDir);
-
-          itemBoxSizer10->Layout();
+            k_charts = VISIT_CHARTS;
       }
 
 
@@ -2339,43 +2313,6 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   int nLang = sizeof(lang_list)/sizeof(int);
 
-#if 0
-                 for( int it = 0 ; it < nLang ; it++)
-                  {
-                        if(wxLocale::IsAvailable(lang_list[it]))
-                        {
-#ifdef __WXMSW__
-                              //  Look explicitely to see if .mo is available
-                              wxString lang_canonical = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
-                              //    simplify common sublangauges, i.e. en_EN
-                              if((lang_canonical.Len() == 5) &&
-                                    (lang_canonical.Mid(0, 2).Upper() == lang_canonical.Mid(3,2)))
-                                  lang_canonical.Truncate(2);
-                              wxString lang_dir = g_SData_Locn;
-                              lang_dir += _T("share/");
-                              lang_dir += _T("locale/");
-                              lang_dir += lang_canonical;
-                              if(wxDir::Exists(lang_dir))
-#endif
-                              {
-                                  wxLocale ltest(lang_list[it], 0);
-                                  ltest.AddCatalog(_T("opencpn"));
-
-                                  if(ltest.IsLoaded(_T("opencpn")))
-                                  {
-                                    wxString s0 = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
-                                    wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-                                    if(wxNOT_FOUND == lang_array.Index(s0))
-                                          lang_array.Add(s0);
-
-                                  }
-                              }
-                        }
-                  }
-
-                  for(unsigned int i=0 ; i < lang_array.GetCount() ; i++)
-                        m_itemLangListBox->Append( wxLocale:: FindLanguageInfo(lang_array[i])->Description);
-#endif
 
 #ifdef __WXMSW__
                    // always add us english
@@ -2433,7 +2370,11 @@ void options::OnPageChange(wxNotebookEvent& event)
                   }
 
                   for(unsigned int i=0 ; i < lang_array.GetCount() ; i++)
-                        m_itemLangListBox->Append( wxLocale::FindLanguageInfo(lang_array[i])->Description);
+                  {
+                        //  Make opencpn substitutions
+                        wxString loc_lang_name = GetOCPNKnownLanguage(lang_array[i], NULL);
+                        m_itemLangListBox->Append( loc_lang_name );
+                  }
 #endif
 
 
@@ -2604,8 +2545,8 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
       else if(lang_canonical == _T("pt_BR")) {dir_suffix = _T("pt_BR"); return_string = wxString("Português Brasileiro", wxConvUTF8);}
       else if(lang_canonical == _T("ru_RU")) {dir_suffix = _T("ru");    return_string = wxString("Русский", wxConvUTF8);}
       else if(lang_canonical == _T("sv_SE")) {dir_suffix = _T("sv");    return_string = wxString("Svenska", wxConvUTF8);}
-	  else if(lang_canonical == _T("fi_FI")) {dir_suffix = _T("fi");   return_string = wxString("Suomalainen", wxConvUTF8);}
-	  else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norske", wxConvUTF8);}
+      else if(lang_canonical == _T("fi_FI")) {dir_suffix = _T("fi");   return_string = wxString("Suomalainen", wxConvUTF8);}
+	else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norske", wxConvUTF8);}
       else
       {
             dir_suffix = lang_canonical;
@@ -2617,6 +2558,6 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
             *lang_dir = dir_suffix;
 
       return return_string;
-      //
+
 }
 
