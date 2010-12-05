@@ -2375,10 +2375,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     phash = m_phash;
 
     CheckAndAddPlugInTool(tb);
-    tb->AddTool( ID_ZOOMIN, _T(""), *(*phash)[wxString(_T("zoomin"))], _T(""), wxITEM_NORMAL);
+    tb->AddTool( ID_ZOOMIN, _T(""), *(*phash)[wxString(_T("zoomin"))], _("Zoom In"), wxITEM_NORMAL);
     x += pitch_tool;
     CheckAndAddPlugInTool(tb);
-    tb->AddTool( ID_ZOOMOUT, _T(""), *(*phash)[wxString(_T("zoomout"))], _T(""), wxITEM_NORMAL);
+    tb->AddTool( ID_ZOOMOUT, _T(""), *(*phash)[wxString(_T("zoomout"))], _("Zoom Out"), wxITEM_NORMAL);
     x += pitch_tool;
 
 
@@ -2395,10 +2395,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     else
     {
           CheckAndAddPlugInTool(tb);
-          tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin_grey"))], _("Shift to Larger Scale Chart"), wxITEM_NORMAL);
+          tb->AddTool( ID_STKDN, _T(""), *(*phash)[wxString(_T("scin_grey"))], _T(""), wxITEM_NORMAL);
           x += pitch_tool;
           CheckAndAddPlugInTool(tb);
-          tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout_grey"))], _("Shift to Smaller Scale Chart"), wxITEM_NORMAL);
+          tb->AddTool( ID_STKUP, _T(""),*(*phash)[wxString(_T("scout_grey"))], _T(""), wxITEM_NORMAL);
           x += pitch_tool;
           m_toolbar_scale_shown = false;
     }
@@ -3328,6 +3328,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     if(g_pnmea)
     {
+          g_pnmea->Close();
           delete g_pnmea;
     }
 
@@ -4098,13 +4099,15 @@ int MyFrame::DoOptionsDialog()
 
             if((*pNMEADataSource != previous_NMEA_source) || ( previous_bGarminHost != g_bGarminHost))
             {
-//                  if(g_pnmea)
-//                        g_pnmea->Close();
+                  if(g_pnmea)
+                        g_pnmea->Close();
                   delete g_pnmea;
+
+                  bGPSValid = false;
 
                   //    If the selected port is the same as AIS port, override the name to force the
                   //    NMEA class to expect muxed data from AIS decoder
-                  if(pNMEADataSource->IsSameAs(*pAIS_Port))
+                  if((pNMEADataSource->IsSameAs(*pAIS_Port)) && (!pNMEADataSource->Upper().Contains(_T("NONE"))))
                         g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
                   else
                         g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
@@ -7633,21 +7636,24 @@ FILE *f;
 }
 #endif
 
-//    Search for (any?) Garmin device on Windows platforms
+//    Search for Garmin device driver on Windows platforms
 
       HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
-      SP_DEVICE_INTERFACE_DATA deviceinterface;
 
- //     wxLogMessage(_T("In EnumerateSerialPorts(), searching for Garmin DeviceInterface..."));
 
       hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID,
                                                       NULL, NULL,
                                                       DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
 
       if (hdeviceinfo != INVALID_HANDLE_VALUE)
-            wxLogMessage(_T("Found Garmin USB Driver."));
+      {
+            wxLogMessage(_T("EnumerateSerialPorts() Found Garmin USB Driver."));
+            preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
+            g_bGarminPersistance = true;        // And record the existance
+      }
 
-
+#if 0
+    SP_DEVICE_INTERFACE_DATA deviceinterface;
     deviceinterface.cbSize = sizeof(deviceinterface);
 
     if (SetupDiEnumDeviceInterfaces(hdeviceinfo,
@@ -7662,6 +7668,7 @@ FILE *f;
             g_bGarminPersistance = true;        // And record the existance
 
       }
+#endif
 
 #endif      //__WXMSW__
 
