@@ -388,7 +388,12 @@ IF (USE_GARMINHOST)
                   src/garmin/jeeps/gpssend.h
                   src/garmin/jeeps/gpsusbcommon.h
                   src/garmin/jeeps/gpsutil.h
+                  
 	)
+        IF(WIN32)
+           SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
+        ENDIF(WIN32)
+
 	ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
 	SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
