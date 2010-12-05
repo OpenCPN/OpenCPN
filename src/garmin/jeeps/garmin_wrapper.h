@@ -45,5 +45,10 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
 
 wxString GetLastGarminError(void);
 
+int Garmin_USB_On(void);
+int Garmin_USB_Off(void);
+
+
+
 #endif      /* garmin_wrapper_h */
 

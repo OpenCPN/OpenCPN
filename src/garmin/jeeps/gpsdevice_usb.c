@@ -31,8 +31,11 @@ static int32 success_stub(void)
 
 static int32 gdu_on(const char *port, gpsdevh **fd)
 {
-//dsr	return gusb_init(port, fd);
+#ifdef __WIN32__
+	return gusb_init(port, fd);
+#else
       return -1;
+#endif
 }
 
 static int32 gdu_off(gpsdevh *dh)

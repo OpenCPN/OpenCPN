@@ -29,6 +29,8 @@
 extern char last_error[];
 extern gpsdevh *g_gps_devh;
 
+gpsdevh *my_gps_devh;
+
 
 wxString GetLastGarminError(void)
 {
@@ -337,4 +339,18 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
       return ret_val;
 }
 
+/*
+int Garmin_USB_On(void)
+{
+      int ret_val = GPS_Device_On("usb:", &my_gps_devh);
 
+      return ret_val;
+}
+
+int Garmin_USB_Off(void)
+{
+      int ret_val = GPS_Device_Off(my_gps_devh);
+
+      return ret_val;
+}
+*/

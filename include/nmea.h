@@ -25,30 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * Revision 1.25  2010/01/25 01:31:53  badfeed
- * $Log: nmea.h,v $
- * Revision 1.32  2010/06/04 22:36:27  bdbcat
- * 604
- *
- * Revision 1.31  2010/05/31 00:41:28  bdbcat
- * 530
- *
- * Revision 1.30  2010/05/25 00:11:05  bdbcat
- * libgps
- *
- * Revision 1.29  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.28  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
- * Revision 1.27  2010/02/03 02:55:14  badfeed
- * Re-enable GSocket rename workaround for gtk, take 2.
- *
- * Revision 1.26  2010/01/25 20:27:15  badfeed
- * Undo re-enabled GSocket rename workaround for gtk, until a better approach is found
- *
- * Re-enable GSocket rename workaround for gtk
  *
  *
  *
@@ -102,6 +78,8 @@
 #define TIMER_NMEA1           777
 #define TIMER_LIBGPS1           999
 
+#define TIMER_GARMIN1           950
+
 enum
 {
     EVT_NMEA_DIRECT,
@@ -109,12 +87,12 @@ enum
 };
 
 //          Fwd Declarations
-class     CSyncSerialComm;
 class     MyFrame;
 class     OCP_NMEA_Thread;
 class     OCP_GARMIN_Thread;
 class     ComPortManager;
-
+class     DeviceMonitorWindow;
+class     GarminEvent;
 
 
 // Class declarations
@@ -190,6 +168,8 @@ public:
       NMEAHandler(int window_id, wxFrame *frame, const wxString& NMEADataSource, const wxString& BaudRate, wxMutex *pMutex = 0, bool bGarmin = false);
       ~NMEAHandler();
 
+      void Close(void);
+
       void GetSource(wxString& source);
 
       //    Stop/Start the NMEA Socket Client
@@ -207,6 +187,11 @@ public:
 
       bool SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress);
       bool SendRouteToGPS(Route *pr, wxString &com_name,  bool bsend_waypoints, wxGauge *pProgress);
+
+      wxFrame *GetParentFrame(){ return m_parent_frame; }
+
+      DeviceMonitorWindow     *m_pdevmon;
+      int                     m_Thread_run_flag;
 
 private:
       void OnSocketEvent(wxSocketEvent& event);
@@ -248,6 +233,7 @@ private:
       void               (*m_fn_gps_set_raw_hook)(struct gps_data_t *, void (*)(struct gps_data_t *, char *, size_t));
       int                (*m_fn_gps_stream)(struct gps_data_t *, unsigned int, void *);
       bool               m_bgps_present;
+
 
 
 DECLARE_EVENT_TABLE()
@@ -327,177 +313,6 @@ private:
 
 };
 
-
-
-//-------------------------------------------------------------------------------------------------------------
-//
-//    Garmin Input Thread
-//
-//    This thread manages reading the positioning data stream from the declared Garmin USB device
-//
-//-------------------------------------------------------------------------------------------------------------
-
-#ifdef __WXMSW__
-#include <windows.h>
-#endif
-
-
-//      Local Endian conversions
-void le_write16(void *addr, const unsigned value);
-void le_write32(void *addr, const unsigned value);
-signed int le_read16(const void *addr);
-signed int le_read32(const void *addr);
-
-
-
-//              Some Garmin Data Structures and Constants
-#define GARMIN_USB_API_VERSION 1
-#define GARMIN_USB_MAX_BUFFER_SIZE 4096
-#define GARMIN_USB_INTERRUPT_DATA_SIZE 64
-
-#define IOCTL_GARMIN_USB_API_VERSION CTL_CODE \
-        (FILE_DEVICE_UNKNOWN, 0x800, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_GARMIN_USB_INTERRUPT_IN CTL_CODE \
-        (FILE_DEVICE_UNKNOWN, 0x850, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE CTL_CODE \
-        (FILE_DEVICE_UNKNOWN, 0x851, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-
-/*
- * New packet types in USB.
- */
-#define GUSB_SESSION_START 5    /* We request units attention */
-#define GUSB_SESSION_ACK   6    /* Unit responds that we have its attention */
-#define GUSB_REQUEST_BULK  2    /* Unit requests we read from bulk pipe */
-
-#define GUSB_RESPONSE_PVT  51   /* PVT Data Packet */
-#define GUSB_RESPONSE_SDR  114  /* Satellite Data Record Packet */
-
-
-
-
-typedef
-union {
-        struct {
-        unsigned char type;
-        unsigned char reserved1;
-        unsigned char reserved2;
-        unsigned char reserved3;
-        unsigned char pkt_id[2];
-        unsigned char reserved6;
-        unsigned char reserved7;
-        unsigned char datasz[4];
-        unsigned char databuf[1]; /* actually a variable length array... */
-        } gusb_pkt;
-        unsigned char dbuf[1024];
-} garmin_usb_packet;
-
-
-typedef struct garmin_unit_info {
-        unsigned long serial_number;
-        unsigned long unit_id;
-        unsigned long unit_version;
-        char *os_identifier; /* In case the OS has another name for it. */
-        char *product_identifier; /* From the hardware itself. */
-} unit_info_type;
-
-
-
-/*              Packet structure for Pkt_ID = 51 (PVT Data Record)   */
-//#pragma pack(push)  /* push current alignment to stack */
-//#pragma pack(1)     /* set alignment to 1 byte boundary */
-#pragma pack(push,1) /* push current alignment to stack, set alignment to 1 byte boundary */
-
-typedef struct {
-        float   alt;
-        float   epe;
-        float   eph;
-        float   epv;
-        short   fix;
-        double  tow;
-        double  lat;
-        double  lon;
-        float   east;
-        float   north;
-        float   up;
-        float   msl_hght;
-        short   leap_scnds;
-        long    wn_days;
-} D800_Pvt_Data_Type;
-
-#pragma pack(pop)   /* restore original alignment from stack */
-
-
-
-
-/*              Packet structure for Pkt_ID = 114 (Satellite Data Record)   */
-typedef    struct
-           {
-           unsigned char         svid;          //space vehicle identification (1-32 and 33-64 for WAAS)
-           short                 snr;           //signal-to-noise ratio
-           unsigned char         elev;          //satellite elevation in degrees
-           short                 azmth;         //satellite azimuth in degrees
-           unsigned char         status;        //status bit-field
-           } cpo_sat_data;
-
-/*
-The status bit field represents a set of booleans described below:
-       Bit      Meaning when bit is one (1)
-        0       The unit has ephemeris data for the specified satellite.
-        1       The unit has a differential correction for the specified satellite.
-        2       The unit is using this satellite in the solution.
-*/
-
-
-enum {
-        rs_fromintr,
-        rs_frombulk
-};
-
-
-
-class OCP_GARMIN_Thread: public wxThread
-{
-
-public:
-
-      OCP_GARMIN_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget, wxMutex *pMutex, const wxString& PortName);
-      ~OCP_GARMIN_Thread(void);
-      void *Entry();
-
-      void OnExit(void);
-
-private:
-#ifdef __WXMSW__
-      HANDLE garmin_usb_start(HDEVINFO hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata);
-      bool gusb_syncup(void);
-
-      int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
-      int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
-      int gusb_win_send(const garmin_usb_packet *opkt, size_t sz);
-
-      int gusb_cmd_send(const garmin_usb_packet *opkt, size_t sz);
-      int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);
-#endif
-
-      void ThreadMsg(const wxString &msg);          // Send a wxLogMessage to main program event loop
-      bool ResetGarminUSBDriver();
-
-      wxEvtHandler            *m_pMainEventHandler;
-      NMEAHandler             *m_launcher;
-      wxMutex                 *m_pShareMutex;
-      wxString                m_PortName;
-
-#ifdef __WXMSW__
-      HANDLE                  m_usb_handle;
-#endif
-
-      int                     m_max_tx_size;
-      int                     m_receive_state;
-      cpo_sat_data            m_sat_data[12];
-      unit_info_type          grmin_unit_info[2];
-      int                     m_nSats;
-};
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -601,7 +416,9 @@ private:
 };
 
 
+#ifdef __WXMSW__
 
+#endif
 
 #endif
 

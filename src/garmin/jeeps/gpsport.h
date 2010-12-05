@@ -22,7 +22,9 @@ typedef unsigned short gbuint16;
 typedef long gbint32;
 typedef short gbint16;
 
-#define snprintf  _snprintf
+#ifndef snprintf
+  #define snprintf  _snprintf
+#endif
 
 #else
 

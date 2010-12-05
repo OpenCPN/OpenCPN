@@ -60,7 +60,9 @@ char *xstrdup(const char *s);
  * thread safe.   The buffer pointed to remains valid only until the next
  * call to this function.
  */
-#define snprintf  _snprintf
+#ifndef snprintf
+  #define snprintf  _snprintf
+#endif
 
 const char *fix_win_serial_name_r(const char *comname, char *obuf, size_t len);
 const char *fix_win_serial_name(const char *comname);
