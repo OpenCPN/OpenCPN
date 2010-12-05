@@ -204,11 +204,6 @@ options::options( )
 options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
 {
       Init();
-#ifndef bert// wxCHECK_VERSION(2, 9, 0)
-//      wxDialog::Init();
-#else
-      wxScrollingDialog::Init();
-#endif
 
       pParent = parent;
 
@@ -222,21 +217,13 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 //      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
 //            wstyle |= (wxNO_BORDER);
 
-#ifndef bert// wxCHECK_VERSION(2, 9, 0)
-#else
-      SetLayoutAdaptation(true);
-#endif
 //      SetLayoutAdaptationLevel(2);
 
 //      Create(parent, id, caption, pos, size, wstyle);
 
       SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-#ifndef bert// (2, 9, 0)
       wxDialog::Create( parent, id, caption, pos, size,wstyle );
-#else
-      wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
-#endif
 
       CreateControls();
 
@@ -263,9 +250,11 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
             else
                   pagesize = page->GetBestSize();
 
+
             largest_unscrolled_page_size = wxSize(wxMax(largest_unscrolled_page_size.x, pagesize.x), wxMax(largest_unscrolled_page_size.y, pagesize.y));
 
       }
+
 
       for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
@@ -278,6 +267,11 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       SetMaxSize(wxDisplay(wxDisplay::GetFromWindow(this)).GetClientArea().GetSize());
 
       Fit();
+      //    Not sure why, but we need to account for some decorations
+      wxSize now_size = GetSize();
+      now_size.IncBy(8);
+      SetSize(now_size);
+
       Centre();
 }
 
@@ -805,29 +799,27 @@ void options::CreateControls()
 
     wxStaticBox* itemStaticBoxSizer57Static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Mariner's Standard"));
     wxStaticBoxSizer* itemStaticBoxSizer57 = new wxStaticBoxSizer(itemStaticBoxSizer57Static, wxVERTICAL);
-    itemStaticBoxSizer26->Add(itemStaticBoxSizer57, 1, wxALL|wxEXPAND, 2);
+    itemStaticBoxSizer26->Add(itemStaticBoxSizer57, 0, wxALL|wxEXPAND, 2);
 
     wxString* ps57CtlListBoxStrings = NULL;
-    ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(-1, 150), 0,
+    ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(-1, 180), 0,
                                          ps57CtlListBoxStrings, wxLB_SINGLE );
     itemStaticBoxSizer57->Add(ps57CtlListBox, 0, wxALIGN_LEFT|wxALL, border_size);
 
-    wxBoxSizer* itemBoxSizer57 = new wxBoxSizer(wxVERTICAL);
-    itemStaticBoxSizer57->Add(itemBoxSizer57, 1, wxALL|wxEXPAND, 2);
+ //   wxBoxSizer* itemBoxSizer57 = new wxBoxSizer(wxVERTICAL);
+//    itemStaticBoxSizer57->Add(itemBoxSizer57, 1, wxALL|wxEXPAND, 2);
 
-    itemButtonClearList = new wxButton( ps57Ctl, ID_CLEARLIST, _("Clear All"),
-            wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer57->Add(itemButtonClearList, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
+    itemButtonClearList = new wxButton( ps57Ctl, ID_CLEARLIST, _("Clear All"));
+    itemStaticBoxSizer57->Add(itemButtonClearList, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
 
-    itemButtonSelectList = new wxButton( ps57Ctl, ID_SELECTLIST, _("Select All"),
-            wxDefaultPosition, wxDefaultSize, 0 );
+    itemButtonSelectList = new wxButton( ps57Ctl, ID_SELECTLIST, _("Select All"));
     itemButtonSelectList->SetDefault();
-    itemBoxSizer57->Add(itemButtonSelectList, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
+    itemStaticBoxSizer57->Add(itemButtonSelectList, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
 
 
 
     wxBoxSizer* itemBoxSizer75 = new wxBoxSizer(wxVERTICAL);
-    itemStaticBoxSizer26->Add(itemBoxSizer75, 1, wxALL, border_size);
+    itemStaticBoxSizer26->Add(itemBoxSizer75, 0, wxALL, border_size);
 
     wxString pDispCatStrings[] = {
         _("Base"),
