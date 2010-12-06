@@ -1067,7 +1067,7 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 
 //    Substitue icon?
       wxBitmap *pbm;
-      if ( m_bIsActive )
+      if (( m_bIsActive ) &&  (m_IconName != _T("mob")))
             pbm = pWayPointMan->GetIconBitmap ( _T ( "activepoint" ) );
       else
             pbm =m_pbmIcon;

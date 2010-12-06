@@ -3791,7 +3791,7 @@ void MyFrame::ActivateMOB(void)
       double zlat, zlon;
       ll_gc_ll(gLat, gLon, gCog, 1.0, &zlat, &zlon);
 
-      RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+      RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _( "1.0 NM along COG" ) ), GPX_EMPTY_STRING );
       pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_src );
 
       Route *temp_route = new Route();
@@ -3809,7 +3809,10 @@ void MyFrame::ActivateMOB(void)
       temp_route->m_bDeleteOnArrival = false;
 
       temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
+
+      g_pRouteMan->DeactivateRoute();
       g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+
       cc1->Refresh(false);
 
       wxString mob_message(_( "MAN OVERBOARD" ));
