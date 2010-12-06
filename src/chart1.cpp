@@ -2989,7 +2989,7 @@ void MyFrame::ReSizeToolbar(void)
 
     int dummy_size_last = m_tool_dummy_size_x;
     m_tool_dummy_size_x = tx - toolbar_width_without_static;
-    if(dummy_size_last != m_tool_dummy_size_x)
+    if((dummy_size_last != m_tool_dummy_size_x) && (m_tool_dummy_size_x > 0))
           m_bneedtoolbar = true;
 
 }
@@ -5012,7 +5012,9 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
                   mdc.DrawBitmap(BMPRose, offset_x, offset_y, true);
             }
             if(fabs(m_rose_angle - rose_angle) > .001)
+            {
                   b_need_refresh = true;
+            }
 
             m_rose_angle = rose_angle;
 
@@ -5050,7 +5052,7 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
             // Update the tool in the toolbar
             if(m_toolBar && b_update_toolbar && b_need_refresh)
             {
-///
+
                   //   Delete the current status tool, if present
                   int ct_pos = m_toolBar->GetToolPos(ID_TBSTATBOX);
                   if(ct_pos != -1)
@@ -5060,17 +5062,11 @@ void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
                               m_toolBar->DeleteTool(ID_TBEXIT);
 
       //      Delete the current status tool
-//      #ifndef __WXOSX__
                         m_toolBar->RemoveTool(ID_TBSTATBOX);
-//      #endif
-      // end rms
                   }
 
       //      Create the new control tool
-      //#ifdef __WXMSW__
                   delete m_pStatBoxToolStaticBmp;        // Gets deleted by DeleteTool? No....
-      //#endif
-
 
                   m_pStatBoxToolStaticBmp = new wxStaticBitmap(m_toolBar, ID_TBSTATBOX, m_StatBmp,
                               wxPoint(2000,10), wxSize(m_StatBmp.GetWidth(),DUMMY_HEIGHT),wxSIMPLE_BORDER, _T("staticBitmap"));
