@@ -4736,6 +4736,18 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
             if(td->n_alarm_state == AIS_ALARM_SET)
                   drawit++;
 
+            //  If AIS tracks are shown, is the first point of the track on-screen?
+            if(g_bAISShowTracks)
+            {
+                  wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                  if(node)
+                  {
+                        AISTargetTrackPoint *ptrack_point = node->GetData();
+                        if ( VPoint.vpBBox.PointInBox ( ptrack_point->m_lon, ptrack_point->m_lat, 0 ) )
+                              drawit++;
+                  }
+            }
+
                 //    Calculate AIS target Position Predictor, using global static variable for length of vector
 
             double pred_lat, pred_lon;
@@ -6431,6 +6443,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                    else if ( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging)
                          DraggingAllowed = false;
 
+                   if(m_pRoutePointEditTarget && (m_pRoutePointEditTarget->m_IconName == _T("mob")))
+                         DraggingAllowed = false;
+
                    if (DraggingAllowed)
                    {
 
@@ -7450,20 +7465,22 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                        if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
                        else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15
 
-                        pConfig->DeleteWayPoint ( m_pFoundRoutePoint );
-                        pSelect->DeleteSelectablePoint ( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
-                        delete m_pFoundRoutePoint;
-                        m_pFoundRoutePoint = NULL;
+                       if(m_pFoundRoutePoint && (m_pFoundRoutePoint->m_IconName != _T("mob")))
+                       {
+                              pConfig->DeleteWayPoint ( m_pFoundRoutePoint );
+                              pSelect->DeleteSelectablePoint ( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
+                              delete m_pFoundRoutePoint;
+                              m_pFoundRoutePoint = NULL;
 
-                        if(pMarkPropDialog)
-                        {
-                              pMarkPropDialog->SetRoutePoint ( NULL );
-                              pMarkPropDialog->UpdateProperties();
-                        }
+                              if(pMarkPropDialog)
+                              {
+                                    pMarkPropDialog->SetRoutePoint ( NULL );
+                                    pMarkPropDialog->UpdateProperties();
+                              }
 
-                        if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
-                              pRouteManagerDialog->UpdateWptListCtrl();
-
+                              if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                                    pRouteManagerDialog->UpdateWptListCtrl();
+                       }
                         break;
                 }
                 case ID_WP_MENU_PROPERTIES:
