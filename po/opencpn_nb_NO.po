@@ -5,34 +5,146 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Version 2.1.0 Build 624a\n"
+"Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 23:11-0500\n"
-"PO-Revision-Date: 2010-10-30 14:12+0100\n"
-"Last-Translator: Frode Lynum <frode@brommeland.no>\n"
+"POT-Creation-Date: 2010-11-11 09:12-0500\n"
+"PO-Revision-Date: 2010-12-05 18:27+0100\n"
+"Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Norwegian Bokmal\n"
-"X-Poedit-Country: NORWAY\n"
-#
+"X-Poedit-Language: Norwegian Bokmål\n"
+"X-Poedit-Country: Norge\n"
+
+#: include/routeprop.h:71
+#: src/chcanv.cpp:7171
+#: src/chcanv.cpp:7964
+#: src/routemanagerdialog.cpp:823
+msgid "Route Properties"
+msgstr "Egenskaper for rute"
+
+#: include/routeprop.h:89
+msgid "Mark Properties"
+msgstr "Egenskaper for merke"
+
+#: include/routeprop.h:103
+msgid "Mark Information"
+msgstr "Merke informasjon"
+
+#: include/options.h:72
+msgid "Options"
+msgstr "Valg"
+
+#: include/chcanv.h:580
+#: include/chcanv.h:592
+#: include/chcanv.h:645
+#: include/chcanv.h:657
+#: src/chcanv.cpp:7252
+#: src/chcanv.cpp:7259
+#: src/chcanv.cpp:7710
+msgid "Object Query"
+msgstr "Objekt informasjon"
+
+#: include/chcanv.h:849
+msgid "Jump To Position"
+msgstr "Gå til posisjon"
+
+#: include/about.h:70
+#: src/chart1.cpp:2436
+msgid "About OpenCPN"
+msgstr "Om OpenCPN"
+
+#: include/ais.h:446
+#: src/ais.cpp:2436
+msgid "AIS Alert"
+msgstr "AIS varsel"
+
+#: include/ais.h:489
+#: src/chcanv.cpp:7319
+#: src/chcanv.cpp:8116
+msgid "AIS target list"
+msgstr "AIS mål liste"
+
+#: include/routeman.h:71
+msgid "Send Route To GPS"
+msgstr "Send rute til GPS"
+
+#: src/chartdbs.cpp:706
+msgid " ChartFile:  "
+msgstr " Kartfil:  "
+
+#: src/chartdbs.cpp:714
+msgid " Name:  "
+msgstr " Navn:  "
+
+#: src/chartdbs.cpp:720
+#, c-format
+msgid " Scale:  1:%d"
+msgstr " Skala:  1:%d"
+
+#: src/chartdbs.cpp:727
+msgid " ID:  "
+msgstr " ID:  "
+
+#: src/chartdbs.cpp:736
+msgid " Depth Units:  "
+msgstr " Dybde enheter:  "
+
+#: src/chartdbs.cpp:745
+msgid " Soundings:  "
+msgstr " Loddskudd:  "
+
+#: src/chartdbs.cpp:754
+msgid " Datum:  "
+msgstr " Datum:  "
+
+#: src/chartdbs.cpp:760
+msgid " Projection:  "
+msgstr " Projeksjon:  "
+
+#: src/chartdbs.cpp:762
+#: src/ais.cpp:842
+msgid "Unknown"
+msgstr "Ukjent"
+
+#: src/chartdbs.cpp:764
+msgid "Mercator"
+msgstr "Mercator"
+
+#: src/chartdbs.cpp:766
+msgid "Transverse Mercator"
+msgstr "Transvers merkator"
+
+#: src/chartdbs.cpp:768
+msgid "Polyconic"
+msgstr "Polyconic"
+
+#: src/chartdbs.cpp:775
+msgid " Source Edition:  "
+msgstr " Kildeversjon:  "
+
+#: src/chartdbs.cpp:784
+msgid " Updated:  "
+msgstr " Oppdatert:  "
+
+#: src/chartdbs.cpp:795
 msgid "\n"
 msgstr "\n"
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-#
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN... En fin liten åpen-kilde kartplotter/navigator"
-#
+
+#: src/chartdbs.cpp:988
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN kartskann..."
+
+#: src/chartdbs.cpp:1043
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN katalog skann..."
+
+#: src/chartdbs.cpp:1275
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN legg til kart..."
+
+#: src/chart1.cpp:640
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -48,1784 +160,2142 @@ msgid ""
 "\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr ""
-#
+"\n"
+"OpenCPN er distribuert i håpet om at det vil være til god hjelp,\n"
+"men UTEN NOEN GARANTI; uten den underforståtte\n"
+"garantien av SALGBARHET eller FUNKSJONALITET FOR\n"
+"DENNE BRUK.\n"
+"Se GNU Generell Åpen Lisens for flere detaljer.\n"
+"\n"
+"OpenCPN må bare brukes sammen med godkjente\n"
+"papirkarter og tradisjonelle navigasjonsmetoder.\n"
+"\n"
+"IKKE stol på OpenCPN for sikkerheten til de ombord eller\n"
+"materiell.\n"
+"\n"
+"Vennligst klikk \"OK\" for å godta og fortsette, \"Avbryt\" for å avslutte.\n"
+
+#: src/chart1.cpp:651
+msgid "Welcome to OpenCPN"
+msgstr "Velkommen til OpenCPN"
+
+#: src/chart1.cpp:868
+#: src/chart1.cpp:1634
+#: src/chart1.cpp:4010
+#: src/navutil.cpp:1184
+#: src/navutil.cpp:1933
+msgid "OpenCPN Info"
+msgstr "OpenCPN info"
+
+#: src/chart1.cpp:1067
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr "Innhenter grunnleggende språkvalg fra Windows registeret"
+
+#: src/chart1.cpp:1566
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr "Innhenter grunnleggende kart kataloger fra Windows registeret"
+
+#: src/chart1.cpp:1617
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr "Gjenoppbygger kartdatabase fra konfigurasjons fil oppføringer..."
+
+#: src/chart1.cpp:1618
+#: src/chart1.cpp:3931
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN kart oppdatering"
+
+#: src/chart1.cpp:1632
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 "           Ingen kart er installert.\n"
-"Vennligst velg kartmappe i Verktøy->Kart."
-#
-msgid "      \"Ship Name\" MMSI (Call Sign)"
+"Velg kartmapper i Verktøy->Kart."
+
+#: src/chart1.cpp:2199
+#: src/chcanv.cpp:7274
+#: src/chcanv.cpp:7735
+#: src/ais.cpp:3482
+msgid "AIS Target Query"
+msgstr "AIS mål informasjon"
+
+#: src/chart1.cpp:2351
+#: src/chart1.cpp:2361
+msgid "Shift to Larger Scale Chart"
+msgstr "Bytt til større kartskala"
+
+#: src/chart1.cpp:2354
+#: src/chart1.cpp:2364
+msgid "Shift to Smaller Scale Chart"
+msgstr "Bytt til mindre kartskala"
+
+#: src/chart1.cpp:2371
+msgid "Create Route"
+msgstr "Lag rute"
+
+#: src/chart1.cpp:2374
+msgid "Auto Follow"
+msgstr "Følg automatisk"
+
+#: src/chart1.cpp:2379
+#: src/chart1.cpp:3857
+msgid "ToolBox"
+msgstr "Verktøy"
+
+#: src/chart1.cpp:2382
+msgid "Show ENC Text"
+msgstr "Vis ENC-tekst"
+
+#: src/chart1.cpp:2391
+msgid "Show AIS Targets"
+msgstr "Vis AIS-mål"
+
+#: src/chart1.cpp:2398
+msgid "Show Currents"
+msgstr "Vis strømmer"
+
+#: src/chart1.cpp:2401
+msgid "Show Tides"
+msgstr "Vis tidevann"
+
+#: src/chart1.cpp:2407
+msgid "Print Chart"
+msgstr "Skriv ut kart"
+
+#: src/chart1.cpp:2413
+#: src/routemanagerdialog.cpp:297
+msgid "Route Manager"
+msgstr "Rutebehandling"
+
+#: src/chart1.cpp:2420
+msgid "Toggle Tracking"
+msgstr "Slepestrek"
+
+#: src/chart1.cpp:2428
+msgid "Change Color Scheme"
+msgstr "Bytt fargepalett"
+
+#: src/chart1.cpp:2432
+msgid "Drop MOB Marker"
+msgstr "Mann Over Bord"
+
+#: src/chart1.cpp:2522
+#: src/chart1.cpp:4928
+#: src/chart1.cpp:5160
+msgid "Exit OpenCPN"
+msgstr "Avslutt OpenCPN"
+
+#: src/chart1.cpp:3569
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr "Kart1::Hendelse...TCMgr Ikke tilgjengelig"
+
+#: src/chart1.cpp:3645
+#: src/chcanv.cpp:2835
+msgid "MAN OVERBOARD"
+msgstr "MANN OVER BORD"
+
+#: src/chart1.cpp:4010
+msgid "Please restart OpenCPN to activate new language selection."
+msgstr "Start OpenCPN på nytt for å aktivere det nye språket."
+
+#: src/chart1.cpp:4599
+#: src/chcanv.cpp:3164
+#: src/chcanv.cpp:6032
+msgid "Cursor: "
+msgstr "Kursor: "
+
+#: src/chart1.cpp:4608
+#: src/chcanv.cpp:3173
+#: src/chcanv.cpp:6041
+#, c-format
+msgid "From Ownship: %03d Deg  %6.2f NMi"
+msgstr "Fra eget skip: %03d Grader  %6.2f Nm"
+
+#: src/chart1.cpp:5430
+msgid "Chart file corrupt.. disabling this chart \n"
+msgstr "Kartfil er ødelagt. Deaktiverer dette kartet \n"
+
+#: src/chart1.cpp:5433
+#: src/nmea.cpp:207
+#: src/nmea.cpp:261
+#: src/nmea.cpp:295
+#: src/nmea.cpp:323
+#: src/nmea.cpp:363
+#: src/nmea.cpp:375
+#: src/ais.cpp:2100
+#: src/ais.cpp:2144
+msgid "OpenCPN Message"
+msgstr "OpenCPN melding"
+
+#: src/chart1.cpp:6015
+msgid "Add this chart to quilt."
+msgstr "Legg dette kartet til for fletting."
+
+#: src/chart1.cpp:6021
+#: src/chcanv.cpp:7264
+msgid "Remove this chart from quilt."
+msgstr "Fjern dette kartet fra fletting."
+
+#: src/chart1.cpp:6244
+msgid "Chart Print"
+msgstr "Skriv ut kart"
+
+#: src/chart1.cpp:6248
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
 msgstr ""
-#
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "      Kursvektor lengde (Minutter):"
-#
-msgid "      Max moored target speed (Kts.):"
-msgstr "      Max fart på fortøyde mål (Knop):"
-#
-msgid "      Target track length (Minutes):"
-msgstr "      Slepestrek lengde etter mål (Minutter):"
-#
-msgid "   Chart File RLL data corrupt on chart "
-msgstr "   Kartfil RLL data er skadet i kart"
-#
+"Et problem oppstod ved utskrift.\n"
+"Kanskje printer ikke er installert korrekt?"
+
+#: src/chart1.cpp:6750
+msgid " Ship: "
+msgstr " Skip: "
+
+#: src/chart1.cpp:9015
+msgid "ToolTips"
+msgstr "Verktøytips"
+
+#: src/chartimg.cpp:258
+msgid "No Chart Available"
+msgstr "Ingen kart er tilgjengelig"
+
+#: src/chartimg.cpp:763
+#: src/chartimg.cpp:1322
 msgid "   Chart File contains less than 3 PLY points: "
-msgstr "   Kartfil inneholder mindre enn 3 PLY punkter:"
-#
-msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "   Kartfil er skadet i PostInit() i kart"
-#
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr "   Kartfil har ikke BSB hode, kan ikke aktiveres."
-#
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "   Kartprojeksjon er UKJENT, antar Mercator:"
-#
+msgstr "   Kartfil inneholder mindre enn 3 PLY punkter: "
+
+#: src/chartimg.cpp:872
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
-msgstr "   Kunne ikke lese første %d bytes av hode for kartfil:"
-#
-msgid "   Error creating Line Index for chart "
-msgstr "   Feil ved opprettelse av Linjeindex for kart"
-#
+msgstr "   Kunne ikke lese første %d bytes av hode for kartfil: "
+
+#: src/chartimg.cpp:894
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "   Kartfil har ikke BSB hode, kan ikke åpne."
+
+#: src/chartimg.cpp:1058
+msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+
+#: src/chartimg.cpp:1375
+msgid "   Chart File RLL data corrupt on chart "
+msgstr "   Kartfil RLL data er ødelagt i kart "
+
+#: src/chartimg.cpp:1725
+#: src/chartimg.cpp:1736
+msgid "   Chart File corrupt in PostInit() on chart "
+msgstr "   Kartfil er ødelagt i PostInit() på kart "
+
+#: src/chartimg.cpp:1794
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "   Linjeindex er skadet, gjenoppretter Index for kart"
-#
-msgid "   PlugInManager: Cannot load library: "
-msgstr ""
-#
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr ""
-#
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr ""
-#
-msgid "   Result: OK, Internal georef solution used."
-msgstr "   Resultat: OK, Intern georef. løsning ble brukt."
-#
-msgid "   Trying again with internally calculated georef solution "
-msgstr "   Forsøker på nytt med internkalkulert georef. løsning"
-#
-msgid ""
-"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
-"chart "
-msgstr ""
-"   VP Sluttsjekk med intern georef: Georeferanse Chart_Error_Factor på kart"
-#
+msgstr "   Linje indeks er ødelagt, gjenskaper indeks for kart "
+
+#: src/chartimg.cpp:1799
+msgid "   Error creating Line Index for chart "
+msgstr "   Feil oppstod under gjenskaping av linje indeks for kart "
+
+#: src/chartimg.cpp:4708
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr "---<<< Advarsel:  Georeferanse for kart kan være dårlig. >>>---"
+
+#: src/chartimg.cpp:4783
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP Sluttsjekk: Georeferanse Chart_Error_Factor på kart"
-#
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr "  ..Og TCPA er mindre enn (Minutter):"
-#
-msgid "  Could not open AIS serial port '"
-msgstr "  Kunne ikke åpne AIS serieport '"
-#
-msgid "  Could not open serial port '"
-msgstr "   Kunne ikke åpne seriellport '"
-#
-msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D Dager  %H Timer  %M Minutter"
-#
-msgid " %H Hours  %M Minutes"
-msgstr " %H Timer  %M Minutter"
-#
-msgid " - "
-msgstr " - "
-#
-msgid " ChartFile:  "
-msgstr " Kartfil:"
-#
-msgid " Datum:  "
-msgstr " Datum:"
-#
-msgid " Depth Units:  "
-msgstr " Dybde enheter:"
-#
-msgid " ID:  "
-msgstr " ID:"
-#
-msgid " Name:  "
-msgstr " Navn:"
-#
-msgid " Projection:  "
-msgstr " Projeksjon:"
-#
-#, c-format
-msgid " Scale:  1:%d"
-msgstr "Skala:  1:%d"
-#
-msgid " Ship: "
-msgstr " Skip:"
-#
-msgid " Soundings:  "
-msgstr "Loddskudd:"
-#
-msgid " Source Edition:  "
-msgstr " Kilde versjon:"
-#
-msgid " Updated:  "
-msgstr " Oppdatert:"
-#
+msgstr "   VP Sluttsjekk: Georeferanse Chart_Error_Factor på kart "
+
+#: src/chartimg.cpp:4791
+#: src/chartimg.cpp:4855
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr "---<<< Advarsel:  Georeferanse nøyaktighet for kart er dårlig. >>>---"
+
+#: src/chartimg.cpp:4798
+msgid "   Trying again with internally calculated georef solution "
+msgstr "   Forsøker på nytt med intern kalkulert georeferanse løsning "
+
+#: src/chartimg.cpp:4847
+msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
+msgstr "   VP sluttsjekk med intern georeferanse: Georeferanse Chart_Error_Factor på kart "
+
+#: src/chartimg.cpp:4850
 #, c-format
 msgid " is %5g"
-msgstr "er %5g"
-#
-msgid " to "
-msgstr ""
-#
-msgid "&Acknowledge"
-msgstr "&Kvitter"
-#
-msgid "&Activate"
-msgstr "&Aktiver"
-#
-msgid "&Cancel"
-msgstr "&Avbryt"
-#
-msgid "&Delete"
-msgstr "&Slett"
-#
-#, fuzzy
-msgid "&Delete All"
-msgstr "&Slett"
-#
-#, fuzzy
-msgid "&Export Route..."
-msgstr "Eksporter rute..."
-#
-#, fuzzy
-msgid "&Export Track..."
-msgstr "Eksporter slepestrek..."
-#
-#, fuzzy
-msgid "&Export Wpt..."
-msgstr "&Eksporter..."
-#
-msgid "&Font family:"
-msgstr "&Font familie:"
-#
-#, fuzzy
-msgid "&Go To"
-msgstr "Gå hit"
-#
-msgid "&Kilometers"
-msgstr "&Kilometer"
-#
-msgid "&Nautical miles"
-msgstr "&Nautiske mil"
-#
-msgid "&New"
-msgstr ""
-#
-msgid "&OK"
-msgstr "&OK"
-#
-msgid "&Point size:"
-msgstr "&Punkt størrelse:"
-#
-#, fuzzy
-msgid "&Properties"
-msgstr "Egenskaper"
-#
-msgid "&Properties..."
-msgstr "&Egenskaper"
-#
-msgid "&Reverse"
-msgstr "&Snu"
-#
-#, fuzzy
-msgid "&Send to GPS"
-msgstr "Send til GPS..."
-#
-msgid "&Silence Alert"
-msgstr "&Demp Varsel"
-#
-#, fuzzy
-msgid "&Start Track"
-msgstr "Vis slepestrek etter mål"
-#
-msgid "&Style:"
-msgstr "&Stil:"
-#
-msgid "&Underline"
-msgstr "&Understrek"
-#
-msgid "&Weight:"
-msgstr "&Vekt:"
-#
-msgid "&Zoom to"
-msgstr "&Zoom til"
-#
-msgid ""
-"'\n"
-" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-msgstr ""
-"'\n"
-" Forslag: Prøv 'xxx.xxx.xxx.xxx' notasjon"
-#
+msgstr " er %5g"
+
+#: src/chartimg.cpp:4859
+msgid "   Result: OK, Internal georef solution used."
+msgstr "   Resultat: OK, intern georef. løsning er benyttet."
+
+#: src/nmea.cpp:205
+msgid "  Could not open serial port '"
+msgstr "  Kunne ikke åpne serieport '"
+
+#: src/nmea.cpp:206
+#: src/ais.cpp:2143
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
 msgstr ""
 "'\n"
 "Forslag: Forsøk å lukke andre programmer."
-#
-msgid "(Unnamed Route)"
-msgstr "(Rute uten navn)"
-#
-msgid "(Unnamed Track)"
-msgstr "(Slepestrek uten navn)"
-#
-#, fuzzy
-msgid "(Unnamed Waypoint)"
-msgstr "Døp om Veipunkter?"
-#
-msgid "-"
-msgstr "-"
-#
-#, fuzzy
-msgid "--"
-msgstr "-"
-#
-msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< Advarsel:  Kart georef. nøyaktighet er dårlig. >>>---"
-#
-msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< Advarsel:  Kart georef. nøyaktighet kan være dårlig. >>>---"
-#
-msgid "2 Color"
-msgstr "2 Farger"
-#
-msgid "4 Color"
-msgstr "4 Farger"
-#
-msgid "A"
-msgstr "A"
-#
-msgid "AIS"
-msgstr "AIS"
-#
-msgid "AIS Alert"
-msgstr "AIS varsel"
-#
-msgid "AIS Data Port"
-msgstr "AIS dataport"
-#
-msgid "AIS General"
-msgstr "AIS generellt"
-#
-msgid "AIS Target Query"
-msgstr "AIS mål spørring"
-#
-msgid "AIS target list"
-msgstr "AIS mål liste"
-#
-#, fuzzy
-msgid "AISRollover"
-msgstr "AIS varsel"
-#
-msgid "AISTargetQuery"
-msgstr "AISMålSpørring"
-#
-msgid "About"
-msgstr "Om"
-#
-msgid "About OpenCPN"
-msgstr "Om OpenCPN"
-#
-msgid "Activate"
-msgstr "Aktiver"
-#
-msgid "Activate CM93 Offset"
-msgstr ""
-#
-msgid "Activate Next in Route"
-msgstr "Aktiver som neste i rute"
-#
-msgid "Activate Route"
-msgstr "Aktiver rute"
-#
-msgid "Activate Waypoint"
-msgstr "Aktiver veipunkt"
-#
-msgid "Active Chart Directories"
-msgstr "Aktive kartkataloger"
-#
-msgid "Add Selection"
-msgstr "Legg til utvalg"
-#
-msgid "Add this chart to quilt."
-msgstr "Legg til dette kartet i overlapping."
-#
-msgid "Additional information"
-msgstr "Tilleggsinformasjon"
-#
-#, fuzzy
-msgid "Aid to Navigation"
-msgstr ""
-"Hjelp til navigasjon \n"
-"\n"
-#
-msgid "All files (*.*)|*.*"
-msgstr "Alle filer (*.*)|*.*"
-#
-msgid "Append Waypoint"
-msgstr "Legg til veipunkt"
-#
-msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Er du sikker på at du vil slette <ALLE> rutene?"
-#
-msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Er du sikker på at du ønsker å slette <ALLE> slepestrek?"
-#
-msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Er du sikker på at du vil slette <ALLE> veipunktene?"
-#
-msgid "Assumed 1 Mile Point"
-msgstr ""
-#
-msgid "AtoN"
-msgstr "AtoN"
-#
+
+#: src/nmea.cpp:251
+msgid "Failed to load libgps.so.19"
+msgstr "Kunne ikke laste libgps.so.19"
+
+#: src/nmea.cpp:252
 msgid "Attempting to load libgps.so"
+msgstr "Forsøker å laste libgps.so"
+
+#: src/nmea.cpp:259
+msgid "Failed to load libgps.so"
+msgstr "Kunne ikke laste libgps.so"
+
+#: src/nmea.cpp:260
+msgid "Unable to load libgps.so"
+msgstr "Kunne ikke laste libgps.so"
+
+#: src/nmea.cpp:294
+msgid ""
+"Unable to initialize libgps.\n"
+"\n"
+"gpsd host is: "
 msgstr ""
-#
-msgid "Authors"
-msgstr "Opphav"
-#
-msgid "Auto Follow"
-msgstr "Følg automatisk"
-#
-msgid "Autopilot Output Port"
-msgstr "Autopilot utgangs port"
-#
-msgid "Available Chart Directories"
-msgstr "Tilgjengelige kartkataloger"
-#
-msgid "Avg. speed (Kts)"
-msgstr ""
-#
-msgid "B"
-msgstr "B"
-#
-msgid "Base"
-msgstr "Base"
-#
-#, fuzzy
-msgid "Base Station"
-msgstr "Destinasjon"
-#
-msgid "BaseClassCommonName"
-msgstr ""
-#
-msgid "Bearing"
-msgstr "Kurs"
-#
-#, fuzzy, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Kurs:              %5.0f Deg.\n"
-#
-#, fuzzy
-msgid "Bearing:                Unavailable\n"
-msgstr "Fart:            Utilgjengelig\n"
-#
-msgid "Boundaries"
-msgstr "Grenser"
-#
-msgid "Brg"
-msgstr "Kurs"
-#
-msgid "C&olour:"
-msgstr "F&arge:"
-#
-msgid "CM93"
-msgstr "CM93"
-#
-msgid "CM93 Offset Display"
-msgstr ""
-#
-msgid "CM93 Offset Off"
-msgstr ""
-#
-msgid "CM93 Offset On"
-msgstr ""
-#
-msgid "CM93 Offset Tool Off"
-msgstr ""
-#
-msgid "CM93 Offset Tool....."
-msgstr ""
-#
-msgid "CM93 Offsets"
-msgstr ""
-#
-msgid "CM93 Offsets On"
-msgstr ""
-#
-msgid "CM93 Zoom Detail"
-msgstr "CM93 Zoom detalj"
-#
-msgid "CPA"
-msgstr ""
-#
-msgid "CPA Calculation"
-msgstr "CPA kalkulasjon"
-#
-#, fuzzy
-msgid "CPA TCPA"
-msgstr "CPA/TCPA varsler"
-#
-msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA varsler"
-#
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f NM\n"
-#
-msgid "Call"
-msgstr "Kallesignal"
-#
+"Kunne ikke initiere libgps.\n"
+"\n"
+"gpsd vert er: "
+
+#: src/nmea.cpp:322
 msgid ""
 "Call to gps_open failed.\n"
 "Is gpsd running?\n"
 "\n"
 "gpsd host is: "
 msgstr ""
-"Tilkobling til gps_open feilet.\n"
-"Er gpsd startet?\n"
+"Forsøk på å åpne gps_open feilet.\n"
+"Er gpsd på?\n"
 "\n"
 "gpsd vert er: "
-#
-#, fuzzy
-msgid "CallSign:             "
-msgstr "Posisjon:"
-#
-msgid "Cancel"
-msgstr "Avbryt"
-#
-msgid "Change Color Scheme"
-msgstr "Bytt fargeoppsett"
-#
-msgid "Chart"
-msgstr "Kart"
-#
-msgid "Chart Depth Units"
-msgstr "Kart dybdeenheter"
-#
-msgid "Chart Display Filters"
-msgstr "Kartvisnings filtre"
-#
-msgid "Chart Display Options"
-msgstr "Kartvisningsvalg"
-#
-msgid "Chart Display Style"
-msgstr "Kartvisnings stil"
-#
-msgid "Chart Print"
-msgstr "Skriv ut Kart"
-#
-msgid "Chart file corrupt.. disabling this chart \n"
-msgstr "Kartfil er skadet.. deaktiverer dette kartet \n"
-#
-msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Chart1::Event...TCMgr Ikke Tilgjengelig"
-#
-msgid "Charts"
-msgstr "Karter"
-#
-msgid "Choose Font..."
-msgstr "Velg font..."
-#
-msgid "Class"
-msgstr "Klasse"
-#
-#, fuzzy
-msgid "Class:                "
-msgstr "ETA:"
-#
-msgid "Clear All"
-msgstr "Tøm Alt"
-#
-msgid "Clear Anchor Watch"
-msgstr "Fjern ankervakt"
-#
-msgid "Click to cancel the font selection."
-msgstr "Klikk for å avbryte fontvalg"
-#
-msgid "Click to confirm the font selection."
-msgstr "Klikk for å bekrefte fontvalg."
-#
-msgid "Close"
-msgstr "Lukk"
-#
-msgid "CoG"
-msgstr "COG"
-#
-msgid "Colors"
-msgstr "Farger"
-#
-msgid "Console Legend"
-msgstr ""
-#
-msgid "Console Value"
-msgstr ""
-#
-msgid "Could not resolve TCP/IP host '"
-msgstr "Kunne ikke finne TCP/IP vert '"
-#
-msgid "Course UP Mode"
-msgstr "Kurs opp modus"
-#
-#, fuzzy, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Kurs:               %5.0f Deg.\n"
-#
-#, fuzzy
-msgid "Course:                 Unavailable\n"
-msgstr "Fart:            Utilgjengelig\n"
-#
-msgid "Create Route"
-msgstr "Lag rute"
-#
-msgid "Current"
-msgstr "Strøm"
-#
-msgid "Cursor: "
-msgstr "Kursor:"
-#
-msgid "De-Clutter Text (exp.)"
-msgstr "Rydd opp i tekst"
-#
-msgid "Deactivate"
-msgstr "Deaktiver"
-#
-msgid "Deactivate Route"
-msgstr "Deaktiver rute"
-#
-msgid "Deep Depth"
-msgstr "Dyp dybde"
-#
-#, fuzzy
-msgid "Delete All"
-msgstr "Velg Alt"
-#
-msgid "Delete Mark"
-msgstr "Slett merke"
-#
-msgid "Delete Route"
-msgstr "Slett rute"
-#
-msgid "Delete Selection"
-msgstr "Slett utvalg"
-#
-msgid "Delete Track"
-msgstr "Slett slepestrek"
-#
-msgid "Delete Waypoint"
-msgstr "Slett veipunkt"
-#
-msgid "Depart From"
-msgstr "Avreise fra"
-#
-msgid "Depth Settings"
-msgstr "Dybde Innstillinger"
-#
-msgid "Depth Settings(m)"
-msgstr "Dybde Innstillinger(m)"
-#
-msgid "Description"
-msgstr "Beskrivelse"
-#
-msgid "Destination"
-msgstr "Destinasjon"
-#
-msgid "Destination:          "
-msgstr "Destinasjon:"
-#
-#, fuzzy
-msgid "Disable"
-msgstr "Distanse"
-#
-msgid "Display"
-msgstr "Vis"
-#
-msgid "Display Category"
-msgstr "Visningskategori"
-#
-msgid "Distance"
-msgstr "Distanse"
-#
-msgid "Distance between rings"
-msgstr "Distanse mellom ringer"
-#
-msgid "Done."
-msgstr ""
-#
-msgid "Drop MOB Marker"
-msgstr "Sett MOB merke"
-#
-msgid "Drop Mark Here"
-msgstr "Sett merke her"
-#
-#, fuzzy
-msgid "E&xport All..."
-msgstr "&Eksporter..."
-#
-msgid "ENC/Vector"
-msgstr "ENC/Vektor"
-#
-msgid "ETA          "
-msgstr "ETA"
-#
-#, fuzzy
-msgid "ETA:"
-msgstr "ETA"
-#
-msgid "ETA:                  "
-msgstr "ETA:"
-#
-msgid "ETE/Timestamp"
-msgstr "ETE/Tidsmerke"
-#
-msgid "Enable"
-msgstr ""
-#
-msgid "Enable CM93 Detail Slider"
-msgstr "Aktiver CM93 detalj-justering"
-#
-msgid "Enable Chart Quilting"
-msgstr "Aktiver kartfletting"
-#
-msgid "Enable Manual CM93 Offsets"
-msgstr ""
-#
-msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr ""
-#
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Aktiver hjulzoom til kursor"
-#
-msgid "End Route"
-msgstr "Avslutt rute"
-#
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
-#
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
-#
-msgid "Etc."
-msgstr "Osv."
-#
-msgid "Exit OpenCPN"
-msgstr "Avslutt OpenCPN"
-#
-msgid "Export GPX file"
-msgstr "Eksporter GPX fil"
-#
-#, fuzzy
-msgid "Failed to load libgps.so"
-msgstr ""
-"Kunne ikke laste libgps.\n"
-"\n"
-"gpsd vert er: "
-#
-#, fuzzy
-msgid "Failed to load libgps.so.19"
-msgstr ""
-"Kunne ikke laste libgps.\n"
-"\n"
-"gpsd vert er: "
-#
-msgid "Fathoms"
-msgstr "Favner"
-#
-msgid "Feet"
-msgstr "Fot"
-#
-msgid "Filter NMEA Course and Speed data"
-msgstr ""
-#
-msgid "Filter Period (Sec.)"
-msgstr ""
-#
-msgid "Font Options"
-msgstr "Font Valg"
-#
-msgid "Force Full Database Rebuild"
-msgstr "Tving full database gjenoppbygging"
-#
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
-msgstr "Fra Eget skip: %03d Grader  %6.2f Nm"
-#
-msgid "GPS"
-msgstr "GPS"
-#
-msgid "GPS/Plotter Port"
-msgstr "GPS/Plotterport"
-#
-msgid "GPSD Data Server"
-msgstr "GPSD dataserver"
-#
-msgid "GRIB"
-msgstr "GRIB"
-#
-msgid "GUI Options"
-msgstr "GUI Valg"
-#
-msgid "Go To Here"
-msgstr "Gå hit"
-#
-#, fuzzy
-msgid "Go To Mark/WP"
-msgstr "Gå hit"
-#
-#, fuzzy
-msgid "Go to "
-msgstr "Gå hit"
-#
-msgid "Help"
-msgstr "Hjelp"
-#
-msgid "Here"
-msgstr "Her"
-#
-msgid "I&mport..."
-msgstr "I&mporter..."
-#
-msgid "Icon"
-msgstr "Ikon"
-#
-msgid "Import GPX file"
-msgstr "Importer GPX fil"
-#
-msgid "Inland Blue Flag        Clear\n"
-msgstr ""
-#
-msgid "Inland Blue Flag        Set\n"
-msgstr ""
-#
-msgid "Insert Waypoint"
-msgstr "Sett inn veipunkt"
-#
-#, fuzzy
-msgid "Jump To"
-msgstr "Posisjon"
-#
-#, fuzzy
-msgid "Jump To Position"
-msgstr "Posisjon"
-#
-msgid "Jump To Position..."
-msgstr ""
-#
-msgid "Language"
-msgstr "Språk"
-#
-msgid "Language/Fonts"
-msgstr "Språk/Fonter"
-#
-#, fuzzy
-msgid "Latest Report Time:      "
-msgstr "Siste rapportering:"
-#
-msgid "Latitude"
-msgstr "Breddegrad"
-#
-msgid "Leg"
-msgstr "Legg"
-#
-msgid "Leg/Route"
-msgstr "Legg/Rute"
-#
-#, fuzzy
-msgid "Leg: from "
-msgstr "Legg:"
-#
-#, fuzzy
-msgid "Length"
-msgstr "Legg"
-#
-msgid "License"
-msgstr "Lisens"
-#
-msgid "Limit range: NM"
-msgstr ""
-#
-msgid "Links"
-msgstr "Linker"
-#
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
-msgstr "Lås alle veipunkter unntagen når en veipunktdialog er synlig"
-#
-msgid "Longitude"
-msgstr "Lengdegrad"
-#
-msgid "Look Ahead Mode"
-msgstr "Se forover modus"
-#
-msgid "Lost Targets"
-msgstr "Mistede mål"
-#
-msgid "MAN OVERBOARD"
-msgstr "MANN OVERBORD"
-#
-msgid "META Objects"
-msgstr "META objekter"
-#
-msgid "MMSI"
-msgstr "MMSI"
-#
-msgid "Mariner's Standard"
-msgstr "Mariner's Standard"
-#
-msgid "MarinersStandard"
-msgstr "MarinersStandard"
-#
-msgid "Mark Icon"
-msgstr "Merkeikon"
-#
-msgid "Mark Information"
-msgstr "Merke informasjon"
-#
-msgid "Mark Name"
-msgstr "Merkenavn"
-#
-msgid "Mark Properties"
-msgstr "Egenskaper for merke"
-#
-msgid "Mark targets as lost after (Minutes:):"
-msgstr "Merk mål som mistet etter (Minutter):"
-#
-msgid "Mark/WP Properties"
-msgstr "Egenskaper for Merke/VP"
-#
-#, fuzzy
-msgid "Marks"
-msgstr "Nytt Merke"
-#
-msgid "Max Detail Here"
-msgstr "Max detalj her"
-#
-msgid "Measure Off"
-msgstr "Deaktiver måling"
-#
-msgid "Measure....."
-msgstr "Mål..."
-#
-msgid "Mercator"
-msgstr "Mercator"
-#
-msgid "Meters"
-msgstr "Meter"
-#
-msgid "Metres"
-msgstr "Meter"
-#
-msgid "Move Boat Here"
-msgstr "Flytt båt hit"
-#
-msgid "NMEA Baud Rate"
-msgstr "NMEA overføringshastighet"
-#
-msgid "NMEA Data Source"
-msgstr "NMEA datakilde"
-#
-msgid "NMEA Options"
-msgstr "NMEA valg"
-#
-msgid "Name"
-msgstr "Navn"
-#
-msgid "Nav Status"
-msgstr "Nav status"
-#
-msgid "Navigation Data"
-msgstr "Navigasjonsdata"
-#
-msgid "Navigational Status:  "
-msgstr "Navigasjons status:"
-#
-msgid "New Mark"
-msgstr "Nytt Merke"
-#
-msgid "Next"
-msgstr "Neste"
-#
-msgid "No CPA Calculation if target range is greater than (NMi):"
-msgstr "Ingen CPA kalkulasjon om avstand til mål er mer enn (Nm):"
-#
-msgid "No Chart Available"
-msgstr "Ingen kart er tilgjengelig"
-#
-msgid "Number of radar rings shown"
-msgstr "Vis antall radar ringer"
-#
-msgid "OK"
-msgstr "OK"
-#
-msgid "Object Query"
-msgstr "Objekt spørring"
-#
-msgid "Ok"
-msgstr "Ok"
-#
-msgid "OpenCPN Alert"
-msgstr "OpenCPN varsel"
-#
-#, fuzzy
-msgid "OpenCPN Chart Add...."
-msgstr "OpenCPN kart-oppdatering"
-#
-#, fuzzy
-msgid "OpenCPN Chart Scan...."
-msgstr "OpenCPN kart-oppdatering"
-#
-msgid "OpenCPN Chart Update"
-msgstr "OpenCPN kart-oppdatering"
-#
-msgid "OpenCPN Converting Track to Route...."
-msgstr ""
-#
-msgid "OpenCPN Directory Scan...."
-msgstr ""
-#
-msgid "OpenCPN Info"
-msgstr "OpenCPN Info"
-#
-msgid "OpenCPN Message"
-msgstr "OpenCPN melding"
-#
-msgid "OpenCPN PlugIn Base Class"
-msgstr ""
-#
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-#
-msgid "OpenCPN Route Create"
-msgstr "OpenCPN ruteopprettelse"
-#
-msgid "Options"
-msgstr "Valg"
-#
-msgid "Other"
-msgstr "Andre"
-#
-msgid "OverZoom"
-msgstr "OverZoom"
-#
-msgid "Overwrite existing file?"
-msgstr "Skrive over eksisterende fil?"
-#
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Lengde for kursvektor på eget skip (Minutter):"
-#
-msgid "OwnShip Display Options"
-msgstr "Valg for visning av Eget Skip"
-#
-msgid "Paper Chart"
-msgstr "Papirkart"
-#
-msgid "Place Trackpoints at distance interval (NMi):"
-msgstr "Plasser slepestrekpunkter ved distanseintervall (Nm):"
-#
-msgid "Place Trackpoints at time interval (Seconds):"
-msgstr "Plasser slepestrekpunkter ved tidsintervall (Sek.):"
-#
-msgid "Plain"
-msgstr "Enkel"
-#
-msgid "Plan Speed"
-msgstr "Reisens fart"
-#
-#, fuzzy
-msgid "Plan speed (Kts)"
-msgstr "Reisens fart"
-#
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Spill lyd ved CPA/TCPA varsel"
-#
-msgid "Play ships bells"
-msgstr "Spill skipsklokker"
-#
-msgid "Please restart OpenCPN to activate new language selection."
-msgstr "Vennligst start OpenCPN på nytt for å aktivere nytt språkvalg."
-#
-msgid "PlugInManager searching for PlugIns in location "
-msgstr ""
-#
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: Loading PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr ""
-#
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr ""
-#
-msgid "PlugIns"
-msgstr ""
-#
-msgid "Points"
-msgstr "Punkter"
-#
-msgid "Polyconic"
-msgstr "Polyconic"
-#
-msgid "Position"
-msgstr "Posisjon"
-#
-#, fuzzy
-msgid "Position:               "
-msgstr "Posisjon:"
-#
+
+#: src/nmea.cpp:361
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
 "\n"
-"                              Would you like to use this version of libgps "
-"anyway?"
+"                              Would you like to use this version of libgps anyway?"
 msgstr ""
-#
-msgid "Preferences"
-msgstr ""
-#
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Klargjør GPS for rute/veipunktmottak og trykk Send..."
-#
-msgid "Preserve scale when switching charts"
-msgstr "Bevar skala ved bytte av kart"
-#
-msgid "Prev"
-msgstr "Forrige"
-#
-msgid "Preview:"
-msgstr "Forhånsvisning:"
-#
-msgid "Print Chart"
-msgstr "Skriv ut kart"
-#
-msgid "Printing"
-msgstr "Skriver ut"
-#
-#, fuzzy
-msgid "Processing Waypoints..."
-msgstr "Slett alle veipunkter"
-#
-msgid "Progress..."
-msgstr "Forløp..."
-#
-msgid "Properties"
-msgstr "Egenskaper"
-#
-msgid "Radar rings"
-msgstr "Radar ringer"
-#
-msgid "Range"
-msgstr "Avstand"
-#
-#, fuzzy
-msgid "Range:                  Unavailable\n"
-msgstr "Fart:            Utilgjengelig\n"
-#
+"Mulig libgps API versjon forskjell.\n"
+"libgps ga ikke et gyldig svar på versjon forespørsel\n"
+"\n"
+"                              Vil du benytte denne versjonen av libgps?"
+
+#: src/nmea.cpp:372
 #, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Avstand:                %5.1f NM\n"
-#
-msgid "Raster"
-msgstr "Raster"
-#
-#, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Rapport alder:               %3d Sek.\n"
-#
-#, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Rapport alder:               %3d Sek.\n"
-#
-#, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Rapport alder:               %3d Sek.\n"
-#
-#, fuzzy
-msgid "Rebuilding chart database from configuration file entries..."
-msgstr "OpenCPN må oppdatere kartdatabasen fra konfigurasjonsfil oppføringer..."
-#
-#, fuzzy, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
-msgstr ""
-"Seneste rapport periode:     %3d Sek.\n"
-"\n"
-#
-msgid "Reference Station:"
-msgstr "Referanse stasjon:"
-#
-msgid "Remove Waypoint from Route"
-msgstr "Fjern veipunkt fra rute"
-#
-msgid "Remove lost targets after (Minutes:):"
-msgstr "Fjern mistede mål etter (Minutter):"
-#
-msgid "Remove this chart from quilt."
-msgstr "Fjern dette kartet fra overlapping."
-#
-msgid "Rename Waypoints?"
-msgstr "Døp om Veipunkter?"
-#
-#, fuzzy, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Rapport alder:               %3d Sek.\n"
-#
-msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr ""
-#
-msgid "Retrieving initial language selection from Windows Registry"
-msgstr ""
-#
-msgid "Reverse Route"
-msgstr "Snu rute"
-#
-msgid "Rollover"
-msgstr ""
-#
-msgid "Route"
-msgstr "Rute"
-#
-msgid "Route Manager"
-msgstr "Rutebehandling"
-#
-msgid "Route Name"
-msgstr "Rutenavn"
-#
-msgid "Route Properties"
-msgstr "Egenskaper for rute"
-#
-msgid "Route Uploaded successfully."
-msgstr ""
-#
-msgid "Route from Track"
-msgstr ""
-#
-#, fuzzy
-msgid "Routes"
-msgstr "Rute"
-#
-msgid "SOG COG"
-msgstr ""
-#
-msgid "Safety Depth"
-msgstr "Sikkerhets dybde"
-#
-msgid "Scale In"
-msgstr "Skaler inn"
-#
-msgid "Scale Out"
-msgstr "Skaler ut"
-#
-msgid "Select Alert Sound"
-msgstr "Velg varslingslyd"
-#
-msgid "Select All"
-msgstr "Velg Alt"
-#
-msgid "Select Chart Types for Quilting"
-msgstr "Velg karttype for fletting"
-#
-msgid "Select Sound File"
-msgstr "Velg lydfil"
-#
-msgid "Send"
-msgstr "Send"
-#
-msgid "Send Route To GPS"
-msgstr "Send rute til GPS"
-#
-msgid "Send To GPS..."
-msgstr "Send til GPS..."
-#
-msgid "Set Anchor Watch"
-msgstr "Sett ankervakt"
-#
-msgid "Set CM93 Offset"
-msgstr ""
-#
-msgid "Settings"
-msgstr "Innstillinger"
-#
-msgid "Shallow Depth"
-msgstr "Grunntvanns dybde"
-#
-msgid "Shift to Larger Scale Chart"
-msgstr "Bytt til større kartskala"
-#
-msgid "Shift to Smaller Scale Chart"
-msgstr "Bytt til mindre kartskala"
-#
-msgid "Ship Type:            "
-msgstr "Skipstype:"
-#
-msgid "ShipName:  "
-msgstr "Skipsnavn:"
-#
-msgid "Show AIS Targets"
-msgstr "Vis AIS mål"
-#
-msgid "Show ATON labels"
-msgstr "Vis navhjelp etiketter"
-#
-msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Vis CPA/TCPA varseldialog"
-#
-msgid "Show Chart Outlines"
-msgstr "Vis kartomriss"
-#
-msgid "Show Currents"
-msgstr "Vis strøm"
-#
-msgid "Show DepthUnits"
-msgstr "Vis loddskudd"
-#
-msgid "Show ENC Text"
-msgstr "Vis ENC Tekst"
-#
-msgid "Show GPS/NMEA data stream window"
-msgstr "Vis NMEA datastrøm vindu"
-#
-msgid "Show GRIB icon"
-msgstr "Vis GRIB ikon"
-#
-msgid "Show Important Text Only"
-msgstr "Vis kun viktig tekst"
-#
-msgid "Show Light Descriptions"
-msgstr "Vis lys beskrivelser"
-#
-msgid "Show Name"
-msgstr "Vis navn"
-#
-msgid "Show Printing Icon"
-msgstr "Vis skriv ut ikon"
-#
-msgid "Show Status Bar"
-msgstr "Vis Statuslinje"
-#
-msgid "Show Tides"
-msgstr "Vis tidevann"
-#
-msgid "Show Track icon"
-msgstr "Vis slepestrek ikon"
-#
-msgid "Show radar rings"
-msgstr "Vis radar ringer"
-#
-msgid "Show skewed raster charts as North-Up"
-msgstr ""
-#
-msgid "Show target COG arrows"
-msgstr "Vis målets kursvektor"
-#
-msgid "Show target tracks"
-msgstr "Vis slepestrek etter mål"
-#
-msgid "ShowSoundings"
-msgstr "VisLoddskudd"
-#
-msgid "Shows the font preview."
-msgstr "Viser utseende til font."
-#
-msgid "Simplified"
-msgstr "Forenklet"
-#
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:                %5dm x %dm x %4.1fm\n"
-"\n"
-#
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:                %5dm x %dm x ---m\n"
-"\n"
-#
-#, fuzzy, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:                ---m x ---m x %4.1fm\n"
-"\n"
-#
-#, fuzzy
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:                ---m x ---m x ---m\n"
-"\n"
-#
-#, fuzzy, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:                %5dm x %dm x %4.1fm\n"
-"\n"
-#
-#, fuzzy, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:                %5dm x %dm x ---m\n"
-"\n"
-#
-msgid "SoG"
-msgstr "SOG"
-#
-#, fuzzy
-msgid "Speed (Kts)"
-msgstr "Vindhastighet, Knop"
-#
-#, fuzzy
-msgid "Speed:                  Unavailable\n"
-msgstr "Fart:            Utilgjengelig\n"
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Fart:                %5.2f Kts.\n"
-#
-msgid "Standard"
-msgstr "Standard"
-#
-msgid "Start"
-msgstr "Start"
-#
-msgid "Supress Alerts for anchored/moored targets"
-msgstr "Eliminer varsler for forankrede/fortøyde mål"
-#
-msgid "Supress anchored/moored targets"
-msgstr "Eliminer forankrede/fortøyde mål"
-#
-msgid "Symbolized"
-msgstr "Symbolisert"
-#
-msgid "TCP/IP WiFi Data Server"
-msgstr "TCP/IP WiFi Data Server"
-#
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Tim:Min\n"
-#
-msgid "Target info"
-msgstr ""
-#
-msgid "Temporary GOTO Route"
-msgstr "Midlertidig GÅ TIL rute"
-#
-#, fuzzy
-msgid "Temporary MOB Route"
-msgstr "Midlertidig GÅ TIL rute"
-#
-msgid "Test Alert Sound"
-msgstr "Test varslingslyd"
-#
-msgid "Text Element"
-msgstr "Tekstelement"
-#
-msgid "The font colour."
-msgstr "Font farge."
-#
-msgid "The font family."
-msgstr "Font familie."
-#
-msgid "The font point size."
-msgstr "Font punktstørrelse"
-#
-msgid "The font style."
-msgstr "Font stil."
-#
-msgid "The font weight."
-msgstr "Font vekt."
-#
-msgid "There"
-msgstr "Der"
-#
-msgid ""
-"There was a problem printing.\n"
-"Perhaps your current printer is not set correctly?"
-msgstr ""
-"Et problem oppstod ved utskrift.\n"
-"Kanskje printeren din ikke er oppsatt korrekt?"
-#
-msgid "This Leg"
-msgstr "Denne leggen"
-#
-msgid "Tide"
-msgstr "Tidevann"
-#
-msgid "Time Enroute"
-msgstr "Reisetid"
-#
-msgid "To"
-msgstr "Til"
-#
-msgid "To Waypoint"
-msgstr "Til veipunkt"
-#
-msgid "Today"
-msgstr "I dag"
-#
-msgid "Toggle Tracking"
-msgstr "Slepestrek"
-#
-msgid "Tomorrow"
-msgstr "I morgen"
-#
-msgid "ToolBox"
-msgstr "Verktøy"
-#
-msgid "ToolTips"
-msgstr ""
-#
-msgid "Total Distance"
-msgstr "Total distanse"
-#
-#, fuzzy
-msgid "Track Name"
-msgstr "Merkenavn"
-#
-msgid "Track Properties"
-msgstr "Egenskaper for slepestrek"
-#
-msgid "Tracks"
-msgstr "Slepestreker"
-#
-msgid "Transverse Mercator"
-msgstr "Transvers mercator"
-#
-#, c-format
-msgid "TrueScale: %8.0f             "
-msgstr "VirkeligSkala: %8.0f  "
-#
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "VirkeligSkala: %8.0f  Zoom %4.1fx"
-#
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "VirkeligSkala: %8.0f  Zoom %4.2fx"
-#
-msgid "Type"
-msgstr "Type"
-#
-msgid "UTC"
-msgstr "UTC"
-#
-msgid ""
-"Unable to initialize libgps.\n"
-"\n"
-"gpsd host is: "
-msgstr ""
-"Kunne ikke starte libgps.\n"
-"\n"
-"gpsd vert er: "
-#
-#, fuzzy
-msgid "Unable to load libgps.so"
-msgstr ""
-"Kunne ikke laste libgps.\n"
-"\n"
-"gpsd vert er: "
-#
-msgid "Units"
-msgstr "Enheter"
-#
-msgid "Unk"
-msgstr "Ukj"
-#
-msgid "Unknown"
-msgstr "Ukjent"
-#
-msgid "Update CM93 Offset"
-msgstr ""
-#
-msgid "Update Control"
-msgstr "Oppdaterings kontroll"
-#
-msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
-msgstr ""
-#
-msgid "Use High Definition Graphics"
-msgstr "Benytt HD grafikk"
-#
-msgid "Use SCAMIN"
-msgstr "Bruk SCAMIN"
-#
-msgid "Use nearby waypoint?"
-msgstr "Benytte et nært veipunkt?"
-#
-msgid "Vector Charts"
-msgstr "Vektorkart"
-#
-msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
-msgstr "WAV filer (*.wav)|*.wav|All files (*.*)|*.*"
-#
-msgid "Warn if CPA less than (NMi):"
-msgstr "Varsle om CPA er mindre enn (Nm):"
-#
-msgid "Waypoint Locking"
-msgstr "Veipunkt låsing"
-#
-#, fuzzy
-msgid "Waypoint Name"
-msgstr "Veipunkter"
-#
-msgid "Waypoint(s) Uploaded successfully."
-msgstr ""
-#
-msgid "Waypoints"
-msgstr "Veipunkter"
-#
-msgid ""
-"Waypoints can be renamed to reflect the new order, the names will be '001', "
-"'002' etc.\n"
-"\n"
-"Do you want to rename the waypoints?"
-msgstr ""
-"Veipunkter kan omdøpes til å gjenspeile den nye rekkefølgen, navnene vil bli "
-"'001', '002' osv.\n"
-"\n"
-"Ønsker du å gi disse veipunktene nye navn?"
-#
-#, fuzzy
-msgid "Welcome to OpenCPN"
-msgstr "Om OpenCPN"
-#
-msgid "Whether the font is underlined."
-msgstr "Uansett om fonten er understreket."
-#
-msgid "WiFi Options"
-msgstr "WiFi valg"
-#
-msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
-msgstr ""
-#
-msgid "XTE         L"
-msgstr "XTE         V"
-#
-msgid "XTE         R"
-msgstr "XTE         H"
-#
-msgid "Y Offset (Positive moves map to North) (NMi/cos(lat)) :"
-msgstr ""
-#
-msgid "Zoom In"
-msgstr "Zoom inn"
-#
-msgid "Zoom Out"
-msgstr "Zoom ut"
-#
-msgid "[Class] Type (Status)"
-msgstr ""
-#
-msgid "cm93 Detail"
-msgstr "CM93 detalj"
-#
-#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
 "Would you like to use this version of libgps anyway?"
 msgstr ""
-"libgps API Versjon stemmer ikke.\n"
-"OpenCPN fant versjon %d.%d, men krever minst versjon 3.1"
-#
-#
-#
-#~ msgid "&Close"
-#~ msgstr "&Lukk"
-#
-#
-#
-#~ msgid "&Delete All Routes..."
-#~ msgstr "&Slett alle ruter..."
-#
-#
-#
-#~ msgid "&Delete All Tracks..."
-#~ msgstr "&Slett alle slepestrek..."
-#
-#
-#
-#~ msgid "(Active Track)"
-#~ msgstr "(Aktiv Slepestrek)"
-#
-#
-#
-#~ msgid "CallSign:  "
-#~ msgstr "Kallesignal:"
-#
-#
-#
-#~ msgid ""
-#~ "Class unknown\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Ukjent klasse \n"
-#~ "\n"
-#
-#
-#
-#~ msgid ""
-#~ "Class:     A\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Klasse:     A\n"
-#~ "\n"
-#
-#
-#
-#~ msgid ""
-#~ "Class:     B\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Klasse:     B\n"
-#~ "\n"
-#
-#
-#
-#~ msgid "Current Velocity, Kts."
-#~ msgstr "Fart, Knop"
-#
-#
-#
-#~ msgid "ETA"
-#~ msgstr "ETA"
-#
-#
-#
-#~ msgid "ETA:                  Unknown"
-#~ msgstr "ETA:                  Ukjent"
-#
-#
-#
-#~ msgid "GPX"
-#~ msgstr "GPX"
-#
-#
-#
-#~ msgid "GRIB Data"
-#~ msgstr "GRIB data"
-#
-#
-#
-#~ msgid "GRIB Display Control"
-#~ msgstr "GRIB visningskontroll"
-#
-#
-#
-#~ msgid "GRIB File Directory"
-#~ msgstr "GRIB fil katalog"
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-#~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede CRAIN GRIB"
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-#~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede HTSGW GRIB"
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-#~ msgstr ""
-#~ "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØSTRØM GRIB"
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-#~ msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØTEMP GRIB"
-#
-#
-#
-#~ msgid "Pressure, mBar"
-#~ msgstr "Lufttrykk, mb"
-#
-#
-#
-#~ msgid "Route Manager..."
-#~ msgstr "Rute Behandling..."
-#
-#
-#
-#~ msgid "Sea Surface Temp, C"
-#~ msgstr "Sjøoverflate temp, C"
-#
-#
-#
-#~ msgid "Select GRIB Directory"
-#~ msgstr "Velg GRIB Katalog"
-#
-#
-#
-#~ msgid "Send Route To GPS..."
-#~ msgstr "Send rute til GPS"
-#
-#
-#
-#~ msgid "Show GPX icons"
-#~ msgstr "Vis GPX ikoner"
-#
-#
-#
-#~ msgid "Show GRIB dialog"
-#~ msgstr "Vis GRIB dialog"
-#
-#
-#
-#~ msgid "Significant Wave Height, m"
-#~ msgstr "Vesentlig bølgehøyde, m"
-#
-#
-#
-#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
-#~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
-#
-#
-#
-#~ msgid "Wind Direction"
-#~ msgstr "Vindretning"
-#
-#
-#
-#~ msgid "Wind Speed, Kts."
-#~ msgstr "Vindhastighet, Knop"
+"libgps API versjon samsvarer ikke.\n"
+"OpenCPN fant versjon %d.%d, men krever minst versjon 3.0\n"
+"\n"
+"Vil du benytte denne versjonen av libgps?"
+
+#: src/concanv.cpp:97
+#: src/concanv.cpp:338
+#: src/concanv.cpp:362
+msgid "This Leg"
+msgstr "Denne leggen"
+
+#: src/concanv.cpp:110
+msgid "Leg/Route"
+msgstr "Legg/Rute"
+
+#: src/concanv.cpp:115
+#: src/concanv.cpp:119
+#: src/concanv.cpp:123
+#: src/concanv.cpp:127
+msgid "Console Legend"
+msgstr "Konsoll Legend"
+
+#: src/concanv.cpp:115
+#: src/concanv.cpp:119
+#: src/concanv.cpp:123
+#: src/concanv.cpp:127
+msgid "Console Value"
+msgstr "Konsoll Verdi"
+
+#: src/concanv.cpp:230
+msgid "XTE         L"
+msgstr "XTE         L"
+
+#: src/concanv.cpp:232
+msgid "XTE         R"
+msgstr "XTE         R"
+
+#: src/concanv.cpp:310
+msgid "ETA          "
+msgstr "ETA"
+
+#: src/concanv.cpp:336
+#: src/concanv.cpp:360
+msgid "Route"
+msgstr "Rute"
+
+#: src/chcanv.cpp:1465
+#: src/chcanv.cpp:1491
+#: src/chcanv.cpp:9438
+#: src/options.cpp:873
+msgid "Feet"
+msgstr "Fot"
+
+#: src/chcanv.cpp:1466
+#: src/chcanv.cpp:1492
+#: src/chcanv.cpp:9439
+msgid "Meters"
+msgstr "Meter"
+
+#: src/chcanv.cpp:1467
+#: src/chcanv.cpp:1493
+#: src/chcanv.cpp:9440
+#: src/options.cpp:875
+msgid "Fathoms"
+msgstr "Favner"
+
+#: src/chcanv.cpp:2823
+msgid "New Mark"
+msgstr "Nytt merke"
+
+#: src/chcanv.cpp:3088
+#: src/chcanv.cpp:6245
+msgid "Leg: from "
+msgstr "Legg: fra "
+
+#: src/chcanv.cpp:3090
+#: src/chcanv.cpp:6247
+msgid " to "
+msgstr " til "
+
+#: src/chcanv.cpp:3903
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.1fx"
+msgstr "Virkelig skala: %8.0f  Zoom %4.1fx"
+
+#: src/chcanv.cpp:3905
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.2fx"
+msgstr "Virkelig skala: %8.0f  Zoom %4.2fx"
+
+#: src/chcanv.cpp:3908
+#, c-format
+msgid "TrueScale: %8.0f             "
+msgstr "Virkelig skala: %8.0f"
+
+#: src/chcanv.cpp:6321
+msgid "Use nearby waypoint?"
+msgstr "Benytte nærliggende veipunkt?"
+
+#: src/chcanv.cpp:6321
+msgid "OpenCPN Route Create"
+msgstr "OpenCPN ruteopprettelse"
+
+#: src/chcanv.cpp:7147
+msgid "Update CM93 Offset"
+msgstr "Oppdater CM93 korreksjon"
+
+#: src/chcanv.cpp:7149
+msgid "Set CM93 Offset"
+msgstr "Sett CM93 korreksjon"
+
+#: src/chcanv.cpp:7151
+msgid "CM93 Offset Tool Off"
+msgstr "CM93 korrigeringsverktøy Av"
+
+#: src/chcanv.cpp:7157
+#: src/chcanv.cpp:7978
+#: src/routemanagerdialog.cpp:1205
+msgid "Track Properties"
+msgstr "Egenskaper for slepestrek"
+
+#: src/chcanv.cpp:7158
+msgid "Delete Track"
+msgstr "Slett slepestrek"
+
+#: src/chcanv.cpp:7165
+msgid "Activate Route"
+msgstr "Aktiver rute"
+
+#: src/chcanv.cpp:7166
+msgid "Deactivate Route"
+msgstr "Deaktiver rute"
+
+#: src/chcanv.cpp:7167
+msgid "Insert Waypoint"
+msgstr "Sett inn veipunkt"
+
+#: src/chcanv.cpp:7168
+msgid "Append Waypoint"
+msgstr "Legg til veipunkt"
+
+#: src/chcanv.cpp:7169
+msgid "Delete Route"
+msgstr "Slett rute"
+
+#: src/chcanv.cpp:7170
+msgid "Reverse Route"
+msgstr "Snu rute"
+
+#: src/chcanv.cpp:7184
+msgid "Activate Waypoint"
+msgstr "Aktiver veipunkt"
+
+#: src/chcanv.cpp:7185
+msgid "Activate Next in Route"
+msgstr "Aktiver som neste i rute"
+
+#: src/chcanv.cpp:7186
+msgid "Remove Waypoint from Route"
+msgstr "Fjern veipunkt fra rute"
+
+#: src/chcanv.cpp:7187
+msgid "Delete Waypoint"
+msgstr "Slett veipunkt"
+
+#: src/chcanv.cpp:7188
+#: src/chcanv.cpp:7211
+msgid "Mark/WP Properties"
+msgstr "Egenskaper for Merke/Veipunkt"
+
+#: src/chcanv.cpp:7193
+#: src/chcanv.cpp:7226
+msgid "Additional information"
+msgstr "Tilleggsinformasjon"
+
+#: src/chcanv.cpp:7208
+msgid "Go To Mark/WP"
+msgstr "Gå til merke/veipunkt"
+
+#: src/chcanv.cpp:7210
+msgid "Delete Mark"
+msgstr "Slett merke"
+
+#: src/chcanv.cpp:7214
+msgid "Clear Anchor Watch"
+msgstr "Tøm ankervakt"
+
+#: src/chcanv.cpp:7222
+msgid "Set Anchor Watch"
+msgstr "Sett ankervakt"
+
+#: src/chcanv.cpp:7238
+#: src/chcanv.cpp:7283
+msgid "Max Detail Here"
+msgstr "Maks detalj her"
+
+#: src/chcanv.cpp:7239
+#: src/chcanv.cpp:7284
+msgid "Scale In"
+msgstr "Skala inn"
+
+#: src/chcanv.cpp:7240
+#: src/chcanv.cpp:7285
+msgid "Scale Out"
+msgstr "Skala ut"
+
+#: src/chcanv.cpp:7246
+msgid "Enable CM93 Detail Slider"
+msgstr "Aktiver CM93 detalj justering"
+
+#: src/chcanv.cpp:7287
+msgid "Zoom In"
+msgstr "Zoom inn"
+
+#: src/chcanv.cpp:7288
+msgid "Zoom Out"
+msgstr "Zoom ut"
+
+#: src/chcanv.cpp:7289
+msgid "End Route"
+msgstr "Avslutt rute"
+
+#: src/chcanv.cpp:7294
+msgid "Drop Mark Here"
+msgstr "Slipp merke her"
+
+#: src/chcanv.cpp:7295
+msgid "Move Boat Here"
+msgstr "Flytt båt her"
+
+#: src/chcanv.cpp:7296
+msgid "Jump To Position..."
+msgstr "Gå til posisjon"
+
+#: src/chcanv.cpp:7300
+msgid "Go To Here"
+msgstr "Gå hit"
+
+#: src/chcanv.cpp:7304
+msgid "Measure....."
+msgstr "Avstandsmåling..."
+
+#: src/chcanv.cpp:7306
+msgid "Measure Off"
+msgstr "Avslutt måling"
+
+#: src/chcanv.cpp:7312
+msgid "CM93 Offset Tool....."
+msgstr "CM93 korrigeringsverktøy..."
+
+#: src/chcanv.cpp:7314
+msgid "CM93 Offset Off"
+msgstr "CM93 korrigering AV"
+
+#: src/chcanv.cpp:7316
+#: src/chcanv.cpp:9465
+#: src/chcanv.cpp:9467
+msgid "CM93 Offset On"
+msgstr "CM93 korrigering PÅ"
+
+#: src/chcanv.cpp:7439
+msgid "Temporary GOTO Route"
+msgstr "Midlertidig GÅTIL rute"
+
+#: src/chcanv.cpp:7440
+#: src/chcanv.cpp:7491
+#: src/routemanagerdialog.cpp:1565
+msgid "Here"
+msgstr "Her"
+
+#: src/chcanv.cpp:7441
+msgid "There"
+msgstr "Der"
+
+#: src/chcanv.cpp:7488
+#: src/routemanagerdialog.cpp:1358
+#: src/routemanagerdialog.cpp:1562
+msgid "(Unnamed Waypoint)"
+msgstr "(Veipunkt uten navn)"
+
+#: src/chcanv.cpp:7489
+#: src/routemanagerdialog.cpp:1563
+msgid "Go to "
+msgstr "Gå til"
+
+#: src/chcanv.cpp:7643
+msgid "cm93 Detail"
+msgstr "cm93 detalj"
+
+#: src/chcanv.cpp:7764
+#: src/routemanagerdialog.cpp:874
+msgid "Rename Waypoints?"
+msgstr "Bytte navn på veipunkter?"
+
+#: src/chcanv.cpp:9451
+#: src/chcanv.cpp:9453
+msgid "OverZoom"
+msgstr "OverZoom"
+
+#: src/chcanv.cpp:10196
+msgid "Tide"
+msgstr "Tidevann"
+
+#: src/chcanv.cpp:10201
+msgid "Current"
+msgstr "Strøm"
+
+#: src/chcanv.cpp:10299
+#: src/chcanv.cpp:11891
+#: src/chcanv.cpp:12430
+#: src/routeprop.cpp:247
+#: src/routeprop.cpp:899
+#: src/routeprop.cpp:1343
+msgid "OK"
+msgstr "OK"
+
+#: src/chcanv.cpp:10304
+msgid "Prev"
+msgstr "Forrige"
+
+#: src/chcanv.cpp:10312
+msgid "Next"
+msgstr "Neste"
+
+#: src/chcanv.cpp:10629
+msgid "Reference Station:"
+msgstr "Referanse stasjon: "
+
+#: src/chcanv.cpp:10739
+msgid "Today"
+msgstr "I dag"
+
+#: src/chcanv.cpp:10741
+#: src/chcanv.cpp:10744
+msgid "Tomorrow"
+msgstr "I morgen"
+
+#: src/chcanv.cpp:11558
+msgid "AISTargetQuery"
+msgstr "AIS mål informasjon"
+
+#: src/chcanv.cpp:11652
+#: src/options.cpp:345
+msgid "Ok"
+msgstr "Ok"
+
+#: src/chcanv.cpp:11831
+msgid "Chart"
+msgstr "Kart"
+
+#: src/chcanv.cpp:12118
+msgid "AISRollover"
+msgstr "AIS rull over"
+
+#: src/chcanv.cpp:12406
+#: src/routeprop.cpp:875
+#: src/routeprop.cpp:1302
+msgid "Position"
+msgstr "Posisjon"
+
+#: src/chcanv.cpp:12411
+#: src/routeprop.cpp:280
+#: src/routeprop.cpp:880
+#: src/routeprop.cpp:1307
+msgid "Latitude"
+msgstr "Breddegrad"
+
+#: src/chcanv.cpp:12418
+#: src/routeprop.cpp:285
+#: src/routeprop.cpp:887
+#: src/routeprop.cpp:1313
+msgid "Longitude"
+msgstr "Lengdegrad"
+
+#: src/chcanv.cpp:12427
+#: src/routeprop.cpp:244
+#: src/routeprop.cpp:896
+#: src/routeprop.cpp:1340
+#: src/routeman.cpp:951
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: src/navutil.cpp:1079
+#: src/navutil.cpp:1114
+#: src/navutil.cpp:1115
+msgid "Marks"
+msgstr "Merker"
+
+#: src/navutil.cpp:1180
+msgid "Waypoint(s) Uploaded successfully."
+msgstr "Veipunkt(er) lastet opp."
+
+#: src/navutil.cpp:1182
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr "Feil ved veipunkt opplasting. Sjekk loggfiler..."
+
+#: src/navutil.cpp:1929
+msgid "Route Uploaded successfully."
+msgstr "Rute ble opplastet."
+
+#: src/navutil.cpp:1931
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr "Feil ved rute opplasting. Sjekk loggfiler..."
+
+#: src/navutil.cpp:3716
+#: src/navutil.cpp:3761
+#: src/navutil.cpp:3802
+msgid "Export GPX file"
+msgstr "Eksporter GPX fil"
+
+#: src/navutil.cpp:3731
+#: src/navutil.cpp:3776
+#: src/navutil.cpp:3817
+msgid "Overwrite existing file?"
+msgstr "Overskrive eksisterende fil?"
+
+#: src/navutil.cpp:3970
+msgid "Import GPX file"
+msgstr "Importer GPX fil"
+
+#: src/navutil.cpp:5952
+msgid "&Font family:"
+msgstr "S&krift familie:"
+
+#: src/navutil.cpp:5958
+#: src/navutil.cpp:5960
+msgid "The font family."
+msgstr "Font familie."
+
+#: src/navutil.cpp:5965
+msgid "&Style:"
+msgstr "&Stil:"
+
+#: src/navutil.cpp:5969
+#: src/navutil.cpp:5971
+msgid "The font style."
+msgstr "Font stil."
+
+#: src/navutil.cpp:5976
+msgid "&Weight:"
+msgstr "&Vekt:"
+
+#: src/navutil.cpp:5980
+#: src/navutil.cpp:5982
+msgid "The font weight."
+msgstr "Font vekt."
+
+#: src/navutil.cpp:5989
+msgid "C&olour:"
+msgstr "Fa&rge:"
+
+#: src/navutil.cpp:5999
+#: src/navutil.cpp:6001
+msgid "The font colour."
+msgstr "Font farge."
+
+#: src/navutil.cpp:6007
+msgid "&Point size:"
+msgstr "&Punkt størrelse"
+
+#: src/navutil.cpp:6012
+#: src/navutil.cpp:6014
+msgid "The font point size."
+msgstr "Font punkt størrelse."
+
+#: src/navutil.cpp:6021
+msgid "&Underline"
+msgstr "&Understreket"
+
+#: src/navutil.cpp:6024
+#: src/navutil.cpp:6026
+msgid "Whether the font is underlined."
+msgstr "Om skriften skal være understreket."
+
+#: src/navutil.cpp:6033
+msgid "Preview:"
+msgstr "Forhåndsvisning:"
+
+#: src/navutil.cpp:6038
+#: src/navutil.cpp:6040
+msgid "Shows the font preview."
+msgstr "Viser forhåndsvisning av skrift."
+
+#: src/navutil.cpp:6047
+#: src/options.cpp:349
+msgid "&Cancel"
+msgstr "&Avbryt"
+
+#: src/navutil.cpp:6049
+msgid "Click to cancel the font selection."
+msgstr "Klikk for å avbryte skriftvalg"
+
+#: src/navutil.cpp:6052
+msgid "&OK"
+msgstr "&OK"
+
+#: src/navutil.cpp:6054
+#: src/navutil.cpp:6056
+msgid "Click to confirm the font selection."
+msgstr "Klikk for å bekrefte skriftvalg."
+
+#: src/routeprop.cpp:184
+#: src/routeprop.cpp:843
+msgid "Properties"
+msgstr "Egenskaper"
+
+#: src/routeprop.cpp:188
+#: src/routeprop.cpp:1294
+#: src/ais.cpp:3436
+msgid "Name"
+msgstr "Navn"
+
+#: src/routeprop.cpp:198
+msgid "Depart From"
+msgstr "Avgang fra"
+
+#: src/routeprop.cpp:201
+#: src/ais.cpp:3445
+#: src/ais.cpp:3447
+msgid "Destination"
+msgstr "Destinasjon"
+
+#: src/routeprop.cpp:214
+msgid "Total Distance"
+msgstr "Sammenlagt distanse"
+
+#: src/routeprop.cpp:217
+msgid "Plan Speed"
+msgstr "Planens fart"
+
+#: src/routeprop.cpp:220
+msgid "Time Enroute"
+msgstr "Tid underveis"
+
+#: src/routeprop.cpp:233
+#: src/routemanagerdialog.cpp:465
+msgid "Waypoints"
+msgstr "Veipunkter"
+
+#: src/routeprop.cpp:261
+msgid "Leg"
+msgstr "Legg"
+
+#: src/routeprop.cpp:265
+msgid "To Waypoint"
+msgstr "Til veipunkt"
+
+#: src/routeprop.cpp:270
+#: src/routemanagerdialog.cpp:478
+msgid "Distance"
+msgstr "Distanse"
+
+#: src/routeprop.cpp:275
+msgid "Bearing"
+msgstr "Kurs"
+
+#: src/routeprop.cpp:290
+msgid "ETE/Timestamp"
+msgstr "ETE/Tids stempel"
+
+#: src/routeprop.cpp:295
+msgid "Speed (Kts)"
+msgstr "Fart (Knop)"
+
+#: src/routeprop.cpp:369
+msgid "Avg. speed (Kts)"
+msgstr "Gjennomsn.fart (Knop)"
+
+#: src/routeprop.cpp:374
+msgid "Plan speed (Kts)"
+msgstr "Planens fart (Knop)"
+
+#: src/routeprop.cpp:487
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D Dager  %H Timer  %M Minutter"
+
+#: src/routeprop.cpp:489
+msgid " %H Hours  %M Minutes"
+msgstr " %H Timer  %M Minutter"
+
+#: src/routeprop.cpp:547
+msgid "Start"
+msgstr "Start"
+
+#: src/routeprop.cpp:594
+msgid "--"
+msgstr "--"
+
+#: src/routeprop.cpp:848
+msgid "Mark Name"
+msgstr "Merkenavn"
+
+#: src/routeprop.cpp:854
+msgid "Show Name"
+msgstr "Vis navn"
+
+#: src/routeprop.cpp:857
+#: src/routeprop.cpp:920
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: src/routeprop.cpp:867
+msgid "Mark Icon"
+msgstr "Merke ikon"
+
+#: src/routeprop.cpp:914
+#: src/routemanagerdialog.cpp:476
+msgid "Icon"
+msgstr "Ikon"
+
+#: src/routeprop.cpp:1320
+msgid "Links"
+msgstr "Linker"
+
+#: src/routemanagerdialog.cpp:318
+msgid "Routes"
+msgstr "Ruter"
+
+#: src/routemanagerdialog.cpp:342
+msgid "Route Name"
+msgstr "Rutenavn"
+
+#: src/routemanagerdialog.cpp:343
+msgid "To"
+msgstr "Til"
+
+#: src/routemanagerdialog.cpp:359
+msgid "&Properties..."
+msgstr "&Egenskaper"
+
+#: src/routemanagerdialog.cpp:364
+msgid "&Activate"
+msgstr "&Aktiver"
+
+#: src/routemanagerdialog.cpp:371
+#: src/routemanagerdialog.cpp:493
+msgid "&Zoom to"
+msgstr "&Zoom til"
+
+#: src/routemanagerdialog.cpp:378
+msgid "&Reverse"
+msgstr "&Reverser"
+
+#: src/routemanagerdialog.cpp:383
+#: src/routemanagerdialog.cpp:438
+#: src/routemanagerdialog.cpp:498
+msgid "&Delete"
+msgstr "&Slett"
+
+#: src/routemanagerdialog.cpp:388
+msgid "&Export Route..."
+msgstr "%Eksporter rute..."
+
+#: src/routemanagerdialog.cpp:393
+#: src/routemanagerdialog.cpp:513
+msgid "&Send to GPS"
+msgstr "&Send til GPS"
+
+#: src/routemanagerdialog.cpp:400
+#: src/routemanagerdialog.cpp:455
+msgid "&Delete All"
+msgstr "&Slett Alle"
+
+#: src/routemanagerdialog.cpp:410
+#: src/options.cpp:1185
+msgid "Tracks"
+msgstr "Slepestrek"
+
+#: src/routemanagerdialog.cpp:422
+msgid "Track Name"
+msgstr "Slepestrek navn"
+
+#: src/routemanagerdialog.cpp:423
+msgid "Length"
+msgstr "Lengde"
+
+#: src/routemanagerdialog.cpp:428
+msgid "&Start Track"
+msgstr "&Start slepestrek"
+
+#: src/routemanagerdialog.cpp:433
+#: src/routemanagerdialog.cpp:488
+msgid "&Properties"
+msgstr "&Egenskaper"
+
+#: src/routemanagerdialog.cpp:443
+msgid "&Export Track..."
+msgstr "&Eksporter slepestrek..."
+
+#: src/routemanagerdialog.cpp:448
+msgid "Route from Track"
+msgstr "Rute fra Slepestrek"
+
+#: src/routemanagerdialog.cpp:477
+msgid "Waypoint Name"
+msgstr "Veipunktnavn"
+
+#: src/routemanagerdialog.cpp:483
+msgid "&New"
+msgstr "&Ny"
+
+#: src/routemanagerdialog.cpp:503
+msgid "&Go To"
+msgstr "&Gå til"
+
+#: src/routemanagerdialog.cpp:508
+msgid "&Export Wpt..."
+msgstr "&Eksporter Wpt..."
+
+#: src/routemanagerdialog.cpp:520
+msgid "Delete All"
+msgstr "Slett alle"
+
+#: src/routemanagerdialog.cpp:531
+msgid "I&mport..."
+msgstr "I&mporter.."
+
+#: src/routemanagerdialog.cpp:535
+msgid "E&xport All..."
+msgstr "E&ksporter alle..."
+
+#: src/routemanagerdialog.cpp:635
+msgid "(Unnamed Route)"
+msgstr "(Rute uten navn)"
+
+#: src/routemanagerdialog.cpp:640
+#: src/routemanagerdialog.cpp:884
+msgid " - "
+msgstr " - "
+
+#: src/routemanagerdialog.cpp:680
+msgid "Activate"
+msgstr "Aktiver"
+
+#: src/routemanagerdialog.cpp:690
+msgid "Deactivate"
+msgstr "Deaktiver"
+
+#: src/routemanagerdialog.cpp:779
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Er du sikker på at du vil slette <ALLE> rutene?"
+
+#: src/routemanagerdialog.cpp:779
+#: src/routemanagerdialog.cpp:1300
+#: src/routemanagerdialog.cpp:1611
+msgid "OpenCPN Alert"
+msgstr "OpenCPN Varsel"
+
+#: src/routemanagerdialog.cpp:1044
+#: src/routemanagerdialog.cpp:1603
+msgid "Send To GPS..."
+msgstr "Send til GPS..."
+
+#: src/routemanagerdialog.cpp:1105
+msgid "(Unnamed Track)"
+msgstr "Slepestrek uten navn)"
+
+#: src/routemanagerdialog.cpp:1278
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN Konverterer Slepestrek til Rute..."
+
+#: src/routemanagerdialog.cpp:1279
+msgid "Processing Waypoints..."
+msgstr "Behandler veipunkter..."
+
+#: src/routemanagerdialog.cpp:1288
+msgid "Done."
+msgstr "Ferdig."
+
+#: src/routemanagerdialog.cpp:1300
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Er du sikker på at du vil slette <ALLE> slepestrekene?"
+
+#: src/routemanagerdialog.cpp:1611
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr "Er du sikker på at du vil slette <ALLE> veipunkter?"
+
+#: src/ais.cpp:441
+msgid "ShipName:  "
+msgstr "Båtens navn:  "
+
+#: src/ais.cpp:452
+msgid "CallSign:             "
+msgstr "Kallesignal:             "
+
+#: src/ais.cpp:464
+msgid "Class:                "
+msgstr "Klasse:                "
+
+#: src/ais.cpp:473
+msgid "Navigational Status:  "
+msgstr "Navigasjons status:  "
+
+#: src/ais.cpp:481
+msgid "Ship Type:            "
+msgstr "Skips type:            "
+
+#: src/ais.cpp:496
+#: src/ais.cpp:511
+#, c-format
+msgid ""
+"Size:                 ---m x ---m x %4.1fm\n"
+"\n"
+msgstr ""
+"Størrelse:                 ---m x ---m x %4.1fm\n"
+"\n"
+
+#: src/ais.cpp:498
+#: src/ais.cpp:513
+msgid ""
+"Size:                 ---m x ---m x ---m\n"
+"\n"
+msgstr ""
+"Størrelse:                 ---m x ---m x ---m\n"
+"\n"
+
+#: src/ais.cpp:503
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+msgstr ""
+"Størrelse:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+
+#: src/ais.cpp:505
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+msgstr ""
+"Størrelse:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+
+#: src/ais.cpp:517
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
+msgstr ""
+"Størrelse:                 %dm x %dm x ---m\n"
+"\n"
+
+#: src/ais.cpp:519
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x %4.1fm\n"
+"\n"
+msgstr ""
+"Størrelse:                 %dm x %dm x %4.1fm\n"
+"\n"
+
+#: src/ais.cpp:527
+msgid "Destination:          "
+msgstr "Destinasjon:          "
+
+#: src/ais.cpp:537
+msgid "ETA:                  "
+msgstr "ETA:                  "
+
+#: src/ais.cpp:545
+msgid "ETA:"
+msgstr "ETA:"
+
+#: src/ais.cpp:554
+#, c-format
+msgid "Course:                 %03d Deg.\n"
+msgstr "Kurs:                 %03d Deg.\n"
+
+#: src/ais.cpp:556
+msgid "Course:                 Unavailable\n"
+msgstr "Kurs:                 Unavailable\n"
+
+#: src/ais.cpp:560
+#, c-format
+msgid "Speed:                %5.2f Kts.\n"
+msgstr "Fart:                %5.2f Kts.\n"
+
+#: src/ais.cpp:562
+msgid "Speed:                  Unavailable\n"
+msgstr "Fart:                  Unavailable\n"
+
+#: src/ais.cpp:568
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+msgstr "ROT            %3d Deg./Min. Right\n"
+
+#: src/ais.cpp:570
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+msgstr "ROT            %3d Deg./Min. Left\n"
+
+#: src/ais.cpp:572
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min.\n"
+msgstr "ROT            %3d Deg./Min.\n"
+
+#: src/ais.cpp:578
+#, c-format
+msgid "Range:                %5.1f NM\n"
+msgstr "Avstand:                %5.1f NM\n"
+
+#: src/ais.cpp:580
+msgid "Range:                  Unavailable\n"
+msgstr "Avstand:                  Unavailable\n"
+
+#: src/ais.cpp:585
+#, c-format
+msgid "Bearing:                %03d Deg.\n"
+msgstr "Retning:                %03d Deg.\n"
+
+#: src/ais.cpp:587
+msgid "Bearing:                Unavailable\n"
+msgstr "Retning:                Unavailable\n"
+
+#: src/ais.cpp:592
+msgid "Inland Blue Flag        Clear\n"
+msgstr "Innenlands Blått Flagg        Tøm\n"
+
+#: src/ais.cpp:597
+msgid "Inland Blue Flag        Set\n"
+msgstr "Innenlands Blått Flagg        Sett\n"
+
+#: src/ais.cpp:602
+msgid "Position:               "
+msgstr "Posisjon:"
+
+#: src/ais.cpp:613
+msgid ""
+"\n"
+"\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"\n"
+
+#: src/ais.cpp:618
+msgid "Latest Report Time:      "
+msgstr "Siste rapport - tid:      "
+
+#: src/ais.cpp:621
+msgid "UTC"
+msgstr "UTC"
+
+#: src/ais.cpp:630
+#, c-format
+msgid "Report Age:             %3d Sec.\n"
+msgstr "Rapport alder:             %3d Sek.\n"
+
+#: src/ais.cpp:633
+#, c-format
+msgid ""
+"Recent Report Period:   %3d Sec.\n"
+"\n"
+msgstr ""
+"Seneste rapport periode:   %3d Sek.\n"
+"\n"
+
+#: src/ais.cpp:640
+#, c-format
+msgid "TCPA:                 %02d:%02d Hr:Min\n"
+msgstr "TCPA:                 %02d:%02d Tim:Min\n"
+
+#: src/ais.cpp:642
+msgid "TCPA:  \n"
+msgstr "TCPA:  \n"
+
+#: src/ais.cpp:646
+#, c-format
+msgid "CPA:                 %6.1f NM\n"
+msgstr "CPA:                 %6.1f Nm\n"
+
+#: src/ais.cpp:648
+msgid "CPA:       \n"
+msgstr "CPA:       \n"
+
+#: src/ais.cpp:755
+msgid "CPA"
+msgstr "CPA"
+
+#: src/ais.cpp:834
+msgid "A"
+msgstr "A"
+
+#: src/ais.cpp:836
+msgid "B"
+msgstr "B"
+
+#: src/ais.cpp:838
+msgid "AtoN"
+msgstr "AtoN"
+
+#: src/ais.cpp:838
+msgid "Aid to Navigation"
+msgstr "Hjelp til Navigasjon (AtoN)"
+
+#: src/ais.cpp:840
+#: src/options.cpp:760
+msgid "Base"
+msgstr "Base"
+
+#: src/ais.cpp:840
+msgid "Base Station"
+msgstr "Base Stasjon"
+
+#: src/ais.cpp:842
+msgid "Unk"
+msgstr "Ukj"
+
+#: src/ais.cpp:2098
+msgid "Could not resolve TCP/IP host '"
+msgstr "Kunne ikke løse TCP/IP vert '"
+
+#: src/ais.cpp:2099
+msgid ""
+"'\n"
+" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+msgstr ""
+"'\n"
+" Forslag: Forsøk 'xxx.xxx.xxx.xxx' oppføring"
+
+#: src/ais.cpp:2142
+msgid "  Could not open AIS serial port '"
+msgstr "  Kunne ikke åpne AIS serie port '"
+
+#: src/ais.cpp:3259
+msgid "&Silence Alert"
+msgstr "&Avstill alarm"
+
+#: src/ais.cpp:3265
+msgid "&Acknowledge"
+msgstr "&Bekreft"
+
+#: src/ais.cpp:3437
+msgid "Call"
+msgstr "Kallesignal"
+
+#: src/ais.cpp:3438
+msgid "MMSI"
+msgstr "MMSI"
+
+#: src/ais.cpp:3440
+msgid "Class"
+msgstr "Klasse"
+
+#: src/ais.cpp:3441
+msgid "Type"
+msgstr "Type"
+
+#: src/ais.cpp:3442
+msgid "Nav Status"
+msgstr "Nav Status"
+
+#: src/ais.cpp:3450
+#: src/ais.cpp:3452
+msgid "ETA"
+msgstr "ETA"
+
+#: src/ais.cpp:3454
+msgid "Brg"
+msgstr "Kurs"
+
+#: src/ais.cpp:3455
+msgid "Range"
+msgstr "Avstand"
+
+#: src/ais.cpp:3456
+msgid "CoG"
+msgstr "COG"
+
+#: src/ais.cpp:3457
+msgid "SoG"
+msgstr "SOG"
+
+#: src/ais.cpp:3534
+#: src/ais.cpp:3550
+#: src/ais.cpp:3557
+#: src/ais.cpp:3561
+#: src/ais.cpp:3569
+#: src/ais.cpp:3582
+msgid "-"
+msgstr "-"
+
+#: src/options.cpp:359
+msgid "Settings"
+msgstr "Innstillinger"
+
+#: src/options.cpp:364
+msgid "Navigation Data"
+msgstr "Navigasjonsdata"
+
+#: src/options.cpp:367
+msgid "Show Status Bar"
+msgstr "Vis statuslinje"
+
+#: src/options.cpp:373
+msgid "Printing"
+msgstr "Skriver ut"
+
+#: src/options.cpp:376
+msgid "Show Printing Icon"
+msgstr "Vis utskrift ikon"
+
+#: src/options.cpp:383
+msgid "Chart Display Options"
+msgstr "Kartvisnings valg"
+
+#: src/options.cpp:388
+msgid "Enable Chart Quilting"
+msgstr "Tillat kartfletting"
+
+#: src/options.cpp:392
+msgid "Course UP Mode"
+msgstr "Kurs opp modus"
+
+#: src/options.cpp:396
+msgid "Look Ahead Mode"
+msgstr "Se forover modus"
+
+#: src/options.cpp:400
+msgid "Show Chart Outlines"
+msgstr "Vis kartomriss"
+
+#: src/options.cpp:404
+msgid "Show DepthUnits"
+msgstr "Vis dybde enheter"
+
+#: src/options.cpp:408
+msgid "Show skewed raster charts as North-Up"
+msgstr "Vis skjevte rasterkarter som Nord opp"
+
+#: src/options.cpp:420
+msgid "Select Chart Types for Quilting"
+msgstr "Velg kart typer for fletting"
+
+#: src/options.cpp:424
+msgid "Raster"
+msgstr "Raster"
+
+#: src/options.cpp:427
+msgid "ENC/Vector"
+msgstr "ENC/Vektor"
+
+#: src/options.cpp:430
+msgid "CM93"
+msgstr "CM93"
+
+#: src/options.cpp:436
+msgid "OwnShip Display Options"
+msgstr "Valg for visning av eget skip"
+
+#: src/options.cpp:444
+msgid "OwnShip COG arrow predictor length (Minutes):"
+msgstr "Eget skips COG Kursvektor lengde (minutter):"
+
+#: src/options.cpp:455
+msgid "CM93 Offset Display"
+msgstr "CM93 korrigeringsvisning"
+
+#: src/options.cpp:460
+msgid "Activate CM93 Offset"
+msgstr "Aktiver CM93 korrigering"
+
+#: src/options.cpp:467
+msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
+msgstr "X Korrigering (Positiv, flytter kart mot øst) (Nm/cos(breddegr.)) :"
+
+#: src/options.cpp:473
+msgid "Y Offset (Positive moves map to North) (NMi/cos(lat)) :"
+msgstr "Y Korrigering (Positiv, flytter kart mot nord) (Nm/cos(lengdegr.)) :"
+
+#: src/options.cpp:482
+msgid "WiFi Options"
+msgstr "WiFi Valg"
+
+#: src/options.cpp:487
+msgid "TCP/IP WiFi Data Server"
+msgstr "TCP/IP WiFi data server"
+
+#: src/options.cpp:510
+msgid "GPS"
+msgstr "GPS"
+
+#: src/options.cpp:515
+msgid "NMEA Options"
+msgstr "NMEA Valg"
+
+#: src/options.cpp:521
+msgid "NMEA Data Source"
+msgstr "NMEA Datakilde"
+
+#: src/options.cpp:530
+msgid "GPSD Data Server"
+msgstr "GPSD Dataserver"
+
+#: src/options.cpp:652
+msgid "NMEA Baud Rate"
+msgstr "NMEA Hastighet"
+
+#: src/options.cpp:667
+msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+msgstr "Benytt Garmin GRMN/GRMN (Vert) modus for veipunkter og rute opplasting."
+
+#: src/options.cpp:671
+msgid "Show GPS/NMEA data stream window"
+msgstr "Vis GPS/NMEA datastrøm vindu"
+
+#: src/options.cpp:676
+msgid "Autopilot Output Port"
+msgstr "Autopilot utgangs port"
+
+#: src/options.cpp:717
+msgid "Charts"
+msgstr "Karter"
+
+#: src/options.cpp:729
+msgid "Chart Display Filters"
+msgstr "Kartvisning filter"
+
+#: src/options.cpp:733
+msgid "Mariner's Standard"
+msgstr "Mariner's Standard"
+
+#: src/options.cpp:745
+msgid "Clear All"
+msgstr "Tøm alt"
+
+#: src/options.cpp:749
+msgid "Select All"
+msgstr "Velg alt"
+
+#: src/options.cpp:761
+msgid "Standard"
+msgstr "Standard"
+
+#: src/options.cpp:762
+msgid "Other"
+msgstr "Annen"
+
+#: src/options.cpp:763
+msgid "MarinersStandard"
+msgstr "MarinersStandard"
+
+#: src/options.cpp:765
+msgid "Display Category"
+msgstr "Visnings kategori"
+
+#: src/options.cpp:771
+msgid "ShowSoundings"
+msgstr "Vis loddskudd"
+
+#: src/options.cpp:776
+msgid "META Objects"
+msgstr "META Objekter"
+
+#: src/options.cpp:781
+msgid "Show Important Text Only"
+msgstr "Vis kun viktig tekst"
+
+#: src/options.cpp:786
+msgid "Use SCAMIN"
+msgstr "Benytt SCAMIN"
+
+#: src/options.cpp:791
+msgid "Show ATON labels"
+msgstr "Vis AtoN etiketter"
+
+#: src/options.cpp:796
+msgid "Show Light Descriptions"
+msgstr "Vis lyskarakteristikk"
+
+#: src/options.cpp:801
+msgid "De-Clutter Text (exp.)"
+msgstr "Ryddig visning av tekst (eksp.)"
+
+#: src/options.cpp:806
+msgid "Chart Display Style"
+msgstr "Kartvisnings stil"
+
+#: src/options.cpp:811
+msgid "Paper Chart"
+msgstr "Papirkart"
+
+#: src/options.cpp:812
+msgid "Simplified"
+msgstr "Forenklet"
+
+#: src/options.cpp:814
+msgid "Points"
+msgstr "Punkter"
+
+#: src/options.cpp:819
+msgid "Plain"
+msgstr "Vanlig"
+
+#: src/options.cpp:820
+msgid "Symbolized"
+msgstr "Symbolisert"
+
+#: src/options.cpp:822
+msgid "Boundaries"
+msgstr "Grenser"
+
+#: src/options.cpp:827
+msgid "2 Color"
+msgstr "2 Farge"
+
+#: src/options.cpp:828
+msgid "4 Color"
+msgstr "4 Farge"
+
+#: src/options.cpp:830
+msgid "Colors"
+msgstr "Farger"
+
+#: src/options.cpp:836
+msgid "CM93 Zoom Detail"
+msgstr "CM93 Zoom detaljer"
+
+#: src/options.cpp:844
+msgid "Depth Settings"
+msgstr "Dybde Instillinger"
+
+#: src/options.cpp:848
+msgid "Depth Settings(m)"
+msgstr "Dybde inst.(m)"
+
+#: src/options.cpp:852
+msgid "Shallow Depth"
+msgstr "Grunn dybde"
+
+#: src/options.cpp:858
+msgid "Safety Depth"
+msgstr "Sikkerhetsdybde"
+
+#: src/options.cpp:864
+msgid "Deep Depth"
+msgstr "Dyp dybde"
+
+#: src/options.cpp:874
+msgid "Metres"
+msgstr "Meter"
+
+#: src/options.cpp:878
+msgid "Chart Depth Units"
+msgstr "Dybde enheter"
+
+#: src/options.cpp:884
+msgid "CM93 Offsets"
+msgstr "CM93 Korrigeringer"
+
+#: src/options.cpp:889
+msgid "Enable Manual CM93 Offsets"
+msgstr "Aktiver manuell CM93 korrigering"
+
+#: src/options.cpp:893
+msgid "Vector Charts"
+msgstr "Vektorkarter"
+
+#: src/options.cpp:903
+msgid "AIS"
+msgstr "AIS"
+
+#: src/options.cpp:906
+msgid "AIS General"
+msgstr "AIS Innstillinger"
+
+#: src/options.cpp:911
+msgid "AIS Data Port"
+msgstr "AIS dataport"
+
+#: src/options.cpp:947
+msgid "CPA Calculation"
+msgstr "CPA kalkulasjon"
+
+#: src/options.cpp:955
+msgid "No CPA Calculation if target range is greater than (NMi):"
+msgstr "Ingen CPA kalkulering om målet er lengre borte enn (Nm): "
+
+#: src/options.cpp:961
+msgid "Warn if CPA less than (NMi):"
+msgstr "Advar om CPA er mindre enn (Nm):"
+
+#: src/options.cpp:967
+msgid "  ..And TCPA is less than (Minutes):"
+msgstr "  ..og TCPA er mindre enn (minutter):"
+
+#: src/options.cpp:974
+msgid "Lost Targets"
+msgstr "Mistede mål"
+
+#: src/options.cpp:982
+msgid "Mark targets as lost after (Minutes:):"
+msgstr "Merk mål som mistet etter (minutter):"
+
+#: src/options.cpp:988
+msgid "Remove lost targets after (Minutes:):"
+msgstr "Fjern mistede mål etter (minutter): "
+
+#: src/options.cpp:995
+msgid "Display"
+msgstr "Vis"
+
+#: src/options.cpp:1003
+msgid "Show target COG arrows"
+msgstr "Vis målenes COG kursvektor"
+
+#: src/options.cpp:1009
+msgid "      COG arrow predictor length (Minutes):"
+msgstr "      COG kursvektor lengde (minutter):"
+
+#: src/options.cpp:1015
+msgid "Show target tracks"
+msgstr "Vis slepestrek etter mål"
+
+#: src/options.cpp:1021
+msgid "      Target track length (Minutes):"
+msgstr "      Lengde på slepestrek etter mål (minutter):"
+
+#: src/options.cpp:1028
+msgid "Supress anchored/moored targets"
+msgstr "Skjul fortøyde/ankrede mål"
+
+#: src/options.cpp:1034
+msgid "      Max moored target speed (Kts.):"
+msgstr "      Maksimum fart på fortøyde mål (knop):"
+
+#: src/options.cpp:1041
+msgid "Rollover"
+msgstr "Rull over"
+
+#: src/options.cpp:1045
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr "      \"Skipsnavn\" MMSI (kallesignal)"
+
+#: src/options.cpp:1048
+msgid "[Class] Type (Status)"
+msgstr "[Class] Type (Status)"
+
+#: src/options.cpp:1051
+msgid "SOG COG"
+msgstr "SOG COG"
+
+#: src/options.cpp:1054
+msgid "CPA TCPA"
+msgstr "CPA TCPA"
+
+#: src/options.cpp:1058
+msgid "CPA/TCPA Alerts"
+msgstr "CPA/TCPA Varsler"
+
+#: src/options.cpp:1066
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "Vis CPA/TCPA Varseldialog"
+
+#: src/options.cpp:1069
+msgid "Select Alert Sound"
+msgstr "Velg lyd for varsel"
+
+#: src/options.cpp:1072
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Spill lyd ved CPA/TCPA varsel"
+
+#: src/options.cpp:1075
+msgid "Test Alert Sound"
+msgstr "Test lyd for varsel"
+
+#: src/options.cpp:1078
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Forhindre varsel for ankrede/fortøyde mål"
+
+#: src/options.cpp:1084
+msgid "Enable Target Alert Acknowledge timeout (minutes)"
+msgstr "Aktiver målvarsel utkvitterings timeout (minutter)"
+
+#: src/options.cpp:1150
+msgid "Language/Fonts"
+msgstr "Språk og Skrift"
+
+#: src/options.cpp:1160
+#: src/options.cpp:1163
+msgid "GRIB"
+msgstr "GRIB"
+
+#: src/options.cpp:1167
+msgid "Show GRIB icon"
+msgstr "Vis GRIB ikon"
+
+#: src/options.cpp:1171
+msgid "Use High Definition Graphics"
+msgstr "Benytt HD grafikk"
+
+#: src/options.cpp:1182
+msgid "Etc."
+msgstr "Diverse"
+
+#: src/options.cpp:1188
+msgid "Show Track icon"
+msgstr "Vis slepestrek ikon"
+
+#: src/options.cpp:1198
+msgid "Place Trackpoints at time interval (Seconds):"
+msgstr "Plasser slepestrekpunkter ved tidsintervall (sek.):"
+
+#: src/options.cpp:1205
+msgid "Place Trackpoints at distance interval (NMi):"
+msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
+
+#: src/options.cpp:1212
+msgid "Radar rings"
+msgstr "Radar ringer"
+
+#: src/options.cpp:1216
+msgid "Show radar rings"
+msgstr "Vis radar ringer"
+
+#: src/options.cpp:1226
+msgid "Number of radar rings shown"
+msgstr "Antall radar ringer"
+
+#: src/options.cpp:1232
+msgid "Distance between rings"
+msgstr "Distanse mellom ringer"
+
+#: src/options.cpp:1239
+msgid "&Nautical miles"
+msgstr "&Nautiske mil"
+
+#: src/options.cpp:1240
+msgid "&Kilometers"
+msgstr "&Kilometer"
+
+#: src/options.cpp:1242
+msgid "Units"
+msgstr "Enheter"
+
+#: src/options.cpp:1249
+msgid "Waypoint Locking"
+msgstr "Veipunkt lås"
+
+#: src/options.cpp:1252
+msgid "Lock all waypoints unless a waypoint property dialog is visible"
+msgstr "Lås alle veipunkt untatt når dialogboksen er synlig"
+
+#: src/options.cpp:1259
+msgid "GUI Options"
+msgstr "GUI Valg"
+
+#: src/options.cpp:1263
+msgid "Enable Wheel-Zoom-to-Cursor"
+msgstr "Aktiver Hjul-Zoom-til-Kursor"
+
+#: src/options.cpp:1268
+msgid "Preserve scale when switching charts"
+msgstr "Bevar skala ved bytte av karter"
+
+#: src/options.cpp:1271
+msgid "Play ships bells"
+msgstr "Spill skipsklokker"
+
+#: src/options.cpp:1309
+msgid "PlugIns"
+msgstr "PluggIns"
+
+#: src/options.cpp:2193
+msgid "Available Chart Directories"
+msgstr "Tilgjengelige kartmapper"
+
+#: src/options.cpp:2197
+msgid "All files (*.*)|*.*"
+msgstr "Alle filer (*.*)|*.*"
+
+#: src/options.cpp:2211
+msgid "Add Selection"
+msgstr "Legg til utvalg"
+
+#: src/options.cpp:2216
+msgid "Active Chart Directories"
+msgstr "Aktiverte kartmapper"
+
+#: src/options.cpp:2232
+msgid "Delete Selection"
+msgstr "Slett utvalg"
+
+#: src/options.cpp:2245
+msgid "Update Control"
+msgstr "Oppdateringskontroll"
+
+#: src/options.cpp:2248
+msgid "Force Full Database Rebuild"
+msgstr "Fremtving full database gjenoppbygging"
+
+#: src/options.cpp:2296
+msgid "Language"
+msgstr "Språk"
+
+#: src/options.cpp:2418
+msgid "Font Options"
+msgstr "Skriftvalg"
+
+#: src/options.cpp:2422
+msgid "Text Element"
+msgstr "Tekstelement"
+
+#: src/options.cpp:2440
+msgid "Choose Font..."
+msgstr "Velg skrifttype"
+
+#: src/options.cpp:2538
+msgid "Select Sound File"
+msgstr "Velg lydfil"
+
+#: src/options.cpp:2539
+msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
+msgstr "WAV filer (*.wav)|*.wav|Alle filer (*.*)|*.*"
+
+#: src/about.cpp:254
+msgid ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN...En liten og pen Open Source Kartplotter/Navigator"
+
+#: src/about.cpp:271
+msgid "About"
+msgstr "Om"
+
+#: src/about.cpp:298
+msgid "Authors"
+msgstr "Opphav"
+
+#: src/about.cpp:314
+msgid "License"
+msgstr "Lisens"
+
+#: src/about.cpp:361
+msgid "Help"
+msgstr "Hjelp"
+
+#: src/about.cpp:376
+msgid "Close"
+msgstr "Lukk"
+
+#: src/routeman.cpp:839
+msgid ""
+"Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n"
+"\n"
+"Do you want to rename the waypoints?"
+msgstr ""
+"Veipunkter kan døpes om for å reflektere den nye sorteringen, navnene vil bli '001', '002' osv.\n"
+"\n"
+"Ønsker du å døpe om veipunktene?"
+
+#: src/routeman.cpp:909
+msgid "GPS/Plotter Port"
+msgstr "GPS/Plotter port"
+
+#: src/routeman.cpp:934
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr "Klargjør GPS for rute/veipunkt mottak og trykk send..."
+
+#: src/routeman.cpp:938
+msgid "Progress..."
+msgstr "Forløp..."
+
+#: src/routeman.cpp:954
+msgid "Send"
+msgstr "Send"
+
+#: src/pluginmanager.cpp:77
+msgid "PlugInManager searching for PlugIns in location "
+msgstr "PluggInn behandling søker etter PluggInn plassering"
+
+#: src/pluginmanager.cpp:144
+#, c-format
+msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+msgstr "PluggInn Behandler: Laster ut PluggIn med ugyldig API versjon %d.%d: "
+
+#: src/pluginmanager.cpp:171
+msgid "PlugInManager: Initializing PlugIn: "
+msgstr "PluggInn Behandler: Initierer PluggInn: "
+
+#: src/pluginmanager.cpp:187
+#: src/pluginmanager.cpp:272
+msgid "PlugInManager: Deactivating PlugIn: "
+msgstr "PluggInn Behandler: Deaktiverer PluggInn: "
+
+#: src/pluginmanager.cpp:252
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr "PluggInn Behandler: Laster ut PluggInn: "
+
+#: src/pluginmanager.cpp:288
+msgid "PlugInManager: Loading PlugIn: "
+msgstr "PluggInn Behandler: Laster PluggInn: "
+
+#: src/pluginmanager.cpp:301
+msgid "   PlugInManager: Cannot load library: "
+msgstr "   PluggInn Behandler: Kan ikke laste bibliotek: "
+
+#: src/pluginmanager.cpp:314
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr "   PluggInn Behandler: Kan ikke laste symbol create_pi: "
+
+#: src/pluginmanager.cpp:325
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr "   PluggInn Behandler: Kan ikke laste symbol destroy_pi: "
+
+#: src/pluginmanager.cpp:903
+msgid "BaseClassCommonName"
+msgstr "BaseClassCommonName"
+
+#: src/pluginmanager.cpp:908
+msgid "OpenCPN PlugIn Base Class"
+msgstr "OpenCPN PlugIn Base Class"
+
+#: src/pluginmanager.cpp:913
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+"OpenCPN PlugIn Base Class\n"
+"PluggInn Behandler opprettet denne base klassen"
+
+#: src/pluginmanager.cpp:1080
+msgid "Preferences"
+msgstr "Innstillinger"
+
+#: src/pluginmanager.cpp:1149
+#: src/pluginmanager.cpp:1159
+msgid "Enable"
+msgstr "Aktiver"
+
+#: src/pluginmanager.cpp:1157
+msgid "Disable"
+msgstr "Deaktiver"
+
+#: plugins/grib_pi/src/grib.h:116
+msgid "GRIB Display Control"
+msgstr "GRIB visningskontroll"
+
+#: plugins/grib_pi/src/grib.cpp:211
+msgid "GRIB File Directory"
+msgstr "GRIB filmappe"
+
+#: plugins/grib_pi/src/grib.cpp:237
+msgid "GRIB Data"
+msgstr "GRIB data"
+
+#: plugins/grib_pi/src/grib.cpp:250
+msgid "Wind Speed, Kts."
+msgstr "Vindhastighet, Knop"
+
+#: plugins/grib_pi/src/grib.cpp:260
+msgid "Wind Direction"
+msgstr "Vindretning"
+
+#: plugins/grib_pi/src/grib.cpp:270
+msgid "Pressure, mBar"
+msgstr "Trykk, mbar"
+
+#: plugins/grib_pi/src/grib.cpp:280
+msgid "Significant Wave Height, m"
+msgstr "Signifikant bølgehøyde, m"
+
+#: plugins/grib_pi/src/grib.cpp:291
+msgid "Sea Surface Temp, C"
+msgstr "Sjøoverflate temp, C"
+
+#: plugins/grib_pi/src/grib.cpp:301
+msgid "Current Velocity, Kts."
+msgstr "Nåværende hastighet, knop"
+
+#: plugins/grib_pi/src/grib.cpp:316
+msgid "&Close"
+msgstr "&Lukk"
+
+#: plugins/grib_pi/src/grib.cpp:518
+msgid "Select GRIB Directory"
+msgstr "Velg GRIB mappe"
+
+#: plugins/grib_pi/src/grib.cpp:1110
+#, c-format
+msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgstr "ADVARSEL:  QuickScat GRIB data %d timer gammel."
+
+#: plugins/grib_pi/src/grib.cpp:1230
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Vennligst Zoom ut eller skaler ut for å vise skjult HTSGW GRIB"
+
+#: plugins/grib_pi/src/grib.cpp:1403
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "Vennligst Zoom ut eller skaler ut for å vise skjult CRAIN GRIB"
+
+#: plugins/grib_pi/src/grib.cpp:1520
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "Vennligst Zoom ut eller skaler ut for å vise skjult SJØTEMP GRIB"
+
+#: plugins/grib_pi/src/grib.cpp:1640
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr "Vennligst Zoom ut eller skaler ut for å vise skjult SJØSTRØM GRIB"
+

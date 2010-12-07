@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 02:27+0100\n"
-"PO-Revision-Date: 2010-10-14 13:43+0100\n"
+"PO-Revision-Date: 2010-11-25 08:36+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
 "Language: \n"
@@ -19,26 +19,30 @@ msgstr ""
 "X-Poedit-Country: CZECH REPUBLIC\n"
 
 #
-# 
-# 
-#: src/grib.h:116 src/grib_pi.cpp:270
+#
+#
+#: src/grib.h:116
+#: src/grib_pi.cpp:270
 msgid "GRIB Display Control"
 msgstr "Ovládání zobrazení GRIB"
 
-#: src/grib_pi.cpp:112 src/grib_pi.cpp:199 src/grib_pi.cpp:248
+#: src/grib_pi.cpp:112
+#: src/grib_pi.cpp:199
+#: src/grib_pi.cpp:248
 msgid "Grib"
 msgstr ""
 
 #
-# 
-# 
-#: src/grib_pi.cpp:168 src/grib_pi.cpp:221
+#
+#
+#: src/grib_pi.cpp:168
+#: src/grib_pi.cpp:221
 msgid "GRIB"
 msgstr "GRIB"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr ""
+msgstr "Doplněk GRIB pro OpenCPN"
 
 #: src/grib_pi.cpp:180
 msgid ""
@@ -51,127 +55,135 @@ msgid ""
 "- sea surface temperature\n"
 "- surface current direction and speed."
 msgstr ""
+"Doplněk GRIB pro OpenCPN\n"
+"Poskytuje základní možnosti překryvného zobrazení GRIB souborů několika typů.\n"
+"\n"
+"Podporované typy GRIB souborů obsahují:\n"
+"- rychlost a sílu větru\n"
+"- signifikantní výšku vlny\n"
+"- teplotu povrchu moře\n"
+"- rychlost a směr povrchových proudů."
 
 #: src/grib_pi.cpp:212
 msgid "GRIB Preferences"
-msgstr ""
+msgstr "Nastavení GRIBu"
 
 #
-# 
-# 
+#
+#
 #: src/grib_pi.cpp:225
 msgid "Show GRIB icon"
 msgstr "Zobrazit ikonu GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib_pi.cpp:228
 msgid "Use High Definition Graphics"
 msgstr "Použít grafiku ve velkém rozlišení"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:211
 msgid "GRIB File Directory"
 msgstr "Složka souborů GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:237
 msgid "GRIB Data"
 msgstr "Data GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:250
 msgid "Wind Speed, Kts."
 msgstr "Rychlost větru, Uzly"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:260
 msgid "Wind Direction"
 msgstr "Směr větru"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:270
 msgid "Pressure, mBar"
 msgstr "Tlak, mBar"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:280
 msgid "Significant Wave Height, m"
 msgstr "Signifikantní výška vln, m"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:291
 msgid "Sea Surface Temp, C"
 msgstr "Povrchová teplota moře, C"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:301
 msgid "Current Velocity, Kts."
 msgstr "Rychlost proudu, Kts."
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:316
 msgid "&Close"
 msgstr "&Zavřít"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:518
 msgid "Select GRIB Directory"
 msgstr "Složka souborů GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:1110
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "VAROVÁNÍ:  QuickScat GRIB data jsou %d hodin stará."
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:1230
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:1403
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:1520
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
 
 #
-# 
-# 
+#
+#
 #: src/grib.cpp:1640
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení OCEAN CURRENT GRIB"

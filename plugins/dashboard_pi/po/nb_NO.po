@@ -7,224 +7,170 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 22:51-0500\n"
-"PO-Revision-Date: 2010-11-24 22:55-0500\n"
-"Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2010-11-24 20:32-0500\n"
+"PO-Revision-Date: 2010-12-05 21:41+0100\n"
+"Last-Translator: Frode Lynum <post@kb-h.com>\n"
+"Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
+"X-Poedit-Language: Norsk\n"
+"X-Poedit-Country: Norge\n"
 
-#
 #
 msgid "Add"
-msgstr ""
+msgstr "Legg til"
 
-#
 #
 msgid "Add instrument"
-msgstr ""
+msgstr "Legg til instrument"
 
-#
 #
 msgid "Apparent wind"
-msgstr ""
+msgstr "Tilsynelatende vind"
 
-#
 #
 msgid "COG"
-msgstr ""
+msgstr "COG"
 
-#
 #
 msgid "Compass"
-msgstr ""
+msgstr "Kompass"
 
-#
 #
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashbord"
 
-#
 #
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
+msgstr "Dashbord PluggInn for OpenCPN"
 
-#
 #
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
+"Dashbord PluggInn for OpenCPN\n"
+"Tilføyer navigasjons instrument visning fra NMEA kilder."
 
-#
 #
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "Dashbord instillinger"
 
-#
-msgid "Data:"
-msgstr ""
-
-#
 #
 msgid "Delete"
-msgstr ""
+msgstr "Slett"
 
-#
 #
 msgid "Depth"
-msgstr ""
+msgstr "Dybde"
 
-#
 #
 msgid "Down"
-msgstr ""
+msgstr "Ned"
 
-#
 #
 msgid "E"
-msgstr ""
+msgstr "Ø"
 
-#
 #
 msgid "Edit"
-msgstr ""
+msgstr "Rediger"
 
-#
-msgid "Fonts"
-msgstr ""
-
-#
 #
 msgid "GPS in view"
-msgstr ""
+msgstr "Synlig GPS"
 
-#
 #
 msgid "GPS status"
-msgstr ""
+msgstr "GPS status"
 
-#
 #
 msgid "HDG"
-msgstr ""
+msgstr "HDG"
 
-#
 #
 msgid "Instrument width:"
-msgstr ""
+msgstr "Instrumentbredde:"
 
-#
 #
 msgid "Instruments"
-msgstr ""
+msgstr "Instrumenter"
 
-#
-msgid "Label:"
-msgstr ""
-
-#
 #
 msgid "N"
-msgstr ""
+msgstr "N"
 
-#
 #
 msgid "NE"
-msgstr ""
+msgstr "NØ"
 
-#
 #
 msgid "NW"
-msgstr ""
+msgstr "NV"
 
-#
 #
 msgid "Position"
-msgstr ""
+msgstr "Posisjon"
 
-#
 #
 msgid "Rudder angle"
-msgstr ""
+msgstr "Rorvinkel"
 
-#
 #
 msgid "S"
-msgstr ""
+msgstr "S"
 
-#
 #
 msgid "SE"
-msgstr ""
+msgstr "SØ"
 
-#
 #
 msgid "SOG"
-msgstr ""
+msgstr "SOG"
 
-#
 #
 msgid "STW"
-msgstr ""
+msgstr "STW"
 
-#
 #
 msgid "SW"
-msgstr ""
+msgstr "SV"
 
-#
 #
 msgid "Select instrument to add:"
-msgstr ""
+msgstr "Velg instrument som skal legges til:"
 
-#
-msgid "Small:"
-msgstr ""
-
-#
 #
 msgid "Speedometer"
-msgstr ""
+msgstr "Speedometer"
 
-#
 #
 msgid "Temp"
-msgstr ""
+msgstr "Temp"
 
-#
-msgid "Title:"
-msgstr ""
-
-#
 #
 msgid "True wind"
-msgstr ""
+msgstr "Sann vind"
 
-#
 #
 msgid "Up"
-msgstr ""
+msgstr "Opp"
 
-#
 #
 msgid "VMG"
-msgstr ""
+msgstr "VMG"
 
-#
 #
 msgid "W"
-msgstr ""
+msgstr "V"
 
-#
 #
 msgid "Wind angle"
-msgstr ""
+msgstr "Vind retning"
 
 #
-#
 msgid "Wind speed"
-msgstr ""
+msgstr "Vind hastighet"
 

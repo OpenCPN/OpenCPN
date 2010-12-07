@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 22:51-0500\n"
-"PO-Revision-Date: 2010-11-24 22:55-0500\n"
-"Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
+"PO-Revision-Date: 2010-11-25 23:47+0100\n"
+"Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,17 +19,17 @@ msgstr ""
 #
 #
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #
 #
 msgid "Add instrument"
-msgstr ""
+msgstr "Aggiungi Strumento"
 
 #
 #
 msgid "Apparent wind"
-msgstr ""
+msgstr "Vento Apparente"
 
 #
 #
@@ -39,17 +39,17 @@ msgstr ""
 #
 #
 msgid "Compass"
-msgstr ""
+msgstr "Bussola"
 
 #
 #
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #
 #
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
+msgstr "Dashboard PlugIn per OpenCPN"
 
 #
 #
@@ -57,30 +57,32 @@ msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
+"Dashboard PlugIn per OpenCPN\n"
+"Mostra strumenti di navigazione dai dati NMEA."
 
 #
 #
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "Preferenze Dashboard"
 
 #
 msgid "Data:"
-msgstr ""
+msgstr "Dati:"
 
 #
 #
 msgid "Delete"
-msgstr ""
+msgstr "Cancella"
 
 #
 #
 msgid "Depth"
-msgstr ""
+msgstr "Profondità"
 
 #
 #
 msgid "Down"
-msgstr ""
+msgstr "Giù"
 
 #
 #
@@ -90,21 +92,21 @@ msgstr ""
 #
 #
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #
 msgid "Fonts"
-msgstr ""
+msgstr "Caratteri"
 
 #
 #
 msgid "GPS in view"
-msgstr ""
+msgstr "Satelliti GPS in vista"
 
 #
 #
 msgid "GPS status"
-msgstr ""
+msgstr "Stato GPS"
 
 #
 #
@@ -114,16 +116,16 @@ msgstr ""
 #
 #
 msgid "Instrument width:"
-msgstr ""
+msgstr "Larghezza Strumenti:"
 
 #
 #
 msgid "Instruments"
-msgstr ""
+msgstr "Strumenti"
 
 #
 msgid "Label:"
-msgstr ""
+msgstr "Etichetta:"
 
 #
 #
@@ -143,12 +145,12 @@ msgstr ""
 #
 #
 msgid "Position"
-msgstr ""
+msgstr "Posizione"
 
 #
 #
 msgid "Rudder angle"
-msgstr ""
+msgstr "Angolo di barra"
 
 #
 #
@@ -178,35 +180,35 @@ msgstr ""
 #
 #
 msgid "Select instrument to add:"
-msgstr ""
+msgstr "Seleziona strumenti:"
 
 #
 msgid "Small:"
-msgstr ""
+msgstr "Piccolo:"
 
 #
 #
 msgid "Speedometer"
-msgstr ""
+msgstr "Velocità"
 
 #
 #
 msgid "Temp"
-msgstr ""
+msgstr "Temperatura"
 
 #
 msgid "Title:"
-msgstr ""
+msgstr "Titolo:"
 
 #
 #
 msgid "True wind"
-msgstr ""
+msgstr "Vento Reale"
 
 #
 #
 msgid "Up"
-msgstr ""
+msgstr "Su"
 
 #
 #
@@ -221,10 +223,10 @@ msgstr ""
 #
 #
 msgid "Wind angle"
-msgstr ""
+msgstr "Angolo Vento"
 
 #
 #
 msgid "Wind speed"
-msgstr ""
+msgstr "Velocità Vento"
 
