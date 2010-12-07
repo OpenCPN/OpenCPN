@@ -2537,8 +2537,9 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
       else if(lang_canonical == _T("pt_BR")) {dir_suffix = _T("pt_BR"); return_string = wxString("Português Brasileiro", wxConvUTF8);}
       else if(lang_canonical == _T("ru_RU")) {dir_suffix = _T("ru");    return_string = wxString("Русский", wxConvUTF8);}
       else if(lang_canonical == _T("sv_SE")) {dir_suffix = _T("sv");    return_string = wxString("Svenska", wxConvUTF8);}
-      else if(lang_canonical == _T("fi_FI")) {dir_suffix = _T("fi");   return_string = wxString("Suomalainen", wxConvUTF8);}
-	else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norske", wxConvUTF8);}
+      else if(lang_canonical == _T("fi_FI")) {dir_suffix = _T("fi");    return_string = wxString("Suomalainen", wxConvUTF8);}
+	else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norsk", wxConvUTF8);}
+      else if(lang_canonical == _T("tr_TR")) {dir_suffix = _T("tr_TR"); return_string = wxString("Türkçe", wxConvUTF8);}
       else
       {
             dir_suffix = lang_canonical;
