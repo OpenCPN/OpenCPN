@@ -512,10 +512,10 @@ wxString          g_AisTargetList_perspective;
 int               g_AisTargetList_range;
 int               g_AisTargetList_sortColumn;
 bool              g_bAisTargetList_sortReverse;
+wxString          g_AisTargetList_column_spec;
 
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
-wxTextCtrl *g_text;
 
 bool              g_blocale_changed;
 
@@ -6684,8 +6684,10 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                   {
                         if(m_NMEA0183.Parse())
                         {
-                              gSog = m_NMEA0183.Vtg.SpeedKnots;
-                              gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                              if(!wxIsNaN(m_NMEA0183.Vtg.SpeedKnots))
+                                    gSog = m_NMEA0183.Vtg.SpeedKnots;
+                              if(!wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue))
+                                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                         }
                         else if(g_nNMEADebug)
                         {
