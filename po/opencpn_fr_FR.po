@@ -1808,7 +1808,7 @@ msgid ""
 "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 msgstr ""
-"Taille              : %5.1dm x %4.1dm x %4.1fm\n"
+"Taille              : %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 
 #
@@ -1819,7 +1819,7 @@ msgid ""
 "Size:               %5.1fm x %4.1fm x ---m\n"
 "\n"
 msgstr ""
-"Taille              : %5.1dm x %4.1dm x ---m\n"
+"Taille              : %5.1fm x %4.1fm x ---m\n"
 "\n"
 
 #
