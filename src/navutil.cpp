@@ -2432,7 +2432,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_ais_query_dialog_y < 0) || (g_ais_query_dialog_y > display_height))
             g_ais_query_dialog_y = 5;
 
-      Read ( _T ( "AISTargetListPerspective" ), g_AisTargetList_perspective );
+      Read ( _T ( "AISTargetListPerspective" ), &g_AisTargetList_perspective );
       g_AisTargetList_range = Read ( _T ( "AISTargetListRange" ),  40L );
       g_AisTargetList_sortColumn = Read ( _T ( "AISTargetListSortColumn" ), 2L ); // Column #2 is MMSI
       Read ( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse, false );
@@ -6690,7 +6690,13 @@ double fromDMM(char *dms)
 
       m = (double) (abs(d)) + m / 60.0;
 
-      if (d >= 0 && strpbrk(buf, "SWsw") == NULL)
+      char *hemi_str;
+      if(strpbrk(buf, "SWsw"))
+            hemi_str = buf;
+      else
+            hemi_str = buf1;
+
+      if (d >= 0 && strpbrk(hemi_str, "SWsw") == NULL)
             return m;
       else
             return -m;

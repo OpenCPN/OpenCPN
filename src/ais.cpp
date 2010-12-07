@@ -1950,6 +1950,13 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       if(!bGPSValid)
       {
             ptarget->bCPA_Valid = false;
+
+            //    Compute the current Range/Brg to the target, even though ownship position may not be valid
+            double brg, dist;
+            DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
+            ptarget->Range_NM = dist;
+            ptarget->Brg = brg;
+
             return;
       }
 
@@ -2140,6 +2147,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
           comx =  m_data_source_string.AfterFirst(':');      // strip "Serial:"
 
 #ifdef __WXMSW__
+          wxString mcomx = comx;
           comx.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
 //  As a quick check, verify that the specified port is available
@@ -2153,7 +2161,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
 
             if(m_hSerialComm == INVALID_HANDLE_VALUE)
             {
-                  wxString msg(comx);
+                  wxString msg(mcomx);
                   msg.Prepend(_("  Could not open AIS serial port '"));
                   msg.Append(_("'\nSuggestion: Try closing other applications."));
                   wxMessageDialog md(pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
@@ -3396,8 +3404,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
 
 // A second box sizer to give more space around the controls
-//      wxBoxSizer* boxSizer = new wxBoxSizer ( wxVERTICAL );
-//      topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 2 );
+//      wxBoxSizer* boxSizer = new wxBoxSizer ( wxHORIZONTAL );
+ //     topSizer->Add ( boxSizer, 0, wxEXPAND, 0 );
 
       m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
                                              wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN );
@@ -3413,9 +3421,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, 55);
       m_pListCtrlAISTargets->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, 80 );
 //      m_pListCtrlAISTargets->InsertColumn( tlIMO, _("IMO/AIS#"), wxLIST_FORMAT_LEFT, 70 );
-      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, 50 );
+      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, 55 );
       m_pListCtrlAISTargets->InsertColumn( tlTYPE, _("Type"), wxLIST_FORMAT_LEFT, 80 );
-      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, 82 );
+      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, 90 );
 
 /*
       if(m_size_min.x < 900)
@@ -3430,7 +3438,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 */
 
       m_pListCtrlAISTargets->InsertColumn( tlBRG, _("Brg"), wxLIST_FORMAT_RIGHT, 45 );
-      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, 55 );
+      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, 62 );
       m_pListCtrlAISTargets->InsertColumn( tlCOG, _("CoG"), wxLIST_FORMAT_RIGHT, 50 );
       m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, 50 );
 
@@ -3460,6 +3468,12 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND|wxALL, 0 );
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
+
+      topSizer->Layout();
+
+      //    This is silly, but seems to be required for __WXMSW__ build
+      //    If not done, the SECOND invocation of AISTargetList fails to expand the list to the full wxSizer size....
+      SetSize(GetSize().x, GetSize().y-1);
 
       SetColorScheme();
       UpdateButtons();
@@ -3741,7 +3755,11 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                   }
                   item.Clear();
             }
-            m_pListCtrlAISTargets->SortItems( ListItemCompare, (long)m_pListCtrlAISTargets );
+
+            if(m_pListCtrlAISTargets->GetItemCount() < 200)
+                  m_pListCtrlAISTargets->SortItems( ListItemCompare, (long)m_pListCtrlAISTargets );
+
+
             //m_pListCtrlAISTargets->SetScrollbar(wxVERTICAL, sb_position, sb_thumbSize, sb_range, false);
             m_pListCtrlAISTargets->SetScrollPos(wxVERTICAL, sb_position, false);
             selItemID = m_pListCtrlAISTargets->FindItem(-1, selItemMMSI);
@@ -3752,7 +3770,6 @@ void AISTargetListDialog::UpdateAISTargetList(void)
      }
 
 }
-
 
 
 
