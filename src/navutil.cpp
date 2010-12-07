@@ -221,6 +221,7 @@ extern wxString         g_AisTargetList_perspective;
 extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
+extern wxString         g_AisTargetList_column_spec;
 
 extern bool             g_bShowPrintIcon;
 extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -2436,6 +2437,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       g_AisTargetList_range = Read ( _T ( "AISTargetListRange" ),  40L );
       g_AisTargetList_sortColumn = Read ( _T ( "AISTargetListSortColumn" ), 2L ); // Column #2 is MMSI
       Read ( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse, false );
+      Read ( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
 
       Read ( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
       Read ( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
@@ -3585,6 +3587,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AISTargetListRange" ),  g_AisTargetList_range );
       Write ( _T ( "AISTargetListSortColumn" ),  g_AisTargetList_sortColumn );
       Write ( _T ( "bAISTargetListSortReverse" ),  g_bAisTargetList_sortReverse );
+      Write ( _T ( "AISTargetListColumnSpec" ),  g_AisTargetList_column_spec );
 
       Write ( _T ( "bAISRolloverShowClass" ),  g_bAISRolloverShowClass );
       Write ( _T ( "bAISRolloverShowCOG" ),  g_bAISRolloverShowCOG );

@@ -110,6 +110,7 @@ extern int              g_AisTargetList_range;
 extern wxString         g_AisTargetList_perspective;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
+extern wxString         g_AisTargetList_column_spec;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -305,12 +306,9 @@ enum {
       tlNAME = 0,
       tlCALL,
       tlMMSI,
-//      tlIMO,
       tlCLASS,
       tlTYPE,
       tlNAVSTATUS,
-//      tlDESTINATION,
-//      tlETA,
       tlBRG,
       tlRNG,
       tlCOG,
@@ -3407,6 +3405,12 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 //      wxBoxSizer* boxSizer = new wxBoxSizer ( wxHORIZONTAL );
  //     topSizer->Add ( boxSizer, 0, wxEXPAND, 0 );
 
+      //  Parse the global column width string as read from config file
+      wxStringTokenizer tkz(g_AisTargetList_column_spec, _T(";"));
+      wxString s_width = tkz.GetNextToken();
+      int width;
+      long lwidth;
+
       m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
                                              wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN );
       wxImageList *imglist = new wxImageList( 16, 16, true, 2 );
@@ -3417,30 +3421,55 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pListCtrlAISTargets->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler( AISTargetListDialog::OnTargetSelected ), NULL, this );
       m_pListCtrlAISTargets->Connect( wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler( AISTargetListDialog::OnTargetDefaultAction ), NULL, this );
       m_pListCtrlAISTargets->Connect( wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler( AISTargetListDialog::OnTargetListColumnClicked ), NULL, this );
-      m_pListCtrlAISTargets->InsertColumn( tlNAME, _("Name"), wxLIST_FORMAT_LEFT, 105 );
-      m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, 55);
-      m_pListCtrlAISTargets->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, 80 );
-//      m_pListCtrlAISTargets->InsertColumn( tlIMO, _("IMO/AIS#"), wxLIST_FORMAT_LEFT, 70 );
-      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, 55 );
-      m_pListCtrlAISTargets->InsertColumn( tlTYPE, _("Type"), wxLIST_FORMAT_LEFT, 80 );
-      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, 90 );
 
-/*
-      if(m_size_min.x < 900)
-            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 80 );
-      else
-            m_pListCtrlAISTargets->InsertColumn( tlDESTINATION, _("Destination"), wxLIST_FORMAT_LEFT, 120 );
+      width = 105;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlNAME, _("Name"), wxLIST_FORMAT_LEFT, width );
+      s_width = tkz.GetNextToken();
 
-      if(m_size_min.x < 900)
-            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 40 );
-      else
-            m_pListCtrlAISTargets->InsertColumn( tlETA, _("ETA"), wxLIST_FORMAT_LEFT, 140 );
-*/
+      width = 55;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlCALL, _("Call"), wxLIST_FORMAT_LEFT, width);
+      s_width = tkz.GetNextToken();
 
-      m_pListCtrlAISTargets->InsertColumn( tlBRG, _("Brg"), wxLIST_FORMAT_RIGHT, 45 );
-      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, 62 );
-      m_pListCtrlAISTargets->InsertColumn( tlCOG, _("CoG"), wxLIST_FORMAT_RIGHT, 50 );
-      m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, 50 );
+      width = 80;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 55;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlCLASS, _("Class"), wxLIST_FORMAT_CENTER, width );
+      s_width = tkz.GetNextToken();
+
+      width = 80;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlTYPE, _("Type"), wxLIST_FORMAT_LEFT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 90;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlNAVSTATUS, _("Nav Status"), wxLIST_FORMAT_LEFT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 45;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlBRG, _("Brg"), wxLIST_FORMAT_RIGHT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 62;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlRNG, _("Range"), wxLIST_FORMAT_RIGHT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 50;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlCOG, _("CoG"), wxLIST_FORMAT_RIGHT, width );
+      s_width = tkz.GetNextToken();
+
+      width = 50;
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
+      m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, width );
 
       wxListItem item;
       item.SetMask(wxLIST_MASK_IMAGE);
@@ -3525,12 +3554,26 @@ void AISTargetListDialog::SetColorScheme()
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
+      if(m_pListCtrlAISTargets)
+      {
+            g_AisTargetList_column_spec.Clear();
+            for(int i=0 ; i < tlSOG + 1 ; i++)
+            {
+                  wxListItem item;
+                  m_pListCtrlAISTargets->GetColumn(i, item);
+                  wxString sitem;
+                  sitem.Printf(_T("%d;"), item.m_width);
+                  g_AisTargetList_column_spec += sitem;
+            }
+      }
+
       if (event.pane->name == _T("AISTargetList"))
       {
             g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
             //event.Veto();
       }
       g_pAISTargetList = NULL;
+      m_pListCtrlAISTargets = NULL;
       event.Skip();
 }
 
