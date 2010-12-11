@@ -2237,19 +2237,15 @@ void options::PopulateChartsPage()
 
           //        Currently selected chart dirs
       wxString dirname;
-      if(m_pCurrentDirList)
+      if(m_pCurrentDirList && pListBox)
       {
+            pListBox->Clear();
             int nDir = m_pCurrentDirList->GetCount();
             for(int i=0 ; i<nDir ; i++)
             {
                   dirname = m_pCurrentDirList->Item(i).fullpath;
                   if(!dirname.IsEmpty())
-                  {
-                        if (pListBox)
-                        {
-                              pListBox->Append(dirname);
-                        }
-                  }
+                        pListBox->Append(dirname);
             }
       }
 
