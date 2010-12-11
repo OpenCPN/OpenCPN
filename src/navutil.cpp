@@ -4925,7 +4925,7 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                               wxString tpChildName = wxString::FromUTF8(tpchild->Value());
                               if(tpChildName == _T("trkpt"))
                               {
-                                    pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty"), b_fullviz );
+                                    pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty"), false/*b_fullviz*/ );
 						pTentTrack->AddPoint ( pWp, false );
                                     pWp->m_bIsInRoute = false;                      // Hack
                                     pWp->m_bIsInTrack = true;
