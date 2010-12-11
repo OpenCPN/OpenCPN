@@ -7131,7 +7131,8 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
             pdef_menu->Append ( ID_RT_MENU_ACTPOINT,    _( "Activate Waypoint" ) );
             pdef_menu->Append ( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next in Route" ) );
             pdef_menu->Append ( ID_RT_MENU_REMPOINT,    _( "Remove Waypoint from Route" ) );
-            pdef_menu->Append ( ID_RT_MENU_DELPOINT,    _( "Delete Waypoint" ) );
+            if(m_pFoundRoutePoint->m_IconName != _T("mob"))
+                  pdef_menu->Append ( ID_RT_MENU_DELPOINT,    _( "Delete Waypoint" ) );
             pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
 
             int NbrLinks = m_pFoundRoutePoint->m_HyperlinkList->GetCount();
@@ -7154,7 +7155,8 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               if ( !g_pRouteMan->GetpActiveRoute() )
                     pdef_menu->Append ( ID_WP_MENU_GOTO,        _( "Go To Mark/WP" ) );
 
-              pdef_menu->Append ( ID_WP_MENU_DELPOINT,    _( "Delete Mark" ) );
+              if(m_pFoundRoutePoint->m_IconName != _T("mob"))
+                    pdef_menu->Append ( ID_WP_MENU_DELPOINT,    _( "Delete Mark" ) );
               pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
 
               if ((m_pFoundRoutePoint == pAnchorWatchPoint1) || (m_pFoundRoutePoint == pAnchorWatchPoint2))       //pjotrc 2010.02.15
