@@ -3769,7 +3769,7 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
     wxString Message = SENCfile.GetFullPath();
     Message.Append(_T("...Ingesting"));
 
-    wxString Title(_T("OpenCPN S57 SENC File Create..."));
+    wxString Title(_("OpenCPN S57 SENC File Create..."));
     Title.append(SENCfile.GetFullPath());
 
 
@@ -4458,7 +4458,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                  nGeo1000 = nGeoFeature / 500;
 
 #ifdef __WXMSW__
-                 SENC_prog = new wxProgressDialog(  _T("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
+                 SENC_prog = new wxProgressDialog(  _("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
                              wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_SMOOTH);
 
 #endif
