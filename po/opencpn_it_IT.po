@@ -1191,7 +1191,7 @@ msgstr "Fatto."
 #
 #
 msgid "Drop MOB Marker"
-msgstr "UOMO A MARE: Aggiungi Punto a Rotta!"
+msgstr "UOMO A MARE: Aggiungi Punto e Rotta!"
 
 #
 #
