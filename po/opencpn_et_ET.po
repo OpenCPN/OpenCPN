@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 23:11-0500\n"
+"POT-Creation-Date: 2010-12-11 10:26-0500\n"
 "PO-Revision-Date: 2010-09-06 23:34-0500\n"
 "Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -447,6 +447,9 @@ msgstr "---<<< HOIATUS: Kaardil asukoht on vale. >>>---"
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< HOIATUS: Kaardil asukoht võib olla vale. >>>---"
 #
+msgid "1.0 NM along COG"
+msgstr ""
+#
 # 
 # 
 msgid "2 Color"
@@ -497,6 +500,12 @@ msgstr "AIS-i objektide nimekiri"
 #, fuzzy
 msgid "AISRollover"
 msgstr "AIS-i alarm"
+#
+# 
+# 
+#, fuzzy
+msgid "AISTargetAlert"
+msgstr "AIS objekti päring"
 #
 # 
 # 
@@ -1199,11 +1208,6 @@ msgstr "GPSD andmete server"
 #
 # 
 # 
-msgid "GRIB"
-msgstr "GRIB"
-#
-# 
-# 
 msgid "GUI Options"
 msgstr "GUI seaded"
 #
@@ -1580,6 +1584,15 @@ msgstr ""
 # 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN teekonna looja"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN teekonna looja"
+#
+msgid "OpenCPN S57 SENC File Load"
+msgstr ""
 #
 # 
 # 
@@ -2056,11 +2069,6 @@ msgstr "Näita GPS/NMEA andmete saabumis akent"
 #
 # 
 # 
-msgid "Show GRIB icon"
-msgstr "Näita GRIB-i ikooni"
-#
-# 
-# 
 msgid "Show Important Text Only"
 msgstr "Näita ainult olulist teksti"
 #
@@ -2470,11 +2478,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Use High Definition Graphics"
-msgstr "Kasuta kõrgresulutsioonil graafikat"
-#
-# 
-# 
 msgid "Use SCAMIN"
 msgstr "Kasuta SCAMIN"
 #
@@ -2597,10 +2600,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulge"
+#
 #
 #
 #
@@ -2612,11 +2617,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Kustuta kõik jäljed..."
+#
 #
 #
 #
@@ -2628,11 +2635,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Kutsung:"
+#
 #
 #
 #
@@ -2648,6 +2657,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -2657,6 +2667,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Liik:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -2672,6 +2683,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
@@ -2679,10 +2691,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 #
@@ -2694,11 +2708,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
+#
+# 
+# 
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
 #
 #
 #
@@ -2709,10 +2731,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-i ekraani kontroll"
+#
 #
 #
 #
@@ -2723,10 +2747,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
+#
 #
 #
 #
@@ -2737,10 +2763,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
+#
 #
 #
 #
@@ -2751,10 +2779,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Õhurõhk, mBar"
+#
 #
 #
 #
@@ -2766,6 +2796,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
@@ -2773,10 +2804,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Vali GRIB-i asukoht"
+#
 #
 #
 #
@@ -2788,11 +2821,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Näita GPX ikooni"
+#
 #
 #
 #
@@ -2803,11 +2838,25 @@ msgstr ""
 #~ msgstr "Näita GRIB akent"
 #
 #
+# 
+# 
+#~ msgid "Show GRIB icon"
+#~ msgstr "Näita GRIB-i ikooni"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Oluline laine kõrgus, m"
+#
+#
+# 
+# 
+#~ msgid "Use High Definition Graphics"
+#~ msgstr "Kasuta kõrgresulutsioonil graafikat"
+#
 #
 #
 #
@@ -2818,10 +2867,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Tuule suund"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 23:11-0500\n"
+"POT-Creation-Date: 2010-12-11 10:26-0500\n"
 "PO-Revision-Date: 2010-10-18 00:02+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -463,6 +463,9 @@ msgstr ""
 "---<<< Warnung: Die Georeferenzierung der Karte ist möglicherweise ungenau. "
 ">>>---"
 #
+msgid "1.0 NM along COG"
+msgstr ""
+#
 # 
 # 
 msgid "2 Color"
@@ -513,6 +516,12 @@ msgstr "Liste AIS-Ziele"
 #, fuzzy
 msgid "AISRollover"
 msgstr "Rollover"
+#
+# 
+# 
+#, fuzzy
+msgid "AISTargetAlert"
+msgstr "AIS-Zielabfrage"
 #
 # 
 # 
@@ -1195,11 +1204,6 @@ msgstr "GPSD-Datenserver"
 #
 # 
 # 
-msgid "GRIB"
-msgstr "GRIB"
-#
-# 
-# 
 msgid "GUI Options"
 msgstr "Benutzerinterface-Einstellungen"
 #
@@ -1572,6 +1576,15 @@ msgstr ""
 # 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Routenerstellung"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN Routenerstellung"
+#
+msgid "OpenCPN S57 SENC File Load"
+msgstr ""
 #
 # 
 # 
@@ -2054,11 +2067,6 @@ msgstr "Fenster mit GPS-/ NMEA-Datenfluss anzeigen"
 #
 # 
 # 
-msgid "Show GRIB icon"
-msgstr "GRIB-Symbol anzeigen"
-#
-# 
-# 
 msgid "Show Important Text Only"
 msgstr "Nur wichtigen Text anzeigen"
 #
@@ -2464,11 +2472,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Use High Definition Graphics"
-msgstr "Hochäuflösende Grafik verwenden"
-#
-# 
-# 
 msgid "Use SCAMIN"
 msgstr "SCAMIN (Scale Minimum) verwenden"
 #
@@ -2593,10 +2596,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 #
 #
@@ -2606,6 +2611,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Rufzeichen:  "
+#
 #
 #
 #
@@ -2621,6 +2627,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
@@ -2628,10 +2635,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
+#
+# 
+# 
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
 #
 #
 #
@@ -2642,6 +2657,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
@@ -2649,10 +2665,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
+#
 #
 #
 #
@@ -2665,12 +2683,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -2683,12 +2703,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -2699,10 +2721,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Luftdruck, mBar"
+#
 #
 #
 #
@@ -2713,10 +2737,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB-Verzeichnis auswählen"
+#
+#
+# 
+# 
+#~ msgid "Show GRIB icon"
+#~ msgstr "GRIB-Symbol anzeigen"
+#
 #
 #
 #
@@ -2724,6 +2756,13 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifik. Wellenhöhe, m"
+#
+#
+# 
+# 
+#~ msgid "Use High Definition Graphics"
+#~ msgstr "Hochäuflösende Grafik verwenden"
+#
 #
 #
 #
@@ -2734,10 +2773,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 #
 #

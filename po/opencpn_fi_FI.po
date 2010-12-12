@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 23:07-0400\n"
+"POT-Creation-Date: 2010-12-11 10:26-0500\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -16,394 +16,489 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
-
-#: include/routeprop.h:66
-#: src/chcanv.cpp:6397
-#: src/chcanv.cpp:7087
-msgid "Route Properties"
-msgstr "Reitin ominaisuudet"
-
-#: include/routeprop.h:84
-msgid "Mark Properties"
-msgstr "Merkitse ominaisuudet"
-
-#: include/routeprop.h:98
-msgid "Mark Information"
-msgstr "Merkitse tiedot"
-
-#: include/options.h:64
-msgid "Options"
-msgstr "Asetukset"
-
-#: include/chcanv.h:656
-#: include/chcanv.h:668
-#: include/chcanv.h:721
-#: include/chcanv.h:733
-#: src/chcanv.cpp:6479
-#: src/chcanv.cpp:6486
-#: src/chcanv.cpp:6827
-msgid "Object Query"
-msgstr "Kohdekysely"
-
-#: include/about.h:70
-#: src/chart1.cpp:2345
-msgid "About OpenCPN"
-msgstr "Tietoja OpenCPN:stä"
-
-#: include/grib.h:100
-#: src/chcanv.cpp:2905
-msgid "GRIB Display Control"
-msgstr "GRIB-näytön hallinta"
-
-#: include/ais.h:436
-#: src/ais.cpp:2178
-msgid "AIS Alert"
-msgstr "AIS hälytysluettelo"
-
-#: include/ais.h:479
-#: src/chcanv.cpp:6531
-#: src/chcanv.cpp:7264
-msgid "AIS target list"
-msgstr "AIS maaliluettelo"
-
-#: include/routeman.h:71
-msgid "Send Route To GPS"
-msgstr "Lähetä reitti GPSään"
-
-#: src/chartdbs.cpp:690
-msgid " ChartFile:  "
-msgstr "Karttatiedosto:"
-
-#: src/chartdbs.cpp:698
-msgid " Name:  "
-msgstr "Nimi:"
-
-#: src/chartdbs.cpp:704
-#, c-format
-msgid " Scale:  1:%d"
-msgstr "Mittakaava:  1:%d"
-
-#: src/chartdbs.cpp:711
-msgid " ID:  "
-msgstr "ID:"
-
-#: src/chartdbs.cpp:720
-msgid " Depth Units:  "
-msgstr "Syvyysyksiköt:"
-
-#: src/chartdbs.cpp:729
-msgid " Soundings:  "
-msgstr "Luotaukset:"
-
-#: src/chartdbs.cpp:738
-msgid " Datum:  "
-msgstr "Päivämäärä:"
-
-#: src/chartdbs.cpp:744
-msgid " Projection:  "
-msgstr "Projektio:"
-
-#: src/chartdbs.cpp:746
-msgid "Unknown"
-msgstr "Tuntematon"
-
-#: src/chartdbs.cpp:748
-msgid "Mercator"
-msgstr "Mercator"
-
-#: src/chartdbs.cpp:750
-msgid "Transverse Mercator"
-msgstr "Transverse Mercator"
-
-#: src/chartdbs.cpp:752
-msgid "Polyconic"
-msgstr "Polyconic"
-
-#: src/chartdbs.cpp:759
-msgid " Source Edition:  "
-msgstr "Lähdeversio:"
-
-#: src/chartdbs.cpp:768
-msgid " Updated:  "
-msgstr "Päivitetty:"
-
-#: src/chartdbs.cpp:779
+#
 msgid "\n"
 msgstr "\n"
-
-#: src/chart1.cpp:909
-#: src/chart1.cpp:1529
-#: src/chart1.cpp:1553
-#: src/chart1.cpp:3791
-msgid "OpenCPN Info"
-msgstr "OPenCPN-tietoja"
-
-#: src/chart1.cpp:1527
-msgid "OpenCPN needs to update the chart database from config file entries...."
-msgstr "OpenCPN päivittää karttatietokantaa config-tiedoston mukaan..."
-
-#: src/chart1.cpp:1537
-#: src/chart1.cpp:3679
-msgid "OpenCPN Chart Update"
-msgstr "OpenCPN karttapäivitys"
-
-#: src/chart1.cpp:1551
+#
+msgid ""
+"\n"
+"\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+#
+msgid ""
+"\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n"
+"\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n"
+"\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n"
+"\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr ""
+#
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 "            Karttoja ei asennettu.\n"
 "Valitse karttahakemisto: Työkalut->Kartat."
-
-#: src/chart1.cpp:2122
-#: src/chcanv.cpp:6497
-#: src/chcanv.cpp:6852
-msgid "AIS Target Query"
-msgstr "AIS maalin kysely"
-
-#: src/chart1.cpp:2267
-msgid "Shift to Larger Scale Chart"
-msgstr "Siirry suurempimittakaavaiseen karttaan"
-
-#: src/chart1.cpp:2269
-msgid "Shift to Smaller Scale Chart"
-msgstr "Siirry pienempimittakaavaiseen karttaan"
-
-#: src/chart1.cpp:2274
-msgid "Create Route"
-msgstr "Luo reitti"
-
-#: src/chart1.cpp:2276
-msgid "Auto Follow"
-msgstr "Automaattiseuranta"
-
-#: src/chart1.cpp:2280
-#: src/chart1.cpp:3602
-msgid "ToolBox"
-msgstr "Työkalut"
-
-#: src/chart1.cpp:2282
-msgid "Show ENC Text"
-msgstr "Näytä ENC-teksti"
-
-#: src/chart1.cpp:2290
-msgid "Show AIS Targets"
-msgstr "Näytä AIS maalit"
-
-#: src/chart1.cpp:2296
-msgid "Show Currents"
-msgstr "Näytä virrat"
-
-#: src/chart1.cpp:2298
-msgid "Show Tides"
-msgstr "Näytä vuorovedet"
-
-#: src/chart1.cpp:2304
-msgid "Print Chart"
-msgstr "Tulosta kartta"
-
-#: src/chart1.cpp:2311
-#: src/navutil.cpp:3786
-msgid "Import GPX file"
-msgstr "Tuo GPX-tiedosto"
-
-#: src/chart1.cpp:2315
-#: src/navutil.cpp:3704
-#: src/navutil.cpp:3752
-msgid "Export GPX file"
-msgstr "Vie GPX-tiedosto"
-
-#: src/chart1.cpp:2322
-msgid "Toggle Tracking"
-msgstr "Kytke jälki"
-
-#: src/chart1.cpp:2331
-msgid "Show GRIB dialog"
-msgstr "Näytä GRIB-ruutu"
-
-#: src/chart1.cpp:2339
-msgid "Change Color Scheme"
-msgstr "Vaihda värikarttaa"
-
-#: src/chart1.cpp:2342
-msgid "Drop MOB Marker"
-msgstr "Aseta MOB-merkki"
-
-#: src/chart1.cpp:2429
-#: src/chart1.cpp:4652
-#: src/chart1.cpp:4884
-msgid "Exit OpenCPN"
-msgstr "Poistu OpenCPN:stä"
-
-#: src/chart1.cpp:3338
-msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Kartta1::Tapahtuma...TCMgr ei käytössä"
-
-#: src/chart1.cpp:3422
-#: src/chcanv.cpp:2865
-msgid "MAN OVERBOARD"
-msgstr "MIES YLI LAIDAN (MOB)"
-
-#: src/chart1.cpp:3791
-msgid "Please restart OpenCPN to activate new language selection."
-msgstr "Uudelleenkäynnistä OpenCPN kielen vaihtamiseksi "
-
-#: src/chart1.cpp:4334
-#: src/chcanv.cpp:3098
-#: src/chcanv.cpp:5470
-msgid "Cursor: "
-msgstr "Osoitin:"
-
-#: src/chart1.cpp:4343
-#: src/chcanv.cpp:3107
-#: src/chcanv.cpp:5479
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
-msgstr "Omasta aluksesta: %03d ast  %6.2f mpk"
-
-#: src/chart1.cpp:5149
-msgid "Chart file corrupt.. disabling this chart \n"
-msgstr "Viallinen karttatiedosto... käyttö estetty \n"
-
-#: src/chart1.cpp:5152
-#: src/nmea.cpp:182
-#: src/nmea.cpp:229
-#: src/nmea.cpp:263
-#: src/nmea.cpp:291
-#: src/nmea.cpp:311
-#: src/ais.cpp:1842
-#: src/ais.cpp:1886
-msgid "OpenCPN Message"
-msgstr "OpenCPN viesti"
-
-#: src/chart1.cpp:5698
-msgid "Add this chart to quilt."
-msgstr "Lisää tämä kartta tilkkutäkkiin."
-
-#: src/chart1.cpp:5704
-#: src/chcanv.cpp:6488
-msgid "Remove this chart from quilt."
-msgstr "Poista tämä kartta tilkkutäkistä."
-
-#: src/chart1.cpp:5919
-msgid "Chart Print"
-msgstr "Kartan tulostus"
-
-#: src/chart1.cpp:5923
-msgid ""
-"There was a problem printing.\n"
-"Perhaps your current printer is not set correctly?"
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
 msgstr ""
-"Tulostusonglema. \n"
-"Kirjoittimesi asetukset saattavat olla vialliset?  "
-
-#: src/chart1.cpp:6417
-msgid " Ship: "
-msgstr "  Alus:"
-
-#: src/chartimg.cpp:237
-msgid "No Chart Available"
-msgstr "Ei karttaa saatavilla"
-
-#: src/chartimg.cpp:733
-#: src/chartimg.cpp:1282
+#
+msgid "      COG arrow predictor length (Minutes):"
+msgstr "  COG-ennustenuolen pituus (minuuttia):"
+#
+msgid "      Max moored target speed (Kts.):"
+msgstr "  Kiinteän maalin max nopeus (solmua):"
+#
+msgid "      Target track length (Minutes):"
+msgstr "  Maalijäljen pituus (minuuttia):"
+#
+msgid "   Chart File RLL data corrupt on chart "
+msgstr "  Karttatiedoston RLL on viallinen"
+#
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "  Karttatiedosto sisältää alle 3 PLY pistettä:"
-
-#: src/chartimg.cpp:844
+#
+msgid "   Chart File corrupt in PostInit() on chart "
+msgstr "  Karttatiedosto viallinen PostInit() kohdassa"
+#
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "  Karttatiedostossa ei ole BSB-alkua, sitä ei voi käyttää."
+#
+msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
+#
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr "  Karttatiedoston alun ensimmäisiä %d tavuja ei pysty lukemaan:"
-
-#: src/chartimg.cpp:866
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr "  Karttatiedostossa ei ole BSB-alkua, sitä ei voi käyttää."
-
-#: src/chartimg.cpp:1018
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
-
-#: src/chartimg.cpp:1335
-msgid "   Chart File RLL data corrupt on chart "
-msgstr "  Karttatiedoston RLL on viallinen"
-
-#: src/chartimg.cpp:1678
-#: src/chartimg.cpp:1689
-msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "  Karttatiedosto viallinen PostInit() kohdassa"
-
-#: src/chartimg.cpp:1747
-msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "  Line Index vialiinen, luon uuden indeksin kartalle."
-
-#: src/chartimg.cpp:1752
+#
 msgid "   Error creating Line Index for chart "
 msgstr "  Line Indexin luonti ei onnistu."
-
-#: src/chartimg.cpp:4623
-msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< Varoitus:  Kartan tarkkuus saattaa olla huono. >>>---"
-
-#: src/chartimg.cpp:4698
-msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "  VP Final Check: Georeference Chart_Error_Factor on chart"
-
-#: src/chartimg.cpp:4706
-#: src/chartimg.cpp:4770
-msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< Varoitus: Kartan georef tarkkuus on huono. >>>---"
-
-#: src/chartimg.cpp:4713
+#
+msgid "   Line Index corrupt, recreating Index for chart "
+msgstr "  Line Index vialiinen, luon uuden indeksin kartalle."
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr ""
+#
+msgid "   Result: OK, Internal georef solution used."
+msgstr " Tulos: OK sisäinen georef-ratkaisu käytössä."
+#
 msgid "   Trying again with internally calculated georef solution "
 msgstr " Yritän uutta sisäistä georef-ratkaisua"
-
-#: src/chartimg.cpp:4762
-msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
-msgstr " VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
-
-#: src/chartimg.cpp:4765
+#
+msgid ""
+"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
+"chart "
+msgstr ""
+" VP Final Check with internal georef: Georeference Chart_Error_Factor on "
+"chart "
+#
+msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
+msgstr "  VP Final Check: Georeference Chart_Error_Factor on chart"
+#
+msgid "  ..And TCPA is less than (Minutes):"
+msgstr ".. ja TCPA on vähemmän kuin (minuuttia):"
+#
+msgid "  Could not open AIS serial port '"
+msgstr "AIS-sarjaportti ei aukea"
+#
+msgid "  Could not open serial port '"
+msgstr "  Ssarjaporttia ei pysty avaamaan'"
+#
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D pvää %H tuntia  %M minuuttia"
+#
+msgid " %H Hours  %M Minutes"
+msgstr " %H tuntia  %M minuuttia"
+#
+msgid " - "
+msgstr " -"
+#
+msgid " ChartFile:  "
+msgstr "Karttatiedosto:"
+#
+msgid " Datum:  "
+msgstr "Päivämäärä:"
+#
+msgid " Depth Units:  "
+msgstr "Syvyysyksiköt:"
+#
+msgid " ID:  "
+msgstr "ID:"
+#
+msgid " Name:  "
+msgstr "Nimi:"
+#
+msgid " Projection:  "
+msgstr "Projektio:"
+#
+#, c-format
+msgid " Scale:  1:%d"
+msgstr "Mittakaava:  1:%d"
+#
+msgid " Ship: "
+msgstr "  Alus:"
+#
+msgid " Soundings:  "
+msgstr "Luotaukset:"
+#
+msgid " Source Edition:  "
+msgstr "Lähdeversio:"
+#
+msgid " Updated:  "
+msgstr "Päivitetty:"
+#
 #, c-format
 msgid " is %5g"
 msgstr " on %5g"
-
-#: src/chartimg.cpp:4774
-msgid "   Result: OK, Internal georef solution used."
-msgstr " Tulos: OK sisäinen georef-ratkaisu käytössä."
-
-#: src/nmea.cpp:180
-msgid "  Could not open serial port '"
-msgstr "  Ssarjaporttia ei pysty avaamaan'"
-
-#: src/nmea.cpp:181
-#: src/ais.cpp:1885
+#
+msgid " to "
+msgstr ""
+#
+msgid "&Acknowledge"
+msgstr "&Kuittaus"
+#
+msgid "&Activate"
+msgstr "&Aktivoi"
+#
+msgid "&Cancel"
+msgstr "&Poista"
+#
+msgid "&Delete"
+msgstr "&Poista"
+#
+#, fuzzy
+msgid "&Delete All"
+msgstr "&Poista"
+#
+#, fuzzy
+msgid "&Export Route..."
+msgstr "Vie reitti..."
+#
+#, fuzzy
+msgid "&Export Track..."
+msgstr "Vie jälki..."
+#
+#, fuzzy
+msgid "&Export Wpt..."
+msgstr "&Vie..."
+#
+msgid "&Font family:"
+msgstr "&Kirjasinperhe:"
+#
+#, fuzzy
+msgid "&Go To"
+msgstr "Mene tänne"
+#
+msgid "&Kilometers"
+msgstr "&kilometriä"
+#
+msgid "&Nautical miles"
+msgstr "&meripeninkulmaa"
+#
+msgid "&New"
+msgstr ""
+#
+msgid "&OK"
+msgstr "&OK"
+#
+msgid "&Point size:"
+msgstr "&Pistekoko:"
+#
+#, fuzzy
+msgid "&Properties"
+msgstr "Ominaisuudet"
+#
+msgid "&Properties..."
+msgstr "&Ominaisuudet"
+#
+msgid "&Reverse"
+msgstr "&Käännä"
+#
+#, fuzzy
+msgid "&Send to GPS"
+msgstr "Lähetä GPS:lle..."
+#
+msgid "&Silence Alert"
+msgstr "&Sammuta hälytys"
+#
+#, fuzzy
+msgid "&Start Track"
+msgstr "Näytä maalijälki"
+#
+msgid "&Style:"
+msgstr "&Tyyli:"
+#
+msgid "&Underline"
+msgstr "&Alleviivaus"
+#
+msgid "&Weight:"
+msgstr "&Paksuus:"
+#
+msgid "&Zoom to"
+msgstr "&Zoomaa"
+#
+msgid ""
+"'\n"
+" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+msgstr ""
+"'\n"
+" Ehdotus:  Kokeile 'xxx.xxx.xxx.xxx' merkintätapaa"
+#
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
 msgstr ""
 "'\n"
 "Ehdotus: Yritä sulkea muut sovellukset."
-
-#: src/nmea.cpp:228
-msgid ""
-"Unable to load libgps.\n"
-"\n"
-"gpsd host is: "
+#
+msgid "(Unnamed Route)"
+msgstr "(Nimeämätön reitti)"
+#
+msgid "(Unnamed Track)"
+msgstr "(Nimeämätön jälki)"
+#
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Uudelleennimeä kiintopisteet?"
+#
+msgid "-"
+msgstr "-"
+#
+#, fuzzy
+msgid "--"
+msgstr "-"
+#
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr "---<<< Varoitus: Kartan georef tarkkuus on huono. >>>---"
+#
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr "---<<< Varoitus:  Kartan tarkkuus saattaa olla huono. >>>---"
+#
+msgid "1.0 NM along COG"
 msgstr ""
-"libgps:ää ei pysty avaamaan.\n"
-"\n"
-"gpsd-isäntä on: "
-
-#: src/nmea.cpp:262
-msgid ""
-"Unable to initialize libgps.\n"
-"\n"
-"gpsd host is: "
+#
+msgid "2 Color"
+msgstr "2 väriä"
+#
+msgid "4 Color"
+msgstr "4 väriä"
+#
+msgid "A"
+msgstr "A"
+#
+msgid "AIS"
+msgstr "AIS"
+#
+msgid "AIS Alert"
+msgstr "AIS hälytysluettelo"
+#
+msgid "AIS Data Port"
+msgstr "AIS data-portti"
+#
+msgid "AIS General"
+msgstr "AIS yleiset"
+#
+msgid "AIS Target Query"
+msgstr "AIS maalin kysely"
+#
+msgid "AIS target list"
+msgstr "AIS maaliluettelo"
+#
+#, fuzzy
+msgid "AISRollover"
+msgstr "AIS hälytysluettelo"
+#
+#, fuzzy
+msgid "AISTargetAlert"
+msgstr "AIS-maalikysely?"
+#
+msgid "AISTargetQuery"
+msgstr "AIS-maalikysely?"
+#
+msgid "About"
+msgstr "Ohjelmatietoja"
+#
+msgid "About OpenCPN"
+msgstr "Tietoja OpenCPN:stä"
+#
+msgid "Activate"
+msgstr "Aktivoi"
+#
+msgid "Activate CM93 Offset"
 msgstr ""
-"libgps:ää ei pysty alustamaan.\n"
+#
+msgid "Activate Next in Route"
+msgstr "Aktivoi reitin seuraava piste"
+#
+msgid "Activate Route"
+msgstr "Aktivoi reitti"
+#
+msgid "Activate Waypoint"
+msgstr "Aktivoi kiintopiste"
+#
+msgid "Active Chart Directories"
+msgstr "Aktiiviset karttahakemistot"
+#
+msgid "Add Selection"
+msgstr "Valitse mukaan"
+#
+msgid "Add this chart to quilt."
+msgstr "Lisää tämä kartta tilkkutäkkiin."
+#
+msgid "Additional information"
+msgstr "Lisätieto"
+#
+#, fuzzy
+msgid "Aid to Navigation"
+msgstr ""
+"Aid to Navigation\n"
 "\n"
-"gpsd isäntä on: "
-
-#: src/nmea.cpp:290
+#
+msgid "All files (*.*)|*.*"
+msgstr "Kaikki tiedostot (*.*)|*.*"
+#
+msgid "Append Waypoint"
+msgstr "Lisää kiintopiste"
+#
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Haluatko varmasti poistaa KAIKKI reitit?"
+#
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Haluatko varmasti poistaa KAIKKI jäljet?"
+#
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr "Haluatko varmasti poistaa KAIKKI kiintopisteet?"
+#
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
+msgid "AtoN"
+msgstr "AToN"
+#
+msgid "Attempting to load libgps.so"
+msgstr ""
+#
+msgid "Authors"
+msgstr "Tekijät"
+#
+msgid "Auto Follow"
+msgstr "Automaattiseuranta"
+#
+msgid "Autopilot Output Port"
+msgstr "Lähtöportti autopilotille"
+#
+msgid "Available Chart Directories"
+msgstr "Käytettävät karttahakemistot"
+#
+msgid "Avg. speed (Kts)"
+msgstr ""
+#
+msgid "B"
+msgstr "B"
+#
+msgid "Base"
+msgstr "Perus"
+#
+#, fuzzy
+msgid "Base Station"
+msgstr "Päämäärä"
+#
+msgid "BaseClassCommonName"
+msgstr ""
+#
+msgid "Bearing"
+msgstr "Suuntima"
+#
+#, fuzzy, c-format
+msgid "Bearing:                %03d Deg.\n"
+msgstr "Suuntima:              %5.0f Deg.\n"
+#
+#, fuzzy
+msgid "Bearing:                Unavailable\n"
+msgstr "Nopeus:            Tuntematon\n"
+#
+msgid "Boundaries"
+msgstr "Rajat"
+#
+msgid "Brg"
+msgstr "Suuntima"
+#
+msgid "C&olour:"
+msgstr "&Väri:"
+#
+msgid "CM93"
+msgstr "CM93"
+#
+msgid "CM93 Offset Display"
+msgstr ""
+#
+msgid "CM93 Offset Off"
+msgstr ""
+#
+msgid "CM93 Offset On"
+msgstr ""
+#
+msgid "CM93 Offset Tool Off"
+msgstr ""
+#
+msgid "CM93 Offset Tool....."
+msgstr ""
+#
+msgid "CM93 Offsets"
+msgstr ""
+#
+msgid "CM93 Offsets On"
+msgstr ""
+#
+msgid "CM93 Zoom Detail"
+msgstr "CM93 zoom-detaljit"
+#
+msgid "CPA"
+msgstr ""
+#
+msgid "CPA Calculation"
+msgstr "CPA-laskenta"
+#
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "CPA/TCPA-hälytykset"
+#
+msgid "CPA/TCPA Alerts"
+msgstr "CPA/TCPA-hälytykset"
+#
+msgid "CPA:       \n"
+msgstr "CPA:       \n"
+#
+#, c-format
+msgid "CPA:                 %6.1f NM\n"
+msgstr "CPA:                 %6.1f NM\n"
+#
+msgid "Call"
+msgstr "Kutsu"
+#
 msgid ""
 "Call to gps_open failed.\n"
 "Is gpsd running?\n"
@@ -414,1467 +509,1270 @@ msgstr ""
 "Onko gpsd käynnissä?\n"
 "\n"
 "gpsd isäntä on: "
-
-#: src/nmea.cpp:310
-#, c-format
-msgid ""
-"libgps API Version mismatch.\n"
-"Opencpn found version %d.%d, but requires at least version 3.1"
-msgstr ""
-"libgps API Version mismatch.\n"
-"Opencpn found version %d.%d, but requires at least version 3.1"
-
-#: src/concanv.cpp:97
-#: src/concanv.cpp:338
-#: src/concanv.cpp:362
-msgid "This Leg"
-msgstr "Tämä reittiosuus"
-
-#: src/concanv.cpp:110
-msgid "Leg/Route"
-msgstr "Reittiosuus/reitti"
-
-#: src/concanv.cpp:230
-msgid "XTE         L"
-msgstr "XTE         L"
-
-#: src/concanv.cpp:232
-msgid "XTE         R"
-msgstr "XTE         R"
-
-#: src/concanv.cpp:310
-msgid "ETA          "
-msgstr "ETA"
-
-#: src/concanv.cpp:336
-#: src/concanv.cpp:360
-msgid "Route"
-msgstr "Reitti"
-
-#: src/chcanv.cpp:1516
-#: src/chcanv.cpp:1542
-#: src/chcanv.cpp:8522
-#: src/options.cpp:837
-msgid "Feet"
-msgstr "Jalat"
-
-#: src/chcanv.cpp:1517
-#: src/chcanv.cpp:1543
-#: src/chcanv.cpp:8523
-msgid "Meters"
-msgstr "Metrit"
-
-#: src/chcanv.cpp:1518
-#: src/chcanv.cpp:1544
-#: src/chcanv.cpp:8524
-#: src/options.cpp:839
-msgid "Fathoms"
-msgstr "Sylit"
-
-#: src/chcanv.cpp:2853
-msgid "New Mark"
-msgstr "Uusi merkintä"
-
-#: src/chcanv.cpp:3809
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Mittakaava: %8.0f  Zoom %4.1fx"
-
-#: src/chcanv.cpp:3811
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Mittakaava: %8.0f  Zoom %4.2fx"
-
-#: src/chcanv.cpp:3814
-#, c-format
-msgid "TrueScale: %8.0f             "
-msgstr "Mittakaava: %8.0f       "
-
-#: src/chcanv.cpp:5677
-msgid "Use nearby waypoint?"
-msgstr "Käytänkö lähintä kiintopistettä?"
-
-#: src/chcanv.cpp:5677
-msgid "OpenCPN Route Create"
-msgstr "Luo OpenCPN-reitti"
-
-#: src/chcanv.cpp:6382
-#: src/chcanv.cpp:7137
-msgid "Track Properties"
-msgstr "Jäljen asetukset"
-
-#: src/chcanv.cpp:6383
-msgid "Delete Track"
-msgstr "Poista jälki"
-
-#: src/chcanv.cpp:6384
-msgid "Export Track...."
-msgstr "Vie jälki..."
-
-#: src/chcanv.cpp:6391
-msgid "Activate Route"
-msgstr "Aktivoi reitti"
-
-#: src/chcanv.cpp:6392
-msgid "Deactivate Route"
-msgstr "Deaktivoi reitti"
-
-#: src/chcanv.cpp:6393
-msgid "Insert Waypoint"
-msgstr "Aseta kiintopiste"
-
-#: src/chcanv.cpp:6394
-msgid "Append Waypoint"
-msgstr "Lisää kiintopiste"
-
-#: src/chcanv.cpp:6395
-msgid "Delete Route"
-msgstr "Poista reitti"
-
-#: src/chcanv.cpp:6396
-msgid "Reverse Route"
-msgstr "Käännä reitti"
-
-#: src/chcanv.cpp:6398
-msgid "Export Route...."
-msgstr "Vie reitti..."
-
-#: src/chcanv.cpp:6399
-msgid "Send Route To GPS..."
-msgstr "Lähetä reitti GPS:lle..."
-
-#: src/chcanv.cpp:6413
-msgid "Activate Waypoint"
-msgstr "Aktivoi kiintopiste"
-
-#: src/chcanv.cpp:6414
-msgid "Activate Next in Route"
-msgstr "Aktivoi reitin seuraava piste"
-
-#: src/chcanv.cpp:6415
-msgid "Remove Waypoint from Route"
-msgstr "Poista kiintopiste reitistä"
-
-#: src/chcanv.cpp:6416
-msgid "Delete Waypoint"
-msgstr "Poista kiintopiste"
-
-#: src/chcanv.cpp:6417
-#: src/chcanv.cpp:6437
-msgid "Mark/WP Properties"
-msgstr "Merkkaa /WP ominaisuudet"
-
-#: src/chcanv.cpp:6422
-#: src/chcanv.cpp:6453
-msgid "Additional information"
-msgstr "Lisätieto"
-
-#: src/chcanv.cpp:6436
-msgid "Delete Mark"
-msgstr "Poista merkintä"
-
-#: src/chcanv.cpp:6438
-msgid "Delete All Waypoints..."
-msgstr "Poista kaikki kiintopisteet"
-
-#: src/chcanv.cpp:6441
-msgid "Clear Anchor Watch"
-msgstr "Poista ankkurivahti"
-
-#: src/chcanv.cpp:6449
-msgid "Set Anchor Watch"
-msgstr "Aseta ankkurivahti"
-
-#: src/chcanv.cpp:6465
-#: src/chcanv.cpp:6506
-msgid "Max Detail Here"
-msgstr "Kaikki yksityiskohdat tästä"
-
-#: src/chcanv.cpp:6466
-#: src/chcanv.cpp:6507
-msgid "Scale In"
-msgstr "Skaalaa sisään"
-
-#: src/chcanv.cpp:6467
-#: src/chcanv.cpp:6508
-msgid "Scale Out"
-msgstr "Skaalaa ulos"
-
-#: src/chcanv.cpp:6473
-msgid "Enable CM93 Detail Slider"
-msgstr "Aktivoi CM93 detaljisäädin"
-
-#: src/chcanv.cpp:6510
-msgid "Zoom In"
-msgstr "Zoomaa sisään"
-
-#: src/chcanv.cpp:6511
-msgid "Zoom Out"
-msgstr "Zoomaa ulos"
-
-#: src/chcanv.cpp:6512
-msgid "End Route"
-msgstr "Lopeta reitti"
-
-#: src/chcanv.cpp:6517
-msgid "Drop Mark Here"
-msgstr "Aseta merkintä tähän"
-
-#: src/chcanv.cpp:6518
-msgid "Move Boat Here"
-msgstr "Siirrä alus tähän"
-
-#: src/chcanv.cpp:6521
-msgid "Go To Here"
-msgstr "Mene tänne"
-
-#: src/chcanv.cpp:6524
-msgid "Measure....."
-msgstr "Mittaa..."
-
-#: src/chcanv.cpp:6526
-msgid "Measure Off"
-msgstr "Mittaus pois"
-
-#: src/chcanv.cpp:6528
-msgid "Route Manager..."
-msgstr "Reittien käsittely"
-
-#: src/chcanv.cpp:6627
-msgid "Temporary GOTO Route"
-msgstr "Väliaikainen GOTO-reitti"
-
-#: src/chcanv.cpp:6628
-msgid "Here"
-msgstr "Tässä"
-
-#: src/chcanv.cpp:6629
-msgid "There"
-msgstr "Tuolla"
-
-#: src/chcanv.cpp:6692
-msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Haluatko varmasti poistaa KAIKKI kiintopisteet?"
-
-#: src/chcanv.cpp:6692
-#: src/chcanv.cpp:7096
-#: src/routemanagerdialog.cpp:432
-#: src/routemanagerdialog.cpp:453
-msgid "OpenCPN Alert"
-msgstr "OpenCPN hälytys"
-
-#: src/chcanv.cpp:6760
-msgid "cm93 Detail"
-msgstr "CM93 detaljit"
-
-#: src/chcanv.cpp:7096
-#: src/routemanagerdialog.cpp:432
-msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Haluatko varmasti poistaa KAIKKI reitit?"
-
-#: src/chcanv.cpp:7115
-msgid "Send To GPS..."
-msgstr "Lähetä GPS:lle..."
-
-#: src/chcanv.cpp:7981
-msgid "Leg:  "
-msgstr "Reittiväli:"
-
-#: src/chcanv.cpp:8535
-#: src/chcanv.cpp:8537
-msgid "OverZoom"
-msgstr "Yli-zoomaus"
-
-#: src/chcanv.cpp:9262
-msgid "Tide"
-msgstr "Vuorovesi"
-
-#: src/chcanv.cpp:9267
-msgid "Current"
-msgstr "Virta"
-
-#: src/chcanv.cpp:9363
-#: src/chcanv.cpp:10891
-#: src/routeprop.cpp:269
-#: src/routeprop.cpp:819
-#: src/routeprop.cpp:1223
-msgid "OK"
-msgstr "OK"
-
-#: src/chcanv.cpp:9368
-msgid "Prev"
-msgstr "Edellinen"
-
-#: src/chcanv.cpp:9376
-msgid "Next"
-msgstr "Seuraava"
-
-#: src/chcanv.cpp:9685
-msgid "Reference Station:"
-msgstr "Vertailuasema:"
-
-#: src/chcanv.cpp:9740
-msgid "Today"
-msgstr "Tänään"
-
-#: src/chcanv.cpp:9742
-#: src/chcanv.cpp:9745
-msgid "Tomorrow"
-msgstr "Huomenna"
-
-#: src/chcanv.cpp:10553
-msgid "AISTargetQuery"
-msgstr "AIS-maalikysely?"
-
-#: src/chcanv.cpp:10652
-#: src/options.cpp:356
-msgid "Ok"
-msgstr "Ok"
-
-#: src/chcanv.cpp:10831
-msgid "Chart"
-msgstr "Kartta"
-
-#: src/navutil.cpp:3719
-#: src/navutil.cpp:3768
-msgid "Overwrite existing file?"
-msgstr "Tiedoston päällekirjoitus?"
-
-#: src/navutil.cpp:5587
-msgid "&Font family:"
-msgstr "&Kirjasinperhe:"
-
-#: src/navutil.cpp:5593
-#: src/navutil.cpp:5595
-msgid "The font family."
-msgstr "Kirjasinperhe."
-
-#: src/navutil.cpp:5600
-msgid "&Style:"
-msgstr "&Tyyli:"
-
-#: src/navutil.cpp:5604
-#: src/navutil.cpp:5606
-msgid "The font style."
-msgstr "Kirjasintyyli."
-
-#: src/navutil.cpp:5611
-msgid "&Weight:"
-msgstr "&Paksuus:"
-
-#: src/navutil.cpp:5615
-#: src/navutil.cpp:5617
-msgid "The font weight."
-msgstr "Kirjasinpaksuus."
-
-#: src/navutil.cpp:5624
-msgid "C&olour:"
-msgstr "&Väri:"
-
-#: src/navutil.cpp:5634
-#: src/navutil.cpp:5636
-msgid "The font colour."
-msgstr "Kirjasinväri."
-
-#: src/navutil.cpp:5642
-msgid "&Point size:"
-msgstr "&Pistekoko:"
-
-#: src/navutil.cpp:5647
-#: src/navutil.cpp:5649
-msgid "The font point size."
-msgstr "Kirjasimen pistekoko."
-
-#: src/navutil.cpp:5656
-msgid "&Underline"
-msgstr "&Alleviivaus"
-
-#: src/navutil.cpp:5659
-#: src/navutil.cpp:5661
-msgid "Whether the font is underlined."
-msgstr "Käytetäänkö alleviivausta."
-
-#: src/navutil.cpp:5668
-msgid "Preview:"
-msgstr "Ennakkokatselu:"
-
-#: src/navutil.cpp:5673
-#: src/navutil.cpp:5675
-msgid "Shows the font preview."
-msgstr "Näyttää kirjasimet."
-
-#: src/navutil.cpp:5682
-#: src/options.cpp:360
-msgid "&Cancel"
-msgstr "&Poista"
-
-#: src/navutil.cpp:5684
-msgid "Click to cancel the font selection."
-msgstr "Poista kirjasinvalinta."
-
-#: src/navutil.cpp:5687
-msgid "&OK"
-msgstr "&OK"
-
-#: src/navutil.cpp:5689
-#: src/navutil.cpp:5691
-msgid "Click to confirm the font selection."
-msgstr "Hyväksy kirjasinvalinta."
-
-#: src/routeprop.cpp:206
-#: src/routeprop.cpp:763
-msgid "Properties"
-msgstr "Ominaisuudet"
-
-#: src/routeprop.cpp:210
-#: src/routeprop.cpp:1174
-#: src/ais.cpp:3160
-msgid "Name"
-msgstr "Nimi"
-
-#: src/routeprop.cpp:220
-msgid "Depart From"
-msgstr "Lähtöpaikka"
-
-#: src/routeprop.cpp:223
-#: src/ais.cpp:3169
-#: src/ais.cpp:3171
-msgid "Destination"
-msgstr "Päämäärä"
-
-#: src/routeprop.cpp:236
-msgid "Total Distance"
-msgstr "Kokonaismatka"
-
-#: src/routeprop.cpp:239
-msgid "Plan Speed"
-msgstr "Suunniteltu nopeus"
-
-#: src/routeprop.cpp:242
-msgid "Time Enroute"
-msgstr "Matka-aika"
-
-#: src/routeprop.cpp:255
-msgid "Waypoints"
-msgstr "Kiintopisteet"
-
-#: src/routeprop.cpp:266
-#: src/routeprop.cpp:816
-#: src/routeprop.cpp:1220
-#: src/routeman.cpp:954
+#
+#, fuzzy
+msgid "CallSign:             "
+msgstr "Sijainti:"
+#
 msgid "Cancel"
 msgstr "Peruuta"
-
-#: src/routeprop.cpp:283
-msgid "Leg"
-msgstr "Reittiväli"
-
-#: src/routeprop.cpp:287
-msgid "To Waypoint"
-msgstr "Kiintopisteelle"
-
-#: src/routeprop.cpp:292
-msgid "Distance"
-msgstr "Etäisyys"
-
-#: src/routeprop.cpp:297
-msgid "Bearing"
-msgstr "Suuntima"
-
-#: src/routeprop.cpp:302
-#: src/routeprop.cpp:800
-#: src/routeprop.cpp:1187
-msgid "Latitude"
-msgstr "Leveyspiiri"
-
-#: src/routeprop.cpp:307
-#: src/routeprop.cpp:807
-#: src/routeprop.cpp:1193
-msgid "Longitude"
-msgstr "Pituuspiiri"
-
-#: src/routeprop.cpp:312
-msgid "ETE/Timestamp"
-msgstr "ETE/Aikaleima"
-
-#: src/routeprop.cpp:442
-msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D pvää %H tuntia  %M minuuttia"
-
-#: src/routeprop.cpp:444
-msgid " %H Hours  %M Minutes"
-msgstr " %H tuntia  %M minuuttia"
-
-#: src/routeprop.cpp:502
-msgid "Start"
-msgstr "Aloita"
-
-#: src/routeprop.cpp:768
-msgid "Mark Name"
-msgstr "Merkitse nimi"
-
-#: src/routeprop.cpp:774
-msgid "Show Name"
-msgstr "Näytä nimi"
-
-#: src/routeprop.cpp:777
-#: src/routeprop.cpp:840
-msgid "Description"
-msgstr "Kuvaus"
-
-#: src/routeprop.cpp:787
-msgid "Mark Icon"
-msgstr "Merkitse ikoni"
-
-#: src/routeprop.cpp:795
-#: src/routeprop.cpp:1182
-msgid "Position"
-msgstr "Sijainti"
-
-#: src/routeprop.cpp:834
-msgid "Icon"
-msgstr "Ikoni"
-
-#: src/routeprop.cpp:1200
-msgid "Links"
-msgstr "Linkit"
-
-#: src/routemanagerdialog.cpp:118
-msgid "Route Manager"
-msgstr "Reitinkäsittely"
-
-#: src/routemanagerdialog.cpp:151
-msgid "Route Name"
-msgstr "Reitin nimi"
-
-#: src/routemanagerdialog.cpp:152
-msgid "To"
-msgstr "mihin"
-
-#: src/routemanagerdialog.cpp:158
-msgid "&Activate"
-msgstr "&Aktivoi"
-
-#: src/routemanagerdialog.cpp:165
-msgid "&Zoom to"
-msgstr "&Zoomaa"
-
-#: src/routemanagerdialog.cpp:172
-msgid "&Reverse"
-msgstr "&Käännä"
-
-#: src/routemanagerdialog.cpp:177
-msgid "&Properties..."
-msgstr "&Ominaisuudet"
-
-#: src/routemanagerdialog.cpp:182
-msgid "&Delete"
-msgstr "&Poista"
-
-#: src/routemanagerdialog.cpp:187
-msgid "&Delete All Routes..."
-msgstr "&Poista kaikki reitit"
-
-#: src/routemanagerdialog.cpp:192
-msgid "&Delete All Tracks..."
-msgstr "&Poista kaikki jäljet"
-
-#: src/routemanagerdialog.cpp:197
-msgid "I&mport..."
-msgstr "&Tuo..."
-
-#: src/routemanagerdialog.cpp:202
-msgid "&Export..."
-msgstr "&Vie..."
-
-#: src/routemanagerdialog.cpp:262
-msgid "(Active Track)"
-msgstr "(Aktiivoitu reitti)"
-
-#: src/routemanagerdialog.cpp:264
-msgid "(Unnamed Track)"
-msgstr "(Nimeämätön jälki)"
-
-#: src/routemanagerdialog.cpp:267
-msgid "(Unnamed Route)"
-msgstr "(Nimeämätön reitti)"
-
-#: src/routemanagerdialog.cpp:279
-#: src/routemanagerdialog.cpp:536
-msgid " - "
-msgstr " -"
-
-#: src/routemanagerdialog.cpp:332
-#: src/routemanagerdialog.cpp:595
-msgid "Activate"
-msgstr "Aktivoi"
-
-#: src/routemanagerdialog.cpp:342
-#: src/routemanagerdialog.cpp:595
+#
+msgid "Change Color Scheme"
+msgstr "Vaihda värikarttaa"
+#
+msgid "Chart"
+msgstr "Kartta"
+#
+msgid "Chart Depth Units"
+msgstr "Kartan syvvysyksikkö"
+#
+msgid "Chart Display Filters"
+msgstr "Karttanäyttösuodin"
+#
+msgid "Chart Display Options"
+msgstr "Karttanäyttöasetukset"
+#
+msgid "Chart Display Style"
+msgstr "Karttanäyttötyyli"
+#
+msgid "Chart Print"
+msgstr "Kartan tulostus"
+#
+msgid "Chart file corrupt.. disabling this chart \n"
+msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr "Kartta1::Tapahtuma...TCMgr ei käytössä"
+#
+msgid "Charts"
+msgstr "Kartat"
+#
+msgid "Choose Font..."
+msgstr "Valitse kirjasin..."
+#
+msgid "Class"
+msgstr "Luokka"
+#
+#, fuzzy
+msgid "Class:                "
+msgstr "ETA:      "
+#
+msgid "Clear All"
+msgstr "Poista kaikki"
+#
+msgid "Clear Anchor Watch"
+msgstr "Poista ankkurivahti"
+#
+msgid "Click to cancel the font selection."
+msgstr "Poista kirjasinvalinta."
+#
+msgid "Click to confirm the font selection."
+msgstr "Hyväksy kirjasinvalinta."
+#
+msgid "Close"
+msgstr "Sulje"
+#
+msgid "CoG"
+msgstr "COG"
+#
+msgid "Colors"
+msgstr "Värit"
+#
+msgid "Console Legend"
+msgstr ""
+#
+msgid "Console Value"
+msgstr ""
+#
+msgid "Could not resolve TCP/IP host '"
+msgstr "TCP/IP-hostia ei löydy '"
+#
+msgid "Course UP Mode"
+msgstr "Kurssi-ylhäällä moodi"
+#
+#, fuzzy, c-format
+msgid "Course:                 %03d Deg.\n"
+msgstr "Kurssi:               %5.0f Deg.\n"
+#
+#, fuzzy
+msgid "Course:                 Unavailable\n"
+msgstr "Nopeus:            Tuntematon\n"
+#
+msgid "Create Route"
+msgstr "Luo reitti"
+#
+msgid "Current"
+msgstr "Virta"
+#
+msgid "Cursor: "
+msgstr "Osoitin:"
+#
+msgid "De-Clutter Text (exp.)"
+msgstr "Selvennä tekstit"
+#
 msgid "Deactivate"
 msgstr "Deaktivoi"
-
-#: src/routemanagerdialog.cpp:453
-msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Haluatko varmasti poistaa KAIKKI jäljet?"
-
-#: src/routemanagerdialog.cpp:526
-msgid ""
-"Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n"
-"\n"
-"Do you want to rename the waypoints?"
-msgstr ""
-"Kiintopisteet voi uudelleennimetä järjestyksen muuttamiseksi, nimet ovat '001', '002' jne.\n"
-"\n"
-"Haluatko uudelleennimetä kiintopisteet?"
-
-#: src/routemanagerdialog.cpp:527
-msgid "Rename Waypoints?"
-msgstr "Uudelleennimeä kiintopisteet?"
-
-#: src/grib.cpp:212
-msgid "GRIB File Directory"
-msgstr "GRIB-tiedostojen hakemisto"
-
-#: src/grib.cpp:238
-msgid "GRIB Data"
-msgstr "GRIB data"
-
-#: src/grib.cpp:251
-msgid "Wind Speed, Kts."
-msgstr "Tuulen nopeus, solmua"
-
-#: src/grib.cpp:261
-msgid "Wind Direction"
-msgstr "Tuulen suunta"
-
-#: src/grib.cpp:271
-msgid "Pressure, mBar"
-msgstr "Ilmanpaine, mbar"
-
-#: src/grib.cpp:281
-msgid "Significant Wave Height, m"
-msgstr "Merkitsevä aallonkorkeus, m"
-
-#: src/grib.cpp:292
-msgid "Sea Surface Temp, C"
-msgstr "Pintalämpötila, C"
-
-#: src/grib.cpp:302
-msgid "Current Velocity, Kts."
-msgstr "Virran nopeus, solmua"
-
-#: src/grib.cpp:317
-msgid "&Close"
-msgstr "&Sulje"
-
-#: src/grib.cpp:525
-msgid "Select GRIB Directory"
-msgstr "Valtse GRIB-hakemisto"
-
-#: src/grib.cpp:1081
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
-
-#: src/grib.cpp:1192
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
-
-#: src/grib.cpp:1348
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Zoomaa ulos nähdäksesi peitetyt CRAIN GRIB tiedot"
-
-#: src/grib.cpp:1457
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
-
-#: src/grib.cpp:1568
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zoomaa ulos nähdäksesi peitetyt OCEAN CURRENT GRIB tiedot"
-
-#: src/ais.cpp:393
-msgid "ShipName:  "
-msgstr "Aluksen nimi:"
-
-#: src/ais.cpp:407
-msgid "CallSign:  "
-msgstr "Radiokutsu:"
-
-#: src/ais.cpp:419
-msgid ""
-"Class:     A\n"
-"\n"
-msgstr ""
-"Luokka:     A\n"
-"\n"
-
-#: src/ais.cpp:421
-msgid ""
-"Class:     B\n"
-"\n"
-msgstr ""
-"Luokka:     B\n"
-"\n"
-
-#: src/ais.cpp:423
-msgid ""
-"Aid to Navigation\n"
-"\n"
-msgstr ""
-"Aid to Navigation\n"
-"\n"
-
-#: src/ais.cpp:424
-msgid ""
-"Class unknown\n"
-"\n"
-msgstr ""
-"Luokka tuntematon\n"
-"\n"
-
-#: src/ais.cpp:437
-msgid "Navigational Status:  "
-msgstr "Status: "
-
-#: src/ais.cpp:449
-msgid "Ship Type:            "
-msgstr "Alustyyppi:"
-
-#: src/ais.cpp:460
+#
+msgid "Deactivate Route"
+msgstr "Deaktivoi reitti"
+#
+msgid "Deep Depth"
+msgstr "Syvävesi"
+#
+#, fuzzy
+msgid "Delete All"
+msgstr "Valitse kaikki"
+#
+msgid "Delete Mark"
+msgstr "Poista merkintä"
+#
+msgid "Delete Route"
+msgstr "Poista reitti"
+#
+msgid "Delete Selection"
+msgstr "Poista valinta"
+#
+msgid "Delete Track"
+msgstr "Poista jälki"
+#
+msgid "Delete Waypoint"
+msgstr "Poista kiintopiste"
+#
+msgid "Depart From"
+msgstr "Lähtöpaikka"
+#
+msgid "Depth Settings"
+msgstr "Syvyysasetukset"
+#
+msgid "Depth Settings(m)"
+msgstr "Syvyysasetukset (m)"
+#
+msgid "Description"
+msgstr "Kuvaus"
+#
+msgid "Destination"
+msgstr "Päämäärä"
+#
 msgid "Destination:          "
 msgstr "Päämäärä:"
-
-#: src/ais.cpp:471
+#
+#, fuzzy
+msgid "Disable"
+msgstr "Etäisyys"
+#
+msgid "Display"
+msgstr "Näyttö"
+#
+msgid "Display Category"
+msgstr "Näyttökategoria"
+#
+msgid "Distance"
+msgstr "Etäisyys"
+#
+msgid "Distance between rings"
+msgstr "Tutkarenkaiden etäisyys"
+#
+msgid "Done."
+msgstr ""
+#
+msgid "Drop MOB Marker"
+msgstr "Aseta MOB-merkki"
+#
+msgid "Drop Mark Here"
+msgstr "Aseta merkintä tähän"
+#
+#, fuzzy
+msgid "E&xport All..."
+msgstr "&Vie..."
+#
+msgid "ENC/Vector"
+msgstr "ENC/Vektori"
+#
+msgid "ETA          "
+msgstr "ETA"
+#
+#, fuzzy
+msgid "ETA:"
+msgstr "ETA"
+#
 msgid "ETA:                  "
 msgstr "ETA:      "
-
-#: src/ais.cpp:479
-msgid "ETA:                  Unknown"
-msgstr "ETA:                  Tuntematon"
-
-#: src/ais.cpp:490
-#, c-format
-msgid ""
-"Size:                ---m x ---m x %4.1fm\n"
-"\n"
+#
+msgid "ETE/Timestamp"
+msgstr "ETE/Aikaleima"
+#
+msgid "Enable"
 msgstr ""
-"Koko:                ---m x ---m x %4.1fm\n"
-"\n"
-
-#: src/ais.cpp:492
-msgid ""
-"Size:                ---m x ---m x ---m\n"
-"\n"
+#
+msgid "Enable CM93 Detail Slider"
+msgstr "Aktivoi CM93 detaljisäädin"
+#
+msgid "Enable Chart Quilting"
+msgstr "Aseta karttatilkkutäkki"
+#
+msgid "Enable Manual CM93 Offsets"
 msgstr ""
-"Koko:                ---m x ---m x ---m\n"
-"\n"
-
-#: src/ais.cpp:495
-#, c-format
-msgid ""
-"Size:                %5dm x %dm x ---m\n"
-"\n"
+#
+msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr ""
-"Koko:                %5dm x %dm x ---m\n"
-"\n"
-
-#: src/ais.cpp:497
-#, c-format
-msgid ""
-"Size:                %5dm x %dm x %4.1fm\n"
-"\n"
+#
+msgid "Enable Wheel-Zoom-to-Cursor"
+msgstr "Hiiri-zoomaus kursorille päällä"
+#
+msgid "End Route"
+msgstr "Lopeta reitti"
+#
+msgid "Error on Route Upload.  Please check logfiles..."
 msgstr ""
-"Koko:                %5dm x %dm x %4.1fm\n"
+#
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+#
+msgid "Etc."
+msgstr "jne."
+#
+msgid "Exit OpenCPN"
+msgstr "Poistu OpenCPN:stä"
+#
+msgid "Export GPX file"
+msgstr "Vie GPX-tiedosto"
+#
+#, fuzzy
+msgid "Failed to load libgps.so"
+msgstr ""
+"libgps:ää ei pysty avaamaan.\n"
 "\n"
-
-#: src/ais.cpp:501
+"gpsd-isäntä on: "
+#
+#, fuzzy
+msgid "Failed to load libgps.so.19"
+msgstr ""
+"libgps:ää ei pysty avaamaan.\n"
+"\n"
+"gpsd-isäntä on: "
+#
+msgid "Fathoms"
+msgstr "Sylit"
+#
+msgid "Feet"
+msgstr "Jalat"
+#
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
+msgid "Font Options"
+msgstr "Kirjasinasetukset"
+#
+msgid "Force Full Database Rebuild"
+msgstr "Pakota tietokannan päivitys"
+#
 #, c-format
-msgid "Course:               %5.0f Deg.\n"
-msgstr "Kurssi:               %5.0f Deg.\n"
-
-#: src/ais.cpp:505
+msgid "From Ownship: %03d Deg  %6.2f NMi"
+msgstr "Omasta aluksesta: %03d ast  %6.2f mpk"
+#
+msgid "GPS"
+msgstr "GPS"
+#
+msgid "GPS/Plotter Port"
+msgstr "GPS/Plotter portti"
+#
+msgid "GPSD Data Server"
+msgstr "GPSD Data Server"
+#
+msgid "GUI Options"
+msgstr "Käyttöliittymäasetukset"
+#
+msgid "Go To Here"
+msgstr "Mene tänne"
+#
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Mene tänne"
+#
+#, fuzzy
+msgid "Go to "
+msgstr "Mene tänne"
+#
+msgid "Help"
+msgstr "Ohje"
+#
+msgid "Here"
+msgstr "Tässä"
+#
+msgid "I&mport..."
+msgstr "&Tuo..."
+#
+msgid "Icon"
+msgstr "Ikoni"
+#
+msgid "Import GPX file"
+msgstr "Tuo GPX-tiedosto"
+#
+msgid "Inland Blue Flag        Clear\n"
+msgstr ""
+#
+msgid "Inland Blue Flag        Set\n"
+msgstr ""
+#
+msgid "Insert Waypoint"
+msgstr "Aseta kiintopiste"
+#
+msgid "Jump To"
+msgstr ""
+#
+#, fuzzy
+msgid "Jump To Position"
+msgstr "Sijainti"
+#
+msgid "Jump To Position..."
+msgstr ""
+#
+msgid "Language"
+msgstr "Kieli"
+#
+msgid "Language/Fonts"
+msgstr "Kielet/kirjasimet"
+#
+#, fuzzy
+msgid "Latest Report Time:      "
+msgstr "Viime raporttiaika:"
+#
+msgid "Latitude"
+msgstr "Leveyspiiri"
+#
+msgid "Leg"
+msgstr "Reittiväli"
+#
+msgid "Leg/Route"
+msgstr "Reittiosuus/reitti"
+#
+#, fuzzy
+msgid "Leg: from "
+msgstr "Reittiväli:"
+#
+#, fuzzy
+msgid "Length"
+msgstr "Reittiväli"
+#
+msgid "License"
+msgstr "Lisenssi"
+#
+msgid "Limit range: NM"
+msgstr ""
+#
+msgid "Links"
+msgstr "Linkit"
+#
+msgid "Lock all waypoints unless a waypoint property dialog is visible"
+msgstr "Lukitse kaikki kiintopisteet ellei kiintopisteruutu ole näkyvillä"
+#
+msgid "Longitude"
+msgstr "Pituuspiiri"
+#
+msgid "Look Ahead Mode"
+msgstr "Keula-ylhäällä moodi"
+#
+msgid "Lost Targets"
+msgstr "Kadotetut maalit"
+#
+msgid "MAN OVERBOARD"
+msgstr "MIES YLI LAIDAN (MOB)"
+#
+msgid "META Objects"
+msgstr "META Objects"
+#
+msgid "MMSI"
+msgstr "MMSI"
+#
+msgid "Mariner's Standard"
+msgstr "Mariner's Standard (vakio)"
+#
+msgid "MarinersStandard"
+msgstr "MarinersStandard"
+#
+msgid "Mark Icon"
+msgstr "Merkitse ikoni"
+#
+msgid "Mark Information"
+msgstr "Merkitse tiedot"
+#
+msgid "Mark Name"
+msgstr "Merkitse nimi"
+#
+msgid "Mark Properties"
+msgstr "Merkitse ominaisuudet"
+#
+msgid "Mark targets as lost after (Minutes:):"
+msgstr "Merkitse maali kadotetuksi (minuutin) jälkeen:"
+#
+msgid "Mark/WP Properties"
+msgstr "Merkkaa /WP ominaisuudet"
+#
+#, fuzzy
+msgid "Marks"
+msgstr "Uusi merkintä"
+#
+msgid "Max Detail Here"
+msgstr "Kaikki yksityiskohdat tästä"
+#
+msgid "Measure Off"
+msgstr "Mittaus pois"
+#
+msgid "Measure....."
+msgstr "Mittaa..."
+#
+msgid "Mercator"
+msgstr "Mercator"
+#
+msgid "Meters"
+msgstr "Metrit"
+#
+msgid "Metres"
+msgstr "Metrit"
+#
+msgid "Move Boat Here"
+msgstr "Siirrä alus tähän"
+#
+msgid "NMEA Baud Rate"
+msgstr "NMEA nopeus"
+#
+msgid "NMEA Data Source"
+msgstr "NMEA lähde"
+#
+msgid "NMEA Options"
+msgstr "NMEA asetukset"
+#
+msgid "Name"
+msgstr "Nimi"
+#
+msgid "Nav Status"
+msgstr "Status"
+#
+msgid "Navigation Data"
+msgstr "Navigointitiedot"
+#
+msgid "Navigational Status:  "
+msgstr "Status: "
+#
+msgid "New Mark"
+msgstr "Uusi merkintä"
+#
+msgid "Next"
+msgstr "Seuraava"
+#
+msgid "No CPA Calculation if target range is greater than (NMi):"
+msgstr "Ei CAP -laskentaa jos maali kauempana kuin (mpk):"
+#
+msgid "No Chart Available"
+msgstr "Ei karttaa saatavilla"
+#
+msgid "Number of radar rings shown"
+msgstr "Tutkarenkaiden määrä"
+#
+msgid "OK"
+msgstr "OK"
+#
+msgid "Object Query"
+msgstr "Kohdekysely"
+#
+msgid "Ok"
+msgstr "Ok"
+#
+msgid "OpenCPN Alert"
+msgstr "OpenCPN hälytys"
+#
+#, fuzzy
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN karttapäivitys"
+#
+#, fuzzy
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN karttapäivitys"
+#
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN karttapäivitys"
+#
+msgid "OpenCPN Converting Track to Route...."
+msgstr ""
+#
+msgid "OpenCPN Directory Scan...."
+msgstr ""
+#
+msgid "OpenCPN Info"
+msgstr "OPenCPN-tietoja"
+#
+msgid "OpenCPN Message"
+msgstr "OpenCPN viesti"
+#
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
+msgid "OpenCPN Route Create"
+msgstr "Luo OpenCPN-reitti"
+#
+#, fuzzy
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "Luo OpenCPN-reitti"
+#
+msgid "OpenCPN S57 SENC File Load"
+msgstr ""
+#
+msgid "Options"
+msgstr "Asetukset"
+#
+msgid "Other"
+msgstr "Muu"
+#
+msgid "OverZoom"
+msgstr "Yli-zoomaus"
+#
+msgid "Overwrite existing file?"
+msgstr "Tiedoston päällekirjoitus?"
+#
+msgid "OwnShip COG arrow predictor length (Minutes):"
+msgstr "Oman aluksen keulaviivan pituus (minuuteissa):"
+#
+msgid "OwnShip Display Options"
+msgstr "Oman aluksen asetukset"
+#
+msgid "Paper Chart"
+msgstr "Paperikartta"
+#
+msgid "Place Trackpoints at distance interval (NMi):"
+msgstr "Jälkipisteiden etäisyysväli (mpk):"
+#
+msgid "Place Trackpoints at time interval (Seconds):"
+msgstr "Jälkipisteiden aikaväli (sekuntia):"
+#
+msgid "Plain"
+msgstr "Pelkistetty"
+#
+msgid "Plan Speed"
+msgstr "Suunniteltu nopeus"
+#
+#, fuzzy
+msgid "Plan speed (Kts)"
+msgstr "Suunniteltu nopeus"
+#
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Soita ääni CPA/TCPA-hälytyksissä"
+#
+msgid "Play ships bells"
+msgstr "Soita laivakelloa"
+#
+msgid "Please restart OpenCPN to activate new language selection."
+msgstr "Uudelleenkäynnistä OpenCPN kielen vaihtamiseksi "
+#
+msgid "PlugInManager searching for PlugIns in location "
+msgstr ""
+#
+msgid "PlugInManager: Deactivating PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: Initializing PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
+#
 #, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Nopeus:                %5.2f Kts.\n"
-
-#: src/ais.cpp:507
-msgid "Speed:            Unavailable\n"
+msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+msgstr ""
+#
+msgid "PlugIns"
+msgstr ""
+#
+msgid "Points"
+msgstr "Pisteet"
+#
+msgid "Polyconic"
+msgstr "Polyconic"
+#
+msgid "Position"
+msgstr "Sijainti"
+#
+#, fuzzy
+msgid "Position:               "
+msgstr "Sijainti:"
+#
+msgid ""
+"Possible libgps API version mismatch.\n"
+"libgps did not reasonably respond to version request\n"
+"\n"
+"                              Would you like to use this version of libgps "
+"anyway?"
+msgstr ""
+#
+msgid "Preferences"
+msgstr ""
+#
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr "Aseta GPS vastaanottamaan reitti/kiintopiste-tietoja ja paina lähetä..."
+#
+msgid "Preserve scale when switching charts"
+msgstr "Säilytä mittakaava kartan vaihdossa"
+#
+msgid "Prev"
+msgstr "Edellinen"
+#
+msgid "Preview:"
+msgstr "Ennakkokatselu:"
+#
+msgid "Print Chart"
+msgstr "Tulosta kartta"
+#
+msgid "Printing"
+msgstr "Tulostus"
+#
+#, fuzzy
+msgid "Processing Waypoints..."
+msgstr "Poista kaikki kiintopisteet"
+#
+msgid "Progress..."
+msgstr "Edistyminen..."
+#
+msgid "Properties"
+msgstr "Ominaisuudet"
+#
+msgid "Radar rings"
+msgstr "Tutkarenkaat"
+#
+msgid "Range"
+msgstr "Etäisyys"
+#
+#, fuzzy
+msgid "Range:                  Unavailable\n"
 msgstr "Nopeus:            Tuntematon\n"
-
-#: src/ais.cpp:510
+#
 #, c-format
 msgid "Range:                %5.1f NM\n"
 msgstr "Etäisys:                %5.1f NM\n"
-
-#: src/ais.cpp:513
-#, c-format
-msgid "Bearing:              %5.0f Deg.\n"
-msgstr "Suuntima:              %5.0f Deg.\n"
-
-#: src/ais.cpp:516
-msgid "Position:              "
-msgstr "Sijainti:"
-
-#: src/ais.cpp:528
-msgid "Latest Report Time:       "
-msgstr "Viime raporttiaika:"
-
-#: src/ais.cpp:531
-msgid "UTC"
-msgstr "UTC"
-
-#: src/ais.cpp:540
-#, c-format
-msgid "Report Age:               %3d Sec.\n"
+#
+msgid "Raster"
+msgstr "Rasteri"
+#
+#, fuzzy, c-format
+msgid "Rate Of Turn            %3d Deg./Min.\n"
 msgstr "Raportin ikä:               %3d Sec.\n"
-
-#: src/ais.cpp:543
-#, c-format
+#
+#, fuzzy, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+msgstr "Raportin ikä:               %3d Sec.\n"
+#
+#, fuzzy, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+msgstr "Raportin ikä:               %3d Sec.\n"
+#
+#, fuzzy
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr "OpenCPN päivittää karttatietokantaa config-tiedoston mukaan..."
+#
+#, fuzzy, c-format
 msgid ""
-"Recent Report Period:     %3d Sec.\n"
+"Recent Report Period:   %3d Sec.\n"
 "\n"
 msgstr ""
 "Äskeinen raporttiväli:     %3d Sec.\n"
 "\n"
-
-#: src/ais.cpp:550
+#
+msgid "Reference Station:"
+msgstr "Vertailuasema:"
+#
+msgid "Remove Waypoint from Route"
+msgstr "Poista kiintopiste reitistä"
+#
+msgid "Remove lost targets after (Minutes:):"
+msgstr "Poista kadotetut maalit (minuutin) jälkeen:"
+#
+msgid "Remove this chart from quilt."
+msgstr "Poista tämä kartta tilkkutäkistä."
+#
+msgid "Rename Waypoints?"
+msgstr "Uudelleennimeä kiintopisteet?"
+#
+#, fuzzy, c-format
+msgid "Report Age:             %3d Sec.\n"
+msgstr "Raportin ikä:               %3d Sec.\n"
+#
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr ""
+#
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr ""
+#
+msgid "Reverse Route"
+msgstr "Käännä reitti"
+#
+msgid "Rollover"
+msgstr ""
+#
+msgid "Route"
+msgstr "Reitti"
+#
+msgid "Route Manager"
+msgstr "Reitinkäsittely"
+#
+msgid "Route Name"
+msgstr "Reitin nimi"
+#
+msgid "Route Properties"
+msgstr "Reitin ominaisuudet"
+#
+msgid "Route Uploaded successfully."
+msgstr ""
+#
+msgid "Route from Track"
+msgstr ""
+#
+#, fuzzy
+msgid "Routes"
+msgstr "Reitti"
+#
+msgid "SOG COG"
+msgstr ""
+#
+msgid "Safety Depth"
+msgstr "Turvasyvyys"
+#
+msgid "Scale In"
+msgstr "Skaalaa sisään"
+#
+msgid "Scale Out"
+msgstr "Skaalaa ulos"
+#
+msgid "Select Alert Sound"
+msgstr "Valitse hälytysääni"
+#
+msgid "Select All"
+msgstr "Valitse kaikki"
+#
+msgid "Select Chart Types for Quilting"
+msgstr "Valitse tilkkutäkin karttatyypit"
+#
+msgid "Select Sound File"
+msgstr "Valitse äänitiedosto"
+#
+msgid "Send"
+msgstr "Lähetä"
+#
+msgid "Send Route To GPS"
+msgstr "Lähetä reitti GPSään"
+#
+msgid "Send To GPS..."
+msgstr "Lähetä GPS:lle..."
+#
+msgid "Set Anchor Watch"
+msgstr "Aseta ankkurivahti"
+#
+msgid "Set CM93 Offset"
+msgstr ""
+#
+msgid "Settings"
+msgstr "Asetukset"
+#
+msgid "Shallow Depth"
+msgstr "Matala syvyys"
+#
+msgid "Shift to Larger Scale Chart"
+msgstr "Siirry suurempimittakaavaiseen karttaan"
+#
+msgid "Shift to Smaller Scale Chart"
+msgstr "Siirry pienempimittakaavaiseen karttaan"
+#
+msgid "Ship Type:            "
+msgstr "Alustyyppi:"
+#
+msgid "ShipName:  "
+msgstr "Aluksen nimi:"
+#
+msgid "Show AIS Targets"
+msgstr "Näytä AIS maalit"
+#
+msgid "Show ATON labels"
+msgstr "Näytä ATON-leimat"
+#
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "Näytä CPA/TCPA hälytysruutu"
+#
+msgid "Show Chart Outlines"
+msgstr "Näytä karttarajat"
+#
+msgid "Show Currents"
+msgstr "Näytä virrat"
+#
+msgid "Show DepthUnits"
+msgstr "Näytä syvyysyksiköt"
+#
+msgid "Show ENC Text"
+msgstr "Näytä ENC-teksti"
+#
+msgid "Show GPS/NMEA data stream window"
+msgstr "Näytä GPS/NMEA tietovirtaruutu"
+#
+msgid "Show Important Text Only"
+msgstr "Näytä vain tärkeät tekstit"
+#
+msgid "Show Light Descriptions"
+msgstr "Näytä valojen kuvaus"
+#
+msgid "Show Name"
+msgstr "Näytä nimi"
+#
+msgid "Show Printing Icon"
+msgstr "Näytä tulostusikoni"
+#
+msgid "Show Status Bar"
+msgstr "Näytä tilapalkki"
+#
+msgid "Show Tides"
+msgstr "Näytä vuorovedet"
+#
+msgid "Show Track icon"
+msgstr "Näytä jälki-ikoni"
+#
+msgid "Show radar rings"
+msgstr "Näytä tutkarenkaat"
+#
+msgid "Show skewed raster charts as North-Up"
+msgstr ""
+#
+msgid "Show target COG arrows"
+msgstr "Näytä maalin COG-nuolet"
+#
+msgid "Show target tracks"
+msgstr "Näytä maalijälki"
+#
+msgid "ShowSoundings"
+msgstr "Näytä syvyydet"
+#
+msgid "Shows the font preview."
+msgstr "Näyttää kirjasimet."
+#
+msgid "Simplified"
+msgstr "Yksinkertaistettu"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm x %4.1fm\n"
+"\n"
+msgstr ""
+"Koko:                %5dm x %dm x %4.1fm\n"
+"\n"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
+msgstr ""
+"Koko:                %5dm x %dm x ---m\n"
+"\n"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 ---m x ---m x %4.1fm\n"
+"\n"
+msgstr ""
+"Koko:                ---m x ---m x %4.1fm\n"
+"\n"
+#
+#, fuzzy
+msgid ""
+"Size:                 ---m x ---m x ---m\n"
+"\n"
+msgstr ""
+"Koko:                ---m x ---m x ---m\n"
+"\n"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+msgstr ""
+"Koko:                %5dm x %dm x %4.1fm\n"
+"\n"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+msgstr ""
+"Koko:                %5dm x %dm x ---m\n"
+"\n"
+#
+msgid "SoG"
+msgstr "SOG"
+#
+#, fuzzy
+msgid "Speed (Kts)"
+msgstr "Tuulen nopeus, solmua"
+#
+#, fuzzy
+msgid "Speed:                  Unavailable\n"
+msgstr "Nopeus:            Tuntematon\n"
+#
+#, c-format
+msgid "Speed:                %5.2f Kts.\n"
+msgstr "Nopeus:                %5.2f Kts.\n"
+#
+msgid "Standard"
+msgstr "Vakio"
+#
+msgid "Start"
+msgstr "Aloita"
+#
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Vaimenna ankkuri/laituri-maalien hälytys"
+#
+msgid "Supress anchored/moored targets"
+msgstr "Älä näytä ankkuri/laituri-maaleja"
+#
+msgid "Symbolized"
+msgstr "Symboolinen"
+#
+msgid "TCP/IP WiFi Data Server"
+msgstr "TCP/IP WiFi Data Server"
+#
+msgid "TCPA:  \n"
+msgstr "TCPA:  \n"
+#
 #, c-format
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Hr:Min\n"
-
-#: src/ais.cpp:552
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-
-#: src/ais.cpp:556
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f NM\n"
-
-#: src/ais.cpp:558
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-
-#: src/ais.cpp:1840
-msgid "Could not resolve TCP/IP host '"
-msgstr "TCP/IP-hostia ei löydy '"
-
-#: src/ais.cpp:1841
-msgid ""
-"'\n"
-" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+#
+msgid "Target info"
 msgstr ""
-"'\n"
-" Ehdotus:  Kokeile 'xxx.xxx.xxx.xxx' merkintätapaa"
-
-#: src/ais.cpp:1884
-msgid "  Could not open AIS serial port '"
-msgstr "AIS-sarjaportti ei aukea"
-
-#: src/ais.cpp:2997
-msgid "&Silence Alert"
-msgstr "&Sammuta hälytys"
-
-#: src/ais.cpp:3003
-msgid "&Acknowledge"
-msgstr "&Kuittaus"
-
-#: src/ais.cpp:3161
-msgid "Call"
-msgstr "Kutsu"
-
-#: src/ais.cpp:3162
-msgid "MMSI"
-msgstr "MMSI"
-
-#: src/ais.cpp:3164
-msgid "Class"
-msgstr "Luokka"
-
-#: src/ais.cpp:3165
-msgid "Type"
-msgstr "Tyyppi"
-
-#: src/ais.cpp:3166
-msgid "Nav Status"
-msgstr "Status"
-
-#: src/ais.cpp:3174
-#: src/ais.cpp:3176
-msgid "ETA"
-msgstr "ETA"
-
-#: src/ais.cpp:3178
-msgid "Brg"
-msgstr "Suuntima"
-
-#: src/ais.cpp:3179
-msgid "Range"
-msgstr "Etäisyys"
-
-#: src/ais.cpp:3180
-msgid "CoG"
-msgstr "COG"
-
-#: src/ais.cpp:3181
-msgid "SoG"
-msgstr "SOG"
-
-#: src/ais.cpp:3257
-msgid "A"
-msgstr "A"
-
-#: src/ais.cpp:3259
-msgid "B"
-msgstr "B"
-
-#: src/ais.cpp:3261
-msgid "AtoN"
-msgstr "AToN"
-
-#: src/ais.cpp:3263
-msgid "Unk"
-msgstr "Unk"
-
-#: src/ais.cpp:3273
-#: src/ais.cpp:3290
-#: src/ais.cpp:3298
-#: src/ais.cpp:3306
-#: src/ais.cpp:3314
-msgid "-"
-msgstr "-"
-
-#: src/options.cpp:370
-msgid "Settings"
-msgstr "Asetukset"
-
-#: src/options.cpp:375
-msgid "Navigation Data"
-msgstr "Navigointitiedot"
-
-#: src/options.cpp:378
-msgid "Show Status Bar"
-msgstr "Näytä tilapalkki"
-
-#: src/options.cpp:384
-msgid "Printing"
-msgstr "Tulostus"
-
-#: src/options.cpp:387
-msgid "Show Printing Icon"
-msgstr "Näytä tulostusikoni"
-
-#: src/options.cpp:394
-msgid "Chart Display Options"
-msgstr "Karttanäyttöasetukset"
-
-#: src/options.cpp:399
-msgid "Enable Chart Quilting"
-msgstr "Aseta karttatilkkutäkki"
-
-#: src/options.cpp:403
-msgid "Course UP Mode"
-msgstr "Kurssi-ylhäällä moodi"
-
-#: src/options.cpp:407
-msgid "Look Ahead Mode"
-msgstr "Keula-ylhäällä moodi"
-
-#: src/options.cpp:411
-msgid "Show Chart Outlines"
-msgstr "Näytä karttarajat"
-
-#: src/options.cpp:415
-msgid "Show DepthUnits"
-msgstr "Näytä syvyysyksiköt"
-
-#: src/options.cpp:425
-msgid "Select Chart Types for Quilting"
-msgstr "Valitse tilkkutäkin karttatyypit"
-
-#: src/options.cpp:429
-msgid "Raster"
-msgstr "Rasteri"
-
-#: src/options.cpp:432
-msgid "ENC/Vector"
-msgstr "ENC/Vektori"
-
-#: src/options.cpp:435
-msgid "CM93"
-msgstr "CM93"
-
-#: src/options.cpp:441
-msgid "OwnShip Display Options"
-msgstr "Oman aluksen asetukset"
-
-#: src/options.cpp:449
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Oman aluksen keulaviivan pituus (minuuteissa):"
-
-#: src/options.cpp:461
-msgid "WiFi Options"
-msgstr "WiFi asetukset"
-
-#: src/options.cpp:466
-msgid "TCP/IP WiFi Data Server"
-msgstr "TCP/IP WiFi Data Server"
-
-#: src/options.cpp:489
-msgid "GPS"
-msgstr "GPS"
-
-#: src/options.cpp:494
-msgid "NMEA Options"
-msgstr "NMEA asetukset"
-
-#: src/options.cpp:500
-msgid "NMEA Data Source"
-msgstr "NMEA lähde"
-
-#: src/options.cpp:597
-msgid "GPSD Data Server"
-msgstr "GPSD Data Server"
-
-#: src/options.cpp:619
-msgid "NMEA Baud Rate"
-msgstr "NMEA nopeus"
-
-#: src/options.cpp:635
-msgid "Show GPS/NMEA data stream window"
-msgstr "Näytä GPS/NMEA tietovirtaruutu"
-
-#: src/options.cpp:640
-msgid "Autopilot Output Port"
-msgstr "Lähtöportti autopilotille"
-
-#: src/options.cpp:681
-msgid "Charts"
-msgstr "Kartat"
-
-#: src/options.cpp:693
-msgid "Chart Display Filters"
-msgstr "Karttanäyttösuodin"
-
-#: src/options.cpp:697
-msgid "Mariner's Standard"
-msgstr "Mariner's Standard (vakio)"
-
-#: src/options.cpp:709
-msgid "Clear All"
-msgstr "Poista kaikki"
-
-#: src/options.cpp:713
-msgid "Select All"
-msgstr "Valitse kaikki"
-
-#: src/options.cpp:724
-msgid "Base"
-msgstr "Perus"
-
-#: src/options.cpp:725
-msgid "Standard"
-msgstr "Vakio"
-
-#: src/options.cpp:726
-msgid "Other"
-msgstr "Muu"
-
-#: src/options.cpp:727
-msgid "MarinersStandard"
-msgstr "MarinersStandard"
-
-#: src/options.cpp:729
-msgid "Display Category"
-msgstr "Näyttökategoria"
-
-#: src/options.cpp:735
-msgid "ShowSoundings"
-msgstr "Näytä syvyydet"
-
-#: src/options.cpp:740
-msgid "META Objects"
-msgstr "META Objects"
-
-#: src/options.cpp:745
-msgid "Show Important Text Only"
-msgstr "Näytä vain tärkeät tekstit"
-
-#: src/options.cpp:750
-msgid "Use SCAMIN"
-msgstr "Käytä SCAMIN-asetusta"
-
-#: src/options.cpp:755
-msgid "Show ATON labels"
-msgstr "Näytä ATON-leimat"
-
-#: src/options.cpp:760
-msgid "Show Light Descriptions"
-msgstr "Näytä valojen kuvaus"
-
-#: src/options.cpp:765
-msgid "De-Clutter Text (exp.)"
-msgstr "Selvennä tekstit"
-
-#: src/options.cpp:770
-msgid "Chart Display Style"
-msgstr "Karttanäyttötyyli"
-
-#: src/options.cpp:775
-msgid "Paper Chart"
-msgstr "Paperikartta"
-
-#: src/options.cpp:776
-msgid "Simplified"
-msgstr "Yksinkertaistettu"
-
-#: src/options.cpp:778
-msgid "Points"
-msgstr "Pisteet"
-
-#: src/options.cpp:783
-msgid "Plain"
-msgstr "Pelkistetty"
-
-#: src/options.cpp:784
-msgid "Symbolized"
-msgstr "Symboolinen"
-
-#: src/options.cpp:786
-msgid "Boundaries"
-msgstr "Rajat"
-
-#: src/options.cpp:791
-msgid "2 Color"
-msgstr "2 väriä"
-
-#: src/options.cpp:792
-msgid "4 Color"
-msgstr "4 väriä"
-
-#: src/options.cpp:794
-msgid "Colors"
-msgstr "Värit"
-
-#: src/options.cpp:800
-msgid "CM93 Zoom Detail"
-msgstr "CM93 zoom-detaljit"
-
-#: src/options.cpp:808
-msgid "Depth Settings"
-msgstr "Syvyysasetukset"
-
-#: src/options.cpp:812
-msgid "Depth Settings(m)"
-msgstr "Syvyysasetukset (m)"
-
-#: src/options.cpp:816
-msgid "Shallow Depth"
-msgstr "Matala syvyys"
-
-#: src/options.cpp:822
-msgid "Safety Depth"
-msgstr "Turvasyvyys"
-
-#: src/options.cpp:828
-msgid "Deep Depth"
-msgstr "Syvävesi"
-
-#: src/options.cpp:838
-msgid "Metres"
-msgstr "Metrit"
-
-#: src/options.cpp:842
-msgid "Chart Depth Units"
-msgstr "Kartan syvvysyksikkö"
-
-#: src/options.cpp:847
-msgid "Vector Charts"
-msgstr "Vektorikartat"
-
-#: src/options.cpp:857
-msgid "AIS"
-msgstr "AIS"
-
-#: src/options.cpp:860
-msgid "AIS General"
-msgstr "AIS yleiset"
-
-#: src/options.cpp:865
-msgid "AIS Data Port"
-msgstr "AIS data-portti"
-
-#: src/options.cpp:901
-msgid "CPA Calculation"
-msgstr "CPA-laskenta"
-
-#: src/options.cpp:909
-msgid "No CPA Calculation if target range is greater than (NMi):"
-msgstr "Ei CAP -laskentaa jos maali kauempana kuin (mpk):"
-
-#: src/options.cpp:915
-msgid "Warn if CPA less than (NMi):"
-msgstr "Varoita, jos CPA pienempi kuin (mpk):"
-
-#: src/options.cpp:921
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr ".. ja TCPA on vähemmän kuin (minuuttia):"
-
-#: src/options.cpp:928
-msgid "Lost Targets"
-msgstr "Kadotetut maalit"
-
-#: src/options.cpp:936
-msgid "Mark targets as lost after (Minutes:):"
-msgstr "Merkitse maali kadotetuksi (minuutin) jälkeen:"
-
-#: src/options.cpp:942
-msgid "Remove lost targets after (Minutes:):"
-msgstr "Poista kadotetut maalit (minuutin) jälkeen:"
-
-#: src/options.cpp:949
-msgid "Display"
-msgstr "Näyttö"
-
-#: src/options.cpp:957
-msgid "Show target COG arrows"
-msgstr "Näytä maalin COG-nuolet"
-
-#: src/options.cpp:963
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "  COG-ennustenuolen pituus (minuuttia):"
-
-#: src/options.cpp:970
-msgid "Show target tracks"
-msgstr "Näytä maalijälki"
-
-#: src/options.cpp:976
-msgid "      Target track length (Minutes):"
-msgstr "  Maalijäljen pituus (minuuttia):"
-
-#: src/options.cpp:983
-msgid "Supress anchored/moored targets"
-msgstr "Älä näytä ankkuri/laituri-maaleja"
-
-#: src/options.cpp:989
-msgid "      Max moored target speed (Kts.):"
-msgstr "  Kiinteän maalin max nopeus (solmua):"
-
-#: src/options.cpp:996
-msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA-hälytykset"
-
-#: src/options.cpp:1004
-msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Näytä CPA/TCPA hälytysruutu"
-
-#: src/options.cpp:1007
-msgid "Select Alert Sound"
-msgstr "Valitse hälytysääni"
-
-#: src/options.cpp:1010
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Soita ääni CPA/TCPA-hälytyksissä"
-
-#: src/options.cpp:1013
+#
+msgid "Temporary GOTO Route"
+msgstr "Väliaikainen GOTO-reitti"
+#
+#, fuzzy
+msgid "Temporary MOB Route"
+msgstr "Väliaikainen GOTO-reitti"
+#
 msgid "Test Alert Sound"
 msgstr "Testaa hälytysääntä"
-
-#: src/options.cpp:1016
-msgid "Supress Alerts for anchored/moored targets"
-msgstr "Vaimenna ankkuri/laituri-maalien hälytys"
-
-#: src/options.cpp:1080
-msgid "Language/Fonts"
-msgstr "Kielet/kirjasimet"
-
-#: src/options.cpp:1089
-#: src/options.cpp:1092
-msgid "GRIB"
-msgstr "GRIB"
-
-#: src/options.cpp:1096
-msgid "Show GRIB icon"
-msgstr "Näytä GRIB-ikoni"
-
-#: src/options.cpp:1100
-msgid "Use High Definition Graphics"
-msgstr "Käytä tarkkuusgrafiikkaa"
-
-#: src/options.cpp:1111
-msgid "Etc."
-msgstr "jne."
-
-#: src/options.cpp:1114
-msgid "GPX"
-msgstr "GPX"
-
-#: src/options.cpp:1117
-msgid "Show GPX icons"
-msgstr "Näytä GPX-ikoni"
-
-#: src/options.cpp:1123
-msgid "Tracks"
-msgstr "Jäljet"
-
-#: src/options.cpp:1126
-msgid "Show Track icon"
-msgstr "Näytä jälki-ikoni"
-
-#: src/options.cpp:1136
-msgid "Place Trackpoints at time interval (Seconds):"
-msgstr "Jälkipisteiden aikaväli (sekuntia):"
-
-#: src/options.cpp:1143
-msgid "Place Trackpoints at distance interval (NMi):"
-msgstr "Jälkipisteiden etäisyysväli (mpk):"
-
-#: src/options.cpp:1150
-msgid "Radar rings"
-msgstr "Tutkarenkaat"
-
-#: src/options.cpp:1154
-msgid "Show radar rings"
-msgstr "Näytä tutkarenkaat"
-
-#: src/options.cpp:1164
-msgid "Number of radar rings shown"
-msgstr "Tutkarenkaiden määrä"
-
-#: src/options.cpp:1170
-msgid "Distance between rings"
-msgstr "Tutkarenkaiden etäisyys"
-
-#: src/options.cpp:1177
-msgid "&Nautical miles"
-msgstr "&meripeninkulmaa"
-
-#: src/options.cpp:1178
-msgid "&Kilometers"
-msgstr "&kilometriä"
-
-#: src/options.cpp:1180
-msgid "Units"
-msgstr "Yksiköt"
-
-#: src/options.cpp:1187
-msgid "Waypoint Locking"
-msgstr "Kiintopisteiden lukitus"
-
-#: src/options.cpp:1190
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
-msgstr "Lukitse kaikki kiintopisteet ellei kiintopisteruutu ole näkyvillä"
-
-#: src/options.cpp:1197
-msgid "GUI Options"
-msgstr "Käyttöliittymäasetukset"
-
-#: src/options.cpp:1201
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Hiiri-zoomaus kursorille päällä"
-
-#: src/options.cpp:1206
-msgid "Preserve scale when switching charts"
-msgstr "Säilytä mittakaava kartan vaihdossa"
-
-#: src/options.cpp:1209
-msgid "Play ships bells"
-msgstr "Soita laivakelloa"
-
-#: src/options.cpp:2031
-msgid "Available Chart Directories"
-msgstr "Käytettävät karttahakemistot"
-
-#: src/options.cpp:2035
-msgid "All files (*.*)|*.*"
-msgstr "Kaikki tiedostot (*.*)|*.*"
-
-#: src/options.cpp:2049
-msgid "Add Selection"
-msgstr "Valitse mukaan"
-
-#: src/options.cpp:2054
-msgid "Active Chart Directories"
-msgstr "Aktiiviset karttahakemistot"
-
-#: src/options.cpp:2070
-msgid "Delete Selection"
-msgstr "Poista valinta"
-
-#: src/options.cpp:2083
-msgid "Update Control"
-msgstr "Päivitys"
-
-#: src/options.cpp:2086
-msgid "Force Full Database Rebuild"
-msgstr "Pakota tietokannan päivitys"
-
-#: src/options.cpp:2134
-msgid "Language"
-msgstr "Kieli"
-
-#: src/options.cpp:2156
-msgid "Font Options"
-msgstr "Kirjasinasetukset"
-
-#: src/options.cpp:2160
+#
 msgid "Text Element"
 msgstr "Tekstielementit"
-
-#: src/options.cpp:2178
-msgid "Choose Font..."
-msgstr "Valitse kirjasin..."
-
-#: src/options.cpp:2276
-msgid "Select Sound File"
-msgstr "Valitse äänitiedosto"
-
-#: src/options.cpp:2277
+#
+msgid "The font colour."
+msgstr "Kirjasinväri."
+#
+msgid "The font family."
+msgstr "Kirjasinperhe."
+#
+msgid "The font point size."
+msgstr "Kirjasimen pistekoko."
+#
+msgid "The font style."
+msgstr "Kirjasintyyli."
+#
+msgid "The font weight."
+msgstr "Kirjasinpaksuus."
+#
+msgid "There"
+msgstr "Tuolla"
+#
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr ""
+"Tulostusonglema. \n"
+"Kirjoittimesi asetukset saattavat olla vialliset?  "
+#
+msgid "This Leg"
+msgstr "Tämä reittiosuus"
+#
+msgid "Tide"
+msgstr "Vuorovesi"
+#
+msgid "Time Enroute"
+msgstr "Matka-aika"
+#
+msgid "To"
+msgstr "mihin"
+#
+msgid "To Waypoint"
+msgstr "Kiintopisteelle"
+#
+msgid "Today"
+msgstr "Tänään"
+#
+msgid "Toggle Tracking"
+msgstr "Kytke jälki"
+#
+msgid "Tomorrow"
+msgstr "Huomenna"
+#
+msgid "ToolBox"
+msgstr "Työkalut"
+#
+msgid "ToolTips"
+msgstr ""
+#
+msgid "Total Distance"
+msgstr "Kokonaismatka"
+#
+#, fuzzy
+msgid "Track Name"
+msgstr "Merkitse nimi"
+#
+msgid "Track Properties"
+msgstr "Jäljen asetukset"
+#
+msgid "Tracks"
+msgstr "Jäljet"
+#
+msgid "Transverse Mercator"
+msgstr "Transverse Mercator"
+#
+#, c-format
+msgid "TrueScale: %8.0f             "
+msgstr "Mittakaava: %8.0f       "
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.1fx"
+msgstr "Mittakaava: %8.0f  Zoom %4.1fx"
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.2fx"
+msgstr "Mittakaava: %8.0f  Zoom %4.2fx"
+#
+msgid "Type"
+msgstr "Tyyppi"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid ""
+"Unable to initialize libgps.\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"libgps:ää ei pysty alustamaan.\n"
+"\n"
+"gpsd isäntä on: "
+#
+#, fuzzy
+msgid "Unable to load libgps.so"
+msgstr ""
+"libgps:ää ei pysty avaamaan.\n"
+"\n"
+"gpsd-isäntä on: "
+#
+msgid "Units"
+msgstr "Yksiköt"
+#
+msgid "Unk"
+msgstr "Unk"
+#
+msgid "Unknown"
+msgstr "Tuntematon"
+#
+msgid "Update CM93 Offset"
+msgstr ""
+#
+msgid "Update Control"
+msgstr "Päivitys"
+#
+msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+msgstr ""
+#
+msgid "Use SCAMIN"
+msgstr "Käytä SCAMIN-asetusta"
+#
+msgid "Use nearby waypoint?"
+msgstr "Käytänkö lähintä kiintopistettä?"
+#
+msgid "Vector Charts"
+msgstr "Vektorikartat"
+#
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV tiedostot (*.wav)|*.wav|Kaikki tiedostot (*.*)|*.*"
-
-#: src/about.cpp:309
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+#
+msgid "Warn if CPA less than (NMi):"
+msgstr "Varoita, jos CPA pienempi kuin (mpk):"
+#
+msgid "Waypoint Locking"
+msgstr "Kiintopisteiden lukitus"
+#
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Kiintopisteet"
+#
+msgid "Waypoint(s) Uploaded successfully."
 msgstr ""
+#
+msgid "Waypoints"
+msgstr "Kiintopisteet"
+#
+msgid ""
+"Waypoints can be renamed to reflect the new order, the names will be '001', "
+"'002' etc.\n"
 "\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-
-#: src/about.cpp:318
-msgid "About"
-msgstr "Ohjelmatietoja"
-
-#: src/about.cpp:339
-msgid "Authors"
-msgstr "Tekijät"
-
-#: src/about.cpp:355
-msgid "License"
-msgstr "Lisenssi"
-
-#: src/about.cpp:402
-msgid "Help"
-msgstr "Ohje"
-
-#: src/about.cpp:417
-msgid "Close"
-msgstr "Sulje"
-
-#: src/routeman.cpp:912
-msgid "GPS/Plotter Port"
-msgstr "GPS/Plotter portti"
-
-#: src/routeman.cpp:937
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Aseta GPS vastaanottamaan reitti/kiintopiste-tietoja ja paina lähetä..."
-
-#: src/routeman.cpp:941
-msgid "Progress..."
-msgstr "Edistyminen..."
-
-#: src/routeman.cpp:957
-msgid "Send"
-msgstr "Lähetä"
-
+"Do you want to rename the waypoints?"
+msgstr ""
+"Kiintopisteet voi uudelleennimetä järjestyksen muuttamiseksi, nimet ovat "
+"'001', '002' jne.\n"
+"\n"
+"Haluatko uudelleennimetä kiintopisteet?"
+#
+#, fuzzy
+msgid "Welcome to OpenCPN"
+msgstr "Tietoja OpenCPN:stä"
+#
+msgid "Whether the font is underlined."
+msgstr "Käytetäänkö alleviivausta."
+#
+msgid "WiFi Options"
+msgstr "WiFi asetukset"
+#
+msgid "X Offset (Positive moves map to East) (NMi/cos(lat)) :"
+msgstr ""
+#
+msgid "XTE         L"
+msgstr "XTE         L"
+#
+msgid "XTE         R"
+msgstr "XTE         R"
+#
+msgid "Y Offset (Positive moves map to North) (NMi/cos(lat)) :"
+msgstr ""
+#
+msgid "Zoom In"
+msgstr "Zoomaa sisään"
+#
+msgid "Zoom Out"
+msgstr "Zoomaa ulos"
+#
+msgid "[Class] Type (Status)"
+msgstr ""
+#
+msgid "cm93 Detail"
+msgstr "CM93 detaljit"
+#
+#, fuzzy, c-format
+msgid ""
+"libgps API version mismatch.\n"
+"OpenCPN found version %d.%d, but requires at least version 3.0\n"
+"\n"
+"Would you like to use this version of libgps anyway?"
+msgstr ""
+"libgps API Version mismatch.\n"
+"Opencpn found version %d.%d, but requires at least version 3.1"
+#
+#~ msgid "&Close"
+#~ msgstr "&Sulje"
+#
+#~ msgid "&Delete All Routes..."
+#~ msgstr "&Poista kaikki reitit"
+#
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "&Poista kaikki jäljet"
+#
+#~ msgid "(Active Track)"
+#~ msgstr "(Aktiivoitu reitti)"
+#
+#~ msgid "CallSign:  "
+#~ msgstr "Radiokutsu:"
+#
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Luokka tuntematon\n"
+#~ "\n"
+#
+#~ msgid ""
+#~ "Class:     A\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Luokka:     A\n"
+#~ "\n"
+#
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Luokka:     B\n"
+#~ "\n"
+#
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Virran nopeus, solmua"
+#
+#~ msgid "ETA:                  Unknown"
+#~ msgstr "ETA:                  Tuntematon"
+#
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
+#~ msgid "GRIB Data"
+#~ msgstr "GRIB data"
+#
+#~ msgid "GRIB Display Control"
+#~ msgstr "GRIB-näytön hallinta"
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "GRIB-tiedostojen hakemisto"
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr "Zoomaa ulos nähdäksesi peitetyt CRAIN GRIB tiedot"
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr "Zoomaa ulos nähdäksesi peitetyt OCEAN CURRENT GRIB tiedot"
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
+#
+#~ msgid "Pressure, mBar"
+#~ msgstr "Ilmanpaine, mbar"
+#
+#~ msgid "Route Manager..."
+#~ msgstr "Reittien käsittely"
+#
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Pintalämpötila, C"
+#
+#~ msgid "Select GRIB Directory"
+#~ msgstr "Valtse GRIB-hakemisto"
+#
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Lähetä reitti GPS:lle..."
+#
+#~ msgid "Show GPX icons"
+#~ msgstr "Näytä GPX-ikoni"
+#
+#~ msgid "Show GRIB dialog"
+#~ msgstr "Näytä GRIB-ruutu"
+#
+#~ msgid "Show GRIB icon"
+#~ msgstr "Näytä GRIB-ikoni"
+#
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Merkitsevä aallonkorkeus, m"
+#
+#~ msgid "Use High Definition Graphics"
+#~ msgstr "Käytä tarkkuusgrafiikkaa"
+#
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
+#~ msgid "Wind Direction"
+#~ msgstr "Tuulen suunta"

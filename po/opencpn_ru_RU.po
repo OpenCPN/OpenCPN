@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 23:11-0500\n"
+"POT-Creation-Date: 2010-12-11 10:26-0500\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -524,6 +524,9 @@ msgstr ""
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr ""
 #
+msgid "1.0 NM along COG"
+msgstr ""
+#
 # 
 # 
 # 
@@ -584,6 +587,13 @@ msgstr "Запрос целей АИС"
 #, fuzzy
 msgid "AISRollover"
 msgstr "Предупреждение АИС"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "AISTargetAlert"
+msgstr "Запрос целей АИС"
 #
 # 
 # 
@@ -1385,12 +1395,6 @@ msgstr "Сервер GPSD"
 # 
 # 
 # 
-msgid "GRIB"
-msgstr "GRIB"
-#
-# 
-# 
-# 
 msgid "GUI Options"
 msgstr "Настройки интерфейса пользователя"
 #
@@ -1837,6 +1841,16 @@ msgstr ""
 # 
 msgid "OpenCPN Route Create"
 msgstr "Создать маршрут OpenCPN"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "Создать маршрут OpenCPN"
+#
+msgid "OpenCPN S57 SENC File Load"
+msgstr ""
 #
 # 
 # 
@@ -2405,12 +2419,6 @@ msgstr "Отобразить окно потока данных GPS/NMEA"
 # 
 # 
 # 
-msgid "Show GRIB icon"
-msgstr "Показать иконку GRIB"
-#
-# 
-# 
-# 
 msgid "Show Important Text Only"
 msgstr "Показывать только важные сообщения"
 #
@@ -2855,12 +2863,6 @@ msgstr ""
 # 
 # 
 # 
-msgid "Use High Definition Graphics"
-msgstr "Использовать графику с высоким разрешением"
-#
-# 
-# 
-# 
 msgid "Use SCAMIN"
 msgstr "Использовать  SCAMIN"
 #
@@ -2994,12 +2996,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -3017,6 +3021,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3031,6 +3036,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3042,6 +3048,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "(Active Track)"
 #~ msgstr "Удалить трек"
+#
 #
 #
 #
@@ -3070,6 +3077,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3077,6 +3085,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "Позывной:  "
+#
 #
 #
 #
@@ -3090,6 +3099,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3107,6 +3117,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3131,6 +3142,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3146,6 +3158,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3153,6 +3166,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "Ожидаемое время прибытия:                  Неизвестно"
+#
 #
 #
 #
@@ -3177,6 +3191,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3189,12 +3204,21 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+# 
+# 
+# 
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
+#
+#
 #
 # 
 # 
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Данные GRIB"
+#
 #
 #
 #
@@ -3206,11 +3230,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -3222,11 +3248,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -3239,12 +3267,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -3256,12 +3286,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -3279,6 +3311,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3289,6 +3322,7 @@ msgstr ""
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "Показать иконку GPX"
+#
 #
 #
 #
@@ -3304,12 +3338,28 @@ msgstr ""
 #~ msgstr "Показать диалог GRIB"
 #
 #
+# 
+# 
+# 
+#~ msgid "Show GRIB icon"
+#~ msgstr "Показать иконку GRIB"
+#
+#
+#
 #
 # 
 # 
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Характерная высота волны, м"
+#
+#
+# 
+# 
+# 
+#~ msgid "Use High Definition Graphics"
+#~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 #
@@ -3321,11 +3371,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 #
