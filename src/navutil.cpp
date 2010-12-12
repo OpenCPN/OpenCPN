@@ -6678,7 +6678,7 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
 /****************************************************************************/
 double fromDMM(char *dms)
 {
-      int d = 0;
+      float d = 0;
       double m = 0.0;
       char buf[20];
       char buf1[20];
@@ -6686,12 +6686,12 @@ double fromDMM(char *dms)
       buf[0] = buf1[0] = '\0';
 
 //      sscanf(dms, "%d%[ ]%lf%[ 'NSWEnswe]", &d, buf, &m, buf);
-      sscanf(dms, "%d%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
+      sscanf(dms, "%f%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
       wxString min(buf1,  wxConvUTF8);
       min.Replace(_T(","), _T("."));
       min.ToDouble(&m);
 
-      m = (double) (abs(d)) + m / 60.0;
+      m = (double) (fabs(d)) + m / 60.0;
 
       char *hemi_str;
       if(strpbrk(buf, "SWsw"))
