@@ -218,6 +218,7 @@ public:
     AISTargetTrackList        *m_ptrack;
 };
 
+WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
 
 
 #define AIS_MAX_MESSAGE_LEN (10 * 82)           // AIS Spec allows up to 9 sentences per message, 82 bytes each
@@ -318,7 +319,9 @@ public:
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
+    void SetNoErase(bool flag){m_bno_erase = flag;}
 
+    int             m_Thread_run_flag;
 
 private:
     AIS_Error OpenDataSource(wxFrame *pParent, const wxString& AISDataSource);
@@ -367,6 +370,7 @@ private:
     int              m_n_targets;
     bool             m_bSuppressed;
     bool             m_bGeneralAlert;
+    bool             m_bno_erase;
 
 DECLARE_EVENT_TABLE()
 
@@ -391,7 +395,7 @@ class OCP_AIS_Thread: public wxThread
 
 public:
 
-      OCP_AIS_Thread(wxEvtHandler *pParent, const wxString& PortName);
+      OCP_AIS_Thread(AIS_Decoder *pParent, const wxString& PortName);
       ~OCP_AIS_Thread(void);
       void *Entry();
 
@@ -400,7 +404,7 @@ public:
 private:
       bool HandleRead(char *buf, int character_count);
 
-      wxEvtHandler            *m_pParentEventHandler;
+      AIS_Decoder             *m_pParentEventHandler;
       wxString                *m_pPortName;
       int                     TimeOutInSec;
       char                    *put_ptr;
@@ -473,6 +477,7 @@ class AISTargetAlertDialog: public wxDialog
 
 };
 
+class OCPNListCtrl;
 //----------------------------------------------------------------------------------------------------------
 //    AISTargetListDialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -487,11 +492,17 @@ class AISTargetListDialog: public wxPanel
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
 
+            OCPNListCtrl      *m_pListCtrlAISTargets;
+            AIS_Decoder       *m_pdecoder;
+
+            ArrayOfInts       mmsi_array;
+            ArrayOfAISTarget  *m_ptarget_array;
+
       private:
             void OnPaneClose( wxAuiManagerEvent& event );
             void UpdateButtons();
             void OnTargetSelected( wxListEvent &event );
-            void DoTargetQuery( long mmsi );
+            void DoTargetQuery( int mmsi );
             void OnTargetDefaultAction( wxListEvent& event );
             void OnTargetQuery( wxCommandEvent& event );
             void OnTargetListColumnClicked( wxListEvent &event );
@@ -500,13 +511,12 @@ class AISTargetListDialog: public wxPanel
 
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;
-            wxListCtrl        *m_pListCtrlAISTargets;
             wxButton          *m_pButtonInfo;
             wxButton          *m_pButtonScroll;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
-            AIS_Decoder       *m_pdecoder;
             wxSize            m_size_min;
+
 
 };
 

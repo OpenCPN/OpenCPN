@@ -111,6 +111,7 @@ extern wxString         g_AisTargetList_perspective;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern int              g_AisTargetList_count;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -995,6 +996,7 @@ AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDa
       m_bAIS_Audio_Alert_On = false;
 
       m_n_targets = 0;
+      m_bno_erase = false;
 
       OpenDataSource(pParent, AISDataSource);
 
@@ -1005,19 +1007,25 @@ AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDa
 
 AIS_Decoder::~AIS_Decoder(void)
 {
-
- //    Kill off the  RX Thread if alive
-//      Todo Need to fix this by re-building the comm thread to not use blocking event structure
-//      Also affects the NMEA thread in nmea.cpp
-
       if(pAIS_Thread)
       {
-            pAIS_Thread->Delete();         //was kill();
-#ifdef __WXMSW__
-//          wxSleep(1);
-#else
-            sleep(2);
-#endif
+            wxLogMessage(_T("Stopping AIS Secondary Thread"));
+
+            m_Thread_run_flag = 0;
+            int tsec = 5;
+            while((m_Thread_run_flag >= 0) && (tsec--))
+            {
+                  wxSleep(1);
+            }
+
+            wxString msg;
+            if(m_Thread_run_flag < 0)
+                  msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
+            else
+                  msg.Printf(_T("Not Stopped after 5 sec."));
+            wxLogMessage(msg);
+
+            pAIS_Thread = NULL;
       }
 
 
@@ -2173,6 +2181,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
 
 //    Kick off the AIS RX thread
             pAIS_Thread = new OCP_AIS_Thread(this, comx);
+            m_Thread_run_flag = 1;
             pAIS_Thread->Run();
 #endif
 
@@ -2180,6 +2189,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
 #ifdef __POSIX__
 //    Kick off the NMEA RX thread
             pAIS_Thread = new OCP_AIS_Thread(this, comx);
+            m_Thread_run_flag = 1;
             pAIS_Thread->Run();
 #endif
 
@@ -2371,7 +2381,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 
           //      Remove lost targets if specified
           double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
-          if(g_bRemoveLost)
+          if(g_bRemoveLost && !m_bno_erase)
           {
                 if(target_age > removelost_Mins * 60)
                 {
@@ -2574,7 +2584,7 @@ AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI(int mmsi)
 
 //    ctor
 
-OCP_AIS_Thread::OCP_AIS_Thread(wxEvtHandler *pParent, const wxString& PortName)
+OCP_AIS_Thread::OCP_AIS_Thread(AIS_Decoder *pParent, const wxString& PortName)
 {
 
       m_pParentEventHandler = pParent;
@@ -2880,12 +2890,11 @@ port_ready:
 //    printf("starting\n");
 
 
-    while(not_done)
+    while((not_done) && (m_pParentEventHandler->m_Thread_run_flag > 0))
     {
         if(TestDestroy())
         {
             not_done = false;                               // smooth exit
-///            printf("smooth exit\n");
         }
 
 //#define oldway 1
@@ -2938,6 +2947,8 @@ port_ready:
 
     free (pttyset);
     free (pttyset_old);
+
+    m_pParentEventHandler->m_Thread_run_flag = -1;
 
     return 0;
 
@@ -3058,7 +3069,7 @@ void *OCP_AIS_Thread::Entry()
 //    The main loop
       not_done = true;
 
-      while(not_done)
+      while((not_done) && (m_pParentEventHandler->m_Thread_run_flag > 0))
       {
             if(TestDestroy())
                   not_done = false;                                     // smooth exit
@@ -3126,6 +3137,8 @@ fail_point:
 
       if (osReader.hEvent)
             CloseHandle(osReader.hEvent);
+
+      m_pParentEventHandler->m_Thread_run_flag = -1;
 
       return 0;
 }
@@ -3195,7 +3208,7 @@ bool AISTargetAlertDialog::Create ( int target_mmsi,
       m_pparent = parent;
       m_pdecoder = pdecoder;
 
-      wxFont *dFont = pFontMgr->GetFont(_T("AISTargetAlert"), 12);
+      wxFont *dFont = pFontMgr->GetFont(_("AISTargetAlert"), 12);
       SetFont ( *dFont );
       m_pFont = dFont;
 
@@ -3382,10 +3395,262 @@ void AISTargetAlertDialog::OnSize( wxSizeEvent& event )
       event.Skip();
 }
 
+class AISTargetListDialog;
+//---------------------------------------------------------------------------------------
+//          OCPNListCtrl Definition
+//---------------------------------------------------------------------------------------
+class OCPNListCtrl: public wxListCtrl
+{
+public:
+      OCPNListCtrl(AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style);
+      ~OCPNListCtrl();
+
+      wxString OnGetItemText(long item, long column) const;
+      int OnGetItemColumnImage(long item, long column) const;
+
+      wxString GetTargetColumnData(AIS_Target_Data *pAISTarget, long column) const;
+
+      AISTargetListDialog     *m_parent;
+
+
+};
+
+
+OCPNListCtrl::OCPNListCtrl(AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style):
+            wxListCtrl(parent, id, pos, size, style)
+{
+      m_parent = parent;
+}
+
+OCPNListCtrl::~OCPNListCtrl()
+{
+            g_AisTargetList_column_spec.Clear();
+            for(int i=0 ; i < tlSOG + 1 ; i++)
+            {
+                  wxListItem item;
+                  GetColumn(i, item);
+                  wxString sitem;
+                  sitem.Printf(_T("%d;"), item.m_width);
+                  g_AisTargetList_column_spec += sitem;
+            }
+}
+
+
+wxString  OCPNListCtrl::OnGetItemText(long item, long column) const
+{
+      wxString ret;
+
+      if(m_parent->m_pListCtrlAISTargets)
+      {
+            AIS_Target_Data *pAISTarget = m_parent->m_ptarget_array->Item(item);
+            if(pAISTarget)
+                  ret = GetTargetColumnData(pAISTarget, column);
+      }
+
+      return ret;
+}
+
+
+int OCPNListCtrl::OnGetItemColumnImage(long item, long column) const
+{
+      return -1;
+}
+
+wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long column) const
+{
+      wxString ret;
+
+      if(pAISTarget)
+      {
+            switch (column)
+            {
+                  case tlNAME:
+                        ret = trimAISField(pAISTarget->ShipName);
+                        break;
+
+                  case tlCALL:
+                        ret = trimAISField(pAISTarget->CallSign);
+                        break;
+
+                  case tlMMSI:
+                        ret.Printf(_T("%09d"), pAISTarget->MMSI);
+                        break;
+
+                  case tlCLASS:
+                        ret = pAISTarget->Get_class_string(true);
+                        break;
+
+                  case tlTYPE:
+                        ret = pAISTarget->Get_vessel_type_string(false);
+                        break;
+
+                  case tlNAVSTATUS:
+                  {
+                        if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
+                              ret =  wxString::From8BitData(&ais_status[pAISTarget->NavStatus][0]);
+                        else
+                              ret = _("-");
+                        break;
+                  }
+
+                  case tlBRG:
+                  {
+                        if(pAISTarget->b_positionValid)
+                             ret.Printf(_T("%5.0f"), pAISTarget->Brg);
+                        else
+                             ret = _("-");
+                        break;
+                  }
+
+                  case tlCOG:
+                  {
+                        if( pAISTarget->COG > 360.)
+                              ret =  _("-");
+                        else
+                              ret.Printf(_T("%5.0f"), pAISTarget->COG);
+                        break;
+                  }
+
+                  case tlSOG:
+                  {
+                        if(pAISTarget->SOG > 100.)
+                              ret = _("-");
+                        else
+                              ret.Printf(_T("%5.1f"), pAISTarget->SOG);
+                        break;
+                  }
+
+                  case tlRNG:
+                  {
+                        if(pAISTarget->b_positionValid)
+                              ret.Printf(_T("%5.2f"), pAISTarget->Range_NM);
+                        else
+                              ret = _("-");
+                        break;
+                  }
+
+                  default:
+                        break;
+            }
+
+      }
+
+      return ret;
+}
+
+#include <wx/arrimpl.cpp>
+//WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *,ArrayOfAISTarget);
+
 
 //---------------------------------------------------------------------------------------
 //          AISTargetListDialog Implementation
 //---------------------------------------------------------------------------------------
+int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
+{
+      wxString s1, s2;
+      double n1 = 0.;
+      double n2 = 0.;
+      bool b_cmptype_num = false;
+
+      //    Don't sort if target list count is too large
+      if(g_AisTargetList_count > 200)
+            return 0;
+
+      AIS_Target_Data *t1 = pAISTarget1;
+      AIS_Target_Data *t2 = pAISTarget2;
+
+      switch (g_AisTargetList_sortColumn)
+      {
+            case tlNAME:
+                  s1 =  trimAISField(t1->ShipName);
+                  s2 =  trimAISField(t2->ShipName);
+                  break;
+
+            case tlCALL:
+                  s1 = trimAISField(t1->CallSign);
+                  s2 = trimAISField(t2->CallSign);
+                  break;
+
+            case tlMMSI:
+                  n1 = t1->MMSI;
+                  n2 = t2->MMSI;
+                  b_cmptype_num = true;
+                  break;
+
+            case tlCLASS:
+                  s1 = t1->Get_class_string(true);
+                  s2 = t2->Get_class_string(true);
+                  break;
+
+            case tlTYPE:
+                  s1 = t1->Get_vessel_type_string(false);
+                  s2 = t2->Get_vessel_type_string(false);
+                  break;
+
+            case tlNAVSTATUS:
+            {
+                  if((t1->NavStatus <= 15) && (t1->NavStatus >= 0))
+                        s1 =  wxString::From8BitData(&ais_status[t1->NavStatus][0]);
+                  else
+                        s1 = _("-");
+                  if((t2->NavStatus <= 15) && (t2->NavStatus >= 0))
+                        s2 =  wxString::From8BitData(&ais_status[t2->NavStatus][0]);
+                  else
+                        s2 = _("-");
+                  break;
+            }
+
+            case tlBRG:
+            {
+                  n1 = t1->Brg;
+                  n2 = t2->Brg;
+                  b_cmptype_num = true;
+                  break;
+            }
+
+            case tlCOG:
+            {
+                  n1 = t1->COG;
+                  n2 = t2->COG;
+                  b_cmptype_num = true;
+                  break;
+            }
+
+            case tlSOG:
+            {
+                  n1 = t1->SOG;
+                  n2 = t2->SOG;
+                  b_cmptype_num = true;
+                  break;
+            }
+
+            case tlRNG:
+            {
+                  n1 = t1->Range_NM;
+                  n2 = t2->Range_NM;
+                  b_cmptype_num = true;
+                  break;
+            }
+
+            default:
+                  break;
+      }
+
+      if(!b_cmptype_num)
+      {
+            if (g_bAisTargetList_sortReverse)
+                  return s2.Cmp(s1);
+            return s1.Cmp(s2);
+      }
+      else
+      {
+            if (g_bAisTargetList_sortReverse)
+                  return (int)(n2 - n1);
+            return (int)(n1 - n2);
+      }
+}
+
+
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
 
@@ -3396,14 +3661,15 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pAuiManager = auimgr;
       m_pdecoder = pdecoder;
 
+      if(m_pdecoder)
+            m_pdecoder->SetNoErase(true);
+
+      m_ptarget_array = new ArrayOfAISTarget(ArrayItemCompare);
+
 // A top-level sizer
       wxBoxSizer* topSizer = new wxBoxSizer ( wxHORIZONTAL );
       SetSizer( topSizer );
 
-
-// A second box sizer to give more space around the controls
-//      wxBoxSizer* boxSizer = new wxBoxSizer ( wxHORIZONTAL );
- //     topSizer->Add ( boxSizer, 0, wxEXPAND, 0 );
 
       //  Parse the global column width string as read from config file
       wxStringTokenizer tkz(g_AisTargetList_column_spec, _T(";"));
@@ -3411,8 +3677,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       int width;
       long lwidth;
 
-      m_pListCtrlAISTargets = new wxListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
-                                             wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN );
+
+      m_pListCtrlAISTargets = new OCPNListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
+                                               wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN|wxLC_VIRTUAL );
       wxImageList *imglist = new wxImageList( 16, 16, true, 2 );
       imglist->Add(*_img_sort_asc);
       imglist->Add(*_img_sort_desc);
@@ -3493,7 +3760,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       boxSizer02->AddSpacer( 5 );
       m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
-      m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 200, g_AisTargetList_range );
+      m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 20000, g_AisTargetList_range );
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND|wxALL, 0 );
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
@@ -3522,7 +3789,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
 AISTargetListDialog::~AISTargetListDialog( )
 {
-      delete m_pListCtrlAISTargets;
+      if(m_pdecoder)
+            m_pdecoder->SetNoErase(false);
+
       g_pAISTargetList = NULL;
 }
 
@@ -3550,30 +3819,16 @@ void AISTargetListDialog::SetColorScheme()
       m_pListCtrlAISTargets->SetForegroundColour( cl );
       m_pStaticTextRange->SetForegroundColour( cl );
       m_pSpinCtrlRange->SetForegroundColour( cl );
+
 }
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
-      if(m_pListCtrlAISTargets)
-      {
-            g_AisTargetList_column_spec.Clear();
-            for(int i=0 ; i < tlSOG + 1 ; i++)
-            {
-                  wxListItem item;
-                  m_pListCtrlAISTargets->GetColumn(i, item);
-                  wxString sitem;
-                  sitem.Printf(_T("%d;"), item.m_width);
-                  g_AisTargetList_column_spec += sitem;
-            }
-      }
-
       if (event.pane->name == _T("AISTargetList"))
       {
             g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
             //event.Veto();
       }
-      g_pAISTargetList = NULL;
-      m_pListCtrlAISTargets = NULL;
       event.Skip();
 }
 
@@ -3592,7 +3847,7 @@ void AISTargetListDialog::OnTargetSelected( wxListEvent &event )
       UpdateButtons();
 }
 
-void AISTargetListDialog::DoTargetQuery( long mmsi )
+void AISTargetListDialog::DoTargetQuery( int mmsi )
 {
       if(NULL == g_pais_query_dialog_active)
       {
@@ -3624,28 +3879,9 @@ void AISTargetListDialog::OnTargetQuery( wxCommandEvent& event )
       if (selItemID == -1)
             return;
 
-      long selItemMMSI = m_pListCtrlAISTargets->GetItemData(selItemID);
-      DoTargetQuery( selItemMMSI );
-}
-
-int wxCALLBACK ListItemCompare( long item1, long item2, long list )
-{
-      wxListCtrl *lc = (wxListCtrl*)list;
-      wxListItem it1, it2;
-      it1.SetId(lc->FindItem(-1, item1));
-      it1.SetColumn(g_AisTargetList_sortColumn);
-      it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
-      it2.SetId(lc->FindItem(-1, item2));
-      it2.SetColumn(g_AisTargetList_sortColumn);
-      it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-
-      lc->GetItem(it1);
-      lc->GetItem(it2);
-
-      if (g_bAisTargetList_sortReverse)
-            return it2.GetText().Cmp(it1.GetText());
-      return it1.GetText().Cmp(it2.GetText());
+      AIS_Target_Data *pAISTarget = m_ptarget_array->Item(selItemID);
+      if(pAISTarget)
+            DoTargetQuery( pAISTarget->MMSI );
 }
 
 void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
@@ -3666,7 +3902,6 @@ void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
       if(g_AisTargetList_sortColumn >= 0)
       {
             m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
-      //m_pListCtrlAISTargets->SortItems( ListItemCompare, (long)m_pListCtrlAISTargets );
             UpdateAISTargetList();
       }
 }
@@ -3678,13 +3913,14 @@ void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
       if (selItemID == -1)
             return;
 
-      long selItemMMSI = m_pListCtrlAISTargets->GetItemData( selItemID );
+      AIS_Target_Data *pAISTarget = m_ptarget_array->Item(selItemID);
 
-      AIS_Target_Data *pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI( selItemMMSI );
-
-      cc1->ClearbFollow();
-      cc1->SetViewPoint( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER );
-      cc1->Refresh();
+      if(pAISTarget)
+      {
+            cc1->ClearbFollow();
+            cc1->SetViewPoint( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER );
+            cc1->Refresh();
+      }
 }
 
 void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
@@ -3693,123 +3929,72 @@ void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
       UpdateAISTargetList();
 }
 
+
 void AISTargetListDialog::UpdateAISTargetList(void)
 {
       if(m_pdecoder)
       {
             int sb_position = m_pListCtrlAISTargets->GetScrollPos(wxVERTICAL);
-            //int sb_thumbSize = m_pListCtrlAISTargets->GetScrollThumb(wxVERTICAL);
-            //int sb_range = m_pListCtrlAISTargets->GetScrollRange(wxVERTICAL);
+
             long selItemID = -1;
             selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-            long selItemMMSI = -1;
-            if (selItemID != -1)
-                  selItemMMSI = m_pListCtrlAISTargets->GetItemData(selItemID);
-            selItemID = -1;
 
-            m_pListCtrlAISTargets->Freeze();
-            m_pListCtrlAISTargets->DeleteAllItems();
+            int selMMSI = -1;
+            if (selItemID != -1)
+            {
+                  AIS_Target_Data *pAISTargetSel = m_ptarget_array->Item(selItemID);
+                  if(pAISTargetSel)
+                        selMMSI = pAISTargetSel->MMSI;
+            }
 
             AIS_Target_Hash::iterator it;
             AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
             wxListItem item;
 
             int index = 0;
+            m_ptarget_array->Clear();
+
             for( it = (*current_targets).begin(); it != (*current_targets).end(); ++it, ++index )
             {
                   AIS_Target_Data *pAISTarget = it->second;
                   item.SetId(index);
 
-                  if ( NULL != pAISTarget && pAISTarget->Range_NM <= g_AisTargetList_range )
+                  if ( (NULL != pAISTarget) && (pAISTarget->b_positionValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
                   {
-                        long idx = m_pListCtrlAISTargets->InsertItem(item);
-                        wxString data;
-
-                        // Puts the MMSI No in the item data (to be used be activation event)
-                        item.m_itemId = idx;
-                        item.m_data = pAISTarget->MMSI;
-                        item.m_mask = wxLIST_MASK_DATA;
-                        m_pListCtrlAISTargets->SetItem(item);
-
-                        m_pListCtrlAISTargets->SetItem(idx, tlNAME,
-                                    trimAISField(pAISTarget->ShipName));
-                        m_pListCtrlAISTargets->SetItem(idx, tlCALL,
-                                    trimAISField(pAISTarget->CallSign));
-                        data.Printf(_T("%09d"), pAISTarget->MMSI); m_pListCtrlAISTargets->SetItem(idx, tlMMSI, data);
-//                        data.Printf(_T("%d"), pAISTarget->IMO); m_pListCtrlAISTargets->SetItem(idx, tlIMO, data);
-                        m_pListCtrlAISTargets->SetItem(idx, tlCLASS, pAISTarget->Get_class_string(true));
-                        m_pListCtrlAISTargets->SetItem(idx, tlTYPE, pAISTarget->Get_vessel_type_string(false));
-                        if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
-                        {
-                              m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS,
-                                          wxString::From8BitData(&ais_status[pAISTarget->NavStatus][0]));
-                        }
-                        else
-                              m_pListCtrlAISTargets->SetItem(idx, tlNAVSTATUS, _("-"));
-/*
-                        m_pListCtrlAISTargets->SetItem(idx, tlDESTINATION,
-                                    trimAISField(pAISTarget->Destination));
-                        wxString eta = _T("");
-                        if((pAISTarget->ETA_Mo) && (pAISTarget->ETA_Hr < 24))
-                        {
-                              wxDateTime now = wxDateTime::Now();
-                              wxDateTime _eta(pAISTarget->ETA_Day, wxDateTime::Month(pAISTarget->ETA_Mo-1),
-                                              (pAISTarget->ETA_Mo < now.GetMonth() ? now.GetYear() : now.GetYear()+1),
-                                              pAISTarget->ETA_Hr, pAISTarget->ETA_Min);
-
-                              eta.Append( _eta.FormatISODate());
-                              eta.Append(_T(" "));
-                              eta.Append( _eta.FormatISOTime());
-                        }
-                        else
-                              eta = _("-");
-
-                        m_pListCtrlAISTargets->SetItem(idx, tlETA, eta);
-*/
-                        if(pAISTarget->b_positionValid)
-                              data.Printf(_T("%5.0f"), pAISTarget->Brg);
-                        else
-                              data = _("-");
-                        m_pListCtrlAISTargets->SetItem(idx, tlBRG, data);
-
-                        if( pAISTarget->COG > 360.)
-                              m_pListCtrlAISTargets->SetItem(idx, tlCOG, _("-"));
-                        else
-                        {
-                              data.Printf(_T("%5.0f"), pAISTarget->COG);
-                              m_pListCtrlAISTargets->SetItem(idx, tlCOG, data);
-                        }
-
-                        if(pAISTarget->SOG > 100.)
-                              m_pListCtrlAISTargets->SetItem(idx, tlSOG,  _("-"));
-                        else
-                        {
-                              data.Printf(_T("%5.1f"), pAISTarget->SOG);
-                              m_pListCtrlAISTargets->SetItem(idx, tlSOG, data);
-                        }
-
-                        if(pAISTarget->b_positionValid)
-                        {
-                              data.Printf(_T("%5.2f"), pAISTarget->Range_NM);
-                              m_pListCtrlAISTargets->SetItem(idx, tlRNG, data);
-                        }
-                        else
-                              m_pListCtrlAISTargets->SetItem(idx, tlRNG, _("-"));
+                        m_ptarget_array->Add(pAISTarget);
                   }
-                  item.Clear();
             }
 
-            if(m_pListCtrlAISTargets->GetItemCount() < 200)
-                  m_pListCtrlAISTargets->SortItems( ListItemCompare, (long)m_pListCtrlAISTargets );
+            m_pListCtrlAISTargets->SetItemCount(m_ptarget_array->GetCount());
 
+            g_AisTargetList_count = m_ptarget_array->GetCount();
 
-            //m_pListCtrlAISTargets->SetScrollbar(wxVERTICAL, sb_position, sb_thumbSize, sb_range, false);
             m_pListCtrlAISTargets->SetScrollPos(wxVERTICAL, sb_position, false);
-            selItemID = m_pListCtrlAISTargets->FindItem(-1, selItemMMSI);
-            if (selItemID != -1)
-                  m_pListCtrlAISTargets->SetItemState(selItemID, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
 
-            m_pListCtrlAISTargets->Thaw();
+            //    Restore selected item
+            long item_sel = 0;
+            if ((selItemID != -1) && (selMMSI != -1))
+            {
+                  for(unsigned int i=0 ; i < m_ptarget_array->GetCount() ; i++)
+                  {
+                        AIS_Target_Data *pAISTargetCheck = m_ptarget_array->Item(i);
+                        if(pAISTargetCheck)
+                        {
+                              if(pAISTargetCheck->MMSI == selMMSI)
+                              {
+                                    item_sel = i;
+                                    break;
+                              }
+                        }
+                  }
+            }
+
+            if(m_ptarget_array->GetCount())
+                  m_pListCtrlAISTargets->SetItemState(item_sel, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
+
+#ifdef __WXMSW__
+            m_pListCtrlAISTargets->Refresh(false);
+#endif
      }
 
 }

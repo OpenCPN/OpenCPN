@@ -513,6 +513,7 @@ int               g_AisTargetList_range;
 int               g_AisTargetList_sortColumn;
 bool              g_bAisTargetList_sortReverse;
 wxString          g_AisTargetList_column_spec;
+int               g_AisTargetList_count;
 
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
