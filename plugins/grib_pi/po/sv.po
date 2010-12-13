@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 02:27+0100\n"
-"PO-Revision-Date: 2010-11-26 00:49+0100\n"
+"PO-Revision-Date: 2010-12-13 00:19+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "Language: \n"
@@ -36,7 +36,7 @@ msgstr "GRIB"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "GRIB modul för OpenCPN"
+msgstr "GRIB-modul för OpenCPN"
 
 #: src/grib_pi.cpp:180
 msgid ""
@@ -49,7 +49,7 @@ msgid ""
 "- sea surface temperature\n"
 "- surface current direction and speed."
 msgstr ""
-"GRIB modul för OpenCPN\n"
+"GRIB-modul för OpenCPN\n"
 "Visar överlagrad GRIB-information för ett flertal filtyper.\n"
 "\n"
 "Stöd för GRIB-information inkluderar:\n"
@@ -64,7 +64,7 @@ msgstr "GRIB Inställningar"
 
 #: src/grib_pi.cpp:225
 msgid "Show GRIB icon"
-msgstr "Aktivera GRIB ikon"
+msgstr "Aktivera GRIB-ikon"
 
 #: src/grib_pi.cpp:228
 msgid "Use High Definition Graphics"
