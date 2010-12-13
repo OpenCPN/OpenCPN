@@ -3992,6 +3992,17 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
 
 }
 
+void MyFrame::JumpToPosition(double lat, double lon)
+{
+      vLat = lat;
+      vLon = lon;
+      cc1->m_bFollow = false;
+      SetToolbarItemState(ID_FOLLOW, false);
+      DoChartUpdate();
+      cc1->ReloadVP();
+      RequestNewToolbar();
+}
+
 int MyFrame::DoOptionsDialog()
 {
       bool b_refresh_after_options = false;

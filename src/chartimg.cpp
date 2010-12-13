@@ -148,6 +148,13 @@ class MyConfig;
 extern MyConfig        *pConfig;
 #endif
 
+typedef struct  {
+      float y;
+      float x;
+} MyFlPoint;
+
+
+bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
 
 
 // ----------------------------------------------------------------------------
@@ -2692,6 +2699,9 @@ void ChartBaseBSB::SetVPParms(const ViewPort &vpt)
 
 bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
+      bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) GetCOVRTableHead ( 0 ), GetCOVRTablenPoints ( 0 ), vp_proposed.clon, vp_proposed.clat );
+      if(!bInside)
+            return false;
 
       ViewPort vp_save = vp_proposed;                 // save a copy
 
