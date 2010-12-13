@@ -522,13 +522,13 @@ void options::CreateControls()
       pCM93OffsetDisplayGrid->AddGrowableCol(1);
       itemStaticBoxSizerCM93OffsetDisplay->Add(pCM93OffsetDisplayGrid, 0, wxALL|wxEXPAND, border_size);
 
-      wxStaticText *pStatic_CM93OffsetX = new wxStaticText( itemPanel5, -1, _("X Offset (Positive moves map to East) (NMi/cos(lat)) :"));
+      wxStaticText *pStatic_CM93OffsetX = new wxStaticText( itemPanel5, -1, _("X Offset (Positive moves map to East) (NMi Projected) :"));
       pCM93OffsetDisplayGrid->Add(pStatic_CM93OffsetX, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
       m_pText_CM93OffsetX = new wxTextCtrl(itemPanel5, -1);
       pCM93OffsetDisplayGrid->Add(m_pText_CM93OffsetX, 1, wxALIGN_RIGHT, group_item_spacing);
 
-      wxStaticText *pStatic_CM93OffsetY = new wxStaticText( itemPanel5, -1, _("Y Offset (Positive moves map to North) (NMi/cos(lat)) :"));
+      wxStaticText *pStatic_CM93OffsetY = new wxStaticText( itemPanel5, -1, _("Y Offset (Positive moves map to North) (NMi Projected) :"));
       pCM93OffsetDisplayGrid->Add(pStatic_CM93OffsetY, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
 
       m_pText_CM93OffsetY = new wxTextCtrl(itemPanel5, -1);
