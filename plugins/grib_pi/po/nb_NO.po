@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: opencpn 2.2.1211\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 02:27+0100\n"
-"PO-Revision-Date: 2010-12-05 22:00+0100\n"
+"PO-Revision-Date: 2010-12-13 15:02+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
 "Language: \n"
@@ -117,17 +117,17 @@ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
 
 #: src/grib.cpp:1230
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede HTSGW GRIB"
+msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte HTSGW GRIB"
 
 #: src/grib.cpp:1403
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede CRAIN GRIB"
+msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
 
 #: src/grib.cpp:1520
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØTEMP GRIB"
+msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
 
 #: src/grib.cpp:1640
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Vennligst Zoom eller Skaler ut for å vise undertrykkede SJØSTRØM GRIB"
+msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
 

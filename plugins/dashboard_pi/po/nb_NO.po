@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: opencpn 2.2.1211\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 20:32-0500\n"
-"PO-Revision-Date: 2010-12-05 21:41+0100\n"
+"PO-Revision-Date: 2010-12-13 15:04+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
 "MIME-Version: 1.0\n"

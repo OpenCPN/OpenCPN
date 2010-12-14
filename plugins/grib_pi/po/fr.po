@@ -15,23 +15,27 @@ msgstr ""
 
 #
 #
-#: src/grib.h:116 src/grib_pi.cpp:270
+#: src/grib.h:116
+#: src/grib_pi.cpp:270
 msgid "GRIB Display Control"
-msgstr "Gestionnaire d'affichage des fichiers Grib"
+msgstr "Gestionnaire d'affichage GRIB"
 
-#: src/grib_pi.cpp:112 src/grib_pi.cpp:199 src/grib_pi.cpp:248
+#: src/grib_pi.cpp:112
+#: src/grib_pi.cpp:199
+#: src/grib_pi.cpp:248
 msgid "Grib"
-msgstr ""
+msgstr "GRIB"
 
 #
 #
-#: src/grib_pi.cpp:168 src/grib_pi.cpp:221
+#: src/grib_pi.cpp:168
+#: src/grib_pi.cpp:221
 msgid "GRIB"
-msgstr "GRIB"
+msgstr "Affichage"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr ""
+msgstr "Plug-in météo d'affichage des fichiers GRIB pour OpenCPN"
 
 #: src/grib_pi.cpp:180
 msgid ""
@@ -44,9 +48,16 @@ msgid ""
 "- sea surface temperature\n"
 "- surface current direction and speed."
 msgstr ""
+"Plug-in météo pour l'affichage des fichiers GRIB par OpenCPN\n"
+"Fournit un affichage de base des fichiers GRIB pour plusieurs types de fichiers.\n"
+"\n"
+"Supporte les types de fichiers GRIG suivants :\n"
+"- Vent : Direction et vitesse\n"
+"- Hauteur significative des vagues\n"
+"- Température de surface de la mer\n"
+"- Courant de surface : Direction et vitesse."
 
 #: src/grib_pi.cpp:212
-#, fuzzy
 msgid "GRIB Preferences"
 msgstr "Préférences"
 
@@ -127,39 +138,29 @@ msgstr "Sélectionner le dossier des fichiers GRIB"
 #: src/grib.cpp:1110
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr ""
-"Attention : Les fichiers GRIB de vitesse du vent sont obsolètes de %d   "
-"heures."
+msgstr "Attention : Les fichiers GRIB de vitesse du vent sont obsolètes de %d   heures."
 
 #
 #
 #: src/grib.cpp:1230
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues "
-"non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues non visibles"
 
 #
 #
 #: src/grib.cpp:1403
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non "
-"visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non visibles"
 
 #
 #
 #: src/grib.cpp:1520
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les température de "
-"l'eau non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les température de l'eau non visibles"
 
 #
 #
 #: src/grib.cpp:1640
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les vitesses de "
-"courants non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les vitesses de courants non visibles"
 
