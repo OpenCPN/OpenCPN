@@ -12444,7 +12444,7 @@ void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
       strncpy(str, l.mb_str(), 49);
       double lon = fromDMM(str);
 
-      gFrame->JumpToPosition(lat, lon);
+      gFrame->JumpToPosition(lat, lon, cc1->GetVPScale());
 
       Hide();
       event.Skip();

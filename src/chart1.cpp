@@ -3992,13 +3992,21 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
 
 }
 
-void MyFrame::JumpToPosition(double lat, double lon)
+void MyFrame::JumpToPosition(double lat, double lon, double scale)
 {
+      bool bnew_scale = false;
+      if(fabs(cc1->GetVPScale() - scale) > 1e-6)
+            bnew_scale = true;
+
       vLat = lat;
       vLon = lon;
       cc1->m_bFollow = false;
       SetToolbarItemState(ID_FOLLOW, false);
       DoChartUpdate();
+
+      if(bnew_scale)
+            cc1->SetVPScale(scale);
+
       cc1->ReloadVP();
       RequestNewToolbar();
 }

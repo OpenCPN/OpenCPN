@@ -72,6 +72,7 @@ extern  double          gLat, gLon, gSog, gCog;
 extern  bool            g_bGPSAISMux;
 extern FontMgr          *pFontMgr;
 extern ChartCanvas      *cc1;
+extern MyFrame          *gFrame;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -3917,9 +3918,11 @@ void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
 
       if(pAISTarget)
       {
-            cc1->ClearbFollow();
-            cc1->SetViewPoint( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER );
-            cc1->Refresh();
+//            cc1->ClearbFollow();
+//            cc1->SetViewPoint( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER );
+//            cc1->Refresh();
+            gFrame->JumpToPosition(pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale());
+
       }
 }
 

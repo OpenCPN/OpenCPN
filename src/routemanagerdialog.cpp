@@ -87,7 +87,7 @@ extern ChartBase *Current_Ch;
 extern Track     *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
 extern MarkProp         *pMarkPropDialog;
-extern MyFrame         *gFrame;
+extern MyFrame          *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
 extern double           gCog, gSog;
@@ -790,9 +790,11 @@ void RouteManagerDialog::ZoomtoRoute(Route *route)
 
       ppm = wxMin(ppm, 1.0);
 
-      cc1->ClearbFollow();
-      cc1->SetViewPoint(clat, clon, ppm, 0, cc1->GetVPRotation(), CURRENT_RENDER);
-      cc1->Refresh();
+//      cc1->ClearbFollow();
+//      cc1->SetViewPoint(clat, clon, ppm, 0, cc1->GetVPRotation(), CURRENT_RENDER);
+//      cc1->Refresh();
+
+      gFrame->JumpToPosition(clat, clon, ppm);
 
       m_bNeedConfigFlush = true;
 }
@@ -1559,9 +1561,11 @@ void RouteManagerDialog::OnWptZoomtoClick(wxCommandEvent &event)
 
       if (!wp) return;
 
-      cc1->ClearbFollow();
-      cc1->SetViewPoint(wp->m_lat, wp->m_lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER);
-      cc1->Refresh();
+//      cc1->ClearbFollow();
+//      cc1->SetViewPoint(wp->m_lat, wp->m_lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER);
+//      cc1->Refresh();
+      gFrame->JumpToPosition(wp->m_lat, wp->m_lon, cc1->GetVPScale());
+
 }
 
 void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event)

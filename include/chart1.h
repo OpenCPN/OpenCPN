@@ -218,7 +218,7 @@ class MyFrame: public wxFrame
     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
     void SelectQuiltRefChart(int selected_index);
 
-    void JumpToPosition(double lat, double lon);
+    void JumpToPosition(double lat, double lon, double scale);
 
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void SetChartThumbnail(int index);

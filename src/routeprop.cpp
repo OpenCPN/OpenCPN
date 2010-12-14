@@ -56,6 +56,7 @@ extern Select           *pSelect;
 extern Routeman         *g_pRouteMan;
 extern RouteProp        *pRoutePropDialog;
 extern RouteList        *pRouteList;
+extern MyFrame          *gFrame;
 
 WX_DEFINE_LIST(HyperlinkCtrlList);        // toh, 2009.02.22
 
@@ -133,8 +134,10 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
 //          vLon = cc1->VPoint.clon = prp->m_lon;
 //          cc1->SetVPScale ( cc1->GetVPScale() );
 //          cc1->Refresh();
-          cc1->SetViewPoint(prp->m_lat, prp->m_lon);
-          cc1->Refresh(false);
+//          cc1->SetViewPoint(prp->m_lat, prp->m_lon);
+//          cc1->Refresh(false);
+          gFrame->JumpToPosition(prp->m_lat, prp->m_lon, cc1->GetVPScale());
+
       }
     }
 }
