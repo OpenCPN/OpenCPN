@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1211\n"
+"Project-Id-Version: opencpn 2.3.1214\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-12-11 10:26-0500\n"
-"PO-Revision-Date: 2010-12-13 15:54+0100\n"
+"PO-Revision-Date: 2010-12-15 14:37+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
 "MIME-Version: 1.0\n"
@@ -37,7 +37,7 @@ msgid ""
 "         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
 msgstr ""
 "\n"
-"         OpenCPN...En liten og pen Open Source Kartplotter/Navigator"
+"         OpenCPN...En enkel og grei åpen-kilde kartplotter/navigator"
 
 #
 msgid ""
