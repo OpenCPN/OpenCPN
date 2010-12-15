@@ -3811,8 +3811,16 @@ void MyFrame::ActivateMOB(void)
 
       temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
 
+      temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
+
       g_pRouteMan->DeactivateRoute();
       g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+
+      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      {
+            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+      }
 
       cc1->Refresh(false);
 
@@ -4001,13 +4009,12 @@ void MyFrame::JumpToPosition(double lat, double lon, double scale)
       vLat = lat;
       vLon = lon;
       cc1->m_bFollow = false;
-      SetToolbarItemState(ID_FOLLOW, false);
       DoChartUpdate();
 
-      if(bnew_scale)
-            cc1->SetVPScale(scale);
-
+      cc1->SetViewPoint(lat, lon, scale, 0, cc1->GetVPRotation(), CURRENT_RENDER);
       cc1->ReloadVP();
+
+      SetToolbarItemState(ID_FOLLOW, false);
       RequestNewToolbar();
 }
 
