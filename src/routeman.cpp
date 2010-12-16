@@ -646,6 +646,13 @@ void Routeman::DeleteRoute(Route *pRoute)
                               pnode = NULL;
                               delete prp;
                         }
+                        else
+                        {
+                              prp->m_bDynamicName = false;
+                              prp->m_bIsolatedMark = true;        // This has become an isolated mark
+                              prp->m_bKeepXRoute = false;         // and is no longer part of a route
+                        }
+
 
                   }
                   if(pnode)
@@ -1566,6 +1573,10 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp)
                   for(unsigned int ir=0 ; ir < proute_array->GetCount() ; ir++)
                   {
                         Route *pr = (Route *)proute_array->Item(ir);
+
+                        if ( g_pRouteMan->GetpActiveRoute() == pr )            // Deactivate any route containing this point
+                              g_pRouteMan->DeactivateRoute();
+
                         pr->RemovePoint ( pRp );
 
                   }
@@ -1589,7 +1600,16 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp)
             // Now it is safe to delete the point
             pConfig->DeleteWayPoint ( pRp );
             pSelect->DeleteSelectablePoint ( pRp, SELTYPE_ROUTEPOINT );
-            delete pRp;
+
+            //TODO  FIXME
+            // Some memory corruption occurs if the wp is deleted here.
+            // To continue running OK, it is sufficient to simply remove the wp from the global list
+            // This will leak, although called infrequently....
+            //  12/15/10...Seems to occur only on MOB delete....
+
+            if ( NULL != pWayPointMan )
+                  pWayPointMan->m_pWayPointList->DeleteObject ( pRp );
+//            delete pRp;
 
             //    The RoutePoint might be currently in use as an anchor watch point
             if(pRp == pAnchorWatchPoint1)

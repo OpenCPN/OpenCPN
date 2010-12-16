@@ -1595,6 +1595,7 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event)
       }
 
       UpdateWptListCtrl();
+      UpdateRouteListCtrl();
       cc1->Refresh();
 }
 
@@ -1687,6 +1688,7 @@ void RouteManagerDialog::OnWptDeleteAllClick(wxCommandEvent &event)
             pMarkPropDialog->UpdateProperties();
       }
 
+      UpdateRouteListCtrl();
       UpdateWptListCtrl();
       cc1->Refresh();
 }

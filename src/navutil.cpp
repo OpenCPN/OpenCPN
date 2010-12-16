@@ -1638,7 +1638,7 @@ void Route::DeletePoint ( RoutePoint *rp, bool bRenamePoints )
 
       pRoutePointList->DeleteObject ( rp );
 
-      if ( rp->m_GUID.Len() )
+      if (( rp->m_GUID.Len() ) && (wxNOT_FOUND != RoutePointGUIDList.Index(rp->m_GUID)))
             RoutePointGUIDList.Remove ( rp->m_GUID );
 
       delete rp;
@@ -1667,8 +1667,10 @@ void Route::RemovePoint ( RoutePoint *rp, bool bRenamePoints )
       pSelect->DeleteAllSelectableRouteSegments ( this );
 
       pRoutePointList->DeleteObject ( rp );
-      RoutePointGUIDList.Remove ( rp->m_GUID );
+      if(wxNOT_FOUND != RoutePointGUIDList.Index(rp->m_GUID))
+            RoutePointGUIDList.Remove ( rp->m_GUID );
       m_nPoints -= 1;
+
 
 
       // check all other routes to see if this point appears in any other route
