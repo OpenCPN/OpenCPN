@@ -3853,7 +3853,7 @@ void AISTargetListDialog::DoTargetQuery( int mmsi )
       if(NULL == g_pais_query_dialog_active)
       {
             g_pais_query_dialog_active = new AISTargetQueryDialog();
-            g_pais_query_dialog_active->Create ( this, -1, _( "AIS Target Query" ), wxPoint(g_ais_query_dialog_x, g_ais_query_dialog_y));
+            g_pais_query_dialog_active->Create ( m_pparent, -1, _( "AIS Target Query" ), wxPoint(g_ais_query_dialog_x, g_ais_query_dialog_y));
       }
 
       g_pais_query_dialog_active->SetMMSI(mmsi);
