@@ -2179,6 +2179,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         m_pRolloverRouteSeg           = NULL;
 
+        VPoint.Invalidate();
 
 //    Build the cursors
 
@@ -3249,22 +3250,29 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
 
                         // TODO     maybe need iterative process to validate bInside
                         //          first pass is mercator, then check chart boundaries
-//                        bool bInside = true;
-//                        if ( bInside )
+
+
+                        //    This is a Raster chart....
+                        //    If the VP is changing, the raster chart parameters may not yet be setup
+                        //    So do that before accessing the chart's embedded georeferencing
+                        wxRect Rtest;
+                        Cur_BSB_Ch->ComputeSourceRectangle(VPoint, &Rtest);
+                        if(Cur_BSB_Ch->GetSourceRect() != Rtest)
+                                Current_Ch->SetVPParms(VPoint);
+
+
+                        double slat, slon;
+                        if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
                         {
-                              double slat, slon;
-                              if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
-                              {
-                                    lat = slat;
+                              lat = slat;
 
-                                    if(slon < -180.)
-                                          slon += 360.;
-                                    else if(slon > 180.)
-                                          slon -= 360.;
+                              if(slon < -180.)
+                                   slon += 360.;
+                              else if(slon > 180.)
+                                   slon -= 360.;
 
-                                    lon = slon;
-                                    bUseMercator = false;
-                              }
+                              lon = slon;
+                              bUseMercator = false;
                         }
 
                 }
@@ -3683,6 +3691,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
               if(fabs(rotator) > .001)
                     VPoint.rv_rect.Inflate((dx - VPoint.pix_width)/2, (dy - VPoint.pix_height)/2);
         }
+
 
 
 

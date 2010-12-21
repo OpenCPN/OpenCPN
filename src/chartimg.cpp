@@ -2784,6 +2784,9 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
 bool ChartBaseBSB::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 {
+      if ( !vp_last.IsValid()  ||   !vp_proposed.IsValid() )
+            return true;
+
       wxRect rlast, rthis;
 
       ComputeSourceRectangle(vp_last, &rlast);

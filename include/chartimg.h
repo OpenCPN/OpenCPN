@@ -182,6 +182,9 @@ class  ChartBaseBSB     :public ChartBase
 
       virtual int Continue_BackgroundHiDefRender(void);
 
+      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+      wxRect GetSourceRect(){ return Rsrc; }
+
       wxImage *GetImage();
 
 protected:
@@ -220,8 +223,6 @@ protected:
       virtual int ReadBSBHdrLine( wxFileInputStream*, char *, int );
       virtual int AnalyzeRefpoints(void);
       virtual bool SetMinMax(void);
-
-      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
 
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
       InitReturn PostInit(void);
