@@ -7445,6 +7445,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         temp_route->AddPoint(pWP_src);
                         temp_route->AddPoint(m_pFoundRoutePoint);
+                        m_pFoundRoutePoint->m_bKeepXRoute = true;
 
                         pSelect->AddSelectableRouteSegment ( gLat, gLon, m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, pWP_src, m_pFoundRoutePoint, temp_route );
 
