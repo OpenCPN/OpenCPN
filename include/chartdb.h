@@ -59,7 +59,7 @@
 #include "chartbase.h"
 #include "chartdbs.h"
 
-#define     MAXSTACK          20
+#define     MAXSTACK          30
 
 #include "s52s57.h"           //types
 
