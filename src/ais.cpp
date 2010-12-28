@@ -1954,6 +1954,16 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       if(!ptarget->b_positionValid)
             return;
 
+      //    There can be no collision between ownship and itself....
+      //    This can happen if AIVDO messages are received, and there is another source of ownship position, like NMEA GLL
+      //    The two positions are always temporally out of sync, and one will always be exactly in front of the other one.
+      if(ptarget->b_OwnShip)
+      {
+            ptarget->CPA = 100;
+            ptarget->TCPA = -100;
+            return;
+      }
+
       if(!bGPSValid)
       {
             ptarget->bCPA_Valid = false;
