@@ -263,7 +263,7 @@ LangString RB_Downgrade_TypeInst_Text ${LANG_PORTUGUESEBR} "Downgrade OpenCPN us
 LangString Label_TypeInst_Parallel_Text ${LANG_PORTUGUESEBR} "A Instalação detectou varias versões do OpenCPN instalado no seu sistema. É recomendado ter sómente uma versão do OpenCPN instalado por vez. Selecione a operação que deseja executar e click Next para continuar."
 
 #LangString RB_Parallel_TypeInst_Text ${LANG_ENGLISH} "Parallel Installation (advanced users)"
-LangString RB_Parallel_TypeInst_Text ${LANG_PORTUGUESEBR} "Parallel Installation (usuários avançados)"
+LangString RB_Parallel_TypeInst_Text ${LANG_PORTUGUESEBR} "Instalação Personalizada (usuários avançados)"
 
 #LangString EmptyString ${LANG_ENGLISH} ""
 LangString EmptyString ${LANG_PORTUGUESEBR} ""

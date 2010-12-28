@@ -173,7 +173,7 @@ LangString SecDeleteCM93_Text ${LANG_FRENCH} "Supprime le répertoire CM93"
 LangString SecDeleteLogFile_Text ${LANG_FRENCH} "Supprime le fichier journal (opencpn.log)"
 
 #LangString SecDeleteNavobjFile_Text ${LANG_ENGLISH} "Delete Navobject file (navobj.xml)"
-LangString SecDeleteNavobjFile_Text ${LANG_FRENCH} "Supprime le fichier Navobject (navobj.xml)"
+LangString SecDeleteNavobjFile_Text ${LANG_FRENCH} "Supprime le fichier Routes/Way points/Traces (navobj.xml)"
 
 #LangString SecSetConfig_Text ${LANG_ENGLISH} "OpenCPN Configuration Settings"
 LangString SecSetConfig_Text ${LANG_FRENCH} "Configuration de OpenCPN"
@@ -188,7 +188,7 @@ LangString SecSetConfigChartDir_Text ${LANG_FRENCH} "Sélectionner un répertoir
 LangString SecGrpResetConfig_Desc ${LANG_FRENCH} "Supprime TOUS le contenu du répertoire de configuration."
 
 #LangString SecDeleteConfigFile_Desc ${LANG_ENGLISH} "Deletes the configuration file. This file helds also Routes and Waypoints."
-LangString SecDeleteConfigFile_Desc ${LANG_FRENCH} "Supprime le fichier de configuration y compris  les routes et Waypoints."
+LangString SecDeleteConfigFile_Desc ${LANG_FRENCH} "Supprime le fichier de configuration ."
 
 #LangString SecDeleteChartDB_Desc ${LANG_ENGLISH} "Deletes the Chart DB file."
 LangString SecDeleteChartDB_Desc ${LANG_FRENCH} "Supprime le fichier base cartes."
