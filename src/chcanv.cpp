@@ -1465,9 +1465,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   int units = ps52plib->m_nDepthUnitDisplay;
                   switch(units)
                   {
-                        case 0 : m_quilt_depth_unit = _("Feet"); break;
-                        case 1 : m_quilt_depth_unit = _("Meters"); break;
-                        case 2 : m_quilt_depth_unit = _("Fathoms"); break;
+                        case 0 : m_quilt_depth_unit = _T("Feet"); break;
+                        case 1 : m_quilt_depth_unit = _T("Meters"); break;
+                        case 2 : m_quilt_depth_unit = _T("Fathoms"); break;
                   }
             }
       }
@@ -1491,9 +1491,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         int units = ps52plib->m_nDepthUnitDisplay;
                         switch(units)
                         {
-                        case 0 : du = _("Feet"); break;
-                        case 1 : du = _("Meters"); break;
-                        case 2 : du = _("Fathoms"); break;
+                        case 0 : du = _T("Feet"); break;
+                        case 1 : du = _T("Meters"); break;
+                        case 2 : du = _T("Fathoms"); break;
                         }
                   }
                   wxString dul = du.Lower();
