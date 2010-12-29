@@ -248,6 +248,7 @@ class DeviceMonitorWindow: public wxWindow
             void OnEvtGarmin(GarminEvent &event);
 
             bool FindGarminDeviceInterface();
+            bool IsGarminPlugged();
             HANDLE garmin_usb_start();
             bool gusb_syncup(void);
 
@@ -275,6 +276,7 @@ class DeviceMonitorWindow: public wxWindow
             int                     m_Thread_run_flag;
             GARMIN_IO_Thread        *m_io_thread;
 		bool                    m_bneed_int_reset;
+            int                     m_ndelay;
 
             DECLARE_EVENT_TABLE()
 };
@@ -2821,6 +2823,41 @@ wxEvent* GarminEvent::Clone() const
 }
 
 
+BOOL IsUserAdmin(VOID)
+/*++
+            Routine Description: This routine returns TRUE if the caller's
+            process is a member of the Administrators local group. Caller is NOT
+            expected to be impersonating anyone and is expected to be able to
+            open its own process and process token.
+            Arguments: None.
+Return Value:
+            TRUE - Caller has Administrators local group.
+            FALSE - Caller does not have Administrators local group. --
+*/
+{
+      BOOL b;
+      SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+      PSID AdministratorsGroup;
+      b = AllocateAndInitializeSid(
+                                   &NtAuthority,
+                                   2,
+                                   SECURITY_BUILTIN_DOMAIN_RID,
+                                   DOMAIN_ALIAS_RID_ADMINS,
+                                   0, 0, 0, 0, 0, 0,
+                                   &AdministratorsGroup);
+      if(b)
+      {
+            if (!CheckTokenMembership( NULL, AdministratorsGroup, &b))
+            {
+                  b = FALSE;
+            }
+            FreeSid(AdministratorsGroup);
+      }
+
+      return(b);
+}
+
+
 
 
 //----------------------------------------------------------------------------
@@ -2852,6 +2889,7 @@ DeviceMonitorWindow::DeviceMonitorWindow(NMEAHandler *parent, wxWindow *MessageT
 
       m_bneed_int_reset = true;
       m_receive_state = rs_fromintr;
+      m_ndelay = 0;
 
 
 //      Connect(wxEVT_OCPN_GARMIN, (wxObjectEventFunction)(wxEventFunction)&DeviceMonitorWindow::OnEvtGarmin);
@@ -2862,7 +2900,7 @@ DeviceMonitorWindow::DeviceMonitorWindow(NMEAHandler *parent, wxWindow *MessageT
       char  pvt_off[14] =
       {20, 0, 0, 0, 10, 0, 0, 0, 2, 0, 0, 0, 50, 0};
 
-      wxLogMessage(_T("Searching for Garmin DeviceInterface..."));
+      wxLogMessage(_T("Searching for Garmin DeviceInterface and Device..."));
 
       if(!FindGarminDeviceInterface())
       {
@@ -2872,7 +2910,7 @@ DeviceMonitorWindow::DeviceMonitorWindow(NMEAHandler *parent, wxWindow *MessageT
 	{
 	  if(!ResetGarminUSBDriver())
 	  {
-			  wxLogMessage(_T("   Reset:Is the Garmin USB driver installed?"));
+			  wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
      	  }
         else
         {
@@ -2914,14 +2952,14 @@ void DeviceMonitorWindow::StopIOThread(bool b_pause)
             while((m_Thread_run_flag >= 0) && (tsec--))
             {
                   wxSleep(1);
-			}
+		}
 
-			wxString msg;
-		    if(m_Thread_run_flag < 0)
+		wxString msg;
+            if(m_Thread_run_flag < 0)
 			  msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
-		    else
+		else
 			  msg.Printf(_T("Not Stopped after 5 sec."));
-		  wxLogMessage(msg);
+		wxLogMessage(msg);
       }
 
       m_io_thread = NULL;
@@ -2929,6 +2967,8 @@ void DeviceMonitorWindow::StopIOThread(bool b_pause)
       if(m_usb_handle != INVALID_HANDLE_VALUE)
             CloseHandle(m_usb_handle);
       m_usb_handle = INVALID_HANDLE_VALUE;
+
+      m_ndelay = 30;          // Fix delay for next restart
 
 }
 
@@ -2953,14 +2993,19 @@ void DeviceMonitorWindow::OnTimerGarmin1(wxTimerEvent& event)
       {
             if(INVALID_HANDLE_VALUE != garmin_usb_start())
             {
-            //    Send out a request for Garmin PVT data
-                  m_receive_state = rs_fromintr;
-                  gusb_cmd_send((const garmin_usb_packet *) pvt_on, sizeof(pvt_on));
+                  {
+                        {
 
-            //    Start the pump
-                  m_io_thread = new GARMIN_IO_Thread(this, m_pMainEventHandler, m_pShareMutex, m_usb_handle, m_max_tx_size);
-                  m_Thread_run_flag = 1;
-                  m_io_thread->Run();
+                        //    Send out a request for Garmin PVT data
+                              m_receive_state = rs_fromintr;
+                              gusb_cmd_send((const garmin_usb_packet *) pvt_on, sizeof(pvt_on));
+
+                        //    Start the pump
+                              m_io_thread = new GARMIN_IO_Thread(this, m_pMainEventHandler, m_pShareMutex, m_usb_handle, m_max_tx_size);
+                              m_Thread_run_flag = 1;
+                              m_io_thread->Run();
+                        }
+                  }
             }
       }
 
@@ -2970,6 +3015,22 @@ void DeviceMonitorWindow::OnTimerGarmin1(wxTimerEvent& event)
 
 bool DeviceMonitorWindow::ResetGarminUSBDriver()
 {
+      OSVERSIONINFO version_info;
+      version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+      if(GetVersionEx(&version_info))
+      {
+            if(version_info.dwMajorVersion > 5)
+            {
+                  if(!IsUserAdmin())
+                  {
+                        wxLogMessage(_T("    GarminUSBDriver Reset skipped, requires elevated privileges on Vista and later...."));
+                        return true;
+                  }
+            }
+      }
+
+
       HDEVINFO devs;
       SP_DEVINFO_DATA devInfo;
       SP_PROPCHANGE_PARAMS pchange;
@@ -3032,6 +3093,52 @@ bool DeviceMonitorWindow::FindGarminDeviceInterface()
 
       return true;
 }
+
+
+bool DeviceMonitorWindow::IsGarminPlugged()
+{
+      DWORD size = 0;
+
+      HDEVINFO hdevinfo;
+      SP_DEVICE_INTERFACE_DATA infodata;
+
+      //    Search for the Garmin Device Interface Class
+      hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+                                       DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+
+      if (hdevinfo == INVALID_HANDLE_VALUE)
+            return INVALID_HANDLE_VALUE;
+
+      infodata.cbSize = sizeof(infodata);
+
+      bool bgarmin_unit_found = (SetupDiEnumDeviceInterfaces(hdevinfo,
+                                 NULL,(GUID *) &GARMIN_GUID, 0, &infodata) != 0);
+
+      if(!bgarmin_unit_found)
+            return false;
+
+      PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
+      SP_DEVINFO_DATA devinfo;
+
+      SetupDiGetDeviceInterfaceDetail(hdevinfo, &infodata,
+                                            NULL, 0, &size, NULL);
+
+      pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA)malloc(size);
+      pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
+
+      devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
+      if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, &infodata,
+                 pdd, size, NULL, &devinfo))
+      {
+            free(pdd);
+            return false;
+      }
+
+      free(pdd);
+
+      return true;
+}
+
 
 HANDLE DeviceMonitorWindow::garmin_usb_start()
 {
@@ -3331,7 +3438,7 @@ WXLRESULT DeviceMonitorWindow::MSWWindowProc(WXUINT message, WXWPARAM wParam, WX
 
                                           wxLogMessage(_T("Garmin USB Device Removed"));
                                           StopIOThread(false);
-							   			  m_bneed_int_reset = true;
+                                          m_bneed_int_reset = true;
                                           processed = true;
                                           break;
                   }
