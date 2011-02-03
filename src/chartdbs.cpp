@@ -25,41 +25,6 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************
 *
-* $Log: chartdbs.cpp,v $
-* Revision 1.17  2010/06/13 21:05:05  bdbcat
-* 613a
-*
-* Revision 1.16  2010/05/29 17:33:29  bdbcat
-* 529a
-*
-* Revision 1.15  2010/05/27 18:58:07  bdbcat
-* 527a
-*
-* Revision 1.14  2010/05/20 19:04:03  bdbcat
-* Build 520
-*
-* Revision 1.13  2010/05/19 01:07:09  bdbcat
-* Build 518
-*
-* Revision 1.12  2010/05/15 03:58:25  bdbcat
-* Build 514
-*
-* Revision 1.11  2010/05/02 03:03:33  bdbcat
-* Build 501
-*
-* Revision 1.10  2010/04/27 01:40:44  bdbcat
-* Build 426
-*
-* Revision 1.9  2010/03/29 03:28:25  bdbcat
-* 2.1.0 Beta Initial
-*
-* Revision 1.8  2010/02/09 01:57:59  badfeed
-* fix a few case-sensitivity problems, particularly with cm93
-*
-* Revision 1.7  2010/01/02 02:01:52  bdbcat
-* Correct to disallow multiple same chart additions
-*
-*
 */
 
 #include "wx/wxprec.h"
@@ -75,10 +40,13 @@
 
 #include "chartdbs.h"
 #include "chartbase.h"
+#include "pluginmanager.h"
 
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif
+
+extern PlugInManager    *g_pi_manager;
 
 int s_dbVersion;                                //    Database version currently in use at runtime
                                                 //  Needed for ChartTableEntry::GetChartType() only
@@ -550,11 +518,50 @@ void ChartTableEntry::Disable()
 ///////////////////////////////////////////////////////////////////////
 
 WX_DEFINE_OBJARRAY(ChartTable);
+WX_DEFINE_OBJARRAY(ArrayOfChartClassDescriptor);
 
 ChartDatabase::ChartDatabase()
 {
       m_ChartTableEntryDummy.Clear();
+
+      //    Create and add the descriptors for the default chart types recognized
+      ChartClassDescriptor *pcd;
+      pcd = new ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR);
+      m_ChartClassDescriptorArray.Add(pcd);
+      pcd = new ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR);
+      m_ChartClassDescriptorArray.Add(pcd);
+      pcd = new ChartClassDescriptor(_T("s57chart"), _T("*.000"), BUILTIN_DESCRIPTOR);
+      m_ChartClassDescriptorArray.Add(pcd);
+      pcd = new ChartClassDescriptor(_T("s57chart"), _T("*.s57"), BUILTIN_DESCRIPTOR);
+      m_ChartClassDescriptorArray.Add(pcd);
+      pcd = new ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR);
+      m_ChartClassDescriptorArray.Add(pcd);
+
+      //    If the PlugIn Manager exists, get the array of dynamically loadable chart class names
+      if(g_pi_manager)
+      {
+            wxArrayString array = g_pi_manager->GetPlugInChartClassNameArray();
+            for(unsigned int j = 0 ; j < array.GetCount() ; j++)
+            {
+                  //    Instantiate a blank chart to retrieve the directory search mask for this chart type
+                  wxString class_name = array.Item(j);
+                  ChartPlugInWrapper *cpiw = new ChartPlugInWrapper(class_name);
+                  if(cpiw)
+                  {
+                        wxString mask = cpiw->GetFileSearchMask();
+
+            //    Create a new descriptor
+                        ChartClassDescriptor *picd = new ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR);
+
+            //    Add descriptor to the database array member
+                        m_ChartClassDescriptorArray.Add(picd);
+
+                        delete cpiw;
+                  }
+            }
+      }
 }
+
 
 const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const
 {
@@ -1017,22 +1024,11 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDia
       //    There presumably was a change in the directory contents.  Return the new magic number
       dir_magic = new_magic;
 
-      //    MSW file system considers upper and lower case names to be the same for simple 8.3 file names
-      //    So we don't have to check both cases for MSW
-
-
-      nAdd += SearchDirAndAddCharts(dir_path, wxString(_T("*.geo")), pprog);
-      nAdd += SearchDirAndAddCharts(dir_path, wxString(_T("*.kap")), pprog);
-
-#ifdef USE_S57
-      nAdd += SearchDirAndAddCharts(dir_path, wxString(_T("*.000")), pprog);
-      nAdd += SearchDirAndAddCharts(dir_path, wxString(_T("*.s57")), pprog);
-#endif
-
-
-#ifdef USE_CM93
-      nAdd += SearchDirAndAddCharts(dir_path, _T("00300000.a"), pprog);     // for cm93
-#endif
+      //    Look for all possible defined chart classes
+      for(unsigned int i = 0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
+      {
+            nAdd += SearchDirAndAddCharts(dir_path, m_ChartClassDescriptorArray.Item(i), pprog);
+      }
 
       return nAdd;
 }
@@ -1206,21 +1202,22 @@ wxString ChartDatabase::Check_CM93_Structure(wxString dir_name)
 //  if target chart is already in table, mark it valid and skip chart processing
 // ----------------------------------------------------------------------------
 
-int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString& filespec_base,
+int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
+                                         ChartClassDescriptor &chart_desc,
                                          wxProgressDialog *pprog)
 {
       wxString msg(_T("Searching directory: "));
       msg += dir_name_base;
       msg += _T(" for ");
-      msg += filespec_base;
+      msg += chart_desc.m_search_mask;
       wxLogMessage(msg);
 
       if(!wxDir::Exists(dir_name_base))
             return 0;
 
       wxString dir_name = dir_name_base;
-      wxString filespec = filespec_base.Upper();
-      wxString lowerFileSpec = filespec.Lower();
+      wxString filespec = chart_desc.m_search_mask.Upper();
+      wxString lowerFileSpec = chart_desc.m_search_mask.Lower();
       wxString filename;
 
 //    Count the files
@@ -1297,7 +1294,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
             ChartTableEntry *pnewChart = NULL;
             bool bAddFinal = true;
 
-            pnewChart = CreateChartTableEntry(full_name);
+            pnewChart = CreateChartTableEntry(full_name, chart_desc);
             if(!pnewChart)
             {
                   bAddFinal = false;
@@ -1405,7 +1402,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base, const wxString
 // Create a Chart object
 ///////////////////////////////////////////////////////////////////////
 
-ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath) const
+ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const
 {
     // TODO: support non-UI chart factory
     return NULL;
@@ -1415,13 +1412,13 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath) const
 // Create Chart Table entry by reading chart header info, etc.
 ///////////////////////////////////////////////////////////////////////
 
-ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath)
+ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc)
 {
       wxString msg = wxT("Loading chart data for ");
       msg.Append(filePath);
       wxLogMessage(msg);
 
-      ChartBase *pch = GetChart(filePath);
+      ChartBase *pch = GetChart(filePath, chart_desc);
 
       if (pch == NULL) {
             wxString msg = wxT("   ...creation failed for ");

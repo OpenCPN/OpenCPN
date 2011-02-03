@@ -25,25 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: chartbase.h,v $
- * Revision 1.24  2010/06/25 02:00:36  bdbcat
- * 624
- *
- * Revision 1.23  2010/05/29 17:34:21  bdbcat
- * 529a
- *
- * Revision 1.22  2010/05/19 01:04:52  bdbcat
- * Build 518
- *
- * Revision 1.21  2010/05/15 03:55:04  bdbcat
- * Build 514
- *
- * Revision 1.20  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.19  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
  */
 
 #ifndef _CHARTBASE_H_
@@ -51,10 +32,7 @@
 
 #include "dychart.h"
 
-//#include "ocpn_pixel.h"
 #include "bbox.h"
-//#include "chcanv.h"         // for enums
-//#include "chart1.h"
 #include "ocpn_types.h"
 
 
@@ -196,8 +174,8 @@ public:
 
       ChartTypeEnum GetChartType(){ return m_ChartType;}
 
-      int GetCOVREntries(){ return  m_nCOVREntries; }
-      int GetCOVRTablePoints(int iTable) const { return m_pCOVRTablePoints[iTable]; }
+      virtual int GetCOVREntries(){ return  m_nCOVREntries; }
+      virtual int GetCOVRTablePoints(int iTable) { return m_pCOVRTablePoints[iTable]; }
 
       virtual ChartDepthUnitType GetDepthUnitType(void) { return m_depth_unit_id;}
 
@@ -332,6 +310,70 @@ public:
 
 private:
       wxBitmap    *m_pBM;
+};
+
+
+// ----------------------------------------------------------------------------
+// ChartPlugInWrapper
+//    This class is a wrapper/interface to PlugIn charts(PlugInChartBase) as defined in ocpn_plugin.h
+// ----------------------------------------------------------------------------
+
+class PlugInChartBase;                  // found in ocpn_plugin.h
+
+class ChartPlugInWrapper : public ChartBase
+{
+      public:
+            ChartPlugInWrapper();
+            ChartPlugInWrapper(wxString &chart_class);
+            virtual ~ChartPlugInWrapper();
+
+            virtual wxString GetFileSearchMask(void);
+
+            virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
+
+//    Accessors
+            virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
+            virtual ThumbData *GetThumbData();
+            virtual bool UpdateThumbData(float lat, float lon);
+
+            virtual int GetNativeScale();
+            double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
+            double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
+
+            virtual wxString GetPubDate();
+            virtual double GetChartSkew();
+            virtual bool GetChartExtent(Extent *pext);
+
+            virtual void InvalidateCache(void);
+
+            virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
+            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
+                                              const wxRegion &Region, ScaleTypeEnum scale_type);
+
+            virtual void SetVPParms(const ViewPort &vpt);
+
+            virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+
+            virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
+
+            virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+
+            virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
+
+            virtual bool IsCacheValid();
+
+            virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
+
+            virtual int GetCOVREntries();
+            virtual int GetCOVRTablePoints(int iTable);
+            virtual int GetCOVRTablenPoints(int iTable);
+            virtual float *GetCOVRTableHead(int iTable);
+
+
+      private:
+            double            m_Chart_Skew;
+            PlugInChartBase *m_ppicb;
+            wxObject          *m_ppo;
 };
 
 

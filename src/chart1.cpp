@@ -755,7 +755,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(338998);
+//     _CrtSetBreakAlloc(137591);
 #endif
 
 
@@ -3108,7 +3108,7 @@ void MyFrame::DeleteToolbarBitmaps()
             delete px1;
       }
 
-      //    Delete everything no in the hash
+      //    Delete everything not in the hash
 
     delete _img_left;
     delete _img_right;
@@ -3135,6 +3135,9 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_gpx_import;
     delete _img_gpx_export;
+
+    delete _img_sort_asc;
+    delete _img_sort_desc;
 
 
 
@@ -3317,6 +3320,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 
     cc1->Destroy();
     cc1 = NULL;
+
+    //      Delete all open charts in the cache
+    if(ChartData)
+          ChartData->PurgeCache();
+
 
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
@@ -5588,7 +5596,8 @@ void MyFrame::SetChartThumbnail(int index)
         else if(index < pCurrentStack->nEntry)
         {
                 if((ChartData->GetCSChartType(pCurrentStack, index) == CHART_TYPE_KAP) ||
-                                  (ChartData->GetCSChartType(pCurrentStack, index) == CHART_TYPE_GEO))
+                                  (ChartData->GetCSChartType(pCurrentStack, index) == CHART_TYPE_GEO) ||
+                                  (ChartData->GetCSChartType(pCurrentStack, index) == CHART_TYPE_PLUGIN))
                 {
                         ChartBase *new_pThumbChart = ChartData->OpenChartFromStack(pCurrentStack, index);
                         if(new_pThumbChart)         // chart opened ok
@@ -5608,6 +5617,7 @@ void MyFrame::SetChartThumbnail(int index)
 
                                 else
                                 {
+/*
                                         wxString fp = ChartData->GetFullPath(pCurrentStack, index);
                                         wxString msg(_("Chart file corrupt.. disabling this chart \n"));
                                         msg.Append(fp);
@@ -5615,8 +5625,8 @@ void MyFrame::SetChartThumbnail(int index)
                                         wxMessageDialog dlg(gFrame, msg, _("OpenCPN Message"), wxOK);
                                         dlg.ShowModal();
                                         ChartData->DisableChart(fp);
-
-                                        wxLogMessage(_T("chart1.cpp:SetChartThumbnail...Could not create thumbnail"));
+*/
+                                        wxLogMessage(_T("    chart1.cpp:SetChartThumbnail...Could not create thumbnail"));
                                         pthumbwin->pThumbChart = NULL;
                                         pthumbwin->Show(false);
                                         cc1->Refresh(FALSE);
@@ -5626,7 +5636,7 @@ void MyFrame::SetChartThumbnail(int index)
                         else                            // some problem opening chart
                         {
                                 wxString fp = ChartData->GetFullPath(pCurrentStack, index);
-                                fp.Prepend(_T("chart1.cpp:SetChartThumbnail...Could not open chart "));
+                                fp.Prepend(_T("    chart1.cpp:SetChartThumbnail...Could not open chart "));
                                 wxLogMessage(fp);
                                 pthumbwin->pThumbChart = NULL;
                                 pthumbwin->Show(false);

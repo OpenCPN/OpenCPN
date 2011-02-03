@@ -153,7 +153,7 @@ public:
 
 
 protected:
-        virtual ChartBase *GetChart(const wxChar *theFilePath) const;
+      virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
 
 private:
       InitReturn CreateChartTableEntry(wxString full_name, ChartTableEntry *pEntry);

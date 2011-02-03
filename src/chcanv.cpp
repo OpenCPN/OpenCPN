@@ -3209,6 +3209,7 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
 //                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
 //                        bInside = true;
 //                        if ( bInside )
+                        if(Cur_BSB_Ch)
                         {
                               int  rpixxd, rpixyd;
                               if ( 0 == Cur_BSB_Ch->latlong_to_pix_vp ( rlat, rlon, rpixxd, rpixyd, VPoint ) )
@@ -3252,27 +3253,30 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                         //          first pass is mercator, then check chart boundaries
 
 
-                        //    This is a Raster chart....
-                        //    If the VP is changing, the raster chart parameters may not yet be setup
-                        //    So do that before accessing the chart's embedded georeferencing
-                        wxRect Rtest;
-                        Cur_BSB_Ch->ComputeSourceRectangle(VPoint, &Rtest);
-                        if(Cur_BSB_Ch->GetSourceRect() != Rtest)
-                                Current_Ch->SetVPParms(VPoint);
-
-
-                        double slat, slon;
-                        if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
+                        if(Cur_BSB_Ch)
                         {
-                              lat = slat;
+                              //    This is a Raster chart....
+                              //    If the VP is changing, the raster chart parameters may not yet be setup
+                              //    So do that before accessing the chart's embedded georeferencing
+                              wxRect Rtest;
+                              Cur_BSB_Ch->ComputeSourceRectangle(VPoint, &Rtest);
+                              if(Cur_BSB_Ch->GetSourceRect() != Rtest)
+                                    Current_Ch->SetVPParms(VPoint);
 
-                              if(slon < -180.)
-                                   slon += 360.;
-                              else if(slon > 180.)
-                                   slon -= 360.;
 
-                              lon = slon;
-                              bUseMercator = false;
+                              double slat, slon;
+                              if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
+                              {
+                                    lat = slat;
+
+                                    if(slon < -180.)
+                                    slon += 360.;
+                                    else if(slon > 180.)
+                                    slon -= 360.;
+
+                                    lon = slon;
+                                    bUseMercator = false;
+                              }
                         }
 
                 }

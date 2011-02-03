@@ -71,6 +71,8 @@ class       wxAuiManager;
 #define     WANTS_AIS_SENTENCES                 0x00000200
 #define     USES_AUI_MANAGER                    0x00000400
 #define     WANTS_PREFERENCES                   0x00000800
+#define     INSTALLS_PLUGIN_CHART               0x00001000
+
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -157,8 +159,179 @@ class PlugIn_AIS_Target
             plugin_ais_alarm_type     alarm_state;
 };
 
+
+//    ChartType constants
+typedef enum ChartTypeEnumPI
+{
+      PI_CHART_TYPE_UNKNOWN = 0,
+      PI_CHART_TYPE_DUMMY,
+      PI_CHART_TYPE_DONTCARE,
+      PI_CHART_TYPE_KAP,
+      PI_CHART_TYPE_GEO,
+      PI_CHART_TYPE_S57,
+      PI_CHART_TYPE_CM93,
+      PI_CHART_TYPE_CM93COMP,
+      PI_CHART_TYPE_PLUGIN
+}_ChartTypeEnumPI;
+
+//    ChartFamily constants
+typedef enum ChartFamilyEnumPI
+{
+      PI_CHART_FAMILY_UNKNOWN = 0,
+      PI_CHART_FAMILY_RASTER,
+      PI_CHART_FAMILY_VECTOR,
+      PI_CHART_FAMILY_DONTCARE
+}_ChartFamilyEnumPI;
+
+//          Depth unit type enum
+typedef enum ChartDepthUnitTypePI
+{
+      PI_DEPTH_UNIT_UNKNOWN,
+      PI_DEPTH_UNIT_FEET,
+      PI_DEPTH_UNIT_METERS,
+      PI_DEPTH_UNIT_FATHOMS
+}_ChartDepthUnitTypePI;
+
+//          Projection type enum
+typedef enum OcpnProjTypePI
+{
+      PI_PROJECTION_UNKNOWN,
+      PI_PROJECTION_MERCATOR,
+      PI_PROJECTION_TRANSVERSE_MERCATOR,
+      PI_PROJECTION_POLYCONIC
+}_OcpnProjTypePI;
+
+typedef struct _ExtentPI{
+      double SLAT;
+      double WLON;
+      double NLAT;
+      double ELON;
+}ExtentPI;
+
+//    PlugInChartBase::Init()  init_flags constants
+#define      PI_FULL_INIT        0
+#define      PI_HEADER_ONLY      1
+#define      PI_THUMB_ONLY       2
+
+
+// ----------------------------------------------------------------------------
+// PlugInChartBase
+//  This class is the base class for Plug-able chart types
+// ----------------------------------------------------------------------------
+
+class DECL_EXP PlugInChartBase : public wxObject
+{
+      public:
+            //    These methods Must be overriden in any derived class
+            PlugInChartBase();
+            virtual ~PlugInChartBase();
+
+            virtual wxString GetFileSearchMask(void);
+
+            virtual int Init( const wxString& full_path, int init_flags );
+            virtual void SetColorScheme(int cs, bool bApplyImmediate);
+
+            virtual double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
+            virtual double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
+            virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
+
+            virtual bool GetChartExtent(ExtentPI *pext);
+
+            virtual bool IsCacheValid();
+            virtual void InvalidateCache(void);
+
+            virtual bool RenderViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, int scale_type);
+            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint,
+                                              const wxRegion &Region, int scale_type);
+
+            virtual void SetVPParms(const PlugIn_ViewPort &vpt);
+            virtual bool AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
+            virtual bool IsRenderDelta(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
+
+            virtual void GetValidCanvasRegion(const PlugIn_ViewPort& VPoint, wxRegion *pValidRegion);
+
+            virtual int GetCOVREntries(){ return  0; }
+            virtual int GetCOVRTablePoints(int iTable) { return 0; }
+            virtual int  GetCOVRTablenPoints(int iTable){ return 0; }
+            virtual float *GetCOVRTableHead(int iTable){ return (float *)NULL; }
+
+            virtual wxBitmap *GetThumbnail(int tnx, int tny, int cs);
+
+//    Accessors, need not be overridden in derived class if the member variables are maintained
+            virtual wxString GetFullPath() const            { return m_FullPath;}
+            virtual ChartTypeEnumPI GetChartType()          { return m_ChartType;}
+            virtual ChartFamilyEnumPI GetChartFamily()      { return m_ChartFamily;}
+            virtual OcpnProjTypePI GetChartProjection()     { return m_projection;}
+            virtual wxString GetName()                      { return m_Name;}
+            virtual wxString GetDescription()               { return m_Description;}
+            virtual wxString GetID()                        { return m_ID;}
+            virtual wxString GetSE()                        { return m_SE;}
+            virtual wxString GetDepthUnits()                { return m_DepthUnits;}
+            virtual wxString GetSoundingsDatum()            { return m_SoundingsDatum;}
+            virtual wxString GetDatumString()               { return m_datum_str;}
+            virtual wxString GetExtraInfo()                 { return m_ExtraInfo; }
+            virtual wxString GetPubDate()                   { return m_PubYear;}
+            virtual double GetChartErrorFactor()            { return m_Chart_Error_Factor;}
+            virtual ChartDepthUnitTypePI GetDepthUnitId()   { return m_depth_unit_id;}
+            virtual bool IsReadyToRender()                  { return m_bReadyToRender;}
+            virtual int GetNativeScale()                    { return m_Chart_Scale; };
+            virtual double GetChartSkew()                   { return m_Chart_Skew; }
+            virtual wxDateTime GetEditionDate(void)         { return m_EdDate;}
+
+
+      protected:
+            ChartTypeEnumPI     m_ChartType;
+            ChartFamilyEnumPI   m_ChartFamily;
+
+            wxString            m_FullPath;
+            OcpnProjTypePI      m_projection;
+            int                 m_Chart_Scale;
+            double              m_Chart_Skew;
+
+            wxDateTime          m_EdDate;
+            bool                m_bReadyToRender;
+
+            wxString          m_Name;
+            wxString          m_Description;
+            wxString          m_ID;
+            wxString          m_SE;
+            wxString          m_SoundingsDatum;
+            wxString          m_datum_str;
+            wxString          m_PubYear;
+            wxString          m_DepthUnits;
+            wxString          m_ExtraInfo;
+
+            ChartDepthUnitTypePI  m_depth_unit_id;
+
+            double            m_Chart_Error_Factor;
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //    Declare an array of PlugIn_AIS_Targets
 WX_DEFINE_ARRAY_PTR(PlugIn_AIS_Target *, ArrayOfPlugIn_AIS_Targets);
+
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -227,6 +400,8 @@ public:
       virtual void OnContextMenuItemCallback(int id);
 
       virtual void UpdateAuiStatus(void);
+
+      virtual wxArrayString GetDynamicChartClassNameArray(void);
  };
 
 

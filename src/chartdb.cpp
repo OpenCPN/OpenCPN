@@ -269,7 +269,7 @@ void ChartDB::PurgeCache()
 //      This version creates a fully functional UI-capable chart.
 //-------------------------------------------------------------------------------------------------------
 
-ChartBase *ChartDB::GetChart(const wxChar *theFilePath) const
+ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const
 {
       wxFileName fn(theFilePath);
 
@@ -281,6 +281,7 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath) const
       ChartBase *pch = NULL;
 
       wxString chartExt = fn.GetExt().Upper();
+
       if (chartExt == wxT("KAP")) {
             pch = new ChartKAP;
       }
@@ -290,13 +291,18 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath) const
       else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
             pch = new s57chart;
       }
+      else if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
+            ChartPlugInWrapper *cpiw = new ChartPlugInWrapper(chart_desc.m_class_name);
+            pch = (ChartBase *)cpiw;
+      }
+
 #ifdef USE_CM93
-      else {
+      else
+      {
             wxRegEx rxName(wxT("[0-9]+"));
             wxRegEx rxExt(wxT("[A-G]"));
-            if (rxName.Matches(fn.GetName()) && rxExt.Matches(chartExt)) {
+            if (rxName.Matches(fn.GetName()) && rxExt.Matches(chartExt))
                   pch = new cm93compchart;
-            }
       }
 #endif
 
@@ -633,7 +639,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       wxString ChartFullPath(cte.GetpFullPath(), wxConvUTF8 );
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
 
-      ChartBase *Ch;
+      ChartBase *Ch = NULL;
       CacheEntry *pce;
 
       wxDateTime now = wxDateTime::Now();                   // get time for LRU use
@@ -898,6 +904,44 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
 
 #endif
+
+            else if(chart_type == CHART_TYPE_PLUGIN)
+            {
+                  wxFileName fn(ChartFullPath);
+                  wxString ext = fn.GetExt();
+                  ext.Prepend(_T("*."));
+                  wxString ext_upper = ext.MakeUpper();
+                  wxString ext_lower = ext.MakeLower();
+                  wxString chart_class_name;
+
+                  //    Search the array of chart class descriptors to find a match
+                  //    bewteen the search mask and the the chart file extension
+
+                  for(unsigned int i=0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
+                  {
+                        if(m_ChartClassDescriptorArray.Item(i).m_descriptor_type == PLUGIN_DESCRIPTOR)
+                        {
+                              if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_upper)
+                              {
+                                    chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                    break;
+                              }
+                              if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_lower)
+                              {
+                                    chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                    break;
+                              }
+                        }
+                  }
+
+//                chart_class_name = cte.GetChartClassName();
+                  if(chart_class_name.Len())
+                  {
+                        ChartPlugInWrapper *cpiw = new ChartPlugInWrapper(chart_class_name);
+                        Ch = (ChartBase *)cpiw;
+                  }
+            }
+
 
             else
                   Ch = NULL;

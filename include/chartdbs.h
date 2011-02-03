@@ -25,37 +25,6 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************
 *
-* $Log: chartdbs.h,v $
-* Revision 1.11  2010/05/27 19:00:26  bdbcat
-* 527a
-*
-* Revision 1.10  2010/05/19 01:05:06  bdbcat
-* Build 518
-*
-* Revision 1.9  2010/05/02 03:04:27  bdbcat
-* Build 501
-*
-* Revision 1.8  2010/04/27 01:44:36  bdbcat
-* Build 426
-*
-* Revision 1.7  2010/03/29 03:31:16  bdbcat
-* 2.1.0 Beta Initial
-*
-* Revision 1.6  2010/03/29 03:18:13  bdbcat
-* 2.1.0 Beta Initial
-*
-* Revision 1.4  2010/02/09 01:58:44  badfeed
-* fix a few case-sensitivity problems, particularly with cm93
-*
-* Revision 1.3  2010/01/02 02:15:35  bdbcat
-* Correct to disallow multiple same chart additions
-*
-* Revision 1.2  2009/12/17 02:45:00  bdbcat
-* Beta 1216
-*
-* Revision 1.1  2009/12/10 21:21:20  bdbcat
-* Beta 1210
-*
 */
 
 #ifndef __CHARTDBS_H__
@@ -214,11 +183,33 @@ struct ChartTableEntry
     bool        bValid;
 };
 
+enum
+{
+      BUILTIN_DESCRIPTOR       = 0,
+      PLUGIN_DESCRIPTOR
+};
+
+class ChartClassDescriptor
+{
+public:
+      ChartClassDescriptor();
+      virtual ~ChartClassDescriptor(){}
+
+      ChartClassDescriptor(wxString classn, wxString mask, int type)
+      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type) {};
+
+      wxString    m_class_name;
+      wxString    m_search_mask;
+      int         m_descriptor_type;
+};
+
+
 ///////////////////////////////////////////////////////////////////////
 // Chart Database
 ///////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
+WX_DECLARE_OBJARRAY(ChartClassDescriptor, ArrayOfChartClassDescriptor);
 
 class ChartDatabase
 {
@@ -252,14 +243,18 @@ public:
     int FinddbIndex(wxString PathToFind);
 
 protected:
-    virtual ChartBase *GetChart(const wxChar *theFilePath) const;
+    virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
     void SetValid(bool valid) { bValid = valid; }
-    ChartTableEntry *CreateChartTableEntry(const wxString &filePath);
+    ChartTableEntry *CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc);
+
+    ArrayOfChartClassDescriptor    m_ChartClassDescriptorArray;
 
 private:
     bool IsChartDirUsed(const wxString &theDir);
-    int SearchDirAndAddCharts(wxString& dir, const wxString& filespec, wxProgressDialog *pprog);
+
+    int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxProgressDialog *pprog);
+
     int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDialog *pprog, wxString& dir_magic, bool bForce);
     bool DetectDirChange(wxString dir_path, wxString magic, wxString &new_magic, wxProgressDialog *pprog);
     wxString Check_CM93_Structure(wxString dir_name);
@@ -269,7 +264,8 @@ private:
     int           m_dbversion;
     ChartTable    chartTable;
 
-    ChartTableEntry m_ChartTableEntryDummy;           // used for return value if database is not valid
+    ChartTableEntry           m_ChartTableEntryDummy;   // used for return value if database is not valid
+
 };
 
 #endif
