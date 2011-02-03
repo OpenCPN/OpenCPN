@@ -304,13 +304,6 @@ wxString ChartDummy::GetPubDate()
       return _T("");
 }
 
-
-void ChartDummy::InvalidateCache(void)
-{
-      delete m_pBM;
-      m_pBM = NULL;
-}
-
 bool ChartDummy::GetChartExtent(Extent *pext)
 {
     pext->NLAT = 80;
@@ -320,7 +313,6 @@ bool ChartDummy::GetChartExtent(Extent *pext)
 
     return true;
 }
-
 
 bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
 {
@@ -2393,6 +2385,38 @@ int ChartBaseBSB::vp_pix_to_latlong(ViewPort& vp, int pixx, int pixy, double *pl
 //                  printf("vp.clon  %g    xc  %g   px   %g   east  %g  \n", vp.clon, xc, px, east);
 
             }
+            else if(m_projection == PROJECTION_POLYCONIC)
+            {
+                   //      Use Projected Polynomial algorithm
+
+                  double raster_scale = GetPPM() / vp.view_scale_ppm;
+
+                  //      Apply poly solution to vp center point
+                  double easting, northing;
+                  toPOLY(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
+                  double xc = polytrans( cPoints.wpx, easting, northing );
+                  double yc = polytrans( cPoints.wpy, easting, northing );
+
+                  //    convert screen pixels to chart pixmap relative
+                  double px = xc + (pixx- (vp.pix_width / 2))*raster_scale;
+                  double py = yc + (pixy- (vp.pix_height / 2))*raster_scale;
+
+                  //    Apply polynomial solution to chart relative pixels to get e/n
+                  double east  = polytrans( cPoints.pwx, px, py );
+                  double north = polytrans( cPoints.pwy, px, py );
+
+                  //    Apply inverse Projection to get lat/lon
+                  double lat,lon;
+                  fromPOLY ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
+
+                  //    Make Datum adjustments.....
+                  double slon_p = lon - m_lon_datum_adjust;
+                  double slat_p = lat - m_lat_datum_adjust;
+
+                  slon = slon_p;
+                  slat = slat_p;
+
+            }
             else
             {
                   // Use a Mercator estimator, with Eccentricity corrrection applied
@@ -2565,8 +2589,53 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 pixy = pixy_p;
 
           }
+          else if(m_projection == PROJECTION_POLYCONIC)
+          {
+                //      Use Projected Polynomial algorithm
+
+                alon = lon + m_lon_datum_adjust;
+                alat = lat + m_lat_datum_adjust;
+
+                //      Get e/n from  Projection
+                xlon = alon;
+                if(m_bIDLcross)
+                {
+                      if(xlon < 0.)
+                            xlon += 360.;
+                }
+                toPOLY(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
+
+                //      Apply poly solution to target point
+                double xd = polytrans( cPoints.wpx, easting, northing );
+                double yd = polytrans( cPoints.wpy, easting, northing );
+
+                //      Apply poly solution to vp center point
+                double xlonc = vp.clon;
+                if(m_bIDLcross)
+                {
+                      if(xlonc < 0.)
+                            xlonc += 360.;
+                }
+
+                toPOLY(vp.clat + m_lat_datum_adjust, xlonc + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
+                double xc = polytrans( cPoints.wpx, easting, northing );
+                double yc = polytrans( cPoints.wpy, easting, northing );
+
+                //      Calculate target point relative to vp center
+                double raster_scale = GetPPM() / vp.view_scale_ppm;
+
+                int xs = (int)xc - (int)(vp.pix_width  * raster_scale / 2);
+                int ys = (int)yc - (int)(vp.pix_height * raster_scale / 2);
+
+                int pixx_p = (int)(((xd - xs) / raster_scale) + 0.5);
+                int pixy_p = (int)(((yd - ys) / raster_scale) + 0.5);
+
+                pixx = pixx_p;
+                pixy = pixy_p;
+
+          }
           else
-         {
+          {
                 toSM_ECC(lat, xlon, vp.clat, vp.clon, &easting, &northing);
 
                 double epix = easting  * vp.view_scale_ppm;
@@ -2577,7 +2646,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
 
                 pixx = ( int ) /*rint*/( ( vp.pix_width  / 2 ) + dx );
                 pixy = ( int ) /*rint*/( ( vp.pix_height / 2 ) - dy );
-         }
+          }
                 return 0;
     }
 
@@ -2644,8 +2713,30 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRec
 
         }
 
+        else if(m_projection == PROJECTION_POLYCONIC)
+        {
+                  //      Apply poly solution to vp center point
+              double easting, northing;
+              double xlon = vp.clon;
+              if(m_bIDLcross)
+              {
+                    if(xlon < 0)
+                          xlon += 360.;
+              }
+              toPOLY(vp.clat + m_lat_datum_adjust, xlon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
+              double xc = polytrans( cPoints.wpx, easting, northing );
+              double yc = polytrans( cPoints.wpy, easting, northing );
 
-        if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
+                  //    convert screen pixels to chart pixmap relative
+              pSourceRect->x = (int)(xc - (vp.pix_width / 2)*binary_scale_factor);
+              pSourceRect->y = (int)(yc - (vp.pix_height / 2)*binary_scale_factor);
+
+              pSourceRect->width =  (int)(vp.pix_width  * binary_scale_factor) ;
+              pSourceRect->height = (int)(vp.pix_height * binary_scale_factor) ;
+
+         }
+
+        else if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
         {
                   //      Apply poly solution to vp center point
               double easting, northing;
@@ -4369,6 +4460,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
                   memset(pCL, nPixValue, nRunCount+1);
                   pCL += nRunCount+1;
                   iPixel += nRunCount+1;
+
             }
       }
 
@@ -4699,6 +4791,81 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
  //             for(int h=0 ; h < 10 ; h++)
 //                    printf("east to pix %d  %g\n",  h, cPoints.wpx[h]);          // lon to pix
 
+
+       }
+
+       else if(m_projection == PROJECTION_POLYCONIC)
+       {
+             //   This is interesting
+             //   On some BSB V 1.0 Polyconic charts (e.g. 14500_1, 1995), the projection parameter
+             //   Which is taken to be the central meridian of the projection is of the wrong sign....
+
+             //   We check for this case, and make a correction if necessary.....
+             //   Obviously, the projection meridian should be on the chart, i.e. between the min and max longitudes....
+             double proj_meridian = m_proj_lon;
+
+             if((pRefTable[nlonmax].lonr >= -proj_meridian) && (-proj_meridian >= pRefTable[nlonmin].lonr))
+                   m_proj_lon = -m_proj_lon;
+
+
+             double easting0, easting1, northing0, northing1;
+             //  Get the Poly projection of the two REF points
+             toPOLY(pRefTable[imax].latr, pRefTable[imax].lonr, m_proj_lat, m_proj_lon, &easting0, &northing0);
+             toPOLY(pRefTable[jmax].latr, pRefTable[jmax].lonr, m_proj_lat, m_proj_lon, &easting1, &northing1);
+
+              //  Calculate the scale factor using exact REF point math
+             double dx2 =  (pRefTable[jmax].xr - pRefTable[imax].xr) *  (pRefTable[jmax].xr - pRefTable[imax].xr);
+             double dy2 =  (pRefTable[jmax].yr - pRefTable[imax].yr) *  (pRefTable[jmax].yr - pRefTable[imax].yr);
+             double dn2 =  (northing1 - northing0) * (northing1 - northing0);
+             double de2 =  (easting1 - easting0) * (easting1 - easting0);
+
+             m_ppm_avg = sqrt(dx2 + dy2) / sqrt(dn2 + de2);
+
+             // Sanity check
+//             double ref_dist = DistGreatCircle(pRefTable[imax].latr, pRefTable[imax].lonr, pRefTable[jmax].latr, pRefTable[jmax].lonr);
+//             ref_dist *= 1852;                                    //To Meters
+//             double ref_dist_transform = sqrt(dn2 + de2);         //Also meters
+//             double error = (ref_dist - ref_dist_transform)/ref_dist;
+
+              //  Set up and solve polynomial solution for pix<->cartesian east/north as projected
+              // Fill the cpoints structure with pixel points and transformed lat/lon
+
+             for(int n=0 ; n<nRefpoint ; n++)
+             {
+                   double lata, lona;
+                   lata = pRefTable[n].latr;
+                   lona = pRefTable[n].lonr;
+
+                   double easting, northing;
+                   toPOLY(pRefTable[n].latr, pRefTable[n].lonr, m_proj_lat, m_proj_lon, &easting, &northing);
+
+                   //   Round trip check for debugging....
+//                   double lat, lon;
+//                   fromPOLY(easting, northing, m_proj_lat, m_proj_lon, &lat, &lon);
+
+                   cPoints.tx[n] = pRefTable[n].xr;
+                   cPoints.ty[n] = pRefTable[n].yr;
+                   cPoints.lon[n] = easting;
+                   cPoints.lat[n] = northing;
+//                   printf(" x: %g  y: %g  east: %g  north: %g\n",pRefTable[n].xr, pRefTable[n].yr, easting, northing);
+             }
+
+                     //      Helper parameters
+             cPoints.txmax = plonmax;
+             cPoints.txmin = plonmin;
+             cPoints.tymax = platmax;
+             cPoints.tymin = platmin;
+             toPOLY(latmax, lonmax, m_proj_lat, m_proj_lon, &cPoints.lonmax, &cPoints.latmax);
+             toPOLY(latmin, lonmin, m_proj_lat, m_proj_lon, &cPoints.lonmin, &cPoints.latmin);
+
+             cPoints.status = 1;
+
+             Georef_Calculate_Coefficients_Proj(&cPoints);
+
+//              for(int h=0 ; h < 10 ; h++)
+//                    printf("pix to east %d  %g\n",  h, cPoints.pwx[h]);          // pix to lon
+//              for(int h=0 ; h < 10 ; h++)
+//                    printf("east to pix %d  %g\n",  h, cPoints.wpx[h]);          // lon to pix
 
        }
 

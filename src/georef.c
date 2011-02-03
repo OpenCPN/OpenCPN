@@ -29,21 +29,6 @@
  *  Parts of this file were adapted from source code found in              *
  *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
  ***************************************************************************
-
- * $Log: georef.c,v $
- * Revision 1.26  2010/05/02 03:00:41  bdbcat
- * Build 501
- *
- * Revision 1.25  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.24  2010/03/29 18:39:02  bdbcat
- * Correct for Unicode build
- *
- * Revision 1.23  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
-
  */
 
 
@@ -368,32 +353,6 @@ void toDMM(double a, char *bufp, int bufplen)
     return;
 }
 
-/* Moved to navutil.cpp */
-#if 0
-/****************************************************************************/
-/* Convert dd mm.mmm' (DMM-Format) to degree.                               */
-/****************************************************************************/
-double fromDMM(char *dms)
-{
-    int d = 0;
-    double m = 0.0;
-    char buf[20];
-
-    char r[20];
-
-    buf[0] = r[0] = '\0';
-    sscanf(dms, "%d%[ ]%lf%[ 'NSWEnswe]", &d, buf, &m, buf);
-
-    m = (double) (abs(d)) + m / 60.0;
-
-    if (d >= 0 && strpbrk(buf, "SWsw") == NULL)
-      return m;
-    else
-      return -m;
-}
-
-#endif
-
 
 /* --------------------------------------------------------------------------------- */
 /****************************************************************************/
@@ -459,6 +418,7 @@ fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon)
       // lon = x + lon0
       lon1 = lon0 + (x / (DEGREE * z));
       *lon = lon1;
+
 
 }
 
@@ -547,6 +507,115 @@ void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat, doubl
 
 
      *lat = -(xi + esf) / DEGREE;
+
+}
+
+#define TOL 1e-10
+#define CONV      1e-10
+#define N_ITER    10
+#define I_ITER 20
+#define ITOL 1.e-12
+
+void
+toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y)
+{
+      double cot, E, z;
+
+      z = WGS84_semimajor_axis_meters * mercator_k0;
+
+      if (fabs((lat - lat0) * DEGREE) <= TOL)
+      {
+            *x = (lon - lon0) * DEGREE * z;
+            *y = 0.;
+
+      }
+      else
+      {
+            cot = 1. / tan(lat * DEGREE);
+            *x = sin(E = ((lon - lon0) * DEGREE) * sin((lat * DEGREE))) * cot;
+            *y = (lat * DEGREE) - (lat0 * DEGREE) + cot * (1. - cos(E));
+
+            *x *= z;
+            *y *= z;
+      }
+
+
+/*
+      if (fabs(lp.phi) <= TOL) { xy.x = lp.lam; xy.y = P->ml0; }
+      else {
+            cot = 1. / tan(lp.phi);
+            xy.x = sin(E = lp.lam * sin(lp.phi)) * cot;
+            xy.y = lp.phi - P->phi0 + cot * (1. - cos(E));
+      }
+*/
+}
+
+
+
+void
+fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon)
+{
+      double B, dphi, tp;
+      int i;
+      double xp, yp, lat3, z;
+
+      z = WGS84_semimajor_axis_meters * mercator_k0;
+
+      yp = y - (lat0 * DEGREE * z);
+      if(fabs(yp <= TOL))
+      {
+            *lon = lon0 + (x / (DEGREE * z));
+            *lat = lat0;
+      }
+      else
+      {
+            yp = y / z;
+            xp = x / z;
+
+            lat3 = yp;
+            B = (xp * xp) + (yp * yp);
+            i = N_ITER;
+            do {
+                  tp = tan(lat3);
+                  lat3 -= (dphi = ((yp) * (lat3 * tp + 1.) - lat3 -
+                              .5 * ( lat3 * lat3 + B) * tp) /
+                              ((lat3 - (yp)) / tp - 1.));
+            } while (fabs(dphi) > CONV && --i);
+            if (! i)
+            {
+                  *lon = 0.;
+                  *lat = 0.;
+            }
+            else
+            {
+                  *lon = asin(xp * tan(lat3)) / sin(lat3);
+                  *lon /= DEGREE;
+                  *lon += lon0;
+
+                  *lat = lat3 / DEGREE;
+            }
+      }
+
+
+
+
+/*
+      if (fabs(xy.y = P->phi0 + xy.y) <= TOL) { lp.lam = xy.x; lp.phi = 0.; }
+      else {
+      lp.phi = xy.y;
+      B = xy.x * xy.x + xy.y * xy.y;
+      i = N_ITER;
+      do {
+      tp = tan(lp.phi);
+      lp.phi -= (dphi = (xy.y * (lp.phi * tp + 1.) - lp.phi -
+      .5 * ( lp.phi * lp.phi + B) * tp) /
+      ((lp.phi - xy.y) / tp - 1.));
+} while (fabs(dphi) > CONV && --i);
+      if (! i) I_ERROR;
+      lp.lam = asin(xy.x * tan(lp.phi)) / sin(lp.phi);
+}
+      return (lp);
+*/
 
 }
 
