@@ -24,39 +24,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: cm93.h,v $
- * Revision 1.26  2010/06/24 02:03:21  bdbcat
- * 623
- *
- * Revision 1.25  2010/06/07 15:28:42  bdbcat
- * 607a
- *
- * Revision 1.24  2010/06/06 20:49:51  bdbcat
- * 606a
- *
- * Revision 1.23  2010/05/23 23:27:10  bdbcat
- * Build 523a
- *
- * Revision 1.22  2010/05/19 01:04:42  bdbcat
- * Build 518
- *
- * Revision 1.21  2010/05/04 01:34:04  bdbcat
- * Build 503
- *
- * Revision 1.20  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.19  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.18  2010/04/01 20:15:30  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.17  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
- *
  */
 
 #ifndef __CM93CHART_H__
@@ -446,8 +413,7 @@ class cm93compchart : public s57chart
             bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
             bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
-            bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
-            bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type);
+            bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
             bool RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool bdraw_mono);
 
@@ -455,7 +421,6 @@ class cm93compchart : public s57chart
             void GetPixPoint(int pixx, int pixy, double *plat, double *plon, ViewPort *vpt);
             void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
 
-            void InvalidateCache();
 
             ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, ViewPort *VPoint);
             S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
@@ -469,12 +434,15 @@ class cm93compchart : public s57chart
 
 
       private:
+            void InvalidateCache();
+            bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
+
             InitReturn CreateHeaderData();
             cm93_dictionary *FindAndLoadDictFromDir(const wxString &dir);
             void SetVPPositive(ViewPort *pvp);
             void FillScaleArray(double lat, double lon);
             void PrepareChartScale(const ViewPort &vpt, int cmscale);
-            bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type);
+            bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
 
             //    Data members

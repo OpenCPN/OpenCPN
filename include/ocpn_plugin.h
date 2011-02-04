@@ -237,12 +237,7 @@ class DECL_EXP PlugInChartBase : public wxObject
 
             virtual bool GetChartExtent(ExtentPI *pext);
 
-            virtual bool IsCacheValid();
-            virtual void InvalidateCache(void);
-
-            virtual bool RenderViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, int scale_type);
-            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint,
-                                              const wxRegion &Region, int scale_type);
+            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, const wxRegion &Region);
 
             virtual void SetVPParms(const PlugIn_ViewPort &vpt);
             virtual bool AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
@@ -307,23 +302,6 @@ class DECL_EXP PlugInChartBase : public wxObject
 
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

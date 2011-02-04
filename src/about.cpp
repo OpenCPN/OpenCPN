@@ -47,12 +47,10 @@
 #include "bitmaps/paypal_donate.xpm"
 
 
-CPL_CVSID("$Id: about.cpp,v 1.75 2010/06/25 13:30:53 bdbcat Exp $");
 
 
 //    Some constants
 
-//char OpenCPNVersion[] = {"\n      Version 2.2 Build 1007"}; //Gunther
 //Gunther Start
 wxString str_version_start = wxT("\n      Version ");
 wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
@@ -67,7 +65,7 @@ extern wxString        *pHome_Locn;
 char AboutText[] =
 {
   "\n                                         OpenCPN\n\n\
-                       (c) 2000-2010 The OpenCPN Authors\n"
+                       (c) 2000-2011 The OpenCPN Authors\n"
 };
 
 char OpenCPNInfo[] = {"\n\n\

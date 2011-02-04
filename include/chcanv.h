@@ -134,7 +134,6 @@ public:
       //    Methods
       void OnChar(wxKeyEvent &event);
       void OnPaint(wxPaintEvent& event);
- //     void NowPaint();
       void Scroll(int dx, int dy);
       void CanvasPopupMenu(int x, int y, int seltype);
       void DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu );
@@ -147,7 +146,7 @@ public:
 
       bool Do_Hotkeys(wxKeyEvent &event);
 
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, int sample_mode);
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation);
       void SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( void );
@@ -162,7 +161,6 @@ public:
       void UpdateShips();
       void UpdateAIS();
       void UpdateAlerts();                          // pjotrc 2010.02.22
-      void FlushBackgroundRender(void);
 
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
@@ -295,12 +293,9 @@ private:
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(wxDC& dc);
       void DrawArrow(wxDC& dc, int x, int y, float rot_angle, float scale);
-      void OnEvtRescale(wxCommandEvent& event);
-      void OnIdleEvent(wxIdleEvent& event);
       void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
 
       void RotateTimerEvent(wxTimerEvent& event);
-      void RescaleTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
       bool CheckEdgePan(int x, int y);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
@@ -337,8 +332,7 @@ private:
       void CreateOZEmbossMapData(ColorScheme cs);
       void EmbossOverzoomIndicator ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
 
-// Flav: for CM93Offset
-	  void CreateCM93OffsetEmbossMapData(ColorScheme cs);
+      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
       void EmbossCM93Offset ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
 
       void EmbossCanvas ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, emboss_data *pemboss, int x, int y);
@@ -363,16 +357,13 @@ private:
       int         warp_x, warp_y;
       bool        warp_flag;
 
-      ScaleTypeEnum  current_scale_method;
-
-      bool        m_bSubsamp;
+//      bool        m_bSubsamp;
 
       wxBitmap    *pBM;
 
       float       current_draw_scaler;
 
 
-      wxTimer     *pRescaleTimer;   // This timer used for bi-linear rescale
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
@@ -383,7 +374,6 @@ private:
       int         m_mouse_wheel_oneshot;
       int         m_last_wheel_dir;
 
-      int         m_rescale_timer_msec;
       int         m_curtrack_timer_msec;
       int         m_routeleg_popup_timer_msec;
 
@@ -411,7 +401,7 @@ private:
       emboss_data *m_pEM_Fathoms;
 
       emboss_data *m_pEM_OverZoom;
-	  emboss_data *m_pEM_CM93Offset;	// Flav
+      emboss_data *m_pEM_CM93Offset;	// Flav
 
 
       double      m_pix_per_mm;     // pixels per millimeter on the screen

@@ -68,11 +68,6 @@ typedef enum ColorScheme
       N_COLOR_SCHEMES
 }_ColorScheme;
 
-typedef enum ScaleTypeEnum
-{
-      RENDER_LODEF = 0,
-      RENDER_HIDEF,
-}_ScaleTypeEnum;
 
 //----------------------------------------------------------------------------
 // ViewPort

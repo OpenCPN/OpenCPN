@@ -1258,14 +1258,9 @@ double PlugInChartBase::GetNormalScaleMax(double canvas_scale_factor, int canvas
 bool PlugInChartBase::GetChartExtent(ExtentPI *pext)
 { return false; }
 
-void PlugInChartBase::InvalidateCache(void)
-{}
-
-bool PlugInChartBase::RenderViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, int scale_type)
-{ return false;}
 
 bool PlugInChartBase::RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint,
-                                              const wxRegion &Region, int scale_type)
+                                              const wxRegion &Region)
 { return false;}
 
 
@@ -1283,9 +1278,6 @@ void PlugInChartBase::GetValidCanvasRegion(const PlugIn_ViewPort& VPoint, wxRegi
 
 void PlugInChartBase::SetColorScheme(int cs, bool bApplyImmediate)
 {}
-
-bool PlugInChartBase::IsCacheValid()
-{ return false;}
 
 double PlugInChartBase::GetNearestPreferredScalePPM(double target_scale_ppm)
 { return 1.0; }
@@ -1516,31 +1508,13 @@ double ChartPlugInWrapper::GetChartSkew()
       return m_Chart_Skew;
 }
 
-void ChartPlugInWrapper::InvalidateCache(void)
-{
-      if(m_ppicb)
-            m_ppicb->InvalidateCache();
-
-}
-
-bool ChartPlugInWrapper::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type)
-{
-      if(m_ppicb)
-      {
-            PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&VPoint);
-            return m_ppicb->RenderViewOnDC(dc, pivp, scale_type);
-      }
-      else
-            return false;
-}
-
 bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                              const wxRegion &Region, ScaleTypeEnum scale_type)
+                                              const wxRegion &Region)
 {
       if(m_ppicb)
       {
             PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&VPoint);
-            return m_ppicb->RenderRegionViewOnDC(dc, pivp, Region, scale_type);
+            return m_ppicb->RenderRegionViewOnDC(dc, pivp, Region);
       }
       else
             return false;
@@ -1597,14 +1571,6 @@ void ChartPlugInWrapper::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
             m_ppicb->SetColorScheme(cs, bApplyImmediate);
 }
 
-
-bool ChartPlugInWrapper::IsCacheValid()
-{
-      if(m_ppicb)
-            return m_ppicb->IsCacheValid();
-      else
-            return false;
-}
 
 double ChartPlugInWrapper::GetNearestPreferredScalePPM(double target_scale_ppm)
 {

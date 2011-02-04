@@ -181,11 +181,8 @@ public:
 
       virtual bool IsReadyToRender(){ return bReadyToRender;}
 
-      virtual void InvalidateCache(void) = 0;
-
-      virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type) = 0;
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region, ScaleTypeEnum scale_type) = 0;
+                                        const wxRegion &Region) = 0;
 
       virtual void SetVPParms(const ViewPort &vpt) = 0;
 
@@ -195,8 +192,6 @@ public:
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion) = 0;
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate = true ) = 0;
-
-      virtual bool IsCacheValid(void) = 0;
 
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm) = 0;
 
@@ -288,11 +283,8 @@ public:
       virtual double GetChartSkew(){ return 0.0;}
       virtual bool GetChartExtent(Extent *pext);
 
-      virtual void InvalidateCache(void);
-
-      virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region, ScaleTypeEnum scale_type);
+                                        const wxRegion &Region);
 
       virtual void SetVPParms(const ViewPort &vpt);
 
@@ -304,11 +296,11 @@ public:
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
-      virtual bool IsCacheValid(){ return false; }
-
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm){ return target_scale_ppm; }
 
 private:
+      bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
+
       wxBitmap    *m_pBM;
 };
 
@@ -344,11 +336,8 @@ class ChartPlugInWrapper : public ChartBase
             virtual double GetChartSkew();
             virtual bool GetChartExtent(Extent *pext);
 
-            virtual void InvalidateCache(void);
-
-            virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
             virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                              const wxRegion &Region, ScaleTypeEnum scale_type);
+                                              const wxRegion &Region);
 
             virtual void SetVPParms(const ViewPort &vpt);
 
@@ -359,8 +348,6 @@ class ChartPlugInWrapper : public ChartBase
             virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
             virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
-
-            virtual bool IsCacheValid();
 
             virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 

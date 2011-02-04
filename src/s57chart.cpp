@@ -1654,7 +1654,7 @@ void s57chart::SetLinePriorities(void)
 }
 
 
-bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
+bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
       bool force_new_view = false;
 
@@ -1728,7 +1728,7 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
 }
 
 
-bool s57chart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type)
+bool s57chart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
 //    CALLGRIND_START_INSTRUMENTATION
 

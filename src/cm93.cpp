@@ -3698,7 +3698,7 @@ S57Obj *cm93chart::CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *
                         trans_WGS84_offset_x = offset.m_x;
                         trans_WGS84_offset_y = offset.m_y;
 
-						// Flav: CM93Offset for soundings do not transform: transform is done by origin, 
+						// Flav: CM93Offset for soundings do not transform: transform is done by origin,
 						// if not tranform is done twice
                         *pdd++ = p.x; // - trans_WGS84_offset_x;
                         *pdd++ = p.y; // - trans_WGS84_offset_y;
@@ -3842,7 +3842,7 @@ wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon)
 	  {
 		  ret.m_x = -g_CM93Maps_Offset_x;
 		  ret.m_y = -g_CM93Maps_Offset_y;
-          return ret;  
+          return ret;
 	  }
 	  else
 	  {
@@ -5126,21 +5126,21 @@ void cm93compchart::SetVPPositive(ViewPort *pvp)
 }
 
 
-bool cm93compchart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
+bool cm93compchart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
-      return DoRenderRegionViewOnDC(dc, VPoint, Region, scale_type);
+      return DoRenderRegionViewOnDC(dc, VPoint, Region);
 }
 
-bool cm93compchart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type)
+bool cm93compchart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
       const wxRegion vpr(0,0,VPoint.pix_width, VPoint.pix_height);
 
-      return DoRenderRegionViewOnDC(dc, VPoint, vpr, scale_type);
+      return DoRenderRegionViewOnDC(dc, VPoint, vpr);
 
 }
 
 int s_dc1;
-bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
+bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
 
 //      CALLGRIND_START_INSTRUMENTATION
@@ -5185,7 +5185,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 #else
                         wxMemoryDC temp_dc;
 #endif
-                        render_return = m_pcm93chart_current->RenderViewOnDC(temp_dc, vp_positive, scale_type);
+                        render_return = m_pcm93chart_current->RenderViewOnDC(temp_dc, vp_positive);
 
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
@@ -5233,7 +5233,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     if(g_bDebugCM93)
                                           printf("  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
 
-                                    m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive, scale_type);
+                                    m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive);
 
                                     wxRegion sscale_region;
                                     GetValidCanvasRegion(vp_positive, &sscale_region);
@@ -5279,10 +5279,10 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
                   }
                   else
-                        render_return = m_pcm93chart_current->RenderRegionViewOnDC(dc, vp_positive, Region, scale_type);
+                        render_return = m_pcm93chart_current->RenderRegionViewOnDC(dc, vp_positive, Region);
             }
             else
-                  render_return = m_pcm93chart_current->RenderRegionViewOnDC(dc, vp_positive, Region, scale_type);
+                  render_return = m_pcm93chart_current->RenderRegionViewOnDC(dc, vp_positive, Region);
 
 
 

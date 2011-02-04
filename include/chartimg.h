@@ -49,6 +49,11 @@
 #include "chartbase.h"
 #include "georef.h"                 // for GeoRef type
 
+typedef enum ScaleTypeEnum
+{
+      RENDER_LODEF = 0,
+      RENDER_HIDEF,
+}_ScaleTypeEnum;
 
 
 
@@ -156,16 +161,13 @@ class  ChartBaseBSB     :public ChartBase
       double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
       double GetChartSkew(){return Chart_Skew;}
-      bool IsCacheValid(){ return cached_image_ok; }
-      void InvalidateCache(){cached_image_ok = 0;}
 
       virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
 
       virtual int latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy, ViewPort& vp);
       virtual int vp_pix_to_latlong(ViewPort& vp, int pixx, int pixy, double *lat, double *lon);
 
-      bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
-      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type);
+      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
       virtual void SetVPParms(const ViewPort &vpt);
 
@@ -189,6 +191,12 @@ class  ChartBaseBSB     :public ChartBase
 
 protected:
 //    Methods
+
+      bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
+
+      bool IsCacheValid(){ return cached_image_ok; }
+      void InvalidateCache(){cached_image_ok = 0;}
+
       void CreatePaletteEntry(char *buffer, int palette_index);
       PaletteDir GetPaletteDir(void);
       int  *GetPalettePtr(BSB_Color_Capability);

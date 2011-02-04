@@ -1475,7 +1475,7 @@ bool MyApp::OnInit()
 
         cc1->SetQuiltMode(pConfig->m_bQuilt);                     // set initial quilt mode
         cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-        cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0., CURRENT_RENDER );
+        cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0.);
 
         cc1->SetFocus();
 
@@ -4017,7 +4017,7 @@ void MyFrame::JumpToPosition(double lat, double lon, double scale)
       cc1->m_bFollow = false;
       DoChartUpdate();
 
-      cc1->SetViewPoint(lat, lon, scale, 0, cc1->GetVPRotation(), CURRENT_RENDER);
+      cc1->SetViewPoint(lat, lon, scale, 0, cc1->GetVPRotation());
       cc1->ReloadVP();
 
       SetToolbarItemState(ID_FOLLOW, false);
@@ -4082,8 +4082,6 @@ int MyFrame::DoOptionsDialog()
             if(rr & VISIT_CHARTS)
             {
                   FrameTimer1.Stop();                  // stop other asynchronous activity
-
-                  cc1->FlushBackgroundRender();
 
                   cc1->InvalidateQuilt();
                   cc1->SetQuiltRefChart(-1);
@@ -4275,8 +4273,6 @@ void MyFrame::ChartsRefresh(void)
       ::wxBeginBusyCursor();
 
       FrameTimer1.Stop();                  // stop other asynchronous activity
-
-      cc1->FlushBackgroundRender();
 
       cc1->InvalidateQuilt();
       cc1->SetQuiltRefChart(-1);
@@ -4611,7 +4607,6 @@ void MyFrame::OnMemFootTimer(wxTimerEvent& event)
                         while((memsize > (g_MemFootMB * 1000)) && (pCache->GetCount() > minimum_cache) && (idelete < idelete_max))
                         {
                               int memsizeb = memsize;
-                              cc1->FlushBackgroundRender();
 
                               ChartData->DeleteCacheChart((ChartBase *)pcea[idelete].pChart);
                               idelete++;
@@ -5543,18 +5538,10 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
             else
                 { zLat = vLat; zLon = vLon;}
 
-
-//  If the cache is invalid, as in new chart load, force a fast LODEF render
-            int new_sample_mode;
-            if(Current_Ch->IsCacheValid())
-                new_sample_mode = CURRENT_RENDER;
-            else
-                new_sample_mode = FORCE_SUBSAMPLE;
-
             double best_scale = GetBestVPScale(Current_Ch);
 
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
-                              cc1->GetVPRotation(), new_sample_mode);
+                              cc1->GetVPRotation());
 
             UpdateToolbarStatusBox();           // Pick up the rotation
 
@@ -5900,13 +5887,13 @@ bool MyFrame::DoChartUpdate(void)
 
                   }
 
-                  cc1->SetViewPoint(vpLat, vpLon, cc1->GetCanvasScaleFactor() / proposed_scale_onscreen, 0, cc1->GetVPRotation(), CURRENT_RENDER);
+                  cc1->SetViewPoint(vpLat, vpLon, cc1->GetCanvasScaleFactor() / proposed_scale_onscreen, 0, cc1->GetVPRotation());
 
                   bFirstAuto = false;                           // Auto open on program start
             }
 
 
-            if(cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER))
+            if(cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation()))
                   bNewChart = true;
 
             goto update_finish;
@@ -5958,7 +5945,7 @@ bool MyFrame::DoChartUpdate(void)
                 if(!cc1->VPoint.bValid)
                     set_scale = 1./200000.;
 
-                cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation(), CURRENT_RENDER);
+                cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
 
         //      If the chart stack has just changed, there is new status
                 if(!ChartData->EqualStacks(&WorkStack, pCurrentStack))
@@ -6109,12 +6096,7 @@ bool MyFrame::DoChartUpdate(void)
                         set_scale = cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
                     }
 
-//  If the chart cache is invalid, as in new chart load, force a fast sub-sample render
-                    int new_sample_mode = CURRENT_RENDER;
-                    if(!Current_Ch->IsCacheValid())
-                           new_sample_mode = FORCE_SUBSAMPLE;
-
-                    cc1->SetViewPoint(vpLat, vpLon, set_scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation(), new_sample_mode);
+                    cc1->SetViewPoint(vpLat, vpLon, set_scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
 
                 }
         }         // new stack
@@ -6122,7 +6104,7 @@ bool MyFrame::DoChartUpdate(void)
         else                                                                    // No change in Chart Stack
         {
               if((cc1->m_bFollow) && Current_Ch)
-                      cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation(),CURRENT_RENDER);
+                      cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
         }
 
 

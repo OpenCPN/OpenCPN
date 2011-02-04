@@ -314,12 +314,12 @@ bool ChartDummy::GetChartExtent(Extent *pext)
     return true;
 }
 
-bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
+bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
-      return RenderViewOnDC(dc, VPoint, scale_type);
+      return RenderViewOnDC(dc, VPoint);
 }
 
-bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type)
+bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
       if(m_pBM)
       {
@@ -3368,7 +3368,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
 
 int s_dc;
 
-bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type)
+bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
       wxRegion rgn(0,0,VPoint.pix_width, VPoint.pix_height);
 
@@ -3380,43 +3380,8 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleT
 
       m_last_region = rgn;
 
-      return RenderRegionViewOnDC(dc, VPoint, rgn,  scale_type);
+      return RenderRegionViewOnDC(dc, VPoint, rgn);
 
-/*
-      wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
-      double factor = ((double)Rsrc.width)/((double)dest.width);
-      factor = m_raster_scale_factor;
-
-      if(b_cdebug)printf("RenderView  ScaleType:  %d   factor:  %g\n", scale_type, factor );
-
-      //    Invalidate the cache if the scale has changed....
-      if(fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9)
-            cached_image_ok = false;
-
-      m_cached_scale_ppm = VPoint.view_scale_ppm;
-
-      bool bnewview;
-//    Get the view into the pixel buffer
-      bnewview = GetViewUsingCache(Rsrc, dest, scale_type);
-
-
-      //    It could happen that this is the first render of this chart,
-      //    .AND. scale_type is bi-linear
-      //    .AND.  the render is interrupted by mouse movement.
-      //    In this case, there is will be no pPixCache yet....
-
-      //    So, force a subsample render which cannot be interrupted
-
-      if(pPixCache == NULL)
-            bnewview = GetViewUsingCache(Rsrc, dest, RENDER_LODEF);
-
-//    Select the data into the dc
-      pPixCache->SelectIntoDC(dc);
-
-      Initialize_BackgroundHiDefRender(VPoint);
-
-      return bnewview;
-*/
 }
 
 
@@ -3424,12 +3389,12 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleT
 
 
 
-bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type)
+bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
       wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
 //      double factor = ((double)Rsrc.width)/((double)dest.width);
       double factor = m_raster_scale_factor;
-      if(m_b_cdebug)printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, scale_type, factor );
+      if(m_b_cdebug)printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );
 
             //    Invalidate the cache if the scale has changed or the viewport size has changed....
       if((fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9) || (m_last_vprect != dest))

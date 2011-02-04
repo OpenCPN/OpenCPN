@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s57chart.h,v 1.33 2010/06/24 02:03:34 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  S57 Chart Object
@@ -24,31 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: s57chart.h,v $
- * Revision 1.33  2010/06/24 02:03:34  bdbcat
- * 623
- *
- * Revision 1.32  2010/06/11 16:31:45  bdbcat
- * 611a
- *
- * Revision 1.31  2010/06/06 20:50:11  bdbcat
- * 606a
- *
- * Revision 1.30  2010/05/19 01:02:37  bdbcat
- * Build 518
- *
- * Revision 1.29  2010/05/15 03:55:46  bdbcat
- * Build 514
- *
- * Revision 1.28  2010/05/04 01:34:04  bdbcat
- * Build 503
- *
- * Revision 1.27  2010/04/27 01:45:21  bdbcat
- * Build 426
- *
- * Revision 1.26  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  *
  */
@@ -157,14 +131,11 @@ public:
 
       double GetChartSkew(){return 0.0;}
 
-      virtual void InvalidateCache();
 
-      virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, ScaleTypeEnum scale_type);
-      virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type);
+      virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
-      virtual bool IsCacheValid(){ return (pDIB != NULL); }
 
       virtual void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
       virtual void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
@@ -233,7 +204,12 @@ public:
       ViewPort    m_last_vp;
       wxRegion    m_last_Region;
 
+      virtual bool IsCacheValid(){ return (pDIB != NULL); }
+      virtual void InvalidateCache();
+      virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
+
 private:
+
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);

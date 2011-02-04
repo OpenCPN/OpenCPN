@@ -62,7 +62,7 @@ public:
       ~WVSChart();
 
       void RenderViewOnDC(wxMemoryDC& dc, ViewPort& VPoint);
-      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, ScaleTypeEnum scale_type);
+      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
 private:
       wxString    *pwvs_home_dir;

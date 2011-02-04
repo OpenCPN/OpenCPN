@@ -384,7 +384,7 @@ class Quilt
             wxString GetQuiltDepthUnit(){ return m_quilt_depth_unit; }
 
             int GetnCharts(){ return m_PatchList.GetCount();}
-            bool RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region, ScaleTypeEnum scale_type );
+            bool RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
 
             ChartBase *GetChartAtPix(wxPoint p);
             int GetChartdbIndexAtPix(wxPoint p);
@@ -1556,7 +1556,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
 }
 
 
-bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region, ScaleTypeEnum scale_type )
+bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region )
 {
 
 #ifdef ocpnUSE_DIBSECTION
@@ -1602,7 +1602,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     wxRegion get_region = pqp->ActiveRegion;
                                     get_region.Intersect(chart_region);
 
-                                    pch->RenderRegionViewOnDC(dc, vp, get_region, scale_type);
+                                    pch->RenderRegionViewOnDC(dc, vp, get_region);
 
                               }
                               rendered_base = true;
@@ -1650,7 +1650,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     get_region.Intersect(chart_region);
 
 
-                                    pch->RenderRegionViewOnDC(tmp_dc, vp, get_region, scale_type);
+                                    pch->RenderRegionViewOnDC(tmp_dc, vp, get_region);
 
                                     wxRegionIterator upd ( get_region );
                                     while ( upd )
@@ -2065,12 +2065,10 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_ACTIVATE ( ChartCanvas::OnActivate )
         EVT_SIZE ( ChartCanvas::OnSize )
         EVT_MOUSE_EVENTS ( ChartCanvas::MouseEvent )
-        EVT_TIMER ( RESCALE_TIMER, ChartCanvas::RescaleTimerEvent )
         EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
         EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
         EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
         EVT_TIMER ( RTELEGPU_TIMER, ChartCanvas::OnRouteLegPopupTimerEvent )
-        EVT_IDLE ( ChartCanvas::OnIdleEvent )
         EVT_CHAR(ChartCanvas::OnChar )
         EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
 
@@ -2328,13 +2326,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         SetMyCursor ( pCursorArrow );
 
-        current_scale_method = RENDER_LODEF;          // default
-        m_bSubsamp = true;
-        m_rescale_timer_msec = 1000;
-
-        pRescaleTimer = new wxTimer ( this, RESCALE_TIMER );
-        pRescaleTimer->Stop();
-
         pPanTimer = new wxTimer ( this, PAN_TIMER );
         pPanTimer->Stop();
 
@@ -2543,7 +2534,6 @@ ChartCanvas::~ChartCanvas()
         delete pCursorArrow;
         delete pCursorPencil;
 
-        delete pRescaleTimer;
         delete pPanTimer;
         delete pCurTrackTimer;
         delete pRotDefTimer;
@@ -2915,7 +2905,6 @@ void ChartCanvas::SetColorScheme(ColorScheme cs)
       CreateOZEmbossMapData( cs );
 
       SetbTCUpdate(true);                        // force re-render of tide/current locators
-      FlushBackgroundRender();
 
       ReloadVP();
 
@@ -2957,91 +2946,13 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
 }
 
 
-void ChartCanvas::RescaleTimerEvent ( wxTimerEvent& event )
-{
-
-      /*
-        if ( m_bBackRender && !m_bbr_paused )
-        {
-                if ( br_Ch )
-                {
-                        br_Ch->Abort_BackgroundHiDefRender();
-                        br_Ch = NULL;
-                        m_bBackRender = false;
-                }
-        }
-
-*/
-        if ( ( RENDER_HIDEF != current_scale_method ) && !m_bBackRender )
-        {
-                //    Start a background render
-                //    If the Initialize call fails, it simply means that the chart cannot do a background render
-                //    and so no action is performed.
-                br_Ch = m_RescaleCandidate;
-                if ( br_Ch )
-                {
-                        {
-//                              printf("Chcanv Rescale timer start bbr\n");
-                              m_bBackRender = true;
-                                m_bbr_paused = false;
-                                ::wxWakeUpIdle();
-                        }
-                }
-                return;
-        }
-
-        if ( ( RENDER_HIDEF != current_scale_method ) && m_bBackRender && m_bbr_paused )
-        {
-                m_bbr_paused = false;
-                return;
-        }
-}
-
 /*
+
 void ChartCanvas::MouseWheelTimerEvent ( wxTimerEvent& event )
 {
       m_bEnableWheelEvents = true;
 }
 */
-
-void ChartCanvas::OnIdleEvent ( wxIdleEvent& event )
-{
-        //  If a background render is in process, continue it along...
-        if ( m_bBackRender )
-        {
-
-                if ( br_Ch != m_RescaleCandidate )              // a logical error, happens on chart change
-                {
-                        if ( br_Ch )
-                        {
-                                br_Ch = NULL;
-                                m_bBackRender = false;
-                                event.Skip();
-                                return;
-                        }
-                }
-
-                if ( !m_bbr_paused )
-                {
-                      int br_ret = br_Ch->Continue_BackgroundHiDefRender();
-                      if(( BR_DONE_NOP == br_ret) || ( BR_DONE_REFRESH == br_ret))    //done?
-                      {
-//                              printf("Chcanv bbr finish reported\n");
-                              current_scale_method = RENDER_HIDEF;
-                              m_bBackRender = false;
-
-                              if(BR_DONE_REFRESH == br_ret)
-                                    Refresh ( false );
-                        }
-                        else
-                                event.RequestMore();
-
-                }
-                event.Skip();
-        }
-        else
-                event.Skip();
-}
 
 void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
 {
@@ -3288,14 +3199,6 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 }
 }
 
-void ChartCanvas::FlushBackgroundRender ( void )
-{
-        if ( m_bBackRender )
-        {
-                m_bBackRender = false;
-                m_bbr_paused = false;
-        }
-}
 
 bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
 {
@@ -3415,7 +3318,7 @@ bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
        if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
              SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
        else
-             SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation, FORCE_SUBSAMPLE );
+             SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
 
        Refresh(false);
 
@@ -3513,7 +3416,7 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
       if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
             SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
       else
-            SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation, FORCE_SUBSAMPLE );
+            SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
 
 
       Refresh(false);
@@ -3553,7 +3456,7 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       }
 
       int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
-      SetViewPoint ( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, RENDER_LODEF/*FORCE_SUBSAMPLE*/ );
+      SetViewPoint ( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
       vLat = dlat;
       vLon = dlon;
 
@@ -3584,7 +3487,7 @@ void ChartCanvas::ReloadVP ( void )
       m_cache_vp.Invalidate();
 
       VPoint.Invalidate();
-      SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, CURRENT_RENDER );
+      SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
       Refresh(false);
 }
@@ -3600,16 +3503,16 @@ void ChartCanvas::SetQuiltRefChart(int dbIndex)
 void ChartCanvas::SetVPScale ( double scale )
 {
 //      if(VPoint.bValid)
-      SetViewPoint ( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation, FORCE_SUBSAMPLE );
+      SetViewPoint ( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation );
 }
 
 bool ChartCanvas::SetViewPoint ( double lat, double lon)
 {
-      return SetViewPoint ( lat, lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, CURRENT_RENDER );
+      return SetViewPoint ( lat, lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 }
 
 
-bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, double skew, double rotation, int sample_mode )
+bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, double skew, double rotation )
 {
 
 
@@ -3968,13 +3871,13 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         //    If requested by sample_mode = FORCE_SUBSAMPLE, then
         //    force the scale method to LODEF, rescale enabled
 
-
+/*
         if( !m_bBackRender && !pRescaleTimer->IsRunning() &&  m_RescaleCandidate )
         {
               current_scale_method = RENDER_LODEF;
               pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
         }
-
+*/
         //  Maintain global vLat/vLon
         vLat = VPoint.clat;
         vLon = VPoint.clon;
@@ -5681,8 +5584,6 @@ void ChartCanvas::OnActivate ( wxActivateEvent& event )
 
 void ChartCanvas::OnSize ( wxSizeEvent& event )
 {
-//    Stop any background rendering unilaterally
-        FlushBackgroundRender();
 
         GetClientSize ( &m_canvas_width, &m_canvas_height );
 
@@ -5850,7 +5751,7 @@ bool ChartCanvas::CheckEdgePan ( int x, int y )
               if(new_lon > 360.) new_lon -= 360.;
               if(new_lon < -360.) new_lon += 360.;
 
-                SetViewPoint ( new_lat, new_lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, FORCE_SUBSAMPLE );
+                SetViewPoint ( new_lat, new_lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
                 Refresh ( false );
 
                 vLat = new_lat;
@@ -5894,14 +5795,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         }
 #endif
 
-        //    pause any underway background rendering operation
-        //    and re-trigger the one-shot timer to be sure
-
-        if ( m_bBackRender )
-        {
-                m_bbr_paused = true;
-                pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
-        }
 
         //  Kick off the Rotation control timer
         if(g_bCourseUp)
@@ -5915,9 +5808,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         mouse_y = y;
         mouse_leftisdown = event.LeftIsDown();
 
-//    Retrigger the rescale timer
-        if ( pRescaleTimer->IsRunning() )
-                pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
 
 //      Retrigger the route leg popup timer
         if(m_pRolloverWin && m_pRolloverWin->IsShown())
@@ -6043,33 +5933,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                               m_wheel_y = y;
                         }
 
-
-
-/*
-                        bool b_zoom_moved = false;
-
-                        double wheel_lat = m_cursor_lat;
-                        double wheel_lon = m_cursor_lon;
-
-                        if(warp_flag)           // there may be an unprocessed deferred warp...
-                        {
-                              wheel_lat = 0.;
-                              wheel_lon = 0.;
-                        }
-
-                        if(wheel_dir > 0)
-                              b_zoom_moved = ZoomCanvasIn(wheel_lat, wheel_lon);
-                        else if(wheel_dir < 0)
-                              b_zoom_moved = ZoomCanvasOut(wheel_lat, wheel_lon);
-
-                        if(b_zoom_moved && !warp_flag)
-                        {
-                              WarpPointerDeferred(m_canvas_width/2, m_canvas_height/2);          // move the mouse pointer to zoomed location
-                              vLat = m_cursor_lat;
-                              vLon = m_cursor_lon;
-                        }
-*/
-
                         ClearbFollow();      // update the follow flag
 
                   }
@@ -6162,59 +6025,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         if(m_pAISRolloverWin && m_pAISRolloverWin->IsShown() && !showRollover)
               m_pAISRolloverWin->Hide();
 
-#if 0  //  Moved to one-shot timer event
-      // Route info rollover
-      // Show the route segment info
-      SelectItem *pFindRouteSeg;
-      pFindRouteSeg = pSelect->FindSelection ( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT, SelectRadius );
-      if (pFindRouteSeg)
-      {
-            Route *pr = (Route *)pFindRouteSeg->m_pData3;
-            if(pr && pr->IsVisible())
-            {
-                  showRollover = true;
-
-                  if(NULL == m_pRolloverWin)
-                  {
-                        m_pRolloverWin = new RolloverWin(this);
-                        m_pRolloverWin->Hide();
-                  }
-
-                  if(!m_pRolloverWin->IsShown())
-                  {
-                        wxString s;
-                        RoutePoint *segShow_point_a = ( RoutePoint * ) pFindRouteSeg->m_pData1;
-                        RoutePoint *segShow_point_b = ( RoutePoint * ) pFindRouteSeg->m_pData2;
-
-                        double brg, dist;
-                        DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
-                                    segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
-
-                        s.Append(_("Leg: from "));
-                        s.Append(segShow_point_a->m_MarkName);
-                        s.Append(_(" to "));
-                        s.Append(segShow_point_b->m_MarkName);
-                        s.Append(_T("\n"));
-                        wxString t;
-                        if ( dist > 0.1 )
-                              t.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
-                        else
-                              t.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.);
-                        s.Append(t);
-
-                        m_pRolloverWin->SetString(s);
-
-                        wxSize win_size = GetSize();
-                        if(console->IsShown())
-                              win_size.x -= console->GetSize().x;
-                        m_pRolloverWin->SetBestPosition(x, y, 16, 16, win_size);
-                        m_pRolloverWin->SetBitmap();
-                        m_pRolloverWin->Refresh();
-                        m_pRolloverWin->Show();
-                  }
-            }
-      }
-#endif
 
 
 //          Mouse Clicks
@@ -6594,14 +6404,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                 last_drag.x = mx;
                                 last_drag.y = my;
 
-//    if LODEF->HIDEF panning is enabled....
-                                if ( m_bSubsamp )
-                                {
-                                      current_scale_method = RENDER_LODEF;
-//    Retrigger the rescale timer
-                                      pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
-                                }
-
                                 Refresh ( false );
                         }
                 }
@@ -6624,7 +6426,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                     pr->m_bIsBeingEdited = false;
 
                                     pConfig->UpdateRoute ( pr );
-//                                    pConfig->UpdateWayPoint ( m_pRoutePointEditTarget );
                               }
                         }
 
@@ -6714,7 +6515,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                               if(dlon > 180.) dlon -= 360.;
                                               if(dlon < -180.) dlon += 360.;
 
-                                              SetViewPoint ( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, FORCE_SUBSAMPLE );
+                                              SetViewPoint ( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
                                               vLat = dlat;
                                               vLon = dlon;
 
@@ -7351,7 +7152,6 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
         wxString *QueryResult;
 
-//        double deltax;          // Flav: for CM930ffset only if use context menu ID_DEF_MENU_SET_CM93OFFSET
 
 #ifdef USE_S57
         float SelectRadius;
@@ -8506,7 +8306,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
         if(VPoint.b_quilt)          // quilted
         {
-            if(!m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_region, current_scale_method ))
+            if(!m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_region ))
             { return;}
         }
         else                  // not quilted
@@ -8519,7 +8319,8 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               }
 
               Current_Ch->SetVPParms(svp);
-              Current_Ch->RenderViewOnDC(temp_dc, svp, current_scale_method);
+//              Current_Ch->RenderViewOnDC(temp_dc, svp, current_scale_method);
+              Current_Ch->RenderRegionViewOnDC(temp_dc, svp, chart_get_region);
         }
 
         if(!temp_dc.IsOk())
