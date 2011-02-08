@@ -239,9 +239,7 @@ class DECL_EXP PlugInChartBase : public wxObject
 
             virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, const wxRegion &Region);
 
-            virtual void SetVPParms(const PlugIn_ViewPort &vpt);
             virtual bool AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
-            virtual bool IsRenderDelta(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
 
             virtual void GetValidCanvasRegion(const PlugIn_ViewPort& VPoint, wxRegion *pValidRegion);
 

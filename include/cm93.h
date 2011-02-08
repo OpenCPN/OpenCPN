@@ -411,7 +411,6 @@ class cm93compchart : public s57chart
             ThumbData *GetThumbData() {return (ThumbData *)NULL;}
 
             bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-            bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
             bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
@@ -431,7 +430,6 @@ class cm93compchart : public s57chart
             void UpdateLUPs(s57chart *pOwner);
             void ForceEdgePriorityEvaluate(void);
             ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
-
 
       private:
             void InvalidateCache();

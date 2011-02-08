@@ -216,6 +216,7 @@ ChartBase::ChartBase()
       Chart_Error_Factor = 0;
 
       m_Chart_Scale = 10000;              // a benign value
+      m_Chart_Skew = 0.0;
 
       m_nCOVREntries = 0;
       m_pCOVRTable = NULL;
@@ -245,11 +246,12 @@ ChartBase::~ChartBase()
       free( m_pCOVRTablePoints );
 
 }
-
+/*
 int ChartBase::Continue_BackgroundHiDefRender(void)
 {
       return BR_DONE_NOP;            // signal "done, no refresh"
 }
+*/
 
 // ============================================================================
 // ChartDummy implementation
@@ -260,7 +262,7 @@ ChartDummy::ChartDummy()
       m_pBM = NULL;
       m_ChartType = CHART_TYPE_DUMMY;
       m_ChartFamily = CHART_FAMILY_UNKNOWN;
-
+      m_Chart_Scale = 22000000;
 
       m_FullPath = _("No Chart Available");
       m_Description = m_FullPath;
@@ -288,21 +290,11 @@ ThumbData *ChartDummy::GetThumbData(int tnx, int tny, float lat, float lon)
       return (ThumbData *)NULL;
 }
 
-bool ChartDummy::UpdateThumbData(float lat, float lon)
+bool ChartDummy::UpdateThumbData(double lat, double lon)
 {
       return FALSE;
 }
 
-
-int ChartDummy::GetNativeScale()
-{
-      return 22000000;
-}
-
-wxString ChartDummy::GetPubDate()
-{
-      return _T("");
-}
 
 bool ChartDummy::GetChartExtent(Extent *pext)
 {
@@ -342,15 +334,12 @@ bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 }
 
 
-void ChartDummy::SetVPParms(const ViewPort &vpt)
-{
-}
-
 bool ChartDummy::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       return false;
 }
 
+/*
 bool ChartDummy::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       if((vp_last.clat == vp_proposed.clat)  &&
@@ -360,7 +349,7 @@ bool ChartDummy::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
       else
             return true;
 }
-
+*/
 
 void ChartDummy::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
@@ -524,7 +513,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
                         i = tkz.GetPosition();
                         float fcs;
                         sscanf(&buffer[i], "%f,", &fcs);
-                        Chart_Skew = fcs;
+                        m_Chart_Skew = fcs;
                   }
             }
 
@@ -995,7 +984,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               i = tkz.GetPosition();
                               float fcs;
                               sscanf(&buffer[i], "%f,", &fcs);
-                              Chart_Skew = fcs;
+                              m_Chart_Skew = fcs;
                         }
                         else if(token.IsSameAs(_T("UN"), TRUE))                  // extract Depth Units
                         {
@@ -1422,7 +1411,7 @@ ChartBaseBSB::ChartBaseBSB()
 
 
       bUseLineCache = true;
-      Chart_Skew = 0.0;
+      m_Chart_Skew = 0.0;
 
       pPixCache = NULL;
       pPixCacheBackground = NULL;
@@ -2246,7 +2235,7 @@ ThumbData *ChartBaseBSB::GetThumbData(int tnx, int tny, float lat, float lon)
       return pThumbData;
 }
 
-bool ChartBaseBSB::UpdateThumbData(float lat, float lon)
+bool ChartBaseBSB::UpdateThumbData(double lat, double lon)
 {
 //    Plot the supplied Lat/Lon on the thumbnail
 //  Return TRUE if the pixel location of ownship has changed
@@ -2759,7 +2748,7 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRec
 }
 
 
-void ChartBaseBSB::SetVPParms(const ViewPort &vpt)
+void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
 {
       //    Calculate the potential datum offset parameters for this viewport, if not WGS84
 
@@ -2873,6 +2862,7 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       return (ret_val > 0);
 }
 
+/*
 bool ChartBaseBSB::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       if ( !vp_last.IsValid()  ||   !vp_proposed.IsValid() )
@@ -2885,7 +2875,7 @@ bool ChartBaseBSB::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 
       return ((rlast != rthis) || !(IsCacheValid()) || (vp_last.view_scale_ppm != vp_proposed.view_scale_ppm));
 }
-
+*/
 
 void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
@@ -3370,6 +3360,8 @@ int s_dc;
 
 bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
+      SetVPRasterParms(VPoint);
+
       wxRegion rgn(0,0,VPoint.pix_width, VPoint.pix_height);
 
       bool bsame_region = (rgn == m_last_region);          // only want to do this once
@@ -3391,6 +3383,8 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 
 bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
+      SetVPRasterParms(VPoint);
+
       wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
 //      double factor = ((double)Rsrc.width)/((double)dest.width);
       double factor = m_raster_scale_factor;
@@ -3532,8 +3526,8 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
 
-           if(ren_type == RENDER_LODEF)
-                  Initialize_BackgroundHiDefRender(VPoint);
+//           if(ren_type == RENDER_LODEF)
+//                  Initialize_BackgroundHiDefRender(VPoint);
 
            return true;
      }
@@ -3548,7 +3542,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
                   //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
 
-           Initialize_BackgroundHiDefRender(VPoint);
+//           Initialize_BackgroundHiDefRender(VPoint);
 
            return bnewview;
      }
@@ -3939,7 +3933,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 }
 
 
-
+#if 0
 bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
 {
     if(br_Rsrc == Rsrc)
@@ -4107,6 +4101,7 @@ int ChartBaseBSB::Continue_BackgroundHiDefRender(void)
     return BR_DONE_REFRESH;                        // done
 }
 
+#endif
 
 bool ChartBaseBSB::GetChartBits(wxRect& source, unsigned char *pPix, int sub_samp)
 {
@@ -4876,7 +4871,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
         vp.pix_width = 1000;
         vp.pix_height = 1000;
 //        vp.rv_rect = wxRect(0,0, vp.pix_width, vp.pix_height);
-        SetVPParms(vp);
+        SetVPRasterParms(vp);
 
 
         double xpl_err_max = 0;
@@ -4944,7 +4939,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
               wxLogMessage(msg);
 
               bHaveEmbeddedGeoref = false;
-              SetVPParms(vp);
+              SetVPRasterParms(vp);
 
               xpl_err_max = 0;
               ypl_err_max = 0;

@@ -71,13 +71,6 @@ typedef enum InitReturn
 }_InitReturn;
 
 
-enum
-{
-      BR_CONTINUE,            // Continue background render
-      BR_DONE_REFRESH,        // Background render is done, need a repaint
-      BR_DONE_NOP             // Background render is done, no repaint needed
-};
-
 
 class ThumbData
 {
@@ -148,20 +141,19 @@ public:
 //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon) = 0;
       virtual ThumbData *GetThumbData() = 0;
-      virtual bool UpdateThumbData(float lat, float lon) = 0;
+      virtual bool UpdateThumbData(double lat, double lon) = 0;
 
-      virtual int GetNativeScale() = 0;
       virtual double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom) = 0;
       virtual double GetNormalScaleMax(double canvas_scale_factor, int canvas_width) = 0;
 
-      virtual double GetChartSkew() = 0;
       virtual bool GetChartExtent(Extent *pext) = 0;
 
-      virtual OcpnProjType GetChartProjectionType(){ return m_projection;}
 
-      virtual wxString GetPubDate(){ return m_PubYear;}
+      virtual OcpnProjType GetChartProjectionType(){ return m_projection;}
       virtual wxDateTime GetEditionDate(void){ return m_EdDate;}
 
+      virtual wxString GetPubDate(){ return m_PubYear;}
+      virtual int GetNativeScale(){ return m_Chart_Scale;}
       wxString GetFullPath() const { return m_FullPath;}
       wxString GetName(){ return m_Name;}
       wxString GetDescription() { return m_Description;}
@@ -171,11 +163,11 @@ public:
       wxString GetSoundingsDatum(){ return m_SoundingsDatum;}
       wxString GetDatumString(){ return m_datum_str;}
       wxString GetExtraInfo(){ return m_ExtraInfo; }
-
+      double GetChart_Error_Factor(){ return Chart_Error_Factor; }
       ChartTypeEnum GetChartType(){ return m_ChartType;}
+      ChartFamilyEnum GetChartFamily(){ return m_ChartFamily;}
+      double GetChartSkew(){ return m_Chart_Skew; }
 
-      virtual int GetCOVREntries(){ return  m_nCOVREntries; }
-      virtual int GetCOVRTablePoints(int iTable) { return m_pCOVRTablePoints[iTable]; }
 
       virtual ChartDepthUnitType GetDepthUnitType(void) { return m_depth_unit_id;}
 
@@ -184,10 +176,7 @@ public:
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                         const wxRegion &Region) = 0;
 
-      virtual void SetVPParms(const ViewPort &vpt) = 0;
-
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
-      virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion) = 0;
 
@@ -195,13 +184,14 @@ public:
 
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm) = 0;
 
+      virtual int GetCOVREntries(){ return  m_nCOVREntries; }
+      virtual int GetCOVRTablePoints(int iTable) { return m_pCOVRTablePoints[iTable]; }
       virtual int  GetCOVRTablenPoints(int iTable){ return m_pCOVRTablePoints[iTable]; }
       virtual float *GetCOVRTableHead(int iTable){ return m_pCOVRTable[iTable]; }
 
-      //    Background HiDef Render Methods
-      virtual int Continue_BackgroundHiDefRender(void);
+protected:
 
-
+      int               m_Chart_Scale;
       ChartTypeEnum     m_ChartType;
       ChartFamilyEnum   m_ChartFamily;
 
@@ -212,11 +202,14 @@ public:
       wxString          m_SE;
       wxString          m_SoundingsDatum;
       wxString          m_datum_str;
-
+      wxString          m_ExtraInfo;
       wxString          m_PubYear;
       wxString          m_DepthUnits;
 
-      wxString          m_ExtraInfo;
+      OcpnProjType      m_projection;
+      ChartDepthUnitType m_depth_unit_id;
+
+      wxDateTime        m_EdDate;
 
       wxBitmap          *pcached_bitmap;
 
@@ -227,8 +220,10 @@ public:
 
       double            Chart_Error_Factor;
 
-      ChartDepthUnitType m_depth_unit_id;
+      double            m_lon_datum_adjust;             // Add these numbers to WGS84 position to obtain internal chart position
+      double            m_lat_datum_adjust;
 
+      double            m_Chart_Skew;
 
 
       //    Chart region coverage information
@@ -243,16 +238,6 @@ public:
       float       **m_pCOVRTable;                       // table of pointers to list of floats describing valid COVR
 
       //    Todo  Define invalid COVR regions
-
-protected:
-      int               m_Chart_Scale;
-      wxDateTime        m_EdDate;
-
-      double            m_lon_datum_adjust;             // Add these numbers to WGS84 position to obtain internal chart position
-      double            m_lat_datum_adjust;
-
-      OcpnProjType      m_projection;
-
 
 };
 
@@ -273,24 +258,17 @@ public:
 //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
       virtual ThumbData *GetThumbData() {return pThumbData;}
-      virtual bool UpdateThumbData(float lat, float lon);
+      virtual bool UpdateThumbData(double lat, double lon);
 
-      virtual int GetNativeScale();
       double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom){return 1.0;}
       double GetNormalScaleMax(double canvas_scale_factor, int canvas_width){ return 2.0e7;}
 
-      virtual wxString GetPubDate();
-      virtual double GetChartSkew(){ return 0.0;}
       virtual bool GetChartExtent(Extent *pext);
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                         const wxRegion &Region);
 
-      virtual void SetVPParms(const ViewPort &vpt);
-
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-
-      virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
@@ -326,24 +304,17 @@ class ChartPlugInWrapper : public ChartBase
 //    Accessors
             virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
             virtual ThumbData *GetThumbData();
-            virtual bool UpdateThumbData(float lat, float lon);
+            virtual bool UpdateThumbData(double lat, double lon);
 
-            virtual int GetNativeScale();
             double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
             double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
-            virtual wxString GetPubDate();
-            virtual double GetChartSkew();
             virtual bool GetChartExtent(Extent *pext);
 
             virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                               const wxRegion &Region);
 
-            virtual void SetVPParms(const ViewPort &vpt);
-
             virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-
-            virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
             virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
@@ -358,7 +329,6 @@ class ChartPlugInWrapper : public ChartBase
 
 
       private:
-            double            m_Chart_Skew;
             PlugInChartBase *m_ppicb;
             wxObject          *m_ppo;
 };

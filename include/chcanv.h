@@ -387,11 +387,6 @@ private:
       wxRect      ais_draw_rect;
       wxRect      alert_draw_rect;          // pjotrc 2010.02.22
 
-      bool              m_bBackRender;
-      bool              m_bbr_paused;
-      ChartBase         *br_Ch;
-      ChartBase         *m_RescaleCandidate;
-
       wxBitmap    *proute_bm;          // a bitmap and dc used to calculate route bounding box
       wxMemoryDC  m_dc_route;         // seen in mouse->edit->route
 

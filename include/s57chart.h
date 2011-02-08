@@ -121,16 +121,13 @@ public:
 
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
       virtual ThumbData *GetThumbData() {return pThumbData;}
-      bool UpdateThumbData(float lat, float lon);
+      bool UpdateThumbData(double lat, double lon);
 
       virtual int GetNativeScale(){return m_Chart_Scale;}
       virtual double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
       virtual double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
       void SetNativeScale(int s){m_Chart_Scale = s;}
-
-      double GetChartSkew(){return 0.0;}
-
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
@@ -144,7 +141,7 @@ public:
       virtual void SetVPParms(const ViewPort &vpt);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-      virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
+//      virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm){ return target_scale_ppm; }
 

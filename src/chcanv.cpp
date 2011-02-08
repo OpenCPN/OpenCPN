@@ -1460,7 +1460,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       {
             m_quilt_depth_unit =  pc->GetDepthUnits();
 
-            if(pc->m_ChartFamily == CHART_FAMILY_VECTOR)
+            if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
             {
                   int units = ps52plib->m_nDepthUnitDisplay;
                   switch(units)
@@ -1486,7 +1486,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             {
                   wxString du = pc->GetDepthUnits();
 
-                  if(pc->m_ChartFamily == CHART_FAMILY_VECTOR)
+                  if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
                   {
                         int units = ps52plib->m_nDepthUnitDisplay;
                         switch(units)
@@ -1530,7 +1530,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             ChartBase *pc = ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
             if(pc)
             {
-                  m_max_error_factor = wxMax(m_max_error_factor, pc->Chart_Error_Factor);
+                  m_max_error_factor = wxMax(m_max_error_factor, pc->GetChart_Error_Factor());
             }
       }
 
@@ -1580,7 +1580,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             bool rendered_base = false;
             while(pch && !rendered_base)
             {
-                       pch->SetVPParms(vp);
+//                       pch->SetVPParms(vp);
 
                         QuiltPatch *pqp = GetCurrentPatch();
                         if(pqp->b_Valid)
@@ -1639,7 +1639,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
 
             while(pch)
             {
-                        pch->SetVPParms(vp);
+//                        pch->SetVPParms(vp);
 
                         QuiltPatch *pqp = GetCurrentPatch();
                         if(pqp->b_Valid)
@@ -1774,12 +1774,6 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             if(!dc.IsOk())                  // some error, probably bad charts, to be disabled on next compose
             {
                   SubstituteClearDC(dc, vp);
-/*
-                  dc.SelectObject(*m_pBM);
-                  dc.SetBackground(*wxBLACK_BRUSH);
-                  dc.Clear();
-                  m_covered_region.Clear();
-*/
             }
 
             return true;
@@ -1787,12 +1781,6 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
       else              // no charts yet, or busy....
       {
             SubstituteClearDC(dc, vp);
-/*
-            dc.SelectObject(*m_pBM);
-            dc.SetBackground(*wxBLACK_BRUSH);
-            dc.Clear();
-            m_covered_region.Clear();
-*/
             return true;                // no quilt yet...
       }
 }
@@ -2152,8 +2140,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         warp_flag = false;
         pss_overlay_bmp = NULL;
         pss_overlay_mask = NULL;
-        m_bBackRender = false;
-        m_bbr_paused = false;
         m_bChartDragging = false;
         m_bMeasure_Active = false;
         m_pMeasureRoute = NULL;
@@ -2163,7 +2149,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_bCM93MeasureOffset_Active = false;
         m_pCM93MeasureOffsetRoute = NULL;
         m_pCIWin = NULL;
-        m_RescaleCandidate = NULL;
 
         m_pSelectedRoute              = NULL;
         m_pSelectedTrack              = NULL;
@@ -3110,7 +3095,7 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && (Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER) &&
+                if ( Current_Ch && (Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER) &&
                      ((( fabs(VPoint.rotation) < .01) && !g_bskew_comp) ||
                      (Current_Ch->GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR)) )
 
@@ -3153,7 +3138,7 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 // then fall back to mercator estimate from canvas parameters
                 bool bUseMercator = true;
 
-                if ( Current_Ch && (Current_Ch->m_ChartFamily == CHART_FAMILY_RASTER) &&
+                if ( Current_Ch && (Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER) &&
                      ((( fabs(VPoint.rotation) < .01) && !g_bskew_comp) ||
                      (Current_Ch->GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR)) )
 
@@ -3169,11 +3154,7 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                               //    This is a Raster chart....
                               //    If the VP is changing, the raster chart parameters may not yet be setup
                               //    So do that before accessing the chart's embedded georeferencing
-                              wxRect Rtest;
-                              Cur_BSB_Ch->ComputeSourceRectangle(VPoint, &Rtest);
-                              if(Cur_BSB_Ch->GetSourceRect() != Rtest)
-                                    Current_Ch->SetVPParms(VPoint);
-
+                              Cur_BSB_Ch->SetVPRasterParms(VPoint);
 
                               double slat, slon;
                               if ( 0 == Cur_BSB_Ch->vp_pix_to_latlong ( VPoint, x, y, &slat, &slon ) )
@@ -3669,9 +3650,6 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         // Restore the rotation angle
         VPoint.SetRotationAngle(rotation_save);
 
-        m_RescaleCandidate = NULL;
-
-
         if ( !VPoint.b_quilt && Current_Ch )
         {
               //  Allow the chart to adjust the new ViewPort for performance optimization
@@ -3679,12 +3657,23 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             Current_Ch->AdjustVP(last_vp, VPoint);
 
             // If there is a sensible change in the chart render, refresh the whole screen
-            if(Current_Ch->IsRenderDelta(last_vp, VPoint))
+            if (( !last_vp.IsValid()) || (last_vp.view_scale_ppm != VPoint.view_scale_ppm))
+            {
                   Refresh(false);
+            }
+            else
+            {
+                  wxPoint cp_last, cp_this;
+                  GetCanvasPointPix ( last_vp.clat, last_vp.clon, &cp_last );
+                  GetCanvasPointPix ( VPoint.clat, VPoint.clon, &cp_this );
 
+                  if(cp_last != cp_this)
+                        Refresh(false);
+            }
 
-             m_RescaleCandidate = Current_Ch;
         }
+//            if(Current_Ch->IsRenderDelta(last_vp, VPoint))
+//                  Refresh(false);
 
 
 
@@ -3774,38 +3763,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
                         int target_scale = cte_ref.GetScale();
                         int target_type = cte_ref.GetChartType();
                         int candidate_stack_index;
-/*
-                        candidate_stack_index = pCurrentStack->nEntry-1;
-                        while(candidate_stack_index  >= 0)
-                        {
-                              const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(pCurrentStack->GetDBIndex(candidate_stack_index));
-                              int candidate_scale = cte_candidate.GetScale();
-                              int candidate_type = cte_candidate.GetChartType();
 
-                              if((candidate_scale <= target_scale) && (candidate_type == target_type))
-                                    break;
-
-                              candidate_stack_index --;
-                        }
-
-                        //    If that did not work, look for a chart of just smaller scale and same type
-                        if(candidate_stack_index < 0)
-                        {
-                              candidate_stack_index = 0;
-                              while(candidate_stack_index  <= pCurrentStack->nEntry-1)
-                              {
-                                    const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(pCurrentStack->GetDBIndex(candidate_stack_index));
-                                    int candidate_scale = cte_candidate.GetScale();
-                                    int candidate_type = cte_candidate.GetChartType();
-
-                                    if((candidate_scale >= target_scale) && (candidate_type == target_type))
-                                          break;
-
-                                    candidate_stack_index ++;
-                              }
-                        }
-
-*/
                   //    reset the ref chart in a way that does not lead to excessive underzoom, for performance reasons
                   //    Try to find a chart that is the same type, and has a scale of just smaller than the current ref chart
 
@@ -3860,7 +3818,6 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
               //  This will normally be only a few pixels adjustment...
                   m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
 
-                  m_RescaleCandidate = m_pQuilt->GetLargestScaleChart();
             }
 
             VPoint.skew = 0.;                                     // Quilting supports 0 Skew
@@ -3868,16 +3825,6 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         }
 
 
-        //    If requested by sample_mode = FORCE_SUBSAMPLE, then
-        //    force the scale method to LODEF, rescale enabled
-
-/*
-        if( !m_bBackRender && !pRescaleTimer->IsRunning() &&  m_RescaleCandidate )
-        {
-              current_scale_method = RENDER_LODEF;
-              pRescaleTimer->Start ( m_rescale_timer_msec, wxTIMER_ONE_SHOT );
-        }
-*/
         //  Maintain global vLat/vLon
         vLat = VPoint.clat;
         vLon = VPoint.clon;
@@ -7004,21 +6951,21 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                         pdef_menu->AppendSeparator();
                   }
 
-                  if (Current_Ch && ( Current_Ch->m_ChartType == CHART_TYPE_CM93COMP ))
+                  if (Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ))
                   {
                         pdef_menu->AppendCheckItem(ID_DEF_MENU_CM93ZOOM, _("Enable CM93 Detail Slider"));
                         if(pCM93DetailSlider)
                               pdef_menu->Check(ID_DEF_MENU_CM93ZOOM, pCM93DetailSlider->IsShown());
                   }
 
-                  if (Current_Ch && ( Current_Ch->m_ChartFamily == CHART_FAMILY_VECTOR ))
+                  if (Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ))
                         pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
 
               }
               else
               {
                     ChartBase *pChartTest = m_pQuilt->GetChartAtPix(wxPoint(x, y));
-                    if(pChartTest && (pChartTest->m_ChartFamily == CHART_FAMILY_VECTOR ))
+                    if(pChartTest && (pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ))
                         pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
 
                     if((VPoint.b_quilt) &&
@@ -7435,7 +7382,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                 case ID_DEF_MENU_QUERY:
                 {
                       ChartBase *target_chart;
-                      if (Current_Ch && ( Current_Ch->m_ChartFamily == CHART_FAMILY_VECTOR ))
+                      if (Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ))
                             target_chart = Current_Ch;
                       else if(VPoint.b_quilt)
                             target_chart = m_pQuilt->GetChartAtPix(wxPoint(popx, popy));
@@ -7906,7 +7853,7 @@ void ChartCanvas::RenderAllChartOutlines ( wxDC *pdc, ViewPort& vp, bool bdraw_m
 
 
  //        On CM93 Composite Charts, draw the outlines of the next smaller scale cell
-        if(Current_Ch && (Current_Ch->m_ChartType == CHART_TYPE_CM93COMP))
+        if(Current_Ch && (Current_Ch->GetChartType() == CHART_TYPE_CM93COMP))
         {
               cm93compchart *pch = (cm93compchart *)Current_Ch;
               if(pch)
@@ -8318,7 +8265,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                     return;
               }
 
-              Current_Ch->SetVPParms(svp);
+//              Current_Ch->SetVPParms(svp);
 //              Current_Ch->RenderViewOnDC(temp_dc, svp, current_scale_method);
               Current_Ch->RenderRegionViewOnDC(temp_dc, svp, chart_get_region);
         }
@@ -8501,7 +8448,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                     {
                           depth_unit_type = Current_Ch->GetDepthUnitType();
 
-                          if(Current_Ch->m_ChartFamily == CHART_FAMILY_VECTOR)
+                          if(Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR)
                                 depth_unit_type =  ps52plib->m_nDepthUnitDisplay + 1;
                     }
               }
@@ -8539,7 +8486,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                         if(Current_Ch)
                         {
                   //    Special case for cm93
-                              if(Current_Ch->m_ChartType == CHART_TYPE_CM93COMP)
+                              if(Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
                               {
                                     if(zoom_factor > 8.0)
                                     {

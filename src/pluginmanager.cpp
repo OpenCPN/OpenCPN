@@ -1264,14 +1264,8 @@ bool PlugInChartBase::RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort
 { return false;}
 
 
-void PlugInChartBase::SetVPParms(const PlugIn_ViewPort &vpt)
-{}
-
 bool PlugInChartBase::AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed)
 { return false;}
-
-bool PlugInChartBase::IsRenderDelta(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed)
-{ return true;}
 
 void PlugInChartBase::GetValidCanvasRegion(const PlugIn_ViewPort& VPoint, wxRegion *pValidRegion)
 {}
@@ -1339,12 +1333,10 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
                   m_ExtraInfo = m_ppicb->GetExtraInfo();
                   Chart_Error_Factor = m_ppicb->GetChartErrorFactor();
                   m_depth_unit_id = (ChartDepthUnitType)m_ppicb->GetDepthUnitId();
+                  m_Chart_Skew = m_ppicb->GetChartSkew();
+                  m_Chart_Scale = m_ppicb->GetNativeScale();
 
                   bReadyToRender = m_ppicb->IsReadyToRender();
-
-                  //    These member elements are in the derived chart (this)
-                  m_Chart_Scale = m_ppicb->GetNativeScale();
-                  m_Chart_Skew = m_ppicb->GetChartSkew();
 
             }
 
@@ -1472,14 +1464,9 @@ ThumbData *ChartPlugInWrapper::GetThumbData()
       return pThumbData;
 }
 
-bool ChartPlugInWrapper::UpdateThumbData(float lat, float lon)
+bool ChartPlugInWrapper::UpdateThumbData(double lat, double lon)
 {
       return true;
-}
-
-int ChartPlugInWrapper::GetNativeScale()
-{
-      return m_Chart_Scale;
 }
 
 double ChartPlugInWrapper::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom)
@@ -1498,16 +1485,6 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
             return 2.0e7;
 }
 
-wxString ChartPlugInWrapper::GetPubDate()
-{
-      return _T("2011");
-}
-
-double ChartPlugInWrapper::GetChartSkew()
-{
-      return m_Chart_Skew;
-}
-
 bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                               const wxRegion &Region)
 {
@@ -1520,15 +1497,6 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
             return false;
 }
 
-void ChartPlugInWrapper::SetVPParms(const ViewPort &vpt)
-{
-      if(m_ppicb)
-      {
-            PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&vpt);
-            m_ppicb->SetVPParms(pivp);
-      }
-}
-
 bool ChartPlugInWrapper::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       if(m_ppicb)
@@ -1539,18 +1507,6 @@ bool ChartPlugInWrapper::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       }
       else
             return false;
-}
-
-bool ChartPlugInWrapper::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
-{
-      if(m_ppicb)
-      {
-            PlugIn_ViewPort pivp_last = CreatePlugInViewport( &vp_last);
-            PlugIn_ViewPort pivp_proposed = CreatePlugInViewport( &vp_proposed);
-            return m_ppicb->IsRenderDelta(pivp_last, pivp_proposed);
-      }
-      else
-            return true;
 }
 
 void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)

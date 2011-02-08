@@ -4852,7 +4852,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       {
         if(Current_Ch)
         {
-           if(Current_Ch->Chart_Error_Factor > 0.02)
+           if(Current_Ch->GetChart_Error_Factor() > 0.02)
                cc1->SetOwnShipState(SHIP_LOWACCURACY);
         }
       }
@@ -5178,7 +5178,7 @@ void MyFrame::UpdateToolbarStatusWindow(ChartBase *pchart, bool bUpdate)
 
       if(pchart)
       {
-            if(pchart->Chart_Error_Factor > .02)                                       // X percent error
+            if(pchart->GetChart_Error_Factor() > .02)                                       // X percent error
             {
                   brush = wxBrush(GetGlobalColor(_T("CHYLW")), wxSOLID);   // loud yellow
 
@@ -5906,8 +5906,8 @@ bool MyFrame::DoChartUpdate(void)
         ChartFamilyEnum new_open_family;
         if(pLast_Ch)
         {
-              new_open_type = pLast_Ch->m_ChartType;
-              new_open_family = pLast_Ch->m_ChartFamily;
+              new_open_type = pLast_Ch->GetChartType();
+              new_open_family = pLast_Ch->GetChartFamily();
         }
         else
         {
@@ -5935,7 +5935,7 @@ bool MyFrame::DoChartUpdate(void)
                 }
 
                 if(Current_Ch)
-                    if(Current_Ch->m_ChartType != CHART_TYPE_DUMMY)
+                    if(Current_Ch->GetChartType() != CHART_TYPE_DUMMY)
                         bNewChart = true;
 
                 Current_Ch = pDummyChart;
@@ -6044,7 +6044,7 @@ bool MyFrame::DoChartUpdate(void)
                       }
 
                       if(pLast_Ch)
-                         if(pLast_Ch->m_ChartType != CHART_TYPE_DUMMY)
+                         if(pLast_Ch->GetChartType() != CHART_TYPE_DUMMY)
                                bNewChart = true;
 
                       pProposed = pDummyChart;

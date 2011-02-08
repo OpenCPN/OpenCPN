@@ -1096,6 +1096,7 @@ s57chart::s57chart()
                     razRules[i][j] = NULL;
 
     m_Chart_Scale = 1;                              // Will be fetched during Init()
+    m_Chart_Skew = 0.0;
 
     pDIB = NULL;
     m_pCloneBM = NULL;
@@ -1509,6 +1510,7 @@ bool s57chart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       return false;
 }
 
+/*
 bool s57chart::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       double last_center_easting, last_center_northing, this_center_easting, this_center_northing;
@@ -1520,6 +1522,7 @@ bool s57chart::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 
       return((dx !=  0) || (dy != 0) || !(IsCacheValid()) || (vp_proposed.view_scale_ppm != vp_last.view_scale_ppm));
 }
+*/
 
 ThumbData *s57chart::GetThumbData(int tnx, int tny, float lat, float lon)
 {
@@ -1552,22 +1555,22 @@ ThumbData *s57chart::GetThumbData(int tnx, int tny, float lat, float lon)
         return pThumbData;
 }
 
-bool s57chart::UpdateThumbData(float lat, float lon)
+bool s57chart::UpdateThumbData(double lat, double lon)
 {
     //  Plot the passed lat/lon at the thumbnail bitmap scale
     //  Using simple linear algorithm.
     int test_x, test_y;
     if( pThumbData->pDIBThumb)
     {
-          float lat_top =   m_FullExtent.NLAT;
-          float lat_bot =   m_FullExtent.SLAT;
-          float lon_left =  m_FullExtent.WLON;
-          float lon_right = m_FullExtent.ELON;
+          double lat_top =   m_FullExtent.NLAT;
+          double lat_bot =   m_FullExtent.SLAT;
+          double lon_left =  m_FullExtent.WLON;
+          double lon_right = m_FullExtent.ELON;
 
                 // Build the scale factors just as the thumbnail was built
-        float ext_max = fmax((lat_top - lat_bot), (lon_right - lon_left));
+          double ext_max = fmax((lat_top - lat_bot), (lon_right - lon_left));
 
-        float thumb_view_scale_ppm = (S57_THUMB_SIZE/ ext_max) / (1852 * 60);
+          double thumb_view_scale_ppm = (S57_THUMB_SIZE/ ext_max) / (1852 * 60);
         double east, north;
         toSM(lat, lon, (lat_top + lat_bot) / 2., (lon_left + lon_right) / 2., &east, &north);
 
@@ -1656,6 +1659,8 @@ void s57chart::SetLinePriorities(void)
 
 bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
+      SetVPParms(VPoint);
+
       bool force_new_view = false;
 
       if(Region != m_last_Region)
@@ -1731,6 +1736,8 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
 bool s57chart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
 //    CALLGRIND_START_INSTRUMENTATION
+
+    SetVPParms(VPoint);
 
     ps52plib->PrepareForRender();
 

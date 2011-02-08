@@ -4612,6 +4612,7 @@ cm93compchart::cm93compchart()
       m_pcm93chart_current = NULL;
 
       m_cmscale = -1;
+      m_Chart_Skew = 0.0;
 
       m_pDummyBM = NULL;
 }
@@ -5128,12 +5129,16 @@ void cm93compchart::SetVPPositive(ViewPort *pvp)
 
 bool cm93compchart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
+      SetVPParms(VPoint);
+
       return DoRenderRegionViewOnDC(dc, VPoint, Region);
 }
 
 bool cm93compchart::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
       const wxRegion vpr(0,0,VPoint.pix_width, VPoint.pix_height);
+
+      SetVPParms(VPoint);
 
       return DoRenderRegionViewOnDC(dc, VPoint, vpr);
 
@@ -5561,15 +5566,13 @@ VC_Hash& cm93compchart::Get_vc_hash(void)
 
 bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
-//      SetVPParms ( &vp_proposed );                    // This will ensure that the required CM93 cell is loaded
-
-
       if(NULL != m_pcm93chart_current)
             return m_pcm93chart_current->AdjustVP(vp_last, vp_proposed);
       else
             return false;
 }
 
+/*
 bool cm93compchart::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       if(NULL != m_pcm93chart_current)
@@ -5577,7 +5580,7 @@ bool cm93compchart::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
       else
             return true;
 }
-
+*/
 ThumbData *cm93compchart::GetThumbData(int tnx, int tny, float lat, float lon)
 {
       return (ThumbData *)NULL;

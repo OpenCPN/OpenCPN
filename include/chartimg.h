@@ -154,13 +154,11 @@ class  ChartBaseBSB     :public ChartBase
       //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
       virtual ThumbData *GetThumbData() {return pThumbData;}
-      virtual bool UpdateThumbData(float lat, float lon);
+      virtual bool UpdateThumbData(double lat, double lon);
 
       int GetNativeScale(){return m_Chart_Scale;}
       double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
       double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
-
-      double GetChartSkew(){return Chart_Skew;}
 
       virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
 
@@ -169,12 +167,8 @@ class  ChartBaseBSB     :public ChartBase
 
       bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
-      virtual void SetVPParms(const ViewPort &vpt);
-
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
-
-      virtual bool IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed);
 
       void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion  *pValidRegion);
 
@@ -182,15 +176,15 @@ class  ChartBaseBSB     :public ChartBase
 
       void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
-      virtual int Continue_BackgroundHiDefRender(void);
-
-      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
-      wxRect GetSourceRect(){ return Rsrc; }
-
       wxImage *GetImage();
+
+      void SetVPRasterParms(const ViewPort &vpt);
 
 protected:
 //    Methods
+
+      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+      wxRect GetSourceRect(){ return Rsrc; }
 
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
@@ -200,9 +194,6 @@ protected:
       void CreatePaletteEntry(char *buffer, int palette_index);
       PaletteDir GetPaletteDir(void);
       int  *GetPalettePtr(BSB_Color_Capability);
-
-      bool Initialize_BackgroundHiDefRender(const ViewPort &VPoint);
-      bool Finish_BackgroundHiDefRender(void);
 
       double GetClosestValidNaturalScalePPM(double target_scale, double scale_factor_min, double scale_factor_max);
 
@@ -244,7 +235,6 @@ protected:
       int         Size_Y;
       int         m_Chart_DU;
       double      m_cph;
-      double      Chart_Skew;
       double      m_proj_parameter;                     // Mercator:               Projection Latitude
                                                       // Transverse Mercator:    Central Meridian
       double      m_dx;                                 // Pixel scale factors, from KAP header

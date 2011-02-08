@@ -2684,7 +2684,7 @@ bool s52plib::TextRenderCheck ( ObjRazRules *rzRules )
 
       //    An optimization for CM93 charts.
       //    Don't show the text associated with some objects, since CM93 database includes _texto objects aplenty
-      if ( ( rzRules->chart->m_ChartType == CHART_TYPE_CM93 ) || ( rzRules->chart->m_ChartType == CHART_TYPE_CM93COMP ) )
+      if ( ( rzRules->chart->GetChartType() == CHART_TYPE_CM93 ) || ( rzRules->chart->GetChartType() == CHART_TYPE_CM93COMP ) )
       {
             if ( !strncmp ( rzRules->obj->FeatureName, "BUAARE", 6 ) )
                   return false;
