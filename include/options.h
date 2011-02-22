@@ -136,8 +136,8 @@ enum {
         ID_CHECK_LOOKAHEAD,
         ID_SKEWCOMPBOX,
         ID_GARMINHOST,
-        ID_ACTIVATECM93OFFSET, // Flav for CM93Offset
-        ID_ENABLECM93OFFSET,
+//        ID_ACTIVATECM93OFFSET, // Flav for CM93Offset
+//        ID_ENABLECM93OFFSET,
         ID_FILTERNMEA
 
 };
@@ -151,7 +151,7 @@ enum {
 #define     VISIT_CHARTS      16
 #define     LOCALE_CHANGED    32
 #define     TOOLBAR_CHANGED   64
-#define     CM93OFFSET_CHANGED 128          // Flav: for CM93Offset
+//#define     CM93OFFSET_CHANGED 128          // Flav: for CM93Offset
 
 
 #ifndef wxCLOSE_BOX
@@ -241,9 +241,9 @@ public:
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxCheckBox              *pSkewComp;
 // Flav: for CM93Offset
-    wxCheckBox              *pSActivateCM93Offset;
-    wxTextCtrl              *m_pText_CM93OffsetX;
-    wxTextCtrl              *m_pText_CM93OffsetY;
+//    wxCheckBox              *pSActivateCM93Offset;
+//    wxTextCtrl              *m_pText_CM93OffsetX;
+//    wxTextCtrl              *m_pText_CM93OffsetY;
 
 //    For GPS Page
     wxScrolledWindow        *itemPanelGPS;

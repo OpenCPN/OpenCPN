@@ -396,7 +396,7 @@ private:
       emboss_data *m_pEM_Fathoms;
 
       emboss_data *m_pEM_OverZoom;
-      emboss_data *m_pEM_CM93Offset;	// Flav
+//      emboss_data *m_pEM_CM93Offset;	// Flav
 
 
       double      m_pix_per_mm;     // pixels per millimeter on the screen
@@ -411,9 +411,9 @@ private:
       Route       *m_pMeasureRoute;
 
 // Flav CM93Offset Tool
-      bool        m_bCM93MeasureOffset_Active;
-      int         m_nCM93MeasureOffsetState;
-      Route       *m_pCM93MeasureOffsetRoute;
+//      bool        m_bCM93MeasureOffset_Active;
+//      int         m_nCM93MeasureOffsetState;
+//      Route       *m_pCM93MeasureOffsetRoute;
 
       wxBitmap    m_bmTideDay;
       wxBitmap    m_bmTideDusk;
@@ -859,7 +859,7 @@ class ChInfoWin: public wxWindow
 class GoToPositionDialog: public wxDialog
 {
       DECLARE_DYNAMIC_CLASS( GoToPositionDialog )
-                  DECLARE_EVENT_TABLE()
+      DECLARE_EVENT_TABLE()
 
       public:
     /// Constructors

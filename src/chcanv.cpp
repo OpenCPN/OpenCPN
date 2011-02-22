@@ -151,11 +151,14 @@ extern bool             g_bShowDepthUnits;
 extern AIS_Decoder      *g_pAIS;
 extern FontMgr         *pFontMgr;
 
+#ifdef FLAV
 // Flav add for CM93Offset manual setup
 extern double           g_CM93Maps_Offset_x;
 extern double           g_CM93Maps_Offset_y;
 extern bool             g_CM93Maps_Offset_on;
 extern bool             g_CM93Maps_Offset_Enable;
+#endif
+
 extern MyFrame          *gFrame;
 
 //    AIS Global configuration
@@ -224,6 +227,8 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern PlugInManager    *g_pi_manager;
 
 extern wxAuiManager      *g_pauimgr;
+
+extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 
 extern bool             g_bskew_comp;
 
@@ -294,10 +299,13 @@ enum
         ID_DEF_MENU_ACTIVATE_MEASURE,
         ID_DEF_MENU_DEACTIVATE_MEASURE,
 
+#ifdef FLAV
         ID_DEF_MENU_ACTIVATE_CM93OFFSET,                 // Flav: for CM93Offset Tool
-//        ID_DEF_MENU_SET_CM93OFFSET,
+        ID_DEF_MENU_SET_CM93OFFSET,
         ID_DEF_MENU_DEACTIVATE_CM93OFFSET,
         ID_DEF_MENU_CM93OFFSET_TOGGLE,
+#endif
+        ID_DEF_MENU_CM93OFFSET_DIALOG,
 
         ID_TK_MENU_PROPERTIES,
         ID_TK_MENU_DELETE,
@@ -2099,10 +2107,12 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_DEF_MENU_CM93ZOOM,           ChartCanvas::PopupMenuHandler )
 
         // Flav CM93Offset Tool
+#ifdef FLAV
         EVT_MENU ( ID_DEF_MENU_ACTIVATE_CM93OFFSET,   ChartCanvas::PopupMenuHandler )
-        //EVT_MENU ( ID_DEF_MENU_SET_CM93OFFSET,   ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_DEACTIVATE_CM93OFFSET,   ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_CM93OFFSET_TOGGLE,   ChartCanvas::PopupMenuHandler )
+#endif
+        EVT_MENU ( ID_DEF_MENU_CM93OFFSET_DIALOG,   ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_WP_MENU_GOTO,           ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_WP_MENU_DELPOINT,           ChartCanvas::PopupMenuHandler )
@@ -2145,9 +2155,12 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pMeasureRoute = NULL;
         m_pRolloverWin = NULL;
         m_pAISRolloverWin = NULL;
+
 // Flav CM93Offset Tool
+#ifdef FLAV
         m_bCM93MeasureOffset_Active = false;
         m_pCM93MeasureOffsetRoute = NULL;
+#endif
         m_pCIWin = NULL;
 
         m_pSelectedRoute              = NULL;
@@ -2377,8 +2390,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         CreateOZEmbossMapData(GLOBAL_COLOR_SCHEME_DAY);
 
 // Flav
+#ifdef FLAV
         m_pEM_CM93Offset = NULL;
         CreateCM93OffsetEmbossMapData(GLOBAL_COLOR_SCHEME_DAY);
+#endif
 
 //    Build icons for tide/current points
 #ifdef USE_PNG_TIDESML
@@ -2544,7 +2559,7 @@ ChartCanvas::~ChartCanvas()
         delete m_pEM_Fathoms;
 
         delete m_pEM_OverZoom;
-        delete m_pEM_CM93Offset;
+//        delete m_pEM_CM93Offset;
 
         delete m_pQuilt;
 
@@ -2715,6 +2730,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                         break;
                   case WXK_F4:
+#ifdef FLAV
                         // Flav: do not display Measure Tool if CM93Offset Tool is active
                         if(!m_bCM93MeasureOffset_Active)
                         {
@@ -2724,6 +2740,13 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               Refresh();
                               b_proc = true;
                         }
+#endif
+                        m_bMeasure_Active = true;
+                        m_nMeasureState = 1;
+                        SetMyCursor ( pCursorPencil );
+                        Refresh();
+                        b_proc = true;
+
                         break;
 
                   case WXK_F5:
@@ -2828,7 +2851,9 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               pGoToPositionDialog->Show();
                               break;
 
-                  case 27:                       // Generic break
+                  case 27:
+                        // Generic break
+#if FLAV
                         if(m_bCM93MeasureOffset_Active) // turns CM93Offset Tool Off
                         {
                               m_bCM93MeasureOffset_Active = false;
@@ -2837,6 +2862,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               SetMyCursor (pCursorArrow);
                               Refresh ( false );
                         }
+#endif
                         if(m_bMeasure_Active)
                         {
                               m_bMeasure_Active = false;
@@ -3398,7 +3424,6 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
             SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
       else
             SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
-
 
       Refresh(false);
       return true;
@@ -5919,6 +5944,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         }
 
 // CM93Offset Measure Tool Rubber Banding
+#ifdef FLAV
         if ( m_bCM93MeasureOffset_Active && (m_nCM93MeasureOffsetState >= 2 ))
         {
               r_rband.x = x;
@@ -5927,7 +5953,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
               CheckEdgePan ( x, y );
               Refresh ( false );
         }
-
+#endif
         bool showRollover = false;
 //    AIS Target Rollover
         if(g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS )     // pjotrc 2010.02.09
@@ -6081,6 +6107,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       Refresh ( false );
                 }
+#ifdef FLAV
                 else if ( m_bCM93MeasureOffset_Active )                     // Flav: Left Click and CM93Offset tool on
                 {
                       SetMyCursor ( pCursorPencil );
@@ -6131,6 +6158,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       Refresh ( false );
                 }
+#endif
                 else                                // Not creating Route
                 {
                         // So look for selectable and visible route point
@@ -6736,7 +6764,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         wxCursor *ptarget_cursor = pCursorArrow;
 
-        if (( !parent_frame->nRoute_State ) && ( !m_bMeasure_Active ) && ( !m_bCM93MeasureOffset_Active ) )
+        if (( !parent_frame->nRoute_State ) && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/ )
         {
 
 
@@ -6766,7 +6794,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         cursor_region = CENTER;
                 }
         }
-        else if (m_bMeasure_Active || m_bCM93MeasureOffset_Active || parent_frame->nRoute_State ) // If Measure tool or CM93Offset tool use Pencil Cursor
+        else if (m_bMeasure_Active /*|| m_bCM93MeasureOffset_Active*/ || parent_frame->nRoute_State ) // If Measure tool or CM93Offset tool use Pencil Cursor
               ptarget_cursor = pCursorPencil;
 
         SetMyCursor ( ptarget_cursor );
@@ -6848,17 +6876,13 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
 #endif
 
         // Flav if CM93Offset Tool is active add it first on right click menu
+#ifdef FLAV
         if(m_bCM93MeasureOffset_Active)
         {
-#if 0 // Put this on left click
-              if(g_CM93Maps_Offset_on)
-                    pdef_menu->Append ( ID_DEF_MENU_SET_CM93OFFSET, _( "Update CM93 Offset" ) );
-              else
-                    pdef_menu->Append ( ID_DEF_MENU_SET_CM93OFFSET, _( "Set CM93 Offset" ) );
-#endif
               pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_CM93OFFSET, _( "CM93 Offset Tool Off" ) );
               pdef_menu->AppendSeparator();
         }
+#endif
 
         if(seltype & SELTYPE_TRACKSEGMENT)
         {
@@ -7010,7 +7034,8 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                     pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
 
         // Flav: Measure Tool and CM93Offset Tool cannot be displayed in same time
-        if(!m_bMeasure_Active && !m_bCM93MeasureOffset_Active)
+
+        if(!m_bMeasure_Active /*&& !m_bCM93MeasureOffset_Active*/)
               pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_MEASURE,    _( "Measure....." ) );
         else if(m_bMeasure_Active)
               pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
@@ -7019,6 +7044,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
 
 // Flav add CM93Offset Tool on right click menu
+#ifdef FLAV
         if(g_CM93Maps_Offset_Enable)
         {
             pdef_menu->AppendSeparator();
@@ -7034,6 +7060,12 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
             else
                   pdef_menu->Append ( ID_DEF_MENU_CM93OFFSET_TOGGLE, _( "CM93 Offset On" ) );
         }
+#endif
+
+        if(!VPoint.b_quilt && Current_Ch && (Current_Ch->GetChartType() == CHART_TYPE_CM93COMP))
+              pdef_menu->Append ( ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog" ) );
+
+
 
 
 #ifdef __WXMSW__
@@ -7308,39 +7340,12 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
 
 // Flav : CM93Offset Calculate Offset Tool
+#ifdef FLAV
                 case ID_DEF_MENU_ACTIVATE_CM93OFFSET:
                       m_bCM93MeasureOffset_Active = true;
                       m_nCM93MeasureOffsetState = 1;
                       break;
-#if 0 // Put this on left click
-                case ID_DEF_MENU_SET_CM93OFFSET:
-                      // Flav: to set here offset values
-                      if(m_nCM93MeasureOffsetState >= 2)
-                      {
-                            deltax = m_cursor_lon - m_prev_rlon;
-                            if(deltax > 180.)
-                            {
-                                  deltax = deltax - 360.;
-                            }
-                            else if(deltax < -180.)
-                            {
-                                  deltax = deltax + 360.;
-                            }
-                            if(!g_CM93Maps_Offset_on)
-                            {
-                                  g_CM93Maps_Offset_x = deltax*1852.*60;
-                                  g_CM93Maps_Offset_y = (m_cursor_lat - m_prev_rlat)*1852.*60/cos(abs(m_cursor_lat + m_prev_rlat)/360.*PI);
-                                  g_CM93Maps_Offset_on = true;
-                            }
-                            else
-                            {
-                                  g_CM93Maps_Offset_x += deltax*1852.*60;
-                                  g_CM93Maps_Offset_y += (m_cursor_lat - m_prev_rlat)*1852.*60/cos(abs(m_cursor_lat + m_prev_rlat)/360.*PI);
-                            }
-                            gFrame->ChartsRefresh();
-                      }
-                      // then continues to putting off CM93Offset Tool
-#endif
+
                 case ID_DEF_MENU_DEACTIVATE_CM93OFFSET:
                       m_bCM93MeasureOffset_Active = false;
                       g_pRouteMan->DeleteRoute( m_pCM93MeasureOffsetRoute );
@@ -7351,7 +7356,23 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                       g_CM93Maps_Offset_on = !g_CM93Maps_Offset_on;
                       gFrame->ChartsRefresh();
                       break;
-                case ID_DEF_MENU_CM93ZOOM:
+#endif
+
+              case ID_DEF_MENU_CM93OFFSET_DIALOG:
+                    if ( NULL == g_pCM93OffsetDialog )
+                    {
+                          if(!VPoint.b_quilt && Current_Ch && (Current_Ch->GetChartType() == CHART_TYPE_CM93COMP))
+                          {
+                                cm93compchart *pch = (cm93compchart *)Current_Ch;
+                                g_pCM93OffsetDialog = new CM93OffsetDialog( parent_frame, pch );
+                          }
+                    }
+                    g_pCM93OffsetDialog->Show();
+                    g_pCM93OffsetDialog->UpdateMCOVRList(VPoint);
+
+                    break;
+
+              case ID_DEF_MENU_CM93ZOOM:
                         g_bShowCM93DetailSlider = event.IsChecked();
 
                         if(g_bShowCM93DetailSlider)
@@ -8513,11 +8534,12 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
 
 // Flav: if CM93Offset on (and to add if CM93 chart)
+#ifdef FLAV
         if ( g_CM93Maps_Offset_on )
         {
               EmbossCM93Offset ( &scratch_dc, &scratch_dc );
         }
-
+#endif
 
 //    Draw the rest of the overlay objects directly on the scratch dc
 
@@ -8628,92 +8650,15 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 #endif
         }
 
+#ifdef FLAV
         if ( m_pCM93MeasureOffsetRoute && m_bCM93MeasureOffset_Active && ( m_nCM93MeasureOffsetState > 1) )
         {
               wxPoint rpt;
               m_pCM93MeasureOffsetRoute->DrawPointWhich ( scratch_dc, 1,  &rpt );
               m_pCM93MeasureOffsetRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, VPoint, true );
 
-//              RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
-//                                  m_cursor_lat, m_cursor_lon, r_rband, _T(""));
-
-
-///
-#if 0
-              double brg, dist;
-              DistanceBearingMercator(m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon, &brg, &dist);   // for brg only
-//              dist = DistGreatCircle(m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon);
-
-              if((m_cursor_lat == m_prev_rlat) && (m_cursor_lon ==  m_prev_rlon))               // special optimization
-                    brg = 90.;
-
-              wxString s;
-              if ( dist > 0.1 )                                                                 //pjotrc 2010.02.16
-                    s.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
-              else                                                                                    //pjotrc 2010.02.16
-                    s.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.); //pjotrc 2010.02.16
-
-              int w, h;
-              double angle;
-              int xp, yp, xp1, yp1;
-              int hilite_offset = 3;
-              scratch_dc.GetTextExtent(s, &w, &h);
-
-              if(true/*(brg >= 0.) && (brg < 180.)*/)
-              {
-                    angle = 0; //90. - brg;
-
-                    xp = r_rband.x  - (int)(w * cos((angle) * PI / 180.));
-                    yp = r_rband.y  + (int)(w * sin((angle) * PI / 180.));
-
-                    xp += (int)(hilite_offset * sin((angle) * PI / 180.));
-                    yp += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-                    xp1 = r_rband.x;
-                    yp1 = r_rband.y;
-                    xp1 += (int)(hilite_offset * sin((angle) * PI / 180.));
-                    yp1 += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-              }
-              else
-              {
-                    angle = 0; //270. - brg;
-
-                    xp = r_rband.x;
-                    yp = r_rband.y;
-                    xp += (int)(hilite_offset * sin((angle) * PI / 180.));
-                    yp += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-                    xp1 = r_rband.x  + (int)(w * cos((angle) * PI / 180.));
-                    yp1 = r_rband.y  - (int)(w * sin((angle) * PI / 180.));
-                    xp1 += (int)(hilite_offset * sin((angle) * PI / 180.));
-                    yp1 += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-             }
-
-              wxPoint hilite_array[4];
-              hilite_array[0].x = xp;
-              hilite_array[0].y = yp;
-
-              hilite_array[1].x = xp + (int)((h) * sin((angle) * PI / 180.));
-              hilite_array[1].y = yp + (int)((h) * cos((angle) * PI / 180.));
-
-              hilite_array[2].x = xp1 + (int)((h) * sin((angle) * PI / 180.));
-              hilite_array[2].y = yp1 + (int)((h) * cos((angle) * PI / 180.));
-
-              hilite_array[3].x = xp1;
-              hilite_array[3].y = yp1;
-
-              scratch_dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "YELO1" ) ) ) );
-              scratch_dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "YELO1" ) ) ) );
-              scratch_dc.DrawPolygon(4, hilite_array);
-
-              scratch_dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-              scratch_dc.DrawRotatedText(s, xp, yp, angle);
-///
-#endif
         }
-
+#endif
         //  Draw S52 compatible Scale Bar
         wxCoord w, h;
         scratch_dc.GetSize(&w, &h);
@@ -9043,11 +8988,12 @@ void ChartCanvas::EmbossOverzoomIndicator ( wxMemoryDC *psource_dc, wxMemoryDC *
 }
 
 // Flav CM93Offset
+#ifdef FLAV
 void ChartCanvas::EmbossCM93Offset ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc)
 {
       EmbossCanvas ( psource_dc, pdest_dc, m_pEM_CM93Offset, 0, (VPoint.pix_height - m_pEM_CM93Offset->height));
 }
-
+#endif
 
 void ChartCanvas::EmbossDepthScale ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, int emboss_ident )
 {
@@ -9170,6 +9116,7 @@ void ChartCanvas::CreateOZEmbossMapData(ColorScheme cs)
 }
 
 // Flav for CM93Offset
+#ifdef FLAV
 void ChartCanvas::CreateCM93OffsetEmbossMapData(ColorScheme cs)
 {
       delete m_pEM_CM93Offset;
@@ -9182,7 +9129,7 @@ void ChartCanvas::CreateCM93OffsetEmbossMapData(ColorScheme cs)
 
       m_pEM_CM93Offset    = CreateEmbossMapData ( font, w + 10, h + 10, _("CM93 Offsets On"), cs);
 }
-
+#endif
 
 emboss_data *ChartCanvas::CreateEmbossMapData ( wxFont &font, int width, int height, const wxChar *str, ColorScheme cs )
 {
@@ -12077,7 +12024,7 @@ IMPLEMENT_DYNAMIC_CLASS( GoToPositionDialog, wxDialog )
  * GoToPositionDialog constructors
  */
 
-            GoToPositionDialog::GoToPositionDialog( )
+GoToPositionDialog::GoToPositionDialog( )
 {
 }
 

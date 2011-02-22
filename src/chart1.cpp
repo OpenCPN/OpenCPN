@@ -279,10 +279,12 @@ bool            g_bDebugS57;
 bool            g_bGarminHost;
 
 // Flav add for CM9Offset manual setup
+#ifdef FLAV
 double          g_CM93Maps_Offset_x;
 double          g_CM93Maps_Offset_y;
 bool            g_CM93Maps_Offset_on;
 bool            g_CM93Maps_Offset_Enable;
+#endif
 
 bool            g_bfilter_cogsog;
 int             g_COGFilterSec;
@@ -514,6 +516,8 @@ int               g_AisTargetList_sortColumn;
 bool              g_bAisTargetList_sortReverse;
 wxString          g_AisTargetList_column_spec;
 int               g_AisTargetList_count;
+
+CM93OffsetDialog *g_pCM93OffsetDialog;
 
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
@@ -4174,11 +4178,12 @@ int MyFrame::DoOptionsDialog()
 #endif
 
 // Flav: for CM93Offset refreshes all maps
+#ifdef FLAV
             if(rr & CM93OFFSET_CHANGED)
             {
                   ChartsRefresh();
             }
-
+#endif
             if(rr & LOCALE_CHANGED)
             {
                   if(prev_locale != g_locale)
@@ -4355,11 +4360,13 @@ void MyFrame::SetupQuiltMode(void)
             {
                   target_new_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
 
+#ifdef QUILT_ONLY_MERC
                   if(-1 != target_new_dbindex)
                   {
                   //    Check to see if the target new chart is Merc
                         int proj = ChartData->GetDBChartProj(target_new_dbindex);
                         int type = ChartData->GetDBChartType(target_new_dbindex);
+
 
                         if(PROJECTION_MERCATOR != proj)
                         {
@@ -4380,7 +4387,9 @@ void MyFrame::SetupQuiltMode(void)
                                     stack_index++;
                               }
                         }
+
                   }
+#endif
             }
 
             cc1->SetQuiltRefChart(target_new_dbindex);

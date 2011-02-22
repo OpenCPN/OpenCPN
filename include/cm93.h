@@ -40,10 +40,12 @@
 //    Static functions
 int Get_CM93_CellIndex(double lat, double lon, int scale);
 void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
-ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale);
+//ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale);
 
 //    Fwd definitions
 class covr_set;
+class wxSpinCtrl;
+
 
 class M_COVR_Desc
 {
@@ -54,8 +56,10 @@ class M_COVR_Desc
       int      GetWKBSize();
       bool     WriteWKB(void *p);
       int      ReadWKB(wxFFileInputStream &ifs);
+      void     Update(M_COVR_Desc *pmcd);
 
       int         m_cell_index;
+      int         m_object_id;
 
       int         m_nvertices;
       float_2Dpt  *pvertices;
@@ -67,10 +71,16 @@ class M_COVR_Desc
       double      m_covr_lat_max;
       double      m_covr_lon_min;
       double      m_covr_lon_max;
+      double      user_xoff;
+      double      user_yoff;
+
       wxBoundingBox m_covr_bbox;
+      bool        m_buser_offsets;
+
 };
 
 WX_DECLARE_OBJARRAY(M_COVR_Desc, Array_Of_M_COVR_Desc);
+WX_DECLARE_OBJARRAY(M_COVR_Desc *, Array_Of_M_COVR_Desc_Ptr);
 
 WX_DECLARE_LIST(M_COVR_Desc, List_Of_M_COVR_Desc);
 
@@ -196,6 +206,11 @@ typedef struct{
       int                           m_n_point2d_records;
 
       List_Of_M_COVR_Desc          m_cell_mcovr_list;
+      bool                         b_have_offsets;
+      bool                         b_have_user_offsets;
+
+      double                       user_xoff;
+      double                       user_yoff;
 
       //    Allocated working blocks
       vector_record_descriptor      *object_vector_record_descriptor_block;
@@ -322,28 +337,29 @@ class cm93chart : public s57chart
 
             void SetCM93Dict(cm93_dictionary *pDict){m_pDict = pDict;}
             void SetCM93Prefix(wxString &prefix){m_prefix = prefix;}
-//            bool LoadM_COVRSet(ViewPort *vpt);
-//            List_Of_M_COVR_Desc LoadM_COVRSetList(int cell_index);
-            bool UpdateCovrSet(ViewPort *vpt);
-            bool IsPointInM_COVR(double xc, double yc);
 
+            bool UpdateCovrSet(ViewPort *vpt);
+            bool IsPointInLoadedM_COVR(double xc, double yc);
             covr_set *GetCoverSet(){ return m_pcovr_set; }
 
-            Array_Of_M_COVR_Desc    m_covr_array;
+            ArrayOfInts GetVPCellArray(const ViewPort &vpt);
+
+            Array_Of_M_COVR_Desc_Ptr    m_pcovr_array_loaded;
+
+            void SetUserOffsets(int cell_index, int object_id, int xoff, int yoff);
+            wxString GetScaleChar(){ return m_scalechar; }
 
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
             Extended_Geometry *BuildGeom(Object *pobject, wxFileOutputStream *postream, int iobject);
 
-            S57Obj *CreateS57Obj( int iobject, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
+            S57Obj *CreateS57Obj( int cell_index, int iobject, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
                                              double ref_lat, double ref_lon, double scale);
 
             void translate_colmar(wxString &sclass, S57attVal *pattValTmp);
 
-            ArrayOfInts GetVPCellArray(const ViewPort &vpt);
-
-            int CreateObjChain(void);
+            int CreateObjChain(int cell_index);
 
             void Unload_CM93_Cell(void);
 
@@ -355,13 +371,12 @@ class cm93chart : public s57chart
             void ProcessVectorEdges(void);
 
             wxPoint2DDouble FindM_COVROffset(double lat, double lon);
+            M_COVR_Desc *FindM_COVR_InWorkingSet(double lat, double lon);
 
 
             Cell_Info_Block   m_CIB;
 
-
             cm93_dictionary   *m_pDict;
-            int               m_cmscale;
 
             wxString          m_prefix;
 
@@ -377,14 +392,14 @@ class cm93chart : public s57chart
             wxChar            m_loadcell_key;
             double            m_dval;
 
-
             covr_set          *m_pcovr_set;
-
 };
 
 //----------------------------------------------------------------------------
 // cm93 Composite Chart object class
 //----------------------------------------------------------------------------
+class CM93OffsetDialog;
+
 class cm93compchart : public s57chart
 {
       public:
@@ -430,14 +445,21 @@ class cm93compchart : public s57chart
             void UpdateLUPs(s57chart *pOwner);
             void ForceEdgePriorityEvaluate(void);
             ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
+            cm93chart *GetCurrentSingleScaleChart(){ return m_pcm93chart_current; }
 
-      private:
+            void SetSpecialOutlineCellIndex(int cell_index, int object_id)
+                  { m_cell_index_special_outline = cell_index;
+                    m_object_id_special_outline = object_id; }
+            void SetSpecialCellIndexOffset(int cell_index, int object_id, int xoff, int yoff);
+            void CloseandReopenCurrentSubchart(void);
+            void SetOffsetDialog(CM93OffsetDialog *dialog){ m_pOffsetDialog = dialog; }
+
             void InvalidateCache();
+      private:
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
             InitReturn CreateHeaderData();
             cm93_dictionary *FindAndLoadDictFromDir(const wxString &dir);
-            void SetVPPositive(ViewPort *pvp);
             void FillScaleArray(double lat, double lon);
             void PrepareChartScale(const ViewPort &vpt, int cmscale);
             bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
@@ -456,7 +478,59 @@ class cm93compchart : public s57chart
             int               m_current_cell_pub_date;      // the (integer) publish date of the cell at the current VP
 
             wxBitmap          *m_pDummyBM;
+            int               m_cell_index_special_outline;
+            int               m_object_id_special_outline;
+            int               m_special_offset_x;
+            int               m_special_offset_y;
+            ViewPort          m_vpt;
+
+            CM93OffsetDialog  *m_pOffsetDialog;
 };
+
+
+class OCPNOffsetListCtrl;
+//----------------------------------------------------------------------------------------------------------
+//    CM93OffsetDialog Specification
+//----------------------------------------------------------------------------------------------------------
+class CM93OffsetDialog: public wxDialog
+{
+      DECLARE_CLASS( CM93OffsetDialog )
+      DECLARE_EVENT_TABLE()
+
+      public:
+            CM93OffsetDialog( wxWindow *parent, cm93compchart *pchart );
+            ~CM93OffsetDialog( );
+
+            void OnClose(wxCloseEvent& event);
+
+            void SetColorScheme( );
+            void UpdateMCOVRList( const ViewPort &vpt );     // Rebuild MCOVR list
+
+            OCPNOffsetListCtrl            *m_pListCtrlMCOVRs;
+            Array_Of_M_COVR_Desc_Ptr      m_pcovr_array;
+
+            wxString                      m_selected_chart_scale_char;
+
+      private:
+            void OnCellSelected( wxListEvent &event );
+            void OnOffSetSet( wxCommandEvent& event );
+
+            void UpdateOffsets(void);
+
+            wxSpinCtrl        *m_pSpinCtrlXoff;
+            wxSpinCtrl        *m_pSpinCtrlYoff;
+
+            wxWindow          *m_pparent;
+            cm93compchart     *m_pcompchart;
+
+            int               m_xoff;
+            int               m_yoff;
+            int               m_selected_cell_index;
+            int               m_selected_object_id;
+            int               m_selected_list_index;
+
+};
+
 
 
 #endif
