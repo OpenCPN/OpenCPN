@@ -1366,8 +1366,8 @@ void Route::Draw ( wxDC& dc, ViewPort &VP )
             prp2->Draw ( dc, &rpt2 );
 
             //    Handle offscreen points
-            bool b_2_on = VP.vpBBox.PointInBox ( prp2->m_lon, prp2->m_lat, 0 );
-            bool b_1_on = VP.vpBBox.PointInBox ( prp1->m_lon, prp1->m_lat, 0 );
+            bool b_2_on = VP.GetBBox().PointInBox ( prp2->m_lon, prp2->m_lat, 0 );
+            bool b_1_on = VP.GetBBox().PointInBox ( prp1->m_lon, prp1->m_lat, 0 );
 
             //TODO This logic could be simpliifed
             //Simple case
@@ -3541,7 +3541,7 @@ void MyConfig::UpdateSettings()
 
       wxString st1;
 
-      if ( cc1 && cc1->VPoint.bValid )
+      if ( cc1 && cc1->VPoint.IsValid() )
       {
             st1.Printf ( _T ( "%10.4f,%10.4f" ), cc1->VPoint.clat, cc1->VPoint.clon );
             Write ( _T ( "VPLatLon" ), st1 );

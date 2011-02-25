@@ -211,7 +211,7 @@ public:
       int GetQuiltRefChartdbIndex(void);
       void InvalidateQuilt(void);
       double GetQuiltMaxErrorFactor();
-      bool IsChartQuiltable(int db_index);
+      bool IsChartQuiltableRef(int db_index);
 
       void ShowChartInfoWindow(int x, int y, int dbIndex);
       void HideChartInfoWindow(void);
@@ -300,13 +300,13 @@ private:
       bool CheckEdgePan(int x, int y);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
-      void DrawAllRoutesInBBox(wxDC& dc, wxBoundingBox& BltBBox, const wxRegion& clipregion);
-      void DrawAllWaypointsInBBox(wxDC& dc, wxBoundingBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
+      void DrawAllRoutesInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
+      void DrawAllWaypointsInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
-      void DrawAllTidesInBBox(wxDC& dc, wxBoundingBox& BBox, bool bRebuildSelList,
+      void DrawAllTidesInBBox(wxDC& dc, LLBBox& BBox, bool bRebuildSelList,
                         bool bdraw_mono = false);
-      void DrawAllCurrentsInBBox(wxDC& dc, wxBoundingBox& BBox, double skew_angle,
+      void DrawAllCurrentsInBBox(wxDC& dc, LLBBox& BBox, double skew_angle,
                            bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
       void DrawTCWindow(int x, int y, void *pIDX);
       void RenderChartOutline(wxDC *pdc, int dbIndex, ViewPort& vp, bool bdraw_mono = false);

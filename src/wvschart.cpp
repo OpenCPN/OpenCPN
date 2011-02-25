@@ -117,10 +117,10 @@ void WVSChart::RenderViewOnDC(wxMemoryDC& dc, ViewPort& VPoint)
 
 //      Compute the 1 degree cell boundaries
 
-        int lat_min = (int)floor(VPoint.vpBBox.GetMinY());
-        int lat_max = (int)ceil(VPoint.vpBBox.GetMaxY());
-        int lon_min = (int)floor(VPoint.vpBBox.GetMinX());
-        int lon_max = (int)ceil(VPoint.vpBBox.GetMaxX());
+        int lat_min = (int)floor(VPoint.GetBBox().GetMinY());
+        int lat_max = (int)ceil(VPoint.GetBBox().GetMaxY());
+        int lon_min = (int)floor(VPoint.GetBBox().GetMinX());
+        int lon_max = (int)ceil(VPoint.GetBBox().GetMaxX());
 
         x = lon_min;
         y = lat_min;

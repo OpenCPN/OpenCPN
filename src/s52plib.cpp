@@ -6357,7 +6357,7 @@ int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
       ppatt_spec->x = r.x - 2000000;                  // bias way down to avoid zero-crossing logic in dda
       ppatt_spec->y = r.y - 2000000;
 
-      RenderToBufferFilledPolygon ( rzRules, rzRules->obj, NULL, vp->vpBBox, pb_spec, ppatt_spec );
+      RenderToBufferFilledPolygon ( rzRules, rzRules->obj, NULL, vp->GetBBox(), pb_spec, ppatt_spec );
 
       return 1;
 }
@@ -6371,7 +6371,7 @@ int s52plib::RenderToBufferAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
 
       c = ps52plib->S52_getColor ( str );
 
-      RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->vpBBox, pb_spec, NULL );
+      RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL );
 
 
       //    At very small scales, the object could be visible on both the left and right sides of the screen.
@@ -6379,15 +6379,15 @@ int s52plib::RenderToBufferAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
       if(vp->chart_scale > 5e7)
       {
             //    Does the object hang out over the left side of the VP?
-            if((rzRules->obj->BBObj.GetMaxX() > vp->vpBBox.GetMinX()) && (rzRules->obj->BBObj.GetMinX() < vp->vpBBox.GetMinX()))
+            if((rzRules->obj->BBObj.GetMaxX() > vp->GetBBox().GetMinX()) && (rzRules->obj->BBObj.GetMinX() < vp->GetBBox().GetMinX()))
             {
                   //    If we add 360 to the objects lons, does it intersect the the right side of the VP?
-                  if(((rzRules->obj->BBObj.GetMaxX() + 360.) > vp->vpBBox.GetMaxX()) && ((rzRules->obj->BBObj.GetMinX() + 360.) < vp->vpBBox.GetMaxX()))
+                  if(((rzRules->obj->BBObj.GetMaxX() + 360.) > vp->GetBBox().GetMaxX()) && ((rzRules->obj->BBObj.GetMinX() + 360.) < vp->GetBBox().GetMaxX()))
                   {
                         //  If so, this area oject should be drawn again, this time for the left side
                         //    Do this by temporarily adjusting the objects rendering offset
                         rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-                        RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->vpBBox, pb_spec, NULL );
+                        RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL );
                         rzRules->obj->x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
                   }
@@ -6625,15 +6625,15 @@ bool s52plib::ObjectRenderCheck ( ObjRazRules *rzRules, ViewPort *vp )
 //        return false;
 
       // Of course, the object must be at least partly visible in the viewport
-      wxBoundingBox BBView = vp->vpBBox;
+      wxBoundingBox BBView = vp->GetBBox();
       if ( BBView.Intersect ( rzRules->obj->BBObj, 0 ) == _OUT ) // Object is wholly outside window
       {
 
             //  Dp a secondary test if the viewport crosses Greenwich
             //  This will pick up objects east of Greenwich
-            if ( vp->vpBBox.GetMaxX() > 360. )
+            if ( vp->GetBBox().GetMaxX() > 360. )
             {
-                  wxBoundingBox bbRight ( 0., vp->vpBBox.GetMinY(), vp->vpBBox.GetMaxX() - 360., vp->vpBBox.GetMaxY() );
+                  wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
                   if ( bbRight.Intersect ( rzRules->obj->BBObj, 0 ) == _OUT )
                         return false;
             }

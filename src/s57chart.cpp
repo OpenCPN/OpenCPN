@@ -1924,13 +1924,13 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
             double temp_easting_lr = temp_easting_ul + (rect.width / m_view_scale_ppm);
             fromSM(temp_easting_lr, temp_northing_lr, ref_lat, ref_lon, &temp_lat_bot, &temp_lon_right);
 
-            temp_vp.vpBBox.SetMin(temp_lon_left, temp_lat_bot);
-            temp_vp.vpBBox.SetMax(temp_lon_right, temp_lat_top);
+            temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
+            temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
 
             //      Allow some slop in the viewport
             //    TODO Investigate why this fails if greater than 5 percent
-            double margin = wxMin(temp_vp.vpBBox.GetWidth(), temp_vp.vpBBox.GetHeight()) * 0.05;
-            temp_vp.vpBBox.EnLarge(margin);
+            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
+            temp_vp.GetBBox().EnLarge(margin);
 
 //      And Render it new piece on the target dc
 //     printf("New Render, rendering %d %d %d %d \n", rect.x, rect.y, rect.width, rect.height);
@@ -2648,11 +2648,11 @@ bool s57chart::BuildThumbnail(const wxString &bmpname)
       vp.pix_height = S57_THUMB_SIZE;
       vp.pix_width  = S57_THUMB_SIZE;
 
-      vp.vpBBox.SetMin(m_FullExtent.WLON, m_FullExtent.SLAT);
-      vp.vpBBox.SetMax(m_FullExtent.ELON, m_FullExtent.NLAT);
+      vp.GetBBox().SetMin(m_FullExtent.WLON, m_FullExtent.SLAT);
+      vp.GetBBox().SetMax(m_FullExtent.ELON, m_FullExtent.NLAT);
 
       vp.chart_scale = 10000000 - 1;
-      vp.bValid = true;
+      vp.Validate();
 
        // cause a clean new render
       delete pDIB;
@@ -6117,15 +6117,18 @@ bool s57chart::IsPointInObjArea(float lat, float lon, float select_radius, S57Ob
 
           MyPoint pvert_list[4];
 
+          double y_rate = obj->y_rate;
+          double y_origin = obj->y_origin;
+
           for(int i=0 ; i < ntraps ; i++ , ptraps++)
           {
                 //      Y test
 
-                double hiy = (ptraps->hiy * obj->y_rate) + obj->y_origin;
+                double hiy = (ptraps->hiy * y_rate) + y_origin;
                 if(northing > hiy)
                       continue;
 
-                double loy = (ptraps->loy * obj->y_rate) + obj->y_origin;
+                double loy = (ptraps->loy * y_rate) + y_origin;
                 if(northing < loy)
                       continue;
 

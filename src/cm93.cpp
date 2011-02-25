@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cm93.cpp,v 1.50 2010/06/24 01:50:59 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  cm93 Chart Object
@@ -1264,73 +1263,6 @@ int get_dval(int native_scale)
       return dval;
 }
 
-ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale)
-{
-      int dval = get_dval(native_scale);
-
-      //    Fetch the lat/lon of the screen corner points
-      LLBBox box = vpt.vpBBox;
-      double ll_lon = box.GetMinX();
-      double ll_lat = box.GetMinY();
-
-      double ur_lon = box.GetMaxX();
-      double ur_lat = box.GetMaxY();
-
-      //    Adjust to always positive for easier cell calculations
-      if(ll_lon < 0)
-      {
-            ll_lon += 360;
-            ur_lon += 360;
-      }
-
-     //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells;
-
-      vpcells.Clear();
-
-      int lower_left_cell = Get_CM93_CellIndex(ll_lat, ll_lon, native_scale);
-      vpcells.Add(lower_left_cell);                   // always add the lower left cell
-
-      if(g_bDebugCM93)
-            printf("cm93chart::GetVPCellArray   Adding %d\n", lower_left_cell);
-
-      double rlat, rlon;
-      Get_CM93_Cell_Origin(lower_left_cell, native_scale, &rlat, &rlon);
-
-
-      // Use exact integer math here
-      //    It is more obtuse, but it removes dependency on FP rounding policy
-
-      int loni_0 = (int)wxRound(rlon * 3);
-      int loni_20 = loni_0 + dval;               // already added the lower left cell
-      int lati_20 = (int)wxRound(rlat * 3);
-
-
-      while(lati_20 < (ur_lat * 3.))
-      {
-            while(loni_20 < (ur_lon * 3.))
-            {
-                  unsigned int next_lon = loni_20 + 1080;
-                  while(next_lon >= 1080)
-                        next_lon -= 1080;
-
-                  unsigned int next_cell = next_lon;
-
-                  next_cell += (lati_20 + 270) * 10000;
-
-                  vpcells.Add((int)next_cell);
-                  if(g_bDebugCM93)
-                        printf("cm93chart::GetVPCellArray   Adding %d\n", next_cell);
-
-                  loni_20 += dval;
-            }
-            lati_20 += dval;
-            loni_20 = loni_0;
-      }
-
-      return vpcells;
-}
-
 
 bool read_header_and_populate_cib(FILE *stream, Cell_Info_Block *pCIB)
 {
@@ -2027,9 +1959,9 @@ void cm93chart::GetPointPix(ObjRazRules *rzRules, float north, float east, wxPoi
       double valy = (north * obj->y_rate) + obj->y_origin;
 
             //    Crossing Greenwich right
-      if(m_vp_current.vpBBox.GetMaxX() > 360.)
+      if(m_vp_current.GetBBox().GetMaxX() > 360.)
       {
-            wxBoundingBox bbRight(0., m_vp_current.vpBBox.GetMinY(), m_vp_current.vpBBox.GetMaxX() - 360., m_vp_current.vpBBox.GetMaxY());
+            wxBoundingBox bbRight(0., m_vp_current.GetBBox().GetMinY(), m_vp_current.GetBBox().GetMaxX() - 360., m_vp_current.GetBBox().GetMaxY());
             if ( bbRight.Intersect ( rzRules->obj->BBObj, 0 ) != _OUT )
             {
                   valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
@@ -2050,9 +1982,9 @@ void cm93chart::GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *
       double yo =  obj->y_origin;
 
       //    Crossing Greenwich right
-      if(m_vp_current.vpBBox.GetMaxX() > 360.)
+      if(m_vp_current.GetBBox().GetMaxX() > 360.)
       {
-            wxBoundingBox bbRight(0., m_vp_current.vpBBox.GetMinY(), m_vp_current.vpBBox.GetMaxX() - 360., m_vp_current.vpBBox.GetMaxY());
+            wxBoundingBox bbRight(0., m_vp_current.GetBBox().GetMinY(), m_vp_current.GetBBox().GetMaxX() - 360., m_vp_current.GetBBox().GetMaxY());
             if ( bbRight.Intersect ( rzRules->obj->BBObj, 0 ) != _OUT )
             {
                   xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
@@ -2116,7 +2048,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
       if(g_bDebugCM93)
       {
       //    Fetch the lat/lon of the screen corner points
-            LLBBox box = vpt.vpBBox;
+            ViewPort vptl = vpt;
+            LLBBox box = vptl.GetBBox();
             double ll_lon = box.GetMinX();
             double ll_lat = box.GetMinY();
 
@@ -2170,7 +2103,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
 ArrayOfInts cm93chart::GetVPCellArray(const ViewPort &vpt)
 {
       //    Fetch the lat/lon of the screen corner points
-      LLBBox box = vpt.vpBBox;
+      ViewPort vptl = vpt;
+      LLBBox box = vptl.GetBBox();
       double ll_lon = box.GetMinX();
       double ll_lat = box.GetMinY();
 
@@ -4621,11 +4555,11 @@ cm93_dictionary *cm93manager::FindAndLoadDict(const wxString &file)
 
 void SetVPPositive(ViewPort *pvp)
 {
-      while(pvp->vpBBox.GetMinX() < 0)
+      while(pvp->GetBBox().GetMinX() < 0)
       {
             pvp->clon += 360.;
             wxPoint2DDouble t(360., 0.);
-            pvp->vpBBox.Translate(t);
+            pvp->GetBBox().Translate(t);
       }
 }
 
@@ -5540,7 +5474,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
 
                                     //    Case:  vpBBox is completely inside the mcd box
-                                    if(!(_OUT == vp_positive.vpBBox.Intersect(mcd->m_covr_bbox)) || !(_OUT == vp.vpBBox.Intersect(mcd->m_covr_bbox)))
+                                    if(!(_OUT == vp_positive.GetBBox().Intersect(mcd->m_covr_bbox)) || !(_OUT == vp.GetBBox().Intersect(mcd->m_covr_bbox)))
                                     {
 
                                           float_2Dpt *p = mcd->pvertices;
@@ -6206,7 +6140,7 @@ void CM93OffsetDialog::UpdateMCOVRList(const ViewPort &vpt)
                         {
                               if(cell_array.Item(icell) == mcd->m_cell_index)
                               {
-                                    if(_OUT != vp_positive.vpBBox.Intersect(mcd->m_covr_bbox))
+                                    if(_OUT != vp_positive.GetBBox().Intersect(mcd->m_covr_bbox))
                                           m_pcovr_array.Add(mcd);
                               }
                         }

@@ -190,6 +190,7 @@ protected:
 
       bool IsCacheValid(){ return cached_image_ok; }
       void InvalidateCache(){cached_image_ok = 0;}
+      bool IsRenderCacheable( wxRect& source, wxRect& dest );
 
       void CreatePaletteEntry(char *buffer, int palette_index);
       PaletteDir GetPaletteDir(void);
@@ -214,7 +215,7 @@ protected:
                                    double scale_factor, ScaleTypeEnum scale_type);
 
 
-      bool GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type );
+      bool GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegion& Region, ScaleTypeEnum scale_type );
       bool GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type );
 
 
@@ -311,20 +312,6 @@ protected:
                                         // pixels per meter
 
       double      m_raster_scale_factor;        // exact scaling factor for pixel oversampling calcs
-
-      //    Storage for background render machine
-
-      PixelCache    *pPixCacheBackground;
-      unsigned char *background_work_buffer;
-      unsigned char *br_target_data;
-
-      int       br_target_height;
-      int       br_target_width;
-      int       br_target_y;
-      double    br_factor;
-      wxRect    br_Rsrc;
-      double    m_br_scale;
-      bool      m_br_bpending;
 
       bool      m_bIDLcross;
 

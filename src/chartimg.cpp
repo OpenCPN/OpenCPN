@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chartimg.cpp,v 1.57 2010/06/25 13:28:46 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  ChartBase, ChartBaseBSB and Friends
@@ -24,61 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: chartimg.cpp,v $
- * Revision 1.57  2010/06/25 13:28:46  bdbcat
- * 624 Quick Fix
- *
- * Revision 1.56  2010/06/25 02:02:45  bdbcat
- * 624
- *
- * Revision 1.55  2010/06/24 02:00:56  bdbcat
- * 623
- *
- * Revision 1.53  2010/06/21 02:43:09  bdbcat
- * 620
- *
- * Revision 1.52  2010/06/21 02:02:09  bdbcat
- * 620
- *
- * Revision 1.51  2010/06/07 15:29:19  bdbcat
- * 607a
- *
- * Revision 1.50  2010/06/06 20:50:35  bdbcat
- * 606a
- *
- * Revision 1.49  2010/06/04 22:35:12  bdbcat
- * 604
- *
- * Revision 1.48  2010/05/29 17:32:18  bdbcat
- * 529a
- *
- * Revision 1.47  2010/05/28 15:09:08  bdbcat
- * 528a Catch SIGSEGV
- *
- * Revision 1.46  2010/05/27 18:58:47  bdbcat
- * 527a
- *
- * Revision 1.45  2010/05/23 23:09:14  bdbcat
- * Build 523a
- *
- * Revision 1.44  2010/05/19 01:07:02  bdbcat
- * Build 518
- *
- * Revision 1.43  2010/05/15 03:58:59  bdbcat
- * Build 514
- *
- * Revision 1.42  2010/05/02 03:02:41  bdbcat
- * Build 501
- *
- * Revision 1.41  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.40  2010/04/15 15:49:49  bdbcat
- * Build 415.
- *
- * Revision 1.39  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 
@@ -109,6 +53,7 @@
 #include <wx/image.h>
 
 #include <sys/stat.h>
+
 
 #include "chartimg.h"
 #include "ocpn_pixel.h"
@@ -1414,8 +1359,6 @@ ChartBaseBSB::ChartBaseBSB()
       m_Chart_Skew = 0.0;
 
       pPixCache = NULL;
-      pPixCacheBackground = NULL;
-      background_work_buffer = NULL;
 
       pLineCache = NULL;
 
@@ -1446,10 +1389,6 @@ ChartBaseBSB::ChartBaseBSB()
       m_proj_lat = 0.;
       m_proj_lon = 0.;
       m_proj_parameter = 0.;
-
-      m_br_scale = -1.0;
-      br_target_y = -1;
-      m_br_bpending = false;
 
       m_b_cdebug = 0;
 
@@ -1510,9 +1449,6 @@ ChartBaseBSB::~ChartBaseBSB()
 
 
       delete pPixCache;
-
-      delete pPixCacheBackground;
-      free(background_work_buffer);
 
 
       for(int i = 0 ; i < N_BSB_COLORS ; i++)
@@ -2787,7 +2723,7 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       int ret_val = 0;
 
-      if(vp_last.bValid)
+      if(vp_last.IsValid())
       {
 
                   double binary_scale_factor = GetPPM() / vp_proposed.view_scale_ppm;
@@ -2862,20 +2798,68 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       return (ret_val > 0);
 }
 
-/*
-bool ChartBaseBSB::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
+
+bool ChartBaseBSB::IsRenderCacheable( wxRect& source, wxRect& dest )
 {
-      if ( !vp_last.IsValid()  ||   !vp_proposed.IsValid() )
-            return true;
+      wxRect s1;
+      double scale_x = (double)source.width / (double)dest.width;
 
-      wxRect rlast, rthis;
+//      if(m_b_cdebug)printf("GVUC: scale_x: %g\n", scale_x);
 
-      ComputeSourceRectangle(vp_last, &rlast);
-      ComputeSourceRectangle(vp_proposed, &rthis);
 
-      return ((rlast != rthis) || !(IsCacheValid()) || (vp_last.view_scale_ppm != vp_proposed.view_scale_ppm));
+      //    Using the cache only works for pure binary scale factors......
+      if((fabs(scale_x - wxRound(scale_x))) > .0001)
+      {
+//            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 1\n");
+            return false;
+      }
+
+
+      if(scale_x <= 1.0)                                        // overzoom
+      {
+//            if(m_b_cdebug)printf("    MISS<<<>>>GVUC:  Overzoom\n");
+            return false;
+      }
+
+      //    Scale must be exactly digital...
+      if((int)(source.width/dest.width) != (int)wxRound(scale_x))
+      {
+//            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: Not digital scale test 2\n");
+            return false;
+      }
+
+//    Calculate the digital scale, e.g. 1,2,4,8,,,
+      int cs1d = source.width/dest.width;
+      if(abs(source.x - cache_rect.x) % cs1d)
+      {
+//            if(m_b_cdebug)printf("   source.x: %d  cache_rect.x: %d  cs1d: %d\n", source.x, cache_rect.x, cs1d);
+//            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: x mismatch\n");
+            return false;
+      }
+      if(abs(source.y - cache_rect.y) % cs1d)
+      {
+//            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: y mismatch\n");
+            return false;
+      }
+
+      if(pPixCache && ((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height)))
+      {
+//            if(m_b_cdebug)printf("   MISS<<<>>>GVUC: dest size mismatch\n");
+            return false;
+      }
+
+      int stride_rows = (source.y + source.height) - (cache_rect.y + cache_rect.height);
+      if(abs(stride_rows) >= source.height)                       // Pan more than one screen
+            return false;
+
+      int stride_pixels = (source.x + source.width) - (cache_rect.x + cache_rect.width);
+      if(abs(stride_pixels) >= source.width)                      // Pan more than one screen
+            return false;
+
+
+      return true;
 }
-*/
+
 
 void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
@@ -2908,13 +2892,10 @@ void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValid
 }
 
 
-bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type )
+bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegion& Region, ScaleTypeEnum scale_type )
 {
       wxRect s1;
-//      unsigned char *pCP;
-//      unsigned char *pPix;
       ScaleTypeEnum scale_type_corrected;
-//      int xsoff, ysoff;
 
       if(m_b_cdebug)printf(" source:  %d %d\n", source.x, source.y);
       if(m_b_cdebug)printf(" cache:   %d %d\n", cache_rect.x, cache_rect.y);
@@ -2991,7 +2972,6 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
       }
 
       int stride_rows = (source.y + source.height) - (cache_rect.y + cache_rect.height);
-//      int yo = (source.y - cache_rect.y) % cs1d;
       int scaled_stride_rows = (int)(stride_rows / scale_x);
 
       if(abs(stride_rows) >= source.height)                       // Pan more than one screen
@@ -3066,132 +3046,30 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
 //    Y Pan
       if(source.y != cache_rect.y)
       {
-            if(abs(scaled_stride_rows) < 4)
-            {
-                  if(m_b_cdebug)printf("    GVUC Filling cache(y) at HIDEF %d rows\n", abs(scaled_stride_rows));
-                  pan_scale_type_y = RENDER_HIDEF;
-            }
-
-#if 0
-            //    Get the new bits needed
-            if(stride_rows > 0)                             // pan down
-                  s1 = wxRect(cache_rect.x, cache_rect.y + cache_rect.height, cache_rect.width, stride_rows + yo);
-            else                                                  // pan up
-                  s1 = wxRect(cache_rect.x, source.y, cache_rect.width,  -(stride_rows + yo));
-
-            wxRect sub_dest = dest;
-            sub_dest.y = 0;
-                  sub_dest.height = abs(scaled_stride_rows);
-
-            unsigned char *ppnx = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
-            GetAndScaleData(&ppnx, s1, source.width, sub_dest, dest.width, cs1d, pan_scale_type_y);
-
-//    Now, concatenate the data
-
-            unsigned char *ppc = (unsigned char *)pPixCache->GetpData();     // source
-            PixelCache *pPCtemp = new PixelCache(dest.width, dest.height, BPP);     // destination
-            pPix = pPCtemp->GetpData();
-
-
-            unsigned char *ppn = ppnx;
-            pCP = pPix;
-            if(stride_rows > 0)                             // pan down
-            {
-                  unsigned char *pcac = ppc + (scaled_stride_rows * dest.width * BPP/8);  //pointer into current cache
-                  unsigned char *pnew = ppn;
-
-                  memcpy(pCP, pcac, dest.width * (dest.height - scaled_stride_rows)*BPP/8);
-                  pCP += dest.width * (dest.height - scaled_stride_rows) *BPP/8;
-                  memcpy(pCP, pnew, dest.width * (scaled_stride_rows)*BPP/8);
-
-            }
-            else                                                  // pan up
-            {
-                  unsigned char *pcac = ppc;
-                  unsigned char *pnew = ppn;
-
-                  memcpy(pCP, pnew, dest.width * (-scaled_stride_rows)*BPP/8);
-                  pCP += dest.width * (-scaled_stride_rows) *BPP/8;
-                  memcpy(pCP, pcac, dest.width * (dest.height + scaled_stride_rows)*BPP/8);
-
-            }
-#endif
-            //    Move the data in the cache out of the way
-//            int height = pPixCache->GetHeight();
-//            int width = pPixCache->GetWidth();
-
             wxRect sub_dest = dest;
             sub_dest.height = abs(scaled_stride_rows);
 
             if(stride_rows > 0)                             // pan down
             {
-//                  unsigned char *ps = pPixCache->GetpData() +  (scaled_stride_rows * width * BPP/8);
-//                  memmove(pPixCache->GetpData(), ps, width * (height - scaled_stride_rows)*BPP/8);
                   sub_dest.y = height - scaled_stride_rows;
 
             }
             else
             {
-//                  unsigned char *pd = pPixCache->GetpData() - (scaled_stride_rows * width * BPP/8);
-//                  memmove(pd, pPixCache->GetpData(), width * (height + scaled_stride_rows)*BPP/8);
                   sub_dest.y = 0;
 
             }
 
-
             //    Get the new bits needed
-/*
-            if(stride_rows > 0)                             // pan down
-                  s1 = wxRect(cache_rect.x, cache_rect.y + cache_rect.height, cache_rect.width, stride_rows + yo);
-            else                                                  // pan up
-                  s1 = wxRect(cache_rect.x, source.y, cache_rect.width,  -(stride_rows + yo));
 
-            wxRect sub_dest = dest;
-            sub_dest.y = 0;
-            sub_dest.height = abs(scaled_stride_rows);
-*/
-//            unsigned char *ppnx = (unsigned char *) malloc( pPixCache->GetWidth()*(pPixCache->GetHeight()+2)*BPP/8 );
-            unsigned char *ppn = pPixCache->GetpData();
-            GetAndScaleData(&ppn, source, source.width, sub_dest, width, cs1d, pan_scale_type_y);
-/*
-//    Now, concatenate the data
-
-            unsigned char *ppc = (unsigned char *)pPixCache->GetpData();     // source
-
-            PixelCache *pPCtemp = new PixelCache(pPixCache->GetWidth(), pPixCache->GetHeight(), BPP);     // destination
-            pPix = pPCtemp->GetpData();
-
-
-            unsigned char *ppn = ppnx;
-            pCP = pPix;
-            if(stride_rows > 0)                             // pan down
+            //    A little optimization...
+            //    No sense in fetching bits that are not part of the ultimate render region
+            wxRegionContain rc = Region.Contains(sub_dest);
+            if((wxPartRegion == rc) || (wxInRegion == rc))
             {
-                  unsigned char *pcac = ppc + (scaled_stride_rows * pPixCache->GetWidth() * BPP/8);  //pointer into current cache
-                  unsigned char *pnew = ppn + (scaled_stride_rows * pPixCache->GetWidth() * BPP/8);
-
-                  memcpy(pCP, pcac, dest.width * (dest.height - scaled_stride_rows)*BPP/8);
-                  pCP += dest.width * (dest.height - scaled_stride_rows) *BPP/8;
-                  memcpy(pCP, pnew, dest.width * (scaled_stride_rows)*BPP/8);
-
+                  unsigned char *ppn = pPixCache->GetpData();
+                  GetAndScaleData(&ppn, source, source.width, sub_dest, width, cs1d, pan_scale_type_y);
             }
-            else                                                  // pan up
-            {
-                  unsigned char *pcac = ppc;
-                  unsigned char *pnew = ppn;
-
-                  memcpy(pCP, pnew, dest.width * (-scaled_stride_rows)*BPP/8);
-                  pCP += dest.width * (-scaled_stride_rows) *BPP/8;
-                  memcpy(pCP, pcac, dest.width * (dest.height + scaled_stride_rows)*BPP/8);
-
-            }
-*/
-
-//    Delete working data
-//            free(ppnx);
-
-
-//            delete pPixCache;
-//            pPixCache = pPCtemp;
             pPixCache->Update();
 
 //    Update the cached parameters, Y only
@@ -3201,7 +3079,6 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             cache_rect_scaled = dest;
             cached_image_ok = 1;
 
-
       }                 // Y Pan
 
 
@@ -3210,129 +3087,30 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
 //    X Pan
       if(source.x != cache_rect.x)
       {
-            if(abs(scaled_stride_pixels) < 4)
-            {
-                  if(m_b_cdebug)printf("    GVUC Filling cache(x) at HIDEF %d columns\n",abs(scaled_stride_pixels) );
-                  pan_scale_type_x = RENDER_HIDEF;
-            }
-            //    Move the data in the cache out of the way
- //           int height = pPixCache->GetHeight();
- //           int width = pPixCache->GetWidth();
-
             wxRect sub_dest = dest;
             sub_dest.width = abs(scaled_stride_pixels);
 
             if(stride_pixels > 0)                           // pan right
             {
-/*
-                  unsigned char *ps = pPixCache->GetpData() + scaled_stride_pixels * BPP/8;
-                  unsigned char *pd = pPixCache->GetpData();
-
-                  for(int iy=0 ; iy<height ; iy++)
-                  {
-                        memmove(pd, ps, (width - scaled_stride_pixels) *BPP/8);
-
-                        ps += width * BPP/8;
-                        pd += width * BPP/8;
-                  }
-*/
                   sub_dest.x = width - scaled_stride_pixels;
             }
             else                                                  // pan left
             {
-/*
-                  unsigned char *pd = pPixCache->GetpData() - scaled_stride_pixels * BPP/8;
-                  unsigned char *ps = pPixCache->GetpData();
-
-                  for(int iy=0 ; iy<height ; iy++)
-                  {
-                        memmove(pd, ps, (width + scaled_stride_pixels) *BPP/8);
-
-                        ps += width * BPP/8;
-                        pd += width * BPP/8;
-                  }
-*/
                   sub_dest.x = 0;
             }
 
             //    Get the new bits needed
 
-            unsigned char *ppnx = pPixCache->GetpData();
-            GetAndScaleData(&ppnx, source, source.width, sub_dest, width, cs1d, pan_scale_type_x);
+            //    A little optimization...
+            //    No sense in fetching bits that are not part of the ultimate render region
+            wxRegionContain rc = Region.Contains(sub_dest);
+            if((wxPartRegion == rc) || (wxInRegion == rc))
+            {
+                  unsigned char *ppnx = pPixCache->GetpData();
+                  GetAndScaleData(&ppnx, source, source.width, sub_dest, width, cs1d, pan_scale_type_x);
+            }
 
             pPixCache->Update();
-
-#if 0
-            //    Get the new bits needed
-            if(stride_pixels > 0)                           // pan right
-                  s1 = wxRect(cache_rect.x + cache_rect.width, source.y, stride_pixels, source.height);
-            else                                                  // pan left
-                  s1 = wxRect(source.x, source.y, -stride_pixels, source.height);
-
-            wxRect sub_dest = dest;
-            sub_dest.x = 0;
-            sub_dest.width = abs(scaled_stride_pixels);
-
-            unsigned char *ppnx = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
-            GetAndScaleData(&ppnx, s1, source.width, sub_dest, abs(scaled_stride_pixels), cs1d, pan_scale_type_x);
-
-
-//    Now, concatenate the data
-
-            unsigned char *ppc = (unsigned char *)pPixCache->GetpData();     // source
-            PixelCache *pPCtemp = new PixelCache(dest.width, dest.height, BPP);     // destination
-            pPix = pPCtemp->GetpData();
-
-            unsigned char *ppn = ppnx;
-            pCP = pPix;
-            if(stride_pixels > 0)                           // pan right
-            {
-                  unsigned char *pcac = ppc + scaled_stride_pixels * BPP/8;
-                  unsigned char *pnew = ppn;
-
-                  for(int iy=0 ; iy<cache_rect_scaled.height ; iy++)
-                  {
-                        memcpy(pCP, pcac, (cache_rect_scaled.width-scaled_stride_pixels) *BPP/8);
-
-                        pCP += (cache_rect_scaled.width-scaled_stride_pixels) *BPP/8;
-
-                        memcpy(pCP, pnew, scaled_stride_pixels * BPP/8);
-
-                        pcac += cache_rect_scaled.width * BPP/8;
-                        pnew += scaled_stride_pixels * BPP/8;
-
-                        pCP += scaled_stride_pixels * BPP/8;
-                  }
-            }
-            else                                                  // pan left
-            {
-                  unsigned char *pcac = ppc;
-                  unsigned char *pnew = ppn;
-
-                  for(int iy=0 ; iy<cache_rect_scaled.height ; iy++)
-                  {
-                        memcpy(pCP, pnew, scaled_stride_pixels * -BPP/8);
-                        pCP += scaled_stride_pixels * -BPP/8;
-
-                        memcpy(pCP, pcac, (cache_rect_scaled.width+scaled_stride_pixels) * BPP/8);
-
-                        pCP += (cache_rect_scaled.width+scaled_stride_pixels) * BPP/8;
-
-
-                        pcac += cache_rect_scaled.width * BPP/8;
-                        pnew += scaled_stride_pixels * -BPP/8;
-
-                  }
-            }
-
-
-//    Delete working data
-            free(ppnx);
-
-
-            delete pPixCache;
-            pPixCache = pPCtemp;
-#endif
 
 //    Update the cached parameters
             cache_rect = source;
@@ -3340,13 +3118,6 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, ScaleTypeEnu
             cached_image_ok = 1;
 
       }           // X pan
-
-      if(cache_scale_method == RENDER_HIDEF)          // as set by background render
-      {
-            if( (abs(scaled_stride_pixels) && (pan_scale_type_x == RENDER_LODEF))
-                 || (abs(scaled_stride_rows) && (pan_scale_type_y == RENDER_LODEF)) )
-               cache_scale_method = RENDER_LODEF;
-      }
 
       return true;
 }
@@ -3392,25 +3163,11 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
             //    Invalidate the cache if the scale has changed or the viewport size has changed....
       if((fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9) || (m_last_vprect != dest))
-      {
             cached_image_ok = false;
-
-            //    Cancel any background render in process
-            delete pPixCacheBackground;
-            pPixCacheBackground = NULL;
-
-            free(background_work_buffer);
-            background_work_buffer = NULL;
-
-            br_Rsrc.SetSize(wxSize(1,1));             // mark this a definitely different
-            br_target_y = 0;
-            m_br_bpending = false;;
-      }
 
 
       m_cached_scale_ppm = VPoint.view_scale_ppm;
       m_last_vprect = dest;
-
 
       bool bsame_region = (Region == m_last_region);          // only want to do this once
 
@@ -3422,75 +3179,36 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
               return false;
      }
 
-//     if(!bsame_region)
-//           cached_image_ok = false;
-
      m_last_region = Region;
 
-     //     Is this render interrupting a background HIDEF render at the same scale?
-     //     If so, then go ahead and do a HIDEF render to this viewport, and return same
-     if(m_br_bpending && (0 != br_target_y) && (fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) < 1e-9))
-     {
-           if(m_b_cdebug)printf("  Underway bbr interrupted, creating new HIDEF render\n");
-
-           PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
-
-           unsigned char *ppnx = pPixCacheTemp->GetpData();
-
-           if(!GetAndScaleData(&ppnx, Rsrc, Rsrc.width, dest, dest.width, factor, RENDER_HIDEF))
-           {
-                  delete pPixCacheTemp;                       // Some error, retain old cache
-                  return false;
-           }
-           else
-           {
-                  delete pPixCache;                           // new cache is OK
-                  pPixCache = pPixCacheTemp;
-           }
-
-//    Update cache parameters
-           cache_rect = Rsrc;
-           cache_rect_scaled = dest;
-           cache_scale_method = RENDER_HIDEF;
-           cached_image_ok = 1;
-
-//    Mark the background as done
-           delete pPixCacheBackground;
-           pPixCacheBackground = NULL;
-
-           free(background_work_buffer);
-           background_work_buffer = NULL;
-
-           br_target_y = 0;
-           m_br_bpending = false;
-
-//          Return the best pixel cache
-           pPixCache->SelectIntoDC(dc);
-
-           return true;
-     }
 
      //     Analyze the region requested
-     //     Get the region rectanglel count and the proportion of the vp covered
-     int pix_area = 0;
-     int n_rect =0;
-     wxRegionIterator upd ( Region ); // get the requested rect list
-     while ( upd )
-     {
-           wxRect rect = upd.GetRect();
-           pix_area += rect.width * rect.height;
-           n_rect++;
-           upd ++ ;
-     }
-     double area_fraction = (double)pix_area / (double)(VPoint.pix_width * VPoint.pix_height);
-
      //     When rendering complex regions, (more than say 4 rectangles)
      //     .OR. small proportions, then rectangle rendering may be faster
      //     Also true  if the scale is less than near unity, or overzoom.
      //     This will be the case for backgrounds of the quilt.
 
 
-     if((factor < 1) || (n_rect > 4) || (area_fraction < .4))
+     /*  Update for Version 2.4.0
+     This logic seems flawed, at least for quilts which contain charts having non-rectangular coverage areas.
+     These quilt regions decompose to ...LOTS... of rectangles, most of which are 1 pixel in height.
+     This is very slow, due to the overhead of GetAndScaleData().
+     However, remember that overzoom never uses the cache, nor does non-binary scale factors..
+     So, we check to see if this is a cacheable render, and that the number of rectangles is "reasonable"
+     */
+
+     //     Get the region rectangle count
+
+     int n_rect =0;
+     wxRegionIterator upd ( Region ); // get the requested rect list
+     while ( upd )
+     {
+           n_rect++;
+           upd ++ ;
+     }
+
+     if(!IsRenderCacheable( Rsrc, dest ) && ( n_rect > 1 ) && (n_rect < 10))
+//     if((factor < 1) || (n_rect > 4) || (area_fraction < .4))
      {
            ScaleTypeEnum ren_type = RENDER_HIDEF;
 
@@ -3515,19 +3233,14 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
            delete pPixCache;                           // new cache is OK
            pPixCache = pPixCacheTemp;
 
-
-
       //    Update cache parameters
            cache_rect = Rsrc;
            cache_scale_method = ren_type;
            cached_image_ok = true;
 
 
-//    Select the data into the dc
+      //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
-
-//           if(ren_type == RENDER_LODEF)
-//                  Initialize_BackgroundHiDefRender(VPoint);
 
            return true;
      }
@@ -3537,12 +3250,10 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     Default is to try using the cache
      {
            if(m_b_cdebug)printf("  Render Region By GVUC\n");
-           bool bnewview = GetViewUsingCache(Rsrc, dest, RENDER_HIDEF/*scale_type*/);
+           bool bnewview = GetViewUsingCache(Rsrc, dest, Region, RENDER_HIDEF);
 
-                  //    Select the data into the dc
+     //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
-
-//           Initialize_BackgroundHiDefRender(VPoint);
 
            return bnewview;
      }
@@ -3574,53 +3285,23 @@ wxImage *ChartBaseBSB::GetImage()
 
 bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type )
 {
-//      int cs1 = source.width/dest.width;
-
-//    Setup the scale_type dependencies
-//      int get_bits_submap = 1;            // default, bi-linear
-
-//    n.b if cs1 ==0, we are oversampling, scale > 1
-//      if( (scale_type == SCALE_SUBSAMP) && cs1)
-//            get_bits_submap = cs1;
-
-//      float canvas_scale = (float)dest.width / (float)source.width;
-
-//      printf("canvas_scale %g\n", canvas_scale);
-
-//    Create a temporary PixelCache
-//      delete pPixCache;
       PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
-
-//    Special case for unity scale
-//    In this case, need only one buffer, so make it the PixelCache buffer directly
-//      if(canvas_scale == 1)
-//      {
-//    Get the chart bits directly into the PixelCache data buffer
-//          GetChartBits(source, pPixCacheTemp->GetpData(), get_bits_submap);
-//          delete pPixCache;
-//          pPixCache = pPixCacheTemp;
-//      }
-
-//    Otherwise, non-unity scale, so need a temp buffer
-//      else
-      {
 //    Get and Rescale the data directly into the temporary PixelCache data buffer
+      unsigned char *ppnx = pPixCacheTemp->GetpData();
+      double factor = ((double)source.width)/((double)dest.width);
 
-            unsigned char *ppnx = pPixCacheTemp->GetpData();
-            double factor = ((double)source.width)/((double)dest.width);
-
-            if(!GetAndScaleData(&ppnx, source, source.width, dest, dest.width, factor, scale_type))
-            {
-                delete pPixCacheTemp;                       // Some error, retain old cache
-                return false;
-            }
-            else
-            {
-                delete pPixCache;                           // new cache is OK
-                pPixCache = pPixCacheTemp;
-            }
+      if(!GetAndScaleData(&ppnx, source, source.width, dest, dest.width, factor, scale_type))
+      {
+           delete pPixCacheTemp;                       // Some error, retain old cache
+           return false;
       }
+      else
+      {
+           delete pPixCache;                           // new cache is OK
+           pPixCache = pPixCacheTemp;
+      }
+
 
 //    Update cache parameters
 
@@ -3641,7 +3322,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 
       unsigned char *s_data = NULL;
 
-      double factor = scale_factor;  //((double)source_stride)/((double)dest.width);
+      double factor = scale_factor;
       int Factor =  (int)factor;
 
       int target_width = (int)wxRound((double)source.width  / factor) ;
@@ -3664,7 +3345,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 
       else                                            // else get a buffer here (and return it)
       {
-//            data = (unsigned char *) malloc( target_width*(target_height+2)*BPP/8 );
             malloc_size = dest.width*(dest.height+2)*BPP/8;
             data = (unsigned char *) malloc( dest.width*(dest.height+2)*BPP/8 );
             target_data = data;
@@ -3903,10 +3583,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
                         i = dest.x;
                         while( i < dest.x + dest.width)
                         {
-      //                        int into_target_buffer = target_data_x - target_data;
-
-      //                        int into_source_buffer =  BPP/8*(y_offset + (int)(i * m_raster_scale_factor));
-
                               memcpy( target_data_x,
                                     source_data + BPP/8*(y_offset + (int)(i * m_raster_scale_factor)),
                                     BPP/8 );
@@ -3915,7 +3591,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
                               i++;
                         }
 
-      //                  target_line_start += target_width * BPP / 8;
                         j++;
                   }
 
@@ -3933,175 +3608,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char **ppn, wxRect& source, int sour
 }
 
 
-#if 0
-bool ChartBaseBSB::Initialize_BackgroundHiDefRender(const ViewPort &VPoint)
-{
-    if(br_Rsrc == Rsrc)
-    {
-          if(m_b_cdebug)printf("    %d No Init bbr due to Rsrc == br_Rsrc \n",s_dc++);
-          return false;;
-    }
-
-    if(cache_scale_method == RENDER_HIDEF)
-    {
-          if(cached_image_ok && (cache_rect == Rsrc))
-          {
-                if(m_b_cdebug)printf("    %d No Init bbr due to good cache \n",s_dc++);
-                return false;;
-          }
-    }
-
-    wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
-    double factor = ((float)Rsrc.width)/((float)dest.width);
-
-    if(factor < 1.0)            // it should never happen that we try to
-        return false;           // re-scale an overzoomed chart, but....
-
-    if(factor >=8.0 )            // set an upper limit on rescale for performance reasons
-          return false;
-
-    m_br_bpending = true;
-    br_factor = factor;
-    br_Rsrc = Rsrc;
-
-    br_target_width = dest.width;
-    br_target_height = dest.height;
-
-    delete pPixCacheBackground;
-    pPixCacheBackground = NULL;     //new PixelCache(dest.width, dest.height, BPP);
-
-    free(background_work_buffer);
-    background_work_buffer = NULL; //(unsigned char *) malloc( bwb_size ); // work buffer
-
-    //  And the scale....
-    m_br_scale = VPoint.view_scale_ppm;
-
-    //  Set starting points
-    br_target_y = 0;
-
-    if(m_b_cdebug)printf("   on bbr init, br_Rsrc: %d %d\n", br_Rsrc.x, br_Rsrc.y);
-
-    return true;
-}
-
-bool ChartBaseBSB::Finish_BackgroundHiDefRender(void)
-{
-    if(m_b_cdebug)printf("    ......Finish bbr\n");
-    cache_scale_method= RENDER_HIDEF;             // the cache is set
-    cache_rect = br_Rsrc; //Rsrc;
-
-    cached_image_ok = true;
-
-    delete pPixCache;
-    pPixCache = pPixCacheBackground;
-    pPixCacheBackground = NULL;
-
-    free(background_work_buffer);
-    background_work_buffer = NULL;
-
-    br_target_y = 0;
-    m_br_bpending = false;;
-
-    return true;
-}
-
-int ChartBaseBSB::Continue_BackgroundHiDefRender(void)
-        /*
-            Return BR_DONE_NOP or BR_DONE_REFRESH when finished
-        */
-{
-    if(!m_br_bpending)
-    {
-          if(m_b_cdebug)printf("bbr Continue reports nothing in process\n");
-          return BR_DONE_NOP;
-    }
-
-//    if(br_Rsrc != Rsrc)
-//          printf("Rsrs mismatch\n");
-
-    if(!pPixCacheBackground)
-    {
-          if(m_b_cdebug)printf("    ......bbr Continue creates new PixelCache\n");
-          pPixCacheBackground = new PixelCache(br_target_width, br_target_height, BPP);
-          br_target_data = pPixCacheBackground->GetpData();
-    }
-
-    if(!background_work_buffer)
-    {
-      int bwb_size = (int)((Rsrc.width) * ((br_factor + 1) * 2) * BPP/8 );
-      background_work_buffer = (unsigned char *) malloc( bwb_size ); // work buffer
-    }
-
-    if (br_target_y < br_target_height)
-    {
-        int y_source = Rsrc.y + (int)(br_target_y * br_factor);
-                  //    Read "factor + 1" lines
-        wxRect s1;
-        s1.x = Rsrc.x;
-        s1.y = y_source;
-        s1.width = Rsrc.width;
-        s1.height = (int)(br_factor + 1);
-        GetChartBits(s1, background_work_buffer, 1);
-
-        unsigned char *pixel;
-
-        for (int x = 0; x < br_target_width; x++)
-        {
-            unsigned int avgRed = 0 ;
-            unsigned int avgGreen = 0;
-            unsigned int avgBlue = 0;
-            unsigned char *pix0 = background_work_buffer + BPP/8 * ((int)( x * br_factor )) ;
-
-            int pixel_count = 0;
-            int y_offset = 0;
-            if((x * br_factor) < (Size_X - Rsrc.x))
-            {
-            // determine average
-                for ( int y1 = 0 ; y1 < (int)br_factor ; ++y1 )
-                {
-                    pixel = pix0 + (BPP/8 * y_offset ) ;
-                    for ( int x1 = 0 ; x1 < (int)br_factor ; ++x1 )
-                    {
-                        avgRed   += pixel[0] ;
-                        avgGreen += pixel[1] ;
-                        avgBlue  += pixel[2] ;
-
-                        pixel += BPP/8;
-                        pixel_count++;
-                    }
-                    y_offset += Rsrc.width ;
-                }
-
-
-                br_target_data[0] = avgRed   / pixel_count;
-                br_target_data[1] = avgGreen / pixel_count;
-                br_target_data[2] = avgBlue  / pixel_count;
-
-                br_target_data += BPP/8;
-            }
-
-            else
-            {
-                  br_target_data[0] = 0;
-                  br_target_data[1] = 0;
-                  br_target_data[2] = 0;
-
-                  br_target_data += BPP/8;
-            }
-
-        }  // for x
-
-        br_target_y++;
-
-        return BR_CONTINUE;                   // more to come
-
-    }  // if y on range
-
-    Finish_BackgroundHiDefRender();
-    return BR_DONE_REFRESH;                        // done
-}
-
-#endif
 
 bool ChartBaseBSB::GetChartBits(wxRect& source, unsigned char *pPix, int sub_samp)
 {
@@ -4436,20 +3942,43 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
       pCL = xtemp_line + xs;
       unsigned char *prgb = pLineBuf;
 
-      int dest_inc_val_bytes = (BPP/8) * sub_samp;
-      ix = xs;
-      while(ix < xl-1)
+      //    Optimization for most usual case
+      if((BPP == 24) && (1 == sub_samp))
       {
-            unsigned char cur_by = *pCL;
-            rgbval = (int)(pPalette[cur_by]);
-            while((ix < xl-1))
+            ix = xs;
+            while(ix < xl-1)
             {
-                  if(cur_by != *pCL)
-                        break;
-                  *((int *)prgb) = rgbval;
-                  prgb+=dest_inc_val_bytes ;
-                  pCL += sub_samp;
-                  ix  += sub_samp;
+                  unsigned char cur_by = *pCL;
+                  rgbval = (int)(pPalette[cur_by]);
+                  while((ix < xl-1))
+                  {
+                        if(cur_by != *pCL)
+                              break;
+                        *((int *)prgb) = rgbval;
+                        prgb += 3;
+                        pCL ++;
+                        ix  ++;
+                  }
+            }
+
+      }
+      else
+      {
+            int dest_inc_val_bytes = (BPP/8) * sub_samp;
+            ix = xs;
+            while(ix < xl-1)
+            {
+                  unsigned char cur_by = *pCL;
+                  rgbval = (int)(pPalette[cur_by]);
+                  while((ix < xl-1))
+                  {
+                        if(cur_by != *pCL)
+                              break;
+                        *((int *)prgb) = rgbval;
+                        prgb+=dest_inc_val_bytes ;
+                        pCL += sub_samp;
+                        ix  += sub_samp;
+                  }
             }
       }
 
@@ -4703,13 +4232,10 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
              toSM_ECC(pRefTable[imax].latr, pRefTable[imax].lonr, m_proj_lat, m_proj_lon, &easting0, &northing0);
              toSM_ECC(pRefTable[jmax].latr, pRefTable[jmax].lonr, m_proj_lat, m_proj_lon, &easting1, &northing1);
 
-              //  Calculate the scale factor using exact REF point math in x(longitude) direction
-
-
-             double dx =  (pRefTable[jmax].xr - pRefTable[imax].xr);
-             double de =  (easting1 - easting0);
-
-             m_ppm_avg = fabs(dx / de);
+              //  Calculate the scale factor using exact REF point math
+//             double dx =  (pRefTable[jmax].xr - pRefTable[imax].xr);
+//             double de =  (easting1 - easting0);
+//             m_ppm_avg = fabs(dx / de);
 
              double dx2 =  (pRefTable[jmax].xr - pRefTable[imax].xr) *  (pRefTable[jmax].xr - pRefTable[imax].xr);
              double dy2 =  (pRefTable[jmax].yr - pRefTable[imax].yr) *  (pRefTable[jmax].yr - pRefTable[imax].yr);

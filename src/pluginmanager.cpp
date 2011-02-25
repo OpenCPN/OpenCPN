@@ -68,12 +68,12 @@ PlugIn_ViewPort CreatePlugInViewport( ViewPort *vp)
       pivp.b_quilt =                vp->b_quilt;
       pivp.m_projection_type =      vp->m_projection_type;
 
-      pivp.lat_min =                vp->vpBBox.GetMinY();
-      pivp.lat_max =                vp->vpBBox.GetMaxY();
-      pivp.lon_min =                vp->vpBBox.GetMinX();
-      pivp.lon_max =                vp->vpBBox.GetMaxX();
+      pivp.lat_min =                vp->GetBBox().GetMinY();
+      pivp.lat_max =                vp->GetBBox().GetMaxY();
+      pivp.lon_min =                vp->GetBBox().GetMinX();
+      pivp.lon_max =                vp->GetBBox().GetMaxX();
 
-      pivp.bValid =                 vp->bValid;                 // This VP is valid
+      pivp.bValid =                 vp->IsValid();                 // This VP is valid
 
       return pivp;
 }
@@ -392,12 +392,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *v
       pivp.b_quilt =                vp->b_quilt;
       pivp.m_projection_type =      vp->m_projection_type;
 
-      pivp.lat_min =                vp->vpBBox.GetMinY();
-      pivp.lat_max =                vp->vpBBox.GetMaxY();
-      pivp.lon_min =                vp->vpBBox.GetMinX();
-      pivp.lon_max =                vp->vpBBox.GetMaxX();
+      pivp.lat_min =                vp->GetBBox().GetMinY();
+      pivp.lat_max =                vp->GetBBox().GetMaxY();
+      pivp.lon_min =                vp->GetBBox().GetMinX();
+      pivp.lon_max =                vp->GetBBox().GetMaxX();
 
-      pivp.bValid =                 vp->bValid;                 // This VP is valid
+      pivp.bValid =                 vp->IsValid();                 // This VP is valid
 
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
@@ -845,7 +845,7 @@ void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon)
       ocpn_vp.pix_width = vp->pix_width;
       ocpn_vp.pix_height = vp->pix_height;
 
-      wxPoint ret = ocpn_vp.GetMercatorPixFromLL(lat, lon);
+      wxPoint ret = ocpn_vp.GetPixFromLL(lat, lon);
       pp->x = ret.x;
       pp->y = ret.y;
 }
@@ -863,7 +863,7 @@ void GetCanvasLLPix( PlugIn_ViewPort *vp, wxPoint p, double *plat, double *plon)
       ocpn_vp.pix_width = vp->pix_width;
       ocpn_vp.pix_height = vp->pix_height;
 
-      return ocpn_vp.GetMercatorLLFromPix( p, plat, plon);
+      return ocpn_vp.GetLLFromPix( p, plat, plon);
 }
 
 bool GetGlobalColor(wxString colorName, wxColour *pcolour)

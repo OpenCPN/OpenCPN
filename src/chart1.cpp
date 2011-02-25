@@ -4512,7 +4512,7 @@ void MyFrame::DoStackDown(void)
       {
             int new_dbIndex = pCurrentStack->GetDBIndex(current_stack_index - 1);
 
-            if(!cc1->IsChartQuiltable(new_dbIndex))
+            if(!cc1->IsChartQuiltableRef(new_dbIndex))
             {
                   ToggleQuiltMode();
                   SelectChartFromStack(current_stack_index - 1);
@@ -4543,7 +4543,7 @@ void MyFrame::DoStackUp(void)
       {
             int new_dbIndex = pCurrentStack->GetDBIndex(current_stack_index + 1);
 
-            if(!cc1->IsChartQuiltable(new_dbIndex))
+            if(!cc1->IsChartQuiltableRef(new_dbIndex))
             {
                   ToggleQuiltMode();
                   SelectChartFromStack(current_stack_index + 1);
@@ -5374,7 +5374,7 @@ void MyFrame::HandlePianoClick(int selected_index, int selected_dbIndex)
             SelectChartFromStack(selected_index);
       else
       {
-            if(cc1->IsChartQuiltable(selected_dbIndex))
+            if(cc1->IsChartQuiltableRef(selected_dbIndex))
                   SelectQuiltRefChart(selected_index);
             else
             {
@@ -5859,9 +5859,9 @@ bool MyFrame::DoChartUpdate(void)
 
                         int initial_type = ChartData->GetDBChartType(initial_db_index);
 
-                  //    Check to see if the target new chart is quiltable
+                  //    Check to see if the target new chart is quiltable as a reference chart
 
-                        if(!cc1->IsChartQuiltable(initial_db_index))
+                        if(!cc1->IsChartQuiltableRef(initial_db_index))
                         {
                   // If it is not quiltable, then walk the stack up looking for a satisfactory chart
                   // i.e. one that is quiltable and of the same type
@@ -5870,7 +5870,7 @@ bool MyFrame::DoChartUpdate(void)
                               while((stack_index < pCurrentStack->nEntry-1) && (stack_index >= 0))
                               {
                                     int test_db_index = pCurrentStack->GetDBIndex(stack_index);
-                                    if(cc1->IsChartQuiltable(test_db_index) &&
+                                    if(cc1->IsChartQuiltableRef(test_db_index) &&
                                        ( initial_type == ChartData->GetDBChartType(initial_db_index)))
                                     {
                                           initial_db_index = test_db_index;
@@ -5951,7 +5951,7 @@ bool MyFrame::DoChartUpdate(void)
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
                 double set_scale = cc1->GetVPScale();
-                if(!cc1->VPoint.bValid)
+                if(!cc1->VPoint.IsValid())
                     set_scale = 1./200000.;
 
                 cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
@@ -6080,7 +6080,7 @@ bool MyFrame::DoChartUpdate(void)
                     double set_scale = cc1->GetVPScale();
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
-                    if(!cc1->VPoint.bValid)
+                    if(!cc1->VPoint.IsValid())
                         set_scale = 1./200000.;
                     else                                    // otherwise, match scale if elected.
                     {
