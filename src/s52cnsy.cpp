@@ -1662,6 +1662,15 @@ static void *OBSTRN04 (void *param)
                   else
                   {
                         switch (watlevstr[0]){
+                              case 5: depth_value =   0.0 ; break;
+                              case 3: depth_value =   0.01; break;
+                              case 4:
+                              case 1:
+                              case 2:
+                              default : depth_value = -15.0 ; break;
+                        }
+/*
+                        switch (watlevstr[0]){
                               case '5': depth_value =   0.0 ; break;
                               case '3': depth_value =   0.01; break;
                               case '4':
@@ -1669,6 +1678,7 @@ static void *OBSTRN04 (void *param)
                               case '2':
                                     default : depth_value = -15.0 ; break;
                         }
+*/
                   }
             }
             else
@@ -3108,7 +3118,7 @@ static void *WRECKS02 (void *param)
     }
 	if (7 != quasou) //Fixes FS 165
 		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
-	else 
+	else
 		udwhaz03str = new wxString();
     quapnt01str = CSQUAPNT01(obj);
 
