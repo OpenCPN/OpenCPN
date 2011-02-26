@@ -1442,6 +1442,7 @@ ChartBaseBSB::~ChartBaseBSB()
                   pt = &pLineCache[ylc];
                   if(pt->pPix)
                         free (pt->pPix);
+                  free( pt->pRGB );
             }
             free (pLineCache);
       }
@@ -1742,6 +1743,7 @@ InitReturn ChartBaseBSB::PostInit(void)
                   pt->xstart = 0;
                   pt->xlength = 1;
                   pt->pPix = NULL;        //(unsigned char *)malloc(1);
+                  pt->pRGB = NULL;
             }
       }
       else
@@ -3933,8 +3935,58 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
       if(bUseLineCache)
             pt->bValid = true;
 
-//          Line is valid, de-reference thru proper pallete directly to target
+#if 0
+      //    Here is some test code, using full RGB line buffers in LineCache
+      //    instead of pallete dereferencing for every access....
+      //    Uses lots of memory, needs ColorScheme considerations
+      if(pt->pRGB == NULL)
+      {
+            pt->pRGB = (unsigned char *)malloc(Size_X * BPP/8);
 
+            ix = 0;
+            unsigned char *prgb = pt->pRGB;           // destination
+            unsigned char *pCL = xtemp_line;          // line of pallet pointers
+
+            while(ix < Size_X-1)
+            {
+                  unsigned char cur_by = *pCL;
+                  rgbval = (int)(pPalette[cur_by]);
+                  while((ix < Size_X-1))
+                  {
+                        if(cur_by != *pCL)
+                              break;
+                        *((int *)prgb) = rgbval;
+                        prgb += BPP/8 ;
+                        pCL ++;
+                        ix  ++;
+                  }
+
+                  // Get the last pixel explicitely
+
+                  unsigned char *pCLast = xtemp_line + (Size_X - 1);
+                  unsigned char *prgb_last = pt->pRGB + ((Size_X - 1)) * BPP/8;
+
+                  rgbval = (int)(pPalette[*pCLast]);        // last pixel
+                  unsigned char a = rgbval & 0xff;
+                  *prgb_last++ = a;
+                  a = (rgbval >> 8) & 0xff;
+                  *prgb_last++ = a;
+                  a = (rgbval >> 16) & 0xff;
+                  *prgb_last = a;
+
+            }
+      }
+
+      if(pt->pRGB)
+      {
+            unsigned char *ps = pt->pRGB + (xs * BPP/8);
+            int len = wxMin((xl - xs), (Size_X - xs));
+            memmove(pLineBuf, ps, len * BPP/8);
+            return 1;
+      }
+#endif
+
+//          Line is valid, de-reference thru proper pallete directly to target
 
       if(xl > Size_X-1)
             xl = Size_X-1;

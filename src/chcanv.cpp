@@ -151,14 +151,6 @@ extern bool             g_bShowDepthUnits;
 extern AIS_Decoder      *g_pAIS;
 extern FontMgr         *pFontMgr;
 
-#ifdef FLAV
-// Flav add for CM93Offset manual setup
-extern double           g_CM93Maps_Offset_x;
-extern double           g_CM93Maps_Offset_y;
-extern bool             g_CM93Maps_Offset_on;
-extern bool             g_CM93Maps_Offset_Enable;
-#endif
-
 extern MyFrame          *gFrame;
 
 //    AIS Global configuration
@@ -231,6 +223,8 @@ extern wxAuiManager      *g_pauimgr;
 extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 
 extern bool             g_bskew_comp;
+
+extern bool             g_bFullScreenQuilt;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -936,7 +930,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   }
             }
       }
-      if(0)
+      if(g_bFullScreenQuilt)
       {
 //                  double quilt_area = vp_local.pix_width * vp_local.pix_height;
             int n_all_charts = ChartData->GetChartTableEntries();
@@ -1031,20 +1025,22 @@ bool Quilt::Compose(const ViewPort &vp_in)
             }
       }
 
-
-
-
-
-/*
+      //    It is possible that the reference chart is not really part of the visible quilt
+      //    This can happen when the reference chart is panned
+      //    off-screen in full screen quilt mode
+      //    We detect this case, and set a NOP default value for m_refchart_dbIndex.
+      //    This will cause the quilt parameters such as scale, type, and projection
+      //    to retain their current settings until the reference chart is later directly set.
+      bool bf = false;
       for(unsigned int i=0 ; i<m_pcandidate_array->GetCount() ; i++)
       {
             QuiltCandidate *qc = m_pcandidate_array->Item(i);
-            const ChartTableEntry &m = ChartData->GetChartTableEntry(qc->dbIndex);
-            printf("Sorted candidate array chart scale: %d\n", m.GetScale());
+            if(qc->dbIndex == m_refchart_dbIndex)
+                  bf = true;
       }
-*/
 
-
+      if(!bf)
+            m_refchart_dbIndex = -1;
 
 
       //    Using Region logic, and starting from the largest scale chart
@@ -3788,8 +3784,24 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
                               current_ref_stack_index = i;
                   }
 
-                  if(0)
-                       current_ref_stack_index = m_pQuilt->GetRefChartdbIndex();
+                  if(g_bFullScreenQuilt)
+                  {
+/*
+                        current_ref_stack_index = -1;
+                        int ref_db_index = m_pQuilt->GetRefChartdbIndex();
+                        int proj = ChartData->GetDBChartProj(ref_db_index);
+                        VPoint.SetProjectionType(proj);
+                        VPoint.SetBoxes();
+
+                        LLBBox viewbox = VPoint.GetBBox();
+                        wxBoundingBox chart_box;
+                        ChartData->GetDBBoundingBox(ref_db_index, &chart_box);
+
+
+                        if((viewbox.Intersect( chart_box) != _OUT))
+*/
+                        current_ref_stack_index = m_pQuilt->GetRefChartdbIndex();
+                  }
 
                   //    If the new stack does not contain the current ref chart....
                   if((-1 == current_ref_stack_index) && (m_pQuilt->GetRefChartdbIndex() >= 0))

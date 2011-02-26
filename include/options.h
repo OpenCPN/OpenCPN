@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: options.h,v 1.27 2010/06/11 16:20:28 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
@@ -24,25 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- * 2010.02.09 pjotrc
- * - implement ships bells
- *
- * $Log: options.h,v $
- * Revision 1.27  2010/06/11 16:20:28  bdbcat
- * 611a
- *
- * Revision 1.26  2010/06/04 22:36:32  bdbcat
- * 604
- *
- * Revision 1.25  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.24  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.23  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
  */
 
 
@@ -136,9 +116,9 @@ enum {
         ID_CHECK_LOOKAHEAD,
         ID_SKEWCOMPBOX,
         ID_GARMINHOST,
-//        ID_ACTIVATECM93OFFSET, // Flav for CM93Offset
-//        ID_ENABLECM93OFFSET,
-        ID_FILTERNMEA
+        ID_FILTERNMEA,
+        ID_FULLSCREENQUILT
+
 
 };
 
@@ -151,7 +131,7 @@ enum {
 #define     VISIT_CHARTS      16
 #define     LOCALE_CHANGED    32
 #define     TOOLBAR_CHANGED   64
-//#define     CM93OFFSET_CHANGED 128          // Flav: for CM93Offset
+
 
 
 #ifndef wxCLOSE_BOX
@@ -240,10 +220,7 @@ public:
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxCheckBox              *pSkewComp;
-// Flav: for CM93Offset
-//    wxCheckBox              *pSActivateCM93Offset;
-//    wxTextCtrl              *m_pText_CM93OffsetX;
-//    wxTextCtrl              *m_pText_CM93OffsetY;
+    wxCheckBox              *pFullScreenQuilt;
 
 //    For GPS Page
     wxScrolledWindow        *itemPanelGPS;

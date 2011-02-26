@@ -124,6 +124,7 @@ public:
       int               xstart;
       int               xlength;
       unsigned char     *pPix;
+      unsigned char     *pRGB;
       bool              bValid;
 };
 

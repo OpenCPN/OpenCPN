@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id:
  *
  * Project:  OpenCPN
  * Purpose:  Navigation Utility Functions
@@ -24,67 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: navutil.cpp,v $
- * Revision 1.77  2010/06/25 02:04:23  bdbcat
- * 624
- *
- * Revision 1.76  2010/06/21 01:58:14  bdbcat
- * 620
- *
- * Revision 1.75  2010/06/16 03:53:26  bdbcat
- * 615a
- *
- * Revision 1.74  2010/06/13 21:05:23  bdbcat
- * 613a
- *
- * Revision 1.73  2010/06/11 16:27:53  bdbcat
- * 611a
- *
- * Revision 1.72  2010/06/06 20:53:09  bdbcat
- * 606a
- *
- * Revision 1.71  2010/06/04 22:35:30  bdbcat
- * 604
- *
- * Revision 1.70  2010/05/26 21:57:10  bdbcat
- * 526a
- *
- * Revision 1.69  2010/05/25 01:55:16  bdbcat
- * Build 524b
- *
- * Revision 1.68  2010/05/23 23:17:42  bdbcat
- * Build 523a
- *
- * Revision 1.67  2010/05/20 19:04:33  bdbcat
- * Build 520
- *
- * Revision 1.66  2010/05/15 04:01:08  bdbcat
- * Build 514
- *
- * Revision 1.65  2010/04/27 01:41:36  bdbcat
- * Build 426
- *
- * Revision 1.64  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.63  2010/04/01 20:17:38  bdbcat
- * 2.1.0 Build 331
- *
- * Revision 1.62  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * 2010.02.26-28, 03.02 pjotrc
- * - allow multi segment tracks import & export
- * - don't draw links between disjoint GPX track segments
- *
- * 2010.02.26 pjotrc
- * - draw running track in different color
- * - draw tracks in track marks color
- *
- * 2010.02.11 pjotrc
- * - show creation date for trackpoints
- *
  *
  */
 
@@ -299,7 +237,6 @@ extern int              g_BSBImgDebug;
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
 
-
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
@@ -310,6 +247,8 @@ extern bool             g_bDebugGPSD;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
+
+extern bool             g_bFullScreenQuilt;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2331,13 +2270,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );
 
-      // Flav CM93Offset reads values from ini file
-#ifdef FLAV
-      Read ( _T ( "CM93DisplayOffsetX" ),  &g_CM93Maps_Offset_x, 0 );
-      Read ( _T ( "CM93DisplayOffsetY" ),  &g_CM93Maps_Offset_y, 0 );
-      Read ( _T ( "CM93DisplayOffsetOn" ),  &g_CM93Maps_Offset_on, 0 );
-      Read ( _T ( "CM93DisplayOffsetEnable" ),  &g_CM93Maps_Offset_Enable, 0 );
-#endif
+      Read ( _T ( "FullScreenQuilt" ),  &g_bFullScreenQuilt, 1 );
 
       Read ( _T ( "StartWithTrackActive" ),  &g_bTrackCarryOver, 0 );
 
@@ -3488,13 +3421,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
       Write ( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
 
-#ifdef FLAV
-      // Flav CM93Offset: writes values to ini file
-      Write ( _T ( "CM93DisplayOffsetX" ),  g_CM93Maps_Offset_x);
-      Write ( _T ( "CM93DisplayOffsetY" ),  g_CM93Maps_Offset_y);
-      Write ( _T ( "CM93DisplayOffsetOn" ),  g_CM93Maps_Offset_on);
-      Write ( _T ( "CM93DisplayOffsetEnable" ),  g_CM93Maps_Offset_Enable);
-#endif
+      Write ( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
 
       Write ( _T ( "NMEALogWindowSizeX" ),  g_NMEALogWindow_sx );
       Write ( _T ( "NMEALogWindowSizeY" ),  g_NMEALogWindow_sy );
