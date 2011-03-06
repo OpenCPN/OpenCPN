@@ -3788,7 +3788,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                               y_offset = (int)(js *m_raster_scale_factor) * source.width;
 
                               target_line_start = target_data + (j * dest_stride * BPP / 8);
-                              target_data_x = target_line_start + (dest.x * BPP / 8);
+                              target_data_x = target_line_start + ((dest.x - wxRound(x_vernier / m_raster_scale_factor)) * BPP / 8);
 
                               i = dest.x;
                               int is = i;
