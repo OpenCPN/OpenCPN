@@ -77,7 +77,7 @@ class ViewPort
 {
       public:
 //  ctor
-            ViewPort()  { bValid = false; skew = 0.; view_scale_ppm = 1; rotation = 0.; b_quilt = false;}
+            ViewPort();
 
             wxPoint GetPixFromLL(double lat, double lon) const;
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
@@ -89,7 +89,7 @@ class ViewPort
 //  Accessors
             void Invalidate() { bValid = false; }
             void Validate() { bValid = true; }
-            bool IsValid() { return bValid; }
+            bool IsValid() const { return bValid; }
 
             void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
             void SetProjectionType(int type){ m_projection_type = type; }
@@ -113,6 +113,7 @@ class ViewPort
 
             wxRect   rv_rect;
 
+            wxPoint  m_pan_delta;
       private:
             //    Methods
 

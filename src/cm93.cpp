@@ -39,6 +39,7 @@
 #include <wx/arrstr.h>
 #include <wx/mstream.h>
 #include <wx/spinctrl.h>
+#include <wx/listctrl.h>
 
 #include "ogr_api.h"
 #include "s57chart.h"

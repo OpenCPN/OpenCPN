@@ -4395,6 +4395,7 @@ void MyFrame::SetupQuiltMode(void)
             }
 
             cc1->SetQuiltRefChart(target_new_dbindex);
+            cc1->ReloadVP();
 
             Current_Ch = NULL;                  // Bye....
       }
@@ -6244,20 +6245,6 @@ void MyFrame::OnPianoMenuEnableChart(wxCommandEvent& event)
 
 void MyFrame::OnPianoMenuDisableChart(wxCommandEvent& event)
 {
-/*
-       //    Remove the item from the list to avoid multiple addition
-      for(unsigned int i=0 ; i < g_quilt_noshow_index_array.GetCount() ; i++)
-      {
-            if(g_quilt_noshow_index_array.Item(i) == menu_selected_dbIndex)        // chart is in the noshow list
-            {
-                  g_quilt_noshow_index_array.RemoveAt(i);
-                  break;
-            }
-      }
-
-      g_quilt_noshow_index_array.Add(menu_selected_dbIndex);
-*/
-
       RemoveChartFromQuilt(menu_selected_dbIndex);
 
 //      It could happen that the chart being disabled is the reference chart....
@@ -6266,15 +6253,34 @@ void MyFrame::OnPianoMenuDisableChart(wxCommandEvent& event)
             int type = ChartData->GetDBChartType(menu_selected_dbIndex);
 
             int i = menu_selected_index + 1;          // select next smaller scale chart
+            bool b_success = false;
             while(i < pCurrentStack->nEntry - 1)
             {
                   int dbIndex = pCurrentStack->GetDBIndex(i);
                   if(type == ChartData->GetDBChartType(dbIndex))
                   {
                         SelectQuiltRefChart(i);
+                        b_success = true;
                         break;
                   }
                   i++;
+            }
+
+            //    If that did not work, try to select the next larger scale compatible chart
+            if(!b_success)
+            {
+                  i = menu_selected_index - 1;
+                  while(i > 0)
+                  {
+                        int dbIndex = pCurrentStack->GetDBIndex(i);
+                        if(type == ChartData->GetDBChartType(dbIndex))
+                        {
+                              SelectQuiltRefChart(i);
+                              b_success = true;
+                              break;
+                        }
+                        i--;
+                  }
             }
       }
 }

@@ -186,6 +186,8 @@ protected:
 
       void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
       wxRect GetSourceRect(){ return Rsrc; }
+      void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
+      void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
 
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
@@ -211,7 +213,7 @@ protected:
       virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
       virtual int BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int xl, int sub_samp);
 
-      virtual bool GetAndScaleData(unsigned char **ppn,
+      virtual bool GetAndScaleData(unsigned char *ppn,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,
                                    double scale_factor, ScaleTypeEnum scale_type);
 
@@ -321,6 +323,8 @@ protected:
       int       m_b_cdebug;
 
       double    m_proj_lat, m_proj_lon;
+
+      ViewPort  m_vp_render_last;
 };
 
 

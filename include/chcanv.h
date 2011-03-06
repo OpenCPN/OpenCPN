@@ -357,9 +357,6 @@ private:
       int         warp_x, warp_y;
       bool        warp_flag;
 
-//      bool        m_bSubsamp;
-
-      wxBitmap    *pBM;
 
       float       current_draw_scaler;
 
@@ -410,11 +407,6 @@ private:
       int         m_nMeasureState;
       Route       *m_pMeasureRoute;
 
-// Flav CM93Offset Tool
-//      bool        m_bCM93MeasureOffset_Active;
-//      int         m_nCM93MeasureOffsetState;
-//      Route       *m_pCM93MeasureOffsetRoute;
-
       wxBitmap    m_bmTideDay;
       wxBitmap    m_bmTideDusk;
       wxBitmap    m_bmTideNight;
@@ -447,7 +439,6 @@ private:
 
       Quilt       *m_pQuilt;
 
-      PixelCache  *m_pPix;                      // the cached pixels
       ViewPort    m_cache_vp;
       wxBitmap    *m_prot_bm;
       wxPoint     m_roffset;
@@ -458,6 +449,10 @@ private:
 
       double      m_wheel_lat, m_wheel_lon;
       int         m_wheel_x,m_wheel_y;
+
+      ViewPort    m_bm_cache_vp;
+      wxBitmap    m_working_bm;           // Used to build quilt in OnPaint()
+      wxBitmap    m_cached_chart_bm;      // A cached copy of the fully drawn quilt
 
 
 

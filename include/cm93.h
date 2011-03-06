@@ -28,6 +28,8 @@
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
 
+#include <wx/listctrl.h>			// Somehow missing from wx build
+
 #include    "s57chart.h"
 #include    "cutil.h"               // for types
 
@@ -39,12 +41,10 @@
 //    Static functions
 int Get_CM93_CellIndex(double lat, double lon, int scale);
 void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
-//ArrayOfInts GetVPCellArray(const ViewPort &vpt, int native_scale);
 
 //    Fwd definitions
 class covr_set;
 class wxSpinCtrl;
-
 
 class M_COVR_Desc
 {
