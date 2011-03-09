@@ -240,7 +240,7 @@ class covr_set
             unsigned int GetCoverCount(){ return m_covr_array_outlines.GetCount(); }
             M_COVR_Desc *GetCover(unsigned int im){ return &m_covr_array_outlines.Item(im); }
             void Add_MCD(M_COVR_Desc *pmcd);
-            void Add_Update_MCD(M_COVR_Desc *pmcd);
+            bool Add_Update_MCD(M_COVR_Desc *pmcd);
             bool IsCovrLoaded(int cell_index);
             int Find_MCD(M_COVR_Desc *pmcd);
             M_COVR_Desc *Find_MCD(int cell_index, int object_id);
@@ -403,12 +403,13 @@ bool covr_set::IsCovrLoaded(int cell_index)
       return(m_cell_hash.find( cell_index) != m_cell_hash.end());
 }
 
-void covr_set::Add_Update_MCD(M_COVR_Desc *pmcd)
+bool covr_set::Add_Update_MCD(M_COVR_Desc *pmcd)
 {
       if(m_cell_hash.find( pmcd->m_cell_index ) == m_cell_hash.end())         // not present yet?
       {
             m_covr_array_outlines.Add(pmcd);
             m_cell_hash[pmcd->m_cell_index] = 1;  // initialize
+            return true;
       }
             //    There is at least one MCD already in place for this cell index
             //    We need to search the entire table to see if any of those MCD's
@@ -431,7 +432,10 @@ void covr_set::Add_Update_MCD(M_COVR_Desc *pmcd)
             {
                   m_covr_array_outlines.Add(pmcd);
                   m_cell_hash[pmcd->m_cell_index]++;        // add this M_COVR to the hash map
+                  return true;
             }
+            else
+                  return false;
       }
 }
 
@@ -3633,12 +3637,10 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, Object *pobject, c
                         pmcd->transform_WGS84_offset_x = tmp_transform_x;
                         pmcd->transform_WGS84_offset_y = tmp_transform_y;
 
-                       //     Add this geometry to the currently loaded class M_COVR array
-                        m_pcovr_array_loaded.Add(pmcd);
 
                         //    Is this MCD in the preloaded cache file coverset?
                         int im = GetCoverSet()->Find_MCD(pmcd);
-                        if(im != -1)
+                        if(im != -1)      //this MCD is already in the coverset
                         {
                               // If so, are there user offsets applied to this MCD?
                               M_COVR_Desc *pmcd_candidate = GetCoverSet()->GetCover(im);
@@ -3650,21 +3652,27 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, Object *pobject, c
                                     m_CIB.user_yoff = pmcd_candidate->user_yoff;
 
                                     //    Update the working MCD as well
-                                    pmcd->user_xoff = pmcd_candidate->user_xoff;
-                                    pmcd->user_yoff = pmcd_candidate->user_yoff;
-                                    pmcd->m_buser_offsets = true;
-
+//                                    pmcd->user_xoff = pmcd_candidate->user_xoff;
+//                                    pmcd->user_yoff = pmcd_candidate->user_yoff;
+//                                    pmcd->m_buser_offsets = true;
                               }
+
+                              delete pmcd;
+                              pmcd = pmcd_candidate;
                         }
+                        else
+                              //    Add this MCD to the persistent class covr_set if it does not exist already
+                              GetCoverSet()->Add_Update_MCD(pmcd);
+
+
+                        //     Add this geometry to the currently loaded class M_COVR array
+                        m_pcovr_array_loaded.Add(pmcd);
 
                         //    Add the MCD it to the current (temporary) per cell list
                         //    This array is used only to quickly find the M_COVR object parameters which apply to other objects
                         //    loaded from this cell.
                         //    We do this so we don't have to search the entire (worldwide) coverset for this chart scale
                         m_CIB.m_cell_mcovr_list.Append(pmcd);
-
-                        //    Add this MCD to the persistent class covr_set if it does not exist already
-                        GetCoverSet()->Add_Update_MCD(pmcd);
 
                   }
 
@@ -4149,7 +4157,7 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt)
       for(unsigned int i=0 ; i < vpcells.GetCount() ; i++)
       {
             //    If the cell is not already in the master coverset, go load enough of it to get the offsets and outlines.....
-            if(!m_pcovr_set->IsCovrLoaded(vpcells.Item(i)))//                  M_COVR_Desc *covr_set::Find_MCD(int cell_index, int object_id)
+            if(!m_pcovr_set->IsCovrLoaded(vpcells.Item(i)))
             {
                   m_loadcell_key = '0';               // starting
 
