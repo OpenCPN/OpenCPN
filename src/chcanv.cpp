@@ -8439,18 +8439,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                   {
                         wxMemoryDC scratch_dc_0;
                         scratch_dc_0.SelectObject ( m_cached_chart_bm);
-//                        wxRegion rgn_blit_save = GetUpdateRegion(); //ru;
-/*                        wxRegion rgn_blit_save(wxRect(0,0,svp.pix_width, svp.pix_height));
-                        wxRegionIterator upd_save ( rgn_blit_save ); // get the update rect list
-                        while ( upd_save )
-                        {
-                              wxRect rect = upd_save.GetRect();
-
-                              scratch_dc_0.Blit ( rect.x, rect.y, rect.width, rect.height,
-                                          &temp_dc, rect.x, rect.y  );
-                              upd_save ++ ;
-                        }
-*/
                         scratch_dc_0.Blit ( 0, 0, svp.pix_width, svp.pix_height, &temp_dc, 0, 0  );
 
                         scratch_dc_0.SelectObject ( wxNullBitmap);
