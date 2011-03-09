@@ -8437,10 +8437,10 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
             //  Save the fully rendered quilt image as a wxBitmap member of this class
                   if(b_save)
                   {
-                        wxRegion rgn_blit_save;
                         wxMemoryDC scratch_dc_0;
                         scratch_dc_0.SelectObject ( m_cached_chart_bm);
-                        rgn_blit_save = ru;
+//                        wxRegion rgn_blit_save = GetUpdateRegion(); //ru;
+/*                        wxRegion rgn_blit_save(wxRect(0,0,svp.pix_width, svp.pix_height));
                         wxRegionIterator upd_save ( rgn_blit_save ); // get the update rect list
                         while ( upd_save )
                         {
@@ -8450,6 +8450,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                                           &temp_dc, rect.x, rect.y  );
                               upd_save ++ ;
                         }
+*/
+                        scratch_dc_0.Blit ( 0, 0, svp.pix_width, svp.pix_height, &temp_dc, 0, 0  );
+
                         scratch_dc_0.SelectObject ( wxNullBitmap);
 
                         m_bm_cache_vp = VPoint;             // save the ViewPort associated with the cached wxBitmap
