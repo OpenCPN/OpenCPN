@@ -835,6 +835,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
             if(pc)
             {
                   double max_ref_scale = pc->GetNormalScaleMax(m_canvas_scale_factor, m_canvas_width);
+                  max_ref_scale *= 1.1;         // Fudge factor, to err on the side of more detail on zoomout
 
                   if(proposed_scale_onscreen > max_ref_scale)
                   {
@@ -1068,7 +1069,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   if((m_reference_type == ChartData->GetDBChartType(i)) &&
                   (fabs(chart_skew) < 1.0) &&
                   ((ChartData->GetDBChartProj(i) == m_quilt_proj) || (m_bquilt_polyconic && (ChartData->GetDBChartProj(i) == PROJECTION_POLYCONIC))) &&
-                  (ChartData->GetDBChartScale(i) > m_reference_scale / 2))
+                  (ChartData->GetDBChartScale(i) >= m_reference_scale / 2))
                   {
                         wxBoundingBox chart_box;
                         ChartData->GetDBBoundingBox(i, &chart_box);
