@@ -1644,6 +1644,11 @@ bool MyApp::OnInit()
                         ChartData = new ChartDB(gFrame);
 
                         wxString line(_("Rebuilding chart database from configuration file entries..."));
+                        /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
+                         * to be localized properly. See {wxWidgets}src/generic/progdlgg.cpp:190 */
+                        wxString dummy1 = _("Elapsed time : ");
+                        wxString dummy2 = _("Estimated time : ");
+                        wxString dummy3 = _("Remaining time : ");
                         wxProgressDialog *pprog = new wxProgressDialog (  _("OpenCPN Chart Update"), line, 100, NULL,
                                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 

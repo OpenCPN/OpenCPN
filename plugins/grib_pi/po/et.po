@@ -2,39 +2,43 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 02:27+0100\n"
-"PO-Revision-Date: 2010-09-06 23:34-0500\n"
-"Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
+"PO-Revision-Date: 2011-01-09 19:25+0200\n"
+"Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-# 
-# 
-#: src/grib.h:116 src/grib_pi.cpp:270
+#
+#
+#: src/grib.h:116
+#: src/grib_pi.cpp:270
 msgid "GRIB Display Control"
 msgstr "GRIB-i ekraani kontroll"
 
-#: src/grib_pi.cpp:112 src/grib_pi.cpp:199 src/grib_pi.cpp:248
+#: src/grib_pi.cpp:112
+#: src/grib_pi.cpp:199
+#: src/grib_pi.cpp:248
 msgid "Grib"
-msgstr ""
+msgstr "Grib"
 
-# 
-# 
-#: src/grib_pi.cpp:168 src/grib_pi.cpp:221
+#
+#
+#: src/grib_pi.cpp:168
+#: src/grib_pi.cpp:221
 msgid "GRIB"
 msgstr "GRIB"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr ""
+msgstr "GRIB lisa OpenCPN-ile"
 
 #: src/grib_pi.cpp:180
 msgid ""
@@ -47,110 +51,118 @@ msgid ""
 "- sea surface temperature\n"
 "- surface current direction and speed."
 msgstr ""
+"GRIB lisa OpenCPN-ile\n"
+"Hoolitseb GRIB failide läbipaistva lisamise mitmete GRIB faili tüüpidele .\n"
+"\n"
+"Toetatud GRIB faili tüübid kaasaarvatud:\n"
+"- tuule suund ja kiirus\n"
+"- tähtis laine kõrgus\n"
+"- vee pindmine temperatuur\n"
+"- tõusu/mõõna suund ja kiirus."
 
 #: src/grib_pi.cpp:212
 msgid "GRIB Preferences"
-msgstr ""
+msgstr "GRIP Seaded"
 
-# 
-# 
+#
+#
 #: src/grib_pi.cpp:225
 msgid "Show GRIB icon"
 msgstr "Näita GRIB-i ikooni"
 
-# 
-# 
+#
+#
 #: src/grib_pi.cpp:228
 msgid "Use High Definition Graphics"
 msgstr "Kasuta kõrgresulutsioonil graafikat"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:211
 msgid "GRIB File Directory"
 msgstr "GRIB faili asukoht"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:237
 msgid "GRIB Data"
 msgstr "GRIB-i andmed"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:250
 msgid "Wind Speed, Kts."
 msgstr "Tuule kiirus, sõlmedes"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:260
 msgid "Wind Direction"
 msgstr "Tuule suund"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:270
 msgid "Pressure, mBar"
 msgstr "Õhurõhk, mBar"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:280
 msgid "Significant Wave Height, m"
 msgstr "Oluline laine kõrgus, m"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:291
 msgid "Sea Surface Temp, C"
 msgstr "Veepinna temperatuur, C"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:301
 msgid "Current Velocity, Kts."
 msgstr "Praegune kiirus, sõlme"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:316
 msgid "&Close"
 msgstr "&Sulge"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:518
 msgid "Select GRIB Directory"
 msgstr "Vali GRIB-i asukoht"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:1110
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
 
-# 
-# 
+#
+#
 #: src/grib.cpp:1230
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud HTSGW ILMA"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:1403
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:1520
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
 
-# 
-# 
+#
+#
 #: src/grib.cpp:1640
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"

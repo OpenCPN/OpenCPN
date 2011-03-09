@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-14 09:54-0500\n"
+"POT-Creation-Date: 2011-03-09 16:32-0500\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -15,155 +15,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
 #
-#: include/routeprop.h:71
-#: src/chcanv.cpp:7118
-#: src/chcanv.cpp:7922
-#: src/routemanagerdialog.cpp:879
-msgid "Route Properties"
-msgstr "Ιδιότητες ταξιδίου (Route)"
-
-#
-#: include/routeprop.h:89
-msgid "Mark Properties"
-msgstr "Ιδιότητες Σημαδιού"
-
-#
-#: include/routeprop.h:103
-msgid "Mark Information"
-msgstr "Πληροφορίες Σημαδιού"
-
-#
-#: include/options.h:72
-msgid "Options"
-msgstr "Επιλογές"
-
-#
-#: include/chcanv.h:580
-#: include/chcanv.h:592
-#: include/chcanv.h:645
-#: include/chcanv.h:657
-#: src/chcanv.cpp:7201
-#: src/chcanv.cpp:7208
-#: src/chcanv.cpp:7668
-msgid "Object Query"
-msgstr "Ιδιότητες αντικειμένου"
-
-#
-#: include/chcanv.h:849
-msgid "Jump To Position"
-msgstr "Μεταπήδησε στη Θέση"
-
-#
-#: include/about.h:70
-#: src/chart1.cpp:2474
-msgid "About OpenCPN"
-msgstr "Περί OpenCPN"
-
-#
-#: include/ais.h:452
-#: src/ais.cpp:2468
-msgid "AIS Alert"
-msgstr "Συναγερμός AIS"
-
-#
-#: include/routeman.h:71
-msgid "Send Route To GPS"
-msgstr "Αποστολή ταξιδίου στο GPS"
-
-#
-#: src/chartdbs.cpp:706
-msgid " ChartFile:  "
-msgstr "Αρχείο Χάρτη:  "
-
-#
-#: src/chartdbs.cpp:714
-msgid " Name:  "
-msgstr "Όνομα:  "
-
-#
-#: src/chartdbs.cpp:720
-#, c-format
-msgid " Scale:  1:%d"
-msgstr "Κλίμακα:  1:%d"
-
-#
-#: src/chartdbs.cpp:727
-msgid " ID:  "
-msgstr " ID:  "
-
-#
-#: src/chartdbs.cpp:736
-msgid " Depth Units:  "
-msgstr "Μονάδες Βάθους:  "
-
-#
-#: src/chartdbs.cpp:745
-msgid " Soundings:  "
-msgstr "Βάθη:  "
-
-#
-#: src/chartdbs.cpp:754
-msgid " Datum:  "
-msgstr "Ημερομηνία:  "
-
-#
-#: src/chartdbs.cpp:760
-msgid " Projection:  "
-msgstr "Προβολή:  "
-
-#
-#: src/chartdbs.cpp:762
-#: src/ais.cpp:848
-msgid "Unknown"
-msgstr "Άγνωστο"
-
-#
-#: src/chartdbs.cpp:764
-msgid "Mercator"
-msgstr "Μερκατορική Προβολή"
-
-#
-#: src/chartdbs.cpp:766
-msgid "Transverse Mercator"
-msgstr "Εγκάρσια Μερκατορική Προβολή (Transverse Mercator)"
-
-#
-#: src/chartdbs.cpp:768
-msgid "Polyconic"
-msgstr "Πολυκωνική Προβολή"
-
-#
-#: src/chartdbs.cpp:775
-msgid " Source Edition:  "
-msgstr "Έκδοση Κώδικα:  "
-
-#
-#: src/chartdbs.cpp:784
-msgid " Updated:  "
-msgstr "Ενημεώθηκε:  "
-
-#
-#: src/chartdbs.cpp:795
 msgid "\n"
 msgstr "\n"
-
 #
-#: src/chartdbs.cpp:988
-msgid "OpenCPN Chart Scan...."
-msgstr "OpenCPN Αναζήτηση Χαρτών...."
-
-#: src/chartdbs.cpp:1043
-msgid "OpenCPN Directory Scan...."
-msgstr "OpenCPN Σκανάρισμα Φακέλων...."
-
+msgid ""
+"\n"
+"\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"\n"
 #
-#: src/chartdbs.cpp:1275
-msgid "OpenCPN Chart Add...."
-msgstr "OpenCPN Προσθήκη Χαρτών...."
-
-#: src/chart1.cpp:652
+msgid ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN ...ένα ελαφρύ εκλεπτυσμένο Ανοικτού Λογισμικού Πρόγραμμα "
+"αποτύπωσης Χαρτών/Πλοηγός"
+#
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -192,376 +64,468 @@ msgstr ""
 "ΜΗΝ ΕΜΠΙΣΤΕΥΕΣΤΕ την ζωή σας ή την περιουσία σας απόλυτα στο OpenCPN.\n"
 "\n"
 "Παρακαλώ πιέστε \"OK\" αν συμφωνείτε να προχωρήσετε, ή \"Cancel\" για Έξοδο\n"
-
 #
-#: src/chart1.cpp:663
-msgid "Welcome to OpenCPN"
-msgstr "Καλωσορίσατε στο OpenCPN"
-
-#
-#: src/chart1.cpp:880
-#: src/chart1.cpp:1656
-#: src/chart1.cpp:4174
-#: src/navutil.cpp:1190
-#: src/navutil.cpp:1941
-msgid "OpenCPN Info"
-msgstr "OpenCPN Πληροφορίες"
-
-#: src/chart1.cpp:1079
-msgid "Retrieving initial language selection from Windows Registry"
-msgstr "Ανάκτηση της τοπικής γλώσσας από την Windows Registry"
-
-#: src/chart1.cpp:1588
-msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "Ανάκτηση των τοπικών φακέλων χαρτών από την Windows Registry"
-
-#
-#: src/chart1.cpp:1639
-msgid "Rebuilding chart database from configuration file entries..."
-msgstr "Το OpenCPN ανακεφαλαιώνει τη βάση δεδομένων Χαρτών από τα αρχεία διαμόρφωσης..."
-
-#
-#: src/chart1.cpp:1640
-#: src/chart1.cpp:4093
-msgid "OpenCPN Chart Update"
-msgstr "OpenCPN Ανανέωση Χαρτών"
-
-#
-#: src/chart1.cpp:1654
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 "           Δεν έχουν εγκατασταθεί χάρτες.\n"
 "Παρακαλώ επιλέξτε τους φακέλους χαρτών από Εργαλεία -> Ναυτικοί Χάρτες."
-
 #
-#: src/chart1.cpp:2231
-#: src/chcanv.cpp:7223
-#: src/chcanv.cpp:7693
-#: src/ais.cpp:3856
-msgid "AIS Target Query"
-msgstr "Ερώτηση προορισμών AIS"
-
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr "       \"Όνομα Πλοίου\" MMSI (Call Sign)"
 #
-#: src/chart1.cpp:2379
-#: src/chcanv.cpp:7236
-msgid "Zoom In"
-msgstr "Μεγένθυση"
-
+msgid "      COG arrow predictor length (Minutes):"
+msgstr "      Μήκους Βέλους (COG) σε πρώτα λεπτά μοίρας (Minuten):"
 #
-#: src/chart1.cpp:2382
-#: src/chcanv.cpp:7237
-msgid "Zoom Out"
-msgstr "Σμίκρυνση"
-
+msgid "      Max moored target speed (Kts.):"
+msgstr "      Μέγιστη Ταχύτητα για σταθερά σημεία σε κόμβους (kn):"
 #
-#: src/chart1.cpp:2389
-msgid "Shift to Larger Scale Chart"
-msgstr "Άλλαξε σε χάρτη με μεγαλύτερη Κλίμακα"
-
+msgid "      Target track length (Minutes):"
+msgstr "       Μήκος ίχνους στόχου (Λεπτά) (Minuten):"
 #
-#: src/chart1.cpp:2392
-msgid "Shift to Smaller Scale Chart"
-msgstr "Άλλαξε σε χάρτη με μικρότερη Κλίμακα"
-
-#
-#: src/chart1.cpp:2409
-msgid "Create Route"
-msgstr "Φτιάξε Ταξίδι"
-
-#
-#: src/chart1.cpp:2412
-msgid "Auto Follow"
-msgstr "Ακολούθησε το σκάφος αυτόματα"
-
-#
-#: src/chart1.cpp:2417
-#: src/chart1.cpp:4019
-msgid "ToolBox"
-msgstr "Ρυθμίσεις"
-
-#
-#: src/chart1.cpp:2420
-msgid "Show ENC Text"
-msgstr "Δείξε κείμενα ENC"
-
-#
-#: src/chart1.cpp:2429
-msgid "Show AIS Targets"
-msgstr "Δείξε στόχους AIS"
-
-#
-#: src/chart1.cpp:2436
-msgid "Show Currents"
-msgstr "Δείξε παλίρροια"
-
-#
-#: src/chart1.cpp:2439
-msgid "Show Tides"
-msgstr "Δείξε πλημμύριδα"
-
-#
-#: src/chart1.cpp:2445
-msgid "Print Chart"
-msgstr "Εκτύπωσε Χάρτη"
-
-#
-#: src/chart1.cpp:2451
-#: src/routemanagerdialog.cpp:296
-msgid "Route Manager"
-msgstr "Διαχειριστής Ταξιδίου"
-
-#
-#: src/chart1.cpp:2458
-msgid "Toggle Tracking"
-msgstr "Αρχή/Παύση ιχνηλάτησης"
-
-#
-#: src/chart1.cpp:2466
-msgid "Change Color Scheme"
-msgstr "Αλλαγή Θεματικού Χρώματος"
-
-#
-#: src/chart1.cpp:2470
-msgid "Drop MOB Marker"
-msgstr "Σημάδεψε 'Ανθρωπος στη Θάλασσα (ΜΟΒ)"
-
-#
-#: src/chart1.cpp:2563
-#: src/chart1.cpp:5104
-#: src/chart1.cpp:5336
-msgid "Exit OpenCPN"
-msgstr "Έξοδος OpenCPN"
-
-#
-#: src/chart1.cpp:3662
-msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Χάρτης1::Γεγονός...TCMgr δεν είναι διαθέσιμο"
-
-#
-#: src/chart1.cpp:3783
-#: src/chart1.cpp:3819
-msgid "MAN OVERBOARD"
-msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ (ΜΟΒ)"
-
-#: src/chart1.cpp:3795
-msgid "1.0 NM along COG"
-msgstr "1.0 NM παραπλεύρως COG"
-
-#
-#: src/chart1.cpp:3806
-msgid "Temporary MOB Route"
-msgstr "Προσωρινό ΜΟΒ ταξίδι"
-
-#: src/chart1.cpp:3807
-msgid "Assumed 1 Mile Point"
-msgstr "Υποθέτω σημείο 1 Μιλίου"
-
-#
-#: src/chart1.cpp:4174
-msgid "Please restart OpenCPN to activate new language selection."
-msgstr "Παρακαλώ επανεκιννείστε το OpenCPN ώστε να ενεργοποιηθεί η αλλαγή Γλώσσας"
-
-#
-#: src/chart1.cpp:4779
-#: src/chcanv.cpp:3164
-#: src/chcanv.cpp:5967
-msgid "Cursor: "
-msgstr "κέρσορας: "
-
-#
-#: src/chart1.cpp:4788
-#: src/chcanv.cpp:3173
-#: src/chcanv.cpp:5976
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
-msgstr "Από το Σκάφος: %03d Μοίρες %6.2f ΝΜ"
-
-#
-#: src/chart1.cpp:5606
-msgid "Chart file corrupt.. disabling this chart \n"
-msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
-
-#
-#: src/chart1.cpp:5609
-#: src/nmea.cpp:374
-#: src/nmea.cpp:429
-#: src/nmea.cpp:463
-#: src/nmea.cpp:491
-#: src/nmea.cpp:531
-#: src/nmea.cpp:543
-#: src/ais.cpp:2129
-#: src/ais.cpp:2174
-msgid "OpenCPN Message"
-msgstr "OpenCPN Μήνυμα "
-
-#
-#: src/chart1.cpp:6193
-msgid "Add this chart to quilt."
-msgstr "Πρόσθεσε το χάρτη στις επικαλύψεις"
-
-#
-#: src/chart1.cpp:6199
-#: src/chcanv.cpp:7213
-msgid "Remove this chart from quilt."
-msgstr "Αφαίρεσε χάρτη από τις επικαλύψεις"
-
-#
-#: src/chart1.cpp:6422
-msgid "Chart Print"
-msgstr "Εκτύπωση Χάρτη"
-
-#
-#: src/chart1.cpp:6426
-msgid ""
-"There was a problem printing.\n"
-"Perhaps your current printer is not set correctly?"
-msgstr ""
-"Πρόβλημα εκτύπωσης.\n"
-"Πιθανόν ο εκτυπωτής δεν εγκαταστάθηκε σωστά;"
-
-#
-#: src/chart1.cpp:6962
-msgid " Ship: "
-msgstr "Σκάφος: "
-
-#: src/chart1.cpp:9299
-msgid "ToolTips"
-msgstr "Υποδείξεις Εργαλείων"
-
-#
-#: src/chartimg.cpp:265
-msgid "No Chart Available"
-msgstr "Μη διαθέσιμος Χάρτης"
-
-#
-#: src/chartimg.cpp:770
-#: src/chartimg.cpp:1329
-msgid "   Chart File contains less than 3 PLY points: "
-msgstr "   Ο χάρτης περιέχει λιγότερα από 3 σημεία αναφοράς συντεταγμένων: "
-
-#
-#: src/chartimg.cpp:879
-#, c-format
-msgid "   Could not read first %d bytes of header for chart file: "
-msgstr "    Τα πρώτα %d Bytes της επικεφαλίδας του χάρτη δεν μπορούν να διαβαστούν: "
-
-#
-#: src/chartimg.cpp:901
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr "   Το αρχείο του Χάρτη δεν περιέχει επικεφαλίδα BSB και δεν μπορεί να εγκατασταθεί."
-
-#
-#: src/chartimg.cpp:1065
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
-
-#
-#: src/chartimg.cpp:1382
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   Αρχείο RLL του χάρτη κατεστραμένο"
-
 #
-#: src/chartimg.cpp:1732
-#: src/chartimg.cpp:1743
+msgid "   Chart File contains less than 3 PLY points: "
+msgstr "   Ο χάρτης περιέχει λιγότερα από 3 σημεία αναφοράς συντεταγμένων: "
+#
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   Αρχείο Χάρτη κατεστραμένο στο PostInit() του χάρτη"
-
 #
-#: src/chartimg.cpp:1801
-msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "   Κατεστραμμένος δείκτης αναφοράς, ανακατασκεύασε τον δείκτη του Χάρτη"
-
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr ""
+"   Το αρχείο του Χάρτη δεν περιέχει επικεφαλίδα BSB και δεν μπορεί να "
+"εγκατασταθεί."
 #
-#: src/chartimg.cpp:1806
+msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
+#, c-format
+msgid "   Could not read first %d bytes of header for chart file: "
+msgstr ""
+"    Τα πρώτα %d Bytes της επικεφαλίδας του χάρτη δεν μπορούν να διαβαστούν: "
+#
 msgid "   Error creating Line Index for chart "
 msgstr "   Λάθος στην κατασκευή δείκτη (Line Index) για τον χάρτη."
-
 #
-#: src/chartimg.cpp:4718
-msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< Προειδοποίηση:  Η ακρίβεια των συντεταγμένων του χάρτη είναι πιθανόν ανακριβής. >>>---"
-
+msgid "   Line Index corrupt, recreating Index for chart "
+msgstr "   Κατεστραμμένος δείκτης αναφοράς, ανακατασκεύασε τον δείκτη του Χάρτη"
 #
-#: src/chartimg.cpp:4793
-msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP Τελικός Έλεγχος:  Γεωδετικό Λάθος Συντελεστή (Chart_Error_Factor) επί του χάρτη. "
-
+msgid "   PlugInManager: Cannot load library: "
+msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
 #
-#: src/chartimg.cpp:4801
-#: src/chartimg.cpp:4865
-msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< Προειδοποίηση:  Η ακρίβεια των συντεταγμένων είναι χαμηλή. >>>---"
-
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
 #
-#: src/chartimg.cpp:4808
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
+#
+msgid "   Result: OK, Internal georef solution used."
+msgstr "   Αποτέλεσμα: OK, χρησιμοποιήθηκε εσωτερική γεωδετική λύση."
+#
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   Νέα προσπάθεια για εσωτερική γεωδετική λύση "
-
 #
-#: src/chartimg.cpp:4857
-msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
-msgstr "   VP τελικός έλεγχος με χρήση εσωτερικής γεωδεσίας : Γεωδετικό Λάθος Συντελεστή (Chart_Error_Factor) επί του χάρτη "
-
+msgid ""
+"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
+"chart "
+msgstr ""
+"   VP τελικός έλεγχος με χρήση εσωτερικής γεωδεσίας : Γεωδετικό Λάθος "
+"Συντελεστή (Chart_Error_Factor) επί του χάρτη "
 #
-#: src/chartimg.cpp:4860
+msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
+msgstr ""
+"   VP Τελικός Έλεγχος:  Γεωδετικό Λάθος Συντελεστή (Chart_Error_Factor) επί "
+"του χάρτη. "
+#
+msgid "  ..And TCPA is less than (Minutes):"
+msgstr " ...και TCPA είναι μικρότερο από Πρώτα Λεπτά (Minuten):"
+#
+msgid "  Could not open AIS serial port '"
+msgstr "  Δεν μπορώ να ανοίξω την AIS-σειριακή θύρα: '"
+#
+msgid "  Could not open serial port '"
+msgstr "  Δεν μπορώ να ανοίξω την σειριακή θύρα '"
+#
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D Ημέρες  %H Ώρες  %M Λεπτά"
+#
+msgid " %H Hours  %M Minutes"
+msgstr " %H Ώρες   %M Λεπτά"
+#
+msgid " - "
+msgstr " - "
+#
+msgid " ChartFile:  "
+msgstr "Αρχείο Χάρτη:  "
+#
+msgid " Datum:  "
+msgstr "Ημερομηνία:  "
+#
+msgid " Depth Units:  "
+msgstr "Μονάδες Βάθους:  "
+#
+msgid " ID:  "
+msgstr " ID:  "
+#
+msgid " Name:  "
+msgstr "Όνομα:  "
+#
+msgid " Projection:  "
+msgstr "Προβολή:  "
+#
+#, c-format
+msgid " Scale:  1:%d"
+msgstr "Κλίμακα:  1:%d"
+#
+msgid " Ship: "
+msgstr "Σκάφος: "
+#
+msgid " Soundings:  "
+msgstr "Βάθη:  "
+#
+msgid " Source Edition:  "
+msgstr "Έκδοση Κώδικα:  "
+#
+msgid " Updated:  "
+msgstr "Ενημεώθηκε:  "
+#
 #, c-format
 msgid " is %5g"
 msgstr "είναι %5g"
-
 #
-#: src/chartimg.cpp:4869
-msgid "   Result: OK, Internal georef solution used."
-msgstr "   Αποτέλεσμα: OK, χρησιμοποιήθηκε εσωτερική γεωδετική λύση."
-
+msgid " to "
+msgstr " Προς "
 #
-#: src/nmea.cpp:372
-msgid "  Could not open serial port '"
-msgstr "  Δεν μπορώ να ανοίξω την σειριακή θύρα '"
-
+msgid "&Acknowledge"
+msgstr "&Αποδοχή"
 #
-#: src/nmea.cpp:373
-#: src/ais.cpp:2173
+msgid "&Activate"
+msgstr "&Ενεργοποίηση"
+#
+msgid "&Cancel"
+msgstr "&Ακύρωση"
+#
+msgid "&Delete"
+msgstr "&Διαγραφή"
+#
+msgid "&Delete All"
+msgstr "&Διαγραφή όλων"
+#
+msgid "&Export Route..."
+msgstr "&Εξαγωγή ταξιδιού..."
+#
+msgid "&Export Track..."
+msgstr "&Εξαγωγή Ίχνους (πορείας)..."
+#
+msgid "&Export Wpt..."
+msgstr "&Εξαγωγή σημείου Πορείας (WP)..."
+#
+msgid "&Font family:"
+msgstr "&Οικογένεια Γραμματοσειράς:"
+#
+msgid "&Go To"
+msgstr "&Πήγαινε στο"
+#
+msgid "&Kilometers"
+msgstr "&Χιλιόμετρα"
+#
+msgid "&Nautical miles"
+msgstr "&Ναυτικά Μίλια"
+#
+msgid "&New"
+msgstr "&Νέο"
+#
+msgid "&OK"
+msgstr "&ΟΚ"
+#
+msgid "&Point size:"
+msgstr "&Μέγεθος Γραμματοσειράς:"
+#
+msgid "&Properties"
+msgstr "&Ιδιότητες"
+#
+msgid "&Properties..."
+msgstr "&Ιδιότητες..."
+#
+msgid "&Reverse"
+msgstr "&Αναστροφή"
+#
+msgid "&Send to GPS"
+msgstr "&Στείλε στο GPS"
+#
+msgid "&Silence Alert"
+msgstr "&Σίγαση  συναγερμού"
+#
+msgid "&Start Track"
+msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
+#
+msgid "&Style:"
+msgstr "&Στυλ:"
+#
+msgid "&Underline"
+msgstr "&Υπογράμμιση"
+#
+msgid "&Weight:"
+msgstr "&Πάχος:"
+#
+msgid "&Zoom to"
+msgstr "&Μεγένθυση σε"
+#
+msgid ""
+"'\n"
+" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+msgstr ""
+"'\n"
+" Προτροπή: Δοκιμάστε στη Μορφή  'xxx.xxx.xxx.xxx'  "
+#
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
 msgstr ""
 "'\n"
 "Προτροπή: προσπαθείστε να κλείσετε άλλες Ενεργές Εφαρμογές."
-
 #
-#: src/nmea.cpp:419
-msgid "Failed to load libgps.so.19"
-msgstr "Αδύνατο να τρέξει το libgps.so.19"
-
-#: src/nmea.cpp:420
+msgid "(Unnamed Route)"
+msgstr "(ανώνυμο ταξίδι)"
+#
+msgid "(Unnamed Track)"
+msgstr "(ανώνυμο ίχνος (πορεία))"
+#
+msgid "(Unnamed Waypoint)"
+msgstr "(Ανώνυμο Σημείο)(WP)"
+#
+msgid "-"
+msgstr "-"
+#
+msgid "--"
+msgstr "--"
+#
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr ""
+"---<<< Προειδοποίηση:  Η ακρίβεια των συντεταγμένων είναι χαμηλή. >>>---"
+#
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr ""
+"---<<< Προειδοποίηση:  Η ακρίβεια των συντεταγμένων του χάρτη είναι πιθανόν "
+"ανακριβής. >>>---"
+#
+msgid "1.0 NM along COG"
+msgstr "1.0 NM παραπλεύρως COG"
+#
+msgid "2 Color"
+msgstr "2-χρωμο"
+#
+msgid "4 Color"
+msgstr "4-τράχρωμο"
+#
+msgid "?"
+msgstr ""
+#
+msgid "A"
+msgstr "Α"
+#
+msgid "AIS"
+msgstr "AIS"
+#
+msgid "AIS Alert"
+msgstr "Συναγερμός AIS"
+#
+msgid "AIS Data Port"
+msgstr "Θύρα για δεδομένα AIS"
+#
+msgid "AIS General"
+msgstr "AIS Γενικά"
+#
+msgid "AIS Target Query"
+msgstr "Ερώτηση προορισμών AIS"
+#
+msgid "AIS target list"
+msgstr "Κατάλογος Στόχων AIS"
+#
+msgid "AISRollover"
+msgstr "Αντιστροφή AIS"
+#
+msgid "AISTargetAlert"
+msgstr "Συναγερμός Στόχων AIS"
+#
+msgid "AISTargetQuery"
+msgstr "Ερώτηση Στόχων AIS"
+#
+msgid "About"
+msgstr "Περί"
+#
+msgid "About OpenCPN"
+msgstr "Περί OpenCPN"
+#
+msgid "Activate"
+msgstr "Ενεργοποίηση"
+#
+msgid "Activate CM93 Offset"
+msgstr "Ενεργοποίησε Αντιμετάθεση CM93"
+#
+msgid "Activate Next in Route"
+msgstr "Ενεργοποίηση του επόμενου σημείου Πορείας (WP) στο Ταξίδι (Route)"
+#
+msgid "Activate Route"
+msgstr "Ενεργοποίηση Ταξιδιού (Route)"
+#
+msgid "Activate Waypoint"
+msgstr "Ενεργοποίηση Σημείου Πορείας (WP)"
+#
+msgid "Active Chart Directories"
+msgstr "Ενεργοί φάκελοι Χαρτών"
+#
+msgid "Add Selection"
+msgstr "Προσθήκη Επιλογής"
+#
+msgid "Add this chart to quilt."
+msgstr "Πρόσθεσε το χάρτη στις επικαλύψεις"
+#
+msgid "Additional information"
+msgstr "Πρόσθετες Πληροφορίες"
+#
+msgid "Aground"
+msgstr ""
+#
+msgid "Aid to Navigation"
+msgstr "Βοήθημα στην Πλοήγηση"
+#
+msgid "All files (*.*)|*.*"
+msgstr "Όλα τα αρχεία (*.*)|*.*"
+#
+msgid "Append Waypoint"
+msgstr "Επισύναψη Σημείου Πορείας (WP)"
+#
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα ταξίδια (routes);"
+#
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα Ίχνη ( tracks);"
+#
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr ""
+"Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα Σημεία Πορείας (waypoints);"
+#
+msgid "Assumed 1 Mile Point"
+msgstr "Υποθέτω σημείο 1 Μιλίου"
+#
+#, fuzzy
+msgid "At Anchor"
+msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
+#
+msgid "AtoN"
+msgstr "AtoN"
+#
 msgid "Attempting to load libgps.so"
 msgstr "Προσπάθεια να φορτωθεί το libgps.so"
-
 #
-#: src/nmea.cpp:427
-msgid "Failed to load libgps.so"
-msgstr "Αποτυχία στη φόρτωση του libgps.so"
-
+msgid "Authors"
+msgstr "Δημιουργοί"
 #
-#: src/nmea.cpp:428
-msgid "Unable to load libgps.so"
-msgstr "Αδύνατο να τρέξει το libgps.so"
-
+msgid "Auto Follow"
+msgstr "Ακολούθησε το σκάφος αυτόματα"
 #
-#: src/nmea.cpp:462
-msgid ""
-"Unable to initialize libgps.\n"
-"\n"
-"gpsd host is: "
+msgid "Autopilot Output Port"
+msgstr "Θύρα Εξόδου για Αυτόματο Πιλότο"
+#
+msgid "Available Chart Directories"
+msgstr "Διαθέσιμοι φάκελοι Χαρτών"
+#
+msgid "Avg. speed (Kts)"
+msgstr "Μέση Ταχύτητα (Kts)"
+#
+msgid "B"
+msgstr "Β"
+#
+msgid "Base"
+msgstr "Βασικό"
+#
+msgid "Base Station"
+msgstr "Σταθμός αναφοράς"
+#
+msgid "BaseClassCommonName"
+msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
+msgid "Beacon, Isolated Danger"
 msgstr ""
-"Δεν μπορεί να τρέξει το libgps.\n"
-"\n"
-"gpsd Host είναι: "
-
 #
-#: src/nmea.cpp:490
+msgid "Beacon, Port Hand"
+msgstr ""
+#
+msgid "Beacon, Preferred Channel Port Hand"
+msgstr ""
+#
+msgid "Beacon, Preferred Channel Starboard Hand"
+msgstr ""
+#
+msgid "Beacon, Safe Water"
+msgstr ""
+#
+msgid "Beacon, Special Mark"
+msgstr ""
+#
+msgid "Beacon, Starboard Hand"
+msgstr ""
+#
+msgid "Bearing"
+msgstr "Διόπτευση"
+#
+#, c-format
+msgid "Bearing:                %03d Deg.\n"
+msgstr "Διόπτευση:            %03d μοίρες.\n"
+#
+msgid "Bearing:                Unavailable\n"
+msgstr "Διόπτευση:            μη διαθέσιμη\n"
+#
+msgid "Boundaries"
+msgstr "Σύνορα"
+#
+msgid "Brg"
+msgstr "Διόπτευση"
+#
+msgid "C&olour:"
+msgstr "Χ&ρώμα:"
+#
+msgid "CM93"
+msgstr "CM93"
+#
+#, fuzzy
+msgid "CM93 Offset Dialog"
+msgstr "Δείξε Αντιμετάθεση Χαρτών"
+#
+msgid "CM93 Offset Display"
+msgstr "Δείξε Αντιμετάθεση Χαρτών"
+#
+msgid "CM93 Offsets"
+msgstr "Αντιμεταθέσεις CM93"
+#
+msgid "CM93 Zoom Detail"
+msgstr "Λεπτέρειες μεγένθυνσης CM93"
+#
+msgid "CPA"
+msgstr "CPA"
+#
+msgid "CPA Calculation"
+msgstr "Υπολογισμός CPA"
+#
+msgid "CPA TCPA"
+msgstr "CPA TCPA"
+#
+msgid "CPA/TCPA Alerts"
+msgstr "Συναγερμοί CPA-/ TCPA"
+#
+msgid "CPA:       \n"
+msgstr "CPA:       \n"
+#
+#, c-format
+msgid "CPA:                 %6.1f NM\n"
+msgstr "CPA:                 %6.1f ΝΜ\n"
+#
+msgid "Call"
+msgstr "Κλήση"
+#
 msgid ""
 "Call to gps_open failed.\n"
 "Is gpsd running?\n"
@@ -572,21 +536,1462 @@ msgstr ""
 "Τρέχει το gpsd;\n"
 "\n"
 "gpsd Host είναι: "
-
-#: src/nmea.cpp:529
+#
+msgid "CallSign:             "
+msgstr "Κωδικός Κλήσης:"
+#
+msgid "Cancel"
+msgstr "Ακύρωση"
+#
+msgid "Card. E"
+msgstr ""
+#
+msgid "Card. N"
+msgstr ""
+#
+msgid "Card. S"
+msgstr ""
+#
+msgid "Card. W"
+msgstr ""
+#
+msgid "Cardinal E Beacon"
+msgstr ""
+#
+msgid "Cardinal Mark E"
+msgstr ""
+#
+msgid "Cardinal Mark N"
+msgstr ""
+#
+msgid "Cardinal Mark S"
+msgstr ""
+#
+msgid "Cardinal Mark W"
+msgstr ""
+#
+msgid "Cardinal N Beacon"
+msgstr ""
+#
+msgid "Cardinal S Beacon"
+msgstr ""
+#
+msgid "Cardinal W Beacon"
+msgstr ""
+#
+msgid "Cargo Ship"
+msgstr ""
+#
+#, fuzzy
+msgid "Cell"
+msgstr "Κλήση"
+#
+msgid "Cell Scale"
+msgstr ""
+#
+#, fuzzy
+msgid "Cell X Offset"
+msgstr "Θέσε αντιστάθμιση CM93"
+#
+#, fuzzy
+msgid "Cell Y Offset"
+msgstr "Θέσε αντιστάθμιση CM93"
+#
+msgid "Change Color Scheme"
+msgstr "Αλλαγή Θεματικού Χρώματος"
+#
+msgid "Chart"
+msgstr "Χάρτης"
+#
+msgid "Chart Depth Units"
+msgstr "Μονάδες Βάθους Χάρτη"
+#
+msgid "Chart Display Filters"
+msgstr "Απεικόνηση Φίλτρων Χαρτών"
+#
+msgid "Chart Display Options"
+msgstr "Επιλογές στην απεικόνηση Χάρτη"
+#
+msgid "Chart Display Style"
+msgstr "Στυλ Απεικόνησης χάρτη"
+#
+msgid "Chart Print"
+msgstr "Εκτύπωση Χάρτη"
+#
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr "Χάρτης1::Γεγονός...TCMgr δεν είναι διαθέσιμο"
+#
+msgid "Charts"
+msgstr "Χάρτες"
+#
+msgid "Choose Font..."
+msgstr "Επέλεξε γραμματοσειρά..."
+#
+msgid "Class"
+msgstr "Κατηγορία"
+#
+msgid "Class:                "
+msgstr "Κατηγορία:"
+#
+msgid "Clear All"
+msgstr "Απομάκρυνση όλων"
+#
+msgid "Clear Anchor Watch"
+msgstr "Ακύρωση επιτήρησης Αγκυροβολίας"
+#
+msgid "Click to cancel the font selection."
+msgstr "Κάντε κλικ εδώ για να ακυρώσετε την επιλογή γραμματοσειράς."
+#
+msgid "Click to confirm the font selection."
+msgstr "Κάντε κλικ εδώ για να επιβεβαιώσετε την επιλογή γραμματοσειράς."
+#
+msgid "Close"
+msgstr "Κλείσε"
+#
+msgid "CoG"
+msgstr "Πορεία (CoG)"
+#
+msgid "Colors"
+msgstr "Χρώματα"
+#
+msgid "Console Legend"
+msgstr "Επεξηγήσεις Κονσόλας"
+#
+msgid "Console Value"
+msgstr "Τιμή κονσόλας"
+#
+msgid "Constrained by draught"
+msgstr ""
+#
+msgid "Could not resolve TCP/IP host '"
+msgstr "Δεν μπορώ να αποφανθώ για το TCP/IP host '"
+#
+msgid "Course UP Mode"
+msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
+#
+#, c-format
+msgid "Course:                 %03d Deg.\n"
+msgstr "Πορεία:                 %03d Μοίρες\n"
+#
+msgid "Course:                 Unavailable\n"
+msgstr "Πορεία:                  μη διαθέσιμη\n"
+#
+msgid "Create Route"
+msgstr "Φτιάξε Ταξίδι"
+#
+msgid "Current"
+msgstr "Παλίρροια"
+#
+msgid "Cursor: "
+msgstr "κέρσορας: "
+#
+msgid "D/V"
+msgstr ""
+#
+msgid "De-Clutter Text (exp.)"
+msgstr "Οργάνωση Κειμένου (exp.)"
+#
+msgid "Deactivate"
+msgstr "Απενεργοποίηση"
+#
+msgid "Deactivate Route"
+msgstr "Απενεργοποίησε Ταξίδι (Route)"
+#
+msgid "Deep Depth"
+msgstr "'Οριο Βαθέων Υδάτων"
+#
+msgid "Delete All"
+msgstr "Διαγραφή Όλων"
+#
+msgid "Delete Mark"
+msgstr "Σβήσε σημάδια"
+#
+msgid "Delete Route"
+msgstr "Διαγραφή Ταξιδιού(Route)"
+#
+msgid "Delete Selection"
+msgstr "Διαγραφή επιλογής"
+#
+msgid "Delete Track"
+msgstr "Διαγραφή Ίχνους (πορείας)"
+#
+msgid "Delete Waypoint"
+msgstr "Διαγραφή σημείου Πορείας (WP)"
+#
+msgid "Depart From"
+msgstr "Αναχώρηση από"
+#
+msgid "Depth Settings"
+msgstr "Ρυθμίσεις Βάθους"
+#
+msgid "Depth Settings(m)"
+msgstr "Ρυθμίσεις Βάθους (μέτρα)"
+#
+msgid "Description"
+msgstr "Περιγραφή"
+#
+msgid "Destination"
+msgstr "Προορισμός"
+#
+msgid "Destination:          "
+msgstr "Προορισμός:                    "
+#
+msgid "Disable"
+msgstr "Ακύρωσε"
+#
+#, fuzzy
+msgid "Disable Full Screen Quilting"
+msgstr "Εμφάνισε επικάλυψη χαρτών"
+#
+msgid "Display"
+msgstr "Εμφάνισε"
+#
+msgid "Display Category"
+msgstr "Εμφάνισε κατηγορία"
+#
+msgid "Distance"
+msgstr "Απόσταση"
+#
+msgid "Distance between rings"
+msgstr "Απόσταση μεταξύ δακτυλίων"
+#
+msgid "Done."
+msgstr "Έτοιμο."
+#
+msgid "Dredge"
+msgstr ""
+#
+msgid "Drop MOB Marker"
+msgstr "Σημάδεψε 'Ανθρωπος στη Θάλασσα (ΜΟΒ)"
+#
+msgid "Drop Mark Here"
+msgstr "Σημάδεψε εδώ"
+#
+msgid "E&xport All..."
+msgstr "Ε&ξαγωγή Όλων..."
+#
+msgid "ENC/Vector"
+msgstr "ENC/Διάνυσμα"
+#
+msgid "ETA          "
+msgstr "ETA          "
+#
+msgid "ETA:"
+msgstr "ΕΤΑ:"
+#
+msgid "ETA:                  "
+msgstr "ΕΤΑ:                  "
+#
+msgid "ETE/Timestamp"
+msgstr "ETE/ σφραγίδα χρόνου"
+#
+msgid "Elapsed time : "
+msgstr ""
+#
+msgid "Enable"
+msgstr "Επέτρεψε"
+#
+msgid "Enable CM93 Detail Slider"
+msgstr "Εμφάνισε δείκτη λεπτομερειών CM93"
+#
+msgid "Enable Chart Quilting"
+msgstr "Εμφάνισε επικάλυψη χαρτών"
+#
+msgid "Enable Manual CM93 Offsets"
+msgstr "Επέτρεψε χειροκίνητη Αντιμετάθεση CM93"
+#
+msgid "Enable Target Alert Acknowledge timeout (minutes)"
+msgstr "Παύση Έναρξης Αναγνώρισης Συναγερμού Στόχου (λεπτά)"
+#
+msgid "Enable Wheel-Zoom-to-Cursor"
+msgstr "Ενεργοποίησε μεγένθυνση με ρόδα ποντικιού στον κέρσορα"
+#
+msgid "End Route"
+msgstr "Τέλος Ταξιδιού"
+#
+msgid "Engaged in Fishing"
+msgstr ""
+#
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr "Σφάλμα στη φόρτωση Ταξιδίου.  Παρακαλώ ελέγξτε τα αρχεία  log..."
+#
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+"Σφάλμα  κατά την φόρτωση Σημείων Πορείας (WP).  Παρακαλώ ελέγξτε το αρχείο  "
+"log..."
+#
+msgid "Estimated time : "
+msgstr ""
+#
+msgid "Etc."
+msgstr "Διάφορα"
+#
+msgid "Exit OpenCPN"
+msgstr "Έξοδος OpenCPN"
+#
+msgid "Export GPX file"
+msgstr "Εξαγωγή Αρχείου GPX"
+#
+msgid "F/V"
+msgstr ""
+#
+msgid "Failed to load libgps.so"
+msgstr "Αποτυχία στη φόρτωση του libgps.so"
+#
+msgid "Failed to load libgps.so.19"
+msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
+msgid "Fathoms"
+msgstr "Οργιές"
+#
+msgid "Feet"
+msgstr "Πόδια"
+#
+msgid "Filter NMEA Course and Speed data"
+msgstr "Φίλτραρε πορεία ΝΜΕΑ και στοιχεία ταχύτητας"
+#
+msgid "Filter Period (Sec.)"
+msgstr "Φίλτρο Περιόδου (Δευτερ/πτα)"
+#
+msgid "Fix.Struct."
+msgstr ""
+#
+msgid "Fixed Structure"
+msgstr ""
+#
+msgid "Font Options"
+msgstr "Επιλογές Γραμματοσειράς"
+#
+msgid "Force Full Database Rebuild"
+msgstr "Ανακατασκεύασε ΌΛΗ τη Βάση Δεδομένων"
+#
+#, c-format
+msgid "From Ownship: %03d Deg  %6.2f NMi"
+msgstr "Από το Σκάφος: %03d Μοίρες %6.2f ΝΜ"
+#
+msgid "GPS"
+msgstr "GPS"
+#
+msgid "GPS/Plotter Port"
+msgstr "Θύρα GPS/ Plotter"
+#
+msgid "GPSD Data Server"
+msgstr "Διακομιστής GPSD"
+#
+msgid "GUI Options"
+msgstr "Ρυθμίσεις Γραφικού Περιβάλλοντος ( GUI )"
+#
+msgid "Go To Here"
+msgstr "Πήγαινε ΕΔΩ"
+#
+msgid "Go To Mark/WP"
+msgstr "Μετάβαση στο Σημάδι/WP"
+#
+msgid "Go to "
+msgstr "Πήγαινε σε"
+#
+msgid "HSC"
+msgstr ""
+#
+msgid "Help"
+msgstr "Βοήθεια"
+#
+msgid "Here"
+msgstr "Εδώ"
+#
+msgid "High Speed Craft"
+msgstr ""
+#
+msgid "I&mport..."
+msgstr "Ε&ισαγωγή"
+#
+msgid "Icon"
+msgstr "Εικόνα"
+#
+msgid "Import GPX file"
+msgstr "Εισαγωγή Αρχείου GPX"
+#
+msgid "Inland Blue Flag        Clear\n"
+msgstr "Inland Blue Flag        Clear\n"
+#
+msgid "Inland Blue Flag        Set\n"
+msgstr "Inland Blue Flag        Set\n"
+#
+msgid "Insert Waypoint"
+msgstr "Εισαγωγή Σημείου Πορείας (WP)"
+#
+msgid "Isol. Dngr"
+msgstr ""
+#
+#, fuzzy
+msgid "Isolated Danger"
+msgstr "Διαχειριστής Ταξιδίου"
+#
+msgid "Jump To"
+msgstr "Μεταπήδησε σε"
+#
+msgid "Jump To Position"
+msgstr "Μεταπήδησε στη Θέση"
+#
+msgid "Jump To Position..."
+msgstr "Μεταπήδησε στη Θέση..."
+#
+msgid "LE/V"
+msgstr ""
+#
+msgid "Language"
+msgstr "Γλώσσα"
+#
+msgid "Language/Fonts"
+msgstr "Γλώσσα/Γραμματοσειρές"
+#
+msgid "Latest Report Time:      "
+msgstr "Χρόνος τελευταίας αναφοράς: "
+#
+msgid "Latitude"
+msgstr "Γεωγραφικό Πλάτος"
+#
+msgid "Law Enforcement Vessel"
+msgstr ""
+#
+msgid "Ldg Lt Front"
+msgstr ""
+#
+msgid "Ldg Lt Rear"
+msgstr ""
+#
+msgid "Leading Light Front"
+msgstr ""
+#
+msgid "Leading Light Rear"
+msgstr ""
+#
+msgid "Leg"
+msgstr "Σκέλος"
+#
+msgid "Leg/Route"
+msgstr "Σκέλος/Ταξίδι"
+#
+msgid "Leg: from "
+msgstr "Τμήμα: από "
+#
+msgid "Length"
+msgstr "Μήκος"
+#
+msgid "License"
+msgstr "Άδεια"
+#
+#, fuzzy
+msgid "Light"
+msgstr "&Πάχος:"
+#
+msgid "Light Vessel/Rig"
+msgstr ""
+#
+msgid "Light w/Sectors"
+msgstr ""
+#
+msgid "Limit range: NM"
+msgstr "Όριο Απόστασης: ΝΜ"
+#
+msgid "Links"
+msgstr "Συνδέσεις"
+#
+msgid "Lock all waypoints unless a waypoint property dialog is visible"
+msgstr ""
+"Κλείδωσε όλα τα Σημεία Πορείας (WP), εκτός αν εμφανίζεται ο Διάλογος Ιδιοτήτων"
+#
+msgid "Long Tow"
+msgstr ""
+#
+msgid "Longitude"
+msgstr "Γεωγραφικό Μήκος"
+#
+msgid "Look Ahead Mode"
+msgstr "Λειτουργεία προεπισκόπισης ΠΡΟΣΩ ΟΛΟΤΑΧΩΣ"
+#
+msgid "Lost Targets"
+msgstr "Χαμένοι Στόχοι"
+#
+msgid "Lt"
+msgstr ""
+#
+msgid "Lt sect."
+msgstr ""
+#
+msgid "LtV/Rig"
+msgstr ""
+#
+msgid "M/T"
+msgstr ""
+#
+msgid "M/V"
+msgstr ""
+#
+msgid "MAN OVERBOARD"
+msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ (ΜΟΒ)"
+#
+msgid "META Objects"
+msgstr "META-Αντικείμενα "
+#
+msgid "MMSI"
+msgstr "MMSI"
+#
+msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Mariner's Standard"
+msgstr "Βασικό ναυτικό"
+#
+msgid "MarinersStandard"
+msgstr "Βασικό ναυτικό"
+#
+msgid "Mark Icon"
+msgstr "Εικόνα Σημαδιού"
+#
+msgid "Mark Information"
+msgstr "Πληροφορίες Σημαδιού"
+#
+msgid "Mark Name"
+msgstr "Όνομα Σημαδιού"
+#
+msgid "Mark Properties"
+msgstr "Ιδιότητες Σημαδιού"
+#
+msgid "Mark targets as lost after (Minutes:):"
+msgstr "Μαρκάρισε Στόχους ως χαμένους μετά από (Λεπτά:):"
+#
+msgid "Mark/WP Properties"
+msgstr "Ιδιότητες Σημαδιών-/ σημείων Πορείας (WP)"
+#
+msgid "Marks"
+msgstr "Σημάδια"
+#
+msgid "Max Detail Here"
+msgstr "Μέγιστη Λεπτομέρια Εδώ"
+#
+msgid "Measure Off"
+msgstr "Τέλος μέτρησης"
+#
+msgid "Measure....."
+msgstr "Μέτρηση....."
+#
+msgid "Med/V"
+msgstr ""
+#
+msgid "Medical Transport"
+msgstr ""
+#
+msgid "Mercator"
+msgstr "Μερκατορική Προβολή"
+#
+msgid "Meters"
+msgstr "Μέτρα"
+#
+msgid "Metres"
+msgstr "Μέτρα"
+#
+msgid "Mil/V"
+msgstr ""
+#
+msgid "Military Vessel"
+msgstr ""
+#
+msgid "Moored"
+msgstr ""
+#
+msgid "Move Boat Here"
+msgstr "Μετακίνησε το Σκάφος ΕΔΩ"
+#
+msgid "NMEA Baud Rate"
+msgstr "Ταχύτητα Θύρας ΝΜΕΑ (Baud Rate)"
+#
+msgid "NMEA Data Source"
+msgstr "Πηγή ΝΜΕΑ"
+#
+msgid "NMEA Options"
+msgstr "Ρυθμίσεις ΝΜΕΑ"
+#
+msgid "Name"
+msgstr "Όνομα"
+#
+msgid "Nav Status"
+msgstr "Κατάσταση Πλοήγησης"
+#
+msgid "Navigation Data"
+msgstr "Στοιχεία Πλοήγησης"
+#
+msgid "Navigational Status:  "
+msgstr "Κατάσταση Πλοήγησης:  "
+#
+msgid "New Mark"
+msgstr "Νέο Σημάδι"
+#
+msgid "Next"
+msgstr "Επόμενο"
+#
+msgid "No CPA Calculation if target range is greater than (NMi):"
+msgstr ""
+"Δεν υπολογίζεται η CPA, αν η απόσταση από το σημείο είναι μεγαλύτερη από (ΝΜ):"
+#
+msgid "No Chart Available"
+msgstr "Μη διαθέσιμος Χάρτης"
+#
+msgid "Not Under Command"
+msgstr ""
+#
+msgid "Number of radar rings shown"
+msgstr "Αριθμός Δακτυλίων Ραντάρ για εμφάνιση"
+#
+msgid "OK"
+msgstr "ΟΚ"
+#
+msgid "Object Query"
+msgstr "Ιδιότητες αντικειμένου"
+#
+msgid "Ok"
+msgstr "ΟΚ"
+#
+msgid "OpenCPN Alert"
+msgstr "Συναγερμός OpenCPN"
+#
+msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr ""
+#
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN Προσθήκη Χαρτών...."
+#
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN Αναζήτηση Χαρτών...."
+#
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN Ανανέωση Χαρτών"
+#
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN μετατρέπει το Ίχνος σε Ταξίδι...."
+#
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN Σκανάρισμα Φακέλων...."
+#
+msgid "OpenCPN Info"
+msgstr "OpenCPN Πληροφορίες"
+#
+msgid "OpenCPN Message"
+msgstr "OpenCPN Μήνυμα "
+#
+msgid "OpenCPN PlugIn Base Class"
+msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+"OpenCPN PlugIn Βασική Κλάση\n"
+"Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
+msgid "OpenCPN Route Create"
+msgstr "OpenCPN Κατασκευή Διαδρομής"
+#
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN κατασκευάζει Αρχείο S57 SENC"
+#
+msgid "OpenCPN S57 SENC File Load"
+msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
+msgid "Options"
+msgstr "Επιλογές"
+#
+msgid "Other"
+msgstr "Άλλα"
+#
+msgid "OverZoom"
+msgstr "Υπερμεγένθυνση"
+#
+msgid "Overwrite existing file?"
+msgstr "Αντικατάσταση του ήδη υπάρχοντος Αρχείου;"
+#
+msgid "OwnShip COG arrow predictor length (Minutes):"
+msgstr "Βέλος Προπορείας ( σε λεπτά ):"
+#
+msgid "OwnShip Display Options"
+msgstr "Ρυθμίσεις Εμφάνισης στοιχείων του Σκάφους μας"
+#
+msgid "P/V"
+msgstr ""
+#
+msgid "PC/V"
+msgstr ""
+#
+msgid "Paper Chart"
+msgstr "Εκυπωμένος χάρτης"
+#
+msgid "Pass/V"
+msgstr ""
+#
+msgid "Passenger Ship"
+msgstr ""
+#
+msgid "Pilot Vessel"
+msgstr ""
+#
+msgid "Place Trackpoints at distance interval (NMi):"
+msgstr "Βάλε σημεία ίχνους ανά διάστημα απόστασης (ΝΜ):"
+#
+msgid "Place Trackpoints at time interval (Seconds):"
+msgstr "Βάλε σημεία ίχνους ανά χρονικό διάστημα (δευερόλεπτα):"
+#
+msgid "Plain"
+msgstr "Απλό"
+#
+msgid "Plan Speed"
+msgstr "Προσχεδιασμένη Ταχύτητα"
+#
+msgid "Plan speed (Kts)"
+msgstr "Προσχεδιασμένη ταχύτητα (Kts)"
+#
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Παίξε ήχο σε συναγερμό CPA/ TCPA"
+#
+msgid "Play ships bells"
+msgstr "Χτύπα Καμπανάκι πλοίου"
+#
+msgid "Please restart OpenCPN to activate new language selection."
+msgstr ""
+"Παρακαλώ επανεκιννείστε το OpenCPN ώστε να ενεργοποιηθεί η αλλαγή Γλώσσας"
+#
+#, fuzzy
+msgid "Pleasure craft"
+msgstr "Τέλος μέτρησης"
+#
+msgid "PlugInManager searching for PlugIns in location "
+msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
+msgid "PlugInManager: Deactivating PlugIn: "
+msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
+#
+msgid "PlugInManager: Initializing PlugIn: "
+msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
+#, c-format
+msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+msgstr ""
+"Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
+#
+msgid "PlugIns"
+msgstr "Επιπρόσθετα (PlugIns)"
+#
+msgid "Points"
+msgstr "Σημεία"
+#
+msgid "Pollution Control Vessel"
+msgstr ""
+#
+msgid "Polyconic"
+msgstr "Πολυκωνική Προβολή"
+#
+#, fuzzy
+msgid "Port"
+msgstr "Σημεία"
+#
+msgid "Port Hand"
+msgstr ""
+#
+msgid "Port Hand Mark"
+msgstr ""
+#
+msgid "Port Tender"
+msgstr ""
+#
+msgid "Position"
+msgstr "Θέση"
+#
+msgid "Position:               "
+msgstr "Θέση:"
+#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
 "\n"
-"                              Would you like to use this version of libgps anyway?"
+"                              Would you like to use this version of libgps "
+"anyway?"
 msgstr ""
 "Πιθανόν λανθασμένη έκδοση του libgps API.\n"
 "libgps δεν ανταποκρίνεται στην έκδοση που ζητείται\n"
 "\n"
-"                              Επιθυμείτε να χρησιμοποιήσετε σε κάθε περίπτωση αυτή την έκδοση της libgps;"
-
+"                              Επιθυμείτε να χρησιμοποιήσετε σε κάθε περίπτωση "
+"αυτή την έκδοση της libgps;"
 #
-#: src/nmea.cpp:540
+msgid "Pref. Chnl"
+msgstr ""
+#
+msgid "Preferences"
+msgstr "Προτιμήσεις"
+#
+msgid "Preferred Channel Port Hand"
+msgstr ""
+#
+msgid "Preferred Channel Starboard Hand"
+msgstr ""
+#
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr ""
+"Προετοιμάστε το GPS να παραλάβει(upload ) Ταξίδια (Route)/ Σημεία Πορείας "
+"(WP) και πατήστε αποστολή ..."
+#
+msgid "Preserve scale when switching charts"
+msgstr "Διατήρησε την ίδια Κλίμακα κατά την αλλαγή Χαρτών"
+#
+msgid "Prev"
+msgstr "Προηγούμενο"
+#
+msgid "Preview:"
+msgstr "Προεπισκόπηση:"
+#
+msgid "Print Chart"
+msgstr "Εκτύπωσε Χάρτη"
+#
+msgid "Printing"
+msgstr "Εκτύπωση"
+#
+msgid "Processing Waypoints..."
+msgstr "Διεργασία Σημείου Πορείας (WP)..."
+#
+msgid "Progress..."
+msgstr "Πρόοδος ..."
+#
+msgid "Properties"
+msgstr "Ιδιότητες"
+#
+msgid "RACON"
+msgstr ""
+#
+msgid "Radar rings"
+msgstr "Δακτύλιοι Ραντάρ"
+#
+msgid "Range"
+msgstr "Απόσταση"
+#
+msgid "Range:                  Unavailable\n"
+msgstr "Απόσταση:            μη διαθέσιμη\n"
+#
+#, c-format
+msgid "Range:                %5.1f NM\n"
+msgstr "Απόσταση:           %5.1f ΝΜ.\n"
+#
+msgid "Raster"
+msgstr "Χάρτες κουκίδας (Raster )"
+#
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min.\n"
+msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά\n"
+#
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
+#
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
+#
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr ""
+"Το OpenCPN ανακεφαλαιώνει τη βάση δεδομένων Χαρτών από τα αρχεία "
+"διαμόρφωσης..."
+#
+#, c-format
+msgid ""
+"Recent Report Period:   %3d Sec.\n"
+"\n"
+msgstr ""
+"Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
+"\n"
+#
+msgid "Ref. Pt"
+msgstr ""
+#
+#, fuzzy
+msgid "Reference Point"
+msgstr "Σταθμός αναφοράς:"
+#
+msgid "Reference Station:"
+msgstr "Σταθμός αναφοράς:"
+#
+msgid "Remaining time : "
+msgstr ""
+#
+msgid "Remove Waypoint from Route"
+msgstr "Διέγραψε σημεία Πορείας (WP) από Ταξίδια(Routes)"
+#
+msgid "Remove lost targets after (Minutes:):"
+msgstr "Απομάκρυνε χαμένους στόχους μετά από (Λεπτά):"
+#
+msgid "Remove this chart from quilt."
+msgstr "Αφαίρεσε χάρτη από τις επικαλύψεις"
+#
+msgid "Rename Waypoints?"
+msgstr "Μετονομασία σημείου Πορείας (WP);"
+#
+#, c-format
+msgid "Report Age:             %3d Sec.\n"
+msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
+#
+msgid "Reserved 11"
+msgstr ""
+#
+msgid "Reserved 12"
+msgstr ""
+#
+msgid "Reserved 13"
+msgstr ""
+#
+msgid "Reserved 14"
+msgstr ""
+#
+msgid "Restricted Manoeuvrability"
+msgstr ""
+#
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr "Ανάκτηση των τοπικών φακέλων χαρτών από την Windows Registry"
+#
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr "Ανάκτηση της τοπικής γλώσσας από την Windows Registry"
+#
+msgid "Reverse Route"
+msgstr "Αντιστροφή Ταξιδίου(Route)"
+#
+msgid "Rollover"
+msgstr "Αναστροφή"
+#
+msgid "Route"
+msgstr "Ταξίδι"
+#
+msgid "Route Manager"
+msgstr "Διαχειριστής Ταξιδίου"
+#
+msgid "Route Name"
+msgstr "Όνομα Ταξιδίου"
+#
+msgid "Route Properties"
+msgstr "Ιδιότητες ταξιδίου (Route)"
+#
+msgid "Route Uploaded successfully."
+msgstr "Επιτυχής φόρτωση Ταξιδίου(Route)"
+#
+msgid "Route from Track"
+msgstr "Ταξίδι(Route) από Ίχνος(Track)"
+#
+msgid "Routes"
+msgstr "Ταξίδια (Routes)"
+#
+msgid "S/V"
+msgstr ""
+#
+msgid "SAR/V"
+msgstr ""
+#
+msgid "SOG COG"
+msgstr "SOG COG"
+#
+msgid "Safe Water"
+msgstr ""
+#
+msgid "Safety Depth"
+msgstr "Ασφαλές Βάθος"
+#
+msgid "Sailing Vessel"
+msgstr ""
+#
+msgid "Scale In"
+msgstr "Αύξησε Κλίμακα"
+#
+msgid "Scale Out"
+msgstr "Ελάτωσε Κλίμακα"
+#
+msgid "Search and Rescue Vessel"
+msgstr ""
+#
+msgid "Select Alert Sound"
+msgstr "Διάλεξε ήχο συναγερμού"
+#
+msgid "Select All"
+msgstr "Επιλογή όλων"
+#
+msgid "Select Chart Types for Quilting"
+msgstr "Διάλεξε τύπους χαρτών για επικάλυψη"
+#
+msgid "Select Sound File"
+msgstr "Διάλεξε αρχείο ήχου"
+#
+msgid "Send"
+msgstr "Αποστολή"
+#
+msgid "Send Route To GPS"
+msgstr "Αποστολή ταξιδίου στο GPS"
+#
+msgid "Send To GPS..."
+msgstr "Στείλε στο GPS..."
+#
+msgid "Set Anchor Watch"
+msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
+#
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+#
+msgid "Shallow Depth"
+msgstr "Όριο Αβαθών"
+#
+msgid "Shift to Larger Scale Chart"
+msgstr "Άλλαξε σε χάρτη με μεγαλύτερη Κλίμακα"
+#
+msgid "Shift to Smaller Scale Chart"
+msgstr "Άλλαξε σε χάρτη με μικρότερη Κλίμακα"
+#
+msgid "Ship Type:            "
+msgstr "Τύπος Σκάφους:         "
+#
+msgid "ShipName:  "
+msgstr "Όνομα Σκάφους: "
+#
+msgid "Show AIS Targets"
+msgstr "Δείξε στόχους AIS"
+#
+msgid "Show ATON labels"
+msgstr "Δείξε ετικέτες ATON"
+#
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "Δείξε παράθυρο συναγερμού CPA/ TCPA"
+#
+msgid "Show Chart Outlines"
+msgstr "Δείξε περιθώρεια χαρτών"
+#
+msgid "Show Currents"
+msgstr "Δείξε παλίρροια"
+#
+msgid "Show DepthUnits"
+msgstr "Δείξε Μονάδες Βάθους"
+#
+msgid "Show ENC Text"
+msgstr "Δείξε κείμενα ENC"
+#
+msgid "Show GPS/NMEA data stream window"
+msgstr "Δείξε παράθυρο με ροή στοιχείων GPS-/ NMEA"
+#
+#, fuzzy
+msgid "Show Grid"
+msgstr "Δείξε πλημμύριδα"
+#
+msgid "Show Important Text Only"
+msgstr "Εμφάνισε μόνο σημαντικό κείμενο"
+#
+msgid "Show Light Descriptions"
+msgstr "Δείξε Στοιχεία Φάρων"
+#
+msgid "Show Name"
+msgstr "Δείξε Όνομα"
+#
+msgid "Show Printing Icon"
+msgstr "Δείξε εικόνα εκτύπωσης"
+#
+msgid "Show Status Bar"
+msgstr "Δείξε γραμμή κατάστασης"
+#
+msgid "Show Tides"
+msgstr "Δείξε πλημμύριδα"
+#
+msgid "Show Track icon"
+msgstr "Δείξε εικόνα ίχνους"
+#
+msgid "Show radar rings"
+msgstr "Δείξε δακτυλίους Ραντάρ"
+#
+msgid "Show skewed raster charts as North-Up"
+msgstr "Δείξε τους παραμορφωμένους raster χάρτες με το Βορρά Πάνω"
+#
+msgid "Show target COG arrows"
+msgstr "Δείξε βέλος COG στόχου"
+#
+msgid "Show target tracks"
+msgstr "Δείξε ίχνη στόχων"
+#
+msgid "ShowSoundings"
+msgstr "Δείξε βάθη"
+#
+msgid "Shows the font preview."
+msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
+#
+msgid "Simplified"
+msgstr "Απλοποιημένο"
+#
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x %4.1fm\n"
+"\n"
+msgstr ""
+"Μέγεθος:          %dm x %dm x %4.1fm\n"
+"\n"
+#
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
+msgstr ""
+"Μέγεθος:          %dm x %dm x ---m\n"
+"\n"
+#
+#, c-format
+msgid ""
+"Size:                 ---m x ---m x %4.1fm\n"
+"\n"
+msgstr ""
+"Μέγεθος:          ---m x ---m x %4.1fm\n"
+"\n"
+#
+msgid ""
+"Size:                 ---m x ---m x ---m\n"
+"\n"
+msgstr ""
+"Μέγεθος:          ---m x ---m x ---m\n"
+"\n"
+#
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+msgstr ""
+"Μέγεθος:        %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+#
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+msgstr "Μέγεθος:        %5.1fm x %4.1fm x ---m\n"
+#
+msgid "SoG"
+msgstr "Ταχύτητα (SoG)"
+#
+#, fuzzy
+msgid "Spare"
+msgstr "Εκκίνηση"
+#
+msgid "Special"
+msgstr ""
+#
+#, fuzzy
+msgid "Special Mark"
+msgstr "Σβήσε σημάδια"
+#
+msgid "Speed (Kts)"
+msgstr "Ταχύτητα (Kts)"
+#
+msgid "Speed:                  Unavailable\n"
+msgstr "Ταχύτητα:             μη διαθέσιμη\n"
+#
+#, c-format
+msgid "Speed:                %5.2f Kts.\n"
+msgstr "Ταχύτητα:           %5.2f ΚΝ\n"
+#
+msgid "Standard"
+msgstr "Βασικό"
+#
+msgid "Starboard Hand Mark"
+msgstr ""
+#
+msgid "Start"
+msgstr "Εκκίνηση"
+#
+msgid "Stbd"
+msgstr ""
+#
+msgid "Stbd Hand"
+msgstr ""
+#
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Απενεργοποίησε συναγερμό για ποντισμένα/αγκυροβολημένα σημάδια"
+#
+msgid "Supress anchored/moored targets"
+msgstr "Κρύψε ποντισμένα/αγκυροβολημένα σημάδια"
+#
+msgid "Symbolized"
+msgstr "Συμβολικά"
+#
+msgid "TCP/IP WiFi Data Server"
+msgstr "Διακομιστής TCP/IP WLAN"
+#
+msgid "TCPA:  \n"
+msgstr "TCPA:  \n"
+#
+#, c-format
+msgid "TCPA:                 %02d:%02d Hr:Min\n"
+msgstr "TCPA:                 %02d:%02d Ω:Λεπτά\n"
+#
+msgid "Tanker"
+msgstr ""
+#
+msgid "Target info"
+msgstr "Πληροφορίες Στόχου"
+#
+msgid "Temporary GOTO Route"
+msgstr "Δευτερεύον (πήγαινε προς) ταξίδι"
+#
+msgid "Temporary MOB Route"
+msgstr "Προσωρινό ΜΟΒ ταξίδι"
+#
+#, fuzzy
+msgid "Tender"
+msgstr "Αποστολή"
+#
+msgid "Test Alert Sound"
+msgstr "Τέστ ήχου συναγερμού"
+#
+msgid "Text Element"
+msgstr "Στοιχείο Κειμένου"
+#
+msgid "The font colour."
+msgstr "Χρώμα Γραμματοσειράς."
+#
+msgid "The font family."
+msgstr "Οικογένεια Γραμματοσειράς."
+#
+msgid "The font point size."
+msgstr "Το Μέγεθος Γραμματοσειράς."
+#
+msgid "The font style."
+msgstr "Το Στύλ γραμματοσειράς."
+#
+msgid "The font weight."
+msgstr "Το Πάχος γραμματοσειράς."
+#
+msgid "There"
+msgstr "Εκεί"
+#
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr ""
+"Πρόβλημα εκτύπωσης.\n"
+"Πιθανόν ο εκτυπωτής δεν εγκαταστάθηκε σωστά;"
+#
+msgid "This Leg"
+msgstr "Αυτό το τμήμα."
+#
+msgid "Tide"
+msgstr "Πλημμύριδα"
+#
+msgid "Time Enroute"
+msgstr "Χρόνος ταξιδίου"
+#
+msgid "To"
+msgstr "Προς "
+#
+msgid "To Waypoint"
+msgstr "προς Σημείο Πορείας (WP)"
+#
+msgid "Today"
+msgstr "Σήμερα"
+#
+msgid "Toggle Tracking"
+msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
+msgid "Tomorrow"
+msgstr "Αύριο"
+#
+msgid "ToolBox"
+msgstr "Ρυθμίσεις"
+#
+msgid "ToolTips"
+msgstr "Υποδείξεις Εργαλείων"
+#
+msgid "Total Distance"
+msgstr "Ολική Απόσταση"
+#
+#, fuzzy
+msgid "Tow"
+msgstr "Προς "
+#
+msgid "Track Name"
+msgstr "Όνομα Ίχνους"
+#
+msgid "Track Properties"
+msgstr "Ιδιότητες ίχνους"
+#
+msgid "Tracks"
+msgstr "Ίχνη"
+#
+msgid "Transverse Mercator"
+msgstr "Εγκάρσια Μερκατορική Προβολή (Transverse Mercator)"
+#
+#, c-format
+msgid "TrueScale: %8.0f             "
+msgstr "Αληθής Κλίμακα: %8.0f             "
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.1fx"
+msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.1fx"
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.2fx"
+msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.2fx"
+#
+msgid "Tug"
+msgstr ""
+#
+msgid "Type"
+msgstr "Τύπος"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid ""
+"Unable to initialize libgps.\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"Δεν μπορεί να τρέξει το libgps.\n"
+"\n"
+"gpsd Host είναι: "
+#
+msgid "Unable to load libgps.so"
+msgstr "Αδύνατο να τρέξει το libgps.so"
+#
+#, fuzzy
+msgid "Undefined"
+msgstr "&Υπογράμμιση"
+#
+msgid "Under way sailing"
+msgstr ""
+#
+msgid "Underway"
+msgstr ""
+#
+msgid "Units"
+msgstr "Μονάδες"
+#
+msgid "Unk"
+msgstr "Άγνωστο"
+#
+msgid "Unknown"
+msgstr "Άγνωστο"
+#
+msgid "Update Control"
+msgstr "Έλεγχος Ενημέρωσης"
+#
+msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+msgstr ""
+"Χρησιμοποίησε GRMN/GRMN (Host) Mode για φόρτωση Σημίων(WP) και Ταξιδιών(Route)"
+#
+msgid "Use SCAMIN"
+msgstr "Χρησιμοποίησε το SCAMIN"
+#
+msgid "Use nearby waypoint?"
+msgstr "Να χρησιμοποιήσω το πλησιέστερο Σημείο Κατεύθυνσης;"
+#
+#, fuzzy
+msgid "User X Offset"
+msgstr "Ανανέωση αντιστάθμισης CM93"
+#
+msgid "User X Offset (Metres)"
+msgstr ""
+#
+#, fuzzy
+msgid "User Y Offset"
+msgstr "Ανανέωση αντιστάθμισης CM93"
+#
+msgid "User Y Offset (Metres)"
+msgstr ""
+#
+msgid "Vector Charts"
+msgstr "Διανισματικοί Χάρτες"
+#
+msgid "Vessel Diving"
+msgstr ""
+#
+msgid "Vessel Dredging"
+msgstr ""
+#
+msgid "Vessel Fishing"
+msgstr ""
+#
+msgid "Vessel Towing"
+msgstr ""
+#
+msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
+msgstr "Αρχεία WAV (*.wav)|*.wav|Όλα τα Αρχεία (*.*)|*.*"
+#
+msgid "Warn if CPA less than (NMi):"
+msgstr "ΠΡΟΣΟΧΗ, αν η CPA είναι μικρότερη από ( ΝΜ ):"
+#
+msgid "Waypoint Locking"
+msgstr "Κλείδωμα Σημείων Πορείας (WP)"
+#
+msgid "Waypoint Name"
+msgstr "Όνομα Σημείου"
+#
+msgid "Waypoint(s) Uploaded successfully."
+msgstr "Επιτυχής φόρτωση Σημείου(ων)(WP)"
+#
+msgid "Waypoints"
+msgstr "Σημεία Πορείας (WP)"
+#
+msgid ""
+"Waypoints can be renamed to reflect the new order, the names will be '001', "
+"'002' etc.\n"
+"\n"
+"Do you want to rename the waypoints?"
+msgstr ""
+"Τα σημεία Διαδρομής μπορούν να μετονομαστούν, ώστε να αντικατοπτρίζουν την "
+"αντίστροφη σειρά. Η ονομασία θα είναι  '001', '002', κλπ....\n"
+"\n"
+"Θέλετε να τα μετονομάσετε;"
+#
+msgid "Welcome to OpenCPN"
+msgstr "Καλωσορίσατε στο OpenCPN"
+#
+msgid "Whether the font is underlined."
+msgstr "Όπου η γραμματοσειρά είναι υπογραμμισμένη."
+#
+msgid "WiFi Options"
+msgstr "Ρυθμίσεις για Ασύρματα Δίκτυα ( Wi-Fi )"
+#
+msgid "Wing In Ground Effect"
+msgstr ""
+#
+msgid "X Offset (Positive moves map to East) (NMi Projected) :"
+msgstr "Χ Αντιμετάθεση (θετική μετακινεί το χάρτη ανατολικά) (Προβολή σε NMi) :"
+#
+msgid "XTE         L"
+msgstr "XTE         L"
+#
+msgid "XTE         R"
+msgstr "XTE         R"
+#
+msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
+msgstr "Υ Αντιμετάθεση (θετική μετακινεί το χάρτη βόρεια) (Προβολή σε NMi) :"
+#
+msgid "Yat"
+msgstr ""
+#
+msgid "Zoom In"
+msgstr "Μεγένθυση"
+#
+msgid "Zoom Out"
+msgstr "Σμίκρυνση"
+#
+msgid "[Class] Type (Status)"
+msgstr "[Κατηγορία] Τύπος (Κατάσταση)"
+#
+msgid "cm93 Detail"
+msgstr "Λεπτομέρειες CM93"
+#
 #, c-format
 msgid ""
 "libgps API version mismatch.\n"
@@ -596,2086 +2001,33 @@ msgid ""
 msgstr ""
 "Μη συμβατή Έκδοση  libgps API .\n"
 "OpenCPN βρήκε την έκδοση %d.%d , αλλά χρειάζεται τουλάχιστον την Έκδοση 3.1"
-
 #
-#: src/concanv.cpp:97
-#: src/concanv.cpp:338
-#: src/concanv.cpp:362
-msgid "This Leg"
-msgstr "Αυτό το τμήμα."
-
 #
-#: src/concanv.cpp:110
-msgid "Leg/Route"
-msgstr "Σκέλος/Ταξίδι"
-
-#: src/concanv.cpp:115
-#: src/concanv.cpp:119
-#: src/concanv.cpp:123
-#: src/concanv.cpp:127
-msgid "Console Legend"
-msgstr "Επεξηγήσεις Κονσόλας"
-
-#: src/concanv.cpp:115
-#: src/concanv.cpp:119
-#: src/concanv.cpp:123
-#: src/concanv.cpp:127
-msgid "Console Value"
-msgstr "Τιμή κονσόλας"
-
 #
-#: src/concanv.cpp:230
-msgid "XTE         L"
-msgstr "XTE         L"
-
+#~ msgid "CM93 Offset Off"
+#~ msgstr "Αντιμετάθεση CM93 κλειστή"
 #
-#: src/concanv.cpp:232
-msgid "XTE         R"
-msgstr "XTE         R"
-
 #
-#: src/concanv.cpp:310
-msgid "ETA          "
-msgstr "ETA          "
-
 #
-#: src/concanv.cpp:336
-#: src/concanv.cpp:360
-msgid "Route"
-msgstr "Ταξίδι"
-
+#~ msgid "CM93 Offset On"
+#~ msgstr "Αντιμετάθεση CM93 ανοικτή"
 #
-#: src/chcanv.cpp:1468
-#: src/chcanv.cpp:1494
-#: src/chcanv.cpp:9392
-#: src/options.cpp:931
-msgid "Feet"
-msgstr "Πόδια"
-
 #
-#: src/chcanv.cpp:1469
-#: src/chcanv.cpp:1495
-#: src/chcanv.cpp:9393
-msgid "Meters"
-msgstr "Μέτρα"
-
 #
-#: src/chcanv.cpp:1470
-#: src/chcanv.cpp:1496
-#: src/chcanv.cpp:9394
-#: src/options.cpp:933
-msgid "Fathoms"
-msgstr "Οργιές"
-
+#~ msgid "CM93 Offset Tool Off"
+#~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
 #
-#: src/chcanv.cpp:2826
-msgid "New Mark"
-msgstr "Νέο Σημάδι"
-
 #
-#: src/chcanv.cpp:3088
-#: src/chcanv.cpp:6180
-msgid "Leg: from "
-msgstr "Τμήμα: από "
-
-#: src/chcanv.cpp:3090
-#: src/chcanv.cpp:6182
-msgid " to "
-msgstr " Προς "
-
 #
-#: src/chcanv.cpp:3823
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.1fx"
-
+#~ msgid "CM93 Offset Tool....."
+#~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
 #
-#: src/chcanv.cpp:3825
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.2fx"
-
 #
-#: src/chcanv.cpp:3828
-#, c-format
-msgid "TrueScale: %8.0f             "
-msgstr "Αληθής Κλίμακα: %8.0f             "
-
 #
-#: src/chcanv.cpp:6256
-msgid "Use nearby waypoint?"
-msgstr "Να χρησιμοποιήσω το πλησιέστερο Σημείο Κατεύθυνσης;"
-
+#~ msgid "CM93 Offsets On"
+#~ msgstr "Αντιμετάθεση CM93 ενεργή"
 #
-#: src/chcanv.cpp:6256
-msgid "OpenCPN Route Create"
-msgstr "OpenCPN Κατασκευή Διαδρομής"
-
-#: src/chcanv.cpp:7094
-msgid "Update CM93 Offset"
-msgstr "Ανανέωση αντιστάθμισης CM93"
-
-#: src/chcanv.cpp:7096
-msgid "Set CM93 Offset"
-msgstr "Θέσε αντιστάθμιση CM93"
-
-#: src/chcanv.cpp:7098
-#: src/chcanv.cpp:7269
-msgid "CM93 Offset Tool Off"
-msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
-
 #
-#: src/chcanv.cpp:7104
-#: src/chcanv.cpp:7936
-#: src/routemanagerdialog.cpp:1265
-msgid "Track Properties"
-msgstr "Ιδιότητες ίχνους"
-
 #
-#: src/chcanv.cpp:7105
-msgid "Delete Track"
-msgstr "Διαγραφή Ίχνους (πορείας)"
-
-#
-#: src/chcanv.cpp:7112
-msgid "Activate Route"
-msgstr "Ενεργοποίηση Ταξιδιού (Route)"
-
-#
-#: src/chcanv.cpp:7113
-msgid "Deactivate Route"
-msgstr "Απενεργοποίησε Ταξίδι (Route)"
-
-#
-#: src/chcanv.cpp:7114
-msgid "Insert Waypoint"
-msgstr "Εισαγωγή Σημείου Πορείας (WP)"
-
-#
-#: src/chcanv.cpp:7115
-msgid "Append Waypoint"
-msgstr "Επισύναψη Σημείου Πορείας (WP)"
-
-#
-#: src/chcanv.cpp:7116
-msgid "Delete Route"
-msgstr "Διαγραφή Ταξιδιού(Route)"
-
-#
-#: src/chcanv.cpp:7117
-msgid "Reverse Route"
-msgstr "Αντιστροφή Ταξιδίου(Route)"
-
-#
-#: src/chcanv.cpp:7131
-msgid "Activate Waypoint"
-msgstr "Ενεργοποίηση Σημείου Πορείας (WP)"
-
-#
-#: src/chcanv.cpp:7132
-msgid "Activate Next in Route"
-msgstr "Ενεργοποίηση του επόμενου σημείου Πορείας (WP) στο Ταξίδι (Route)"
-
-#
-#: src/chcanv.cpp:7133
-msgid "Remove Waypoint from Route"
-msgstr "Διέγραψε σημεία Πορείας (WP) από Ταξίδια(Routes)"
-
-#
-#: src/chcanv.cpp:7135
-msgid "Delete Waypoint"
-msgstr "Διαγραφή σημείου Πορείας (WP)"
-
-#
-#: src/chcanv.cpp:7136
-#: src/chcanv.cpp:7160
-msgid "Mark/WP Properties"
-msgstr "Ιδιότητες Σημαδιών-/ σημείων Πορείας (WP)"
-
-#
-#: src/chcanv.cpp:7141
-#: src/chcanv.cpp:7175
-msgid "Additional information"
-msgstr "Πρόσθετες Πληροφορίες"
-
-#
-#: src/chcanv.cpp:7156
-msgid "Go To Mark/WP"
-msgstr "Μετάβαση στο Σημάδι/WP"
-
-#
-#: src/chcanv.cpp:7159
-msgid "Delete Mark"
-msgstr "Σβήσε σημάδια"
-
-#
-#: src/chcanv.cpp:7163
-msgid "Clear Anchor Watch"
-msgstr "Ακύρωση επιτήρησης Αγκυροβολίας"
-
-#
-#: src/chcanv.cpp:7171
-msgid "Set Anchor Watch"
-msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
-
-#
-#: src/chcanv.cpp:7187
-#: src/chcanv.cpp:7232
-msgid "Max Detail Here"
-msgstr "Μέγιστη Λεπτομέρια Εδώ"
-
-#
-#: src/chcanv.cpp:7188
-#: src/chcanv.cpp:7233
-msgid "Scale In"
-msgstr "Αύξησε Κλίμακα"
-
-#
-#: src/chcanv.cpp:7189
-#: src/chcanv.cpp:7234
-msgid "Scale Out"
-msgstr "Ελάτωσε Κλίμακα"
-
-#
-#: src/chcanv.cpp:7195
-msgid "Enable CM93 Detail Slider"
-msgstr "Εμφάνισε δείκτη λεπτομερειών CM93"
-
-#
-#: src/chcanv.cpp:7238
-msgid "End Route"
-msgstr "Τέλος Ταξιδιού"
-
-#
-#: src/chcanv.cpp:7243
-msgid "Drop Mark Here"
-msgstr "Σημάδεψε εδώ"
-
-#
-#: src/chcanv.cpp:7244
-msgid "Move Boat Here"
-msgstr "Μετακίνησε το Σκάφος ΕΔΩ"
-
-#: src/chcanv.cpp:7245
-msgid "Jump To Position..."
-msgstr "Μεταπήδησε στη Θέση..."
-
-#
-#: src/chcanv.cpp:7249
-msgid "Go To Here"
-msgstr "Πήγαινε ΕΔΩ"
-
-#
-#: src/chcanv.cpp:7253
-msgid "Measure....."
-msgstr "Μέτρηση....."
-
-#
-#: src/chcanv.cpp:7255
-msgid "Measure Off"
-msgstr "Τέλος μέτρησης"
-
-#
-#: src/chcanv.cpp:7258
-#: src/ais.cpp:3781
-msgid "AIS target list"
-msgstr "Κατάλογος Στόχων AIS"
-
-#: src/chcanv.cpp:7266
-msgid "CM93 Offset Tool....."
-msgstr "Εργαλείο Αντιμετάθεσης CM93..."
-
-#: src/chcanv.cpp:7272
-msgid "CM93 Offset Off"
-msgstr "Αντιμετάθεση CM93 κλειστή"
-
-#: src/chcanv.cpp:7274
-msgid "CM93 Offset On"
-msgstr "Αντιμετάθεση CM93 ανοικτή"
-
-#
-#: src/chcanv.cpp:7395
-msgid "Temporary GOTO Route"
-msgstr "Δευτερεύον (πήγαινε προς) ταξίδι"
-
-#
-#: src/chcanv.cpp:7396
-#: src/chcanv.cpp:7447
-#: src/routemanagerdialog.cpp:1627
-msgid "Here"
-msgstr "Εδώ"
-
-#
-#: src/chcanv.cpp:7397
-msgid "There"
-msgstr "Εκεί"
-
-#
-#: src/chcanv.cpp:7444
-#: src/routemanagerdialog.cpp:1418
-#: src/routemanagerdialog.cpp:1624
-msgid "(Unnamed Waypoint)"
-msgstr "(Ανώνυμο Σημείο)(WP)"
-
-#
-#: src/chcanv.cpp:7445
-#: src/routemanagerdialog.cpp:1625
-msgid "Go to "
-msgstr "Πήγαινε σε"
-
-#
-#: src/chcanv.cpp:7601
-msgid "cm93 Detail"
-msgstr "Λεπτομέρειες CM93"
-
-#
-#: src/chcanv.cpp:7722
-#: src/routemanagerdialog.cpp:930
-msgid "Rename Waypoints?"
-msgstr "Μετονομασία σημείου Πορείας (WP);"
-
-#
-#: src/chcanv.cpp:9405
-#: src/chcanv.cpp:9407
-msgid "OverZoom"
-msgstr "Υπερμεγένθυνση"
-
-#: src/chcanv.cpp:9419
-#: src/chcanv.cpp:9421
-msgid "CM93 Offsets On"
-msgstr "Αντιμετάθεση CM93 ενεργή"
-
-#
-#: src/chcanv.cpp:10150
-msgid "Tide"
-msgstr "Πλημμύριδα"
-
-#
-#: src/chcanv.cpp:10155
-msgid "Current"
-msgstr "Παλίρροια"
-
-#
-#: src/chcanv.cpp:10253
-#: src/chcanv.cpp:11849
-#: src/chcanv.cpp:12392
-#: src/routeprop.cpp:250
-#: src/routeprop.cpp:902
-#: src/routeprop.cpp:1346
-msgid "OK"
-msgstr "ΟΚ"
-
-#
-#: src/chcanv.cpp:10258
-msgid "Prev"
-msgstr "Προηγούμενο"
-
-#
-#: src/chcanv.cpp:10266
-msgid "Next"
-msgstr "Επόμενο"
-
-#
-#: src/chcanv.cpp:10583
-msgid "Reference Station:"
-msgstr "Σταθμός αναφοράς:"
-
-#
-#: src/chcanv.cpp:10693
-msgid "Today"
-msgstr "Σήμερα"
-
-#
-#: src/chcanv.cpp:10695
-#: src/chcanv.cpp:10698
-msgid "Tomorrow"
-msgstr "Αύριο"
-
-#
-#: src/chcanv.cpp:11512
-msgid "AISTargetQuery"
-msgstr "Ερώτηση Στόχων AIS"
-
-#
-#: src/chcanv.cpp:11610
-#: src/options.cpp:408
-msgid "Ok"
-msgstr "ΟΚ"
-
-#
-#: src/chcanv.cpp:11789
-msgid "Chart"
-msgstr "Χάρτης"
-
-#
-#: src/chcanv.cpp:12082
-#: src/chcanv.cpp:12118
-msgid "AISRollover"
-msgstr "Αντιστροφή AIS"
-
-#
-#: src/chcanv.cpp:12368
-#: src/routeprop.cpp:878
-#: src/routeprop.cpp:1305
-msgid "Position"
-msgstr "Θέση"
-
-#
-#: src/chcanv.cpp:12373
-#: src/routeprop.cpp:283
-#: src/routeprop.cpp:883
-#: src/routeprop.cpp:1310
-msgid "Latitude"
-msgstr "Γεωγραφικό Πλάτος"
-
-#
-#: src/chcanv.cpp:12380
-#: src/routeprop.cpp:288
-#: src/routeprop.cpp:890
-#: src/routeprop.cpp:1316
-msgid "Longitude"
-msgstr "Γεωγραφικό Μήκος"
-
-#
-#: src/chcanv.cpp:12389
-#: src/routeprop.cpp:247
-#: src/routeprop.cpp:899
-#: src/routeprop.cpp:1343
-#: src/routeman.cpp:958
-msgid "Cancel"
-msgstr "Ακύρωση"
-
-#
-#: src/navutil.cpp:1085
-#: src/navutil.cpp:1120
-#: src/navutil.cpp:1121
-msgid "Marks"
-msgstr "Σημάδια"
-
-#: src/navutil.cpp:1186
-msgid "Waypoint(s) Uploaded successfully."
-msgstr "Επιτυχής φόρτωση Σημείου(ων)(WP)"
-
-#: src/navutil.cpp:1188
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Σφάλμα  κατά την φόρτωση Σημείων Πορείας (WP).  Παρακαλώ ελέγξτε το αρχείο  log..."
-
-#: src/navutil.cpp:1937
-msgid "Route Uploaded successfully."
-msgstr "Επιτυχής φόρτωση Ταξιδίου(Route)"
-
-#: src/navutil.cpp:1939
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr "Σφάλμα στη φόρτωση Ταξιδίου.  Παρακαλώ ελέγξτε τα αρχεία  log..."
-
-#
-#: src/navutil.cpp:3754
-#: src/navutil.cpp:3799
-#: src/navutil.cpp:3840
-msgid "Export GPX file"
-msgstr "Εξαγωγή Αρχείου GPX"
-
-#
-#: src/navutil.cpp:3769
-#: src/navutil.cpp:3814
-#: src/navutil.cpp:3855
-msgid "Overwrite existing file?"
-msgstr "Αντικατάσταση του ήδη υπάρχοντος Αρχείου;"
-
-#
-#: src/navutil.cpp:4018
-msgid "Import GPX file"
-msgstr "Εισαγωγή Αρχείου GPX"
-
-#
-#: src/navutil.cpp:6034
-msgid "&Font family:"
-msgstr "&Οικογένεια Γραμματοσειράς:"
-
-#
-#: src/navutil.cpp:6040
-#: src/navutil.cpp:6042
-msgid "The font family."
-msgstr "Οικογένεια Γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6047
-msgid "&Style:"
-msgstr "&Στυλ:"
-
-#
-#: src/navutil.cpp:6051
-#: src/navutil.cpp:6053
-msgid "The font style."
-msgstr "Το Στύλ γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6058
-msgid "&Weight:"
-msgstr "&Πάχος:"
-
-#
-#: src/navutil.cpp:6062
-#: src/navutil.cpp:6064
-msgid "The font weight."
-msgstr "Το Πάχος γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6071
-msgid "C&olour:"
-msgstr "Χ&ρώμα:"
-
-#
-#: src/navutil.cpp:6081
-#: src/navutil.cpp:6083
-msgid "The font colour."
-msgstr "Χρώμα Γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6089
-msgid "&Point size:"
-msgstr "&Μέγεθος Γραμματοσειράς:"
-
-#
-#: src/navutil.cpp:6094
-#: src/navutil.cpp:6096
-msgid "The font point size."
-msgstr "Το Μέγεθος Γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6103
-msgid "&Underline"
-msgstr "&Υπογράμμιση"
-
-#
-#: src/navutil.cpp:6106
-#: src/navutil.cpp:6108
-msgid "Whether the font is underlined."
-msgstr "Όπου η γραμματοσειρά είναι υπογραμμισμένη."
-
-#
-#: src/navutil.cpp:6115
-msgid "Preview:"
-msgstr "Προεπισκόπηση:"
-
-#
-#: src/navutil.cpp:6120
-#: src/navutil.cpp:6122
-msgid "Shows the font preview."
-msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6129
-#: src/options.cpp:412
-msgid "&Cancel"
-msgstr "&Ακύρωση"
-
-#
-#: src/navutil.cpp:6131
-msgid "Click to cancel the font selection."
-msgstr "Κάντε κλικ εδώ για να ακυρώσετε την επιλογή γραμματοσειράς."
-
-#
-#: src/navutil.cpp:6134
-msgid "&OK"
-msgstr "&ΟΚ"
-
-#
-#: src/navutil.cpp:6136
-#: src/navutil.cpp:6138
-msgid "Click to confirm the font selection."
-msgstr "Κάντε κλικ εδώ για να επιβεβαιώσετε την επιλογή γραμματοσειράς."
-
-#
-#: src/routeprop.cpp:187
-#: src/routeprop.cpp:846
-msgid "Properties"
-msgstr "Ιδιότητες"
-
-#
-#: src/routeprop.cpp:191
-#: src/routeprop.cpp:1297
-#: src/ais.cpp:3695
-msgid "Name"
-msgstr "Όνομα"
-
-#
-#: src/routeprop.cpp:201
-msgid "Depart From"
-msgstr "Αναχώρηση από"
-
-#
-#: src/routeprop.cpp:204
-msgid "Destination"
-msgstr "Προορισμός"
-
-#
-#: src/routeprop.cpp:217
-msgid "Total Distance"
-msgstr "Ολική Απόσταση"
-
-#
-#: src/routeprop.cpp:220
-msgid "Plan Speed"
-msgstr "Προσχεδιασμένη Ταχύτητα"
-
-#
-#: src/routeprop.cpp:223
-msgid "Time Enroute"
-msgstr "Χρόνος ταξιδίου"
-
-#
-#: src/routeprop.cpp:236
-#: src/routemanagerdialog.cpp:464
-msgid "Waypoints"
-msgstr "Σημεία Πορείας (WP)"
-
-#
-#: src/routeprop.cpp:264
-msgid "Leg"
-msgstr "Σκέλος"
-
-#
-#: src/routeprop.cpp:268
-msgid "To Waypoint"
-msgstr "προς Σημείο Πορείας (WP)"
-
-#
-#: src/routeprop.cpp:273
-#: src/routemanagerdialog.cpp:477
-msgid "Distance"
-msgstr "Απόσταση"
-
-#
-#: src/routeprop.cpp:278
-msgid "Bearing"
-msgstr "Διόπτευση"
-
-#
-#: src/routeprop.cpp:293
-msgid "ETE/Timestamp"
-msgstr "ETE/ σφραγίδα χρόνου"
-
-#
-#: src/routeprop.cpp:298
-msgid "Speed (Kts)"
-msgstr "Ταχύτητα (Kts)"
-
-#: src/routeprop.cpp:372
-msgid "Avg. speed (Kts)"
-msgstr "Μέση Ταχύτητα (Kts)"
-
-#
-#: src/routeprop.cpp:377
-msgid "Plan speed (Kts)"
-msgstr "Προσχεδιασμένη ταχύτητα (Kts)"
-
-#
-#: src/routeprop.cpp:490
-msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D Ημέρες  %H Ώρες  %M Λεπτά"
-
-#
-#: src/routeprop.cpp:492
-msgid " %H Hours  %M Minutes"
-msgstr " %H Ώρες   %M Λεπτά"
-
-#
-#: src/routeprop.cpp:550
-msgid "Start"
-msgstr "Εκκίνηση"
-
-#
-#: src/routeprop.cpp:597
-msgid "--"
-msgstr "--"
-
-#
-#: src/routeprop.cpp:851
-msgid "Mark Name"
-msgstr "Όνομα Σημαδιού"
-
-#
-#: src/routeprop.cpp:857
-msgid "Show Name"
-msgstr "Δείξε Όνομα"
-
-#
-#: src/routeprop.cpp:860
-#: src/routeprop.cpp:923
-msgid "Description"
-msgstr "Περιγραφή"
-
-#
-#: src/routeprop.cpp:870
-msgid "Mark Icon"
-msgstr "Εικόνα Σημαδιού"
-
-#
-#: src/routeprop.cpp:917
-#: src/routemanagerdialog.cpp:475
-msgid "Icon"
-msgstr "Εικόνα"
-
-#
-#: src/routeprop.cpp:1323
-msgid "Links"
-msgstr "Συνδέσεις"
-
-#
-#: src/routemanagerdialog.cpp:317
-msgid "Routes"
-msgstr "Ταξίδια (Routes)"
-
-#
-#: src/routemanagerdialog.cpp:341
-msgid "Route Name"
-msgstr "Όνομα Ταξιδίου"
-
-#
-#: src/routemanagerdialog.cpp:342
-msgid "To"
-msgstr "Προς "
-
-#
-#: src/routemanagerdialog.cpp:358
-msgid "&Properties..."
-msgstr "&Ιδιότητες..."
-
-#
-#: src/routemanagerdialog.cpp:363
-msgid "&Activate"
-msgstr "&Ενεργοποίηση"
-
-#
-#: src/routemanagerdialog.cpp:370
-#: src/routemanagerdialog.cpp:492
-msgid "&Zoom to"
-msgstr "&Μεγένθυση σε"
-
-#
-#: src/routemanagerdialog.cpp:377
-msgid "&Reverse"
-msgstr "&Αναστροφή"
-
-#
-#: src/routemanagerdialog.cpp:382
-#: src/routemanagerdialog.cpp:437
-#: src/routemanagerdialog.cpp:497
-msgid "&Delete"
-msgstr "&Διαγραφή"
-
-#
-#: src/routemanagerdialog.cpp:387
-msgid "&Export Route..."
-msgstr "&Εξαγωγή ταξιδιού..."
-
-#
-#: src/routemanagerdialog.cpp:392
-#: src/routemanagerdialog.cpp:512
-msgid "&Send to GPS"
-msgstr "&Στείλε στο GPS"
-
-#
-#: src/routemanagerdialog.cpp:399
-#: src/routemanagerdialog.cpp:454
-msgid "&Delete All"
-msgstr "&Διαγραφή όλων"
-
-#
-#: src/routemanagerdialog.cpp:409
-#: src/options.cpp:1162
-msgid "Tracks"
-msgstr "Ίχνη"
-
-#
-#: src/routemanagerdialog.cpp:421
-msgid "Track Name"
-msgstr "Όνομα Ίχνους"
-
-#
-#: src/routemanagerdialog.cpp:422
-msgid "Length"
-msgstr "Μήκος"
-
-#
-#: src/routemanagerdialog.cpp:427
-msgid "&Start Track"
-msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
-
-#
-#: src/routemanagerdialog.cpp:432
-#: src/routemanagerdialog.cpp:487
-msgid "&Properties"
-msgstr "&Ιδιότητες"
-
-#
-#: src/routemanagerdialog.cpp:442
-msgid "&Export Track..."
-msgstr "&Εξαγωγή Ίχνους (πορείας)..."
-
-#: src/routemanagerdialog.cpp:447
-msgid "Route from Track"
-msgstr "Ταξίδι(Route) από Ίχνος(Track)"
-
-#
-#: src/routemanagerdialog.cpp:476
-msgid "Waypoint Name"
-msgstr "Όνομα Σημείου"
-
-#: src/routemanagerdialog.cpp:482
-msgid "&New"
-msgstr "&Νέο"
-
-#
-#: src/routemanagerdialog.cpp:502
-msgid "&Go To"
-msgstr "&Πήγαινε στο"
-
-#
-#: src/routemanagerdialog.cpp:507
-msgid "&Export Wpt..."
-msgstr "&Εξαγωγή σημείου Πορείας (WP)..."
-
-#
-#: src/routemanagerdialog.cpp:519
-msgid "Delete All"
-msgstr "Διαγραφή Όλων"
-
-#
-#: src/routemanagerdialog.cpp:530
-msgid "I&mport..."
-msgstr "Ε&ισαγωγή"
-
-#
-#: src/routemanagerdialog.cpp:534
-msgid "E&xport All..."
-msgstr "Ε&ξαγωγή Όλων..."
-
-#
-#: src/routemanagerdialog.cpp:689
-msgid "(Unnamed Route)"
-msgstr "(ανώνυμο ταξίδι)"
-
-#
-#: src/routemanagerdialog.cpp:694
-#: src/routemanagerdialog.cpp:940
-msgid " - "
-msgstr " - "
-
-#
-#: src/routemanagerdialog.cpp:734
-msgid "Activate"
-msgstr "Ενεργοποίηση"
-
-#
-#: src/routemanagerdialog.cpp:744
-msgid "Deactivate"
-msgstr "Απενεργοποίηση"
-
-#
-#: src/routemanagerdialog.cpp:835
-msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα ταξίδια (routes);"
-
-#
-#: src/routemanagerdialog.cpp:835
-#: src/routemanagerdialog.cpp:1360
-#: src/routemanagerdialog.cpp:1677
-msgid "OpenCPN Alert"
-msgstr "Συναγερμός OpenCPN"
-
-#
-#: src/routemanagerdialog.cpp:1104
-#: src/routemanagerdialog.cpp:1669
-msgid "Send To GPS..."
-msgstr "Στείλε στο GPS..."
-
-#
-#: src/routemanagerdialog.cpp:1165
-msgid "(Unnamed Track)"
-msgstr "(ανώνυμο ίχνος (πορεία))"
-
-#: src/routemanagerdialog.cpp:1338
-msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN μετατρέπει το Ίχνος σε Ταξίδι...."
-
-#
-#: src/routemanagerdialog.cpp:1339
-msgid "Processing Waypoints..."
-msgstr "Διεργασία Σημείου Πορείας (WP)..."
-
-#: src/routemanagerdialog.cpp:1348
-msgid "Done."
-msgstr "Έτοιμο."
-
-#
-#: src/routemanagerdialog.cpp:1360
-msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα Ίχνη ( tracks);"
-
-#
-#: src/routemanagerdialog.cpp:1677
-msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Είστε ΣΙΓΟΥΡΟΙ, ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ <ΟΛΑ> τα Σημεία Πορείας (waypoints);"
-
-#
-#: src/ais.cpp:447
-msgid "ShipName:  "
-msgstr "Όνομα Σκάφους: "
-
-#
-#: src/ais.cpp:458
-msgid "CallSign:             "
-msgstr "Κωδικός Κλήσης:"
-
-#
-#: src/ais.cpp:470
-msgid "Class:                "
-msgstr "Κατηγορία:"
-
-#
-#: src/ais.cpp:479
-msgid "Navigational Status:  "
-msgstr "Κατάσταση Πλοήγησης:  "
-
-#
-#: src/ais.cpp:487
-msgid "Ship Type:            "
-msgstr "Τύπος Σκάφους:         "
-
-#
-#: src/ais.cpp:502
-#: src/ais.cpp:517
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:          ---m x ---m x %4.1fm\n"
-"\n"
-
-#
-#: src/ais.cpp:504
-#: src/ais.cpp:519
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Μέγεθος:          ---m x ---m x ---m\n"
-"\n"
-
-#
-#: src/ais.cpp:509
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:        %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-
-#
-#: src/ais.cpp:511
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr "Μέγεθος:        %5.1fm x %4.1fm x ---m\n"
-
-#
-#: src/ais.cpp:523
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Μέγεθος:          %dm x %dm x ---m\n"
-"\n"
-
-#
-#: src/ais.cpp:525
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:          %dm x %dm x %4.1fm\n"
-"\n"
-
-#
-#: src/ais.cpp:533
-msgid "Destination:          "
-msgstr "Προορισμός:                    "
-
-#
-#: src/ais.cpp:543
-msgid "ETA:                  "
-msgstr "ΕΤΑ:                  "
-
-#
-#: src/ais.cpp:551
-msgid "ETA:"
-msgstr "ΕΤΑ:"
-
-#
-#: src/ais.cpp:560
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Πορεία:                 %03d Μοίρες\n"
-
-#
-#: src/ais.cpp:562
-msgid "Course:                 Unavailable\n"
-msgstr "Πορεία:                  μη διαθέσιμη\n"
-
-#
-#: src/ais.cpp:566
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Ταχύτητα:           %5.2f ΚΝ\n"
-
-#
-#: src/ais.cpp:568
-msgid "Speed:                  Unavailable\n"
-msgstr "Ταχύτητα:             μη διαθέσιμη\n"
-
-#
-#: src/ais.cpp:574
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
-
-#
-#: src/ais.cpp:576
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
-
-#
-#: src/ais.cpp:578
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά\n"
-
-#
-#: src/ais.cpp:584
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Απόσταση:           %5.1f ΝΜ.\n"
-
-#
-#: src/ais.cpp:586
-msgid "Range:                  Unavailable\n"
-msgstr "Απόσταση:            μη διαθέσιμη\n"
-
-#
-#: src/ais.cpp:591
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Διόπτευση:            %03d μοίρες.\n"
-
-#
-#: src/ais.cpp:593
-msgid "Bearing:                Unavailable\n"
-msgstr "Διόπτευση:            μη διαθέσιμη\n"
-
-#: src/ais.cpp:598
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Inland Blue Flag        Clear\n"
-
-#: src/ais.cpp:603
-msgid "Inland Blue Flag        Set\n"
-msgstr "Inland Blue Flag        Set\n"
-
-#
-#: src/ais.cpp:608
-msgid "Position:               "
-msgstr "Θέση:"
-
-#: src/ais.cpp:619
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
-
-#
-#: src/ais.cpp:624
-msgid "Latest Report Time:      "
-msgstr "Χρόνος τελευταίας αναφοράς: "
-
-#
-#: src/ais.cpp:627
-msgid "UTC"
-msgstr "UTC"
-
-#
-#: src/ais.cpp:636
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
-
-#
-#: src/ais.cpp:639
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
-msgstr ""
-"Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
-"\n"
-
-#
-#: src/ais.cpp:646
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Ω:Λεπτά\n"
-
-#
-#: src/ais.cpp:648
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-
-#
-#: src/ais.cpp:652
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f ΝΜ\n"
-
-#
-#: src/ais.cpp:654
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-
-#: src/ais.cpp:761
-msgid "CPA"
-msgstr "CPA"
-
-#
-#: src/ais.cpp:840
-msgid "A"
-msgstr "Α"
-
-#
-#: src/ais.cpp:842
-msgid "B"
-msgstr "Β"
-
-#
-#: src/ais.cpp:844
-msgid "AtoN"
-msgstr "AtoN"
-
-#
-#: src/ais.cpp:844
-msgid "Aid to Navigation"
-msgstr "Βοήθημα στην Πλοήγηση"
-
-#
-#: src/ais.cpp:846
-#: src/options.cpp:825
-msgid "Base"
-msgstr "Βασικό"
-
-#
-#: src/ais.cpp:846
-msgid "Base Station"
-msgstr "Σταθμός αναφοράς"
-
-#
-#: src/ais.cpp:848
-msgid "Unk"
-msgstr "Άγνωστο"
-
-#
-#: src/ais.cpp:2127
-msgid "Could not resolve TCP/IP host '"
-msgstr "Δεν μπορώ να αποφανθώ για το TCP/IP host '"
-
-#
-#: src/ais.cpp:2128
-msgid ""
-"'\n"
-" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-msgstr ""
-"'\n"
-" Προτροπή: Δοκιμάστε στη Μορφή  'xxx.xxx.xxx.xxx'  "
-
-#
-#: src/ais.cpp:2172
-msgid "  Could not open AIS serial port '"
-msgstr "  Δεν μπορώ να ανοίξω την AIS-σειριακή θύρα: '"
-
-#
-#: src/ais.cpp:3212
-msgid "AISTargetAlert"
-msgstr "Συναγερμός Στόχων AIS"
-
-#
-#: src/ais.cpp:3294
-msgid "&Silence Alert"
-msgstr "&Σίγαση  συναγερμού"
-
-#
-#: src/ais.cpp:3300
-msgid "&Acknowledge"
-msgstr "&Αποδοχή"
-
-#
-#: src/ais.cpp:3493
-#: src/ais.cpp:3502
-#: src/ais.cpp:3509
-#: src/ais.cpp:3518
-#: src/ais.cpp:3529
-#: src/ais.cpp:3596
-#: src/ais.cpp:3600
-msgid "-"
-msgstr "-"
-
-#
-#: src/ais.cpp:3700
-msgid "Call"
-msgstr "Κλήση"
-
-#
-#: src/ais.cpp:3705
-msgid "MMSI"
-msgstr "MMSI"
-
-#
-#: src/ais.cpp:3710
-msgid "Class"
-msgstr "Κατηγορία"
-
-#
-#: src/ais.cpp:3715
-msgid "Type"
-msgstr "Τύπος"
-
-#
-#: src/ais.cpp:3720
-msgid "Nav Status"
-msgstr "Κατάσταση Πλοήγησης"
-
-#
-#: src/ais.cpp:3725
-msgid "Brg"
-msgstr "Διόπτευση"
-
-#
-#: src/ais.cpp:3730
-msgid "Range"
-msgstr "Απόσταση"
-
-#
-#: src/ais.cpp:3735
-msgid "CoG"
-msgstr "Πορεία (CoG)"
-
-#
-#: src/ais.cpp:3740
-msgid "SoG"
-msgstr "Ταχύτητα (SoG)"
-
-#: src/ais.cpp:3753
-msgid "Target info"
-msgstr "Πληροφορίες Στόχου"
-
-#: src/ais.cpp:3758
-msgid "Jump To"
-msgstr "Μεταπήδησε σε"
-
-#: src/ais.cpp:3762
-msgid "Limit range: NM"
-msgstr "Όριο Απόστασης: ΝΜ"
-
-#
-#: src/options.cpp:418
-msgid "Settings"
-msgstr "Ρυθμίσεις"
-
-#
-#: src/options.cpp:426
-msgid "Navigation Data"
-msgstr "Στοιχεία Πλοήγησης"
-
-#
-#: src/options.cpp:429
-msgid "Show Status Bar"
-msgstr "Δείξε γραμμή κατάστασης"
-
-#
-#: src/options.cpp:434
-msgid "Printing"
-msgstr "Εκτύπωση"
-
-#
-#: src/options.cpp:437
-msgid "Show Printing Icon"
-msgstr "Δείξε εικόνα εκτύπωσης"
-
-#
-#: src/options.cpp:442
-msgid "Chart Display Options"
-msgstr "Επιλογές στην απεικόνηση Χάρτη"
-
-#
-#: src/options.cpp:447
-msgid "Enable Chart Quilting"
-msgstr "Εμφάνισε επικάλυψη χαρτών"
-
-#
-#: src/options.cpp:451
-msgid "Course UP Mode"
-msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
-
-#
-#: src/options.cpp:455
-msgid "Look Ahead Mode"
-msgstr "Λειτουργεία προεπισκόπισης ΠΡΟΣΩ ΟΛΟΤΑΧΩΣ"
-
-#
-#: src/options.cpp:459
-msgid "Show Chart Outlines"
-msgstr "Δείξε περιθώρεια χαρτών"
-
-#
-#: src/options.cpp:463
-msgid "Show DepthUnits"
-msgstr "Δείξε Μονάδες Βάθους"
-
-#: src/options.cpp:467
-msgid "Show skewed raster charts as North-Up"
-msgstr "Δείξε τους παραμορφωμένους raster χάρτες με το Βορρά Πάνω"
-
-#
-#: src/options.cpp:479
-msgid "Select Chart Types for Quilting"
-msgstr "Διάλεξε τύπους χαρτών για επικάλυψη"
-
-#
-#: src/options.cpp:483
-msgid "Raster"
-msgstr "Χάρτες κουκίδας (Raster )"
-
-#
-#: src/options.cpp:486
-msgid "ENC/Vector"
-msgstr "ENC/Διάνυσμα"
-
-#
-#: src/options.cpp:489
-msgid "CM93"
-msgstr "CM93"
-
-#
-#: src/options.cpp:495
-msgid "OwnShip Display Options"
-msgstr "Ρυθμίσεις Εμφάνισης στοιχείων του Σκάφους μας"
-
-#
-#: src/options.cpp:503
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Βέλος Προπορείας ( σε λεπτά ):"
-
-#: src/options.cpp:513
-msgid "CM93 Offset Display"
-msgstr "Δείξε Αντιμετάθεση Χαρτών"
-
-#: src/options.cpp:518
-msgid "Activate CM93 Offset"
-msgstr "Ενεργοποίησε Αντιμετάθεση CM93"
-
-#: src/options.cpp:525
-msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-msgstr "Χ Αντιμετάθεση (θετική μετακινεί το χάρτη ανατολικά) (Προβολή σε NMi) :"
-
-#: src/options.cpp:531
-msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-msgstr "Υ Αντιμετάθεση (θετική μετακινεί το χάρτη βόρεια) (Προβολή σε NMi) :"
-
-#
-#: src/options.cpp:542
-msgid "WiFi Options"
-msgstr "Ρυθμίσεις για Ασύρματα Δίκτυα ( Wi-Fi )"
-
-#
-#: src/options.cpp:547
-msgid "TCP/IP WiFi Data Server"
-msgstr "Διακομιστής TCP/IP WLAN"
-
-#
-#: src/options.cpp:566
-msgid "GPS"
-msgstr "GPS"
-
-#
-#: src/options.cpp:576
-msgid "NMEA Options"
-msgstr "Ρυθμίσεις ΝΜΕΑ"
-
-#
-#: src/options.cpp:582
-msgid "NMEA Data Source"
-msgstr "Πηγή ΝΜΕΑ"
-
-#
-#: src/options.cpp:591
-msgid "GPSD Data Server"
-msgstr "Διακομιστής GPSD"
-
-#
-#: src/options.cpp:713
-msgid "NMEA Baud Rate"
-msgstr "Ταχύτητα Θύρας ΝΜΕΑ (Baud Rate)"
-
-#: src/options.cpp:728
-msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
-msgstr "Χρησιμοποίησε GRMN/GRMN (Host) Mode για φόρτωση Σημίων(WP) και Ταξιδιών(Route)"
-
-#
-#: src/options.cpp:732
-msgid "Show GPS/NMEA data stream window"
-msgstr "Δείξε παράθυρο με ροή στοιχείων GPS-/ NMEA"
-
-#: src/options.cpp:736
-msgid "Filter NMEA Course and Speed data"
-msgstr "Φίλτραρε πορεία ΝΜΕΑ και στοιχεία ταχύτητας"
-
-#: src/options.cpp:743
-msgid "Filter Period (Sec.)"
-msgstr "Φίλτρο Περιόδου (Δευτερ/πτα)"
-
-#
-#: src/options.cpp:750
-msgid "Autopilot Output Port"
-msgstr "Θύρα Εξόδου για Αυτόματο Πιλότο"
-
-#
-#: src/options.cpp:779
-msgid "Charts"
-msgstr "Χάρτες"
-
-#
-#: src/options.cpp:788
-msgid "Vector Charts"
-msgstr "Διανισματικοί Χάρτες"
-
-#
-#: src/options.cpp:796
-msgid "Chart Display Filters"
-msgstr "Απεικόνηση Φίλτρων Χαρτών"
-
-#
-#: src/options.cpp:800
-msgid "Mariner's Standard"
-msgstr "Βασικό ναυτικό"
-
-#
-#: src/options.cpp:812
-msgid "Clear All"
-msgstr "Απομάκρυνση όλων"
-
-#
-#: src/options.cpp:815
-msgid "Select All"
-msgstr "Επιλογή όλων"
-
-#
-#: src/options.cpp:826
-msgid "Standard"
-msgstr "Βασικό"
-
-#
-#: src/options.cpp:827
-msgid "Other"
-msgstr "Άλλα"
-
-#
-#: src/options.cpp:828
-msgid "MarinersStandard"
-msgstr "Βασικό ναυτικό"
-
-#
-#: src/options.cpp:830
-msgid "Display Category"
-msgstr "Εμφάνισε κατηγορία"
-
-#
-#: src/options.cpp:836
-msgid "ShowSoundings"
-msgstr "Δείξε βάθη"
-
-#
-#: src/options.cpp:840
-msgid "META Objects"
-msgstr "META-Αντικείμενα "
-
-#
-#: src/options.cpp:844
-msgid "Show Important Text Only"
-msgstr "Εμφάνισε μόνο σημαντικό κείμενο"
-
-#
-#: src/options.cpp:848
-msgid "Use SCAMIN"
-msgstr "Χρησιμοποίησε το SCAMIN"
-
-#
-#: src/options.cpp:852
-msgid "Show ATON labels"
-msgstr "Δείξε ετικέτες ATON"
-
-#
-#: src/options.cpp:856
-msgid "Show Light Descriptions"
-msgstr "Δείξε Στοιχεία Φάρων"
-
-#
-#: src/options.cpp:860
-msgid "De-Clutter Text (exp.)"
-msgstr "Οργάνωση Κειμένου (exp.)"
-
-#
-#: src/options.cpp:864
-msgid "Chart Display Style"
-msgstr "Στυλ Απεικόνησης χάρτη"
-
-#
-#: src/options.cpp:869
-msgid "Paper Chart"
-msgstr "Εκυπωμένος χάρτης"
-
-#
-#: src/options.cpp:870
-msgid "Simplified"
-msgstr "Απλοποιημένο"
-
-#
-#: src/options.cpp:872
-msgid "Points"
-msgstr "Σημεία"
-
-#
-#: src/options.cpp:877
-msgid "Plain"
-msgstr "Απλό"
-
-#
-#: src/options.cpp:878
-msgid "Symbolized"
-msgstr "Συμβολικά"
-
-#
-#: src/options.cpp:880
-msgid "Boundaries"
-msgstr "Σύνορα"
-
-#
-#: src/options.cpp:885
-msgid "2 Color"
-msgstr "2-χρωμο"
-
-#
-#: src/options.cpp:886
-msgid "4 Color"
-msgstr "4-τράχρωμο"
-
-#
-#: src/options.cpp:888
-msgid "Colors"
-msgstr "Χρώματα"
-
-#
-#: src/options.cpp:894
-msgid "CM93 Zoom Detail"
-msgstr "Λεπτέρειες μεγένθυνσης CM93"
-
-#
-#: src/options.cpp:902
-msgid "Depth Settings"
-msgstr "Ρυθμίσεις Βάθους"
-
-#
-#: src/options.cpp:906
-msgid "Depth Settings(m)"
-msgstr "Ρυθμίσεις Βάθους (μέτρα)"
-
-#
-#: src/options.cpp:910
-msgid "Shallow Depth"
-msgstr "Όριο Αβαθών"
-
-#
-#: src/options.cpp:916
-msgid "Safety Depth"
-msgstr "Ασφαλές Βάθος"
-
-#
-#: src/options.cpp:922
-msgid "Deep Depth"
-msgstr "'Οριο Βαθέων Υδάτων"
-
-#
-#: src/options.cpp:932
-msgid "Metres"
-msgstr "Μέτρα"
-
-#
-#: src/options.cpp:936
-msgid "Chart Depth Units"
-msgstr "Μονάδες Βάθους Χάρτη"
-
-#: src/options.cpp:941
-msgid "CM93 Offsets"
-msgstr "Αντιμεταθέσεις CM93"
-
-#: src/options.cpp:946
-msgid "Enable Manual CM93 Offsets"
-msgstr "Επέτρεψε χειροκίνητη Αντιμετάθεση CM93"
-
-#
-#: src/options.cpp:953
-msgid "AIS"
-msgstr "AIS"
-
-#
-#: src/options.cpp:960
-msgid "AIS General"
-msgstr "AIS Γενικά"
-
-#
-#: src/options.cpp:965
-msgid "AIS Data Port"
-msgstr "Θύρα για δεδομένα AIS"
-
-#
-#: src/options.cpp:1001
-msgid "CPA Calculation"
-msgstr "Υπολογισμός CPA"
-
-#
-#: src/options.cpp:1009
-msgid "No CPA Calculation if target range is greater than (NMi):"
-msgstr "Δεν υπολογίζεται η CPA, αν η απόσταση από το σημείο είναι μεγαλύτερη από (ΝΜ):"
-
-#
-#: src/options.cpp:1015
-msgid "Warn if CPA less than (NMi):"
-msgstr "ΠΡΟΣΟΧΗ, αν η CPA είναι μικρότερη από ( ΝΜ ):"
-
-#
-#: src/options.cpp:1021
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr " ...και TCPA είναι μικρότερο από Πρώτα Λεπτά (Minuten):"
-
-#
-#: src/options.cpp:1028
-msgid "Lost Targets"
-msgstr "Χαμένοι Στόχοι"
-
-#
-#: src/options.cpp:1036
-msgid "Mark targets as lost after (Minutes:):"
-msgstr "Μαρκάρισε Στόχους ως χαμένους μετά από (Λεπτά:):"
-
-#
-#: src/options.cpp:1042
-msgid "Remove lost targets after (Minutes:):"
-msgstr "Απομάκρυνε χαμένους στόχους μετά από (Λεπτά):"
-
-#
-#: src/options.cpp:1049
-msgid "Display"
-msgstr "Εμφάνισε"
-
-#
-#: src/options.cpp:1057
-msgid "Show target COG arrows"
-msgstr "Δείξε βέλος COG στόχου"
-
-#
-#: src/options.cpp:1063
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "      Μήκους Βέλους (COG) σε πρώτα λεπτά μοίρας (Minuten):"
-
-#
-#: src/options.cpp:1069
-msgid "Show target tracks"
-msgstr "Δείξε ίχνη στόχων"
-
-#
-#: src/options.cpp:1075
-msgid "      Target track length (Minutes):"
-msgstr "       Μήκος ίχνους στόχου (Λεπτά) (Minuten):"
-
-#
-#: src/options.cpp:1082
-msgid "Supress anchored/moored targets"
-msgstr "Κρύψε ποντισμένα/αγκυροβολημένα σημάδια"
-
-#
-#: src/options.cpp:1088
-msgid "      Max moored target speed (Kts.):"
-msgstr "      Μέγιστη Ταχύτητα για σταθερά σημεία σε κόμβους (kn):"
-
-#: src/options.cpp:1095
-msgid "Rollover"
-msgstr "Αναστροφή"
-
-#: src/options.cpp:1099
-msgid "      \"Ship Name\" MMSI (Call Sign)"
-msgstr "       \"Όνομα Πλοίου\" MMSI (Call Sign)"
-
-#: src/options.cpp:1102
-msgid "[Class] Type (Status)"
-msgstr "[Κατηγορία] Τύπος (Κατάσταση)"
-
-#: src/options.cpp:1105
-msgid "SOG COG"
-msgstr "SOG COG"
-
-#
-#: src/options.cpp:1108
-msgid "CPA TCPA"
-msgstr "CPA TCPA"
-
-#
-#: src/options.cpp:1112
-msgid "CPA/TCPA Alerts"
-msgstr "Συναγερμοί CPA-/ TCPA"
-
-#
-#: src/options.cpp:1120
-msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Δείξε παράθυρο συναγερμού CPA/ TCPA"
-
-#
-#: src/options.cpp:1123
-msgid "Select Alert Sound"
-msgstr "Διάλεξε ήχο συναγερμού"
-
-#
-#: src/options.cpp:1126
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Παίξε ήχο σε συναγερμό CPA/ TCPA"
-
-#
-#: src/options.cpp:1129
-msgid "Test Alert Sound"
-msgstr "Τέστ ήχου συναγερμού"
-
-#
-#: src/options.cpp:1132
-msgid "Supress Alerts for anchored/moored targets"
-msgstr "Απενεργοποίησε συναγερμό για ποντισμένα/αγκυροβολημένα σημάδια"
-
-#: src/options.cpp:1138
-msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr "Παύση Έναρξης Αναγνώρισης Συναγερμού Στόχου (λεπτά)"
-
-#
-#: src/options.cpp:1148
-msgid "Language/Fonts"
-msgstr "Γλώσσα/Γραμματοσειρές"
-
-#
-#: src/options.cpp:1156
-msgid "Etc."
-msgstr "Διάφορα"
-
-#
-#: src/options.cpp:1165
-msgid "Show Track icon"
-msgstr "Δείξε εικόνα ίχνους"
-
-#
-#: src/options.cpp:1174
-msgid "Place Trackpoints at time interval (Seconds):"
-msgstr "Βάλε σημεία ίχνους ανά χρονικό διάστημα (δευερόλεπτα):"
-
-#
-#: src/options.cpp:1181
-msgid "Place Trackpoints at distance interval (NMi):"
-msgstr "Βάλε σημεία ίχνους ανά διάστημα απόστασης (ΝΜ):"
-
-#
-#: src/options.cpp:1188
-msgid "Radar rings"
-msgstr "Δακτύλιοι Ραντάρ"
-
-#
-#: src/options.cpp:1192
-msgid "Show radar rings"
-msgstr "Δείξε δακτυλίους Ραντάρ"
-
-#
-#: src/options.cpp:1201
-msgid "Number of radar rings shown"
-msgstr "Αριθμός Δακτυλίων Ραντάρ για εμφάνιση"
-
-#
-#: src/options.cpp:1207
-msgid "Distance between rings"
-msgstr "Απόσταση μεταξύ δακτυλίων"
-
-#
-#: src/options.cpp:1214
-msgid "&Nautical miles"
-msgstr "&Ναυτικά Μίλια"
-
-#
-#: src/options.cpp:1215
-msgid "&Kilometers"
-msgstr "&Χιλιόμετρα"
-
-#
-#: src/options.cpp:1217
-msgid "Units"
-msgstr "Μονάδες"
-
-#
-#: src/options.cpp:1224
-msgid "Waypoint Locking"
-msgstr "Κλείδωμα Σημείων Πορείας (WP)"
-
-#
-#: src/options.cpp:1227
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
-msgstr "Κλείδωσε όλα τα Σημεία Πορείας (WP), εκτός αν εμφανίζεται ο Διάλογος Ιδιοτήτων"
-
-#
-#: src/options.cpp:1233
-msgid "GUI Options"
-msgstr "Ρυθμίσεις Γραφικού Περιβάλλοντος ( GUI )"
-
-#
-#: src/options.cpp:1237
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Ενεργοποίησε μεγένθυνση με ρόδα ποντικιού στον κέρσορα"
-
-#
-#: src/options.cpp:1241
-msgid "Preserve scale when switching charts"
-msgstr "Διατήρησε την ίδια Κλίμακα κατά την αλλαγή Χαρτών"
-
-#
-#: src/options.cpp:1244
-msgid "Play ships bells"
-msgstr "Χτύπα Καμπανάκι πλοίου"
-
-#: src/options.cpp:1279
-msgid "PlugIns"
-msgstr "Επιπρόσθετα (PlugIns)"
-
-#
-#: src/options.cpp:2169
-msgid "Available Chart Directories"
-msgstr "Διαθέσιμοι φάκελοι Χαρτών"
-
-#
-#: src/options.cpp:2180
-msgid "Active Chart Directories"
-msgstr "Ενεργοί φάκελοι Χαρτών"
-
-#
-#: src/options.cpp:2196
-msgid "Delete Selection"
-msgstr "Διαγραφή επιλογής"
-
-#
-#: src/options.cpp:2200
-msgid "Update Control"
-msgstr "Έλεγχος Ενημέρωσης"
-
-#
-#: src/options.cpp:2203
-msgid "Force Full Database Rebuild"
-msgstr "Ανακατασκεύασε ΌΛΗ τη Βάση Δεδομένων"
-
-#
-#: src/options.cpp:2220
-msgid "All files (*.*)|*.*"
-msgstr "Όλα τα αρχεία (*.*)|*.*"
-
-#
-#: src/options.cpp:2229
-msgid "Add Selection"
-msgstr "Προσθήκη Επιλογής"
-
-#
-#: src/options.cpp:2289
-msgid "Language"
-msgstr "Γλώσσα"
-
-#
-#: src/options.cpp:2378
-msgid "Font Options"
-msgstr "Επιλογές Γραμματοσειράς"
-
-#
-#: src/options.cpp:2382
-msgid "Text Element"
-msgstr "Στοιχείο Κειμένου"
-
-#
-#: src/options.cpp:2400
-msgid "Choose Font..."
-msgstr "Επέλεξε γραμματοσειρά..."
-
-#
-#: src/options.cpp:2498
-msgid "Select Sound File"
-msgstr "Διάλεξε αρχείο ήχου"
-
-#
-#: src/options.cpp:2499
-msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
-msgstr "Αρχεία WAV (*.wav)|*.wav|Όλα τα Αρχεία (*.*)|*.*"
-
-#
-#: src/about.cpp:254
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN ...ένα ελαφρύ εκλεπτυσμένο Ανοικτού Λογισμικού Πρόγραμμα αποτύπωσης Χαρτών/Πλοηγός"
-
-#
-#: src/about.cpp:271
-msgid "About"
-msgstr "Περί"
-
-#
-#: src/about.cpp:298
-msgid "Authors"
-msgstr "Δημιουργοί"
-
-#
-#: src/about.cpp:314
-msgid "License"
-msgstr "Άδεια"
-
-#
-#: src/about.cpp:361
-msgid "Help"
-msgstr "Βοήθεια"
-
-#
-#: src/about.cpp:376
-msgid "Close"
-msgstr "Κλείσε"
-
-#
-#: src/s57chart.cpp:3772
-msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPN κατασκευάζει Αρχείο S57 SENC"
-
-#: src/s57chart.cpp:4461
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
-
-#
-#: src/routeman.cpp:838
-msgid ""
-"Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n"
-"\n"
-"Do you want to rename the waypoints?"
-msgstr ""
-"Τα σημεία Διαδρομής μπορούν να μετονομαστούν, ώστε να αντικατοπτρίζουν την αντίστροφη σειρά. Η ονομασία θα είναι  '001', '002', κλπ....\n"
-"\n"
-"Θέλετε να τα μετονομάσετε;"
-
-#
-#: src/routeman.cpp:908
-msgid "GPS/Plotter Port"
-msgstr "Θύρα GPS/ Plotter"
-
-#
-#: src/routeman.cpp:941
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Προετοιμάστε το GPS να παραλάβει(upload ) Ταξίδια (Route)/ Σημεία Πορείας (WP) και πατήστε αποστολή ..."
-
-#
-#: src/routeman.cpp:945
-msgid "Progress..."
-msgstr "Πρόοδος ..."
-
-#
-#: src/routeman.cpp:961
-msgid "Send"
-msgstr "Αποστολή"
-
-#: src/pluginmanager.cpp:78
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
-
-#: src/pluginmanager.cpp:145
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
-
-#: src/pluginmanager.cpp:172
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
-
-#: src/pluginmanager.cpp:188
-#: src/pluginmanager.cpp:273
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
-
-#: src/pluginmanager.cpp:253
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
-
-#: src/pluginmanager.cpp:289
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
-
-#: src/pluginmanager.cpp:302
-msgid "   PlugInManager: Cannot load library: "
-msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
-
-#: src/pluginmanager.cpp:315
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
-
-#: src/pluginmanager.cpp:326
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
-
-#: src/pluginmanager.cpp:908
-msgid "BaseClassCommonName"
-msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
-
-#: src/pluginmanager.cpp:913
-msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN PlugIn βασική κατηγορία"
-
-#: src/pluginmanager.cpp:918
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"OpenCPN PlugIn Βασική Κλάση\n"
-"Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
-
-#: src/pluginmanager.cpp:1085
-msgid "Preferences"
-msgstr "Προτιμήσεις"
-
-#: src/pluginmanager.cpp:1154
-#: src/pluginmanager.cpp:1164
-msgid "Enable"
-msgstr "Επέτρεψε"
-
-#
-#: src/pluginmanager.cpp:1162
-msgid "Disable"
-msgstr "Ακύρωσε"
-
+#~ msgid "Chart file corrupt.. disabling this chart \n"
+#~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"

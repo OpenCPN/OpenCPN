@@ -173,135 +173,135 @@ char test_str[24][79] = {
 };
 
 
-char ais_status[][40] = {
-      "Underway",
-      "At Anchor",
-      "Not Under Command",
-      "Restricted Manoeuvrability",
-      "Constrained by draught",
-      "Moored",
-      "Aground",
-      "Engaged in Fishing",
-      "Under way sailing",
-      "High Speed Craft",
-      "Wing In Ground Effect",
-      "Reserved 11",
-      "Reserved 12",
-      "Reserved 13",
-      "Reserved 14",
-      "Undefined"
+wxString ais_status[] = {
+      _("Underway"),
+      _("At Anchor"),
+      _("Not Under Command"),
+      _("Restricted Manoeuvrability"),
+      _("Constrained by draught"),
+      _("Moored"),
+      _("Aground"),
+      _("Engaged in Fishing"),
+      _("Under way sailing"),
+      _("High Speed Craft"),
+      _("Wing In Ground Effect"),
+      _("Reserved 11"),
+      _("Reserved 12"),
+      _("Reserved 13"),
+      _("Reserved 14"),
+      _("Undefined")
 };
 
-char ais_type[][80] = {
-"Vessel Fishing",             //30        0
-"Vessel Towing",              //31        1
-"Vessel Towing, Long",        //32        2
-"Vessel Dredging",            //33        3
-"Vessel Diving",              //34        4
-"Military Vessel",            //35        5
-"Sailing Vessel",             //36        6     // pjotrc 2010.02.07
-"Pleasure craft",             //37        7     // pjotrc 2010.02.10
-"High Speed Craft",           //4x        8
-"Pilot Vessel",               //50        9
-"Search and Rescue Vessel",   //51        10
-"Tug",                        //52        11
-"Port Tender",                //53        12
-"Pollution Control Vessel",   //54        13
-"Law Enforcement Vessel",     //55        14
-"Medical Transport",          //58        15
-"Passenger Ship",             //6x        16
-"Cargo Ship",                 //7x        17
-"Tanker",                     //8x        18
-"Unknown",                    //          19
+wxString ais_type[] = {
+      _("Vessel Fishing"),             //30        0
+      _("Vessel Towing"),              //31        1
+      _("Vessel Towing, Long"),        //32        2
+      _("Vessel Dredging"),            //33        3
+      _("Vessel Diving"),              //34        4
+      _("Military Vessel"),            //35        5
+      _("Sailing Vessel"),             //36        6     // pjotrc 2010.02.07
+      _("Pleasure craft"),             //37        7     // pjotrc 2010.02.10
+      _("High Speed Craft"),           //4x        8
+      _("Pilot Vessel"),               //50        9
+      _("Search and Rescue Vessel"),   //51        10
+      _("Tug"),                        //52        11
+      _("Port Tender"),                //53        12
+      _("Pollution Control Vessel"),   //54        13
+      _("Law Enforcement Vessel"),     //55        14
+      _("Medical Transport"),          //58        15
+      _("Passenger Ship"),             //6x        16
+      _("Cargo Ship"),                 //7x        17
+      _("Tanker"),                     //8x        18
+      _("Unknown"),                    //          19
 
-"Aid to Navigation",		//type 0	20   // pjotrc 2010.02.01
-"Reference Point",		//01		21
-"RACON",     	            //02        22
-"Fixed Structure",            //03        23
-"Spare",                      //04        24
-"Light",                      //05        25
-"Light w/Sectors",            //06        26
-"Leading Light Front",        //07        27
-"Leading Light Rear",         //08        28
-"Cardinal N Beacon",          //09        29
-"Cardinal E Beacon",          //10        30
-"Cardinal S Beacon",          //11        31
-"Cardinal W Beacon",          //12        32
-"Beacon, Port Hand",          //13        33
-"Beacon, Starboard Hand",     //14        34
-"Beacon, Preferred Channel Port Hand",         //15        35
-"Beacon, Preferred Channel Starboard Hand",    //16        36
-"Beacon, Isolated Danger",    //17        37
-"Beacon, Safe Water",         //18        38
-"Beacon, Special Mark",       //19        39
-"Cardinal Mark N",            //20        40
-"Cardinal Mark E",            //21        41
-"Cardinal Mark S",            //22        42
-"Cardinal Mark W",            //23        43
-"Port Hand Mark",             //24        44
-"Starboard Hand Mark",        //25        45
-"Preferred Channel Port Hand",      //26        46
-"Preferred Channel Starboard Hand", //27        47
-"Isolated Danger",            //28        48
-"Safe Water",                 //29        49
-"Special Mark",               //30        50
-"Light Vessel/Rig"            //31        51
+      _("Aid to Navigation"),		//type 0	20   // pjotrc 2010.02.01
+      _("Reference Point"),		//01		21
+      _("RACON"),     	            //02        22
+      _("Fixed Structure"),            //03        23
+      _("Spare"),                      //04        24
+      _("Light"),                      //05        25
+      _("Light w/Sectors"),            //06        26
+      _("Leading Light Front"),        //07        27
+      _("Leading Light Rear"),         //08        28
+      _("Cardinal N Beacon"),          //09        29
+      _("Cardinal E Beacon"),          //10        30
+      _("Cardinal S Beacon"),          //11        31
+      _("Cardinal W Beacon"),          //12        32
+      _("Beacon, Port Hand"),          //13        33
+      _("Beacon, Starboard Hand"),     //14        34
+      _("Beacon, Preferred Channel Port Hand"),         //15        35
+      _("Beacon, Preferred Channel Starboard Hand"),    //16        36
+      _("Beacon, Isolated Danger"),    //17        37
+      _("Beacon, Safe Water"),         //18        38
+      _("Beacon, Special Mark"),       //19        39
+      _("Cardinal Mark N"),            //20        40
+      _("Cardinal Mark E"),            //21        41
+      _("Cardinal Mark S"),            //22        42
+      _("Cardinal Mark W"),            //23        43
+      _("Port Hand Mark"),             //24        44
+      _("Starboard Hand Mark"),        //25        45
+      _("Preferred Channel Port Hand"),      //26        46
+      _("Preferred Channel Starboard Hand"), //27        47
+      _("Isolated Danger"),            //28        48
+      _("Safe Water"),                 //29        49
+      _("Special Mark"),               //30        50
+      _("Light Vessel/Rig")            //31        51
 };
 
-char short_ais_type[][80] = {
-      "F/V",                  //30        0
-      "Tow",                  //31        1
-      "Long Tow",             //32        2
-      "Dredge",               //33        3
-      "D/V",                  //34        4
-      "Mil/V",                //35        5
-      "S/V",                  //36        6
-      "Yat",                  //37        7    // pjotrc 2010.02.10
-      "HSC",                  //4x        8
-      "P/V",                  //50        9
-      "SAR/V",                //51        10
-      "Tug",                  //52        11
-      "Tender",               //53        12
-      "PC/V",                 //54        13
-      "LE/V",                 //55        14
-      "Med/V",                //58        15
-      "Pass/V",               //6x        16
-      "M/V",                  //7x        17
-      "M/T",                  //8x        18
-      "",                     //          19
+wxString short_ais_type[] = {
+      _("F/V"),                  //30        0
+      _("Tow"),                  //31        1
+      _("Long Tow"),             //32        2
+      _("Dredge"),               //33        3
+      _("D/V"),                  //34        4
+      _("Mil/V"),                //35        5
+      _("S/V"),                  //36        6
+      _("Yat"),                  //37        7    // pjotrc 2010.02.10
+      _("HSC"),                  //4x        8
+      _("P/V"),                  //50        9
+      _("SAR/V"),                //51        10
+      _("Tug"),                  //52        11
+      _("Tender"),               //53        12
+      _("PC/V"),                 //54        13
+      _("LE/V"),                 //55        14
+      _("Med/V"),                //58        15
+      _("Pass/V"),               //6x        16
+      _("M/V"),                  //7x        17
+      _("M/T"),                  //8x        18
+      _("?"),                    //          19
 
-	"AtoN",			//00		20   // pjotrc 2010.02.01
-	"Ref. Pt",		      //01		21
-	"RACON",     	      //02        22
-	"Fix.Struct.",          //03        23
-	"",                     //04        24
-	"Lt",                   //05        25
-	"Lt sect.",             //06        26
-	"Ldg Lt Front",         //07        27
-	"Ldg Lt Rear",          //08        28
-	"Card. N",              //09        29
-	"Card. E",              //10        30
-	"Card. S",              //11        31
-	"Card. W",              //12        32
-	"Port",                 //13        33
-	"Stbd",                 //14        34
-	"Pref. Chnl",           //15        35
-	"Pref. Chnl",           //16        36
-	"Isol. Dngr",           //17        37
-	"Safe Water",           //18        38
-	"Special",              //19        39
-	"Card. N",              //20        40
-	"Card. E",              //21        41
-	"Card. S",              //22        42
-	"Card. W",              //23        43
-	"Port Hand",            //24        44
-	"Stbd Hand",            //25        45
-	"Pref. Chnl",           //26        46
-	"Pref. Chnl",           //27        47
-	"Isol. Dngr",           //28        48
-	"Safe Water",           //29        49
-	"Special",              //30        50
-	"LtV/Rig"               //31        51
+	_("AtoN"),			//00		20   // pjotrc 2010.02.01
+	_("Ref. Pt"),		      //01		21
+	_("RACON"),     	      //02        22
+	_("Fix.Struct."),          //03        23
+	_("?")                     //04        24
+	_("Lt"),                   //05        25
+	_("Lt sect."),             //06        26
+	_("Ldg Lt Front"),         //07        27
+	_("Ldg Lt Rear"),          //08        28
+	_("Card. N"),              //09        29
+	_("Card. E"),              //10        30
+	_("Card. S"),              //11        31
+	_("Card. W"),              //12        32
+	_("Port"),                 //13        33
+	_("Stbd"),                 //14        34
+	_("Pref. Chnl"),           //15        35
+	_("Pref. Chnl"),           //16        36
+	_("Isol. Dngr"),           //17        37
+	_("Safe Water"),           //18        38
+	_("Special"),              //19        39
+	_("Card. N"),              //20        40
+	_("Card. E"),              //21        41
+	_("Card. S"),              //22        42
+	_("Card. W"),              //23        43
+	_("Port Hand"),            //24        44
+	_("Stbd Hand"),            //25        45
+	_("Pref. Chnl"),           //26        46
+	_("Pref. Chnl"),           //27        47
+	_("Isol. Dngr"),           //28        48
+	_("Safe Water"),           //29        49
+	_("Special"),              //30        50
+	_("LtV/Rig")               //31        51
 };
 
 enum {
@@ -478,7 +478,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
             if((NavStatus <= 15) && (NavStatus >= 0))
-                  line.Append( wxString::From8BitData(&ais_status[NavStatus][0]) );
+                  line.Append( ais_status[NavStatus] );
             line.Append(_T("\n"));
             result.Append(line);
 
@@ -741,7 +741,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
                   if((NavStatus <= 15) && (NavStatus >= 0) )
                   {
                         result.Append(_T(" ("));
-                        result.Append(wxString::From8BitData(&ais_status[NavStatus][0]));
+                        result.Append(ais_status[NavStatus]);
                         result.Append(_T(")"));
                   }
             }
@@ -827,9 +827,9 @@ wxString AIS_Target_Data::Get_vessel_type_string(bool b_short)
 	}
 
       if(!b_short)
-            return wxString::From8BitData(&ais_type[i][0]);
+            return ais_type[i];
       else
-            return wxString::From8BitData(&short_ais_type[i][0]);
+            return short_ais_type[i];
 }
 
 wxString AIS_Target_Data::Get_class_string(bool b_short)
@@ -3498,7 +3498,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                   case tlNAVSTATUS:
                   {
                         if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
-                              ret =  wxString::From8BitData(&ais_status[pAISTarget->NavStatus][0]);
+                              ret =  ais_status[pAISTarget->NavStatus];
                         else
                               ret = _("-");
                         break;
@@ -3601,11 +3601,11 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
             case tlNAVSTATUS:
             {
                   if((t1->NavStatus <= 15) && (t1->NavStatus >= 0))
-                        s1 =  wxString::From8BitData(&ais_status[t1->NavStatus][0]);
+                        s1 =  ais_status[t1->NavStatus];
                   else
                         s1 = _("-");
                   if((t2->NavStatus <= 15) && (t2->NavStatus >= 0))
-                        s2 =  wxString::From8BitData(&ais_status[t2->NavStatus][0]);
+                        s2 =  ais_status[t2->NavStatus];
                   else
                         s2 = _("-");
                   break;
