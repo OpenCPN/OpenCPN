@@ -964,14 +964,22 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                     m_projection = PROJECTION_MERCATOR;
                                     bp_set = true;
                               }
+
                               if(stru.Matches(_T("*TRANSVERSE*")))
                               {
                                     m_projection = PROJECTION_TRANSVERSE_MERCATOR;
                                     bp_set = true;
                               }
+
                               if(stru.Matches(_T("*POLYCONIC*")))
                               {
                                     m_projection = PROJECTION_POLYCONIC;
+                                    bp_set = true;
+                              }
+
+                              if(stru.Matches(_T("*UTM*")))
+                              {
+                                    m_projection = PROJECTION_TRANSVERSE_MERCATOR;
                                     bp_set = true;
                               }
 
