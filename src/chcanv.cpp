@@ -190,6 +190,7 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern int              g_cm93_zoom_factor;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
+extern bool            g_bDisplayGrid;
 
 extern bool             g_bUseGreenShip;
 
@@ -4704,6 +4705,222 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 */
 }
 
+/* @ChartCanvas::CalcGridSpacing
+**
+** Calculate the major and minor spacing between the lat/lon grid
+**
+** @param [r] WindowDegrees [double] displayed number of lat or lan in the window
+** @param [w] MajorSpacing [double &] Major distance between grid lines
+** @param [w] MinorSpacing [double &] Minor distance between grid lines
+** @return [void]
+*/
+void CalcGridSpacing (double WindowDegrees, double& MajorSpacing, double&MinorSpacing)
+{
+      int tabi; // iterator for lltab
+
+     // table for calculating the distance between the grids
+     // [0] width or height of the displayed chart in degrees
+     // [1] spacing between major grid liones in degrees
+     // [2] spacing between minor grid lines in degrees
+     const double lltab[][3]={
+           {180.0,90.0, 30.0},
+           {90.0, 45.0, 15.0},
+           {60.0, 30.0, 10.0},
+           {20.0, 10.0,  2.0},
+           {10.0,  5.0,  1.0},
+           { 4.0,  2.0,  30.0/60.0},
+           { 2.0,  1.0,  20.0/60.0},
+           { 1.0,  0.5,  10.0/60.0},
+           {30.0/60.0, 15.0/60.0, 5.0/60.0},
+           {20.0/60.0, 10.0/60.0, 2.0/60.0},
+           {10.0/60.0,  5.0/60.0, 1.0/60.0},
+           { 4.0/60.0,  2.0/60.0, 0.5/60.0},
+           { 2.0/60.0,  1.0/60.0, 0.2/60.0},
+           { 1.0/60.0,  0.5/60.0, 0.1/60.0},
+           { 0.4/60.0,  0.2/60.0, 0.05/60.0},
+           { 0.0,       0.1/60.0, 0.02/60.0} // indicates last entry
+     };
+
+     for (tabi=0;lltab[tabi][0]!=0.0;tabi++)
+     {
+           if (WindowDegrees > lltab[tabi][0])
+           {
+                 break;
+           }
+     }
+     MajorSpacing=lltab[tabi][1]; // major latitude distance
+     MinorSpacing=lltab[tabi][2]; // minor latitude distance
+     return;
+}
+/* @ChartCanvas::CalcGridText *************************************
+**
+** Calculates text to display at the major grid lines
+**
+** @param [r] latlon [double] latitude or longitude of grid line
+** @param [r] spacing [double] distance between two major grid lines
+** @param [r] bPostfix [bool] true for latitudes, false for longitudes
+** @param [w] text [char*] textbuffer for result, minimum of 12 chars in length
+**
+** @return [void]
+*/
+void CalcGridText( double latlon, double spacing, bool bPostfix, char *text)
+{
+     int deg=(int)fabs(latlon); // degrees
+     double min=fabs((fabs(latlon)-deg)*60.0); // Minutes
+     char postfix;
+     const unsigned int BufLen=12;
+
+     // calculate postfix letter (NSEW)
+     if (latlon > 0.0)
+     {
+           if (bPostfix)
+           {
+                 postfix='N';
+           }
+           else
+           {
+                 postfix='E';
+           }
+     }
+     else if (latlon < 0.0)
+     {
+           if (bPostfix)
+           {
+                 postfix='S';
+           }
+           else
+           {
+                 postfix='W';
+           }
+     }
+     else
+     {
+           postfix=' '; // no postfix for ecuator and greenwich
+     }
+     // calculate text, display minutes only if spacing is smaller than one degree
+
+     if (spacing >= 1.0)
+           {
+                 snprintf(text,BufLen , "%3d� %c",deg,postfix);
+           }
+           else if (spacing >= (1.0/60.0) )
+           {
+                 snprintf(text, BufLen, "%3d�%02.0f %c",deg,min,postfix);
+           }
+           else
+           {
+                 snprintf(text, BufLen, "%3d�%02.2f %c",deg,min,postfix);
+           }
+           text[BufLen-1] = '\0';
+           return;
+}
+
+/* @ChartCanvas::GridDraw *****************************************
+**
+** Draws major and minor Lat/Lon Grid on the chart
+** - distance between Grid-lm ines are calculated automatic
+** - major grid lines will be across the whole chart window
+** - minor grid lines will be 10 pixel at each edge of the chart window.
+**
+** @param [w] dc [wxDC&] the wx drawing context
+**
+** @return [void]
+************************************************************************/
+void ChartCanvas::GridDraw( wxDC& dc)
+{
+     double nlat, elon, slat, wlon;
+     double lat,lon;
+     double dlat,dlon;
+     double gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
+     wxCoord w, h;
+     wxPen GridPen ( GetGlobalColor ( _T ( "SNDG1" ) ), 1, wxSOLID );
+     wxFont *font = wxTheFontList->FindOrCreateFont ( 8, wxFONTFAMILY_SWISS,wxNORMAL,  wxFONTWEIGHT_NORMAL,
+                     FALSE, wxString ( _T ( "Arial" ) ) );
+     dc.SetPen(GridPen);
+     dc.SetFont(*font);
+
+     dc.GetSize(&w, &h);     // get windows width and height
+
+     GetCanvasPixPoint ( 0, 0, nlat, wlon ); // get lat/lon of upper left point of the window
+     GetCanvasPixPoint ( w, h, slat, elon ); // get lat/lon of lower right point of the window
+     dlat=nlat-slat; // calculate how many degrees of latitude are shown in the window
+     dlon=elon-wlon; // calculate how many degrees of longitude are shown in the window
+     if (dlon < 0.0) // concider datum border at 180 degrees longitude
+     {
+           dlon=dlon+360.0;
+     }
+     // calculate distance between latitude grid lines
+     CalcGridSpacing(dlat, gridlatMajor, gridlatMinor);
+
+     // calculate position of first major latitude grid line
+     lat=ceil(slat/gridlatMajor)*gridlatMajor;
+
+     // Draw Major latitude grid lines and text
+     while (lat < nlat)
+     {
+           wxPoint r;
+           char sbuf[12];
+           CalcGridText(lat, gridlatMajor, true, sbuf); // get text for grid line
+           GetCanvasPointPix ( lat, 0, &r );
+           dc.DrawLine(0,r.y,w,r.y);                             // draw grid line
+           dc.DrawText(wxString ( sbuf, wxConvUTF8 ),0,r.y); // draw text
+           lat = lat + gridlatMajor;
+     }
+
+     // calculate position of first minor latitude grid line
+     lat=ceil(slat/gridlatMinor)*gridlatMinor;
+
+     // Draw minor latitude grid lines
+     while (lat < nlat)
+     {
+           wxPoint r;
+           GetCanvasPointPix ( lat, 0, &r );
+           dc.DrawLine(0,r.y,10,r.y);
+           dc.DrawLine(w-10,r.y,w,r.y);
+           lat = lat + gridlatMinor;
+     }
+
+     // calculate distance between grid lines
+     CalcGridSpacing(dlon, gridlonMajor, gridlonMinor);
+
+     // calculate position of first major latitude grid line
+     lon=ceil(wlon/gridlonMajor)*gridlonMajor;
+
+     // draw major longitude grid lines
+     for(int i=0,itermax=(int)(dlon/gridlonMajor); i<=itermax; i++)
+     {
+           wxPoint r;
+           char sbuf[12];
+           CalcGridText(lon, gridlonMajor, false, sbuf);
+           GetCanvasPointPix ( 0, lon, &r );
+           dc.DrawLine(r.x,0,r.x,h);
+           dc.DrawText(wxString ( sbuf, wxConvUTF8 ),r.x,0);
+           lon = lon + gridlonMajor;
+           if (lon > 180.0)
+           {
+                 lon = lon - 360.0;
+           }
+     }
+
+     // calculate position of first minor longitude grid line
+     lon=ceil(wlon/gridlonMinor)*gridlonMinor;
+     // draw minor longitude grid lines
+     for(int i=0,itermax=(int)(dlon/gridlonMinor);i<=itermax;i++)
+     {
+           wxPoint r;
+           GetCanvasPointPix ( 0, lon, &r );
+           dc.DrawLine(r.x,0,r.x,10);
+           dc.DrawLine(r.x,h-10,r.x,h);
+           lon = lon + gridlonMinor;
+           if (lon > 180.0)
+           {
+                 lon = lon - 360.0;
+           }
+     }
+     return;
+}
+
+
 
 void ChartCanvas::ScaleBarDraw( wxDC& dc, int x_origin, int y_origin )
 {
@@ -8740,6 +8957,12 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
                                   m_cursor_lat, m_cursor_lon, r_rband, _T(""));
         }
+
+         // Draw a Grid
+           if(g_bDisplayGrid)
+           {
+                 GridDraw(scratch_dc);
+           }
 
         //  Draw S52 compatible Scale Bar
         wxCoord w, h;

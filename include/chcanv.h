@@ -322,6 +322,7 @@ private:
       void AtoN_Diamond(wxDC &dc, wxPen pen, int x, int y, int radius);  // pjotrc 2010.02.01
       void Base_Square(wxDC &dc, wxPen pen, int x, int y, int radius);
 
+      void GridDraw(wxDC& dc); // Display lat/lon Grid in chart display
       void ScaleBarDraw( wxDC& dc, int x_origin, int y_origin );
 
       void EmbossDepthScale(wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, int emboss_ident);

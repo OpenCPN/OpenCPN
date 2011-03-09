@@ -106,6 +106,8 @@ extern Routeman         *g_pRouteMan;
 extern ComPortManager   *g_pCommMan;
 
 extern bool             s_bSetSystemTime;
+extern bool             g_bDisplayGrid;         //Flig indicating if grid is to be displayed
+
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
@@ -1173,7 +1175,7 @@ Route::~Route ( void )
 
 void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 {
-      if(pNewPoint->m_bIsolatedMark) 
+      if(pNewPoint->m_bIsolatedMark)
       {
             pNewPoint->m_bKeepXRoute = true;
       }
@@ -2266,6 +2268,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
       Read ( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
+      Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -3396,6 +3399,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowDebugWindows" ), m_bShowDebugWindows );
       Write ( _T ( "ShowPrintIcon" ), g_bShowPrintIcon );
       Write ( _T ( "SetSystemTime" ), s_bSetSystemTime );
+      Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
@@ -4956,7 +4960,7 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                         pTentTrack->m_GUID = pWayPointMan->CreateGUID ( NULL );
                         //Now also change guids for the routepoints
                         wxRoutePointListNode *pthisnode = ( pTentTrack->pRoutePointList )->GetFirst();
-                        while ( pthisnode ) 
+                        while ( pthisnode )
                         {
                               pthisnode->GetData()->m_GUID = pWayPointMan->CreateGUID ( NULL );
                               pthisnode = pthisnode->GetNext();
@@ -5278,7 +5282,7 @@ void GPXLoadRoute ( GpxRteElement* rtenode, int routenum, bool b_fullviz )
                         pTentRoute->m_GUID = pWayPointMan->CreateGUID ( NULL );
                         //Now also change guids for the routepoints
                         wxRoutePointListNode *pthisnode = ( pTentRoute->pRoutePointList )->GetFirst();
-                        while ( pthisnode ) 
+                        while ( pthisnode )
                         {
                               pthisnode->GetData()->m_GUID = pWayPointMan->CreateGUID ( NULL );
                               pthisnode = pthisnode->GetNext();

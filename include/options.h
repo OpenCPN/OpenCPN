@@ -67,6 +67,7 @@ enum {
         xID_OK,
         ID_DEBUGCHECKBOX1,
         ID_PRINTCHECKBOX1,
+        ID_CHECK_DISPLAYGRID,
         ID_OUTLINECHECKBOX1,
         ID_BUTTONADD,
         ID_PANEL3,
@@ -211,6 +212,7 @@ public:
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
     wxCheckBox              *pSDepthUnits;
+    wxCheckBox              *pSDisplayGrid;
     wxCheckBox              *pAutoAnchorMark;
     wxCheckBox              *pCDOQuilting;
     wxCheckBox              *pCBRaster;

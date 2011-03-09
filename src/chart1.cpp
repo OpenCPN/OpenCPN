@@ -241,6 +241,7 @@ wxPageSetupData* g_pageSetupData = (wxPageSetupData*) NULL;
 bool              g_bShowPrintIcon;
 bool              g_bShowOutlines;
 bool              g_bShowDepthUnits;
+bool              g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
 bool              g_bGarminPersistance;
 int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09

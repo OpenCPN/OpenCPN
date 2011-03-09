@@ -81,13 +81,7 @@ extern PlugInManager    *g_pi_manager;
 
 extern wxString         g_SData_Locn;
 
-// Flav add for CM93 offset manual setup
-#ifdef FLAV
-extern double           g_CM93Maps_Offset_x;
-extern double           g_CM93Maps_Offset_y;
-extern bool             g_CM93Maps_Offset_on;
-extern bool             g_CM93Maps_Offset_Enable;
-#endif
+extern bool             g_bDisplayGrid;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -465,6 +459,10 @@ void options::CreateControls()
     //  Chart Outlines checkbox
     pCDOOutlines = new wxCheckBox( itemPanel5, ID_OUTLINECHECKBOX1, _("Show Chart Outlines"));
     itemStaticBoxSizerCDO->Add(pCDOOutlines, 1, wxALIGN_LEFT|wxALL, 2);
+
+    //  Grid display  checkbox
+    pSDisplayGrid = new wxCheckBox( itemPanel5, ID_CHECK_DISPLAYGRID, _("Show Grid"));
+    itemStaticBoxSizerCDO->Add(pSDisplayGrid, 1, wxALIGN_LEFT|wxALL, 2);
 
     //  Depth Unit checkbox
     pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits"));
@@ -1367,10 +1365,10 @@ void options::SetInitialSettings()
       pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
+      pSDisplayGrid->SetValue(g_bDisplayGrid);
 
       pCBCourseUp->SetValue(g_bCourseUp);
       pCBLookAhead->SetValue(g_bLookAhead);
-
 
       if(fabs(wxRound(g_ownship_predictor_minutes) - g_ownship_predictor_minutes) > 1e-4)
             s.Printf(_T("%6.2f"), g_ownship_predictor_minutes);
@@ -1738,6 +1736,8 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bShowPrintIcon = pPrintShowIcon->GetValue();
     g_bShowOutlines = pCDOOutlines->GetValue();
+    g_bDisplayGrid = pSDisplayGrid->GetValue();
+
 
     pParent->SetQuiltMode(pCDOQuilting->GetValue());
     g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
