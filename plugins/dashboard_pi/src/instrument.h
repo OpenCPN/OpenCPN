@@ -57,18 +57,20 @@ enum
     OCPN_DBP_STC_SOG = 1 << 2,
     OCPN_DBP_STC_COG = 1 << 3,
     OCPN_DBP_STC_STW = 1 << 4,
-    OCPN_DBP_STC_HDG = 1 << 5,
-    OCPN_DBP_STC_BRG = 1 << 6,
-    OCPN_DBP_STC_AWA = 1 << 7,
-    OCPN_DBP_STC_AWS = 1 << 8,
-    OCPN_DBP_STC_TWA = 1 << 9,
-    OCPN_DBP_STC_TWS = 1 << 10,
-    OCPN_DBP_STC_DPT = 1 << 11,
-    OCPN_DBP_STC_TMP = 1 << 12,
-    OCPN_DBP_STC_VMG = 1 << 13,
-    OCPN_DBP_STC_RSA = 1 << 14,
-    OCPN_DBP_STC_SAT = 1 << 15,
-    OCPN_DBP_STC_GPS = 1 << 16
+    OCPN_DBP_STC_HDM = 1 << 5,
+    OCPN_DBP_STC_HDT = 1 << 6,
+    OCPN_DBP_STC_HMV = 1 << 7, // Magnetic variation
+    OCPN_DBP_STC_BRG = 1 << 8,
+    OCPN_DBP_STC_AWA = 1 << 9,
+    OCPN_DBP_STC_AWS = 1 << 10,
+    OCPN_DBP_STC_TWA = 1 << 11,
+    OCPN_DBP_STC_TWS = 1 << 12,
+    OCPN_DBP_STC_DPT = 1 << 13,
+    OCPN_DBP_STC_TMP = 1 << 14,
+    OCPN_DBP_STC_VMG = 1 << 15,
+    OCPN_DBP_STC_RSA = 1 << 16,
+    OCPN_DBP_STC_SAT = 1 << 17,
+    OCPN_DBP_STC_GPS = 1 << 18
 };
 
 class DashboardInstrument : public wxWindow

@@ -56,8 +56,9 @@ DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID
       SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_Wind::DrawBackground(wxPaintDC* dc)
+void DashboardInstrument_Wind::DrawBackground(wxBufferedDC* dc)
 {
+/*
       wxPoint points[5];
 
       points[0].x = m_cx + m_radius * .25;
@@ -71,5 +72,54 @@ void DashboardInstrument_Wind::DrawBackground(wxPaintDC* dc)
       points[4].x = m_cx - m_radius * .25;
       points[4].y = m_cy + m_radius * .2;
       dc->DrawLines(5, points);
+*/
+      wxCoord x = m_cx - (m_radius * 0.3);
+      wxCoord y = m_cy - (m_radius * 0.6);
+      dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
+}
+
+DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag ) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360 )
+{
+      SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
+      wxString labels[] = {_("N"), _("NE"), _("E"), _("SE"), _("S"), _("SW"), _("W"), _("NW")};
+      SetOptionLabel(45, DIAL_LABEL_HORIZONTAL, wxArrayString(8, labels));
+
+      SetInstrumentWidth(200);
+}
+
+void DashboardInstrument_WindCompass::DrawBackground(wxBufferedDC* dc)
+{
+      wxPoint points[3];
+      int tmpradius = m_radius * 0.85;
+
+      wxColour cl;
+      wxPen pen;
+      pen.SetStyle(wxSOLID);
+      GetGlobalColor(_T("BLUE1"), &cl);
+      pen.SetColour(cl);
+      dc->SetPen(pen);
+      dc->SetTextForeground(cl);
+
+      int offset = 0;
+      for(double tmpangle = m_AngleStart - ANGLE_OFFSET;
+                        tmpangle <= m_AngleStart + 360 - ANGLE_OFFSET; tmpangle+=45)
+      {
+            dc->SetBrush(*wxTRANSPARENT_BRUSH);
+            points[0].x = m_cx;
+            points[0].y = m_cy;
+            points[1].x = m_cx + tmpradius * 0.1 * cos(deg2rad(tmpangle-45));
+            points[1].y = m_cy + tmpradius * 0.1 * sin(deg2rad(tmpangle-45));
+            double size = (offset % 2 ? 0.50 : 0.80);
+            points[2].x = m_cx + tmpradius * size * cos(deg2rad(tmpangle));
+            points[2].y = m_cy + tmpradius * size * sin(deg2rad(tmpangle));
+            dc->DrawPolygon(3, points, 0, 0);
+
+            points[1].x = m_cx + tmpradius * 0.1 * cos(deg2rad(tmpangle+45));
+            points[1].y = m_cy + tmpradius * 0.1 * sin(deg2rad(tmpangle+45));
+            dc->SetBrush(cl);
+            dc->DrawPolygon(3, points, 0, 0);
+            offset++;
+      }
 }
 

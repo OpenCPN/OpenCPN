@@ -359,10 +359,10 @@ void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
 
       dc->SetPen(*wxTRANSPARENT_PEN);
 
-      GetGlobalColor(_T("BLUE1"), &cl);
+      //GetGlobalColor(_T("BLUE1"), &cl);
       wxBrush brush;
       brush.SetStyle(wxSOLID);
-      brush.SetColour(cl);
+      brush.SetColour(wxColour(255,145,0));
       dc->SetBrush(brush);
 
       // The arrow should stay inside fixed limits

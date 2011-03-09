@@ -103,9 +103,11 @@
 #include "dbt.hpp"
 #include "dpt.hpp"
 #include "mtw.hpp"
+#include "mwd.hpp"
 #include "mwv.hpp"
 #include "vhw.hpp"
 #include "vwr.hpp"
+#include "vwt.hpp"
 #include "zda.hpp"
 /*
 #include "ROT.hpp"
@@ -194,6 +196,7 @@ class NMEA0183
       LCD Lcd;
 */
       MTW Mtw;
+      MWD Mwd;
       MWV Mwv;
 /*
       OLN Oln;
@@ -227,6 +230,7 @@ class NMEA0183
 */
       VTG Vtg;
       VWR Vwr;
+      VWT Vwt;
 /*
       WCV Wcv;
       WNC Wnc;

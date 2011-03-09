@@ -36,7 +36,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    0
+#define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    2
@@ -45,6 +45,7 @@
 #include <wx/fileconf.h>
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
+#include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
 //wx2.9 #include <wx/wrapsizer.h>
@@ -60,9 +61,25 @@
 #include "depth.h"
 
 class DashboardWindow;
+class DashboardWindowContainer;
 class DashboardInstrumentContainer;
 
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
+
+class DashboardWindowContainer
+{
+      public:
+            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, int width, wxArrayInt inst) {
+                  m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_iInstrumentWidth = width; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+
+            DashboardWindow              *m_pDashboardWindow;
+            bool                          m_bIsVisible; // Only used for config
+            bool                          m_bIsDeleted; // Only used for config
+            wxString                      m_sCaption;
+            wxString                      m_sOrientation;
+            int                           m_iInstrumentWidth;
+            wxArrayInt                    m_aInstrumentList;
+};
 
 class DashboardInstrumentContainer
 {
@@ -77,8 +94,10 @@ class DashboardInstrumentContainer
 
 //    Dynamic arrays of pointers need explicit macros in wx261
 #ifdef __WX261
+WX_DEFINE_ARRAY_PTR(DashboardWindowContainer *, wxArrayOfDashboard);
 WX_DEFINE_ARRAY_PTR(DashboardInstrumentContainer *, wxArrayOfInstrument);
 #else
+WX_DEFINE_ARRAY(DashboardWindowContainer *, wxArrayOfDashboard);
 WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 #endif
 
@@ -106,62 +125,85 @@ public:
       wxString GetLongDescription();
 
 //    The optional method overrides
-
       void SetNMEASentence(wxString &sentence);
       void SetPositionFix(PlugIn_Position_Fix &pfix);
       int GetToolbarToolCount(void);
       void OnToolbarToolCallback(int id);
       void ShowPreferencesDialog( wxWindow* parent );
       void SetColorScheme(PI_ColorScheme cs);
-
-      void OnInstrumentSelected(wxListEvent& event);
-      void OnInstrumentAdd(wxCommandEvent& event);
-      void OnInstrumentEdit(wxCommandEvent& event);
-      void OnInstrumentDelete(wxCommandEvent& event);
-      void OnInstrumentUp(wxCommandEvent& event);
-      void OnInstrumentDown(wxCommandEvent& event);
+      void OnPaneClose( wxAuiManagerEvent& event );
       void UpdateAuiStatus(void);
 
 private:
       bool LoadConfig(void);
       bool SaveConfig(void);
       void ApplyConfig(void);
-      void UpdateButtonsState(void);
+      void SendSentenceToAllInstruments(int st, double value, wxString unit);
+      void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
+      int GetDashboardWindowShownCount();
 
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;
       int              m_toolbar_item_id;
 
-      DashboardWindow       *m_pdashboard_window;
+      wxArrayOfDashboard       m_ArrayOfDashboardWindow;
       int               m_show_id;
       int               m_hide_id;
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
-      short                mPriPosition, mPriCOGSOG, mPriHeading, mPriVar, mPriDateTime, mPriApWind, mPriDepth;
+      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriWindR, mPriWindT, mPriDepth;
       double               mVar;
       // FFU
       double               mSatsInView;
       double               mHdm;
       wxDateTime           mUTCDateTime;
 
-      // Config dialog items
-      wxListCtrl*                   m_pListCtrlInstruments;
-      wxTextCtrl*                   m_pInstrumentWidth;
+//protected:
+//      DECLARE_EVENT_TABLE();
+};
+
+class DashboardPreferencesDialog : public wxDialog
+{
+public:
+      DashboardPreferencesDialog( wxWindow *pparent, wxWindowID id, wxArrayOfDashboard config );
+      ~DashboardPreferencesDialog() {}
+
+      void OnCloseDialog(wxCloseEvent& event);
+      void OnDashboardSelected(wxListEvent& event);
+      void OnDashboardAdd(wxCommandEvent& event);
+      void OnDashboardDelete(wxCommandEvent& event);
+      void OnInstrumentSelected(wxListEvent& event);
+      void OnInstrumentAdd(wxCommandEvent& event);
+      void OnInstrumentEdit(wxCommandEvent& event);
+      void OnInstrumentDelete(wxCommandEvent& event);
+      void OnInstrumentUp(wxCommandEvent& event);
+      void OnInstrumentDown(wxCommandEvent& event);
+      void SaveDashboardConfig();
+
+      wxArrayOfDashboard            m_Config;
       wxFontPickerCtrl             *m_pFontPickerTitle;
       wxFontPickerCtrl             *m_pFontPickerData;
       wxFontPickerCtrl             *m_pFontPickerLabel;
       wxFontPickerCtrl             *m_pFontPickerSmall;
-      int                           m_iInstrumentWidth;
-      int                           m_iInstrumentCount; // Warning: should be size_t for wxArray.GetCount()
-      wxArrayInt                    m_aInstrumentList;
-      wxButton*                     m_pButtonAdd;
-      wxButton*                     m_pButtonEdit;
-      wxButton*                     m_pButtonDelete;
-      wxButton*                     m_pButtonUp;
-      wxButton*                     m_pButtonDown;
 
-//protected:
-//      DECLARE_EVENT_TABLE();
+private:
+      void UpdateDashboardButtonsState(void);
+      void UpdateButtonsState(void);
+      int                           curSel;
+      wxListCtrl                   *m_pListCtrlDashboards;
+      wxBitmapButton               *m_pButtonAddDashboard;
+      wxBitmapButton               *m_pButtonDeleteDashboard;
+      wxPanel                      *m_pPanelDashboard;
+      wxTextCtrl                   *m_pTextCtrlCaption;
+      wxCheckBox                   *m_pCheckBoxIsVisible;
+      wxChoice                     *m_pChoiceOrientation;
+      wxSpinCtrl                   *m_pInstrumentWidth;
+      wxListCtrl                   *m_pListCtrlInstruments;
+      wxButton                     *m_pButtonAdd;
+      wxButton                     *m_pButtonEdit;
+      wxButton                     *m_pButtonDelete;
+      wxButton                     *m_pButtonUp;
+      wxButton                     *m_pButtonDown;
 };
 
 class AddInstrumentDlg : public wxDialog
@@ -184,12 +226,12 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, int tbitem);
+      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
       ~DashboardWindow(){}
 
       void SetColorScheme(PI_ColorScheme cs);
+      void SetSizerOrientation( int orient );
       void OnSize(wxSizeEvent& evt);
-      void OnShow(wxShowEvent& event);
       void SetInstrumentList(wxArrayInt list);
       void SetInstrumentWidth(int width);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
@@ -199,7 +241,6 @@ public:
 
 private:
       wxAuiManager         *m_pauimgr;
-      int                  m_toolbar_item_id;
 
 //wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;

@@ -63,7 +63,20 @@ class DashboardInstrument_Wind: public DashboardInstrument_Dial
       private:
 
       protected:
-            void DrawBackground(wxPaintDC* dc);
+            void DrawBackground(wxBufferedDC* dc);
+};
+
+class DashboardInstrument_WindCompass: public DashboardInstrument_Dial
+{
+      public:
+            DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag);
+
+            ~DashboardInstrument_WindCompass(void){}
+
+      private:
+
+      protected:
+            void DrawBackground(wxBufferedDC* dc);
 };
 
 #endif // __Wind_H__

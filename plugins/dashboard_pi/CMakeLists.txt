@@ -149,6 +149,10 @@ SET(SRC_NMEA0183
 		src/nmea0183/rsa.hpp
 		src/nmea0183/rsa.cpp
 		src/nmea0183/SatInfo.h
+            src/nmea0183/mwd.cpp
+            src/nmea0183/mwd.hpp
+            src/nmea0183/vwt.cpp
+            src/nmea0183/vwt.hpp
 
 	)
 INCLUDE_DIRECTORIES(src/nmea0183)
