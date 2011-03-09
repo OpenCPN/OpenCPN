@@ -1173,6 +1173,10 @@ Route::~Route ( void )
 
 void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 {
+      if(pNewPoint->m_bIsolatedMark) 
+      {
+            pNewPoint->m_bKeepXRoute = true;
+      }
       pNewPoint->m_bIsolatedMark = false;       // definitely no longer isolated
       pNewPoint->m_bIsInRoute = true;
 
@@ -1190,7 +1194,7 @@ void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 
       m_pLastAddedPoint = pNewPoint;
 
-      if ( b_rename_in_sequence && pNewPoint->m_MarkName.IsEmpty() )
+      if ( b_rename_in_sequence && pNewPoint->m_MarkName.IsEmpty() && !pNewPoint->m_bKeepXRoute)
       {
             pNewPoint->m_MarkName.Printf ( _T ( "%03d" ), m_nPoints );
             pNewPoint->m_bDynamicName = true;
@@ -3802,7 +3806,7 @@ void MyConfig::ExportGPX ( wxWindow* parent )
             while ( node )
             {
                   pr = node->GetData();
-                  if ( !WptIsInRouteList ( pr ) )
+                  if ( pr->m_bKeepXRoute || !WptIsInRouteList ( pr ) )
                   {
                         gpxroot->AddWaypoint(CreateGPXWpt(pr, GPX_WPT_WAYPOINT));
                   }
@@ -3993,6 +3997,9 @@ void MyConfig::ImportGPX ( wxWindow* parent )
                                                 RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
                                                 if(!pExisting)
                                                 {
+                                                      if (WaypointExists(pWp->m_GUID)) //We try to import a waypoint with the same guid but different properties, so we assign it a new guid to keep them both
+                                                            pWp->m_GUID = pWayPointMan->CreateGUID ( pWp );
+
                                                       if ( NULL != pWayPointMan )
                                                             pWayPointMan->m_pWayPointList->Append ( pWp );
 
@@ -4945,6 +4952,17 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
 //    TODO  All this trouble for a tentative route.......Should make some Route methods????
             if ( bAddtrack )
             {
+                  if (::RouteExists(pTentTrack->m_GUID)) { //We are importing a different route with the same guid, so let's generate it a new guid
+                        pTentTrack->m_GUID = pWayPointMan->CreateGUID ( NULL );
+                        //Now also change guids for the routepoints
+                        wxRoutePointListNode *pthisnode = ( pTentTrack->pRoutePointList )->GetFirst();
+                        while ( pthisnode ) 
+                        {
+                              pthisnode->GetData()->m_GUID = pWayPointMan->CreateGUID ( NULL );
+                              pthisnode = pthisnode->GetNext();
+                              //FIXME: !!!!!! the shared waypoint gets part of both the routes -> not  goood at all
+                        }
+                  }
                   pRouteList->Append ( pTentTrack );
 
                   if(b_propviz)
@@ -5109,7 +5127,7 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
 
                   RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
 
-                  if(!pExisting)
+                  if(!pExisting || !pExisting->m_bKeepXRoute)
                   {
                         if ( NULL != pWayPointMan )
                               pWayPointMan->m_pWayPointList->Append ( pWp );
@@ -5254,10 +5272,20 @@ void GPXLoadRoute ( GpxRteElement* rtenode, int routenum, bool b_fullviz )
             Route *pTentRoute = ::LoadGPXRoute(rtenode, routenum, b_fullviz);
 
 //    TODO  All this trouble for a tentative route.......Should make some Route methods????
-            if ( !::RouteExists(pTentRoute->m_GUID) && !::RouteExists(pTentRoute))
+            if ( !::RouteExists(pTentRoute))
             {
+                  if (::RouteExists(pTentRoute->m_GUID)) { //We are importing a different route with the same guid, so let's generate it a new guid
+                        pTentRoute->m_GUID = pWayPointMan->CreateGUID ( NULL );
+                        //Now also change guids for the routepoints
+                        wxRoutePointListNode *pthisnode = ( pTentRoute->pRoutePointList )->GetFirst();
+                        while ( pthisnode ) 
+                        {
+                              pthisnode->GetData()->m_GUID = pWayPointMan->CreateGUID ( NULL );
+                              pthisnode = pthisnode->GetNext();
+                              //FIXME: !!!!!! the shared routepoint gets part of both the routes -> not  goood at all
+                        }
+                  }
                   ::InsertRoute(pTentRoute, routenum);
-
             }
             else
             {
@@ -5270,7 +5298,7 @@ void GPXLoadRoute ( GpxRteElement* rtenode, int routenum, bool b_fullviz )
                         // check all other routes to see if this point appears in any other route
                         Route *pcontainer_route = g_pRouteMan->FindRouteContainingWaypoint ( prp );
 
-                        if ( pcontainer_route == NULL )
+                        if ( pcontainer_route == NULL && prp->m_bIsInRoute )
                         {
                               prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
                               if ( !prp->m_bKeepXRoute )

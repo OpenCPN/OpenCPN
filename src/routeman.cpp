@@ -625,7 +625,7 @@ void Routeman::DeleteRoute(Route *pRoute)
                   // check all other routes to see if this point appears in any other route
                   Route *pcontainer_route = FindRouteContainingWaypoint(prp);
 
-                  if(pcontainer_route == NULL)
+                  if(pcontainer_route == NULL && prp->m_bIsInRoute)
                   {
                         prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
                         if(!prp->m_bKeepXRoute)
