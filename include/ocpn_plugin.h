@@ -45,8 +45,12 @@
 
 
 
+//    This is the most modern API Version number
+//    It is expected that the API will remain downward compatible, meaning that
+//    PlugIns conforming to API Version less then the most modern will also
+//    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           2
+#define API_VERSION_MINOR           4
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -72,7 +76,7 @@ class       wxAuiManager;
 #define     USES_AUI_MANAGER                    0x00000400
 #define     WANTS_PREFERENCES                   0x00000800
 #define     INSTALLS_PLUGIN_CHART               0x00001000
-
+#define     WANTS_ONPAINT_VIEWPORT              0x00002000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -237,7 +241,7 @@ class DECL_EXP PlugInChartBase : public wxObject
 
             virtual bool GetChartExtent(ExtentPI *pext);
 
-            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint, const wxRegion &Region);
+            virtual wxBitmap &RenderRegionView(const PlugIn_ViewPort& VPoint, const wxRegion &Region);
 
             virtual bool AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed);
 
@@ -365,6 +369,7 @@ public:
 
       virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);
+      virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
       virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
       virtual void SetNMEASentence(wxString &sentence);

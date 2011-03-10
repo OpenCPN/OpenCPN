@@ -140,6 +140,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                         {
                               case 102:                                 // TODO add more valid API versions to this case as necessary
                               case 103:
+                              case 104:
                                     bver_ok = true;
                                     break;
                               default:
@@ -378,36 +379,38 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
 bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp)
 {
-      //    Create a PlugIn Viewport
-      PlugIn_ViewPort pivp;
-      pivp.clat =                   vp->clat;                   // center point
-      pivp.clon =                   vp->clon;
-      pivp.view_scale_ppm =         vp->view_scale_ppm;
-      pivp.skew =                   vp->skew;
-      pivp.rotation =               vp->rotation;
-      pivp.chart_scale =            vp->chart_scale;
-      pivp.pix_width =              vp->pix_width;
-      pivp.pix_height =             vp->pix_height;
-      pivp.rv_rect =                vp->rv_rect;
-      pivp.b_quilt =                vp->b_quilt;
-      pivp.m_projection_type =      vp->m_projection_type;
-
-      pivp.lat_min =                vp->GetBBox().GetMinY();
-      pivp.lat_max =                vp->GetBBox().GetMaxY();
-      pivp.lon_min =                vp->GetBBox().GetMinX();
-      pivp.lon_max =                vp->GetBBox().GetMaxX();
-
-      pivp.bValid =                 vp->IsValid();                 // This VP is valid
-
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
             if(pic->m_bEnabled && pic->m_bInitState)
-                  pic->m_pplugin->RenderOverlay(pmdc, &pivp);
+            {
+                  if(pic->m_cap_flag & WANTS_OVERLAY_CALLBACK)
+                  {
+                        PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
+                        pic->m_pplugin->RenderOverlay(pmdc, &pivp);
+                  }
+            }
       }
 
       return true;
 }
+
+void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_ONPAINT_VIEWPORT)
+                  {
+                        PlugIn_ViewPort pivp = CreatePlugInViewport( &vp );
+                        pic->m_pplugin->SetCurrentViewPort(pivp);
+                  }
+            }
+      }
+}
+
 
 void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
 {
@@ -941,10 +944,10 @@ bool opencpn_plugin::DeInit(void)
 {  return true; }
 
 int opencpn_plugin::GetAPIVersionMajor()
-{  return API_VERSION_MAJOR; }
+{  return 1; }
 
 int opencpn_plugin::GetAPIVersionMinor()
-{  return API_VERSION_MINOR; }
+{  return 2; }
 
 int opencpn_plugin::GetPlugInVersionMajor()
 {  return 1; }
@@ -1004,6 +1007,9 @@ bool opencpn_plugin::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
+{}
+
+void opencpn_plugin::SetCurrentViewPort(PlugIn_ViewPort &vp)
 {}
 
 void opencpn_plugin::SetDefaults(void)
@@ -1259,9 +1265,9 @@ bool PlugInChartBase::GetChartExtent(ExtentPI *pext)
 { return false; }
 
 
-bool PlugInChartBase::RenderRegionViewOnDC(wxMemoryDC& dc, const PlugIn_ViewPort& VPoint,
+wxBitmap& PlugInChartBase::RenderRegionView(const PlugIn_ViewPort& VPoint,
                                               const wxRegion &Region)
-{ return false;}
+{ return wxNullBitmap;}
 
 
 bool PlugInChartBase::AdjustVP(PlugIn_ViewPort &vp_last, PlugIn_ViewPort &vp_proposed)
@@ -1491,7 +1497,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
       if(m_ppicb)
       {
             PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&VPoint);
-            return m_ppicb->RenderRegionViewOnDC(dc, pivp, Region);
+            dc.SelectObject(m_ppicb->RenderRegionView( pivp, Region));
+            return true;
+//            return m_ppicb->RenderRegionViewOnDC(dc, pivp, Region);
       }
       else
             return false;

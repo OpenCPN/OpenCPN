@@ -8835,7 +8835,10 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         }
 
         if(g_pi_manager)
-            g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, &VPoint);
+        {
+              g_pi_manager->SendViewPortToRequestingPlugIns( VPoint );
+              g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, &VPoint);
+        }
 
         //      If Depth Unit Display is selected, emboss it
         if ( g_bShowDepthUnits )

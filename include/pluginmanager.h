@@ -147,6 +147,7 @@ public:
 
       bool RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
+      void SendViewPortToRequestingPlugIns( ViewPort &vp );
 
       void AddAllPlugInToolboxPanels( wxNotebook *pnotebook);
       void CloseAllPlugInPanels( int );
