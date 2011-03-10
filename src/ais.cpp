@@ -274,7 +274,7 @@ wxString short_ais_type[] = {
 	_("Ref. Pt"),		      //01		21
 	_("RACON"),     	      //02        22
 	_("Fix.Struct."),          //03        23
-	_("?")                     //04        24
+	_("?"),                     //04        24
 	_("Lt"),                   //05        25
 	_("Lt sect."),             //06        26
 	_("Ldg Lt Front"),         //07        27
