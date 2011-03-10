@@ -812,7 +812,7 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 
             SaveConfig();
             ApplyConfig();
-            SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() );
+            SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()==0 );
       }
       dialog->Destroy();
 }
@@ -863,7 +863,7 @@ void dashboard_pi::OnPaneClose( wxAuiManagerEvent& event )
                   }
             }
       }
-      SetToolbarItemState( m_toolbar_item_id, cnt );
+      SetToolbarItemState( m_toolbar_item_id, cnt==0 );
 
       event.Skip();
 }
@@ -897,7 +897,7 @@ void dashboard_pi::UpdateAuiStatus(void)
 
       //    We use this callback here to keep the context menu selection in sync with the window state
 
-      SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() );
+      SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()== 0 );
 }
 
 bool dashboard_pi::LoadConfig(void)
