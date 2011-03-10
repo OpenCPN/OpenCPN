@@ -4795,21 +4795,21 @@ void CalcGridText( double latlon, double spacing, bool bPostfix, char *text)
      }
      else
      {
-           postfix=' '; // no postfix for ecuator and greenwich
+           postfix=' '; // no postfix for equator and greenwich
      }
      // calculate text, display minutes only if spacing is smaller than one degree
 
      if (spacing >= 1.0)
            {
-                 snprintf(text,BufLen , "%3d� %c",deg,postfix);
+                 snprintf(text,BufLen , "%3d° %c",deg,postfix);
            }
            else if (spacing >= (1.0/60.0) )
            {
-                 snprintf(text, BufLen, "%3d�%02.0f %c",deg,min,postfix);
+                 snprintf(text, BufLen, "%3d°%02.0f %c",deg,min,postfix);
            }
            else
            {
-                 snprintf(text, BufLen, "%3d�%02.2f %c",deg,min,postfix);
+                 snprintf(text, BufLen, "%3d°%02.2f %c",deg,min,postfix);
            }
            text[BufLen-1] = '\0';
            return;
