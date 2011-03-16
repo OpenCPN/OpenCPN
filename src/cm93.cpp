@@ -108,7 +108,6 @@ void appendOSDirSep(wxString* pString)
 M_COVR_Desc::M_COVR_Desc()
 {
       pvertices = NULL;
-      pPoints = NULL;
 
       user_xoff = 0.;
       user_yoff = 0.;
@@ -119,7 +118,6 @@ M_COVR_Desc::M_COVR_Desc()
 M_COVR_Desc::~M_COVR_Desc()
 {
       delete[] pvertices;
-      delete[] pPoints;
 }
 
 int M_COVR_Desc::GetWKBSize()
@@ -129,6 +127,7 @@ int M_COVR_Desc::GetWKBSize()
       size = sizeof(int);                             // size itself
       size += sizeof(int);                            // m_cell_index;
       size += sizeof(int);                            // m_object_id;
+      size += sizeof(int);                           // m_subcell
       size += sizeof(int);                            // m_nvertices;
       size += m_nvertices * sizeof(float_2Dpt);       // pvertices;
 
@@ -147,6 +146,7 @@ bool M_COVR_Desc:: WriteWKB(void *p)
 
             *pr++ = m_cell_index;
             *pr++ = m_object_id;
+            *pr++ = m_subcell;
 
             *pr++ = m_nvertices;
 
@@ -182,6 +182,7 @@ int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
       {
             ifs.Read(&m_cell_index, sizeof(int));
             ifs.Read(&m_object_id, sizeof(int));
+            ifs.Read(&m_subcell, sizeof(int));
 
             ifs.Read(&m_nvertices, sizeof(int));
 
@@ -206,17 +207,10 @@ int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
             else
                   m_buser_offsets = false;
 
-
-            pPoints = new wxPoint[m_nvertices];
-
             m_covr_bbox = wxBoundingBox(m_covr_lon_min, m_covr_lat_min, m_covr_lon_max, m_covr_lat_max);
 
       }
       return length;
-}
-
-void M_COVR_Desc::Update(M_COVR_Desc *pmcd)
-{
 }
 
 
@@ -228,7 +222,7 @@ void M_COVR_Desc::Update(M_COVR_Desc *pmcd)
 
 WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, cm93cell_hash );
 
-char sig_version[] = "COVR1001";
+char sig_version[] = "COVR1002";
 
 class covr_set
 {
@@ -243,7 +237,7 @@ class covr_set
             bool Add_Update_MCD(M_COVR_Desc *pmcd);
             bool IsCovrLoaded(int cell_index);
             int Find_MCD(M_COVR_Desc *pmcd);
-            M_COVR_Desc *Find_MCD(int cell_index, int object_id);
+            M_COVR_Desc *Find_MCD(int cell_index, int object_id, int sbcell);
 
             cm93chart         *m_pParent;
             wxChar            m_scale_char;
@@ -413,16 +407,18 @@ bool covr_set::Add_Update_MCD(M_COVR_Desc *pmcd)
       }
             //    There is at least one MCD already in place for this cell index
             //    We need to search the entire table to see if any of those MCD's
-            //    correspond to this MCD's object identifier as well as cell index
+            //    correspond to this MCD's object identifier and subcell, as well as cell index
       else
       {
             bool b_found = false;
             for(unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++)
             {
                   M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item(i);
-                  if((pmcd_candidate->m_cell_index == pmcd->m_cell_index) && (pmcd_candidate->m_object_id == pmcd->m_object_id))
+                  if((pmcd_candidate->m_cell_index == pmcd->m_cell_index) &&
+                      (pmcd_candidate->m_object_id == pmcd->m_object_id) &&
+                      (pmcd_candidate->m_subcell == pmcd->m_subcell))
+
                   {
-                        pmcd_candidate->Update(pmcd);              // replace(Update) the MCD
                         b_found = true;
                         break;
                   }
@@ -452,19 +448,29 @@ int covr_set::Find_MCD(M_COVR_Desc *pmcd)
             for(unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++)
             {
                   M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item(i);
-                  if((pmcd_candidate->m_cell_index == pmcd->m_cell_index) && (pmcd_candidate->m_object_id == pmcd->m_object_id))
+                  if((pmcd_candidate->m_cell_index == pmcd->m_cell_index) &&
+                      (pmcd_candidate->m_object_id == pmcd->m_object_id) &&
+                      (pmcd_candidate->m_subcell == pmcd->m_subcell))
+                  {
                         return (int)i;
+                  }
             }
       }
       return -1;
 }
 
-M_COVR_Desc *covr_set::Find_MCD(int cell_index, int object_id)
+M_COVR_Desc *covr_set::Find_MCD(int cell_index, int object_id, int subcell)
 {
+      if(m_cell_hash.find( cell_index ) == m_cell_hash.end())         // not present?
+            return NULL;
+
       for(unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++)
       {
             M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item(i);
-            if((pmcd_candidate->m_cell_index == cell_index) && (pmcd_candidate->m_object_id == object_id))
+            if((pmcd_candidate->m_cell_index == cell_index) &&
+                (pmcd_candidate->m_object_id == object_id) &&
+                (pmcd_candidate->m_subcell == subcell))
+
                   return pmcd_candidate;
       }
 
@@ -1878,6 +1884,9 @@ cm93chart::cm93chart()
       m_pcovr_set = new covr_set(this);
 
 
+      //    Make initial allocation of shared outline drawing buffer
+      m_pDrawBuffer = (wxPoint *)malloc(4 * sizeof(wxPoint));
+      m_nDrawBufferSize = 1;
 
 
 /*
@@ -1899,6 +1908,9 @@ cm93chart::~cm93chart()
       free(m_pcontour_array);
 
       delete m_pcovr_set;
+
+      free(m_pDrawBuffer);
+
 }
 
 void  cm93chart::Unload_CM93_Cell(void)
@@ -2086,19 +2098,36 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
             //    The cell is not in place, so go load it
             if(!bcell_is_in)
             {
-                  m_loadcell_key = '0';               // starting
+                  int cell_index = vpcells.Item(i);
 
-                  //    Load the subcells in sequence
-                  //    On successful load, add it to the member list and process the cell
-                  while(loadcell_in_sequence(vpcells.Item(i)))
+                  if(loadcell_in_sequence(cell_index, '0'))       // Base cell
                   {
                         ProcessVectorEdges();
-                        CreateObjChain(vpcells.Item(i));
+                        CreateObjChain(cell_index, (int)'0');
 
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
-                        m_cells_loaded_array.Add(vpcells.Item(i));
+                        m_cells_loaded_array.Add(cell_index);
 
                         Unload_CM93_Cell();
+                  }
+
+                  char loadcell_key = 'A';               // starting
+
+                  //    Load any subcells in sequence
+                  //    On successful load, add it to the member list and process the cell
+                  while(loadcell_in_sequence(cell_index, loadcell_key))
+                  {
+                        ProcessVectorEdges();
+                        CreateObjChain(cell_index, (int)loadcell_key);
+
+                        ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
+
+                        if(wxNOT_FOUND == m_cells_loaded_array.Index(cell_index))
+                              m_cells_loaded_array.Add(cell_index);
+
+                        Unload_CM93_Cell();
+
+                        loadcell_key++;
                   }
             }
       }
@@ -2197,7 +2226,7 @@ void cm93chart::ProcessVectorEdges(void)
 
             if(pgd->n_points)
             {
-                  double *pPoints = (double *)malloc(pgd->n_points * 2 * sizeof(double));
+                  double *2 = (double *)malloc(pgd->n_points * 2 * sizeof(double));
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;
@@ -2256,7 +2285,7 @@ void cm93chart::ProcessVectorEdges(void)
 
 
 
-int cm93chart::CreateObjChain(int cell_index)
+int cm93chart::CreateObjChain(int cell_index, int subcell)
 {
       LUPrec           *LUP;
       LUPname          LUP_Name = PAPER_CHART;
@@ -2283,7 +2312,7 @@ int cm93chart::CreateObjChain(int cell_index)
 
                   obj = NULL;
                   if(NULL != xgeom)
-                         obj = CreateS57Obj( cell_index, iObj,  pobjectDef, m_pDict, xgeom, ref_lat, ref_lon, GetNativeScale() );
+                         obj = CreateS57Obj( cell_index, iObj, subcell, pobjectDef, m_pDict, xgeom, ref_lat, ref_lon, GetNativeScale() );
 
                    if(obj)
                    {
@@ -3131,7 +3160,7 @@ void cm93chart::translate_colmar(wxString &sclass, S57attVal *pattValTmp)
 }
 
 
-S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
+S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
                                      double ref_lat, double ref_lon, double scale)
 {
 
@@ -3582,88 +3611,84 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, Object *pobject, c
                   //    Check for and maintain the class array of M_COVR objects
                   if(sclass_sub.IsSameAs(_T("M_COVR")))
                   {
-                        double lat, lon;
+                        M_COVR_Desc *pmcd;
 
-                        M_COVR_Desc *pmcd = new M_COVR_Desc;
-
-                  //    Record unique identifiers for this M_COVR object
-                        pmcd->m_cell_index = cell_index;
-                        pmcd->m_object_id = iobject;
-
-                  //    User offsets start empty
-                        pmcd->user_xoff = 0;
-                        pmcd->user_yoff = 0;
-                        pmcd->m_buser_offsets = false;
-
-                  //    Record the Publication Year of this cell
-                        pmcd->m_npub_year = npub_year;
-
-                  //      Get number of exterior ring points(vertices)
-                        int npta  = xgeom->contour_array[0];
-                        float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
-                        float_2Dpt *ppt = geoPt;
-
-                        pmcd->m_covr_lon_max = -1000.;
-                        pmcd->m_covr_lon_min = 1000.;
-                        pmcd->m_covr_lat_max = -1000.;
-                        pmcd->m_covr_lat_min = 1000.;
-
-//  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
-                        for(int ip = 0 ; ip < npta ; ip++)
+                        M_COVR_Desc *pmcd_look = GetCoverSet()->Find_MCD(cell_index, iobject, subcell);
+                        if(NULL == pmcd_look)        // not found
                         {
-                              cm93_point p;
-                              p.x = (int)xgeom->vertex_array[ip + 1].m_x;
-                              p.y = (int)xgeom->vertex_array[ip + 1].m_y;
+                              double lat, lon;
 
-                              Transform(&p, 0, 0,/*tmp_transform_x, tmp_transform_y,*/ &lat, &lon);
-                              ppt->x = lon;
-                              ppt->y = lat;
+                              pmcd = new M_COVR_Desc;
 
-                              pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
-                              pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
-                              pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
-                              pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
+                        //    Record unique identifiers for this M_COVR object
+                              pmcd->m_cell_index = cell_index;
+                              pmcd->m_object_id = iobject;
+                              pmcd->m_subcell = subcell;
 
-                              ppt++;
+                        //    User offsets start empty
+                              pmcd->user_xoff = 0;
+                              pmcd->user_yoff = 0;
+                              pmcd->m_buser_offsets = false;
+
+                        //    Record the Publication Year of this cell
+                              pmcd->m_npub_year = npub_year;
+
+                        //      Get number of exterior ring points(vertices)
+                              int npta  = xgeom->contour_array[0];
+                              float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
+                              float_2Dpt *ppt = geoPt;
+
+                              pmcd->m_covr_lon_max = -1000.;
+                              pmcd->m_covr_lon_min = 1000.;
+                              pmcd->m_covr_lat_max = -1000.;
+                              pmcd->m_covr_lat_min = 1000.;
+
+      //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
+                              for(int ip = 0 ; ip < npta ; ip++)
+                              {
+                                    cm93_point p;
+                                    p.x = (int)xgeom->vertex_array[ip + 1].m_x;
+                                    p.y = (int)xgeom->vertex_array[ip + 1].m_y;
+
+                                    Transform(&p, 0, 0,/*tmp_transform_x, tmp_transform_y,*/ &lat, &lon);
+                                    ppt->x = lon;
+                                    ppt->y = lat;
+
+                                    pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
+                                    pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
+                                    pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
+                                    pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
+
+                                    ppt++;
+                              }
+                              pmcd->m_nvertices = npta;
+                              pmcd->pvertices = geoPt;
+
+                              pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
+
+
+                              //    Capture and store the potential WGS transform offsets grabbed during attribute decode
+                              pmcd->transform_WGS84_offset_x = tmp_transform_x;
+                              pmcd->transform_WGS84_offset_y = tmp_transform_y;
+
+                              //    Add this MCD to the persistent class covr_set
+                              GetCoverSet()->Add_Update_MCD(pmcd);
+
                         }
-                        pmcd->m_nvertices = npta;
-                        pmcd->pvertices = geoPt;
-                        pmcd->pPoints = new wxPoint[npta];
-
-                        pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
-
-
-                        //    Capture and store the potential WGS transform offsets grabbed during attribute decode
-                        pmcd->transform_WGS84_offset_x = tmp_transform_x;
-                        pmcd->transform_WGS84_offset_y = tmp_transform_y;
-
-
-                        //    Is this MCD in the preloaded cache file coverset?
-                        int im = GetCoverSet()->Find_MCD(pmcd);
-                        if(im != -1)      //this MCD is already in the coverset
+                        else
                         {
-                              // If so, are there user offsets applied to this MCD?
-                              M_COVR_Desc *pmcd_candidate = GetCoverSet()->GetCover(im);
-                              if(pmcd_candidate->m_buser_offsets)
+                              // If already in the coverset, are there user offsets applied to this MCD?
+                              if(pmcd_look->m_buser_offsets)
                               {
                                     m_CIB.b_have_user_offsets = true;
 
-                                    m_CIB.user_xoff = pmcd_candidate->user_xoff;
-                                    m_CIB.user_yoff = pmcd_candidate->user_yoff;
-
-                                    //    Update the working MCD as well
-//                                    pmcd->user_xoff = pmcd_candidate->user_xoff;
-//                                    pmcd->user_yoff = pmcd_candidate->user_yoff;
-//                                    pmcd->m_buser_offsets = true;
+                                    m_CIB.user_xoff = pmcd_look->user_xoff;
+                                    m_CIB.user_yoff = pmcd_look->user_yoff;
                               }
 
-                              delete pmcd;
-                              pmcd = pmcd_candidate;
-                        }
-                        else
-                              //    Add this MCD to the persistent class covr_set if it does not exist already
-                              GetCoverSet()->Add_Update_MCD(pmcd);
+                              pmcd = pmcd_look;
 
+                        }
 
                         //     Add this geometry to the currently loaded class M_COVR array
                         m_pcovr_array_loaded.Add(pmcd);
@@ -3999,19 +4024,6 @@ wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon)
 {
 	  wxPoint2DDouble ret(0., 0.);
 
-#ifdef FLAV
-	  // Flav here returns the offset applyed to all the CM93 maps
-	  if(g_CM93Maps_Offset_on)
-	  {
-		  ret.m_x = -g_CM93Maps_Offset_x;
-		  ret.m_y = -g_CM93Maps_Offset_y;
-          return ret;
-	  }
-	  else
-	  {
-		  return ret;                   // Stub return for now, no offsets ever used after 2.1.0 Build 331.....
-	  }
-#endif
 
       //    Default is to use the first M_COVR, the usual case
       wxList_Of_M_COVR_DescNode *node0 = m_CIB.m_cell_mcovr_list.GetFirst();
@@ -4147,6 +4159,131 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell(void)
       return INIT_OK;
 }
 
+void cm93chart::ProcessMCOVRObjects(int cell_index, char subcell)
+{
+      //Extract the m_covr structures inline
+
+      Object *pobject = m_CIB.pobject_block;           // head of object array
+
+      int iObj = 0;
+      while(iObj < m_CIB.m_nfeature_records)
+      {
+            if((pobject != NULL) )
+            {
+                                    //    Look for and process m_covr object(s)
+                  int iclass = pobject->otype;
+
+                  wxString sclass = m_pDict->GetClassName(iclass);
+
+                  if(sclass.IsSameAs(_T("_m_sor")))
+                  {
+                        M_COVR_Desc *pmcd = m_pcovr_set->Find_MCD(cell_index, iObj, (int)subcell);
+                        if(NULL == pmcd)
+                        {
+                              Extended_Geometry *xgeom = BuildGeom(pobject, NULL, iObj);
+
+                              //    Decode the attributes, specifically looking for _wgsox, _wgsoy
+
+                              double tmp_transform_x = 0.;
+                              double tmp_transform_y = 0.;
+
+                              cm93_attr_block *pab = new cm93_attr_block(pobject->attributes_block, m_pDict);
+                              for( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++)
+                              {
+                                    unsigned char *curr_attr = pab->GetNextAttr();
+                                    unsigned char iattr = *curr_attr;
+                                    wxString sattr = m_pDict->GetAttrName(iattr);
+                                    char vtype = m_pDict->GetAttrType(iattr);
+                                    unsigned char *aval = curr_attr + 1;
+
+                                    if(vtype == 'R')
+                                    {
+                                          float *pf = (float *)aval;
+
+                                          if(sattr.IsSameAs(_T("_wgsox")))
+                                                tmp_transform_x = *pf;
+                                          else if(sattr.IsSameAs(_T("_wgsoy")))
+                                                tmp_transform_y = *pf;
+                                    }
+
+
+                              }     //for all attributes
+
+                              delete pab;
+
+
+                              if(NULL != xgeom)
+                              {
+                                    double lat, lon;
+
+                                    pmcd = new M_COVR_Desc;
+
+                                    //    Record unique identifiers for this M_COVR object
+                                    pmcd->m_cell_index = cell_index;
+                                    pmcd->m_object_id = iObj;
+                                    pmcd->m_subcell = (int)subcell;
+
+                                    //      Get number of exterior ring points(vertices)
+                                    int npta  = xgeom->contour_array[0];
+                                    float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
+                                    float_2Dpt *ppt = geoPt;
+
+                                    //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
+                                    pmcd->m_covr_lon_max = -1000.;
+                                    pmcd->m_covr_lon_min = 1000.;
+                                    pmcd->m_covr_lat_max = -1000.;
+                                    pmcd->m_covr_lat_min = 1000.;
+
+
+                                    for(int ip = 0 ; ip < npta ; ip++)
+                                    {
+                                          cm93_point p;
+                                          p.x = (int)xgeom->vertex_array[ip + 1].m_x;
+                                          p.y = (int)xgeom->vertex_array[ip + 1].m_y;
+
+                                          Transform(&p, 0., 0., &lat, &lon);
+                                          ppt->x = lon;
+                                          ppt->y = lat;
+
+                                          pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
+                                          pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
+                                          pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
+                                          pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
+
+                                          ppt++;
+                                    }
+                                    pmcd->m_nvertices = npta;
+                                    pmcd->pvertices = geoPt;
+
+                                    pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
+
+
+                                    //    Capture and store the potential WGS transform offsets grabbed during attribute decode
+                                    pmcd->transform_WGS84_offset_x = tmp_transform_x;
+                                    pmcd->transform_WGS84_offset_y = tmp_transform_y;
+
+                                    //     Add this object to the covr_set
+                                    m_pcovr_set->Add_Update_MCD(pmcd);
+
+                                    //    Clean up the xgeom
+                                    free( xgeom->pvector_index );
+                                    free( xgeom->contour_array );
+                                    free( xgeom->vertex_array );
+
+                                    delete xgeom;
+                              }
+                        }
+                  }
+            }
+
+            else                    // objectdef == NULL
+                  break;
+
+            pobject++;
+            iObj++;
+      }
+}
+
 bool cm93chart::UpdateCovrSet(ViewPort *vpt)
 {
       //    Create an array of CellIndexes covering the current viewport
@@ -4159,133 +4296,27 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt)
             //    If the cell is not already in the master coverset, go load enough of it to get the offsets and outlines.....
             if(!m_pcovr_set->IsCovrLoaded(vpcells.Item(i)))
             {
-                  m_loadcell_key = '0';               // starting
+                  if(loadcell_in_sequence(vpcells.Item(i), '0'))
+                  {
+                        ProcessMCOVRObjects(vpcells.Item(i), '0');
+                        Unload_CM93_Cell();           // all done with this (sub)cell
+                  }
+
+                  char loadcell_key = 'A';               // starting subcells
 
       //    Load the subcells in sequence
       //    On successful load, add it to the covr set and process the cell
-                  while(loadcell_in_sequence(vpcells.Item(i)))
+                  while(loadcell_in_sequence(vpcells.Item(i), loadcell_key))
                   {
             //Extract the m_covr structures inline
 
-                        Object *pobject = m_CIB.pobject_block;           // head of object array
+                        ProcessMCOVRObjects(vpcells.Item(i), loadcell_key);
 
-                        int iObj = 0;
-                        while(iObj < m_CIB.m_nfeature_records)
-                        {
-                              if((pobject != NULL) )
-                              {
-                                    //    Look for and process m_covr object(s)
-                                    int iclass = pobject->otype;
+                        Unload_CM93_Cell();           // all done with this (sub)cell
 
-                                    wxString sclass = m_pDict->GetClassName(iclass);
+                        loadcell_key++;
 
-                                    if(sclass.IsSameAs(_T("_m_sor")))
-                                    {
-                                          Extended_Geometry *xgeom = BuildGeom(pobject, NULL, iObj);
-
-                                          //    Decode the attributes, specifically looking for _wgsox, _wgsoy
-
-                                          double tmp_transform_x = 0.;
-                                          double tmp_transform_y = 0.;
-
-                                          cm93_attr_block *pab = new cm93_attr_block(pobject->attributes_block, m_pDict);
-                                          for( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++)
-                                          {
-                                                unsigned char *curr_attr = pab->GetNextAttr();
-                                                unsigned char iattr = *curr_attr;
-                                                wxString sattr = m_pDict->GetAttrName(iattr);
-                                                char vtype = m_pDict->GetAttrType(iattr);
-                                                unsigned char *aval = curr_attr + 1;
-
-                                                if(vtype == 'R')
-                                                {
-                                                      float *pf = (float *)aval;
-
-                                                      if(sattr.IsSameAs(_T("_wgsox")))
-                                                            tmp_transform_x = *pf;
-                                                      else if(sattr.IsSameAs(_T("_wgsoy")))
-                                                            tmp_transform_y = *pf;
-                                                }
-
-
-                                          }     //for all attributes
-
-                                          delete pab;
-
-
-                                          if(NULL != xgeom)
-                                          {
-                                                double lat, lon;
-
-                                                M_COVR_Desc *pmcd = new M_COVR_Desc;
-
-                               //    Record unique identifiers for this M_COVR object
-                                                pmcd->m_cell_index = vpcells.Item(i);
-                                                pmcd->m_object_id = iObj;
-
-                              //      Get number of exterior ring points(vertices)
-                                                int npta  = xgeom->contour_array[0];
-                                                float_2Dpt *geoPt = new float_2Dpt[npta + 2];     // vertex array
-                                                float_2Dpt *ppt = geoPt;
-
-                              //  Transcribe exterior ring points to vertex array, in Lat/Lon coordinates
-                                                pmcd->m_covr_lon_max = -1000.;
-                                                pmcd->m_covr_lon_min = 1000.;
-                                                pmcd->m_covr_lat_max = -1000.;
-                                                pmcd->m_covr_lat_min = 1000.;
-
-
-                                                for(int ip = 0 ; ip < npta ; ip++)
-                                                {
-                                                      cm93_point p;
-                                                      p.x = (int)xgeom->vertex_array[ip + 1].m_x;
-                                                      p.y = (int)xgeom->vertex_array[ip + 1].m_y;
-
-                                                      Transform(&p, 0., 0., &lat, &lon);
-                                                      ppt->x = lon;
-                                                      ppt->y = lat;
-
-                                                      pmcd->m_covr_lon_max = wxMax(pmcd->m_covr_lon_max, lon);
-                                                      pmcd->m_covr_lon_min = wxMin(pmcd->m_covr_lon_min, lon);
-                                                      pmcd->m_covr_lat_max = wxMax(pmcd->m_covr_lat_max, lat);
-                                                      pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
-
-                                                      ppt++;
-                                                }
-                                                pmcd->m_nvertices = npta;
-                                                pmcd->pvertices = geoPt;
-
-                                                // pre-allocate storage for later use in drawing
-                                                pmcd->pPoints = new wxPoint[npta];
-
-                                                pmcd->m_covr_bbox = wxBoundingBox(pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max);
-
-
-                               //    Capture and store the potential WGS transform offsets grabbed during attribute decode
-                                                pmcd->transform_WGS84_offset_x = tmp_transform_x;
-                                                pmcd->transform_WGS84_offset_y = tmp_transform_y;
-
-                              //     Add this object to the covr_set
-                                                m_pcovr_set->Add_Update_MCD(pmcd);
-
-                              //    Clean up the xgeom
-                                                free( xgeom->pvector_index );
-                                                free( xgeom->contour_array );
-                                                free( xgeom->vertex_array );
-                                                delete xgeom;
-                                          }
-                                    }
-                              }
-
-                              else                    // objectdef == NULL
-                                    break;
-
-                              pobject++;
-                              iObj++;
-                        }
-
-                        Unload_CM93_Cell();           // all done
-                  }                       // while
+                  }     // while
             }           // cell is not in
       }                 // for cellindex array
 
@@ -4308,22 +4339,9 @@ bool cm93chart::IsPointInLoadedM_COVR(double xc, double yc)
 
 
 
-int cm93chart::loadcell_in_sequence(int cellindex)
+int cm93chart::loadcell_in_sequence(int cellindex, char subcell)
 {
-      int rv = 0;
-
-      if(m_loadcell_key == '0')
-      {
-            //    Try to load the simple case, where sub_char is '0'
-            rv = loadsubcell(cellindex, '0');
-            m_loadcell_key = 'A';
-
-            if(rv)
-                  return rv;
-      }
-
-      rv = loadsubcell(cellindex, m_loadcell_key);
-      m_loadcell_key ++;
+      int rv = loadsubcell(cellindex, subcell);
 
       return rv;
 }
@@ -4445,9 +4463,9 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char)
       return 1;
 }
 
-void cm93chart::SetUserOffsets(int cell_index, int object_id, int xoff, int yoff)
+void cm93chart::SetUserOffsets(int cell_index, int object_id, int subcell, int xoff, int yoff)
 {
-      M_COVR_Desc *pmcd = GetCoverSet()->Find_MCD(cell_index, object_id);
+      M_COVR_Desc *pmcd = GetCoverSet()->Find_MCD(cell_index, object_id, subcell);
       if(pmcd)
       {
             pmcd->user_xoff = xoff;
@@ -4456,6 +4474,16 @@ void cm93chart::SetUserOffsets(int cell_index, int object_id, int xoff, int yoff
       }
 }
 
+wxPoint *cm93chart::GetDrawBuffer(int nSize)
+{
+//    Reallocate the cm93chart DrawBuffer if it is currently too small
+      if(nSize > m_nDrawBufferSize)
+      {
+            m_pDrawBuffer = (wxPoint *)realloc(m_pDrawBuffer, sizeof(wxPoint) * (nSize + 1));
+            m_nDrawBufferSize = nSize + 1;
+      }
+      return m_pDrawBuffer;
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -4602,7 +4630,7 @@ cm93compchart::cm93compchart()
 
       m_pDummyBM = NULL;
 
-      SetSpecialOutlineCellIndex(0, 0);
+      SetSpecialOutlineCellIndex(0, 0, 0);
       m_pOffsetDialog = NULL;
 
 }
@@ -5086,7 +5114,9 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
             {
                   M_COVR_Desc *pmcd = (m_pcm93chart_current->m_pcovr_array_loaded.Item(im));
 
-                  wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, pmcd->pPoints );
+                  wxPoint *DrawBuf = m_pcm93chart_current->GetDrawBuffer(pmcd->m_nvertices);
+
+                  wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, DrawBuf );
 
                   if(!rgn_covr.Empty())
                   {
@@ -5324,7 +5354,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                         {
 
                               float_2Dpt *p = pmcd->pvertices;
-                              wxPoint *pwp = pmcd->pPoints;
+                              wxPoint *pwp = m_pcm93chart_current->GetDrawBuffer(pmcd->m_nvertices);
 
                               for(int ip = 0 ; ip < pmcd->m_nvertices ; ip++)
                               {
@@ -5382,13 +5412,13 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
       return render_return;
 }
 
-void cm93compchart::SetSpecialCellIndexOffset(int cell_index, int object_id, int xoff, int yoff)
+void cm93compchart::SetSpecialCellIndexOffset(int cell_index, int object_id, int subcell, int xoff, int yoff)
 {
       m_special_offset_x = xoff;
       m_special_offset_y = yoff;
 
       if(m_pcm93chart_current)
-            m_pcm93chart_current->SetUserOffsets( cell_index, object_id, xoff, yoff);
+            m_pcm93chart_current->SetUserOffsets( cell_index, object_id, subcell, xoff, yoff);
 }
 
 bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool bdraw_mono)
@@ -5487,7 +5517,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
                                     {
 
                                           float_2Dpt *p = mcd->pvertices;
-                                          wxPoint *pwp = mcd->pPoints;
+                                          wxPoint *pwp = psc->GetDrawBuffer(mcd->m_nvertices);
 
                                           for(int ip = 0 ; ip < mcd->m_nvertices ; ip++)
                                           {
@@ -5848,18 +5878,6 @@ OCPNOffsetListCtrl::OCPNOffsetListCtrl(CM93OffsetDialog* parent, wxWindowID id, 
 
 OCPNOffsetListCtrl::~OCPNOffsetListCtrl()
 {
-
-/*
-      g_AisTargetList_column_spec.Clear();
-      for(int i=0 ; i < tlSOG + 1 ; i++)
-      {
-            wxListItem item;
-            GetColumn(i, item);
-            wxString sitem;
-            sitem.Printf(_T("%d;"), item.m_width);
-            g_AisTargetList_column_spec += sitem;
-      }
-*/
 }
 
 
@@ -5872,9 +5890,15 @@ wxString  OCPNOffsetListCtrl::OnGetItemText(long item, long column) const
       switch (column)
       {
             case tlCELL:
+            {
                   ret.Printf(_T("%d"), pmcd->m_cell_index);
-                  break;
+                  if(((int)'0') == pmcd->m_subcell)
+                        ret.Prepend(_T("0"));
+                  else
+                        ret.Prepend((char)pmcd->m_subcell);
 
+                  break;
+            }
             case tlMCOVR:
                   ret.Printf(_T("%d"), pmcd->m_object_id);
                   break;
@@ -6020,7 +6044,7 @@ void CM93OffsetDialog::OnClose(wxCloseEvent& event)
 {
       if(m_pcompchart)
       {
-            m_pcompchart->SetSpecialOutlineCellIndex(0, 0);
+            m_pcompchart->SetSpecialOutlineCellIndex(0, 0, 0);
 
             m_pcompchart->InvalidateCache();
 
@@ -6050,7 +6074,7 @@ void CM93OffsetDialog::UpdateOffsets(void)
       if(m_pcompchart)
       {
             //    Set the offsets of the selected cell/object
-            m_pcompchart->SetSpecialCellIndexOffset(m_selected_cell_index, m_selected_object_id, m_xoff, m_yoff);
+            m_pcompchart->SetSpecialCellIndexOffset(m_selected_cell_index, m_selected_object_id, m_selected_subcell, m_xoff, m_yoff);
 
             //    Closing the current cell will recored the offsets in the M_COVR cache file
             //    Re-opening will then refresh the M_COVRs in the cover set
@@ -6093,7 +6117,7 @@ void CM93OffsetDialog::OnCellSelected( wxListEvent &event )
       cm93chart *pchart = m_pcompchart->GetCurrentSingleScaleChart();
       if(pchart)
       {
-            M_COVR_Desc *cached_mcd = pchart->GetCoverSet()->Find_MCD(mcd->m_cell_index, mcd->m_object_id);
+            M_COVR_Desc *cached_mcd = pchart->GetCoverSet()->Find_MCD(mcd->m_cell_index, mcd->m_object_id, mcd->m_subcell);
             if(cached_mcd)
             {
                   m_pSpinCtrlXoff->SetValue(wxRound(cached_mcd->user_xoff));
@@ -6101,10 +6125,11 @@ void CM93OffsetDialog::OnCellSelected( wxListEvent &event )
             }
       }
 
-      m_pcompchart->SetSpecialOutlineCellIndex(mcd->m_cell_index, mcd->m_object_id);
+      m_pcompchart->SetSpecialOutlineCellIndex(mcd->m_cell_index, mcd->m_object_id, mcd->m_subcell);
 
       m_selected_cell_index = mcd->m_cell_index;
       m_selected_object_id  = mcd->m_object_id;
+      m_selected_subcell = mcd->m_subcell;
 
       m_pcompchart->InvalidateCache();
 

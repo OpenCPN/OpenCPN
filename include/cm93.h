@@ -59,10 +59,10 @@ class M_COVR_Desc
 
       int         m_cell_index;
       int         m_object_id;
+      int         m_subcell;
 
       int         m_nvertices;
       float_2Dpt  *pvertices;
-      wxPoint     *pPoints;
       int         m_npub_year;
       double      transform_WGS84_offset_x;
       double      transform_WGS84_offset_y;
@@ -345,27 +345,31 @@ class cm93chart : public s57chart
 
             Array_Of_M_COVR_Desc_Ptr    m_pcovr_array_loaded;
 
-            void SetUserOffsets(int cell_index, int object_id, int xoff, int yoff);
+            void SetUserOffsets(int cell_index, int object_id, int subcell, int xoff, int yoff);
             wxString GetScaleChar(){ return m_scalechar; }
+
+            wxPoint *GetDrawBuffer(int nSize);
 
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
             Extended_Geometry *BuildGeom(Object *pobject, wxFileOutputStream *postream, int iobject);
 
-            S57Obj *CreateS57Obj( int cell_index, int iobject, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
+            S57Obj *CreateS57Obj( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
                                              double ref_lat, double ref_lon, double scale);
+
+            void ProcessMCOVRObjects(int cell_index, char subcell);
 
             void translate_colmar(wxString &sclass, S57attVal *pattValTmp);
 
-            int CreateObjChain(int cell_index);
+            int CreateObjChain(int cell_index, int subcell);
 
             void Unload_CM93_Cell(void);
 
             //    cm93 point manipulation methods
             void Transform(cm93_point *s, double trans_x, double trans_y, double *lat, double *lon);
 
-            int loadcell_in_sequence(int);
+            int loadcell_in_sequence(int, char);
             int loadsubcell(int, wxChar);
             void ProcessVectorEdges(void);
 
@@ -392,6 +396,10 @@ class cm93chart : public s57chart
             double            m_dval;
 
             covr_set          *m_pcovr_set;
+
+            wxPoint     *m_pDrawBuffer;               // shared outline drawing buffer
+            int         m_nDrawBufferSize;
+
 };
 
 //----------------------------------------------------------------------------
@@ -446,10 +454,12 @@ class cm93compchart : public s57chart
             ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
             cm93chart *GetCurrentSingleScaleChart(){ return m_pcm93chart_current; }
 
-            void SetSpecialOutlineCellIndex(int cell_index, int object_id)
+            void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell)
                   { m_cell_index_special_outline = cell_index;
-                    m_object_id_special_outline = object_id; }
-            void SetSpecialCellIndexOffset(int cell_index, int object_id, int xoff, int yoff);
+                    m_object_id_special_outline = object_id;
+                    m_subcell_special_outline = subcell; }
+
+            void SetSpecialCellIndexOffset(int cell_index, int object_id, int subcell, int xoff, int yoff);
             void CloseandReopenCurrentSubchart(void);
             void SetOffsetDialog(CM93OffsetDialog *dialog){ m_pOffsetDialog = dialog; }
 
@@ -479,6 +489,7 @@ class cm93compchart : public s57chart
             wxBitmap          *m_pDummyBM;
             int               m_cell_index_special_outline;
             int               m_object_id_special_outline;
+            int               m_subcell_special_outline;
             int               m_special_offset_x;
             int               m_special_offset_y;
             ViewPort          m_vpt;
@@ -526,6 +537,7 @@ class CM93OffsetDialog: public wxDialog
             int               m_yoff;
             int               m_selected_cell_index;
             int               m_selected_object_id;
+            int               m_selected_subcell;
             int               m_selected_list_index;
 
 };
