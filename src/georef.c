@@ -625,7 +625,7 @@ fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon)
 
 
 
-//converts TM coords to lat/long.  Equations from USGS Bulletin 1532
+//converts lat/long to TM coords.  Equations from USGS Bulletin 1532
 //East Longitudes are positive, West longitudes are negative.
 //North latitudes are positive, South latitudes are negative
 //Lat and Long are in decimal degrees.
@@ -684,7 +684,7 @@ void  toTM(float lat, float lon, float lat0, float lon0, double *x, double *y)
 
 /* --------------------------------------------------------------------------------- */
 
-//converts lat/long to TM coords.  Equations from USGS Bulletin 1532
+//converts TM coords to lat/long.  Equations from USGS Bulletin 1532
 //East Longitudes are positive, West longitudes are negative.
 //North latitudes are positive, South latitudes are negative
 //Lat and Long are in decimal degrees
