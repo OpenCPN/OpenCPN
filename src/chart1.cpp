@@ -1622,6 +1622,12 @@ bool MyApp::OnInit()
         }
 #endif
 
+//    If the ChartDirArray is empty at this point, any existing chart database file must be declared invalid,
+//    So it is best to simply delete it if present.
+//    TODO  There is a possibility of recreating the dir list from the database itself......
+
+        if(!g_ChartDirArray.GetCount())
+            ::wxRemoveFile(*pChartListFileName);
 
 //      Try to load the current chart list Data file
         ChartData = new ChartDB(gFrame);
