@@ -1610,6 +1610,9 @@ void Route::DeletePoint ( RoutePoint *rp, bool bRenamePoints )
 
 void Route::RemovePoint ( RoutePoint *rp, bool bRenamePoints )
 {
+      if ( rp->m_bIsActive && this->IsActive() )                  //FS#348
+            g_pRouteMan->DeactivateRoute();
+
       pSelect->DeleteAllSelectableRoutePoints ( this );
       pSelect->DeleteAllSelectableRouteSegments ( this );
 

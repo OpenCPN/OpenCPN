@@ -1574,9 +1574,10 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp)
                   {
                         Route *pr = (Route *)proute_array->Item(ir);
 
+/*  FS#348
                         if ( g_pRouteMan->GetpActiveRoute() == pr )            // Deactivate any route containing this point
                               g_pRouteMan->DeactivateRoute();
-
+*/
                         pr->RemovePoint ( pRp );
 
                   }
