@@ -556,7 +556,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       result.Append(_T("\n"));
 
       int crs = wxRound(COG);
-      if(b_positionValid)
+      if(COG != 360.0)
             line.Printf(_("Course:                 %03d Deg.\n"), crs);
       else
             line.Printf(_("Course:                 Unavailable\n"));
@@ -1983,7 +1983,13 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             return;
       }
 
-            //    Express the SOGs as meters per hour
+      if((ptarget->COG == 360.0) || (ptarget->SOG >102.2))
+      {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
+
+      //    Express the SOGs as meters per hour
       double v0 = gSog         * 1852.;
       double v1 = ptarget->SOG * 1852.;
 
@@ -3506,7 +3512,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlBRG:
                   {
-                        if(pAISTarget->b_positionValid)
+                        if(pAISTarget->b_positionValid && bGPSValid)
+
                              ret.Printf(_T("%5.0f"), pAISTarget->Brg);
                         else
                              ret = _("-");
@@ -3515,7 +3522,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlCOG:
                   {
-                        if( pAISTarget->COG > 360.)
+                        if( pAISTarget->COG >= 360.0)
                               ret =  _("-");
                         else
                               ret.Printf(_T("%5.0f"), pAISTarget->COG);
@@ -3533,7 +3540,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlRNG:
                   {
-                        if(pAISTarget->b_positionValid)
+                        if(pAISTarget->b_positionValid && bGPSValid)
                               ret.Printf(_T("%5.2f"), pAISTarget->Range_NM);
                         else
                               ret = _("-");

@@ -4846,7 +4846,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                   return;
 
                 //      Skip anchored/moored (interpreted as low speed) targets if requested
-            if ( (!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts))  // dsr
+                //      unless the target is NUC, in which cas it is always displayed.
+            if ( (!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts) && (td->NavStatus != NOT_UNDER_COMMAND))
                         return;
 
                 //      Target data position must be valid
@@ -4854,7 +4855,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                   return;
 
                  //      Target data speed must be valid
-            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED))
+                 //      unless the target is moored, anchored, or "not under command"
+            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
                   return;
 
                  // And we never draw ownship
