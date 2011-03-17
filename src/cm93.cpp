@@ -3660,6 +3660,8 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                                     pmcd->m_covr_lat_min = wxMin(pmcd->m_covr_lat_min, lat);
 
                                     ppt++;
+
+//                                    printf("%d %d %g %g\n", p.x, p.y, lon, lat);
                               }
                               pmcd->m_nvertices = npta;
                               pmcd->pvertices = geoPt;
@@ -5345,7 +5347,10 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
             for(unsigned int im=0 ; im < pcover->GetCoverCount() ; im++)
             {
                   M_COVR_Desc *pmcd = pcover->GetCover(im);
-                  if((pmcd->m_cell_index == m_cell_index_special_outline) && (pmcd->m_object_id == m_object_id_special_outline))
+                  if((pmcd->m_cell_index == m_cell_index_special_outline) &&
+                      (pmcd->m_object_id == m_object_id_special_outline) &&
+                      (pmcd->m_subcell == m_subcell_special_outline))
+
                   {
                         //    Draw this MCD's represented outline
 
@@ -5895,7 +5900,12 @@ wxString  OCPNOffsetListCtrl::OnGetItemText(long item, long column) const
                   if(((int)'0') == pmcd->m_subcell)
                         ret.Prepend(_T("0"));
                   else
-                        ret.Prepend((char)pmcd->m_subcell);
+				  {
+					    char t = (char)pmcd->m_subcell;
+					    wxString p;
+						p.Printf(_T("%c"), t);
+                        ret.Prepend(p);
+				  }
 
                   break;
             }
@@ -6076,9 +6086,11 @@ void CM93OffsetDialog::UpdateOffsets(void)
             //    Set the offsets of the selected cell/object
             m_pcompchart->SetSpecialCellIndexOffset(m_selected_cell_index, m_selected_object_id, m_selected_subcell, m_xoff, m_yoff);
 
-            //    Closing the current cell will recored the offsets in the M_COVR cache file
+            //    Closing the current cell will record the offsets in the M_COVR cache file
             //    Re-opening will then refresh the M_COVRs in the cover set
+            ::wxBeginBusyCursor();
             m_pcompchart->CloseandReopenCurrentSubchart();
+            ::wxEndBusyCursor();
 
             if(m_pparent)
                   m_pparent->Refresh(true);
