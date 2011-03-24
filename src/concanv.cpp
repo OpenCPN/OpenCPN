@@ -200,7 +200,10 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                   wxString srng;
                   float rng = g_pRouteMan->GetCurrentRngToActivePoint();
                   float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
-                  if((fabs(rng - nrng) > .01) && (rng < 10.0))
+
+//                  if((fabs(rng - nrng) > .01) && (rng < 10.0))
+                  double deltarng = fabs(rng - nrng);
+                  if((deltarng > .01) && ((deltarng / rng) > .10) && (rng < 10.0))        // show if there is more than 10% difference in ranges, etc...
                   {
                         if(nrng < 10.0)
                             srng.Printf(_T("%5.2f/%5.2f"), rng, nrng );
