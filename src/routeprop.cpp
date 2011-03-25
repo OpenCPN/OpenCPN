@@ -1164,17 +1164,9 @@ void MarkProp::OnShowNamecheckboxClick( wxCommandEvent& event )
 
 void MarkProp::OnPositionCtlUpdated( wxCommandEvent& event )
 {
-      char str[50];
-      wxString l;
-
       //    Fetch the control values, convert to degrees
-      l = m_MarkLatCtl->GetValue();
-      strncpy(str, l.mb_str(), 49);
-      double lat = fromDMM(str);
-
-      l = m_MarkLonCtl->GetValue();
-      strncpy(str, l.mb_str(), 49);
-      double lon = fromDMM(str);
+      double lat = fromDMM(m_MarkLatCtl->GetValue());
+      double lon = fromDMM(m_MarkLonCtl->GetValue());
 
       m_pRoutePoint->SetPosition(lat, lon);
       pSelect->ModifySelectablePoint(lat, lon, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
