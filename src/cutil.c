@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cutil.c,v 1.16 2010/05/23 23:17:58 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Extern C Linked Utilities
@@ -24,55 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- *
- * $Log: cutil.c,v $
- * Revision 1.16  2010/05/23 23:17:58  bdbcat
- * Build 523a
- *
- * Revision 1.15  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.14  2009/12/17 02:49:29  bdbcat
- * Cleanup definitions
- *
- * Revision 1.13  2009/12/14 23:32:35  bdbcat
- * Correct "C" definitions
- *
- * Revision 1.12  2009/09/18 01:22:14  bdbcat
- * MSVC Fix
- *
- * Revision 1.11  2009/08/10 02:23:14  bdbcat
- * Correct line endings
- *
- * Revision 1.10  2009/08/03 03:37:06  bdbcat
- * Cleanup for MSVC
- *
- * Revision 1.9  2008/08/09 23:56:08  bdbcat
- * Cleanup
- *
- * Revision 1.8  2008/04/10 01:05:22  bdbcat
- * Add mysnprintf
- *
- * Revision 1.7  2008/03/30 22:31:39  bdbcat
- * Cleanup
- *
- * Revision 1.6  2008/01/02 20:47:16  bdbcat
- * Add windows exception handler
- *
- * Revision 1.5  2007/05/03 13:23:55  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.4  2007/03/02 02:02:41  dsr
- * Cleanup
- *
- * Revision 1.3  2006/10/07 03:50:27  dsr
- * *** empty log message ***
- *
- * Revision 1.2  2006/10/01 03:22:58  dsr
- * no message
- *
- *
  *
  */
 #include <stdio.h>
@@ -481,3 +431,220 @@ extern int mysnprintf( char *buffer, int count, const char *format, ... )
       return ret;
 }
 #endif
+
+//--------------------------------------------------------------------------------------------------------
+//    Screen Brightness Control Support Routines
+//
+//--------------------------------------------------------------------------------------------------------
+#ifdef __WIN32__
+#include <windows.h>
+
+      HMODULE hGDI32DLL;
+      typedef BOOL (WINAPI *SetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
+      typedef BOOL (WINAPI *GetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
+      SetDeviceGammaRamp_ptr_type   g_pSetDeviceGammaRamp;            // the API entry points in the dll
+      GetDeviceGammaRamp_ptr_type   g_pGetDeviceGammaRamp;
+
+      HMODULE hUSER32DLL;
+      typedef DWORD (WINAPI *SetLayeredWindowAttributes_ptr_type)(HWND, DWORD, BYTE, DWORD);
+      typedef HWND (WINAPI *GetDesktopWidow_ptr_type)();
+      GetDesktopWidow_ptr_type                  g_pGetDesktopWindow;
+      SetLayeredWindowAttributes_ptr_type       g_pSetLayeredWindowAttributes;
+
+      WORD                          *g_pSavedGammaMap;
+#endif
+
+int SaveScreenBrightness(void)
+{
+#ifdef __WIN32__
+      wchar_t wdll_name[80];
+      LPCWSTR cstr;
+      HDC hDC;
+      BOOL bbr;
+
+      if(NULL == hGDI32DLL)
+      {
+                // Unicode stuff.....
+            MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
+            cstr = wdll_name;
+
+            hGDI32DLL = LoadLibrary(cstr);
+
+            if(NULL != hGDI32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                  {
+                              FreeLibrary(hGDI32DLL);
+                              hGDI32DLL = NULL;
+                              return 0;
+                  }
+            }
+      }
+
+
+      //    Interface is ready, so....
+      //    Get some storage
+      g_pSavedGammaMap = (WORD *)malloc( 3 * 256 * sizeof(WORD));
+
+      hDC = GetDC(NULL);                                      // Get the full screen DC
+      bbr = g_pGetDeviceGammaRamp(hDC, g_pSavedGammaMap);    // Get the existing ramp table
+      ReleaseDC(NULL, hDC);                                       // Release the DC
+
+      return 1;
+
+
+#endif
+      return 0;
+}
+
+int RestoreScreenBrightness(void)
+{
+#ifdef __WIN32__
+      HDC hDC;
+      BOOL bbr;
+
+      if(g_pSavedGammaMap)
+      {
+            hDC = GetDC(NULL);                                            // Get the full screen DC
+            bbr = g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
+            ReleaseDC(NULL, hDC);                                             // Release the DC
+            return 1;
+      }
+      else
+            return 0;
+#endif
+
+      return 0;
+}
+
+//    Set brightness. [0..99]
+int SetScreenBrightness(int brightness)
+{
+#ifdef LAYERED__WIN32__
+
+      wchar_t wdll_name[80];
+      LPCWSTR cstr;
+      HWND handle;
+	  BOOL rv;
+	  LONG lstyle;
+
+      if(NULL == hUSER32DLL)
+      {
+                // Unicode stuff.....
+            MultiByteToWideChar( 0, 0, "user32.dll", -1, wdll_name, 80);
+            cstr = wdll_name;
+
+            hUSER32DLL = LoadLibrary(cstr);
+
+            if(NULL != hUSER32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pGetDesktopWindow = (GetDesktopWidow_ptr_type)GetProcAddress(hUSER32DLL, "GetDesktopWindow");
+                  g_pSetLayeredWindowAttributes = (SetLayeredWindowAttributes_ptr_type)GetProcAddress(hUSER32DLL, "SetLayeredWindowAttributes");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pGetDesktopWindow) || (NULL == g_pSetLayeredWindowAttributes))
+                  {
+                        FreeLibrary(hUSER32DLL);
+                        hUSER32DLL = NULL;
+                        return 0;
+                  }
+            }
+      }
+
+      handle = g_pGetDesktopWindow();
+	  lstyle = GetWindowLong (handle , GWL_EXSTYLE );
+	  lstyle |= WS_EX_LAYERED;
+	  SetWindowLong (handle , GWL_EXSTYLE , GetWindowLong (handle , GWL_EXSTYLE ) | WS_EX_LAYERED ) ;
+	  lstyle = GetWindowLong (handle , GWL_EXSTYLE );
+      rv = g_pSetLayeredWindowAttributes (handle, RGB(255,255,255), brightness * 256 / 100, /*LWA_COLORKEY|*/LWA_ALPHA);
+
+      return 1;
+
+#endif
+
+#ifdef __WIN32__
+
+
+      //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
+      //    Load the required library dll, if not already in place
+      wchar_t wdll_name[80];
+      LPCWSTR cstr;
+      HDC hDC;
+      BOOL bbr;
+      int cmcap;
+      WORD GammaTable[3][256];
+      int i;
+      int table_val, increment;
+
+      if(NULL == hGDI32DLL)
+      {
+                // Unicode stuff.....
+            MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
+            cstr = wdll_name;
+
+            hGDI32DLL = LoadLibrary(cstr);
+
+            if(NULL != hGDI32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                  {
+                              FreeLibrary(hGDI32DLL);
+                              hGDI32DLL = NULL;
+                              return 0;
+                  }
+            }
+      }
+
+
+      hDC = GetDC(NULL);                          // Get the full screen DC
+      cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
+      if (cmcap != CM_GAMMA_RAMP)
+      {
+//            wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
+//            return false;
+      }
+
+
+      increment = brightness * 256 / 100;
+
+      // Build the Gamma Ramp table
+      table_val = 0;
+      for (i = 0; i < 256; i++)
+      {
+
+            GammaTable[0][i] = GammaTable[1][i] = GammaTable[2][i] = (WORD)table_val;
+
+            table_val += increment;
+
+            if (table_val > 65535)
+                  table_val = 65535;
+
+      }
+
+      bbr = g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
+      ReleaseDC(NULL, hDC);                                     // Release the DC
+
+      return 1;
+
+
+
+
+#endif
+
+#ifdef __WXGTK__
+
+#endif
+      return 0;
+}
+

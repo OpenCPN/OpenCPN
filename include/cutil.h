@@ -59,6 +59,10 @@
 #define __CUTIL_H__
 
 
+#ifdef __MSVC__
+#include <windows.h>
+#endif
+
 
 typedef struct  {
       double x;
@@ -121,5 +125,14 @@ extern "C"  double     round_msvc (double flt);
 #endif /* __cplusplus */
 
 
+//--------------------------------------------------------
+//    Screen Brightness Control Support Routines
+//
+//--------------------------------------------------------
+#ifdef __cplusplus
+extern "C" int SaveScreenBrightness(void);
+extern "C" int RestoreScreenBrightness(void);
+extern "C" int SetScreenBrightness(int brightness);
+#endif
 
 #endif
