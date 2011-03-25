@@ -3556,7 +3556,7 @@ int s52plib::RenderSY ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
       //    Debug
-//      if(rzRules->obj->Index != 1318/*555*/)
+//      if(rzRules->obj->Index != 5108)
 //            return 1;
 
       wxPoint         *ptp;
