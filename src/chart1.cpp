@@ -170,7 +170,8 @@ double          gLat, gLon, gCog, gSog, gHdt, gHDg, gVar;
 double          vLat, vLon;
 double          initial_scale_ppm;
 
-//wxArrayString   *pChartDirArray;
+int             g_nbrightness;
+
 ArrayOfCDI      g_ChartDirArray;
 
 bool            bDBUpdateInProgress;
@@ -1581,7 +1582,10 @@ bool MyApp::OnInit()
        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
        g_pi_manager->NotifyAuiPlugIns();
 
-        bool b_SetInitialPoint = false;
+       //   Save the existing Screen Brightness
+       SaveScreenBrightness();
+
+       bool b_SetInitialPoint = false;
 
         //  Windows installer may have left hints regarding the initial chart dir selection
 #ifdef __WXMSW__
@@ -1880,6 +1884,9 @@ int MyApp::OnExit()
 #ifdef __MSVC__LEAK
     DeInitAllocCheck();
 #endif
+
+    //   Save the saved Screen Brightness
+    RestoreScreenBrightness();
 
     delete g_pPlatform;
     delete g_pauimgr;
@@ -5917,8 +5924,7 @@ bool MyFrame::DoChartUpdate(void)
             }
 
 
-            if(cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation()))
-                  bNewChart = true;
+            cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation());
 
             goto update_finish;
 
@@ -6136,8 +6142,8 @@ bool MyFrame::DoChartUpdate(void)
 update_finish:
 
             //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-            if(pCurrentStack && ((pCurrentStack->nEntry <= 1) && m_toolbar_scale_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_shown))
-                  gFrame->RequestNewToolbar();
+        if(pCurrentStack && ((pCurrentStack->nEntry <= 1) && m_toolbar_scale_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_shown))
+            gFrame->RequestNewToolbar();
 
         if(bNewChart)
             UpdateToolbarStatusWindow(Current_Ch, false);
@@ -6871,8 +6877,32 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
             }
       }
 
+      //    Build and send a Position Fix event to PlugIns
+      if(bis_recognized_sentence)
+      {
+            if(g_pi_manager)
+            {
+                  GenericPosDat GPSData;
+                  GPSData.kLat = gLat;
+                  GPSData.kLon = gLon;
+                  GPSData.kCog = gCog;
+                  GPSData.kSog = gSog;
+                  GPSData.kVar = gVar;
+                  GPSData.nSats = g_SatsInView;
+
+                  //TODO  This really should be the fix time obtained from the NMEA sentence.
+                  //  To do this, we need to cleanly parse the NMEA date and time fields....
+                  //  Until that is done, use the current system time.
+                  wxDateTime now = wxDateTime::Now();
+                  GPSData.FixTime = now.GetTicks();
+
+                  g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
+            }
+      }
+
       if(bis_recognized_sentence)
             PostProcessNNEA(bshow_tick, sfixtime);
+
 }
 
 
