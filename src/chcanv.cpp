@@ -86,6 +86,7 @@
 #include <setjmp.h>
 
 
+
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
@@ -109,7 +110,7 @@ extern ChartDB          *ChartData;
 extern bool             bDBUpdateInProgress;
 extern ColorScheme      global_color_scheme;
 extern bool             g_bHDxValid;
-
+extern int              g_nbrightness;
 
 extern ConsoleCanvas    *console;
 
@@ -375,9 +376,9 @@ class Quilt
             ChartBase *GetNextChart();
             ChartBase *GetLargestScaleChart();
             ArrayOfInts GetQuiltIndexArray(void);
-            bool IsQuiltDelta(void);
+            bool IsQuiltDelta(ViewPort &vp);
             bool IsChartQuiltableRef(int db_index);
-
+            ViewPort &GetQuiltVP(){ return m_vp_quilt;}
             wxString GetQuiltDepthUnit(){ return m_quilt_depth_unit; }
 
             int GetnCharts(){ return m_PatchList.GetCount();}
@@ -428,6 +429,7 @@ class Quilt
             ArrayOfInts       m_extended_stack_array;
             ArrayOfInts       m_eclipsed_stack_array;
 
+            ViewPort          m_vp_quilt;
             int               m_nHiLiteIndex;
             int               m_refchart_dbIndex;
             int               m_reference_scale;
@@ -756,16 +758,21 @@ ArrayOfInts Quilt::GetQuiltIndexArray(void)
       return ret;
 }
 
-bool Quilt::IsQuiltDelta(void)
+bool Quilt::IsQuiltDelta(ViewPort &vp)
 {
-      if(m_last_index_array.GetCount() != m_index_array.GetCount())
+      if(!m_vp_quilt.IsValid() || !m_bcomposed)
             return true;
 
-      for(unsigned int i=0 ; i < m_index_array.GetCount() ; i++)
-            if(m_last_index_array.Item(i) != m_index_array.Item(i))
-                  return true;
+      if (m_vp_quilt.view_scale_ppm != vp.view_scale_ppm)
+            return true;
 
-      return false;
+      //    Has the quilt shifted by more than one pixel in any direction?
+      wxPoint cp_last, cp_this;
+
+      cp_last = m_vp_quilt.GetPixFromLL(vp.clat, vp.clon);
+      cp_this = vp.GetPixFromLL(vp.clat, vp.clon);
+
+      return (cp_last != cp_this);
 }
 
 
@@ -1715,9 +1722,13 @@ bool Quilt::Compose(const ViewPort &vp_in)
 */
 
       m_bcomposed = true;
+
+      m_vp_quilt = vp_in;                 // save the corresponding ViewPort locally
+
       return true;
 }
 
+int g_render;
 
 bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region )
 {
@@ -1744,7 +1755,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             ChartBase *pch = GetFirstChart();
             while(pch)
             {
-//                  printf("Patch: %d\n", ip);
+//                  printf("%d Patch: %d\n", g_render++, ip);
                         QuiltPatch *pqp = GetCurrentPatch();
                         if(pqp->b_Valid)
                         {
@@ -2839,9 +2850,9 @@ ChartCanvas::~ChartCanvas()
 
 }
 
-bool ChartCanvas::IsQuiltDelta(void)
+bool ChartCanvas::IsQuiltDelta()
 {
-      return m_pQuilt->IsQuiltDelta();
+      return m_pQuilt->IsQuiltDelta(VPoint);
 }
 
 ArrayOfInts ChartCanvas::GetQuiltIndexArray(void)
@@ -3012,6 +3023,18 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         parent_frame->ToggleColorScheme();
                         b_proc = true;
                         break;
+
+                  case WXK_F6:
+                  {
+                        g_nbrightness -= 10;
+                        if(g_nbrightness <= 0)
+                              g_nbrightness = 100;
+                        g_nbrightness = wxMin(100, g_nbrightness);
+                        SetScreenBrightness(g_nbrightness);
+
+                        b_proc = true;
+                        break;
+                  }
 
                   case WXK_F7:
                         parent_frame->DoStackDown();
@@ -3629,15 +3652,20 @@ void ChartCanvas::ReloadVP ( void )
       m_cache_vp.Invalidate();
 
       VPoint.Invalidate();
+
+      if(m_pQuilt)
+            m_pQuilt->Invalidate();
+
       SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-      Refresh(false);
+//      Refresh(false);         // probably redundant, out in 2.4.0
 }
 
 void ChartCanvas::SetQuiltRefChart(int dbIndex)
 {
       m_pQuilt->SetReferenceChart(dbIndex);
       VPoint.Invalidate();
+      m_pQuilt->Invalidate();
 }
 
 
@@ -3670,7 +3698,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
         VPoint.Validate();                     // Mark this ViewPoint as OK
 
-     //    Take a copy of the last viewport
+     //    Take a local copy of the last viewport
         ViewPort last_vp = VPoint;
 
         VPoint.skew = skew;
@@ -3693,24 +3721,23 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             VPoint.SetBoxes();
 
               //  Allow the chart to adjust the new ViewPort for performance optimization
-              //  This will normally be only a few pixels adjustment...
+              //  This will normally be only a fractional (i.e.sub-pixel) adjustment...
             Current_Ch->AdjustVP(last_vp, VPoint);
 
             // If there is a sensible change in the chart render, refresh the whole screen
-            if (( !last_vp.IsValid()) || (last_vp.view_scale_ppm != VPoint.view_scale_ppm))
+            if (( !m_cache_vp.IsValid()) || (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm))
             {
                   Refresh(false);
             }
             else
             {
                   wxPoint cp_last, cp_this;
-                  GetCanvasPointPix ( last_vp.clat, last_vp.clon, &cp_last );
+                  GetCanvasPointPix ( m_cache_vp.clat, m_cache_vp.clon, &cp_last );
                   GetCanvasPointPix ( VPoint.clat, VPoint.clon, &cp_this );
 
                   if(cp_last != cp_this)
                         Refresh(false);
             }
-
         }
 
 
@@ -3813,14 +3840,18 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
                   VPoint.SetBoxes();
 
-                  m_pQuilt->Compose(VPoint);
+                  //    If this quilt will be a perceptible delta from the existing quilt, then refresh the entire screen
+                  if(m_pQuilt->IsQuiltDelta(VPoint))
+                  {
+//                        printf("Compose and Refresh\n");
+              //  Allow the quilt to adjust the new ViewPort for performance optimization
+              //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
+                        m_pQuilt->AdjustQuiltVP(m_pQuilt->GetQuiltVP(), VPoint);
+                        m_pQuilt->Compose(VPoint);
+                        Refresh(false);
+                  }
 
                   parent_frame->UpdateControlBar();
-
-
-              //  Allow the quilt to adjust the new ViewPort for performance optimization
-              //  This will normally be only a few pixels adjustment...
-//                  m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
 
             }
 
@@ -8304,14 +8335,16 @@ void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, d
 
 void ChartCanvas::OnPaint ( wxPaintEvent& event )
 {
-        int rx, ry, rwidth, rheight;
 
 //      CALLGRIND_START_INSTRUMENTATION
 
         wxPaintDC dc ( this );
 
         wxRegion ru = GetUpdateRegion();
-        ru.GetBox ( rx, ry, rwidth, rheight );
+
+//        int rx, ry, rwidth, rheight;
+//        ru.GetBox ( rx, ry, rwidth, rheight );
+//        printf("Onpaint update region box: %d %d %d %d\n", rx, ry, rwidth, rheight);
 
         wxBoundingBox BltBBox;
 
@@ -8479,7 +8512,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                               b_save = false;
                         }
                   }
-                  else      //cached bitmap is not yet valid
+                  else      //cached bitmap is not yet valid, or running in bFollow
                   {
                         temp_dc.SelectObject ( m_working_bm );
                         m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_region );
@@ -9409,7 +9442,7 @@ void ChartCanvas::DrawAllWaypointsInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRe
                 RoutePoint *pWP = node->GetData();
                 if ( pWP )
                 {
-                        if ( ( bDrawMarksOnly ) && ( pWP->m_bIsInRoute ) )
+                        if ( ( bDrawMarksOnly ) && ( pWP->m_bIsInRoute || pWP->m_bIsInTrack ) )
                         {
                                 node = node->GetNext();
                                 continue;
@@ -12201,17 +12234,10 @@ void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
 
 void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
 {
-      char str[50];
-      wxString l;
 
     //    Fetch the control values, convert to degrees
-      l = m_MarkLatCtl->GetValue();
-      strncpy(str, l.mb_str(), 49);
-      double lat = fromDMM(str);
-
-      l = m_MarkLonCtl->GetValue();
-      strncpy(str, l.mb_str(), 49);
-      double lon = fromDMM(str);
+      double lat = fromDMM(m_MarkLatCtl->GetValue());
+      double lon = fromDMM(m_MarkLonCtl->GetValue());
 
       gFrame->JumpToPosition(lat, lon, cc1->GetVPScale());
 
@@ -12223,6 +12249,4 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
 {
       // We do not want to change the position on lat/lon now
 }
-
-
 
