@@ -84,6 +84,7 @@ extern double           vLat, vLon, gLat, gLon;
 extern double           kLat, kLon;
 extern double           initial_scale_ppm;
 extern ColorScheme      global_color_scheme;
+extern int              g_nbrightness;
 
 extern wxToolBarBase    *toolBar;
 extern wxString         *pNMEADataSource;
@@ -1001,6 +1002,10 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
             *rpn = r;
 
       if ( !m_bIsVisible && !m_bIsInTrack)     // pjotrc 2010.02.13
+            return;
+
+      //    Optimization, especially apparent on tracks in normal cases
+      if (m_IconName == _T("empty"))
             return;
 
       wxPen *pen;
@@ -2233,6 +2238,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       g_COGFilterSec = wxMax(g_COGFilterSec, 1);
       g_SOGFilterSec = g_COGFilterSec;
 
+      Read ( _T ( "ScreenBrightness" ),  &g_nbrightness, 100 );
 
       Read ( _T ( "MemFootprintMgrTimeSec" ),  &g_MemFootSec, 60 );
       Read ( _T ( "MemFootprintTargetMB" ),  &g_MemFootMB, 200 );
@@ -6646,9 +6652,21 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
 
 /****************************************************************************/
 /* Convert dd mm.mmm' (DMM-Format) to degree.                               */
+/*        or dd°mm.m′ (degree sign or alternate minute sign)                */
 /****************************************************************************/
-double fromDMM(char *dms)
+double fromDMM(wxString sdms)
 {
+      wxString rdms = sdms;
+
+	  // Handle e.g. 16°53.2′N
+	wxString a("°", wxConvUTF8);
+      rdms.Replace(a, _T(" "));
+	wxString b("′", wxConvUTF8);
+      rdms.Replace(b, _T("'"));
+
+      char str[50];
+      strncpy(str, rdms.mb_str(wxConvUTF8), 49);
+
       float d = 0;
       double m = 0.0;
       char buf[20];
@@ -6656,11 +6674,10 @@ double fromDMM(char *dms)
 
       buf[0] = buf1[0] = '\0';
 
-//      sscanf(dms, "%d%[ ]%lf%[ 'NSWEnswe]", &d, buf, &m, buf);
-      sscanf(dms, "%f%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
-      wxString min(buf1,  wxConvUTF8);
-      min.Replace(_T(","), _T("."));
-      min.ToDouble(&m);
+      sscanf(str, "%f%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
+      wxString minutes(buf1,  wxConvUTF8);
+      minutes.Replace(_T(","), _T("."));
+      minutes.ToDouble(&m);
 
       m = (double) (fabs(d)) + m / 60.0;
 
@@ -6674,8 +6691,8 @@ double fromDMM(char *dms)
             return m;
       else
             return -m;
-}
 
+}
 
 void AlphaBlending ( wxDC &dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency )
