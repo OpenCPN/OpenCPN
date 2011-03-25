@@ -1985,8 +1985,8 @@ void cm93chart::GetPointPix(ObjRazRules *rzRules, float north, float east, wxPoi
             }
       }
 
-      r->x = (int)round(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
-      r->y = (int)round(m_pixy_vp_center - ((valy - m_northing_vp_center) * m_view_scale_ppm));
+      r->x = (int)wxRound(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
+      r->y = (int)wxRound(m_pixy_vp_center - ((valy - m_northing_vp_center) * m_view_scale_ppm));
 }
 
 void cm93chart::GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints)
@@ -2013,8 +2013,8 @@ void cm93chart::GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *
       {
             double valx = (en[i].m_x * xr) + xo;
             double valy = (en[i].m_y * yr) + yo;
-            r[i].x = (int)round(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
-            r[i].y = (int)round(m_pixy_vp_center - ((valy - m_northing_vp_center) * m_view_scale_ppm));
+            r[i].x = (int)wxRound(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
+            r[i].y = (int)wxRound(m_pixy_vp_center - ((valy - m_northing_vp_center) * m_view_scale_ppm));
       }
 }
 
@@ -2307,6 +2307,9 @@ int cm93chart::CreateObjChain(int cell_index, int subcell)
       {
             if((pobjectDef != NULL))
             {
+
+//                  if(pobjectDef->n_related_objects)
+//                        int yyp = 5;
 
                   Extended_Geometry *xgeom = BuildGeom(pobjectDef, NULL, iObj);
 
@@ -3180,16 +3183,6 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
       //    Per object transfor offsets,
       double trans_WGS84_offset_x = 0.;
       double trans_WGS84_offset_y = 0.;
-
-
-#if FLAV
-	  // Flav : CM93Offset add here set of tmp_transform
-	  if(g_CM93Maps_Offset_on)
-	  {
-		tmp_transform_x = -g_CM93Maps_Offset_x;
-		tmp_transform_y = -g_CM93Maps_Offset_y;
-	  }
-#endif
 
 
         // Debug Hook
@@ -5677,15 +5670,6 @@ bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
             return false;
 }
 
-/*
-bool cm93compchart::IsRenderDelta(ViewPort &vp_last, ViewPort &vp_proposed)
-{
-      if(NULL != m_pcm93chart_current)
-            return m_pcm93chart_current->IsRenderDelta(vp_last, vp_proposed);
-      else
-            return true;
-}
-*/
 ThumbData *cm93compchart::GetThumbData(int tnx, int tny, float lat, float lon)
 {
       return (ThumbData *)NULL;
