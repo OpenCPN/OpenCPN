@@ -242,6 +242,7 @@ public:
       int GetNumIcons(void){ return m_nIcons; }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
+      RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, wxString &guid);
       void SetColorScheme(ColorScheme cs);
       void DeleteAllWaypoints(bool b_delete_used);
       RoutePoint *FindRoutePointByGUID(wxString &guid);

@@ -80,6 +80,8 @@ class   RoutePoint;
 #define ID_LISTCTRL 7004
 #define ID_ROUTEPROP_CANCEL 7006
 #define ID_ROUTEPROP_OK 7007
+#define ID_ROUTEPROP_SPLIT 7107
+#define ID_ROUTEPROP_EXTEND 7207
 #define ID_PLANSPEEDCTL 7008
 #define ID_TEXTCTRL4 7009
 #define ID_TEXTCTRLDESC 7010
@@ -157,6 +159,10 @@ public:
     void OnRoutepropOkClick( wxCommandEvent& event );
     void OnPlanSpeedCtlUpdated( wxCommandEvent& event );
     void OnRoutepropListClick( wxListEvent& event );
+    void OnRoutepropSplitClick( wxCommandEvent& event );
+    void OnRoutepropExtendClick( wxCommandEvent& event );
+    bool IsThisRouteExtendable();
+    bool IsThisTrackExtendable();
     void OnEvtColDragEnd(wxListEvent& event);
 
 
@@ -183,10 +189,19 @@ public:
 
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
+    wxButton*     m_ExtendButton;
+    wxButton*     m_SplitButton;
 
     Route       *m_pRoute;
+    Route       *m_pHead; // for route splitting
+    Route       *m_pTail;
+      RoutePoint *m_pExtendPoint;
+      Route *m_pExtendRoute;
+
     double      m_planspeed;
     double      m_avgspeed;
+
+    int         m_nSelected; // index of point selected in Properties dialog row
 };
 
 

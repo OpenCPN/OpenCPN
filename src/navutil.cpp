@@ -466,6 +466,41 @@ bool Select::AddAllSelectableRouteSegments ( Route *pr )
             return false;
 }
 
+bool Select::AddAllSelectableTrackSegments ( Route *pr )
+{
+      wxPoint rpt, rptn;
+      float slat1, slon1, slat2, slon2;
+
+      if ( pr->pRoutePointList->GetCount() )
+      {
+            wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+
+            RoutePoint *prp0 = node->GetData();
+            slat1 = prp0->m_lat;
+            slon1 = prp0->m_lon;
+
+            node = node->GetNext();
+
+            while ( node )
+            {
+                  RoutePoint *prp = node->GetData();
+                  slat2 = prp->m_lat;
+                  slon2 = prp->m_lon;
+
+                  AddSelectableTrackSegment ( slat1, slon1, slat2, slon2, prp0, prp, pr );
+
+                  slat1 = slat2;
+                  slon1 = slon2;
+                  prp0 = prp;
+
+                  node = node->GetNext();
+            }
+            return true;
+      }
+      else
+            return false;
+}
+
 bool Select::UpdateSelectableRouteSegments ( RoutePoint *prp )
 {
       SelectItem *pFindSel;
@@ -1177,6 +1212,91 @@ Route::~Route ( void )
       delete pRoutePointList;
 }
 
+// The following is used only for route splitting, assumes just created, empty route
+//
+void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix)
+{
+      m_bIsTrack = psourceroute->m_bIsTrack;
+
+      m_RouteNameString = psourceroute->m_RouteNameString+suffix;
+      m_RouteStartString = psourceroute->m_RouteStartString;
+      m_RouteEndString = psourceroute->m_RouteEndString;
+
+      int i;
+      for (i = start_nPoint; i <= end_nPoint; i++) {
+            AddPoint(psourceroute->GetPoint(i), false);
+      }
+
+      CalculateBBox();
+ 
+}
+
+void Route::CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix)
+{
+      m_bIsTrack = psourceroute->m_bIsTrack;
+
+      m_RouteNameString = psourceroute->m_RouteNameString+suffix;
+      m_RouteStartString = psourceroute->m_RouteStartString;
+      m_RouteEndString = psourceroute->m_RouteEndString;
+
+      bool b_splitting = GetnPoints()==0;
+
+      int startTrkSegNo;
+      if (b_splitting)
+            startTrkSegNo = psourceroute->GetPoint(start_nPoint)->m_GPXTrkSegNo;
+      else
+            startTrkSegNo = this->GetLastPoint()->m_GPXTrkSegNo;
+
+      int i;
+      for (i = start_nPoint; i <= end_nPoint; i++) {
+
+            RoutePoint *psourcepoint = psourceroute->GetPoint(i);
+            RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->m_IconName, psourcepoint->m_MarkName, GPX_EMPTY_STRING, false );
+
+            AddPoint(ptargetpoint, false);
+
+            CloneAddedTrackPoint(m_pLastAddedPoint, psourcepoint);
+
+            int segment_shift = psourcepoint->m_GPXTrkSegNo;
+
+            if ((start_nPoint == 2) /*&& (psourcepoint->m_GPXTrkSegNo == startTrkSegNo)*/)
+                  segment_shift = psourcepoint->m_GPXTrkSegNo - 1;  // continue first segment if tracks share the first point
+
+            if (b_splitting)
+                  m_pLastAddedPoint->m_GPXTrkSegNo = (psourcepoint->m_GPXTrkSegNo - startTrkSegNo) + 1;
+            else
+                  m_pLastAddedPoint->m_GPXTrkSegNo = startTrkSegNo + segment_shift;
+      }
+
+      CalculateBBox();
+ 
+}
+
+void Route::CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint)
+{
+            //    This is a hack, need to undo the action of Route::AddPoint
+            ptargetpoint->m_bIsInRoute = false;
+            ptargetpoint->m_bIsInTrack = true;
+            ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
+            ptargetpoint->m_prop_string_format = psourcepoint->m_prop_string_format;
+            ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
+            ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
+            ptargetpoint->m_bPtIsSelected = false;
+            ptargetpoint->m_pbmIcon = psourcepoint->m_pbmIcon;
+            ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
+            ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
+            ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
+            ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
+            ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
+            ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
+            ptargetpoint->m_CreateTime = psourcepoint->m_CreateTime;
+            ptargetpoint->m_HyperlinkList = new HyperlinkList;
+            // Hyperlinks not implemented currently in GPX for trackpoints
+            //if (!psourcepoint->m_HyperlinkList->IsEmpty()) {
+            //      HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
+            //      psourcepoint->m_HyperlinkList->splice(iter, *(ptargetpoint->m_HyperlinkList));
+            //}
+}
 
 void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 {

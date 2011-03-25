@@ -201,6 +201,9 @@ public:
       wxString GetNewMarkSequenced(void);
       void AssembleRoute();
       bool IsEqualTo(Route *ptargetroute);
+      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
+      void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
+      void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
       void RenderSegment(wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
 
@@ -441,6 +444,7 @@ public:
       bool DeleteAllSelectableTrackSegments(Route *);
       bool DeleteAllSelectableRoutePoints(Route *);
       bool AddAllSelectableRouteSegments(Route *pr);
+      bool AddAllSelectableTrackSegments(Route *pr);
       bool AddAllSelectableRoutePoints(Route *pr);
       bool UpdateSelectableRouteSegments(RoutePoint *prp);
 

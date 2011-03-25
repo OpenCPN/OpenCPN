@@ -178,6 +178,7 @@ public:
       float GetVPScale(){return VPoint.view_scale_ppm;}
       float GetVPChartScale(){return VPoint.chart_scale;}
       double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
+      double GetCanvasTrueScale(){return m_true_scale_ppm;}
 
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}

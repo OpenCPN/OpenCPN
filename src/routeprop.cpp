@@ -43,6 +43,7 @@
 #include "georef.h"
 #include "chart1.h"
 #include "routeman.h"
+#include "routemanagerdialog.h"
 #include "chcanv.h"
 
 
@@ -55,6 +56,8 @@ extern ChartCanvas      *cc1;
 extern Select           *pSelect;
 extern Routeman         *g_pRouteMan;
 extern RouteProp        *pRoutePropDialog;
+extern RouteManagerDialog *pRouteManagerDialog;
+extern Track     *g_pActiveTrack;
 extern RouteList        *pRouteList;
 extern MyFrame          *gFrame;
 
@@ -80,6 +83,8 @@ BEGIN_EVENT_TABLE( RouteProp, wxDialog )
     EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
     EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
     EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
+    EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
+    EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
 
 END_EVENT_TABLE()
 
@@ -96,6 +101,9 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
 {
       m_TotalDistCtl = NULL;
       m_wpList = NULL;
+      m_nSelected = 0;
+      m_pHead = NULL;
+      m_pTail = NULL;
 
 /*
       wxScrollingDialog::Init();
@@ -111,12 +119,185 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
       Centre();
 }
 
+void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
+{
+      m_SplitButton->Enable(false);
+
+      if ((m_nSelected > 1) && (m_nSelected < m_pRoute->GetnPoints())) {
+            if (m_pRoute->m_bIsTrack) {
+                  m_pHead = new Track();
+                  m_pTail = new Track();
+                  m_pHead->CloneTrack(m_pRoute, 1, m_nSelected, _("_A"));
+                  m_pTail->CloneTrack(m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B"));
+            }
+            else {
+                  m_pHead = new Route();
+                  m_pTail = new Route();
+                  m_pHead->CloneRoute(m_pRoute, 1, m_nSelected, _("_A"));
+                  m_pTail->CloneRoute(m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B"));
+            }
+            pRouteList->Append ( m_pHead );
+            pConfig->AddNewRoute ( m_pHead, -1 );
+            m_pHead->RebuildGUIDList();
+
+            pRouteList->Append ( m_pTail );
+            pConfig->AddNewRoute ( m_pTail, -1 );
+            m_pTail->RebuildGUIDList();
+
+            pConfig->DeleteConfigRoute ( m_pRoute );
+
+            if (!m_pTail->m_bIsTrack) {
+                  g_pRouteMan->DeleteRoute(m_pRoute);
+                  pSelect->AddAllSelectableRouteSegments ( m_pTail );
+                  pSelect->AddAllSelectableRoutePoints ( m_pTail );
+                  pSelect->AddAllSelectableRouteSegments ( m_pHead );
+                  pSelect->AddAllSelectableRoutePoints ( m_pHead );
+            }
+            else {
+                  pSelect->DeleteAllSelectableTrackSegments(m_pRoute);
+                  m_pRoute->ClearHighlights();
+                  g_pRouteMan->DeleteTrack(m_pRoute);
+                  pSelect->AddAllSelectableTrackSegments ( m_pTail );
+                  pSelect->AddAllSelectableTrackSegments ( m_pHead );
+            }
+
+            SetRouteAndUpdate(m_pTail);
+
+            if ( pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+                  if (!m_pTail->m_bIsTrack) 
+                        pRouteManagerDialog->UpdateRouteListCtrl();
+                  else
+                        pRouteManagerDialog->UpdateTrkListCtrl();
+            }
+      }
+}
+
+void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
+{
+      m_ExtendButton->Enable(false);
+
+      if (!m_pRoute->m_bIsTrack) {
+            if ( IsThisRouteExtendable() ) {
+                  int fm = m_pExtendRoute->GetIndexOf(m_pExtendPoint)+1;
+                  int to = m_pExtendRoute->GetnPoints();
+                  if (fm < to) {
+                        pSelect->DeleteAllSelectableRouteSegments ( m_pRoute );
+                        m_pRoute->CloneRoute(m_pExtendRoute, fm, to, _("_plus"));
+                        pSelect->AddAllSelectableRouteSegments ( m_pRoute );
+                        SetRouteAndUpdate(m_pRoute);
+                  }
+            }
+      } // end route extend
+      else {  // start track extend
+            RoutePoint *pLastPoint = m_pRoute->GetPoint(1);
+
+            if (IsThisTrackExtendable()) {
+                        int begin = 1;
+                        if (pLastPoint->m_CreateTime == m_pExtendPoint->m_CreateTime) begin = 2;
+                        pSelect->DeleteAllSelectableTrackSegments(m_pExtendRoute);
+                        m_pExtendRoute->CloneTrack(m_pRoute, begin, m_pRoute->GetnPoints(), _("_plus"));
+                        pSelect->AddAllSelectableTrackSegments ( m_pExtendRoute );
+                        pSelect->DeleteAllSelectableTrackSegments(m_pRoute);
+                        m_pRoute->ClearHighlights();
+                        g_pRouteMan->DeleteTrack(m_pRoute);
+
+                        SetRouteAndUpdate(m_pExtendRoute);
+
+                        if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                              pRouteManagerDialog->UpdateTrkListCtrl();
+            }
+      }
+}
+
+bool RouteProp::IsThisRouteExtendable()
+{
+      m_pExtendRoute = NULL;
+      m_pExtendPoint = NULL;
+      if (m_pRoute->m_bRtIsActive) return false;
+
+      if (!m_pRoute->m_bIsTrack) {
+            RoutePoint *pLastPoint = m_pRoute->GetLastPoint();
+            wxArrayPtrVoid *pEditRouteArray;
+
+            pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(pLastPoint);
+            // remove invisible & own routes from choices
+            int i;
+            for ( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+                  Route *p = (Route *)pEditRouteArray->Item(i-1);
+                  if (!p->IsVisible() || (p->m_GUID == m_pRoute->m_GUID)) pEditRouteArray->RemoveAt(i-1);
+            }
+            if (pEditRouteArray->GetCount() == 1 )
+                  m_pExtendPoint = pLastPoint;
+            else 
+            if (pEditRouteArray->GetCount() == 0 ) {
+
+                  //int nearby_radius_meters = 8./cc1->GetCanvasScaleFactor(); // "nearby" means 8 pixels away
+                  int nearby_radius_meters = 8./cc1->GetCanvasTrueScale();
+                  double rlat = pLastPoint->m_lat;
+                  double rlon = pLastPoint->m_lon;
+
+                  m_pExtendPoint = pWayPointMan->GetOtherNearbyWaypoint(rlat, rlon, nearby_radius_meters, pLastPoint->m_GUID);
+                  if ( m_pExtendPoint && !m_pExtendPoint->m_bIsInTrack ) {
+                        pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(m_pExtendPoint);
+                  }
+                  // remove invisible & own routes from choices
+                  for ( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+                        Route *p = (Route *)pEditRouteArray->Item(i-1);
+                        if (!p->IsVisible() || (p->m_GUID == m_pRoute->m_GUID)) pEditRouteArray->RemoveAt(i-1);
+                  }
+            }
+
+            if ( pEditRouteArray->GetCount() == 1 ) {
+                  Route *p = (Route *)pEditRouteArray->Item(0);
+                  int fm = p->GetIndexOf(m_pExtendPoint)+1;
+                  int to = p->GetnPoints();
+                  if (fm < to) {
+                        m_pExtendRoute = p;
+                        delete pEditRouteArray;
+                        return true;
+                  }
+            }
+            delete pEditRouteArray;
+
+      } // end route extend
+      return false;
+}
+
+bool RouteProp::IsThisTrackExtendable()
+{
+            m_pExtendRoute = NULL;
+            m_pExtendPoint = NULL;
+            if(m_pRoute == g_pActiveTrack) return false;
+            
+            RoutePoint *pLastPoint = m_pRoute->GetPoint(1);
+
+            wxRouteListNode *route_node = pRouteList->GetFirst();
+            while(route_node) {
+                  Route *proute = route_node->GetData();
+                  if (proute->m_bIsTrack && proute->IsVisible() && (proute->m_GUID != m_pRoute->m_GUID)) {
+                        RoutePoint *track_node = proute->GetLastPoint();
+                              if(track_node->m_CreateTime <= pLastPoint->m_CreateTime)
+                                    if (!m_pExtendPoint || track_node->m_CreateTime > m_pExtendPoint->m_CreateTime) {
+                                          m_pExtendPoint = track_node;
+                                          m_pExtendRoute = proute;
+                                    }
+                  }
+                  route_node = route_node->GetNext();                         // next route
+            }
+            if (m_pExtendRoute)
+                  return true;
+            else
+                  return false;
+}
+
 void RouteProp::OnRoutepropListClick( wxListEvent& event )
 {
     long itemno = 0;
+      m_nSelected = 0;
     const wxListItem &i = event.GetItem();
     i.GetText().ToLong(&itemno);
 
+    int selected_no = itemno;
     m_pRoute->ClearHighlights();
 
     wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
@@ -130,6 +311,8 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
       if ( prp )
       {
           prp->m_bPtIsSelected = true;                // highlight the routepoint
+          m_nSelected = selected_no + 1;
+          if (!(m_pRoute == g_pActiveTrack) && !(m_pRoute->m_bRtIsActive)) m_SplitButton->Enable(true);
 //          vLat = cc1->VPoint.clat = prp->m_lat;
 //          vLon = cc1->VPoint.clon = prp->m_lon;
 //          cc1->SetVPScale ( cc1->GetVPScale() );
@@ -244,11 +427,19 @@ void RouteProp::CreateControls()
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT|wxALL, 5);
 
+    m_ExtendButton = new wxButton( itemDialog1, ID_ROUTEPROP_EXTEND, _("Extend Route"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer16->Add(m_ExtendButton, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    m_ExtendButton->Enable(false);
+
+    m_SplitButton = new wxButton( itemDialog1, ID_ROUTEPROP_SPLIT, _("Split Route"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer16->Add(m_SplitButton, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    m_SplitButton->Enable(false);
+
     m_CancelButton = new wxButton( itemDialog1, ID_ROUTEPROP_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_OKButton = new wxButton( itemDialog1, ID_ROUTEPROP_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
     m_OKButton->SetDefault();
 
     //      To correct a bug in MSW commctl32, we need to catch column width drag events, and do a Refresh()
@@ -335,6 +526,12 @@ void RouteProp::SetColorScheme(ColorScheme cs)
 
       m_wpList->SetBackgroundColour(back_color);
       m_wpList->SetForegroundColour(text_color);
+
+      m_ExtendButton->SetBackgroundColour(back_color);
+      m_ExtendButton->SetForegroundColour(text_color);
+
+      m_SplitButton->SetBackgroundColour(back_color);
+      m_SplitButton->SetForegroundColour(text_color);
 
       m_CancelButton->SetBackgroundColour(back_color);
       m_CancelButton->SetForegroundColour(text_color);
@@ -444,11 +641,26 @@ bool RouteProp::UpdateProperties()
 {
       ::wxBeginBusyCursor();
 
+      m_ExtendButton->SetLabel(_T("Extend"));
+      m_ExtendButton->Enable(false);
+
+      m_SplitButton->SetLabel(_T("Split"));
+      m_SplitButton->Enable(false);
+
       m_TotalDistCtl->SetValue(_T(""));
       m_TimeEnrouteCtl->SetValue(_T(""));
 
       if(m_pRoute)
       {
+            if (m_pRoute->m_bIsTrack) {
+                  m_ExtendButton->SetLabel(_T("Extend Track"));
+                  m_SplitButton->SetLabel(_T("Split Track"));
+            }
+            else {
+                  m_ExtendButton->SetLabel(_T("Extend Route"));
+                  m_SplitButton->SetLabel(_T("Split Route"));
+            }
+
             m_pRoute->UpdateSegmentDistances();           // get segment and total distance
 
                   double total_seconds = 0.;
@@ -468,11 +680,13 @@ bool RouteProp::UpdateProperties()
                         wxString s;
                         s.Printf(_T("%5.2f"), m_avgspeed);
                         m_PlanSpeedCtl->SetValue(s);
+                        if (IsThisTrackExtendable()) m_ExtendButton->Enable(true);
             }
             else
             {
                         if((0.1 < m_planspeed) && (m_planspeed < 1000.0))
                               total_seconds= 3600 * m_pRoute->m_route_length / m_planspeed;     // in seconds
+                        if (IsThisRouteExtendable()) m_ExtendButton->Enable(true);
             }
 
       //  Total length
