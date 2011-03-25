@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s57chart.cpp,v 1.61 2010/06/24 01:48:02 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  S57 Chart Object
@@ -24,56 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
-
- * $Log: s57chart.cpp,v $
- * Revision 1.61  2010/06/24 01:48:02  bdbcat
- * 623
- *
- * Revision 1.60  2010/06/23 23:48:51  bdbcat
- * 623
- *
- * Revision 1.59  2010/06/21 01:56:14  bdbcat
- * 620
- *
- * Revision 1.58  2010/06/11 16:22:58  bdbcat
- * 611a
- *
- * Revision 1.57  2010/06/07 15:30:40  bdbcat
- * 607a
- *
- * Revision 1.56  2010/06/06 20:52:28  bdbcat
- * 606a
- *
- * Revision 1.55  2010/06/04 22:35:38  bdbcat
- * 604
- *
- * Revision 1.54  2010/05/24 16:02:42  bdbcat
- * Unicode fix
- *
- * Revision 1.53  2010/05/23 23:16:30  bdbcat
- * Build 523a
- *
- * Revision 1.52  2010/05/20 19:05:25  bdbcat
- * Build 520
- *
- * Revision 1.51  2010/05/19 01:02:05  bdbcat
- * Build 518
- *
- * Revision 1.50  2010/05/15 04:03:11  bdbcat
- * Build 514
- *
- * Revision 1.49  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.48  2010/04/27 01:43:46  bdbcat
- * Build 426
- *
- * Revision 1.47  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.46  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 
@@ -1826,7 +1775,6 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
             prev_easting_lr = easting_ul + (m_last_vp.pix_width / m_view_scale_ppm);
             prev_northing_lr = northing_ul - (m_last_vp.pix_height / m_view_scale_ppm);
 
-
             rul.x = (int)round((easting_ul - prev_easting_ul) * m_view_scale_ppm);
             rul.y = (int)round((prev_northing_ul - northing_ul) * m_view_scale_ppm);
 
@@ -1834,7 +1782,10 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
             rlr.y = (int)round((prev_northing_ul - northing_lr) * m_view_scale_ppm);
 
             if((rul.x != 0) || (rul.y != 0))
+            {
+//                  printf("newvp due to rul\n");
                   bNewVP = true;
+            }
     }
     else
     {
@@ -1857,7 +1808,6 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
 
     if(bNewVP && (NULL != pDIB) && !rgn_last.IsEmpty())
     {
-
         int xu, yu, wu, hu;
         rgn_last.GetBox(xu, yu, wu, hu);
 
@@ -1943,6 +1893,10 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
         dc.SelectObject(wxNullBitmap);
 
         bnewview = true;
+
+//      Update last_vp to reflect the current cached bitmap
+        m_last_vp = VPoint;
+
     }
 
     else if(bNewVP || (NULL == pDIB))
@@ -1961,10 +1915,11 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
         dc.SelectObject(wxNullBitmap);
 
         bnewview = true;
-    }
 
 //      Update last_vp to reflect the current cached bitmap
         m_last_vp = VPoint;
+
+    }
 
 
         return bnewview;
@@ -4797,7 +4752,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
         }
 
         fprintf( fpOut, "HDRLEN=%d\n", sheader.Len());
-        fwrite(sheader.mb_str(), 1, sheader.Len(), fpOut);
+        fwrite(sheader.mb_str(wxConvUTF8), 1, sheader.Len(), fpOut);
 
         if(( pGeo != NULL ) /*&& (mode == 1)*/)
         {
