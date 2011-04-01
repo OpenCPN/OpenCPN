@@ -4198,13 +4198,6 @@ int MyFrame::DoOptionsDialog()
             }
 #endif
 
-// Flav: for CM93Offset refreshes all maps
-#ifdef FLAV
-            if(rr & CM93OFFSET_CHANGED)
-            {
-                  ChartsRefresh();
-            }
-#endif
             if(rr & LOCALE_CHANGED)
             {
                   if(prev_locale != g_locale)
@@ -4277,6 +4270,9 @@ int MyFrame::DoOptionsDialog()
           g_pAIS->UnPause();
       if(g_pnmea)
             g_pnmea->UnPause();
+
+//      if(g_pCM93OffsetDialog)                   // Might have been a change in cm93 composite chart set.
+//            g_pCM93OffsetDialog->Destroy();
 
       delete pWorkDirArray;
 

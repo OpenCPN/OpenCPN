@@ -213,6 +213,42 @@ int M_COVR_Desc:: ReadWKB(wxFFileInputStream &ifs)
       return length;
 }
 
+wxRegion M_COVR_Desc::GetRegion(const ViewPort &vp, wxPoint *pwp)
+{
+      float_2Dpt *p = pvertices;
+
+      for(int ip = 0 ; ip < m_nvertices ; ip++)
+      {
+
+            double plon = p->x;
+            if(fabs(plon - vp.clon) > 180.)
+            {
+                  if(plon > vp.clon)
+                        plon -= 360.;
+                  else
+                        plon += 360.;
+            }
+
+
+            double easting, northing, epix, npix;
+            toSM(p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing);
+
+//            easting -= transform_WGS84_offset_x;
+            easting -=  user_xoff;
+//            northing -= transform_WGS84_offset_y;
+            northing -= user_yoff;
+
+            epix = easting  * vp.view_scale_ppm;
+            npix = northing * vp.view_scale_ppm;
+
+            pwp[ip].x = (int)round((vp.pix_width  / 2) + epix);
+            pwp[ip].y = (int)round((vp.pix_height / 2) - npix);
+
+            p++;
+      }
+
+      return wxRegion(m_nvertices, pwp);
+}
 
 //----------------------------------------------------------------------------
 // cm93 covr_set object class
@@ -3718,8 +3754,10 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(latc, lonc);
                         if(pmcd)
                         {
-                              trans_WGS84_offset_x = pmcd->transform_WGS84_offset_x + pmcd->user_xoff;
-                              trans_WGS84_offset_y = pmcd->transform_WGS84_offset_y + pmcd->user_yoff;
+                              trans_WGS84_offset_x = pmcd->user_xoff;
+//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
+                              trans_WGS84_offset_y = pmcd->user_yoff;
+//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -3769,8 +3807,10 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(lat, lon);
                         if(pmcd)
                         {
-                              trans_WGS84_offset_x = pmcd->transform_WGS84_offset_x + pmcd->user_xoff;
-                              trans_WGS84_offset_y = pmcd->transform_WGS84_offset_y + pmcd->user_yoff;
+                              trans_WGS84_offset_x = pmcd->user_xoff;
+//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
+                              trans_WGS84_offset_y = pmcd->user_yoff;
+//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -3830,8 +3870,10 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(latc, lonc);
                         if(pmcd)
                         {
-                              trans_WGS84_offset_x = pmcd->transform_WGS84_offset_x + pmcd->user_xoff;
-                              trans_WGS84_offset_y = pmcd->transform_WGS84_offset_y + pmcd->user_yoff;
+                              trans_WGS84_offset_x = pmcd->user_xoff;
+//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
+                              trans_WGS84_offset_y = pmcd->user_yoff;
+//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -3892,8 +3934,10 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(latc, lonc);
                         if(pmcd)
                         {
-                              trans_WGS84_offset_x = pmcd->transform_WGS84_offset_x + pmcd->user_xoff;
-                              trans_WGS84_offset_y = pmcd->transform_WGS84_offset_y + pmcd->user_yoff;
+                              trans_WGS84_offset_x = pmcd->user_xoff;
+//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
+                              trans_WGS84_offset_y = pmcd->user_yoff;
+//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -4773,10 +4817,53 @@ double scale_breaks[] = {
 //              Calculate and Set ViewPoint Constants
 //-----------------------------------------------------------------------
 
+int cm93compchart::GetCMScaleFromVP(const ViewPort &vpt)
+{
+      double scale_mpp = 3000 / vpt.view_scale_ppm;
+
+      double scale_mpp_adj = scale_mpp;
+
+      double scale_breaks_adj[7];
+
+      for(int i=0 ; i < 7 ; i++)
+            scale_breaks_adj[i] = scale_breaks[i];
+
+
+
+      //    Completely intuitive exponential curve adjustment
+      if(g_cm93_zoom_factor)
+      {
+            double efactor = (double)(g_cm93_zoom_factor) * (.176 / 7.);
+            for(int i=0 ; i < 7 ; i++)
+            {
+                  double efr = efactor * (7 - i);
+                  scale_breaks_adj[i] = scale_breaks[i] * pow(10., efr);
+                  if(g_bDebugCM93)
+                        printf("g_cm93_zoom_factor: %2d  efactor: %6g efr:%6g, scale_breaks[i]:%6g  scale_breaks_adj[i]: %6g\n",
+                               g_cm93_zoom_factor, efactor, efr, scale_breaks[i], scale_breaks_adj[i]);
+            }
+      }
+
+      int cmscale_calc = 7;
+      int brk_index = 0;
+      while(cmscale_calc > 0)
+      {
+            if(scale_mpp_adj < scale_breaks_adj[brk_index])
+                  break;
+            cmscale_calc--;
+            brk_index++;
+      }
+
+      return cmscale_calc;
+}
+
 void cm93compchart::SetVPParms(const ViewPort &vpt)
 {
       m_vpt = vpt;                              // save a copy
 
+      int cmscale = GetCMScaleFromVP(vpt);            // First order calculation of cmscale
+
+/*
       double scale_mpp = 3000 / vpt.view_scale_ppm;
 
       double scale_mpp_adj = scale_mpp;
@@ -4811,8 +4898,8 @@ void cm93compchart::SetVPParms(const ViewPort &vpt)
             cmscale--;
             brk_index++;
       }
-
-      PrepareChartScale(vpt, cmscale);
+*/
+      m_cmscale = PrepareChartScale(vpt, cmscale);
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
       if(m_pcm93chart_array[cmscale])
@@ -4822,13 +4909,11 @@ void cm93compchart::SetVPParms(const ViewPort &vpt)
       }
 }
 
-void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
+int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
 {
 
       if(g_bDebugCM93)
             printf("\non SetVPParms, cmscale:%d, %c\n", cmscale, (char)('A' + cmscale -1));
-
-      m_cmscale = cmscale;
 
       wxChar ext;
       bool cellscale_is_useable = false;
@@ -4894,7 +4979,7 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   for(int i = 0 ; i < 8 ; i++)
                          m_pcm93chart_array[i] = NULL;
 
-                  return;
+                  return cmscale;
             }
 
             if(m_pcm93chart_current)
@@ -4957,7 +5042,8 @@ void cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   }
             }
       }
-      m_cmscale = cmscale;
+
+      return cmscale;
 }
 
 //    Populate the member bool array describing which chart scales are available at any location
@@ -5182,17 +5268,18 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
       {
             m_pcm93chart_current->SetVPParms(vp_positive);
 
-            //    Check the current chart scale to see if it covers the viewport totally
+            //    Check the current chart scale to see if it covers the requested region totally
             if(VPoint.b_quilt)
             {
-                  wxRegion vpr_empty(VPoint.rv_rect);
+//                  wxRegion vpr_empty(VPoint.rv_rect);
+                  wxRegion vpr_empty = Region;
 
                   wxRegion chart_region;
                   GetValidCanvasRegion(vp_positive, &chart_region);
                   vpr_empty.Subtract(chart_region);
 
 
-                  if(!vpr_empty.Empty() && m_cmscale)           // This chart scale does not fully cover the viewport
+                  if(!vpr_empty.Empty() && m_cmscale)           // This chart scale does not fully cover the region
                   {
                         //    Render the target scale chart on a temp dc for safekeeping
 #ifdef ocpnUSE_DIBSECTION
@@ -5200,7 +5287,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 #else
                         wxMemoryDC temp_dc;
 #endif
-                        render_return = m_pcm93chart_current->RenderViewOnDC(temp_dc, vp_positive);
+//                        render_return = m_pcm93chart_current->RenderViewOnDC(temp_dc, vp_positive);
+                        render_return = m_pcm93chart_current->RenderRegionViewOnDC(temp_dc, vp_positive, chart_region);
 
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
@@ -5231,12 +5319,12 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
                         int cmscale_next = m_cmscale;
 
-                        //    Render smaller scale cells onto a temporary DC, blitting the valid region onto the quilt dc until the vp is full
+                        //    Render smaller scale cells onto a temporary DC, blitting the valid region onto the quilt dc until the region is full
                         while(!vpr_empty.Empty() && cmscale_next)
                         {
                         //    get the next smaller scale chart
                               cmscale_next--;
-                              PrepareChartScale(vp_positive, cmscale_next);
+                              m_cmscale = PrepareChartScale(vp_positive, cmscale_next);
 #ifdef ocpnUSE_DIBSECTION
                               ocpnMemDC build_dc;
 #else
@@ -5248,7 +5336,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     if(g_bDebugCM93)
                                           printf("  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
 
-                                    m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive);
+//                                    m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive);
+                                    m_pcm93chart_current->RenderRegionViewOnDC(build_dc, vp_positive, Region);
 
                                     wxRegion sscale_region;
                                     GetValidCanvasRegion(vp_positive, &sscale_region);
@@ -5371,8 +5460,10 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     toSM(p->y, plon + 360., VPoint.clat, VPoint.clon + 360, &easting, &northing);
 
                                     //    Outlines stored in MCDs are not adjusted for offsets
-                                    easting -= pmcd->transform_WGS84_offset_x + pmcd->user_xoff;
-                                    northing -= pmcd->transform_WGS84_offset_y + pmcd->user_yoff;
+//                                    easting -= pmcd->transform_WGS84_offset_x;
+                                    easting -= pmcd->user_xoff;
+//                                    northing -= pmcd->transform_WGS84_offset_y;
+                                    northing -= pmcd->user_yoff;
 
                                     epix = easting  * VPoint.view_scale_ppm;
                                     npix = northing * VPoint.view_scale_ppm;
@@ -5383,23 +5474,40 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     p++;
                               }
 
-                                          //    Scrub the points
-                                          //    looking for segments for which the wrong longitude decision was made
-                                          //    TODO all this mole needs to be rethought, again
+                              //    Scrub the points
+                              //   looking for segments for which the wrong longitude decision was made
+                              //    TODO all this mole needs to be rethought, again
                               bool btest = true;
+/*
                               wxPoint p0 = pwp[0];
                               for(int ip = 1 ; ip < pmcd->m_nvertices ; ip++)
                               {
-                                    if(((p0.x > VPoint.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > VPoint.pix_width)))
-                                          btest = false;
+ //                                   if(((p0.x > VPoint.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > VPoint.pix_width)))
+ //                                         btest = false;
 
                                     p0 = pwp[ip];
                               }
-
+*/
                               if(btest)
                               {
                                     dc.SetPen(wxPen(wxTheColourDatabase->Find(_T("YELLOW")), 4, wxLONG_DASH));
-                                    dc.DrawLines(pmcd->m_nvertices, pwp);
+
+                                    for(int iseg=0 ; iseg < pmcd->m_nvertices-1 ; iseg++)
+                                    {
+
+                                          int x0 = pwp[iseg].x;
+                                          int y0 = pwp[iseg].y;
+                                          int x1 = pwp[iseg+1].x;
+                                          int y1 = pwp[iseg+1].y;
+
+                                          ClipResult res = cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1,
+                                                      0, VPoint.pix_width, 0, VPoint.pix_height );
+
+                                          if ( res == Invisible )                                                 // Do not bother with segments that are invisible
+                                                continue;
+
+                                          dc.DrawLine(x0, y0, x1, y1);
+                                    }
                               }
                         }
 
@@ -5534,8 +5642,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
                                                 toSM(p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing);
 
                                                 //    Outlines stored in MCDs are not adjusted for offsets
-                                                easting -= mcd->transform_WGS84_offset_x + mcd->user_xoff;
-                                                northing -= mcd->transform_WGS84_offset_y + mcd->user_yoff;
+//                                                easting -= mcd->transform_WGS84_offset_x;
+                                                easting -= mcd->user_xoff;
+//                                                northing -= mcd->transform_WGS84_offset_y;
+                                                northing -= mcd->user_yoff;
 
                                                 epix = easting  * vp.view_scale_ppm;
                                                 npix = northing * vp.view_scale_ppm;
@@ -5664,6 +5774,16 @@ VC_Hash& cm93compchart::Get_vc_hash(void)
 
 bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
+      //    This may be a partial screen render
+      //    If it is, the cmscale value on this render must match the same parameter
+      //    on the last render.
+      //    If it does not, the partial render will not quilt correctly with the previous data
+      //    Detect this case, and indicate that the entire screen must be rendered.
+      int cmscale = GetCMScaleFromVP(vp_proposed);
+
+      if(m_cmscale != PrepareChartScale(vp_proposed, cmscale))
+            return false;
+
       if(NULL != m_pcm93chart_current)
             return m_pcm93chart_current->AdjustVP(vp_last, vp_proposed);
       else
@@ -6014,6 +6134,11 @@ CM93OffsetDialog::CM93OffsetDialog( wxWindow *parent, cm93compchart *pchart)
       m_pSpinCtrlYoff->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( CM93OffsetDialog::OnOffSetSet ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlYoff, 0, wxEXPAND|wxALL, 0 );
 
+      m_OKButton = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+      m_OKButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( CM93OffsetDialog::OnOK ), NULL, this );
+      boxSizer02->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+      m_OKButton->SetDefault();
+
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
       topSizer->Layout();
 
@@ -6046,12 +6171,17 @@ void CM93OffsetDialog::OnClose(wxCloseEvent& event)
                   m_pparent->Refresh(true);
       }
 
-      m_pListCtrlMCOVRs->SetItemState(m_selected_list_index, 0, wxLIST_STATE_SELECTED);
+      if(m_pListCtrlMCOVRs->GetItemCount() > m_selected_list_index)
+            m_pListCtrlMCOVRs->SetItemState(m_selected_list_index, 0, wxLIST_STATE_SELECTED);
 
       Hide();
 }
 
 
+void CM93OffsetDialog::OnOK(wxCommandEvent& event)
+{
+      Close();
+}
 
 
 void CM93OffsetDialog::OnOffSetSet( wxCommandEvent& event )
@@ -6109,6 +6239,9 @@ void CM93OffsetDialog::OnCellSelected( wxListEvent &event )
       m_selected_list_index = event.GetIndex();
 
       M_COVR_Desc *mcd =  m_pcovr_array.Item(event.GetIndex());
+
+      if(m_selected_list_index > m_pListCtrlMCOVRs->GetItemCount())
+            return;            // error
 
       cm93chart *pchart = m_pcompchart->GetCurrentSingleScaleChart();
       if(pchart)
@@ -6170,13 +6303,36 @@ void CM93OffsetDialog::UpdateMCOVRList(const ViewPort &vpt)
                         {
                               if(cell_array.Item(icell) == mcd->m_cell_index)
                               {
-                                    if(_OUT != vp_positive.GetBBox().Intersect(mcd->m_covr_bbox))
+                                    wxPoint *pwp = pchart->GetDrawBuffer(mcd->m_nvertices);
+                                    wxRegion rgn = mcd->GetRegion(vp_positive, pwp);
+
+//                                    if(_OUT != vp_positive.GetBBox().Intersect(mcd->m_covr_bbox))
+                                    if(rgn.Contains(0, 0, vpt.pix_width, vpt.pix_height) != wxOutRegion)
                                           m_pcovr_array.Add(mcd);
                               }
                         }
                   }
 
+                  //    Try to find and maintain the correct list selection, even though the list contents may have changed
+                  int sel_index = -1;
+                  for(unsigned int im=0 ; im < m_pcovr_array.GetCount() ; im++)
+                  {
+                        M_COVR_Desc *mcd = m_pcovr_array.Item(im);
+                        if((m_selected_cell_index == mcd->m_cell_index) &&
+                            (m_selected_object_id == mcd->m_object_id) &&
+                            (m_selected_subcell == mcd->m_subcell))
+                        {
+                              sel_index = im;
+                              break;
+                        }
+                  }
+
                   m_pListCtrlMCOVRs->SetItemCount(m_pcovr_array.GetCount());
+                  if(-1 != sel_index)
+                        m_pListCtrlMCOVRs->SetItemState(sel_index, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+                  else
+                        m_pListCtrlMCOVRs->SetItemState(sel_index, 0, wxLIST_STATE_SELECTED);   // deselect all
+
                   m_pListCtrlMCOVRs->Refresh(true);
 
 
