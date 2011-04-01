@@ -1770,6 +1770,12 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     if(!get_region.IsEmpty())
                                     {
                                           ViewPort vp_single = vp;
+
+                                          //    The region to be rendered may not represent the entire patch region...
+
+                                          //    Query the chart:
+                                          //    Is this render going to quilt in correctly?
+                                          //    If not, request a full patch render
                                           if(pch->AdjustVP(vp, vp_single))
                                                 adj_region = get_region;
                                           else
@@ -8472,7 +8478,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                                           else
                                                 temp_dc.Blit(-dx, -dy, VPoint.pix_width + dx, VPoint.pix_height + dy, &cache_dc, 0, 0);
                                     }
-
 
 
                                     wxRegion update_region;
