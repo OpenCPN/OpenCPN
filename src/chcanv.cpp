@@ -4728,7 +4728,7 @@ void ChartCanvas::GridDraw( wxDC& dc)
            wxPoint r;
            char sbuf[12];
            CalcGridText(lat, gridlatMajor, true, sbuf); // get text for grid line
-           GetCanvasPointPix ( lat, 0, &r );
+           GetCanvasPointPix ( lat, (elon + wlon)/2, &r );
            dc.DrawLine(0,r.y,w,r.y);                             // draw grid line
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),0,r.y); // draw text
            lat = lat + gridlatMajor;
@@ -4741,7 +4741,7 @@ void ChartCanvas::GridDraw( wxDC& dc)
      while (lat < nlat)
      {
            wxPoint r;
-           GetCanvasPointPix ( lat, 0, &r );
+           GetCanvasPointPix ( lat, (elon + wlon)/2, &r );
            dc.DrawLine(0,r.y,10,r.y);
            dc.DrawLine(w-10,r.y,w,r.y);
            lat = lat + gridlatMinor;
@@ -4759,7 +4759,7 @@ void ChartCanvas::GridDraw( wxDC& dc)
            wxPoint r;
            char sbuf[12];
            CalcGridText(lon, gridlonMajor, false, sbuf);
-           GetCanvasPointPix ( 0, lon, &r );
+           GetCanvasPointPix ( (nlat + slat)/2, lon, &r );
            dc.DrawLine(r.x,0,r.x,h);
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),r.x,0);
            lon = lon + gridlonMajor;
@@ -4775,7 +4775,7 @@ void ChartCanvas::GridDraw( wxDC& dc)
      for(int i=0,itermax=(int)(dlon/gridlonMinor);i<=itermax;i++)
      {
            wxPoint r;
-           GetCanvasPointPix ( 0, lon, &r );
+           GetCanvasPointPix ( (nlat + slat)/2, lon, &r );
            dc.DrawLine(r.x,0,r.x,10);
            dc.DrawLine(r.x,h-10,r.x,h);
            lon = lon + gridlonMinor;
