@@ -3489,8 +3489,10 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
 
       //  Update the object Bounding box
       //  so that subsequent drawing operations will redraw the item fully
+      //  We expand the object's BBox to account for objects rendered by multiple symbols, such as SOUNGD.
+      //  so that expansions are cumulative.
       if ( rzRules->obj->Primitive_type == GEO_POINT )
-            rzRules->obj->BBObj = symbox;
+            rzRules->obj->BBObj.Expand(symbox);
 
       return true;
 }
