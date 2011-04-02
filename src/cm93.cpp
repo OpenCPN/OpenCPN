@@ -3860,24 +3860,6 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   double *pdd = pobj->geoPtz;
                   double *pdl = pobj->geoPtMulti;
 
-                  //    Find the proper offset for this group of soundings
-                  //    Assumes that they are all in the same M_COVR
-                  if(m_CIB.b_have_offsets || m_CIB.b_have_user_offsets)
-                  {
-                        double latc = (pobj->BBObj.GetMinY() + pobj->BBObj.GetMaxY()) / 2.;
-                        double lonc = (pobj->BBObj.GetMinX() + pobj->BBObj.GetMaxX()) / 2.;
-
-                        M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(latc, lonc);
-                        if(pmcd)
-                        {
-                              trans_WGS84_offset_x = pmcd->user_xoff;
-//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
-                              trans_WGS84_offset_y = pmcd->user_yoff;
-//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
-                        }
-                  }
-
-
                   for(int ip=0 ; ip<pobj->npt ; ip++)
                   {
                         OGRPoint *ppt = (OGRPoint *)(pGeo->getGeometryRef( ip ));
@@ -3887,12 +3869,37 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         p.y = (int)ppt->getY();
                         double depth = ppt->getZ();
 
-                        *pdd++ = p.x;
-                        *pdd++ = p.y;
+                        double east  = p.x;
+                        double north = p.y;
+
+                        double snd_trans_x = 0.;
+                        double snd_trans_y = 0.;
+
+                        //    Find the proper offset for this individual sounding
+                        if(m_CIB.b_have_user_offsets)
+                        {
+                              double lats, lons;
+                              Transform(&p, 0., 0., &lats, &lons);
+
+                              M_COVR_Desc *pmcd = FindM_COVR_InWorkingSet(lats, lons);
+                              if(pmcd)
+                              {
+                                    // For lat/lon calculation below
+                                    snd_trans_x = pmcd->user_xoff;
+                                    snd_trans_y = pmcd->user_yoff;
+
+                                    // Actual cm93 point of this sounding, back-converted from metres e/n
+                                    east  -= pmcd->user_xoff / m_CIB.transform_x_rate;
+                                    north -= pmcd->user_yoff / m_CIB.transform_y_rate;
+                              }
+                        }
+
+                        *pdd++ = east;
+                        *pdd++ = north;
                         *pdd++ = depth;
 
-                        //  Save lat/lon of point in obj->geoPtMulti for later use in decomposed bboxes
-                        Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
+                        //  Save offset lat/lon of point in obj->geoPtMulti for later use in decomposed bboxes
+                        Transform(&p, snd_trans_x, snd_trans_y, &lat, &lon);
                         *pdl++ = lon;
                         *pdl++ = lat;
                   }
@@ -6103,16 +6110,16 @@ CM93OffsetDialog::CM93OffsetDialog( wxWindow *parent, cm93compchart *pchart)
       m_pListCtrlMCOVRs->InsertColumn( tlSCALE, _("Cell Scale"), wxLIST_FORMAT_CENTER, width );
 
       width = 90;
-      m_pListCtrlMCOVRs->InsertColumn( tlXOFF, _("Cell X Offset"), wxLIST_FORMAT_RIGHT, width );
+      m_pListCtrlMCOVRs->InsertColumn( tlXOFF, _("wgsox"), wxLIST_FORMAT_CENTER, width );
 
       width = 90;
-      m_pListCtrlMCOVRs->InsertColumn( tlYOFF, _("Cell Y Offset"), wxLIST_FORMAT_RIGHT, width );
+      m_pListCtrlMCOVRs->InsertColumn( tlYOFF, _("wgsoy"), wxLIST_FORMAT_CENTER, width );
 
       width = 90;
-      m_pListCtrlMCOVRs->InsertColumn( tlUXOFF, _("User X Offset"), wxLIST_FORMAT_RIGHT, width );
+      m_pListCtrlMCOVRs->InsertColumn( tlUXOFF, _("User X Offset"), wxLIST_FORMAT_CENTER, width );
 
       width = 90;
-      m_pListCtrlMCOVRs->InsertColumn( tlUYOFF, _("User Y Offset"), wxLIST_FORMAT_RIGHT, width );
+      m_pListCtrlMCOVRs->InsertColumn( tlUYOFF, _("User Y Offset"), wxLIST_FORMAT_CENTER, width );
 
 
       topSizer->Add( m_pListCtrlMCOVRs, 1, wxEXPAND|wxALL, 0 );
