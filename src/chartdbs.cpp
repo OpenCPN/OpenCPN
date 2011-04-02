@@ -114,6 +114,9 @@ bool ChartTableHeader::CheckValid()
           msg.Prepend(wxT("   Warning: found incorrect chart db version: "));
           wxLogMessage(msg);
 
+          return false;       // no match....
+
+/*
           // Try previous version....
           sprintf(vb, "V%03d", DB_VERSION_PREVIOUS);
           if (strncmp(vb, dbVersion, sizeof(dbVersion)))
@@ -123,6 +126,8 @@ bool ChartTableHeader::CheckValid()
                 wxLogMessage(_T("   Scheduling db upgrade to current db version on Toolbox->Charts page visit..."));
                 return true;
           }
+*/
+
     }
     else
     {
