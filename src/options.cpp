@@ -465,7 +465,7 @@ void options::CreateControls()
     itemStaticBoxSizerCDO->Add(pSDisplayGrid, 1, wxALIGN_LEFT|wxALL, 2);
 
     //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits"));
+    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units"));
     itemStaticBoxSizerCDO->Add(pSDepthUnits, 1, wxALIGN_LEFT|wxALL, 2);
 
     //  Skewed Raster compenstation checkbox
