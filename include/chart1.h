@@ -229,12 +229,14 @@ class MyFrame: public wxFrame
     void DoExportGPX(void);
     void DoImportGPX(void);
     void TogglebFollow(void);
+    void ToggleFullScreen();
     void SetbFollow(void);
     void ClearbFollow(void);
     void ToggleChartOutlines(void);
     void ToggleENCText(void);
     void TrackOn(void);
-    void TrackOff(void);
+    void TrackOff(bool do_add_point = false);
+    void TrackMidnightRestart(void);
     void ToggleColorScheme();
     int GetnChartStack(void);
     void SetToolbarItemState ( int tool_id, bool state );

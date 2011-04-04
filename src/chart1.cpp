@@ -460,6 +460,7 @@ wxString         g_CM93DictDir;
 bool             g_bShowTrackIcon;
 bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
+bool             g_bTrackDaily;
 Track            *g_pActiveTrack;
 double           g_TrackIntervalSeconds;
 double           g_TrackDeltaDistance;
@@ -1417,6 +1418,7 @@ bool MyApp::OnInit()
               g_bShowMoored = true;
               g_ShowMoored_Kts = 0.2;
               g_bShowTrackIcon = true;
+              g_bTrackDaily = false;
 
               if(ps52plib->m_bOK)
               {
@@ -1582,8 +1584,8 @@ bool MyApp::OnInit()
        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
        g_pi_manager->NotifyAuiPlugIns();
 
-       //   Save the existing Screen Brightness
-       SaveScreenBrightness();
+       //   Initialize and Save the existing Screen Brightness
+       InitScreenBrightness();
 
        bool b_SetInitialPoint = false;
 
@@ -3163,6 +3165,7 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_sort_asc;
     delete _img_sort_desc;
+    delete _img_cross;
 
 
 
@@ -3811,6 +3814,12 @@ void MyFrame::ToggleColorScheme()
       SetAndApplyColorScheme(s);
 }
 
+void MyFrame::ToggleFullScreen()
+{
+      bool to = ! IsFullScreen();
+      ShowFullScreen(to, 0);//wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION);
+}
+
 void MyFrame::ActivateMOB(void)
 {
       //    The MOB point
@@ -3886,14 +3895,20 @@ void MyFrame::TrackOn(void)
 
 }
 
-void MyFrame::TrackOff(void)
+void MyFrame::TrackOff(bool do_add_point)
  {
       if(g_pActiveTrack)
       {
-            g_pActiveTrack->Stop();
+            g_pActiveTrack->Stop( do_add_point );
 
             if ( g_pActiveTrack->GetnPoints() < 2 )
                   g_pRouteMan->DeleteRoute ( g_pActiveTrack );
+            else
+                  if (g_bTrackDaily) {
+                        if (g_pActiveTrack->DoExtendDaily())
+                        g_pRouteMan->DeleteRoute ( g_pActiveTrack );
+                  }
+
       }
 
       g_pActiveTrack = NULL;
@@ -3904,10 +3919,18 @@ void MyFrame::TrackOff(void)
             m_toolBar->ToggleTool(ID_TRACK, g_bTrackActive);
 }
 
+void MyFrame::TrackMidnightRestart(void)
+{
+      if (!g_pActiveTrack) return;
 
+      Track *pPreviousTrack = g_pActiveTrack;
+      TrackOff(true);
+      TrackOn();
+      g_pActiveTrack->FixMidnight(pPreviousTrack);
 
-
-
+      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                  pRouteManagerDialog->UpdateTrkListCtrl();
+}
 
 void MyFrame::ToggleCourseUp(void)
 {
@@ -4773,6 +4796,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             }
             wxLogMessage(navmsg);
             g_loglast_time = lognow;
+
+            if (hour == 0 && minute == 0 && g_bTrackDaily) TrackMidnightRestart();
 
             int bells = (hour % 4)*2;     // 2 bells each hour
             if (minute!=0) bells++;       // + 1 bell on 30 minutes

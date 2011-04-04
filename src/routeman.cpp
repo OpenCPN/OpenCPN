@@ -1103,8 +1103,11 @@ WayPointman::WayPointman()
       MAKEICONARRAYS("wreck1", wreck1, "Wreck A")
       MAKEICONARRAYS("wreck2", wreck2, "Wreck B")
       MAKEICONARRAYS("xmblue", xmblue, "Blue X")
+      MAKEICONARRAYS("xmblue_", empty, "Blue Track")
       MAKEICONARRAYS("xmgreen", xmgreen, "Green X")
+      MAKEICONARRAYS("xmgreen_", empty, "Green Track")
       MAKEICONARRAYS("xmred", xmred, "Red X")
+      MAKEICONARRAYS("xmred_", empty, "Red Track")
       MAKEICONARRAYS("activepoint", activepoint, "Active WP")
 
 // Load user defined icons; toh, 09.10.07

@@ -148,6 +148,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern bool             g_bTrackCarryOver;
+extern bool             g_bTrackDaily;
 extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
@@ -2072,9 +2073,9 @@ Track::Track ( void )
       m_minTrackpoint_delta = .01;
       m_bTrackTime = false;
       m_bTrackDistance = false;
-      m_prev_time = wxDateTime::Now();
-      m_prev_time.ResetTime();            // set to midnight this morning.
-
+      //m_prev_time = wxDateTime::Now();
+      //m_prev_time.ResetTime();            // set to midnight this morning.
+      m_prev_time = wxInvalidDateTime;
       m_prev_glon = -999.;
       m_prev_glat = -999.;
 
@@ -2100,19 +2101,61 @@ void Track::Start ( void )
       }
 }
 
-void Track::Stop ( void )
+void Track::Stop ( bool do_add_point )
 {
       double delta = DistGreatCircle ( gLat, gLon, m_prev_glat, m_prev_glon );
 
-      if (( m_bRunning ) && ( delta > m_minTrackpoint_delta ))
-            AddPointNow();                   // Add last point
-
+      if (( m_bRunning ) && (( delta > m_minTrackpoint_delta ) || do_add_point))
+            AddPointNow( do_add_point );                   // Add last point
 
       m_TimerTrack.Stop();
       m_bRunning = false;
       m_track_run = 0;
 }
 
+bool Track::DoExtendDaily()
+{
+            Route *pExtendRoute = NULL;
+            RoutePoint *pExtendPoint = NULL;
+            
+            RoutePoint *pLastPoint = this->GetPoint(1);
+
+            wxRouteListNode *route_node = pRouteList->GetFirst();
+            while(route_node) {
+                  Route *proute = route_node->GetData();
+                  if (proute->m_bIsTrack) {
+                        RoutePoint *track_node = proute->GetLastPoint();
+                              if(track_node->m_CreateTime <= pLastPoint->m_CreateTime)
+                                    if (!pExtendPoint || track_node->m_CreateTime > pExtendPoint->m_CreateTime) {
+                                          pExtendPoint = track_node;
+                                          pExtendRoute = proute;
+                                    }
+                  }
+                  route_node = route_node->GetNext();                         // next route
+            }
+            if (pExtendRoute
+                  && pExtendRoute->GetPoint(1)->m_CreateTime.FromTimezone(wxDateTime::GMT0).IsSameDate(pLastPoint->m_CreateTime.FromTimezone(wxDateTime::GMT0))){
+                        int begin = 1;
+                        if (pLastPoint->m_CreateTime == pExtendPoint->m_CreateTime) begin = 2;
+                        pSelect->DeleteAllSelectableTrackSegments(pExtendRoute);
+                        pExtendRoute->CloneTrack(this, begin, this->GetnPoints(), _(""));
+                        pSelect->AddAllSelectableTrackSegments ( pExtendRoute );
+                        pSelect->DeleteAllSelectableTrackSegments(this);
+                        this->ClearHighlights();
+                        return true;
+            }
+            else
+                  return false;
+}
+
+void Track::FixMidnight(Track *pPreviousTrack)
+{
+      RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
+      CloneAddedTrackPoint(m_pLastAddedPoint, pMidnightPoint);
+      m_prev_glat = pMidnightPoint->m_lat;
+      m_prev_glon = pMidnightPoint->m_lon;
+      m_prev_time = pMidnightPoint->m_CreateTime.FromUTC();
+}
 
 void Track::OnTimerTrack ( wxTimerEvent& event )
 {
@@ -2132,7 +2175,7 @@ void Track::OnTimerTrack ( wxTimerEvent& event )
 
       if ( b_addpoint )
             AddPointNow();
-      else if ( ( GetnPoints() < 2 )&& (delta < m_DeltaDistance) )  //continuously update track beginning point timestamp if no movement.
+      else if ( ( GetnPoints() < 2 ) && (delta < m_DeltaDistance) && !g_bTrackDaily)  //continuously update track beginning point timestamp if no movement.
       {
             wxDateTime now = wxDateTime::Now();
             pRoutePointList->GetFirst()->GetData()->m_CreateTime = now.ToUTC();
@@ -2141,16 +2184,23 @@ void Track::OnTimerTrack ( wxTimerEvent& event )
       m_TimerTrack.Start ( 1000, wxTIMER_CONTINUOUS );
 }
 
-void Track::AddPointNow()
+void Track::AddPointNow(bool do_add_point)
 {
 
       wxDateTime now = wxDateTime::Now();
 
-      if((m_prev_glat == gLat) && (m_prev_glon == gLon))                 // avoid zero length segs
-            return;
+        //wxString imsg = now.FormatISODate()+now.FormatISOTime()+_T("AddPointNow()");
+        //wxLogMessage(imsg);
 
-      if(m_prev_time == now)                                            // avoid zero time segs
-            return;
+      if((m_prev_glat == gLat) && (m_prev_glon == gLon))                 // avoid zero length segs
+            if (!do_add_point) return;
+
+      if (m_prev_time.IsValid())
+            if(m_prev_time == now)                                            // avoid zero time segs
+                 if (!do_add_point) return;
+
+        //imsg = now.FormatISODate()+now.FormatISOTime()+_T("Adding Point Now");
+        //wxLogMessage(imsg);
 
       RoutePoint *pTrackPoint = new RoutePoint ( gLat, gLon, wxString ( _T ( "empty" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
       pTrackPoint->m_bShowName = false;
@@ -2409,6 +2459,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "FullScreenQuilt" ),  &g_bFullScreenQuilt, 1 );
 
       Read ( _T ( "StartWithTrackActive" ),  &g_bTrackCarryOver, 0 );
+      Read (_T ( "AutomaticDailyTracks" ),  &g_bTrackDaily, 0 );
 
       wxString stps;
       Read ( _T ( "PlanSpeed" ),  &stps );
@@ -3568,6 +3619,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "PreserveScaleOnX" ),   g_bPreserveScaleOnX );
 
       Write ( _T ( "StartWithTrackActive" ),   g_bTrackCarryOver );
+      Write ( _T ( "AutomaticDailyTracks" ),   g_bTrackDaily );
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
 

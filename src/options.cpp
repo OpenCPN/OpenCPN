@@ -116,6 +116,7 @@ extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
+extern bool             g_bTrackDaily;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
@@ -1172,8 +1173,8 @@ void options::CreateControls()
     itemBoxSizerAdvancedPanel->Add(itemStaticBoxSizerTrack, 0, wxGROW|wxALL, border_size);
     pTrackShowIcon = new wxCheckBox( itemPanelAdvanced, ID_TRACKCHECKBOX, _("Show Track icon"));
     itemStaticBoxSizerTrack->Add(pTrackShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
-
-
+    pTrackDaily = new wxCheckBox( itemPanelAdvanced, ID_DAILYCHECKBOX, _("Automatic Daily Tracks"));
+    itemStaticBoxSizerTrack->Add(pTrackDaily, 1, wxALIGN_LEFT|wxALL, border_size);
 
     wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer(2);
     pTrackGrid->AddGrowableCol(1);
@@ -1390,6 +1391,7 @@ void options::SetInitialSettings()
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
+      pTrackDaily->SetValue(g_bTrackDaily);
 
       s.Printf(_T("%4.0f"),g_TrackIntervalSeconds);
       m_pText_TP_Secs->SetValue(s);
@@ -1778,7 +1780,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bTrackTime = m_pCheck_Trackpoint_time->GetValue();
     g_bTrackDistance = m_pCheck_Trackpoint_distance->GetValue();
 
-
+    g_bTrackDaily = pTrackDaily->GetValue();
 
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 

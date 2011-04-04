@@ -102,6 +102,7 @@ enum {
         ID_AISALERTSELECTSOUND,
         ID_AISALERTTESTSOUND,
         ID_TRACKCHECKBOX,
+        ID_DAILYCHECKBOX,
         ID_CM93ZOOM,
         ID_PANELPIM,
         ID_GRIBCHECKBOX,
@@ -333,6 +334,7 @@ public:
     wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
 
     wxCheckBox              *pTrackShowIcon;
+    wxCheckBox              *pTrackDaily;
     wxRadioButton           *m_pCheck_Trackpoint_time;
     wxRadioButton           *m_pCheck_Trackpoint_distance;
     wxTextCtrl              *m_pText_TP_Secs;

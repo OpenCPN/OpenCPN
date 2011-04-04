@@ -268,7 +268,9 @@ class Track : public wxEvtHandler, public Route
             void SetTPDist(bool bTrackDistance){ m_bTrackDistance = bTrackDistance; }
 
             void Start(void);
-            void Stop(void);
+            void Stop(bool do_add_point = false);
+            void FixMidnight(Track *pPreviousTrack);
+            bool DoExtendDaily(void);
 
             void Draw(wxDC& dc, ViewPort &VP);
 
@@ -277,7 +279,7 @@ class Track : public wxEvtHandler, public Route
 
       private:
             void OnTimerTrack(wxTimerEvent& event);
-            void AddPointNow();
+            void AddPointNow(bool do_add_point = false);
 
             bool              m_bRunning;
             wxTimer           m_TimerTrack;
