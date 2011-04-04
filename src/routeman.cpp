@@ -612,6 +612,8 @@ void Routeman::DeleteRoute(Route *pRoute)
             if ( GetpActiveRoute() == pRoute )
                   DeactivateRoute();
 
+            if (pRoute->m_bIsInLayer) return;
+
             //    Remove the route from associated lists
             pSelect->DeleteAllSelectableRouteSegments(pRoute);
             pRouteList->DeleteObject(pRoute);
@@ -678,6 +680,11 @@ void Routeman::DeleteAllRoutes(void)
       {
             Route *proute = node->GetData();
 
+            if (proute->m_bIsInLayer){
+                  node = node->GetNext();
+                  continue;
+            }
+
             if(!proute->m_bIsTrack)
             {
                   pConfig->m_bIsImporting = true;
@@ -703,6 +710,11 @@ void Routeman::DeleteAllTracks(void)
       while(node)
       {
             Route *proute = node->GetData();
+
+            if (proute->m_bIsInLayer){
+                  node = node->GetNext();
+                  continue;
+            }
 
             if(proute->m_bIsTrack)
             {
@@ -748,6 +760,8 @@ void Routeman::DeleteTrack(Route *pRoute)
 {
       if(pRoute)
       {
+            if (pRoute->m_bIsInLayer) return;
+
            ::wxBeginBusyCursor();
 
             //    Remove the route from associated lists
@@ -1564,8 +1578,8 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
       {
             RoutePoint *prp = node->GetData();
 
-            if ( b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
-                 && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) )  )
+            if ( !prp->m_bIsInLayer && (b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
+                 && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) ))  )
             {
                   if (prp == pAnchorWatchPoint1)
                         pAnchorWatchPoint1 = NULL;

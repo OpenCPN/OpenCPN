@@ -195,8 +195,8 @@ public:
     Route       *m_pRoute;
     Route       *m_pHead; // for route splitting
     Route       *m_pTail;
-      RoutePoint *m_pExtendPoint;
-      Route *m_pExtendRoute;
+    RoutePoint *m_pExtendPoint;
+    Route *m_pExtendRoute;
 
     double      m_planspeed;
     double      m_avgspeed;
@@ -241,6 +241,7 @@ public:
       bool UpdateProperties(void);
 
       void SetColorScheme(ColorScheme cs);
+      void SetDialogTitle(wxString title);
 
 private:
       void CreateControls();

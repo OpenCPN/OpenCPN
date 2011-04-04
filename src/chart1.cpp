@@ -152,6 +152,9 @@ wxString        *pdir_list[20];
 int             g_restore_stackindex;
 
 RouteList       *pRouteList;
+LayerList       *pLayerList;
+bool              g_bIsNewLayer;
+int               g_LayerIdx;
 
 Select          *pSelect;
 Select          *pSelectTC;
@@ -1774,6 +1777,32 @@ bool MyApp::OnInit()
 //debug
 //        g_COGAvg = 45.0;
 
+        // Import Layer-wise any .gpx files from /Layers directory
+        wxString layerdir(_T("layers"));
+        wxArrayString file_array;
+        g_LayerIdx = 0;
+        layerdir.Prepend(g_SData_Locn);
+
+        wxString laymsg;
+        laymsg.Printf(wxT("Getting .gpx layer files from: %s"), layerdir.c_str());
+        wxLogMessage(laymsg);
+
+        wxDir dir;
+        dir.Open(layerdir);
+        if ( dir.IsOpened() ) {
+              wxString filename;
+              layerdir.Append(wxFileName::GetPathSeparator());
+              bool cont = dir.GetFirst(&filename);
+              while (cont) {
+                    filename.Prepend(layerdir);
+                    wxFileName f(filename);
+                    if (f.GetExt().IsSameAs(wxT("gpx")))
+                        pConfig->ImportGPX(gFrame, true, filename, false); // preload a single-gpx-file layer
+                    else 
+                        pConfig->ImportGPX(gFrame, true, filename, true); // preload a layer from subdirectory
+                  cont = dir.GetNext(&filename);
+              }
+        }
 
         cc1->ReloadVP();                  // once more, and good to go
 
@@ -3752,6 +3781,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->UpdateLayListCtrl();
             pRouteManagerDialog->Show();
             break;
       }

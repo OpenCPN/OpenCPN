@@ -123,6 +123,8 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
 {
       m_SplitButton->Enable(false);
 
+      if (m_pRoute->m_bIsInLayer) return;
+
       if ((m_nSelected > 1) && (m_nSelected < m_pRoute->GetnPoints())) {
             if (m_pRoute->m_bIsTrack) {
                   m_pHead = new Track();
@@ -162,6 +164,7 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
             }
 
             SetRouteAndUpdate(m_pTail);
+            UpdateProperties();
 
             if ( pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
                   if (!m_pTail->m_bIsTrack) 
@@ -185,6 +188,7 @@ void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
                         m_pRoute->CloneRoute(m_pExtendRoute, fm, to, _("_plus"));
                         pSelect->AddAllSelectableRouteSegments ( m_pRoute );
                         SetRouteAndUpdate(m_pRoute);
+                        UpdateProperties();
                   }
             }
       } // end route extend
@@ -202,6 +206,7 @@ void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
                         g_pRouteMan->DeleteTrack(m_pRoute);
 
                         SetRouteAndUpdate(m_pExtendRoute);
+                        UpdateProperties();
 
                         if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
                               pRouteManagerDialog->UpdateTrkListCtrl();
@@ -213,7 +218,7 @@ bool RouteProp::IsThisRouteExtendable()
 {
       m_pExtendRoute = NULL;
       m_pExtendPoint = NULL;
-      if (m_pRoute->m_bRtIsActive) return false;
+      if (m_pRoute->m_bRtIsActive || m_pRoute->m_bIsInLayer) return false;
 
       if (!m_pRoute->m_bIsTrack) {
             RoutePoint *pLastPoint = m_pRoute->GetLastPoint();
@@ -267,7 +272,7 @@ bool RouteProp::IsThisTrackExtendable()
 {
             m_pExtendRoute = NULL;
             m_pExtendPoint = NULL;
-            if(m_pRoute == g_pActiveTrack) return false;
+            if(m_pRoute == g_pActiveTrack || m_pRoute->m_bIsInLayer) return false;
             
             RoutePoint *pLastPoint = m_pRoute->GetPoint(1);
 
@@ -285,7 +290,7 @@ bool RouteProp::IsThisTrackExtendable()
                   route_node = route_node->GetNext();                         // next route
             }
             if (m_pExtendRoute)
-                  return true;
+                  return (!m_pExtendRoute->m_bIsInLayer);
             else
                   return false;
 }
@@ -311,8 +316,12 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
       if ( prp )
       {
           prp->m_bPtIsSelected = true;                // highlight the routepoint
-          m_nSelected = selected_no + 1;
-          if (!(m_pRoute == g_pActiveTrack) && !(m_pRoute->m_bRtIsActive)) m_SplitButton->Enable(true);
+
+          if (!(m_pRoute->m_bIsInLayer) && !(m_pRoute == g_pActiveTrack) && !(m_pRoute->m_bRtIsActive)) {
+                m_nSelected = selected_no + 1;
+                m_SplitButton->Enable(true);
+          }
+
 //          vLat = cc1->VPoint.clat = prp->m_lat;
 //          vLon = cc1->VPoint.clon = prp->m_lon;
 //          cc1->SetVPScale ( cc1->GetVPScale() );
@@ -641,14 +650,11 @@ bool RouteProp::UpdateProperties()
 {
       ::wxBeginBusyCursor();
 
-      m_ExtendButton->SetLabel(_T("Extend"));
-      m_ExtendButton->Enable(false);
-
-      m_SplitButton->SetLabel(_T("Split"));
-      m_SplitButton->Enable(false);
-
       m_TotalDistCtl->SetValue(_T(""));
       m_TimeEnrouteCtl->SetValue(_T(""));
+
+      m_SplitButton->Enable(false);
+      m_ExtendButton->Enable(false);
 
       if(m_pRoute)
       {
@@ -847,7 +853,7 @@ bool RouteProp::SaveChanges(void)
 //  Save the current planning speed
     g_PlanSpeed = m_planspeed;
 
-    if(m_pRoute)
+    if(m_pRoute && !m_pRoute->m_bIsInLayer)
     {
       //  Get User input Text Fields
       m_pRoute->m_RouteNameString = m_RouteNameCtl->GetValue();
@@ -1196,6 +1202,12 @@ bool MarkProp::ShowToolTips()
     return TRUE;
 }
 
+void MarkProp::SetDialogTitle(wxString title)
+{
+      SetTitle(title);
+}
+
+
 
 void MarkProp::SetRoutePoint(RoutePoint *pRP)
 {
@@ -1253,6 +1265,8 @@ bool MarkProp::SaveChanges(void)
 {
       if(m_pRoutePoint)
       {
+            if (m_pRoutePoint->m_bIsInLayer) return true;
+
             //  Get User input Text Fields
             m_pRoutePoint->m_MarkName = m_MarkNameCtl->GetValue();
             m_pRoutePoint->m_MarkDescription = m_pDescTextCtl->GetValue();
@@ -1360,6 +1374,8 @@ void MarkProp::OnIconListSelected( wxListEvent& event )
       {
            m_current_icon_Index = new_index;
 
+           if (m_pRoutePoint->m_bIsInLayer) return;
+
            m_pRoutePoint->m_IconName = *(pWayPointMan->GetIconKey(m_current_icon_Index));
            m_pRoutePoint->ReLoadIcon();
 
@@ -1370,6 +1386,8 @@ void MarkProp::OnIconListSelected( wxListEvent& event )
 
 void MarkProp::OnShowNamecheckboxClick( wxCommandEvent& event )
 {
+     if (m_pRoutePoint->m_bIsInLayer) return;
+
       m_pRoutePoint->m_bShowName = m_ShowNameCheckbox->GetValue();
 
       // dynamically update the icon on the canvas
@@ -1382,8 +1400,10 @@ void MarkProp::OnPositionCtlUpdated( wxCommandEvent& event )
       double lat = fromDMM(m_MarkLatCtl->GetValue());
       double lon = fromDMM(m_MarkLonCtl->GetValue());
 
-      m_pRoutePoint->SetPosition(lat, lon);
-      pSelect->ModifySelectablePoint(lat, lon, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
+      if (!m_pRoutePoint->m_bIsInLayer) {
+            m_pRoutePoint->SetPosition(lat, lon);
+            pSelect->ModifySelectablePoint(lat, lon, (void *)m_pRoutePoint, SELTYPE_ROUTEPOINT);
+      }
 
       //    Update the mark position dynamically
       cc1->Refresh();

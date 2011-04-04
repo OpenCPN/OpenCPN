@@ -26,9 +26,11 @@
 #include <wx/notebook.h>
 #include <wx/panel.h>
 #include <wx/listctrl.h>
+#include <wx/notebook.h>
 
 class wxButton;
 class Route;
+class Layer;
 
 class RouteManagerDialog : public wxDialog {
       DECLARE_EVENT_TABLE()
@@ -40,6 +42,8 @@ class RouteManagerDialog : public wxDialog {
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
             void UpdateWptListCtrl();
+            void UpdateLayListCtrl();
+            void OnTabSwitch(wxNotebookEvent& event);
 
       private:
             void Create();
@@ -48,6 +52,10 @@ class RouteManagerDialog : public wxDialog {
             void ZoomtoRoute(Route *route); // Attempt to zoom route into the view
             void UpdateTrkButtons();           // Correct button state
             void UpdateWptButtons();           // Correct button state
+            void UpdateLayButtons();           // Correct button state
+            void ToggleLayerContentsOnChart(Layer *layer);
+            void ToggleLayerContentsOnListing(Layer *layer);
+            void ToggleLayerContentsNames(Layer *layer);
 
             // event handlers
             void OnRteDeleteClick(wxCommandEvent &event);
@@ -85,6 +93,16 @@ class RouteManagerDialog : public wxDialog {
             void OnWptSelected(wxListEvent &event);
             void OnWptToggleVisibility(wxMouseEvent &event);
             void OnWptColumnClicked(wxListEvent &event);
+            void OnLayDefaultAction(wxListEvent &event);
+            void OnLayNewClick(wxCommandEvent &event);
+            void OnLayPropertiesClick(wxCommandEvent &event);
+            void OnLayToggleChartClick(wxCommandEvent &event);
+            void OnLayToggleListingClick(wxCommandEvent &event);
+            void OnLayToggleNamesClick(wxCommandEvent &event);
+            void OnLayDeleteClick(wxCommandEvent &event);
+            void OnLaySelected(wxListEvent &event);
+            void OnLayToggleVisibility(wxMouseEvent &event);
+            void OnLayColumnClicked(wxListEvent &event);
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
 
@@ -93,9 +111,11 @@ class RouteManagerDialog : public wxDialog {
             wxPanel    *m_pPanelRte;
             wxPanel    *m_pPanelTrk;
             wxPanel    *m_pPanelWpt;
+            wxPanel     *m_pPanelLay;
             wxListCtrl *m_pRouteListCtrl;
             wxListCtrl *m_pTrkListCtrl;
             wxListCtrl *m_pWptListCtrl;
+            wxListCtrl  *m_pLayListCtrl;
 
             wxButton *btnRteProperties;
             wxButton *btnRteActivate;
@@ -119,6 +139,12 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnWptExport;
             wxButton *btnWptSendToGPS;
             wxButton *btnWptDeleteAll;
+            wxButton *btnLayNew;
+            wxButton *btnLayProperties;
+            wxButton *btnLayToggleChart;
+            wxButton *btnLayToggleListing;
+            wxButton *btnLayToggleNames;
+            wxButton *btnLayDelete;
             wxButton *btnImport;
             wxButton *btnExport;
 

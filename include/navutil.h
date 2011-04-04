@@ -121,7 +121,11 @@ public:
 
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
+      bool IsListed() { return m_bIsListed; }
+      bool IsNameShown() { return m_bShowName; }
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
+      void SetListed(bool viz = true){ m_bIsListed = viz; }
+      void SetNameShown(bool viz = true) { m_bShowName = viz; }
 
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
@@ -143,6 +147,7 @@ public:
                                                 //  route
 
       bool              m_bIsVisible;           // true if should be drawn, false if invisible
+      bool              m_bIsListed;
       bool              m_bIsActive;
       int               m_ConfigWPNum;
       wxString          m_MarkName;
@@ -160,6 +165,8 @@ public:
       int               m_NameLocationOffsetY;
       wxDateTime        m_CreateTime;
       int               m_GPXTrkSegNo;
+      bool              m_bIsInLayer;
+      int               m_LayerID;
 
       HyperlinkList     *m_HyperlinkList;
 
@@ -204,11 +211,14 @@ public:
       void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
       void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
       void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
+      void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
       void RenderSegment(wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
 
       void SetVisible(bool visible = true);
+      void SetListed(bool visible = true);
       bool IsVisible() { return m_bVisible; }
+      bool IsListed() { return m_bListed; }
       bool IsActive() { return m_bRtIsActive; }
       bool IsSelected() { return m_bRtIsSelected; }
 
@@ -231,7 +241,8 @@ public:
       RoutePoint  *m_pLastAddedPoint;
       bool        m_bDeleteOnArrival;
       wxString    m_GUID;
-
+      bool        m_bIsInLayer;
+      int         m_LayerID;
 
       wxArrayString      RoutePointGUIDList;
       RoutePointList     *pRoutePointList;
@@ -243,7 +254,7 @@ private:
       int         m_nPoints;
       int         m_nm_sequence;
       bool        m_bVisible; // should this route be drawn?
-
+      bool        m_bListed;
       double      m_ArrivalRadius;
 
 };
@@ -302,6 +313,38 @@ DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
+//    Layer
+//----------------------------------------------------------------------------
+
+class Layer
+{
+public:
+      Layer(void);
+      ~Layer(void);
+      wxString CreatePropString(void) { return m_LayerFileName; }
+      bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
+      void SetVisibleOnChart(bool viz = true){ m_bIsVisibleOnChart = viz; }
+      bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
+      void SetVisibleOnListing(bool viz = true){ m_bIsVisibleOnListing = viz; }
+      bool HasVisibleNames() { return m_bHasVisibleNames; }
+      void SetVisibleNames(bool viz = true){ m_bHasVisibleNames = viz; }
+
+      bool m_bIsVisibleOnChart;
+      bool m_bIsVisibleOnListing;
+      bool m_bHasVisibleNames;
+      long m_NoOfItems;
+      int m_LayerID;
+
+      wxString          m_LayerName;
+      wxString          m_LayerFileName;
+      wxString          m_LayerDescription;
+      wxDateTime        m_CreateTime;
+
+};
+
+WX_DECLARE_LIST(Layer, LayerList);// establish class as list member
+
+//----------------------------------------------------------------------------
 //    Static XML Helpers
 //----------------------------------------------------------------------------
 
@@ -349,7 +392,7 @@ public:
       virtual void StoreNavObjChanges();
 
       void ExportGPX(wxWindow* parent);
-	void ImportGPX(wxWindow* parent);
+	void ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
 
       bool ExportGPXRoute(wxWindow* parent, Route *pRoute);
       bool ExportGPXWaypoint(wxWindow* parent, RoutePoint *pRoutePoint);
@@ -375,6 +418,7 @@ public:
       bool  m_bQuilt;
 
       bool  m_bIsImporting;
+
 
 };
 
