@@ -570,12 +570,19 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
       if(ROTAIS != -128)
       {
-            if(ROTIND > 0)
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
-            else if(ROTIND < 0)
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+            if(ROTAIS == 127)
+                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Right\n"));
+            else if(ROTAIS == -127)
+                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Left\n"));
             else
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min.\n"), ROTIND);
+            {
+                  if(ROTIND > 0)
+                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
+                  else if(ROTIND < 0)
+                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+                  else
+                        line.Printf(_("Rate Of Turn            NIL\n"));
+            }
 
             result.Append(line);
       }
