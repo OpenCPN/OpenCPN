@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chcanv.cpp,v 1.107 2010/06/25 02:03:34 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -989,7 +988,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   m_pcandidate_array->Add(qcnew);
            }
       }
-
+/*
       //    For S57ENCs
       if(CHART_TYPE_S57 == m_reference_type)
       {
@@ -1055,9 +1054,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   }
             }
       }
+*/
       if(g_bFullScreenQuilt)
       {
-            //    Search the entire database, adding all charts which are on the ViewPort in any way
+            //    Search the entire database, potentially adding all charts which are on the ViewPort in any way
             //    .AND. whose scale is less than twice the the reference scale.
             int n_all_charts = ChartData->GetChartTableEntries();
 
@@ -1073,12 +1073,32 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   (ChartData->GetDBChartProj(i) == m_quilt_proj) &&
                   (ChartData->GetDBChartScale(i) >= m_reference_scale / 2))
                   {
+                        //Get the fractional area of this chart
+                        double chart_fractional_area = 0.;
+                        double quilt_area = vp_local.pix_width * vp_local.pix_height;
+                        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+                        wxRegion chart_region = GetChartQuiltRegion(cte, vp_local);
+                        if(!chart_region.Empty())
+                        {
+                              wxRect rect_ch = chart_region.GetBox();
+                              chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
+                        }
+
+
                         wxBoundingBox chart_box;
                         ChartData->GetDBBoundingBox(i, &chart_box);
 
                         bool b_add = false;
                         if((viewbox.Intersect( chart_box) != _OUT))
                               b_add = true;
+
+                        //    Special case for S57 ENC
+                        //    Add the chart only if the chart's fractional area exceeds 10%
+                        if(CHART_TYPE_S57 == m_reference_type)
+                        {
+                              if(chart_fractional_area < .10)
+                                    b_add = false;
+                        }
 
                         if(b_add)
                         {
@@ -1195,7 +1215,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Now the rest of the candidates
-      if((CHART_TYPE_S57 == m_reference_type) || !vp_region.IsEmpty())
+      if((0/*CHART_TYPE_S57 == m_reference_type*/) || !vp_region.IsEmpty())
       {
             for( ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
             {
@@ -1253,8 +1273,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         pqc->b_include = false;                         // skip for now
 
       /// Don't break early if the quilt is S57 ENC
-      /// This will allow the overlay cells found in Euro IENC to be included
-                  if(CHART_TYPE_S57 != m_reference_type)
+      /// This will allow the overlay cells found in Euro(Austrian) IENC to be included
+                  if(1/*CHART_TYPE_S57 != m_reference_type*/)
                   {
                         if(vp_region.IsEmpty())                         // normal stop condition, quilt is full
                               break;
@@ -1527,11 +1547,12 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
 /// In S57ENC quilts, do not subtract larger scale regions from smaller,
 /// This allows exactly co-incident chart regions to both be included
-/// This covers the case found in layered Euro IENC cells
-
-                  if(CHART_TYPE_S57 != ctei.GetChartType() /*m_reference_type*/)
+/// This covers the case found in layered Euro(Austrian) IENC cells
+/*
+                  if(CHART_TYPE_S57 != ctei.GetChartType() )
                         if(!vpr_region.Empty())
                               vpr_region.Subtract(larger_scale_chart_region);
+*/
             }
 
             //    Whatever is left in the vpr region must belong to the current target chart
@@ -3059,6 +3080,11 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         ReloadVP();
                         break;
                   }
+
+                  case WXK_F10:
+                        parent_frame->ToggleFullScreen();
+                        break;
+
 /*
                   case WXK_F11:
                         ShowGribDialog();
@@ -3147,6 +3173,13 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               m_pMeasureRoute = NULL;
                               Refresh ( false );
                         }
+
+                        if ( parent_frame->nRoute_State )         // creating route?
+                        {
+                              FinishRoute();
+                              Refresh(false);
+                        }
+
                         b_proc = true;
                         break;
 
@@ -7935,6 +7968,8 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
 
                 case ID_RC_MENU_FINISH:
+                        FinishRoute();
+/*
                         parent_frame->nRoute_State = 0;
                         parent_frame->SetToolbarItemState ( ID_ROUTE, false );
                         SetMyCursor ( pCursorArrow );
@@ -7978,7 +8013,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_pSelectedRoute = NULL;
 //                        m_pFoundRoutePoint = NULL;
                         m_pFoundRoutePointSecond = NULL;
-
+*/
                         Refresh ( false );
                         break;
 
@@ -8008,6 +8043,53 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
         g_click_stop = 0;    // Context menu was processed, all is well
 
 }
+
+void ChartCanvas::FinishRoute(void)
+{
+      parent_frame->nRoute_State = 0;
+      parent_frame->SetToolbarItemState ( ID_ROUTE, false );
+      SetMyCursor ( pCursorArrow );
+      m_bDrawingRoute = false;
+
+      if ( m_pMouseRoute )
+      {
+            if ( m_bAppendingRoute )
+                  pConfig->UpdateRoute ( m_pMouseRoute );
+            else
+            {
+                  if ( m_pMouseRoute->GetnPoints() > 1 )
+                  {
+                        pConfig->AddNewRoute ( m_pMouseRoute, -1 );    // use auto next num
+                  }
+                  else
+                  {
+                        g_pRouteMan->DeleteRoute ( m_pMouseRoute );
+                        m_pMouseRoute = NULL;
+                  }
+
+                  if ( m_pMouseRoute )
+                        m_pMouseRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
+            }
+            if ( m_pMouseRoute )
+                  m_pMouseRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
+
+            if ( pRoutePropDialog )
+            {
+                  pRoutePropDialog->SetRouteAndUpdate ( m_pMouseRoute );
+                  pRoutePropDialog->UpdateProperties();
+            }
+
+            if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                  pRouteManagerDialog->UpdateRouteListCtrl();
+
+      }
+      m_bAppendingRoute = false;
+      m_pMouseRoute = NULL;
+
+      m_pSelectedRoute = NULL;
+      m_pFoundRoutePointSecond = NULL;
+}
+
 
 void ChartCanvas::ShowAISTargetList(void)
 {
@@ -12254,4 +12336,239 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
 {
       // We do not want to change the position on lat/lon now
 }
+
+//--------------------------------------------------------------------------------------------------------
+//    Screen Brightness Control Support Routines
+//
+//--------------------------------------------------------------------------------------------------------
+#ifdef __WIN32__
+#include <windows.h>
+
+                     HMODULE hGDI32DLL;
+         typedef BOOL (WINAPI *SetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
+         typedef BOOL (WINAPI *GetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
+         SetDeviceGammaRamp_ptr_type   g_pSetDeviceGammaRamp;            // the API entry points in the dll
+         GetDeviceGammaRamp_ptr_type   g_pGetDeviceGammaRamp;
+
+         HMODULE hUSER32DLL;
+         typedef DWORD (WINAPI *SetLayeredWindowAttributes_ptr_type)(HWND, DWORD, BYTE, DWORD);
+
+         SetLayeredWindowAttributes_ptr_type       g_pSetLayeredWindowAttributes;
+
+         //  "Gamma" mode parameters
+         WORD                             *g_pSavedGammaMap;
+
+         // "Curtain" mode parameters
+         wxWindow                         *g_pcurtain;
+         HWND                             curtain_handle;
+
+#endif
+
+int InitScreenBrightness(void)
+{
+#ifdef __WIN32__
+      HDC hDC;
+      BOOL bbr;
+
+      if(NULL == hGDI32DLL)
+      {
+            hGDI32DLL = LoadLibrary(TEXT("gdi32.dll"));
+
+            if(NULL != hGDI32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                  {
+                        FreeLibrary(hGDI32DLL);
+                        hGDI32DLL = NULL;
+                        return 0;
+                  }
+            }
+      }
+
+
+      //    Interface is ready, so....
+      //    Get some storage
+      g_pSavedGammaMap = (WORD *)malloc( 3 * 256 * sizeof(WORD));
+
+      hDC = GetDC(NULL);                                      // Get the full screen DC
+      bbr = g_pGetDeviceGammaRamp(hDC, g_pSavedGammaMap);    // Get the existing ramp table
+      ReleaseDC(NULL, hDC);                                       // Release the DC
+
+      return 1;
+
+
+#endif
+      return 0;
+}
+
+int RestoreScreenBrightness(void)
+{
+#ifdef __WIN32__
+      HDC hDC;
+      BOOL bbr;
+
+      if(g_pSavedGammaMap)
+      {
+            hDC = GetDC(NULL);                                            // Get the full screen DC
+            bbr = g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
+            ReleaseDC(NULL, hDC);                                             // Release the DC
+            return 1;
+      }
+      else
+            return 0;
+#endif
+
+      return 0;
+}
+
+//    Set brightness. [0..99]
+int SetScreenBrightness(int brightness)
+{
+#ifdef __WIN32__
+
+      BOOL rv;
+      LONG lstyle;
+
+      if(NULL == hUSER32DLL)
+      {
+            hUSER32DLL = LoadLibrary(TEXT("user32.dll"));
+
+            if(NULL != hUSER32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pSetLayeredWindowAttributes = (SetLayeredWindowAttributes_ptr_type)GetProcAddress(hUSER32DLL, "SetLayeredWindowAttributes");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pSetLayeredWindowAttributes))
+                  {
+                        FreeLibrary(hUSER32DLL);
+                        hUSER32DLL = NULL;
+                        return 0;
+                  }
+            }
+
+            //    Build the curtain window
+            g_pcurtain = new wxWindow(gFrame, -1, wxPoint(0,0), wxSize(200,200),
+				wxNO_BORDER | wxTRANSPARENT_WINDOW);
+
+            curtain_handle = (HWND) g_pcurtain->GetHWND();
+
+	        long styleCURT = GetWindowLong(curtain_handle, GWL_STYLE);
+			styleCURT &= ~WS_CHILD;
+            styleCURT |= WS_POPUP;
+            SetWindowLong(curtain_handle, GWL_STYLE, styleCURT);
+	        styleCURT = GetWindowLong(curtain_handle, GWL_STYLE);
+
+//	        g_pcurtain->Disable();
+	        g_pcurtain->Show();
+//	        g_pcurtain->Enable();
+
+      }
+
+      lstyle = GetWindowLong (curtain_handle , GWL_EXSTYLE );
+      lstyle |= WS_EX_LAYERED;
+	  lstyle |= WS_EX_TRANSPARENT;
+	  lstyle |= WS_EX_TOPMOST;
+      SetWindowLong (curtain_handle , GWL_EXSTYLE , lstyle ) ;
+
+      SetWindowPos(curtain_handle,
+                             lstyle & WS_EX_TOPMOST ? HWND_TOPMOST
+                                                         : HWND_NOTOPMOST,
+                             0, 0, 0, 0,
+                             SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+
+
+      lstyle = GetWindowLong (curtain_handle , GWL_EXSTYLE );
+
+      rv = g_pSetLayeredWindowAttributes (curtain_handle, RGB(255,255,255), brightness * 256 / 100, /*LWA_COLORKEY|*/LWA_ALPHA);
+
+      return 1;
+
+#endif
+
+#ifdef GAMMA__WIN32__
+
+
+      //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
+      //    Load the required library dll, if not already in place
+      wchar_t wdll_name[80];
+      LPCWSTR cstr;
+      HDC hDC;
+      BOOL bbr;
+      int cmcap;
+      WORD GammaTable[3][256];
+      int i;
+      int table_val, increment;
+
+      if(NULL == hGDI32DLL)
+      {
+                // Unicode stuff.....
+            MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
+            cstr = wdll_name;
+
+            hGDI32DLL = LoadLibrary(cstr);
+
+            if(NULL != hGDI32DLL)
+            {
+                        //Get the entry points of the required functions
+                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                        //    If the functions are not found, unload the DLL and return false
+                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                  {
+                        FreeLibrary(hGDI32DLL);
+                        hGDI32DLL = NULL;
+                        return 0;
+                  }
+            }
+      }
+
+
+      hDC = GetDC(NULL);                          // Get the full screen DC
+      cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
+      if (cmcap != CM_GAMMA_RAMP)
+      {
+//            wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
+//            return false;
+      }
+
+
+      increment = brightness * 256 / 100;
+
+      // Build the Gamma Ramp table
+      table_val = 0;
+      for (i = 0; i < 256; i++)
+      {
+
+            GammaTable[0][i] = GammaTable[1][i] = GammaTable[2][i] = (WORD)table_val;
+
+            table_val += increment;
+
+            if (table_val > 65535)
+                  table_val = 65535;
+
+      }
+
+      bbr = g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
+      ReleaseDC(NULL, hDC);                                     // Release the DC
+
+      return 1;
+
+
+
+
+#endif
+
+#ifdef __WXGTK__
+
+#endif
+      return 0;
+}
+
 

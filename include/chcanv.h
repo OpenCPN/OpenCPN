@@ -42,6 +42,16 @@
 #include "chart1.h"                 // for enum types
 
 
+//--------------------------------------------------------
+//    Screen Brightness Control Support Routines
+//
+//--------------------------------------------------------
+
+int InitScreenBrightness(void);
+int RestoreScreenBrightness(void);
+int SetScreenBrightness(int brightness);
+
+
 //    Set up the preferred quilt type
 #define QUILT_TYPE_2
 
@@ -228,6 +238,7 @@ public:
 
 private:
       void        PositionConsole(void);
+      void        FinishRoute(void);
 
       ChInfoWin   *m_pCIWin;
 
