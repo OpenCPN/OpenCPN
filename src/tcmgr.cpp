@@ -630,6 +630,113 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
 
 }
 
+bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now, float &tcvalue_prev, bool &w_t)
+{
+
+//    Return a sensible value of 0 by default
+      tcvalue_now = 0;
+	  tcvalue_prev = 0;
+	  w_t = false;
+
+
+//    Load up this location data
+
+      IDX_entry *pIDX = paIDX[idx];             // point to the index entry
+      if(   !pIDX->IDX_Useable )         
+            return false;                                        // no error, but unuseable
+	
+	  pmsd = find_or_load_harm_data(pIDX);
+      if(!pmsd)                           // Master station not found
+            return false;                      // Error
+
+	  have_offsets = 0;
+//    fudge_constituents(pmsd, pIDX);
+	  if(       pIDX->IDX_ht_time_off ||
+                pIDX->IDX_ht_off != 0.0 ||
+                pIDX->IDX_lt_off != 0.0 ||
+                pIDX->IDX_ht_mpy != 1.0 ||
+                pIDX->IDX_lt_mpy != 1.0)
+	  have_offsets = 1;
+
+      amplitude = 0.0;                // Force multiplier re-compute
+      time_t tt = time(NULL);
+      int yott = ((gmtime (&tt))->tm_year) + 1900;
+
+      happy_new_year (yott);//Force new multipliers
+
+//    Finally, process the tide flow sens
+	  
+	  tcvalue_now = time2asecondary (t , pIDX);
+	  tcvalue_prev = time2asecondary (t + sch_step , pIDX);
+
+	  w_t = tcvalue_now > tcvalue_prev;		// w_t = true --> flood , w_t = false --> ebb
+
+	  return true;
+	
+} 
+
+void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float tide_val ,bool w_t , int idx, float &tcvalue, time_t &tctime)
+{
+
+//    Return a sensible value of 0,0 by default
+      tcvalue = 0;
+	  tctime = t;
+
+
+//    Load up this location data
+
+
+      IDX_entry *pIDX = paIDX[idx];             // point to the index entry
+
+      if(   !pIDX->IDX_Useable )         
+            return;                                        // no error, but unuseable
+	
+	  pmsd = find_or_load_harm_data(pIDX);
+
+      if(!pmsd)                           // Master station not found
+            return;                      // Error
+
+	  have_offsets = 0;
+//    fudge_constituents(pmsd, pIDX);
+	  if(       pIDX->IDX_ht_time_off ||
+                pIDX->IDX_ht_off != 0.0 ||
+                pIDX->IDX_lt_off != 0.0 ||
+                pIDX->IDX_ht_mpy != 1.0 ||
+                pIDX->IDX_lt_mpy != 1.0)
+	  have_offsets = 1;
+
+
+
+      amplitude = 0.0;                // Force multiplier re-compute
+      time_t tt = time(NULL);
+      int yott = ((gmtime (&tt))->tm_year) + 1900;
+
+      happy_new_year (yott);//Force new multipliers
+
+// Finally, calculate the Hight and low tides
+	  double newval = tide_val;
+	  double oldval = ( w_t ) ? newval - 1: newval + 1 ;
+	  int j = 0 ;
+	  int k = 0 ;
+	  int ttt ;
+    while ( newval > oldval == w_t )			//searching each ten minute
+	  {
+		j++;
+		oldval = newval;
+		ttt = t + ( sch_step_1 * j );
+		newval = time2asecondary (ttt, pIDX);
+	}
+	oldval = ( w_t ) ? newval - 1: newval + 1 ;				
+	while ( newval > oldval == w_t )			// searching back each minute
+	{
+		oldval = newval ;
+		k++;
+		ttt = t +  ( sch_step_1 * j ) - ( sch_step_2 * k ) ;
+		newval = time2asecondary (ttt, pIDX);
+	}
+      tcvalue = newval;
+	  tctime = ttt + sch_step_2 ;
+}
 
 bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
 {

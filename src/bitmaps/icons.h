@@ -16,6 +16,7 @@ extern wxBitmap *_img_ais;
 extern wxBitmap *_img_ais_supressed;
 extern wxBitmap *_img_colscheme;
 extern wxBitmap *_img_compass;
+extern wxBitmap *_img_cross;
 extern wxBitmap *_img_current;
 extern wxBitmap *_img_down;
 extern wxBitmap *_img_exitt;

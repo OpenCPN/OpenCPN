@@ -85,6 +85,7 @@ int SetScreenBrightness(int brightness);
 #define     CURTRACK_TIMER    3
 #define     ROT_TIMER         4
 #define     RTELEGPU_TIMER    5
+#define     TCWININF_TIMER    6
 
 
 
@@ -230,6 +231,8 @@ public:
       //Todo build more accessors
       bool        m_bFollow;
       wxCursor    *pCursorPencil;
+	  wxCursor    *pCursorArrow;
+	  wxCursor    *pCursorCross;
       TCWin       *pCwin;
       ViewPort    VPoint;
       wxBitmap    *pscratch_bm;
@@ -281,7 +284,6 @@ private:
       wxCursor    *pCursorUpRight;
       wxCursor    *pCursorDownLeft;
       wxCursor    *pCursorDownRight;
-      wxCursor    *pCursorArrow;
 
       wxCursor    *pPriorCursor;
 
@@ -316,7 +318,7 @@ private:
       void DrawAllWaypointsInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
-      void DrawAllTidesInBBox(wxDC& dc, LLBBox& BBox, bool bRebuildSelList,
+      void DrawAllTidesInBBox(wxDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
                         bool bdraw_mono = false);
       void DrawAllCurrentsInBBox(wxDC& dc, LLBBox& BBox, double skew_angle,
                            bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
@@ -502,6 +504,7 @@ public:
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void MouseEvent(wxMouseEvent& event);
+	  void OnTCWinPopupTimerEvent(wxTimerEvent& event);
       void OKEvent(wxCommandEvent& event);
       void NXEvent(wxCommandEvent& event);
       void PREvent(wxCommandEvent& event);
@@ -513,6 +516,10 @@ public:
 
 
 private:
+	  wxTimer	  m_TCWinPopupTimer;
+	  RolloverWin *m_pTCRolloverWin;
+	  int		  curs_x;
+	  int		  curs_y;
       int         m_plot_type;
 
       IDX_entry   *pIDX;
@@ -526,7 +533,8 @@ private:
       int         val_off;
 
 
-      float       tcv[24];
+      float       tcv[26];
+	  wxListBox  *m_tList ;
       bool        btc_valid;
       ChartCanvas *pParent;
       int         m_corr_mins;
@@ -728,8 +736,8 @@ class RolloverWin: public wxWindow
             void SetColorScheme(ColorScheme cs);
             void SetString(wxString &s){ m_string = s; }
             void SetPosition(wxPoint pt){ m_position = pt; }
-            void SetBitmap(void);
-            void SetBestPosition(int x, int y, int off_x, int off_y, wxSize parent_size);
+            void SetBitmap(int rollover);
+            void SetBestPosition(int x, int y, int off_x, int off_y, int rollover, wxSize parent_size);
 
 
       private:
