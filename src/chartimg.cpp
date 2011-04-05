@@ -3483,7 +3483,14 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
      //     Default is to try using the cache
      if(m_b_cdebug)printf("  Render Region By GVUC\n");
-     bool bnewview = GetViewUsingCache(Rsrc, dest, Region, RENDER_HIDEF);
+
+     //     A performance enhancement.....
+     ScaleTypeEnum scale_type_zoom = RENDER_HIDEF;
+     double binary_scale_factor = VPoint.view_scale_ppm / GetPPM();
+     if(binary_scale_factor < .250)
+           scale_type_zoom = RENDER_LODEF;
+
+     bool bnewview = GetViewUsingCache(Rsrc, dest, Region, scale_type_zoom);
 
      //    Select the data into the dc
      pPixCache->SelectIntoDC(dc);
