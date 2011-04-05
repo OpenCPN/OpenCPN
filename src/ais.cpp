@@ -189,7 +189,13 @@ wxString ais_status[] = {
       _("Reserved 12"),
       _("Reserved 13"),
       _("Reserved 14"),
-      _("Undefined")
+      _("Undefined"),
+      _("Virtual"),
+      _("Virtual (On Position)"),
+      _("Virtual (Off Position)"),
+      _("Real"),
+      _("Real (On Position)"),
+      _("Real(Off Position)")
 };
 
 wxString ais_type[] = {
@@ -442,9 +448,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       wxString result;
       wxDateTime now = wxDateTime::Now();
 
-      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      if(Class != AIS_BASE)
       {
-            line.Printf(_("ShipName:  "));
+            line.Printf(_("Name:  "));
             if(b_nameValid)
                   line.Append( trimAISField(ShipName) );
             line.Append(_T("\n\n"));
@@ -472,19 +478,19 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       line.Append(_T("\n"));
       result.Append(line);
 
-      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      if(Class != AIS_BASE)
       {
 
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
-            if((NavStatus <= 15) && (NavStatus >= 0))
+            if((NavStatus <= 20) && (NavStatus >= 0))
                   line.Append( ais_status[NavStatus] );
             line.Append(_T("\n"));
             result.Append(line);
 
 
       //      Ship type
-            line.Printf(_("Ship Type:            "));
+            line.Printf(_("Type:                "));
             line.Append( Get_vessel_type_string() );
             line.Append(_T("\n"));
             result.Append(line);
@@ -524,10 +530,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else
                   line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
-            result.Append(line);
+            if (NavStatus != ATON_VIRTUAL)
+                  result.Append(line);
+
       }
 
-
+/*
 
            //  Destination
       line.Printf(_("Destination:          "));
@@ -585,6 +593,64 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             }
 
             result.Append(line);
+      }
+*/
+      if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
+      {
+            line.Printf(_("Destination:          "));
+            line.Append( trimAISField(Destination) );
+            line.Append(_T("\n"));
+            result.Append(line);
+                         //  ETA
+            if((ETA_Mo) && (ETA_Hr < 24))
+            {
+                  wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
+                  line.Printf(_("ETA:                  "));
+                  line.Append( eta.FormatISODate());
+                  line.Append(_T("  "));
+                  line.Append( eta.FormatISOTime());
+                  line.Append(_T("\n"));
+            }
+            else
+            {
+                  line.Printf(_("ETA:"));
+                  line.Append(_T("\n"));
+            }
+
+            result.Append(line);
+            result.Append(_T("\n"));
+
+            int crs = wxRound(COG);
+            if(b_positionValid)
+                  line.Printf(_("Course:                 %03d Deg.\n"), crs);
+            else
+                  line.Printf(_("Course:                 Unavailable\n"));
+            result.Append(line);
+
+            if(SOG <= 102.2)
+                  line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
+            else
+                  line.Printf(_("Speed:                  Unavailable\n"));
+            result.Append(line);
+
+            if(ROTAIS != -128)
+            {
+                  if(ROTAIS == 127)
+                        line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Right\n"));
+                  else if(ROTAIS == -127)
+                        line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Left\n"));
+                  else
+                  {
+                        if(ROTIND > 0)
+                              line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
+                        else if(ROTIND < 0)
+                              line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+                        else
+                              line.Printf(_("Rate Of Turn            NIL\n"));
+                  }
+
+                  result.Append(line);
+            }
       }
 
       if(b_positionValid && bGPSValid)
@@ -1662,7 +1728,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 //
 // The following is a patch to impersonate an AtoN as Ship      // pjotrc 2010.02.01
 //
-                  ptd->NavStatus = MOORED;
+//                  ptd->NavStatus = MOORED;
                   ptd->ShipType = (unsigned char)bstr->GetInt(39,5);
                   ptd->IMO = 0;
                   ptd->SOG = 0;
@@ -1675,11 +1741,24 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->DimD = bstr->GetInt(244, 6);
                   ptd->Draft = 0;
 
-                  bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
-//                printf("%d %d %s\n", n_msgs, ptd->MMSI, ptd->ShipName);
-                ptd->b_nameValid = true;
+                  ptd->m_utc_sec = bstr->GetInt(254, 6);
 
-                ptd->m_utc_sec = bstr->GetInt(254, 6);
+                  int offpos = bstr->GetInt(260,1); // off position flag
+                  int virt = bstr->GetInt(270,1); // virtual flag
+
+                  if (virt)
+                        ptd->NavStatus = ATON_VIRTUAL;
+                  else
+                        ptd->NavStatus = ATON_REAL;
+                  if (ptd->m_utc_sec<=59 && !virt)
+                  {
+                         ptd->NavStatus += 1;
+                         if (offpos) ptd->NavStatus += 1;
+                  }
+
+
+                  bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
+                ptd->b_nameValid = true;
 
                 parse_result = true;                // so far so good
 
@@ -3510,7 +3589,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlNAVSTATUS:
                   {
-                        if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
+                        if((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
                               ret =  ais_status[pAISTarget->NavStatus];
                         else
                               ret = _("-");
@@ -3529,7 +3608,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlCOG:
                   {
-                        if( pAISTarget->COG >= 360.0)
+                        if( (pAISTarget->COG >= 360.0)|| (pAISTarget->Class == AIS_ATON) )
                               ret =  _("-");
                         else
                               ret.Printf(_T("%5.0f"), pAISTarget->COG);
@@ -3538,7 +3617,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlSOG:
                   {
-                        if(pAISTarget->SOG > 100.)
+                        if( (pAISTarget->SOG > 100.)|| (pAISTarget->Class == AIS_ATON) )
                               ret = _("-");
                         else
                               ret.Printf(_T("%5.1f"), pAISTarget->SOG);
