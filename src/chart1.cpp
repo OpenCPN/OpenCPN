@@ -1798,7 +1798,7 @@ bool MyApp::OnInit()
                     wxFileName f(filename);
                     if (f.GetExt().IsSameAs(wxT("gpx")))
                         pConfig->ImportGPX(gFrame, true, filename, false); // preload a single-gpx-file layer
-                    else 
+                    else
                         pConfig->ImportGPX(gFrame, true, filename, true); // preload a layer from subdirectory
                   cont = dir.GetNext(&filename);
               }
@@ -1916,8 +1916,6 @@ int MyApp::OnExit()
     DeInitAllocCheck();
 #endif
 
-    //   Save the saved Screen Brightness
-    RestoreScreenBrightness();
 
     delete g_pPlatform;
     delete g_pauimgr;
@@ -3272,6 +3270,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
             cc1->Refresh(false);
             cc1->Update();
       }
+
+      //   Save the saved Screen Brightness
+      RestoreScreenBrightness();
 
       //    Deactivate the PlugIns
       if(g_pi_manager)
