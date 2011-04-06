@@ -149,6 +149,7 @@ extern bool             g_bAISRolloverShowCPA;
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
 
+extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
 
 extern wxLocale         locale_def_lang;
@@ -1362,7 +1363,7 @@ void options::SetInitialSettings()
 
       pPrintShowIcon->SetValue(g_bShowPrintIcon);
       pCDOOutlines->SetValue(g_bShowOutlines);
-      pCDOQuilting->SetValue(pParent->GetQuiltMode());
+      pCDOQuilting->SetValue(g_bQuiltEnable);
       pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
@@ -1741,7 +1742,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bDisplayGrid = pSDisplayGrid->GetValue();
 
 
-    pParent->SetQuiltMode(pCDOQuilting->GetValue());
+    g_bQuiltEnable = pCDOQuilting->GetValue();
     g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
 
     g_bShowDepthUnits = pSDepthUnits->GetValue();

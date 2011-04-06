@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chcanv.h,v 1.52 2010/06/21 01:54:16 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -469,6 +468,7 @@ private:
       wxBitmap    m_working_bm;           // Used to build quilt in OnPaint()
       wxBitmap    m_cached_chart_bm;      // A cached copy of the fully drawn quilt
 
+      int         m_brightdir;
 
 
 

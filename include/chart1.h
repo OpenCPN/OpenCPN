@@ -216,7 +216,9 @@ class MyFrame: public wxFrame
 
     void MouseEvent(wxMouseEvent& event);
     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
+    void SelectdbChart(int dbindex);
     void SelectQuiltRefChart(int selected_index);
+    void SelectQuiltRefdbChart(int db_index);
 
     void JumpToPosition(double lat, double lon, double scale);
 
@@ -374,6 +376,8 @@ class MyFrame: public wxFrame
     double              m_COGFilterLast;
     double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
+
+    bool                m_bpersistent_quilt;
 
     DECLARE_EVENT_TABLE()
 };

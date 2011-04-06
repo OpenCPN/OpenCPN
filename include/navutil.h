@@ -414,9 +414,6 @@ public:
 //    These members are set/reset in Options dialog
       bool  m_bShowDebugWindows;
 
-//    These members are READ only from the config file, and stored here until needed
-      bool  m_bQuilt;
-
       bool  m_bIsImporting;
 
 

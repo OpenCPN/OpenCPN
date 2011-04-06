@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chart1.cpp,v 1.102 2010/06/25 02:02:04 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Main wxWidgets Program
@@ -385,6 +384,8 @@ bool             g_bAISRolloverShowCPA;
 bool             g_bDebugGPSD;
 
 bool             g_bFullScreenQuilt;
+bool             g_bQuiltEnable;
+bool             g_bQuiltStart;
 
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
@@ -1486,7 +1487,7 @@ bool MyApp::OnInit()
         cc1 =  new ChartCanvas(gFrame);                         // the chart display canvas
         gFrame->SetCanvasWindow(cc1);
 
-        cc1->SetQuiltMode(pConfig->m_bQuilt);                     // set initial quilt mode
+        cc1->SetQuiltMode(g_bQuiltStart);                     // set initial quilt mode
         cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
         cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0.);
 
@@ -1889,6 +1890,8 @@ int MyApp::OnExit()
 
         delete g_pCommMan;
 
+        delete pLayerList;
+
 #ifdef USE_S57
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
@@ -2077,6 +2080,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         }
         m_COGFilterLast = 0.;
 
+        m_bpersistent_quilt = false;
 
 
 
@@ -4137,7 +4141,7 @@ int MyFrame::DoOptionsDialog()
       bool bPrevPrintIcon = g_bShowPrintIcon;
 
       bool bPrevTrackIcon = g_bShowTrackIcon;
-      bool bPrevQuilt = cc1->GetQuiltMode();
+      bool bPrevQuilt = g_bQuiltEnable;
 
       wxString prev_locale = g_locale;
 
@@ -4275,8 +4279,11 @@ int MyFrame::DoOptionsDialog()
                   g_pActiveTrack->SetTPDist(g_bTrackDistance);
             }
 
-            if(bPrevQuilt != cc1->GetQuiltMode())
+            if(bPrevQuilt != g_bQuiltEnable)
+            {
+                  cc1->SetQuiltMode(g_bQuiltEnable);
                   SetupQuiltMode();
+            }
 
             if(g_bCourseUp)
             {
@@ -4390,8 +4397,17 @@ void MyFrame::ChartsRefresh(void)
 void MyFrame::ToggleQuiltMode(void)
 {
       if(cc1)
-            cc1->SetQuiltMode(!cc1->GetQuiltMode());
-      SetupQuiltMode();
+      {
+            bool cur_mode = cc1->GetQuiltMode();
+
+            if(!cc1->GetQuiltMode() && g_bQuiltEnable)
+                  cc1->SetQuiltMode(true);
+            else if(cc1->GetQuiltMode())
+                  cc1->SetQuiltMode(false);
+
+            if(cur_mode != cc1->GetQuiltMode())
+                  SetupQuiltMode();
+      }
 }
 
 void MyFrame::SetQuiltMode(bool bquilt)
@@ -5445,16 +5461,33 @@ void MyFrame::HandlePianoClick(int selected_index, int selected_dbIndex)
             return;
 
       if(!cc1->GetQuiltMode())
-            SelectChartFromStack(selected_index);
+      {
+            if(m_bpersistent_quilt && g_bQuiltEnable)
+            {
+                  if(cc1->IsChartQuiltableRef(selected_dbIndex))
+                  {
+                        ToggleQuiltMode();
+                        SelectQuiltRefdbChart(selected_dbIndex);
+                        m_bpersistent_quilt = false;
+                  }
+                  else
+                  {
+                        SelectChartFromStack(selected_index);
+                  }
+            }
+            else
+                  SelectChartFromStack(selected_index);
+      }
       else
       {
             if(cc1->IsChartQuiltableRef(selected_dbIndex))
-                  SelectQuiltRefChart(selected_index);
+                  SelectQuiltRefdbChart(selected_dbIndex);
             else
             {
                   ToggleQuiltMode();
-                  SelectChartFromStack(selected_index);
-            }
+                  SelectdbChart(selected_dbIndex);
+                  m_bpersistent_quilt = true;
+             }
       }
 
       cc1->SetQuiltChartHiLiteIndex(-1);
@@ -5523,6 +5556,8 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
                   }
 
             }
+            SetChartThumbnail(-1);        // hide all thumbs in quilt mode
+
       }
 }
 
@@ -5573,21 +5608,22 @@ double MyFrame::GetBestVPScale(ChartBase *pchart)
 void MyFrame::SelectQuiltRefChart(int selected_index)
 {
       ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-
       int current_db_index = piano_chart_index_array.Item(selected_index);
 
+      SelectQuiltRefdbChart(current_db_index);
+}
+
+void MyFrame::SelectQuiltRefdbChart(int db_index)
+{
       if(pCurrentStack)
-            pCurrentStack->SetCurrentEntryFromdbIndex(current_db_index);
+            pCurrentStack->SetCurrentEntryFromdbIndex(db_index);
 
-      cc1->SetQuiltRefChart(current_db_index);
+      cc1->SetQuiltRefChart(db_index);
 
-      ChartBase *pc = ChartData->OpenChartFromDB(current_db_index, FULL_INIT);
+      ChartBase *pc = ChartData->OpenChartFromDB(db_index, FULL_INIT);
       double best_scale = GetBestVPScale(pc);
       cc1->SetVPScale ( best_scale );
 
-//      UpdateToolbarStatusWindow(pc, false);
-
-//      UpdateControlBar();           // Probably redundant
 }
 
 
@@ -5640,6 +5676,57 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
               stats->Refresh(true);
         }
 }
+
+void MyFrame::SelectdbChart(int dbindex)
+{
+      if(dbindex >= 0)
+      {
+//      Open the new chart
+            ChartBase *pTentative_Chart;
+            pTentative_Chart = ChartData->OpenChartFromDB(dbindex, FULL_INIT);
+
+            if(pTentative_Chart)
+            {
+                  if(Current_Ch)
+                        Current_Ch->Deactivate();
+
+                  Current_Ch = pTentative_Chart;
+                  Current_Ch->Activate();
+
+                  pCurrentStack->CurrentStackEntry = ChartData->GetStackEntry(pCurrentStack, Current_Ch->GetFullPath());
+            }
+            else
+                  SetChartThumbnail(-1);       // need to reset thumbnail on failed chart open
+
+
+
+//      Setup the view
+            double zLat, zLon;
+            if(cc1->m_bFollow)
+            { zLat = gLat; zLon = gLon;}
+            else
+            { zLat = vLat; zLon = vLon;}
+
+            double best_scale = GetBestVPScale(Current_Ch);
+
+            cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
+                              cc1->GetVPRotation());
+
+            UpdateToolbarStatusBox();           // Pick up the rotation
+
+      }
+
+        //          Refresh the Piano Bar
+      if(stats)
+      {
+            ArrayOfInts piano_active_chart_index_array;
+            piano_active_chart_index_array.Add(pCurrentStack->GetCurrentEntrydbIndex());
+            stats->pPiano->SetActiveKeyArray(piano_active_chart_index_array);
+
+            stats->Refresh(true);
+      }
+}
+
 
 void MyFrame::SetChartThumbnail(int index)
 {

@@ -255,7 +255,9 @@ extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
 
+extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern bool             g_bQuiltStart;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2521,7 +2523,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "WindowsComPortMax" ),  &g_nCOMPortCheck, 32 );
 
-      Read ( _T ( "ChartQuilting" ),  &m_bQuilt, 0 );
+      Read ( _T ( "ChartQuilting" ),  &g_bQuiltEnable, 0 );
+      Read ( _T ( "ChartQuiltingInitial" ),  &g_bQuiltStart, 0 );
 
       Read ( _T ( "UseRasterCharts" ),  &g_bUseRaster, 1 );             // default is true......
       Read ( _T ( "UseVectorCharts" ),  &g_bUseVector, 0 );
@@ -3722,8 +3725,6 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "SkewToNorthUp" ), g_bskew_comp );
 
-      if(cc1)
-            Write ( _T ( "ChartQuilting" ), cc1->GetQuiltMode());
 
       Write ( _T ( "UseRasterCharts" ), g_bUseRaster );
       Write ( _T ( "UseVectorCharts" ), g_bUseVector );
@@ -3734,7 +3735,11 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
       Write ( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
 
+      Write ( _T ( "ChartQuilting" ), g_bQuiltEnable);
       Write ( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
+
+      if(cc1)
+            Write ( _T ( "ChartQuiltingInitial" ), cc1->GetQuiltMode() );
 
       Write ( _T ( "NMEALogWindowSizeX" ),  g_NMEALogWindow_sx );
       Write ( _T ( "NMEALogWindowSizeY" ),  g_NMEALogWindow_sy );

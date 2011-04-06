@@ -1008,121 +1008,90 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   m_pcandidate_array->Add(qcnew);
            }
       }
-/*
-      //    For S57ENCs
-      if(CHART_TYPE_S57 == m_reference_type)
-      {
-            double quilt_area = vp_local.pix_width * vp_local.pix_height;
-            int n_all_charts = ChartData->GetChartTableEntries();
-
-            LLBBox viewbox = vp_local.GetBBox();
-            for(int i=0 ; i < n_all_charts ; i++)
-            {
-                  if(ChartData->GetDBChartType(i) == m_reference_type)
-                  {
-                        wxBoundingBox chart_box;
-                        ChartData->GetDBBoundingBox(i, &chart_box);
-
-                        bool b_add = false;
-                        if((viewbox.Intersect( chart_box) != _OUT))
-                               b_add = true;
-
-                        if(b_add)
-                        {
-                              // Check to see if this chart is already in the candidate array...
-                              bool b_exists = false;
-                              for( unsigned int ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
-                              {
-                                    QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
-                                    if(i == pqc->dbIndex)
-                                    {
-                                          b_exists = true;
-                                          break;
-                                    }
-                              }
-
-                              //    Add the chart only if the area is more than 10 % of the ViewPort screen size
-                              if(!b_exists)
-                              {
-                                    const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
-                                    wxRegion chart_region = GetChartQuiltRegion(cte, vp_local);
-                                    if(!chart_region.Empty())
-                                    {
-                                          wxRect rect_ch = chart_region.GetBox();
-                                          double chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
-
-                                          double chart_skew = ChartData->GetDBChartSkew(i);
-                                          if(chart_skew > 180.)
-                                                chart_skew -= 360.;
-
-                                          if((chart_fractional_area > .10) &&
-                                                            (fabs(chart_skew) < 1.0) &&
-                                                            (ChartData->GetDBChartProj(i) == m_quilt_proj))
-
-                                          {
-                                                QuiltCandidate *qcnew = new QuiltCandidate;
-                                                qcnew->dbIndex = i;
-                                                qcnew->ChartScale = ChartData->GetDBChartScale(i);
-                                                m_pcandidate_array->Add(qcnew);
-
-                                                m_extended_stack_array.Add(i);
-                                                b_need_resort = true;
-                                          }
-                                    }
-                              }
-                        }
-                  }
-            }
-      }
-*/
       if(g_bFullScreenQuilt)
       {
             //    Search the entire database, potentially adding all charts which are on the ViewPort in any way
-            //    .AND. whose scale is less than twice the the reference scale.
+            //    .AND. other requirements.
             int n_all_charts = ChartData->GetChartTableEntries();
 
             LLBBox viewbox = vp_local.GetBBox();
+            int sure_index = -1;
+            int sure_index_scale = 0;
+
             for(int i=0 ; i < n_all_charts ; i++)
             {
+                  //    We can eliminate some charts immediately
+                  //    Try to make these tests in some sensible order....
+                  if(m_reference_type != ChartData->GetDBChartType(i))
+                        continue;
+
+                  wxBoundingBox chart_box;
+                  ChartData->GetDBBoundingBox(i, &chart_box);
+                  if((viewbox.Intersect( chart_box) == _OUT))
+                        continue;
+
+                  if(m_quilt_proj != ChartData->GetDBChartProj(i))
+                        continue;
+
                   double chart_skew = ChartData->GetDBChartSkew(i);
                   if(chart_skew > 180.)
                         chart_skew -= 360.;
+                  if(fabs(chart_skew) > 1.0)
+                        continue;
 
-                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
-                  (fabs(chart_skew) < 1.0) &&
-                  (ChartData->GetDBChartProj(i) == m_quilt_proj) &&
-                  (ChartData->GetDBChartScale(i) >= m_reference_scale / 2))
+                  //    Calculate zoom factor for this chart
+                  double chart_native_ppm;
+                  chart_native_ppm = m_canvas_scale_factor / ChartData->GetDBChartScale(i);
+                  double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
+//                  printf("scale: %d zoom: %g  \n", ChartData->GetDBChartScale(i), zoom_factor);
+
+                  //  Try to guarantee that there is one chart added with scale larger than reference scale
+                  //    Take note here, and keep track of the smallest scale chart that is larger scale than reference....
+                  if(ChartData->GetDBChartScale(i) < m_reference_scale)
                   {
-                        //Get the fractional area of this chart
-                        double chart_fractional_area = 0.;
-                        double quilt_area = vp_local.pix_width * vp_local.pix_height;
-                        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
-                        wxRegion chart_region = GetChartQuiltRegion(cte, vp_local);
-                        if(!chart_region.Empty())
+                        if(ChartData->GetDBChartScale(i) > sure_index_scale)
                         {
-                              wxRect rect_ch = chart_region.GetBox();
-                              chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
+                              sure_index = i;
+                              sure_index_scale = ChartData->GetDBChartScale(i);
                         }
+                  }
+
+                  //    At this point, the candidate is the right type, skew, and projection, and is on-screen somewhere....
+                  //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
 
 
-                        wxBoundingBox chart_box;
-                        ChartData->GetDBBoundingBox(i, &chart_box);
+                  if((ChartData->GetDBChartScale(i) >= m_reference_scale) || (zoom_factor > .2))
+                  {
 
-                        bool b_add = false;
-                        if((viewbox.Intersect( chart_box) != _OUT))
-                              b_add = true;
+
+                        bool b_add = true;
 
                         //    Special case for S57 ENC
                         //    Add the chart only if the chart's fractional area exceeds 10%
                         if(CHART_TYPE_S57 == m_reference_type)
                         {
+                              //Get the fractional area of this chart
+                              double chart_fractional_area = 0.;
+                              double quilt_area = vp_local.pix_width * vp_local.pix_height;
+                              const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+                              wxRegion chart_region = GetChartQuiltRegion(cte, vp_local);
+                              if(!chart_region.Empty())
+                              {
+                                    wxRect rect_ch = chart_region.GetBox();
+                                    chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
+                              }
+
                               if(chart_fractional_area < .10)
+                              {
                                     b_add = false;
+//                                    printf("Skipping S57 less than 10 percent\n");
+                              }
                         }
 
                         if(b_add)
                         {
-                              // Check to see if this chart is already in the candidate array...
+                              // Check to see if this chart is already in the candidate array
+                              // by virtue of being under the Viewport center point....
                               bool b_exists = false;
                               for( unsigned int ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
                               {
@@ -1143,8 +1112,37 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                                     m_extended_stack_array.Add(i);
                                     b_need_resort = true;
+//                                    printf("adding scale %d\n", ChartData->GetDBChartScale(i));
+
                              }
                         }
+                  }
+            }
+
+            //    Check to be sure that at least one chart was added that is larger scale than reference scale
+            if(-1 != sure_index)
+            {
+                  // check to see if it is already in
+                  bool sure_exists = false;
+                  for( unsigned int ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
+                  {
+                        QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
+                        if(sure_index == pqc->dbIndex)
+                        {
+                              sure_exists = true;
+                              break;
+                        }
+                  }
+
+                  //    If not already added, do so now
+                  if(!sure_exists)
+                  {
+                        QuiltCandidate *qcnew = new QuiltCandidate;
+                        qcnew->dbIndex = sure_index;
+                        qcnew->ChartScale = ChartData->GetDBChartScale(sure_index);
+                        m_pcandidate_array->Add(qcnew);
+                        m_extended_stack_array.Add(sure_index);
+                        b_need_resort = true;
                   }
             }
       }
@@ -1860,104 +1858,125 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             //    Highlighting....
             if(m_nHiLiteIndex >= 0)
             {
-                  if(m_pBM)
-                  {
-                        if((m_pBM->GetWidth() != vp.rv_rect.width) || (m_pBM->GetHeight() != vp.rv_rect.height))
-                        {
-                              delete m_pBM;
-                              m_pBM = NULL;
-                        }
-                  }
-
-                  if(NULL == m_pBM)
-                        m_pBM = new wxBitmap(vp.rv_rect.width, vp.rv_rect.height);
-
                   //    Walk the PatchList, looking for the target hilite index
+                  wxRect box(0,0,0,0);
                   for(unsigned int i=0 ; i < m_PatchList.GetCount() ; i++)
                   {
                         wxPatchListNode *pcinode = m_PatchList.Item(i);
                         QuiltPatch *piqp = pcinode->GetData();
                         if((m_nHiLiteIndex == piqp->dbIndex) && (piqp->b_Valid))      // found it
                         {
-                              //    Copy the entire quilt to my scratch bm
-                              wxMemoryDC q_dc;
-                              q_dc.SelectObject(*m_pBM);
-                              q_dc.Blit(0, 0, vp.rv_rect.width, vp.rv_rect.height, &dc, 0,0);
-                              q_dc.SelectObject(wxNullBitmap);
+                              box = piqp->ActiveRegion.GetBox();
+                              break;
+                        }
+                  }
 
-                              wxRect box = piqp->ActiveRegion.GetBox();
+                  //    If not in the patchlist, look in the full chartbar
+                  if(box.IsEmpty())
+                  {
+                        for( unsigned int ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
+                        {
+                              QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
+                              if(m_nHiLiteIndex == pqc->dbIndex)
+                              {
+                                    const ChartTableEntry &cte = ChartData->GetChartTableEntry(m_nHiLiteIndex);
+                                    wxRegion chart_region = GetChartQuiltRegion(cte, vp);
+                                    if(!chart_region.Empty())
+                                    {
+                                          box = chart_region.GetBox();
+                                          break;
+                                    }
+                              }
+                        }
+                  }
+
+
+                  if(!box.IsEmpty())
+                  {
+                        //    Is scratch member bitmap OK?
+                        if(m_pBM)
+                        {
+                              if((m_pBM->GetWidth() != vp.rv_rect.width) || (m_pBM->GetHeight() != vp.rv_rect.height))
+                              {
+                                    delete m_pBM;
+                                    m_pBM = NULL;
+                              }
+                        }
+
+                        if(NULL == m_pBM)
+                              m_pBM = new wxBitmap(vp.rv_rect.width, vp.rv_rect.height);
+
+
+                        //    Copy the entire quilt to my scratch bm
+                        wxMemoryDC q_dc;
+                        q_dc.SelectObject(*m_pBM);
+                        q_dc.Blit(0, 0, vp.rv_rect.width, vp.rv_rect.height, &dc, 0,0);
+                        q_dc.SelectObject(wxNullBitmap);
+
 
                               //    Create a "mask" bitmap from the chart's region
                               //    WxGTK has an error in this method....Creates a color bitmap, not usable for mask creation
                               //    So, I clone with correction
-//                              wxBitmap hl_mask_bm = piqp->ActiveRegion.ConvertToBitmap();
-                              wxBitmap hl_mask_bm;
-                              {
-                                    wxRect box = piqp->ActiveRegion.GetBox();
-                                    wxBitmap bmp(box.GetRight(), box.GetBottom(), 1);
-                                    wxMemoryDC dc;
-                                    dc.SelectObject(bmp);
-                                    dc.SetBackground(*wxBLACK_BRUSH);
-                                    dc.Clear();
-                                    dc.SetClippingRegion(*wx_static_cast(const wxRegion *, &piqp->ActiveRegion));
-                                    dc.SetBackground(*wxWHITE_BRUSH);
-                                    dc.Clear();
-                                    dc.SelectObject(wxNullBitmap);
+//                      wxBitmap hl_mask_bm = piqp->ActiveRegion.ConvertToBitmap();
+                        wxBitmap hl_mask_bm(vp.rv_rect.width, vp.rv_rect.height, 1);
+                        wxMemoryDC mdc;
+                        mdc.SelectObject(hl_mask_bm);
+                        mdc.SetBackground(*wxBLACK_BRUSH);
+                        mdc.Clear();
+                        mdc.SetClippingRegion(box);
+                        mdc.SetBackground(*wxWHITE_BRUSH);
+                        mdc.Clear();
+                        mdc.SelectObject(wxNullBitmap);
 
-                                    hl_mask_bm = bmp;
-                              }
 
-                              if(hl_mask_bm.IsOk())
-                              {
-                                    wxMask *phl_mask = new wxMask(hl_mask_bm);
-                                    m_pBM->SetMask(phl_mask);
-                                    q_dc.SelectObject(*m_pBM);
+                        if(hl_mask_bm.IsOk())
+                        {
+                              wxMask *phl_mask = new wxMask(hl_mask_bm);
+                              m_pBM->SetMask(phl_mask);
+                              q_dc.SelectObject(*m_pBM);
 
                                     // Create another mask, dc and bitmap for red-out
-                                    wxBitmap rbm(vp.rv_rect.width, vp.rv_rect.height);
-                                    wxMask *pr_mask = new wxMask(hl_mask_bm);
-                                    wxMemoryDC rdc;
-                                    rbm.SetMask(pr_mask);
-                                    rdc.SelectObject(rbm);
-                                    unsigned char hlcolor = 255;
-                                    switch(global_color_scheme)
-                                    {
-                                          case GLOBAL_COLOR_SCHEME_DAY:
-                                                hlcolor = 255;
-                                                break;
-                                          case GLOBAL_COLOR_SCHEME_DUSK:
-                                                hlcolor = 64;
-                                                break;
-                                          case GLOBAL_COLOR_SCHEME_NIGHT:
-                                                hlcolor = 16;
-                                                break;
-                                          default:
-                                                hlcolor = 255;
-                                                break;
-                                    }
-
-                                    rdc.SetBackground(wxBrush(wxColour(hlcolor,0,0)));
-                                    rdc.Clear();
-
-                                    //  Blit the mask area of the quilt onto the red-out
-                                    rdc.Blit(box.x, box.y, box.width, box.height, &q_dc, box.x, box.y, wxOR, true);
-
-                                    //  And then blit the red-out onto the target
-                                    q_dc.Blit(box.x, box.y, box.width, box.height, &rdc, box.x, box.y, wxCOPY, true);
-                                    q_dc.SelectObject(wxNullBitmap);
-                                    m_pBM->SetMask(NULL);
-
-                                    //    Select the scratch BM as the return dc contents
-                                    dc.SelectObject(*m_pBM);
-
-                                    //    Clear the rdc
-                                    rdc.SelectObject(wxNullBitmap);
-
-
+                              wxBitmap rbm(vp.rv_rect.width, vp.rv_rect.height);
+                              wxMask *pr_mask = new wxMask(hl_mask_bm);
+                              wxMemoryDC rdc;
+                              rbm.SetMask(pr_mask);
+                              rdc.SelectObject(rbm);
+                              unsigned char hlcolor = 255;
+                              switch(global_color_scheme)
+                              {
+                                    case GLOBAL_COLOR_SCHEME_DAY:
+                                          hlcolor = 255;
+                                          break;
+                                    case GLOBAL_COLOR_SCHEME_DUSK:
+                                          hlcolor = 64;
+                                          break;
+                                    case GLOBAL_COLOR_SCHEME_NIGHT:
+                                          hlcolor = 16;
+                                          break;
+                                    default:
+                                          hlcolor = 255;
+                                          break;
                               }
-                        }
-                  }
-            }
+
+                              rdc.SetBackground(wxBrush(wxColour(hlcolor,0,0)));
+                              rdc.Clear();
+
+                              //  Blit the mask area of the quilt onto the red-out
+                              rdc.Blit(box.x, box.y, box.width, box.height, &q_dc, box.x, box.y, wxOR, true);
+
+                              //  And then blit the red-out onto the target
+                              q_dc.Blit(box.x, box.y, box.width, box.height, &rdc, box.x, box.y, wxCOPY, true);
+                              q_dc.SelectObject(wxNullBitmap);
+                              m_pBM->SetMask(NULL);
+
+                              //    Select the scratch BM as the return dc contents
+                              dc.SelectObject(*m_pBM);
+
+                              //    Clear the rdc
+                              rdc.SelectObject(wxNullBitmap);
+                         }
+                  }  // box not empty
+            }     // m_nHiLiteIndex
 
 
             if(!dc.IsOk())                  // some error, probably bad charts, to be disabled on next compose
@@ -2515,6 +2534,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pFoundRoutePointSecond      = NULL;
 
         m_pRolloverRouteSeg           = NULL;
+
+        m_brightdir = 0;
 
         VPoint.Invalidate();
 
@@ -3098,12 +3119,26 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case WXK_F6:
                   {
-                        g_nbrightness -= 10;
-                        if(g_nbrightness <= 0)
-                              g_nbrightness = 100;
-                        g_nbrightness = wxMin(100, g_nbrightness);
-                        SetScreenBrightness(g_nbrightness);
+                        if(0 == m_brightdir)
+                        {
+                              g_nbrightness -= 10;
+                              if(g_nbrightness <= 0)
+                              {
+                                    g_nbrightness = 0;
+                                    m_brightdir = 1;
+                              }
+                        }
+                        else
+                        {
+                              g_nbrightness += 10;
+                              if(g_nbrightness >= 100)
+                              {
+                                    g_nbrightness = 100;
+                                    m_brightdir = 0;
+                              }
+                        }
 
+                        SetScreenBrightness(g_nbrightness);
                         b_proc = true;
                         break;
                   }
@@ -3128,6 +3163,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case WXK_F10:
                         parent_frame->ToggleFullScreen();
+                        b_proc = true;
                         break;
 
 /*
@@ -4961,9 +4997,10 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                   return;
 
                 //      Skip anchored/moored (interpreted as low speed) targets if requested
-                //      unless the target is NUC, in which cas it is always displayed.
-            if ( (!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts) && (td->NavStatus != NOT_UNDER_COMMAND))
-                        return;
+                //      unless the target is NUC or AtoN, in which case it is always displayed.
+            if ( (!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts) && (td->NavStatus != NOT_UNDER_COMMAND)
+                        && ((td->Class == AIS_CLASS_A)||(td->Class == AIS_CLASS_B)) )
+                  return;
 
                 //      Target data position must be valid
             if(!td->b_positionValid)
@@ -8003,25 +8040,32 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_TK_MENU_DELETE:
               {
-                    if((Track *)(m_pSelectedTrack) == g_pActiveTrack)
-                        parent_frame->TrackOff();
+                    wxMessageDialog track_delete_confirm_dlg(this, _("Are you sure you want to delete this track?"), _("OpenCPN Track Delete"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                    int dlg_return = track_delete_confirm_dlg.ShowModal();
 
-                    pConfig->DeleteConfigRoute(m_pSelectedTrack);
-
-                    g_pRouteMan->DeleteTrack (m_pSelectedTrack);
-                    m_pSelectedRoute = NULL;
-                    m_pSelectedTrack = NULL;
-                    m_pFoundRoutePoint = NULL;
-                    m_pFoundRoutePointSecond = NULL;
-
-                    if ( pRoutePropDialog )
+                    if(dlg_return == wxID_YES)
                     {
-                          pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedTrack );
-                          pRoutePropDialog->UpdateProperties();
-                    }
 
-                    if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
-                        pRouteManagerDialog->UpdateTrkListCtrl();
+                        if((Track *)(m_pSelectedTrack) == g_pActiveTrack)
+                              parent_frame->TrackOff();
+
+                        pConfig->DeleteConfigRoute(m_pSelectedTrack);
+
+                        g_pRouteMan->DeleteTrack (m_pSelectedTrack);
+                        m_pSelectedRoute = NULL;
+                        m_pSelectedTrack = NULL;
+                        m_pFoundRoutePoint = NULL;
+                        m_pFoundRoutePointSecond = NULL;
+
+                        if ( pRoutePropDialog )
+                        {
+                              pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedTrack );
+                              pRoutePropDialog->UpdateProperties();
+                        }
+
+                        if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                              pRouteManagerDialog->UpdateTrkListCtrl();
+                    }
 
                     break;
               }
@@ -9795,10 +9839,12 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
 {
 
         wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
+        wxPen *pgray_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "DILG0" ) ), 1, wxSOLID );
+
         wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "GREEN1" ) ), wxSOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-		wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "BLUE2" ) ), wxSOLID );
- 	    wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "YELO1" ) ), wxSOLID );
+        wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "BLUE2" ) ), wxSOLID );
+        wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "YELO1" ) ), wxSOLID );
 
 		wxFont *dFont = pFontMgr->GetFont(_("ExtendedTideIcon"), 12);
 		dc.SetTextForeground(pFontMgr->GetFontColor(_T("ExtendedTideIcon")));
@@ -9888,25 +9934,25 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                         wxPoint r;
                                         GetCanvasPointPix ( lat, nlon, &r );
 //draw standard icons
-									if  (VPoint.chart_scale > 500000 )
-									{
+                                          if  (VPoint.chart_scale > 500000 )
+                                          {
 
-                                        if(bdraw_mono_for_mask)
-                                              dc.DrawRectangle(r.x - bmw/2, r.y - bmh/2, bmw, bmh);
-                                        else
-                                              dc.DrawBitmap(bm, r.x - bmw/2, r.y - bmh/2, true);
+                                                if(bdraw_mono_for_mask)
+                                                      dc.DrawRectangle(r.x - bmw/2, r.y - bmh/2, bmw, bmh);
+                                                else
+                                                      dc.DrawBitmap(bm, r.x - bmw/2, r.y - bmh/2, true);
 
-									}
+                                          }
 //draw "extended" icons
-									else
-									{
+							else
+							{
 
 		//set rectangle size and position (max text lengh)
 										int wx,hx;
 										dc.SetFont( *plabelFont );
 										dc.GetTextExtent(_T("99.9ft "), &wx, &hx);
 										int w = r.x - 6 ;
-										int h = r.y - 10;
+										int h = r.y - 45;
 		//draw mask
 										if ( bdraw_mono_for_mask )
 													dc.DrawRectangle( r.x - ( wx / 2 ), h, wx, hx + 45 );
@@ -9919,93 +9965,96 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
 												time_t tctime, lttime, httime;
 												bool wt;
 			//define if flood or edd in the last ten minutes and verify if data are useable
-												if  ( ptcmgr->GetTideFlowSens( t_this_now, BACKWARD_TEN_MINUTES_STEP, pIDX->IDX_rec_num, nowlev, val, wt) )
-												{
+                                                                        if  ( ptcmgr->GetTideFlowSens( t_this_now, BACKWARD_TEN_MINUTES_STEP, pIDX->IDX_rec_num, nowlev, val, wt) )
+                                                                        {
 
-			//search forward the first HW or LW near "now" ( starting at "now" - ten minutes )
-													ptcmgr->GetHightOrLowTide( t_this_now + BACKWARD_TEN_MINUTES_STEP , FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, val, wt, pIDX->IDX_rec_num, val, tctime);
-													if ( wt )
-													{
-														httime = tctime ;
-														htleve = val ;
-													}
-													else
-													{
-														lttime = tctime ;
-														ltleve = val ;
-													}
-													wt = !wt;
+                  //search forward the first HW or LW near "now" ( starting at "now" - ten minutes )
+                                                                              ptcmgr->GetHightOrLowTide( t_this_now + BACKWARD_TEN_MINUTES_STEP , FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, val, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                              if ( wt )
+                                                                              {
+                                                                                    httime = tctime ;
+                                                                                    htleve = val ;
+                                                                              }
+                                                                              else
+                                                                              {
+                                                                                    lttime = tctime ;
+                                                                                    ltleve = val ;
+                                                                              }
+                                                                              wt = !wt;
 
-			//then search opposite tide near "now"
-													if ( tctime > t_this_now )		// search backward
-														ptcmgr->GetHightOrLowTide( t_this_now, BACKWARD_TEN_MINUTES_STEP,  BACKWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
-													else							// or search forward
-														ptcmgr->GetHightOrLowTide( t_this_now, FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
-													if ( wt )
-													{
-														httime = tctime ;
-														htleve = val ;
-													}
-													else
-													{
-														lttime = tctime ;
-														ltleve = val ;
-													}
+                  //then search opposite tide near "now"
+                                                                              if ( tctime > t_this_now )		// search backward
+                                                                                    ptcmgr->GetHightOrLowTide( t_this_now, BACKWARD_TEN_MINUTES_STEP,  BACKWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                              else							// or search forward
+                                                                                    ptcmgr->GetHightOrLowTide( t_this_now, FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                              if ( wt )
+                                                                              {
+                                                                                    httime = tctime ;
+                                                                                    htleve = val ;
+                                                                              }
+                                                                              else
+                                                                              {
+                                                                                    lttime = tctime ;
+                                                                                    ltleve = val ;
+                                                                              }
 
-			//process tide state  ( %height and flow sens )
-													float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
-													int hs = ( httime > lttime ) ? -5 : 5 ;
-													if ( ts > 0.995 || ts < 0.005 )
-														hs = 0;
-													int ht_y = (int) ( 45.0 * ts ) ;
+                  //process tide state  ( %height and flow sens )
+                                                                              float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
+                                                                              int hs = ( httime > lttime ) ? -5 : 5 ;
+                                                                              if ( ts > 0.995 || ts < 0.005 )
+                                                                                    hs = 0;
+                                                                              int ht_y = (int) ( 45.0 * ts ) ;
 
-			//draw yellow rectangle as total amplitude (width = 12 , height = 45 )
-													dc.SetBrush( *brc_2 );
-													dc.DrawRectangle( w , h , 12 , 45 );
-			//draw blue rectangle as water height
-													dc.SetBrush( *brc_1 );
-													dc.DrawRectangle( w , h + ht_y , 12 , 45 - ht_y );
+                  //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
+                                                                              dc.SetBrush( *brc_2 );
+                                                                              dc.DrawRectangle( w , h , 12 , 45 );
+                  //draw blue rectangle as water height
+                                                                              dc.SetBrush( *brc_1 );
+                                                                              dc.DrawRectangle( w , h + ht_y , 12 , 45 - ht_y );
 
-			//draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
-													int hl;
-													wxPoint arrow[3];
-													arrow[0].x = w;
-													arrow[1].x = w + 5;
-													arrow[2].x = w + 11;
-													if ( ts > 0.35 || ts < 0.15)				// one arrow at 3/4 hight tide
-													{
-														hl = (int) ( 45.0 * 0.25 ) + h ;
-														arrow[0].y = hl;
-														arrow[1].y = hl + hs ;
-														arrow[2].y = hl;
-														dc.DrawLines( 3,arrow);
-													}
-													if ( ts > 0.60 || ts < 0.40 )				//one arrow at 1/2 hight tide
-													{
-														hl = (int) ( 45.0 * 0.5 ) + h ;
-														arrow[0].y = hl;
-														arrow[1].y = hl + hs ;
-														arrow[2].y = hl;
-														dc.DrawLines( 3,arrow);
-													}
-													if ( ts < 0.65 || ts > 0.85 )				//one arrow at 1/4 Hight tide
-													{
-														hl = (int) ( 45.0 * 0.75 ) + h ;
-														arrow[0].y = hl;
-														arrow[1].y = hl + hs ;
-														arrow[2].y = hl;
-														dc.DrawLines( 3,arrow);
-													}
-			//draw tide level text
-													wxString s;
-													s.Printf(_T("%3.1f"),nowlev );
-													Station_Data *pmsd = pIDX->pref_sta_data;					//write unit
-													if ( pmsd )
-														s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
-													int wx1;
-													dc.GetTextExtent(s, &wx1, NULL);
-													dc.DrawText(s , r.x - ( wx1 / 2 ), h + 45 );
-												}
+
+                  //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
+                                                                              dc.SetPen( *pgray_pen );
+
+                                                                              int hl;
+                                                                              wxPoint arrow[3];
+                                                                              arrow[0].x = w;
+                                                                              arrow[1].x = w + 5;
+                                                                              arrow[2].x = w + 11;
+                                                                              if ( ts > 0.35 || ts < 0.15)				// one arrow at 3/4 hight tide
+                                                                              {
+                                                                                    hl = (int) ( 45.0 * 0.25 ) + h ;
+                                                                                    arrow[0].y = hl;
+                                                                                    arrow[1].y = hl + hs ;
+                                                                                    arrow[2].y = hl;
+                                                                                    dc.DrawLines( 3,arrow);
+                                                                              }
+                                                                              if ( ts > 0.60 || ts < 0.40 )				//one arrow at 1/2 hight tide
+                                                                              {
+                                                                                    hl = (int) ( 45.0 * 0.5 ) + h ;
+                                                                                    arrow[0].y = hl;
+                                                                                    arrow[1].y = hl + hs ;
+                                                                                    arrow[2].y = hl;
+                                                                                    dc.DrawLines( 3,arrow);
+                                                                              }
+                                                                              if ( ts < 0.65 || ts > 0.85 )				//one arrow at 1/4 Hight tide
+                                                                              {
+                                                                                    hl = (int) ( 45.0 * 0.75 ) + h ;
+                                                                                    arrow[0].y = hl;
+                                                                                    arrow[1].y = hl + hs ;
+                                                                                    arrow[2].y = hl;
+                                                                                    dc.DrawLines( 3,arrow);
+                                                                              }
+                  //draw tide level text
+                                                                              wxString s;
+                                                                              s.Printf(_T("%3.1f"),nowlev );
+                                                                              Station_Data *pmsd = pIDX->pref_sta_data;					//write unit
+                                                                              if ( pmsd )
+                                                                                    s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                                                                              int wx1;
+                                                                              dc.GetTextExtent(s, &wx1, NULL);
+                                                                              dc.DrawText(s , r.x - ( wx1 / 2 ), h + 45 );
+                                                                        }
 											}
 										}
 									}
@@ -12747,6 +12796,7 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
       // We do not want to change the position on lat/lon now
 }
 
+#define BRIGHT_CURTAIN
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines
 //
@@ -12760,23 +12810,18 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
          SetDeviceGammaRamp_ptr_type   g_pSetDeviceGammaRamp;            // the API entry points in the dll
          GetDeviceGammaRamp_ptr_type   g_pGetDeviceGammaRamp;
 
-         HMODULE hUSER32DLL;
-         typedef DWORD (WINAPI *SetLayeredWindowAttributes_ptr_type)(HWND, DWORD, BYTE, DWORD);
-
-         SetLayeredWindowAttributes_ptr_type       g_pSetLayeredWindowAttributes;
-
          //  "Gamma" mode parameters
          WORD                             *g_pSavedGammaMap;
 
-         // "Curtain" mode parameters
-         wxWindow                         *g_pcurtain;
-         HWND                             curtain_handle;
-
 #endif
+         // "Curtain" mode parameters
+         wxDialog                        *g_pcurtain;
+
+
 
 int InitScreenBrightness(void)
 {
-#ifdef __WIN32__
+#ifdef GAMMA__WIN32__
       HDC hDC;
       BOOL bbr;
 
@@ -12813,12 +12858,43 @@ int InitScreenBrightness(void)
 
 
 #endif
+
+#ifdef BRIGHT_CURTAIN
+
+
+      if(NULL == g_pcurtain)
+      {
+            if(gFrame->CanSetTransparent())
+            {
+            //    Build the curtain window
+                  g_pcurtain = new wxDialog(NULL, -1, _T(""), wxPoint(0,0), wxSize(2,2),
+                                      wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
+
+                  g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
+                  g_pcurtain->SetTransparent(0);
+;
+                  g_pcurtain->Maximize();
+                  g_pcurtain->Show();
+
+                  //    All of this is obtuse, but necessary for Windows...
+                  g_pcurtain->Enable();
+                  g_pcurtain->Disable();
+
+                  gFrame->Disable();
+                  gFrame->Enable();
+                  cc1->SetFocus();
+
+            }
+      }
+      return 1;
+#endif
+
       return 0;
 }
 
 int RestoreScreenBrightness(void)
 {
-#ifdef __WIN32__
+#ifdef GAMMA__WIN32__
       HDC hDC;
       BOOL bbr;
 
@@ -12833,69 +12909,31 @@ int RestoreScreenBrightness(void)
             return 0;
 #endif
 
-      return 0;
+#ifdef BRIGHT_CURTAIN
+	  if(g_pcurtain)
+	  {
+            g_pcurtain->Close();
+	      g_pcurtain->Destroy();
+            g_pcurtain = NULL;
+	  }
+#endif
+
+      return 1;
 }
 
-//    Set brightness. [0..99]
+//    Set brightness. [0..100]
 int SetScreenBrightness(int brightness)
 {
-#ifdef __WIN32__
+#ifdef BRIGHT_CURTAIN
 
-      BOOL rv;
-      LONG lstyle;
 
-      if(NULL == hUSER32DLL)
+      if(g_pcurtain)
       {
-            hUSER32DLL = LoadLibrary(TEXT("user32.dll"));
+            int sbrite = wxMax(1, brightness);
+            sbrite = wxMin(100, sbrite);
 
-            if(NULL != hUSER32DLL)
-            {
-                        //Get the entry points of the required functions
-                  g_pSetLayeredWindowAttributes = (SetLayeredWindowAttributes_ptr_type)GetProcAddress(hUSER32DLL, "SetLayeredWindowAttributes");
-
-                        //    If the functions are not found, unload the DLL and return false
-                  if((NULL == g_pSetLayeredWindowAttributes))
-                  {
-                        FreeLibrary(hUSER32DLL);
-                        hUSER32DLL = NULL;
-                        return 0;
-                  }
-            }
-
-            //    Build the curtain window
-            g_pcurtain = new wxWindow(gFrame, -1, wxPoint(0,0), wxSize(200,200),
-				wxNO_BORDER | wxTRANSPARENT_WINDOW);
-
-            curtain_handle = (HWND) g_pcurtain->GetHWND();
-
-	        long styleCURT = GetWindowLong(curtain_handle, GWL_STYLE);
-			styleCURT &= ~WS_CHILD;
-            styleCURT |= WS_POPUP;
-            SetWindowLong(curtain_handle, GWL_STYLE, styleCURT);
-	        styleCURT = GetWindowLong(curtain_handle, GWL_STYLE);
-
-//	        g_pcurtain->Disable();
-	        g_pcurtain->Show();
-//	        g_pcurtain->Enable();
-
+            g_pcurtain->SetTransparent((100 - sbrite) * 256 / 100);
       }
-
-      lstyle = GetWindowLong (curtain_handle , GWL_EXSTYLE );
-      lstyle |= WS_EX_LAYERED;
-	  lstyle |= WS_EX_TRANSPARENT;
-	  lstyle |= WS_EX_TOPMOST;
-      SetWindowLong (curtain_handle , GWL_EXSTYLE , lstyle ) ;
-
-      SetWindowPos(curtain_handle,
-                             lstyle & WS_EX_TOPMOST ? HWND_TOPMOST
-                                                         : HWND_NOTOPMOST,
-                             0, 0, 0, 0,
-                             SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-
-
-      lstyle = GetWindowLong (curtain_handle , GWL_EXSTYLE );
-
-      rv = g_pSetLayeredWindowAttributes (curtain_handle, RGB(255,255,255), brightness * 256 / 100, /*LWA_COLORKEY|*/LWA_ALPHA);
 
       return 1;
 
@@ -12975,9 +13013,6 @@ int SetScreenBrightness(int brightness)
 
 #endif
 
-#ifdef __WXGTK__
-
-#endif
       return 0;
 }
 
