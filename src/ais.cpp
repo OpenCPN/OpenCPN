@@ -324,6 +324,12 @@ enum {
 };// AISTargetListCtrl Columns;
 
 
+//    Define and declare a hasmap for ERI Ship type strings, keyed by their UN Codes.
+ WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, ERIShipTypeHash );
+
+ ERIShipTypeHash        g_ERI_hash;
+
+
 //#define AIS_DEBUG  1
 
 wxString trimAISField(char *data)
@@ -490,10 +496,33 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
 
       //      Ship type
-            line.Printf(_("Type:                "));
+            line.Printf(_("Type:                 "));
             line.Append( Get_vessel_type_string() );
             line.Append(_T("\n"));
             result.Append(line);
+
+            if(b_isEuroInland && UN_shiptype)
+            {
+
+                  line.Printf(_("UN Ship Type:         "));
+                  ERIShipTypeHash::iterator it = g_ERI_hash.find(UN_shiptype);
+                  wxString type;
+                  if(it == g_ERI_hash.end())
+                        type =_("Undefined");
+                  else
+                        type = it->second;
+
+                  if(type.Len() < 20)
+                        line.Append(type);
+                  else
+                  {
+                        line.Append(_T("\n  "));
+                        line.Append(type);
+                  }
+
+                  line.Append(_T("\n"));
+                  result.Append(line);
+            }
 
 
       //  Dimensions
@@ -636,9 +665,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             if(ROTAIS != -128)
             {
                   if(ROTAIS == 127)
-                        line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Right\n"));
+                        line.Printf(_("Rate Of Turn:       > 5 Deg./30 s. Right\n"));
                   else if(ROTAIS == -127)
-                        line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Left\n"));
+                        line.Printf(_("Rate Of Turn:       > 5 Deg./30 s. Left\n"));
                   else
                   {
                         if(ROTIND > 0)
@@ -646,7 +675,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         else if(ROTIND < 0)
                               line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
                         else
-                              line.Printf(_("Rate Of Turn            NIL\n"));
+                              line.Printf(_("Rate Of Turn            0\n"));
                   }
 
                   result.Append(line);
@@ -1060,6 +1089,8 @@ AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDa
 
       AISTargetList = new AIS_Target_Hash;
 
+      BuildERIShipTypeHash();
+
       m_pShareGPSMutex = pGPSMutex;
 
       m_parent_frame = pParent;
@@ -1132,6 +1163,81 @@ AIS_Decoder::~AIS_Decoder(void)
 
 
 }
+
+#define MAKEHASHERI(key, description) g_ERI_hash[key] = _T(description);
+
+void AIS_Decoder::BuildERIShipTypeHash(void)
+{
+      MAKEHASHERI(8000, "Vessel, type unknown")
+      MAKEHASHERI(8150, "Freightbarge")
+      MAKEHASHERI(8150, "Tankbarge")
+      MAKEHASHERI(8163, "Tankbarge, dry cargo as if liquid (e.g. cement)")
+      MAKEHASHERI(8450, "Service vessel, police patrol, port service")
+      MAKEHASHERI(8430, "Pushboat, single")
+      MAKEHASHERI(8510, "Object, not otherwise specified")
+      MAKEHASHERI(8470, "Object, towed, not otherwise specified")
+      MAKEHASHERI(8490, "Bunkership")
+      MAKEHASHERI(8010, "Motor freighter")
+      MAKEHASHERI(8020, "Motor tanker")
+      MAKEHASHERI(8021, "Motor tanker, liquid cargo, type N")
+      MAKEHASHERI(8022, "Motor tanker, liquid cargo, type C")
+      MAKEHASHERI(8023, "Motor tanker, dry cargo as if liquid (e.g. cement)")
+      MAKEHASHERI(8030, "Container vessel")
+      MAKEHASHERI(8040, "Gas tanker")
+      MAKEHASHERI(8050, "Motor freighter, tug")
+      MAKEHASHERI(8060, "Motor tanker, tug")
+      MAKEHASHERI(8070, "Motor freighter with one or more ships alongside")
+      MAKEHASHERI(8080, "Motor freighter with tanker")
+      MAKEHASHERI(8090, "Motor freighter pushing one or more freighters")
+      MAKEHASHERI(8100, "Motor freighter pushing at least one tank-ship")
+      MAKEHASHERI(8110, "Tug, freighter")
+      MAKEHASHERI(8120, "Tug, tanker")
+      MAKEHASHERI(8130, "Tug freighter, coupled")
+      MAKEHASHERI(8140, "Tug, freighter/tanker, coupled")
+      MAKEHASHERI(8161, "Tankbarge, liquid cargo, type N")
+      MAKEHASHERI(8162, "Tankbarge, liquid cargo, type C")
+      MAKEHASHERI(8170, "Freightbarge with containers")
+      MAKEHASHERI(8180, "Tankbarge, gas")
+      MAKEHASHERI(8210, "Pushtow, one cargo barge")
+      MAKEHASHERI(8220, "Pushtow, two cargo barges")
+      MAKEHASHERI(8230, "Pushtow, three cargo barges")
+      MAKEHASHERI(8240, "Pushtow, four cargo barges")
+      MAKEHASHERI(8250, "Pushtow, five cargo barges")
+      MAKEHASHERI(8260, "Pushtow, six cargo barges")
+      MAKEHASHERI(8270, "Pushtow, seven cargo barges")
+      MAKEHASHERI(8280, "Pushtow, eight cargo barges")
+      MAKEHASHERI(8290, "Pushtow, nine on more barges")
+      MAKEHASHERI(8310, "Pushtow, one tank/gas barge")
+      MAKEHASHERI(8320, "Pushtow, two barges at least one tanker or gas barge")
+      MAKEHASHERI(8330, "Pushtow, three barges at least one tanker or gas barge")
+      MAKEHASHERI(8340, "Pushtow, four barges at least one tanker or gas barge")
+      MAKEHASHERI(8350, "Pushtow, five barges at least one tanker or gas barge")
+      MAKEHASHERI(8360, "Pushtow, six barges at least one tanker or gas barge")
+      MAKEHASHERI(8370, "Pushtow, seven barges at least one tanker or gas barge")
+      MAKEHASHERI(8380, "Pushtow, eight barges at least one tanker or gas barge")
+      MAKEHASHERI(8390, "Pushtow, nine or more barges at least one tanker or gas barge")
+      MAKEHASHERI(8400, "Tug, single")
+      MAKEHASHERI(8410, "Tug, one or more tows")
+      MAKEHASHERI(8420, "Tug, assisting a vessel or linked combination")
+      MAKEHASHERI(8430, "Passenger ship, ferry, cruise ship, red cross ship")
+      MAKEHASHERI(8441, "Ferry")
+      MAKEHASHERI(8442, "Red cross ship")
+      MAKEHASHERI(8443, "Cruise ship")
+      MAKEHASHERI(8444, "Passenger ship without accomodation")
+      MAKEHASHERI(8460, "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge")
+      MAKEHASHERI(8480, "Fishing boat")
+      MAKEHASHERI(8500, "Barge, tanker, chemical")
+      MAKEHASHERI(1500, "General cargo Vessel maritime")
+      MAKEHASHERI(1510, "Unit carrier maritime")
+      MAKEHASHERI(1520, "bulk carrier maritime")
+      MAKEHASHERI(1530, "tanker")
+      MAKEHASHERI(1540, "liquified gas tanker")
+      MAKEHASHERI(1850, "pleasure craft, longer than 20 metres")
+      MAKEHASHERI(1900, "fast ship")
+      MAKEHASHERI(1910, "hydrofoil")
+
+}
+
 
 //----------------------------------------------------------------------------------
 //     Handle events from AIS Serial Port RX thread
@@ -3657,7 +3763,7 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
       bool b_cmptype_num = false;
 
       //    Don't sort if target list count is too large
-      if(g_AisTargetList_count > 200)
+      if(g_AisTargetList_count > 1000)
             return 0;
 
       AIS_Target_Data *t1 = pAISTarget1;
@@ -3866,6 +3972,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
       m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 20000, g_AisTargetList_range );
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
+      m_pSpinCtrlRange->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND|wxALL, 0 );
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
 

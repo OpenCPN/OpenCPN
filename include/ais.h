@@ -352,7 +352,7 @@ private:
     void UpdateOneTrack(AIS_Target_Data *ptarget);
     void Parse_And_Send_Posn(wxString &str_temp_buf);
     void ThreadMessage(const wxString &msg);
-
+    void BuildERIShipTypeHash(void);
 
     AIS_Target_Hash *AISTargetList;
 
