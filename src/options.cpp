@@ -834,7 +834,7 @@ void options::CreateControls()
         _("Base"),
         _("Standard"),
         _("Other"),
-        _("MarinersStandard")
+        _("Mariners Standard")
     };
     pDispCat = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Display Category"), wxDefaultPosition, wxDefaultSize,
                                4, pDispCatStrings, 1, wxRA_SPECIFY_COLS );
@@ -842,7 +842,7 @@ void options::CreateControls()
 
 
 
-    pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("ShowSoundings"));
+    pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("Show Soundings"));
     pCheck_SOUNDG->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_SOUNDG, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
