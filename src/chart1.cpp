@@ -351,6 +351,11 @@ bool             g_bAutoAnchorMark;
 
 wxRect           g_blink_rect;
 double           g_PlanSpeed;
+wxDateTime		 g_StartTime;
+int				 g_StartTimeTZ;
+IDX_entry		*gpIDX;
+int				 gpIDXn;
+long			 gStart_LMT_Offset;
 
 wxArrayString    *pMessageOnceArray;
 
@@ -1436,6 +1441,11 @@ bool MyApp::OnInit()
 
               g_PlanSpeed = 6.;
         }
+
+		g_StartTime = wxInvalidDateTime;
+		g_StartTimeTZ = 1;				// start with local times
+		gpIDX = NULL;
+		gpIDXn = 0;
 
 
 //  Set up the frame initial visual parameters

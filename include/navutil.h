@@ -70,7 +70,7 @@
 #include "gpxdocument.h"
 
 extern bool LogMessageOnce(wxString &msg);
-extern wxString toSDMM(int NEflag, double a, bool hi_precision = false);
+extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
@@ -134,6 +134,9 @@ public:
       double             m_lon;
       double             m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
+      double            m_seg_vmg;
+      wxDateTime        m_seg_etd;
+
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
 
@@ -198,7 +201,7 @@ public:
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
       void DeSelectRoute();
       void CalculateBBox();
-      void UpdateSegmentDistances();
+      void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
       void Reverse(bool bRenamePoints = false);
@@ -234,6 +237,7 @@ public:
       bool        m_bIsBeingCreated;
       bool        m_bIsBeingEdited;
       double      m_route_length;
+      double      m_route_time;
       wxString    m_RouteNameString;
       wxString    m_RouteStartString;
       wxString    m_RouteEndString;

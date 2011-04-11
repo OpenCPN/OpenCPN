@@ -916,6 +916,8 @@ RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, con
 
       //  Nice defaults
       m_seg_len = 0.0;
+      m_seg_vmg = 0.0;
+      m_seg_etd = wxInvalidDateTime;
       m_bDynamicName = false;
       m_bPtIsSelected = false;
       m_bIsBeingEdited = false;
@@ -1208,6 +1210,7 @@ Route::Route ( void )
       m_nPoints = 0;
       m_nm_sequence = 1;
       m_route_length = 0.0;
+      m_route_time = 0.0;
       m_bVisible = true;
       m_bListed = true;
       m_bDeleteOnArrival = false;
@@ -1928,12 +1931,13 @@ void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
 Update the route segment lengths, storing each segment length in <destination> point.
 Also, compute total route length by summing segment distances.
 */
-void Route::UpdateSegmentDistances()
+void Route::UpdateSegmentDistances(double planspeed)
 {
       wxPoint rpt, rptn;
       float slat1, slon1, slat2, slon2;
 
       double route_len = 0.0;
+      double route_time = 0.0;
 
       wxRoutePointListNode *node = pRoutePointList->GetFirst();
 
@@ -1963,6 +1967,48 @@ void Route::UpdateSegmentDistances()
 
                   slat1 = slat2;
                   slon1 = slon2;
+
+
+//    If Point1 Description contains VMG, store it for Properties Dialog in Point2
+//    If Point1 Description contains ETD, store it in Point1
+
+                  if (planspeed > 0.) {
+                        double vmg = 0.0;
+                        wxDateTime etd;
+
+                        if (prp0->m_MarkDescription.Find(_T("VMG="))!= wxNOT_FOUND) {
+                              wxString s_vmg = (prp0->m_MarkDescription.Mid(prp0->m_MarkDescription.Find(_T("VMG="))+4)).BeforeFirst(';');
+                              if (!s_vmg.ToDouble(&vmg))
+                                    vmg = planspeed;
+                              }
+
+                        double legspeed = planspeed;
+                        if (vmg > 0.1 && vmg < 1000.) legspeed = vmg;
+                        if (legspeed > 0.1 && legspeed < 1000.) {
+                              route_time += dd/legspeed;
+                              prp->m_seg_vmg = legspeed;
+                              }
+
+                        prp0->m_seg_etd = wxInvalidDateTime;
+                        if (prp0->m_MarkDescription.Find(_T("ETD="))!= wxNOT_FOUND) {
+                              wxString s_etd = (prp0->m_MarkDescription.Mid(prp0->m_MarkDescription.Find(_T("ETD="))+4)).BeforeFirst(';');
+                              wxString tz = etd.ParseDateTime(s_etd);
+                              if (tz) {
+                                    if (tz.Find(_T("UT")) != wxNOT_FOUND)
+                                          prp0->m_seg_etd = etd;
+                                    else
+                                          if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
+                                                prp0->m_seg_etd = etd;
+                                                long lmt_offset = (long)((prp0->m_lon*3600.)/15.);
+                                                wxTimeSpan lmt(0,0,(int)lmt_offset,0);
+                                                prp0->m_seg_etd -= lmt;
+                                                }
+                                          else
+                                                prp0->m_seg_etd = etd.ToUTC();
+                              }
+                        }
+                  }
+
                   prp0 = prp;
 
                   node = node->GetNext();
@@ -1970,6 +2016,7 @@ void Route::UpdateSegmentDistances()
       }
 
       m_route_length = route_len;
+      m_route_time = route_time*3600.;
 }
 
 
@@ -4280,7 +4327,7 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
       m_bIsImporting = true;
       g_bIsNewLayer = islayer;
       wxArrayString file_array;
-      Layer *l;
+      Layer *l = NULL;
 
                     //wxString impmsg;
                     //impmsg.Printf(wxT("ImportGPX: %d, %s, %d"), islayer, dirpath.c_str(), isdirectory);
@@ -6980,10 +7027,10 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
             neg = 1;
       }
 
-      double mpy = 600000.0;
+      double mpy = 600.0;
 
       if(hi_precision)
-            mpy = mpy * 100.;
+            mpy = mpy * 1000.;
 
       d = ( int ) a;
       m = ( long ) wxRound( ( a - ( double ) d ) * mpy );
@@ -6996,9 +7043,9 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
       if ( !NEflag )
       {
             if(hi_precision)
-                  s.Printf ( _T ( "%d %02ld.%06ld'" ), d, m / 1000000, m % 1000000 );
+                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 10000, m % 10000 );
             else
-                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 10000,   m % 10000 );
+                  s.Printf ( _T ( "%d %02ld.%01ld'" ), d, m / 10,   m % 10 );
       }
       else
       {
@@ -7029,9 +7076,9 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
             if(b_print)
             {
                   if(hi_precision)
-                        s.Printf ( _T ( "%03d %02ld.%06ld %c" ), d, m / 1000000, ( m % 1000000 ), c );
+                        s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
                   else
-                        s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000,   ( m % 10000 ), c );
+                        s.Printf ( _T ( "%03d %02ld.%01ld %c" ), d, m / 10,   ( m % 10 ), c );
             }
       }
       return s;

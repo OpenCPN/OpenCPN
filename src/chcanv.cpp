@@ -127,6 +127,9 @@ extern RouteProp        *pRoutePropDialog;
 extern MarkInfo         *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 
+extern IDX_entry        *gpIDX;
+extern int                    gpIDXn;
+
 extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
 extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
 extern double           AnchorPointMaxDist, AnchorPointMinDist;  // pjotrc 2010.02.15
@@ -266,7 +269,7 @@ enum
         ID_DEF_MENU_MOVE_BOAT_HERE,
         ID_DEF_MENU_GOTO_HERE,
         ID_DEF_MENU_CM93ZOOM,
-	  ID_DEF_MENU_GOTOPOSITION,
+        ID_DEF_MENU_GOTOPOSITION,
 
         ID_WP_MENU_GOTO,
         ID_WP_MENU_DELPOINT,
@@ -310,20 +313,20 @@ enum
 //constants for hight and low tide search
 enum
 {
-		FORWARD_ONE_HOUR_STEP    =3600,
-		FORWARD_TEN_MINUTES_STEP =600,
-		FORWARD_ONE_MINUTES_STEP =60,
-		BACKWARD_ONE_HOUR_STEP    =-3600,
-		BACKWARD_TEN_MINUTES_STEP =-600,
-		BACKWARD_ONE_MINUTES_STEP =-60
+            FORWARD_ONE_HOUR_STEP    =3600,
+            FORWARD_TEN_MINUTES_STEP =600,
+            FORWARD_ONE_MINUTES_STEP =60,
+            BACKWARD_ONE_HOUR_STEP    =-3600,
+            BACKWARD_TEN_MINUTES_STEP =-600,
+            BACKWARD_ONE_MINUTES_STEP =-60
 };
 
 //constants for rollovers fonts
 enum
 {
-		AIS_ROLLOVER =1,
-		LEG_ROLLOVER =2,
-		TC_ROLLOVER  =3
+            AIS_ROLLOVER =1,
+            LEG_ROLLOVER =2,
+            TC_ROLLOVER  =3
 };
 
 //------------------------------------------------------------------------------
@@ -1008,7 +1011,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   m_pcandidate_array->Add(qcnew);
            }
       }
-      if(g_bFullScreenQuilt)
+      if(vp_in.b_FullScreenQuilt)
       {
             //    Search the entire database, potentially adding all charts which are on the ViewPort in any way
             //    .AND. other requirements.
@@ -2447,7 +2450,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_DEF_MENU_DROP_WP,            ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_MOVE_BOAT_HERE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_GOTO_HERE,          ChartCanvas::PopupMenuHandler )
-	  EVT_MENU ( ID_DEF_MENU_GOTOPOSITION,       ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_GOTOPOSITION,       ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_RT_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_RT_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
@@ -2550,7 +2553,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
               wxImage ICursorUp  = _img_up->ConvertToImage( );
               wxImage ICursorDown  = _img_down->ConvertToImage( );
               wxImage ICursorPencil  = _img_pencil->ConvertToImage( );
-		  wxImage ICursorCross  = _img_cross->ConvertToImage( );
+              wxImage ICursorCross  = _img_cross->ConvertToImage( );
 
 #else
                 wxImage ICursorLeft ( left );
@@ -2558,7 +2561,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
                 wxImage ICursorUp ( up );
                 wxImage ICursorDown ( down );
                 wxImage ICursorPencil ( pencil );
-		    wxImage ICursorCross ( cross );
+                wxImage ICursorCross ( cross );
 
 #endif
                 if ( ICursorLeft.Ok() )
@@ -2699,7 +2702,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
                     pCursorUp =      new ocpCursor ( up,    0, 15, 00 );
                     pCursorDown =    new ocpCursor ( down,  0, 15, 31 );
                     pCursorPencil =  new ocpCursor ( pencil, 0, 00, 20 );
-			  pCursorCross =  new ocpCursor ( cross, 0, 13, 12 );
+                    pCursorCross =  new ocpCursor ( cross, 0, 13, 12 );
               }
 
 #endif
@@ -2910,7 +2913,7 @@ ChartCanvas::~ChartCanvas()
         delete pCursorDown;
         delete pCursorArrow;
         delete pCursorPencil;
-		delete pCursorCross;
+            delete pCursorCross;
 
         delete pPanTimer;
         delete pCurTrackTimer;
@@ -2956,6 +2959,7 @@ ArrayOfInts ChartCanvas::GetQuiltIndexArray(void)
 void ChartCanvas::SetQuiltMode(bool b_quilt)
 {
       VPoint.b_quilt = b_quilt;
+      VPoint.b_FullScreenQuilt = g_bFullScreenQuilt;
 }
 
 bool ChartCanvas::GetQuiltMode(void)
@@ -7558,7 +7562,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         pGoToPositionDialog->Show();
                         break;
 
-		case ID_WP_MENU_DELPOINT:
+            case ID_WP_MENU_DELPOINT:
                 {
                        if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
                        else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15
@@ -9029,6 +9033,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 wxPoint rpt;
                 m_pMouseRoute->DrawPointWhich ( scratch_dc, parent_frame->nRoute_State - 1,  &rpt );
                 m_pMouseRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, VPoint, false );
+
+              RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
+                                  m_cursor_lat, m_cursor_lon, r_rband, _T(""));
         }
 
 
@@ -9554,18 +9561,18 @@ wxBitmap *ChartCanvas::DrawTCCBitmap ( wxDC *pbackground_dc, bool bAddNewSelpoin
 
         if ( m_bShowTide )
         {
-			if ( bShowingTide )
-			{
+                  if ( bShowingTide )
+                  {
                 // Rebuild Selpoints list on new map
-				DrawAllTidesInBBox ( ssdc,      VPoint.GetBBox(), bAddNewSelpoints, true );
-				DrawAllTidesInBBox ( ssdc_mask, VPoint.GetBBox(), false, true, true );    // onto the mask
-			}
-			else
-			{
-				DrawAllTidesInBBox ( ssdc,      VPoint.GetBBox(), true,true );
+                        DrawAllTidesInBBox ( ssdc,      VPoint.GetBBox(), bAddNewSelpoints, true );
+                        DrawAllTidesInBBox ( ssdc_mask, VPoint.GetBBox(), false, true, true );    // onto the mask
+                  }
+                  else
+                  {
+                        DrawAllTidesInBBox ( ssdc,      VPoint.GetBBox(), true,true );
                 DrawAllTidesInBBox ( ssdc_mask, VPoint.GetBBox(), false, true ,true);    // onto the mask
-			}
-			bShowingTide = true;
+                  }
+                  bShowingTide = true;
         }
         else
                 bShowingTide = false;
@@ -9838,74 +9845,74 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                        bool bRebuildSelList, bool bforce_redraw_tides, bool bdraw_mono_for_mask )
 {
 
-        wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
-        wxPen *pgray_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "DILG0" ) ), 1, wxSOLID );
+      wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
+      wxPen *pgray_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "DILG0" ) ), 1, wxSOLID );
 
-        wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "GREEN1" ) ), wxSOLID );
+      wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "GREEN1" ) ), wxSOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-        wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "BLUE2" ) ), wxSOLID );
-        wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "YELO1" ) ), wxSOLID );
+      wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "BLUE2" ) ), wxSOLID );
+      wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "YELO1" ) ), wxSOLID );
 
-		wxFont *dFont = pFontMgr->GetFont(_("ExtendedTideIcon"), 12);
-		dc.SetTextForeground(pFontMgr->GetFontColor(_T("ExtendedTideIcon")));
-		int font_size = wxMax(8, dFont->GetPointSize());
-		wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
-                   dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
+      wxFont *dFont = pFontMgr->GetFont(_("ExtendedTideIcon"), 12);
+      dc.SetTextForeground(pFontMgr->GetFontColor(_T("ExtendedTideIcon")));
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
+      dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
 
 
-        if ( bdraw_mono_for_mask )
-        {
+      if ( bdraw_mono_for_mask )
+      {
 #ifdef __WXX11__
-                const wxPen *pmono_pen = wxBLACK_PEN;
-                const wxBrush *pmono_brush = wxBLACK_BRUSH;
+            const wxPen *pmono_pen = wxBLACK_PEN;
+            const wxBrush *pmono_brush = wxBLACK_BRUSH;
 #else
-                const wxPen *pmono_pen = wxWHITE_PEN;
-                const wxBrush *pmono_brush = wxWHITE_BRUSH;
+            const wxPen *pmono_pen = wxWHITE_PEN;
+            const wxBrush *pmono_brush = wxWHITE_BRUSH;
 #endif
 
-                pblack_pen = ( wxPen * ) pmono_pen;
-                pgreen_brush = ( wxBrush * ) pmono_brush;
-				brc_1 = ( wxBrush * ) pmono_brush;
-				brc_2 = ( wxBrush * ) pmono_brush;
+            pblack_pen = ( wxPen * ) pmono_pen;
+            pgreen_brush = ( wxBrush * ) pmono_brush;
+            brc_1 = ( wxBrush * ) pmono_brush;
+            brc_2 = ( wxBrush * ) pmono_brush;
 
-        }
+      }
 
-        dc.SetPen ( *pblack_pen );
-        dc.SetBrush ( *pgreen_brush );
+      dc.SetPen ( *pblack_pen );
+      dc.SetBrush ( *pgreen_brush );
 
-        if ( bRebuildSelList )
-                pSelectTC->DeleteAllSelectableTypePoints ( SELTYPE_TIDEPOINT );
+      if ( bRebuildSelList )
+            pSelectTC->DeleteAllSelectableTypePoints ( SELTYPE_TIDEPOINT );
 
-        wxBitmap bm;
-        switch(m_cs)
-        {
-              case GLOBAL_COLOR_SCHEME_DAY:
-                    bm = m_bmTideDay;
-                    break;
-              case GLOBAL_COLOR_SCHEME_DUSK:
-                    bm = m_bmTideDusk;
-                    break;
-              case GLOBAL_COLOR_SCHEME_NIGHT:
-                    bm = m_bmTideNight;
-                    break;
-              default:
-                    bm = m_bmTideDay;
-                    break;
-        }
+      wxBitmap bm;
+      switch(m_cs)
+      {
+            case GLOBAL_COLOR_SCHEME_DAY:
+                  bm = m_bmTideDay;
+                  break;
+            case GLOBAL_COLOR_SCHEME_DUSK:
+                  bm = m_bmTideDusk;
+                  break;
+            case GLOBAL_COLOR_SCHEME_NIGHT:
+                  bm = m_bmTideNight;
+                  break;
+            default:
+                  bm = m_bmTideDay;
+                  break;
+      }
 
-        int bmw = bm.GetWidth();
-        int bmh = bm.GetHeight();
+      int bmw = bm.GetWidth();
+      int bmh = bm.GetHeight();
 
-		wxDateTime this_now = wxDateTime::Now();
-		time_t t_this_now = this_now.GetTicks();
+      wxDateTime this_now = wxDateTime::Now();
+      time_t t_this_now = this_now.GetTicks();
 
 //      if(1/*BBox.GetValid()*/)
-        {
+      {
 
-				double lon_last = 0.;
-				double lat_last = 0.;
-                for ( int i=1 ; i<ptcmgr->Get_max_IDX() +1 ; i++ )
-                {
+            double lon_last = 0.;
+            double lat_last = 0.;
+            for ( int i=1 ; i<ptcmgr->Get_max_IDX() +1 ; i++ )
+            {
                         IDX_entry *pIDX = ptcmgr->GetIDX_entry ( i );
 
                         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
@@ -9913,157 +9920,164 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                         {
                               double lon = pIDX->IDX_lon;
                               double lat = pIDX->IDX_lat;
-                                bool b_inbox = false;
-                                double nlon;
+                              bool b_inbox = false;
+                              double nlon;
 
-                                if ( BBox.PointInBox ( lon, lat, 0 ) )
+                              if ( BBox.PointInBox ( lon, lat, 0 ) )
                                     {nlon = lon ; b_inbox = true;}
-                                else if ( BBox.PointInBox ( lon + 360., lat, 0 ) )
+                              else if ( BBox.PointInBox ( lon + 360., lat, 0 ) )
                                     {nlon = lon + 360. ; b_inbox = true;}
-                                else if ( BBox.PointInBox ( lon - 360., lat, 0 ) )
+                              else if ( BBox.PointInBox ( lon - 360., lat, 0 ) )
                                     {nlon = lon - 360. ; b_inbox = true;}
 
 //try to eliminate double entry , but the only good way is to clean the file!
-                                if ( b_inbox && ( lat != lat_last ) && ( lon != lon_last ) )
-                                {
+                              if ( b_inbox && ( lat != lat_last ) && ( lon != lon_last ) )
+                              {
 
 //    Manage the point selection list
-                                        if ( bRebuildSelList )
-                                                pSelectTC->AddSelectablePoint ( lat, lon, pIDX, SELTYPE_TIDEPOINT );
+                                    if ( bRebuildSelList )
+                                          pSelectTC->AddSelectablePoint ( lat, lon, pIDX, SELTYPE_TIDEPOINT );
 
-                                        wxPoint r;
-                                        GetCanvasPointPix ( lat, nlon, &r );
+                                    wxPoint r;
+                                    GetCanvasPointPix ( lat, nlon, &r );
 //draw standard icons
-                                          if  (VPoint.chart_scale > 500000 )
-                                          {
+                                    if  (VPoint.chart_scale > 500000 )
+                                    {
 
-                                                if(bdraw_mono_for_mask)
-                                                      dc.DrawRectangle(r.x - bmw/2, r.y - bmh/2, bmw, bmh);
-                                                else
-                                                      dc.DrawBitmap(bm, r.x - bmw/2, r.y - bmh/2, true);
-
-                                          }
+                                          if(bdraw_mono_for_mask)
+                                                dc.DrawRectangle(r.x - bmw/2, r.y - bmh/2, bmw, bmh);
+                                          else
+                                                dc.DrawBitmap(bm, r.x - bmw/2, r.y - bmh/2, true);
+                                    }
 //draw "extended" icons
-							else
-							{
+                                    else
+                                    {
+//set rectangle size and position (max text lengh)
+                                          int wx,hx;
+                                          dc.SetFont( *plabelFont );
+                                          dc.GetTextExtent(_T("99.9ft "), &wx, &hx);
+                                          int w = r.x - 6 ;
+                                          int h = r.y - 45;
+//draw mask
+                                          if ( bdraw_mono_for_mask )
+                                                dc.DrawRectangle( r.x - ( wx / 2 ), h, wx, hx + 45 );
+      //process tides
+                                          else
+                                          {
+                                                if ( bforce_redraw_tides )
+                                                {
+                                                            float val, nowlev;
+                                                            float ltleve = 0.;
+                                                            float htleve = 0.;
+                                                            time_t tctime;
+                                                            time_t lttime = 0;
+                                                            time_t httime = 0;
+                                                            bool wt;
+      //define if flood or edd in the last ten minutes and verify if data are useable
+                                                            if  ( ptcmgr->GetTideFlowSens( t_this_now, BACKWARD_TEN_MINUTES_STEP,
+                                                                        pIDX->IDX_rec_num, nowlev, val, wt) )
+                                                            {
 
-		//set rectangle size and position (max text lengh)
-										int wx,hx;
-										dc.SetFont( *plabelFont );
-										dc.GetTextExtent(_T("99.9ft "), &wx, &hx);
-										int w = r.x - 6 ;
-										int h = r.y - 45;
-		//draw mask
-										if ( bdraw_mono_for_mask )
-													dc.DrawRectangle( r.x - ( wx / 2 ), h, wx, hx + 45 );
-		//process tides
-										else
-										{
-											if ( bforce_redraw_tides )
-											{
-												float val, nowlev, ltleve, htleve;
-												time_t tctime, lttime, httime;
-												bool wt;
-			//define if flood or edd in the last ten minutes and verify if data are useable
-                                                                        if  ( ptcmgr->GetTideFlowSens( t_this_now, BACKWARD_TEN_MINUTES_STEP, pIDX->IDX_rec_num, nowlev, val, wt) )
-                                                                        {
+      //search forward the first HW or LW near "now" ( starting at "now" - ten minutes )
+                                                                  ptcmgr->GetHightOrLowTide( t_this_now + BACKWARD_TEN_MINUTES_STEP ,
+                                                                              FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP,
+                                                                              val, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                  if ( wt )
+                                                                  {
+                                                                        httime = tctime ;
+                                                                        htleve = val ;
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                        lttime = tctime ;
+                                                                        ltleve = val ;
+                                                                  }
+                                                                  wt = !wt;
 
-                  //search forward the first HW or LW near "now" ( starting at "now" - ten minutes )
-                                                                              ptcmgr->GetHightOrLowTide( t_this_now + BACKWARD_TEN_MINUTES_STEP , FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, val, wt, pIDX->IDX_rec_num, val, tctime);
-                                                                              if ( wt )
-                                                                              {
-                                                                                    httime = tctime ;
-                                                                                    htleve = val ;
-                                                                              }
-                                                                              else
-                                                                              {
-                                                                                    lttime = tctime ;
-                                                                                    ltleve = val ;
-                                                                              }
-                                                                              wt = !wt;
+      //then search opposite tide near "now"
+                                                                  if ( tctime > t_this_now )          // search backward
+                                                                        ptcmgr->GetHightOrLowTide( t_this_now, BACKWARD_TEN_MINUTES_STEP,
+                                                                                    BACKWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                  else                                      // or search forward
+                                                                        ptcmgr->GetHightOrLowTide( t_this_now, FORWARD_TEN_MINUTES_STEP,
+                                                                                    FORWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
+                                                                  if ( wt )
+                                                                  {
+                                                                        httime = tctime ;
+                                                                        htleve = val ;
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                        lttime = tctime ;
+                                                                        ltleve = val ;
+                                                                  }
 
-                  //then search opposite tide near "now"
-                                                                              if ( tctime > t_this_now )		// search backward
-                                                                                    ptcmgr->GetHightOrLowTide( t_this_now, BACKWARD_TEN_MINUTES_STEP,  BACKWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
-                                                                              else							// or search forward
-                                                                                    ptcmgr->GetHightOrLowTide( t_this_now, FORWARD_TEN_MINUTES_STEP, FORWARD_ONE_MINUTES_STEP, nowlev, wt, pIDX->IDX_rec_num, val, tctime);
-                                                                              if ( wt )
-                                                                              {
-                                                                                    httime = tctime ;
-                                                                                    htleve = val ;
-                                                                              }
-                                                                              else
-                                                                              {
-                                                                                    lttime = tctime ;
-                                                                                    ltleve = val ;
-                                                                              }
+      //process tide state  ( %height and flow sens )
+                                                                  float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
+                                                                  int hs = ( httime > lttime ) ? -5 : 5 ;
+                                                                  if ( ts > 0.995 || ts < 0.005 )
+                                                                        hs = 0;
+                                                                  int ht_y = (int) ( 45.0 * ts ) ;
 
-                  //process tide state  ( %height and flow sens )
-                                                                              float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
-                                                                              int hs = ( httime > lttime ) ? -5 : 5 ;
-                                                                              if ( ts > 0.995 || ts < 0.005 )
-                                                                                    hs = 0;
-                                                                              int ht_y = (int) ( 45.0 * ts ) ;
-
-                  //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
-                                                                              dc.SetBrush( *brc_2 );
-                                                                              dc.DrawRectangle( w , h , 12 , 45 );
-                  //draw blue rectangle as water height
-                                                                              dc.SetBrush( *brc_1 );
-                                                                              dc.DrawRectangle( w , h + ht_y , 12 , 45 - ht_y );
+      //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
+                                                                  dc.SetBrush( *brc_2 );
+                                                                  dc.DrawRectangle( w , h , 12 , 45 );
+      //draw blue rectangle as water height
+                                                                  dc.SetBrush( *brc_1 );
+                                                                  dc.DrawRectangle( w , h + ht_y , 12 , 45 - ht_y );
 
 
-                  //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
-                                                                              dc.SetPen( *pgray_pen );
+      //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
+                                                                  dc.SetPen( *pgray_pen );
 
-                                                                              int hl;
-                                                                              wxPoint arrow[3];
-                                                                              arrow[0].x = w;
-                                                                              arrow[1].x = w + 5;
-                                                                              arrow[2].x = w + 11;
-                                                                              if ( ts > 0.35 || ts < 0.15)				// one arrow at 3/4 hight tide
-                                                                              {
-                                                                                    hl = (int) ( 45.0 * 0.25 ) + h ;
-                                                                                    arrow[0].y = hl;
-                                                                                    arrow[1].y = hl + hs ;
-                                                                                    arrow[2].y = hl;
-                                                                                    dc.DrawLines( 3,arrow);
-                                                                              }
-                                                                              if ( ts > 0.60 || ts < 0.40 )				//one arrow at 1/2 hight tide
-                                                                              {
-                                                                                    hl = (int) ( 45.0 * 0.5 ) + h ;
-                                                                                    arrow[0].y = hl;
-                                                                                    arrow[1].y = hl + hs ;
-                                                                                    arrow[2].y = hl;
-                                                                                    dc.DrawLines( 3,arrow);
-                                                                              }
-                                                                              if ( ts < 0.65 || ts > 0.85 )				//one arrow at 1/4 Hight tide
-                                                                              {
-                                                                                    hl = (int) ( 45.0 * 0.75 ) + h ;
-                                                                                    arrow[0].y = hl;
-                                                                                    arrow[1].y = hl + hs ;
-                                                                                    arrow[2].y = hl;
-                                                                                    dc.DrawLines( 3,arrow);
-                                                                              }
-                  //draw tide level text
-                                                                              wxString s;
-                                                                              s.Printf(_T("%3.1f"),nowlev );
-                                                                              Station_Data *pmsd = pIDX->pref_sta_data;					//write unit
-                                                                              if ( pmsd )
-                                                                                    s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
-                                                                              int wx1;
-                                                                              dc.GetTextExtent(s, &wx1, NULL);
-                                                                              dc.DrawText(s , r.x - ( wx1 / 2 ), h + 45 );
-                                                                        }
-											}
-										}
-									}
-								}
-								lon_last = lon;
-								lat_last = lat;
-						}
-				}
-		}
+                                                                  int hl;
+                                                                  wxPoint arrow[3];
+                                                                  arrow[0].x = w;
+                                                                  arrow[1].x = w + 5;
+                                                                  arrow[2].x = w + 11;
+                                                                  if ( ts > 0.35 || ts < 0.15)                    // one arrow at 3/4 hight tide
+                                                                  {
+                                                                        hl = (int) ( 45.0 * 0.25 ) + h ;
+                                                                        arrow[0].y = hl;
+                                                                        arrow[1].y = hl + hs ;
+                                                                        arrow[2].y = hl;
+                                                                        dc.DrawLines( 3,arrow);
+                                                                  }
+                                                                  if ( ts > 0.60 || ts < 0.40 )                   //one arrow at 1/2 hight tide
+                                                                  {
+                                                                        hl = (int) ( 45.0 * 0.5 ) + h ;
+                                                                        arrow[0].y = hl;
+                                                                        arrow[1].y = hl + hs ;
+                                                                        arrow[2].y = hl;
+                                                                        dc.DrawLines( 3,arrow);
+                                                                  }
+                                                                  if ( ts < 0.65 || ts > 0.85 )                   //one arrow at 1/4 Hight tide
+                                                                  {
+                                                                        hl = (int) ( 45.0 * 0.75 ) + h ;
+                                                                        arrow[0].y = hl;
+                                                                        arrow[1].y = hl + hs ;
+                                                                        arrow[2].y = hl;
+                                                                        dc.DrawLines( 3,arrow);
+                                                                  }
+      //draw tide level text
+                                                                  wxString s;
+                                                                  s.Printf(_T("%3.1f"),nowlev );
+                                                                  Station_Data *pmsd = pIDX->pref_sta_data;                         //write unit
+                                                                  if ( pmsd )
+                                                                        s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                                                                  int wx1;
+                                                                  dc.GetTextExtent(s, &wx1, NULL);
+                                                                  dc.DrawText(s , r.x - ( wx1 / 2 ), h + 45 );
+                                                            }
+                                                    }
+                                            }
+                                     }
+                              }
+                              lon_last = lon;
+                              lat_last = lat;
+                       }
+               }
+       }
 }
 
 
@@ -10281,7 +10295,7 @@ BEGIN_EVENT_TABLE ( TCWin, wxWindow )
         EVT_BUTTON ( ID_TCWIN_NX, TCWin::NXEvent )
         EVT_BUTTON ( ID_TCWIN_PR, TCWin::PREvent )
         EVT_CLOSE ( TCWin::OnCloseWindow )
-		EVT_TIMER ( TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent )
+            EVT_TIMER ( TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent )
 END_EVENT_TABLE()
 
 #include <wx/listimpl.cpp>
@@ -10308,19 +10322,23 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         pParent = parent;
 
         pIDX = ( IDX_entry * ) pvIDX;
-		m_pTCRolloverWin = NULL ;
+            gpIDXn++;
 
 //    Set up plot type
         if ( strchr ( "Tt", pIDX->IDX_type ) )
         {
                 m_plot_type = TIDE_PLOT;
                 SetTitle ( wxString ( _( "Tide" ) ) );
+                gpIDX = pIDX;       // remember pointer for routeplan
+
         }
         else
         {
                 m_plot_type = CURRENT_PLOT;
                 SetTitle ( wxString ( _( "Current" ) ) );
         }
+
+        m_pTCRolloverWin = NULL ;
 
         int sx,sy;
         GetClientSize ( &sx, &sy );
@@ -10417,25 +10435,25 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
         btc_valid = false;
 
-		wxString* TClist = NULL;
-		m_tList = new wxListBox( this, -1,wxPoint(sx * 63/100 ,11 ),wxSize((sx * 32/100 ) ,( sy * 16/100)),0,
+            wxString* TClist = NULL;
+            m_tList = new wxListBox( this, -1,wxPoint(sx * 63/100 ,11 ),wxSize((sx * 32/100 ) ,( sy * 16/100)),0,
                                 TClist ,wxLB_SINGLE|wxLB_NEEDED_SB );
 
-		m_tList->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG1" ) ) );
-		m_tList->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
+            m_tList->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG1" ) ) );
+            m_tList->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
 
         OK_button = new wxButton ( this, wxID_OK, _( "OK" ),
                                    wxPoint ( sx - 100, sy - 32 ), wxDefaultSize );
         OK_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-		OK_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
+            OK_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
 
 
         PR_button = new wxButton ( this, ID_TCWIN_PR, _( "Prev" ),
                                    wxPoint ( 10 , sy - 32 ), wxSize ( 40, -1 ) );
         PR_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-		PR_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
+            PR_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
         int bsx, bsy, bpx, bpy;
         PR_button->GetSize ( &bsx, &bsy );
@@ -10444,26 +10462,16 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         NX_button = new wxButton ( this, ID_TCWIN_NX, _( "Next" ),
                                    wxPoint ( bpx + bsx + 5, bpy ), wxSize ( 40, -1 ) );
         NX_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-		NX_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
+            NX_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
-		m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
+            m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
 
 }
 
 
 TCWin::~TCWin()
 {
- /*
-        if ( psList )
-        {
-                psList->DeleteContents ( TRUE );
-                psList->Clear();
-                delete psList;
-        }
-*/
-//      pParent->m_bForceReDraw = true;
         pParent->Refresh ( false );
-
 }
 
 
@@ -10471,9 +10479,9 @@ void TCWin::OKEvent ( wxCommandEvent& event )
 {
         Hide();
         pParent->pCwin = NULL;
-		delete m_pTCRolloverWin ;
-		delete m_tList;
-//      pParent->m_bForceReDraw = true;
+        if (--gpIDXn == 0) gpIDX = NULL;
+        delete m_pTCRolloverWin ;
+        delete m_tList;
         pParent->Refresh ( false );
         Destroy();                          // that hurts
 }
@@ -10482,8 +10490,10 @@ void TCWin::OnCloseWindow ( wxCloseEvent& event )
 {
         Hide();
         pParent->pCwin = NULL;
-		delete m_pTCRolloverWin ;
-		delete m_tList;
+        if (--gpIDXn == 0) gpIDX = NULL;
+        delete m_pTCRolloverWin ;
+        delete m_tList;
+
         Destroy();                          // that hurts
 }
 
@@ -10567,7 +10577,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 wxPen *pblack_3 = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UWHIT" ) ), 1, wxSOLID );
                 wxPen *pred_2   = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFR" ) ), 4, wxSOLID );
                 wxBrush *pltgray = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UIBCK" ) ), wxSOLID );
-				wxBrush *pltgray2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "DILG1" ) ), wxSOLID );
+                        wxBrush *pltgray2 = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "DILG1" ) ), wxSOLID );
 
                 wxFont *pSFont = wxTheFontList->FindOrCreateFont ( 8, wxFONTFAMILY_SWISS,wxNORMAL,  wxFONTWEIGHT_NORMAL,
                                  FALSE, wxString ( _T ( "Arial" ) ) );
@@ -10592,8 +10602,8 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                   // box the location text & tide-current table
                   dc.SetPen ( *pblack_3 );
                   dc.SetBrush ( *pltgray2 );
-                  dc.DrawRoundedRectangle( x_textbox, 6, x_textbox_w , y_textbox_h ,4);			//location text box
-//                  dc.DrawRoundedRectangle( x * 62/100, 6, x * 28/100 , y_textbox_h ,4);		//tide-current table box
+                  dc.DrawRoundedRectangle( x_textbox, 6, x_textbox_w , y_textbox_h ,4);               //location text box
+//                  dc.DrawRoundedRectangle( x * 62/100, 6, x * 28/100 , y_textbox_h ,4);       //tide-current table box
                   wxRect tab_rect = m_tList->GetRect();
                   dc.DrawRoundedRectangle( tab_rect.x-4, 6, tab_rect.width + 8 , y_textbox_h ,4);         //tide-current table box
 
@@ -10627,7 +10637,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
 
                 float t_ratio = x_graph_w * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
 
-				//must eliminate line outside the graph (in that case put it outside the window)
+                        //must eliminate line outside the graph (in that case put it outside the window)
                 int xnow = ( t_ratio < 0 || t_ratio > x_graph_w ) ? -1 : x_graph + ( int ) t_ratio;
                 dc.SetPen ( *pred_2 );
                 dc.DrawLine ( xnow, y_graph, xnow, y_graph + y_graph_h );
@@ -10642,15 +10652,15 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         float dir;
                         tcmax = -10;
                         tcmin = 10;
-						float val;
-						m_tList->Clear();
-						int list_index = 0 ;
-						bool wt;
+                                    float val;
+                                    m_tList->Clear();
+                                    int list_index = 0 ;
+                                    bool wt;
 
                         wxBeginBusyCursor();
 
-						// get tide flow sens ( flood or ebb ? )
-						ptcmgr->GetTideFlowSens(m_t_graphday_00_at_station, BACKWARD_ONE_HOUR_STEP, pIDX->IDX_rec_num, tcv[0], val, wt);
+                                    // get tide flow sens ( flood or ebb ? )
+                                    ptcmgr->GetTideFlowSens(m_t_graphday_00_at_station, BACKWARD_ONE_HOUR_STEP, pIDX->IDX_rec_num, tcv[0], val, wt);
 
                         for ( i=0 ; i<26 ; i++ )
                         {
@@ -10659,51 +10669,51 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                 if ( tcv[i] > tcmax )
                                         tcmax = tcv[i];
 
-								if ( tcv[i] < tcmin )
+                                                if ( tcv[i] < tcmin )
                                         tcmin = tcv[i];
-								if ( TIDE_PLOT == m_plot_type )
-								{
- 									if ( ! (tcv[i] > val == wt) )			   // if tide flow sens change
- 									{
-										float tcvalue;							//look backward for HW or LW
-										time_t tctime;
-										ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP, BACKWARD_ONE_MINUTES_STEP, tcv[i], wt, pIDX->IDX_rec_num, tcvalue, tctime);
+                                                if ( TIDE_PLOT == m_plot_type )
+                                                {
+                                                      if ( ! (tcv[i] > val == wt) )                // if tide flow sens change
+                                                      {
+                                                            float tcvalue;                                        //look backward for HW or LW
+                                                            time_t tctime;
+                                                            ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP, BACKWARD_ONE_MINUTES_STEP, tcv[i], wt, pIDX->IDX_rec_num, tcvalue, tctime);
 
-										wxDateTime tcd ;											//write date
-										wxString s,s1;
-										tcd.Set( tctime + ( m_corr_mins * 60 ) ) ;
-										s.Printf(tcd.Format(_T("%H:%M  ")));
-										s1.Printf( _T("%05.2f "),tcvalue);							//write value
-										s.Append(s1 );
-										Station_Data *pmsd = pIDX->pref_sta_data;					//write unit
-										if ( pmsd )
-											s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
-										s.Append(_T("   "));
-										( wt )? s.Append(_("HW") ) : s.Append(_("LW") );			//write HW or LT
+                                                            wxDateTime tcd ;                                                              //write date
+                                                            wxString s,s1;
+                                                            tcd.Set( tctime + ( m_corr_mins * 60 ) ) ;
+                                                            s.Printf(tcd.Format(_T("%H:%M  ")));
+                                                            s1.Printf( _T("%05.2f "),tcvalue);                                      //write value
+                                                            s.Append(s1 );
+                                                            Station_Data *pmsd = pIDX->pref_sta_data;                         //write unit
+                                                            if ( pmsd )
+                                                                  s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                                                            s.Append(_T("   "));
+                                                            ( wt )? s.Append(_("HW") ) : s.Append(_("LW") );                  //write HW or LT
 
-										m_tList->Insert(s,list_index);								// update table list
-										list_index++;
+                                                            m_tList->Insert(s,list_index);                                                // update table list
+                                                            list_index++;
 
-										wt = !wt ;													//change tide flow sens
-									}
-									val = tcv[i];
- 								}
-								if ( CURRENT_PLOT == m_plot_type )
-								{
-									wxDateTime thx ;												//write date
-									wxString s,s1;
-									thx.Set((time_t) (tt + ( m_corr_mins * 60 )));
-									s.Printf(thx.Format(_T("%H:%M  ")));
-									s1.Printf( _T("%05.2f "),fabs(tcv[i]));							//write value
-									s.Append(s1);
-									Station_Data *pmsd = pIDX->pref_sta_data;						//write unit
-									if ( pmsd )
-										s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
-									s1.Printf(_T("  %03.0f"),dir);								//write direction
-									s.Append(s1);
-									m_tList->Insert(s,list_index);									// update table list
-									list_index++;
-								}
+                                                            wt = !wt ;                                                                          //change tide flow sens
+                                                      }
+                                                      val = tcv[i];
+                                                }
+                                                if ( CURRENT_PLOT == m_plot_type )
+                                                {
+                                                      wxDateTime thx ;                                                                    //write date
+                                                      wxString s,s1;
+                                                      thx.Set((time_t) (tt + ( m_corr_mins * 60 )));
+                                                      s.Printf(thx.Format(_T("%H:%M  ")));
+                                                      s1.Printf( _T("%05.2f "),fabs(tcv[i]));                                       //write value
+                                                      s.Append(s1);
+                                                      Station_Data *pmsd = pIDX->pref_sta_data;                               //write unit
+                                                      if ( pmsd )
+                                                            s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                                                      s1.Printf(_T("  %03.0f"),dir);                                                //write direction
+                                                      s.Append(s1);
+                                                      m_tList->Insert(s,list_index);                                                      // update table list
+                                                      list_index++;
+                                                }
 
                         }
 
@@ -10714,7 +10724,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         if ( CURRENT_PLOT == m_plot_type )
                         {
                                 it =  __max ( abs (( int ) tcmin  - 1 ), abs ( ( int ) tcmax  + 1 ) );
-								ib = - it ;
+                                                ib = - it ;
 
                                 im = 2 * it;
                                 m_plot_y_offset = y_graph_h/2;
@@ -10802,28 +10812,28 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                         locna = locn;
                         locnb.Empty();
                 }
-				// write the first line
-				dc.SetFont ( *pLFont );
-				dc.GetTextExtent ( locna, &w, &h );
-				int y_first_line = y * 3 / 100;
-				dc.DrawText ( locna ,x_textbox + 3, y_first_line  );
+                        // write the first line
+                        dc.SetFont ( *pLFont );
+                        dc.GetTextExtent ( locna, &w, &h );
+                        int y_first_line = y * 3 / 100;
+                        dc.DrawText ( locna ,x_textbox + 3, y_first_line  );
 
-				dc.SetFont ( *pSMFont );
+                        dc.SetFont ( *pSMFont );
 
-				// may be write the second line
-				if ( !locnb.IsEmpty() )
-					dc.DrawText ( locnb, x_textbox + 7, y_first_line + h);
+                        // may be write the second line
+                        if ( !locnb.IsEmpty() )
+                              dc.DrawText ( locnb, x_textbox + 7, y_first_line + h);
 
-				//Reference to the master station
+                        //Reference to the master station
 
                 if ( 't' == pIDX->IDX_type )
-				{
+                        {
                      wxString mref ( pIDX->IDX_reference_name, wxConvUTF8 );
 
                      dc.GetTextExtent ( mref, &w, &h );
                      int y_master_reference = y_graph - ( h * 2  + 3 ) ;
-					 dc.DrawText ( _( "Reference Station :" ), x_graph + 3 , y_master_reference  );
-					 dc.DrawText ( mref, x_textbox + 3  , y_master_reference + h - 2  );
+                               dc.DrawText ( _( "Reference Station :" ), x_graph + 3 , y_master_reference  );
+                               dc.DrawText ( mref, x_textbox + 3  , y_master_reference + h - 2  );
                 }
 
                 dc.DestroyClippingRegion();
@@ -10966,82 +10976,82 @@ void TCWin::MouseEvent ( wxMouseEvent& event )
 
         event.GetPosition ( &curs_x, &curs_y );
         if(HasCapture())
-		ReleaseMouse();								//in case the mouse have been captured in "OnTCwinPoupTimerEvent"
+            ReleaseMouse();                                             //in case the mouse have been captured in "OnTCwinPoupTimerEvent"
 
         if ( !m_TCWinPopupTimer.IsRunning() )
-		m_TCWinPopupTimer.Start(20, wxTIMER_ONE_SHOT) ;
+            m_TCWinPopupTimer.Start(20, wxTIMER_ONE_SHOT) ;
 
 }
 
 void TCWin::OnTCWinPopupTimerEvent ( wxTimerEvent& event )
 {
 
-		int x,y;
-		bool ShowRollover;
+            int x,y;
+            bool ShowRollover;
 
-		GetClientSize ( &x, &y );
-		wxRegion cursorarea(( x * 9/100 ) , ( y * 22/100 ) , ( x * 81/100) , ( y * 58/100 ));
+            GetClientSize ( &x, &y );
+            wxRegion cursorarea(( x * 9/100 ) , ( y * 22/100 ) , ( x * 81/100) , ( y * 58/100 ));
 
-		if ( cursorarea.Contains(curs_x,curs_y) )
-		{
-			CaptureMouse();								//the cursor can move into the rollover
-			ShowRollover = true ;
-			SetCursor(*pParent->pCursorCross);
-			if( NULL == m_pTCRolloverWin )
-			{
-				m_pTCRolloverWin = new RolloverWin(this);
-				m_pTCRolloverWin->Hide();
-			}
-			float t,d ;
-			wxString p,s  ;
-			//set time on x cursor position
-			t = ( 25 / ( (float) x * 8/10 ) ) * ( (float) curs_x -  ( (float) x * 1/10 ) ) ;
-			int tt = m_t_graphday_00_at_station +  (int )( t * 3600 );
-			wxDateTime thd ;
-			time_t ths = tt + ( m_corr_mins * 60 );
-			thd.Set(ths) ;
-			p.Printf(thd.Format(_T("%Hh %Mmn")));
-			p.Append(_("\n"));
+            if ( cursorarea.Contains(curs_x,curs_y) )
+            {
+                  CaptureMouse();                                             //the cursor can move into the rollover
+                  ShowRollover = true ;
+                  SetCursor(*pParent->pCursorCross);
+                  if( NULL == m_pTCRolloverWin )
+                  {
+                        m_pTCRolloverWin = new RolloverWin(this);
+                        m_pTCRolloverWin->Hide();
+                  }
+                  float t,d ;
+                  wxString p,s  ;
+                  //set time on x cursor position
+                  t = ( 25 / ( (float) x * 8/10 ) ) * ( (float) curs_x -  ( (float) x * 1/10 ) ) ;
+                  int tt = m_t_graphday_00_at_station +  (int )( t * 3600 );
+                  wxDateTime thd ;
+                  time_t ths = tt + ( m_corr_mins * 60 );
+                  thd.Set(ths) ;
+                  p.Printf(thd.Format(_T("%Hh %Mmn")));
+                  p.Append(_("\n"));
 
-			//set tide level or current speed at that time
-			ptcmgr->GetTideOrCurrent ( tt, pIDX->IDX_rec_num, t, d );
-			s.Printf(_T("%3.2f ") ,( t < 0 && CURRENT_PLOT == m_plot_type) ? -t : t ); // always positive if current
-			p.Append(s);
+                  //set tide level or current speed at that time
+                  ptcmgr->GetTideOrCurrent ( tt, pIDX->IDX_rec_num, t, d );
+                  s.Printf(_T("%3.2f ") ,( t < 0 && CURRENT_PLOT == m_plot_type) ? -t : t ); // always positive if current
+                  p.Append(s);
 
-			//set unit
-			Station_Data *pmsd = pIDX->pref_sta_data;
-			if ( pmsd )
-				p.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                  //set unit
+                  Station_Data *pmsd = pIDX->pref_sta_data;
+                  if ( pmsd )
+                        p.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
 
-			//set current direction
-			if ( CURRENT_PLOT == m_plot_type )
-			{
-				s.Printf(_T("%3.0f Deg"),d);
-				p.Append(_T("\n"));
-				p.Append(s);
-			}
+                  //set current direction
+                  if ( CURRENT_PLOT == m_plot_type )
+                  {
+                        s.Printf(_T("%3.0f Deg"),d);
+                        p.Append(_T("\n"));
+                        p.Append(s);
+                  }
 
-			//set rollover area size
-			wxSize win_size ;
-			win_size.Set(x*90/100 , y*80/100);
+                  //set rollover area size
+                  wxSize win_size ;
+                  win_size.Set(x*90/100 , y*80/100);
 
-			m_pTCRolloverWin->SetString(p);
-			m_pTCRolloverWin->SetBestPosition(curs_x,curs_y,1, 1, TC_ROLLOVER, win_size);
-			m_pTCRolloverWin->SetBitmap(TC_ROLLOVER);
-			m_pTCRolloverWin->Refresh();
-			m_pTCRolloverWin->Show();
-		}
-		else
-		{
-			SetCursor(*pParent->pCursorArrow);
-			ShowRollover = false ;
-		}
+                  m_pTCRolloverWin->SetString(p);
+                  m_pTCRolloverWin->SetBestPosition(curs_x,curs_y,1, 1, TC_ROLLOVER, win_size);
+                  m_pTCRolloverWin->SetBitmap(TC_ROLLOVER);
+                  m_pTCRolloverWin->Refresh();
+                  m_pTCRolloverWin->Show();
+            }
+            else
+            {
+                  SetCursor(*pParent->pCursorArrow);
+                  ShowRollover = false ;
+            }
 
-		if (m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover )
-		{
-			m_pTCRolloverWin->Hide();
-			m_pTCRolloverWin = NULL;
-		}
+            if (m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover )
+            {
+                  m_pTCRolloverWin->Hide();
+                  m_pTCRolloverWin = NULL;
+            }
 
 }
 
@@ -12395,28 +12405,29 @@ void RolloverWin::SetBitmap(int rollover)
       mdc.Blit(0, 0, m_size.x, m_size.y, &cdc, m_position.x, m_position.y);
 
        wxFont *dFont;
-	   switch ( rollover )
-	   {
-			case AIS_ROLLOVER:
-				AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
-				dFont = pFontMgr->GetFont(_("AISRollover"), 12);
-				mdc.SetTextForeground(pFontMgr->GetFontColor(_T("AISRollover")));
-				break;
+         switch ( rollover )
+         {
+                  case AIS_ROLLOVER:
+                        AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+                        dFont = pFontMgr->GetFont(_("AISRollover"), 12);
+                        mdc.SetTextForeground(pFontMgr->GetFontColor(_T("AISRollover")));
+                        break;
 
-			case LEG_ROLLOVER:
-				AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
-				dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
-				mdc.SetTextForeground(pFontMgr->GetFontColor(_T("RouteLegInfoRollover")));
-				break;
+                  case TC_ROLLOVER:
+                        AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 255 );
+                        dFont = pFontMgr->GetFont(_("TideCurrentGraphRollover"), 12);
+                        mdc.SetTextForeground(pFontMgr->GetFontColor(_T("TideCurrentGraphRollover")));
+                        break;
+                  default:
+                  case LEG_ROLLOVER:
+                     AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+                     dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
+                     mdc.SetTextForeground(pFontMgr->GetFontColor(_T("RouteLegInfoRollover")));
+                     break;
 
-			case TC_ROLLOVER:
-				AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 255 );
-				dFont = pFontMgr->GetFont(_("TideCurrentGraphRollover"), 12);
-				mdc.SetTextForeground(pFontMgr->GetFontColor(_T("TideCurrentGraphRollover")));
-				break;
-	   }
+         }
 
-	  int font_size = wxMax(8, dFont->GetPointSize());
+        int font_size = wxMax(8, dFont->GetPointSize());
        wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
                    dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
 
@@ -12451,19 +12462,20 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, int rollov
       wxClientDC cdc(GetParent());
 
       wxFont *dFont;
-	  switch ( rollover )
-	  {
+      switch ( rollover )
+      {
 
-			case AIS_ROLLOVER:
-				dFont = pFontMgr->GetFont(_("AISRollover"), 12);break;
+            case AIS_ROLLOVER:
+                  dFont = pFontMgr->GetFont(_("AISRollover"), 12);break;
 
-			case LEG_ROLLOVER:
-				dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);break;
+            case TC_ROLLOVER:
+                  dFont = pFontMgr->GetFont(_("TideCurrentGraphRollover"), 12);break;
 
-			case TC_ROLLOVER:
-				dFont = pFontMgr->GetFont(_("TideCurrentGraphRollover"), 12);break;
+            default:
+            case LEG_ROLLOVER:
+                  dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);break;
 
-	  }
+      }
       int font_size = wxMax(8, dFont->GetPointSize());
       wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
                    dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
@@ -12910,12 +12922,12 @@ int RestoreScreenBrightness(void)
 #endif
 
 #ifdef BRIGHT_CURTAIN
-	  if(g_pcurtain)
-	  {
+        if(g_pcurtain)
+        {
             g_pcurtain->Close();
-	      g_pcurtain->Destroy();
+            g_pcurtain->Destroy();
             g_pcurtain = NULL;
-	  }
+        }
 #endif
 
       return 1;
