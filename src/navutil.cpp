@@ -110,7 +110,8 @@ extern Routeman         *g_pRouteMan;
 extern ComPortManager   *g_pCommMan;
 
 extern bool             s_bSetSystemTime;
-extern bool             g_bDisplayGrid;         //Flig indicating if grid is to be displayed
+extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
+extern bool             g_bPlayShipsBells;
 
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
@@ -127,14 +128,6 @@ extern double           g_PlanSpeed;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
-
-// Flav add for CM93 offset manual setup
-#ifdef FLAV
-extern double           g_CM93Maps_Offset_x;
-extern double           g_CM93Maps_Offset_y;
-extern bool             g_CM93Maps_Offset_on;
-extern bool             g_CM93Maps_Offset_Enable;
-#endif
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -2604,6 +2597,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
       Read ( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
+      Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -3755,6 +3749,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowPrintIcon" ), g_bShowPrintIcon );
       Write ( _T ( "SetSystemTime" ), s_bSetSystemTime );
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
+      Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );

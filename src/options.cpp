@@ -1368,6 +1368,7 @@ void options::SetInitialSettings()
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
       pSDisplayGrid->SetValue(g_bDisplayGrid);
+      pPlayShipsBells->SetValue(g_bPlayShipsBells);
 
       pCBCourseUp->SetValue(g_bCourseUp);
       pCBLookAhead->SetValue(g_bLookAhead);
@@ -1740,7 +1741,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowPrintIcon = pPrintShowIcon->GetValue();
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
-
+    g_bPlayShipsBells = pPlayShipsBells->GetValue();
 
     g_bQuiltEnable = pCDOQuilting->GetValue();
     g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
