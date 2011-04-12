@@ -329,6 +329,86 @@ enum
             TC_ROLLOVER  =3
 };
 
+
+//----------------------------------------------------------------------------
+// ChartInfo Rollover Window Definition
+//----------------------------------------------------------------------------
+class ChInfoWin: public wxWindow
+{
+      public:
+            ChInfoWin(wxWindow *parent);
+            ~ChInfoWin();
+
+            void SetString(wxString &s){ m_string = s; }
+            void SetPosition(wxPoint pt){ m_position = pt; }
+            void SetWinSize(wxSize sz){ m_size = sz; }
+            void SetBitmap(void);
+            void FitToChars(int char_width, int char_height);
+            wxSize GetWinSize(void){ return m_size; }
+
+      private:
+
+            wxString          m_string;
+            wxSize            m_size;
+            wxPoint           m_position;
+//            wxTextCtrl        *m_pInfoTextCtl;
+            wxStaticText      *m_pInfoTextCtl;
+
+            DECLARE_EVENT_TABLE()
+};
+
+
+
+//-----------------------------------------------------------------------
+//
+//    Chart Info Rollover window implementation
+//
+//-----------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
+            END_EVENT_TABLE()
+
+// Define a constructor
+ChInfoWin::ChInfoWin(wxWindow *parent):
+            wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER)
+{
+      int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
+      m_pInfoTextCtl = new wxStaticText ( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize, ststyle );
+
+      Hide();
+}
+
+ChInfoWin::~ChInfoWin()
+{
+      delete m_pInfoTextCtl;
+}
+void ChInfoWin::SetBitmap()
+{
+
+
+      SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
+
+      m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
+      m_pInfoTextCtl->SetForegroundColour(GetGlobalColor ( _T ( "UITX1" ) ));
+
+      m_pInfoTextCtl->SetSize(4, 4, m_size.x-8, m_size.y - 8);
+      m_pInfoTextCtl->SetLabel(m_string);
+
+      SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
+}
+
+void ChInfoWin::FitToChars(int char_width, int char_height)
+{
+      wxSize size;
+
+      size.x = GetCharWidth() * char_width;
+      size.y = GetCharHeight() * (char_height + 1);
+      SetWinSize(size);
+}
+
+
+
+
+
 //------------------------------------------------------------------------------
 //    Quilt Candidate Definition
 //------------------------------------------------------------------------------
@@ -5424,7 +5504,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                               pgc->FillPath(gpath);
 
                                                          //        If this is a moored/anchored target, so symbolize it
-                              if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) &&(target_sog < g_ShowMoored_Kts))   // pjotrc 2010.01.31
+                              if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
                               {
                                     pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
                                     wxGraphicsPath gpath = pgc->CreatePath();
@@ -5510,7 +5590,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         dc.DrawPolygon ( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );         // pjotrc 2010.01.31
 
                            //        If this is a moored/anchored target, so symbolize it
-                        if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) &&(target_sog < g_ShowMoored_Kts))   // pjotrc 2010.01.31
+                        if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
                         {
                               dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
                               dc.DrawCircle ( TargetPoint.x, TargetPoint.y, 5 );
@@ -6060,12 +6140,23 @@ void ChartCanvas::ShowChartInfoWindow(int x, int y, int dbIndex)
                   if((ChartData->IsChartInCache(dbIndex)) && ChartData->IsValid())
                         pc = ChartData->OpenChartFromDB(dbIndex, FULL_INIT);   // this must come from cache
 
-                  s = ChartData->GetFullChartInfo(pc, dbIndex, 50);
+                  int char_width, char_height;
+
+                  s = ChartData->GetFullChartInfo(pc, dbIndex, &char_width, &char_height);
 
                   m_pCIWin->SetString(s);
 
-                  m_pCIWin->SetWinSize(wxSize(400, 250));
-                  m_pCIWin->SetPosition(wxPoint(x, y));
+//                  m_pCIWin->SetWinSize(wxSize(400, 250));
+                  m_pCIWin->FitToChars(char_width, char_height);
+
+                  wxPoint p;
+                  p.x = x;
+                  if((p.x + m_pCIWin->GetWinSize().x) > m_canvas_width)
+                        p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
+
+                  p.y = m_canvas_height - m_pCIWin->GetWinSize().y;
+
+                  m_pCIWin->SetPosition(p);
                   m_pCIWin->SetBitmap();
                   m_pCIWin->Refresh();
                   m_pCIWin->Show();
@@ -12603,46 +12694,6 @@ void CM93DSlide::OnChangeValue( wxScrollEvent& event)
 }
 
 
-//-----------------------------------------------------------------------
-//
-//    Chart Info Rollover window implementation
-//
-//-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
-            END_EVENT_TABLE()
-
-// Define a constructor
-ChInfoWin::ChInfoWin(wxWindow *parent):
-            wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(1,1), wxNO_BORDER)
-{
-
-      int tcstyle = wxTE_MULTILINE | wxTE_READONLY | wxNO_BORDER;
-      m_pInfoTextCtl = new wxTextCtrl ( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize, tcstyle );
-
-      Hide();
-}
-
-ChInfoWin::~ChInfoWin()
-{
-      delete m_pInfoTextCtl;
-}
-void ChInfoWin::SetBitmap()
-{
-
-
-      SetBackgroundColour(GetGlobalColor ( _T ( "UBLCK" ) ));
-
-      m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
-      m_pInfoTextCtl->SetForegroundColour(GetGlobalColor ( _T ( "UITX1" ) ));
-
-      m_pInfoTextCtl->SetSize(4, 4, m_size.x-8, m_size.y-8);
-      m_pInfoTextCtl->Clear();
-      m_pInfoTextCtl->AppendText(m_string);
-
-
-      SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
-}
-
 //-------------------------------------------------------------------------------
 //
 //    Go To Position Dialog Implementation
@@ -12808,7 +12859,10 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
       // We do not want to change the position on lat/lon now
 }
 
+#ifdef __WIN32__
 #define BRIGHT_CURTAIN
+#endif
+
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines
 //
@@ -12884,7 +12938,7 @@ int InitScreenBrightness(void)
 
                   g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
                   g_pcurtain->SetTransparent(0);
-;
+
                   g_pcurtain->Maximize();
                   g_pcurtain->Show();
 

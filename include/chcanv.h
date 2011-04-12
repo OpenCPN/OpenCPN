@@ -808,31 +808,6 @@ class CM93DSlide : public wxDialog
 };
 
 
-//----------------------------------------------------------------------------
-// ChartInfo Rollover Window
-//----------------------------------------------------------------------------
-class ChInfoWin: public wxWindow
-{
-      public:
-            ChInfoWin(wxWindow *parent);
-            ~ChInfoWin();
-
-            void SetString(wxString &s){ m_string = s; }
-            void SetPosition(wxPoint pt){ m_position = pt; }
-            void SetWinSize(wxSize sz){ m_size = sz; }
-            void SetBitmap(void);
-
-
-      private:
-
-            wxString          m_string;
-            wxSize            m_size;
-            wxPoint           m_position;
-            wxTextCtrl        *m_pInfoTextCtl;
-
-            DECLARE_EVENT_TABLE()
-};
-
 //-------------------------------------------------------------------------------
 //
 //    Go To Position Dialog Implementation
