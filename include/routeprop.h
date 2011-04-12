@@ -205,6 +205,7 @@ public:
     RoutePoint *m_pExtendPoint;
     Route *m_pExtendRoute;
     RoutePoint    *m_pEnroutePoint;
+    bool          m_bStartNow;
 
     double      m_planspeed;
     double      m_avgspeed;

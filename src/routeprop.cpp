@@ -286,6 +286,7 @@ BEGIN_EVENT_TABLE( RouteProp, wxDialog )
 
     EVT_TEXT( ID_PLANSPEEDCTL, RouteProp::OnPlanSpeedCtlUpdated )
     EVT_TEXT_ENTER( ID_STARTTIMECTL, RouteProp::OnStartTimeCtlUpdated )
+	//EVT_RADIOBOX ( ID_TIMEZONESEL, RouteProp::OnStartTimeCtlUpdated )
 	EVT_RADIOBOX ( ID_TIMEZONESEL, RouteProp::OnTimeZoneSelected )
     EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
     EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
@@ -311,6 +312,11 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
       m_nSelected = 0;
       m_pHead = NULL;
       m_pTail = NULL;
+      m_pEnroutePoint = NULL;
+      m_bStartNow = false;
+
+      m_pEnroutePoint = NULL;
+      m_bStartNow = false;
 
 /*
       wxScrollingDialog::Init();
@@ -731,8 +737,8 @@ void RouteProp::CreateControls()
 
 //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
-	m_starttime = g_StartTime;
-	pDispTz->SetSelection(g_StartTimeTZ);
+
+    pDispTz->SetSelection(g_StartTimeTZ);
 
 
 
@@ -804,15 +810,26 @@ void RouteProp::SetDialogTitle(wxString title)
 void RouteProp::SetRouteAndUpdate(Route *pR)
 {
       //  Fetch any config file values
-      m_planspeed = g_PlanSpeed;
-	  m_starttime = g_StartTime;
-	  int tz_selection = g_StartTimeTZ;
-	  pDispTz->SetSelection(tz_selection);
-//	  long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
 
+//      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
+      int tz_selection = 1;
+
+      if (pR == m_pRoute) {
+	  //m_starttime = g_StartTime;
+	  //tz_selection = g_StartTimeTZ;
 	  gStart_LMT_Offset = 0;
+      }
+      else {
+        g_StartTime = wxInvalidDateTime;
+        g_StartTimeTZ = 1;
+	  m_starttime = g_StartTime;
+	  tz_selection = g_StartTimeTZ;
+	  gStart_LMT_Offset = 0;
+        m_pEnroutePoint = NULL;
+        m_bStartNow = false;
+      }
 
-      m_pEnroutePoint = NULL;
+	pDispTz->SetSelection(tz_selection);
 
 // Reorganize dialog for route or track display
       if(pR)
@@ -835,7 +852,7 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
       if(pR)
       {
             wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
-            if (m_pEnroutePoint)
+            if (m_pEnroutePoint && m_bStartNow)
                   gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
             else
                   gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
@@ -953,7 +970,8 @@ bool RouteProp::UpdateProperties()
 
             m_pRoute->UpdateSegmentDistances(m_planspeed);           // get segment and total distance
             double leg_speed = m_planspeed;
-            wxTimeSpan stopover_time (0);
+            wxTimeSpan stopover_time (0); // time spent waiting for ETD
+            wxTimeSpan joining_time (0);   // time spent before reaching first waypoint
 
             double total_seconds = 0.;
 
@@ -981,17 +999,25 @@ bool RouteProp::UpdateProperties()
                   //      total_seconds= 3600 * m_pRoute->m_route_length / m_planspeed;     // in seconds
                   total_seconds = m_pRoute->m_route_time;
 
-                  if (m_pRoute) {
+                  if (m_pRoute && m_bStartNow) {
                         if (m_pEnroutePoint)
                               gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
                         else
                               gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
                   }
 
-			if (m_starttime.IsValid()) {
-                        wxString s = ts2s(m_starttime, tz_selection, (int)gStart_LMT_Offset, INPUT_FORMAT);
-                        m_StartTimeCtl->SetValue(s);
-			}
+      		if (m_starttime.IsValid()) {
+                        wxString s;
+                        if (m_bStartNow) {
+                              wxDateTime d = wxDateTime::Now();
+                              if (tz_selection == 1) {
+                                    m_starttime = d.ToUTC();
+                                    s =_T(">");
+                              }
+                        }
+                       s += ts2s(m_starttime, tz_selection, (int)gStart_LMT_Offset, INPUT_FORMAT);
+                       m_StartTimeCtl->SetValue(s);
+                  }
                   else
 				m_StartTimeCtl->Clear();
 
@@ -1002,7 +1028,10 @@ bool RouteProp::UpdateProperties()
             wxString slen;
             slen.Printf(wxT("%5.2f"), m_pRoute->m_route_length);
 
-            m_TotalDistCtl->SetValue(slen);
+            if (!m_pEnroutePoint)
+                  m_TotalDistCtl->SetValue(slen);
+            else
+                  m_TotalDistCtl->Clear();
 
             wxString time_form;
 		wxString tide_form;
@@ -1015,7 +1044,10 @@ bool RouteProp::UpdateProperties()
             else
                   time_form = time.Format(_(" %H Hours  %M Minutes"));
 
-            m_TimeEnrouteCtl->SetValue(time_form);
+            if (!m_pEnroutePoint)
+                  m_TimeEnrouteCtl->SetValue(time_form);
+            else
+                  m_TimeEnrouteCtl->Clear();
 
       //  Iterate on Route Points
             wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
@@ -1031,7 +1063,7 @@ bool RouteProp::UpdateProperties()
             bool enroute = true; // for active route, skip all points up to the active point
 
             if (m_pRoute->m_bRtIsActive) {
-                  if (m_pEnroutePoint)
+                  if (m_pEnroutePoint && m_bStartNow)
                         enroute = (m_pRoute->GetPoint(1)->m_GUID == m_pEnroutePoint->m_GUID);
             }
 
@@ -1065,7 +1097,12 @@ bool RouteProp::UpdateProperties()
                   {
                         slat = gLat;
                         slon = gLon;
-                        if (i != 0) leg_speed = gSog; // should be VMG
+                        if (gSog > 0.0) leg_speed = gSog; // should be VMG
+                        else leg_speed = m_planspeed;
+                        if (m_bStartNow) {
+                              DistanceBearingMercator(prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist);
+                              if (i == 0) joining_time = wxTimeSpan::Seconds((leg_dist*3600.)/leg_speed);
+                        }
                         enroute = true;
                   }
                   else {
@@ -1104,7 +1141,7 @@ bool RouteProp::UpdateProperties()
                         {
                           time_form.Printf(_("Start"));
                           if (m_starttime.IsValid()) {
-                              wxDateTime act_starttime = m_starttime;
+                              wxDateTime act_starttime = m_starttime + joining_time;
                               time_form.Append(_T(": "));
 
                               if (!arrival ) {
@@ -1134,7 +1171,7 @@ bool RouteProp::UpdateProperties()
                           }
                         tdis = 0;
                         tsec = 0.;
-                        } // end of point 0
+                        } // end of route point 0
                         else
                         {
                               if (arrival && enroute) tdis += leg_dist;
@@ -1146,7 +1183,7 @@ bool RouteProp::UpdateProperties()
 						if (m_starttime.IsValid()) {
 
 							wxDateTime ueta = m_starttime;
-							ueta.Add(time+stopover_time);
+							ueta.Add(time + stopover_time + joining_time);
 
                                           if (!arrival) {
                                                 wxDateTime etd = prp->m_seg_etd;
@@ -1333,12 +1370,14 @@ void RouteProp::OnStartTimeCtlUpdated( wxCommandEvent& event )
             if (m_pRoute->m_bRtIsActive) {
                   m_pEnroutePoint = g_pRouteMan->GetpActivePoint();
             }
+            m_bStartNow = true;
 	      d = wxDateTime::Now();
 		if (tz_selection == 1) m_starttime = d.ToUTC();
 		else m_starttime = wxInvalidDateTime; // can't get it to work otherwise
 	}
 	else {
             m_pEnroutePoint = NULL;
+            m_bStartNow = false;
 		if (!d.ParseDateTime(stime))		// only specific times accepted
 			d = wxInvalidDateTime;
 
@@ -1425,6 +1464,9 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
             SaveChanges();              // write changes to globals and update config
             m_pRoute->ClearHighlights();
       }
+
+      m_pEnroutePoint = NULL;
+      m_bStartNow = false;
 
     Hide();
     cc1->Refresh(false);

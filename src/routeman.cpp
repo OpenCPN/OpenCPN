@@ -351,6 +351,19 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
         g_blink_rect = pRP_target->CurrentRect_in_DC;               // set up global blinker
 
         m_bArrival = false;
+
+            //    Update the RouteProperties Dialog, if currently shown
+            if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+            {
+                  if(pRoutePropDialog->m_pRoute == pA)
+                  {
+                        if (pRoutePropDialog->m_pEnroutePoint)
+                              pRoutePropDialog->m_pEnroutePoint = pActivePoint;
+                        pRoutePropDialog->SetRouteAndUpdate ( pA );
+                        pRoutePropDialog->UpdateProperties();
+                  }
+            }
+
         return true;
 }
 
@@ -376,6 +389,18 @@ bool Routeman::ActivateNextPoint(Route *pr)
           g_blink_rect = pActivePoint->CurrentRect_in_DC;               // set up global blinker
 
           m_bArrival = false;
+
+            //    Update the RouteProperties Dialog, if currently shown
+            if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+            {
+                  if(pRoutePropDialog->m_pRoute == pr)
+                  {
+                        if (pRoutePropDialog->m_pEnroutePoint)
+                              pRoutePropDialog->m_pEnroutePoint = pActivePoint;
+                        pRoutePropDialog->SetRouteAndUpdate ( pr );
+                        pRoutePropDialog->UpdateProperties();
+                  }
+            }
 
           return true;
       }
