@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chartdb.cpp,v 1.42 2010/06/13 21:04:55 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Chart Database Object
@@ -24,130 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: chartdb.cpp,v $
- * Revision 1.42  2010/06/13 21:04:55  bdbcat
- * 613a
- *
- * Revision 1.41  2010/06/11 16:30:22  bdbcat
- * 611a
- *
- * Revision 1.40  2010/05/19 01:07:15  bdbcat
- * Build 518
- *
- * Revision 1.39  2010/05/15 03:57:04  bdbcat
- * Build 514
- *
- * Revision 1.38  2010/05/02 20:11:08  bdbcat
- * Build 502b
- *
- * Revision 1.37  2010/05/02 03:03:23  bdbcat
- * Build 501
- *
- * Revision 1.36  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.35  2010/04/15 15:49:34  bdbcat
- * Build 415.
- *
- * Revision 1.34  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * Revision 1.33  2010/02/09 01:57:58  badfeed
- * fix a few case-sensitivity problems, particularly with cm93
- *
- * Revision 1.32  2009/12/22 21:42:02  bdbcat
- * Cleanup Messages
- *
- * Revision 1.31  2009/12/14 04:58:28  bdbcat
- * Leaks
- *
- * Revision 1.30  2009/12/14 03:57:51  bdbcat
- * PurgeChache()
- *
- * Revision 1.29  2009/12/10 21:18:50  bdbcat
- * Beta 1210
- *
- * Revision 1.28  2009/11/18 01:24:15  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.27  2009/09/30 02:28:52  bdbcat
- * Cleanup
- *
- * Revision 1.26  2009/09/28 23:05:21  bdbcat
- * Correct again for IDL crossing
- *
- * Revision 1.25  2009/09/28 13:20:14  bdbcat
- * Correct for IDL crossing
- *
- * Revision 1.24  2009/08/30 03:34:07  bdbcat
- * New Methods
- *
- * Revision 1.23  2009/08/22 15:50:44  bdbcat
- * Unicode fixup
- *
- * Revision 1.22  2009/08/22 14:04:19  bdbcat
- * Correct dir scan logic
- *
- * Revision 1.21  2009/08/22 01:17:39  bdbcat
- * Better CM93 detect
- *
- * Revision 1.20  2009/08/03 03:26:48  bdbcat
- * Cleanup for MSVC
- *
- * Revision 1.19  2009/07/29 00:52:03  bdbcat
- * Correct stack index logic.
- *
- * Revision 1.18  2009/06/30 03:05:29  bdbcat
- * Fix compile bug.
- *
- * Revision 1.17  2009/06/30 03:02:03  bdbcat
- * Add configurable chart cache limit.
- *
- * Revision 1.16  2009/06/18 01:33:48  bdbcat
- * Allow u/l case dir search.
- *
- * Revision 1.15  2009/06/03 03:14:29  bdbcat
- * Correct chart discard logic for thumbnail window.
- *
- * Revision 1.14  2009/05/05 03:57:36  bdbcat
- * New logic for db update, incomplete....
- *
- * Revision 1.13  2009/03/26 22:28:55  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.12  2008/12/19 04:16:57  bdbcat
- * Improve database logic.
- *
- * Revision 1.11  2008/10/24 00:09:19  bdbcat
- * Validate GetEditionDate() return
- *
- * Revision 1.10  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.9  2008/04/20 20:53:04  bdbcat
- * Cache optimization
- *
- * Revision 1.8  2008/03/30 21:54:29  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.7  2008/01/12 06:23:19  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.6  2007/06/10 02:25:09  bdbcat
- * Fix leaks
- *
- * Revision 1.5  2007/05/03 13:23:55  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.4  2006/10/08 14:15:00  dsr
- * no message
- *
- * Revision 1.3  2006/10/08 00:36:44  dsr
- * no message
- *
- * Revision 1.2  2006/09/21 01:37:36  dsr
- * Major refactor/cleanup
  *
  */
 
@@ -174,7 +49,6 @@
 
 #ifdef USE_S57
 #include "s57chart.h"
-///#include "s57.h"
 #endif
 
 #include "cm93.h"
@@ -764,7 +638,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             unsigned int nCache = pChartCache->GetCount();
             if(nCache >= (unsigned int)g_nCacheLimit)
             {
-///                  wxLogMessage("Searching chart cache for oldest entry");
+
+ ///                  wxLogMessage("Searching chart cache for oldest entry");
                   int LRUTime = now.GetTicks();
                   int iOldest = 0;
                   for(unsigned int i=0 ; i<nCache ; i++)
@@ -783,9 +658,34 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   pce = (CacheEntry *)(pChartCache->Item(iOldest));
                   ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
 
+/*
+                  // Discard the smallest scale chart
+                  int i_smallest_scale = nCache-1;
+                  int scale_highest = 0;
+                  for(unsigned int i=0 ; i<nCache ; i++)
+                  {
+                        pce = (CacheEntry *)(pChartCache->Item(i));
+                        if((ChartBase *)(pce->pChart) != Current_Ch)
+                        {
+                              ChartBase *pc = (ChartBase *)pce->pChart;
+                              if(pc)
+                              {
+                                    if(pc->GetNativeScale() > scale_highest)
+                                    {
+                                          i_smallest_scale = i;
+                                          scale_highest = pc->GetNativeScale();
+                                    }
+                              }
+                        }
+                  }
+
+                  pce = (CacheEntry *)(pChartCache->Item(i_smallest_scale));
+                  ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
+
+*/
                   if(Current_Ch != pDeleteCandidate)
                   {
- ///                     wxLogMessage("Deleting/Removing oldest chart from cache");
+///                      wxLogMessage("Deleting/Removing oldest chart from cache");
 ///                      wxLogMessage("oMem_Free before chart removal is %d", omem_free);
 
                     //  If this chart should happen to be in the thumbnail window....
