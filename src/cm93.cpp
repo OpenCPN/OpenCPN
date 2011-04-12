@@ -2142,6 +2142,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt)
                         CreateObjChain(cell_index, (int)'0');
 
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
+
+                        BuildDepthContourArray();
+
                         m_cells_loaded_array.Add(cell_index);
 
                         Unload_CM93_Cell();
@@ -2442,6 +2445,9 @@ int cm93chart::CreateObjChain(int cell_index, int subcell)
 
 //              Add linked object/LUP to the working set
                             _insertRules(obj,LUP, this);
+
+//              Establish Object's Display Category
+                            obj->m_DisplayCat = LUP->DISC;
                          }
                     }
 
@@ -4998,6 +5004,15 @@ int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   //    Which will also load the needed cell(s)
                   m_pcm93chart_current->SetVPParms(vpt);
 
+
+                  //    If full screen quilting, we don't care if the VP center is on the selected cell
+                  //    We know that there is at least some cell(s) of the selected scale on the screen, so that is enough
+                  if(vpt.b_quilt &&  vpt.b_FullScreenQuilt)
+                  {
+                        cellscale_is_useable = true;
+                        break;
+                  }
+
                   //    Check to see if the viewpoint center is actually on the selected chart
                   float yc = vpt.clat;
                   float xc = vpt.clon;
@@ -5202,6 +5217,9 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
             {
                   M_COVR_Desc *pmcd = (m_pcm93chart_current->m_pcovr_array_loaded.Item(im));
 
+                  if(vp_positive.GetBBox().Intersect(pmcd->m_covr_bbox) == _OUT)       // no overlap at all
+                        continue;
+
                   wxPoint *DrawBuf = m_pcm93chart_current->GetDrawBuffer(pmcd->m_nvertices);
 
                   wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, DrawBuf );
@@ -5283,7 +5301,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
                   wxRegion chart_region;
                   GetValidCanvasRegion(vp_positive, &chart_region);
-                  vpr_empty.Subtract(chart_region);
+                  if(!chart_region.IsEmpty())
+                        vpr_empty.Subtract(chart_region);
 
 
                   if(!vpr_empty.Empty() && m_cmscale)           // This chart scale does not fully cover the region
@@ -5364,7 +5383,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     build_dc.SelectObject(wxNullBitmap);             // safely unmap the bmp
 
                               //    Update the remaining empty region
-                                    vpr_empty.Subtract(sscale_region);
+                                    if(!sscale_region.IsEmpty())
+                                          vpr_empty.Subtract(sscale_region);
                               }
 
                         }     // while

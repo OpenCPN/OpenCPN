@@ -2440,14 +2440,6 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 {
 
-    //  Establish a common reference point for the chart
-//    ref_lat = (FullExtent.NLAT + FullExtent.SLAT) /2.;
-//    ref_lon = (FullExtent.WLON + FullExtent.ELON) /2.;
-
-    //  Todo Eventually s_ref_lat/lon goes away.
-//    s_ref_lat = ref_lat;
-//    s_ref_lon = ref_lon;
-
 
 //    SENC file is ready, so build the RAZ structure
         if(0 != BuildRAZFromSENCFile( m_SENCFileName.GetFullPath()) )
@@ -2462,7 +2454,6 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-
 
         wxString SENCdir = g_SENCPrefix;
         if(SENCdir.Last() != m_SENCFileName.GetPathSeparator())
@@ -2498,48 +2489,55 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
     SetColorScheme(cs, false);
 
 
-//    Set some plib behaviour flags
-//    ps52plib->SetTextOverlapAvoid(true);
-//    ps52plib->SetShowAtonText(true);
 
 //    Build array of contour values for later use by conditional symbology
 
-    if(0 == m_nvaldco_alloc)
-    {
-        m_nvaldco_alloc = 5;
-        m_pvaldco_array = (double *)calloc(m_nvaldco_alloc, sizeof(double));
-    }
+    BuildDepthContourArray();
+        bReadyToRender = true;
+
+        return INIT_OK;
+}
+
+void s57chart::BuildDepthContourArray(void)
+{
+      //    Build array of contour values for later use by conditional symbology
+
+      if(0 == m_nvaldco_alloc)
+      {
+            m_nvaldco_alloc = 5;
+            m_pvaldco_array = (double *)calloc(m_nvaldco_alloc, sizeof(double));
+      }
 
 
-    ObjRazRules *top;
-    for (int i=0; i<PRIO_NUM; ++i)
-    {
-        for(int j=0 ; j<LUPNAME_NUM ; j++)
-        {
-
-            top = razRules[i][j];
-            while ( top != NULL)
+      ObjRazRules *top;
+      for (int i=0; i<PRIO_NUM; ++i)
+      {
+            for(int j=0 ; j<LUPNAME_NUM ; j++)
             {
-               if(!strncmp(top->obj->FeatureName, "DEPCNT", 6))
-               {
-                     double valdco = 0.0;
-                     if(GetDoubleAttr(top->obj, "VALDCO", valdco))
-                     {
-                           m_nvaldco++;
-                           if(m_nvaldco > m_nvaldco_alloc)
-                           {
-                                 void *tr = realloc((void *)m_pvaldco_array,m_nvaldco_alloc * 2 * sizeof(double));
-                                 m_pvaldco_array = (double *)tr;
-                                 m_nvaldco_alloc *= 2;
-                           }
-                           m_pvaldco_array[m_nvaldco - 1] = valdco;
-                     }
-               }
-               ObjRazRules *nxx  = top->next;
-               top = nxx;
+
+                  top = razRules[i][j];
+                  while ( top != NULL)
+                  {
+                        if(!strncmp(top->obj->FeatureName, "DEPCNT", 6))
+                        {
+                              double valdco = 0.0;
+                              if(GetDoubleAttr(top->obj, "VALDCO", valdco))
+                              {
+                                    m_nvaldco++;
+                                    if(m_nvaldco > m_nvaldco_alloc)
+                                    {
+                                          void *tr = realloc((void *)m_pvaldco_array,m_nvaldco_alloc * 2 * sizeof(double));
+                                          m_pvaldco_array = (double *)tr;
+                                          m_nvaldco_alloc *= 2;
+                                    }
+                                    m_pvaldco_array[m_nvaldco - 1] = valdco;
+                              }
+                        }
+                        ObjRazRules *nxx  = top->next;
+                        top = nxx;
+                  }
             }
-        }
-    }
+      }
 
     //      And bubble sort it
       bool swap = true;
@@ -2562,9 +2560,6 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
             }
       }
 
-        bReadyToRender = true;
-
-        return INIT_OK;
 }
 
 
@@ -3156,7 +3151,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj)
                         {
                               if(!strncmp(top->obj->FeatureName, "DEPARE", 6) || !strncmp(top->obj->FeatureName, "DRGARE", 6))
                               {
-                                    if(obj->BBObj.PointInBox( lon, lat, 0.0))
+                                    if(top->obj->BBObj.PointInBox( lon, lat, 0.0))
                                     {
                                           if(IsPointInObjArea(lat, lon, 0.0, top->obj))
                                               pobj_list->Append(top->obj);
@@ -4195,7 +4190,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                          {
                                if(g_bDebugS57)
                                {
-                                     wxString msg(obj->FeatureName, wxConvUTF8);
+                                    wxString msg(obj->FeatureName, wxConvUTF8);
                                     msg.Prepend(_T("   Could not find LUP for "));
                                     LogMessageOnce(msg);
                                }
@@ -4208,6 +4203,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
 //              Add linked object/LUP to the working set
                             _insertRules(obj,LUP, this);
+
+//              Establish Object's Display Category
+                            obj->m_DisplayCat = LUP->DISC;
                          }
                     }
 
@@ -4267,28 +4265,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                         //    Next element
                         fpx.Read(&index, sizeof(int));
                   }
-/*
-                  //    Create a nice, sparse linear array of VE_Element pointers as a chart class member
-                  int n_ve_elements = ve_array.GetCount();
-//                  m_pve_array = (VE_Element **)calloc((index_max + 1) * sizeof(VE_Element *), 1);
-//                  m_nve_elements = index_max;
 
-                  m_pve_array = (VE_Element **)calloc((n_ve_elements + 1) * sizeof(VE_Element *), 1);
-                  m_nve_elements = n_ve_elements;
-
-                  for(int i = 0 ; i < n_ve_elements ; i++)
-                  {
-                        VE_Element ve_from_array = ve_array.Item(i);
-                        VE_Element *vep = new VE_Element;
-                        vep->index = ve_from_array.index;
-                        vep->nCount = ve_from_array.nCount;
-                        vep->pPoints = ve_from_array.pPoints;
-
-//                        m_pve_array[vep->index] = vep;
-                        m_pve_array[i] = vep;
-
-                  }
-*/
                   //    Create a hash map of VE_Element pointers as a chart class member
                   int n_ve_elements = ve_array.GetCount();
 
@@ -4342,25 +4319,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                         //    Next element
                         fpx.Read(&index, sizeof(int));
                   }
-/*
-                  //    Create a nice, sparse linear array of VC_Element pointers as a chart class member
-                  int n_vc_elements = vc_array.GetCount();
-//                  m_pvc_array = (VC_Element **)calloc((index_max + 1) * sizeof(VC_Element *), 1);
-//                  m_nvc_elements = index_max;
 
-                  m_pvc_array = (VC_Element **)calloc((n_vc_elements + 1) * sizeof(VC_Element *), 1);
-                  m_nvc_elements = n_vc_elements;
-
-                  for(int i = 0 ; i < n_vc_elements ; i++)
-                  {
-                        VC_Element vc_from_array = vc_array.Item(i);
-                        VC_Element *vcp = new VC_Element;
-                        vcp->index = vc_from_array.index;
-                        vcp->pPoint = vc_from_array.pPoint;
-
-                        m_pvc_array[vcp->index] = vcp;
-                  }
-*/
                   //    Create a hash map VC_Element pointers as a chart class member
                   int n_vc_elements = vc_array.GetCount();
 
@@ -4583,6 +4542,7 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
                 LUP = ps52plib->S52_LUPLookup(PAPER_CHART, top->obj->FeatureName, top->obj);
                 ps52plib->_LUP2rules(LUP, top->obj);
                 _insertRules(top->obj, LUP, pOwner);
+                top->obj->m_DisplayCat = LUP->DISC;
 
                 nxx  = top->next;
                 top = nxx;
@@ -4599,6 +4559,7 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
                 LUP = ps52plib->S52_LUPLookup(SIMPLIFIED, top->obj->FeatureName, top->obj);
                 ps52plib->_LUP2rules(LUP, top->obj);
                 _insertRules(top->obj, LUP, pOwner);
+                top->obj->m_DisplayCat = LUP->DISC;
 
                 nxx  = top->next;
                 top = nxx;
@@ -4631,6 +4592,7 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
                 LUP = ps52plib->S52_LUPLookup(PLAIN_BOUNDARIES, top->obj->FeatureName, top->obj);
                 ps52plib->_LUP2rules(LUP, top->obj);
                 _insertRules(top->obj, LUP, pOwner);
+                top->obj->m_DisplayCat = LUP->DISC;
 
                 nxx  = top->next;
                 top = nxx;
