@@ -239,7 +239,7 @@ public:
     int  GetDBPlyPoint(int dbIndex, int plyindex, float *lat, float *lon);
     int  GetDBAuxPlyPoint(int dbIndex, int plyindex, int iAuxPly, float *lat, float *lon);
     int  GetVersion(){ return m_dbversion; }
-    wxString GetFullChartInfo(ChartBase *pc, int dbIndex, int max_width);
+    wxString GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_width, int *line_count);
     int FinddbIndex(wxString PathToFind);
 
 protected:
