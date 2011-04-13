@@ -194,7 +194,7 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern int              g_cm93_zoom_factor;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern bool            g_bDisplayGrid;
+extern bool             g_bDisplayGrid;
 
 extern bool             g_bUseGreenShip;
 
@@ -1163,6 +1163,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
                                     wxRect rect_ch = chart_region.GetBox();
                                     chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
                               }
+                              else
+                                    b_add = false;                // this chart has no overlap on screen
+                                                                  // probably because it has a concave outline
+                                                                  // i.e the bboxes overlap, but the actual coverage intersect is null.
 
                               if(chart_fractional_area < .10)
                               {
@@ -1301,7 +1305,17 @@ bool Quilt::Compose(const ViewPort &vp_in)
             wxRegion vpu_region(vp_local.rv_rect);
 
             wxRegion chart_region = GetChartQuiltRegion(cte_ref, vp_local);
-            if(!chart_region.Empty())
+
+/*
+            wxRegionIterator upd ( chart_region );
+            while ( upd )
+            {
+                  wxRect rect = upd.GetRect();
+                  printf("  chart_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                  upd ++ ;
+            }
+*/
+           if(!chart_region.Empty())
                   vpu_region.Intersect(chart_region);
 
             if(vpu_region.IsEmpty())
@@ -1311,12 +1325,19 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   pqc_ref->b_include = true;
                   vp_region.Subtract(chart_region);          // adding this chart
             }
-
-
       }
 
+/*
+      wxRegionIterator updd ( vp_region );
+      while ( updd )
+      {
+            wxRect rect = updd.GetRect();
+            printf("  vp_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+            updd ++ ;
+      }
+*/
       //    Now the rest of the candidates
-      if((0/*CHART_TYPE_S57 == m_reference_type*/) || !vp_region.IsEmpty())
+      if( !vp_region.IsEmpty() )
       {
             for( ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
             {
@@ -1405,7 +1426,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Potentially add cm93 to the candidate array if the region is not yet fully covered
-      if(!vp_region.IsEmpty())
+      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty())
       {
             //    Walk the current ChartStack to find cm93
             for(int ics=0 ; ics < n_charts ; ics++)
@@ -3918,6 +3939,9 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         if ( last_vp.view_scale_ppm != scale_ppm )
             m_cache_vp.Invalidate();
 
+        //  A preliminary value, may be tweaked below
+        VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
+
         if ( !VPoint.b_quilt && Current_Ch )
         {
 
@@ -4062,65 +4086,67 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             VPoint.skew = 0.;                                     // Quilting supports 0 Skew
 
         }
-
-        //    Calculate the on-screen displayed actual scale
-        //    by a simple traverse northward from the center point
-        //    of roughly 10 % of the Viewport extent
-        double tlat, tlon;
-        wxPoint r, r1;
-        double delta_y = (VPoint.GetBBox().GetMaxY() - VPoint.GetBBox().GetMinY()) * 60.0 * .10;              // roughly 10 % of lat range, in NM
-
-        //  Make sure the two points are in phase longitudinally
-        double lon_norm = VPoint.clon;
-        if(lon_norm > 180.)
-              lon_norm -= 360;
-        else if(lon_norm < -180.)
-              lon_norm += 360.;
-
-        ll_gc_ll ( VPoint.clat, lon_norm, 0, delta_y, &tlat, &tlon );
-
-        GetCanvasPointPix ( tlat, tlon, &r1 );
-        GetCanvasPointPix ( VPoint.clat, lon_norm, &r );
-
-        m_true_scale_ppm = sqrt(pow((double)(r.y - r1.y), 2) + pow((double)(r.x - r1.x), 2)) / (delta_y * 1852.);
-
-        //        A fall back in case of very high zoom-out, giving delta_y == 0
-        //        which can probably only happen with vector charts
-        if(0.0 == m_true_scale_ppm)
-              m_true_scale_ppm = scale_ppm;
-
-        //        Another fallback, for highly zoomed out charts
-        //        This adjustment makes the displayed TrueScale correspond to the
-        //        same algorithm used to calculate the chart zoom-out limit for ChartDummy.
-        if(scale_ppm < 1e-4)
-              m_true_scale_ppm = scale_ppm;
-
-        if(m_true_scale_ppm)
-              VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
-        else
-              VPoint.chart_scale = 1.0;
-
-
-        if ( parent_frame->m_pStatusBar )
+        if(VPoint.GetBBox().GetValid())
         {
-              double true_scale_display = floor(VPoint.chart_scale / 100.) * 100.;
-              wxString text;
 
-              if(Current_Ch)
-              {
-                    double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-                    double scale_factor = scale_ppm / chart_native_ppm;
-                    if(scale_factor > 1.0)
-                          text.Printf(_("TrueScale: %8.0f  Zoom %4.1fx"), true_scale_display, scale_factor);
-                    else
-                          text.Printf(_("TrueScale: %8.0f  Zoom %4.2fx"), true_scale_display, scale_factor);
-              }
-              else
-                    text.Printf(_("TrueScale: %8.0f             "), true_scale_display);
+            //    Calculate the on-screen displayed actual scale
+            //    by a simple traverse northward from the center point
+            //    of roughly 10 % of the Viewport extent
+            double tlat, tlon;
+            wxPoint r, r1;
+            double delta_y = (VPoint.GetBBox().GetMaxY() - VPoint.GetBBox().GetMinY()) * 60.0 * .10;              // roughly 10 % of lat range, in NM
 
-              parent_frame->SetStatusText ( text, STAT_FIELD_SCALE );
+            //  Make sure the two points are in phase longitudinally
+            double lon_norm = VPoint.clon;
+            if(lon_norm > 180.)
+                  lon_norm -= 360;
+            else if(lon_norm < -180.)
+                  lon_norm += 360.;
+
+            ll_gc_ll ( VPoint.clat, lon_norm, 0, delta_y, &tlat, &tlon );
+
+            GetCanvasPointPix ( tlat, tlon, &r1 );
+            GetCanvasPointPix ( VPoint.clat, lon_norm, &r );
+
+            m_true_scale_ppm = sqrt(pow((double)(r.y - r1.y), 2) + pow((double)(r.x - r1.x), 2)) / (delta_y * 1852.);
+
+            //        A fall back in case of very high zoom-out, giving delta_y == 0
+            //        which can probably only happen with vector charts
+            if(0.0 == m_true_scale_ppm)
+                  m_true_scale_ppm = scale_ppm;
+
+            //        Another fallback, for highly zoomed out charts
+            //        This adjustment makes the displayed TrueScale correspond to the
+            //        same algorithm used to calculate the chart zoom-out limit for ChartDummy.
+            if(scale_ppm < 1e-4)
+                  m_true_scale_ppm = scale_ppm;
+
+            if(m_true_scale_ppm)
+                  VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
+            else
+                  VPoint.chart_scale = 1.0;
+
+
+            if ( parent_frame->m_pStatusBar )
+            {
+                  double true_scale_display = floor(VPoint.chart_scale / 100.) * 100.;
+                  wxString text;
+
+                  if(Current_Ch)
+                  {
+                        double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
+                        double scale_factor = scale_ppm / chart_native_ppm;
+                        if(scale_factor > 1.0)
+                              text.Printf(_("TrueScale: %8.0f  Zoom %4.1fx"), true_scale_display, scale_factor);
+                        else
+                              text.Printf(_("TrueScale: %8.0f  Zoom %4.2fx"), true_scale_display, scale_factor);
+                  }
+                  else
+                        text.Printf(_("TrueScale: %8.0f             "), true_scale_display);
+
+                  parent_frame->SetStatusText ( text, STAT_FIELD_SCALE );
+            }
         }
-
 
 
         //  Maintain global vLat/vLon
@@ -4903,6 +4929,7 @@ void ChartCanvas::GridDraw( wxDC& dc)
                      FALSE, wxString ( _T ( "Arial" ) ) );
      dc.SetPen(GridPen);
      dc.SetFont(*font);
+     dc.SetTextForeground( GetGlobalColor ( _T ( "SNDG1" ) ));
 
      dc.GetSize(&w, &h);     // get windows width and height
 
