@@ -757,13 +757,17 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
               GetIntAttr(obj, "WATLEV", watlev);
 
               if((1 == watlev) || (2 == watlev))
-                  udwhaz03str = _T(";OP(--D14050)");
+              {
+//                  udwhaz03str = _T(";OP(--D14050)");
+              }
               else
               {
-                  udwhaz03str = _T(";OP(8OD14010);SY(ISODGR51)");
+                    udwhaz03str = _T(";SY(ISODGR51)");     //_T(";OP(8OD14010);SY(ISODGR51)");
 //                  S57_setAtt(geo, "SCAMIN", "INFINITE");
               }
 
+              //  Move this object to DisplayBase category
+              rzRules->obj->m_DisplayCat = DISPLAYBASE;
 
 /*
             GString *watlevstr = S57_getAttVal(geo, "WATLEV");
@@ -1076,10 +1080,14 @@ static void *DEPCNT02 (void *param)
 
       if (safe) {
 //            S57_setAtt(geo, "SCAMIN", "INFINITE");
-            rule_str.Prepend(_T(";OP(8OD13010)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(8OD13010)");
-      } else
-            rule_str.Prepend(_T(";OP(---33020)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(---33020)");
+//            rule_str.Prepend(_T(";OP(8OD13010)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(8OD13010)");
+           //  Move this object to DisplayBase category
+            rzRules->obj->m_DisplayCat = DISPLAYBASE;
+            rzRules->LUP->DPRI = PRIO_HAZARDS;
 
+      } else {
+//            rule_str.Prepend(_T(";OP(---33020)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(---33020)");
+      }
     // facultative in S-52
     //if (TRUE == S52_getMarinerParam(S52_MAR_SHOW_TEXT)) {
     //    GString *sndfrm02 = _SNDFRM02(geo, depth_value);

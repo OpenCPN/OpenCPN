@@ -113,6 +113,7 @@
 #include <wx/tokenzr.h>
 
 #include "tcmgr.h"
+#include "georef.h"
 
 
 
@@ -558,6 +559,37 @@ void TCMgr::SaveMRU(void)
       }
 }
 
+int TCMgr::GetNextBigEvent (time_t *tm, int idx)
+{
+   float tcvalue[1]; float dir; bool ret;
+  double p, q;
+  int flags = 0, slope = 0;
+      ret = GetTideOrCurrent(*tm, idx, tcvalue[0],  dir);
+  p = tcvalue[0];
+  *tm += 60;
+      ret = GetTideOrCurrent(*tm, idx, tcvalue[0],  dir);
+  q = tcvalue[0];
+  *tm += 60;
+  if (p < q)
+    slope = 1;
+  while (1) {
+    if ((slope == 1 && q < p) || (slope == 0 && p < q)) {
+      /* Tide event */
+      flags |= (1 << slope);
+    }
+    if (flags) {
+      *tm -= 60;
+      if (flags < 4)
+        *tm -= 60;
+      return flags;
+    }
+    p = q;
+      ret = GetTideOrCurrent(*tm, idx, tcvalue[0],  dir);
+    q = tcvalue[0];
+    *tm += 60;
+  }
+}
+
 
 bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bool &bnew_val)
 {
@@ -630,6 +662,113 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
 
 }
 
+bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now, float &tcvalue_prev, bool &w_t)
+{
+
+//    Return a sensible value of 0 by default
+      tcvalue_now = 0;
+	  tcvalue_prev = 0;
+	  w_t = false;
+
+
+//    Load up this location data
+
+      IDX_entry *pIDX = paIDX[idx];             // point to the index entry
+      if(   !pIDX->IDX_Useable )
+            return false;                                        // no error, but unuseable
+
+	  pmsd = find_or_load_harm_data(pIDX);
+      if(!pmsd)                           // Master station not found
+            return false;                      // Error
+
+	  have_offsets = 0;
+//    fudge_constituents(pmsd, pIDX);
+	  if(       pIDX->IDX_ht_time_off ||
+                pIDX->IDX_ht_off != 0.0 ||
+                pIDX->IDX_lt_off != 0.0 ||
+                pIDX->IDX_ht_mpy != 1.0 ||
+                pIDX->IDX_lt_mpy != 1.0)
+	  have_offsets = 1;
+
+      amplitude = 0.0;                // Force multiplier re-compute
+      time_t tt = time(NULL);
+      int yott = ((gmtime (&tt))->tm_year) + 1900;
+
+      happy_new_year (yott);//Force new multipliers
+
+//    Finally, process the tide flow sens
+
+	  tcvalue_now = time2asecondary (t , pIDX);
+	  tcvalue_prev = time2asecondary (t + sch_step , pIDX);
+
+	  w_t = tcvalue_now > tcvalue_prev;		// w_t = true --> flood , w_t = false --> ebb
+
+	  return true;
+
+}
+
+void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float tide_val ,bool w_t , int idx, float &tcvalue, time_t &tctime)
+{
+
+//    Return a sensible value of 0,0 by default
+      tcvalue = 0;
+	  tctime = t;
+
+
+//    Load up this location data
+
+
+      IDX_entry *pIDX = paIDX[idx];             // point to the index entry
+
+      if(   !pIDX->IDX_Useable )
+            return;                                        // no error, but unuseable
+
+	  pmsd = find_or_load_harm_data(pIDX);
+
+      if(!pmsd)                           // Master station not found
+            return;                      // Error
+
+	  have_offsets = 0;
+//    fudge_constituents(pmsd, pIDX);
+	  if(       pIDX->IDX_ht_time_off ||
+                pIDX->IDX_ht_off != 0.0 ||
+                pIDX->IDX_lt_off != 0.0 ||
+                pIDX->IDX_ht_mpy != 1.0 ||
+                pIDX->IDX_lt_mpy != 1.0)
+	  have_offsets = 1;
+
+
+
+      amplitude = 0.0;                // Force multiplier re-compute
+      time_t tt = time(NULL);
+      int yott = ((gmtime (&tt))->tm_year) + 1900;
+
+      happy_new_year (yott);//Force new multipliers
+
+// Finally, calculate the Hight and low tides
+	  double newval = tide_val;
+	  double oldval = ( w_t ) ? newval - 1: newval + 1 ;
+	  int j = 0 ;
+	  int k = 0 ;
+	  int ttt = 0 ;
+        while ( newval > oldval == w_t )			//searching each ten minute
+	  {
+		j++;
+		oldval = newval;
+		ttt = t + ( sch_step_1 * j );
+		newval = time2asecondary (ttt, pIDX);
+	  }
+	  oldval = ( w_t ) ? newval - 1: newval + 1 ;
+	  while ( newval > oldval == w_t )			// searching back each minute
+	  {
+		oldval = newval ;
+		k++;
+		ttt = t +  ( sch_step_1 * j ) - ( sch_step_2 * k ) ;
+		newval = time2asecondary (ttt, pIDX);
+	  }
+        tcvalue = newval;
+	  tctime = ttt + sch_step_2 ;
+}
 
 bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
 {
@@ -2771,3 +2910,33 @@ double TCMgr::time2dt_tide (time_t t, int deriv)
       happy_new_year(this_year);
   return _time2dt_tide(t, deriv);
 }
+
+int TCMgr::GetStationIDXbyName(wxString prefix, double xlat, double xlon, TCMgr *ptcmgr)
+	{
+		  IDX_entry *lpIDX;
+		  int jx = 0;
+		  wxString locn;
+		  double distx = 100000.;
+
+	     // if (prp->m_MarkName.Find(_T("@~~")) != wxNOT_FOUND) {
+		    //tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find(_T("@~~"))+3);
+
+			for ( int j=1 ; j<ptcmgr->Get_max_IDX() +1 ; j++ ) {
+					lpIDX = ptcmgr->GetIDX_entry ( j );
+					char type = lpIDX->IDX_type;             // Entry "TCtcIUu" identifier
+					wxString locnx ( lpIDX->IDX_station_name, wxConvUTF8 );
+
+					if ( (( type == 't' ) ||  ( type == 'T' ) )   // only Tides
+						&& (locnx.StartsWith(prefix))) {
+							double brg, dist;
+							DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg, &dist);
+							if (dist < distx){
+								distx = dist;
+								//locn = locnx.Prepend(_T(" @~~"));
+								jx = j;
+							}
+						}
+			} // end for loop
+		  //} // end if @~~ found in WP
+			return(jx);
+		}

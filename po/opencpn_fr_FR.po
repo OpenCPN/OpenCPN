@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 16:32-0500\n"
+"POT-Creation-Date: 2011-04-12 22:52-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -322,6 +322,9 @@ msgstr "Démarrer"
 msgid "&Style:"
 msgstr "&Style :"
 #
+msgid "&Toggle Chart"
+msgstr ""
+#
 #
 msgid "&Underline"
 msgstr "So&uligné"
@@ -354,6 +357,11 @@ msgstr ""
 "- Si vous utilisez un logiciel de partage de ports, est il lancé ?\n"
 "- Sinon, une autre application utilisant le même port est peut être active. "
 "Dans ce cas, fermez la."
+#
+#
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(Route sans nom)"
 #
 #
 msgid "(Unnamed Route)"
@@ -507,6 +515,11 @@ msgstr "Êtes vous certain de vouloir effacer <TOUTES> les traces ?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Êtes vous sûr de vouloir effacer <TOUTES> les marques ?"
 #
+#
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Êtes vous certain de vouloir effacer <TOUTES> les traces ?"
+#
 # Traduction à confirmer (2010-11-25)
 msgid "Assumed 1 Mile Point"
 msgstr "Longueur : 1 mille."
@@ -529,6 +542,9 @@ msgstr "Auteurs"
 #
 msgid "Auto Follow"
 msgstr "Centrage automatique"
+#
+msgid "Automatic Daily Tracks"
+msgstr ""
 #
 #
 msgid "Autopilot Output Port"
@@ -713,14 +729,6 @@ msgstr "Indicatif"
 msgid "Cell Scale"
 msgstr ""
 #
-#, fuzzy
-msgid "Cell X Offset"
-msgstr "CM93 : Activer la compensation"
-#
-#, fuzzy
-msgid "Cell Y Offset"
-msgstr "CM93 : Activer la compensation"
-#
 #
 msgid "Change Color Scheme"
 msgstr "Choisir l'affichage :  Jour / Crépuscule / Nuit"
@@ -881,6 +889,9 @@ msgstr "Supprimer ce waypoint"
 msgid "Depart From"
 msgstr "Départ de"
 #
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
 #
 msgid "Depth Settings"
 msgstr "Configurer les profondeurs"
@@ -1018,6 +1029,14 @@ msgstr "Quitter OpenCPN"
 msgid "Export GPX file"
 msgstr "Exporter un fichier GPX"
 #
+#
+#, fuzzy
+msgid "Extend Route"
+msgstr "Terminer la route"
+#
+msgid "ExtendedTideIcon"
+msgstr ""
+#
 msgid "F/V"
 msgstr ""
 #
@@ -1091,6 +1110,9 @@ msgstr "Aller au curseur (avec route)"
 msgid "HSC"
 msgstr ""
 #
+msgid "HW"
+msgstr ""
+#
 #
 msgid "Help"
 msgstr "Aide"
@@ -1099,11 +1121,18 @@ msgstr "Aide"
 msgid "Here"
 msgstr "Ici"
 #
+msgid "Hide WPT names"
+msgstr ""
+#
+msgid "Hide from chart"
+msgstr ""
+#
 msgid "High Speed Craft"
 msgstr ""
 #
 #
-msgid "I&mport..."
+#, fuzzy
+msgid "I&mport GPX..."
 msgstr "I&mporter ..."
 #
 #
@@ -1112,6 +1141,11 @@ msgstr "Icône"
 #
 #
 msgid "Import GPX file"
+msgstr "Importer un fichier GPX"
+#
+#
+#, fuzzy
+msgid "Import new layer"
 msgstr "Importer un fichier GPX"
 #
 msgid "Inland Blue Flag        Clear\n"
@@ -1146,6 +1180,12 @@ msgstr "Allez à la position ..."
 msgid "LE/V"
 msgstr ""
 #
+msgid "LMT @ Location"
+msgstr ""
+#
+msgid "LW"
+msgstr ""
+#
 #
 msgid "Language"
 msgstr "Langue"
@@ -1163,6 +1203,14 @@ msgid "Latitude"
 msgstr "Latitude"
 #
 msgid "Law Enforcement Vessel"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Layer Name"
+msgstr "Nom de la marque"
+#
+msgid "Layers"
 msgstr ""
 #
 msgid "Ldg Lt Front"
@@ -1214,6 +1262,14 @@ msgstr "Distance limite : NM"
 #
 msgid "Links"
 msgstr "Liens"
+#
+#
+#, fuzzy
+msgid "List contents"
+msgstr "Licence"
+#
+msgid "Local @ PC"
+msgstr ""
 #
 #
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
@@ -1270,8 +1326,9 @@ msgid "Mariner's Standard"
 msgstr "Objets affichables"
 #
 #
-msgid "MarinersStandard"
-msgstr "Libre choix d'affichage"
+#, fuzzy
+msgid "Mariners Standard"
+msgstr "Objets affichables"
 #
 #
 msgid "Mark Icon"
@@ -1360,6 +1417,11 @@ msgid "Name"
 msgstr "Nom"
 #
 #
+#, fuzzy
+msgid "Name:  "
+msgstr " Zone couverte  : "
+#
+#
 msgid "Nav Status"
 msgstr "Statut de nav."
 #
@@ -1379,6 +1441,9 @@ msgstr "Nouvelle marque"
 msgid "Next"
 msgstr "Suiv."
 #
+msgid "Next tide event"
+msgstr ""
+#
 #
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr "CPA : Pas de calcul si la distance est supérieure à ... (milles) :"
@@ -1386,6 +1451,9 @@ msgstr "CPA : Pas de calcul si la distance est supérieure à ... (milles) :"
 #
 msgid "No Chart Available"
 msgstr "Pas de carte disponible"
+#
+msgid "No. of items"
+msgstr ""
 #
 msgid "Not Under Command"
 msgstr ""
@@ -1459,6 +1527,11 @@ msgstr "OpenCPN crée le fichier des cartes S57 ..."
 #
 msgid "OpenCPN S57 SENC File Load"
 msgstr "OpenCPN charge le fichier des cartes S57"
+#
+#
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "Alerte OpenCPN"
 #
 #
 msgid "Options"
@@ -1684,11 +1757,6 @@ msgstr "Raster"
 #
 #
 #, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Vitesse de rotation : %3d Deg./Min.\n"
-#
-#
-#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
 #
@@ -1696,6 +1764,34 @@ msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Vitesse de rotation : %3d Deg./Min. Droite\n"
+#
+#
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "Vitesse de rotation : %3d Deg./Min.\n"
+#
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
+#
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Vitesse de rotation : %3d Deg./Min. Droite\n"
+#
+msgid "Real"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Position"
+#
+#
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Position"
 #
 #
 msgid "Rebuilding chart database from configuration file entries..."
@@ -1721,7 +1817,8 @@ msgid "Reference Point"
 msgstr "Port de référence :"
 #
 #
-msgid "Reference Station:"
+#, fuzzy
+msgid "Reference Station :"
 msgstr "Port de référence :"
 #
 msgid "Remaining time : "
@@ -1801,6 +1898,9 @@ msgstr "Route : Chargement réussi"
 #
 msgid "Route from Track"
 msgstr "Trace -> Route"
+#
+msgid "RouteLegInfoRollover"
+msgstr ""
 #
 #
 msgid "Routes"
@@ -1885,14 +1985,6 @@ msgid "Shift to Smaller Scale Chart"
 msgstr "Passer à l'échelle inférieure"
 #
 #
-msgid "Ship Type:            "
-msgstr "Type de bateau      : "
-#
-#
-msgid "ShipName:  "
-msgstr "Nom du bateau       : "
-#
-#
 msgid "Show AIS Targets"
 msgstr "Afficher les cibles AIS"
 #
@@ -1913,7 +2005,8 @@ msgid "Show Currents"
 msgstr "Afficher les Courants"
 #
 #
-msgid "Show DepthUnits"
+#, fuzzy
+msgid "Show Depth Units"
 msgstr "Profondeur : Afficher l'unité"
 #
 #
@@ -1946,6 +2039,11 @@ msgid "Show Printing Icon"
 msgstr "Afficher l'icône d'impression"
 #
 #
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Afficher : Sondes"
+#
+#
 msgid "Show Status Bar"
 msgstr "Afficher la barre d'état"
 #
@@ -1956,6 +2054,16 @@ msgstr "Afficher les marées"
 #
 msgid "Show Track icon"
 msgstr "Afficher l'icône de trace"
+#
+#
+#, fuzzy
+msgid "Show WPT names"
+msgstr "Afficher le nom"
+#
+#
+#, fuzzy
+msgid "Show on chart"
+msgstr "Afficher les cibles AIS"
 #
 #
 msgid "Show radar rings"
@@ -1971,10 +2079,6 @@ msgstr "COG : Afficher les flèches indiquant la route fond"
 #
 msgid "Show target tracks"
 msgstr "Afficher leurs traces"
-#
-#
-msgid "ShowSoundings"
-msgstr "Afficher : Sondes"
 #
 #
 msgid "Shows the font preview."
@@ -2065,6 +2169,11 @@ msgstr "Vitesse             : Indisponible\n"
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Vitesse             : %5.2f noeuds.\n"
+#
+#
+#, fuzzy
+msgid "Split Route"
+msgstr "Supprimer la route"
 #
 #
 msgid "Standard"
@@ -2173,9 +2282,15 @@ msgstr "Ce segment"
 msgid "Tide"
 msgstr "Marée"
 #
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
 #
 msgid "Time Enroute"
 msgstr "Durée prévisible de navigation"
+#
+msgid "Times shown as"
+msgstr ""
 #
 #
 msgid "To"
@@ -2188,6 +2303,16 @@ msgstr "Vers le waypoint"
 #
 msgid "Today"
 msgstr "Aujourd'hui"
+#
+#
+#, fuzzy
+msgid "Toggle Listing"
+msgstr "Activer/désactiver le mode trace"
+#
+#
+#, fuzzy
+msgid "Toggle Names"
+msgstr "Nom :"
 #
 #
 msgid "Toggle Tracking"
@@ -2251,6 +2376,16 @@ msgid "Type"
 msgstr "Type"
 #
 #
+#, fuzzy
+msgid "Type:                 "
+msgstr "Heure est. d'arrivée:"
+#
+#
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Type de bateau      : "
+#
+#
 msgid "UTC"
 msgstr "UTC"
 #
@@ -2288,6 +2423,9 @@ msgstr "Inc."
 #
 msgid "Unknown"
 msgstr "Inconnue"
+#
+msgid "Unlist contents"
+msgstr ""
 #
 #
 msgid "Update Control"
@@ -2336,6 +2474,15 @@ msgid "Vessel Towing"
 msgstr ""
 #
 msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "Virtual"
+msgstr ""
+#
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+msgid "Virtual (On Position)"
 msgstr ""
 #
 #
@@ -2416,6 +2563,17 @@ msgstr "Dézoomer"
 msgid "[Class] Type (Status)"
 msgstr "[Classe] Type (Statut)"
 #
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+msgid "_plus"
+msgstr ""
+#
 #
 msgid "cm93 Detail"
 msgstr "CM93 : Détail"
@@ -2432,10 +2590,18 @@ msgstr ""
 "\n"
 "Voulez vous l'utiliser malgré tout ?"
 #
+msgid "wgsox"
+msgstr ""
+#
+msgid "wgsoy"
+msgstr ""
+#
+#
 #
 #
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 : Désactiver la compensation"
+#
 #
 #
 #
@@ -2444,8 +2610,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 : Désactiver l'outil de compensation"
+#
 #
 #
 #
@@ -2454,11 +2622,33 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "cm93 comp."
+#
+#
+#, fuzzy
+#~ msgid "Cell X Offset"
+#~ msgstr "CM93 : Activer la compensation"
+#
+#
+#, fuzzy
+#~ msgid "Cell Y Offset"
+#~ msgstr "CM93 : Activer la compensation"
+#
 #
 #
 #
 #
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichier carte corrompu...Désactivation de cette carte \n"
+#
+#
+#
+#~ msgid "MarinersStandard"
+#~ msgstr "Libre choix d'affichage"
+#
+#
+#
+#~ msgid "ShipName:  "
+#~ msgstr "Nom du bateau       : "

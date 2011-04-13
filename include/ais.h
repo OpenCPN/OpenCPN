@@ -97,7 +97,20 @@ typedef enum ais_nav_status
     MOORED,
     AGROUND,
     FISHING,
-    UNDERWAY_SAILING
+    UNDERWAY_SAILING,
+    HSC,
+    RESERVED_10,
+    RESERVED_11,
+    RESERVED_12,
+    RESERVED_13,
+    RESERVED_14,
+    UNDEFINED,
+    ATON_VIRTUAL,
+    ATON_VIRTUAL_ONPOSITION,
+    ATON_VIRTUAL_OFFPOSITION,
+    ATON_REAL,
+    ATON_REAL_ONPOSITION,
+    ATON_REAL_OFFPOSITION
 
 }_ais_nav_status;
 
@@ -339,7 +352,7 @@ private:
     void UpdateOneTrack(AIS_Target_Data *ptarget);
     void Parse_And_Send_Posn(wxString &str_temp_buf);
     void ThreadMessage(const wxString &msg);
-
+    void BuildERIShipTypeHash(void);
 
     AIS_Target_Hash *AISTargetList;
 

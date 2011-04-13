@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 16:32-0500\n"
+"POT-Creation-Date: 2011-04-12 22:52-0400\n"
 "PO-Revision-Date: 2010-10-18 00:02+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -390,6 +390,9 @@ msgstr "Start Track"
 msgid "&Style:"
 msgstr "Stil:"
 #
+msgid "&Toggle Chart"
+msgstr ""
+#
 # 
 # 
 msgid "&Underline"
@@ -422,6 +425,12 @@ msgid ""
 msgstr ""
 "'\n"
 "Vorschlag: Schließen Sie andere Anwendungen, die ggf. den COM-Port belegen."
+#
+# 
+# 
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(unbenannte Route)"
 #
 # 
 # 
@@ -617,6 +626,12 @@ msgstr "Sind Sie sicher, dass Sie <ALLE> Tracks löschen möchten?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Sind Sie sicher, dass Sie <ALLE> Wegpunkte löschen wollen?"
 #
+# 
+# 
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Sind Sie sicher, dass Sie <ALLE> Tracks löschen möchten?"
+#
 msgid "Assumed 1 Mile Point"
 msgstr ""
 #
@@ -646,6 +661,9 @@ msgstr "Autoren"
 # 
 msgid "Auto Follow"
 msgstr "Schiff autom. zentriert"
+#
+msgid "Automatic Daily Tracks"
+msgstr ""
 #
 # 
 # 
@@ -858,12 +876,6 @@ msgstr "Rufzeichen"
 msgid "Cell Scale"
 msgstr ""
 #
-msgid "Cell X Offset"
-msgstr ""
-#
-msgid "Cell Y Offset"
-msgstr ""
-#
 # 
 # 
 msgid "Change Color Scheme"
@@ -1066,6 +1078,9 @@ msgstr "Wegpunkt löschen"
 msgid "Depart From"
 msgstr "Start"
 #
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
 # 
 # 
 msgid "Depth Settings"
@@ -1237,6 +1252,15 @@ msgstr "OpenCPN beenden"
 msgid "Export GPX file"
 msgstr "GPX-Datei exportieren"
 #
+# 
+# 
+#, fuzzy
+msgid "Extend Route"
+msgstr "Routenerstellung beenden"
+#
+msgid "ExtendedTideIcon"
+msgstr ""
+#
 msgid "F/V"
 msgstr ""
 #
@@ -1328,6 +1352,9 @@ msgstr "Gehe zu"
 msgid "HSC"
 msgstr ""
 #
+msgid "HW"
+msgstr ""
+#
 # 
 # 
 msgid "Help"
@@ -1338,12 +1365,19 @@ msgstr "Hilfe"
 msgid "Here"
 msgstr "urspr. Position"
 #
+msgid "Hide WPT names"
+msgstr ""
+#
+msgid "Hide from chart"
+msgstr ""
+#
 msgid "High Speed Craft"
 msgstr ""
 #
 # 
 # 
-msgid "I&mport..."
+#, fuzzy
+msgid "I&mport GPX..."
 msgstr "Importieren"
 #
 # 
@@ -1354,6 +1388,12 @@ msgstr "Symbol"
 # 
 # 
 msgid "Import GPX file"
+msgstr "GPX-Datei importieren"
+#
+# 
+# 
+#, fuzzy
+msgid "Import new layer"
 msgstr "GPX-Datei importieren"
 #
 # 
@@ -1398,6 +1438,12 @@ msgstr ""
 msgid "LE/V"
 msgstr ""
 #
+msgid "LMT @ Location"
+msgstr ""
+#
+msgid "LW"
+msgstr ""
+#
 # 
 # 
 msgid "Language"
@@ -1419,6 +1465,15 @@ msgid "Latitude"
 msgstr "Breitengrad"
 #
 msgid "Law Enforcement Vessel"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Layer Name"
+msgstr "Name der Markierung"
+#
+msgid "Layers"
 msgstr ""
 #
 msgid "Ldg Lt Front"
@@ -1477,6 +1532,15 @@ msgstr ""
 # 
 msgid "Links"
 msgstr "Verknüpfungen"
+#
+# 
+# 
+#, fuzzy
+msgid "List contents"
+msgstr "Lizenz"
+#
+msgid "Local @ PC"
+msgstr ""
 #
 # 
 # 
@@ -1541,7 +1605,8 @@ msgstr "Benutzerdef. Auswahl"
 #
 # 
 # 
-msgid "MarinersStandard"
+#, fuzzy
+msgid "Mariners Standard"
 msgstr "Benutzerdef. Auswahl"
 #
 # 
@@ -1651,6 +1716,12 @@ msgstr "Name"
 #
 # 
 # 
+#, fuzzy
+msgid "Name:  "
+msgstr " Name:  "
+#
+# 
+# 
 msgid "Nav Status"
 msgstr "Navigationsstatus"
 #
@@ -1674,6 +1745,9 @@ msgstr "Neue Markierung"
 msgid "Next"
 msgstr "vor"
 #
+msgid "Next tide event"
+msgstr ""
+#
 # 
 # 
 msgid "No CPA Calculation if target range is greater than (NMi):"
@@ -1683,6 +1757,9 @@ msgstr "Keine CPA-Berechnung, wenn das Ziel weiter entfernt ist als (sm):"
 # 
 msgid "No Chart Available"
 msgstr "Keine Karte verfügbar"
+#
+msgid "No. of items"
+msgstr ""
 #
 msgid "Not Under Command"
 msgstr ""
@@ -1775,6 +1852,12 @@ msgstr "OpenCPN Routenerstellung"
 #
 msgid "OpenCPN S57 SENC File Load"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN Alarm"
 #
 # 
 # 
@@ -2054,12 +2137,6 @@ msgstr "Rasterkarten"
 # 
 # 
 #, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Drehgeschwindigkeit:            %3d Grad/Min.\n"
-#
-# 
-# 
-#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Drehgeschw./ -richtung:       %3d Grad/Min. Links\n"
 #
@@ -2068,6 +2145,39 @@ msgstr "Drehgeschw./ -richtung:       %3d Grad/Min. Links\n"
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Drehgeschw./ -richtung:       %3d Grad/Min. Rechts\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "Drehgeschwindigkeit:            %3d Grad/Min.\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Drehgeschw./ -richtung:       %3d Grad/Min. Links\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Drehgeschw./ -richtung:       %3d Grad/Min. Rechts\n"
+#
+msgid "Real"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Position"
+#
+# 
+# 
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Position"
 #
 # 
 # 
@@ -2097,7 +2207,8 @@ msgstr "Bezugsort:"
 #
 # 
 # 
-msgid "Reference Station:"
+#, fuzzy
+msgid "Reference Station :"
 msgstr "Bezugsort:"
 #
 msgid "Remaining time : "
@@ -2194,6 +2305,9 @@ msgstr "Route erfolgreich hochgeladen."
 # 
 msgid "Route from Track"
 msgstr "Route aus Track"
+#
+msgid "RouteLegInfoRollover"
+msgstr ""
 #
 # 
 # 
@@ -2297,16 +2411,6 @@ msgstr "Auf Karte mit kleinerem Maßstab wechseln"
 #
 # 
 # 
-msgid "Ship Type:            "
-msgstr "Schiffstyp:         "
-#
-# 
-# 
-msgid "ShipName:  "
-msgstr "Schiffsname: "
-#
-# 
-# 
 msgid "Show AIS Targets"
 msgstr "AIS-Ziele anzeigen"
 #
@@ -2332,7 +2436,8 @@ msgstr "Gezeitenströme anzeigen"
 #
 # 
 # 
-msgid "Show DepthUnits"
+#, fuzzy
+msgid "Show Depth Units"
 msgstr "Tiefeneinheit (oben rechts) anzeigen"
 #
 # 
@@ -2373,6 +2478,12 @@ msgstr "Druck-Symbol anzeigen"
 #
 # 
 # 
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Tiefenangaben anzeigen"
+#
+# 
+# 
 msgid "Show Status Bar"
 msgstr "Statusleiste anzeigen"
 #
@@ -2385,6 +2496,18 @@ msgstr "Tiden-Referenzorte anzeigen"
 # 
 msgid "Show Track icon"
 msgstr "Track-Symbol anzeigen"
+#
+# 
+# 
+#, fuzzy
+msgid "Show WPT names"
+msgstr "Namen anzeigen"
+#
+# 
+# 
+#, fuzzy
+msgid "Show on chart"
+msgstr "AIS-Ziele anzeigen"
 #
 # 
 # 
@@ -2405,11 +2528,6 @@ msgstr "KüG-Pfeil für Ziel anzeigen"
 # 
 msgid "Show target tracks"
 msgstr "Tracking für Ziele anzeigen"
-#
-# 
-# 
-msgid "ShowSoundings"
-msgstr "Tiefenangaben anzeigen"
 #
 # 
 # 
@@ -2516,6 +2634,12 @@ msgstr "Geschwindigkeit:        nicht verfügbar\n"
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Geschwindigkeit:      %5.2f kn\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Split Route"
+msgstr "Route löschen"
 #
 # 
 # 
@@ -2649,10 +2773,16 @@ msgstr "Abschn."
 msgid "Tide"
 msgstr "Tide"
 #
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
 # 
 # 
 msgid "Time Enroute"
 msgstr "Reisezeit"
+#
+msgid "Times shown as"
+msgstr ""
 #
 # 
 # 
@@ -2668,6 +2798,18 @@ msgstr "zum Wegpunkt"
 # 
 msgid "Today"
 msgstr "heute"
+#
+# 
+# 
+#, fuzzy
+msgid "Toggle Listing"
+msgstr "Tracking an-/ ausschalten"
+#
+# 
+# 
+#, fuzzy
+msgid "Toggle Names"
+msgstr "Routen-Name"
 #
 # 
 # 
@@ -2748,6 +2890,18 @@ msgstr "Schiffstyp"
 #
 # 
 # 
+#, fuzzy
+msgid "Type:                 "
+msgstr "ETA:                   "
+#
+# 
+# 
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Schiffstyp:         "
+#
+# 
+# 
 msgid "UTC"
 msgstr "UTC"
 #
@@ -2794,6 +2948,9 @@ msgstr "Unbek."
 # 
 msgid "Unknown"
 msgstr "Unbekannt"
+#
+msgid "Unlist contents"
+msgstr ""
 #
 # 
 # 
@@ -2847,6 +3004,15 @@ msgid "Vessel Towing"
 msgstr ""
 #
 msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "Virtual"
+msgstr ""
+#
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+msgid "Virtual (On Position)"
 msgstr ""
 #
 # 
@@ -2946,6 +3112,21 @@ msgstr "[Class] Typ (Status)"
 #
 # 
 # 
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+# 
+# 
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+msgid "_plus"
+msgstr ""
+#
+# 
+# 
 msgid "cm93 Detail"
 msgstr "CM93 Details"
 #
@@ -2964,6 +3145,13 @@ msgstr ""
 "\n"
 "Möchten Sie diese Version von libgps trotzdem verwenden?"
 #
+msgid "wgsox"
+msgstr ""
+#
+msgid "wgsoy"
+msgstr ""
+#
+#
 #
 #
 #
@@ -2981,6 +3169,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -2990,10 +3179,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 #
@@ -3017,10 +3208,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
 #
 #
 #
@@ -3037,10 +3230,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -3059,6 +3254,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
@@ -3070,10 +3266,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
+#
+#
+# 
+# 
+#~ msgid "MarinersStandard"
+#~ msgstr "Benutzerdef. Auswahl"
+#
 #
 #
 #
@@ -3094,12 +3298,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -3120,12 +3326,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -3144,10 +3352,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Luftdruck, mBar"
+#
 #
 #
 #
@@ -3166,10 +3376,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB-Verzeichnis auswählen"
+#
+#
+# 
+# 
+#~ msgid "ShipName:  "
+#~ msgstr "Schiffsname: "
+#
 #
 #
 #
@@ -3186,6 +3404,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
@@ -3195,10 +3414,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Hochäuflösende Grafik verwenden"
+#
 #
 #
 #
@@ -3217,10 +3438,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 #
 #

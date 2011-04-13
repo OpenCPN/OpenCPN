@@ -189,7 +189,13 @@ wxString ais_status[] = {
       _("Reserved 12"),
       _("Reserved 13"),
       _("Reserved 14"),
-      _("Undefined")
+      _("Undefined"),
+      _("Virtual"),
+      _("Virtual (On Position)"),
+      _("Virtual (Off Position)"),
+      _("Real"),
+      _("Real (On Position)"),
+      _("Real(Off Position)")
 };
 
 wxString ais_type[] = {
@@ -318,6 +324,12 @@ enum {
 };// AISTargetListCtrl Columns;
 
 
+//    Define and declare a hasmap for ERI Ship type strings, keyed by their UN Codes.
+ WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, ERIShipTypeHash );
+
+ ERIShipTypeHash        g_ERI_hash;
+
+
 //#define AIS_DEBUG  1
 
 wxString trimAISField(char *data)
@@ -442,9 +454,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       wxString result;
       wxDateTime now = wxDateTime::Now();
 
-      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      if(Class != AIS_BASE)
       {
-            line.Printf(_("ShipName:  "));
+            line.Printf(_("Name:  "));
             if(b_nameValid)
                   line.Append( trimAISField(ShipName) );
             line.Append(_T("\n\n"));
@@ -472,22 +484,45 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       line.Append(_T("\n"));
       result.Append(line);
 
-      if((Class != AIS_ATON) && (Class != AIS_BASE))
+      if(Class != AIS_BASE)
       {
 
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
-            if((NavStatus <= 15) && (NavStatus >= 0))
+            if((NavStatus <= 20) && (NavStatus >= 0))
                   line.Append( ais_status[NavStatus] );
             line.Append(_T("\n"));
             result.Append(line);
 
 
       //      Ship type
-            line.Printf(_("Ship Type:            "));
+            line.Printf(_("Type:                 "));
             line.Append( Get_vessel_type_string() );
             line.Append(_T("\n"));
             result.Append(line);
+
+            if(b_isEuroInland && UN_shiptype)
+            {
+
+                  line.Printf(_("UN Ship Type:         "));
+                  ERIShipTypeHash::iterator it = g_ERI_hash.find(UN_shiptype);
+                  wxString type;
+                  if(it == g_ERI_hash.end())
+                        type =_("Undefined");
+                  else
+                        type = it->second;
+
+                  if(type.Len() < 20)
+                        line.Append(type);
+                  else
+                  {
+                        line.Append(_T("\n  "));
+                        line.Append(type);
+                  }
+
+                  line.Append(_T("\n"));
+                  result.Append(line);
+            }
 
 
       //  Dimensions
@@ -524,10 +559,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else
                   line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
-            result.Append(line);
+            if (NavStatus != ATON_VIRTUAL)
+                  result.Append(line);
+
       }
 
-
+/*
 
            //  Destination
       line.Printf(_("Destination:          "));
@@ -570,14 +607,79 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
       if(ROTAIS != -128)
       {
-            if(ROTIND > 0)
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
-            else if(ROTIND < 0)
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+            if(ROTAIS == 127)
+                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Right\n"));
+            else if(ROTAIS == -127)
+                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Left\n"));
             else
-                  line.Printf(_("Rate Of Turn            %3d Deg./Min.\n"), ROTIND);
+            {
+                  if(ROTIND > 0)
+                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
+                  else if(ROTIND < 0)
+                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+                  else
+                        line.Printf(_("Rate Of Turn            NIL\n"));
+            }
 
             result.Append(line);
+      }
+*/
+      if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
+      {
+            line.Printf(_("Destination:          "));
+            line.Append( trimAISField(Destination) );
+            line.Append(_T("\n"));
+            result.Append(line);
+                         //  ETA
+            if((ETA_Mo) && (ETA_Hr < 24))
+            {
+                  wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
+                  line.Printf(_("ETA:                  "));
+                  line.Append( eta.FormatISODate());
+                  line.Append(_T("  "));
+                  line.Append( eta.FormatISOTime());
+                  line.Append(_T("\n"));
+            }
+            else
+            {
+                  line.Printf(_("ETA:"));
+                  line.Append(_T("\n"));
+            }
+
+            result.Append(line);
+            result.Append(_T("\n"));
+
+            int crs = wxRound(COG);
+            if(b_positionValid)
+                  line.Printf(_("Course:                 %03d Deg.\n"), crs);
+            else
+                  line.Printf(_("Course:                 Unavailable\n"));
+            result.Append(line);
+
+            if(SOG <= 102.2)
+                  line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
+            else
+                  line.Printf(_("Speed:                  Unavailable\n"));
+            result.Append(line);
+
+            if(ROTAIS != -128)
+            {
+                  if(ROTAIS == 127)
+                        line.Printf(_("Rate Of Turn:       > 5 Deg./30 s. Right\n"));
+                  else if(ROTAIS == -127)
+                        line.Printf(_("Rate Of Turn:       > 5 Deg./30 s. Left\n"));
+                  else
+                  {
+                        if(ROTIND > 0)
+                              line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
+                        else if(ROTIND < 0)
+                              line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
+                        else
+                              line.Printf(_("Rate Of Turn            0\n"));
+                  }
+
+                  result.Append(line);
+            }
       }
 
       if(b_positionValid && bGPSValid)
@@ -987,6 +1089,8 @@ AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDa
 
       AISTargetList = new AIS_Target_Hash;
 
+      BuildERIShipTypeHash();
+
       m_pShareGPSMutex = pGPSMutex;
 
       m_parent_frame = pParent;
@@ -1059,6 +1163,81 @@ AIS_Decoder::~AIS_Decoder(void)
 
 
 }
+
+#define MAKEHASHERI(key, description) g_ERI_hash[key] = _T(description);
+
+void AIS_Decoder::BuildERIShipTypeHash(void)
+{
+      MAKEHASHERI(8000, "Vessel, type unknown")
+      MAKEHASHERI(8150, "Freightbarge")
+      MAKEHASHERI(8150, "Tankbarge")
+      MAKEHASHERI(8163, "Tankbarge, dry cargo as if liquid (e.g. cement)")
+      MAKEHASHERI(8450, "Service vessel, police patrol, port service")
+      MAKEHASHERI(8430, "Pushboat, single")
+      MAKEHASHERI(8510, "Object, not otherwise specified")
+      MAKEHASHERI(8470, "Object, towed, not otherwise specified")
+      MAKEHASHERI(8490, "Bunkership")
+      MAKEHASHERI(8010, "Motor freighter")
+      MAKEHASHERI(8020, "Motor tanker")
+      MAKEHASHERI(8021, "Motor tanker, liquid cargo, type N")
+      MAKEHASHERI(8022, "Motor tanker, liquid cargo, type C")
+      MAKEHASHERI(8023, "Motor tanker, dry cargo as if liquid (e.g. cement)")
+      MAKEHASHERI(8030, "Container vessel")
+      MAKEHASHERI(8040, "Gas tanker")
+      MAKEHASHERI(8050, "Motor freighter, tug")
+      MAKEHASHERI(8060, "Motor tanker, tug")
+      MAKEHASHERI(8070, "Motor freighter with one or more ships alongside")
+      MAKEHASHERI(8080, "Motor freighter with tanker")
+      MAKEHASHERI(8090, "Motor freighter pushing one or more freighters")
+      MAKEHASHERI(8100, "Motor freighter pushing at least one tank-ship")
+      MAKEHASHERI(8110, "Tug, freighter")
+      MAKEHASHERI(8120, "Tug, tanker")
+      MAKEHASHERI(8130, "Tug freighter, coupled")
+      MAKEHASHERI(8140, "Tug, freighter/tanker, coupled")
+      MAKEHASHERI(8161, "Tankbarge, liquid cargo, type N")
+      MAKEHASHERI(8162, "Tankbarge, liquid cargo, type C")
+      MAKEHASHERI(8170, "Freightbarge with containers")
+      MAKEHASHERI(8180, "Tankbarge, gas")
+      MAKEHASHERI(8210, "Pushtow, one cargo barge")
+      MAKEHASHERI(8220, "Pushtow, two cargo barges")
+      MAKEHASHERI(8230, "Pushtow, three cargo barges")
+      MAKEHASHERI(8240, "Pushtow, four cargo barges")
+      MAKEHASHERI(8250, "Pushtow, five cargo barges")
+      MAKEHASHERI(8260, "Pushtow, six cargo barges")
+      MAKEHASHERI(8270, "Pushtow, seven cargo barges")
+      MAKEHASHERI(8280, "Pushtow, eight cargo barges")
+      MAKEHASHERI(8290, "Pushtow, nine on more barges")
+      MAKEHASHERI(8310, "Pushtow, one tank/gas barge")
+      MAKEHASHERI(8320, "Pushtow, two barges at least one tanker or gas barge")
+      MAKEHASHERI(8330, "Pushtow, three barges at least one tanker or gas barge")
+      MAKEHASHERI(8340, "Pushtow, four barges at least one tanker or gas barge")
+      MAKEHASHERI(8350, "Pushtow, five barges at least one tanker or gas barge")
+      MAKEHASHERI(8360, "Pushtow, six barges at least one tanker or gas barge")
+      MAKEHASHERI(8370, "Pushtow, seven barges at least one tanker or gas barge")
+      MAKEHASHERI(8380, "Pushtow, eight barges at least one tanker or gas barge")
+      MAKEHASHERI(8390, "Pushtow, nine or more barges at least one tanker or gas barge")
+      MAKEHASHERI(8400, "Tug, single")
+      MAKEHASHERI(8410, "Tug, one or more tows")
+      MAKEHASHERI(8420, "Tug, assisting a vessel or linked combination")
+      MAKEHASHERI(8430, "Passenger ship, ferry, cruise ship, red cross ship")
+      MAKEHASHERI(8441, "Ferry")
+      MAKEHASHERI(8442, "Red cross ship")
+      MAKEHASHERI(8443, "Cruise ship")
+      MAKEHASHERI(8444, "Passenger ship without accomodation")
+      MAKEHASHERI(8460, "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge")
+      MAKEHASHERI(8480, "Fishing boat")
+      MAKEHASHERI(8500, "Barge, tanker, chemical")
+      MAKEHASHERI(1500, "General cargo Vessel maritime")
+      MAKEHASHERI(1510, "Unit carrier maritime")
+      MAKEHASHERI(1520, "bulk carrier maritime")
+      MAKEHASHERI(1530, "tanker")
+      MAKEHASHERI(1540, "liquified gas tanker")
+      MAKEHASHERI(1850, "pleasure craft, longer than 20 metres")
+      MAKEHASHERI(1900, "fast ship")
+      MAKEHASHERI(1910, "hydrofoil")
+
+}
+
 
 //----------------------------------------------------------------------------------
 //     Handle events from AIS Serial Port RX thread
@@ -1655,7 +1834,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 //
 // The following is a patch to impersonate an AtoN as Ship      // pjotrc 2010.02.01
 //
-                  ptd->NavStatus = MOORED;
+//                  ptd->NavStatus = MOORED;
                   ptd->ShipType = (unsigned char)bstr->GetInt(39,5);
                   ptd->IMO = 0;
                   ptd->SOG = 0;
@@ -1668,11 +1847,24 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->DimD = bstr->GetInt(244, 6);
                   ptd->Draft = 0;
 
-                  bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
-//                printf("%d %d %s\n", n_msgs, ptd->MMSI, ptd->ShipName);
-                ptd->b_nameValid = true;
+                  ptd->m_utc_sec = bstr->GetInt(254, 6);
 
-                ptd->m_utc_sec = bstr->GetInt(254, 6);
+                  int offpos = bstr->GetInt(260,1); // off position flag
+                  int virt = bstr->GetInt(270,1); // virtual flag
+
+                  if (virt)
+                        ptd->NavStatus = ATON_VIRTUAL;
+                  else
+                        ptd->NavStatus = ATON_REAL;
+                  if (ptd->m_utc_sec<=59 && !virt)
+                  {
+                         ptd->NavStatus += 1;
+                         if (offpos) ptd->NavStatus += 1;
+                  }
+
+
+                  bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
+                ptd->b_nameValid = true;
 
                 parse_result = true;                // so far so good
 
@@ -3503,7 +3695,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlNAVSTATUS:
                   {
-                        if((pAISTarget->NavStatus <= 15) && (pAISTarget->NavStatus >= 0))
+                        if((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
                               ret =  ais_status[pAISTarget->NavStatus];
                         else
                               ret = _("-");
@@ -3522,7 +3714,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlCOG:
                   {
-                        if( pAISTarget->COG >= 360.0)
+                        if( (pAISTarget->COG >= 360.0)|| (pAISTarget->Class == AIS_ATON) )
                               ret =  _("-");
                         else
                               ret.Printf(_T("%5.0f"), pAISTarget->COG);
@@ -3531,7 +3723,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlSOG:
                   {
-                        if(pAISTarget->SOG > 100.)
+                        if( (pAISTarget->SOG > 100.)|| (pAISTarget->Class == AIS_ATON) )
                               ret = _("-");
                         else
                               ret.Printf(_T("%5.1f"), pAISTarget->SOG);
@@ -3571,7 +3763,7 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
       bool b_cmptype_num = false;
 
       //    Don't sort if target list count is too large
-      if(g_AisTargetList_count > 200)
+      if(g_AisTargetList_count > 1000)
             return 0;
 
       AIS_Target_Data *t1 = pAISTarget1;
@@ -3780,6 +3972,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
       m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 20000, g_AisTargetList_range );
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
+      m_pSpinCtrlRange->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND|wxALL, 0 );
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
 

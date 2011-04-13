@@ -114,6 +114,9 @@ bool ChartTableHeader::CheckValid()
           msg.Prepend(wxT("   Warning: found incorrect chart db version: "));
           wxLogMessage(msg);
 
+          return false;       // no match....
+
+/*
           // Try previous version....
           sprintf(vb, "V%03d", DB_VERSION_PREVIOUS);
           if (strncmp(vb, dbVersion, sizeof(dbVersion)))
@@ -123,6 +126,8 @@ bool ChartTableHeader::CheckValid()
                 wxLogMessage(_T("   Scheduling db upgrade to current db version on Toolbox->Charts page visit..."));
                 return true;
           }
+*/
+
     }
     else
     {
@@ -702,31 +707,42 @@ wxString SplitPath(wxString s, wxString tkd, int nchar, int offset)
 }
 
 
-wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_width)
+wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_width, int *line_count)
 {
       wxString r;
+      int lc = 0;
+      unsigned int max_width = 0;
 
       const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
       if(1)       //TODO why can't this be cte.GetbValid()?
       {
             wxString line;
             line = _(" ChartFile:  ");
-            line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), max_width, 15);
-            line += _T("\r\n");
+//            line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), max_width, 15);
+//            line += _T("\r\n");
+            line += wxString(cte.GetpFullPath(), wxConvUTF8);
+            line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
             {
                   line = _(" Name:  ");
-                  line += SplitPath(pc->GetName(), _T(" "), max_width, 12);
+//                  line += SplitPath(pc->GetName(), _T(" "), max_width, 12);
+                  line += pc->GetName();
             }
-            line += _T("\r\n");
+            line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Printf(_(" Scale:  1:%d"), cte.GetScale() );
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -735,7 +751,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += pc->GetID();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -744,7 +762,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += pc->GetDepthUnits();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -753,7 +773,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += pc->GetSoundingsDatum();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -762,7 +784,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += pc->GetDatumString();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line = _(" Projection:  ");
             if(PROJECTION_UNKNOWN == cte.GetChartProjectionType())
@@ -774,7 +798,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
             else if(PROJECTION_POLYCONIC == cte.GetChartProjectionType())
                   line += _("Polyconic");
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -783,7 +809,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += pc->GetSE();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc)
@@ -793,16 +821,27 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int max_wid
                   line += ed.FormatISODate();
             }
             line += _T("\n");
+            max_width = wxMax(max_width, line.Len());
             r += line;
+            lc++;
 
             line.Empty();
             if(pc && pc->GetExtraInfo().Len())
             {
                   line += pc->GetExtraInfo();
                   line += _("\n");
+                  max_width = wxMax(max_width, line.Len());
                   r += line;
+                  lc++;
+
             }
       }
+
+      if(line_count)
+            *line_count = lc;
+
+      if(char_width)
+            *char_width = max_width;
 
       return r;
 }

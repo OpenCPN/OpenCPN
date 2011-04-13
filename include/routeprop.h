@@ -85,6 +85,8 @@ class   RoutePoint;
 #define ID_PLANSPEEDCTL 7008
 #define ID_TEXTCTRL4 7009
 #define ID_TEXTCTRLDESC 7010
+#define ID_STARTTIMECTL 7011
+#define ID_TIMEZONESEL 7012
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -158,6 +160,8 @@ public:
     void OnRoutepropCancelClick( wxCommandEvent& event );
     void OnRoutepropOkClick( wxCommandEvent& event );
     void OnPlanSpeedCtlUpdated( wxCommandEvent& event );
+    void OnStartTimeCtlUpdated( wxCommandEvent& event );
+	void OnTimeZoneSelected( wxCommandEvent& event );
     void OnRoutepropListClick( wxListEvent& event );
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );
@@ -173,13 +177,16 @@ public:
     Route *GetRoute(void){return m_pRoute;}
 
     bool UpdateProperties(void);
+	wxString MakeTideInfo(int jx, time_t tm, int tz_selection, long LMT_Offset);
     bool SaveChanges(void);
 
     wxTextCtrl  *m_TotalDistCtl;
     wxTextCtrl  *m_PlanSpeedCtl;
+	wxTextCtrl	*m_StartTimeCtl;
     wxTextCtrl  *m_TimeEnrouteCtl;
 
 	wxStaticText *m_PlanSpeedLabel;
+	wxStaticText *m_StartTimeLabel;
 
     wxTextCtrl  *m_RouteNameCtl;
     wxTextCtrl  *m_RouteStartCtl;
@@ -195,13 +202,18 @@ public:
     Route       *m_pRoute;
     Route       *m_pHead; // for route splitting
     Route       *m_pTail;
-      RoutePoint *m_pExtendPoint;
-      Route *m_pExtendRoute;
+    RoutePoint *m_pExtendPoint;
+    Route *m_pExtendRoute;
+    RoutePoint    *m_pEnroutePoint;
+    bool          m_bStartNow;
 
     double      m_planspeed;
     double      m_avgspeed;
 
     int         m_nSelected; // index of point selected in Properties dialog row
+
+    wxDateTime	m_starttime; // kept as UTC
+    wxRadioBox	*pDispTz;
 };
 
 
@@ -241,6 +253,7 @@ public:
       bool UpdateProperties(void);
 
       void SetColorScheme(ColorScheme cs);
+      void SetDialogTitle(wxString title);
 
 private:
       void CreateControls();

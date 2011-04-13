@@ -341,6 +341,8 @@ public:
       int                     *m_lsindex_array;
       int                     m_n_edge_max_points;
 
+      DisCat                  m_DisplayCat;
+
 
                                                       // This transform converts from object geometry
                                                       // to SM coordinates.

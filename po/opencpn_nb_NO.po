@@ -5,16 +5,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.3.1214\n"
+"Project-Id-Version: OpenCPN 2.4.324\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 16:32-0500\n"
-"PO-Revision-Date: 2010-12-15 14:37+0100\n"
+"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"PO-Revision-Date: 2011-03-27 00:41+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
-"Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
+"Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Norwegian Bokmål\n"
+"X-Poedit-Language: Norsk\n"
 "X-Poedit-Country: Norge\n"
 #
 msgid "\n"
@@ -111,13 +111,13 @@ msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Linje indeks er ødelagt, gjenskaper indeks for kart "
 #
 msgid "   PlugInManager: Cannot load library: "
-msgstr "   PluggInn Behandler: Kan ikke laste bibliotek: "
+msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
 #
 msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   PluggInn Behandler: Kan ikke laste symbol create_pi: "
+msgstr "   Utvidelses behandling: Kan ikke laste symbol create_pi: "
 #
 msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "   PluggInn Behandler: Kan ikke laste symbol destroy_pi: "
+msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Resultat: OK, intern georef. løsning er benyttet."
@@ -260,6 +260,9 @@ msgstr "&Start slepestrek"
 msgid "&Style:"
 msgstr "&Stil:"
 #
+msgid "&Toggle Chart"
+msgstr ""
+#
 msgid "&Underline"
 msgstr "&Understreket"
 #
@@ -282,6 +285,10 @@ msgid ""
 msgstr ""
 "'\n"
 "Forslag: Forsøk å lukke andre programmer."
+#
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(Rute uten navn)"
 #
 msgid "(Unnamed Route)"
 msgstr "(Rute uten navn)"
@@ -314,7 +321,7 @@ msgid "4 Color"
 msgstr "4 Farge"
 #
 msgid "?"
-msgstr ""
+msgstr "?"
 #
 msgid "A"
 msgstr "A"
@@ -380,7 +387,7 @@ msgid "Additional information"
 msgstr "Tilleggsinformasjon"
 #
 msgid "Aground"
-msgstr ""
+msgstr "På grunn"
 #
 msgid "Aid to Navigation"
 msgstr "Hjelp til Navigasjon (AtoN)"
@@ -400,12 +407,15 @@ msgstr "Er du sikker på at du vil slette <ALLE> slepestrekene?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Er du sikker på at du vil slette <ALLE> veipunkter?"
 #
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Er du sikker på at du vil slette <ALLE> slepestrekene?"
+#
 msgid "Assumed 1 Mile Point"
 msgstr "Antatt 1 mils punkt"
 #
-#, fuzzy
 msgid "At Anchor"
-msgstr "Sett ankervakt"
+msgstr "Oppankret"
 #
 msgid "AtoN"
 msgstr "AtoN"
@@ -418,6 +428,9 @@ msgstr "Opphav"
 #
 msgid "Auto Follow"
 msgstr "Følg automatisk"
+#
+msgid "Automatic Daily Tracks"
+msgstr ""
 #
 msgid "Autopilot Output Port"
 msgstr "Autopilot utgangs port"
@@ -432,34 +445,34 @@ msgid "B"
 msgstr "B"
 #
 msgid "Base"
-msgstr "Base"
+msgstr "Basis"
 #
 msgid "Base Station"
 msgstr "Base Stasjon"
 #
 msgid "BaseClassCommonName"
-msgstr "BaseClassCommonName"
+msgstr "BaseKlasseFellesNavn"
 #
 msgid "Beacon, Isolated Danger"
-msgstr ""
+msgstr "Lys, isolert fare"
 #
 msgid "Beacon, Port Hand"
-msgstr ""
+msgstr "Lys, babord side"
 #
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr ""
+msgstr "Lys, Foretrukket kanal babord side"
 #
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "Lys, Foretrukket kanal styrbord side"
 #
 msgid "Beacon, Safe Water"
-msgstr ""
+msgstr "Lys, Klart farvann"
 #
 msgid "Beacon, Special Mark"
-msgstr ""
+msgstr "Lykt, Spesial merke"
 #
 msgid "Beacon, Starboard Hand"
-msgstr ""
+msgstr "Lykt, Styrbord side"
 #
 msgid "Bearing"
 msgstr "Kurs"
@@ -483,9 +496,8 @@ msgstr "F&arge:"
 msgid "CM93"
 msgstr "CM93"
 #
-#, fuzzy
 msgid "CM93 Offset Dialog"
-msgstr "CM93 korrigeringsvisning"
+msgstr "CM93 forskyvnings dialog"
 #
 msgid "CM93 Offset Display"
 msgstr "CM93 korrigeringsvisning"
@@ -536,58 +548,49 @@ msgid "Cancel"
 msgstr "Avbryt"
 #
 msgid "Card. E"
-msgstr ""
+msgstr "Kard. Ø"
 #
 msgid "Card. N"
-msgstr ""
+msgstr "Kard. N"
 #
 msgid "Card. S"
-msgstr ""
+msgstr "Kard. S"
 #
 msgid "Card. W"
-msgstr ""
+msgstr "Kard. V"
 #
 msgid "Cardinal E Beacon"
-msgstr ""
+msgstr "Kardinal Ø Lykt"
 #
 msgid "Cardinal Mark E"
-msgstr ""
+msgstr "Kardinalmerke Ø"
 #
 msgid "Cardinal Mark N"
-msgstr ""
+msgstr "Kardinalmerke N"
 #
 msgid "Cardinal Mark S"
-msgstr ""
+msgstr "Kardinalmerke S"
 #
 msgid "Cardinal Mark W"
-msgstr ""
+msgstr "Kardinalmerke V"
 #
 msgid "Cardinal N Beacon"
-msgstr ""
+msgstr "Kardinal N Lykt"
 #
 msgid "Cardinal S Beacon"
-msgstr ""
+msgstr "Kardinal S Lykt"
 #
 msgid "Cardinal W Beacon"
-msgstr ""
+msgstr "Kardinal V Lykt"
 #
 msgid "Cargo Ship"
-msgstr ""
+msgstr "Lasteskip"
 #
-#, fuzzy
 msgid "Cell"
-msgstr "Kallesignal"
+msgstr "Celle"
 #
 msgid "Cell Scale"
-msgstr ""
-#
-#, fuzzy
-msgid "Cell X Offset"
-msgstr "Sett CM93 korreksjon"
-#
-#, fuzzy
-msgid "Cell Y Offset"
-msgstr "Sett CM93 korreksjon"
+msgstr "Celleskala"
 #
 msgid "Change Color Scheme"
 msgstr "Bytt fargepalett"
@@ -605,7 +608,7 @@ msgid "Chart Display Options"
 msgstr "Kartvisnings valg"
 #
 msgid "Chart Display Style"
-msgstr "Kartvisnings stil"
+msgstr "Kartvisnings alternativer"
 #
 msgid "Chart Print"
 msgstr "Skriv ut kart"
@@ -653,7 +656,7 @@ msgid "Console Value"
 msgstr "Konsoll Verdi"
 #
 msgid "Constrained by draught"
-msgstr ""
+msgstr "Forhindret av dypgående"
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Kunne ikke løse TCP/IP vert '"
@@ -678,10 +681,10 @@ msgid "Cursor: "
 msgstr "Kursor: "
 #
 msgid "D/V"
-msgstr ""
+msgstr "D/F"
 #
 msgid "De-Clutter Text (exp.)"
-msgstr "Ryddig visning av tekst (eksp.)"
+msgstr "Ryddig visning av ENC-tekst"
 #
 msgid "Deactivate"
 msgstr "Deaktiver"
@@ -713,8 +716,11 @@ msgstr "Slett veipunkt"
 msgid "Depart From"
 msgstr "Avgang fra"
 #
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
 msgid "Depth Settings"
-msgstr "Dybde Instillinger"
+msgstr "Dybde alternativer"
 #
 msgid "Depth Settings(m)"
 msgstr "Dybde inst.(m)"
@@ -731,15 +737,14 @@ msgstr "Destinasjon:          "
 msgid "Disable"
 msgstr "Deaktiver"
 #
-#, fuzzy
 msgid "Disable Full Screen Quilting"
-msgstr "Tillat kartfletting"
+msgstr "Deaktiver fullskjerms fletting"
 #
 msgid "Display"
 msgstr "Vis"
 #
 msgid "Display Category"
-msgstr "Visnings kategori"
+msgstr "Visnings innstillinger"
 #
 msgid "Distance"
 msgstr "Distanse"
@@ -751,7 +756,7 @@ msgid "Done."
 msgstr "Ferdig."
 #
 msgid "Dredge"
-msgstr ""
+msgstr "Oppmudring"
 #
 msgid "Drop MOB Marker"
 msgstr "Mann Over Bord"
@@ -778,7 +783,7 @@ msgid "ETE/Timestamp"
 msgstr "ETE/Tids stempel"
 #
 msgid "Elapsed time : "
-msgstr ""
+msgstr "Forbrukt tid : "
 #
 msgid "Enable"
 msgstr "Aktiver"
@@ -802,7 +807,7 @@ msgid "End Route"
 msgstr "Avslutt rute"
 #
 msgid "Engaged in Fishing"
-msgstr ""
+msgstr "Deltar i fiske"
 #
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Feil ved rute opplasting. Sjekk loggfiler..."
@@ -811,7 +816,7 @@ msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Feil ved veipunkt opplasting. Sjekk loggfiler..."
 #
 msgid "Estimated time : "
-msgstr ""
+msgstr "Estimert tid : "
 #
 msgid "Etc."
 msgstr "Diverse"
@@ -822,8 +827,15 @@ msgstr "Avslutt OpenCPN"
 msgid "Export GPX file"
 msgstr "Eksporter GPX fil"
 #
-msgid "F/V"
+#, fuzzy
+msgid "Extend Route"
+msgstr "Avslutt rute"
+#
+msgid "ExtendedTideIcon"
 msgstr ""
+#
+msgid "F/V"
+msgstr "F/F"
 #
 msgid "Failed to load libgps.so"
 msgstr "Kunne ikke laste libgps.so"
@@ -844,10 +856,10 @@ msgid "Filter Period (Sec.)"
 msgstr "Filterperiode (Sek.)"
 #
 msgid "Fix.Struct."
-msgstr ""
+msgstr "Fst.Konstr."
 #
 msgid "Fixed Structure"
-msgstr ""
+msgstr "Fast konstruksjon"
 #
 msgid "Font Options"
 msgstr "Skriftvalg"
@@ -869,7 +881,7 @@ msgid "GPSD Data Server"
 msgstr "GPSD Dataserver"
 #
 msgid "GUI Options"
-msgstr "GUI Valg"
+msgstr "Brukergrensesnitt alternativer"
 #
 msgid "Go To Here"
 msgstr "Gå hit"
@@ -881,6 +893,9 @@ msgid "Go to "
 msgstr "Gå til"
 #
 msgid "HSC"
+msgstr "HHF"
+#
+msgid "HW"
 msgstr ""
 #
 msgid "Help"
@@ -889,16 +904,27 @@ msgstr "Hjelp"
 msgid "Here"
 msgstr "Her"
 #
-msgid "High Speed Craft"
+msgid "Hide WPT names"
 msgstr ""
 #
-msgid "I&mport..."
+msgid "Hide from chart"
+msgstr ""
+#
+msgid "High Speed Craft"
+msgstr "Høyhastighets fartøy"
+#
+#, fuzzy
+msgid "I&mport GPX..."
 msgstr "I&mporter..."
 #
 msgid "Icon"
 msgstr "Ikon"
 #
 msgid "Import GPX file"
+msgstr "Importer GPX fil"
+#
+#, fuzzy
+msgid "Import new layer"
 msgstr "Importer GPX fil"
 #
 msgid "Inland Blue Flag        Clear\n"
@@ -911,11 +937,10 @@ msgid "Insert Waypoint"
 msgstr "Sett inn veipunkt"
 #
 msgid "Isol. Dngr"
-msgstr ""
+msgstr "Isol. Fare"
 #
-#, fuzzy
 msgid "Isolated Danger"
-msgstr "Rutebehandling"
+msgstr "Isolert Fare"
 #
 msgid "Jump To"
 msgstr "Gå til"
@@ -927,6 +952,12 @@ msgid "Jump To Position..."
 msgstr "Gå til posisjon"
 #
 msgid "LE/V"
+msgstr "LO/F"
+#
+msgid "LMT @ Location"
+msgstr ""
+#
+msgid "LW"
 msgstr ""
 #
 msgid "Language"
@@ -942,19 +973,26 @@ msgid "Latitude"
 msgstr "Breddegrad"
 #
 msgid "Law Enforcement Vessel"
+msgstr "Lov opprettholdelses fartøy"
+#
+#, fuzzy
+msgid "Layer Name"
+msgstr "Merkenavn"
+#
+msgid "Layers"
 msgstr ""
 #
 msgid "Ldg Lt Front"
-msgstr ""
+msgstr "Ldly Ll Foran"
 #
 msgid "Ldg Lt Rear"
-msgstr ""
+msgstr "Ldly Ll Bak"
 #
 msgid "Leading Light Front"
-msgstr ""
+msgstr "Ledelys foran"
 #
 msgid "Leading Light Rear"
-msgstr ""
+msgstr "Ledelys bak"
 #
 msgid "Leg"
 msgstr "Legg"
@@ -971,15 +1009,14 @@ msgstr "Lengde"
 msgid "License"
 msgstr "Lisens"
 #
-#, fuzzy
 msgid "Light"
-msgstr "&Vekt:"
+msgstr "Lys"
 #
 msgid "Light Vessel/Rig"
-msgstr ""
+msgstr "Fyrfartøy/rigg"
 #
 msgid "Light w/Sectors"
-msgstr ""
+msgstr "Fyr m/sektorer"
 #
 msgid "Limit range: NM"
 msgstr "Begrens avstand: NM"
@@ -987,11 +1024,18 @@ msgstr "Begrens avstand: NM"
 msgid "Links"
 msgstr "Linker"
 #
+#, fuzzy
+msgid "List contents"
+msgstr "Lisens"
+#
+msgid "Local @ PC"
+msgstr ""
+#
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
 msgstr "Lås alle veipunkt untatt når dialogboksen er synlig"
 #
 msgid "Long Tow"
-msgstr ""
+msgstr "Langt slep"
 #
 msgid "Longitude"
 msgstr "Lengdegrad"
@@ -1003,19 +1047,19 @@ msgid "Lost Targets"
 msgstr "Mistede mål"
 #
 msgid "Lt"
-msgstr ""
+msgstr "Lt"
 #
 msgid "Lt sect."
-msgstr ""
+msgstr "Lt sekt."
 #
 msgid "LtV/Rig"
-msgstr ""
+msgstr "FyF/Rigg"
 #
 msgid "M/T"
-msgstr ""
+msgstr "M/T"
 #
 msgid "M/V"
-msgstr ""
+msgstr "M/F"
 #
 msgid "MAN OVERBOARD"
 msgstr "MANN OVER BORD"
@@ -1027,13 +1071,14 @@ msgid "MMSI"
 msgstr "MMSI"
 #
 msgid "M_COVR ID"
-msgstr ""
+msgstr "M_COVR ID"
 #
 msgid "Mariner's Standard"
 msgstr "Mariner's Standard"
 #
-msgid "MarinersStandard"
-msgstr "MarinersStandard"
+#, fuzzy
+msgid "Mariners Standard"
+msgstr "Mariner's Standard"
 #
 msgid "Mark Icon"
 msgstr "Merke ikon"
@@ -1066,10 +1111,10 @@ msgid "Measure....."
 msgstr "Avstandsmåling..."
 #
 msgid "Med/V"
-msgstr ""
+msgstr "Med/F"
 #
 msgid "Medical Transport"
-msgstr ""
+msgstr "Medisinsk Fartøy"
 #
 msgid "Mercator"
 msgstr "Mercator"
@@ -1081,19 +1126,19 @@ msgid "Metres"
 msgstr "Meter"
 #
 msgid "Mil/V"
-msgstr ""
+msgstr "Mil/F"
 #
 msgid "Military Vessel"
-msgstr ""
+msgstr "Militær Fartøy"
 #
 msgid "Moored"
-msgstr ""
+msgstr "Fortøyd"
 #
 msgid "Move Boat Here"
 msgstr "Flytt båt her"
 #
 msgid "NMEA Baud Rate"
-msgstr "NMEA Hastighet"
+msgstr "NMEA porthastighet"
 #
 msgid "NMEA Data Source"
 msgstr "NMEA Datakilde"
@@ -1103,6 +1148,10 @@ msgstr "NMEA Valg"
 #
 msgid "Name"
 msgstr "Navn"
+#
+#, fuzzy
+msgid "Name:  "
+msgstr " Navn:  "
 #
 msgid "Nav Status"
 msgstr "Nav Status"
@@ -1119,14 +1168,20 @@ msgstr "Nytt merke"
 msgid "Next"
 msgstr "Neste"
 #
+msgid "Next tide event"
+msgstr ""
+#
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr "Ingen CPA kalkulering om målet er lengre borte enn (Nm): "
 #
 msgid "No Chart Available"
 msgstr "Ingen kart er tilgjengelig"
 #
-msgid "Not Under Command"
+msgid "No. of items"
 msgstr ""
+#
+msgid "Not Under Command"
+msgstr "Ikke under kommando"
 #
 msgid "Number of radar rings shown"
 msgstr "Antall radar ringer"
@@ -1144,7 +1199,7 @@ msgid "OpenCPN Alert"
 msgstr "OpenCPN Varsel"
 #
 msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr ""
+msgstr "OpenCPN CM93 Celle forskyvnings justering"
 #
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN legg til kart..."
@@ -1168,14 +1223,14 @@ msgid "OpenCPN Message"
 msgstr "OpenCPN melding"
 #
 msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN PlugIn Base Class"
+msgstr "OpenCPN Utvidelses Base Klasse"
 #
 msgid ""
 "OpenCPN PlugIn Base Class\n"
 "PlugInManager created this base class"
 msgstr ""
-"OpenCPN PlugIn Base Class\n"
-"PluggInn Behandler opprettet denne base klassen"
+"OpenCPN Utvidelses Base Klasse\n"
+"Utvidelses behandling opprettet denne base klassen"
 #
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN ruteopprettelse"
@@ -1185,6 +1240,10 @@ msgstr "OpenCPN S57 SENC Filopprettelse..."
 #
 msgid "OpenCPN S57 SENC File Load"
 msgstr "OpenCPN S57 SENC Fillasting"
+#
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN Varsel"
 #
 msgid "Options"
 msgstr "Valg"
@@ -1199,28 +1258,28 @@ msgid "Overwrite existing file?"
 msgstr "Overskrive eksisterende fil?"
 #
 msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Eget skips COG Kursvektor lengde (minutter):"
+msgstr "Eget skips COG kursvektor lengde (minutter):"
 #
 msgid "OwnShip Display Options"
 msgstr "Valg for visning av eget skip"
 #
 msgid "P/V"
-msgstr ""
+msgstr "P/F"
 #
 msgid "PC/V"
-msgstr ""
+msgstr "FK/F"
 #
 msgid "Paper Chart"
 msgstr "Papirkart"
 #
 msgid "Pass/V"
-msgstr ""
+msgstr "Pass/F"
 #
 msgid "Passenger Ship"
-msgstr ""
+msgstr "Passasjer Fartøy"
 #
 msgid "Pilot Vessel"
-msgstr ""
+msgstr "Los Fartøy"
 #
 msgid "Place Trackpoints at distance interval (NMi):"
 msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
@@ -1246,53 +1305,52 @@ msgstr "Spill skipsklokker"
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Start OpenCPN på nytt for å aktivere det nye språket."
 #
-#, fuzzy
 msgid "Pleasure craft"
-msgstr "Avslutt måling"
+msgstr "Fornøyelses Fartøy"
 #
 msgid "PlugInManager searching for PlugIns in location "
-msgstr "PluggInn behandling søker etter PluggInn plassering"
+msgstr "Utvidelses behandling søker etter utvidelses plassering"
 #
 msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "PluggInn Behandler: Deaktiverer PluggInn: "
+msgstr "Utvidelses behandling: Deaktiverer utvidelse: "
 #
 msgid "PlugInManager: Initializing PlugIn: "
-msgstr "PluggInn Behandler: Initierer PluggInn: "
+msgstr "Utvidelses behandling: Starter utvidelse: "
 #
 msgid "PlugInManager: Loading PlugIn: "
-msgstr "PluggInn Behandler: Laster PluggInn: "
+msgstr "Utvidelses behandling: Laster utvidelse: "
 #
 msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "PluggInn Behandler: Laster ut PluggInn: "
+msgstr "Utvidelses behandling: Laster ut utvidelse: "
 #
 #, c-format
 msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "PluggInn Behandler: Laster ut PluggIn med ugyldig API versjon %d.%d: "
+msgstr ""
+"Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
 #
 msgid "PlugIns"
-msgstr "PluggIns"
+msgstr "Utvidelser"
 #
 msgid "Points"
-msgstr "Punkter"
+msgstr "Merker"
 #
 msgid "Pollution Control Vessel"
-msgstr ""
+msgstr "Forurensningskontroll Fartøy"
 #
 msgid "Polyconic"
 msgstr "Polyconic"
 #
-#, fuzzy
 msgid "Port"
-msgstr "Punkter"
+msgstr "Babord"
 #
 msgid "Port Hand"
-msgstr ""
+msgstr "Babord side"
 #
 msgid "Port Hand Mark"
-msgstr ""
+msgstr "Babord sidemerke"
 #
 msgid "Port Tender"
-msgstr ""
+msgstr "Havneoppsyn"
 #
 msgid "Position"
 msgstr "Posisjon"
@@ -1313,16 +1371,16 @@ msgstr ""
 "                              Vil du benytte denne versjonen av libgps?"
 #
 msgid "Pref. Chnl"
-msgstr ""
+msgstr "Foret.Kanal"
 #
 msgid "Preferences"
 msgstr "Innstillinger"
 #
 msgid "Preferred Channel Port Hand"
-msgstr ""
+msgstr "Foretrukket kanal babord side"
 #
 msgid "Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "Foretrukket kanal styrbord side"
 #
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr "Klargjør GPS for rute/veipunkt mottak og trykk send..."
@@ -1340,7 +1398,7 @@ msgid "Print Chart"
 msgstr "Skriv ut kart"
 #
 msgid "Printing"
-msgstr "Skriver ut"
+msgstr "Utskrift"
 #
 msgid "Processing Waypoints..."
 msgstr "Behandler veipunkter..."
@@ -1352,7 +1410,7 @@ msgid "Properties"
 msgstr "Egenskaper"
 #
 msgid "RACON"
-msgstr ""
+msgstr "RACON"
 #
 msgid "Radar rings"
 msgstr "Radar ringer"
@@ -1371,16 +1429,35 @@ msgid "Raster"
 msgstr "Raster"
 #
 #, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "ROT            %3d Gra./Min.\n"
-#
-#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "ROT            %3d Gra./Min. Venstre\n"
 #
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "ROT            %3d Gra./Min. Høyre\n"
+#
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "ROT            %3d Gra./Min.\n"
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "ROT            %3d Gra./Min. Venstre\n"
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "ROT            %3d Gra./Min. Høyre\n"
+#
+msgid "Real"
+msgstr ""
+#
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Posisjon"
+#
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Posisjon"
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Gjenoppbygger kartdatabase fra konfigurasjons fil oppføringer..."
@@ -1394,17 +1471,17 @@ msgstr ""
 "\n"
 #
 msgid "Ref. Pt"
-msgstr ""
+msgstr "Ref.Pkt."
+#
+msgid "Reference Point"
+msgstr "Referanse punkt"
 #
 #, fuzzy
-msgid "Reference Point"
-msgstr "Referanse stasjon: "
-#
-msgid "Reference Station:"
+msgid "Reference Station :"
 msgstr "Referanse stasjon: "
 #
 msgid "Remaining time : "
-msgstr ""
+msgstr "Gjenværende tid : "
 #
 msgid "Remove Waypoint from Route"
 msgstr "Fjern veipunkt fra rute"
@@ -1423,19 +1500,19 @@ msgid "Report Age:             %3d Sec.\n"
 msgstr "Rapport alder:             %3d Sek.\n"
 #
 msgid "Reserved 11"
-msgstr ""
+msgstr "Reservert 11"
 #
 msgid "Reserved 12"
-msgstr ""
+msgstr "Reservert 12"
 #
 msgid "Reserved 13"
-msgstr ""
+msgstr "Reservert 13"
 #
 msgid "Reserved 14"
-msgstr ""
+msgstr "Reservert 14"
 #
 msgid "Restricted Manoeuvrability"
-msgstr ""
+msgstr "Begrenset manøvrerbarhet"
 #
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Innhenter grunnleggende kart kataloger fra Windows registeret"
@@ -1467,26 +1544,29 @@ msgstr "Rute ble opplastet."
 msgid "Route from Track"
 msgstr "Rute fra Slepestrek"
 #
+msgid "RouteLegInfoRollover"
+msgstr ""
+#
 msgid "Routes"
 msgstr "Ruter"
 #
 msgid "S/V"
-msgstr ""
+msgstr "S/F"
 #
 msgid "SAR/V"
-msgstr ""
+msgstr "SAR/F"
 #
 msgid "SOG COG"
 msgstr "SOG COG"
 #
 msgid "Safe Water"
-msgstr ""
+msgstr "Trygt farvann"
 #
 msgid "Safety Depth"
 msgstr "Sikkerhetsdybde"
 #
 msgid "Sailing Vessel"
-msgstr ""
+msgstr "Seilfartøy"
 #
 msgid "Scale In"
 msgstr "Skala inn"
@@ -1495,7 +1575,7 @@ msgid "Scale Out"
 msgstr "Skala ut"
 #
 msgid "Search and Rescue Vessel"
-msgstr ""
+msgstr "Søk og redningsfartøy"
 #
 msgid "Select Alert Sound"
 msgstr "Velg lyd for varsel"
@@ -1533,12 +1613,6 @@ msgstr "Bytt til større kartskala"
 msgid "Shift to Smaller Scale Chart"
 msgstr "Bytt til mindre kartskala"
 #
-msgid "Ship Type:            "
-msgstr "Skips type:            "
-#
-msgid "ShipName:  "
-msgstr "Båtens navn:  "
-#
 msgid "Show AIS Targets"
 msgstr "Vis AIS-mål"
 #
@@ -1554,7 +1628,8 @@ msgstr "Vis kartomriss"
 msgid "Show Currents"
 msgstr "Vis strømmer"
 #
-msgid "Show DepthUnits"
+#, fuzzy
+msgid "Show Depth Units"
 msgstr "Vis dybde enheter"
 #
 msgid "Show ENC Text"
@@ -1563,9 +1638,8 @@ msgstr "Vis ENC-tekst"
 msgid "Show GPS/NMEA data stream window"
 msgstr "Vis GPS/NMEA datastrøm vindu"
 #
-#, fuzzy
 msgid "Show Grid"
-msgstr "Vis tidevann"
+msgstr "Vis rutenett"
 #
 msgid "Show Important Text Only"
 msgstr "Vis kun viktig tekst"
@@ -1577,7 +1651,11 @@ msgid "Show Name"
 msgstr "Vis navn"
 #
 msgid "Show Printing Icon"
-msgstr "Vis utskrift ikon"
+msgstr "Vis utskrifts ikon"
+#
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Vis loddskudd"
 #
 msgid "Show Status Bar"
 msgstr "Vis statuslinje"
@@ -1587,6 +1665,14 @@ msgstr "Vis tidevann"
 #
 msgid "Show Track icon"
 msgstr "Vis slepestrek ikon"
+#
+#, fuzzy
+msgid "Show WPT names"
+msgstr "Vis navn"
+#
+#, fuzzy
+msgid "Show on chart"
+msgstr "Vis AIS-mål"
 #
 msgid "Show radar rings"
 msgstr "Vis radar ringer"
@@ -1600,14 +1686,11 @@ msgstr "Vis målenes COG kursvektor"
 msgid "Show target tracks"
 msgstr "Vis slepestrek etter mål"
 #
-msgid "ShowSoundings"
-msgstr "Vis loddskudd"
-#
 msgid "Shows the font preview."
 msgstr "Viser forhåndsvisning av skrift."
 #
 msgid "Simplified"
-msgstr "Forenklet"
+msgstr "ENC standard"
 #
 #, c-format
 msgid ""
@@ -1659,16 +1742,14 @@ msgstr ""
 msgid "SoG"
 msgstr "SOG"
 #
-#, fuzzy
 msgid "Spare"
-msgstr "Start"
+msgstr "Reserve"
 #
 msgid "Special"
-msgstr ""
+msgstr "Spesial"
 #
-#, fuzzy
 msgid "Special Mark"
-msgstr "Slett merke"
+msgstr "Spesialmerke"
 #
 msgid "Speed (Kts)"
 msgstr "Fart (Knop)"
@@ -1680,20 +1761,24 @@ msgstr "Fart:                  Unavailable\n"
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Fart:                %5.2f Kts.\n"
 #
+#, fuzzy
+msgid "Split Route"
+msgstr "Slett rute"
+#
 msgid "Standard"
 msgstr "Standard"
 #
 msgid "Starboard Hand Mark"
-msgstr ""
+msgstr "Styrbord sidemerke"
 #
 msgid "Start"
 msgstr "Start"
 #
 msgid "Stbd"
-msgstr ""
+msgstr "Stbd"
 #
 msgid "Stbd Hand"
-msgstr ""
+msgstr "Stbd side"
 #
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Forhindre varsel for ankrede/fortøyde mål"
@@ -1715,7 +1800,7 @@ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Tim:Min\n"
 #
 msgid "Tanker"
-msgstr ""
+msgstr "Tanker"
 #
 msgid "Target info"
 msgstr "Mål informasjon"
@@ -1726,9 +1811,8 @@ msgstr "Midlertidig GÅTIL rute"
 msgid "Temporary MOB Route"
 msgstr "Midlertidig MOB rute"
 #
-#, fuzzy
 msgid "Tender"
-msgstr "Send"
+msgstr "Hjelper"
 #
 msgid "Test Alert Sound"
 msgstr "Test lyd for varsel"
@@ -1767,8 +1851,14 @@ msgstr "Denne leggen"
 msgid "Tide"
 msgstr "Tidevann"
 #
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
 msgid "Time Enroute"
 msgstr "Tid underveis"
+#
+msgid "Times shown as"
+msgstr ""
 #
 msgid "To"
 msgstr "Til"
@@ -1778,6 +1868,14 @@ msgstr "Til veipunkt"
 #
 msgid "Today"
 msgstr "I dag"
+#
+#, fuzzy
+msgid "Toggle Listing"
+msgstr "Slepestrek"
+#
+#, fuzzy
+msgid "Toggle Names"
+msgstr "Rutenavn"
 #
 msgid "Toggle Tracking"
 msgstr "Slepestrek"
@@ -1794,9 +1892,8 @@ msgstr "Verktøytips"
 msgid "Total Distance"
 msgstr "Sammenlagt distanse"
 #
-#, fuzzy
 msgid "Tow"
-msgstr "Til"
+msgstr "Sleper"
 #
 msgid "Track Name"
 msgstr "Slepestrek navn"
@@ -1823,10 +1920,18 @@ msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "Virkelig skala: %8.0f  Zoom %4.2fx"
 #
 msgid "Tug"
-msgstr ""
+msgstr "Taubåt"
 #
 msgid "Type"
 msgstr "Type"
+#
+#, fuzzy
+msgid "Type:                 "
+msgstr "ETA:                  "
+#
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Skips type:            "
 #
 msgid "UTC"
 msgstr "UTC"
@@ -1843,15 +1948,14 @@ msgstr ""
 msgid "Unable to load libgps.so"
 msgstr "Kunne ikke laste libgps.so"
 #
-#, fuzzy
 msgid "Undefined"
-msgstr "&Understreket"
+msgstr "Udefinert"
 #
 msgid "Under way sailing"
-msgstr ""
+msgstr "Underveis for seil"
 #
 msgid "Underway"
-msgstr ""
+msgstr "Underveis"
 #
 msgid "Units"
 msgstr "Enheter"
@@ -1861,6 +1965,9 @@ msgstr "Ukj"
 #
 msgid "Unknown"
 msgstr "Ukjent"
+#
+msgid "Unlist contents"
+msgstr ""
 #
 msgid "Update Control"
 msgstr "Oppdateringskontroll"
@@ -1874,36 +1981,43 @@ msgstr "Benytt SCAMIN"
 msgid "Use nearby waypoint?"
 msgstr "Benytte nærliggende veipunkt?"
 #
-#, fuzzy
 msgid "User X Offset"
-msgstr "Oppdater CM93 korreksjon"
+msgstr "Bruker X forskyvning"
 #
 msgid "User X Offset (Metres)"
-msgstr ""
+msgstr "Bruker X forskyvning (meter)"
 #
-#, fuzzy
 msgid "User Y Offset"
-msgstr "Oppdater CM93 korreksjon"
+msgstr "Bruker Y forskyvning"
 #
 msgid "User Y Offset (Metres)"
-msgstr ""
+msgstr "Bruker Y forskyvning (meter)"
 #
 msgid "Vector Charts"
 msgstr "Vektorkarter"
 #
 msgid "Vessel Diving"
-msgstr ""
+msgstr "Dykkerfartøy"
 #
 msgid "Vessel Dredging"
-msgstr ""
+msgstr "Muddringsfartøy"
 #
 msgid "Vessel Fishing"
-msgstr ""
+msgstr "Fiskefartøy"
 #
 msgid "Vessel Towing"
-msgstr ""
+msgstr "Slepefartøy"
 #
 msgid "Vessel Towing, Long"
+msgstr "Slepefartøy, langt"
+#
+msgid "Virtual"
+msgstr ""
+#
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+msgid "Virtual (On Position)"
 msgstr ""
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
@@ -1945,11 +2059,10 @@ msgid "WiFi Options"
 msgstr "WiFi Valg"
 #
 msgid "Wing In Ground Effect"
-msgstr ""
+msgstr "Vingen i bakken-effekt fartøy (WIG)"
 #
-#, fuzzy
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-msgstr "X Korrigering (Positiv, flytter kart mot øst) (Nm/cos(breddegr.)) :"
+msgstr "X forskyvning (Positiv, flytter kart mot øst) (Nm Projisert) :"
 #
 msgid "XTE         L"
 msgstr "XTE         L"
@@ -1957,12 +2070,11 @@ msgstr "XTE         L"
 msgid "XTE         R"
 msgstr "XTE         R"
 #
-#, fuzzy
 msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-msgstr "Y Korrigering (Positiv, flytter kart mot nord) (Nm/cos(lengdegr.)) :"
+msgstr "Y forskyvning (Positiv, flytter kart mot nord) (Nm projisert) :"
 #
 msgid "Yat"
-msgstr ""
+msgstr "Yacht"
 #
 msgid "Zoom In"
 msgstr "Zoom inn"
@@ -1972,6 +2084,17 @@ msgstr "Zoom ut"
 #
 msgid "[Class] Type (Status)"
 msgstr "[Class] Type (Status)"
+#
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+msgid "_plus"
+msgstr ""
 #
 msgid "cm93 Detail"
 msgstr "cm93 detalj"
@@ -1988,32 +2111,24 @@ msgstr ""
 "\n"
 "Vil du benytte denne versjonen av libgps?"
 #
+msgid "wgsox"
+msgstr ""
+#
+msgid "wgsoy"
+msgstr ""
 #
 #
-#~ msgid "CM93 Offset Off"
-#~ msgstr "CM93 korrigering AV"
+#~ msgid "Cell X Offset"
+#~ msgstr "Celle X forskyvning"
 #
 #
-#
-#~ msgid "CM93 Offset On"
-#~ msgstr "CM93 korrigering PÅ"
-#
+#~ msgid "Cell Y Offset"
+#~ msgstr "Celle Y forskyvning"
 #
 #
-#~ msgid "CM93 Offset Tool Off"
-#~ msgstr "CM93 korrigeringsverktøy Av"
+#~ msgid "MarinersStandard"
+#~ msgstr "MarinersStandard"
 #
 #
-#
-#~ msgid "CM93 Offset Tool....."
-#~ msgstr "CM93 korrigeringsverktøy..."
-#
-#
-#
-#~ msgid "CM93 Offsets On"
-#~ msgstr "CM93 korreksjon PÅ"
-#
-#
-#
-#~ msgid "Chart file corrupt.. disabling this chart \n"
-#~ msgstr "Kartfil er ødelagt. Deaktiverer dette kartet \n"
+#~ msgid "ShipName:  "
+#~ msgstr "Båtens navn:  "

@@ -205,6 +205,8 @@ public:
       virtual void InvalidateCache();
       virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
+      virtual void BuildDepthContourArray(void);
+
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);

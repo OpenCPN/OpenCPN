@@ -5,172 +5,241 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.3.1214\n"
+"Project-Id-Version: OpenCPN 2.4.324\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 20:32-0500\n"
-"PO-Revision-Date: 2010-12-15 14:34+0100\n"
+"POT-Creation-Date: 2011-03-24 19:17+0100\n"
+"PO-Revision-Date: 2011-03-27 00:54+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
-"Language-Team: Brommeland Elektronikk AS <frode@brommeland.no>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Norsk\n"
 "X-Poedit-Country: Norge\n"
 
-#
-msgid "Add"
-msgstr "Legg til"
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:125
+#: src/dashboard_pi.cpp:515
+msgid "N"
+msgstr ""
 
-#
-msgid "Add instrument"
-msgstr "Legg til instrument"
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "NE"
+msgstr ""
 
-#
-msgid "Apparent wind"
-msgstr "Tilsynelatende vind"
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:126
+msgid "E"
+msgstr "Ø"
 
-#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "SE"
+msgstr "SØ"
+
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:127
+msgid "S"
+msgstr "S"
+
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "SW"
+msgstr "SV"
+
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:128
+msgid "W"
+msgstr "V"
+
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "NW"
+msgstr "NV"
+
+#: src/dashboard_pi.cpp:96
+msgid "Position"
+msgstr "Posisjon"
+
+#: src/dashboard_pi.cpp:98
+msgid "SOG"
+msgstr "SOG"
+
+#: src/dashboard_pi.cpp:100
+msgid "Speedometer"
+msgstr "Fartsmåler"
+
+#: src/dashboard_pi.cpp:102
 msgid "COG"
 msgstr "COG"
 
-#
+#: src/dashboard_pi.cpp:104
 msgid "Compass"
 msgstr "Kompass"
 
-#
+#: src/dashboard_pi.cpp:106
+msgid "STW"
+msgstr "STW"
+
+#: src/dashboard_pi.cpp:108
+msgid "HDG"
+msgstr "HDG"
+
+#: src/dashboard_pi.cpp:110
+msgid "Apparent wind"
+msgstr "Tilsynelatende vind"
+
+#: src/dashboard_pi.cpp:112
+msgid "Wind angle"
+msgstr "Vindretning"
+
+#: src/dashboard_pi.cpp:114
+#: src/dashboard_pi.cpp:116
+msgid "Wind speed"
+msgstr "Vindhastighet"
+
+#: src/dashboard_pi.cpp:118
+msgid "True wind"
+msgstr "Riktig vind"
+
+#: src/dashboard_pi.cpp:120
+#: src/dashboard_pi.cpp:122
+msgid "Depth"
+msgstr "Dybde"
+
+#: src/dashboard_pi.cpp:124
+msgid "Temp"
+msgstr "Temp"
+
+#: src/dashboard_pi.cpp:126
+#: src/dashboard_pi.cpp:128
+msgid "VMG"
+msgstr "VMG"
+
+#: src/dashboard_pi.cpp:130
+#: src/dashboard_pi.cpp:132
+msgid "Rudder angle"
+msgstr "Rorvinkel"
+
+#: src/dashboard_pi.cpp:134
+msgid "GPS in view"
+msgstr "GPS i sikte"
+
+#: src/dashboard_pi.cpp:136
+msgid "GPS status"
+msgstr "GPS status"
+
+#: src/dashboard_pi.cpp:220
+#: src/dashboard_pi.cpp:284
+#: src/dashboard_pi.cpp:958
+#: src/dashboard_pi.cpp:966
+#: src/dashboard_pi.cpp:1107
+#: src/dashboard_pi.cpp:1142
+#: src/dashboard_pi.cpp:1334
 msgid "Dashboard"
-msgstr "Dashbord"
+msgstr "Instrumentbord"
 
-#
+#: src/dashboard_pi.cpp:290
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Dashbord PluggInn for OpenCPN"
+msgstr "Instrumentbord utvidelse for OpenCPN"
 
-#
+#: src/dashboard_pi.cpp:295
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
-"Dashbord PluggInn for OpenCPN\n"
-"Tilføyer navigasjons instrument visning fra NMEA kilder."
+"Instrumentbord utvidelse for OpenCPN\n"
+"Tilføyer navigasjonsinstrumentvisning fra NMEA kilder."
 
-#
+#: src/dashboard_pi.cpp:1088
 msgid "Dashboard preferences"
-msgstr "Dashbord instillinger"
+msgstr "Instrumentbord alternativer"
 
-#
-msgid "Delete"
-msgstr "Slett"
+#: src/dashboard_pi.cpp:1149
+msgid "show this dashboard"
+msgstr "vis dette instrumentbord"
 
-#
-msgid "Depth"
-msgstr "Dybde"
+#: src/dashboard_pi.cpp:1154
+msgid "Caption:"
+msgstr "Overskrift:"
 
-#
-msgid "Down"
-msgstr "Ned"
+#: src/dashboard_pi.cpp:1159
+msgid "Orientation:"
+msgstr "Retning:"
 
-#
-msgid "E"
-msgstr "Ø"
+#: src/dashboard_pi.cpp:1162
+msgid "Vertical"
+msgstr "Vertikal"
 
-#
-msgid "Edit"
-msgstr "Rediger"
+#: src/dashboard_pi.cpp:1163
+msgid "Horizontal"
+msgstr "Horisontal"
 
-#
-msgid "GPS in view"
-msgstr "Synlig GPS"
-
-#
-msgid "GPS status"
-msgstr "GPS status"
-
-#
-msgid "HDG"
-msgstr "HDG"
-
-#
+#: src/dashboard_pi.cpp:1166
 msgid "Instrument width:"
 msgstr "Instrumentbredde:"
 
-#
+#: src/dashboard_pi.cpp:1175
+#: src/dashboard_pi.cpp:1182
+#: src/dashboard_pi.cpp:1447
 msgid "Instruments"
 msgstr "Instrumenter"
 
-#
-msgid "N"
-msgstr "N"
+#: src/dashboard_pi.cpp:1190
+msgid "Add"
+msgstr "Legg til"
 
-#
-msgid "NE"
-msgstr "NØ"
+#: src/dashboard_pi.cpp:1194
+msgid "Edit"
+msgstr "Endre"
 
-#
-msgid "NW"
-msgstr "NV"
+#: src/dashboard_pi.cpp:1198
+msgid "Delete"
+msgstr "Slett"
 
-#
-msgid "Position"
-msgstr "Posisjon"
-
-#
-msgid "Rudder angle"
-msgstr "Rorvinkel"
-
-#
-msgid "S"
-msgstr "S"
-
-#
-msgid "SE"
-msgstr "SØ"
-
-#
-msgid "SOG"
-msgstr "SOG"
-
-#
-msgid "STW"
-msgstr "STW"
-
-#
-msgid "SW"
-msgstr "SV"
-
-#
-msgid "Select instrument to add:"
-msgstr "Velg instrument som skal legges til:"
-
-#
-msgid "Speedometer"
-msgstr "Speedometer"
-
-#
-msgid "Temp"
-msgstr "Temp"
-
-#
-msgid "True wind"
-msgstr "Sann vind"
-
-#
+#: src/dashboard_pi.cpp:1203
 msgid "Up"
 msgstr "Opp"
 
-#
-msgid "VMG"
-msgstr "VMG"
+#: src/dashboard_pi.cpp:1207
+msgid "Down"
+msgstr "Ned"
 
-#
-msgid "W"
-msgstr "V"
+#: src/dashboard_pi.cpp:1215
+msgid "Appearance"
+msgstr "Utseende"
 
-#
-msgid "Wind angle"
-msgstr "Vind retning"
+#: src/dashboard_pi.cpp:1217
+msgid "Fonts"
+msgstr "Skrift"
 
-#
-msgid "Wind speed"
-msgstr "Vind hastighet"
+#: src/dashboard_pi.cpp:1223
+msgid "Title:"
+msgstr "Tittel:"
+
+#: src/dashboard_pi.cpp:1227
+msgid "Data:"
+msgstr "Data:"
+
+#: src/dashboard_pi.cpp:1231
+msgid "Label:"
+msgstr "Etikett:"
+
+#: src/dashboard_pi.cpp:1235
+msgid "Small:"
+msgstr "Liten:"
+
+#: src/dashboard_pi.cpp:1433
+msgid "Add instrument"
+msgstr "Legg til instrument"
+
+#: src/dashboard_pi.cpp:1437
+msgid "Select instrument to add:"
+msgstr "Velg instrument:"
 

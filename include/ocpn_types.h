@@ -108,7 +108,10 @@ class ViewPort
 
             int      pix_width;
             int      pix_height;
+
             bool     b_quilt;
+            bool     b_FullScreenQuilt;
+
             int      m_projection_type;
 
             wxRect   rv_rect;

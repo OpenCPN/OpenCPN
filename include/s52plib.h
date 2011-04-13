@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s52plib.h,v 1.22 2010/05/19 01:02:43 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  S52 Presentation Library
@@ -24,120 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: s52plib.h,v $
- * Revision 1.22  2010/05/19 01:02:43  bdbcat
- * Build 518
- *
- * Revision 1.21  2010/05/15 03:55:41  bdbcat
- * Build 514
- *
- * Revision 1.20  2010/04/27 01:45:21  bdbcat
- * Build 426
- *
- * Revision 1.19  2009/11/18 01:26:42  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.18  2009/07/29 00:54:09  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.17  2009/06/18 01:35:57  bdbcat
- * Cleanup.
- *
- * Revision 1.16  2009/06/03 03:22:25  bdbcat
- * Correct Area Pattern Logic
- *
- * Revision 1.15  2009/05/05 04:02:49  bdbcat
- * *** empty log message ***
- *
- * Revision 1.14  2009/04/19 02:23:52  bdbcat
- * *** empty log message ***
- *
- * Revision 1.13  2009/04/18 03:33:21  bdbcat
- * *** empty log message ***
- *
- * Revision 1.12  2009/04/13 02:34:17  bdbcat
- * Add "show ATON labels" option
- *
- * Revision 1.11  2009/03/26 22:35:35  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.10  2008/12/19 01:46:39  bdbcat
- * Add selectable depth unit conversion for S57 charts
- *
- * Revision 1.9  2008/08/26 13:49:53  bdbcat
- * Better color scheme support
- *
- * Revision 1.8  2008/08/09 23:36:46  bdbcat
- * *** empty log message ***
- *
- * Revision 1.7  2008/03/30 23:23:08  bdbcat
- * *** empty log message ***
- *
- * $Log: s52plib.h,v $
- * Revision 1.22  2010/05/19 01:02:43  bdbcat
- * Build 518
- *
- * Revision 1.21  2010/05/15 03:55:41  bdbcat
- * Build 514
- *
- * Revision 1.20  2010/04/27 01:45:21  bdbcat
- * Build 426
- *
- * Revision 1.19  2009/11/18 01:26:42  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.18  2009/07/29 00:54:09  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.17  2009/06/18 01:35:57  bdbcat
- * Cleanup.
- *
- * Revision 1.16  2009/06/03 03:22:25  bdbcat
- * Correct Area Pattern Logic
- *
- * Revision 1.15  2009/05/05 04:02:49  bdbcat
- * *** empty log message ***
- *
- * Revision 1.14  2009/04/19 02:23:52  bdbcat
- * *** empty log message ***
- *
- * Revision 1.13  2009/04/18 03:33:21  bdbcat
- * *** empty log message ***
- *
- * Revision 1.12  2009/04/13 02:34:17  bdbcat
- * Add "show ATON labels" option
- *
- * Revision 1.11  2009/03/26 22:35:35  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.10  2008/12/19 01:46:39  bdbcat
- * Add selectable depth unit conversion for S57 charts
- *
- * Revision 1.9  2008/08/26 13:49:53  bdbcat
- * Better color scheme support
- *
- * Revision 1.8  2008/08/09 23:36:46  bdbcat
- * *** empty log message ***
- *
- * Revision 1.7  2008/03/30 23:23:08  bdbcat
- * *** empty log message ***
- *
- * Revision 1.6  2008/01/12 06:18:50  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.5  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.4  2007/03/02 02:06:32  dsr
- * Convert to UTM Projection
- *
- * Revision 1.3  2006/10/07 03:50:54  dsr
- * *** empty log message ***
- *
- * Revision 1.2  2006/09/21 01:38:23  dsr
- * Major refactor/cleanup
- *
  *
  */
 
@@ -202,6 +87,7 @@ public:
       wxString GetPLIBColorScheme(void){ return m_ColorScheme; }
 
       bool ObjectRenderCheck(ObjRazRules *rzRules, ViewPort *vp);
+      bool ObjectRenderCheckCat(ObjRazRules *rzRules);
 
       void DestroyLUP(LUPrec *pLUP);
 

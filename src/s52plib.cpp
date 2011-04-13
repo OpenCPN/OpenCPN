@@ -2803,11 +2803,11 @@ int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, boo
                   }
             }
 
-            //  Update the object Bounding box if this object is a POINT object,
+            //  Update the object Bounding box
             //  so that subsequent drawing operations will redraw the item fully
             //  and so that cursor hit testing includes both the text and the object
 
-            if ( rzRules->obj->Primitive_type == GEO_POINT )
+//            if ( rzRules->obj->Primitive_type == GEO_POINT )
             {
                   wxBoundingBox bbtext;
                   double plat, plon;
@@ -3489,8 +3489,10 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
 
       //  Update the object Bounding box
       //  so that subsequent drawing operations will redraw the item fully
+      //  We expand the object's BBox to account for objects rendered by multiple symbols, such as SOUNGD.
+      //  so that expansions are cumulative.
       if ( rzRules->obj->Primitive_type == GEO_POINT )
-            rzRules->obj->BBObj = symbox;
+            rzRules->obj->BBObj.Expand(symbox);
 
       return true;
 }
@@ -4668,7 +4670,7 @@ char *s52plib::RenderCS ( ObjRazRules *rzRules, Rules *rules )
 int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
       //  Debug Hook
-//   if(!strncmp(rzRules->LUP->OBCL, "NAVLNE", 6))
+//   if(!strncmp(rzRules->LUP->OBCL, "TSSLPT", 6))
 //        int yyrt = 4;
 
       if ( !ObjectRenderCheck ( rzRules, vp ) )
@@ -4679,25 +4681,23 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 
 
 //  Debug Hooks
-//   if(rzRules->obj->Index == 386)
+//   if(rzRules->obj->Index == 2174)
 //         int rrt = 5;
 
-
-//    if(!strncmp(rzRules->LUP->OBCL, "FSHFAC", 6))
+//    if(!strncmp(rzRules->LUP->OBCL, "TSSLPT", 6))
 //            int yyrkt = 4;
 
       while ( rules != NULL )
       {
             switch ( rules->ruleType )
             {
-//                         case RUL_ARE_CO:       RenderAC(rzRules,rules, vp);break;             // AC
-                  case RUL_TXT_TX:       RenderTX ( rzRules,rules, vp );break;          // TX
-                  case RUL_TXT_TE:       RenderTE ( rzRules,rules, vp );break;          // TE
-                  case RUL_SYM_PT:       RenderSY ( rzRules,rules, vp );break;          // SY
-                  case RUL_SIM_LN:       RenderLS ( rzRules,rules, vp );break;          // LS
-                  case RUL_COM_LN:       RenderLC ( rzRules,rules, vp );break;          // LC
-                  case RUL_MUL_SG:       RenderMPS ( rzRules,rules, vp );break;         // MultiPoint Sounding
-                  case RUL_ARC_2C:       RenderCARC ( rzRules,rules, vp );break;        // Circular Arc, 2 colors
+                  case RUL_TXT_TX:       if(ObjectRenderCheckCat ( rzRules )) { RenderTX ( rzRules,rules, vp );} break;          // TX
+                  case RUL_TXT_TE:       if(ObjectRenderCheckCat ( rzRules )) { RenderTE ( rzRules,rules, vp );} break;          // TE
+                  case RUL_SYM_PT:       if(ObjectRenderCheckCat ( rzRules )) { RenderSY ( rzRules,rules, vp );} break;          // SY
+                  case RUL_SIM_LN:       if(ObjectRenderCheckCat ( rzRules )) { RenderLS ( rzRules,rules, vp );} break;          // LS
+                  case RUL_COM_LN:       if(ObjectRenderCheckCat ( rzRules )) { RenderLC ( rzRules,rules, vp );} break;          // LC
+                  case RUL_MUL_SG:       if(ObjectRenderCheckCat ( rzRules )) { RenderMPS ( rzRules,rules, vp );} break;         // MultiPoint Sounding
+                  case RUL_ARC_2C:       if(ObjectRenderCheckCat ( rzRules )) { RenderCARC ( rzRules,rules, vp );} break;        // Circular Arc, 2 colors
 
                   case RUL_CND_SY:
                   {
@@ -4707,31 +4707,49 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                               GetAndAddCSRules ( rzRules, rules );
                               rzRules->obj->bCS_Added = 1;                // mark the object
                         }
-                        Rules *rules_last = rules;
-                        rules = rzRules->obj->CSrules;
 
-                        while ( NULL != rules )
+                        //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
+                        if(ObjectRenderCheckCat ( rzRules ))
                         {
-                              switch ( rules->ruleType )
-                              {
-//                                        case RUL_ARE_CO:       RenderAC(rzRules,rules, vp);break;
-                                    case RUL_TXT_TX:       RenderTX ( rzRules,rules, vp );break;
-                                    case RUL_TXT_TE:       RenderTE ( rzRules,rules, vp );break;
-                                    case RUL_SYM_PT:       RenderSY ( rzRules,rules, vp );break;
-                                    case RUL_SIM_LN:       RenderLS ( rzRules,rules, vp );break;
-                                    case RUL_COM_LN:       RenderLC ( rzRules,rules, vp );break;
-                                    case RUL_MUL_SG:       RenderMPS ( rzRules,rules, vp );break;   // MultiPoint Sounding
-                                    case RUL_ARC_2C:       RenderCARC ( rzRules,rules, vp );break;   // Circular Arc, 2 colors
-                                    case RUL_NONE:
-                                    default:
-                                          break; // no rule type (init)
-                              }
-                              rules_last = rules;
-                              rules = rules->next;
-                        }
 
-                        rules = rules_last;
-                        break;
+                              Rules *rules_last = rules;
+                              rules = rzRules->obj->CSrules;
+
+                              while ( NULL != rules )
+                              {
+                                    switch ( rules->ruleType )
+                                    {
+                                          case RUL_SIM_LN:
+                                          case RUL_COM_LN:
+                                          {
+                                                PrioritizeLineFeature ( rzRules, rzRules->LUP->DPRI - '0');
+                                                break;
+                                          }
+                                          default:
+                                                break;
+                                    }
+
+                                    switch ( rules->ruleType )
+                                    {
+      //                                        case RUL_ARE_CO:       RenderAC(rzRules,rules, vp);break;
+                                          case RUL_TXT_TX:       RenderTX ( rzRules,rules, vp );break;
+                                          case RUL_TXT_TE:       RenderTE ( rzRules,rules, vp );break;
+                                          case RUL_SYM_PT:       RenderSY ( rzRules,rules, vp );break;
+                                          case RUL_SIM_LN:       RenderLS ( rzRules,rules, vp );break;
+                                          case RUL_COM_LN:       RenderLC ( rzRules,rules, vp );break;
+                                          case RUL_MUL_SG:       RenderMPS ( rzRules,rules, vp );break;   // MultiPoint Sounding
+                                          case RUL_ARC_2C:       RenderCARC ( rzRules,rules, vp );break;   // Circular Arc, 2 colors
+                                          case RUL_NONE:
+                                          default:
+                                                break; // no rule type (init)
+                                    }
+                                    rules_last = rules;
+                                    rules = rules->next;
+                              }
+
+                              rules = rules_last;
+                              break;
+                        }
                   }
 
                   case RUL_NONE:
@@ -4762,6 +4780,9 @@ int s52plib::SetLineFeaturePriority ( ObjRazRules *rzRules, int npriority )
       //    If the object s not currently visible (i.e. on a not-currently visible layer),
       //    then do not set the line segment priorities at all
 
+      if(!ObjectRenderCheckCat ( rzRules ))
+            return 0;
+/*
       bool b_catfilter = true;
 
       if ( m_nDisplayCategory == MARINERS_STANDARD )
@@ -4797,7 +4818,9 @@ int s52plib::SetLineFeaturePriority ( ObjRazRules *rzRules, int npriority )
 
       if ( !b_catfilter )
             return 0;
+*/
 
+//    Debug Hook
 //      if(rzRules->obj->Index == 219)
 //            int rrt = 5;
 
@@ -5754,7 +5777,6 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
             b=0;
       }
 
-
       //    Clip trapezoid to height spec
       int y1 = ybot;
       int y2 = ytop;
@@ -6436,21 +6458,25 @@ int s52plib::RenderArea ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
                         Rules *rules_last = rules;
                         rules = rzRules->obj->CSrules;
 
-                        while ( NULL != rules )
+                        //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
+                        if(ObjectRenderCheckCat ( rzRules ))
                         {
-//Hve seen drgare fault here, need to code area query to debug
-//possible that RENDERtoBUFFERAP/AC is blowing obj->CSRules
-//    When it faults here, look at new debug field obj->CSLUP
-                              switch ( rules->ruleType )
+                              while ( NULL != rules )
                               {
-                                    case RUL_ARE_CO:       RenderToBufferAC ( rzRules,rules, vp, pb_spec );break;
-                                    case RUL_ARE_PA:       RenderToBufferAP ( rzRules,rules, vp, pb_spec );break;
-                                    case RUL_NONE:
-                                    default:
-                                          break; // no rule type (init)
+      //Hve seen drgare fault here, need to code area query to debug
+      //possible that RENDERtoBUFFERAP/AC is blowing obj->CSRules
+      //    When it faults here, look at new debug field obj->CSLUP
+                                    switch ( rules->ruleType )
+                                    {
+                                          case RUL_ARE_CO:       RenderToBufferAC ( rzRules,rules, vp, pb_spec );break;
+                                          case RUL_ARE_PA:       RenderToBufferAP ( rzRules,rules, vp, pb_spec );break;
+                                          case RUL_NONE:
+                                          default:
+                                                break; // no rule type (init)
+                                    }
+                                    rules_last = rules;
+                                    rules = rules->next;
                               }
-                              rules_last = rules;
-                              rules = rules->next;
                         }
 
                         rules = rules_last;
@@ -6488,7 +6514,7 @@ void s52plib::GetAndAddCSRules ( ObjRazRules *rzRules, Rules *rules )
 //  Do this by checking each LUP in the CS LUPARRAY and checking....
 //  a) is Object Name the same? and
 //  b) was LUP created earlier by exactly the same INSTruction string?
-
+//  c) does LUP have same Display Category and Priority?
 
       wxArrayOfLUPrec *la = condSymbolLUPArray;
       int index = 0;
@@ -6502,8 +6528,11 @@ void s52plib::GetAndAddCSRules ( ObjRazRules *rzRules, Rules *rules )
             {
                   if ( LUPCandidate->INST->IsSameAs ( cs_string ) )
                   {
-                        LUP = LUPCandidate;
-                        break;
+                        if( LUPCandidate->DISC == rzRules->LUP->DISC)
+                        {
+                              LUP = LUPCandidate;
+                              break;
+                        }
                   }
             }
             index++;
@@ -6520,9 +6549,9 @@ void s52plib::GetAndAddCSRules ( ObjRazRules *rzRules, Rules *rules )
       {
 
             NewLUP = ( LUPrec* ) calloc ( 1, sizeof ( LUPrec ) );
-            pAlloc->Add ( NewLUP );
+//            pAlloc->Add ( NewLUP );
 
-            NewLUP->DISC = ( enum _DisCat ) OTHER;         // as a default
+            NewLUP->DISC = rzRules->LUP->DISC;         // as a default
 
             //sscanf(pBuf+11, "%d", &LUP->RCID);
 
@@ -6642,49 +6671,25 @@ bool s52plib::ObjectRenderCheck ( ObjRazRules *rzRules, ViewPort *vp )
                   return false;
       }
 
-      bool b_catfilter = true;
 
-//      Do Object Type Filtering
-
-      if ( m_nDisplayCategory == MARINERS_STANDARD )
+//  Conditional Symbology override
+//  We need to do this since some CS procedures change the display category
+//  So we need to tentatively process all objects with CS LUPs
+      Rules *rules = rzRules->LUP->ruleList;
+      while ( rules != NULL )
       {
-            if ( ! ( ( OBJLElement * ) ( pOBJLArray->Item ( rzRules->obj->iOBJL ) ) )->nViz )
-                  b_catfilter = false;
+            if(RUL_CND_SY == rules->ruleType )
+                  return true;
+
+            rules = rules->next;
       }
 
-      if ( m_nDisplayCategory == OTHER )
-      {
-            if ( ( DISPLAYBASE != rzRules->LUP->DISC )
-                    && ( STANDARD != rzRules->LUP->DISC )
-                    && ( OTHER != rzRules->LUP->DISC ) )
-            {
-                  b_catfilter = false;
-            }
-      }
-
-      else if ( m_nDisplayCategory == STANDARD )
-      {
-            if ( ( DISPLAYBASE != rzRules->LUP->DISC ) && ( STANDARD != rzRules->LUP->DISC ) )
-            {
-                  b_catfilter = false;
-            }
-      }
-      else if ( m_nDisplayCategory == DISPLAYBASE )
-      {
-            if ( DISPLAYBASE != rzRules->LUP->DISC )
-            {
-                  b_catfilter = false;
-            }
-      }
+      bool b_catfilter = ObjectRenderCheckCat ( rzRules );
 
 //  Soundings override
       if ( !strncmp ( rzRules->LUP->OBCL, "SOUNDG", 6 ) )
             b_catfilter = m_bShowSoundg;
 
-//  Meta object override
-      if ( !strncmp ( rzRules->LUP->OBCL, "M_", 2 ) )
-            if ( !m_bShowMeta )
-                  b_catfilter = false;
 
       bool b_visible = false;
       if ( b_catfilter )
@@ -6719,6 +6724,58 @@ bool s52plib::ObjectRenderCheck ( ObjRazRules *rzRules, ViewPort *vp )
 }
 
 
+bool s52plib::ObjectRenderCheckCat ( ObjRazRules *rzRules )
+{
+      if ( rzRules->obj==NULL )
+            return false;
+
+      bool b_viz = true;
+
+      //  Meta object override
+      if ( !strncmp ( rzRules->LUP->OBCL, "M_", 2 ) )
+            if ( !m_bShowMeta )
+                  return false;
+
+
+      //      Do Object Type Filtering
+      DisCat obj_cat = rzRules->obj->m_DisplayCat;
+
+      if ( m_nDisplayCategory == MARINERS_STANDARD )
+      {
+            if ( ! ( ( OBJLElement * ) ( pOBJLArray->Item ( rzRules->obj->iOBJL ) ) )->nViz )
+                  b_viz = false;
+      }
+
+      else if ( m_nDisplayCategory == OTHER )
+      {
+            if ( ( DISPLAYBASE != obj_cat )
+                   && ( STANDARD != obj_cat )
+                   && ( OTHER != obj_cat ) )
+            {
+                  b_viz = false;
+            }
+      }
+
+      else if ( m_nDisplayCategory == STANDARD )
+      {
+            if ( ( DISPLAYBASE != obj_cat ) && ( STANDARD != obj_cat ) )
+            {
+                  b_viz = false;
+            }
+      }
+      else if ( m_nDisplayCategory == DISPLAYBASE )
+      {
+            if ( DISPLAYBASE != obj_cat )
+            {
+                  b_viz = false;
+            }
+      }
+
+      return b_viz;
+}
+
+
+
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
@@ -6738,24 +6795,6 @@ void s52plib::AdjustTextList ( int dx, int dy, int screenw, int screenh )
       //        1.  Apply the specified offset to the list elements
       //        2.. Remove any list elements that are off screen after applied offset
 
-/*
-      for ( ObjList::Node *node = m_textObjList.GetFirst(); node; node = node->GetNext() )
-      {
-//            S57Obj *oc = node->GetData();
-//            if(oc->Index == 1948)
-//                  int ggl = 4;
-
-            wxRect *pcurrent = & ( node->GetData()->rText );
-            pcurrent->Offset ( dx, dy );
-            if ( !pcurrent->Intersects ( rScreen ) )
-            {
-//                  if(oc->Index == 1948)
-//                        int gglf = 4;
-
-                  m_textObjList.DeleteNode ( node );
-            }
-      }
-*/
       ObjList::Node *node = m_textObjList.GetFirst();
       while(node)
       {

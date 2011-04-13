@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chart1.cpp,v 1.102 2010/06/25 02:02:04 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Main wxWidgets Program
@@ -152,6 +151,9 @@ wxString        *pdir_list[20];
 int             g_restore_stackindex;
 
 RouteList       *pRouteList;
+LayerList       *pLayerList;
+bool              g_bIsNewLayer;
+int               g_LayerIdx;
 
 Select          *pSelect;
 Select          *pSelectTC;
@@ -349,6 +351,11 @@ bool             g_bAutoAnchorMark;
 
 wxRect           g_blink_rect;
 double           g_PlanSpeed;
+wxDateTime		 g_StartTime;
+int				 g_StartTimeTZ;
+IDX_entry		*gpIDX;
+int				 gpIDXn;
+long			 gStart_LMT_Offset;
 
 wxArrayString    *pMessageOnceArray;
 
@@ -382,6 +389,8 @@ bool             g_bAISRolloverShowCPA;
 bool             g_bDebugGPSD;
 
 bool             g_bFullScreenQuilt;
+bool             g_bQuiltEnable;
+bool             g_bQuiltStart;
 
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
@@ -460,6 +469,7 @@ wxString         g_CM93DictDir;
 bool             g_bShowTrackIcon;
 bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
+bool             g_bTrackDaily;
 Track            *g_pActiveTrack;
 double           g_TrackIntervalSeconds;
 double           g_TrackDeltaDistance;
@@ -1417,6 +1427,7 @@ bool MyApp::OnInit()
               g_bShowMoored = true;
               g_ShowMoored_Kts = 0.2;
               g_bShowTrackIcon = true;
+              g_bTrackDaily = false;
 
               if(ps52plib->m_bOK)
               {
@@ -1430,6 +1441,11 @@ bool MyApp::OnInit()
 
               g_PlanSpeed = 6.;
         }
+
+		g_StartTime = wxInvalidDateTime;
+		g_StartTimeTZ = 1;				// start with local times
+		gpIDX = NULL;
+		gpIDXn = 0;
 
 
 //  Set up the frame initial visual parameters
@@ -1481,7 +1497,7 @@ bool MyApp::OnInit()
         cc1 =  new ChartCanvas(gFrame);                         // the chart display canvas
         gFrame->SetCanvasWindow(cc1);
 
-        cc1->SetQuiltMode(pConfig->m_bQuilt);                     // set initial quilt mode
+        cc1->SetQuiltMode(g_bQuiltStart);                     // set initial quilt mode
         cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
         cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0.);
 
@@ -1582,8 +1598,8 @@ bool MyApp::OnInit()
        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
        g_pi_manager->NotifyAuiPlugIns();
 
-       //   Save the existing Screen Brightness
-       SaveScreenBrightness();
+       //   Initialize and Save the existing Screen Brightness
+       InitScreenBrightness();
 
        bool b_SetInitialPoint = false;
 
@@ -1772,6 +1788,32 @@ bool MyApp::OnInit()
 //debug
 //        g_COGAvg = 45.0;
 
+        // Import Layer-wise any .gpx files from /Layers directory
+        wxString layerdir(_T("layers"));
+        wxArrayString file_array;
+        g_LayerIdx = 0;
+        layerdir.Prepend(g_SData_Locn);
+
+        wxString laymsg;
+        laymsg.Printf(wxT("Getting .gpx layer files from: %s"), layerdir.c_str());
+        wxLogMessage(laymsg);
+
+        wxDir dir;
+        dir.Open(layerdir);
+        if ( dir.IsOpened() ) {
+              wxString filename;
+              layerdir.Append(wxFileName::GetPathSeparator());
+              bool cont = dir.GetFirst(&filename);
+              while (cont) {
+                    filename.Prepend(layerdir);
+                    wxFileName f(filename);
+                    if (f.GetExt().IsSameAs(wxT("gpx")))
+                        pConfig->ImportGPX(gFrame, true, filename, false); // preload a single-gpx-file layer
+                    else
+                        pConfig->ImportGPX(gFrame, true, filename, true); // preload a layer from subdirectory
+                  cont = dir.GetNext(&filename);
+              }
+        }
 
         cc1->ReloadVP();                  // once more, and good to go
 
@@ -1858,6 +1900,8 @@ int MyApp::OnExit()
 
         delete g_pCommMan;
 
+        delete pLayerList;
+
 #ifdef USE_S57
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
@@ -1885,8 +1929,6 @@ int MyApp::OnExit()
     DeInitAllocCheck();
 #endif
 
-    //   Save the saved Screen Brightness
-    RestoreScreenBrightness();
 
     delete g_pPlatform;
     delete g_pauimgr;
@@ -2048,6 +2090,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         }
         m_COGFilterLast = 0.;
 
+        m_bpersistent_quilt = false;
 
 
 
@@ -3163,6 +3206,7 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_sort_asc;
     delete _img_sort_desc;
+    delete _img_cross;
 
 
 
@@ -3240,6 +3284,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
             cc1->Refresh(false);
             cc1->Update();
       }
+
+      //   Save the saved Screen Brightness
+      RestoreScreenBrightness();
 
       //    Deactivate the PlugIns
       if(g_pi_manager)
@@ -3749,6 +3796,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->UpdateLayListCtrl();
             pRouteManagerDialog->Show();
             break;
       }
@@ -3809,6 +3857,12 @@ void MyFrame::ToggleColorScheme()
             s = GLOBAL_COLOR_SCHEME_RGB;
 
       SetAndApplyColorScheme(s);
+}
+
+void MyFrame::ToggleFullScreen()
+{
+      bool to = ! IsFullScreen();
+      ShowFullScreen(to, 0);//wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION);
 }
 
 void MyFrame::ActivateMOB(void)
@@ -3886,14 +3940,20 @@ void MyFrame::TrackOn(void)
 
 }
 
-void MyFrame::TrackOff(void)
+void MyFrame::TrackOff(bool do_add_point)
  {
       if(g_pActiveTrack)
       {
-            g_pActiveTrack->Stop();
+            g_pActiveTrack->Stop( do_add_point );
 
             if ( g_pActiveTrack->GetnPoints() < 2 )
                   g_pRouteMan->DeleteRoute ( g_pActiveTrack );
+            else
+                  if (g_bTrackDaily) {
+                        if (g_pActiveTrack->DoExtendDaily())
+                        g_pRouteMan->DeleteRoute ( g_pActiveTrack );
+                  }
+
       }
 
       g_pActiveTrack = NULL;
@@ -3904,10 +3964,18 @@ void MyFrame::TrackOff(void)
             m_toolBar->ToggleTool(ID_TRACK, g_bTrackActive);
 }
 
+void MyFrame::TrackMidnightRestart(void)
+{
+      if (!g_pActiveTrack) return;
 
+      Track *pPreviousTrack = g_pActiveTrack;
+      TrackOff(true);
+      TrackOn();
+      g_pActiveTrack->FixMidnight(pPreviousTrack);
 
-
-
+      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                  pRouteManagerDialog->UpdateTrkListCtrl();
+}
 
 void MyFrame::ToggleCourseUp(void)
 {
@@ -4083,7 +4151,7 @@ int MyFrame::DoOptionsDialog()
       bool bPrevPrintIcon = g_bShowPrintIcon;
 
       bool bPrevTrackIcon = g_bShowTrackIcon;
-      bool bPrevQuilt = cc1->GetQuiltMode();
+      bool bPrevQuilt = g_bQuiltEnable;
 
       wxString prev_locale = g_locale;
 
@@ -4198,13 +4266,6 @@ int MyFrame::DoOptionsDialog()
             }
 #endif
 
-// Flav: for CM93Offset refreshes all maps
-#ifdef FLAV
-            if(rr & CM93OFFSET_CHANGED)
-            {
-                  ChartsRefresh();
-            }
-#endif
             if(rr & LOCALE_CHANGED)
             {
                   if(prev_locale != g_locale)
@@ -4228,8 +4289,11 @@ int MyFrame::DoOptionsDialog()
                   g_pActiveTrack->SetTPDist(g_bTrackDistance);
             }
 
-            if(bPrevQuilt != cc1->GetQuiltMode())
+            if(bPrevQuilt != g_bQuiltEnable)
+            {
+                  cc1->SetQuiltMode(g_bQuiltEnable);
                   SetupQuiltMode();
+            }
 
             if(g_bCourseUp)
             {
@@ -4277,6 +4341,9 @@ int MyFrame::DoOptionsDialog()
           g_pAIS->UnPause();
       if(g_pnmea)
             g_pnmea->UnPause();
+
+//      if(g_pCM93OffsetDialog)                   // Might have been a change in cm93 composite chart set.
+//            g_pCM93OffsetDialog->Destroy();
 
       delete pWorkDirArray;
 
@@ -4340,8 +4407,17 @@ void MyFrame::ChartsRefresh(void)
 void MyFrame::ToggleQuiltMode(void)
 {
       if(cc1)
-            cc1->SetQuiltMode(!cc1->GetQuiltMode());
-      SetupQuiltMode();
+      {
+            bool cur_mode = cc1->GetQuiltMode();
+
+            if(!cc1->GetQuiltMode() && g_bQuiltEnable)
+                  cc1->SetQuiltMode(true);
+            else if(cc1->GetQuiltMode())
+                  cc1->SetQuiltMode(false);
+
+            if(cur_mode != cc1->GetQuiltMode())
+                  SetupQuiltMode();
+      }
 }
 
 void MyFrame::SetQuiltMode(bool bquilt)
@@ -4777,6 +4853,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             }
             wxLogMessage(navmsg);
             g_loglast_time = lognow;
+
+            if (hour == 0 && minute == 0 && g_bTrackDaily) TrackMidnightRestart();
 
             int bells = (hour % 4)*2;     // 2 bells each hour
             if (minute!=0) bells++;       // + 1 bell on 30 minutes
@@ -5393,16 +5471,33 @@ void MyFrame::HandlePianoClick(int selected_index, int selected_dbIndex)
             return;
 
       if(!cc1->GetQuiltMode())
-            SelectChartFromStack(selected_index);
+      {
+            if(m_bpersistent_quilt && g_bQuiltEnable)
+            {
+                  if(cc1->IsChartQuiltableRef(selected_dbIndex))
+                  {
+                        ToggleQuiltMode();
+                        SelectQuiltRefdbChart(selected_dbIndex);
+                        m_bpersistent_quilt = false;
+                  }
+                  else
+                  {
+                        SelectChartFromStack(selected_index);
+                  }
+            }
+            else
+                  SelectChartFromStack(selected_index);
+      }
       else
       {
             if(cc1->IsChartQuiltableRef(selected_dbIndex))
-                  SelectQuiltRefChart(selected_index);
+                  SelectQuiltRefdbChart(selected_dbIndex);
             else
             {
                   ToggleQuiltMode();
-                  SelectChartFromStack(selected_index);
-            }
+                  SelectdbChart(selected_dbIndex);
+                  m_bpersistent_quilt = true;
+             }
       }
 
       cc1->SetQuiltChartHiLiteIndex(-1);
@@ -5471,6 +5566,8 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
                   }
 
             }
+            SetChartThumbnail(-1);        // hide all thumbs in quilt mode
+
       }
 }
 
@@ -5521,21 +5618,22 @@ double MyFrame::GetBestVPScale(ChartBase *pchart)
 void MyFrame::SelectQuiltRefChart(int selected_index)
 {
       ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-
       int current_db_index = piano_chart_index_array.Item(selected_index);
 
+      SelectQuiltRefdbChart(current_db_index);
+}
+
+void MyFrame::SelectQuiltRefdbChart(int db_index)
+{
       if(pCurrentStack)
-            pCurrentStack->SetCurrentEntryFromdbIndex(current_db_index);
+            pCurrentStack->SetCurrentEntryFromdbIndex(db_index);
 
-      cc1->SetQuiltRefChart(current_db_index);
+      cc1->SetQuiltRefChart(db_index);
 
-      ChartBase *pc = ChartData->OpenChartFromDB(current_db_index, FULL_INIT);
+      ChartBase *pc = ChartData->OpenChartFromDB(db_index, FULL_INIT);
       double best_scale = GetBestVPScale(pc);
       cc1->SetVPScale ( best_scale );
 
-//      UpdateToolbarStatusWindow(pc, false);
-
-//      UpdateControlBar();           // Probably redundant
 }
 
 
@@ -5588,6 +5686,57 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
               stats->Refresh(true);
         }
 }
+
+void MyFrame::SelectdbChart(int dbindex)
+{
+      if(dbindex >= 0)
+      {
+//      Open the new chart
+            ChartBase *pTentative_Chart;
+            pTentative_Chart = ChartData->OpenChartFromDB(dbindex, FULL_INIT);
+
+            if(pTentative_Chart)
+            {
+                  if(Current_Ch)
+                        Current_Ch->Deactivate();
+
+                  Current_Ch = pTentative_Chart;
+                  Current_Ch->Activate();
+
+                  pCurrentStack->CurrentStackEntry = ChartData->GetStackEntry(pCurrentStack, Current_Ch->GetFullPath());
+            }
+            else
+                  SetChartThumbnail(-1);       // need to reset thumbnail on failed chart open
+
+
+
+//      Setup the view
+            double zLat, zLon;
+            if(cc1->m_bFollow)
+            { zLat = gLat; zLon = gLon;}
+            else
+            { zLat = vLat; zLon = vLon;}
+
+            double best_scale = GetBestVPScale(Current_Ch);
+
+            cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
+                              cc1->GetVPRotation());
+
+            UpdateToolbarStatusBox();           // Pick up the rotation
+
+      }
+
+        //          Refresh the Piano Bar
+      if(stats)
+      {
+            ArrayOfInts piano_active_chart_index_array;
+            piano_active_chart_index_array.Add(pCurrentStack->GetCurrentEntrydbIndex());
+            stats->pPiano->SetActiveKeyArray(piano_active_chart_index_array);
+
+            stats->Refresh(true);
+      }
+}
+
 
 void MyFrame::SetChartThumbnail(int index)
 {

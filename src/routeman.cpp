@@ -351,6 +351,19 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
         g_blink_rect = pRP_target->CurrentRect_in_DC;               // set up global blinker
 
         m_bArrival = false;
+
+            //    Update the RouteProperties Dialog, if currently shown
+            if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+            {
+                  if(pRoutePropDialog->m_pRoute == pA)
+                  {
+                        if (pRoutePropDialog->m_pEnroutePoint)
+                              pRoutePropDialog->m_pEnroutePoint = pActivePoint;
+                        pRoutePropDialog->SetRouteAndUpdate ( pA );
+                        pRoutePropDialog->UpdateProperties();
+                  }
+            }
+
         return true;
 }
 
@@ -376,6 +389,18 @@ bool Routeman::ActivateNextPoint(Route *pr)
           g_blink_rect = pActivePoint->CurrentRect_in_DC;               // set up global blinker
 
           m_bArrival = false;
+
+            //    Update the RouteProperties Dialog, if currently shown
+            if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+            {
+                  if(pRoutePropDialog->m_pRoute == pr)
+                  {
+                        if (pRoutePropDialog->m_pEnroutePoint)
+                              pRoutePropDialog->m_pEnroutePoint = pActivePoint;
+                        pRoutePropDialog->SetRouteAndUpdate ( pr );
+                        pRoutePropDialog->UpdateProperties();
+                  }
+            }
 
           return true;
       }
@@ -612,6 +637,8 @@ void Routeman::DeleteRoute(Route *pRoute)
             if ( GetpActiveRoute() == pRoute )
                   DeactivateRoute();
 
+            if (pRoute->m_bIsInLayer) return;
+
             //    Remove the route from associated lists
             pSelect->DeleteAllSelectableRouteSegments(pRoute);
             pRouteList->DeleteObject(pRoute);
@@ -678,6 +705,11 @@ void Routeman::DeleteAllRoutes(void)
       {
             Route *proute = node->GetData();
 
+            if (proute->m_bIsInLayer){
+                  node = node->GetNext();
+                  continue;
+            }
+
             if(!proute->m_bIsTrack)
             {
                   pConfig->m_bIsImporting = true;
@@ -703,6 +735,11 @@ void Routeman::DeleteAllTracks(void)
       while(node)
       {
             Route *proute = node->GetData();
+
+            if (proute->m_bIsInLayer){
+                  node = node->GetNext();
+                  continue;
+            }
 
             if(proute->m_bIsTrack)
             {
@@ -748,6 +785,8 @@ void Routeman::DeleteTrack(Route *pRoute)
 {
       if(pRoute)
       {
+            if (pRoute->m_bIsInLayer) return;
+
            ::wxBeginBusyCursor();
 
             //    Remove the route from associated lists
@@ -1103,8 +1142,11 @@ WayPointman::WayPointman()
       MAKEICONARRAYS("wreck1", wreck1, "Wreck A")
       MAKEICONARRAYS("wreck2", wreck2, "Wreck B")
       MAKEICONARRAYS("xmblue", xmblue, "Blue X")
+      MAKEICONARRAYS("xmblue_", empty, "Blue Track")
       MAKEICONARRAYS("xmgreen", xmgreen, "Green X")
+      MAKEICONARRAYS("xmgreen_", empty, "Green Track")
       MAKEICONARRAYS("xmred", xmred, "Red X")
+      MAKEICONARRAYS("xmred_", empty, "Red Track")
       MAKEICONARRAYS("activepoint", activepoint, "Active WP")
 
 // Load user defined icons; toh, 09.10.07
@@ -1561,8 +1603,8 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
       {
             RoutePoint *prp = node->GetData();
 
-            if ( b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
-                 && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) )  )
+            if ( !prp->m_bIsInLayer && (b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
+                 && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) ))  )
             {
                   if (prp == pAnchorWatchPoint1)
                         pAnchorWatchPoint1 = NULL;

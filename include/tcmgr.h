@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: tcmgr.h,v 1.7 2010/04/27 01:45:32 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Tide and Current Manager
@@ -211,7 +210,11 @@ public:
       bool IsReady(void){return bTCMReady;}
       bool GetTideOrCurrent(time_t t, int idx, float &value, float& dir);
       bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bool &bnew_val);
+      bool GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now, float &tcvalue_prev, bool &w_t);
+      void GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float tide_val ,bool w_t , int idx, float &tcvalue, time_t &tctime);
       int GetStationTimeOffset(IDX_entry *pIDX);
+      int GetStationIDXbyName(wxString prefix, double xlat, double xlong, TCMgr *ptcmgr);
+      int GetNextBigEvent(time_t *tm, int idx);
 
       int Get_max_IDX(){ return max_IDX;}
       IDX_entry *GetIDX_entry(int i){ return paIDX[i];}
