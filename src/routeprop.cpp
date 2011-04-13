@@ -1363,7 +1363,7 @@ void RouteProp::OnStartTimeCtlUpdated( wxCommandEvent& event )
 {
     //  Fetch the value, and see if it is a "reasonable" time
     wxString stime = m_StartTimeCtl->GetValue();
-	int tz_selection = pDispTz->GetSelection();
+    int tz_selection = pDispTz->GetSelection();
 
     wxDateTime d;
 	if (stime.StartsWith(_T(">"))){
@@ -1394,7 +1394,7 @@ void RouteProp::OnStartTimeCtlUpdated( wxCommandEvent& event )
 
 	UpdateProperties();
 
-    event.Skip();
+//    event.Skip();
 }
 
 void RouteProp::OnTimeZoneSelected( wxCommandEvent& event )
