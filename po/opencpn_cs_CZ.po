@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 16:32-0500\n"
+"POT-Creation-Date: 2011-04-12 22:52-0400\n"
 "PO-Revision-Date: 2010-11-26 12:30+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -380,6 +380,9 @@ msgstr "Zahájit &stopu"
 msgid "&Style:"
 msgstr "&Styl:"
 #
+msgid "&Toggle Chart"
+msgstr ""
+#
 #
 #
 msgid "&Underline"
@@ -412,6 +415,12 @@ msgid ""
 msgstr ""
 "'\n"
 "Doporučení: Zkus zavřít ostatní aplikace."
+#
+#
+#
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(Nepojmenovaná trasa)"
 #
 #
 #
@@ -597,6 +606,12 @@ msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
 #
+#
+#
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
+#
 msgid "Assumed 1 Mile Point"
 msgstr "Předpokládaný 1-mílový bod"
 #
@@ -623,6 +638,9 @@ msgstr "Autoři"
 #
 msgid "Auto Follow"
 msgstr "Automaticky následovat"
+#
+msgid "Automatic Daily Tracks"
+msgstr ""
 #
 #
 #
@@ -832,14 +850,6 @@ msgstr "Volání"
 msgid "Cell Scale"
 msgstr ""
 #
-#, fuzzy
-msgid "Cell X Offset"
-msgstr "Nastav posun CM93"
-#
-#, fuzzy
-msgid "Cell Y Offset"
-msgstr "Nastav posun CM93"
-#
 #
 #
 msgid "Change Color Scheme"
@@ -1039,6 +1049,9 @@ msgstr "Smazat trasový bod"
 msgid "Depart From"
 msgstr "Odplutí z"
 #
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
 #
 #
 msgid "Depth Settings"
@@ -1203,6 +1216,15 @@ msgstr "Ukonči OpenCPN"
 msgid "Export GPX file"
 msgstr "Exportuj GPX soubor"
 #
+#
+#
+#, fuzzy
+msgid "Extend Route"
+msgstr "Ukončit trasu"
+#
+msgid "ExtendedTideIcon"
+msgstr ""
+#
 msgid "F/V"
 msgstr ""
 #
@@ -1290,6 +1312,9 @@ msgstr "Navigovat na"
 msgid "HSC"
 msgstr ""
 #
+msgid "HW"
+msgstr ""
+#
 #
 #
 msgid "Help"
@@ -1300,12 +1325,19 @@ msgstr "Nápověda"
 msgid "Here"
 msgstr "Tady"
 #
+msgid "Hide WPT names"
+msgstr ""
+#
+msgid "Hide from chart"
+msgstr ""
+#
 msgid "High Speed Craft"
 msgstr ""
 #
 #
 #
-msgid "I&mport..."
+#, fuzzy
+msgid "I&mport GPX..."
 msgstr "I&mport...."
 #
 #
@@ -1316,6 +1348,12 @@ msgstr "Ikona"
 #
 #
 msgid "Import GPX file"
+msgstr "Importuj GPX soubor"
+#
+#
+#
+#, fuzzy
+msgid "Import new layer"
 msgstr "Importuj GPX soubor"
 #
 #
@@ -1356,6 +1394,12 @@ msgstr "Skočit na pozici...."
 msgid "LE/V"
 msgstr ""
 #
+msgid "LMT @ Location"
+msgstr ""
+#
+msgid "LW"
+msgstr ""
+#
 #
 #
 msgid "Language"
@@ -1377,6 +1421,15 @@ msgid "Latitude"
 msgstr "Zem. šířka"
 #
 msgid "Law Enforcement Vessel"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Layer Name"
+msgstr "Jméno značky"
+#
+msgid "Layers"
 msgstr ""
 #
 msgid "Ldg Lt Front"
@@ -1435,6 +1488,15 @@ msgstr "Omezit rozsah: NM"
 #
 msgid "Links"
 msgstr "Odkazy"
+#
+#
+#
+#, fuzzy
+msgid "List contents"
+msgstr "Licence"
+#
+msgid "Local @ PC"
+msgstr ""
 #
 #
 #
@@ -1500,8 +1562,9 @@ msgstr "Mariner's Standard"
 #
 #
 #
-msgid "MarinersStandard"
-msgstr "MarinersStandard"
+#, fuzzy
+msgid "Mariners Standard"
+msgstr "Mariner's Standard"
 #
 #
 #
@@ -1609,6 +1672,12 @@ msgstr "Jméno"
 #
 #
 #
+#, fuzzy
+msgid "Name:  "
+msgstr " Jméno:"
+#
+#
+#
 msgid "Nav Status"
 msgstr "Nav status"
 #
@@ -1632,6 +1701,9 @@ msgstr "Nová značka"
 msgid "Next"
 msgstr "Další"
 #
+msgid "Next tide event"
+msgstr ""
+#
 #
 #
 msgid "No CPA Calculation if target range is greater than (NMi):"
@@ -1641,6 +1713,9 @@ msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm):"
 #
 msgid "No Chart Available"
 msgstr "Žádná mapa není k dispozici"
+#
+msgid "No. of items"
+msgstr ""
 #
 msgid "Not Under Command"
 msgstr ""
@@ -1729,6 +1804,12 @@ msgstr "Vytvořit OpenCPN Trasu"
 #
 msgid "OpenCPN S57 SENC File Load"
 msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "Výstraha OpenCPN"
 #
 #
 #
@@ -1994,12 +2075,6 @@ msgstr "Rastr"
 #
 #
 #, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Tempo obratu:           %3d St./Min.\n"
-#
-#
-#
-#, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
 #
@@ -2008,6 +2083,39 @@ msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Tempo obratu:           %3d St./Min.Vpravo\n"
+#
+#
+#
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "Tempo obratu:           %3d St./Min.\n"
+#
+#
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
+#
+#
+#
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Tempo obratu:           %3d St./Min.Vpravo\n"
+#
+msgid "Real"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Pozice"
+#
+#
+#
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Pozice"
 #
 #
 #
@@ -2035,7 +2143,8 @@ msgstr "Referenční stanice:"
 #
 #
 #
-msgid "Reference Station:"
+#, fuzzy
+msgid "Reference Station :"
 msgstr "Referenční stanice:"
 #
 msgid "Remaining time : "
@@ -2126,6 +2235,9 @@ msgstr "Trasa nahrána úspěšně."
 #
 msgid "Route from Track"
 msgstr "Trasa ze stopy"
+#
+msgid "RouteLegInfoRollover"
+msgstr ""
 #
 #
 #
@@ -2228,16 +2340,6 @@ msgstr "Posun na mapu menšího měřítka"
 #
 #
 #
-msgid "Ship Type:            "
-msgstr "Typ lodě:"
-#
-#
-#
-msgid "ShipName:  "
-msgstr "Jméno lodě:"
-#
-#
-#
 msgid "Show AIS Targets"
 msgstr "Zobrazit AIS cíle"
 #
@@ -2263,7 +2365,8 @@ msgstr "Ukaž proudy"
 #
 #
 #
-msgid "Show DepthUnits"
+#, fuzzy
+msgid "Show Depth Units"
 msgstr "Zobrazit jednotky hloubky"
 #
 #
@@ -2304,6 +2407,12 @@ msgstr "Zobrazit ikonu tisku"
 #
 #
 #
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Zobrazit hloubky"
+#
+#
+#
 msgid "Show Status Bar"
 msgstr "Zobrazit stavovou řádku"
 #
@@ -2316,6 +2425,18 @@ msgstr "Ukaž přílivy"
 #
 msgid "Show Track icon"
 msgstr "Zobrazit ikonu stopy"
+#
+#
+#
+#, fuzzy
+msgid "Show WPT names"
+msgstr "Zobraz jméno"
+#
+#
+#
+#, fuzzy
+msgid "Show on chart"
+msgstr "Zobrazit AIS cíle"
 #
 #
 #
@@ -2335,11 +2456,6 @@ msgstr "Ukázat šipky COG cílů"
 #
 msgid "Show target tracks"
 msgstr "Zobrazit stopy cílů"
-#
-#
-#
-msgid "ShowSoundings"
-msgstr "Zobrazit hloubky"
 #
 #
 #
@@ -2444,6 +2560,12 @@ msgstr "Rychlost:            Nedostupná\n"
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Rychlost:                %5.2f Kts.\n"
+#
+#
+#
+#, fuzzy
+msgid "Split Route"
+msgstr "Smazat trasu"
 #
 #
 #
@@ -2574,10 +2696,16 @@ msgstr "Tento úsek"
 msgid "Tide"
 msgstr "Příliv"
 #
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
 #
 #
 msgid "Time Enroute"
 msgstr "Čas na cestě"
+#
+msgid "Times shown as"
+msgstr ""
 #
 #
 #
@@ -2593,6 +2721,18 @@ msgstr "K trasovému bodu"
 #
 msgid "Today"
 msgstr "Dnes"
+#
+#
+#
+#, fuzzy
+msgid "Toggle Listing"
+msgstr "Přepni záznam stopy"
+#
+#
+#
+#, fuzzy
+msgid "Toggle Names"
+msgstr "Název trasy"
 #
 #
 #
@@ -2671,6 +2811,18 @@ msgstr "Typ"
 #
 #
 #
+#, fuzzy
+msgid "Type:                 "
+msgstr "ETA:                  "
+#
+#
+#
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Typ lodě:"
+#
+#
+#
 msgid "UTC"
 msgstr "UTC"
 #
@@ -2714,6 +2866,9 @@ msgstr "Neznámý"
 #
 msgid "Unknown"
 msgstr "Neznámý"
+#
+msgid "Unlist contents"
+msgstr ""
 #
 #
 #
@@ -2766,6 +2921,15 @@ msgid "Vessel Towing"
 msgstr ""
 #
 msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "Virtual"
+msgstr ""
+#
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+msgid "Virtual (On Position)"
 msgstr ""
 #
 #
@@ -2864,6 +3028,19 @@ msgid "[Class] Type (Status)"
 msgstr "[Třída] Typ (Stav)"
 #
 #
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+#
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+msgid "_plus"
+msgstr ""
+#
+#
 #
 msgid "cm93 Detail"
 msgstr "Detail cm93"
@@ -2881,10 +3058,18 @@ msgstr ""
 "\n"
 "Chceš přesto použít tuto verzi libgps?"
 #
+msgid "wgsox"
+msgstr ""
+#
+msgid "wgsoy"
+msgstr ""
+#
+#
 #
 #
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
+#
 #
 #
 #
@@ -2893,8 +3078,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
+#
 #
 #
 #
@@ -2903,8 +3090,20 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
+#
+#
+#, fuzzy
+#~ msgid "Cell X Offset"
+#~ msgstr "Nastav posun CM93"
+#
+#
+#, fuzzy
+#~ msgid "Cell Y Offset"
+#~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -2919,8 +3118,22 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
+#
+#
+#~ msgid "MarinersStandard"
+#~ msgstr "MarinersStandard"
+#
+#
+#
+#
+#~ msgid "ShipName:  "
+#~ msgstr "Jméno lodě:"
+#
 #
 #
 #
@@ -2930,6 +3143,7 @@ msgstr ""
 #
 #~ msgid "Show GRIB icon"
 #~ msgstr "Zobrazit ikonu GRIB"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 16:32-0500\n"
+"POT-Creation-Date: 2011-04-12 22:52-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -383,6 +383,9 @@ msgstr "Mostrar acompanhamentos dos alvos"
 msgid "&Style:"
 msgstr "E&stilo:"
 #
+msgid "&Toggle Chart"
+msgstr ""
+#
 # 
 # 
 msgid "&Underline"
@@ -415,6 +418,12 @@ msgid ""
 msgstr ""
 "'\n"
 "Sugestão: Tente fechar outros programas."
+#
+# 
+# 
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(Derrota sem Nome)"
 #
 # 
 # 
@@ -610,6 +619,12 @@ msgstr "Tem certeza que quer excluir <TODAS> as Derrotas?"
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Tem certeza que quer excluir <TODOS> os Pontos da Derrota?"
 #
+# 
+# 
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Tem certeza que quer excluir <TODAS> as Derrotas?"
+#
 msgid "Assumed 1 Mile Point"
 msgstr ""
 #
@@ -642,6 +657,22 @@ msgstr "Autores"
 # 
 msgid "Auto Follow"
 msgstr "Acompanhar Automaticamente"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Automatic Daily Tracks"
+msgstr "Marca de Fundeio Automática"
 #
 # 
 # 
@@ -858,12 +889,6 @@ msgstr "Chamada"
 msgid "Cell Scale"
 msgstr ""
 #
-msgid "Cell X Offset"
-msgstr ""
-#
-msgid "Cell Y Offset"
-msgstr ""
-#
 # 
 # 
 msgid "Change Color Scheme"
@@ -1069,6 +1094,9 @@ msgstr "Excluir Ponto da Derrota"
 msgid "Depart From"
 msgstr "Partida"
 #
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
 # 
 # 
 msgid "Depth Settings"
@@ -1241,6 +1269,15 @@ msgstr "Sair OpenCPN"
 msgid "Export GPX file"
 msgstr "Exportar arquivo GPX"
 #
+# 
+# 
+#, fuzzy
+msgid "Extend Route"
+msgstr "Fim da Derrota"
+#
+msgid "ExtendedTideIcon"
+msgstr ""
+#
 msgid "F/V"
 msgstr ""
 #
@@ -1340,6 +1377,9 @@ msgstr "Ir Para Aqui"
 msgid "HSC"
 msgstr ""
 #
+msgid "HW"
+msgstr ""
+#
 # 
 # 
 msgid "Help"
@@ -1350,12 +1390,19 @@ msgstr "Ajuda"
 msgid "Here"
 msgstr "Aqui"
 #
+msgid "Hide WPT names"
+msgstr ""
+#
+msgid "Hide from chart"
+msgstr ""
+#
 msgid "High Speed Craft"
 msgstr ""
 #
 # 
 # 
-msgid "I&mport..."
+#, fuzzy
+msgid "I&mport GPX..."
 msgstr "I&mportar..."
 #
 # 
@@ -1366,6 +1413,12 @@ msgstr "Símbolo"
 # 
 # 
 msgid "Import GPX file"
+msgstr "Importar arquivo GPX"
+#
+# 
+# 
+#, fuzzy
+msgid "Import new layer"
 msgstr "Importar arquivo GPX"
 #
 # 
@@ -1410,6 +1463,12 @@ msgstr ""
 msgid "LE/V"
 msgstr ""
 #
+msgid "LMT @ Location"
+msgstr ""
+#
+msgid "LW"
+msgstr ""
+#
 # 
 # 
 msgid "Language"
@@ -1432,6 +1491,15 @@ msgid "Latitude"
 msgstr "Latitude"
 #
 msgid "Law Enforcement Vessel"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Layer Name"
+msgstr "Nome da Marca"
+#
+msgid "Layers"
 msgstr ""
 #
 msgid "Ldg Lt Front"
@@ -1492,6 +1560,15 @@ msgstr ""
 # 
 msgid "Links"
 msgstr "Atalhos"
+#
+# 
+# 
+#, fuzzy
+msgid "List contents"
+msgstr "Licença"
+#
+msgid "Local @ PC"
+msgstr ""
 #
 # 
 # 
@@ -1558,8 +1635,9 @@ msgstr "Mariner's Standard"
 #
 # 
 # 
-msgid "MarinersStandard"
-msgstr "MarinersStandard"
+#, fuzzy
+msgid "Mariners Standard"
+msgstr "Mariner's Standard"
 #
 # 
 # 
@@ -1669,6 +1747,12 @@ msgstr "Nome"
 #
 # 
 # 
+#, fuzzy
+msgid "Name:  "
+msgstr "Nome:"
+#
+# 
+# 
 msgid "Nav Status"
 msgstr "Situação da Nav"
 #
@@ -1692,6 +1776,9 @@ msgstr "Nova Marca"
 msgid "Next"
 msgstr "Próximo"
 #
+msgid "Next tide event"
+msgstr ""
+#
 # 
 # 
 msgid "No CPA Calculation if target range is greater than (NMi):"
@@ -1701,6 +1788,9 @@ msgstr "Sem cálculo de PMA se a distância do alvo é maior que (MN):"
 # 
 msgid "No Chart Available"
 msgstr "Nenhuma Carta Disponível"
+#
+msgid "No. of items"
+msgstr ""
 #
 msgid "Not Under Command"
 msgstr ""
@@ -1791,6 +1881,12 @@ msgstr "OpenCPN Criar Derrota"
 #
 msgid "OpenCPN S57 SENC File Load"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN Alerta"
 #
 # 
 # 
@@ -2070,12 +2166,6 @@ msgstr "Raster"
 # 
 # 
 #, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min.\n"
-msgstr "Idade do Relatório:               %3d Sec.\n"
-#
-# 
-# 
-#, fuzzy, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Idade do Relatório:               %3d Sec.\n"
 #
@@ -2084,6 +2174,39 @@ msgstr "Idade do Relatório:               %3d Sec.\n"
 #, fuzzy, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Idade do Relatório:               %3d Sec.\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "Idade do Relatório:               %3d Sec.\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Idade do Relatório:               %3d Sec.\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Idade do Relatório:               %3d Sec.\n"
+#
+msgid "Real"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Posição"
+#
+# 
+# 
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Posição"
 #
 # 
 # 
@@ -2114,7 +2237,8 @@ msgstr "Estação de Referência:"
 #
 # 
 # 
-msgid "Reference Station:"
+#, fuzzy
+msgid "Reference Station :"
 msgstr "Estação de Referência:"
 #
 msgid "Remaining time : "
@@ -2209,6 +2333,9 @@ msgstr ""
 # 
 # 
 msgid "Route from Track"
+msgstr ""
+#
+msgid "RouteLegInfoRollover"
 msgstr ""
 #
 # 
@@ -2314,16 +2441,6 @@ msgstr "Mudar para Carta de  Menor Escala"
 #
 # 
 # 
-msgid "Ship Type:            "
-msgstr "Tipo de Navio:"
-#
-# 
-# 
-msgid "ShipName:  "
-msgstr "Nome do Navio:"
-#
-# 
-# 
 msgid "Show AIS Targets"
 msgstr "Mostrar Alvos AIS"
 #
@@ -2349,7 +2466,8 @@ msgstr "Mostrar Correntes"
 #
 # 
 # 
-msgid "Show DepthUnits"
+#, fuzzy
+msgid "Show Depth Units"
 msgstr "Mostrar Unidade de Profundidade"
 #
 # 
@@ -2390,6 +2508,12 @@ msgstr "Mostrar Ícone Imprimir"
 #
 # 
 # 
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Mostrar Sondagens"
+#
+# 
+# 
 msgid "Show Status Bar"
 msgstr "Mostrar Barra de Status"
 #
@@ -2402,6 +2526,18 @@ msgstr "Mostrar Marés"
 # 
 msgid "Show Track icon"
 msgstr "Mostrar ícone Acompanhamentos"
+#
+# 
+# 
+#, fuzzy
+msgid "Show WPT names"
+msgstr "Mostrar Nome"
+#
+# 
+# 
+#, fuzzy
+msgid "Show on chart"
+msgstr "Mostrar Alvos AIS"
 #
 # 
 # 
@@ -2422,11 +2558,6 @@ msgstr "Mostrar setas de Rfundo dos alvos"
 # 
 msgid "Show target tracks"
 msgstr "Mostrar acompanhamentos dos alvos"
-#
-# 
-# 
-msgid "ShowSoundings"
-msgstr "Mostrar Sondagens"
 #
 # 
 # 
@@ -2535,6 +2666,12 @@ msgstr "Veloc:           Não disponível\n"
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Velocidade:                %5.2f Nós.\n"
+#
+# 
+# 
+#, fuzzy
+msgid "Split Route"
+msgstr "Excluir Derrota"
 #
 # 
 # 
@@ -2668,10 +2805,16 @@ msgstr "Esta Pernada"
 msgid "Tide"
 msgstr "Maré"
 #
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
 # 
 # 
 msgid "Time Enroute"
 msgstr "Tempo de Viagem"
+#
+msgid "Times shown as"
+msgstr ""
 #
 # 
 # 
@@ -2687,6 +2830,18 @@ msgstr "Para o Ponto"
 # 
 msgid "Today"
 msgstr "Hoje"
+#
+# 
+# 
+#, fuzzy
+msgid "Toggle Listing"
+msgstr "Ligar Acompanhamento"
+#
+# 
+# 
+#, fuzzy
+msgid "Toggle Names"
+msgstr "Nome da Derrota"
 #
 # 
 # 
@@ -2768,6 +2923,18 @@ msgstr "Tipo"
 #
 # 
 # 
+#, fuzzy
+msgid "Type:                 "
+msgstr "ETA:                  "
+#
+# 
+# 
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Tipo de Navio:"
+#
+# 
+# 
 msgid "UTC"
 msgstr "UTC"
 #
@@ -2817,6 +2984,9 @@ msgstr "Desc."
 # 
 msgid "Unknown"
 msgstr "Desconhacido"
+#
+msgid "Unlist contents"
+msgstr ""
 #
 # 
 # 
@@ -2868,6 +3038,15 @@ msgid "Vessel Towing"
 msgstr ""
 #
 msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "Virtual"
+msgstr ""
+#
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+msgid "Virtual (On Position)"
 msgstr ""
 #
 # 
@@ -2969,6 +3148,21 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+# 
+# 
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+msgid "_plus"
+msgstr ""
+#
+# 
+# 
 msgid "cm93 Detail"
 msgstr "Detalhe CM93"
 #
@@ -2984,6 +3178,13 @@ msgstr ""
 "Versão da API libgps não confere.\n"
 "Opencpn encontrou a versão %d.%d, mas é necessário pelo menos a versão 3.1"
 #
+msgid "wgsox"
+msgstr ""
+#
+msgid "wgsoy"
+msgstr ""
+#
+#
 #
 #
 #
@@ -2994,6 +3195,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -3016,6 +3218,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3024,6 +3227,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 #
 #
@@ -3046,20 +3250,6 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Automatic Anchor Mark"
-#~ msgstr "Marca de Fundeio Automática"
-#
-#
-#
-#
-#
-#
 #
 # 
 # 
@@ -3070,10 +3260,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 #
 #
@@ -3100,6 +3292,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3109,6 +3302,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3135,10 +3329,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 #
 #
@@ -3161,10 +3357,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA"
 #~ msgstr "TEC"
+#
 #
 #
 #
@@ -3178,6 +3376,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                 Desconhecido"
+#
 #
 #
 #
@@ -3200,6 +3399,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3213,10 +3413,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -3235,6 +3437,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
@@ -3246,10 +3449,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Diretório de Arquivos GRIB"
+#
+#
+# 
+# 
+#~ msgid "MarinersStandard"
+#~ msgstr "MarinersStandard"
+#
 #
 #
 #
@@ -3268,10 +3479,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 #
 #
@@ -3291,6 +3504,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
@@ -3302,10 +3516,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pressão, hPa"
+#
 #
 #
 #
@@ -3328,10 +3544,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Temperatura da Superfície do Mar, C"
+#
 #
 #
 #
@@ -3350,6 +3568,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3358,6 +3577,13 @@ msgstr ""
 # 
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Enviar Derrota para o GPS..."
+#
+#
+# 
+# 
+#~ msgid "ShipName:  "
+#~ msgstr "Nome do Navio:"
+#
 #
 #
 #
@@ -3380,6 +3606,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3388,6 +3615,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
 #
 #
 #
@@ -3404,6 +3632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
@@ -3413,10 +3642,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 #
 #
@@ -3435,10 +3666,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 #
 #
