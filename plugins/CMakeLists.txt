@@ -10,10 +10,11 @@
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 MESSAGE (STATUS "*** Building PlugIns ***")
- 
-add_subdirectory (grib_pi)
-#add_subdirectory (demo_pi/src)
-add_subdirectory (dashboard_pi)
-#add_subdirectory (celestial_navigation_pi/src)
+
+FILE(GLOB PLUGINS *_pi)
+
+FOREACH(PLUGIN ${PLUGINS})
+     add_subdirectory (${PLUGIN})
+ENDFOREACH(PLUGIN)
 
 
