@@ -2245,7 +2245,7 @@ bool Track::DoExtendDaily()
                         int begin = 1;
                         if (pLastPoint->m_CreateTime == pExtendPoint->m_CreateTime) begin = 2;
                         pSelect->DeleteAllSelectableTrackSegments(pExtendRoute);
-                        pExtendRoute->CloneTrack(this, begin, this->GetnPoints(), _(""));
+                        pExtendRoute->CloneTrack(this, begin, this->GetnPoints(), _T(""));
                         pSelect->AddAllSelectableTrackSegments ( pExtendRoute );
                         pSelect->DeleteAllSelectableTrackSegments(this);
                         this->ClearHighlights();
