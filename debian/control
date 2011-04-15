@@ -12,7 +12,7 @@ Package: opencpn
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libgps19
 Recommends: gpsd
-Suggests: gpsd-clients
+Suggests: gpsd-clients, xcalib
 Description: A concise GPS ChartPlotter/Navigator
  OpenCPN is a cross-platform ship-borne GUI chart plotter
  application supporting:
