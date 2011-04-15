@@ -1,3 +1,11 @@
+opencpn (2.4.412-1) unstable; urgency=low
+
+  * Packaged for upstream git patch version 2.4.412
+  * Move to new DebianGIS email address
+  * Recommend gpsd, suggest gpsd-clients
+
+ -- Hamish B <hamish_b@yahoo.com>  Fri, 15 Apr 2011 14:53:55 +1200
+
 opencpn (2.2.918-1) unstable; urgency=low
 
   * Packaged for upstream git patch version 2.2.918

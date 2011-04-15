@@ -1,7 +1,7 @@
 Source: opencpn
 Section: utils
 Priority: optional
-Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
+Maintainer: Debian GIS Project <debian-gis@lists.debian.org>
 Uploaders: Anton Martchukov <anton@martchukov.com>
 Build-Depends: debhelper (>= 7.0.50~), cmake, libglu-dev, libwxbase2.8-dev,
    libwxgtk2.8-dev, libgtk2.0-dev, zlib1g-dev, libbz2-dev, libgps-dev
@@ -11,8 +11,9 @@ Homepage: http://www.opencpn.org/
 Package: opencpn
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libgps19
-Suggests: gpsd
-Description: a concise ChartPlotter/Navigator
+Recommends: gpsd
+Suggests: gpsd-clients
+Description: A concise GPS ChartPlotter/Navigator
  OpenCPN is a cross-platform ship-borne GUI chart plotter
  application supporting:
  .
