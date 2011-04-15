@@ -1,0 +1,63 @@
+Use system's zlib, bzip2 instead of embedded copy.
+Index: opencpn/plugins/grib_pi/CMakeLists.txt
+===================================================================
+--- opencpn.orig/plugins/grib_pi/CMakeLists.txt	2011-04-15 23:21:38.285860737 +1200
++++ opencpn/plugins/grib_pi/CMakeLists.txt	2011-04-16 03:22:20.561110795 +1200
+@@ -78,7 +78,12 @@
+             src/GribReader.cpp 
+             src/GribRecord.cpp  
+             src/zuFile.cpp 
+-            src/IsoLine.cpp 
++            src/IsoLine.cpp
++)
++ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
++
++IF(!UNIX)
++    SET(SRC_BZIP
+             src/bzip2/bzlib.c 
+             src/bzip2/blocksort.c 
+             src/bzip2/compress.c 
+@@ -86,11 +91,12 @@
+             src/bzip2/decompress.c 
+             src/bzip2/huffman.c 
+             src/bzip2/randtable.c
+-	)
+-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
++    )
++    ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_BZIP})
+ 
+-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
++    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
++    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
++ENDIF(!UNIX)
+ 
+ IF(WIN32)
+   SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
+Index: opencpn/CMakeLists.txt
+===================================================================
+--- opencpn.orig/CMakeLists.txt	2011-04-16 02:55:53.636598695 +1200
++++ opencpn/CMakeLists.txt	2011-04-16 03:21:52.989110463 +1200
+@@ -111,6 +111,13 @@
+ 
+ FIND_PACKAGE(Gettext REQUIRED)
+ 
++IF(UNIX)
++    FIND_PACKAGE(BZip2 REQUIRED)
++    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
++    FIND_PACKAGE(ZLIB REQUIRED)
++    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
++ENDIF(UNIX)
++
+ # For convenience we define the sources as a variable. You can add 
+ # header files and cpp/c files and CMake will sort them out
+ 
+@@ -500,6 +507,8 @@
+ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+       ${OPENGL_LIBRARIES}
+       ${GETTEXT_LIBRARY}
++      ${BZIP2_LIBRARIES}
++      ${ZLIB_LIBRARY}
+ )
+ ENDIF(UNIX)
+ 

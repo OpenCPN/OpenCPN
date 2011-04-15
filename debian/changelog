@@ -1,10 +1,11 @@
-opencpn (2.4.412-1) unstable; urgency=low
+opencpn (2.4.0~412-1) unstable; urgency=low
 
   * Packaged for upstream git patch version 2.4.412
   * Move to new DebianGIS email address
   * Recommend gpsd, suggest gpsd-clients
   * Suggest xcalib to lower contrast for night vision
   * Install plugins .so to /usr/lib/opencpn-plugins/
+  * Use system's zlib, bzip2 instead of embedded copy
 
  -- Hamish B <hamish_b@yahoo.com>  Fri, 15 Apr 2011 15:35:56 +1200
 
