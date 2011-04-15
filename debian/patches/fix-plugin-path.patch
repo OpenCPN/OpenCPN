@@ -1,0 +1,16 @@
+Look for .so plugins in /usr/lib/opencpn-plugins/
+(lintian E: arch-dependent-file-in-usr-share)
+Index: opencpn/src/pluginmanager.cpp
+===================================================================
+--- opencpn.orig/src/pluginmanager.cpp	2011-04-15 20:58:59.296628331 +1200
++++ opencpn/src/pluginmanager.cpp	2011-04-15 20:59:16.701862358 +1200
+@@ -106,7 +106,8 @@
+ 
+ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
+ {
+-      m_plugin_location = shared_data_prefix + _T("plugins");
++      //m_plugin_location = shared_data_prefix + _T("plugins");
++      m_plugin_location = _T("/usr/lib/opencpn-plugins");
+       wxDir pi_dir(m_plugin_location);
+ 
+       wxString msg(_("PlugInManager searching for PlugIns in location "));

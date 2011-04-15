@@ -4,8 +4,9 @@ opencpn (2.4.412-1) unstable; urgency=low
   * Move to new DebianGIS email address
   * Recommend gpsd, suggest gpsd-clients
   * Suggest xcalib to lower contrast for night vision
+  * Install plugins .so to /usr/lib/opencpn-plugins/
 
- -- Hamish B <hamish_b@yahoo.com>  Fri, 15 Apr 2011 15:12:36 +1200
+ -- Hamish B <hamish_b@yahoo.com>  Fri, 15 Apr 2011 15:35:56 +1200
 
 opencpn (2.2.918-1) unstable; urgency=low
 

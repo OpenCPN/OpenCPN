@@ -17,6 +17,10 @@ override_dh_install:
 	mkdir -p $(CURDIR)/debian/opencpn/usr/share/pixmaps
 	cp $(CURDIR)/src/bitmaps/opencpn.xpm $(CURDIR)/debian/opencpn/usr/share/pixmaps/
 	
+	mkdir -p $(CURDIR)/debian/opencpn/usr/lib
+	mv -f $(CURDIR)/debian/opencpn/usr/share/opencpn/plugins/ \
+		$(CURDIR)/debian/opencpn/usr/lib/opencpn-plugins/
+	
 	dh_install
 	
 	rm $(CURDIR)/debian/opencpn/usr/share/opencpn/license.txt
