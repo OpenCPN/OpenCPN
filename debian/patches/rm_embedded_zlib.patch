@@ -12,7 +12,7 @@ Index: opencpn/plugins/grib_pi/CMakeLists.txt
 +)
 +ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 +
-+IF(!UNIX)
++IF(NOT UNIX)
 +    SET(SRC_BZIP
              src/bzip2/bzlib.c 
              src/bzip2/blocksort.c 
@@ -30,7 +30,7 @@ Index: opencpn/plugins/grib_pi/CMakeLists.txt
 -INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 +    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
 +    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
-+ENDIF(!UNIX)
++ENDIF(NOT UNIX)
  
  IF(WIN32)
    SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
