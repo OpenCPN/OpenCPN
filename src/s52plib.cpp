@@ -4681,10 +4681,10 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 
 
 //  Debug Hooks
-//   if(rzRules->obj->Index == 2174)
+//   if(rzRules->obj->Index == 8558)
 //         int rrt = 5;
 
-//    if(!strncmp(rzRules->LUP->OBCL, "TSSLPT", 6))
+//    if(!strncmp(rzRules->LUP->OBCL, "UWTROC", 6))
 //            int yyrkt = 4;
 
       while ( rules != NULL )
@@ -6549,7 +6549,7 @@ void s52plib::GetAndAddCSRules ( ObjRazRules *rzRules, Rules *rules )
       {
 
             NewLUP = ( LUPrec* ) calloc ( 1, sizeof ( LUPrec ) );
-//            pAlloc->Add ( NewLUP );
+            pAlloc->Add ( NewLUP );
 
             NewLUP->DISC = rzRules->LUP->DISC;         // as a default
 
