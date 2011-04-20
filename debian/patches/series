@@ -1,2 +1,3 @@
 fix-plugin-path.patch
 rm_embedded_zlib.patch
+use_xtide_coastline.patch

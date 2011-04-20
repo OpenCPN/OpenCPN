@@ -1,0 +1,33 @@
+Depend on WVS coastline from Debian's xtide package instead of
+shipping a clone of it. If that is not installed the result is
+not fatal, just a warning in the log file.
+Index: opencpn/src/chart1.cpp
+===================================================================
+--- opencpn.orig/src/chart1.cpp	2011-04-21 00:09:08.208588848 +1200
++++ opencpn/src/chart1.cpp	2011-04-21 00:11:15.816860473 +1200
+@@ -1401,8 +1401,9 @@
+ 
+ 
+ //      Establish the WorldVectorShoreline Dataset location
+-        pWVS_Locn = new wxString(_T("wvsdata"));
+-        pWVS_Locn->Prepend(g_SData_Locn);
++//      pWVS_Locn = new wxString(_T("wvsdata"));
++//      pWVS_Locn->Prepend(g_SData_Locn);
++        pWVS_Locn = new wxString(_T("/usr/share/xtide-wvs"));
+         pWVS_Locn->Append(wxFileName::GetPathSeparator());
+ 
+ //      Reload the config data, to pick up any missing data class configuration info
+Index: opencpn/src/wvschart.cpp
+===================================================================
+--- opencpn.orig/src/wvschart.cpp	2011-04-21 00:12:26.016601391 +1200
++++ opencpn/src/wvschart.cpp	2011-04-21 00:13:13.188610696 +1200
+@@ -52,7 +52,8 @@
+ {
+         pwvs_home_dir = new wxString(wvs_chart_home);
+         pwvs_file_name = new wxString(*pwvs_home_dir);
+-        pwvs_file_name->Append(_T("wvs43.dat"));
++//      pwvs_file_name->Append(_T("wvs43.dat"));
++        pwvs_file_name->Append(_T("wvs1.dat"));
+         for(int i=0 ; i < 360 ; i++)
+         {
+                 for(int j=0 ; j < 180; j++)
