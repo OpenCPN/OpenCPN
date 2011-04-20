@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chartdb.h,v 1.24 2010/06/13 21:02:56 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Chart Database Object
@@ -24,23 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: chartdb.h,v $
- * Revision 1.24  2010/06/13 21:02:56  bdbcat
- * 613a
- *
- * Revision 1.23  2010/05/02 03:04:17  bdbcat
- * Build 501
- *
- * Revision 1.22  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.21  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.20  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
  *
  *
  *
@@ -94,6 +76,8 @@ public:
       void        SetCurrentEntryFromdbIndex(int current_db_index);
       int         GetDBIndex(int stack_index);
       void        SetDBIndex(int stack_index, int db_index);
+      bool        DoesStackContaindbIndex(int db_index);
+
 private:
       int         DBIndex[MAXSTACK];
 

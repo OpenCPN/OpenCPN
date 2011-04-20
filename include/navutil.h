@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: navutil.h,v 1.32 2010/06/21 01:55:00 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Navigation Utility Functions
@@ -25,27 +24,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: navutil.h,v $
- * Revision 1.32  2010/06/21 01:55:00  bdbcat
- * 620
- *
- * Revision 1.31  2010/06/04 22:36:16  bdbcat
- * 604
- *
- * Revision 1.30  2010/05/23 23:27:23  bdbcat
- * Build 523a
- *
- * Revision 1.29  2010/05/20 19:05:32  bdbcat
- * Build 520
- *
- * Revision 1.28  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.27  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.26  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 
@@ -126,6 +104,10 @@ public:
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
+      wxString GetName(void){ return m_MarkName; }
+
+      void SetName(wxString name);
+      void CalculateNameExtents(void);
 
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
@@ -153,11 +135,15 @@ public:
       bool              m_bIsListed;
       bool              m_bIsActive;
       int               m_ConfigWPNum;
-      wxString          m_MarkName;
       wxString          m_MarkDescription;
       wxString          m_GUID;
       wxString          m_IconName;
       wxString          m_prop_string_format;         // Alpha character, like "A", giving version of property string
+
+      wxFont            *m_pMarkFont;
+      wxColour          m_FontColor;
+
+      wxSize            m_NameExtents;
 
       wxBitmap          *m_pbmIcon;
       bool              m_bBlink;
@@ -172,6 +158,10 @@ public:
       int               m_LayerID;
 
       HyperlinkList     *m_HyperlinkList;
+
+private:
+      wxString          m_MarkName;
+
 
 
 };

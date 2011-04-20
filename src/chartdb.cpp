@@ -101,6 +101,16 @@ void ChartStack::SetDBIndex(int stack_index, int db_index)
 }
 
 
+bool ChartStack::DoesStackContaindbIndex(int db_index)
+{
+      for(int i=0 ; i < nEntry ; i++)
+      {
+            if(db_index == DBIndex[i])
+                  return true;
+      }
+
+      return false;
+}
 
 // ============================================================================
 // ChartDB implementation

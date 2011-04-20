@@ -581,8 +581,8 @@ bool Routeman::UpdateAutopilot()
                       m_NMEA0183.Rmb.DirectionToSteer = Right;
 
 
-                m_NMEA0183.Rmb.To = pActivePoint->m_MarkName.Truncate(6);
-                m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->m_MarkName.Truncate(6);
+                m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(6);
+                m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(6);
 
 //                str_buf.Printf(_T("%03d"), pActiveRoute->GetIndexOf(pActiveRouteSegmentBeginPoint));
 //                wxString from = str_buf;
@@ -1593,6 +1593,22 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon, double r
       return NULL;
 
 }
+
+void WayPointman::ClearRoutePointFonts(void)
+{
+      //    Iterate on the RoutePoint list, clearing Font pointers
+      //    This is typically done globally after a font switch
+
+      wxRoutePointListNode *node = m_pWayPointList->GetFirst();
+      while(node)
+      {
+            RoutePoint *pr = node->GetData();
+
+            pr->m_pMarkFont = NULL;
+            node = node->GetNext();
+      }
+}
+
 
 void WayPointman::DeleteAllWaypoints(bool b_delete_used)
 {

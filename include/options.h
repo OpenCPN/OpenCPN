@@ -119,7 +119,8 @@ enum {
         ID_SKEWCOMPBOX,
         ID_GARMINHOST,
         ID_FILTERNMEA,
-        ID_FULLSCREENQUILT
+        ID_FULLSCREENQUILT,
+        ID_FSTOOLBARCHECKBOX
 
 
 };
@@ -332,6 +333,7 @@ public:
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
     wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
+    wxCheckBox              *pFullScreenToolbar;
 
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;

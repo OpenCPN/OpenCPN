@@ -883,7 +883,9 @@ void Quilt::AdjustQuiltVP(ViewPort &vp_last, ViewPort &vp_proposed)
       if(m_bbusy)
             return;
 
-      ChartBase *pRefChart = GetLargestScaleChart();
+//      ChartBase *pRefChart = GetLargestScaleChart();
+      ChartBase *pRefChart = ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
+
       if(pRefChart)
             pRefChart->AdjustVP(vp_last, vp_proposed);
 }
@@ -1009,11 +1011,15 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                               target_stack_index--;
                               int test_db_index = m_extended_stack_array.Item(target_stack_index);
 
-                              if((current_type == ChartData->GetDBChartType(test_db_index)) && IsChartQuiltableRef(test_db_index))
+                              if( pCurrentStack->DoesStackContaindbIndex(test_db_index))
                               {
+                                    if((current_type == ChartData->GetDBChartType(test_db_index)) && IsChartQuiltableRef(test_db_index))
+                                    {
+
                                     //    open the target, and check the min_scale
-                                    ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
-                                    min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, false);
+                                          ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
+                                          min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, false);
+                                    }
                               }
                         }
 
@@ -2406,7 +2412,8 @@ void ViewPort::SetBoxes(void)
         //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
       if(( g_bskew_comp && (fabs(skew) > .001)) || (fabs(rotation) > .001))
       {
-              //  Get four reference "corner" points in rotated space
+/*
+            //  Get four reference "corner" points in rotated space
 
               //  First, get screen geometry factors
             double pw2 = pix_width / 2;
@@ -2417,7 +2424,7 @@ void ViewPort::SetBoxes(void)
 
               //Rotate the 4 corner points, and get the max rectangle enclosing it
             double rotator = rotation;
-            rotator += skew;
+            rotator -= skew;
 
             double a_east = pix_l * cos ( phi + rotator ) ;
             double a_north = pix_l * sin ( phi + rotator ) ;
@@ -2449,6 +2456,25 @@ void ViewPort::SetBoxes(void)
               //  Grow the source rectangle appropriately
             if(fabs(rotator) > .001)
                   rv_rect.Inflate((dx - pix_width)/2, (dy - pix_height)/2);
+*/
+
+            double rotator = rotation;
+            rotator -= skew;
+
+            int dy = wxRound(fabs(pix_height * cos(rotator)) + fabs(pix_width * sin(rotator)));
+            int dx = wxRound(fabs(pix_width * cos(rotator)) + fabs(pix_height * sin(rotator)));
+
+            //  It is important for MSW build that viewport pixel dimensions be multiples of 4.....
+            if(dy % 4)
+                  dy+= 4 - (dy%4);
+            if(dx % 4)
+                  dx+= 4 - (dx%4);
+
+              //  Grow the source rectangle appropriately
+            if(fabs(rotator) > .001)
+                  rv_rect.Inflate((dx - pix_width)/2, (dy - pix_height)/2);
+
+
       }
 
         //  Compute Viewport lat/lon reference points for co-ordinate hit testing
@@ -3266,7 +3292,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         break;
                   }
 
-                  case WXK_F10:
+                  case WXK_F11:
                         parent_frame->ToggleFullScreen();
                         b_proc = true;
                         break;
@@ -3505,9 +3531,9 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
                                           segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
 
                               s.Append(_("Leg: from "));
-                              s.Append(segShow_point_a->m_MarkName);
+                              s.Append(segShow_point_a->GetName());
                               s.Append(_(" to "));
-                              s.Append(segShow_point_b->m_MarkName);
+                              s.Append(segShow_point_b->GetName());
                               s.Append(_T("\n"));
                               wxString t;
                               if ( dist > 0.1 )
@@ -3542,6 +3568,9 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
                   showRollover = true;
       }
 
+      //    If currently creating a route, do not show this rollover window
+      if ( parent_frame->nRoute_State )
+            showRollover = false;
 
       if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
       {
@@ -4268,11 +4297,11 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         if(wxIsNaN(icon_hdt))
               icon_hdt = 0.0;
 
-//    Calculate the ownship drawing angle icon_rad using an assumed 1.0 minute predictor
+//    Calculate the ownship drawing angle icon_rad using an assumed 10 minute predictor
         double osd_head_lat, osd_head_lon;
         wxPoint osd_head_point;
 
-        ll_gc_ll ( gLat, gLon, icon_hdt, pSog * 1.0 / 60., &osd_head_lat, &osd_head_lon );
+        ll_gc_ll ( gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat, &osd_head_lon );
 
         GetCanvasPointPix ( gLat, gLon, &lShipPoint );
         GetCanvasPointPix ( osd_head_lat, osd_head_lon, &osd_head_point );
@@ -6251,6 +6280,11 @@ bool ChartCanvas::CheckEdgePan ( int x, int y )
       double new_lat, new_lon;
       GetCanvasPixPoint ( np.x, np.y, new_lat, new_lon );
 
+      //    Of course, if the mouse left button is not down, we must stop the event injection
+      wxMouseState state = ::wxGetMouseState();
+      if(!state.LeftDown())
+            bft = false;
+
         if ( ( bft ) && !pPanTimer->IsRunning() )
         {
               if(new_lon > 360.) new_lon -= 360.;
@@ -6274,6 +6308,8 @@ bool ChartCanvas::CheckEdgePan ( int x, int y )
         {
                 pPanTimer->Stop();
         }
+
+
 
         return ( false );
 }
@@ -6522,6 +6558,60 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
               m_pAISRolloverWin->Hide();
 
 
+        // This is a special, platform dependent situation.
+        // If the user (accidentally) drags a route point out of the chart canvas,
+        // then we can end up with an orphan edit target.
+        // This test will detect that condition, and properly close out the route edit
+        // by performing the same actions as on an event.LeftUp()
+
+        // Platform dependence:  we note that the problem only appears on Windows platform.
+        // On gtk, a LeftUp event (generated when the user releases the drag) is always passed to this method,
+        // even if the cursor is not in the canvas window at that time.
+        // Not so for Windows....
+        if(m_bRouteEditing && m_pRoutePointEditTarget && !event.Dragging() && !event.LeftUp())
+        {
+                    pSelect->UpdateSelectableRouteSegments ( m_pRoutePointEditTarget );
+
+                    if ( m_pEditRouteArray )
+                    {
+                          for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
+                          {
+                                Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                                pr->CalculateBBox();
+                                pr->UpdateSegmentDistances();
+                                pr->m_bIsBeingEdited = false;
+
+                                pConfig->UpdateRoute ( pr );
+                          }
+                    }
+
+                              //    Update the RouteProperties Dialog, if currently shown
+                    if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+                    {
+                          if ( m_pEditRouteArray )
+                          {
+                                for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
+                                {
+                                      Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                                      if(pRoutePropDialog->m_pRoute == pr)
+                                      {
+                                            pRoutePropDialog->SetRouteAndUpdate ( pr );
+                                            pRoutePropDialog->UpdateProperties();
+                                      }
+                                }
+                          }
+                    }
+
+                    m_pRoutePointEditTarget->m_bPtIsSelected = false;
+
+                    delete m_pEditRouteArray;
+                    m_pEditRouteArray = NULL;
+
+
+              m_bRouteEditing = false;
+              m_pRoutePointEditTarget = NULL;
+        }
+
 
 //          Mouse Clicks
 
@@ -6575,6 +6665,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         if(NULL == pMousePoint)                   // need a new point
                         {
                               pMousePoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                              pMousePoint->SetNameShown(false);
+
                               pConfig->AddNewWayPoint ( pMousePoint, -1 );    // use auto next num
                               pSelect->AddSelectableRoutePoint ( rlat, rlon, pMousePoint );
                         }
@@ -6685,7 +6777,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         if ( event.Dragging() )
         {
-                if ( m_bRouteEditing )
+              if ( m_bRouteEditing  &&  m_pRoutePointEditTarget)
                 {
 
                    bool DraggingAllowed = true;
@@ -6765,7 +6857,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 }     // if Route Editing
 
 
-                else if ( m_bMarkEditing )
+                else if ( m_bMarkEditing  &&  m_pRoutePointEditTarget)
                 {
                                     // toh, 2009.02.24
                       bool DraggingAllowed = true;
@@ -6826,6 +6918,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         if((lppmax > post_rect.width/2) || (lppmax > post_rect.height/2))
                               post_rect.Inflate((int)(lppmax - (post_rect.width/2)), (int)(lppmax - (post_rect.height/2)));
 
+//                        post_rect.Inflate(200);
                         //    Invalidate the union region
                         pre_rect.Union ( post_rect );
                         RefreshRect ( pre_rect, false );
@@ -6851,46 +6944,48 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         {
                 if ( m_bRouteEditing )
                 {
+                      if(m_pRoutePointEditTarget)
+                      {
+                              pSelect->UpdateSelectableRouteSegments ( m_pRoutePointEditTarget );
 
-                        pSelect->UpdateSelectableRouteSegments ( m_pRoutePointEditTarget );
-
-                        if ( m_pEditRouteArray )
-                        {
-                              for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
-                              {
-                                    Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                    pr->CalculateBBox();
-                                    pr->UpdateSegmentDistances();
-                                    pr->m_bIsBeingEdited = false;
-
-                                    pConfig->UpdateRoute ( pr );
-                              }
-                        }
-
-                        //    Update the RouteProperties Dialog, if currently shown
-                        if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
-                        {
                               if ( m_pEditRouteArray )
                               {
                                     for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
                                     {
                                           Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                          if(pRoutePropDialog->m_pRoute == pr)
+                                          pr->CalculateBBox();
+                                          pr->UpdateSegmentDistances();
+                                          pr->m_bIsBeingEdited = false;
+
+                                          pConfig->UpdateRoute ( pr );
+                                    }
+                              }
+
+                              //    Update the RouteProperties Dialog, if currently shown
+                              if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
+                              {
+                                    if ( m_pEditRouteArray )
+                                    {
+                                          for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
                                           {
-                                                pRoutePropDialog->SetRouteAndUpdate ( pr );
-                                                pRoutePropDialog->UpdateProperties();
+                                                Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                                                if(pRoutePropDialog->m_pRoute == pr)
+                                                {
+                                                      pRoutePropDialog->SetRouteAndUpdate ( pr );
+                                                      pRoutePropDialog->UpdateProperties();
+                                                }
                                           }
                                     }
                               }
-                        }
 
+                              m_pRoutePointEditTarget->m_bPtIsSelected = false;
 
-                        m_bRouteEditing = false;
-                        delete m_pEditRouteArray;
-                        m_pEditRouteArray = NULL;
+                              delete m_pEditRouteArray;
+                              m_pEditRouteArray = NULL;
+                      }
 
-                        m_pRoutePointEditTarget->m_bPtIsSelected = false;
-                        m_pRoutePointEditTarget = NULL;
+                      m_bRouteEditing = false;
+                      m_pRoutePointEditTarget = NULL;
                 }
 
                 else if ( m_bMarkEditing )
@@ -7657,7 +7752,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         pSelect->AddSelectableRouteSegment ( gLat, gLon, m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, pWP_src, m_pFoundRoutePoint, temp_route );
 
-                        wxString name = m_pFoundRoutePoint->m_MarkName;
+                        wxString name = m_pFoundRoutePoint->GetName();
                         if (name.IsEmpty())
                               name = _("(Unnamed Waypoint)");
                         wxString rteName = _("Go to "); rteName.Append(name);
@@ -8680,8 +8775,8 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
         wxRegion ru = GetUpdateRegion();
 
-//        int rx, ry, rwidth, rheight;
-//        ru.GetBox ( rx, ry, rwidth, rheight );
+        int rx, ry, rwidth, rheight;
+        ru.GetBox ( rx, ry, rwidth, rheight );
 //        printf("Onpaint update region box: %d %d %d %d\n", rx, ry, rwidth, rheight);
 
         wxBoundingBox BltBBox;
@@ -8740,6 +8835,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         if(g_bCourseUp && (fabs(VPoint.rotation) > 0.01))
               b_rcache_ok = !b_newview;
 
+        //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
+        if(g_bskew_comp && (fabs(VPoint.skew) > 0.01))
+              b_rcache_ok = !b_newview;
 
         //  Make a special VP
         ViewPort svp = VPoint;
@@ -8925,7 +9023,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxMemoryDC *pChartDC = &temp_dc;
         wxMemoryDC rotd_dc;
 
-        if((/*g_bCourseUp && */(fabs(VPoint.rotation) > 0.01)) || (g_bskew_comp && (fabs(VPoint.skew) > 0.01)))
+        if(((fabs(VPoint.rotation) > 0.01)) || (g_bskew_comp && (fabs(VPoint.skew) > 0.01)))
             {
 
                   //  Can we use the current rotated image cache?
@@ -9167,16 +9265,15 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                                   m_cursor_lat, m_cursor_lon, r_rband, _T(""));
         }
 
-         // Draw a Grid
-           if(g_bDisplayGrid)
-           {
-                 GridDraw(scratch_dc);
-           }
-
         //  Draw S52 compatible Scale Bar
         wxCoord w, h;
         scratch_dc.GetSize(&w, &h);
         ScaleBarDraw( scratch_dc, 20, h - 20 );
+
+        // Maybe draw a Grid
+        if(g_bDisplayGrid && (fabs(VPoint.rotation) < 1e-5) && ((fabs(VPoint.skew) < 1e-9) || g_bskew_comp))
+              GridDraw(scratch_dc);
+
 
 //  Using yet another bitmap and DC, draw semi-static overlay objects if necessary
 
@@ -9930,7 +10027,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint)
 
    if (pAnchorWatchPoint)
    {
-      (pAnchorWatchPoint->m_MarkName).ToDouble(&d1);
+     (pAnchorWatchPoint->GetName()).ToDouble(&d1);
       d1 = AnchorDistFix(d1, AnchorPointMinDist, AnchorPointMaxDist);
       dabs = fabs(d1/1852.);
       ll_gc_ll ( pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs, &tlat1, &tlon1 );
@@ -12960,10 +13057,16 @@ int InitScreenBrightness(void)
             if(gFrame->CanSetTransparent())
             {
             //    Build the curtain window
-                  g_pcurtain = new wxDialog(NULL, -1, _T(""), wxPoint(0,0), wxSize(2,2),
+                  g_pcurtain = new wxDialog(NULL, -1, _T(""), wxPoint(0,0), wxSize(200,200),
                                       wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
 
-                  g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
+                  //ShowWindow(hWnd, SW_HIDE);
+                  g_pcurtain->Hide();
+				  HWND hWnd = GetHwndOf(g_pcurtain);
+                  SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
+                  //ShowWindow(hWnd, SW_SHOW);
+
+				  g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
                   g_pcurtain->SetTransparent(0);
 
                   g_pcurtain->Maximize();

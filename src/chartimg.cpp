@@ -2919,11 +2919,11 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       ViewPort vp_save = vp_proposed;                 // save a copy
 
       int ret_val = 0;
+      double binary_scale_factor = GetPPM() / vp_proposed.view_scale_ppm;
 
       if(vp_last.IsValid())
       {
 
-                  double binary_scale_factor = GetPPM() / vp_proposed.view_scale_ppm;
 
                   //    We only need to adjust the VP if the cache is valid and potentially usable, i.e. the scale factor is integer...
                   //    The objective here is to ensure that the VP center falls on an exact pixel boundary within the cache

@@ -98,7 +98,7 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
 
             pway->lat = prp->m_lat;
             pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
+            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
 
       }
 
@@ -166,7 +166,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
 
             pway->lat = prp->m_lat;
             pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
+            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
       }
 
       return ppway;
@@ -228,7 +228,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
 
                   pway->lat = prp->m_lat;
                   pway->lon = prp->m_lon;
-                  strncpy(pway->ident, (prp->m_MarkName.Truncate ( 6 )).mb_str(), 6);
+                  strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
 	    }
 	    else  /* Even */
 	    {

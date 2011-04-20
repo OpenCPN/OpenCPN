@@ -248,6 +248,7 @@ bool              g_bDisplayGrid;  // Flag indicating weather the lat/lon grid s
 bool              g_bGarminPersistance;
 int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
+bool              g_bFullscreenToolbar;
 
 
 bool              g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -294,6 +295,8 @@ bool            g_bfilter_cogsog;
 int             g_COGFilterSec;
 int             g_SOGFilterSec;
 
+int             g_ChartUpdatePeriod;
+int             g_SkewCompUpdatePeriod;
 
 #ifdef USE_S57
 s52plib           *ps52plib;
@@ -352,9 +355,9 @@ bool             g_bAutoAnchorMark;
 wxRect           g_blink_rect;
 double           g_PlanSpeed;
 wxDateTime		 g_StartTime;
-int				 g_StartTimeTZ;
+int			 g_StartTimeTZ;
 IDX_entry		*gpIDX;
-int				 gpIDXn;
+int			 gpIDXn;
 long			 gStart_LMT_Offset;
 
 wxArrayString    *pMessageOnceArray;
@@ -1503,7 +1506,7 @@ bool MyApp::OnInit()
 
         cc1->SetFocus();
 
-        console = new ConsoleCanvas(cc1/*gFrame*/);                    // the console
+        console = new ConsoleCanvas(cc1);                    // the console
 
 
         stats = new StatWin(gFrame);
@@ -2092,6 +2095,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
         m_bpersistent_quilt = false;
 
+        m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
 
 
 //    Establish my children
@@ -3099,21 +3103,30 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
     }
 #else
 */
-    DestroyMyToolbar();
-    m_toolBar = CreateAToolbar();
-    SetToolBar((wxToolBar *)m_toolBar);
+    if (!IsFullScreen() || (IsFullScreen() && g_bFullscreenToolbar))
+    {
+          DestroyMyToolbar();
+          m_toolBar = CreateAToolbar();
+          SetToolBar((wxToolBar *)m_toolBar);
+    }
+    else
+    {
+          if(m_toolBar)
+                DestroyMyToolbar();
+    }
 //#endif
-
-    wxColour back_color = GetGlobalColor(_T("GREY2"));            // Was GREY1, switched on v 1.3.4 transparent icons
+    if (m_toolBar)
+    {
+      wxColour back_color = GetGlobalColor(_T("GREY2"));            // Was GREY1, switched on v 1.3.4 transparent icons
 
     //  Set background
-    m_toolBar->SetBackgroundColour(back_color);
-    m_toolBar->ClearBackground();
+      m_toolBar->SetBackgroundColour(back_color);
+      m_toolBar->ClearBackground();
 
 #ifdef ocpnUSE_OPNCTOOLBAR
-    m_toolBar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
+      m_toolBar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
 
-    m_toolBar->SetColorScheme(cs);
+      m_toolBar->SetColorScheme(cs);
 #endif
 
 //    UpdateToolbarDynamics();
@@ -3121,9 +3134,10 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
 //    UpdateToolbarStatusWindow(Current_Ch, false);
 
     //  Re-establish toggle states
-    m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
-    m_toolBar->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
-    m_toolBar->ToggleTool(ID_TIDE, cc1->GetbShowTide());
+      m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
+      m_toolBar->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
+      m_toolBar->ToggleTool(ID_TIDE, cc1->GetbShowTide());
+    }
 
     return;
 }
@@ -3329,7 +3343,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
                   while(node)
                   {
                         RoutePoint *pr = node->GetData();
-                        if(pr->m_MarkName.StartsWith(_T("Anchorage")))
+                        if(pr->GetName().StartsWith(_T("Anchorage")))
                         {
                               double a = gLat - pr->m_lat;
                               double b = gLon - pr->m_lon;
@@ -3511,7 +3525,6 @@ void MyFrame::DoSetSize(void)
         if(stats)
               stat_height = 22 * stats->GetRows();
 
-
         int cccw = x;
         int ccch = y;
 
@@ -3607,10 +3620,8 @@ void MyFrame::UpdateAllFonts()
       if(console)
       {
             console->UpdateFonts();
-
             //    Reposition console
             PositionConsole();
-            cc1->Refresh();
       }
 
       if(g_pais_query_dialog_active)
@@ -3618,6 +3629,11 @@ void MyFrame::UpdateAllFonts()
             g_pais_query_dialog_active->Destroy();
             g_pais_query_dialog_active = NULL;
       }
+
+      if(pWayPointMan)
+            pWayPointMan->ClearRoutePointFonts();
+
+      cc1->Refresh();
 }
 
 void MyFrame::OnToolLeftClick(wxCommandEvent& event)
@@ -3666,7 +3682,8 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_TEXT:
         {
             ps52plib->SetShowS57Text(!ps52plib->GetShowS57Text());
-            m_toolBar->ToggleTool(ID_TEXT, ps52plib->GetShowS57Text());
+            if (m_toolBar)
+                  m_toolBar->ToggleTool(ID_TEXT, ps52plib->GetShowS57Text());
             cc1->ReloadVP();
             break;
         }
@@ -3675,7 +3692,8 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_AIS:
         {
             g_bShowAIS = !g_bShowAIS;
-            m_toolBar->ToggleTool(ID_AIS, g_bShowAIS );
+            if (m_toolBar)
+                  m_toolBar->ToggleTool(ID_AIS, g_bShowAIS );
             cc1->ReloadVP();
             break;
         }
@@ -3704,14 +3722,16 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             if(ptcmgr->IsReady())
             {
                   cc1->SetbShowCurrent(!cc1->GetbShowCurrent());
-                  m_toolBar->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
+                  if (m_toolBar)
+                        m_toolBar->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
                   cc1->ReloadVP();
             }
             else
             {
                 wxLogMessage(_T("Chart1::Event...TCMgr Not Available"));
                 cc1->SetbShowCurrent(false);
-                m_toolBar->ToggleTool(ID_CURRENT, false);
+                if (m_toolBar)
+                      m_toolBar->ToggleTool(ID_CURRENT, false);
             }
 
             if(cc1->GetbShowCurrent())
@@ -3736,14 +3756,16 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
                 if(ptcmgr->IsReady())
                 {
                       cc1->SetbShowTide(!cc1->GetbShowTide());
-                      m_toolBar->ToggleTool(ID_TIDE, cc1->GetbShowTide());
+                      if (m_toolBar)
+                            m_toolBar->ToggleTool(ID_TIDE, cc1->GetbShowTide());
                       cc1->ReloadVP();
                 }
                 else
                 {
                     wxLogMessage(_("Chart1::Event...TCMgr Not Available"));
                     cc1->SetbShowTide(false);
-                    m_toolBar->ToggleTool(ID_TIDE, false);
+                    if (m_toolBar)
+                          m_toolBar->ToggleTool(ID_TIDE, false);
                 }
 
                 if(cc1->GetbShowTide())
@@ -3862,7 +3884,22 @@ void MyFrame::ToggleColorScheme()
 void MyFrame::ToggleFullScreen()
 {
       bool to = ! IsFullScreen();
-      ShowFullScreen(to, 0);//wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION);
+      long style;
+      if (g_bFullscreenToolbar)
+      {
+            if (to)
+                  m_toolBar = CreateAToolbar();
+            style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOMENUBAR;
+      }
+      else
+      {
+            if (to)
+                  DestroyMyToolbar();
+            style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOMENUBAR | wxFULLSCREEN_NOTOOLBAR;
+      }
+      ShowFullScreen(to, style);
+      UpdateToolbar(global_color_scheme);
+      Layout();
 }
 
 void MyFrame::ActivateMOB(void)
@@ -3936,7 +3973,8 @@ void MyFrame::TrackOn(void)
       pRouteList->Append ( g_pActiveTrack );
       g_pActiveTrack->Start();
 
-      m_toolBar->ToggleTool(ID_TRACK, g_bTrackActive);
+      if (m_toolBar)
+            m_toolBar->ToggleTool(ID_TRACK, g_bTrackActive);
 
 }
 
@@ -4008,7 +4046,8 @@ void MyFrame::ToggleENCText(void)
       if(ps52plib)
       {
             ps52plib->SetShowS57Text(!ps52plib->GetShowS57Text());
-            m_toolBar->ToggleTool(ID_TEXT, ps52plib->GetShowS57Text());
+            if (m_toolBar)
+                  m_toolBar->ToggleTool(ID_TEXT, ps52plib->GetShowS57Text());
             cc1->ReloadVP();
       }
 
@@ -4026,7 +4065,8 @@ void MyFrame::TogglebFollow(void)
 void MyFrame::SetbFollow(void)
 {
       cc1->m_bFollow = true;
-      m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
+      if (m_toolBar)
+            m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
 
       DoChartUpdate();
       cc1->ReloadVP();
@@ -4039,7 +4079,8 @@ void MyFrame::ClearbFollow(void)
       vLat = gLat;
       vLon = gLon;
       cc1->m_bFollow = false;
-      m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
+      if (m_toolBar)
+            m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
       DoChartUpdate();
       cc1->ReloadVP();
 
@@ -4331,6 +4372,8 @@ int MyFrame::DoOptionsDialog()
 
       }
 
+      SetChartUpdatePeriod(cc1->VPoint);              // Pick up changes to skew compensator
+
 //    Restart the async classes
 #ifdef USE_WIFI_CLIENT
       if(pWIFI)
@@ -4593,7 +4636,8 @@ void MyFrame::SetupQuiltMode(void)
 
 void MyFrame::ClearRouteTool()
 {
-      m_toolBar->ToggleTool(ID_ROUTE, false);
+      if (m_toolBar)
+            m_toolBar->ToggleTool(ID_ROUTE, false);
 }
 
 
@@ -4790,7 +4834,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             double brg;
             DistanceBearingMercator(pAnchorWatchPoint1->m_lat, pAnchorWatchPoint1->m_lon, gLat, gLon, &brg, &dist);
             double d = AnchorPointMaxDist;
-            (pAnchorWatchPoint1->m_MarkName).ToDouble(&d);
+            (pAnchorWatchPoint1->GetName()).ToDouble(&d);
             d = AnchorDistFix(d, AnchorPointMinDist, AnchorPointMaxDist);
             bool toofar = false; bool tooclose = false;
             if (d >= 0.0) toofar = (dist*1852. > d);
@@ -4809,7 +4853,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
              DistanceBearingMercator(pAnchorWatchPoint2->m_lat, pAnchorWatchPoint2->m_lon, gLat, gLon, &brg, &dist);
 
              double d = AnchorPointMaxDist;
-             (pAnchorWatchPoint2->m_MarkName).ToDouble(&d);
+             (pAnchorWatchPoint2->GetName()).ToDouble(&d);
              d = AnchorDistFix(d, AnchorPointMinDist, AnchorPointMaxDist);
              bool toofar = false; bool tooclose = false;
              if (d >= 0) toofar = (dist*1852. > d);
@@ -4908,29 +4952,16 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       }
 
 
-//    Poll for updates to Toolbar status window
-//    in order to handle especially the CM93Composite chart
-/*
-      if(Current_Ch)
-      {
-            wxString name = Current_Ch->GetName();
-            wxString pub_date = Current_Ch->GetPubDate();
-
-            if((!name.IsSameAs(m_last_reported_chart_name)) || (!pub_date.IsSameAs(m_last_reported_chart_pubdate)))
-            {
-                  UpdateToolbarStatusWindow(Current_Ch, false);
-                  m_last_reported_chart_name = name;
-                  m_last_reported_chart_pubdate = pub_date;
-            }
-      }
-*/
-
 //      Update the chart database and displayed chart
       bool bnew_chart = false;
 
+//    Do the chart update based on the global update period currently set
 //    If in COG UP mode, the chart update is handled by COG Update timer
-      if(!g_bCourseUp)
+      if(!g_bCourseUp && (0 == m_ChartUpdatePeriod--))
+      {
             bnew_chart = DoChartUpdate();
+            m_ChartUpdatePeriod = g_ChartUpdatePeriod;
+      }
 
 //      Update the active route, if any
       if(g_pRouteMan->UpdateProgress())
@@ -5031,12 +5062,7 @@ void MyFrame::DoCOGSet(void)
       double old_VPRotate = g_VPRotate;
 
       if(g_bCourseUp)
-      {
             g_VPRotate = -g_COGAvg * PI / 180.;
-
-//            if(Current_Ch)
-//                  g_VPRotate -= Current_Ch->GetChartSkew() * PI / 180.;
-      }
       else
             g_VPRotate = 0.;
 
@@ -5672,6 +5698,8 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
+            SetChartUpdatePeriod(cc1->VPoint);
+
             UpdateToolbarStatusBox();           // Pick up the rotation
 
         }
@@ -5722,6 +5750,8 @@ void MyFrame::SelectdbChart(int dbindex)
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
+            SetChartUpdatePeriod(cc1->VPoint);
+
             UpdateToolbarStatusBox();           // Pick up the rotation
 
       }
@@ -5735,6 +5765,22 @@ void MyFrame::SelectdbChart(int dbindex)
 
             stats->Refresh(true);
       }
+}
+
+
+void MyFrame::SetChartUpdatePeriod(ViewPort &vp)
+{
+     //    Set the chart update period based upon chart skew and skew compensator
+
+      g_ChartUpdatePeriod = 1;            // General default
+
+      if(!vp.b_quilt)
+      {
+            if(g_bskew_comp && (fabs(vp.skew)) > 0.01)
+                  g_ChartUpdatePeriod = g_SkewCompUpdatePeriod;
+      }
+
+      m_ChartUpdatePeriod = g_ChartUpdatePeriod;
 }
 
 

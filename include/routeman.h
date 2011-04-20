@@ -247,7 +247,7 @@ public:
       void DeleteAllWaypoints(bool b_delete_used);
       RoutePoint *FindRoutePointByGUID(wxString &guid);
       void DestroyWaypoint(RoutePoint *pRp);
-
+      void ClearRoutePointFonts(void);
 
       bool DoesIconExist(const wxString icon_key);
       wxBitmap *GetIconBitmap(int index);
