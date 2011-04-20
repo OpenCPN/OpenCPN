@@ -352,6 +352,8 @@ class cm93chart : public s57chart
 
             wxPoint *GetDrawBuffer(int nSize);
 
+            wxRegion          m_render_region;
+
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
@@ -401,6 +403,7 @@ class cm93chart : public s57chart
 
             wxPoint     *m_pDrawBuffer;               // shared outline drawing buffer
             int         m_nDrawBufferSize;
+
 
 };
 

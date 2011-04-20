@@ -5234,7 +5234,6 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
                   {
                   //    No sense in increasing the region beyond the current VPoint size,
                   //    Just makes subsequent region iterator loops HUGE....
-//                        rgn_covr.Intersect(0, 0, VPoint.pix_width, VPoint.pix_height);
                         rgn_covr.Intersect(VPoint.rv_rect);
 
                         pValidRegion->Union(rgn_covr);
@@ -5302,11 +5301,19 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
             //    Check the current chart scale to see if it covers the requested region totally
             if(VPoint.b_quilt)
             {
-//                  wxRegion vpr_empty(VPoint.rv_rect);
+                  //    Clear all the subchart regions
+                  for(int i = 0 ; i < 8 ; i++)
+                  {
+                        if(m_pcm93chart_array[i])
+                              m_pcm93chart_array[i]->m_render_region.Clear();
+                  }
+
                   wxRegion vpr_empty = Region;
 
                   wxRegion chart_region;
                   GetValidCanvasRegion(vp_positive, &chart_region);
+                  m_pcm93chart_current->m_render_region = chart_region;
+
                   if(!chart_region.IsEmpty())
                         vpr_empty.Subtract(chart_region);
 
@@ -5376,6 +5383,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect(vpr_empty);
+
+                                    m_pcm93chart_current->m_render_region = sscale_region;
 
                                     //    Blit the smaller scale chart patch onto the target DC
                                     wxRegionIterator upd ( sscale_region );
@@ -5783,7 +5792,32 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon(float lat, float lon, f
 
       SetVPPositive(&vp_positive);
 
-      return  m_pcm93chart_current->GetObjRuleListAtLatLon(lat, alon, select_radius, &vp_positive);
+      if(!VPoint->b_quilt)
+            return  m_pcm93chart_current->GetObjRuleListAtLatLon(lat, alon, select_radius, &vp_positive);
+      else
+      {
+            //    Search all of the subcharts, looking for the one whose render region contains the requested point
+            wxPoint p = VPoint->GetPixFromLL(lat, lon);
+
+            for(int i = 0 ; i < 8 ; i++)
+            {
+                  if(m_pcm93chart_array[i])
+                  {
+                        if(!m_pcm93chart_array[i]->m_render_region.IsEmpty())
+                        {
+                              if(wxInRegion == m_pcm93chart_array[i]->m_render_region.Contains(p))
+                                    return  m_pcm93chart_array[i]->GetObjRuleListAtLatLon(lat, alon, select_radius, &vp_positive);
+                        }
+                  }
+            }
+
+           //     As default, return an empty list
+           ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+
+           return ret_ptr;
+
+      }
+
 }
 
 S57ObjectDesc *cm93compchart::CreateObjDescription(const ObjRazRules *obj)
