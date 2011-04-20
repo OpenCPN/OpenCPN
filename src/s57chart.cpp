@@ -4540,9 +4540,12 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
             while ( top != NULL)
             {
                 LUP = ps52plib->S52_LUPLookup(PAPER_CHART, top->obj->FeatureName, top->obj);
-                ps52plib->_LUP2rules(LUP, top->obj);
-                _insertRules(top->obj, LUP, pOwner);
-                top->obj->m_DisplayCat = LUP->DISC;
+                if(LUP)
+                {
+                  ps52plib->_LUP2rules(LUP, top->obj);
+                  _insertRules(top->obj, LUP, pOwner);
+                  top->obj->m_DisplayCat = LUP->DISC;
+                }
 
                 nxx  = top->next;
                 top = nxx;
@@ -4557,9 +4560,12 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
             while ( top != NULL)
             {
                 LUP = ps52plib->S52_LUPLookup(SIMPLIFIED, top->obj->FeatureName, top->obj);
-                ps52plib->_LUP2rules(LUP, top->obj);
-                _insertRules(top->obj, LUP, pOwner);
-                top->obj->m_DisplayCat = LUP->DISC;
+                if(LUP)
+                {
+                      ps52plib->_LUP2rules(LUP, top->obj);
+                      _insertRules(top->obj, LUP, pOwner);
+                      top->obj->m_DisplayCat = LUP->DISC;
+                }
 
                 nxx  = top->next;
                 top = nxx;
@@ -4574,8 +4580,12 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
             while ( top != NULL)
             {
                 LUP = ps52plib->S52_LUPLookup(SYMBOLIZED_BOUNDARIES, top->obj->FeatureName, top->obj);
-                ps52plib->_LUP2rules(LUP, top->obj);
-                _insertRules(top->obj, LUP, pOwner);
+                if(LUP)
+                {
+                      ps52plib->_LUP2rules(LUP, top->obj);
+                      _insertRules(top->obj, LUP, pOwner);
+                      top->obj->m_DisplayCat = LUP->DISC;
+                }
 
                 nxx  = top->next;
                 top = nxx;
@@ -4590,9 +4600,12 @@ void s57chart::UpdateLUPs(s57chart *pOwner)
             while ( top != NULL)
             {
                 LUP = ps52plib->S52_LUPLookup(PLAIN_BOUNDARIES, top->obj->FeatureName, top->obj);
-                ps52plib->_LUP2rules(LUP, top->obj);
-                _insertRules(top->obj, LUP, pOwner);
-                top->obj->m_DisplayCat = LUP->DISC;
+                if(LUP)
+                {
+                      ps52plib->_LUP2rules(LUP, top->obj);
+                      _insertRules(top->obj, LUP, pOwner);
+                      top->obj->m_DisplayCat = LUP->DISC;
+                }
 
                 nxx  = top->next;
                 top = nxx;
