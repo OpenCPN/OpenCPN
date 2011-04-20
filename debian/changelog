@@ -8,6 +8,7 @@ opencpn (2.4.412-1) unstable; urgency=low
   * Use system's zlib, bzip2 instead of embedded copy
   * Recommend xtide's WVS coastline instead of shipping a clone
   * Use system's copy of the GPLv2
+  * Point to packaged doc directory
 
  -- Hamish B <hamish_b@yahoo.com>  Wed, 20 Apr 2011 17:56:57 +1200
 
