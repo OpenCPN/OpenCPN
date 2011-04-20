@@ -5217,7 +5217,13 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
             {
                   M_COVR_Desc *pmcd = (m_pcm93chart_current->m_pcovr_array_loaded.Item(im));
 
-                  if(vp_positive.GetBBox().Intersect(pmcd->m_covr_bbox) == _OUT)       // no overlap at all
+                  //    We can make a quick test based on the bbox of the M_COVR and the bbox of the ViewPort
+                  wxBoundingBox rtwbb = pmcd->m_covr_bbox;
+                  wxPoint2DDouble rtw(360., 0.);
+                  rtwbb.Translate( rtw );
+
+                  if((vp_positive.GetBBox().Intersect(pmcd->m_covr_bbox) == _OUT) &&
+                      (vp_positive.GetBBox().Intersect(rtwbb) == _OUT))
                         continue;
 
                   wxPoint *DrawBuf = m_pcm93chart_current->GetDrawBuffer(pmcd->m_nvertices);
