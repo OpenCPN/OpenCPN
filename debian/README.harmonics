@@ -1,0 +1,20 @@
+The opencpn-data package currently ships the ASCII version of xtide's
+tidal harmonics tables, while the xtide-data package ships a binary-
+blob version.
+
+
+On 21 Apr 2011, Dave (bdbcat) wrote:
+"""
+Comment on xtide data:
+The harmonic data currently shipping in sourceforge git have been 
+tweaked (by me and others) to work nicely in the US, especially 
+fixing current direction reporting. We are also soon adding 
+Scandinavian tide staion support. Using a generic xtide harmonic 
+file will be less useful for many users. I think we need to continue 
+to package our own harmonic files.
+...
+Related point: I tested some code to incorporate the newer binary 
+xtide data sets. This could be made to work, but I have no immediate 
+motivation to pursue.
+"""
+
