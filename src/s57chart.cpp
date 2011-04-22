@@ -154,6 +154,8 @@ S57Obj::S57Obj()
         m_lsindex_array = NULL;
         m_n_edge_max_points = 0;
 
+        bBBObj_valid = false;
+
 
         //        Set default (unity) auxiliary transform coefficients
         x_rate   = 1.0;
@@ -525,8 +527,13 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                         double xll, yll;
                         fromSM(easting, northing, point_ref_lat, point_ref_lon, &yll, &xll);
 
-                        BBObj.SetMin(xll, yll);
-                        BBObj.SetMax(xll, yll);
+//                        BBObj.SetMin(xll, yll);
+//                        BBObj.SetMax(xll, yll);
+                        m_lon = xll;
+                        m_lat = yll;
+                        BBObj.SetMin(m_lon -.25, m_lat - .25);
+                        BBObj.SetMax(m_lon +.25, m_lat + .25);
+
 
                     }
                     else
@@ -624,6 +631,7 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                           // set s57obj bbox as lat/lon
                           BBObj.SetMin(xmin, ymin);
                           BBObj.SetMax(xmax, ymax);
+                          bBBObj_valid = true;
 
                           //  and declare x/y of the object to be average east/north of all points
                           double e1, e2, n1, n2;
@@ -632,6 +640,12 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
 
                           x = (e1 + e2) / 2.;
                           y = (n1 + n2) / 2.;
+
+                          //  Set the object base point
+                          double xll, yll;
+                          fromSM(x, y, line_ref_lat, line_ref_lon, &yll, &xll);
+                          m_lon = xll;
+                          m_lat = yll;
 
                           //  Capture the edge and connected node table indices
                           my_fgets(buf, MAX_LINE, *pfpx);     // this will be "\n"
@@ -691,6 +705,7 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                             //  Set the s57obj bounding box as lat/lon
                             BBObj.SetMin(ppg->Get_xmin(), ppg->Get_ymin());
                             BBObj.SetMax(ppg->Get_xmax(), ppg->Get_ymax());
+                            bBBObj_valid = true;
 
                             //  and declare x/y of the object to be average east/north of all points
                             double e1, e2, n1, n2;
@@ -700,6 +715,11 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                             x = (e1 + e2) / 2.;
                             y = (n1 + n2) / 2.;
 
+                          //  Set the object base point
+                            double xll, yll;
+                            fromSM(x, y, area_ref_lat, area_ref_lon, &yll, &xll);
+                            m_lon = xll;
+                            m_lat = yll;
 
                           //  Capture the edge and connected node table indices
 //                            my_fgets(buf, MAX_LINE, *pfpx);     // this will be "\n"
@@ -1623,6 +1643,12 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
             UpdateLUPs(this);                               // and update the LUPs
             ClearRenderedTextCache();                       // and reset the text renderer,
                                                             //for the case where depth(height) units change
+            ResetPointBBoxes();
+      }
+
+      if(VPoint.view_scale_ppm != m_last_vp.view_scale_ppm)
+      {
+            ResetPointBBoxes();
       }
 
       SetLinePriorities();
@@ -4513,6 +4539,47 @@ int s57chart::_insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner)
    return 1;
 }
 
+void s57chart::ResetPointBBoxes(void)
+{
+      ObjRazRules *top;
+      ObjRazRules *nxx;
+
+      for (int i=0; i<PRIO_NUM; ++i)
+      {
+            top = razRules[i][0];
+
+            while ( top != NULL)
+            {
+                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  {
+                        top->obj->bBBObj_valid = false;
+                        top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
+                        top->obj->BBObj.SetMax(top->obj->m_lon +.25, top->obj->m_lat + .25);
+                  }
+
+                  nxx  = top->next;
+                  top = nxx;
+            }
+
+            top = razRules[i][1];
+
+            while ( top != NULL)
+            {
+                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  {
+                        top->obj->bBBObj_valid = false;
+                        top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
+                        top->obj->BBObj.SetMax(top->obj->m_lon +.25, top->obj->m_lat + .25);
+                  }
+
+                  nxx  = top->next;
+                  top = nxx;
+            }
+      }
+}
+
+
+
 
 //      Traverse the ObjRazRules tree, and fill in
 //      any Lups/rules not linked on initial chart load.
@@ -5377,6 +5444,9 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
                 //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
                 //  possibly expanded by text or symbol rendering
                 {
+                    if(!obj->bBBObj_valid)
+                            return false;
+
                     if(1 == obj->npt)
                     {
                           //  Special case for LIGHTS

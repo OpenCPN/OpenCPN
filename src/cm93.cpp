@@ -3782,6 +3782,15 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->BBObj.SetMax(lon, lat);
 
+                  pobj->bBBObj_valid = true;
+
+                  //  Set the object base point
+                  p.x = pobj->x;
+                  p.y = pobj->y;
+                  Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
+                  pobj->m_lon = lon;
+                  pobj->m_lat = lat;
+
                   //    This will be a deferred tesselation.....
                   PolyTessGeoTrap *ppg = new PolyTessGeoTrap(xgeom);
                   pobj->pPolyTrapGeo = ppg;
@@ -3814,17 +3823,19 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         if(pmcd)
                         {
                               trans_WGS84_offset_x = pmcd->user_xoff;
-//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
                               trans_WGS84_offset_y = pmcd->user_yoff;
-//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
                   //    Transform again to pick up offsets
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
 
-                  pobj->BBObj.SetMin(lon, lat);
-                  pobj-> BBObj.SetMax(lon, lat);
+                  pobj->m_lat = lat;
+                  pobj->m_lon = lon;
+
+                  pobj->BBObj.SetMin(lon-.25, lat-.25);
+                  pobj->BBObj.SetMax(lon+.25, lat+.25);
+
 
                   break;
             }
@@ -3910,6 +3921,14 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         *pdl++ = lat;
                   }
 
+                                    //  Set the object base point
+                  p.x = pobj->x;
+                  p.y = pobj->y;
+                  Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
+                  pobj->m_lon = lon;
+                  pobj->m_lat = lat;
+
+
                   delete pGeo;
 
                   break;
@@ -3969,6 +3988,15 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   p.y = (int)xgeom->ymax;
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->BBObj.SetMax(lon, lat);
+
+                  pobj->bBBObj_valid = true;
+
+                  //  Set the object base point
+                  p.x = pobj->x;
+                  p.y = pobj->y;
+                  Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
+                  pobj->m_lon = lon;
+                  pobj->m_lat = lat;
 
                   break;
 

@@ -323,7 +323,10 @@ public:
       PolyTessGeo             *pPolyTessGeo;
       PolyTessGeoTrap         *pPolyTrapGeo;
 
-      wxBoundingBox           BBObj;
+      wxBoundingBox           BBObj;                  // lat/lon BBox of the rendered object
+      double                  m_lat;                  // The lat/lon of the object's "reference" point
+      double                  m_lon;
+      bool                    bBBObj_valid;           // set after the BBObj has been calculated once.
 
       Rules                   *CSrules;               // per object conditional symbology
       int                     bCS_Added;

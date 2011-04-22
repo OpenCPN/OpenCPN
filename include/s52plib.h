@@ -87,7 +87,9 @@ public:
       wxString GetPLIBColorScheme(void){ return m_ColorScheme; }
 
       bool ObjectRenderCheck(ObjRazRules *rzRules, ViewPort *vp);
-      bool ObjectRenderCheckCat(ObjRazRules *rzRules);
+      bool ObjectRenderCheckPos(ObjRazRules *rzRules, ViewPort *vp);
+      bool ObjectRenderCheckCat(ObjRazRules *rzRules, ViewPort *vp);
+      bool ObjectRenderCheckCS (ObjRazRules *rzRules, ViewPort *vp );
 
       void DestroyLUP(LUPrec *pLUP);
 
