@@ -149,6 +149,7 @@ ChartDB         *ChartData;
 ChartStack      *pCurrentStack;
 wxString        *pdir_list[20];
 int             g_restore_stackindex;
+int             g_restore_dbindex;
 
 RouteList       *pRouteList;
 LayerList       *pLayerList;
@@ -1500,7 +1501,7 @@ bool MyApp::OnInit()
         cc1 =  new ChartCanvas(gFrame);                         // the chart display canvas
         gFrame->SetCanvasWindow(cc1);
 
-        cc1->SetQuiltMode(g_bQuiltStart);                     // set initial quilt mode
+        cc1->SetQuiltMode(g_bQuiltEnable);                     // set initial quilt mode
         cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
         cc1->SetViewPoint ( vLat, vLon, initial_scale_ppm, 0., 0.);
 
@@ -3382,7 +3383,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       TrackOff();
 
       if(pCurrentStack)
+      {
             g_restore_stackindex = pCurrentStack->CurrentStackEntry;
+            g_restore_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
+      }
 
       pConfig->UpdateSettings();
       pConfig->UpdateNavObj();
@@ -3787,6 +3791,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             if(!g_pAboutDlg)
                   g_pAboutDlg = new about(this, &g_SData_Locn);
 
+            g_pAboutDlg->Update();
             g_pAboutDlg->Show();
 
             break;
@@ -4576,7 +4581,7 @@ void MyFrame::SetupQuiltMode(void)
                   ChartData->BuildChartStack(&TempStack, tLat, tLon);
 
 
-                  //    Iterate over the quilt charts actaully shown, looking for the largest scale chart that will be in the new chartstack....
+                  //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
                   //    This will (almost?) always be the reference chart....
 
                   ChartBase *Candidate_Chart = NULL;
@@ -5999,6 +6004,23 @@ bool MyFrame::DoChartUpdate(void)
       if(pCurrentStack)
             last_nEntry = pCurrentStack->nEntry;
 
+      //    Startup case:
+      //    Quilting is enabled, but the last chart seen was not quiltable
+      //    In this case, drop to single chart mode, set persistence flag,
+      //    And open the specified chart
+      if(bFirstAuto)
+      {
+            if (cc1->GetQuiltMode())
+            {
+                  if(!cc1->IsChartQuiltableRef(g_restore_dbindex))
+                  {
+                        ToggleQuiltMode();
+                        m_bpersistent_quilt = true;
+                        Current_Ch = NULL;
+                  }
+            }
+      }
+
 
       //      If in auto-follow mode, use the current glat,glon to build chart stack.
       //      Otherwise, use vLat, vLon gotten from click on chart canvas, or other means
@@ -6066,13 +6088,22 @@ bool MyFrame::DoChartUpdate(void)
             {
                   double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale(); // as set from config load
 
-                  int initial_db_index = -1;
+                  int initial_db_index = g_restore_dbindex;
+                  if(initial_db_index < 0)
+                  {
+                        if(pCurrentStack->nEntry)
+                        {
+                              if((g_restore_stackindex < pCurrentStack->nEntry) && (g_restore_stackindex >= 0))
+                                    initial_db_index = pCurrentStack->GetDBIndex(g_restore_stackindex);
+                              else
+                                    initial_db_index = pCurrentStack->GetDBIndex(pCurrentStack->nEntry-1) ;
+                        }
+                        else
+                              initial_db_index = 0;
+                  }
+
                   if(pCurrentStack->nEntry)
                   {
-                        if((g_restore_stackindex < pCurrentStack->nEntry) && (g_restore_stackindex >= 0))
-                              initial_db_index = pCurrentStack->GetDBIndex(g_restore_stackindex);
-                        else
-                              initial_db_index = pCurrentStack->GetDBIndex(pCurrentStack->nEntry-1) ;
 
                         int initial_type = ChartData->GetDBChartType(initial_db_index);
 

@@ -76,6 +76,7 @@ extern NMEAHandler      *g_pnmea;
 extern FontMgr          *pFontMgr;
 
 extern int              g_restore_stackindex;
+extern int              g_restore_dbindex;
 extern RouteList        *pRouteList;
 extern LayerList        *pLayerList;
 extern bool             g_bIsNewLayer;
@@ -2646,6 +2647,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "AnchorWatch2GUID" ),  &g_AW2GUID, _T(""));
 
       Read ( _T ( "InitialStackIndex" ),  &g_restore_stackindex, 0 );
+      Read ( _T ( "InitialdBIndex" ),  &g_restore_dbindex, -1 );
       Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
       g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
       g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
@@ -3863,6 +3865,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AutomaticDailyTracks" ),   g_bTrackDaily );
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
+      Write ( _T ( "InitialdBIndex" ),  g_restore_dbindex );
 
       Write ( _T ( "AnchorWatch1GUID" ),   g_AW1GUID );
       Write ( _T ( "AnchorWatch2GUID" ),   g_AW2GUID );

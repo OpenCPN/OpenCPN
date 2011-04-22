@@ -915,7 +915,7 @@ int Quilt::GetNewRefChart(void)
             for(unsigned int is=0 ; is<im-1 ; is++)
             {
                   const ChartTableEntry &m = ChartData->GetChartTableEntry(m_extended_stack_array.Item(is));
-                  if(m.GetScale() >= m_reference_scale)
+                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
                   {
                         new_ref_dbIndex = m_extended_stack_array.Item(is);
                         break;
