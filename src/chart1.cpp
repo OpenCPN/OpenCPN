@@ -6008,7 +6008,7 @@ bool MyFrame::DoChartUpdate(void)
       //    Quilting is enabled, but the last chart seen was not quiltable
       //    In this case, drop to single chart mode, set persistence flag,
       //    And open the specified chart
-      if(bFirstAuto)
+      if(bFirstAuto && (g_restore_dbindex >= 0))
       {
             if (cc1->GetQuiltMode())
             {
