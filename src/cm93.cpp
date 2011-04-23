@@ -3761,9 +3761,7 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                         if(pmcd)
                         {
                               trans_WGS84_offset_x = pmcd->user_xoff;
-//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
                               trans_WGS84_offset_y = pmcd->user_yoff;
-//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -3785,8 +3783,8 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   pobj->bBBObj_valid = true;
 
                   //  Set the object base point
-                  p.x = pobj->x;
-                  p.y = pobj->y;
+                  p.x = (int)pobj->x;
+                  p.y = (int)pobj->y;
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->m_lon = lon;
                   pobj->m_lat = lat;
@@ -3922,8 +3920,8 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   }
 
                                     //  Set the object base point
-                  p.x = pobj->x;
-                  p.y = pobj->y;
+                  p.x = (int)pobj->x;
+                  p.y = (int)pobj->y;
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->m_lon = lon;
                   pobj->m_lat = lat;
@@ -3992,8 +3990,8 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   pobj->bBBObj_valid = true;
 
                   //  Set the object base point
-                  p.x = pobj->x;
-                  p.y = pobj->y;
+                  p.x = (int)pobj->x;
+                  p.y = (int)pobj->y;
                   Transform(&p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon);
                   pobj->m_lon = lon;
                   pobj->m_lat = lat;
