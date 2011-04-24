@@ -1981,6 +1981,7 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                         }
                   }
 
+
                   //    If not in the patchlist, look in the full chartbar
                   if(box.IsEmpty())
                   {
@@ -1993,7 +1994,19 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     wxRegion chart_region = GetChartQuiltRegion(cte, vp);
                                     if(!chart_region.Empty())
                                     {
-                                          box = chart_region.GetBox();
+                                          //    Do not highlite fully eclipsed charts
+                                          bool b_eclipsed = false;
+                                          for( unsigned int ir=0 ; ir<m_eclipsed_stack_array.GetCount() ; ir++)
+                                          {
+                                                if(m_nHiLiteIndex == m_eclipsed_stack_array.Item(ir))
+                                                {
+                                                      b_eclipsed = true;
+                                                      break;
+                                                }
+                                          }
+
+                                          if(!b_eclipsed)
+                                                box = chart_region.GetBox();
                                           break;
                                     }
                               }
@@ -2643,6 +2656,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         bShowingCurrent = false;
         pCwin = NULL;
         warp_flag = false;
+        m_bzooming = false;
+
         pss_overlay_bmp = NULL;
         pss_overlay_mask = NULL;
         m_bChartDragging = false;
@@ -3728,9 +3743,13 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 }
 }
 
-
 bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
 {
+      //    Cannot allow Yield() re-entrancy here
+      if(m_bzooming)
+            return false;
+      m_bzooming = true;
+
       double zoom_factor = 2.0;
 
       double min_allowed_scale = 50.0;                // meters per meter
@@ -3780,6 +3799,8 @@ bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
 
       Refresh(false);
 
+      m_bzooming = false;
+
       return true;
 }
 
@@ -3788,6 +3809,10 @@ bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
 
 bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
 {
+      if(m_bzooming)
+            return false;
+      m_bzooming = true;
+
       double zoom_factor = 2.0;
       double max_allowed_scale = 1e8;
 
@@ -3834,6 +3859,9 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
             SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
 
       Refresh(false);
+
+      m_bzooming = false;
+
       return true;
 }
 
