@@ -528,7 +528,7 @@ TNAA:US:SC: -80.8833 32.0833 -5:0 Bloody Point, Daufuskie Island, New River, Sou
 TNAA:US:FL: -81.545 30.4133 -5:0 Blount Island Bridge, St. Johns River, Florida
 TNAP:Can:BC: -124.6167 49.8 -8:0 Blubber Bay (Powell River Approaches), British Columbia
 TNAP:Can:BC: -124.6167 49.8 -8:0 Blubber Bay (Powell River Approaches), British Columbia (2)
-TAuA:NZ:: 168.35 -46.6 0:0 Bluff, New Zealand
+TAuA:NZ:: 168.35 -46.6 12:0 Bluff, New Zealand
 TAuA:NZ:: 168.35 -46.6 12:0 Bluff, New Zealand (2)
 TNAA:US:SC: -80.8667 32.0833 -5:0 Bluffton, South Carolina
 TNAP:Can:BC: -127.2833 50.9 -8:0 Blunden Harbour, British Columbia
@@ -1870,7 +1870,7 @@ TNAA:Can:NovS: -64.3167 44.3667 -4:0 Lunenburg, Nova Scotia
 TNAA:Can:NovS: -64.3167 44.3667 -4:0 Lunenburg, Nova Scotia (2)
 TNAG:US:TX: -95.0783 29.765 -6:0 Lynchburg Landing, San Jacinto River, Texas
 TAuA:Aus:: 122.0167 -15.4667 8:0 Lynher Bank, Australia
-TAuA:NZ:: 172.7167 -43.6 0:0 Lyttelton, New Zealand
+TAuA:NZ:: 172.7167 -43.6 12:0 Lyttelton, New Zealand
 TAuA:NZ:: 172.7167 -43.6 12:0 Lyttelton, New Zealand (2)
 TAua:Tasm:: 146.3167 -43.6667 10:0 Maatsuyker Island, Tasmania
 TAuA:Aus:: 149.2333 -21.1167 10:0 Mackay Outer Harbour, Australia
@@ -2132,7 +2132,7 @@ TNAA:US:MA: -70.0967 41.285 -5:0 Nantucket, Nantucket Island, Massachusetts
 TNAA:US:MA: -70.095 41.2867 -5:0 Nantucket, Nantucket Island, Massachusetts (2)
 TAsi:Jpn:: 138.25 37.1833 9:0 Naoetu, Niigata, Japan
 TAuA:Aus:: 126.7 -14.1 8:0 Napier Broome Bay, Australia
-TAuA:NZ:: 176.9167 -39.4833 0:0 Napier, New Zealand
+TAuA:NZ:: 176.9167 -39.4833 12:0 Napier, New Zealand
 TAuA:NZ:: 176.9167 -39.4833 12:0 Napier, New Zealand (2)
 TNAG:US:FL: -81.8067 26.13 -5:0 Naples (outer coast), Florida
 TNAG:US:FL: -81.8067 26.13 -5:0 Naples (outer coast), Florida (2)
@@ -2155,7 +2155,7 @@ TNAP:US:WA: -124.6167 48.3667 -8:0 Neah Bay, Washington (3)
 TNAA:Can:Nun: -79.0167 69.1 -5:0 Needle Cove, Nunavut
 TAsi:Jpn:: 139.633 35.4 9:0 Negisi, Kanagawa, Japan
 TNAA:Can:Newb: -65.0833 47.25 -4:0 Neguac, New Brunswick
-TAuA:NZ:: 173.2667 -41.2667 0:0 Nelson, New Zealand
+TAuA:NZ:: 173.2667 -41.2667 12:0 Nelson, New Zealand
 TAuA:NZ:: 173.2667 -41.2667 12:0 Nelson, New Zealand (2)
 TAsi:Jpn:: 145.583 43.3333 9:0 Nemuro, Hokkaido, Japan
 TAuA:Aus:: 153.4167 -28 10:0 Nerang River (Bundall), Australia
@@ -2303,7 +2303,7 @@ TAsi:Jpn:: 132.367 33.85 9:0 Oki-Kamuro Sima, Yamaguti, Japan
 TAsi:Jpn:: 135.017 34.2833 9:0 Oki-No-Sima, Wakayama, Japan
 TAsi:Jpn:: 138.517 35.05 9:0 Okitu, Sizuoka, Japan
 TAsi:Jpn:: 132.533 34.15 9:0 Oku-No-Uti, Hirosima, Japan
-TAuA:NZ:: 174.3167 -41.2 -12:0 Okukari Bay, South Island, New Zealand
+TAuA:NZ:: 174.3167 -41.2 12:0 Okukari Bay, South Island, New Zealand
 TAsi:Jpn:: 139.517 42.1667 9:0 Okusiri, Hokkaido, Japan
 TAsi:Jpn:: 132.383 33.3333 9:0 Okuti Wan, Ehime, Japan
 TNAA:Can:NovS: -61.4667 47.5667 -4:0 Old Harry, Nova Scotia
@@ -3213,7 +3213,7 @@ TNAG:US:FL: -80.5167 25.005 -5:0 Tavernier, Florida
 TAsi:Jpn:: 129.667 33.1167 9:0 Tawara-Ga-Ura, Nagasaki, Japan
 TAuA:Aus:: 135.95 -34.85 9:30 Taylors Landing, Australia
 TAsi:Jpn:: 134.317 35.5833 9:0 Taziri, Tottori, Japan
-TAuA:NZ:: 174.1833 -41.2333 -12:0 Te Iro Bay, South Island, New Zealand
+TAuA:NZ:: 174.1833 -41.2333 12:0 Te Iro Bay, South Island, New Zealand
 TNAP:Can:BC: -123.6667 48.9667 -8:0 Telegraph Harbour, British Columbia
 TAsi:Jpn:: 138.767 37.6333 9:0 Teradomari, Niigata, Japan
 TAsi:Jpn:: 137 34.8167 9:0 Terazu, Aichi, Japan
@@ -3485,7 +3485,7 @@ TNAA:US:FL: -81.675 29.4767 -5:0 Welaka, St. Johns River, Florida (3)
 TNAA:US:FL: -81.675 29.4767 -5:0 Welaka, St. Johns River, Florida (4)
 TNAA:US:FL: -81.675 29.4767 -5:0 Welaka, St. Johns River, Florida (5)
 TNAP:Can:BC: -124.55 49.7 -8:0 Welcome Bay, British Columbia
-TAuA:NZ:: 174.7833 -41.2833 0:0 Wellington, New Zealand
+TAuA:NZ:: 174.7833 -41.2833 12:0 Wellington, New Zealand
 TAuA:NZ:: 174.7833 -41.2833 12:0 Wellington, New Zealand (2)
 TNAA:Can:Newb: -66.95 44.8833 -4:0 Welshpool, Campobello Island, New Brunswick
 TNAA:Can:NovS: -64.8167 45.35 -4:0 West Advocate, Nova Scotia
@@ -3510,7 +3510,7 @@ TNAP:Can:BC: -123.3333 48.8833 -8:0 Whaler Bay, British Columbia
 TNAP:Can:BC: -123.3333 48.8833 -8:0 Whaler Bay, British Columbia (2)
 TNAP:Can:BC: -125.05 50.1 -8:0 Whaletown Bay, British Columbia
 TNAP:Can:BC: -125.05 50.1 -8:0 Whaletown Bay, British Columbia (2)
-TAuA:NZ:: 174.35 -35.7667 0:0 Whangarei, New Zealand
+TAuA:NZ:: 174.35 -35.7667 12:0 Whangarei, New Zealand
 TAuA:NZ:: 174.35 -35.7667 12:0 Whangarei, New Zealand (2)
 TEur:Eng:: -0.6126 54.4899 0:0 Whitby, England - READ flaterco.com/pol.html
 TNAA:Can:Labr: -55.8333 52.7333 -3:30 White Bear Arm, Labrador
@@ -11540,21 +11540,6 @@ cNAA:XX:XX: -66.1100  18.4538 -4:0 Bahia de San Juan
 
 cNAA:XX:XX: -66.1267  18.4717 -4:0 Bahia de San Juan entrance
 ^-32767 -327.67 0 -32767 -327.67 0   8846 -32767 -32767 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -155.9667  20.7667 -10:0 Maui Island
-^-32767 -327.67 0 -32767 -327.67 0   4161 -32767 -32767 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -156.5333  20.6000 -10:0 Alalakeiki Channel, west side
-^-32767 -327.67 0 -32767 -327.67 0   4165 -32767 -32767 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -156.4833  20.6167 -10:0 Alalakeiki Channel, east side
-^-32767 -327.67 0 -32767 -327.67 0   4169 -32767 -32767 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -156.5000  20.7667 -10:0 Maalaea Bay, Maui Island
-^-32767 -327.67 0 -32767 -327.67 0   4173 -32767 -32767 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -156.7167  20.8833 -10:0 Auau Channel
-^-32767 -327.67 0 -32767   0.70 0   4177 -32767 73 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -156.9333  21.0333 -10:0 Kalohi Channel
 ^-195   0.40 0 -218   0.30 0   4181 75 227 1 San Diego Bay Entrance, California
