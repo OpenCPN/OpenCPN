@@ -10062,6 +10062,8 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
 
       wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
       wxPen *pgray_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "DILG0" ) ), 1, wxSOLID );
+      wxPen *pyelo_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "YELO1" ) ), 1, wxSOLID );
+      wxPen *pblue_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "BLUE2" ) ), 1, wxSOLID );
 
       wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "GREEN1" ) ), wxSOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
@@ -10172,7 +10174,7 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                           dc.SetFont( *plabelFont );
                                           dc.GetTextExtent(_T("99.9ft "), &wx, &hx);
                                           int w = r.x - 6 ;
-                                          int h = r.y - 45;
+                                          int h = r.y - 22;
 //draw mask
                                           if ( bdraw_mono_for_mask )
                                                 dc.DrawRectangle( r.x - ( wx / 2 ), h, wx, hx + 45 );
@@ -10235,19 +10237,20 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                                                   int ht_y = (int) ( 45.0 * ts ) ;
 
       //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
+                                                                  dc.SetPen ( *pblack_pen );
                                                                   dc.SetBrush( *brc_2 );
                                                                   dc.DrawRectangle( w , h , 12 , 45 );
       //draw blue rectangle as water height
+                                                                  dc.SetPen( *pblue_pen );
                                                                   dc.SetBrush( *brc_1 );
-                                                                  dc.DrawRectangle( w , h + ht_y , 12 , 45 - ht_y );
+                                                                  dc.DrawRectangle( w+2 , h + ht_y , 8 , 45 - ht_y );
 
 
       //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
-                                                                  dc.SetPen( *pgray_pen );
 
                                                                   int hl;
                                                                   wxPoint arrow[3];
-                                                                  arrow[0].x = w;
+                                                                  arrow[0].x = w + 1;
                                                                   arrow[1].x = w + 5;
                                                                   arrow[2].x = w + 11;
                                                                   if ( ts > 0.35 || ts < 0.15)                    // one arrow at 3/4 hight tide
@@ -10256,6 +10259,9 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                                                         arrow[0].y = hl;
                                                                         arrow[1].y = hl + hs ;
                                                                         arrow[2].y = hl;
+                                                                        if ( ts < 0.15 ) dc.SetPen( *pyelo_pen );
+                                                                        else dc.SetPen ( *pblue_pen );
+
                                                                         dc.DrawLines( 3,arrow);
                                                                   }
                                                                   if ( ts > 0.60 || ts < 0.40 )                   //one arrow at 1/2 hight tide
@@ -10264,6 +10270,8 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                                                         arrow[0].y = hl;
                                                                         arrow[1].y = hl + hs ;
                                                                         arrow[2].y = hl;
+                                                                        if ( ts < 0.40 ) dc.SetPen( *pyelo_pen );
+                                                                        else dc.SetPen ( *pblue_pen );
                                                                         dc.DrawLines( 3,arrow);
                                                                   }
                                                                   if ( ts < 0.65 || ts > 0.85 )                   //one arrow at 1/4 Hight tide
@@ -10272,6 +10280,8 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                                                         arrow[0].y = hl;
                                                                         arrow[1].y = hl + hs ;
                                                                         arrow[2].y = hl;
+                                                                        if ( ts < 0.65 ) dc.SetPen( *pyelo_pen );
+                                                                        else dc.SetPen ( *pblue_pen );
                                                                         dc.DrawLines( 3,arrow);
                                                                   }
       //draw tide level text
