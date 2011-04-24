@@ -10059,9 +10059,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint)
 void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
                                        bool bRebuildSelList, bool bforce_redraw_tides, bool bdraw_mono_for_mask )
 {
-
       wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
-      wxPen *pgray_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "DILG0" ) ), 1, wxSOLID );
       wxPen *pyelo_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "YELO1" ) ), 1, wxSOLID );
       wxPen *pblue_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "BLUE2" ) ), 1, wxSOLID );
 
