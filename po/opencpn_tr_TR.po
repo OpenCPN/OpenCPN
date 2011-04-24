@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -1721,6 +1721,9 @@ msgstr "Hedef COG oklarını göster"
 msgid "Show target tracks"
 msgstr "Hedef izlerini göster"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 msgid "Shows the font preview."
 msgstr "Yazı ön izlemesi."
 #
@@ -2169,8 +2172,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
 #
 #
 #
@@ -2181,8 +2186,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
 #
 #
 #
@@ -2193,14 +2200,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Arama İşareti:"
 #
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
 #
 #
 #
@@ -2215,12 +2225,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Class:     A\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -2235,8 +2247,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
 #
 #
 #
@@ -2247,8 +2261,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 #
@@ -2259,8 +2275,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB Verisi"
+#
 #
 #
 #
@@ -2271,12 +2289,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Dosyası Klasörü"
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Denizci Standartı"
+#
 #
 #
 #
@@ -2289,10 +2310,12 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
 #
 #
 #
@@ -2305,10 +2328,12 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr ""
 #~ "Saklı SEATEMP GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
 #
 #
 #
@@ -2319,8 +2344,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Rota Yöneticisi..."
+#
 #
 #
 #
@@ -2331,8 +2358,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB Klasörünü Seç"
+#
 #
 #
 #
@@ -2341,8 +2370,10 @@ msgstr ""
 #~ msgstr "Rotayı GPS'e Gönder..."
 #
 #
+#
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
 #
 #
 #
@@ -2353,8 +2384,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "GRIB kutusunu göster"
+#
 #
 #
 #
@@ -2365,8 +2398,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Anlamlı Dalga Yüksekliği, m."
+#
 #
 #
 #
@@ -2377,8 +2412,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
 #
 #
 #

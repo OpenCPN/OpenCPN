@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-11-26 12:30+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -2457,6 +2457,9 @@ msgstr "Ukázat šipky COG cílů"
 msgid "Show target tracks"
 msgstr "Zobrazit stopy cílů"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 #
 #
 msgid "Shows the font preview."
@@ -3067,8 +3070,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
+#
 #
 #
 #
@@ -3079,8 +3084,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
+#
 #
 #
 #
@@ -3091,8 +3098,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
+#
 #
 #
 #, fuzzy
@@ -3100,9 +3109,11 @@ msgstr ""
 #~ msgstr "Nastav posun CM93"
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -3119,14 +3130,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 #
 #
@@ -3141,8 +3155,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Zobrazit ikonu GRIB"
+#
 #
 #
 #
