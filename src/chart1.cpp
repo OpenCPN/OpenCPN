@@ -542,6 +542,9 @@ wxAuiDefaultDockArt  *g_pauidockart;
 
 bool              g_blocale_changed;
 
+ocpnFloatingToolbarDialog     *g_FloatingToolbarDialog;
+
+
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
 { "1bells.wav","2bells.wav","3bells.wav","4bells.wav","5bells.wav","6bells.wav","7bells.wav","8bells.wav"   // pjotrc 2010.02.09
@@ -685,6 +688,82 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
       wxMessageDialog odlg(gFrame, msg0, _("Welcome to OpenCPN"), wxCANCEL | wxOK );
 
       return(odlg.ShowModal());
+}
+
+
+//----------------------------------------------------------------------------------------------------------
+//    ocpnFloatingToolbarDialog Specification
+//----------------------------------------------------------------------------------------------------------
+class ocpnFloatingToolbarDialog: public wxDialog
+{
+      DECLARE_CLASS( ocpnFloatingToolbarDialog )
+                  DECLARE_EVENT_TABLE()
+
+      public:
+            ocpnFloatingToolbarDialog( wxWindow *parent );
+            ~ocpnFloatingToolbarDialog( );
+
+            void OnClose(wxCloseEvent& event);
+            void OnToolLeftClick(wxCommandEvent& event);
+
+            void SetToolBar(wxToolBarBase *ptb);
+      private:
+
+            wxWindow          *m_pparent;
+            ocpnToolBarSimple *m_ptoolbar;
+
+};
+
+
+//---------------------------------------------------------------------------------------
+//          ocpnFloatingToolbarDialog Implementation
+//---------------------------------------------------------------------------------------
+
+IMPLEMENT_CLASS ( ocpnFloatingToolbarDialog, wxDialog )
+
+            BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
+            EVT_CLOSE(ocpnFloatingToolbarDialog::OnClose)
+            EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, ocpnFloatingToolbarDialog::OnToolLeftClick)
+            END_EVENT_TABLE()
+
+
+            ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent)
+{
+      m_pparent = parent;
+      long wstyle = wxSIMPLE_BORDER;
+      wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(800, 50), wstyle );
+
+
+
+// A top-level sizer
+//      wxBoxSizer* topSizer = new wxBoxSizer ( wxHORIZONTAL );
+//      SetSizer( topSizer );
+
+      Centre();
+
+
+}
+
+ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
+{
+}
+
+void ocpnFloatingToolbarDialog::OnClose(wxCloseEvent& event)
+{
+}
+
+void ocpnFloatingToolbarDialog::SetToolBar(wxToolBarBase *ptb)
+{
+      m_ptoolbar = (ocpnToolBarSimple *)ptb;
+      SetSize(m_ptoolbar->GetSize());
+}
+
+void ocpnFloatingToolbarDialog::OnToolLeftClick(wxCommandEvent& event)
+{
+    // Since Dialog events don't propagate automatically, we send it explicitly (instead of relying on event.Skip())
+    // Send events up the window hierarchy
+      m_pparent->GetEventHandler()->ProcessEvent(event);
+//      event.Skip();
 }
 
 
@@ -2056,6 +2135,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         m_ulLastNEMATicktime = 0;
         m_pStatusBar = NULL;
 
+        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(this);
+
         m_toolBar = NULL;
         m_bneedtoolbar = false;
 
@@ -2359,7 +2440,8 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar(void)
 
 void MyFrame::DestroyMyToolbar()
 {
-//    delete m_ptool_ct_dummy;
+
+    g_FloatingToolbarDialog->Hide();
 
     if(m_toolBar)
     {
@@ -2761,10 +2843,6 @@ bool MyFrame::AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb)
 void MyFrame::RequestNewToolbar()
 {
       UpdateToolbar(global_color_scheme);
-
-//      DestroyMyToolbar();
-//      m_toolBar = CreateAToolbar();
-//      SetToolBar((wxToolBar *)m_toolBar);
 }
 
 
@@ -3093,22 +3171,15 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
             break;
     }
 
-/*    Romoved at 2.2 build 710 for testing
-#ifdef __WXOSX__
-    // RMS Problems with 2.8.3 on the mac and Destroy toolbar
-    //DestroyMyToolbar();
-    if (0 == m_toolBar)
-    {
-      m_toolBar = CreateAToolbar();
-      SetToolBar((wxToolBar *)m_toolBar);
-    }
-#else
-*/
     if (!IsFullScreen() || (IsFullScreen() && g_bFullscreenToolbar))
     {
           DestroyMyToolbar();
           m_toolBar = CreateAToolbar();
-          SetToolBar((wxToolBar *)m_toolBar);
+          m_toolBar->Reparent((wxWindowBase *)g_FloatingToolbarDialog);
+          g_FloatingToolbarDialog->SetToolBar(m_toolBar);
+          g_FloatingToolbarDialog->Show();
+
+//          SetToolBar((wxToolBar *)m_toolBar);
     }
     else
     {
@@ -3893,7 +3964,11 @@ void MyFrame::ToggleFullScreen()
       if (g_bFullscreenToolbar)
       {
             if (to)
+            {
                   m_toolBar = CreateAToolbar();
+                  m_toolBar->Reparent((wxWindowBase *)g_FloatingToolbarDialog);
+                  g_FloatingToolbarDialog->SetToolBar(m_toolBar);
+            }
             style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOMENUBAR;
       }
       else
@@ -8916,6 +8991,7 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent& event)
       }
 }
 
+int  s_dragx, s_dragy;
 
 void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 {
@@ -8937,9 +9013,20 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
       event.GetPosition(&x, &y);
       ocpnToolBarTool *tool = (ocpnToolBarTool *)FindToolForPosition(x, y);
 
+      if(event.Dragging())
+      {
+            wxPoint par_pos = GetParent()->GetPosition();
+            par_pos.x += x - s_dragx;
+            par_pos.y += y - s_dragy;
+
+            GetParent()->Move(par_pos);
+      }
+
       if (event.LeftDown())
       {
             CaptureMouse();
+            s_dragx = x;
+            s_dragy = y;
       }
       if (event.LeftUp())
       {
@@ -9073,6 +9160,9 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
 //            DrawTool(tool);
       }
+
+
+
 }
 
 // ----------------------------------------------------------------------------
@@ -9693,4 +9783,5 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
            else if ( d < -AnchorPointMaxDist ) return -AnchorPointMaxDist;
            else return d;
 }
+
 

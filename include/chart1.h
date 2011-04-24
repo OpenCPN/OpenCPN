@@ -60,6 +60,7 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 //    Fwd definitions
 class OCPN_NMEAEvent;
 class ChartCanvas;
+class ocpnFloatingToolbarDialog;
 
 //----------------------------------------------------------------------------
 //   constants
