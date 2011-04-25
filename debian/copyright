@@ -1,25 +1,43 @@
 This work was packaged for Debian by:
 
     Anton Martchukov <anton@martchukov.com> on Sat, 26 Jun 2010 02:17:46 +0400
+    with help from the DebianGIS team.
 
 It was downloaded from http://sourceforge.net/projects/opencpn/
 
 Upstream Author(s):
 
-    dsr <bdbcat@yahoo.com>
+    David S Register <bdbcat@yahoo.com> - OpenCPN Lead Developer
+    Other contributing authors are listed in src/about.cpp AuthorText[].
 
 Copyright:
 
-    Copyright (C) 2008-2010 dsr <bdbcat@yahoo.com>
+    Copyright (C) 2008-2011 David S Register <bdbcat@yahoo.com>
 
 License:
 
     You are free to distribute this software under the terms of
     the GNU General Public License version 2.
     
-On Debian systems, the complete text of the GNU General Public
-License can be found in the file `/usr/share/common-licenses/GPL-2'.
+    On Debian systems, the complete text of the GNU General Public
+    License can be found in the file `/usr/share/common-licenses/GPL-2'.
+
+  from src/about.c:
+    For Developer Reference, the included source code
+    elements are licensed as follows:
+
+      wxWidgets           LGPL
+      s52cnsy&s52plib     GPL
+      seriallib           GPL
+      tcmgr               GPL
+      mygdal              BSD, compatible with GPL
+      nmea0183            Owner License, compatible with GPL
+      triangles           Public Domain see tri.c, compatible with GPL
+      wvschart            Public Domain see wvschart.cpp, compatible with GPL
+
 
 The Debian packaging is:
 
-    Copyright (C) 2010 Anton Martchukov <anton@martchukov.com>
+    Copyright (C) 2010-2011 Anton Martchukov <anton@martchukov.com>,
+    and the DebianGIS team.
+

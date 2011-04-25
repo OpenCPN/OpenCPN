@@ -1,6 +1,13 @@
+opencpn (2.4.423-1) unstable; urgency=low
+
+  * Packaged for upstream git beta version 2.4.423
+  * Add some copyright notes
+
+ -- Hamish B <hamish_b@yahoo.com>  Mon, 25 Apr 2011 12:18:38 +1200
+
 opencpn (2.4.412-1) unstable; urgency=low
 
-  * Packaged for upstream git patch version 2.4.412
+  * Packaged for upstream git beta version 2.4.412
   * Move to new DebianGIS email address
   * Recommend gpsd, suggest gpsd-clients
   * Suggest xcalib to lower contrast for night vision
