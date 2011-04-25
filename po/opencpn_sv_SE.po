@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.2 Build 1211\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-12-13 00:25+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1698,6 +1698,9 @@ msgstr "Visa målets kurspil"
 msgid "Show target tracks"
 msgstr "Visa målspår"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 msgid "Shows the font preview."
 msgstr "Förhandsgranska teckensnitt."
 #
@@ -2143,8 +2146,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "Avsluta"
+#
 #
 #
 #
@@ -2155,8 +2160,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
+#
 #
 #
 #
@@ -2167,8 +2174,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93-korrektion av"
+#
 #
 #
 #
@@ -2179,8 +2188,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 korrektionsinställning"
+#
 #
 #
 #
@@ -2191,8 +2202,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93-korrektion på"
+#
 #
 #
 #
@@ -2201,9 +2214,11 @@ msgstr ""
 #~ msgstr "Anropssignal:  "
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ange CM93-korrektion"
+#
 #
 #
 #, fuzzy
@@ -2213,8 +2228,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Sjökortet går ej att läsa, kortet inaktiveras \n"
+#
 #
 #
 #
@@ -2229,8 +2246,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Class:     "
 #~ msgstr "Klass:     "
+#
 #
 #
 #
@@ -2245,8 +2264,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Strömhastighet, Knop."
+#
 #
 #
 #
@@ -2257,8 +2278,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ETA"
 #~ msgstr "ETA"
+#
 #
 #
 #
@@ -2269,8 +2292,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
+#
 #
 #
 #
@@ -2281,8 +2306,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 #
@@ -2293,8 +2320,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB Data"
 #~ msgstr "Väderdata"
+#
 #
 #
 #
@@ -2305,12 +2334,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Mapp för väderfiler"
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Marinstandard"
+#
 #
 #
 #
@@ -2321,8 +2353,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa signifikant våghöjd"
+#
 #
 #
 #
@@ -2333,8 +2367,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB vattentemperatur"
+#
 #
 #
 #
@@ -2345,8 +2381,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Pressure, mBar"
 #~ msgstr "Barometertryck, mBar"
+#
 #
 #
 #
@@ -2357,8 +2395,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Vattentemperatur, C"
+#
 #
 #
 #
@@ -2369,12 +2409,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Skicka Rutt till GPS"
 #
 #
+#
 #~ msgid "ShipName:  "
 #~ msgstr "Båtnamn:   "
+#
 #
 #
 #
@@ -2385,8 +2428,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
+#
 #
 #
 #
@@ -2397,8 +2442,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant våghöjd, m"
+#
 #
 #
 #
@@ -2409,8 +2456,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
+#
 #
 #
 #
@@ -2421,8 +2470,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Vindhastighet, knop"
+#
 #
 #
 #

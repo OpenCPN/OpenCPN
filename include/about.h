@@ -101,12 +101,21 @@ class about: public wxDialog
     void OnXidOkClick( wxCommandEvent& event );
     void OnPageChange(wxNotebookEvent& event);
     void OnDonateClick( wxCommandEvent& event );
+    void Update();
 
     wxString          *m_pDataLocn;
     wxWindow          *m_parent;
     wxHtmlWindow      *m_ptips_window;
     bool              m_btips_loaded;
 
+    wxPanel* itemPanelAbout;
+    wxPanel* itemPanelAuthors;
+    wxPanel* itemPanelLicense;
+    wxPanel* itemPanelTips;
+
+    wxTextCtrl *pAboutTextCtl;
+    wxTextCtrl *pAuthorTextCtl;
+    wxTextCtrl *pLicenseTextCtl;
 
 };
 

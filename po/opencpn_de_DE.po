@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-10-18 00:02+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -2529,6 +2529,9 @@ msgstr "KüG-Pfeil für Ziel anzeigen"
 msgid "Show target tracks"
 msgstr "Tracking für Ziele anzeigen"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 # 
 # 
 msgid "Shows the font preview."
@@ -3158,10 +3161,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 #
 #
@@ -3180,10 +3185,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 #
@@ -3209,10 +3216,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
 #
 #
 #
@@ -3231,10 +3240,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -3255,10 +3266,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-Anzeige Einstellungen"
+#
 #
 #
 #
@@ -3273,10 +3286,12 @@ msgstr ""
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
 #
+#
 # 
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Benutzerdef. Auswahl"
+#
 #
 #
 #
@@ -3299,12 +3314,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -3327,12 +3344,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -3353,10 +3372,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Luftdruck, mBar"
+#
 #
 #
 #
@@ -3377,16 +3398,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB-Verzeichnis auswählen"
 #
 #
+#
 # 
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Schiffsname: "
+#
 #
 #
 #
@@ -3405,6 +3429,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Significant Wave Height, m"
@@ -3415,10 +3440,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Hochäuflösende Grafik verwenden"
+#
 #
 #
 #
@@ -3439,10 +3466,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 #
 #

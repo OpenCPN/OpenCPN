@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-11-28 13:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -1697,6 +1697,9 @@ msgstr "Pokaż strzałki COG obiektów"
 msgid "Show target tracks"
 msgstr "Pokaż ślady obiektów"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 msgid "Shows the font preview."
 msgstr "Pokazuje podgląd czcionki."
 #
@@ -2139,8 +2142,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Przesunięcie CM93 wyłączone"
+#
 #
 #
 #
@@ -2151,8 +2156,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Wyłącz narzędzie przesuwania CM93"
+#
 #
 #
 #
@@ -2163,8 +2170,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Włącz przesunięcia CM93"
+#
 #
 #
 #, fuzzy
@@ -2172,9 +2181,11 @@ msgstr ""
 #~ msgstr "Ustaw przesunięcie CM93"
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -2187,12 +2198,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 #
 #~ msgid "ShipName:  "
@@ -2203,8 +2217,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Pokaż ikonę GRIB"
+#
 #
 #
 #

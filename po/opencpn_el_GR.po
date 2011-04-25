@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -1714,6 +1714,9 @@ msgstr "Δείξε βέλος COG στόχου"
 msgid "Show target tracks"
 msgstr "Δείξε ίχνη στόχων"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 msgid "Shows the font preview."
 msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
 #
@@ -2152,8 +2155,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
 #
 #
 #
@@ -2164,8 +2169,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
 #
 #
 #
@@ -2176,13 +2183,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
 #
 #
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #, fuzzy
@@ -2192,12 +2202,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Βασικό ναυτικό"
+#
 #
 #
 #~ msgid "ShipName:  "

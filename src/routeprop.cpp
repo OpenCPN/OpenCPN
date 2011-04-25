@@ -133,7 +133,7 @@ else return 1.;
 
 static double FNipart (double x)
 	{
-		 return(sign(x)*(int)(abs(x)));
+		 return(sign(x)*(int)(fabs(x)));
 	 }
 
 static double FNday (int y, int m, int d, int h)
@@ -162,7 +162,7 @@ double getDaylightEvent (double glat, double glong, int riset, double altitude, 
 		double g = glong * rads;
 		double t, L, G, ec, lambda, E, obl, delta, GHA, cosc;
 		int limit = 12;
-		while ((abs(utold - utnew) > .001)) {
+		while ((fabs(utold - utnew) > .001)) {
 			if (limit-- <= 0) return(-1.);
   			days = day + utnew / tpi;
   			t = days / 36525.;
@@ -199,7 +199,7 @@ static double getLMT(double ut, double lon) {
 
 int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
 	{
-		if (abs(lat)>60.) return(0);
+		if (fabs(lat)>60.) return(0);
 		int y = utcDateTime.GetYear();
 		int m = utcDateTime.GetMonth()+1;  // wxBug? months seem to run 0..11 ?
 		int d = utcDateTime.GetDay();
@@ -225,7 +225,7 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
       //            wxMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
       //            md1.ShowModal();
 
-			if (abs(lt-sunrise)<0.15) return(SUNRISE);
+			if (fabs(lt-sunrise)<0.15) return(SUNRISE);
 			if (lt > sunrise) return(DAY);
 			double twilight = getDaylightEvent(lat, lon, +1, twalt, y, m, d);
 			if (twilight < 0.) return(0); else twilight = getLMT(twilight, lon);
@@ -235,7 +235,7 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
 		else {
 			double sunset = getDaylightEvent(lat, lon, -1, rsalt, y, m, d);
 			if (sunset < 0.) return(0); else sunset = getLMT(sunset, lon);
-			if (abs(lt-sunset)<0.15) return(SUNSET);
+			if (fabs(lt-sunset)<0.15) return(SUNSET);
 			if (lt < sunset) return(DAY);
 			double twilight = getDaylightEvent(lat, lon, -1, twalt, y, m, d);
 			if (twilight < 0.) return(0); else twilight = getLMT(twilight, lon);
@@ -1082,7 +1082,7 @@ bool RouteProp::UpdateProperties()
                   if (arrival) m_wpList->SetItem(item_line_index, 0, t);
 
       //  Mark Name
-                  if (arrival) m_wpList->SetItem(item_line_index, 1, prp->m_MarkName);
+                  if (arrival) m_wpList->SetItem(item_line_index, 1, prp->GetName());
 
       //  Distance
       //  Note that Distance/Bearing for Leg 000 is as from current position
@@ -1101,7 +1101,7 @@ bool RouteProp::UpdateProperties()
                         else leg_speed = m_planspeed;
                         if (m_bStartNow) {
                               DistanceBearingMercator(prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist);
-                              if (i == 0) joining_time = wxTimeSpan::Seconds((leg_dist*3600.)/leg_speed);
+                              if (i == 0) joining_time = wxTimeSpan::Seconds((long)wxRound((leg_dist*3600.)/leg_speed));
                         }
                         enroute = true;
                   }
@@ -1159,8 +1159,8 @@ bool RouteProp::UpdateProperties()
 
                                 if (ptcmgr) {
                                     int jx = 0;
-                                    if (prp->m_MarkName.Find(_T("@~~")) != wxNOT_FOUND) {
-	                                    tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find(_T("@~~"))+3);
+                                    if (prp->GetName().Find(_T("@~~")) != wxNOT_FOUND) {
+                                          tide_form = prp->GetName().Mid(prp->GetName().Find(_T("@~~"))+3);
 	                                    jx = ptcmgr->GetStationIDXbyName(tide_form, prp->m_lat, prp->m_lon, ptcmgr);
 	                              }
                                     if (gpIDX || jx) {
@@ -1199,8 +1199,8 @@ bool RouteProp::UpdateProperties()
 
 							  if (ptcmgr) {
 								  int jx = 0;
-								  if (prp->m_MarkName.Find(_T("@~~")) != wxNOT_FOUND) {
-									tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find(_T("@~~"))+3);
+                                                  if (prp->GetName().Find(_T("@~~")) != wxNOT_FOUND) {
+                                                        tide_form = prp->GetName().Mid(prp->GetName().Find(_T("@~~"))+3);
 									jx = ptcmgr->GetStationIDXbyName(tide_form, prp->m_lat, prp->m_lon, ptcmgr);
 								  }
 								  if (gpIDX || jx) {
@@ -1756,7 +1756,7 @@ bool MarkProp::UpdateProperties()
       if(m_pRoutePoint)
       {
 //    Name
-            m_MarkNameCtl->SetValue(m_pRoutePoint->m_MarkName);
+            m_MarkNameCtl->SetValue(m_pRoutePoint->GetName());
             m_ShowNameCheckbox->SetValue(m_pRoutePoint->m_bShowName);
             m_MarkNameCtl->SetInsertionPoint(0);
             m_MarkNameCtl->SetSelection(-1, -1);
@@ -1790,7 +1790,7 @@ bool MarkProp::SaveChanges(void)
             if (m_pRoutePoint->m_bIsInLayer) return true;
 
             //  Get User input Text Fields
-            m_pRoutePoint->m_MarkName = m_MarkNameCtl->GetValue();
+            m_pRoutePoint->SetName(m_MarkNameCtl->GetValue());
             m_pRoutePoint->m_MarkDescription = m_pDescTextCtl->GetValue();
 
             //    Here is some logic....
@@ -1802,11 +1802,11 @@ bool MarkProp::SaveChanges(void)
             if(m_pRoutePoint->m_bIsInRoute)
             {
                   bool b_name_is_numeric = true;
-                  for(unsigned int i=0 ; i<m_pRoutePoint->m_MarkName.Len() ; i++)
+                  for(unsigned int i=0 ; i<m_pRoutePoint->GetName().Len() ; i++)
                   {
-                        if(wxChar('0') > m_pRoutePoint->m_MarkName[i])
+                        if(wxChar('0') > m_pRoutePoint->GetName()[i])
                               b_name_is_numeric = false;
-                        if(wxChar('9') < m_pRoutePoint->m_MarkName[i])
+                        if(wxChar('9') < m_pRoutePoint->GetName()[i])
                               b_name_is_numeric = false;
                   }
 
@@ -2143,7 +2143,7 @@ bool MarkInfo::UpdateProperties()
       if(m_pRoutePoint)
       {
 //    Name
-            m_MarkNameCtl->SetLabel(m_pRoutePoint->m_MarkName);
+            m_MarkNameCtl->SetLabel(m_pRoutePoint->GetName());
 
 //  Lat/Lon
             char tc[50];

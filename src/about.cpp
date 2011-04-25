@@ -231,12 +231,98 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
 
     m_btips_loaded = false;
 
+
     CreateControls();
+    Update();
+
     GetSizer()->Fit(this);
     GetSizer()->SetSizeHints(this);
     Centre();
 
     return TRUE;
+}
+
+void about::Update()
+{
+      wxColour cb = GetGlobalColor( _T("DILG1") );
+      SetBackgroundColour(cb);
+
+      wxColour cf = GetGlobalColor( _T( "UINFD" ) );          // or UINFF
+      SetForegroundColour( cf );
+
+      itemPanelAbout->SetBackgroundColour(cb);
+      itemPanelAuthors->SetBackgroundColour(cb);
+      itemPanelLicense->SetBackgroundColour(cb);
+      itemPanelTips->SetBackgroundColour(cb);
+      pAboutTextCtl->SetBackgroundColour(cb);
+      pAuthorTextCtl->SetBackgroundColour(cb);
+      pLicenseTextCtl->SetBackgroundColour(cb);
+
+      itemPanelAbout->SetForegroundColour(cf);
+      itemPanelAuthors->SetForegroundColour(cf);
+      itemPanelLicense->SetForegroundColour(cf);
+      itemPanelTips->SetForegroundColour(cf);
+      pAboutTextCtl->SetForegroundColour(cf);
+      pAuthorTextCtl->SetForegroundColour(cf);
+      pLicenseTextCtl->SetForegroundColour(cf);
+
+      wxTextAttr ta(cf, cb);
+
+      pAboutTextCtl->SetDefaultStyle(ta);
+      pAboutTextCtl->Clear();
+      wxString *pAboutString = new wxString(AboutText,  wxConvUTF8);
+
+      pAboutString->Append(OpenCPNVersion); //Gunther
+      pAboutString->Append(wxString(OpenCPNInfo,  wxConvUTF8));
+
+      pAboutTextCtl->WriteText(*pAboutString);
+      delete pAboutString;
+
+  // Show the user where the log file is going to be
+      wxString log = _T("\n    Logfile location: ");
+      log.Append(*pHome_Locn);
+      log.Append(_T("opencpn.log"));
+
+      pAboutTextCtl->WriteText(log);
+
+
+      pAuthorTextCtl->SetDefaultStyle(ta);
+      pAuthorTextCtl->Clear();
+      wxString *pAuthorsString = new wxString(AuthorText,  wxConvUTF8);
+      pAuthorTextCtl->WriteText(*pAuthorsString);
+      delete pAuthorsString;
+
+
+      pLicenseTextCtl->SetDefaultStyle(ta);
+      pLicenseTextCtl->Clear();
+      wxString license_loc(*m_pDataLocn);
+      license_loc.Append(_T("license.txt"));
+
+      wxTextFile license_file(license_loc);
+
+      if(license_file.Open())
+      {
+            wxString str;
+            str = license_file.GetFirstLine();
+            pLicenseTextCtl->WriteText(str);
+
+            while (!license_file.Eof())
+            {
+                  str = license_file.GetNextLine();
+                  str.Append(_T("\n"));
+                  pLicenseTextCtl->AppendText(str);
+            }
+            license_file.Close();
+      }
+      else
+      {
+            wxString msg(_T("Could not open License file: "));
+            msg.Append(license_loc);
+            wxLogMessage(msg);
+      }
+      pLicenseTextCtl->SetInsertionPoint(0);
+
+
 }
 
 void about::CreateControls()
@@ -250,6 +336,7 @@ void about::CreateControls()
 
   wxStaticText *pST1 = new wxStaticText(this, -1, _T("Label"), wxDefaultPosition, wxSize(500, 50));
   pST1->SetLabel(_("\n         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"));
+  pST1->InheritAttributes();
   itemBoxSizer2->Add(pST1);
 
   //   "Donate" Button
@@ -262,53 +349,42 @@ void about::CreateControls()
 
   //  Main Notebook
   wxNotebook* itemNotebook4 = new wxNotebook( itemDialog1, ID_NOTEBOOK_HELP, wxDefaultPosition, wxSize(-1, -1), wxNB_TOP );
+  itemNotebook4->InheritAttributes();
   itemBoxSizer2->Add(itemNotebook4, 0, wxALIGN_CENTER_VERTICAL|wxEXPAND|wxALL, 5);
 
   //    About Panel
-  wxPanel* itemPanelAbout = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelAbout = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelAbout->InheritAttributes();
   itemNotebook4->AddPage(itemPanelAbout, _("About"));
 
   wxBoxSizer* itemBoxSizer6 = new wxBoxSizer(wxVERTICAL);
   itemPanelAbout->SetSizer(itemBoxSizer6);
 
-  wxTextCtrl *pAboutTextCtl = new wxTextCtrl( itemPanelAbout, -1, _T(""), wxDefaultPosition, wxSize(-1, 300),
+  pAboutTextCtl = new wxTextCtrl( itemPanelAbout, -1, _T(""), wxDefaultPosition, wxSize(-1, 300),
                                               wxTE_MULTILINE | wxTE_READONLY );
+  pAboutTextCtl->InheritAttributes();
   itemBoxSizer6->Add(pAboutTextCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5);
 
 
-  wxString *pAboutString = new wxString(AboutText,  wxConvUTF8);
-
-  pAboutString->Append(OpenCPNVersion); //Gunther
-  pAboutString->Append(wxString(OpenCPNInfo,  wxConvUTF8));
-
-  pAboutTextCtl->WriteText(*pAboutString);
-  delete pAboutString;
-
-  // Show the user where the log file is going to be
-  wxString log = _T("\n    Logfile location: ");
-  log.Append(*pHome_Locn);
-  log.Append(_T("opencpn.log"));
-
-  pAboutTextCtl->WriteText(log);
 
   //     Authors Panel
-  wxPanel* itemPanelAuthors = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelAuthors = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelAuthors->InheritAttributes();
   itemNotebook4->AddPage(itemPanelAuthors, _("Authors"));
 
   wxBoxSizer* itemBoxSizer7 = new wxBoxSizer(wxVERTICAL);
   itemPanelAuthors->SetSizer(itemBoxSizer7);
 
-  wxTextCtrl *pAuthorTextCtl = new wxTextCtrl( itemPanelAuthors, -1, _T(""), wxDefaultPosition, wxSize(-1, 300),
+  pAuthorTextCtl = new wxTextCtrl( itemPanelAuthors, -1, _T(""), wxDefaultPosition, wxSize(-1, 300),
                                                wxTE_MULTILINE | wxTE_READONLY );
+  pAuthorTextCtl->InheritAttributes();
   itemBoxSizer7->Add(pAuthorTextCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5);
 
-  wxString *pAuthorsString = new wxString(AuthorText,  wxConvUTF8);
-  pAuthorTextCtl->WriteText(*pAuthorsString);
-  delete pAuthorsString;
 
 
   //  License Panel
-  wxPanel* itemPanelLicense = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelLicense = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelLicense->InheritAttributes();
   itemNotebook4->AddPage(itemPanelLicense, _("License"));
 
   wxBoxSizer* itemBoxSizer8 = new wxBoxSizer(wxVERTICAL);
@@ -323,39 +399,14 @@ void about::CreateControls()
 #ifndef __WXX11__
   tcflags |= wxTE_DONTWRAP;
 #endif
-  wxTextCtrl *pLicenseTextCtl = new wxTextCtrl( itemPanelLicense, -1, _T(""), wxDefaultPosition, wxSize(-1, 300), tcflags);
+  pLicenseTextCtl = new wxTextCtrl( itemPanelLicense, -1, _T(""), wxDefaultPosition, wxSize(-1, 300), tcflags);
 
+  pLicenseTextCtl->InheritAttributes();
   itemBoxSizer8->Add(pLicenseTextCtl, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5);
 
-  wxString license_loc(*m_pDataLocn);
-  license_loc.Append(_T("license.txt"));
-
-  wxTextFile license_file(license_loc);
-
-  if(license_file.Open())
-  {
-      wxString str;
-      str = license_file.GetFirstLine();
-      pLicenseTextCtl->WriteText(str);
-
-      while (!license_file.Eof())
-      {
-            str = license_file.GetNextLine();
-            str.Append(_T("\n"));
-            pLicenseTextCtl->AppendText(str);
-      }
-      license_file.Close();
-  }
-  else
-  {
-      wxString msg(_T("Could not open License file: "));
-      msg.Append(license_loc);
-      wxLogMessage(msg);
-  }
-  pLicenseTextCtl->SetInsertionPoint(0);
-
     //     Tips Panel
-  wxPanel* itemPanelTips = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelTips = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+  itemPanelTips->InheritAttributes();
   itemNotebook4->AddPage(itemPanelTips, _("Help"));
 
   wxBoxSizer* itemBoxSizer9 = new wxBoxSizer(wxVERTICAL);
@@ -373,6 +424,7 @@ void about::CreateControls()
 
   wxButton* itemButton29 = new wxButton( itemDialog1, xID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
   itemButton29->SetDefault();
+  itemButton29->InheritAttributes();
   itemBoxSizer28->Add(itemButton29, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 }
 

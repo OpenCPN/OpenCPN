@@ -1054,7 +1054,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
             float kSog = 8.5;
-            float kCog = 0.;//gCog;// 28.0;                // gCog to simulate, see hotkey arrows
+            float kCog = gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
@@ -1313,7 +1313,7 @@ ret_point:
                         oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
 
 
-                        oNMEA0183.Wpl.To = prp->m_MarkName.Truncate ( 6 );
+                        oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
 
                         oNMEA0183.Wpl.Write ( snt );
 
@@ -1352,7 +1352,7 @@ ret_point:
             while ( node )
             {
                   RoutePoint *prp = node->GetData();
-                  oNMEA0183.Rte.AddWaypoint ( prp->m_MarkName.Truncate ( 6 ) );
+                  oNMEA0183.Rte.AddWaypoint ( prp->GetName().Truncate ( 6 ) );
                   node = node->GetNext();
             }
 
@@ -1553,7 +1553,7 @@ ret_point:
                   oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
 
 
-            oNMEA0183.Wpl.To = prp->m_MarkName.Truncate ( 6 );
+            oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
 
             oNMEA0183.Wpl.Write ( snt );
 

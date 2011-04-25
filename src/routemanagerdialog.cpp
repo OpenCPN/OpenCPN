@@ -1591,7 +1591,7 @@ void RouteManagerDialog::UpdateWptListCtrl()
                   li.SetText(_T(""));
                   long idx = m_pWptListCtrl->InsertItem(li);
 
-                  wxString name = rp->m_MarkName;
+                  wxString name = rp->GetName();
                   if (name.IsEmpty())
                         name = _("(Unnamed Waypoint)");
                   m_pWptListCtrl->SetItem(idx, colWPTNAME, name);
@@ -1807,7 +1807,7 @@ void RouteManagerDialog::OnWptGoToClick(wxCommandEvent &event)
 
       pSelect->AddSelectableRouteSegment ( gLat, gLon, wp->m_lat, wp->m_lon, pWP_src, wp, temp_route );
 
-      wxString name = wp->m_MarkName;
+      wxString name = wp->GetName();
       if (name.IsEmpty())
             name = _("(Unnamed Waypoint)");
       wxString rteName = _("Go to "); rteName.Append(name);

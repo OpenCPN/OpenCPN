@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.0 2011-03-10 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 22:52-0400\n"
+"POT-Creation-Date: 2011-04-23 23:41-0400\n"
 "PO-Revision-Date: 2011-03-25 16:13+0100\n"
 "Last-Translator: FJB <fj.bonig@kpnplanet.nl>\n"
 "Language-Team:  <fj.bonig@kpnplanet.nl>\n"
@@ -2506,6 +2506,9 @@ msgstr "Toon koers/vaart-vectoren van AIS objecten"
 msgid "Show target tracks"
 msgstr "Toon objecttracks"
 #
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
 #
 #
 msgid "Shows the font preview."
@@ -3120,8 +3123,10 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 #~ msgid "Cell X Offset"
 #~ msgstr "Cel X offset"
+#
 #
 #
 #~ msgid "Cell Y Offset"
@@ -3130,8 +3135,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "nautische standaard"
+#
 #
 #
 #

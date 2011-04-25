@@ -320,9 +320,7 @@ class MyFrame: public wxFrame
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
     void FilterCogSog(void);
-
-
-
+    void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
@@ -378,6 +376,7 @@ class MyFrame: public wxFrame
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 
     bool                m_bpersistent_quilt;
+    int                 m_ChartUpdatePeriod;
 
     DECLARE_EVENT_TABLE()
 };

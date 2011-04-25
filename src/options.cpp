@@ -113,6 +113,7 @@ extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
+extern bool             g_bFullscreenToolbar;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
@@ -1254,6 +1255,9 @@ void options::CreateControls()
     pPlayShipsBells = new wxCheckBox( itemPanelAdvanced, ID_BELLSCHECKBOX, _("Play ships bells"));   // pjotrc 2010.02.09
     itemStaticBoxSizerGUIOption->Add(pPlayShipsBells, 1, wxALIGN_LEFT|wxALL, border_size);           // pjotrc 2010.02.09
 
+    pFullScreenToolbar = new wxCheckBox( itemPanelAdvanced, ID_FSTOOLBARCHECKBOX, _("Show toolbar in fullscreen mode"));
+    itemStaticBoxSizerGUIOption->Add(pFullScreenToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
+
 
     //  Printing checkbox
 /*    wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Printing"));
@@ -1368,7 +1372,6 @@ void options::SetInitialSettings()
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
       pSDisplayGrid->SetValue(g_bDisplayGrid);
-      pPlayShipsBells->SetValue(g_bPlayShipsBells);
 
       pCBCourseUp->SetValue(g_bCourseUp);
       pCBLookAhead->SetValue(g_bLookAhead);
@@ -1391,6 +1394,7 @@ void options::SetInitialSettings()
       pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
       pPreserveScale->SetValue(g_bPreserveScaleOnX);
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
+      pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
       pTrackDaily->SetValue(g_bTrackDaily);
@@ -1741,7 +1745,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowPrintIcon = pPrintShowIcon->GetValue();
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
-    g_bPlayShipsBells = pPlayShipsBells->GetValue();
 
     g_bQuiltEnable = pCDOQuilting->GetValue();
     g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
@@ -1775,6 +1778,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
+    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();
     m_pText_TP_Secs->GetValue().ToDouble(&g_TrackIntervalSeconds);

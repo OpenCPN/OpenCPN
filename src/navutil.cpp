@@ -76,6 +76,7 @@ extern NMEAHandler      *g_pnmea;
 extern FontMgr          *pFontMgr;
 
 extern int              g_restore_stackindex;
+extern int              g_restore_dbindex;
 extern RouteList        *pRouteList;
 extern LayerList        *pLayerList;
 extern bool             g_bIsNewLayer;
@@ -112,6 +113,7 @@ extern ComPortManager   *g_pCommMan;
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
+extern bool             g_bFullscreenToolbar;
 
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
@@ -251,6 +253,8 @@ extern int              g_SOGFilterSec;
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
 extern bool             g_bQuiltStart;
+
+extern int              g_SkewCompUpdatePeriod;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -930,6 +934,7 @@ RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, con
       CurrentRect_in_DC = wxRect ( 0,0,0,0 );
       m_NameLocationOffsetX = -10;
       m_NameLocationOffsetY = 8;
+      m_pMarkFont = NULL;
 
       m_prop_string_format = _T ( "A" );              // Set the current Property String format indicator
 
@@ -945,7 +950,7 @@ RoutePoint::RoutePoint ( double lat, double lon, const wxString& icon_ident, con
       m_IconName = icon_ident;
       ReLoadIcon();
 
-      m_MarkName = name;
+      SetName(name);
 
       //  Possibly add the waypoint to the global list maintained by the waypoint manager
 
@@ -974,6 +979,28 @@ RoutePoint::~RoutePoint ( void )
             delete m_HyperlinkList;
       }
 }
+
+void RoutePoint::SetName(wxString name)
+{
+      m_MarkName = name;
+      CalculateNameExtents();
+}
+
+
+void RoutePoint::CalculateNameExtents(void)
+{
+      if(m_pMarkFont)
+      {
+            wxScreenDC dc;
+
+            dc.SetFont ( *m_pMarkFont );
+            m_NameExtents = dc.GetTextExtent ( m_MarkName );
+      }
+      else
+            m_NameExtents = wxSize(0,0);
+
+}
+
 
 wxString RoutePoint::CreatePropString ( void )
 {
@@ -1073,15 +1100,24 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 
 
 //    Calculate the mark drawing extents
-      wxRect r1 ( r.x-sx2, r.y-sy2, sx2 * 2, sy2 * 2 );
+      wxRect r1 ( r.x-sx2, r.y-sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
+
       if ( m_bShowName )
       {
-            dc.SetFont ( *pFontMgr->GetFont ( _( "Marks" ) ) );
-            int stextx, stexty;
-            dc.GetTextExtent ( m_MarkName, &stextx, &stexty );
-            wxRect r2 ( r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY, stextx, stexty );
-            r1.Union ( r2 );
+            if(0 == m_pMarkFont)
+            {
+                  m_pMarkFont = pFontMgr->GetFont ( _( "Marks" ) );
+                  m_FontColor = pFontMgr->GetFontColor(_("Marks"));
+                  CalculateNameExtents();
+            }
+
+            if(m_pMarkFont)
+            {
+                  wxRect r2 ( r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY, m_NameExtents.x, m_NameExtents.y );
+                  r1.Union ( r2 );
+            }
       }
+
       hilitebox = r1;
       hilitebox.x -= r.x;
       hilitebox.y -= r.y;
@@ -1111,10 +1147,13 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
 
       if ( m_bShowName )
       {
-            dc.SetFont ( *pFontMgr->GetFont ( _( "Marks" ) ) );
-            dc.SetTextForeground(pFontMgr->GetFontColor(_("Marks")));
+            if(m_pMarkFont)
+            {
+                  dc.SetFont ( *m_pMarkFont );
+                  dc.SetTextForeground(m_FontColor);
 
-            dc.DrawText ( m_MarkName, r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY );
+                  dc.DrawText ( m_MarkName, r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY );
+            }
       }
 
 
@@ -1249,7 +1288,7 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wx
                   AddPoint(psourceroute->GetPoint(i), false);
             else {
                   RoutePoint *psourcepoint = psourceroute->GetPoint(i);
-                  RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->m_IconName, psourcepoint->m_MarkName, GPX_EMPTY_STRING, false );
+                  RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->m_IconName, psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
                   AddPoint(ptargetpoint, false);
 
@@ -1283,7 +1322,7 @@ void Route::CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wx
       for (i = start_nPoint; i <= end_nPoint; i++) {
 
             RoutePoint *psourcepoint = psourceroute->GetPoint(i);
-            RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->m_IconName, psourcepoint->m_MarkName, GPX_EMPTY_STRING, false );
+            RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->m_IconName, psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
             AddPoint(ptargetpoint, false);
 
@@ -1376,9 +1415,11 @@ void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 
       m_pLastAddedPoint = pNewPoint;
 
-      if ( b_rename_in_sequence && pNewPoint->m_MarkName.IsEmpty() && !pNewPoint->m_bKeepXRoute)
+      if ( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->m_bKeepXRoute)
       {
-            pNewPoint->m_MarkName.Printf ( _T ( "%03d" ), m_nPoints );
+            wxString name;
+            name.Printf ( _T ( "%03d" ), m_nPoints );
+            pNewPoint->SetName(name);
             pNewPoint->m_bDynamicName = true;
       }
       return;
@@ -1904,19 +1945,41 @@ void Route::CalculateBBox()
 
 void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
 {
-
       dc_route.ResetBoundingBox();
       dc_route.DestroyClippingRegion();
 
-      // Draw the route on the dc
-      Draw ( dc_route, VP );
+      // Draw the route in skeleton form on the dc
+      // That is, draw only the route points, assuming that the segements will
+      // always be fully contained within the resulting rectangle.
+      // Can we prove this?
+      if ( m_bVisible)
+      {
+            wxPoint rpt1, rpt2;
+            DrawPointWhich ( dc_route, 1, &rpt1 );
+
+            wxRoutePointListNode *node = pRoutePointList->GetFirst();
+            RoutePoint *prp1 = node->GetData();
+            node = node->GetNext();
+
+            while ( node )
+            {
+
+                  RoutePoint *prp2 = node->GetData();
+                  prp2->Draw ( dc_route, &rpt2 );
+
+                  rpt1 = rpt2;
+                  prp1 = prp2;
+
+                  node = node->GetNext();
+            }
+      }
+
 
       //  Retrieve the drawing extents
       prect->x = dc_route.MinX() - 1;
       prect->y = dc_route.MinY() - 1;
-      prect->width  = dc_route.MaxX() - dc_route.MinX() + 2; // Mouse Poop?
+      prect->width  = dc_route.MaxX() - dc_route.MinX() + 2;
       prect->height = dc_route.MaxY() - dc_route.MinY() + 2;
-
 }
 
 
@@ -2101,7 +2164,11 @@ void Route::RenameRoutePoints ( void )
       {
             RoutePoint *prp = node->GetData();
             if ( prp->m_bDynamicName )
-                  prp->m_MarkName.Printf ( _T ( "%03d" ), i );
+            {
+                  wxString name;
+                  name.Printf ( _T ( "%03d" ), i );
+                  prp->SetName(name);
+            }
 
             node = node->GetNext();
             i++;
@@ -2152,7 +2219,7 @@ bool Route::IsEqualTo ( Route *ptargetroute )
             if ( ( fabs ( pthisrp->m_lat - pthatrp->m_lat ) > 1.0e-6 ) || ( fabs ( pthisrp->m_lon - pthatrp->m_lon ) > 1.0e-6 ) )
                   return false;
 
-            if ( !pthisrp->m_MarkName.IsSameAs ( pthatrp->m_MarkName ) )
+            if ( !pthisrp->GetName().IsSameAs ( pthatrp->GetName() ) )
                   return false;
 
             pthisnode = pthisnode->GetNext();
@@ -2580,6 +2647,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "AnchorWatch2GUID" ),  &g_AW2GUID, _T(""));
 
       Read ( _T ( "InitialStackIndex" ),  &g_restore_stackindex, 0 );
+      Read ( _T ( "InitialdBIndex" ),  &g_restore_dbindex, -1 );
       Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
       g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
       g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
@@ -2591,6 +2659,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_cm93detail_dialog_y < 0) || (g_cm93detail_dialog_y > display_height))
             g_cm93detail_dialog_y = 5;
 
+      Read ( _T ( "SkewCompUpdatePeriod" ),  &g_SkewCompUpdatePeriod, 10 );
 
       Read ( _T ( "ShowCM93DetailSlider" ),  &g_bShowCM93DetailSlider, 0 );
 
@@ -2598,6 +2667,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
+      Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -3750,6 +3820,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "SetSystemTime" ), s_bSetSystemTime );
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
+      Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
@@ -3794,6 +3865,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AutomaticDailyTracks" ),   g_bTrackDaily );
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
+      Write ( _T ( "InitialdBIndex" ),  g_restore_dbindex );
 
       Write ( _T ( "AnchorWatch1GUID" ),   g_AW1GUID );
       Write ( _T ( "AnchorWatch2GUID" ),   g_AW2GUID );
@@ -4242,7 +4314,7 @@ GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props
       }
 
       return new GpxWptElement(waypoint_type, pr->m_lat, pr->m_lon,
-            0, &pr->m_CreateTime, 0, -1, pr->m_MarkName, GPX_EMPTY_STRING,
+                               0, &pr->m_CreateTime, 0, -1, pr->GetName(), GPX_EMPTY_STRING,
             pr->m_MarkDescription, GPX_EMPTY_STRING, &lnks,
             pr->m_IconName, wxString(_T("WPT")), fix_undefined,
             -1, -1, -1, -1, -1, -1, exts);
@@ -4411,7 +4483,7 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                                           if ( ChildName == _T ( "wpt" ) )
                                           {
                                                 RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"), true);          // Full Viz
-                                                RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                                                RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon);
                                                 if(!pExisting)
                                                 {
                                                       if (WaypointExists(pWp->m_GUID)) //We try to import a waypoint with the same guid but different properties, so we assign it a new guid to keep them both
@@ -4477,7 +4549,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon)
 
             if (pr->m_bIsInLayer) return NULL;
 
-            if ( name == pr->m_MarkName )
+            if ( name == pr->GetName() )
             {
                   if ( fabs ( lat-pr->m_lat ) < 1.e-6 && fabs ( lon-pr->m_lon ) < 1.e-6 )
                   {
@@ -5475,7 +5547,7 @@ Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
             {
                   RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square"), b_fullviz );
 
-                  RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                  RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon);
 
                   if(!pExisting)
                   {
@@ -5562,7 +5634,7 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
             {
                   RoutePoint *pWp = LoadGPXWaypoint ( (GpxWptElement *)child, _T("square"), b_fullviz );
 
-                  RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                  RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon);
 
                   if(!pExisting || !pExisting->m_bKeepXRoute)
                   {
@@ -5658,7 +5730,7 @@ void UpdateRoute(Route *pTentRoute)
                         ex_rp->m_lon = prp->m_lon;
                         ex_rp->m_IconName = prp->m_IconName;
                         ex_rp->m_MarkDescription = prp->m_MarkDescription;
-                        ex_rp->m_MarkName = prp->m_MarkName;
+                        ex_rp->SetName(prp->GetName());
                   }
                   else
                   {
@@ -5860,7 +5932,7 @@ bool NavObjectCollection::LoadAllGPXObjects()
                   {
 			      int m_NextWPNum = 0; //FIXME: we do not need it for GPX
                         RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)child, _T("circle"));
-                        RoutePoint *pExisting = WaypointExists( pWp->m_MarkName, pWp->m_lat, pWp->m_lon);
+                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon);
                         if(!pExisting)
                         {
                               if ( NULL != pWayPointMan )
