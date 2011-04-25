@@ -18,16 +18,22 @@ override_dh_install:
 	cp $(CURDIR)/src/bitmaps/opencpn.xpm $(CURDIR)/debian/opencpn/usr/share/pixmaps/
 	
 	mkdir -p $(CURDIR)/debian/opencpn/usr/lib
-	mv -f $(CURDIR)/debian/opencpn/usr/share/opencpn/plugins/ \
+	mv -f $(CURDIR)/debian/tmp/usr/share/opencpn/plugins/* \
 		$(CURDIR)/debian/opencpn/usr/lib/opencpn-plugins/
+	rmdir $(CURDIR)/debian/tmp/usr/share/opencpn/plugins
 	
 	# WVS supplied by the xtide-coastline package
-	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/wvsdata/
+	rm -rf $(CURDIR)/debian/tmp/usr/share/opencpn/wvsdata/
 	
 	dh_install
 	
 	rm $(CURDIR)/debian/opencpn/usr/share/opencpn/license.txt
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/doc
+	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/sounds
+	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/tcdata
+	# fixme: the main docs install just recopies in this README a moment later..
+	rm $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/README.harmonics
+	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README_BELLS.txt
 
 
 override_dh_installman:

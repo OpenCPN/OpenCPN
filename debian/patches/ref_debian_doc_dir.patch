@@ -9,7 +9,7 @@ Index: opencpn/src/about.cpp
              wxString help_locn = _T("doc/help_");
 -            help_locn.Prepend(*m_pDataLocn);
 +//          help_locn.Prepend(*m_pDataLocn);
-+	    help_locn.Prepend(_T("/usr/share/doc/opencpn/"));
++	    help_locn.Prepend(_T("/usr/share/doc/opencpn-doc/"));
  
              wxString help_try = help_locn;
              help_try += def_lang_canonical;
