@@ -9296,7 +9296,11 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         //  Draw S52 compatible Scale Bar
         wxCoord w, h;
         scratch_dc.GetSize(&w, &h);
-        ScaleBarDraw( scratch_dc, 20, h - 20 );
+        if(g_bDisplayGrid)
+              ScaleBarDraw( scratch_dc, 60, h - 20 );
+        else
+              ScaleBarDraw( scratch_dc, 20, h - 20 );
+
 
         // Maybe draw a Grid
         if(g_bDisplayGrid && (fabs(VPoint.rotation) < 1e-5) && ((fabs(VPoint.skew) < 1e-9) || g_bskew_comp))
