@@ -256,6 +256,10 @@ extern bool             g_bQuiltStart;
 
 extern int              g_SkewCompUpdatePeriod;
 
+extern int              g_toolbar_x;
+extern int              g_toolbar_y;
+extern long             g_toolbar_orient;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -2643,6 +2647,10 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
 
+      Read ( _T ( "ToolbarX"),  &g_toolbar_x, 0);
+      Read ( _T ( "ToolbarY" ),  &g_toolbar_y, 0);
+      Read ( _T ( "ToolbarOrient" ),  &g_toolbar_orient, wxTB_HORIZONTAL);
+
       Read ( _T ( "AnchorWatch1GUID" ),  &g_AW1GUID, _T(""));
       Read ( _T ( "AnchorWatch2GUID" ),  &g_AW2GUID, _T(""));
 
@@ -3869,6 +3877,10 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "AnchorWatch1GUID" ),   g_AW1GUID );
       Write ( _T ( "AnchorWatch2GUID" ),   g_AW2GUID );
+
+      Write ( _T ( "ToolbarX" ),   g_toolbar_x );
+      Write ( _T ( "ToolbarY" ),   g_toolbar_y );
+      Write ( _T ( "ToolbarOrient" ),   g_toolbar_orient );
 
       wxString st0;
       st0.Printf ( _T ( "%g" ), g_PlanSpeed );
