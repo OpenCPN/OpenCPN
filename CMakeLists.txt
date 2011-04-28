@@ -710,8 +710,9 @@ IF(WIN32 AND NOT UNIX)
     GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
 #      " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME} /q:a /c:msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q:a /c:\\\"VCREDI~1.EXE /q:a /c:\\\"\\\"msiexec /i vcredist.msi /qn\\\"\\\" \\\"' $0\\n"
-           " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+#      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q:a /c:\\\"VCREDI~1.EXE /q:a /c:\\\"\\\"msiexec /i vcredist.msi /qn\\\"\\\" \\\"' $0\\n"
+      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /qb' $0\\n"
+      " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
 
 
 ELSE(WIN32 AND NOT UNIX)
