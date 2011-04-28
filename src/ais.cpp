@@ -1743,12 +1743,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                   bstr->GetStr(303,120, &ptd->Destination[0], 20);
 
-                  if(AIS_version_indicator > 0)
-                  {
-                        int blue_paddle = bstr->GetInt(143, 2);
-                        ptd->b_blue_paddle = (blue_paddle == 2);             // paddle is set
-                  }
-
                   parse_result = true;
             }
 
