@@ -650,7 +650,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             result.Append(_T("\n"));
 
             int crs = wxRound(COG);
-            if(b_positionValid)
+            if((b_positionValid) && (COG < 360.0))
                   line.Printf(_("Course:                 %03d Deg.\n"), crs);
             else
                   line.Printf(_("Course:                 Unavailable\n"));
@@ -1593,6 +1593,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
         {
             n_msg1++;
 
+            ptd->b_positionValid = true;
+
             ptd->NavStatus = bstr->GetInt(39, 4);
             ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
 
@@ -1600,16 +1602,19 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             if(lon & 0x08000000)                    // negative?
                 lon |= 0xf0000000;
             ptd->Lon = lon / 600000.;
+            if(lon > 180.)
+                  ptd->b_positionValid = false;
 
             int lat = bstr->GetInt(90, 27);
             if(lat & 0x04000000)                    // negative?
                 lat |= 0xf8000000;
             ptd->Lat = lat / 600000.;
+            if(lat > 90.)
+                  ptd->b_positionValid = false;
 
             ptd->COG = 0.1 * (bstr->GetInt(117, 12));
             ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
 
-            ptd->b_positionValid = true;
 
             ptd->ROTAIS = bstr->GetInt(43, 8);
             double rot_dir = 1.0;
@@ -4167,9 +4172,12 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                   AIS_Target_Data *pAISTarget = it->second;
                   item.SetId(index);
 
-                  if ( (NULL != pAISTarget) && (pAISTarget->b_positionValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
+                  if ( NULL != pAISTarget)
                   {
-                        m_ptarget_array->Add(pAISTarget);
+                        if((pAISTarget->b_positionValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
+                              m_ptarget_array->Add(pAISTarget);
+                        else if(!pAISTarget->b_positionValid)
+                              m_ptarget_array->Add(pAISTarget);
                   }
             }
 
