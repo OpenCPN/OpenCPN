@@ -141,6 +141,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                               case 102:                                 // TODO add more valid API versions to this case as necessary
                               case 103:
                               case 104:
+                              case 105:
                                     bver_ok = true;
                                     break;
                               default:
@@ -536,6 +537,18 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
       }
 }
 
+void PlugInManager::SendAISSentenceToAllPlugIns(wxString &sentence)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_AIS_SENTENCES)
+                        pic->m_pplugin->SetAISSentence(sentence);
+            }
+      }
+}
 
 void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDat *ppos)
 {
@@ -980,6 +993,9 @@ void opencpn_plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
 {}
 
 void opencpn_plugin::SetNMEASentence(wxString &sentence)
+{}
+
+void opencpn_plugin::SetAISSentence(wxString &sentence)
 {}
 
 int opencpn_plugin::GetToolbarToolCount(void)

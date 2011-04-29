@@ -59,6 +59,7 @@
 #include "nmea.h"           // for AIS Muxed data stream
 #include "navutil.h"        // for Select
 #include "georef.h"
+#include "pluginmanager.h"  // for PlugInManager
 #include "bitmaps/icons.h" // for sorting icons
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -123,6 +124,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             bGPSValid;
 
+extern PlugInManager    *g_pi_manager;
 
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
@@ -1280,6 +1282,7 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                                     m_pMainEventHandler->AddPendingEvent(event);
                               }
                         }
+                        g_pi_manager->SendAISSentenceToAllPlugIns(message);
                   }
                   else
                   {
