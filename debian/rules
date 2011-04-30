@@ -31,10 +31,14 @@ override_dh_install:
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/doc
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/sounds
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/tcdata
-	# fixme: the main docs install just recopies in this README a moment later..
-	rm $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/README.harmonics
-	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README_BELLS.txt
 
+override_dh_installdocs:
+	dh_installdocs
+	mv $(CURDIR)/debian/opencpn-data/usr/share/doc/opencpn-data/README_BELLS.txt \
+		$(CURDIR)/debian/opencpn-data/usr/share/doc/opencpn-data/README.bells
+	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README_BELLS.txt
+	#harmonics readme already installed to the opencpn-data/docs dir
+	rm $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/README.harmonics
 
 override_dh_installman:
 	dh_installman debian/opencpn.1
