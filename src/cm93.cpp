@@ -4032,8 +4032,8 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
 
             if(bNeedNew)
             {
-                  pOLE = (OBJLElement *)malloc(sizeof(OBJLElement));
-                  strcpy(pOLE->OBJLName, pobj->FeatureName);
+                  pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
+                  strncpy(pOLE->OBJLName, pobj->FeatureName, 6);
                   pOLE->nViz = 1;
 
                   ps52plib->pOBJLArray->Add((void *)pOLE);

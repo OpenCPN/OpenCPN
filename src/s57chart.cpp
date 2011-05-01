@@ -297,8 +297,8 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
 
             if(bNeedNew)
             {
-                pOLE = (OBJLElement *)malloc(sizeof(OBJLElement));
-                strcpy(pOLE->OBJLName, szFeatureName);
+                pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
+                strncpy(pOLE->OBJLName, szFeatureName, 6);
                 pOLE->nViz = 1;
 
                 ps52plib->pOBJLArray->Add((void *)pOLE);
