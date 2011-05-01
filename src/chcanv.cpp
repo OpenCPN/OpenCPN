@@ -306,6 +306,8 @@ enum
         ID_WP_MENU_ADDITIONAL_INFO,
 
         ID_DEF_MENU_QUILTREMOVE,
+        ID_DEF_MENU_COGUP,
+        ID_DEF_MENU_NORTHUP,
         ID_DEF_MENU_LAST
 
 };
@@ -2591,6 +2593,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_DEF_MENU_MOVE_BOAT_HERE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_GOTO_HERE,          ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_GOTOPOSITION,       ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_COGUP,              ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_NORTHUP,            ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_RT_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_RT_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
@@ -2681,6 +2685,13 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pRolloverRouteSeg           = NULL;
 
         m_brightdir = 0;
+
+        m_pos_image_user_day        = NULL;
+        m_pos_image_user_dusk       = NULL;
+        m_pos_image_user_night      = NULL;
+        m_pos_image_user_grey_day   = NULL;
+        m_pos_image_user_grey_dusk  = NULL;
+        m_pos_image_user_grey_night = NULL;
 
         VPoint.Invalidate();
 
@@ -2935,35 +2946,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         double factor_dusk = 0.5;
         double factor_night = 0.25;
 
-        //Green
-        m_os_image_green_day   = _img_ship_green->ConvertToImage();
-
-        int img_width = m_os_image_green_day.GetWidth();
-        int img_height = m_os_image_green_day.GetHeight();
-
-        m_os_image_green_dusk = m_os_image_green_day.Copy();
-        m_os_image_green_night = m_os_image_green_day.Copy();
-
-        for(int iy=0 ; iy < img_height ; iy++)
-        {
-              for(int ix=0 ; ix < img_width ; ix++)
-              {
-                    if(!m_os_image_green_day.IsTransparent(ix, iy))
-                    {
-                        wxImage::RGBValue rgb(m_os_image_green_day.GetRed(ix, iy), m_os_image_green_day.GetGreen(ix, iy), m_os_image_green_day.GetBlue(ix, iy));
-                        wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
-                        hsv.value = hsv.value * factor_dusk;
-                        wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
-                        m_os_image_green_dusk.SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
-
-                        hsv = wxImage::RGBtoHSV(rgb);
-                        hsv.value = hsv.value * factor_night;
-                        nrgb = wxImage::HSVtoRGB(hsv);
-                        m_os_image_green_night.SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
-                    }
-              }
-        }
-
        //Red
         m_os_image_red_day   = _img_ship_red->ConvertToImage();
 
@@ -3025,18 +3007,79 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
 #endif
         //  Set initial pointers to ownship images
-        m_pos_image_green = &m_os_image_green_day;
         m_pos_image_red   = &m_os_image_red_day;
 
         //  Look for user defined ownship image
         //  This may be found in the shared data location along with other user defined icons.
-        //  and will be called "onwship.xpm"
-        m_pos_image_user = NULL;
+        //  and will be called "ownship.xpm"
         if(pWayPointMan && pWayPointMan->DoesIconExist(_T("ownship")))
         {
               wxBitmap *pbmp = pWayPointMan->GetIconBitmap(_T("ownship"));
-              m_pos_image_user = new wxImage;
-              *m_pos_image_user = pbmp->ConvertToImage();
+              m_pos_image_user_day = new wxImage;
+              *m_pos_image_user_day = pbmp->ConvertToImage();
+              m_pos_image_user_day->InitAlpha();
+
+              int gimg_width = m_pos_image_user_day->GetWidth();
+              int gimg_height = m_pos_image_user_day->GetHeight();
+
+              // Make dusk and night images
+              m_pos_image_user_dusk  = new wxImage;
+              m_pos_image_user_night = new wxImage;
+
+              *m_pos_image_user_dusk  = m_pos_image_user_day->Copy();
+              *m_pos_image_user_night = m_pos_image_user_day->Copy();
+
+              for(int iy=0 ; iy < gimg_height ; iy++)
+              {
+                    for(int ix=0 ; ix < gimg_width ; ix++)
+                    {
+                          if(!m_pos_image_user_day->IsTransparent(ix, iy))
+                          {
+                                wxImage::RGBValue rgb(m_pos_image_user_day->GetRed(ix, iy), m_pos_image_user_day->GetGreen(ix, iy), m_pos_image_user_day->GetBlue(ix, iy));
+                                wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
+                                hsv.value = hsv.value * factor_dusk;
+                                wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
+                                m_pos_image_user_dusk->SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
+
+                                hsv = wxImage::RGBtoHSV(rgb);
+                                hsv.value = hsv.value * factor_night;
+                                nrgb = wxImage::HSVtoRGB(hsv);
+                                m_pos_image_user_night->SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
+                          }
+                    }
+              }
+
+              //  Make some alternate greyed out day/dusk/night images
+              m_pos_image_user_grey_day = new wxImage;
+              *m_pos_image_user_grey_day = m_pos_image_user_day->ConvertToGreyscale();
+
+
+              m_pos_image_user_grey_dusk  = new wxImage;
+              m_pos_image_user_grey_night = new wxImage;
+
+              *m_pos_image_user_grey_dusk  = m_pos_image_user_grey_day->Copy();
+              *m_pos_image_user_grey_night = m_pos_image_user_grey_day->Copy();
+
+              for(int iy=0 ; iy < gimg_height ; iy++)
+              {
+                    for(int ix=0 ; ix < gimg_width ; ix++)
+                    {
+                          if(!m_pos_image_user_grey_day->IsTransparent(ix, iy))
+                          {
+                                wxImage::RGBValue rgb(m_pos_image_user_grey_day->GetRed(ix, iy), m_pos_image_user_grey_day->GetGreen(ix, iy), m_pos_image_user_grey_day->GetBlue(ix, iy));
+                                wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
+                                hsv.value = hsv.value * factor_dusk;
+                                wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
+                                m_pos_image_user_grey_dusk->SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
+
+                                hsv = wxImage::RGBtoHSV(rgb);
+                                hsv.value = hsv.value * factor_night;
+                                nrgb = wxImage::HSVtoRGB(hsv);
+                                m_pos_image_user_grey_night->SetRGB(ix, iy, nrgb.red, nrgb.green, nrgb.blue);
+                          }
+                    }
+              }
+
         }
 
         m_pQuilt = new Quilt();
@@ -3084,7 +3127,13 @@ ChartCanvas::~ChartCanvas()
 
         delete m_prot_bm;
 
-        delete m_pos_image_user;
+        delete m_pos_image_user_day;
+        delete m_pos_image_user_dusk;
+        delete m_pos_image_user_night;
+        delete m_pos_image_user_grey_day;
+        delete m_pos_image_user_grey_dusk;
+        delete m_pos_image_user_grey_night;
+
 
 }
 
@@ -3240,10 +3289,12 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         break;
 
                   case WXK_F2:
+					  {
+					    *(int *)(0) = 0;
                         parent_frame->TogglebFollow();
                         b_proc = true;
                         break;
-
+					  }
                   case WXK_F3:
                         parent_frame->ToggleENCText();
                         b_proc = true;
@@ -3428,24 +3479,28 @@ void ChartCanvas::SetColorScheme(ColorScheme cs)
       switch(cs)
       {
             case GLOBAL_COLOR_SCHEME_DAY:
-                  m_pos_image_green = &m_os_image_green_day;
                   m_pos_image_red   = &m_os_image_red_day;
                   m_pos_image_grey  = &m_os_image_grey_day;
+                  m_pos_image_user       = m_pos_image_user_day;
+                  m_pos_image_user_grey  = m_pos_image_user_grey_day;
                   break;
             case GLOBAL_COLOR_SCHEME_DUSK:
-                  m_pos_image_green = &m_os_image_green_dusk;
                   m_pos_image_red   = &m_os_image_red_dusk;
                   m_pos_image_grey  = &m_os_image_grey_dusk;
+                  m_pos_image_user       = m_pos_image_user_dusk;
+                  m_pos_image_user_grey  = m_pos_image_user_grey_dusk;
                   break;
             case GLOBAL_COLOR_SCHEME_NIGHT:
-                  m_pos_image_green = &m_os_image_green_night;
                   m_pos_image_red   = &m_os_image_red_night;
                   m_pos_image_grey  = &m_os_image_grey_night;
+                  m_pos_image_user       = m_pos_image_user_night;
+                  m_pos_image_user_grey  = m_pos_image_user_grey_night;
                   break;
             default:
-                  m_pos_image_green = &m_os_image_green_day;
                   m_pos_image_red   = &m_os_image_red_day;
                   m_pos_image_grey  = &m_os_image_grey_day;
+                  m_pos_image_user       = m_pos_image_user_day;
+                  m_pos_image_user_grey  = m_pos_image_user_grey_day;
                   break;
       }
 
@@ -4381,32 +4436,29 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
                 wxImage *pos_image;
                 wxColour pred_colour;
 
-                if(g_bUseGreenShip)
-                {
-                        pos_image = m_pos_image_green;
-                        pred_colour = GetGlobalColor ( _T ( "GREEN2" ) );
+                pos_image = m_pos_image_red;
+                pred_colour = GetGlobalColor ( _T ( "URED" ) );
 
-                        if(SHIP_NORMAL != m_ownship_state)
-                        {
-                            pos_image = m_pos_image_red;
-                            pred_colour = GetGlobalColor ( _T ( "UDKRD" ) );
-                        }
-                }
-                else
+                if(SHIP_NORMAL != m_ownship_state)
                 {
-                        pos_image = m_pos_image_red;
-                        pred_colour = GetGlobalColor ( _T ( "URED" ) );
-
-                        if(SHIP_NORMAL != m_ownship_state)
-                        {
-                              pos_image = m_pos_image_grey;
-                              pred_colour = GetGlobalColor ( _T ( "GREY1" ) );
-                        }
+                      pos_image = m_pos_image_grey;
+                      pred_colour = GetGlobalColor ( _T ( "GREY1" ) );
                 }
+
 
                 //      Substitute user ownship image if found
                 if(m_pos_image_user)
+                {
                       pos_image = m_pos_image_user;
+                      pred_colour = GetGlobalColor ( _T ( "URED" ) );
+
+                      if(SHIP_NORMAL != m_ownship_state)
+                      {
+                            pos_image = m_pos_image_user_grey;
+                            pred_colour = GetGlobalColor ( _T ( "GREY1" ) );
+                      }
+
+                }
 
 
                 int img_width = pos_image->GetWidth();
@@ -4441,7 +4493,7 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 
                         wxPoint rot_ctr(1 + img_width/2, 1 + img_height/2);
 
-                        wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr);
+                        wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
                         wxBitmap os_bm(rot_image);
                         wxMemoryDC mdc(os_bm);
 
@@ -7596,7 +7648,11 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
         pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
 
-//        if ( !g_pRouteMan->GetpActiveRoute() )
+        if(!g_bCourseUp)
+            pdef_menu->Append(ID_DEF_MENU_COGUP, _("Set Course Up Mode"));
+        else
+            pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
+
         if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
                     pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
 
@@ -7797,13 +7853,21 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
                    }
 
-                case ID_DEF_MENU_GOTOPOSITION:
+                case ID_DEF_MENU_COGUP:
+                      gFrame->ToggleCourseUp();
+                      break;
+
+                case ID_DEF_MENU_NORTHUP:
+                      gFrame->ToggleCourseUp();
+                      break;
+
+               case ID_DEF_MENU_GOTOPOSITION:
                         if ( NULL == pGoToPositionDialog )          // There is one global instance of the Go To Position Dialog
                         pGoToPositionDialog = new GoToPositionDialog ( this );
                         pGoToPositionDialog->Show();
                         break;
 
-            case ID_WP_MENU_DELPOINT:
+               case ID_WP_MENU_DELPOINT:
                 {
                        if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
                        else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15

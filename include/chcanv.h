@@ -431,9 +431,6 @@ private:
       RolloverWin *m_pRolloverWin;
       RolloverWin *m_pAISRolloverWin;
 
-      wxImage     m_os_image_green_day;
-      wxImage     m_os_image_green_dusk;
-      wxImage     m_os_image_green_night;
       wxImage     m_os_image_red_day;
       wxImage     m_os_image_red_dusk;
       wxImage     m_os_image_red_night;
@@ -441,11 +438,18 @@ private:
       wxImage     m_os_image_grey_dusk;
       wxImage     m_os_image_grey_night;
 
-      wxImage     *m_pos_image_green;
       wxImage     *m_pos_image_red;
       wxImage     *m_pos_image_grey;
 
       wxImage     *m_pos_image_user;
+      wxImage     *m_pos_image_user_grey;
+
+      wxImage     *m_pos_image_user_day;
+      wxImage     *m_pos_image_user_dusk;
+      wxImage     *m_pos_image_user_night;
+      wxImage     *m_pos_image_user_grey_day;
+      wxImage     *m_pos_image_user_grey_dusk;
+      wxImage     *m_pos_image_user_grey_night;
 
       wxImage     m_ship_pix_image;             //cached ship draw image for high overzoom
       int         m_cur_ship_pix;
