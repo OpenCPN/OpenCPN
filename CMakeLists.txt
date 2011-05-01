@@ -551,6 +551,7 @@ ENDIF (USE_S57)
 SET(tcData
         data/tcdata/HARMONIC
         data/tcdata/HARMONIC.IDX
+        data/tcdata/README.harmonics
    )
 INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata )
 
