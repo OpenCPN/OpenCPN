@@ -4734,7 +4734,7 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 
 
 //  Debug Hooks
-//   if(rzRules->obj->Index == 306)
+//   if(rzRules->obj->Index == 2314)
  //        int rrt = 5;
 
 //    if(!strncmp(rzRules->LUP->OBCL, "UWTROC", 6))

@@ -1785,12 +1785,12 @@ static void *OBSTRN04 (void *param)
                         else
                         {
                               switch (watlev) {
-                                    case 1:
-                                    case 2: obstrn04str.Append(_T(";SY(ISODGR51)")); break;
-                                    case 3: obstrn04str.Append(_T(";SY(ISODGR51)")); break;
-                                    case 4:
-                                    case 5:
-                                    default : obstrn04str.Append(_T(";SY(ISODGR51)")); break;
+                                    case 1: obstrn04str.Append(_T(";SY(OBSTRN11)")); break;
+                                    case 2: obstrn04str.Append(_T(";SY(OBSTRN11)")); break;
+                                    case 3: obstrn04str.Append(_T(";SY(OBSTRN01)")); break;
+                                    case 4: obstrn04str.Append(_T(";SY(OBSTRN03)")); break;
+                                    case 5: obstrn04str.Append(_T(";SY(OBSTRN03)")); break;
+                                    default : obstrn04str.Append(_T(";SY(OBSTRN01)")); break;
                               }
                         }
                   }
