@@ -25,52 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
-<<<<<<< wificlient.cpp
- * $Log: wificlient.cpp,v $
- * Revision 1.12  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.11  2008/08/09 23:54:20  bdbcat
- * Unicode-ify
- *
- * Revision 1.10  2008/03/30 22:25:29  bdbcat
- * Update for Mac OSX/Unicode
- *
-=======
- * $Log: wificlient.cpp,v $
- * Revision 1.12  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.11  2008/08/09 23:54:20  bdbcat
- * Unicode-ify
- *
- * Revision 1.10  2008/03/30 22:25:29  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.9  2008/01/12 06:22:04  bdbcat
- * Update for Mac OSX/Unicode
- *
->>>>>>> 1.9
- * Revision 1.8  2008/01/02 20:57:14  bdbcat
- * Update for Version 1.2.2
- *
- * Revision 1.7  2007/06/13 22:48:35  bdbcat
- * Reset GPSD client socket on error/timeout
- *
- * Revision 1.6  2007/06/10 02:35:09  bdbcat
- * Cleanup
- *
- * Revision 1.5  2007/02/06 02:08:24  dsr
- * Correct timer interval on UnPause()
- *
- * Revision 1.4  2007/01/19 02:20:37  dsr
- * Rebuild for wifid daemon support
- *
- * Revision 1.3  2006/12/03 21:16:05  dsr
- * Hide window explicitely upon creation
- *
- * Revision 1.2  2006/09/21 01:37:37  dsr
- * Major refactor/cleanup
  *
  */
 
