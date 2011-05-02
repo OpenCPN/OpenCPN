@@ -4590,8 +4590,8 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
                                     double py = ( pya * sin ( cog_rad ) ) - ( pxa * cos ( cog_rad ) );
 
 
-                                    icon[i].x = ( int ) ( px ) + lPredPoint.x;
-                                    icon[i].y = ( int ) ( py ) + lPredPoint.y;
+                                    icon[i].x = ( int )wxRound( px ) + lPredPoint.x;
+                                    icon[i].y = ( int )wxRound( py ) + lPredPoint.y;
                               }
 
 
@@ -4677,8 +4677,8 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
                               double py = ( pya * sin ( cog_rad ) ) - ( pxa * cos ( cog_rad ) );
 
 
-                              icon[i].x = ( int ) ( px ) + lPredPoint.x;
-                              icon[i].y = ( int ) ( py ) + lPredPoint.y;
+                              icon[i].x = ( int ) wxRound( px ) + lPredPoint.x;
+                              icon[i].y = ( int ) wxRound( py ) + lPredPoint.y;
                         }
 
                         wxPen ppPen1 ( pred_colour, 2, wxSOLID );
