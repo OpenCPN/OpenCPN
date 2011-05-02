@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -331,6 +330,7 @@ class cm93chart : public s57chart
             double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
             double GetNormalScaleMax(double canvas_scale_factor);
 
+            bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
             void SetVPParms(const ViewPort &vpt);
             void GetPointPix(ObjRazRules *rzRules, float northing, float easting, wxPoint *r);
             void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);

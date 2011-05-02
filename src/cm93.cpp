@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -2023,6 +2022,10 @@ void cm93chart::GetPointPix(ObjRazRules *rzRules, float north, float east, wxPoi
 
       r->x = (int)wxRound(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
       r->y = (int)wxRound(m_pixy_vp_center - ((valy - m_northing_vp_center) * m_view_scale_ppm));
+
+//      double xx =(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
+//      printf("%g\n", xx);
+
 }
 
 void cm93chart::GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints)
@@ -2077,6 +2080,47 @@ void cm93chart::GetPixPoint(int pixx, int pixy, double *plat, double *plon, View
 
 }
 
+bool cm93chart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
+{
+      if(IsCacheValid())
+      {
+
+      //      If this viewpoint is same scale as last...
+            if ( vp_last.view_scale_ppm == vp_proposed.view_scale_ppm )
+            {
+
+                  double prev_easting_c, prev_northing_c;
+                  toSM ( vp_last.clat, vp_last.clon, ref_lat, ref_lon, &prev_easting_c, &prev_northing_c );
+
+                  double easting_c, northing_c;
+                  toSM ( vp_proposed.clat, vp_proposed.clon,  ref_lat, ref_lon, &easting_c, &northing_c );
+
+                  //  then require this viewport to be exact integral pixel difference from last
+                  //  adjusting clat/clat and SM accordingly
+
+                  double delta_pix_x = ( easting_c - prev_easting_c ) * vp_proposed.view_scale_ppm;
+                  int dpix_x = ( int ) round ( delta_pix_x );
+                  double dpx = dpix_x;
+
+                  double delta_pix_y = ( northing_c - prev_northing_c ) * vp_proposed.view_scale_ppm;
+                  int dpix_y = ( int ) round ( delta_pix_y );
+                  double dpy = dpix_y;
+
+                  double c_east_d = ( dpx / vp_proposed.view_scale_ppm ) + prev_easting_c;
+                  double c_north_d = ( dpy / vp_proposed.view_scale_ppm ) + prev_northing_c;
+
+                  double xlat, xlon;
+                  fromSM ( c_east_d, c_north_d, ref_lat, ref_lon, &xlat, &xlon );
+
+                  vp_proposed.clon = xlon;
+                  vp_proposed.clat = xlat;
+
+                  return true;
+            }
+      }
+
+      return false;
+}
 
 //-----------------------------------------------------------------------
 //              Calculate and Set ViewPoint Constants
@@ -5872,15 +5916,23 @@ bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       //    on the last render.
       //    If it does not, the partial render will not quilt correctly with the previous data
       //    Detect this case, and indicate that the entire screen must be rendered.
-      int cmscale = GetCMScaleFromVP(vp_proposed);
 
-      if(m_cmscale != PrepareChartScale(vp_proposed, cmscale))
+      int cmscale = GetCMScaleFromVP(vp_proposed);                      // This is the scale that should be used, based on the vp
+
+      int cmscale_actual = PrepareChartScale(vp_proposed, cmscale);     // this is the scale that will be used, based on cell coverage
+
+      //    We always need to do a VP adjustment, independent of this method's return value.
+      //    so, do an AdjustVP() based on the chart scale that WILL BE USED
+      //    And be sure to return false if that adjust method suggests so.
+      wxASSERT(NULL != m_pcm93chart_array[cmscale_actual]);
+      bool single_adjust = false;
+      if(m_pcm93chart_array[cmscale_actual])
+            single_adjust = m_pcm93chart_array[cmscale_actual]->AdjustVP(vp_last, vp_proposed);
+
+      if(m_cmscale != cmscale_actual)
             return false;
 
-      if(NULL != m_pcm93chart_current)
-            return m_pcm93chart_current->AdjustVP(vp_last, vp_proposed);
-      else
-            return false;
+      return single_adjust;
 }
 
 ThumbData *cm93compchart::GetThumbData(int tnx, int tny, float lat, float lon)
