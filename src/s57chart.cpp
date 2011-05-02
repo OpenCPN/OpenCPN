@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -44,7 +43,6 @@
 #include "s52plib.h"
 
 #include "s57chart.h"
-//#include "nmea.h"                               // for Pause/UnPause
 
 #include "mygeom.h"
 #include "cutil.h"
@@ -527,8 +525,6 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                         double xll, yll;
                         fromSM(easting, northing, point_ref_lat, point_ref_lon, &yll, &xll);
 
-//                        BBObj.SetMin(xll, yll);
-//                        BBObj.SetMax(xll, yll);
                         m_lon = xll;
                         m_lat = yll;
                         BBObj.SetMin(m_lon -.25, m_lat - .25);
