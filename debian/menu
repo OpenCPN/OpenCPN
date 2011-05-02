@@ -1,3 +1,5 @@
-?package(opencpn):needs="X11" section="Applications/Science/Geoscience"\
-  title="OpenCPN" command="/usr/bin/opencpn"\
+?package(opencpn):needs="X11"\
+  section="Applications/Science/Geoscience"\
+  title="OpenCPN"\
+  command="/usr/bin/opencpn"\
   icon="/usr/share/pixmaps/opencpn.xpm"
