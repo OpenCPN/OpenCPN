@@ -3757,8 +3757,10 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                          xmin_, xmax_, ymin_, ymax_ );
 
                         if ( res != Invisible )
+                        {
                               pdc->DrawLine ( x0,y0,x1,y1 );
-
+//                              printf("***    X0:%d ptp[]%d\n", x0, ptp[ipc].x);
+                        }
                   }
             }
             free ( ptp );
@@ -4734,8 +4736,8 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 
 
 //  Debug Hooks
-//   if(rzRules->obj->Index == 2314)
- //        int rrt = 5;
+//   if(rzRules->obj->Index != 315)
+//         return 0;//int rrt = 5;
 
 //    if(!strncmp(rzRules->LUP->OBCL, "UWTROC", 6))
 //            int yyrkt = 4;
