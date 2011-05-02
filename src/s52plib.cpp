@@ -6,8 +6,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                                      *
- *   $EMAIL$                                                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,45 +24,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: s52plib.cpp,v $
- * Revision 1.52  2010/06/13 21:05:43  bdbcat
- * 613a
- *
- * Revision 1.51  2010/06/11 16:26:29  bdbcat
- * 611a
- *
- * Revision 1.50  2010/06/07 15:30:00  bdbcat
- * 607a
- *
- * Revision 1.49  2010/06/07 03:26:09  bdbcat
- * 606b
- *
- * Revision 1.48  2010/06/06 20:52:40  bdbcat
- * 606a
- *
- * Revision 1.47  2010/05/20 19:05:19  bdbcat
- * Build 520
- *
- * Revision 1.46  2010/05/19 01:00:58  bdbcat
- * Build 518
- *
- * Revision 1.45  2010/05/15 04:02:59  bdbcat
- * Build 514
- *
- * Revision 1.44  2010/05/02 20:04:50  bdbcat
- * Build 502b
- *
- * Revision 1.43  2010/04/27 01:43:31  bdbcat
- * Build 426
- *
- * Revision 1.42  2010/04/16 13:08:31  bdbcat
- * Correct AreaPattern for MSW build.
- *
- * Revision 1.41  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.40  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 
