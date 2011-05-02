@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -3037,8 +3036,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
                               if ( bNeedNew )
                               {
-                                    pOLE = ( OBJLElement * ) malloc ( sizeof ( OBJLElement ) );
-                                    strcpy ( pOLE->OBJLName, sObj.mb_str() );
+                                    pOLE = ( OBJLElement * ) calloc ( sizeof ( OBJLElement ), 1 );
+                                    strncpy ( pOLE->OBJLName, sObj.mb_str(), 6 );
                                     pOLE->nViz = val;
 
                                     ps52plib->pOBJLArray->Add ( ( void * ) pOLE );
@@ -3889,7 +3888,10 @@ void MyConfig::UpdateSettings()
                   OBJLElement *pOLE = ( OBJLElement * ) ( ps52plib->pOBJLArray->Item ( iPtr ) );
 
                   wxString st1 ( _T ( "viz" ) );
-                  st1.Append ( wxString ( pOLE->OBJLName,  wxConvUTF8 ) );
+                  char name[7];
+                  strncpy(name, pOLE->OBJLName, 6);
+                  name[6] = 0;
+                  st1.Append ( wxString ( name,  wxConvUTF8 ) );
                   Write ( st1, pOLE->nViz );
             }
       }
