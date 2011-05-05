@@ -3772,17 +3772,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
 #endif
             {
 
-                  //    Seems safe enough to read all the required data
-                  int sx = wxMax(source.x, 0);
-
-                  //    Although we must adjust (increase) temporary allocation for negative source.x
-
-      //            int s_data_size = (sx + source.width) * source.height * BPP/8;
-                  s_data = (unsigned char *) malloc( (sx + source.width) * source.height * BPP/8 );
-
-                  GetChartBits(source, s_data, 1);
-
-                  unsigned char *source_data =  s_data;
 
 
                   double xd, yd;
@@ -3791,43 +3780,47 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                   double yrd = yd - (m_vp_render_last.pix_height * m_raster_scale_factor / 2);
                   double x_vernier = (xrd - wxRound(xrd));
                   double y_vernier = (yrd - wxRound(yrd));
+                  int x_vernier_i =  (int)wxRound(x_vernier / m_raster_scale_factor);
+                  int y_vernier_i =  (int)wxRound(y_vernier / m_raster_scale_factor);
+
+                  //    Seems safe enough to read all the required data
+                  //    Although we must adjust (increase) temporary allocation for negative source.x
+                  //    and for vernier
+                  int sx = wxMax(source.x, 0);
+                  s_data = (unsigned char *) malloc( (sx + source.width + 2) * (source.height + 2) * BPP/8 );
+
+                  wxRect vsource = source;
+                  vsource.height += 2;                // get more bits to allow for vernier
+                  vsource.width += 2;
+                  vsource.x -= 1;
+                  vsource.y -= 1;
+
+                  GetChartBits(vsource, s_data, 1);
+                  unsigned char *source_data =  s_data;
 
                   j = dest.y;
-                  int js = j;
-                  j -= wxRound(y_vernier / m_raster_scale_factor);
 
-                  while(j < dest.y + dest.height)
+                  while(j < dest.y + dest.height )
                   {
-                        if(j >= dest.y)
+                        y_offset = (int)((j - y_vernier_i) * m_raster_scale_factor) * vsource.width;        // into the source data
+
+                        target_line_start = target_data + (j * dest_stride * BPP / 8);
+                        target_data_x = target_line_start + ((dest.x) * BPP / 8);
+
+                        i = dest.x;
+                        int is = i;
+
+                        while( i < dest.x + dest.width )
                         {
-                              y_offset = (int)(js *m_raster_scale_factor) * source.width;
+                              memcpy( target_data_x,
+                                          source_data + BPP/8*(y_offset + (int)((i + x_vernier_i) * m_raster_scale_factor)),
+                                    BPP/8 );
+                              target_data_x += BPP/8;
 
-                              target_line_start = target_data + (j * dest_stride * BPP / 8);
-                              target_data_x = target_line_start + ((dest.x - wxRound(x_vernier / m_raster_scale_factor)) * BPP / 8);
-
-                              i = dest.x;
-                              int is = i;
-                              i -= wxRound(x_vernier / m_raster_scale_factor);
-
-                              while( i < dest.x + dest.width)
-                              {
-                                    if(i >= dest.x)
-                                    {
-                                          memcpy( target_data_x,
-                                                source_data + BPP/8*(y_offset + (int)(is * m_raster_scale_factor)),
-                                                BPP/8 );
-                                    }
-                                    target_data_x += BPP/8;
-
-                                    i++;
-                                    is++;
-                              }
+                              i++;
                         }
                         j++;
-                        js++;
-
                   }
-
             }
 #ifdef __WXGTK__
             sigaction(SIGSEGV, &sa_all_previous, NULL);        // reset signal handler
