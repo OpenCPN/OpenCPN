@@ -24,7 +24,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- *
+ *f
  */
 
 
@@ -310,7 +310,7 @@ private:
 
       void RotateTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
-      bool CheckEdgePan(int x, int y);
+      bool CheckEdgePan(int x, int y, bool bdragging);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
