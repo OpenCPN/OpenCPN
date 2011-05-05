@@ -833,9 +833,9 @@ bool MyApp::OnInit()
         pFontMgr = new FontMgr();
 
 //    Init the XPM image handler
-        wxImage t;
-        wxXPMHandler *th = new wxXPMHandler;
-        t.AddHandler(th);
+//        wxImage t;
+//        wxXPMHandler *th = new wxXPMHandler;
+//        t.AddHandler(th);
 
 //      Establish a "home" location
         wxStandardPathsBase& std_path = wxApp::GetTraits()->GetStandardPaths();
