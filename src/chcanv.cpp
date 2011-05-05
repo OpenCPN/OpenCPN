@@ -9974,12 +9974,24 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
                             else
                                   pRouteDraw->Draw ( dc, VPoint );
                       }
+                      else if(pRouteDraw->IsTrack())
+                      {
+                            Track *trk = (Track *)pRouteDraw;
+                            if(trk->IsRunning())
+                            {
+                              wxBoundingBox xbox = pRouteDraw->RBBox;
+                              xbox.Expand(gLon, gLat);
+                              if ( BltBBox.Intersect ( xbox, 0 ) != _OUT )
+                                  active_route = pRouteDraw;
+                            }
+                      }
+
                 }
 
                 node = node->GetNext();
         }
 
-        //  Draw any active or selected route last, so that is is always on top
+        //  Draw any active or selected route (or track) last, so that is is always on top
         if(active_route)
               active_route->Draw ( dc, VPoint );
 

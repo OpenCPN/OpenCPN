@@ -214,6 +214,7 @@ public:
       bool IsListed() { return m_bListed; }
       bool IsActive() { return m_bRtIsActive; }
       bool IsSelected() { return m_bRtIsSelected; }
+      bool IsTrack(){ return m_bIsTrack; }
 
       bool SendToGPS(wxString& com_name, bool bsend_waypoints, wxGauge *pProgress);
 
@@ -276,11 +277,10 @@ class Track : public wxEvtHandler, public Route
             void Stop(bool do_add_point = false);
             void FixMidnight(Track *pPreviousTrack);
             bool DoExtendDaily(void);
-
+            bool IsRunning(){ return m_bRunning; }
             void Draw(wxDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
-
 
       private:
             void OnTimerTrack(wxTimerEvent& event);
