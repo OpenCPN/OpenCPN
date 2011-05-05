@@ -3868,6 +3868,8 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
             return false;
       m_bzooming = true;
 
+      bool b_do_zoom = true;
+
       double zoom_factor = 2.0;
       double max_allowed_scale = 1e8;
 
@@ -3905,15 +3907,23 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
                         proposed_scale_onscreen = max_allowed_scale;
             }
       }
-
-
-
-      if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
-            SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
       else
-            SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
+      {
+            double min_scale = m_canvas_width / (WGS84_semimajor_axis_meters * PI);  // something like 180 degrees
+            if((GetCanvasScaleFactor() / proposed_scale_onscreen) < min_scale)
+                  b_do_zoom = false;
+      }
 
-      Refresh(false);
+
+      if(b_do_zoom)
+      {
+            if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
+                  SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
+            else
+                  SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
+
+            Refresh(false);
+      }
 
       m_bzooming = false;
 
@@ -6324,7 +6334,7 @@ void ChartCanvas::PanTimerEvent ( wxTimerEvent& event )
 
 }
 
-bool ChartCanvas::CheckEdgePan ( int x, int y )
+bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
 {
       bool bft = false;
       int pan_margin = 20;
@@ -6360,10 +6370,13 @@ bool ChartCanvas::CheckEdgePan ( int x, int y )
       double new_lat, new_lon;
       GetCanvasPixPoint ( np.x, np.y, new_lat, new_lon );
 
-      //    Of course, if the mouse left button is not down, we must stop the event injection
-      wxMouseState state = ::wxGetMouseState();
-      if(!state.LeftDown())
-            bft = false;
+      //    Of course, if dragging, and the mouse left button is not down, we must stop the event injection
+      if(bdragging)
+      {
+            wxMouseState state = ::wxGetMouseState();
+            if(!state.LeftDown())
+                  bft = false;
+      }
 
         if ( ( bft ) && !pPanTimer->IsRunning() )
         {
@@ -6577,7 +6590,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 r_rband.y = y;
                 m_bDrawingRoute = true;
 
-                CheckEdgePan ( x, y );
+                CheckEdgePan ( x, y, event.Dragging() );
                 Refresh ( false );
         }
 
@@ -6588,7 +6601,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
               r_rband.x = x;
               r_rband.y = y;
 
-              CheckEdgePan ( x, y );
+              CheckEdgePan ( x, y, event.Dragging() );
               Refresh ( false );
         }
 
@@ -6898,7 +6911,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
                         m_pFoundPoint->m_slon = m_cursor_lon;
 
-                        if ( CheckEdgePan ( x, y ) )
+                        if ( CheckEdgePan ( x, y, true ) )
                         {
                                 double new_cursor_lat, new_cursor_lon;
                                 GetCanvasPixPoint ( x, y, new_cursor_lat, new_cursor_lon );
