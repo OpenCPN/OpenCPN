@@ -1261,8 +1261,14 @@ bool RouteProp::UpdateProperties()
                         s.Printf(_T("%5.2f"), leg_speed);
                   }
                   if (arrival) m_wpList->SetItem(item_line_index, 7, s);
-                  if (!enroute) m_wpList->SetItem(item_line_index, 7, nullify);
-			if (enroute) m_wpList->SetItem(item_line_index, 8, tide_form);
+
+                 if (enroute)
+                       m_wpList->SetItem(item_line_index, 8, tide_form);
+                 else {
+                        m_wpList->SetItem(item_line_index, 7, nullify);
+                        m_wpList->SetItem(item_line_index, 8, nullify);
+                 }
+
 
       //  Save for iterating distance/bearing calculation
                   slat = prp->m_lat;
