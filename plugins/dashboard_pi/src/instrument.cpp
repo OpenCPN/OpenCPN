@@ -163,12 +163,14 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title)
-      :DashboardInstrument(pparent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON)
+DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2)
+      :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2)
 {
 
       m_data1 = _T("---");
       m_data2 = _T("---");
+      m_cap_flag1 = cap_flag1;
+      m_cap_flag2 = cap_flag2;
       SetInstrumentWidth(200);
 }
 
@@ -200,11 +202,11 @@ void DashboardInstrument_Position::Draw(wxBufferedDC* dc)
 
 void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
 {
-      if (st == OCPN_DBP_STC_LAT)
+      if (st == m_cap_flag1)
       {
             m_data1 = toSDMM(1, data);
       }
-      else if (st == OCPN_DBP_STC_LON)
+      else if (st == m_cap_flag2)
       {
             m_data2 = toSDMM(2, data);
       }

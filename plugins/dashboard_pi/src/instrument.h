@@ -70,7 +70,9 @@ enum
     OCPN_DBP_STC_VMG = 1 << 15,
     OCPN_DBP_STC_RSA = 1 << 16,
     OCPN_DBP_STC_SAT = 1 << 17,
-    OCPN_DBP_STC_GPS = 1 << 18
+    OCPN_DBP_STC_GPS = 1 << 18,
+    OCPN_DBP_STC_PLA = 1 << 19, // Cursor latitude
+    OCPN_DBP_STC_PLO = 1 << 20 // Cursor longitude
 };
 
 class DashboardInstrument : public wxWindow
@@ -116,7 +118,7 @@ protected:
 class DashboardInstrument_Position : public DashboardInstrument
 {
 public:
-      DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title);
+      DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
       void SetInstrumentWidth(int width);
@@ -125,6 +127,8 @@ public:
 protected:
       wxString          m_data1;
       wxString          m_data2;
+      int               m_cap_flag1;
+      int               m_cap_flag2;
       int               m_DataHeight;
 
       void Draw(wxBufferedDC* dc);

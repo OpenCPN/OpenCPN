@@ -85,7 +85,8 @@ enum
       ID_DBP_I_RSA,
       ID_DBP_D_RSA,
       ID_DBP_I_SAT,
-      ID_DBP_D_GPS
+      ID_DBP_D_GPS,
+      ID_DBP_I_PTR
 };
 
 wxString getInstrumentCaption(unsigned int id)
@@ -134,6 +135,8 @@ wxString getInstrumentCaption(unsigned int id)
             return _("GPS in view");
       case ID_DBP_D_GPS:
             return _("GPS status");
+      case ID_DBP_I_PTR:
+            return _("Cursor");
       }
       return _T("");
 }
@@ -155,6 +158,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_I_VMG:
       case ID_DBP_I_RSA:
       case ID_DBP_I_SAT:
+      case ID_DBP_I_PTR:
             item.SetImage(0);
             break;
       case ID_DBP_D_SOG:
@@ -222,6 +226,7 @@ int dashboard_pi::Init(void)
       ApplyConfig();
       
       return (
+           WANTS_CURSOR_LATLON       |
            WANTS_TOOLBAR_CALLBACK    |
            INSTALLS_TOOLBAR_TOOL     |
            WANTS_PREFERENCES         |
@@ -484,7 +489,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                   {
                         if (mPriHeadingT >= 1) {
                               mPriHeadingT = 1;
-                              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, m_NMEA0183.Hdt.DegreesTrue, _T("Deg"));
+                              if (m_NMEA0183.Hdt.DegreesTrue < 999.)
+                              {
+                                    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, m_NMEA0183.Hdt.DegreesTrue, _T("Deg"));
+                              }
                         }
                   }
             }
@@ -639,7 +647,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                   {
                         if (mPriHeadingT >= 2) {
                               mPriHeadingT = 2;
-                              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, _T("Deg"));
+                              if (m_NMEA0183.Vhw.DegreesTrue < 999.)
+                              {
+                                    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, _T("Deg"));
+                              }
                         }
                         if (mPriHeadingM >= 3) {
                               mPriHeadingM = 3;
@@ -775,6 +786,12 @@ void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             mUTCDateTime.Set(pfix.FixTime);
       }
       mSatsInView = pfix.nSats;
+}
+
+void dashboard_pi::SetCursorLatLon(double lat, double lon)
+{
+            SendSentenceToAllInstruments(OCPN_DBP_STC_PLA, lat, _T("SDMM"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_PLO, lon, _T("SDMM"));
 }
 
 int dashboard_pi::GetToolbarToolCount(void)
@@ -1445,7 +1462,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizer01->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
-      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_D_GPS; i++)
+      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_PTR; i++)
       {
             wxListItem item;
             getListItemForInstrument(item, i);
@@ -1619,6 +1636,9 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   break;
             case ID_DBP_D_GPS:
                   instrument = new DashboardInstrument_GPS(this, wxID_ANY, getInstrumentCaption(id));
+                  break;
+            case ID_DBP_I_PTR:
+                  instrument = new DashboardInstrument_Position(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO);
                   break;
             }
             m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));

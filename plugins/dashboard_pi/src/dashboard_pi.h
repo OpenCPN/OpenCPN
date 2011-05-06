@@ -127,6 +127,7 @@ public:
 //    The optional method overrides
       void SetNMEASentence(wxString &sentence);
       void SetPositionFix(PlugIn_Position_Fix &pfix);
+      void SetCursorLatLon(double lat, double lon);
       int GetToolbarToolCount(void);
       void OnToolbarToolCallback(int id);
       void ShowPreferencesDialog( wxWindow* parent );

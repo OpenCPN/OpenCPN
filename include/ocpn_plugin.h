@@ -50,7 +50,7 @@
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           4
+#define API_VERSION_MINOR           5
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -373,6 +373,7 @@ public:
 
       virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
       virtual void SetNMEASentence(wxString &sentence);
+      virtual void SetAISSentence(wxString &sentence);
 
       virtual void ProcessParentResize(int x, int y);
       virtual void SetColorScheme(PI_ColorScheme cs);
@@ -433,6 +434,8 @@ extern "C"  DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
 extern "C"  DECL_EXP wxAuiManager *GetFrameAuiManager(void);
 
 extern "C"  DECL_EXP bool AddLocaleCatalog( wxString catalog );
+
+extern "C"  DECL_EXP void PushNMEABuffer( wxString str );
 
 #endif            // _PLUGIN_H_
 
