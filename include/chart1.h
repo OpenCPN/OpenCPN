@@ -286,10 +286,7 @@ class MyFrame: public wxFrame
     wxTimer             FrameCOGTimer;
     wxTimer             MemFootTimer;
 
-    wxTextCtrl          *m_textWindow;
 
-    int                 m_tool_dummy_size_x, m_tool_dummy_size_y;
-    int                 m_statTool_pos;
     string_to_pbitmap_hash *m_phash;
 
     //      PlugIn support
@@ -306,7 +303,6 @@ class MyFrame: public wxFrame
     ocpnToolBarSimple *CreateAToolbar();
     void DestroyMyToolbar();
     void UpdateToolbar(ColorScheme cs);
-    void ReSizeToolbar(void);
     void PrepareToolbarBitmaps(void);
     void BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString &index,
                          string_to_pbitmap_hash &hash, bool grey = false);
@@ -315,7 +311,6 @@ class MyFrame: public wxFrame
 
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
-    void UpdateToolbarStatusWindow(ChartBase *pchart, bool bSendSize = true);
     void UpdateToolbarDynamics(void);
     void UpdateToolbarStatusBox(bool bupdate_toolbar = true);
 
@@ -327,11 +322,8 @@ class MyFrame: public wxFrame
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
 
-    int  toolbar_width_without_static;
-
     string_to_pchar_hash tool_xpm_hash;         // hash map of [static] toolbar xpm bitmaps
 
-    int                 tool_dummy_size_x_last;
 
     string_to_pbitmap_hash tool_bitmap_hash_day;
     string_to_pbitmap_hash tool_bitmap_hash_dusk;
@@ -359,16 +351,7 @@ class MyFrame: public wxFrame
     wxString         m_AIS_bmp_hash_index_last;
 
     double           m_rose_angle;
-    bool             m_bneedtoolbar;
-
-    wxToolBarToolBase *m_pStatBoxTool;
-    wxStaticBitmap   *m_pStatBoxToolStaticBmp;
-    wxBitmap         m_StatBmp;
-
-    wxToolBarToolBase *m_pStatDummyTool;
-    wxStaticBitmap    *m_ptool_ct_dummyStaticBmp;
-
-    bool              m_toolbar_scale_shown;
+    bool             m_toolbar_scale_tools_shown;
 
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
