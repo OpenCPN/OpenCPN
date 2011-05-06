@@ -704,8 +704,12 @@ class GrabberWin: public wxPanel
             void OnPaint(wxPaintEvent& event);
             void MouseEvent(wxMouseEvent& event);
             void SetColorScheme(ColorScheme cs);
+            wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
             wxBitmap          *m_pgrabber_bitmap;
+            wxBitmap          *m_pgrabber_bitmap_dusk;
+            wxBitmap          *m_pgrabber_bitmap_night;
+            wxBitmap          *m_pbitmap;
 
       DECLARE_EVENT_TABLE()
       DECLARE_CLASS( GrabberWin )
@@ -798,7 +802,6 @@ class ocpnFloatingToolbarDialog: public wxDialog
 };
 
 
-
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
@@ -819,11 +822,47 @@ GrabberWin::GrabberWin(wxWindow *parent)
       m_pgrabber_bitmap = new wxBitmap(grabber);
       SetSize(wxSize(m_pgrabber_bitmap->GetWidth(), m_pgrabber_bitmap->GetHeight() ));
 
+      //    Dusk
+      m_pgrabber_bitmap_dusk = CreateDimBitmap(m_pgrabber_bitmap, .50);
+
+      //    Night
+      m_pgrabber_bitmap_night = CreateDimBitmap(m_pgrabber_bitmap, .30);
+
+      m_pbitmap = m_pgrabber_bitmap;
 }
 
 GrabberWin::~GrabberWin()
 {
       delete m_pgrabber_bitmap;
+      delete m_pgrabber_bitmap_dusk;
+      delete m_pgrabber_bitmap_night;
+}
+
+
+wxBitmap *GrabberWin::CreateDimBitmap(wxBitmap *pBitmap, double factor)
+{
+      wxImage img = pBitmap->ConvertToImage();
+      int sx = img.GetWidth();
+      int sy = img.GetHeight();
+
+      wxImage new_img(img);
+
+      for(int i = 0 ; i < sx ; i++)
+      {
+            for(int j = 0 ; j < sy ; j++)
+            {
+                  if(!img.IsTransparent(i,j))
+                  {
+                        new_img.SetRGB(i, j, (unsigned char)(img.GetRed(i, j) * factor),
+                                       (unsigned char)(img.GetGreen(i, j) * factor),
+                                        (unsigned char)(img.GetBlue(i, j) * factor));
+                  }
+            }
+      }
+
+      wxBitmap *pret = new wxBitmap(new_img);
+
+      return pret;
 
 }
 
@@ -831,7 +870,7 @@ void GrabberWin::OnPaint(wxPaintEvent& event)
 {
       wxPaintDC dc ( this );
 
-      dc.DrawBitmap(*m_pgrabber_bitmap, 0, 0, true);
+      dc.DrawBitmap(*m_pbitmap, 0, 0, true);
 }
 
 void GrabberWin::SetColorScheme(ColorScheme cs)
@@ -841,6 +880,23 @@ void GrabberWin::SetColorScheme(ColorScheme cs)
     //  Set background
       SetBackgroundColour(back_color);
       ClearBackground();
+
+      switch(cs)
+      {
+            case GLOBAL_COLOR_SCHEME_DAY:
+                  m_pbitmap = m_pgrabber_bitmap;
+                  break;
+            case GLOBAL_COLOR_SCHEME_DUSK:
+                  m_pbitmap = m_pgrabber_bitmap_dusk;
+                  break;
+            case GLOBAL_COLOR_SCHEME_NIGHT:
+                  m_pbitmap = m_pgrabber_bitmap_night;
+                  break;
+            default:
+                  m_pbitmap = m_pgrabber_bitmap;
+                  break;
+      }
+
 }
 
 
