@@ -7607,38 +7607,31 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                         pdef_menu->AppendSeparator();
                   }
 
-                  if (Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ))
+                  if (Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ))
                   {
-                        pdef_menu->AppendCheckItem(ID_DEF_MENU_CM93ZOOM, _("Enable CM93 Detail Slider"));
-                        if(pCM93DetailSlider)
-                              pdef_menu->Check(ID_DEF_MENU_CM93ZOOM, pCM93DetailSlider->IsShown());
+                        pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
+                        pdef_menu->AppendSeparator();
                   }
 
-                  if (Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ))
-                        pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
+
 
               }
               else
               {
                     ChartBase *pChartTest = m_pQuilt->GetChartAtPix(wxPoint(x, y));
                     if(pChartTest && (pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ))
-                        pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
-
-                    if((VPoint.b_quilt) &&
-                            (pCurrentStack && pCurrentStack->b_valid && (pCurrentStack->nEntry > 1)))
                     {
-                          pdef_menu->Append ( ID_DEF_MENU_QUILTREMOVE,  _( "Remove this chart from quilt." ) );
+                        pdef_menu->Append ( ID_DEF_MENU_QUERY,  _( "Object Query" ) );
+                        pdef_menu->AppendSeparator();
                     }
+
 
               }
 
 
         }
 
-        if(seltype & SELTYPE_AISTARGET)
-        {
-              pdef_menu->Append ( ID_DEF_MENU_AIS_QUERY,  _( "AIS Target Query" ) );
-        }
+
 
 
         //        Following Select type are exclusive
@@ -7659,30 +7652,59 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         //        Add invariant items
         pdef_menu->Append ( ID_DEF_MENU_DROP_WP,    _( "Drop Mark Here" ) );
         pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+        if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
+              pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
         pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
+        pdef_menu->AppendSeparator();
 
         if(!g_bCourseUp)
             pdef_menu->Append(ID_DEF_MENU_COGUP, _("Set Course Up Mode"));
         else
             pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
 
-        if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
-                    pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
-
 
         if(!m_bMeasure_Active )
               pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_MEASURE,    _( "Measure....." ) );
         else if(m_bMeasure_Active)
               pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
+        pdef_menu->AppendSeparator();
 
         if ( g_pAIS )
-              pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
+        {
+              if(seltype & SELTYPE_AISTARGET)
+                    pdef_menu->Append ( ID_DEF_MENU_AIS_QUERY,  _( "AIS Target Query" ) );
 
+              pdef_menu->Append(ID_DEF_MENU_AISTARGETLIST, _("AIS target list"));
+              pdef_menu->AppendSeparator();
+        }
+
+
+        bool bneed_sep = false;
+        if (Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ))
+        {
+              pdef_menu->AppendCheckItem(ID_DEF_MENU_CM93ZOOM, _("Enable CM93 Detail Slider"));
+              if(pCM93DetailSlider)
+              {
+                    pdef_menu->Check(ID_DEF_MENU_CM93ZOOM, pCM93DetailSlider->IsShown());
+                    bneed_sep = true;
+              }
+        }
 
         if(!VPoint.b_quilt && Current_Ch && (Current_Ch->GetChartType() == CHART_TYPE_CM93COMP))
+        {
               pdef_menu->Append ( ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog" ) );
+              bneed_sep = true;
+        }
+
+        if(bneed_sep)
+              pdef_menu->AppendSeparator();
 
 
+        if((VPoint.b_quilt) &&
+            (pCurrentStack && pCurrentStack->b_valid && (pCurrentStack->nEntry > 1)))
+        {
+              pdef_menu->Append ( ID_DEF_MENU_QUILTREMOVE,  _( "Remove this chart from quilt." ) );
+        }
 
 
 #ifdef __WXMSW__
