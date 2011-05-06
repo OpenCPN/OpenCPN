@@ -3808,7 +3808,6 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                         target_data_x = target_line_start + ((dest.x) * BPP / 8);
 
                         i = dest.x;
-                        int is = i;
 
                         while( i < dest.x + dest.width )
                         {
