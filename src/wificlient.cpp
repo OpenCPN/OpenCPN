@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: wificlient.cpp,v 1.12 2010/04/27 01:44:02 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  NMEA Data Object
@@ -50,7 +49,6 @@ extern StatWin          *stats;
 
 static int              wifi_s_dns_test_flag;
 
-CPL_CVSID("$Id: wificlient.cpp,v 1.12 2010/04/27 01:44:02 bdbcat Exp $");
 
 //------------------------------------------------------------------------------
 //    WIFI Window Implementation
