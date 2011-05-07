@@ -3019,60 +3019,74 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
+#
 # 
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
 #
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
 #
+#
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
+#
 #
 # 
 #~ msgid "(Active Track)"
 #~ msgstr "(使用中航跡)"
 #
+#
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Offset Off"
+#
 #
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
 #
+#
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Offset Tool Off"
+#
 #
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
 #
+#
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
+#
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 # 
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "設定 CM93 Offset"
 #
+#
 # 
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
 #
+#
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "圖檔毀損.. 取消本圖 \n"
 #
+#
 # 
 #~ msgid ""
 #~ "Class unknown\n"
@@ -3080,6 +3094,7 @@ msgstr "wgsoy"
 #~ msgstr ""
 #~ "Class unknown\n"
 #~ "\n"
+#
 #
 # 
 #~ msgid ""
@@ -3089,6 +3104,7 @@ msgstr "wgsoy"
 #~ "Class:     A\n"
 #~ "\n"
 #
+#
 # 
 #~ msgid ""
 #~ "Class:     B\n"
@@ -3096,106 +3112,132 @@ msgstr "wgsoy"
 #~ msgstr ""
 #~ "Class:     B\n"
 #~ "\n"
+#
 #
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "目前船速, 節."
 #
+#
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Unknown"
+#
 #
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "離開 OpenCPN"
 #
+#
 # 
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
+#
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB 資料"
+#
 #
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB 顯示控制"
 #
+#
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
+#
 #
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "航海用"
 #
+#
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#
 #
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #
+#
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#
 #
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #
+#
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "氣壓, 毫巴"
+#
 #
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "航路管理"
 #
+#
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "海面溫度, 攝氏"
+#
 #
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "選擇 GRIB 目錄"
 #
+#
 # 
 #~ msgid "Send Route To GPS..."
 #~ msgstr "傳送航路至 GPS..."
+#
 #
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "船名:"
 #
+#
 # 
 #~ msgid "Show GPX icons"
 #~ msgstr "顯示 GPX 圖示"
+#
 #
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "顯示 GRIB 對話框"
 #
+#
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "顯示 GRIB 圖示"
+#
 #
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "波高, 公尺"
 #
+#
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "使用高解析度圖形"
 #
+#
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "WARNING:  QuickScat GRIB data is %d hours old."
+#
 #
 # 
 #~ msgid "Wind Direction"

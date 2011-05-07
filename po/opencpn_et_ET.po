@@ -4044,6 +4044,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4052,6 +4053,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
+#
 #
 # 
 # 
@@ -4062,6 +4064,7 @@ msgstr ""
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
 #
+#
 # 
 # 
 # 
@@ -4070,6 +4073,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
+#
 #
 # 
 # 
@@ -4080,6 +4084,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
 #
+#
 # 
 # 
 # 
@@ -4088,6 +4093,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
+#
 #
 # 
 # 
@@ -4098,6 +4104,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
 #
+#
 # 
 # 
 # 
@@ -4106,6 +4113,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 # 
 # 
@@ -4118,6 +4126,7 @@ msgstr ""
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
+#
 # 
 # 
 # 
@@ -4125,6 +4134,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Välju OpenCPN"
+#
 #
 # 
 # 
@@ -4135,6 +4145,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Mere standard"
+#
 #
 # 
 # 

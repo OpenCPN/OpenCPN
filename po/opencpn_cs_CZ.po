@@ -3989,6 +3989,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3998,6 +3999,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
+#
 #
 # 
 # 
@@ -4009,6 +4011,7 @@ msgstr ""
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
 #
+#
 # 
 # 
 # 
@@ -4018,6 +4021,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
+#
 #
 # 
 # 
@@ -4029,6 +4033,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
 #
+#
 # 
 # 
 # 
@@ -4039,6 +4044,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
 #
+#
 # 
 # 
 # 
@@ -4048,6 +4054,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
 #
+#
 # 
 # 
 # 
@@ -4056,6 +4063,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 # 
 # 
@@ -4069,6 +4077,7 @@ msgstr ""
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Soubor s mapou poškozen... vypínám tuto mapu \n"
 #
+#
 # 
 # 
 # 
@@ -4076,6 +4085,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Ukonči OpenCPN"
+#
 #
 # 
 # 
@@ -4091,6 +4101,7 @@ msgstr ""
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
+#
 # 
 # 
 # 
@@ -4101,6 +4112,7 @@ msgstr ""
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
 #
+#
 # 
 # 
 # 
@@ -4110,6 +4122,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Jméno lodě:"
+#
 #
 # 
 # 
@@ -4124,6 +4137,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Zobrazit ikonu GRIB"
+#
 #
 # 
 # 

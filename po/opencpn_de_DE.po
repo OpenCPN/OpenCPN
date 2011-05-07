@@ -4076,6 +4076,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4091,6 +4092,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 # 
 # 
@@ -4110,6 +4112,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Rufzeichen:  "
 #
+#
 # 
 # 
 # 
@@ -4121,6 +4124,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 # 
 # 
@@ -4143,6 +4147,7 @@ msgstr ""
 #~ "Klasse:     A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4158,6 +4163,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
 #
 # 
 # 
@@ -4175,6 +4181,7 @@ msgstr ""
 #~ msgid "ETA"
 #~ msgstr "ETA"
 #
+#
 # 
 # 
 # 
@@ -4182,6 +4189,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN beenden"
+#
 #
 # 
 # 
@@ -4196,6 +4204,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 # 
 # 
@@ -4213,6 +4222,7 @@ msgstr ""
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB-Daten"
 #
+#
 # 
 # 
 # 
@@ -4228,6 +4238,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-Anzeige Einstellungen"
+#
 #
 # 
 # 
@@ -4245,6 +4256,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
+#
 # 
 # 
 # 
@@ -4254,6 +4266,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Benutzerdef. Auswahl"
+#
 #
 # 
 # 
@@ -4273,6 +4286,7 @@ msgstr ""
 #~ "Zur Ansicht der unterdrückten CRAIN GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
 #
+#
 # 
 # 
 # 
@@ -4290,6 +4304,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 # 
 # 
@@ -4309,6 +4324,7 @@ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
 #
+#
 # 
 # 
 # 
@@ -4327,6 +4343,7 @@ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
 #
+#
 # 
 # 
 # 
@@ -4342,6 +4359,7 @@ msgstr ""
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Plugin Name"
+#
 #
 # 
 # 
@@ -4359,6 +4377,7 @@ msgstr ""
 #~ msgid "Pressure, mBar"
 #~ msgstr "Luftdruck, mBar"
 #
+#
 # 
 # 
 # 
@@ -4374,6 +4393,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Wassertemp. (Oberfl.), °C"
+#
 #
 # 
 # 
@@ -4391,6 +4411,7 @@ msgstr ""
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB-Verzeichnis auswählen"
 #
+#
 # 
 # 
 # 
@@ -4400,6 +4421,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Schiffsname: "
+#
 #
 # 
 # 
@@ -4414,6 +4436,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB-Symbol anzeigen"
+#
 #
 # 
 # 
@@ -4431,6 +4454,7 @@ msgstr ""
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifik. Wellenhöhe, m"
 #
+#
 # 
 # 
 # 
@@ -4444,6 +4468,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Hochäuflösende Grafik verwenden"
+#
 #
 # 
 # 
@@ -4461,6 +4486,7 @@ msgstr ""
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
 #
+#
 # 
 # 
 # 
@@ -4476,6 +4502,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 # 
 # 

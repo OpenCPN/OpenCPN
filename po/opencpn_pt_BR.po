@@ -4111,6 +4111,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4126,6 +4127,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 # 
 # 
@@ -4147,6 +4149,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Excluir to&das as Derrotas..."
 #
+#
 # 
 # 
 # 
@@ -4166,6 +4169,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 # 
 # 
@@ -4187,6 +4191,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Acompanhamento Ativo)"
 #
+#
 # 
 # 
 # 
@@ -4205,6 +4210,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Indicativo de Chamada:"
 #
+#
 # 
 # 
 # 
@@ -4216,6 +4222,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 # 
 # 
@@ -4241,6 +4248,7 @@ msgstr ""
 #~ "Classe desconhecida\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4261,6 +4269,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -4286,6 +4295,7 @@ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4301,6 +4311,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 # 
 # 
@@ -4322,6 +4333,7 @@ msgstr ""
 #~ msgid "Delete All Routes..."
 #~ msgstr "Excluir TODAS as Derrotas"
 #
+#
 # 
 # 
 # 
@@ -4337,6 +4349,7 @@ msgstr ""
 # 
 #~ msgid "ETA"
 #~ msgstr "TEC"
+#
 #
 # 
 # 
@@ -4356,6 +4369,7 @@ msgstr ""
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                 Desconhecido"
 #
+#
 # 
 # 
 # 
@@ -4363,6 +4377,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
 #
 # 
 # 
@@ -4384,6 +4399,7 @@ msgstr ""
 #~ msgid "Export...."
 #~ msgstr "Exportar..."
 #
+#
 # 
 # 
 # 
@@ -4404,6 +4420,7 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
 # 
 # 
 # 
@@ -4417,6 +4434,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 # 
 # 
@@ -4434,6 +4452,7 @@ msgstr ""
 #~ msgid "GRIB Data"
 #~ msgstr "Dados GRIB"
 #
+#
 # 
 # 
 # 
@@ -4449,6 +4468,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
 #
 # 
 # 
@@ -4466,6 +4486,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "Diretório de Arquivos GRIB"
 #
+#
 # 
 # 
 # 
@@ -4475,6 +4496,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 # 
 # 
@@ -4492,6 +4514,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver CRAIN GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -4507,6 +4530,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 # 
 # 
@@ -4525,6 +4549,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Por favor Afaste ou Diminua a Escala para ver OCEAN CURRENT GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -4541,6 +4566,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -4556,6 +4582,7 @@ msgstr ""
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pressão, hPa"
+#
 #
 # 
 # 
@@ -4577,6 +4604,7 @@ msgstr ""
 #~ msgid "Route Manager..."
 #~ msgstr "Gerenciador de Derrotas..."
 #
+#
 # 
 # 
 # 
@@ -4593,6 +4621,7 @@ msgstr ""
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Temperatura da Superfície do Mar, C"
 #
+#
 # 
 # 
 # 
@@ -4608,6 +4637,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 # 
 # 
@@ -4629,6 +4659,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Enviar Derrota para o GPS..."
 #
+#
 # 
 # 
 # 
@@ -4638,6 +4669,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
 #
 # 
 # 
@@ -4659,6 +4691,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícone GPX"
 #
+#
 # 
 # 
 # 
@@ -4679,6 +4712,7 @@ msgstr ""
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
 #
+#
 # 
 # 
 # 
@@ -4692,6 +4726,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar ícone GRIB"
+#
 #
 # 
 # 
@@ -4709,6 +4744,7 @@ msgstr ""
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura Significativa das Ondas, m"
 #
+#
 # 
 # 
 # 
@@ -4722,6 +4758,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 # 
 # 
@@ -4739,6 +4776,7 @@ msgstr ""
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "AVISO: Dados GRIB são de %d horas atrás."
 #
+#
 # 
 # 
 # 
@@ -4754,6 +4792,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 # 
 # 

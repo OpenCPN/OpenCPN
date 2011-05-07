@@ -3412,6 +3412,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3424,6 +3425,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 # 
 # 
@@ -3443,6 +3445,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Slet alle ruter..."
 #
+#
 # 
 # 
 # 
@@ -3460,6 +3463,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 # 
 # 
@@ -3479,6 +3483,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt spor)"
 #
+#
 # 
 # 
 # 
@@ -3494,6 +3499,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Kaldesignal:"
 #
+#
 # 
 # 
 # 
@@ -3504,6 +3510,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 # 
 # 
@@ -3527,6 +3534,7 @@ msgstr ""
 #~ "Ukendt klasse\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3545,6 +3553,7 @@ msgstr ""
 #~ "Klasse:    A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3558,12 +3567,14 @@ msgstr ""
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Hastighed, knob"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Afslut OpenCPN"
+#
 #
 # 
 # 
@@ -3578,6 +3589,7 @@ msgstr ""
 #~ msgid "GRIB"
 #~ msgstr "Meteorologi(GRIB)"
 #
+#
 # 
 # 
 # 
@@ -3590,6 +3602,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 # 
 # 
@@ -3604,6 +3617,7 @@ msgstr ""
 #~ msgid "GRIB Display Control"
 #~ msgstr "Meteorologi(GRIB) visning"
 #
+#
 # 
 # 
 # 
@@ -3617,6 +3631,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
 #
+#
 # 
 # 
 # 
@@ -3625,6 +3640,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Maritim standard"
+#
 #
 # 
 # 
@@ -3639,6 +3655,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
+#
 # 
 # 
 # 
@@ -3651,6 +3668,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 # 
 # 
@@ -3665,6 +3683,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
+#
 # 
 # 
 # 
@@ -3678,6 +3697,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
 #
+#
 # 
 # 
 # 
@@ -3688,6 +3708,7 @@ msgstr ""
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Tilføjelse, navn"
+#
 #
 # 
 # 
@@ -3702,6 +3723,7 @@ msgstr ""
 #~ msgid "Pressure, mBar"
 #~ msgstr "Tryk, mBar"
 #
+#
 # 
 # 
 # 
@@ -3714,6 +3736,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Havoverflade temperatur, C"
+#
 #
 # 
 # 
@@ -3728,6 +3751,7 @@ msgstr ""
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
 #
+#
 # 
 # 
 # 
@@ -3736,6 +3760,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Fartøjsnavn:"
+#
 #
 # 
 # 
@@ -3750,6 +3775,7 @@ msgstr ""
 #~ msgid "Show GRIB icon"
 #~ msgstr "Vis meteorologiikon(GRIB)"
 #
+#
 # 
 # 
 # 
@@ -3762,6 +3788,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant bølgehøjde, m"
+#
 #
 # 
 # 
@@ -3776,6 +3803,7 @@ msgstr ""
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Brug højopløsningsgrafik"
 #
+#
 # 
 # 
 # 
@@ -3788,6 +3816,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
+#
 #
 # 
 # 

@@ -4537,6 +4537,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4554,6 +4555,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 # 
 # 
@@ -4578,6 +4580,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Apagar todas as Rotas..."
 #
+#
 # 
 # 
 # 
@@ -4600,6 +4603,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Apagar todas as Rotas..."
+#
 #
 # 
 # 
@@ -4624,6 +4628,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "Apagar Rastro"
 #
+#
 # 
 # 
 # 
@@ -4643,6 +4648,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Indicativo Estação VHF:  "
 #
+#
 # 
 # 
 # 
@@ -4655,6 +4661,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Ficheiro de carta corrompido.. a desactivar carta \n"
+#
 #
 # 
 # 
@@ -4677,6 +4684,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -4703,6 +4711,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -4734,6 +4743,7 @@ msgstr ""
 #~ msgid "Delete All Routes..."
 #~ msgstr "Apagar todas as Rotas..."
 #
+#
 # 
 # 
 # 
@@ -4760,6 +4770,7 @@ msgstr ""
 #~ msgid "ETA"
 #~ msgstr "ETE"
 #
+#
 # 
 # 
 # 
@@ -4779,6 +4790,7 @@ msgstr ""
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  Desconhecida"
 #
+#
 # 
 # 
 # 
@@ -4787,6 +4799,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair do OpenCPN"
+#
 #
 # 
 # 
@@ -4818,6 +4831,7 @@ msgstr ""
 #~ msgid "Export...."
 #~ msgstr "Exportar...."
 #
+#
 # 
 # 
 # 
@@ -4840,6 +4854,7 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
 # 
 # 
 # 
@@ -4854,6 +4869,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 # 
 # 
@@ -4872,6 +4888,7 @@ msgstr ""
 #~ msgid "GRIB Data"
 #~ msgstr "Dados GRIB"
 #
+#
 # 
 # 
 # 
@@ -4888,6 +4905,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 # 
 # 
@@ -4906,6 +4924,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
 #
+#
 # 
 # 
 # 
@@ -4916,6 +4935,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Standard Marítimo"
+#
 #
 # 
 # 
@@ -4934,6 +4954,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver CRAIN GRIB escondido"
 #
+#
 # 
 # 
 # 
@@ -4950,6 +4971,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 # 
 # 
@@ -4969,6 +4991,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver CRAIN GRIB escondido"
 #
+#
 # 
 # 
 # 
@@ -4987,6 +5010,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
 #
+#
 # 
 # 
 # 
@@ -5003,6 +5027,7 @@ msgstr ""
 # 
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pressão, mBar"
+#
 #
 # 
 # 
@@ -5021,6 +5046,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 # 
 # 
@@ -5045,6 +5071,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Enviar para GPS..."
 #
+#
 # 
 # 
 # 
@@ -5055,6 +5082,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 # 
 # 
@@ -5078,6 +5106,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícones GPX"
 #
+#
 # 
 # 
 # 
@@ -5100,6 +5129,7 @@ msgstr ""
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
 #
+#
 # 
 # 
 # 
@@ -5114,6 +5144,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar Ícone GRIB"
+#
 #
 # 
 # 
@@ -5132,6 +5163,7 @@ msgstr ""
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura de Vaga Significativa, m"
 #
+#
 # 
 # 
 # 
@@ -5146,6 +5178,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos Alta Definição"
+#
 #
 # 
 # 
@@ -5164,6 +5197,7 @@ msgstr ""
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ATENÇÃO:  Os dados GRIB QuickScat já têm %d horas atraso."
 #
+#
 # 
 # 
 # 
@@ -5180,6 +5214,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 # 
 # 

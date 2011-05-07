@@ -3070,6 +3070,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3079,6 +3080,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
 #
 # 
 # 
@@ -3090,6 +3092,7 @@ msgstr ""
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
 #
+#
 # 
 # 
 # 
@@ -3099,6 +3102,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
 #
 # 
 # 
@@ -3110,6 +3114,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
 #
+#
 # 
 # 
 # 
@@ -3120,6 +3125,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
 #
+#
 # 
 # 
 # 
@@ -3129,6 +3135,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
 #
+#
 # 
 # 
 # 
@@ -3137,6 +3144,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 # 
 # 
@@ -3148,11 +3156,13 @@ msgstr ""
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Έξοδος OpenCPN"
+#
 #
 # 
 # 
@@ -3161,6 +3171,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Βασικό ναυτικό"
+#
 #
 # 
 # 

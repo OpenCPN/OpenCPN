@@ -3964,6 +3964,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3979,6 +3980,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 # 
 # 
@@ -4001,6 +4003,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Elimina tutte le &Rotte..."
 #
+#
 # 
 # 
 # 
@@ -4021,6 +4024,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
 #
 # 
 # 
@@ -4043,6 +4047,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
 #
+#
 # 
 # 
 # 
@@ -4052,6 +4057,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
+#
 #
 # 
 # 
@@ -4063,6 +4069,7 @@ msgstr ""
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
 #
+#
 # 
 # 
 # 
@@ -4072,6 +4079,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
+#
 #
 # 
 # 
@@ -4083,6 +4091,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
 #
+#
 # 
 # 
 # 
@@ -4093,6 +4102,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
 #
+#
 # 
 # 
 # 
@@ -4102,6 +4112,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
 #
+#
 # 
 # 
 # 
@@ -4110,6 +4121,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 # 
 # 
@@ -4122,6 +4134,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 # 
 # 
@@ -4148,6 +4161,7 @@ msgstr ""
 #~ "Classe sconosciuta\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4169,6 +4183,7 @@ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4176,6 +4191,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Chiudi OpenCPN"
+#
 #
 # 
 # 
@@ -4191,6 +4207,7 @@ msgstr ""
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
+#
 # 
 # 
 # 
@@ -4201,6 +4218,7 @@ msgstr ""
 #~ msgid "MarinersStandard"
 #~ msgstr "Selezione Manuale"
 #
+#
 # 
 # 
 # 
@@ -4210,6 +4228,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome Imbarcazione"
+#
 #
 # 
 # 
@@ -4224,6 +4243,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostra l'icona GRIB"
+#
 #
 # 
 # 

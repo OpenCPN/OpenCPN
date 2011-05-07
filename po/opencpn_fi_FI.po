@@ -3088,6 +3088,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3098,6 +3099,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulje"
+#
 #
 # 
 # 
@@ -3110,6 +3112,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
 #
+#
 # 
 # 
 # 
@@ -3120,6 +3123,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Poista kaikki jäljet"
+#
 #
 # 
 # 
@@ -3132,6 +3136,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktiivoitu reitti)"
 #
+#
 # 
 # 
 # 
@@ -3143,6 +3148,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Radiokutsu:"
 #
+#
 # 
 # 
 # 
@@ -3152,6 +3158,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
 #
 # 
 # 
@@ -3168,6 +3175,7 @@ msgstr ""
 #~ "Luokka tuntematon\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3182,6 +3190,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -3198,6 +3207,7 @@ msgstr ""
 #~ "Luokka:     B\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3208,6 +3218,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Virran nopeus, solmua"
+#
 #
 # 
 # 
@@ -3220,11 +3231,13 @@ msgstr ""
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Tuntematon"
 #
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Poistu OpenCPN:stä"
+#
 #
 # 
 # 
@@ -3237,6 +3250,7 @@ msgstr ""
 #~ msgid "GPX"
 #~ msgstr "GPX"
 #
+#
 # 
 # 
 # 
@@ -3247,6 +3261,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 # 
 # 
@@ -3259,6 +3274,7 @@ msgstr ""
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
 #
+#
 # 
 # 
 # 
@@ -3269,6 +3285,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-näytön hallinta"
+#
 #
 # 
 # 
@@ -3281,6 +3298,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB-tiedostojen hakemisto"
 #
+#
 # 
 # 
 # 
@@ -3288,6 +3306,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 # 
 # 
@@ -3300,6 +3319,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt CRAIN GRIB tiedot"
 #
+#
 # 
 # 
 # 
@@ -3310,6 +3330,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 # 
 # 
@@ -3322,6 +3343,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt OCEAN CURRENT GRIB tiedot"
 #
+#
 # 
 # 
 # 
@@ -3332,6 +3354,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
+#
 #
 # 
 # 
@@ -3344,6 +3367,7 @@ msgstr ""
 #~ msgid "Pressure, mBar"
 #~ msgstr "Ilmanpaine, mbar"
 #
+#
 # 
 # 
 # 
@@ -3354,6 +3378,7 @@ msgstr ""
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "Reittien käsittely"
+#
 #
 # 
 # 
@@ -3366,6 +3391,7 @@ msgstr ""
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Pintalämpötila, C"
 #
+#
 # 
 # 
 # 
@@ -3376,6 +3402,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Valtse GRIB-hakemisto"
+#
 #
 # 
 # 
@@ -3388,6 +3415,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Lähetä reitti GPS:lle..."
 #
+#
 # 
 # 
 # 
@@ -3395,6 +3423,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
 #
 # 
 # 
@@ -3407,6 +3436,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Näytä GPX-ikoni"
 #
+#
 # 
 # 
 # 
@@ -3417,6 +3447,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 # 
 # 
@@ -3429,6 +3460,7 @@ msgstr ""
 #~ msgid "Show GRIB icon"
 #~ msgstr "Näytä GRIB-ikoni"
 #
+#
 # 
 # 
 # 
@@ -3439,6 +3471,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Merkitsevä aallonkorkeus, m"
+#
 #
 # 
 # 
@@ -3451,6 +3484,7 @@ msgstr ""
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Käytä tarkkuusgrafiikkaa"
 #
+#
 # 
 # 
 # 
@@ -3461,6 +3495,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
 #
 # 
 # 

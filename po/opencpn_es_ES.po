@@ -4485,6 +4485,7 @@ msgstr ""
 msgid "wgsoy"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4501,6 +4502,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 # 
 # 
@@ -4524,6 +4526,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Borrar Todas Las Rutas..."
 #
+#
 # 
 # 
 # 
@@ -4545,6 +4548,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 # 
 # 
@@ -4568,6 +4572,7 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Derrota Activa)"
 #
+#
 # 
 # 
 # 
@@ -4577,6 +4582,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Compensación CM93 Off"
+#
 #
 # 
 # 
@@ -4588,6 +4594,7 @@ msgstr ""
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
 #
+#
 # 
 # 
 # 
@@ -4597,6 +4604,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Herramienta Compensación CM93 Off"
+#
 #
 # 
 # 
@@ -4608,6 +4616,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
 #
+#
 # 
 # 
 # 
@@ -4617,6 +4626,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 # 
 # 
@@ -4637,6 +4647,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
 #
+#
 # 
 # 
 # 
@@ -4646,6 +4657,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Ajustar Compensación CM93"
 #
+#
 # 
 # 
 # 
@@ -4654,6 +4666,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 # 
 # 
@@ -4667,6 +4680,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 # 
 # 
@@ -4694,6 +4708,7 @@ msgstr ""
 #~ "Clase desconocida\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4716,6 +4731,7 @@ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4724,6 +4740,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Salir de OpenCPN"
+#
 #
 # 
 # 
@@ -4735,6 +4752,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
 #
 # 
 # 
