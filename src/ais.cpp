@@ -1580,8 +1580,10 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
  //   int utc_day = now.GetDay();
  //   wxDateTime::Month utc_month = now.GetMonth();
  //   int utc_year = now.GetYear();
-    ptd->ReportTicks = now.GetTicks();       // Default is my idea of NOW
-                                            // which may disagee with target...
+
+    //  Not all messages should reset report ticks....Handle case by case
+//    ptd->ReportTicks = now.GetTicks();       // Default is my idea of NOW
+
 
     int message_ID = bstr->GetInt(1, 6);        // Parse on message ID
 
@@ -1670,6 +1672,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
             ptd->Class = AIS_CLASS_A;
 
+            if(ptd->b_positionValid)
+                  ptd->ReportTicks = now.GetTicks();
             break;
         }
 
@@ -1700,17 +1704,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                 ptd->Class = AIS_CLASS_B;
 
-//            if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )    // pjotrc 2010.02.07
-//            {
-//                  g_total_NMEAerror_messages++;
-//                  wxString msg(_T("   AIS type 18...(MMSI, lon, lat:"));
-//			wxString item;
-//      		item.Printf(_T("%d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat);
-//                  msg.Append(item);
-//			msg.Append(_T(" ) "));
-//                  ThreadMessage(msg);
-//            }
-
+                if(ptd->b_positionValid)
+                      ptd->ReportTicks = now.GetTicks();
                 break;
           }
 
@@ -1814,6 +1809,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 ptd->b_positionValid = true;
                 parse_result = true;
 
+                if(ptd->b_positionValid)
+                      ptd->ReportTicks = now.GetTicks();
                 break;
           }
      case 9:                                    // Special Position Report (Standard SAR Aircraft Position Report)
@@ -1874,8 +1871,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                 ptd->Class = AIS_ATON;
 
-            if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
-            {
+                if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
+                {
                   g_total_NMEAerror_messages++;
                   wxString msg(_T("   AIS type 21...(MMSI, lon, lat:"));
 			wxString item;
@@ -1883,7 +1880,10 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   msg.Append(item);
 			msg.Append(_T(" ) "));
                   ThreadMessage(msg);
-            }
+                }
+
+                if(ptd->b_positionValid)
+                      ptd->ReportTicks = now.GetTicks();
 
                 break;
           }
