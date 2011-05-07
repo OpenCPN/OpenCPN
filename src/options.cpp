@@ -2518,6 +2518,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
 	else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norsk", wxConvUTF8);}
       else if(lang_canonical == _T("tr_TR")) {dir_suffix = _T("tr_TR"); return_string = wxString("Türkçe", wxConvUTF8);}
       else if(lang_canonical == _T("el_GR")) {dir_suffix = _T("el_GR"); return_string = wxString("Ελληνικά", wxConvUTF8);}
+      else if(lang_canonical == _T("zh_TW")) {dir_suffix = _T("zh_TW"); return_string = wxString("正體字", wxConvUTF8);}
       else
       {
             dir_suffix = lang_canonical;
