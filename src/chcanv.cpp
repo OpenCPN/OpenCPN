@@ -2684,7 +2684,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         m_pRolloverRouteSeg           = NULL;
 
-        m_brightdir = 0;
+        m_bbrightdir = false;
 
         m_pos_image_user_day        = NULL;
         m_pos_image_user_dusk       = NULL;
@@ -3316,13 +3316,20 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case WXK_F6:
                   {
-                        if(0 == m_brightdir)
+                        int mod =  event.GetModifiers() & wxMOD_SHIFT;
+                        if(mod != m_brightmod)
+                        {
+                              m_brightmod = mod;
+                              m_bbrightdir = !m_bbrightdir;
+                        }
+
+                        if(!m_bbrightdir)
                         {
                               g_nbrightness -= 10;
                               if(g_nbrightness <= 0)
                               {
                                     g_nbrightness = 0;
-                                    m_brightdir = 1;
+                                    m_bbrightdir = true;
                               }
                         }
                         else
@@ -3331,9 +3338,11 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               if(g_nbrightness >= 100)
                               {
                                     g_nbrightness = 100;
-                                    m_brightdir = 0;
+                                    m_bbrightdir = false;
                               }
                         }
+
+//                        printf("%d\n", g_nbrightness);
 
                         SetScreenBrightness(g_nbrightness);
                         b_proc = true;
@@ -12854,6 +12863,7 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, int rollov
       if((x + off_x + m_size.x) > parent_size.x)
       {
             xp = x - (off_x/2) - m_size.x;
+            xp = wxMax(0, xp);
       }
       else
             xp = x + off_x;
@@ -13211,13 +13221,11 @@ int InitScreenBrightness(void)
                   g_pcurtain = new wxDialog(NULL, -1, _T(""), wxPoint(0,0), wxSize(200,200),
                                       wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
 
-                  //ShowWindow(hWnd, SW_HIDE);
                   g_pcurtain->Hide();
-				  HWND hWnd = GetHwndOf(g_pcurtain);
+			HWND hWnd = GetHwndOf(g_pcurtain);
                   SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
-                  //ShowWindow(hWnd, SW_SHOW);
 
-				  g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
+			g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
                   g_pcurtain->SetTransparent(0);
 
                   g_pcurtain->Maximize();
@@ -13273,6 +13281,8 @@ int SetScreenBrightness(int brightness)
 {
 #ifdef BRIGHT_CURTAIN
 
+      if(NULL == g_pcurtain)
+            InitScreenBrightness();
 
       if(g_pcurtain)
       {

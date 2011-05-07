@@ -1260,6 +1260,13 @@ void ocpnFloatingToolbarDialog::Position()
 {
       if(cc1)
       {
+            wxSize cs = cc1->GetClientSize();
+            m_position.x = wxMin(cs.x - 20, m_position.x);
+            m_position.y = wxMin(cs.y - 20, m_position.y);
+
+            m_position.x = wxMax(0, m_position.x);
+            m_position.y = wxMax(0, m_position.y);
+
             wxPoint screen_pos = cc1->ClientToScreen(m_position);
             Move(screen_pos);
       }
@@ -1801,7 +1808,7 @@ bool MyApp::OnInit()
         //    Manage internationalization of embedded messages
         //    using wxWidgets/gettext methodology....
 
-        wxLog::SetVerbose(true);            // log all messages
+//        wxLog::SetVerbose(true);            // log all messages for debugging
 
         if(lang_list[0]){};                 // silly way to avoid compiler warnings
 
@@ -2268,6 +2275,12 @@ bool MyApp::OnInit()
 
         gFrame->ApplyGlobalSettings(1, false);               // done once on init with resize
 
+        g_toolbar_x = wxMax(g_toolbar_x, 0);
+        g_toolbar_y = wxMax(g_toolbar_y, 0);
+
+        g_toolbar_x = wxMin(g_toolbar_x, cw);
+        g_toolbar_y = wxMin(g_toolbar_y, ch);
+
         g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(gFrame, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
@@ -2339,7 +2352,7 @@ bool MyApp::OnInit()
        g_pi_manager->NotifyAuiPlugIns();
 
        //   Initialize and Save the existing Screen Brightness
-       InitScreenBrightness();
+//       InitScreenBrightness();
 
        bool b_SetInitialPoint = false;
 
@@ -2535,28 +2548,33 @@ bool MyApp::OnInit()
         g_LayerIdx = 0;
         layerdir.Prepend(g_SData_Locn);
 
-        wxString laymsg;
-        laymsg.Printf(wxT("Getting .gpx layer files from: %s"), layerdir.c_str());
-        wxLogMessage(laymsg);
+        if(wxDir::Exists(layerdir))
+        {
+            wxString laymsg;
+            laymsg.Printf(wxT("Getting .gpx layer files from: %s"), layerdir.c_str());
+            wxLogMessage(laymsg);
 
-        wxDir dir;
-        dir.Open(layerdir);
-        if ( dir.IsOpened() ) {
-              wxString filename;
-              layerdir.Append(wxFileName::GetPathSeparator());
-              bool cont = dir.GetFirst(&filename);
-              while (cont) {
-                    filename.Prepend(layerdir);
-                    wxFileName f(filename);
-                    if (f.GetExt().IsSameAs(wxT("gpx")))
-                        pConfig->ImportGPX(gFrame, true, filename, false); // preload a single-gpx-file layer
-                    else
-                        pConfig->ImportGPX(gFrame, true, filename, true); // preload a layer from subdirectory
-                  cont = dir.GetNext(&filename);
-              }
+            wxDir dir;
+            dir.Open(layerdir);
+            if ( dir.IsOpened() ) {
+                  wxString filename;
+                  layerdir.Append(wxFileName::GetPathSeparator());
+                  bool cont = dir.GetFirst(&filename);
+                  while (cont) {
+                        filename.Prepend(layerdir);
+                        wxFileName f(filename);
+                        if (f.GetExt().IsSameAs(wxT("gpx")))
+                              pConfig->ImportGPX(gFrame, true, filename, false); // preload a single-gpx-file layer
+                        else
+                              pConfig->ImportGPX(gFrame, true, filename, true); // preload a layer from subdirectory
+                        cont = dir.GetNext(&filename);
+                  }
+            }
         }
 
         cc1->ReloadVP();                  // once more, and good to go
+
+        g_FloatingToolbarDialog->Show();
 
         gFrame->Raise();
 
@@ -3221,12 +3239,6 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     if (g_bShowTrackIcon)
           tb->ToggleTool(ID_TRACK, g_bTrackActive);
-
-
-    //      Induce re-rendering of the statusbox
-    //      TODO not very elegant....
-    m_rose_angle = -999;
-    m_last_gps_bmp_hash_index.Clear();
 
     SetStatusBarPane(-1);                   // don't show help on status bar
 
@@ -4564,8 +4576,7 @@ void MyFrame::ToggleCourseUp(void)
       }
 
       DoCOGSet();
-      m_rose_angle = -1000.;               // force new render
-      UpdateToolbarStatusBox();
+      UpdateGPSCompassStatusBox(true);
       DoChartUpdate();
       cc1->ReloadVP();
 }
@@ -4967,7 +4978,7 @@ void MyFrame::ChartsRefresh(void)
 
       UpdateControlBar();
 
-      UpdateToolbarStatusBox(true);
+      UpdateGPSCompassStatusBox(true);
 
       cc1->SetCursor(wxCURSOR_ARROW);
       FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
@@ -5545,7 +5556,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
 
         //  Pick up any change Toolbar status displays
-        UpdateToolbarStatusBox();
+        UpdateGPSCompassStatusBox();
         UpdateToolbarDynamics();
 
 
@@ -5633,9 +5644,9 @@ void RenderShadowText(wxDC *pdc, wxFont *pFont, wxString& str, int x, int y)
 
 }
 
-void MyFrame::UpdateToolbarStatusBox(bool b_update_toolbar)
+void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
 {
-      g_FloatingCompassDialog->Update();
+      g_FloatingCompassDialog->Update(b_force_new);
 }
 
 
@@ -5854,7 +5865,7 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
 
             SetChartUpdatePeriod(cc1->VPoint);
 
-            UpdateToolbarStatusBox();           // Pick up the rotation
+            UpdateGPSCompassStatusBox();           // Pick up the rotation
 
         }
 
@@ -5906,7 +5917,7 @@ void MyFrame::SelectdbChart(int dbindex)
 
             SetChartUpdatePeriod(cc1->VPoint);
 
-            UpdateToolbarStatusBox();           // Pick up the rotation
+            UpdateGPSCompassStatusBox();           // Pick up the rotation
 
       }
 
@@ -7319,7 +7330,7 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
 
                 if(!last_bGPSValid)
                 {
-                      UpdateToolbarStatusBox();
+                      UpdateGPSCompassStatusBox();
                       cc1->Refresh(false);            // cause own-ship icon to redraw
                 }
 
@@ -7359,10 +7370,7 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
             bool last_bGPSValid = bGPSValid;
             bGPSValid = true;
             if(!last_bGPSValid)
-            {
-//                  UpdateToolbarStatusWindow(Current_Ch, false);
-                  UpdateToolbarStatusBox();
-            }
+                 UpdateGPSCompassStatusBox();
 
 
             //      Show a little heartbeat tick in StatusWindow0 on NMEA events

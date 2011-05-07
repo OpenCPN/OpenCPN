@@ -312,7 +312,7 @@ class MyFrame: public wxFrame
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
     void UpdateToolbarDynamics(void);
-    void UpdateToolbarStatusBox(bool bupdate_toolbar = true);
+    void UpdateGPSCompassStatusBox(bool b_force_new = false);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
@@ -347,10 +347,8 @@ class MyFrame: public wxFrame
 
     double           COGTable[MAX_COG_AVERAGE_SECONDS];
 
-    wxString         m_last_gps_bmp_hash_index;
     wxString         m_AIS_bmp_hash_index_last;
 
-    double           m_rose_angle;
     bool             m_toolbar_scale_tools_shown;
 
     //      Plugin Support

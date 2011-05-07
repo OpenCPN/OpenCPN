@@ -472,7 +472,9 @@ private:
       wxBitmap    m_working_bm;           // Used to build quilt in OnPaint()
       wxBitmap    m_cached_chart_bm;      // A cached copy of the fully drawn quilt
 
-      int         m_brightdir;
+      bool        m_bbrightdir;
+      int         m_brightmod;
+
       bool        m_bzooming;
 
 

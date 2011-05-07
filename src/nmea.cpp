@@ -528,8 +528,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
             if(!b_version_set)
             {
-                  wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\n\
-                              Would you like to use this version of libgps anyway?"));
+                  wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\nWould you like to use this version of libgps anyway?"));
                   wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
 
                   if(wxID_YES == md.ShowModal())
