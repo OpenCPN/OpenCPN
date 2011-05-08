@@ -1,4 +1,7 @@
-Use system's zlib, bzip2 instead of embedded copy.
+Description: Use system's zlib, bzip2 instead of embedded copy.
+Origin: Pavel on the OpenCPN forum
+ http://www.cruisersforum.com/forums/f134/opencpn-build-on-debian-35977-8.html#post667326
+Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/plugins/grib_pi/CMakeLists.txt
 ===================================================================
 --- opencpn.orig/plugins/grib_pi/CMakeLists.txt	2011-04-15 23:21:38.285860737 +1200

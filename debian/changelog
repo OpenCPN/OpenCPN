@@ -1,3 +1,10 @@
+opencpn (2.4.506-1) unstable; urgency=low
+
+  * Packaged for upstream git beta version 2.4.506
+  * A number of packaging cleanups based on pabs's mentor review
+
+ -- Hamish B <hamish_b@yahoo.com>  Sun, 08 May 2011 16:42:40 +1200
+
 opencpn (2.4.423-1) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.423

@@ -1,6 +1,7 @@
-Depend on WVS coastline from Debian's xtide package instead of
-shipping a clone of it. If that is not installed the result is
-not fatal, just a warning in the log file.
+Description: Depend on WVS coastline from Debian's xtide package instead
+ of shipping a clone of it. If that is not installed the result is not
+ fatal, just a warning in the log file.
+Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/chart1.cpp
 ===================================================================
 --- opencpn.orig/src/chart1.cpp	2011-04-21 00:09:08.208588848 +1200

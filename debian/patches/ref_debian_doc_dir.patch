@@ -1,4 +1,5 @@
-point to Debian-package doc dir
+Description: point to Debian-package doc dir
+Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/about.cpp
 ===================================================================
 --- opencpn.orig/src/about.cpp	2011-04-21 01:00:16.956585284 +1200

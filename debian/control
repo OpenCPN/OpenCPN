@@ -13,8 +13,8 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libgps19
 Recommends: gpsd, opencpn-data, opencpn-doc, xtide-coastline
 Suggests: gpsd-clients, xcalib
-Description: A concise GPS ChartPlotter/Navigator
- OpenCPN is a cross-platform ship-borne GUI chart plotter
+Description: GPS ChartPlotter/Navigator
+ OpenCPN is a concise ship-borne GUI chart plotter
  application supporting:
  .
      * GPS/GPDS Postition Input
@@ -28,16 +28,9 @@ Architecture: all
 Depends: ${misc:Depends}
 Section: doc
 Suggests: opencpn
-Description: Documentation for OpenCPN, a concise GPS ChartPlotter/Navigator
- OpenCPN is a cross-platform ship-borne GUI chart plotter
- application supporting:
+Description: Documentation for OpenCPN, a GPS ChartPlotter/Navigator
+ OpenCPN is a concise ship-borne GUI chart plotter application.
  .   
-     * GPS/GPDS Postition Input
-     * BSB Raster Chart Display
-     * S57 Vector ENChart Display
-     * AIS Input Decoding
-     * Waypoint Autopilot Navigation
- .
  This package contains the HTML documentation for OpenCPN.
 
 Package: opencpn-data
@@ -45,14 +38,6 @@ Architecture: all
 Depends: ${misc:Depends}
 Suggests: opencpn
 Description: Tidal harmonics and audio files for OpenCPN
- OpenCPN is a cross-platform ship-borne GUI chart plotter
- application supporting:
- .
-     * GPS/GPDS Postition Input
-     * BSB Raster Chart Display
-     * S57 Vector ENChart Display
-     * AIS Input Decoding
-     * Waypoint Autopilot Navigation
+ OpenCPN is a concise ship-borne GUI chart plotter application.
  .
  This package contains the tidal harmonics and audio files for OpenCPN.
-

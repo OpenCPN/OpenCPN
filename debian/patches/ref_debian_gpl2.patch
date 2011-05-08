@@ -1,4 +1,5 @@
-Use system's copy of GPL2.txt
+Description: Use system's copy of GPL2.txt
+Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/about.cpp
 ===================================================================
 --- opencpn.orig/src/about.cpp	2011-04-25 09:18:19.000000000 +1200

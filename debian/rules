@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -14,9 +8,6 @@
 	dh  $@
 
 override_dh_install:
-	mkdir -p $(CURDIR)/debian/opencpn/usr/share/pixmaps
-	cp $(CURDIR)/src/bitmaps/opencpn.xpm $(CURDIR)/debian/opencpn/usr/share/pixmaps/
-	
 	mkdir -p $(CURDIR)/debian/opencpn/usr/lib
 	mv -f $(CURDIR)/debian/tmp/usr/share/opencpn/plugins/* \
 		$(CURDIR)/debian/opencpn/usr/lib/opencpn-plugins/
@@ -32,13 +23,6 @@ override_dh_install:
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/sounds
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/tcdata
 
-override_dh_installdocs:
-	dh_installdocs
-	mv $(CURDIR)/debian/opencpn-data/usr/share/doc/opencpn-data/README_BELLS.txt \
-		$(CURDIR)/debian/opencpn-data/usr/share/doc/opencpn-data/README.bells
-	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README_BELLS.txt
-	#harmonics readme already installed to the opencpn-data/docs dir
-	rm $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/README.harmonics
-
-override_dh_installman:
-	dh_installman debian/opencpn.1
+	#READMEs already installed to the opencpn-data/docs dir
+	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README.bells
+	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/tcdata/README.harmonics

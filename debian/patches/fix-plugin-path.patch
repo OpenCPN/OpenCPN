@@ -1,5 +1,6 @@
-Look for .so plugins in /usr/lib/opencpn-plugins/
-(lintian E: arch-dependent-file-in-usr-share)
+Description: Look for .so plugins in /usr/lib/opencpn-plugins/
+ (lintian E: arch-dependent-file-in-usr-share)
+Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/pluginmanager.cpp
 ===================================================================
 --- opencpn.orig/src/pluginmanager.cpp	2011-04-15 20:58:59.296628331 +1200

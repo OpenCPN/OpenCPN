@@ -1,3 +1,2 @@
 version=3
-
-http://sf.net/opencpn/opencpn-(.*)\.tar\.gz
+http://sf.net/opencpn/OpenCPN-([\d\.]+)-Source\.tar\.gz
