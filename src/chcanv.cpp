@@ -9012,7 +9012,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                   if(m_bFollow)
                          b_save = false;
 
-                  if(0/*m_cache_vp.IsValid() && !m_bFollow */)
+                  if(m_cache_vp.IsValid() && !m_bFollow )
                   {
                         if(b_newview)
                         {
