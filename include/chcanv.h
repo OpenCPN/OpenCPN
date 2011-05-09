@@ -202,8 +202,8 @@ public:
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void GetCursorLatLon(double *lat, double *lon);
 
-      bool ZoomCanvasIn(double lat = 0., double lon = 0.);
-      bool ZoomCanvasOut(double lat = 0., double lon = 0.);
+      bool ZoomCanvasIn(double factor, double lat = 0., double lon = 0.);
+      bool ZoomCanvasOut(double factor, double lat = 0., double lon = 0.);
       bool PanCanvas(int dx, int dy);
 
       void ShowAISTargetList(void);

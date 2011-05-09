@@ -4203,14 +4203,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_ZOOMIN:
     {
-            cc1->ZoomCanvasIn();
+            cc1->ZoomCanvasIn(2.0);
             DoChartUpdate();
             break;
     }
 
     case ID_ZOOMOUT:
     {
-            cc1->ZoomCanvasOut();
+            cc1->ZoomCanvasOut(2.0);
             DoChartUpdate();
             break;
     }

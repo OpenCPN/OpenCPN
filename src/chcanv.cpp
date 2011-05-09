@@ -3261,7 +3261,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case  WXK_UP:
                         if(event.GetModifiers() == wxMOD_ALT)
-                              PanCanvas(0, -2);
+                              PanCanvas(0, -1);
                         else
                               PanCanvas(0, -100);
                         b_proc = true;
@@ -3273,7 +3273,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         else
                         {
                               if(event.GetModifiers() == wxMOD_ALT)
-                                    PanCanvas(2,0);
+                                    PanCanvas(1,0);
                               else
                                     PanCanvas(100, 0); ///  gCog += 1; if(gCog > 360.) gCog -= 360.; ReloadVP();
                         }
@@ -3282,19 +3282,17 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                   case  WXK_DOWN:
                         if(event.GetModifiers() == wxMOD_ALT)
-                              PanCanvas(0, 2);
+                              PanCanvas(0, 1);
                         else
                               PanCanvas(0, 100);
                         b_proc = true;
                         break;
 
                   case WXK_F2:
-					  {
-					    *(int *)(0) = 0;
                         parent_frame->TogglebFollow();
                         b_proc = true;
                         break;
-					  }
+
                   case WXK_F3:
                         parent_frame->ToggleENCText();
                         b_proc = true;
@@ -3396,15 +3394,21 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         case '+':
                         case '=':
                         case 26:                     // Ctrl Z
-                                    ZoomCanvasIn();
-                                    break;
-                                    b_proc = true;
+                              if ( (event.GetModifiers() == wxMOD_CONTROL) )
+                                    ZoomCanvasIn(1.1);
+                              else
+                                    ZoomCanvasIn(2.0);
+                              break;
+                              b_proc = true;
 
                         case '-':
                         case 24:                     // Ctrl X
-                                    ZoomCanvasOut();
-                                    break;
-                                    b_proc = true;
+                              if ( (event.GetModifiers() == wxMOD_CONTROL) )
+                                    ZoomCanvasOut(1.1);
+                              else
+                                    ZoomCanvasOut(2.0);
+                              break;
+                              b_proc = true;
 
                         case 19:                     // Ctrl S
                                     parent_frame->ToggleENCText();
@@ -3807,14 +3811,14 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 }
 }
 
-bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
+bool ChartCanvas::ZoomCanvasIn(double factor, double lat, double lon)
 {
       //    Cannot allow Yield() re-entrancy here
       if(m_bzooming)
             return false;
       m_bzooming = true;
 
-      double zoom_factor = 2.0;
+      double zoom_factor = factor;
 
       double min_allowed_scale = 50.0;                // meters per meter
 
@@ -3871,7 +3875,7 @@ bool ChartCanvas::ZoomCanvasIn(double lat, double lon)
 
 
 
-bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
+bool ChartCanvas::ZoomCanvasOut(double factor, double lat, double lon)
 {
       if(m_bzooming)
             return false;
@@ -3879,7 +3883,7 @@ bool ChartCanvas::ZoomCanvasOut(double lat, double lon)
 
       bool b_do_zoom = true;
 
-      double zoom_factor = 2.0;
+      double zoom_factor = factor;
       double max_allowed_scale = 1e8;
 
       double proposed_scale_onscreen = GetCanvasScaleFactor() / (GetVPScale() / zoom_factor);
@@ -6559,16 +6563,16 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         if((m_wheel_x == x) && (m_wheel_y == y))
                         {
                               if(wheel_dir > 0)
-                                    b_zoom_moved = ZoomCanvasIn(m_wheel_lat, m_wheel_lon);
+                                    b_zoom_moved = ZoomCanvasIn(2.0, m_wheel_lat, m_wheel_lon);
                               else if(wheel_dir < 0)
-                                    b_zoom_moved = ZoomCanvasOut(m_wheel_lat, m_wheel_lon);
+                                    b_zoom_moved = ZoomCanvasOut(2.0, m_wheel_lat, m_wheel_lon);
                         }
                         else
                         {
                               if(wheel_dir > 0)
-                                    b_zoom_moved = ZoomCanvasIn(m_cursor_lat, m_cursor_lon);
+                                    b_zoom_moved = ZoomCanvasIn(2.0, m_cursor_lat, m_cursor_lon);
                               else if(wheel_dir < 0)
-                                    b_zoom_moved = ZoomCanvasOut(m_cursor_lat, m_cursor_lon);
+                                    b_zoom_moved = ZoomCanvasOut(2.0, m_cursor_lat, m_cursor_lon);
 
                               m_wheel_lat = m_cursor_lat;
                               m_wheel_lon = m_cursor_lon;
@@ -6582,9 +6586,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                   else
                   {
                         if(wheel_dir > 0)
-                              ZoomCanvasIn();
+                              ZoomCanvasIn(2.0);
                         else if(wheel_dir < 0)
-                              ZoomCanvasOut();
+                              ZoomCanvasOut(2.0);
                   }
 
                   m_MouseWheelTimer.Start(m_mouse_wheel_oneshot, true);           // start timer
@@ -9008,7 +9012,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                   if(m_bFollow)
                          b_save = false;
 
-                  if(m_cache_vp.IsValid() && !m_bFollow )
+                  if(0/*m_cache_vp.IsValid() && !m_bFollow */)
                   {
                         if(b_newview)
                         {
