@@ -5921,6 +5921,9 @@ bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       int cmscale_actual = PrepareChartScale(vp_proposed, cmscale);     // this is the scale that will be used, based on cell coverage
 
+      if(g_bDebugCM93)
+            printf("  In AdjustVP,  adjustment subchart scale is %c\n", (char)('A' + cmscale_actual -1));
+
       //    We always need to do a VP adjustment, independent of this method's return value.
       //    so, do an AdjustVP() based on the chart scale that WILL BE USED
       //    And be sure to return false if that adjust method suggests so.
