@@ -201,6 +201,7 @@ class MyFrame: public wxFrame
     void OnCloseWindow(wxCloseEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnSize(wxSizeEvent& event);
+    void OnMove(wxMoveEvent& event);
     void OnFrameTimer1(wxTimerEvent& event);
     bool DoChartUpdate(void);
     void OnEvtNMEA(wxCommandEvent& event);

@@ -780,7 +780,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             void DestroyToolBar();
             void ToggleOrientation();
             void MoveDialogInScreenCoords(wxPoint posn, wxPoint posn_old);
-            void Position();
+            void RePosition();
             void SetColorScheme(ColorScheme cs);
             void SetGeometry();
             long GetOrient(){ return m_orient; }
@@ -799,6 +799,8 @@ class ocpnFloatingToolbarDialog: public wxDialog
             ColorScheme       m_cs;
 
             wxPoint           m_position;
+            int               m_dock_x;
+            int               m_dock_y;
 };
 
 
@@ -930,9 +932,7 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 
       if(event.Dragging())
       {
-
             wxPoint par_pos_old = GetParent()->GetPosition();
-//            printf("%d\n", par_pos_old.x);
 
             wxPoint par_pos = par_pos_old;
             par_pos.x += spt.x - s_gspt.x;
@@ -946,8 +946,8 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 
       }
 
-      wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
-      GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+//      wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
+//      GetParent()->GetEventHandler()->AddPendingEvent(*pev);
 
       gFrame->Raise();
 }
@@ -1203,7 +1203,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_topSizer = new wxBoxSizer ( wxHORIZONTAL );
       SetSizer( m_topSizer );
 
-      Position();
+      //    Set initial "Dock" parameters
+      m_dock_x = 0;
+      m_dock_y = 0;
+
+      RePosition();
 
       Hide();
 }
@@ -1256,18 +1260,28 @@ void ocpnFloatingToolbarDialog::SetGeometry()
       }
 }
 
-void ocpnFloatingToolbarDialog::Position()
+void ocpnFloatingToolbarDialog::RePosition()
 {
-      if(cc1)
+      if(m_pparent)
       {
-            wxSize cs = cc1->GetClientSize();
+            wxSize cs = m_pparent->GetClientSize();
+            if(-1 == m_dock_x)
+                  m_position.x = 0;
+            else if(1 == m_dock_x)
+                  m_position.x = cs.x - GetSize().x;
+
+            if(-1 == m_dock_y)
+                  m_position.y = 0;
+            else if(1 == m_dock_y)
+                  m_position.y = cs.y - GetSize().y;
+
             m_position.x = wxMin(cs.x - 20, m_position.x);
             m_position.y = wxMin(cs.y - 20, m_position.y);
 
             m_position.x = wxMax(0, m_position.x);
             m_position.y = wxMax(0, m_position.y);
 
-            wxPoint screen_pos = cc1->ClientToScreen(m_position);
+            wxPoint screen_pos = m_pparent->ClientToScreen(m_position);
             Move(screen_pos);
       }
 }
@@ -1325,30 +1339,46 @@ void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords(wxPoint posn, wxPoint p
 #define DOCK_MARGIN 40
 
       // X
+      m_dock_x = 0;
       if(pos_in_parent.x < pos_in_parent_old.x)            // moving left
       {
-            if(pos_in_parent.x < (DOCK_MARGIN + cc1->GetPosition().x))
-                  pos_in_parent.x = cc1->GetPosition().x;
+            if(pos_in_parent.x < DOCK_MARGIN )
+            {
+                  pos_in_parent.x = 0;
+                  m_dock_x = -1;
+            }
       }
       else if(pos_in_parent.x > pos_in_parent_old.x)            // moving right
       {
-            int max_right = cc1->GetPosition().x + cc1->GetClientSize().x - GetSize().x;
+            int max_right = m_pparent->GetClientSize().x - GetSize().x;
             if(pos_in_parent.x > (max_right - DOCK_MARGIN))
+            {
                   pos_in_parent.x = max_right;
+                  m_dock_x = 1;
+            }
       }
 
       // Y
+      m_dock_y = 0;
       if(pos_in_parent.y < pos_in_parent_old.y)            // moving up
       {
             if(pos_in_parent.y < DOCK_MARGIN)
+            {
                   pos_in_parent.y = 0;
+                  m_dock_y = -1;
+            }
       }
       else if(pos_in_parent.y > pos_in_parent_old.y)            // moving down
       {
-            int max_down = cc1->GetClientSize().y - GetSize().y;
+            int max_down = m_pparent->GetClientSize().y - GetSize().y;
             if(pos_in_parent.y > (max_down - DOCK_MARGIN))
+            {
                   pos_in_parent.y = max_down;
+                  m_dock_y = 1;
+            }
       }
+
+
 
       m_position = pos_in_parent;
 
@@ -1369,6 +1399,19 @@ void ocpnFloatingToolbarDialog::Realize()
 
             m_topSizer->Layout();
             m_topSizer->Fit(this);
+
+            //    Update "Dock" parameters
+            if(m_position.x == 0)
+                  m_dock_x = -1;
+            else if(m_position.x == m_pparent->GetClientSize().x - GetSize().x)
+                  m_dock_x = 1;
+
+            if(m_position.y == 0)
+                  m_dock_y = -1;
+            else if(m_position.y == m_pparent->GetClientSize().y - GetSize().y)
+                  m_dock_y = 1;
+
+
             Refresh(false);
       }
 }
@@ -1397,7 +1440,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
             m_ptoolbar->ClearBackground();
             m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
             m_ptoolbar->SetColorScheme(m_cs);
-    ;
+
 
             m_ptoolbar->SetToolBitmapSize(wxSize(32,32));
             m_ptoolbar->SetToolSeparation(5);                  // width of separator
@@ -2281,7 +2324,7 @@ bool MyApp::OnInit()
         g_toolbar_x = wxMin(g_toolbar_x, cw);
         g_toolbar_y = wxMin(g_toolbar_y, ch);
 
-        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(gFrame, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
+        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(cc1, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
 
@@ -2574,6 +2617,7 @@ bool MyApp::OnInit()
 
         cc1->ReloadVP();                  // once more, and good to go
 
+        g_FloatingToolbarDialog->Raise();
         g_FloatingToolbarDialog->Show();
 
         gFrame->Raise();
@@ -2792,6 +2836,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_CLOSE(MyFrame::OnCloseWindow)
   EVT_MENU(wxID_EXIT, MyFrame::OnExit)
   EVT_SIZE(MyFrame::OnSize)
+  EVT_MOVE(MyFrame::OnMove)
   EVT_MENU(-1, MyFrame::OnToolLeftClick)
   EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
   EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
@@ -3950,6 +3995,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
 
+    g_FloatingToolbarDialog->Destroy();
+
     cc1->Destroy();
     cc1 = NULL;
 
@@ -4004,7 +4051,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       pAPilot = NULL;
     }
 
-    delete g_FloatingToolbarDialog;
+//    delete g_FloatingToolbarDialog;
     g_FloatingToolbarDialog = NULL;
 
     delete g_FloatingCompassDialog;
@@ -4038,6 +4085,18 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
     this->Destroy();
 
 }
+
+void MyFrame::OnMove(wxMoveEvent& event)
+{
+      if(g_FloatingToolbarDialog)
+            g_FloatingToolbarDialog->RePosition();
+
+      if(g_FloatingCompassDialog)
+            g_FloatingCompassDialog->Update(true);
+}
+
+
+
 
 
 void MyFrame::OnSize(wxSizeEvent& event)
@@ -4096,7 +4155,7 @@ void MyFrame::DoSetSize(void)
 
         if(g_FloatingToolbarDialog)
         {
-              g_FloatingToolbarDialog->Position();
+              g_FloatingToolbarDialog->RePosition();
               g_FloatingToolbarDialog->SetGeometry();
               g_FloatingToolbarDialog->Realize();
 
@@ -9269,6 +9328,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
             wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
             GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+            wxDELETE(pev);
 
             return;
       }
@@ -9297,6 +9357,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
             wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
             GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+            wxDELETE(pev);
 
             return;
       }
@@ -9336,6 +9397,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
       wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
       GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+      wxDELETE(pev);
 
       event.Skip();
 
