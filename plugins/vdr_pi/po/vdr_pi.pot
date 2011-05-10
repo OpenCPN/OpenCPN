@@ -1,0 +1,56 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr_pi 2.4.506\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-10 23:05+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/vdr_pi.cpp:82
+msgid "Record"
+msgstr ""
+
+#: src/vdr_pi.cpp:84
+msgid "Play"
+msgstr ""
+
+#: src/vdr_pi.cpp:147
+msgid "VDR"
+msgstr ""
+
+#: src/vdr_pi.cpp:153
+msgid "Voyage Data Recorder plugin for OpenCPN"
+msgstr ""
+
+#: src/vdr_pi.cpp:158
+msgid ""
+"Voyage Data Recorder plugin for OpenCPN\n"
+"Provides NMEA stream save and replay."
+msgstr ""
+
+#: src/vdr_pi.cpp:223 src/vdr_pi.cpp:254
+msgid "Choose a file"
+msgstr ""
+
+#: src/vdr_pi.cpp:236
+msgid "VDR replay"
+msgstr ""
+
+#: src/vdr_pi.cpp:332
+msgid "Speed:"
+msgstr ""
+
+#: src/vdr_pi.cpp:339
+msgid "Progress:"
+msgstr ""
