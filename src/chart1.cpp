@@ -1275,8 +1275,8 @@ void ocpnFloatingToolbarDialog::RePosition()
             else if(1 == m_dock_y)
                   m_position.y = cs.y - GetSize().y;
 
-            m_position.x = wxMin(cs.x - 20, m_position.x);
-            m_position.y = wxMin(cs.y - 20, m_position.y);
+            m_position.x = wxMin(cs.x - GetSize().x, m_position.x);
+            m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
 
             m_position.x = wxMax(0, m_position.x);
             m_position.y = wxMax(0, m_position.y);
@@ -1289,6 +1289,8 @@ void ocpnFloatingToolbarDialog::RePosition()
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
 {
+      wxPoint old_screen_pos = m_pparent->ClientToScreen(m_position);
+
       if(m_orient == wxTB_HORIZONTAL)
       {
             m_orient = wxTB_VERTICAL;
@@ -1304,6 +1306,21 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
 
       SetGeometry();
       Realize();
+      if(m_orient == wxTB_HORIZONTAL)
+      {
+            m_position.x -= m_pGrabberwin->GetPosition().x - GetSize().y;
+            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
+            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
+      }
+      else
+      {
+            m_position.x += GetSize().y -m_pGrabberwin->GetPosition().x;
+            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
+            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
+      }
+
+
+      RePosition();
 
       GetParent()->Refresh(false);
 
@@ -4158,6 +4175,7 @@ void MyFrame::DoSetSize(void)
               g_FloatingToolbarDialog->RePosition();
               g_FloatingToolbarDialog->SetGeometry();
               g_FloatingToolbarDialog->Realize();
+              g_FloatingToolbarDialog->RePosition();
 
         }
 
@@ -5377,7 +5395,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
     g_tick++;
 
-
 //      Listen for quitflag to be set, requesting application close
       if(quitflag)
       {
@@ -5600,11 +5617,12 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
 //  Invalidate the ChartCanvas window appropriately
-        cc1->UpdateShips();
-
-        cc1->UpdateAIS();
-
-        cc1->UpdateAlerts();                // pjotrc 2010.02.22
+        if(!cc1->m_bFollow)
+        {
+              cc1->UpdateShips();
+              cc1->UpdateAIS();
+              cc1->UpdateAlerts();
+        }
 
         if(g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown())
               g_pais_query_dialog_active->UpdateText();
