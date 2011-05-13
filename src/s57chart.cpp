@@ -4546,7 +4546,7 @@ void s57chart::ResetPointBBoxes(void)
 
             while ( top != NULL)
             {
-                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
                         top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
@@ -4561,7 +4561,7 @@ void s57chart::ResetPointBBoxes(void)
 
             while ( top != NULL)
             {
-                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
                         top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
