@@ -5712,9 +5712,9 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
       {
 //            printf ( "### ledge out of range\n" );
             ret_val = 1;
-            r=255;
-            g=0;
-            b=0;
+//            r=255;
+//            g=0;
+//            b=0;
       }
 
       //    Right edge
@@ -5780,13 +5780,14 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
             }
       }
 
+
       if ( ( ytop < ymin ) || ( ybot > ymax ) )
       {
 //            printf ( "### redge out of range\n" );
             ret_val = 1;
-            r=255;
-            g=0;
-            b=0;
+//            r=255;
+//            g=0;
+//            b=0;
       }
 
       //    Clip trapezoid to height spec
