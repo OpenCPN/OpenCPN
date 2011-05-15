@@ -39,6 +39,7 @@
 #include <wx/aui/aui.h>
 
 ////////////TH//////////////////
+#ifndef OCPN_NO_SOCKETS
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
@@ -50,6 +51,8 @@
 
 #include "wx/socket.h"
 ///////////TH100126////////////////
+#endif
+
 #include "wx/sound.h"
 
 #include "dychart.h"
@@ -356,9 +359,11 @@ private:
 
     AIS_Target_Hash *AISTargetList;
 
-
+#ifndef OCPN_NO_SOCKETS
     wxIPV4address     addr;
     wxSocketClient    *m_sock;
+#endif
+
     bool              m_busy;
     wxTimer           TimerAIS;
     wxFrame           *m_parent_frame;

@@ -596,7 +596,9 @@ void options::CreateControls()
       m_itemNMEAListBox = new wxComboBox(itemPanelGPS, ID_CHOICE_NMEA);
       itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
 
-#ifndef OCPN_DISABLE_SOCKETS
+
+#if !defined( OCPN_NO_SOCKETS) || defined(BUILD_WITH_LIBGPS)
+
 //    Add NMEA TCP/IP Server address
       m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
       m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
@@ -604,6 +606,12 @@ void options::CreateControls()
 
       m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
       m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
+
+      m_itemNMEA_TCPIP_StaticBox->Enable(false);
+      m_itemNMEA_TCPIP_Source->Enable(false);
+
+      m_itemNMEA_TCPIP_Source->WriteText(_T("localhost"));
+
 #endif
 
 
@@ -638,7 +646,7 @@ void options::CreateControls()
       m_itemNMEAListBox->Append( _T("Network LIBGPS"));
 #endif
 
-#ifndef OCPN_DISABLE_SOCKETS
+#ifndef OCPN_NO_SOCKETS
       m_itemNMEAListBox->Append( _T("Network GPSD"));
 #endif
 
@@ -648,7 +656,6 @@ void options::CreateControls()
 //    Activate the proper selections
 //    n.b. Hard coded indices
       int scidx;
-      bool tcp_en = false;
       wxString source;
       source = (*pNMEADataSource);
       if(source.Upper().Contains(_T("SERIAL")))
@@ -669,15 +676,31 @@ void options::CreateControls()
       else if(source.Upper().Contains(_T("LIBGPS")))
       {
             scidx = m_itemNMEAListBox->FindString(_T("Network LIBGPS"));
-            tcp_en = true;
+            wxString ip;
+            if(source.StartsWith(_T("LIBGPS")) )
+                  ip = source.AfterFirst(':');
+            else
+                  ip = _T("localhost");
+
+            m_itemNMEA_TCPIP_Source->WriteText(ip);
+            m_itemNMEA_TCPIP_StaticBox->Enable(true);
+            m_itemNMEA_TCPIP_Source->Enable(true);
       }
 #endif
 
-#ifndef OCPN_DISABLE_SOCKETS
+#ifndef OCPN_NO_SOCKETS
       else if(source.Upper().Contains(_T("GPSD")))
       {
             scidx = m_itemNMEAListBox->FindString(_T("Network GPSD"));
-            tcp_en = true;
+            wxString ip;
+            if(source.StartsWith(_T("GPSD")) )
+                  ip = source.AfterFirst(':');
+            else
+                  ip = _T("localhost");
+
+            m_itemNMEA_TCPIP_Source->WriteText(ip);
+            m_itemNMEA_TCPIP_StaticBox->Enable(true);
+            m_itemNMEA_TCPIP_Source->Enable(true);
       }
 #endif
       else
@@ -693,31 +716,7 @@ void options::CreateControls()
 
 
       m_itemNMEAListBox->SetSelection(scidx);
- ///     itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
 
-#ifndef OCPN_DISABLE_SOCKETS
-
-//    Add NMEA TCP/IP Server address
-//      m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
-//      m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
-//      itemNMEAStaticBoxSizer->Add(m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, 4);
-
-//      m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
-//      m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
-
-      m_itemNMEA_TCPIP_StaticBox->Enable(tcp_en);
-      m_itemNMEA_TCPIP_Source->Enable(tcp_en);
-
-      if(tcp_en)
-      {
-            wxString ip;
-            if(source.StartsWith(_T("LIBGPS")) || source.StartsWith(_T("GPSD")))
-                  ip = source.AfterFirst(':');
-            else
-                  ip = _T("localhost");
-            m_itemNMEA_TCPIP_Source->WriteText(ip);
-      }
-#endif
 
       //    NMEA Baud Rate
       wxStaticBox* itemNMEABaudStaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("NMEA Baud Rate"));

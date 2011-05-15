@@ -289,7 +289,7 @@ class DeviceMonitorWindow: public wxWindow
 
 BEGIN_EVENT_TABLE(NMEAHandler, wxEvtHandler)
 
-            EVT_SOCKET(SOCKET_ID, NMEAHandler::OnSocketEvent)
+ //           EVT_SOCKET(SOCKET_ID, NMEAHandler::OnSocketEvent)
             EVT_TIMER(TIMER_LIBGPS1, NMEAHandler::OnTimerLIBGPS)
             EVT_TIMER(TIMER_NMEA1, NMEAHandler::OnTimerNMEA)
 
@@ -307,7 +307,6 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
       m_pdevmon = NULL;
       m_pSecondary_Thread = NULL;
-      m_sock = NULL;
       SetSecThreadInActive();
 
       TimerLIBGPS.SetOwner(this, TIMER_LIBGPS1);
@@ -569,9 +568,12 @@ Would you like to use this version of libgps anyway?"),
 #endif
 
 
-#ifndef OCPN_DISABLE_SOCKETS
+#ifndef OCPN_NO_SOCKETS
+
 //      NMEA Data Source is private TCP/IP Server
-        else if(m_data_source_string.Contains(_T("GPSD")))
+        m_sock = NULL;
+
+        if(m_data_source_string.Contains(_T("GPSD")))
         {
             wxString NMEA_data_ip;
             NMEA_data_ip = m_data_source_string.Mid(5);         // extract the IP
@@ -643,7 +645,6 @@ Would you like to use this version of libgps anyway?"),
     }
 #endif
 
-
 }
 
 NMEAHandler::~NMEAHandler()
@@ -662,6 +663,7 @@ void NMEAHandler::Close()
       }
 #endif
 
+#ifndef OCPN_NO_SOCKETS
 //    Kill off the NMEA Socket if alive
       if(m_sock)
       {
@@ -669,6 +671,7 @@ void NMEAHandler::Close()
             m_sock->Destroy();
             TimerNMEA.Stop();
       }
+#endif
 
 //    Kill off the Secondary RX Thread if alive
       if(m_pSecondary_Thread)
@@ -723,16 +726,20 @@ void NMEAHandler::Pause(void)
 {
       TimerNMEA.Stop();
 
+#ifndef OCPN_NO_SOCKETS
       if(m_sock)
             m_sock->Notify(FALSE);
+#endif
 }
 
 void NMEAHandler::UnPause(void)
 {
     TimerNMEA.Start(TIMER_NMEA_MSEC,wxTIMER_CONTINUOUS);
 
-      if(m_sock)
+#ifndef OCPN_NO_SOCKETS
+    if(m_sock)
             m_sock->Notify(TRUE);
+#endif
 }
 
 
@@ -855,6 +862,7 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 
 void NMEAHandler::OnSocketEvent(wxSocketEvent& event)
 {
+#ifndef OCPN_NO_SOCKETS
 
 #define RD_BUF_SIZE    200
 
@@ -1009,6 +1017,7 @@ void NMEAHandler::OnSocketEvent(wxSocketEvent& event)
     default                  :
           break;
   }
+#endif
 }
 
 extern double gCog, gLat, gLon;
@@ -1017,6 +1026,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
 {
       TimerNMEA.Stop();
 
+#ifndef OCPN_NO_SOCKETS
       if(!m_bgot_version)                             // Get the gpsd version number
       {
             if(m_sock)
@@ -1046,14 +1056,15 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             m_sock->Connect(m_addr, FALSE);       // Non-blocking connect
         }
       }
+#endif
 
       //--------------Simulator
 #if(0)
       {
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
-            float kSog = 8.5;
-            float kCog = gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
+            float kSog = 5.;//8.5;
+            float kCog = 41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
@@ -1574,6 +1585,7 @@ ret_point:
 
 }
 
+#ifndef OCPN_NO_SOCKETS
 //-------------------------------------------------------------------------------------------------------------
 //
 //    A simple thread to test host name resolution without blocking the main thread
@@ -1603,7 +1615,7 @@ void *DNSTestThread::Entry()
       s_dns_test_flag = 1;                            // came back OK
       return NULL;
 }
-
+#endif
 
 //-------------------------------------------------------------------------------------------------------------
 //

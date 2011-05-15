@@ -1068,7 +1068,7 @@ bool AIS_Bitstring::GetStr(int sp, int len, char *dest, int max_len)
 //---------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
 
-  EVT_SOCKET(AIS_SOCKET_ID, AIS_Decoder::OnSocketEvent)
+//  EVT_SOCKET(AIS_SOCKET_ID, AIS_Decoder::OnSocketEvent)
   EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
   EVT_TIMER(TIMER_AISAUDIO, AIS_Decoder::OnTimerAISAudio)
 //  EVT_COMMAND(ID_AIS_WINDOW, EVT_AIS, AIS_Decoder::OnEvtAIS)
@@ -1150,6 +1150,7 @@ AIS_Decoder::~AIS_Decoder(void)
 
     delete current_targets;
 
+#ifndef OCPN_NO_SOCKETS
     //    Kill off the TCP/IP Socket if alive
     if(m_sock)
     {
@@ -1157,6 +1158,7 @@ AIS_Decoder::~AIS_Decoder(void)
           m_sock->Destroy();
           TimerAIS.Stop();
     }
+#endif
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
@@ -2270,7 +2272,6 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
 AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataSource)
 {
       pAIS_Thread = NULL;
-      m_sock = NULL;
       m_OK = false;
 
       TimerAIS.SetOwner(this, TIMER_AIS1);
@@ -2284,6 +2285,9 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
       wxString msg(_T("AIS Data Source is...."));
       msg.Append(m_data_source_string);
       wxLogMessage(msg);
+
+#ifndef OCPN_NO_SOCKETS
+      m_sock = NULL;
 
 //      Data Source is private TCP/IP Server
       if(m_data_source_string.Contains(_T("TCP/IP")))
@@ -2356,10 +2360,11 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
             m_OK = true;
       }
 
+#endif
 
 //    AIS Data Source is specified serial port
 
-      else if(m_data_source_string.Contains(_T("Serial")))
+      if(m_data_source_string.Contains(_T("Serial")))
       {
           wxString comx;
 //          comx =  m_pdata_source_string->Mid(7);        // either "COM1" style or "/dev/ttyS0" style
@@ -2431,22 +2436,27 @@ void AIS_Decoder::Pause(void)
 {
       TimerAIS.Stop();
 
+#ifndef OCPN_NO_SOCKETS
       if(m_sock)
             m_sock->Notify(FALSE);
+#endif
 }
 
 void AIS_Decoder::UnPause(void)
 {
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
 
-      if(m_sock)
+#ifndef OCPN_NO_SOCKETS
+    if(m_sock)
             m_sock->Notify(TRUE);
+#endif
 }
 
 
 
 void AIS_Decoder::OnSocketEvent(wxSocketEvent& event)
 {
+#ifndef OCPN_NO_SOCKETS
 
 #define RD_BUF_SIZE    200
 
@@ -2503,7 +2513,7 @@ void AIS_Decoder::OnSocketEvent(wxSocketEvent& event)
     default                  :
           break;
   }
-
+#endif
 }
 
 void AIS_Decoder::OnTimerAISAudio(wxTimerEvent& event)
