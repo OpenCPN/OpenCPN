@@ -4278,6 +4278,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                         vee.index = index;
                         vee.nCount = count;
                         vee.pPoints = pPoints;
+                        vee.max_priority = -99;            // Default
 
                         ve_array.Add(vee);
 
