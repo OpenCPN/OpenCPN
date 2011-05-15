@@ -1,4 +1,4 @@
-﻿/*-----------------------------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------------------------------
 NSIS Installer script for OpenCPN (Windows)
 NSIS version 2.46
 Written by Gunther Pilz (Netsurfer) netsurfer@opencpn.de
@@ -667,7 +667,7 @@ CMake variables
 	!include /NONFATAL "Langstrings_SWEDISH.nsh"
 	!insertmacro MUI_LANGUAGE "Finnish"
 	!include /NONFATAL "Langstrings_FINNISH.nsh"
-	!insertmacro MUI_LANGUAGE "Norwegian"
+	!insertmacro MUI_LANGUAGE "Norsk"
 	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
 
 
