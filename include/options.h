@@ -120,7 +120,8 @@ enum {
         ID_GARMINHOST,
         ID_FILTERNMEA,
         ID_FULLSCREENQUILT,
-        ID_FSTOOLBARCHECKBOX
+        ID_FSTOOLBARCHECKBOX,
+        ID_TRANSTOOLBARCHECKBOX
 
 
 };
@@ -334,6 +335,7 @@ public:
     wxCheckBox              *pPreserveScale;
     wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
     wxCheckBox              *pFullScreenToolbar;
+    wxCheckBox              *pTransparentToolbar;
 
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;

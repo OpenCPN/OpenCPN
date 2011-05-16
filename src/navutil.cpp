@@ -113,6 +113,7 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
@@ -2675,6 +2676,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
+      Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -3828,6 +3830,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
+      Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );

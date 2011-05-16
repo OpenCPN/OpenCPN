@@ -114,6 +114,7 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bTransparentToolbar;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
@@ -1257,35 +1258,9 @@ void options::CreateControls()
     pFullScreenToolbar = new wxCheckBox( itemPanelAdvanced, ID_FSTOOLBARCHECKBOX, _("Show toolbar in fullscreen mode"));
     itemStaticBoxSizerGUIOption->Add(pFullScreenToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
+    pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
+    itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    //  Printing checkbox
-/*    wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Printing"));
-    wxStaticBoxSizer* itemStaticBoxSizerPrint = new wxStaticBoxSizer(itemStaticBoxSizerPrintStatic, wxVERTICAL);
-    itemBoxSizer6->Add(itemStaticBoxSizerPrint, 0, wxGROW|wxALL, border_size);
-    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Printing Icon") );
-    pPrintShowIcon->SetValue(FALSE);
-    itemStaticBoxSizerPrint->Add(pPrintShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
-
-    // Chart Display Options Box
-    wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Chart Display Options"));
-    wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer(itemStaticBoxSizerCDOStatic, wxVERTICAL);
-    itemBoxSizer6->Add(itemStaticBoxSizerCDO, 0, wxGROW|wxALL, border_size);
-
-    //  Chart Outlines checkbox
-    pCDOOutlines = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Chart Outlines") );
-    pCDOOutlines->SetValue(FALSE);
-    itemStaticBoxSizerCDO->Add(pCDOOutlines, 1, wxALIGN_LEFT|wxALL, border_size);
-
-
-    //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits") );
-    pSDepthUnits->SetValue(FALSE);
-    itemStaticBoxSizerCDO->Add(pSDepthUnits, 1, wxALIGN_LEFT|wxALL, border_size);
-*/
-
-
-
-    // toh, 2009.02.14; end
 
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize, g_pi_manager->GetPlugInArray() );
@@ -1394,6 +1369,7 @@ void options::SetInitialSettings()
       pPreserveScale->SetValue(g_bPreserveScaleOnX);
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
       pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
+      pTransparentToolbar->SetValue(g_bTransparentToolbar);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
       pTrackDaily->SetValue(g_bTrackDaily);
@@ -1778,6 +1754,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
+    g_bTransparentToolbar = pTransparentToolbar->GetValue();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();
     m_pText_TP_Secs->GetValue().ToDouble(&g_TrackIntervalSeconds);
