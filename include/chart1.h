@@ -174,6 +174,7 @@ class ChartDirInfo
 };
 
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
+WX_DECLARE_OBJARRAY(wxRect, ArrayOfRect);
 
 
 class MyApp: public wxApp
@@ -182,8 +183,6 @@ class MyApp: public wxApp
     bool OnInit();
     int OnExit();
 
-    void TestSockets(void);
-    void OnSocketEvent(wxSocketEvent& event);
     void TrackOff(void);
 
 };
@@ -276,6 +275,8 @@ class MyFrame: public wxFrame
 
     void ChartsRefresh(void);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
+
+    ArrayOfRect GetCanvasReserveRects();
 
     wxStatusBar         *m_pStatusBar;
     int                 nRoute_State;

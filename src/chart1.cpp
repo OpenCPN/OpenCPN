@@ -118,8 +118,9 @@
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
+WX_DEFINE_OBJARRAY(ArrayOfRect);
 
-class ocpnFloatingCompassDialog;
+class ocpnFloatingCompassWindow;
 
 
 //------------------------------------------------------------------------------
@@ -253,6 +254,7 @@ bool              g_bGarminPersistance;
 int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
 bool              g_bFullscreenToolbar;
+bool              g_bTransparentToolbar;
 
 
 bool              g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -336,12 +338,6 @@ AISTargetQueryDialog    *g_pais_query_dialog_active;
 int               g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 int               g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 int               g_ais_query_dialog_x, g_ais_query_dialog_y;
-
-bool            s_socket_test_running;
-bool            s_socket_test_passed;
-wxSocketClient  *s_t_sock;
-wxSocketServer  *s_s_sock;
-
 
 int              g_nframewin_x;
 int              g_nframewin_y;
@@ -539,7 +535,7 @@ wxAuiDefaultDockArt  *g_pauidockart;
 bool              g_blocale_changed;
 
 ocpnFloatingToolbarDialog     *g_FloatingToolbarDialog;
-ocpnFloatingCompassDialog     *g_FloatingCompassDialog;
+ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 
 int               g_toolbar_x;
 int               g_toolbar_y;
@@ -718,16 +714,15 @@ class GrabberWin: public wxPanel
 
 
 //----------------------------------------------------------------------------------------------------------
-//    ocpnFloatingCompassDialog Specification
+//    ocpnFloatingCompassWindow Specification
 //----------------------------------------------------------------------------------------------------------
-class ocpnFloatingCompassDialog: public wxDialog
+class ocpnFloatingCompassWindow: public wxWindow
 {
-      DECLARE_CLASS( ocpnFloatingCompassDialog )
-                  DECLARE_EVENT_TABLE()
+      DECLARE_CLASS( ocpnFloatingCompassWindow )
 
       public:
-            ocpnFloatingCompassDialog( wxWindow *parent );
-            ~ocpnFloatingCompassDialog( );
+            ocpnFloatingCompassWindow( wxWindow *parent );
+            ~ocpnFloatingCompassWindow( );
             wxBitmap CreateBmp();
             void Update(bool bnew = false);
 
@@ -950,6 +945,7 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 //      GetParent()->GetEventHandler()->AddPendingEvent(*pev);
 
       gFrame->Raise();
+//      gFrame->SetFocus();
 }
 
 
@@ -960,17 +956,15 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 //---------------------------------------------------------------------------------------
 
 
-IMPLEMENT_CLASS ( ocpnFloatingCompassDialog, wxDialog )
-
-            BEGIN_EVENT_TABLE(ocpnFloatingCompassDialog, wxDialog)
-            END_EVENT_TABLE()
+IMPLEMENT_CLASS ( ocpnFloatingCompassWindow, wxWindow )
 
 
-ocpnFloatingCompassDialog::ocpnFloatingCompassDialog( wxWindow *parent)
+
+ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent)
 {
       m_pparent = parent;
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
-      wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
+      wxWindow::Create( parent, -1, /*_T("ocpnToolbarDialog"),*/ wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
 
       m_StatBmp.Create((_img_compass->GetWidth() + _img_gpsRed->GetWidth()) + 8, _img_compass->GetHeight() + 8);
@@ -993,12 +987,12 @@ ocpnFloatingCompassDialog::ocpnFloatingCompassDialog( wxWindow *parent)
 
 }
 
-ocpnFloatingCompassDialog::~ocpnFloatingCompassDialog()
+ocpnFloatingCompassWindow::~ocpnFloatingCompassWindow()
 {
       delete m_pStatBoxToolStaticBmp;
 }
 
-void ocpnFloatingCompassDialog::SetColorScheme(ColorScheme cs)
+void ocpnFloatingCompassWindow::SetColorScheme(ColorScheme cs)
 {
       wxColour back_color = GetGlobalColor(_T("GREY2"));
 
@@ -1010,7 +1004,7 @@ void ocpnFloatingCompassDialog::SetColorScheme(ColorScheme cs)
 
 }
 
-void ocpnFloatingCompassDialog::Update(bool bnew)
+void ocpnFloatingCompassWindow::Update(bool bnew)
 {
       if(bnew)
             m_last_gps_bmp_hash_index.Clear();        // force an update to occur
@@ -1031,17 +1025,14 @@ void ocpnFloatingCompassDialog::Update(bool bnew)
             m_topSizer->Fit(this);
       }
 
-      wxSize size_parent = GetParent()->GetClientSize();
-      wxPoint posn(size_parent.x - GetSize().x, 0);
-
-      wxPoint posn_screen = GetParent()->ClientToScreen(posn);
-      Move(posn_screen);
-
+      Raise();
       Show();
-//      Refresh(false);
+      Refresh(false);
+
+
 }
 
-wxBitmap ocpnFloatingCompassDialog::CreateBmp()
+wxBitmap ocpnFloatingCompassWindow::CreateBmp()
 {
       MyFrame *fp = wxDynamicCast(GetParent(), MyFrame);
       if(fp)
@@ -1187,8 +1178,13 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
       wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
-      SetTransparent(128);
-      m_opacity = 128;
+      m_opacity = 255;
+      if(g_bTransparentToolbar)
+      {
+            SetTransparent(128);
+            m_opacity = 128;
+      }
+
 
       m_pGrabberwin = new GrabberWin(this);
 
@@ -1198,6 +1194,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_orient =  orient;
 
       m_fade_timer.SetOwner(this, FADE_TIMER);
+      m_fade_timer.Start(5000, true);
 
 // A top-level sizer
       m_topSizer = new wxBoxSizer ( wxHORIZONTAL );
@@ -1328,20 +1325,26 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
 
 void ocpnFloatingToolbarDialog::MouseEvent ( wxMouseEvent& event )
 {
-      if(event.Entering() && (m_opacity < 255))
+      if(g_bTransparentToolbar)
       {
-            SetTransparent(255);
-            m_opacity = 255;
-      }
+            if(event.Entering() && (m_opacity < 255))
+            {
+                  SetTransparent(255);
+                  m_opacity = 255;
+            }
 
-      if(event.Leaving())
-            m_fade_timer.Start(5000, true);
+            if(event.Leaving())
+                  m_fade_timer.Start(5000, true);
+      }
 }
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent& event)
 {
-      SetTransparent(128);
-      m_opacity = 128;
+      if(g_bTransparentToolbar)
+      {
+            SetTransparent(128);
+            m_opacity = 128;
+      }
 }
 
 
@@ -2637,7 +2640,9 @@ bool MyApp::OnInit()
         g_FloatingToolbarDialog->Raise();
         g_FloatingToolbarDialog->Show();
 
-        gFrame->Raise();
+//        gFrame->Raise();
+
+//        gFrame->SetFocus();
 
         return TRUE;
 }
@@ -2758,72 +2763,6 @@ int MyApp::OnExit()
 }
 
 
-void MyApp::TestSockets(void)
-{
-//      wxWidgets for X11, starting with version 2.6 and extending however
-//      long, has a problem handling TCP/IP socket events.
-//      The problem relates to wxHashTable::Next()
-//      There is a workaround:  configure wxWidgets with --enable-compat24
-//      Anyway, we'll test here to be sure sockets work HERE.
-//      If they don't, we shall have to disable GPSD data input support
-
-
-//  Create a dynamic event handler in MyApp for wxSocketServer events
-        Connect( wxID_ANY, wxEVT_SOCKET, wxSocketEventHandler(MyApp::OnSocketEvent) );
-
-//      Make a localhost server
-        wxIPV4address serv_addr;
-        serv_addr.Service(3001);
-
-        s_s_sock = new wxSocketServer(serv_addr);
-        s_s_sock->SetEventHandler(*this, wxID_ANY);
-
-        s_s_sock->SetNotify(wxSOCKET_CONNECTION_FLAG);
-        s_s_sock->Notify(TRUE);
-
-// Create the test client socket
-        s_t_sock = new wxSocketClient();
-
-//      Connect() the test socket
-
-        wxIPV4address addr;
-        addr.AnyAddress();
-        addr.Service(3001);
-
-        s_socket_test_running = true;
-        s_socket_test_passed = false;
-
-        s_t_sock->Connect(addr, FALSE);       // Non-blocking connect
-
-//    Sleep and loop for N seconds
-#define SLEEP_TEST_SEC  1
-        for(int is=0 ; is<SLEEP_TEST_SEC * 10 ; is++)
-{
-    wxMilliSleep(100);
-}
-
-// Test requires at least one pass thru event loop.  Test will finish in first MyFrame::OnTimer
-
-}
-
-
-
-void MyApp::OnSocketEvent(wxSocketEvent& event)
-//  Used for testing wxSocketClient event handling
-{
-
-    switch(event.GetSocketEvent())
-    {
-        case wxSOCKET_CONNECTION :
-        case wxSOCKET_INPUT:
-        case wxSOCKET_OUTPUT:
-        case wxSOCKET_LOST:
-
-            s_socket_test_passed = true;
-            break;
-    }
-}
-
 
 void MyApp::TrackOff(void)
 {
@@ -2875,7 +2814,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         m_ulLastNEMATicktime = 0;
         m_pStatusBar = NULL;
 
-        g_FloatingCompassDialog = new ocpnFloatingCompassDialog(this);
+        g_FloatingCompassDialog = new ocpnFloatingCompassWindow(this);
 
 
         m_toolBar = NULL;
@@ -3001,6 +2940,23 @@ void MyFrame::OnMaximize(wxMaximizeEvent& event)
 {
       g_click_stop = 0;
 }
+
+ArrayOfRect MyFrame::GetCanvasReserveRects()
+{
+      ArrayOfRect ret_array;
+      if(g_FloatingCompassDialog)
+      {
+            //    Translate from CompassWindow's parent(gFrame) to CanvasWindow coordinates
+            wxPoint pos_in_frame = g_FloatingCompassDialog->GetPosition();
+            wxPoint pos_abs = ClientToScreen(pos_in_frame);
+            wxPoint pos_in_cc1 = cc1->ScreenToClient(pos_abs);
+            wxRect r(pos_in_cc1.x, pos_in_cc1.y, g_FloatingCompassDialog->GetSize().x, g_FloatingCompassDialog->GetSize().y);
+            ret_array.Add(r);
+      }
+
+      return ret_array;
+}
+
 
 void MyFrame::OnActivate(wxActivateEvent& event)
 {
@@ -4180,7 +4136,10 @@ void MyFrame::DoSetSize(void)
         }
 
         if(g_FloatingCompassDialog)
+        {
               g_FloatingCompassDialog->Update(true);
+              g_FloatingCompassDialog->Move(x - g_FloatingCompassDialog->GetSize().x, 0);
+        }
 
         if(console)
               PositionConsole();
@@ -5392,8 +5351,7 @@ void MyFrame::OnMemFootTimer(wxTimerEvent& event)
 
 void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 {
-
-    g_tick++;
+      g_tick++;
 
 //      Listen for quitflag to be set, requesting application close
       if(quitflag)
@@ -6603,7 +6561,7 @@ bool MyFrame::DoChartUpdate(void)
 update_finish:
 
             //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-        if(pCurrentStack && ((pCurrentStack->nEntry <= 1) && m_toolbar_scale_tools_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_tools_shown))
+        if(pCurrentStack && (((pCurrentStack->nEntry <= 1) && m_toolbar_scale_tools_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_tools_shown)))
             if(!bFirstAuto)
                   RequestNewToolbar();
 
