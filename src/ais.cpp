@@ -699,15 +699,18 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Printf(_("Bearing:                Unavailable\n"));
       result.Append(line);
 
-      if(blue_paddle == 1)
+      if(Class != AIS_BASE)
       {
-            line.Printf(_("Inland Blue Flag        Clear\n"));
-            result.Append(line);
-      }
-      else if(blue_paddle == 2)
-      {
-            line.Printf(_("Inland Blue Flag        Set\n"));
-            result.Append(line);
+            if(blue_paddle == 1)
+            {
+                  line.Printf(_("Inland Blue Flag        Clear\n"));
+                  result.Append(line);
+            }
+            else if(blue_paddle == 2)
+            {
+                  line.Printf(_("Inland Blue Flag        Set\n"));
+                  result.Append(line);
+            }
       }
 
 
@@ -858,7 +861,17 @@ wxString AIS_Target_Data::GetRolloverString( void )
                   result.Append(_T("\n"));
             t.Printf(_T("%.2fKts"), SOG); result.Append(t);
             result.Append(_T(" "));
-            t.Printf(_T("%.0fDeg"), COG); result.Append(t);
+
+            int crs = wxRound(COG);
+            if((b_positionValid) && (crs < 360))
+                  t.Printf(_("Course:                 %03d Deg.\n"), crs);
+            else if((b_positionValid) && (crs == 360))
+                  t.Printf(_("Course:                 000 Deg.\n"));
+            else
+                  t.Printf(_("Course:                 Unavailable\n"));
+            result.Append(t);
+
+//            t.Printf(_T("%.0fDeg"), COG); result.Append(t);
       }
       if (g_bAISRolloverShowCPA && bCPA_Valid)
       {
@@ -2159,6 +2172,7 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       {
             ptarget->CPA = 100;
             ptarget->TCPA = -100;
+            ptarget->bCPA_Valid = false;
             return;
       }
 
@@ -3688,7 +3702,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
             switch (column)
             {
                   case tlNAME:
-                        if( (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                        if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
                               ret = trimAISField(pAISTarget->ShipName);
@@ -3707,7 +3721,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         break;
 
                   case tlTYPE:
-                        if( (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                        if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
                               ret = pAISTarget->Get_vessel_type_string(false);
