@@ -2894,7 +2894,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         m_pix_per_mm = ( ( double ) sx ) / ( ( double ) mmx );
 
-        int mm_per_knot = 25;
+        int mm_per_knot = 10;
         current_draw_scaler =  mm_per_knot * m_pix_per_mm;
 
         pscratch_bm = NULL;
@@ -4010,6 +4010,7 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
 void ChartCanvas::ReloadVP ( void )
 {
       m_cache_vp.Invalidate();
+      m_bm_cache_vp.Invalidate();
 
       VPoint.Invalidate();
 
@@ -4018,7 +4019,6 @@ void ChartCanvas::ReloadVP ( void )
 
       SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-//      Refresh(false);         // probably redundant, out in 2.4.0
 }
 
 void ChartCanvas::SetQuiltRefChart(int dbIndex)
@@ -7385,7 +7385,47 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       {
                                   if (  pFindCurrent )
                                   {
-                                        DrawTCWindow ( x, y, ( void * ) pFindCurrent->m_pData1 );
+                                        // There may be multiple current entries at the same point.
+                                        // For example, there often is a current substation (with directions specified)
+                                        // co-located with its master.  We want to select the substation, so that
+                                        // the direction will be properly indicated on the graphic.
+                                        // So, we search the select list looking for IDX_type == 'c' (i.e substation)
+                                        IDX_entry *pIDX_best_candidate;
+
+                                        SelectItem *pFind = NULL;
+                                        SelectableItemList SelList = pSelectTC->FindSelectionList(m_cursor_lat, m_cursor_lon,SELTYPE_CURRENTPOINT,SelectRadius );
+
+                                        //      Default is first entry
+                                        wxSelectableItemListNode *node = SelList.GetFirst();
+                                        pFind = node->GetData();
+                                        pIDX_best_candidate = ( IDX_entry * ) (pFind->m_pData1);
+
+                                        if(SelList.GetCount() > 1)
+                                        {
+                                          node=node->GetNext();
+                                          while ( node )
+                                          {
+                                              pFind = node->GetData();
+                                              IDX_entry *pIDX_candidate = ( IDX_entry * ) (pFind->m_pData1);
+                                              if(pIDX_candidate->IDX_type == 'c')
+                                              {
+                                                    pIDX_best_candidate = pIDX_candidate;
+                                                    break;
+                                              }
+
+                                              node=node->GetNext();
+                                          }       // while (node)
+                                        }
+                                        else
+                                        {
+                                              wxSelectableItemListNode *node = SelList.GetFirst();
+                                              pFind = node->GetData();
+                                              pIDX_best_candidate = ( IDX_entry * ) (pFind->m_pData1);
+                                        }
+
+
+
+                                        DrawTCWindow ( x, y, ( void * ) pIDX_best_candidate );
                                         Refresh ( false );
                                         bseltc = true;
                                   }
@@ -7476,10 +7516,11 @@ void ChartCanvas::DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu )
 
       for(unsigned int i=0 ; i < pMenu->GetMenuItemCount() ; i++)
       {
-            wxMenuItem *pitem = pMenu->FindItemByPosition(i);
 
 #ifdef __WXGTK__
 #ifdef ocpnUSE_GTK_OPTIMIZE
+            wxMenuItem *pitem = pMenu->FindItemByPosition(i);
+
             //    This works for at least some versions of GTK+ with <<some>> window managers and themes....
             wxString text = pitem->GetText();
 //            ::wxSnprintf(tmp, 99, (const wxChar*)("<span color=\"%s\">%s</span>"), col, text);
@@ -7495,6 +7536,7 @@ void ChartCanvas::DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu )
 
 #ifdef __WXMSW__
             //    This does not work......
+            wxMenuItem *pitem = pMenu->FindItemByPosition(i);
             pitem->SetTextColour(text_color);
             pitem->SetBackgroundColour( back_color);
 
@@ -8957,6 +8999,15 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 }
         }
 
+        ArrayOfRect rect_array = gFrame->GetCanvasReserveRects();
+        for(unsigned int ir=0 ; ir < rect_array.GetCount() ; ir++)
+        {
+              wxRect r = rect_array.Item(ir);
+              rgn_chart.Subtract ( r );
+              ru.Subtract ( r );
+        }
+
+
         //  Is this viewpoint the same as the previously painted one?
         bool b_newview = true;;
         if((m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm)
@@ -9012,7 +9063,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                   if(m_bFollow)
                          b_save = false;
 
-                  if(m_cache_vp.IsValid() && !m_bFollow )
+                  if(m_bm_cache_vp.IsValid() && !m_bFollow )
                   {
                         if(b_newview)
                         {
@@ -10485,6 +10536,7 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, LLBBox& BBox, double skew_an
         wxPen *porange_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFO" ) ), 1, wxSOLID );
         wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFO" ) ), wxSOLID );
         wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UIBDR" ) ), wxSOLID );
+        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
 
         if ( bdraw_mono_for_mask )
         {
@@ -10528,8 +10580,11 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, LLBBox& BBox, double skew_an
 //  TODO This is a ---HACK---
 //  try to avoid double current arrows.  Select the first in the list only
 //  Proper fix is to correct the TCDATA index file for depth indication
+                                bool b_dup = false;
+                                if((type == 'c') && (lat == lat_last ) && ( lon == lon_last))
+                                      b_dup = true;
 
-                                if ( ( BBox.PointInBox ( lon, lat, 0 ) ) && ( lat != lat_last ) && ( lon != lon_last ) )
+                                if ( !b_dup && ( BBox.PointInBox ( lon, lat, 0 ) ) )
                                 {
 
 
@@ -10555,36 +10610,44 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, LLBBox& BBox, double skew_an
                                                 dc.SetBrush ( *porange_brush );
                                                 dc.DrawPolygon ( 4, d );
 
-                                                if ( VPoint.chart_scale < 1000000 )
+                                                if(type == 'C')
                                                 {
-                                                        if ( bnew_val || bforce_redraw_currents )
-                                                        {
+                                                      dc.SetBrush ( *pblack_brush );
+                                                      dc.DrawCircle(r.x, r.y, 2);
+                                                }
+
+                                                else if ( (type == 'c') && (VPoint.chart_scale < 1000000) )
+                                                {
+                                                      if ( bnew_val || bforce_redraw_currents )
+                                                      {
 
 //    Get the display pixel location of the current station
-                                                                int pixxc, pixyc;
-                                                                wxPoint cpoint;
-                                                                GetCanvasPointPix ( lat, lon, &cpoint );
-                                                                pixxc = cpoint.x;
-                                                                pixyc = cpoint.y;
+                                                            int pixxc, pixyc;
+                                                            wxPoint cpoint;
+                                                            GetCanvasPointPix ( lat, lon, &cpoint );
+                                                            pixxc = cpoint.x;
+                                                            pixyc = cpoint.y;
 
 //    Draw arrow using preset parameters, see mm_per_knot variable
-                                                                float scale = fabs ( tcvalue ) * current_draw_scaler;
+//                                                            double scale = fabs ( tcvalue ) * current_draw_scaler;
+//    Adjust drawing size using logarithmic scale
+                                                            double a1 = fabs(tcvalue) * 10.;
+                                                            double a2 = log10(a1);
 
-                                                                porange_pen->SetWidth ( 2 );
-                                                                dc.SetPen ( *porange_pen );
-                                                                DrawArrow ( dc, pixxc, pixyc, dir - 90 + ( skew_angle * 180. / PI ), scale/100 );
+                                                            double scale = current_draw_scaler * a2;
 
-
-
+                                                            porange_pen->SetWidth ( 2 );
+                                                            dc.SetPen ( *porange_pen );
+                                                            DrawArrow ( dc, pixxc, pixyc, dir - 90 + ( skew_angle * 180. / PI ), scale/100 );
 // Draw text, if enabled
 
-                                                                if ( bDrawCurrentValues )
-                                                                {
+                                                            if ( bDrawCurrentValues )
+                                                            {
                                                                         dc.SetFont ( *pTCFont );
                                                                         snprintf ( sbuf, 19, "%3.1f", fabs ( tcvalue ) );
                                                                         dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), pixxc, pixyc );
-                                                                }
-                                                        }
+                                                            }
+                                                      }
                                                 }           // scale
                                         }
 /*          This is useful for debugging the TC database
@@ -11049,32 +11112,32 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                                         tcmax = tcv[i];
 
                                                 if ( tcv[i] < tcmin )
-                                        tcmin = tcv[i];
+                                                   tcmin = tcv[i];
                                                 if ( TIDE_PLOT == m_plot_type )
                                                 {
-                                                      if ( ! (tcv[i] > val == wt) )                // if tide flow sens change
-                                                      {
-                                                            float tcvalue;                                        //look backward for HW or LW
-                                                            time_t tctime;
-                                                            ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP, BACKWARD_ONE_MINUTES_STEP, tcv[i], wt, pIDX->IDX_rec_num, tcvalue, tctime);
+                                                    if ( ! ((tcv[i] > val) == wt) )                // if tide flow sens change
+                                                    {
+                                                      float tcvalue;                                        //look backward for HW or LW
+                                                      time_t tctime;
+                                                      ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP, BACKWARD_ONE_MINUTES_STEP, tcv[i], wt, pIDX->IDX_rec_num, tcvalue, tctime);
 
-                                                            wxDateTime tcd ;                                                              //write date
-                                                            wxString s,s1;
-                                                            tcd.Set( tctime + ( m_corr_mins * 60 ) ) ;
-                                                            s.Printf(tcd.Format(_T("%H:%M  ")));
-                                                            s1.Printf( _T("%05.2f "),tcvalue);                                      //write value
-                                                            s.Append(s1 );
-                                                            Station_Data *pmsd = pIDX->pref_sta_data;                         //write unit
-                                                            if ( pmsd )
-                                                                  s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
-                                                            s.Append(_T("   "));
-                                                            ( wt )? s.Append(_("HW") ) : s.Append(_("LW") );                  //write HW or LT
+                                                      wxDateTime tcd ;                                                              //write date
+                                                      wxString s,s1;
+                                                      tcd.Set( tctime + ( m_corr_mins * 60 ) ) ;
+                                                      s.Printf(tcd.Format(_T("%H:%M  ")));
+                                                      s1.Printf( _T("%05.2f "),tcvalue);                                      //write value
+                                                      s.Append(s1 );
+                                                      Station_Data *pmsd = pIDX->pref_sta_data;                         //write unit
+                                                      if ( pmsd )
+                                                            s.Append( wxString(pmsd->units_abbrv ,wxConvUTF8) );
+                                                      s.Append(_T("   "));
+                                                      ( wt )? s.Append(_("HW") ) : s.Append(_("LW") );                  //write HW or LT
 
-                                                            m_tList->Insert(s,list_index);                                                // update table list
-                                                            list_index++;
+                                                      m_tList->Insert(s,list_index);                                                // update table list
+                                                      list_index++;
 
-                                                            wt = !wt ;                                                                          //change tide flow sens
-                                                      }
+                                                      wt = !wt ;                                                                          //change tide flow sens
+                                                    }
                                                       val = tcv[i];
                                                 }
                                                 if ( CURRENT_PLOT == m_plot_type )
@@ -11296,7 +11359,7 @@ void TCWin::OnPaint ( wxPaintEvent& event )
                 }
 
                 //      Show flood and ebb directions
-                if ( strchr ( "Cc", pIDX->IDX_type ) )
+                if ( strchr ( "c", pIDX->IDX_type ) )
                 {
                       dc.SetFont ( *pSFont );
 
@@ -13152,10 +13215,49 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
 #define BRIGHT_CURTAIN
 #endif
 
+#ifdef __WXGTK__
+#define BRIGHT_XCALIB
+#endif
+
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines
 //
 //--------------------------------------------------------------------------------------------------------
+
+class ocpnCurtain: public wxDialog
+{
+      DECLARE_CLASS( ocpnCurtain )
+      DECLARE_EVENT_TABLE()
+
+      public:
+            ocpnCurtain( wxWindow *parent, wxPoint position, wxSize size, long wstyle );
+            ~ocpnCurtain( );
+            bool ProcessEvent(wxEvent& event);
+
+};
+
+IMPLEMENT_CLASS ( ocpnCurtain, wxDialog )
+
+            BEGIN_EVENT_TABLE(ocpnCurtain, wxDialog)
+            END_EVENT_TABLE()
+
+ocpnCurtain::ocpnCurtain( wxWindow *parent, wxPoint position, wxSize size, long wstyle )
+{
+      wxDialog::Create( parent, -1, _T("ocpnCurtain"), position, size, wxNO_BORDER | wxSTAY_ON_TOP  );
+}
+
+ocpnCurtain::~ocpnCurtain()
+{
+}
+
+bool ocpnCurtain::ProcessEvent(wxEvent& event)
+{
+      GetParent()->GetEventHandler()->SetEvtHandlerEnabled(true);
+      return GetParent()->GetEventHandler()->ProcessEvent(event);
+}
+
+
+
 #ifdef __WIN32__
 #include <windows.h>
 
@@ -13222,13 +13324,18 @@ int InitScreenBrightness(void)
             if(gFrame->CanSetTransparent())
             {
             //    Build the curtain window
-                  g_pcurtain = new wxDialog(NULL, -1, _T(""), wxPoint(0,0), wxSize(200,200),
+                  g_pcurtain = new wxDialog(cc1, -1, _T(""), wxPoint(0,0), wxSize(1000,1000),
                                       wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
 
-                  g_pcurtain->Hide();
-			HWND hWnd = GetHwndOf(g_pcurtain);
-                  SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
+//                  g_pcurtain = new ocpnCurtain(gFrame, wxPoint(0,0),::wxGetDisplaySize(),
+//                      wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
 
+                  g_pcurtain->Hide();
+
+#ifdef __WIN32__
+                  HWND hWnd = GetHwndOf(g_pcurtain);
+                  SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
+#endif
 			g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
                   g_pcurtain->SetTransparent(0);
 
@@ -13277,8 +13384,17 @@ int RestoreScreenBrightness(void)
         }
 #endif
 
+#ifdef BRIGHT_XCALIB
+        wxString cmd;
+        cmd = _T("xcalib -clear");
+        wxExecute(cmd, wxEXEC_ASYNC);
+#endif
+
       return 1;
 }
+
+bool  b_init;
+int   last_brightness;
 
 //    Set brightness. [0..100]
 int SetScreenBrightness(int brightness)
@@ -13299,6 +13415,40 @@ int SetScreenBrightness(int brightness)
       return 1;
 
 #endif
+
+#ifdef BRIGHT_XCALIB
+      if(!b_init)
+      {
+            last_brightness = 100;
+            b_init = true;
+      }
+
+      if(brightness > last_brightness)
+      {
+            wxString cmd;
+            cmd = _T("xcalib -clear");
+            wxExecute(cmd, wxEXEC_ASYNC);
+
+            ::wxMilliSleep(10);
+
+            int brite_adj = wxMax(1, brightness);
+            cmd.Printf(_T("xcalib -co %2d -a"), brite_adj);
+            wxExecute(cmd, wxEXEC_ASYNC);
+      }
+      else
+      {
+            int brite_adj = wxMax(1, brightness);
+            int factor = (brite_adj * 100) / last_brightness;
+            factor = wxMax(1, factor);
+            wxString cmd;
+            cmd.Printf(_T("xcalib -co %2d -a"), factor);
+            wxExecute(cmd, wxEXEC_ASYNC);
+      }
+
+      last_brightness = brightness;
+
+#endif
+
 
 #ifdef GAMMA__WIN32__
 
