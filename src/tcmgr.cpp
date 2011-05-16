@@ -313,7 +313,7 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
       fclose(fp);
 
 //    Load the Master Station Data Cache file
-//      LoadMRU();
+      LoadMRU();
 
       bTCMReady = true;
 
@@ -321,7 +321,7 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
 TCMgr::~TCMgr()
 {
-//   SaveMRU();
+   SaveMRU();
 
    FreeMRU();
 
@@ -372,7 +372,7 @@ void TCMgr::LoadMRU(void)
             if(mru_file.GetLineCount())
                   str = mru_file.GetFirstLine();                  //Signature
 
-            if(str != _T("Signature928"))
+            if(str != _T("Signature250"))
                return;
 
             while(!mru_file.Eof())
@@ -521,7 +521,7 @@ void TCMgr::SaveMRU(void)
             wxTextFile mru_file(*pmru_file_name);
             mru_file.Create();
 
-            mru_file.AddLine(wxString(_T("Signature928")));
+            mru_file.AddLine(wxString(_T("Signature250")));
 
             mru_entry *pmru = pmru_head;
 
