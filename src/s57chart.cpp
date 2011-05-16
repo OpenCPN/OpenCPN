@@ -4402,8 +4402,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                  nGeo1000 = nGeoFeature / 500;
 
 #ifdef __WXMSW__
+                 wxBeginBusyCursor();
+/*
                  SENC_prog = new wxProgressDialog(  _("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
                              wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_SMOOTH);
+*/
+                 wxEndBusyCursor();
 
 #endif
             }
