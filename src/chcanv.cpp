@@ -2308,7 +2308,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             }
 
 
-            //    Scan the points one-by-one, so that we can get min/max
+            //    Scan the points one-by-one, so that we can get min/max to make a bbox
             float *pfp = llpoints;
             float lon_max = -10000.;
             float lon_min =  10000.;
@@ -2333,25 +2333,41 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             {
                   if(_OUT == chart_box.Intersect((wxBoundingBox&)vpBBox))
                   {
-                        return wxRegion();
+                        // try again with the chart translated 360
+                        wxPoint2DDouble rtw(360., 0.);
+                        wxBoundingBox trans_box = chart_box;
+                        trans_box.Translate( rtw );
+
+                        if(_OUT == trans_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
+                        {
+                              if(_OUT == trans_box.Intersect((wxBoundingBox&)vpBBox))
+                              {
+                                     return wxRegion();
+                              }
+                        }
                   }
             }
 
             //    Case:  vpBBox is completely inside the chart box
             if(_IN == chart_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
             {
-//                  return wxRegion(0,0,pix_width, pix_height);
                   return wxRegion(rv_rect);
             }
 
             //    The ViewPort and the chart region overlap in some way....
-            //    Simple solution is to create a full screen region and call it good enough.....
-            //    And it will be good enough most of the time when severely overzoomed.
+            //    Create the intersection of the two bboxes
+            double cb_minlon = wxMax(chart_box.GetMinX(), vp_positive.vpBBox.GetMinX());
+            double cb_maxlon = wxMin(chart_box.GetMaxX(), vp_positive.vpBBox.GetMaxX());
+            double cb_minlat = wxMax(chart_box.GetMinY(), vp_positive.vpBBox.GetMinY());
+            double cb_maxlat = wxMin(chart_box.GetMaxY(), vp_positive.vpBBox.GetMaxY());
 
-            //    TODO A better solution would involve converting and bounding the points, perhaps using some scaling,
-            //    and then get the exact intersection
-            return wxRegion(0,0,pix_width, pix_height);
+            if(cb_maxlon < cb_minlon)
+                  cb_maxlon += 360.;
 
+            wxPoint p1 = GetPixFromLL(cb_maxlat, cb_minlon);  // upper left
+            wxPoint p2 = GetPixFromLL(cb_minlat, cb_maxlon);   // lower right
+
+            return wxRegion(p1, p2);
       }
 
       //    More "normal" case
@@ -6723,7 +6739,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         if ( event.LeftDown() )
         {
-
                 last_drag.x = mx;
                 last_drag.y = my;
 
@@ -9063,7 +9078,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                   if(m_bFollow)
                          b_save = false;
 
-                  if(m_bm_cache_vp.IsValid() && !m_bFollow )
+                  if(m_bm_cache_vp.IsValid() && m_cache_vp.IsValid() && !m_bFollow )
                   {
                         if(b_newview)
                         {
