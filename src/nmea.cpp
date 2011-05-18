@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *
  *   Garmin JEEPS Code Copyright (C) 2006 Robert Lipe                      *
  *   GPSBabel and JEEPS code are released under GPL V2                     *
