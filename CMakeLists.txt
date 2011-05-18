@@ -207,7 +207,6 @@ SET(HDRS
 		include/wvschart.h
 		include/about.h
 		include/ais.h
-		include/cm93.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 		include/tinystr.h
@@ -237,7 +236,6 @@ SET(SRCS
 		src/wvschart.cpp
 		src/about.cpp
 		src/ais.cpp
-		src/cm93.cpp
                 src/pluginmanager.cpp
 		src/tinyxml.cpp
 		src/tinyxmlerror.cpp
@@ -270,7 +268,9 @@ IF (USE_S57)
 		src/s52plib.cpp
 		src/s52utils.cpp
 		src/s57chart.cpp
+		src/cm93.cpp
 		src/mygeom.cpp
+		include/cm93.h
 		src/tri.c
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
@@ -406,17 +406,6 @@ IF (USE_GARMINHOST)
 ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
-
-OPTION (USE_WIFI_CLIENT "Enable wifi client" OFF) 
-IF (USE_WIFI_CLIENT)
-	message (STATUS "WiFi client support: enabled")
-	ADD_DEFINITIONS(-DUSE_WIFI_CLIENT)
-	SET(SRCS ${SRCS}
-        	include/wificlient.h
-        	src/wificlient.cpp
-	)
-
-ENDIF (USE_WIFI_CLIENT)
 
 #TODO
 #dnl

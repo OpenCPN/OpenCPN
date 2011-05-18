@@ -44,6 +44,7 @@
 #include <wx/aui/aui.h>
 #include <version.h> //Gunther
 #include <wx/dialog.h>
+#include <wx/progdlg.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
   #include <wx/dialog.h>
@@ -77,11 +78,9 @@
 #include "about.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
-#include "cpl_error.h"
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
-#include "cm93.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -96,9 +95,9 @@
 #endif
 
 #ifdef USE_S57
+#include "cm93.h"
 #include "s52plib.h"
 #include "s57chart.h"
-///#include "s57.h"
 #include "cpl_csv.h"
 #endif
 
@@ -301,6 +300,9 @@ int             g_SkewCompUpdatePeriod;
 s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr   *m_pRegistrarMan;
+
+cm93manager       *s_pcm93mgr;
+CM93OffsetDialog  *g_pCM93OffsetDialog;
 #endif
 
 #ifdef USE_WIFI_CLIENT
@@ -429,8 +431,6 @@ DWORD       color_inactiveborder;
 
 #endif
 
-cm93manager       *s_pcm93mgr;
-
 //    AIS Global configuration
 bool             g_bShowAIS; // pjotrc 2010.02.09
 bool             g_bCPAMax;
@@ -526,8 +526,6 @@ int               g_AisTargetList_sortColumn;
 bool              g_bAisTargetList_sortReverse;
 wxString          g_AisTargetList_column_spec;
 int               g_AisTargetList_count;
-
-CM93OffsetDialog *g_pCM93OffsetDialog;
 
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
@@ -1731,11 +1729,6 @@ bool MyApp::OnInit()
         vs = vs.Trim(false);
         wxLogMessage(vs);
 
-#ifdef USE_CPL
-//      Set up a useable CPL library error handler
-        CPLSetErrorHandler( MyCPLErrorHandler );
-#endif
-
 
 //    Initialize embedded PNG icon graphics
 #ifdef OCPN_USE_PNGICONS
@@ -2002,6 +1995,10 @@ bool MyApp::OnInit()
 
 
 #ifdef USE_S57
+
+//      Set up a useable CPL library error handler for S57 stuff
+        CPLSetErrorHandler( MyCPLErrorHandler );
+
 //      Init the s57 chart object, specifying the location of the required csv files
 
 //      If the config file contains an entry for s57 .csv files,
@@ -2232,7 +2229,9 @@ bool MyApp::OnInit()
               g_ShowMoored_Kts = 0.2;
               g_bShowTrackIcon = true;
               g_bTrackDaily = false;
+              g_PlanSpeed = 6.;
 
+#ifdef USE_S57
               if(ps52plib->m_bOK)
               {
                   ps52plib->m_bShowSoundg = true;
@@ -2242,8 +2241,8 @@ bool MyApp::OnInit()
                   ps52plib->m_bUseSCAMIN = true;
                   ps52plib->m_bShowAtonText = true;
               }
+#endif
 
-              g_PlanSpeed = 6.;
         }
 
 		g_StartTime = wxInvalidDateTime;
@@ -2721,7 +2720,6 @@ int MyApp::OnExit()
 
         delete pMessageOnceArray;
 
-        delete s_pcm93mgr;
 
         DeInitializeUserColors();
 
@@ -2730,6 +2728,7 @@ int MyApp::OnExit()
         delete pLayerList;
 
 #ifdef USE_S57
+        delete s_pcm93mgr;
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
 #endif
@@ -3005,9 +3004,10 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
                   break;
       }
 
+#ifdef USE_S57
       if(ps52plib)
              ps52plib->SetPLIBColorScheme(SchemeName);
-
+#endif
 
         //Search the user color table array to find the proper hash table
       Usercolortable_index = 0;
@@ -3968,8 +3968,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
 
+#ifdef USE_S57
       if(g_pCM93OffsetDialog)
             g_pCM93OffsetDialog->Destroy();
+#endif
 
       g_FloatingToolbarDialog->Destroy();
 
@@ -7694,7 +7696,7 @@ void MyFrame::ResumeSockets(void)
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler
 //----------------------------------------------------------------------------------------------------------
-
+#ifdef USE_S57
 void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
@@ -7711,6 +7713,7 @@ void MyCPLErrorHandler( CPLErr eErrClass, int nError,
     wxString str(msg, wxConvUTF8);
     wxLogMessage(str);
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------
 //      Printing Framework Support
@@ -8196,6 +8199,8 @@ FILE *f;
 wxColour GetGlobalColor(wxString colorName)
 {
       wxColour ret_color;
+
+#ifdef USE_S57
       //    Use the S52 Presentation library if present
       if(ps52plib)
       {
@@ -8207,8 +8212,8 @@ wxColour GetGlobalColor(wxString colorName)
                         ret_color = ( *pcurrent_user_color_hash ) [colorName];
             }
       }
-
       else
+#endif
       {
             if(NULL != pcurrent_user_color_hash)
                   ret_color = ( *pcurrent_user_color_hash ) [colorName];

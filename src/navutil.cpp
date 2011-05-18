@@ -37,6 +37,7 @@
 #include <wx/image.h>
 #include <wx/filename.h>
 #include <wx/graphics.h>
+#include <wx/dir.h>
 
 #include "dychart.h"
 
@@ -57,12 +58,12 @@
 #include "routeman.h"
 #include "s52utils.h"
 #include "chartbase.h"
-#include "cm93.h"
 #include "tinyxml.h"
 #include "gpxdocument.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
+#include "cm93.h"
 #endif
 
 CPL_CVSID ( "$Id: navutil.cpp,v 1.77 2010/06/25 02:04:23 bdbcat Exp $" );
@@ -2587,6 +2588,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 {
 
       int read_int;
+      wxString val;
 
       int display_width, display_height;
       wxDisplaySize(&display_width, &display_height);
@@ -2656,7 +2658,9 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "InitialStackIndex" ),  &g_restore_stackindex, 0 );
       Read ( _T ( "InitialdBIndex" ),  &g_restore_dbindex, -1 );
-      Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
+
+#ifdef USE_S57
+       Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
       g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
       g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
 
@@ -2667,9 +2671,11 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_cm93detail_dialog_y < 0) || (g_cm93detail_dialog_y > display_height))
             g_cm93detail_dialog_y = 5;
 
+      Read ( _T ( "ShowCM93DetailSlider" ),  &g_bShowCM93DetailSlider, 0 );
+#endif
+
       Read ( _T ( "SkewCompUpdatePeriod" ),  &g_SkewCompUpdatePeriod, 10 );
 
-      Read ( _T ( "ShowCM93DetailSlider" ),  &g_bShowCM93DetailSlider, 0 );
 
       Read ( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
       Read ( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
@@ -2812,6 +2818,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 #ifdef USE_S57
       if ( NULL != ps52plib )
       {
+            double dval;
             SetPath ( _T ( "/Settings/GlobalState" ) );
 
             Read ( _T ( "bShowS57Text" ), &read_int, 0 );
@@ -2847,7 +2854,6 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "bDeClutterText" ), &read_int, 0 );
             ps52plib->m_bDeClutterText = ! ( read_int == 0 );
 
-            double dval;
             if ( Read ( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) )
             {
                   S52_setMarinerParam ( S52_MAR_SAFETY_CONTOUR, dval );
@@ -2878,7 +2884,6 @@ int MyConfig::LoadMyConfig ( int iteration )
             g_PresLibData = valpres;
 
       wxString strd ( _T ( "S57DataLocation" ) );
-      wxString val;
       SetPath ( _T ( "/Directories" ) );
       Read ( strd, &val );              // Get the Directory name
 

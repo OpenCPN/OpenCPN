@@ -4646,8 +4646,7 @@ char *s52plib::RenderCS ( ObjRazRules *rzRules, Rules *rules )
       if ( rules->razRule == NULL )
       {
             if ( !f05 )
-                  CPLError ( ( CPLErr ) 0, 0,"S52plib:_renderCS(): ERROR no conditional symbology for: %s\n",
-                             rules->INSTstr );
+//                  CPLError ( ( CPLErr ) 0, 0,"S52plib:_renderCS(): ERROR no conditional symbology for: %s\n", rules->INSTstr );
             f05++;
             return 0;
       }

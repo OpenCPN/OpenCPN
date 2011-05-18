@@ -570,7 +570,7 @@ class ocpCursor : public wxCursor
             ocpCursor(const char **xpm_data, long type, int hotSpotX=0, int hotSpotY=0);
 };
 
-
+#ifdef USE_S57
 //----------------------------------------------------------------------------------------------------------
 //    s57QueryDialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -633,6 +633,44 @@ public:
 
 };
 
+//----------------------------------------------------------------------------------------------------------
+//    S57 Object Query Tree Control Specification
+//----------------------------------------------------------------------------------------------------------
+class S57ObjectTree: public wxTreeCtrl
+{
+      DECLARE_CLASS( S57ObjectTree )
+                  DECLARE_EVENT_TABLE()
+      public:
+      /// Constructors
+            S57ObjectTree( );
+            S57ObjectTree( S57QueryDialog* parent, wxWindowID id = wxID_ANY,
+                           const wxPoint& pos = wxDefaultPosition,
+                           const wxSize& size = wxDefaultSize,
+                           long style = wxTR_HAS_BUTTONS );
+
+            ~S57ObjectTree( );
+
+      /// Initialise our variables
+            void Init();
+
+      //  Override events
+            void OnItemExpanding( wxTreeEvent& event);
+            void OnItemSelectChange( wxTreeEvent& event);
+
+      //    Data
+            S57QueryDialog    *m_parent;
+
+};
+
+class MyTreeItemData : public wxTreeItemData
+{
+      public:
+            MyTreeItemData(S57ObjectDesc *pOD){ m_pOD = pOD; }
+
+            S57ObjectDesc     *m_pOD;
+};
+
+#endif
 
 class AISInfoWin;
 
@@ -688,45 +726,6 @@ public:
       int               m_nl;
       wxButton          *m_okButton;
 };
-
-
-//----------------------------------------------------------------------------------------------------------
-//    S57 Object Query Tree Control Specification
-//----------------------------------------------------------------------------------------------------------
-class S57ObjectTree: public wxTreeCtrl
-{
-      DECLARE_CLASS( S57ObjectTree )
-      DECLARE_EVENT_TABLE()
-public:
-      /// Constructors
-      S57ObjectTree( );
-      S57ObjectTree( S57QueryDialog* parent, wxWindowID id = wxID_ANY,
-                                        const wxPoint& pos = wxDefaultPosition,
-                                        const wxSize& size = wxDefaultSize,
-                                        long style = wxTR_HAS_BUTTONS );
-
-      ~S57ObjectTree( );
-
-      /// Initialise our variables
-      void Init();
-
-      //  Override events
-      void OnItemExpanding( wxTreeEvent& event);
-      void OnItemSelectChange( wxTreeEvent& event);
-
-      //    Data
-      S57QueryDialog    *m_parent;
-
-};
-
-class MyTreeItemData : public wxTreeItemData
-{
-public:
-      MyTreeItemData(S57ObjectDesc *pOD){ m_pOD = pOD; }
-
-      S57ObjectDesc     *m_pOD;
-};
-
 
 
 //----------------------------------------------------------------------------

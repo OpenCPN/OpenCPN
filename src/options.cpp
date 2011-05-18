@@ -46,13 +46,13 @@
 #include "dychart.h"
 #include "chart1.h"
 #include "options.h"
-#include "cm93.h"
 
 #include "navutil.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
 #include "s52utils.h"
+#include "cm93.h"
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
@@ -800,9 +800,6 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer25 = new wxBoxSizer(wxVERTICAL);
     ps57Ctl->SetSizer(itemBoxSizer25);
 
-//    wxBoxSizer* itemBoxSizer25 = new wxBoxSizer(wxHORIZONTAL);
-//    itemBoxSizer22->Add(itemBoxSizer25, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, border_size);
-
     wxStaticBox* itemStaticBoxSizer26Static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Chart Display Filters"));
     wxStaticBoxSizer* itemStaticBoxSizer26 = new wxStaticBoxSizer(itemStaticBoxSizer26Static, wxHORIZONTAL);
     itemBoxSizer25->Add(itemStaticBoxSizer26, 0, wxALL|wxEXPAND, 4);
@@ -900,14 +897,14 @@ void options::CreateControls()
     itemStaticBoxSizer83->Add(p24Color, 0, wxALL|wxEXPAND, check_spacing_2);
 
 
-
+#ifdef USE_S57
     wxStaticBox *pslStatBox = new wxStaticBox(ps57Ctl, wxID_ANY, _("CM93 Zoom Detail"));
     wxStaticBoxSizer* itemStaticBoxSizersl = new wxStaticBoxSizer(pslStatBox, wxVERTICAL);
     itemStaticBoxSizer83->Add(itemStaticBoxSizersl, 0, wxALL|wxEXPAND, border_size);
     m_pSlider_CM93_Zoom = new wxSlider(ps57Ctl, ID_CM93ZOOM , 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                                        wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     itemStaticBoxSizersl->Add(m_pSlider_CM93_Zoom, 0, wxALL|wxEXPAND, border_size);
-
+#endif
 
     wxStaticBox*  pdepth_static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Depth Settings"));
     wxStaticBoxSizer *pdepth_sizer = new wxStaticBoxSizer(pdepth_static, wxHORIZONTAL);
@@ -1440,7 +1437,6 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.0f"),g_AckTimeout_Mins);
       m_pText_ACK_Timeout->SetValue(s);
 
-      m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
       // Rollover
       m_pCheck_Rollover_Class->SetValue(g_bAISRolloverShowClass);
@@ -1449,6 +1445,8 @@ void options::SetInitialSettings()
 
 
 #ifdef USE_S57
+      m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
+
 //    S52 Primary Filters
       ps57CtlListBox->Clear();
 
@@ -1873,10 +1871,12 @@ void options::OnXidOkClick( wxCommandEvent& event )
     *pWIFIServerName = WiFiSource;
 #endif
 
-    g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
 
 #ifdef USE_S57
-    //    Handle s57 Tab
+      //    Handle Vector Charts Tab
+
+      g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+
       int nOBJL = ps57CtlListBox->GetCount();
 
       for( int iPtr = 0 ; iPtr < nOBJL ; iPtr++)

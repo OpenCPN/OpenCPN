@@ -39,15 +39,18 @@
 
 #include "ocpn_types.h"
 
-#include "cpl_error.h"
-
 #include "nmea0183.h"
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
+WX_DECLARE_STRING_HASH_MAP( wxColour, ColourHash );
 
-//    Global Static utility functions
+#ifdef USE_S57
+#include "cpl_error.h"
+
+//    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
+#endif
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);

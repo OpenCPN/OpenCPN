@@ -39,8 +39,6 @@
 #ifndef _DYCHART_H_
 #define _DYCHART_H_
 
-#define USE_CM93
-
 //    Profiling support
 
 //#include "/usr/include/valgrind/callgrind.h"
