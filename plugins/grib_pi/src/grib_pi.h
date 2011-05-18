@@ -39,7 +39,7 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    2
+#define     MY_API_VERSION_MINOR    5
 
 #include "../../../include/ocpn_plugin.h"
 
