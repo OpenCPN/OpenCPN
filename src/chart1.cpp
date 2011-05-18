@@ -1577,7 +1577,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(137591);
+//     _CrtSetBreakAlloc(141542);
 #endif
 
 
@@ -3968,10 +3968,16 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
 
-    g_FloatingToolbarDialog->Destroy();
+      if(g_pCM93OffsetDialog)
+            g_pCM93OffsetDialog->Destroy();
 
-    cc1->Destroy();
-    cc1 = NULL;
+      g_FloatingToolbarDialog->Destroy();
+
+      if(g_pAISTargetList)
+            g_pAISTargetList->Destroy();
+
+      cc1->Destroy();
+      cc1 = NULL;
 
     //      Delete all open charts in the cache
     if(ChartData)
@@ -5143,46 +5149,50 @@ void MyFrame::SetupQuiltMode(void)
                         tLon = vLon;
                   }
 
-                        // Build a temporary chart stack based on tLat, tLon
-                  ChartStack TempStack;
-                  ChartData->BuildChartStack(&TempStack, tLat, tLon);
-
-
-                  //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
-                  //    This will (almost?) always be the reference chart....
-
-                  ChartBase *Candidate_Chart = NULL;
-                  int cur_max_scale = (int)1e8;
-
-                  ChartBase *pChart = cc1->GetFirstQuiltChart();
-                  while(pChart)
+                  if(!Current_Ch)
                   {
-                         //  Is this pChart in new stack?
-                        int tEntry = ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
-                        if(tEntry != -1)
-                        {
-                              if(pChart->GetNativeScale() < cur_max_scale)
-                              {
-                                    Candidate_Chart = pChart;
-                                    cur_max_scale = pChart->GetNativeScale();
-                              }
-                        }
-                        pChart = cc1->GetNextQuiltChart();
-                  }
 
-                  Current_Ch = Candidate_Chart;
+                              // Build a temporary chart stack based on tLat, tLon
+                        ChartStack TempStack;
+                        ChartData->BuildChartStack(&TempStack, tLat, tLon);
+
+
+                        //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
+                        //    This will (almost?) always be the reference chart....
+
+                        ChartBase *Candidate_Chart = NULL;
+                        int cur_max_scale = (int)1e8;
+
+                        ChartBase *pChart = cc1->GetFirstQuiltChart();
+                        while(pChart)
+                        {
+                              //  Is this pChart in new stack?
+                              int tEntry = ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
+                              if(tEntry != -1)
+                              {
+                                    if(pChart->GetNativeScale() < cur_max_scale)
+                                    {
+                                          Candidate_Chart = pChart;
+                                          cur_max_scale = pChart->GetNativeScale();
+                                    }
+                              }
+                              pChart = cc1->GetNextQuiltChart();
+                        }
+
+                        Current_Ch = Candidate_Chart;
 
                   //    If the quilt is empty, there is no "best" chart.
                   //    So, open the smallest scale chart in the current stack
-                  if(NULL == Current_Ch)
-                  {
-                       Current_Ch = ChartData->OpenStackChartConditional(&TempStack,
-                                    TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE, CHART_FAMILY_DONTCARE);
+                        if(NULL == Current_Ch)
+                        {
+                              Current_Ch = ChartData->OpenStackChartConditional(&TempStack,
+                                          TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE, CHART_FAMILY_DONTCARE);
+                        }
                   }
 
 
-
-                  //  Invalidate all the charts in the quilt, as any cached data may be region based and not have fullscreen coverage
+                  //  Invalidate all the charts in the quilt,
+                  // as any cached data may be region based and not have fullscreen coverage
                   cc1->InvalidateAllQuiltPatchs();
 
                   if(Current_Ch)
