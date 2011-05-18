@@ -1064,7 +1064,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
             float kSog = 5.;//8.5;
-            float kCog = 41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
+            float kCog = NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
