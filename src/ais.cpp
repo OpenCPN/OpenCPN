@@ -222,9 +222,9 @@ wxString ais_type[] = {
       _("Tanker"),                     //8x        18
       _("Unknown"),                    //          19
 
-      _("Aid to Navigation"),		//type 0	20   // pjotrc 2010.02.01
-      _("Reference Point"),		//01		21
-      _("RACON"),     	            //02        22
+      _("Unspecified"), 		   //type 0	20  // pjotrc 2010.02.01
+      _("Reference Point"),		   //01        21
+      _("RACON"),     	               //02        22
       _("Fixed Structure"),            //03        23
       _("Spare"),                      //04        24
       _("Light"),                      //05        25
@@ -278,11 +278,11 @@ wxString short_ais_type[] = {
       _("M/T"),                  //8x        18
       _("?"),                    //          19
 
-	_("AtoN"),			//00		20   // pjotrc 2010.02.01
-	_("Ref. Pt"),		      //01		21
-	_("RACON"),     	      //02        22
+	_("AtoN"),                 //00        20   // pjotrc 2010.02.01
+	_("Ref. Pt"),		   //01        21
+	_("RACON"),     	         //02        22
 	_("Fix.Struct."),          //03        23
-	_("?"),                     //04        24
+	_("?"),                    //04        24
 	_("Lt"),                   //05        25
 	_("Lt sect."),             //06        26
 	_("Ldg Lt Front"),         //07        27
@@ -491,7 +491,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
-            if((NavStatus <= 20) && (NavStatus >= 0))
+            if((NavStatus <= 21) && (NavStatus >= 0))
                   line.Append( ais_status[NavStatus] );
             line.Append(_T("\n"));
             result.Append(line);
@@ -561,71 +561,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else
                   line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
+            if (Class == AIS_ATON)
+                  line.Printf(_("Size:                 %dm x %dm \n\n"), (DimA + DimB));
+
             if (NavStatus != ATON_VIRTUAL)
                   result.Append(line);
 
       }
 
-/*
-
-           //  Destination
-      line.Printf(_("Destination:          "));
-      line.Append( trimAISField(Destination) );
-      line.Append(_T("\n"));
-      result.Append(line);
-
-
-      //  ETA
-      if((ETA_Mo) && (ETA_Hr < 24))
-      {
-            wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
-            line.Printf(_("ETA:                  "));
-            line.Append( eta.FormatISODate());
-            line.Append(_T("  "));
-            line.Append( eta.FormatISOTime());
-            line.Append(_T("\n"));
-      }
-      else
-      {
-            line.Printf(_("ETA:"));
-            line.Append(_T("\n"));
-      }
-
-      result.Append(line);
-      result.Append(_T("\n"));
-
-      int crs = wxRound(COG);
-      if(COG != 360.0)
-            line.Printf(_("Course:                 %03d Deg.\n"), crs);
-      else
-            line.Printf(_("Course:                 Unavailable\n"));
-      result.Append(line);
-
-      if(SOG <= 102.2)
-            line.Printf(_("Speed:                %5.2f Kts.\n"), SOG);
-      else
-            line.Printf(_("Speed:                  Unavailable\n"));
-      result.Append(line);
-
-      if(ROTAIS != -128)
-      {
-            if(ROTAIS == 127)
-                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Right\n"));
-            else if(ROTAIS == -127)
-                  line.Printf(_("Rate Of Turn greater than 5 Deg./30 s. Left\n"));
-            else
-            {
-                  if(ROTIND > 0)
-                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Right\n"), ROTIND);
-                  else if(ROTIND < 0)
-                        line.Printf(_("Rate Of Turn            %3d Deg./Min. Left\n"), abs(ROTIND));
-                  else
-                        line.Printf(_("Rate Of Turn            NIL\n"));
-            }
-
-            result.Append(line);
-      }
-*/
       if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
       {
             line.Printf(_("Destination:          "));
