@@ -7174,46 +7174,65 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
 }
 
 /****************************************************************************/
-/* Convert dd mm.mmm' (DMM-Format) to degree.                               */
-/*        or dd°mm.m′ (degree sign or alternate minute sign)                */
+// Modified from the code posted by Andy Ross at
+//     http://www.mail-archive.com/flightgear-devel@flightgear.org/msg06702.html
+// Basically, it looks for a list of decimal numbers embedded in the
+// string and uses the first three as degree, minutes and seconds.  The
+// presence of a "S" or "W character indicates that the result is in a
+// hemisphere where the final answer must be negated.  Non-number
+// characters are treated as whitespace separating numbers.
+//
+// So there are lots of bogus strings you can feed it to get a bogus
+// answer, but that's not surprising.  It does, however, correctly parse
+// all the well-formed strings I can thing of to feed it.  I've tried all
+// the following:
+//
+// 37°54.204' N
+// N37 54 12
+// 37°54'12"
+// 37.9034
+// 122°18.621' W
+// 122w 18 37
+// -122.31035
 /****************************************************************************/
 double fromDMM(wxString sdms)
 {
-      wxString rdms = sdms;
+      wchar_t buf[64];
+      char narrowbuf[64];
+      int i, len, top=0;
+      double stk[32], sign=1;
 
-	  // Handle e.g. 16°53.2′N
-	wxString a("°", wxConvUTF8);
-      rdms.Replace(a, _T(" "));
-	wxString b("′", wxConvUTF8);
-      rdms.Replace(b, _T("'"));
+      wcsncpy(buf, sdms.wc_str(wxConvUTF8), 64);
+      len = wcslen(buf);
 
-      char str[50];
-      strncpy(str, rdms.mb_str(wxConvUTF8), 49);
+      for(i=0; i<len; i++) {
+            wchar_t c = buf[i];
+            if((c>='0' && c<='9') || c=='-' || c=='.' || c=='+')
+            {
+                  narrowbuf[i] = c;
+                  continue;  /* Digit characters are cool as is */
+            }
+            if(c == ',')
+            {
+                  narrowbuf[i] = '.'; /* convert to decimal dot */
+                  continue;
+            }
+            if((c|32) == 'w' || (c|32) == 's')
+                  sign = -1; /* These mean "negate" (note case insensitivity) */
+            narrowbuf[i] = 0;    /* Replace everything else with nuls */
+      }
 
-      float d = 0;
-      double m = 0.0;
-      char buf[20];
-      char buf1[20];
+      /* Build a stack of doubles */
+      stk[0] = stk[1] = stk[2] = 0;
+      for(i=0; i<len; i++) {
+            while(i<len && narrowbuf[i] == 0) i++;
+            if(i != len) {
+                  stk[top++] = atof(narrowbuf+i);
+                  i += strlen(narrowbuf+i);
+            }
+      }
 
-      buf[0] = buf1[0] = '\0';
-
-      sscanf(str, "%f%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
-      wxString minutes(buf1,  wxConvUTF8);
-      minutes.Replace(_T(","), _T("."));
-      minutes.ToDouble(&m);
-
-      m = (double) (fabs(d)) + m / 60.0;
-
-      char *hemi_str;
-      if(strpbrk(buf, "SWsw"))
-            hemi_str = buf;
-      else
-            hemi_str = buf1;
-
-      if (d >= 0 && strpbrk(hemi_str, "SWsw") == NULL)
-            return m;
-      else
-            return -m;
+      return sign * (stk[0] + (stk[1] + stk[2] / 60) / 60);
 
 }
 
