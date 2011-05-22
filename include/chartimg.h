@@ -181,6 +181,8 @@ class  ChartBaseBSB     :public ChartBase
 
       void SetVPRasterParms(const ViewPort &vpt);
 
+      wxPoint2DDouble GetPixDelta(double lat0, double lon0, double lat1, double lon1, double scale_ppm);
+
 protected:
 //    Methods
 
