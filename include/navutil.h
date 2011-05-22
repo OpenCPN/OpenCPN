@@ -244,6 +244,7 @@ public:
 
       wxBoundingBox     RBBox;
       wxRect      active_pt_rect;
+      wxString    m_Colour;
 
 private:
       int         m_nPoints;

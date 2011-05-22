@@ -34,6 +34,7 @@
 #include "wx/dirctrl.h"
 #include "wx/spinctrl.h"
 #include <wx/listctrl.h>
+#include <wx/choice.h>
 #include "pluginmanager.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -121,7 +122,8 @@ enum {
         ID_FILTERNMEA,
         ID_FULLSCREENQUILT,
         ID_FSTOOLBARCHECKBOX,
-        ID_TRANSTOOLBARCHECKBOX
+        ID_TRANSTOOLBARCHECKBOX,
+        ID_SDMMFORMATCHOICE
 
 
 };
@@ -336,6 +338,7 @@ public:
     wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
+    wxChoice                *pSDMMFormat;
 
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;

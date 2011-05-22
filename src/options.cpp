@@ -42,6 +42,7 @@
 #include <wx/listbox.h>
 #include <wx/imaglist.h>
 #include <wx/display.h>
+#include <wx/choice.h>
 
 #include "dychart.h"
 #include "chart1.h"
@@ -153,6 +154,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern int              g_iSDMMFormat;
 
 extern wxLocale         locale_def_lang;
 
@@ -1220,10 +1222,10 @@ void options::CreateControls()
 
     wxString pDistUnitsStrings[] = {
           _("&Nautical miles"),
-             _("&Kilometers"),
+          _("&Kilometers")
     };
     m_itemNavAidRadarRingsStepUnitsRadioBox = new wxRadioBox( itemPanelAdvanced, ID_RADIOBOX, _("Units"), wxDefaultPosition, wxDefaultSize,
-                2, pDistUnitsStrings, 1, wxRA_SPECIFY_COLS );
+          2, pDistUnitsStrings, 1, wxRA_SPECIFY_ROWS );
     pRadarGrid->Add(m_itemNavAidRadarRingsStepUnitsRadioBox, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, border_size);
 
 
@@ -1257,6 +1259,23 @@ void options::CreateControls()
 
     pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
     itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer(2);
+    pFormatGrid->AddGrowableCol(1);
+    itemStaticBoxSizerGUIOption->Add(pFormatGrid, 0, wxALL|wxEXPAND, border_size);
+
+    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelAdvanced, wxID_STATIC, _("Show Lat/Long as"));
+    pFormatGrid->Add(itemStaticTextSDMMFormat, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, border_size);
+
+    wxString pSDMMFormats[] = {
+          _("Degrees, Decimal minutes"),
+          _("Decimal degrees"),
+          _("Degrees, Minutes, Seconds")
+    };
+    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof( wxString );
+    pSDMMFormat = new wxChoice( itemPanelAdvanced, ID_SDMMFORMATCHOICE, wxDefaultPosition, wxDefaultSize, m_SDMMFormatsNChoices,  pSDMMFormats);
+    pFormatGrid->Add(pSDMMFormat, 0, wxALIGN_RIGHT, 2);
+
 
 
     //      Build the PlugIn Manager Panel
@@ -1367,6 +1386,7 @@ void options::SetInitialSettings()
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
       pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
       pTransparentToolbar->SetValue(g_bTransparentToolbar);
+      pSDMMFormat->Select(g_iSDMMFormat);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
       pTrackDaily->SetValue(g_bTrackDaily);
@@ -1753,6 +1773,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
+    g_iSDMMFormat = pSDMMFormat->GetSelection();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();
     m_pText_TP_Secs->GetValue().ToDouble(&g_TrackIntervalSeconds);
