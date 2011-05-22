@@ -248,6 +248,7 @@ S57Reader::~S57Reader()
     CPLFree( pszModuleName );
     CSLDestroy( papszOptions );
 
+    CPLFree( papoFDefnList );
 }
 
 /************************************************************************/
@@ -324,6 +325,8 @@ void S57Reader::Close()
         poModule = NULL;
 
         bFileIngested = FALSE;
+
+        CPLFreeConfig();
 
         CPLFree( pszDSNM );
         pszDSNM = NULL;
