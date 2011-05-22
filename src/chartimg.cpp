@@ -2925,8 +2925,6 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       if(vp_last.IsValid())
       {
-                  if(m_b_cdebug)printf("\n Start AdjustVP: %g\n", binary_scale_factor);
-
                   //    We only need to adjust the VP if the cache is valid and potentially usable, i.e. the scale factor is integer...
                   //    The objective here is to ensure that the VP center falls on an exact pixel boundary within the cache
 
@@ -2946,6 +2944,7 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
                         vp_proposed.clat = lat_adj;
                         vp_proposed.clon = lon_adj;
                         ret_val = 1;
+                  }
       }
 
       return (ret_val > 0);
