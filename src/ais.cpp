@@ -2132,11 +2132,26 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             return;
       }
 
-      if(wxIsNaN(gSog) || wxIsNaN(gCog))
+      double cpa_calc_ownship_cog;
+
+      if(wxIsNaN(gCog))
       {
-            ptarget->bCPA_Valid = false;
+            if(wxIsNaN(gSog))
+            {
+                  ptarget->bCPA_Valid = false;
+                  return;
+            }
+            else if(gSog < .01)
+                  cpa_calc_ownship_cog = 0.;          // substitute value
+                                                      // for the case where SOG = 0, and COG is unknown.
+            else
+                  ptarget->bCPA_Valid = false;
             return;
       }
+      else
+            cpa_calc_ownship_cog = gCog;
+
+
 
       if((ptarget->COG == 360.0) || (ptarget->SOG >102.2))
       {
@@ -2169,8 +2184,8 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             double north = north1;
 
             //    Convert COGs trigonometry to standard unit circle
-            double cosa = cos((90. - gCog) * PI / 180.);
-            double sina = sin((90. - gCog) * PI / 180.);
+            double cosa = cos((90. - cpa_calc_ownship_cog) * PI / 180.);
+            double sina = sin((90. - cpa_calc_ownship_cog) * PI / 180.);
             double cosb = cos((90. - ptarget->COG) * PI / 180.);
             double sinb = sin((90. - ptarget->COG) * PI / 180.);
 
@@ -2197,7 +2212,7 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
 
             double OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA;
 
-            ll_gc_ll(gLat,         gLon,         gCog,         gSog * tcpa,         &OwnshipLatCPA, &OwnshipLonCPA);
+            ll_gc_ll(gLat,         gLon,         cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA, &OwnshipLonCPA);
             ll_gc_ll(ptarget->Lat, ptarget->Lon, ptarget->COG, ptarget->SOG * tcpa, &TargetLatCPA,  &TargetLonCPA);
 
             //   And compute the distance
