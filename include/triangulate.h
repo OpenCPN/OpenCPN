@@ -36,14 +36,14 @@
  * The cvsid_aw() function is just there to prevent reports of cpl_cvsid()
  * being unused.
  */
-
+/*
 #ifndef DISABLE_CVSID
 #  define CPL_CVSID(string)     static char cpl_cvsid[] = string; \
 static char *cvsid_aw() { return( cvsid_aw() ? ((char *) NULL) : cpl_cvsid ); }
 #else
 #  define CPL_CVSID(string)
 #endif
-
+*/
 #endif
 
 
