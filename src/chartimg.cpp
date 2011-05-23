@@ -2951,23 +2951,6 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 }
 
 
-wxPoint2DDouble ChartBaseBSB::GetPixDelta(double lat0, double lon0, double lat1, double lon1, double scale_ppm)
-{
-      double binary_scale_factor = GetPPM() / scale_ppm;
-
-      wxPoint2DDouble ret_val;
-      double xd, yd, xd_last, yd_last;
-
-      latlong_to_chartpix(lat0, lon0, xd, yd);
-      latlong_to_chartpix(lat1, lon1, xd_last, yd_last);
-
-      ret_val.m_x = ( xd-xd_last) / binary_scale_factor ;
-      ret_val.m_y = ( yd-yd_last) / binary_scale_factor ;
-
-      return ret_val;
-}
-
-
 bool ChartBaseBSB::IsRenderCacheable( wxRect& source, wxRect& dest )
 {
       double scale_x = (double)source.width / (double)dest.width;
@@ -3075,7 +3058,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegi
             return GetView( source, dest, scale_type_corrected );
       }
 
-      if(scale_x <= 1.0)                                        // overzoom
+      if(scale_x < 1.0)                                        // overzoom
       {
             if(m_b_cdebug)printf("    MISS<<<>>>GVUC:  Overzoom\n");
             return GetView( source, dest, scale_type_corrected );
@@ -3414,7 +3397,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     A performance enhancement.....
      ScaleTypeEnum scale_type_zoom = RENDER_HIDEF;
      double binary_scale_factor = VPoint.view_scale_ppm / GetPPM();
-     if(binary_scale_factor < .250)
+     if(binary_scale_factor < .20)
            scale_type_zoom = RENDER_LODEF;
 
      bool bnewview = GetViewUsingCache(Rsrc, dest, Region, scale_type_zoom);
@@ -4479,7 +4462,16 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
  //             for(int h=0 ; h < 10 ; h++)
 //                    printf("east to pix %d  %g\n",  h, cPoints.wpx[h]);          // lon to pix
 
+/*
+             if ((0 != m_Chart_DU ) && (0 != m_Chart_Scale))
+             {
+                   double m_ppm_avg1 = m_Chart_DU * 39.37 / m_Chart_Scale;
+                   m_ppm_avg1 *= cos(m_proj_lat * PI / 180.);                    // correct to chart centroid
 
+                   printf("BSB chart ppm_avg:%g ppm_avg1:%g\n", m_ppm_avg, m_ppm_avg1);
+                   m_ppm_avg = m_ppm_avg1;
+             }
+*/
        }
 
        else if(m_projection == PROJECTION_POLYCONIC)
@@ -4580,15 +4572,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
              m_ppm_avg = 1.0;                      // absolute fallback to prevent div-0 errors
 
 
-/*
-       if ((0 != m_Chart_DU ) && (0 != m_Chart_Scale))
-       {
-             double m_ppm_avg1 = m_Chart_DU * 39.37 / m_Chart_Scale;
-             m_ppm_avg1 *= cos(m_proj_lat * PI / 180.);                    // correct to chart centroid
-
-             printf("%g %g\n", m_ppm_avg, m_ppm_avg1);
-       }
-*/
 
         // Do a last little test using a synthetic ViewPort of nominal size.....
         ViewPort vp;
