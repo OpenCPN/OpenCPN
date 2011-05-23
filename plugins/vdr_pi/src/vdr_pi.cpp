@@ -291,7 +291,7 @@ bool vdr_pi::LoadConfig(void)
 
             pConf->Read( _T("InputFilename"), &m_ifilename, wxEmptyString );
             pConf->Read( _T("OutputFilename"), &m_ofilename, wxEmptyString );
-            pConf->Read( _T("Interval"), &m_interval, -1 );
+            pConf->Read( _T("Interval"), &m_interval, 1 );
 
             return true;
       }
