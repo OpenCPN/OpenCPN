@@ -161,8 +161,8 @@ public:
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( void );
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
-      double GetVPRotation(void) { return VPoint.rotation; }
-      double GetVPSkew(void) { return VPoint.skew; }
+      double GetVPRotation(void) { return GetVP().rotation; }
+      double GetVPSkew(void) { return GetVP().skew; }
       void ClearbFollow(void);
 
       void GetCanvasPointPix(double rlat, double rlon, wxPoint *r);
@@ -185,11 +185,11 @@ public:
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
       int GetCanvasHeight(){ return m_canvas_height;}
-      float GetVPScale(){return VPoint.view_scale_ppm;}
-      float GetVPChartScale(){return VPoint.chart_scale;}
+      float GetVPScale(){return GetVP().view_scale_ppm;}
+      float GetVPChartScale(){return GetVP().chart_scale;}
       double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
-
+      ViewPort &GetVP(); const
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
       bool  GetbTCUpdate(){ return m_bTCupdate;}
@@ -233,12 +233,12 @@ public:
 	  wxCursor    *pCursorArrow;
 	  wxCursor    *pCursorCross;
       TCWin       *pCwin;
-      ViewPort    VPoint;
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
 
 
 private:
+      ViewPort    VPoint;
       void        PositionConsole(void);
       void        FinishRoute(void);
 
@@ -297,7 +297,7 @@ private:
 
       double       m_canvas_scale_factor;    // converter....
                                              // useage....
-                                             // true_chart_scale_on_display   = m_canvas_scale_factor / pixels_per_meter of displayed chart
+                                             // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
 
       //    Methods
@@ -305,7 +305,7 @@ private:
       void OnSize(wxSizeEvent& event);
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(wxDC& dc);
-      void DrawArrow(wxDC& dc, int x, int y, float rot_angle, float scale);
+      void DrawArrow(wxDC& dc, int x, int y, double rot_angle, double scale);
       void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
 
       void RotateTimerEvent(wxTimerEvent& event);
