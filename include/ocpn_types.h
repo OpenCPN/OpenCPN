@@ -116,7 +116,6 @@ class ViewPort
 
             wxRect   rv_rect;
 
-            wxPoint  m_pan_delta;
       private:
             //    Methods
 
