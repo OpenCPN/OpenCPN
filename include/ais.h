@@ -182,6 +182,7 @@ public:
     int                       ROTIND;
     char                      CallSign[8];                // includes terminator
     char                      ShipName[21];
+    char                      ShipNameExtension[21];
     unsigned char             ShipType;
     int                       IMO;
 
@@ -246,6 +247,7 @@ public:
     unsigned char to_6bit(const char c);
     int GetInt(int sp, int len);
     bool GetStr(int sp, int len, char *dest, int max_len);
+    int GetBitCount();
 
 
 private:
@@ -530,7 +532,7 @@ class AISTargetListDialog: public wxPanel
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;
             wxButton          *m_pButtonInfo;
-            wxButton          *m_pButtonScroll;
+            wxButton          *m_pButtonJumpTo;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxSize            m_size_min;

@@ -383,6 +383,7 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(ShipName, "Unknown             ", 21);
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
+    ShipNameExtension[0] = 0;
 
     SOG = 555.;
     COG = 666.;
@@ -469,6 +470,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         ret = uret;
 
                   line.Append( ret );
+
+                  if(strlen(ShipNameExtension))
+                        line.Append(wxString(ShipNameExtension, wxConvUTF8));
+
             }
             line.Append(_T("\n\n"));
             result.Append(line);
@@ -788,6 +793,9 @@ wxString AIS_Target_Data::GetRolloverString( void )
                   ret = uret;
 
             result.Append(ret);
+            if(strlen(ShipNameExtension))
+                  result.Append(wxString(ShipNameExtension, wxConvUTF8));
+
             result.Append(_T("\" "));
       }
       t.Printf(_T("%09d"), MMSI); result.Append(t);
@@ -943,6 +951,11 @@ AIS_Bitstring::AIS_Bitstring(const char *str)
     {
         bitbytes[i] = to_6bit(str[i]);
     }
+}
+
+int AIS_Bitstring::GetBitCount()
+{
+      return byte_length * 6;
 }
 
 
@@ -1841,6 +1854,13 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
 
                   bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
+
+                  if(bstr->GetBitCount() > 276)
+                  {
+                        int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
+                        bstr->GetStr(273,nx, &ptd->ShipNameExtension[0], 20);
+                  }
+
                 ptd->b_nameValid = true;
 
                 parse_result = true;                // so far so good
@@ -3687,6 +3707,11 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                                     ret = wxGetTranslation(uret);
                               else
                                     ret = uret;
+
+                              if(strlen(pAISTarget->ShipNameExtension))
+                                    ret.Append(
+									wxString(pAISTarget->ShipNameExtension, wxConvUTF8));
+
                         }
                         break;
 
@@ -4001,9 +4026,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       boxSizer02->Add( m_pButtonInfo, 0, wxALL, 0 );
       boxSizer02->AddSpacer( 5 );
       //wxBitmapButton* button02 = new wxBitmapButton( this, wxID_ANY, *_img_ais_zoom, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-      m_pButtonScroll = new wxButton( this, wxID_ANY, _("Jump To"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-      m_pButtonScroll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
-      boxSizer02->Add( m_pButtonScroll, 0, wxALL, 0 );
+      m_pButtonJumpTo = new wxButton( this, wxID_ANY, _("Jump To"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+      m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
+      boxSizer02->Add( m_pButtonJumpTo, 0, wxALL, 0 );
       boxSizer02->AddSpacer( 5 );
       m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
@@ -4052,7 +4077,7 @@ void AISTargetListDialog::SetColorScheme()
       SetBackgroundColour(cl);
       m_pListCtrlAISTargets->SetBackgroundColour( cl );
       m_pButtonInfo->SetBackgroundColour(cl);
-      m_pButtonScroll->SetBackgroundColour(cl);
+      m_pButtonJumpTo->SetBackgroundColour(cl);
       m_pSpinCtrlRange->SetBackgroundColour( cl );
 /* Doesn't work
       wxListItem item;
@@ -4087,7 +4112,14 @@ void AISTargetListDialog::UpdateButtons()
       bool enable = (item != -1);
 
       m_pButtonInfo->Enable(enable);
-      m_pButtonScroll->Enable(enable);
+
+      if(item != -1)
+      {
+            AIS_Target_Data *pAISTargetSel = m_ptarget_array->Item(item);
+            if(!pAISTargetSel->b_positionValid)
+                  enable = false;
+      }
+      m_pButtonJumpTo->Enable(enable);
 }
 
 void AISTargetListDialog::OnTargetSelected( wxListEvent &event )
