@@ -114,6 +114,13 @@ INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
+IF(UNIX)
+    FIND_PACKAGE(BZip2 REQUIRED)
+    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
+    FIND_PACKAGE(ZLIB REQUIRED)
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+ENDIF(UNIX)
+
 # For convenience we define the sources as a variable. You can add 
 # header files and cpp/c files and CMake will sort them out
 
@@ -492,6 +499,8 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${OPENGL_LIBRARIES}
       ${GETTEXT_LIBRARY}
+      ${BZIP2_LIBRARIES}
+      ${ZLIB_LIBRARY}
 )
 ENDIF(UNIX)
 
