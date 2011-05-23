@@ -689,7 +689,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
 
       wxDateTime rt(ReportTicks);
-      line.Printf(_("Latest Report Time:      "));
+      line.Printf(_("Last Position Report Time:  "));
       line << rt.FormatISOTime();
       line << _T(" ");
       line << _("UTC");
@@ -701,11 +701,11 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       int target_age = now.GetTicks() - ReportTicks;
 
 
-      line.Printf(_("Report Age:             %3d Sec.\n"), target_age);
+      line.Printf(_("Position Report Age:       %3d Sec.\n\n"), target_age);
       result.Append(line);
 
-      line.Printf(_("Recent Report Period:   %3d Sec.\n\n"), RecentPeriod);
-      result.Append(line);
+ //     line.Printf(_("Recent Report Period:   %3d Sec.\n\n"), RecentPeriod);
+ //     result.Append(line);
 
       double hours = floor(TCPA / 60.);
       double mins = TCPA - (hours * 60);
