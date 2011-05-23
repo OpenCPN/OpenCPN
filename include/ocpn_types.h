@@ -81,6 +81,7 @@ class ViewPort
 
             wxPoint GetPixFromLL(double lat, double lon) const;
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
+            wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
             wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
 
