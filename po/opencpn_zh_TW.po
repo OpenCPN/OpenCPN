@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2011-04-29 10:48+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -628,6 +628,12 @@ msgstr "方位:                %03d Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "方位:                無法取得\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 msgid "Boundaries"
 msgstr "邊界"
@@ -850,6 +856,11 @@ msgid "CoG"
 msgstr "CoG"
 #
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "色彩(&o):"
+#
+# 
 msgid "Colors"
 msgstr "色彩"
 #
@@ -909,8 +920,34 @@ msgid "Cursor: "
 msgstr "游標: "
 #
 # 
+#, fuzzy
+msgid "Cyan"
+msgstr "取消"
+#
+# 
 msgid "D/V"
 msgstr "水下作業船"
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
+msgstr ""
 #
 # 
 msgid "De-Clutter Text (exp.)"
@@ -924,9 +961,23 @@ msgstr "取消作用"
 msgid "Deactivate Route"
 msgstr "取消導航"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 msgid "Deep Depth"
 msgstr "最大水深"
+#
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "字型色彩"
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 msgid "Delete All"
@@ -1072,6 +1123,9 @@ msgstr "啟動目標警告認知計時 (分鐘)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "使用\"滑鼠滾輪放大/縮小\"功能"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 msgid "End Route"
 msgstr "結束航路"
@@ -1214,6 +1268,9 @@ msgstr "前往標記/轉向點"
 msgid "Go to "
 msgstr "前往"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr "高速船"
@@ -1315,7 +1372,8 @@ msgid "Language/Fonts"
 msgstr "語系/字型"
 #
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "最近回報時間:      "
 #
 # 
@@ -1372,6 +1430,11 @@ msgstr "版權"
 #
 # 
 msgid "Light"
+msgstr "寬度(&W):"
+#
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "寬度(&W):"
 #
 # 
@@ -1457,6 +1520,9 @@ msgstr "MMSI"
 # 
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
+#
+msgid "Magenta"
+msgstr ""
 #
 # 
 msgid "Mariner's Standard"
@@ -1727,10 +1793,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC檔案建立..."
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN S57 SENC 檔案載入"
-#
-# 
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 警示"
 #
@@ -1892,6 +1954,13 @@ msgid "Position"
 msgstr "位置"
 #
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "回報 Age:             %3d Sec.\n"
+#
+# 
 msgid "Position:               "
 msgstr "位置:               "
 #
@@ -1988,8 +2057,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2099,14 +2167,8 @@ msgstr "位置"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "依據組態檔設定來更新海圖索引資料...."
 #
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"最近回報週期:     %3d Sec.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2143,11 +2205,6 @@ msgstr "從接圖中移除本圖"
 # 
 msgid "Rename Waypoints?"
 msgstr "重新命名轉向點?"
-#
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "回報 Age:             %3d Sec.\n"
 #
 # 
 msgid "Reserved 11"
@@ -2355,6 +2412,11 @@ msgid "Show Important Text Only"
 msgstr "僅顯示匯入文字"
 #
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "顯示 AIS 目標"
+#
+# 
 msgid "Show Light Descriptions"
 msgstr "顯示燈號說明"
 #
@@ -2417,6 +2479,15 @@ msgstr "顯示字型預覽"
 # 
 msgid "Simplified"
 msgstr "簡化"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, c-format
@@ -2821,6 +2892,11 @@ msgid "Unlist contents"
 msgstr "Unlist contents"
 #
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "底線(&U)"
+#
+# 
 msgid "Update Control"
 msgstr "更新控制"
 #
@@ -2942,6 +3018,9 @@ msgstr "歡迎使用OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "字型是否加底線"
 #
+msgid "White"
+msgstr ""
+#
 # 
 msgid "WiFi Options"
 msgstr "WiFi 選項"
@@ -2969,6 +3048,11 @@ msgstr "Y Offset (向北為正值) (NMi Projected) :"
 # 
 msgid "Yat"
 msgstr "遊艇"
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Call"
 #
 # 
 msgid "Zoom In"
@@ -3020,9 +3104,11 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#
 # 
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
 #
 #
 # 
@@ -3030,9 +3116,11 @@ msgstr "wgsoy"
 #~ msgstr "刪除所有航路(&D)..."
 #
 #
+#
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
+#
 #
 #
 # 
@@ -3040,9 +3128,11 @@ msgstr "wgsoy"
 #~ msgstr "(使用中航跡)"
 #
 #
+#
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Offset Off"
+#
 #
 #
 # 
@@ -3050,9 +3140,11 @@ msgstr "wgsoy"
 #~ msgstr "CM93 Offset On"
 #
 #
+#
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Offset Tool Off"
+#
 #
 #
 # 
@@ -3060,14 +3152,17 @@ msgstr "wgsoy"
 #~ msgstr "CM93 Offset Tool....."
 #
 #
+#
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
 #
+#
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 # 
@@ -3076,10 +3171,12 @@ msgstr "wgsoy"
 #~ msgstr "設定 CM93 Offset"
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 # 
@@ -3087,6 +3184,7 @@ msgstr "wgsoy"
 #~ msgstr "圖檔毀損.. 取消本圖 \n"
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Class unknown\n"
@@ -3094,6 +3192,7 @@ msgstr "wgsoy"
 #~ msgstr ""
 #~ "Class unknown\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3105,6 +3204,7 @@ msgstr "wgsoy"
 #~ "\n"
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Class:     B\n"
@@ -3112,6 +3212,7 @@ msgstr "wgsoy"
 #~ msgstr ""
 #~ "Class:     B\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3119,9 +3220,11 @@ msgstr "wgsoy"
 #~ msgstr "目前船速, 節."
 #
 #
+#
 # 
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Unknown"
+#
 #
 #
 # 
@@ -3129,9 +3232,11 @@ msgstr "wgsoy"
 #~ msgstr "離開 OpenCPN"
 #
 #
+#
 # 
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 # 
@@ -3139,9 +3244,11 @@ msgstr "wgsoy"
 #~ msgstr "GRIB"
 #
 #
+#
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB 資料"
+#
 #
 #
 # 
@@ -3149,9 +3256,11 @@ msgstr "wgsoy"
 #~ msgstr "GRIB 顯示控制"
 #
 #
+#
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
+#
 #
 #
 # 
@@ -3160,8 +3269,15 @@ msgstr "wgsoy"
 #
 #
 # 
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN S57 SENC 檔案載入"
+#
+#
+#
+# 
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#
 #
 #
 # 
@@ -3169,14 +3285,17 @@ msgstr "wgsoy"
 #~ msgstr "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #
 #
+#
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #
 #
+#
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#
 #
 #
 # 
@@ -3185,8 +3304,19 @@ msgstr "wgsoy"
 #
 #
 # 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "最近回報週期:     %3d Sec.\n"
+#~ "\n"
+#
+#
+#
+# 
 #~ msgid "Route Manager..."
 #~ msgstr "航路管理"
+#
 #
 #
 # 
@@ -3194,9 +3324,11 @@ msgstr "wgsoy"
 #~ msgstr "海面溫度, 攝氏"
 #
 #
+#
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "選擇 GRIB 目錄"
+#
 #
 #
 # 
@@ -3204,9 +3336,11 @@ msgstr "wgsoy"
 #~ msgstr "傳送航路至 GPS..."
 #
 #
+#
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "船名:"
+#
 #
 #
 # 
@@ -3214,9 +3348,11 @@ msgstr "wgsoy"
 #~ msgstr "顯示 GPX 圖示"
 #
 #
+#
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "顯示 GRIB 對話框"
+#
 #
 #
 # 
@@ -3224,9 +3360,11 @@ msgstr "wgsoy"
 #~ msgstr "顯示 GRIB 圖示"
 #
 #
+#
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "波高, 公尺"
+#
 #
 #
 # 
@@ -3234,9 +3372,11 @@ msgstr "wgsoy"
 #~ msgstr "使用高解析度圖形"
 #
 #
+#
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "WARNING:  QuickScat GRIB data is %d hours old."
+#
 #
 #
 # 

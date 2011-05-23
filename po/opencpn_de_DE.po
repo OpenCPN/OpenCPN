@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-10-18 00:02+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -875,6 +875,12 @@ msgstr "Peilung:                        %03d Grad\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Peilung:                        nicht verfügbar\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1168,6 +1174,13 @@ msgstr "KüG"
 # 
 # 
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "Farbe:"
+#
+# 
+# 
+# 
 msgid "Colors"
 msgstr "Farben"
 #
@@ -1246,7 +1259,35 @@ msgid "Cursor: "
 msgstr "Cursor: "
 #
 # 
+# 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Abbrechen"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1267,11 +1308,27 @@ msgstr "Deaktivieren"
 msgid "Deactivate Route"
 msgstr "Route deaktivieren"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 # 
 # 
 msgid "Deep Depth"
 msgstr "Tiefwassergrenze"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Die Schriftfarbe."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 # 
@@ -1481,6 +1538,9 @@ msgstr "Aktiviere max. Zeitdauer für Ziel-Alarmquittierung (Minuten):"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Mausrad-Zoom auf Cursorposition aktivieren"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1669,6 +1729,9 @@ msgstr "Gehe zu Markierung/ Wegpunkt"
 msgid "Go to "
 msgstr "Gehe zu"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1805,7 +1868,8 @@ msgstr "Sprache/Schrift"
 # 
 # 
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Uhrzeit der letzten Meldung:      "
 #
 # 
@@ -1880,6 +1944,13 @@ msgstr "Lizenz"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "Schnitt:"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "Schnitt:"
 #
 # 
@@ -1983,6 +2054,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -2343,10 +2417,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN Routenerstellung"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 # 
 # 
 #, fuzzy
@@ -2572,6 +2642,15 @@ msgstr "Position"
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Alter der Meldung:           %3d Sek.\n"
+#
+# 
+# 
+# 
 msgid "Position:               "
 msgstr "Position:                    "
 #
@@ -2690,8 +2769,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2834,16 +2912,8 @@ msgstr ""
 "OpenCPN aktualisiert die Kartendatenbank aus den Einstellungen der "
 "Konfigurationsdatei ..."
 #
-# 
-# 
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Dauer letzte Meldung:     %3d Sek.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2894,13 +2964,6 @@ msgstr "Karte aus dem Patchwork entfernen"
 # 
 msgid "Rename Waypoints?"
 msgstr "Wegpunkte umbenennen?"
-#
-# 
-# 
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Alter der Meldung:           %3d Sek.\n"
 #
 # 
 msgid "Reserved 11"
@@ -3189,6 +3252,13 @@ msgstr "Nur wichtigen Text anzeigen"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "AIS-Ziele anzeigen"
+#
+# 
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Leuchtfeuer-Kennungen anzeigen"
 #
@@ -3282,6 +3352,17 @@ msgstr "Zeigt die Schriftvorschau."
 # 
 msgid "Simplified"
 msgstr "Vereinfacht"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Größe:                 %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -3827,6 +3908,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "Unterstrichen"
+#
+# 
+# 
+# 
 msgid "Update Control"
 msgstr "Aktualisierungseinstellung"
 #
@@ -3976,6 +4064,9 @@ msgstr "Willkommen bei OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Ob die Schrift unterstrichen ist."
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4009,6 +4100,13 @@ msgstr ""
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Rufzeichen"
 #
 # 
 # 
@@ -4077,6 +4175,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4092,6 +4191,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 #
 # 
@@ -4113,6 +4213,7 @@ msgstr ""
 #~ msgstr "Rufzeichen:  "
 #
 #
+#
 # 
 # 
 # 
@@ -4124,6 +4225,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 # 
@@ -4148,6 +4250,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4163,6 +4266,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
 #
 #
 # 
@@ -4182,6 +4286,7 @@ msgstr ""
 #~ msgstr "ETA"
 #
 #
+#
 # 
 # 
 # 
@@ -4189,6 +4294,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN beenden"
+#
 #
 #
 # 
@@ -4204,6 +4310,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 # 
@@ -4223,6 +4330,7 @@ msgstr ""
 #~ msgstr "GRIB-Daten"
 #
 #
+#
 # 
 # 
 # 
@@ -4238,6 +4346,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-Anzeige Einstellungen"
+#
 #
 #
 # 
@@ -4257,6 +4366,7 @@ msgstr ""
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
 #
+#
 # 
 # 
 # 
@@ -4266,6 +4376,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Benutzerdef. Auswahl"
+#
 #
 #
 # 
@@ -4287,6 +4398,7 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 # 
@@ -4304,6 +4416,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 # 
@@ -4325,6 +4438,7 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 # 
@@ -4344,6 +4458,7 @@ msgstr ""
 #~ "Maßstab verkleinern."
 #
 #
+#
 # 
 # 
 # 
@@ -4359,6 +4474,7 @@ msgstr ""
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Plugin Name"
+#
 #
 #
 # 
@@ -4381,6 +4497,18 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dauer letzte Meldung:     %3d Sek.\n"
+#~ "\n"
+#
+#
+#
+# 
+# 
+# 
 # 
 # 
 # 
@@ -4393,6 +4521,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Wassertemp. (Oberfl.), °C"
+#
 #
 #
 # 
@@ -4412,6 +4541,7 @@ msgstr ""
 #~ msgstr "GRIB-Verzeichnis auswählen"
 #
 #
+#
 # 
 # 
 # 
@@ -4421,6 +4551,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Schiffsname: "
+#
 #
 #
 # 
@@ -4436,6 +4567,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB-Symbol anzeigen"
+#
 #
 #
 # 
@@ -4455,6 +4587,7 @@ msgstr ""
 #~ msgstr "Signifik. Wellenhöhe, m"
 #
 #
+#
 # 
 # 
 # 
@@ -4468,6 +4601,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Hochäuflösende Grafik verwenden"
+#
 #
 #
 # 
@@ -4487,6 +4621,7 @@ msgstr ""
 #~ msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
 #
 #
+#
 # 
 # 
 # 
@@ -4502,6 +4637,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
 #
 #
 # 

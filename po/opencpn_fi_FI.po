@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -625,6 +625,12 @@ msgstr "Suuntima:              %5.0f Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Nopeus:            Tuntematon\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 msgid "Boundaries"
 msgstr "Rajat"
@@ -851,6 +857,11 @@ msgid "CoG"
 msgstr "COG"
 #
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "&Väri:"
+#
+# 
 msgid "Colors"
 msgstr "Värit"
 #
@@ -910,7 +921,33 @@ msgid "Cursor: "
 msgstr "Osoitin:"
 #
 # 
+#, fuzzy
+msgid "Cyan"
+msgstr "Peruuta"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -925,9 +962,23 @@ msgstr "Deaktivoi"
 msgid "Deactivate Route"
 msgstr "Deaktivoi reitti"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 msgid "Deep Depth"
 msgstr "Syvävesi"
+#
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Kirjasinväri."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -1077,6 +1128,9 @@ msgstr ""
 # 
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Hiiri-zoomaus kursorille päällä"
+#
+msgid "Enable transparent toolbar"
+msgstr ""
 #
 # 
 msgid "End Route"
@@ -1231,6 +1285,9 @@ msgstr "Mene tänne"
 msgid "Go to "
 msgstr "Mene tänne"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1337,7 +1394,7 @@ msgstr "Kielet/kirjasimet"
 #
 # 
 #, fuzzy
-msgid "Latest Report Time:      "
+msgid "Last Position Report Time:  "
 msgstr "Viime raporttiaika:"
 #
 # 
@@ -1398,6 +1455,11 @@ msgstr "Lisenssi"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Paksuus:"
+#
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Paksuus:"
 #
 # 
@@ -1483,6 +1545,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -1758,10 +1823,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Luo OpenCPN-reitti"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN hälytys"
@@ -1927,6 +1988,13 @@ msgid "Position"
 msgstr "Sijainti"
 #
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Raportin ikä:               %3d Sec.\n"
+#
+# 
 #, fuzzy
 msgid "Position:               "
 msgstr "Sijainti:"
@@ -2023,8 +2091,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2141,14 +2208,8 @@ msgstr "Sijainti"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "OpenCPN päivittää karttatietokantaa config-tiedoston mukaan..."
 #
-# 
-#, fuzzy, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Äskeinen raporttiväli:     %3d Sec.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2187,11 +2248,6 @@ msgstr "Poista tämä kartta tilkkutäkistä."
 # 
 msgid "Rename Waypoints?"
 msgstr "Uudelleennimeä kiintopisteet?"
-#
-# 
-#, fuzzy, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Raportin ikä:               %3d Sec.\n"
 #
 # 
 msgid "Reserved 11"
@@ -2402,6 +2458,11 @@ msgid "Show Important Text Only"
 msgstr "Näytä vain tärkeät tekstit"
 #
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Näytä AIS maalit"
+#
+# 
 msgid "Show Light Descriptions"
 msgstr "Näytä valojen kuvaus"
 #
@@ -2467,6 +2528,15 @@ msgstr "Näyttää kirjasimet."
 # 
 msgid "Simplified"
 msgstr "Yksinkertaistettu"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Koko:                %5dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, fuzzy, c-format
@@ -2888,6 +2958,11 @@ msgid "Unlist contents"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Alleviivaus"
+#
+# 
 msgid "Update Control"
 msgstr "Päivitys"
 #
@@ -3011,6 +3086,9 @@ msgstr "Tietoja OpenCPN:stä"
 msgid "Whether the font is underlined."
 msgstr "Käytetäänkö alleviivausta."
 #
+msgid "White"
+msgstr ""
+#
 # 
 msgid "WiFi Options"
 msgstr "WiFi asetukset"
@@ -3038,6 +3116,11 @@ msgstr ""
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Kutsu"
 #
 # 
 msgid "Zoom In"
@@ -3089,6 +3172,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3099,6 +3183,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulje"
+#
 #
 #
 # 
@@ -3113,6 +3198,7 @@ msgstr ""
 #~ msgstr "&Poista kaikki reitit"
 #
 #
+#
 # 
 # 
 # 
@@ -3123,6 +3209,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Poista kaikki jäljet"
+#
 #
 #
 # 
@@ -3137,6 +3224,7 @@ msgstr ""
 #~ msgstr "(Aktiivoitu reitti)"
 #
 #
+#
 # 
 # 
 # 
@@ -3149,6 +3237,7 @@ msgstr ""
 #~ msgstr "Radiokutsu:"
 #
 #
+#
 # 
 # 
 # 
@@ -3158,6 +3247,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
 #
 #
 # 
@@ -3176,6 +3266,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3190,6 +3281,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -3208,6 +3300,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3218,6 +3311,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Virran nopeus, solmua"
+#
 #
 #
 # 
@@ -3232,11 +3326,13 @@ msgstr ""
 #~ msgstr "ETA:                  Tuntematon"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Poistu OpenCPN:stä"
+#
 #
 #
 # 
@@ -3251,6 +3347,7 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
@@ -3261,6 +3358,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 # 
@@ -3275,6 +3373,7 @@ msgstr ""
 #~ msgstr "GRIB data"
 #
 #
+#
 # 
 # 
 # 
@@ -3285,6 +3384,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-näytön hallinta"
+#
 #
 #
 # 
@@ -3299,6 +3399,7 @@ msgstr ""
 #~ msgstr "GRIB-tiedostojen hakemisto"
 #
 #
+#
 # 
 # 
 # 
@@ -3306,6 +3407,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 #
 # 
@@ -3320,6 +3422,7 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt CRAIN GRIB tiedot"
 #
 #
+#
 # 
 # 
 # 
@@ -3330,6 +3433,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 # 
@@ -3344,6 +3448,7 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt OCEAN CURRENT GRIB tiedot"
 #
 #
+#
 # 
 # 
 # 
@@ -3354,6 +3459,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
+#
 #
 #
 # 
@@ -3369,6 +3475,17 @@ msgstr ""
 #
 #
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Äskeinen raporttiväli:     %3d Sec.\n"
+#~ "\n"
+#
+#
+#
+# 
 # 
 # 
 # 
@@ -3378,6 +3495,7 @@ msgstr ""
 # 
 #~ msgid "Route Manager..."
 #~ msgstr "Reittien käsittely"
+#
 #
 #
 # 
@@ -3392,6 +3510,7 @@ msgstr ""
 #~ msgstr "Pintalämpötila, C"
 #
 #
+#
 # 
 # 
 # 
@@ -3402,6 +3521,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Valtse GRIB-hakemisto"
+#
 #
 #
 # 
@@ -3416,6 +3536,7 @@ msgstr ""
 #~ msgstr "Lähetä reitti GPS:lle..."
 #
 #
+#
 # 
 # 
 # 
@@ -3423,6 +3544,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
 #
 #
 # 
@@ -3437,6 +3559,7 @@ msgstr ""
 #~ msgstr "Näytä GPX-ikoni"
 #
 #
+#
 # 
 # 
 # 
@@ -3447,6 +3570,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 # 
@@ -3461,6 +3585,7 @@ msgstr ""
 #~ msgstr "Näytä GRIB-ikoni"
 #
 #
+#
 # 
 # 
 # 
@@ -3471,6 +3596,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Merkitsevä aallonkorkeus, m"
+#
 #
 #
 # 
@@ -3485,6 +3611,7 @@ msgstr ""
 #~ msgstr "Käytä tarkkuusgrafiikkaa"
 #
 #
+#
 # 
 # 
 # 
@@ -3495,6 +3622,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
 #
 #
 # 

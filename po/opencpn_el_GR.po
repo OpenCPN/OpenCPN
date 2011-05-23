@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -633,6 +633,12 @@ msgstr "Διόπτευση:            %03d μοίρες.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Διόπτευση:            μη διαθέσιμη\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 msgid "Boundaries"
 msgstr "Σύνορα"
@@ -857,6 +863,11 @@ msgid "CoG"
 msgstr "Πορεία (CoG)"
 #
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "Χ&ρώμα:"
+#
+# 
 msgid "Colors"
 msgstr "Χρώματα"
 #
@@ -915,7 +926,33 @@ msgid "Cursor: "
 msgstr "κέρσορας: "
 #
 # 
+#, fuzzy
+msgid "Cyan"
+msgstr "Ακύρωση"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -930,9 +967,23 @@ msgstr "Απενεργοποίηση"
 msgid "Deactivate Route"
 msgstr "Απενεργοποίησε Ταξίδι (Route)"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 msgid "Deep Depth"
 msgstr "'Οριο Βαθέων Υδάτων"
+#
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Χρώμα Γραμματοσειράς."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 msgid "Delete All"
@@ -1079,6 +1130,9 @@ msgstr "Παύση Έναρξης Αναγνώρισης Συναγερμού Σ
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Ενεργοποίησε μεγένθυνση με ρόδα ποντικιού στον κέρσορα"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 msgid "End Route"
 msgstr "Τέλος Ταξιδιού"
@@ -1224,6 +1278,9 @@ msgstr "Μετάβαση στο Σημάδι/WP"
 msgid "Go to "
 msgstr "Πήγαινε σε"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1328,7 +1385,8 @@ msgid "Language/Fonts"
 msgstr "Γλώσσα/Γραμματοσειρές"
 #
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Χρόνος τελευταίας αναφοράς: "
 #
 # 
@@ -1387,6 +1445,11 @@ msgstr "Άδεια"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Πάχος:"
+#
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Πάχος:"
 #
 # 
@@ -1473,6 +1536,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -1747,10 +1813,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN κατασκευάζει Αρχείο S57 SENC"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
-#
-# 
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "Συναγερμός OpenCPN"
@@ -1917,6 +1979,13 @@ msgid "Position"
 msgstr "Θέση"
 #
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
+#
+# 
 msgid "Position:               "
 msgstr "Θέση:"
 #
@@ -2016,8 +2085,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2134,14 +2202,8 @@ msgstr ""
 "Το OpenCPN ανακεφαλαιώνει τη βάση δεδομένων Χαρτών από τα αρχεία "
 "διαμόρφωσης..."
 #
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2180,11 +2242,6 @@ msgstr "Αφαίρεσε χάρτη από τις επικαλύψεις"
 # 
 msgid "Rename Waypoints?"
 msgstr "Μετονομασία σημείου Πορείας (WP);"
-#
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
 #
 # 
 msgid "Reserved 11"
@@ -2394,6 +2451,11 @@ msgid "Show Important Text Only"
 msgstr "Εμφάνισε μόνο σημαντικό κείμενο"
 #
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Δείξε στόχους AIS"
+#
+# 
 msgid "Show Light Descriptions"
 msgstr "Δείξε Στοιχεία Φάρων"
 #
@@ -2459,6 +2521,15 @@ msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
 # 
 msgid "Simplified"
 msgstr "Απλοποιημένο"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Μέγεθος:          %dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, c-format
@@ -2869,6 +2940,11 @@ msgid "Unlist contents"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Υπογράμμιση"
+#
+# 
 msgid "Update Control"
 msgstr "Έλεγχος Ενημέρωσης"
 #
@@ -2993,6 +3069,9 @@ msgstr "Καλωσορίσατε στο OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Όπου η γραμματοσειρά είναι υπογραμμισμένη."
 #
+msgid "White"
+msgstr ""
+#
 # 
 msgid "WiFi Options"
 msgstr "Ρυθμίσεις για Ασύρματα Δίκτυα ( Wi-Fi )"
@@ -3020,6 +3099,11 @@ msgstr "Υ Αντιμετάθεση (θετική μετακινεί το χάρ
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Κλήση"
 #
 # 
 msgid "Zoom In"
@@ -3071,6 +3155,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3080,6 +3165,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
 #
 #
 # 
@@ -3093,6 +3179,7 @@ msgstr ""
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
 #
 #
+#
 # 
 # 
 # 
@@ -3102,6 +3189,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
 #
 #
 # 
@@ -3115,6 +3203,7 @@ msgstr ""
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
 #
 #
+#
 # 
 # 
 # 
@@ -3124,6 +3213,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
 #
 #
 # 
@@ -3136,6 +3226,7 @@ msgstr ""
 #~ msgstr "Θέσε αντιστάθμιση CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -3144,6 +3235,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 # 
@@ -3157,11 +3249,13 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Έξοδος OpenCPN"
+#
 #
 #
 # 
@@ -3171,6 +3265,21 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Βασικό ναυτικό"
+#
+#
+# 
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
+#
+# 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
+#~ "\n"
+#
 #
 #
 # 

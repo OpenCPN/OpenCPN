@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-11-26 12:30+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -850,6 +850,12 @@ msgstr "Kurs:              %03d St.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Kurs:            Nedostupný\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1141,6 +1147,13 @@ msgstr "CoG"
 # 
 # 
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "B&arva:"
+#
+# 
+# 
+# 
 msgid "Colors"
 msgstr "Barvy"
 #
@@ -1217,7 +1230,35 @@ msgid "Cursor: "
 msgstr "Kurzor:"
 #
 # 
+# 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Zrušit"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1238,11 +1279,27 @@ msgstr "Deaktivovat"
 msgid "Deactivate Route"
 msgstr "Deaktivovat trasu"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 # 
 # 
 msgid "Deep Depth"
 msgstr "Velká hloubka"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Barva fontu."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 # 
@@ -1448,6 +1505,9 @@ msgstr "Povolit vypršení potvrzení upozornění na cíl (minut)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Povolit přibližování ke kurzoru kolečkem"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1629,6 +1689,9 @@ msgstr "Navigovat na značku/WP"
 msgid "Go to "
 msgstr "Navigovat na"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1761,7 +1824,8 @@ msgstr "Jazyk/fonty"
 # 
 # 
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Čas posledního hlášení:      "
 #
 # 
@@ -1836,6 +1900,13 @@ msgstr "Licence"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Váha:"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Váha:"
 #
 # 
@@ -1940,6 +2011,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -2295,10 +2369,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Vytvořit OpenCPN Trasu"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 # 
 # 
 #, fuzzy
@@ -2513,6 +2583,15 @@ msgstr "Pozice"
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Stáří reportu:            %3d Sec.\n"
+#
+# 
+# 
+# 
 msgid "Position:               "
 msgstr "Pozice:             "
 #
@@ -2628,8 +2707,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2770,16 +2848,8 @@ msgstr "Pozice"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Aktualizovat databázi map ze záznamů v konfiguračním souboru...."
 #
-# 
-# 
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Perioda nedávného reportu:   %3d sek.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2830,13 +2900,6 @@ msgstr "Odstranit tuto mapu ze sestavy."
 # 
 msgid "Rename Waypoints?"
 msgstr "Přejmenovat trasové body"
-#
-# 
-# 
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Stáří reportu:            %3d Sec.\n"
 #
 # 
 msgid "Reserved 11"
@@ -3118,6 +3181,13 @@ msgstr "Zobrazit pouze důležitý text"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Zobrazit AIS cíle"
+#
+# 
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Zobrazit popisy světel"
 #
@@ -3210,6 +3280,17 @@ msgstr "Ukázat náhled fontu."
 # 
 msgid "Simplified"
 msgstr "Zjednodušený"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Velikost:                %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -3745,6 +3826,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "Podtrhno&ut"
+#
+# 
+# 
+# 
 msgid "Update Control"
 msgstr "Aktualizovat ovládací prvek"
 #
@@ -3892,6 +3980,9 @@ msgstr "Vítejte v OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Zda je font podtržen"
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 # 
@@ -3927,6 +4018,13 @@ msgstr "Y posun (Kladný posunuje mapu na sever) (NMi/cos(lat)) :"
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Volání"
 #
 # 
 # 
@@ -3990,6 +4088,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3999,6 +4098,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
+#
 #
 #
 # 
@@ -4012,6 +4112,7 @@ msgstr ""
 #~ msgstr "Posun CM93 zap."
 #
 #
+#
 # 
 # 
 # 
@@ -4021,6 +4122,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
+#
 #
 #
 # 
@@ -4034,6 +4136,7 @@ msgstr ""
 #~ msgstr "Nástroj Posun CM93...."
 #
 #
+#
 # 
 # 
 # 
@@ -4043,6 +4146,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
+#
 #
 #
 # 
@@ -4055,6 +4159,7 @@ msgstr ""
 #~ msgstr "Nastav posun CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -4063,6 +4168,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 # 
@@ -4078,6 +4184,7 @@ msgstr ""
 #~ msgstr "Soubor s mapou poškozen... vypínám tuto mapu \n"
 #
 #
+#
 # 
 # 
 # 
@@ -4085,6 +4192,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Ukonči OpenCPN"
+#
 #
 #
 # 
@@ -4102,6 +4210,7 @@ msgstr ""
 #~ msgstr "GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4116,12 +4225,25 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Perioda nedávného reportu:   %3d sek.\n"
+#~ "\n"
+#
+#
+#
+# 
+# 
+# 
 # 
 # 
 # 
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Jméno lodě:"
+#
 #
 #
 # 
@@ -4137,6 +4259,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Zobrazit ikonu GRIB"
+#
 #
 #
 # 

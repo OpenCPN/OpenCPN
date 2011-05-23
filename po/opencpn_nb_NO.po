@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2011-05-04 23:29+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -485,6 +485,12 @@ msgstr "Kurs:                %03d Gra.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Kurs:                Utilgjengelig\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 msgid "Boundaries"
 msgstr "Grenser"
 #
@@ -653,6 +659,10 @@ msgstr "Lukk"
 msgid "CoG"
 msgstr "COG"
 #
+#, fuzzy
+msgid "Color:"
+msgstr "F&arge:"
+#
 msgid "Colors"
 msgstr "Farger"
 #
@@ -698,8 +708,33 @@ msgstr "Strøm"
 msgid "Cursor: "
 msgstr "Kursor: "
 #
+#, fuzzy
+msgid "Cyan"
+msgstr "Avbryt"
+#
 msgid "D/V"
 msgstr "D/V"
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
+msgstr ""
 #
 msgid "De-Clutter Text (exp.)"
 msgstr "Ryddig visning av ENC-tekst"
@@ -710,8 +745,21 @@ msgstr "Deaktiver"
 msgid "Deactivate Route"
 msgstr "Deaktiver rute"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 msgid "Deep Depth"
 msgstr "Klart farvann (dybde)"
+#
+#, fuzzy
+msgid "Default color"
+msgstr "Font farge."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 msgid "Delete All"
 msgstr "Slett alle"
@@ -821,6 +869,9 @@ msgstr "Aktiver målvarsel utkvitterings timeout (minutter)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Aktiver Mushjul-Zoom-til-Kursor"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 msgid "End Route"
 msgstr "Avslutt rute"
 #
@@ -928,6 +979,9 @@ msgstr "Gå til merke/veipunkt"
 msgid "Go to "
 msgstr "Gå til"
 #
+msgid "Green"
+msgstr ""
+#
 msgid "HSC"
 msgstr "HSC"
 #
@@ -1003,7 +1057,8 @@ msgstr "Språk"
 msgid "Language/Fonts"
 msgstr "Språk og Skrift"
 #
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Siste rapport - tid:      "
 #
 msgid "Latitude"
@@ -1046,6 +1101,10 @@ msgid "License"
 msgstr "Lisens"
 #
 msgid "Light"
+msgstr "Lys"
+#
+#, fuzzy
+msgid "Light Gray"
 msgstr "Lys"
 #
 msgid "Light Vessel/Rig"
@@ -1110,6 +1169,9 @@ msgstr "MMSI"
 #
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
+#
+msgid "Magenta"
+msgstr ""
 #
 msgid "Mariner's Standard"
 msgstr "Mariner's Standard"
@@ -1313,9 +1375,6 @@ msgstr "OpenCPN ruteopprettelse"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC Filopprettelse..."
 #
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN S57 SENC Fil-lasting"
-#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Slett slepestrek"
 #
@@ -1438,6 +1497,12 @@ msgstr "Havneoppsyn"
 msgid "Position"
 msgstr "Posisjon"
 #
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Rapportens alder:             %3d Sek.\n"
+#
 msgid "Position:               "
 msgstr "Posisjon:"
 #
@@ -1513,7 +1578,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
@@ -1597,13 +1662,8 @@ msgstr "Virkelig (utenfor posisjon)"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Gjenoppbygger kartdatabase av konfigurasjonsfil oppføringer..."
 #
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Seneste rapport periode:   %3d Sek.\n"
-"\n"
 #
 msgid "Red cross ship"
 msgstr ""
@@ -1631,10 +1691,6 @@ msgstr "Fjern dette kartet fra fletting."
 #
 msgid "Rename Waypoints?"
 msgstr "Bytte navn på veipunkter?"
-#
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Rapportens alder:             %3d Sek.\n"
 #
 msgid "Reserved 11"
 msgstr "Reservert 11"
@@ -1790,6 +1846,10 @@ msgstr "Vis rutenett"
 msgid "Show Important Text Only"
 msgstr "Vis bare viktig tekst"
 #
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Vis på kart"
+#
 msgid "Show Light Descriptions"
 msgstr "Vis lyskarakteristikk"
 #
@@ -1837,6 +1897,14 @@ msgstr "Viser forhåndsvisning av skrift."
 #
 msgid "Simplified"
 msgstr "ENC standard"
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Størrelse:                 %dm x %dm x ---m\n"
+"\n"
 #
 #, c-format
 msgid ""
@@ -2151,6 +2219,10 @@ msgstr "Ukjent"
 msgid "Unlist contents"
 msgstr "Fjern innhold fra liste"
 #
+#, fuzzy
+msgid "Unspecified"
+msgstr "Udefinert"
+#
 msgid "Update Control"
 msgstr "Oppdateringskontroll"
 #
@@ -2246,6 +2318,9 @@ msgstr "Velkommen til OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Om skriften skal være understreket."
 #
+msgid "White"
+msgstr ""
+#
 msgid "WiFi Options"
 msgstr "WiFi alternativer"
 #
@@ -2266,6 +2341,10 @@ msgstr "Y forskyvning (Positiv, flytter kart mot nord) (Nm projisert) :"
 #
 msgid "Yat"
 msgstr "Yat"
+#
+#, fuzzy
+msgid "Yellow"
+msgstr "Celle"
 #
 msgid "Zoom In"
 msgstr "Zoom inn"
@@ -2307,5 +2386,18 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Avslutt OpenCPN"
+#
+#
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN S57 SENC Fil-lasting"
+#
+#
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Seneste rapport periode:   %3d Sek.\n"
+#~ "\n"

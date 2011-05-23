@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -606,6 +606,12 @@ msgstr "Relèvement          : %03d   Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Relèvement          : Indisponible\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 #
 msgid "Boundaries"
 msgstr "Limites de zones de cartes"
@@ -806,6 +812,11 @@ msgid "CoG"
 msgstr "COG"
 #
 #
+#, fuzzy
+msgid "Color:"
+msgstr "C&ouleur :"
+#
+#
 msgid "Colors"
 msgstr "Nombre de zones colorées"
 #
@@ -859,8 +870,34 @@ msgstr "Afficher les courants"
 msgid "Cursor: "
 msgstr "Curs. : "
 #
+#
+#, fuzzy
+msgid "Cyan"
+msgstr "Annuler"
+#
 msgid "D/V"
 msgstr "Plong."
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
+msgstr ""
 #
 #
 msgid "De-Clutter Text (exp.)"
@@ -874,9 +911,23 @@ msgstr "Désactiver"
 msgid "Deactivate Route"
 msgstr "Désactiver cette route"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 #
 msgid "Deep Depth"
 msgstr "Eaux profondes"
+#
+#
+#, fuzzy
+msgid "Default color"
+msgstr "Couleur de police"
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 #
 msgid "Delete All"
@@ -1014,6 +1065,9 @@ msgstr "Alerte sur cible : Activer le délai maximum d'acquitement (minutes)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Activer le zoom par la molette de la souris"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 #
 msgid "End Route"
 msgstr "Terminer la route"
@@ -1140,6 +1194,9 @@ msgstr "Aller à cette marque/WP (avec route)"
 msgid "Go to "
 msgstr "Aller au curseur (avec route)"
 #
+msgid "Green"
+msgstr ""
+#
 msgid "HSC"
 msgstr "grd. vit."
 #
@@ -1228,7 +1285,8 @@ msgid "Language/Fonts"
 msgstr "Langues / polices"
 #
 #
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Heure du dernier rapport   : "
 #
 #
@@ -1279,6 +1337,11 @@ msgstr "Licence"
 #
 #
 msgid "Light"
+msgstr "Feu"
+#
+#
+#, fuzzy
+msgid "Light Gray"
 msgstr "Feu"
 #
 msgid "Light Vessel/Rig"
@@ -1353,6 +1416,9 @@ msgstr "MMSI"
 #
 msgid "M_COVR ID"
 msgstr "M_COVRD ID"
+#
+msgid "Magenta"
+msgstr ""
 #
 #
 msgid "Mariner's Standard"
@@ -1595,9 +1661,6 @@ msgstr "Créer une route"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN crée le fichier des cartes S57 ..."
 #
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN charge le fichier des cartes S57"
-#
 #
 msgid "OpenCPN Track Delete"
 msgstr "Trace effacé par OpenCPN"
@@ -1742,6 +1805,13 @@ msgid "Position"
 msgstr "Position"
 #
 #
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Dernier rapport            : %3d Sec.\n"
+#
+#
 msgid "Position:               "
 msgstr "Position            :   "
 #
@@ -1828,7 +1898,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
@@ -1927,14 +1997,8 @@ msgstr ""
 "Reconstruction de la base de données des cartes, à partir du fichier de "
 "configuration ...."
 #
-#
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Fréquence rapports récents : %3d Sec.\n"
-"\n"
 #
 msgid "Red cross ship"
 msgstr ""
@@ -1968,11 +2032,6 @@ msgstr "Retirer cette carte de la mosaïque des cartes."
 #
 msgid "Rename Waypoints?"
 msgstr "Renommer les waypoint ?"
-#
-#
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Dernier rapport            : %3d Sec.\n"
 #
 msgid "Reserved 11"
 msgstr "Reservé 11"
@@ -2165,6 +2224,11 @@ msgid "Show Important Text Only"
 msgstr "Afficher : Textes importants seulement"
 #
 #
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Montrer sur la carte"
+#
+#
 msgid "Show Light Descriptions"
 msgstr "Afficher : Descriptions des feux"
 #
@@ -2225,6 +2289,15 @@ msgstr "Afficher la pré-visualisation de police"
 #
 msgid "Simplified"
 msgstr "Simplifiés"
+#
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Taille              : %dm x %dm x ---m\n"
+"\n"
 #
 #
 #, c-format
@@ -2597,6 +2670,11 @@ msgid "Unlist contents"
 msgstr "Conten,us non listyés"
 #
 #
+#, fuzzy
+msgid "Unspecified"
+msgstr "Non défini"
+#
+#
 msgid "Update Control"
 msgstr "Contrôler la mise à jour"
 #
@@ -2704,6 +2782,9 @@ msgstr "Bienvenue dans OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Police soulignée ou non."
 #
+msgid "White"
+msgstr ""
+#
 #
 msgid "WiFi Options"
 msgstr "Options Wifi"
@@ -2727,6 +2808,11 @@ msgstr "Verticalement      (+ : carte déplacée vers le nord) (NMi projeté) :"
 #
 msgid "Yat"
 msgstr "Yat"
+#
+#
+#, fuzzy
+msgid "Yellow"
+msgstr "Cellule"
 #
 #
 msgid "Zoom In"
@@ -2770,13 +2856,29 @@ msgstr "WGS X"
 msgid "wgsoy"
 msgstr "WGS Y"
 #
+#
 #~ msgid "Cell X Offset"
 #~ msgstr "Cellule : Compensation X"
+#
 #
 #~ msgid "Cell Y Offset"
 #~ msgstr "Cellule : Compensation Y"
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Quitter OpenCPN"
+#
+#
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN charge le fichier des cartes S57"
+#
+#
+#
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Fréquence rapports récents : %3d Sec.\n"
+#~ "\n"

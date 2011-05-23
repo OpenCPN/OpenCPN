@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-12-26 23:00+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -969,6 +969,12 @@ msgstr "Demora:                %03d Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Marcación:            No disponible\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1295,6 +1301,14 @@ msgstr "CoG"
 # 
 # 
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "C&olor:"
+#
+# 
+# 
+# 
+# 
 msgid "Colors"
 msgstr "Colores"
 #
@@ -1381,7 +1395,36 @@ msgid "Cursor: "
 msgstr "Cursor: "
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Cancelar"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1405,12 +1448,29 @@ msgstr "Desactivar"
 msgid "Deactivate Route"
 msgstr "Desactivar Ruta"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 # 
 # 
 # 
 msgid "Deep Depth"
 msgstr "Gran Profundidad"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Color de fuente."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 # 
@@ -1647,6 +1707,9 @@ msgstr "Activar retardopara alertas de objetivos tras reconocimiento (minutos)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Habilitar Zoom con rueda de ratón"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1849,6 +1912,9 @@ msgstr "Ir a Marca/WP"
 msgid "Go to "
 msgstr "Ir A "
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1996,7 +2062,8 @@ msgstr "Idioma/Fuentes"
 # 
 # 
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Hora Último Informe:       "
 #
 # 
@@ -2079,6 +2146,14 @@ msgstr "Licencia"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "Tamaño:"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "Tamaño:"
 #
 # 
@@ -2191,6 +2266,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -2587,10 +2665,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Crear archivo OpenCPN S57 SENC..."
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN Carga Archivo S57 SENC"
-#
-# 
 # 
 # 
 # 
@@ -2834,6 +2908,16 @@ msgstr "Posición"
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Antiguedad Informe:               %3d Sec.\n"
+#
+# 
+# 
+# 
+# 
 msgid "Position:               "
 msgstr "Posición:              "
 #
@@ -2964,8 +3048,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -3119,17 +3202,8 @@ msgstr "Posición"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Reconstruyendo la base de datos desde los archivos de configuración...."
 #
-# 
-# 
-# 
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Plazo Informe Reciente:   %3d Sec.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -3186,14 +3260,6 @@ msgstr "Eliminar esta carta de continuidad."
 # 
 msgid "Rename Waypoints?"
 msgstr "¿Renombrar Waypoints?"
-#
-# 
-# 
-# 
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Antiguedad Informe:               %3d Sec.\n"
 #
 # 
 msgid "Reserved 11"
@@ -3514,6 +3580,14 @@ msgstr "Mostrar Solo Texto Importante"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Mostrar objetivos AIS"
+#
+# 
+# 
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Mostrar Descripción Luces"
 #
@@ -3620,6 +3694,18 @@ msgstr "Muestra vista previa de fuente."
 # 
 msgid "Simplified"
 msgstr "Simplificado"
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Tamaño:                 %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -4220,6 +4306,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Subrayar"
+#
+# 
+# 
+# 
+# 
 msgid "Update Control"
 msgstr "Control de Actualizaciones"
 #
@@ -4380,6 +4474,9 @@ msgstr "Bienvenido a OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Si la fuente está subrayada."
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4416,6 +4513,14 @@ msgstr "Compensación Y (+ desplaza mapa al Norte) (NMi Projected) :"
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Llamar"
 #
 # 
 # 
@@ -4486,6 +4591,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4502,6 +4608,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 # 
@@ -4527,6 +4634,7 @@ msgstr ""
 #~ msgstr "&Borrar Todas Las Rutas..."
 #
 #
+#
 # 
 # 
 # 
@@ -4548,6 +4656,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 # 
@@ -4573,6 +4682,7 @@ msgstr ""
 #~ msgstr "(Derrota Activa)"
 #
 #
+#
 # 
 # 
 # 
@@ -4582,6 +4692,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Compensación CM93 Off"
+#
 #
 #
 # 
@@ -4595,6 +4706,7 @@ msgstr ""
 #~ msgstr "Compensación CM93 On"
 #
 #
+#
 # 
 # 
 # 
@@ -4604,6 +4716,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Herramienta Compensación CM93 Off"
+#
 #
 #
 # 
@@ -4617,6 +4730,7 @@ msgstr ""
 #~ msgstr "Herramienta Compensación CM93....."
 #
 #
+#
 # 
 # 
 # 
@@ -4626,6 +4740,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 # 
@@ -4648,6 +4763,7 @@ msgstr ""
 #~ msgstr "Señal Llamada:  "
 #
 #
+#
 # 
 # 
 # 
@@ -4658,6 +4774,7 @@ msgstr ""
 #~ msgstr "Ajustar Compensación CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -4666,6 +4783,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 # 
@@ -4680,6 +4798,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 # 
@@ -4709,6 +4828,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4732,6 +4852,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4740,6 +4861,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Salir de OpenCPN"
+#
 #
 #
 # 
@@ -4752,6 +4874,24 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
+#
+# 
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN Carga Archivo S57 SENC"
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Plazo Informe Reciente:   %3d Sec.\n"
+#~ "\n"
+#
 #
 #
 # 
