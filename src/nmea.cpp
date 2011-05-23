@@ -1063,8 +1063,8 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
       {
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
-            float kSog = 5.;//8.5;
-            float kCog = NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
+            float kSog = 4.;//8.5;
+            float kCog = 20.;//NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
@@ -1177,7 +1177,7 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
       }
 #endif
 
-
+#ifdef USE_GARMINHOST
       if(m_bGarmin_host)
       {
             int ret_val;
@@ -1288,10 +1288,10 @@ ret_point:
             return ret_bool;
 
       }
-      else                          // Standard NMEA mode
-      {
+      else
+#endif    //USE_GARMINHOST
 
-
+      {                       // Standard NMEA mode
             SENTENCE    snt;
             NMEA0183    oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -1384,7 +1384,8 @@ ret_point:
 
             g_pCommMan->CloseComPort ( port_fd );
 
-            return true;
+            ret_bool = true;
+            return ret_bool;
       }
 }
 
@@ -1451,6 +1452,7 @@ bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGaug
       }
 #endif
 
+#ifdef  USE_GARMINHOST
       //    Are we using Garmin Host mode for uploads?
       if(m_bGarmin_host)
       {
@@ -1541,8 +1543,10 @@ ret_point:
             return ret_bool;
 
       }
-      else                          // Standard NMEA mode
-      {
+      else
+#endif      //USE_GARMINHOST
+
+      {     // Standard NMEA mode
             SENTENCE    snt;
             NMEA0183    oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -1580,7 +1584,8 @@ ret_point:
 
             g_pCommMan->CloseComPort ( port_fd );
 
-            return true;
+            ret_bool = true;
+            return ret_bool;
       }
 
 }
