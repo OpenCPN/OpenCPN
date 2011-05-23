@@ -1756,7 +1756,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
 #endif
 
             //    Whatever is left in the vpr region and has not beed yet rendered must belong to the current target chart
-            vpr_region.Intersect(unrendered_region);
 
             wxPatchListNode *pinode = m_PatchList.Item(i);
             QuiltPatch *pqpi = pinode->GetData();
