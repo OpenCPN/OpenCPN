@@ -115,6 +115,9 @@ bool vdr_pi::DeInit(void)
             m_ostream.Close();
             m_recording = false;
       }
+
+      RemovePlugInTool( m_tb_item_id_record );
+      RemovePlugInTool( m_tb_item_id_play );
       return true;
 }
 
