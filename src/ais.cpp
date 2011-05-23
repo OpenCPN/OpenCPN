@@ -460,7 +460,16 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       {
             line.Printf(_("Name:  "));
             if(b_nameValid)
-                  line.Append( trimAISField(ShipName) );
+            {
+                  wxString uret = trimAISField(ShipName);
+                  wxString ret;
+                  if(uret == _T("Unknown"))
+                        ret = wxGetTranslation(uret);
+                  else
+                        ret = uret;
+
+                  line.Append( ret );
+            }
             line.Append(_T("\n\n"));
             result.Append(line);
       }
@@ -482,7 +491,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       }
 
       line.Printf(_("Class:                "));
-      line.Append(Get_class_string(false));
+      line.Append( wxGetTranslation(Get_class_string(false) ));
       line.Append(_T("\n"));
       result.Append(line);
 
@@ -492,14 +501,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             //      Nav Status
             line.Printf(_("Navigational Status:  "));
             if((NavStatus <= 21) && (NavStatus >= 0))
-                  line.Append( ais_status[NavStatus] );
+                  line.Append(  wxGetTranslation(ais_status[NavStatus]) );
             line.Append(_T("\n"));
             result.Append(line);
 
 
       //      Ship type
             line.Printf(_("Type:                 "));
-            line.Append( Get_vessel_type_string() );
+            line.Append(  wxGetTranslation(Get_vessel_type_string() ));
             line.Append(_T("\n"));
             result.Append(line);
 
@@ -514,12 +523,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                   else
                         type = it->second;
 
-                  if(type.Len() < 20)
-                        line.Append(type);
+                  wxString type_t;
+                  type_t =  wxGetTranslation(type);
+                  if(type_t.Len() < 20)
+                        line.Append(type_t);
                   else
                   {
                         line.Append(_T("\n  "));
-                        line.Append(type);
+                        line.Append(type_t);
                   }
 
                   line.Append(_T("\n"));
@@ -769,7 +780,14 @@ wxString AIS_Target_Data::GetRolloverString( void )
       if(b_nameValid)
       {
             result.Append(_T("\""));
-            result.Append(trimAISField(ShipName));
+            wxString uret = trimAISField(ShipName);
+            wxString ret;
+            if(uret == _T("Unknown"))
+                  ret = wxGetTranslation(uret);
+            else
+                  ret = uret;
+
+            result.Append(ret);
             result.Append(_T("\" "));
       }
       t.Printf(_T("%09d"), MMSI); result.Append(t);
@@ -785,15 +803,15 @@ wxString AIS_Target_Data::GetRolloverString( void )
             if (result.Len())
                   result.Append(_T("\n"));
             result.Append(_T("["));
-            result.Append(Get_class_string(false));
+            result.Append(wxGetTranslation(Get_class_string(false)));
             result.Append(_T("] "));
             if((Class != AIS_ATON) && (Class != AIS_BASE))
             {
-                  result.Append(Get_vessel_type_string(false));
+                  result.Append(wxGetTranslation(Get_vessel_type_string(false)));
                   if((NavStatus <= 15) && (NavStatus >= 0) )
                   {
                         result.Append(_T(" ("));
-                        result.Append(ais_status[NavStatus]);
+                        result.Append(wxGetTranslation(ais_status[NavStatus]));
                         result.Append(_T(")"));
                   }
             }
@@ -3663,7 +3681,13 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
-                              ret = trimAISField(pAISTarget->ShipName);
+                        {
+                              wxString uret = trimAISField(pAISTarget->ShipName);
+                              if(uret == _T("Unknown"))
+                                    ret = wxGetTranslation(uret);
+                              else
+                                    ret = uret;
+                        }
                         break;
 
                   case tlCALL:
@@ -3675,20 +3699,20 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         break;
 
                   case tlCLASS:
-                        ret = pAISTarget->Get_class_string(true);
+                        ret = wxGetTranslation(pAISTarget->Get_class_string(true));
                         break;
 
                   case tlTYPE:
                         if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
-                              ret = pAISTarget->Get_vessel_type_string(false);
+                              ret = wxGetTranslation(pAISTarget->Get_vessel_type_string(false));
                         break;
 
                   case tlNAVSTATUS:
                   {
                         if((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
-                              ret =  ais_status[pAISTarget->NavStatus];
+                              ret =  wxGetTranslation(ais_status[pAISTarget->NavStatus]);
                         else
                               ret = _("-");
                         if( (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
