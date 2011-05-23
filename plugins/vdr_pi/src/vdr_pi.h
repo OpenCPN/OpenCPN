@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: vdr_pi.h, v0.1 2011/04/30 SethDart Exp $
+ * $Id: vdr_pi.h, v0.2 2011/05/23 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  VDR Plugin
@@ -36,7 +36,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    0
-#define     PLUGIN_VERSION_MINOR    1
+#define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    5

@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: vdr_pi.cpp, v0.1 2011/04/30 SethDart Exp $
+ * $Id: vdr_pi.cpp, v0.2 2011/05/23 SethDart Exp $
  *
  * Project:  OpenCPN
  * Purpose:  VDR Plugin
@@ -100,15 +100,16 @@ bool vdr_pi::DeInit(void)
       {
             Stop(); // Stop timer
             m_istream.Close();
-
-            if ( m_pvdrcontrol )
-            {
-                  m_pauimgr->DetachPane( m_pvdrcontrol );
-                  m_pvdrcontrol->Close();
-                  m_pvdrcontrol->Destroy();
-                  m_pvdrcontrol = NULL;
-            }
       }
+
+      if ( m_pvdrcontrol )
+      {
+            m_pauimgr->DetachPane( m_pvdrcontrol );
+            m_pvdrcontrol->Close();
+            m_pvdrcontrol->Destroy();
+            m_pvdrcontrol = NULL;
+      }
+
       if ( m_recording )
       {
             m_ostream.Close();
@@ -232,10 +233,13 @@ void vdr_pi::OnToolbarToolCallback(int id)
                   m_istream.Open( m_ifilename );
                   Start( m_interval, wxTIMER_CONTINUOUS ); // start timer
       
-                  m_pvdrcontrol = new VDRControl( GetOCPNCanvasWindow(), wxID_ANY, this, 1000/m_interval, m_istream.GetLineCount() );
-                  wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("VDR")).Caption(_("VDR replay")).CaptionVisible(true).Float().FloatingPosition(50,100).Dockable(false).Fixed().CloseButton(false).Show(true);
-                  m_pauimgr->AddPane( m_pvdrcontrol, pane );
-                  m_pauimgr->Update();
+                  if (! m_pvdrcontrol )
+                  {
+                        m_pvdrcontrol = new VDRControl( GetOCPNCanvasWindow(), wxID_ANY, this, 1000/m_interval, m_istream.GetLineCount() );
+                        wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("VDR")).Caption(_("VDR replay")).CaptionVisible(true).Float().FloatingPosition(50,100).Dockable(false).Fixed().CloseButton(false).Show(true);
+                        m_pauimgr->AddPane( m_pvdrcontrol, pane );
+                        m_pauimgr->Update();
+                  }
 
                   SetToolbarItemState( id, true );
             }
