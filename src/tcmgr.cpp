@@ -241,9 +241,9 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
       for (a=0;a<num_csts;a++)
       {
-            fscanf (fp, "%s", linrec);
+            int ignore = fscanf (fp, "%s", linrec);
             for (b=0;b<num_nodes;b++)
-                  fscanf (fp, "%lf", &(cst_nodes[a][b]));
+                  ignore = fscanf (fp, "%lf", &(cst_nodes[a][b]));
       }
 
       fclose(fp);

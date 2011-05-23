@@ -5116,7 +5116,9 @@ bool s52plib::inter_tri_rect(wxPoint *ptp, render_canvas_parms *pb_spec)
 //----------------------------------------------------------------------------------
 int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec )
 {
-      unsigned char r, g, b;
+      unsigned char r = 0;
+      unsigned char g = 0;
+      unsigned char b = 0;
 
       if(!inter_tri_rect(ptp, pb_spec))
             return 0;
