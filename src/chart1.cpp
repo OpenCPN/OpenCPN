@@ -538,6 +538,7 @@ ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
+int               g_iSDMMFormat;
 
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
@@ -1177,10 +1178,12 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
       m_opacity = 255;
+      m_fade_timer.SetOwner(this, FADE_TIMER);
       if(g_bTransparentToolbar)
       {
             SetTransparent(128);
             m_opacity = 128;
+            m_fade_timer.Start(5000);
       }
 
 
@@ -1191,8 +1194,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_position = position;
       m_orient =  orient;
 
-      m_fade_timer.SetOwner(this, FADE_TIMER);
-      m_fade_timer.Start(5000, true);
 
 // A top-level sizer
       m_topSizer = new wxBoxSizer ( wxHORIZONTAL );
@@ -1202,7 +1203,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_dock_x = 0;
       m_dock_y = 0;
 
-      RePosition();
+//      RePosition();
 
       Hide();
 }
@@ -1257,7 +1258,7 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
 void ocpnFloatingToolbarDialog::RePosition()
 {
-      if(m_pparent)
+      if(m_pparent && m_ptoolbar)
       {
             wxSize cs = m_pparent->GetClientSize();
             if(-1 == m_dock_x)
@@ -1331,8 +1332,10 @@ void ocpnFloatingToolbarDialog::MouseEvent ( wxMouseEvent& event )
                   m_opacity = 255;
             }
 
-            if(event.Leaving())
-                  m_fade_timer.Start(5000, true);
+//            if(event.Leaving())
+//                  m_fade_timer.Start(5000, true);
+            m_fade_timer.Start(5000);           // retrigger the continuous timer
+
       }
 }
 
@@ -2639,9 +2642,10 @@ bool MyApp::OnInit()
         g_FloatingToolbarDialog->Raise();
         g_FloatingToolbarDialog->Show();
 
-//        gFrame->Raise();
+        gFrame->Raise();
 
-//        gFrame->SetFocus();
+        cc1->Enable();
+        cc1->SetFocus();
 
         return TRUE;
 }
@@ -3245,6 +3249,14 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 //      Set up the toggle states
+
+    if (cc1)
+    {
+    //  Re-establish toggle states
+          tb->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
+          tb->ToggleTool(ID_TIDE, cc1->GetbShowTide());
+    }
+
     if(pConfig)
         tb->ToggleTool(ID_FOLLOW, pConfig->st_bFollow);
 
@@ -4959,7 +4971,7 @@ int MyFrame::DoOptionsDialog()
 
       }
 
-      SetChartUpdatePeriod(cc1->VPoint);              // Pick up changes to skew compensator
+      SetChartUpdatePeriod(cc1->GetVP());              // Pick up changes to skew compensator
 
 //    Restart the async classes
 #ifdef USE_WIFI_CLIENT
@@ -5910,7 +5922,7 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
-            SetChartUpdatePeriod(cc1->VPoint);
+            SetChartUpdatePeriod(cc1->GetVP());
 
             UpdateGPSCompassStatusBox();           // Pick up the rotation
 
@@ -5962,7 +5974,7 @@ void MyFrame::SelectdbChart(int dbindex)
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
-            SetChartUpdatePeriod(cc1->VPoint);
+            SetChartUpdatePeriod(cc1->GetVP());
 
             UpdateGPSCompassStatusBox();           // Pick up the rotation
 
@@ -6403,7 +6415,7 @@ bool MyFrame::DoChartUpdate(void)
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
                 double set_scale = cc1->GetVPScale();
-                if(!cc1->VPoint.IsValid())
+                if(!cc1->GetVP().IsValid())
                     set_scale = 1./200000.;
 
                 cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
@@ -6532,7 +6544,7 @@ bool MyFrame::DoChartUpdate(void)
                     double set_scale = cc1->GetVPScale();
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
-                    if(!cc1->VPoint.IsValid())
+                    if(!cc1->GetVP().IsValid())
                         set_scale = 1./200000.;
                     else                                    // otherwise, match scale if elected.
                     {
