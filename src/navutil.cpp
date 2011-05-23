@@ -1148,7 +1148,6 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
             // Do it explicitely here for all platforms.
             dc.CalcBoundingBox ( r.x - sx2, r.y - sy2 );
             dc.CalcBoundingBox ( r.x + sx2, r.y + sy2 );
-
       }
 
       if ( m_bShowName )
@@ -1978,21 +1977,15 @@ void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
       // Can we prove this?
       if ( m_bVisible)
       {
-            wxPoint rpt1, rpt2;
-            DrawPointWhich ( dc_route, 1, &rpt1 );
-
             wxRoutePointListNode *node = pRoutePointList->GetFirst();
-            RoutePoint *prp1 = node->GetData();
-            node = node->GetNext();
-
             while ( node )
             {
 
                   RoutePoint *prp2 = node->GetData();
-                  prp2->Draw ( dc_route, &rpt2 );
-
-                  rpt1 = rpt2;
-                  prp1 = prp2;
+                  bool blink_save = prp2->m_bBlink;
+                  prp2->m_bBlink = false;
+                  prp2->Draw ( dc_route, NULL );
+                  prp2->m_bBlink = blink_save;
 
                   node = node->GetNext();
             }
@@ -3956,12 +3949,17 @@ void MyConfig::UpdateSettings()
 
       wxString st1;
 
-      if ( cc1 && cc1->VPoint.IsValid() )
+      if(cc1)
       {
-            st1.Printf ( _T ( "%10.4f,%10.4f" ), cc1->VPoint.clat, cc1->VPoint.clon );
-            Write ( _T ( "VPLatLon" ), st1 );
-            st1.Printf ( _T ( "%g" ), cc1->VPoint.view_scale_ppm );
-            Write ( _T ( "VPScale" ), st1 );
+            ViewPort vp = cc1->GetVP();
+
+            if ( vp.IsValid() )
+            {
+                  st1.Printf ( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
+                  Write ( _T ( "VPLatLon" ), st1 );
+                  st1.Printf ( _T ( "%g" ), vp.view_scale_ppm );
+                  Write ( _T ( "VPScale" ), st1 );
+            }
       }
 
       st1.Printf ( _T ( "%10.4f, %10.4f" ), gLat, gLon );
