@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -161,8 +161,8 @@ public:
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( void );
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
-      double GetVPRotation(void) { return VPoint.rotation; }
-      double GetVPSkew(void) { return VPoint.skew; }
+      double GetVPRotation(void) { return GetVP().rotation; }
+      double GetVPSkew(void) { return GetVP().skew; }
       void ClearbFollow(void);
 
       void GetCanvasPointPix(double rlat, double rlon, wxPoint *r);
@@ -185,11 +185,11 @@ public:
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
       int GetCanvasHeight(){ return m_canvas_height;}
-      float GetVPScale(){return VPoint.view_scale_ppm;}
-      float GetVPChartScale(){return VPoint.chart_scale;}
+      float GetVPScale(){return GetVP().view_scale_ppm;}
+      float GetVPChartScale(){return GetVP().chart_scale;}
       double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
-
+      ViewPort &GetVP(); const
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
       bool  GetbTCUpdate(){ return m_bTCupdate;}
@@ -202,8 +202,8 @@ public:
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void GetCursorLatLon(double *lat, double *lon);
 
-      bool ZoomCanvasIn(double lat = 0., double lon = 0.);
-      bool ZoomCanvasOut(double lat = 0., double lon = 0.);
+      bool ZoomCanvasIn(double factor, double lat = 0., double lon = 0.);
+      bool ZoomCanvasOut(double factor, double lat = 0., double lon = 0.);
       bool PanCanvas(int dx, int dy);
 
       void ShowAISTargetList(void);
@@ -233,12 +233,12 @@ public:
 	  wxCursor    *pCursorArrow;
 	  wxCursor    *pCursorCross;
       TCWin       *pCwin;
-      ViewPort    VPoint;
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
 
 
 private:
+      ViewPort    VPoint;
       void        PositionConsole(void);
       void        FinishRoute(void);
 
@@ -297,7 +297,7 @@ private:
 
       double       m_canvas_scale_factor;    // converter....
                                              // useage....
-                                             // true_chart_scale_on_display   = m_canvas_scale_factor / pixels_per_meter of displayed chart
+                                             // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
 
       //    Methods
@@ -305,7 +305,7 @@ private:
       void OnSize(wxSizeEvent& event);
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(wxDC& dc);
-      void DrawArrow(wxDC& dc, int x, int y, float rot_angle, float scale);
+      void DrawArrow(wxDC& dc, int x, int y, double rot_angle, double scale);
       void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
 
       void RotateTimerEvent(wxTimerEvent& event);
@@ -570,7 +570,7 @@ class ocpCursor : public wxCursor
             ocpCursor(const char **xpm_data, long type, int hotSpotX=0, int hotSpotY=0);
 };
 
-
+#ifdef USE_S57
 //----------------------------------------------------------------------------------------------------------
 //    s57QueryDialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -633,6 +633,44 @@ public:
 
 };
 
+//----------------------------------------------------------------------------------------------------------
+//    S57 Object Query Tree Control Specification
+//----------------------------------------------------------------------------------------------------------
+class S57ObjectTree: public wxTreeCtrl
+{
+      DECLARE_CLASS( S57ObjectTree )
+                  DECLARE_EVENT_TABLE()
+      public:
+      /// Constructors
+            S57ObjectTree( );
+            S57ObjectTree( S57QueryDialog* parent, wxWindowID id = wxID_ANY,
+                           const wxPoint& pos = wxDefaultPosition,
+                           const wxSize& size = wxDefaultSize,
+                           long style = wxTR_HAS_BUTTONS );
+
+            ~S57ObjectTree( );
+
+      /// Initialise our variables
+            void Init();
+
+      //  Override events
+            void OnItemExpanding( wxTreeEvent& event);
+            void OnItemSelectChange( wxTreeEvent& event);
+
+      //    Data
+            S57QueryDialog    *m_parent;
+
+};
+
+class MyTreeItemData : public wxTreeItemData
+{
+      public:
+            MyTreeItemData(S57ObjectDesc *pOD){ m_pOD = pOD; }
+
+            S57ObjectDesc     *m_pOD;
+};
+
+#endif
 
 class AISInfoWin;
 
@@ -688,45 +726,6 @@ public:
       int               m_nl;
       wxButton          *m_okButton;
 };
-
-
-//----------------------------------------------------------------------------------------------------------
-//    S57 Object Query Tree Control Specification
-//----------------------------------------------------------------------------------------------------------
-class S57ObjectTree: public wxTreeCtrl
-{
-      DECLARE_CLASS( S57ObjectTree )
-      DECLARE_EVENT_TABLE()
-public:
-      /// Constructors
-      S57ObjectTree( );
-      S57ObjectTree( S57QueryDialog* parent, wxWindowID id = wxID_ANY,
-                                        const wxPoint& pos = wxDefaultPosition,
-                                        const wxSize& size = wxDefaultSize,
-                                        long style = wxTR_HAS_BUTTONS );
-
-      ~S57ObjectTree( );
-
-      /// Initialise our variables
-      void Init();
-
-      //  Override events
-      void OnItemExpanding( wxTreeEvent& event);
-      void OnItemSelectChange( wxTreeEvent& event);
-
-      //    Data
-      S57QueryDialog    *m_parent;
-
-};
-
-class MyTreeItemData : public wxTreeItemData
-{
-public:
-      MyTreeItemData(S57ObjectDesc *pOD){ m_pOD = pOD; }
-
-      S57ObjectDesc     *m_pOD;
-};
-
 
 
 //----------------------------------------------------------------------------

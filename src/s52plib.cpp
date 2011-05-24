@@ -4646,8 +4646,7 @@ char *s52plib::RenderCS ( ObjRazRules *rzRules, Rules *rules )
       if ( rules->razRule == NULL )
       {
             if ( !f05 )
-                  CPLError ( ( CPLErr ) 0, 0,"S52plib:_renderCS(): ERROR no conditional symbology for: %s\n",
-                             rules->INSTstr );
+//                  CPLError ( ( CPLErr ) 0, 0,"S52plib:_renderCS(): ERROR no conditional symbology for: %s\n", rules->INSTstr );
             f05++;
             return 0;
       }
@@ -5117,7 +5116,9 @@ bool s52plib::inter_tri_rect(wxPoint *ptp, render_canvas_parms *pb_spec)
 //----------------------------------------------------------------------------------
 int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec )
 {
-      unsigned char r, g, b;
+      unsigned char r = 0;
+      unsigned char g = 0;
+      unsigned char b = 0;
 
       if(!inter_tri_rect(ptp, pb_spec))
             return 0;
@@ -5712,9 +5713,9 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
       {
 //            printf ( "### ledge out of range\n" );
             ret_val = 1;
-            r=255;
-            g=0;
-            b=0;
+//            r=255;
+//            g=0;
+//            b=0;
       }
 
       //    Right edge
@@ -5780,13 +5781,14 @@ inline int s52plib::dda_trap ( wxPoint *segs, int lseg, int rseg, int ytop, int 
             }
       }
 
+
       if ( ( ytop < ymin ) || ( ybot > ymax ) )
       {
 //            printf ( "### redge out of range\n" );
             ret_val = 1;
-            r=255;
-            g=0;
-            b=0;
+//            r=255;
+//            g=0;
+//            b=0;
       }
 
       //    Clip trapezoid to height spec

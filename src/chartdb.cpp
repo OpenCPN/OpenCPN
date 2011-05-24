@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -49,9 +49,8 @@
 
 #ifdef USE_S57
 #include "s57chart.h"
-#endif
-
 #include "cm93.h"
+#endif
 
 
 extern ChartBase    *Current_Ch;
@@ -172,15 +171,17 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
       else if (chartExt == wxT("GEO")) {
             pch = new ChartGEO;
       }
+#ifdef USE_S57
       else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
             pch = new s57chart;
       }
+#endif
       else if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
             ChartPlugInWrapper *cpiw = new ChartPlugInWrapper(chart_desc.m_class_name);
             pch = (ChartBase *)cpiw;
       }
 
-#ifdef USE_CM93
+#ifdef USE_S57
       else
       {
             wxRegEx rxName(wxT("[0-9]+"));
@@ -758,7 +759,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             }
 #endif
 
-#ifdef USE_CM93
+#ifdef USE_S57
             else if(chart_type == CHART_TYPE_CM93)
             {
 //                  Ch = new cm93chart();

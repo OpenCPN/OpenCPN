@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -1005,6 +1005,12 @@ msgstr "Направление:              %5.0f Град.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Тип судна:  "
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1332,6 +1338,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "&Цвет:"
+#
+# 
+# 
+# 
+# 
 msgid "Colors"
 msgstr "Цветность"
 #
@@ -1419,7 +1433,36 @@ msgid "Cursor: "
 msgstr "Курсор: "
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Отмена"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1444,12 +1487,29 @@ msgstr "Деактивировать маршрут"
 msgid "Deactivate Route"
 msgstr "Деактивировать маршрут"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 # 
 # 
 # 
 msgid "Deep Depth"
 msgstr "Глубоко"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Цвет шрифта."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 # 
@@ -1694,6 +1754,9 @@ msgstr ""
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Разрешить увеличение масштаба колесом мышки"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1895,6 +1958,9 @@ msgstr "Установить судно здесь"
 msgid "Go to "
 msgstr "Установить судно здесь"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -2042,7 +2108,7 @@ msgstr "Языки/шрифты"
 # 
 # 
 #, fuzzy
-msgid "Latest Report Time:      "
+msgid "Last Position Report Time:  "
 msgstr "Время последнего сообщения:       "
 #
 # 
@@ -2127,6 +2193,14 @@ msgstr "Лицензия"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Толщина:"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Толщина:"
 #
 # 
@@ -2237,6 +2311,9 @@ msgstr ""
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -2639,10 +2716,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Создать маршрут OpenCPN"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 # 
 # 
 # 
@@ -2889,6 +2962,16 @@ msgstr "Положение"
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Давность сообщения:               %3d сек.\n"
+#
+# 
+# 
+# 
+# 
 #, fuzzy
 msgid "Position:               "
 msgstr "Координаты:              "
@@ -3015,8 +3098,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -3175,17 +3257,8 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "OpenCPN необходимо обновить базу данных карты из конфигурационного файла...."
 #
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Период последних отчётов:     %3d Сек.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -3244,14 +3317,6 @@ msgstr "Удалить точку из маршрута"
 #, fuzzy
 msgid "Rename Waypoints?"
 msgstr "Путевые точки"
-#
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Давность сообщения:               %3d сек.\n"
 #
 # 
 msgid "Reserved 11"
@@ -3573,6 +3638,14 @@ msgstr "Показывать только важные сообщения"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Отображать треки целей"
+#
+# 
+# 
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Показывать описания маяков"
 #
@@ -3679,6 +3752,16 @@ msgstr "Показать пример отображения шрифта."
 # 
 msgid "Simplified"
 msgstr "Упрощённый"
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr "Ожидаемое время прибытия:                  "
 #
 # 
 # 
@@ -4258,6 +4341,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Подчёркнутый"
+#
+# 
+# 
+# 
+# 
 msgid "Update Control"
 msgstr "Управление обновлениями"
 #
@@ -4414,6 +4505,9 @@ msgstr "О программе OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Является ли шрифт подчёркнутым."
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4450,6 +4544,14 @@ msgstr ""
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Очистить всё"
 #
 # 
 # 
@@ -4510,6 +4612,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4527,6 +4630,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 # 
@@ -4553,6 +4657,7 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+#
 # 
 # 
 # 
@@ -4575,6 +4680,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
 #
 #
 # 
@@ -4601,6 +4707,7 @@ msgstr ""
 #~ msgstr "Удалить трек"
 #
 #
+#
 # 
 # 
 # 
@@ -4621,6 +4728,7 @@ msgstr ""
 #~ msgstr "Позывной:  "
 #
 #
+#
 # 
 # 
 # 
@@ -4633,6 +4741,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
 #
 #
 # 
@@ -4656,6 +4765,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -4683,6 +4793,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -4716,6 +4827,7 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+#
 # 
 # 
 # 
@@ -4741,6 +4853,7 @@ msgstr ""
 #~ msgstr "Время прибытия"
 #
 #
+#
 # 
 # 
 # 
@@ -4761,6 +4874,7 @@ msgstr ""
 #~ msgstr "Ожидаемое время прибытия:                  Неизвестно"
 #
 #
+#
 # 
 # 
 # 
@@ -4769,6 +4883,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 # 
@@ -4802,6 +4917,7 @@ msgstr ""
 #~ msgstr "Экспорт...."
 #
 #
+#
 # 
 # 
 # 
@@ -4825,6 +4941,7 @@ msgstr ""
 #~ msgstr "GPX"
 #
 #
+#
 # 
 # 
 # 
@@ -4839,6 +4956,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 # 
@@ -4859,6 +4977,7 @@ msgstr ""
 #~ msgstr "Данные GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4875,6 +4994,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 # 
@@ -4895,6 +5015,7 @@ msgstr ""
 #~ msgstr "Каталог файлов GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4905,6 +5026,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Морской стандарт"
+#
 #
 #
 # 
@@ -4925,6 +5047,7 @@ msgstr ""
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4941,6 +5064,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 # 
@@ -4962,6 +5086,7 @@ msgstr ""
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4979,6 +5104,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 # 
@@ -5003,6 +5129,20 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Период последних отчётов:     %3d Сек.\n"
+#~ "\n"
+#
+#
+#
+# 
+# 
+# 
+# 
 # 
 # 
 # 
@@ -5016,6 +5156,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 # 
@@ -5042,6 +5183,7 @@ msgstr ""
 #~ msgstr "Отправить в устройство GPS"
 #
 #
+#
 # 
 # 
 # 
@@ -5052,6 +5194,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
 #
 #
 # 
@@ -5077,6 +5220,7 @@ msgstr ""
 #~ msgstr "Показать иконку GPX"
 #
 #
+#
 # 
 # 
 # 
@@ -5100,6 +5244,7 @@ msgstr ""
 #~ msgstr "Показать диалог GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -5114,6 +5259,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Показать иконку GRIB"
+#
 #
 #
 # 
@@ -5134,6 +5280,7 @@ msgstr ""
 #~ msgstr "Характерная высота волны, м"
 #
 #
+#
 # 
 # 
 # 
@@ -5148,6 +5295,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 # 
@@ -5168,6 +5316,7 @@ msgstr ""
 #~ msgstr "ВНИМАНИЕ: данные QuickScat GRIB актуальны на %d часов назад"
 #
 #
+#
 # 
 # 
 # 
@@ -5184,6 +5333,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 # 

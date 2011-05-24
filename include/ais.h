@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -39,6 +39,7 @@
 #include <wx/aui/aui.h>
 
 ////////////TH//////////////////
+#ifndef OCPN_NO_SOCKETS
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
@@ -50,6 +51,8 @@
 
 #include "wx/socket.h"
 ///////////TH100126////////////////
+#endif
+
 #include "wx/sound.h"
 
 #include "dychart.h"
@@ -179,6 +182,7 @@ public:
     int                       ROTIND;
     char                      CallSign[8];                // includes terminator
     char                      ShipName[21];
+    char                      ShipNameExtension[21];
     unsigned char             ShipType;
     int                       IMO;
 
@@ -243,6 +247,7 @@ public:
     unsigned char to_6bit(const char c);
     int GetInt(int sp, int len);
     bool GetStr(int sp, int len, char *dest, int max_len);
+    int GetBitCount();
 
 
 private:
@@ -356,9 +361,11 @@ private:
 
     AIS_Target_Hash *AISTargetList;
 
-
+#ifndef OCPN_NO_SOCKETS
     wxIPV4address     addr;
     wxSocketClient    *m_sock;
+#endif
+
     bool              m_busy;
     wxTimer           TimerAIS;
     wxFrame           *m_parent_frame;
@@ -525,7 +532,7 @@ class AISTargetListDialog: public wxPanel
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;
             wxButton          *m_pButtonInfo;
-            wxButton          *m_pButtonScroll;
+            wxButton          *m_pButtonJumpTo;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxSize            m_size_min;

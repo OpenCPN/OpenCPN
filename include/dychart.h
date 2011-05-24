@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -38,8 +38,6 @@
 
 #ifndef _DYCHART_H_
 #define _DYCHART_H_
-
-#define USE_CM93
 
 //    Profiling support
 

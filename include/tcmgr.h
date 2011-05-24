@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -263,7 +263,7 @@ private:
 
 //    TideLib
       double _time2dt_tide (time_t t, int deriv);
-      double blend_tide (time_t t, int deriv, int first_year, double blend);
+      double blend_tide (time_t t, unsigned int deriv, int first_year, double blend);
       double time2dt_tide (time_t t, int deriv);
       int next_big_event (time_t *tm, IDX_entry *pIDX);
       double time2atide (time_t t, IDX_entry *pIDX);

@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -55,21 +55,20 @@
  * The cvsid_aw() function is just there to prevent reports of cpl_cvsid()
  * being unused.
  */
-
+/*
 #ifndef DISABLE_CVSID
 #  define CPL_CVSID(string)     static char cpl_cvsid[] = string; \
 static char *cvsid_aw() { return( cvsid_aw() ? ((char *) NULL) : cpl_cvsid ); }
 #else
 #  define CPL_CVSID(string)
 #endif
-
+*/
 #endif
 
 #ifdef __MSVC__
 #define snprintf mysnprintf
 #endif
 
-CPL_CVSID("$Id: georef.c,v 1.26 2010/05/02 03:00:41 bdbcat Exp $");
 
 
 

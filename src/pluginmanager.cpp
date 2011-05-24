@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -138,10 +138,13 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                         bool bver_ok = false;
                         switch(ver)
                         {
-                              case 102:                                 // TODO add more valid API versions to this case as necessary
+                              // TODO add more valid API versions to last case as necessary
+                              case 102:
                               case 103:
                               case 104:
-                              case 105:
+                                    break;      // incompatible
+
+                              case 105:   // New PlugIn class definition in Version 2.4 Beta,
                                     bver_ok = true;
                                     break;
                               default:
@@ -182,6 +185,8 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
                               msg.Printf(_("PlugInManager: Unloading PlugIn with invalid API version %d.%d: "), api_major, api_minor );
                               msg += pic->m_plugin_file;
                               wxLogMessage(msg);
+
+                              pic->m_destroy_fn(pic->m_pplugin);
 
                               delete pic->m_plibrary;            // This will unload the PlugIn
                               delete pic;

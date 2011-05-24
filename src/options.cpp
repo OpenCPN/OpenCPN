@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -42,17 +42,18 @@
 #include <wx/listbox.h>
 #include <wx/imaglist.h>
 #include <wx/display.h>
+#include <wx/choice.h>
 
 #include "dychart.h"
 #include "chart1.h"
 #include "options.h"
-#include "cm93.h"
 
 #include "navutil.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
 #include "s52utils.h"
+#include "cm93.h"
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
@@ -114,6 +115,7 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bTransparentToolbar;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
@@ -152,6 +154,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern int              g_iSDMMFormat;
 
 extern wxLocale         locale_def_lang;
 
@@ -596,7 +599,9 @@ void options::CreateControls()
       m_itemNMEAListBox = new wxComboBox(itemPanelGPS, ID_CHOICE_NMEA);
       itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
 
-#ifndef OCPN_DISABLE_SOCKETS
+
+#if !defined( OCPN_NO_SOCKETS) || defined(BUILD_WITH_LIBGPS)
+
 //    Add NMEA TCP/IP Server address
       m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
       m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
@@ -604,6 +609,12 @@ void options::CreateControls()
 
       m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
       m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
+
+      m_itemNMEA_TCPIP_StaticBox->Enable(false);
+      m_itemNMEA_TCPIP_Source->Enable(false);
+
+      m_itemNMEA_TCPIP_Source->WriteText(_T("localhost"));
+
 #endif
 
 
@@ -638,7 +649,7 @@ void options::CreateControls()
       m_itemNMEAListBox->Append( _T("Network LIBGPS"));
 #endif
 
-#ifndef OCPN_DISABLE_SOCKETS
+#ifndef OCPN_NO_SOCKETS
       m_itemNMEAListBox->Append( _T("Network GPSD"));
 #endif
 
@@ -648,7 +659,6 @@ void options::CreateControls()
 //    Activate the proper selections
 //    n.b. Hard coded indices
       int scidx;
-      bool tcp_en = false;
       wxString source;
       source = (*pNMEADataSource);
       if(source.Upper().Contains(_T("SERIAL")))
@@ -669,15 +679,31 @@ void options::CreateControls()
       else if(source.Upper().Contains(_T("LIBGPS")))
       {
             scidx = m_itemNMEAListBox->FindString(_T("Network LIBGPS"));
-            tcp_en = true;
+            wxString ip;
+            if(source.StartsWith(_T("LIBGPS")) )
+                  ip = source.AfterFirst(':');
+            else
+                  ip = _T("localhost");
+
+            m_itemNMEA_TCPIP_Source->WriteText(ip);
+            m_itemNMEA_TCPIP_StaticBox->Enable(true);
+            m_itemNMEA_TCPIP_Source->Enable(true);
       }
 #endif
 
-#ifndef OCPN_DISABLE_SOCKETS
+#ifndef OCPN_NO_SOCKETS
       else if(source.Upper().Contains(_T("GPSD")))
       {
             scidx = m_itemNMEAListBox->FindString(_T("Network GPSD"));
-            tcp_en = true;
+            wxString ip;
+            if(source.StartsWith(_T("GPSD")) )
+                  ip = source.AfterFirst(':');
+            else
+                  ip = _T("localhost");
+
+            m_itemNMEA_TCPIP_Source->WriteText(ip);
+            m_itemNMEA_TCPIP_StaticBox->Enable(true);
+            m_itemNMEA_TCPIP_Source->Enable(true);
       }
 #endif
       else
@@ -693,31 +719,7 @@ void options::CreateControls()
 
 
       m_itemNMEAListBox->SetSelection(scidx);
- ///     itemNMEASourceStaticBoxSizer->Add(m_itemNMEAListBox, 0, wxEXPAND|wxALL, border_size);
 
-#ifndef OCPN_DISABLE_SOCKETS
-
-//    Add NMEA TCP/IP Server address
-//      m_itemNMEA_TCPIP_StaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("GPSD Data Server"));
-//      m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemNMEA_TCPIP_StaticBox, wxVERTICAL);
-//      itemNMEAStaticBoxSizer->Add(m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, 4);
-
-//      m_itemNMEA_TCPIP_Source = new wxTextCtrl(itemPanelGPS, wxID_ANY);
-//      m_itemNMEA_TCPIP_StaticBoxSizer->Add(m_itemNMEA_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
-
-      m_itemNMEA_TCPIP_StaticBox->Enable(tcp_en);
-      m_itemNMEA_TCPIP_Source->Enable(tcp_en);
-
-      if(tcp_en)
-      {
-            wxString ip;
-            if(source.StartsWith(_T("LIBGPS")) || source.StartsWith(_T("GPSD")))
-                  ip = source.AfterFirst(':');
-            else
-                  ip = _T("localhost");
-            m_itemNMEA_TCPIP_Source->WriteText(ip);
-      }
-#endif
 
       //    NMEA Baud Rate
       wxStaticBox* itemNMEABaudStaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("NMEA Baud Rate"));
@@ -799,9 +801,6 @@ void options::CreateControls()
 
     wxBoxSizer* itemBoxSizer25 = new wxBoxSizer(wxVERTICAL);
     ps57Ctl->SetSizer(itemBoxSizer25);
-
-//    wxBoxSizer* itemBoxSizer25 = new wxBoxSizer(wxHORIZONTAL);
-//    itemBoxSizer22->Add(itemBoxSizer25, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, border_size);
 
     wxStaticBox* itemStaticBoxSizer26Static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Chart Display Filters"));
     wxStaticBoxSizer* itemStaticBoxSizer26 = new wxStaticBoxSizer(itemStaticBoxSizer26Static, wxHORIZONTAL);
@@ -900,14 +899,14 @@ void options::CreateControls()
     itemStaticBoxSizer83->Add(p24Color, 0, wxALL|wxEXPAND, check_spacing_2);
 
 
-
+#ifdef USE_S57
     wxStaticBox *pslStatBox = new wxStaticBox(ps57Ctl, wxID_ANY, _("CM93 Zoom Detail"));
     wxStaticBoxSizer* itemStaticBoxSizersl = new wxStaticBoxSizer(pslStatBox, wxVERTICAL);
     itemStaticBoxSizer83->Add(itemStaticBoxSizersl, 0, wxALL|wxEXPAND, border_size);
     m_pSlider_CM93_Zoom = new wxSlider(ps57Ctl, ID_CM93ZOOM , 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                                        wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     itemStaticBoxSizersl->Add(m_pSlider_CM93_Zoom, 0, wxALL|wxEXPAND, border_size);
-
+#endif
 
     wxStaticBox*  pdepth_static = new wxStaticBox(ps57Ctl, wxID_ANY, _("Depth Settings"));
     wxStaticBoxSizer *pdepth_sizer = new wxStaticBoxSizer(pdepth_static, wxHORIZONTAL);
@@ -1223,10 +1222,10 @@ void options::CreateControls()
 
     wxString pDistUnitsStrings[] = {
           _("&Nautical miles"),
-             _("&Kilometers"),
+          _("&Kilometers")
     };
     m_itemNavAidRadarRingsStepUnitsRadioBox = new wxRadioBox( itemPanelAdvanced, ID_RADIOBOX, _("Units"), wxDefaultPosition, wxDefaultSize,
-                2, pDistUnitsStrings, 1, wxRA_SPECIFY_COLS );
+          2, pDistUnitsStrings, 1, wxRA_SPECIFY_ROWS );
     pRadarGrid->Add(m_itemNavAidRadarRingsStepUnitsRadioBox, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM, border_size);
 
 
@@ -1258,35 +1257,26 @@ void options::CreateControls()
     pFullScreenToolbar = new wxCheckBox( itemPanelAdvanced, ID_FSTOOLBARCHECKBOX, _("Show toolbar in fullscreen mode"));
     itemStaticBoxSizerGUIOption->Add(pFullScreenToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
+    pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
+    itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    //  Printing checkbox
-/*    wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Printing"));
-    wxStaticBoxSizer* itemStaticBoxSizerPrint = new wxStaticBoxSizer(itemStaticBoxSizerPrintStatic, wxVERTICAL);
-    itemBoxSizer6->Add(itemStaticBoxSizerPrint, 0, wxGROW|wxALL, border_size);
-    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Printing Icon") );
-    pPrintShowIcon->SetValue(FALSE);
-    itemStaticBoxSizerPrint->Add(pPrintShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
+    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer(2);
+    pFormatGrid->AddGrowableCol(1);
+    itemStaticBoxSizerGUIOption->Add(pFormatGrid, 0, wxALL|wxEXPAND, border_size);
 
-    // Chart Display Options Box
-    wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox(itemPanel5, wxID_ANY, _("Chart Display Options"));
-    wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer(itemStaticBoxSizerCDOStatic, wxVERTICAL);
-    itemBoxSizer6->Add(itemStaticBoxSizerCDO, 0, wxGROW|wxALL, border_size);
+    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelAdvanced, wxID_STATIC, _("Show Lat/Long as"));
+    pFormatGrid->Add(itemStaticTextSDMMFormat, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, border_size);
 
-    //  Chart Outlines checkbox
-    pCDOOutlines = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Chart Outlines") );
-    pCDOOutlines->SetValue(FALSE);
-    itemStaticBoxSizerCDO->Add(pCDOOutlines, 1, wxALIGN_LEFT|wxALL, border_size);
-
-
-    //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( itemPanel5, ID_SHOWDEPTHUNITSBOX1, _("Show DepthUnits") );
-    pSDepthUnits->SetValue(FALSE);
-    itemStaticBoxSizerCDO->Add(pSDepthUnits, 1, wxALIGN_LEFT|wxALL, border_size);
-*/
+    wxString pSDMMFormats[] = {
+          _("Degrees, Decimal minutes"),
+          _("Decimal degrees"),
+          _("Degrees, Minutes, Seconds")
+    };
+    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof( wxString );
+    pSDMMFormat = new wxChoice( itemPanelAdvanced, ID_SDMMFORMATCHOICE, wxDefaultPosition, wxDefaultSize, m_SDMMFormatsNChoices,  pSDMMFormats);
+    pFormatGrid->Add(pSDMMFormat, 0, wxALIGN_RIGHT, 2);
 
 
-
-    // toh, 2009.02.14; end
 
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize, g_pi_manager->GetPlugInArray() );
@@ -1395,6 +1385,8 @@ void options::SetInitialSettings()
       pPreserveScale->SetValue(g_bPreserveScaleOnX);
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
       pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
+      pTransparentToolbar->SetValue(g_bTransparentToolbar);
+      pSDMMFormat->Select(g_iSDMMFormat);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
       pTrackDaily->SetValue(g_bTrackDaily);
@@ -1465,7 +1457,6 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.0f"),g_AckTimeout_Mins);
       m_pText_ACK_Timeout->SetValue(s);
 
-      m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
       // Rollover
       m_pCheck_Rollover_Class->SetValue(g_bAISRolloverShowClass);
@@ -1474,6 +1465,8 @@ void options::SetInitialSettings()
 
 
 #ifdef USE_S57
+      m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
+
 //    S52 Primary Filters
       ps57CtlListBox->Clear();
 
@@ -1779,6 +1772,8 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
+    g_bTransparentToolbar = pTransparentToolbar->GetValue();
+    g_iSDMMFormat = pSDMMFormat->GetSelection();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();
     m_pText_TP_Secs->GetValue().ToDouble(&g_TrackIntervalSeconds);
@@ -1897,10 +1892,12 @@ void options::OnXidOkClick( wxCommandEvent& event )
     *pWIFIServerName = WiFiSource;
 #endif
 
-    g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
 
 #ifdef USE_S57
-    //    Handle s57 Tab
+      //    Handle Vector Charts Tab
+
+      g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+
       int nOBJL = ps57CtlListBox->GetCount();
 
       for( int iPtr = 0 ; iPtr < nOBJL ; iPtr++)

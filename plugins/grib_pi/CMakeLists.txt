@@ -78,7 +78,12 @@ SET(SRC_GRIB
             src/GribReader.cpp 
             src/GribRecord.cpp  
             src/zuFile.cpp 
-            src/IsoLine.cpp 
+            src/IsoLine.cpp
+)
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+
+IF(NOT UNIX)
+    SET(SRC_BZIP
             src/bzip2/bzlib.c 
             src/bzip2/blocksort.c 
             src/bzip2/compress.c 
@@ -86,15 +91,16 @@ SET(SRC_GRIB
             src/bzip2/decompress.c 
             src/bzip2/huffman.c 
             src/bzip2/randtable.c
-	)
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+    )
+    ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
 
-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
-INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
+    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
+ENDIF(NOT UNIX)
 
 IF(WIN32)
   SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} LIB_BZIP ${OPENCPN_IMPORT_LIB} )
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 

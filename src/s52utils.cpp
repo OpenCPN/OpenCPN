@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *
  *   Copyright (C) 2000-2004  Sylvain Duclos
  *   sduclos@users.sourceforgue.net

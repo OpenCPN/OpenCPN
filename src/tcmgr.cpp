@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,70 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: tcmgr.cpp,v $
- * Revision 1.12  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.11  2009/09/29 18:15:36  bdbcat
- * Eliminate more unusable current stations
- *
- * Revision 1.10  2009/08/25 21:27:17  bdbcat
- * Cleanup/study
- *
- * Revision 1.9  2009/08/03 03:12:49  bdbcat
- * Cleanup for MSVC
- *
- * Revision 1.8  2009/07/29 20:05:29  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.7  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.6  2008/04/09 03:51:43  bdbcat
- * Correct 64bit time_t math
- *
- * Revision 1.5  2008/03/30 22:24:40  bdbcat
- * Update for Mac OSX/Unicode
- *
- * $Log: tcmgr.cpp,v $
- * Revision 1.12  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.11  2009/09/29 18:15:36  bdbcat
- * Eliminate more unusable current stations
- *
- * Revision 1.10  2009/08/25 21:27:17  bdbcat
- * Cleanup/study
- *
- * Revision 1.9  2009/08/03 03:12:49  bdbcat
- * Cleanup for MSVC
- *
- * Revision 1.8  2009/07/29 20:05:29  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.7  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.6  2008/04/09 03:51:43  bdbcat
- * Correct 64bit time_t math
- *
- * Revision 1.5  2008/03/30 22:24:40  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.4  2008/01/12 06:21:55  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.3  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.2  2006/09/21 01:37:37  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.5  2006/08/04 11:42:03  dsr
- * no message
  *
  */
 
@@ -305,15 +241,15 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
       for (a=0;a<num_csts;a++)
       {
-            fscanf (fp, "%s", linrec);
+            int ignore = fscanf (fp, "%s", linrec);
             for (b=0;b<num_nodes;b++)
-                  fscanf (fp, "%lf", &(cst_nodes[a][b]));
+                  ignore = fscanf (fp, "%lf", &(cst_nodes[a][b]));
       }
 
       fclose(fp);
 
 //    Load the Master Station Data Cache file
-//      LoadMRU();
+      LoadMRU();
 
       bTCMReady = true;
 
@@ -321,7 +257,7 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
 TCMgr::~TCMgr()
 {
-//   SaveMRU();
+   SaveMRU();
 
    FreeMRU();
 
@@ -372,7 +308,7 @@ void TCMgr::LoadMRU(void)
             if(mru_file.GetLineCount())
                   str = mru_file.GetFirstLine();                  //Signature
 
-            if(str != _T("Signature928"))
+            if(str != _T("Signature250"))
                return;
 
             while(!mru_file.Eof())
@@ -521,7 +457,7 @@ void TCMgr::SaveMRU(void)
             wxTextFile mru_file(*pmru_file_name);
             mru_file.Create();
 
-            mru_file.AddLine(wxString(_T("Signature928")));
+            mru_file.AddLine(wxString(_T("Signature250")));
 
             mru_entry *pmru = pmru_head;
 
@@ -751,7 +687,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
 	  int j = 0 ;
 	  int k = 0 ;
 	  int ttt = 0 ;
-        while ( newval > oldval == w_t )			//searching each ten minute
+        while ( (newval > oldval) == w_t )			//searching each ten minute
 	  {
 		j++;
 		oldval = newval;
@@ -759,7 +695,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
 		newval = time2asecondary (ttt, pIDX);
 	  }
 	  oldval = ( w_t ) ? newval - 1: newval + 1 ;
-	  while ( newval > oldval == w_t )			// searching back each minute
+	  while ( (newval > oldval) == w_t )			// searching back each minute
 	  {
 		oldval = newval ;
 		k++;
@@ -1053,8 +989,9 @@ Station_Data *TCMgr::find_or_load_harm_data(IDX_entry *pIDX)
 
               if ((a = findunit (psd->unit)) == -1)
               {
-                        strcpy (psd->units_abbrv, psd->unit);
-                        strcpy (psd->units_conv, known_units[a].name);
+// Nonsense....
+//                        strcpy (psd->units_abbrv, psd->unit);
+//                        strcpy (psd->units_conv, known_units[a].name);
               }
 
                   psd->have_BOGUS = (findunit(psd->unit) != -1) && (known_units[findunit(psd->unit)].type == BOGUS);
@@ -2809,7 +2746,7 @@ blend_weight (double x, int deriv)
  * This function does the actual "blending" of the tide
  * and its derivatives.
  */
-double TCMgr::blend_tide (time_t t, int deriv, int first_year, double blend)
+double TCMgr::blend_tide (time_t t, unsigned int deriv, int first_year, double blend)
 {
   double        fl[TIDE_MAX_DERIV + 1];
   double        fr[TIDE_MAX_DERIV + 1];
@@ -2817,7 +2754,7 @@ double TCMgr::blend_tide (time_t t, int deriv, int first_year, double blend)
   double        w[TIDE_MAX_DERIV + 1];
   double        fact = 1.0;
   double        f;
-  int           n;
+  unsigned int  n;
 
 
   /*

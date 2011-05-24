@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -51,7 +51,7 @@
 #include "wx/tokenzr.h"
 #include "wx/filename.h"
 #include <wx/image.h>
-
+#include <wx/fileconf.h>
 #include <sys/stat.h>
 
 
@@ -61,6 +61,8 @@
 #ifndef __WXMSW__
 #include <signal.h>
 #include <setjmp.h>
+
+#define OCPN_USE_CONFIG 1
 
 struct sigaction sa_all_chart;
 struct sigaction sa_all_previous;
@@ -1390,7 +1392,7 @@ ChartBaseBSB::ChartBaseBSB()
       m_b_cdebug = 0;
 
 #ifdef OCPN_USE_CONFIG
-      wxFileConfig *pfc = pConfig;
+      wxFileConfig *pfc = (wxFileConfig *)pConfig;
       pfc->SetPath ( _T ( "/Settings" ) );
       pfc->Read ( _T ( "DebugBSBImg" ),  &m_b_cdebug, 0 );
 #endif
@@ -2923,128 +2925,25 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       if(vp_last.IsValid())
       {
-
-
                   //    We only need to adjust the VP if the cache is valid and potentially usable, i.e. the scale factor is integer...
                   //    The objective here is to ensure that the VP center falls on an exact pixel boundary within the cache
 
-//                  double dscale = fabs(binary_scale_factor - wxRound(binary_scale_factor));
 
                   if(cached_image_ok && (binary_scale_factor > 1.0) && (fabs(binary_scale_factor - wxRound(binary_scale_factor)) < 1e-5))
                   {
                         if(m_b_cdebug)printf(" Possible Adjust VP for integer scale: %g\n", binary_scale_factor);
+
                         wxRect rprop;
                         ComputeSourceRectangle(vp_proposed, &rprop);
 
-                        int cs1d = rprop.width/vp_proposed.pix_width;
-
-                        if(cs1d > 0)
-                        {
-                              double new_lat = vp_proposed.clat;
-                              double new_lon = vp_proposed.clon;
-
-
-                              int dx = (rprop.x - cache_rect.x) % cs1d;
-                              if(dx)
-                              {
-                                    fromSM((double)-dx / m_ppm_avg, 0., vp_proposed.clat, vp_proposed.clon, &new_lat, &new_lon);
-                                    vp_proposed.clon = new_lon;
-                                    ret_val++;
-
-                              }
-
-                              ComputeSourceRectangle(vp_proposed, &rprop);
-                              int dy = (rprop.y - cache_rect.y) % cs1d;
-                              if(dy)
-                              {
-                                    fromSM(0, (double)dy / m_ppm_avg, vp_proposed.clat, vp_proposed.clon, &new_lat, &new_lon);
-                                    vp_proposed.clat = new_lat;
-                                    ret_val++;
-
-                              }
-
-                              if(m_b_cdebug)printf(" Adjust VP dx: %d  dy:%d\n", dx, dy);
-
-                              //    Check the results...if not good(i.e. VP center is not on cache pixel boundary),
-                              //    then leave the vp unmodified by restoring from the saved copy...
-                              if(ret_val > 0)
-                              {
-                                    wxRect rprop_cor;
-                                    ComputeSourceRectangle(vp_proposed, &rprop_cor);
-                                    int cs2d = rprop_cor.width/vp_proposed.pix_width;
-                                    int dxc = (rprop_cor.x - cache_rect.x) % cs2d;
-                                    int dyc = (rprop_cor.y - cache_rect.y) % cs2d;
-
-//                                    if(m_b_cdebug)printf(" Adjust VP dxc: %d  dyc:%d\n", dxc, dyc);
-                                    if(dxc || dyc)
-                                    {
-                                          vp_proposed.clat = vp_save.clat;
-                                          vp_proposed.clon = vp_save.clon;
-                                          ret_val = 0;
-                                          if(m_b_cdebug)printf(" Adjust VP failed\n");
-                                    }
-                                    else
-                                          if(m_b_cdebug)printf(" Adjust VP succeeded \n");
-
-                              }
-
-                        }
-                  }
-
-                  //    There is another case to consider
-                  //    In quilt projections, we would like for successive renders to differ by exactly integer
-                  //    pixels, so that higher levels may do large scale BLITs, instead of full screen renders.
-                  //    So, here we make some tests, and try to adjust the vp so that this can be true
-                  else if(m_vp_render_last.IsValid() && vp_proposed.b_quilt && ((vp_proposed.m_pan_delta.x) || (vp_proposed.m_pan_delta.y)))
-                  {
-                        double xd, yd, xd_last, yd_last;
-                        latlong_to_chartpix(vp_proposed.clat, vp_proposed.clon, xd, yd);
-                        latlong_to_chartpix(m_vp_render_last.clat, m_vp_render_last.clon, xd_last, yd_last);
-
-                        double xdr = wxRound(( xd-xd_last) / binary_scale_factor );       // The scaled on-screen "pan" value in pixels
-                        double ydr = wxRound(( yd-yd_last) / binary_scale_factor );
-
-                        //    Try to pan the last correctly rendered image by an exact pixel multiple
+                        int pixx, pixy;
                         double lon_adj, lat_adj;
-                        chartpix_to_latlong(xd_last + xdr * binary_scale_factor, yd_last + ydr * binary_scale_factor, &lat_adj, &lon_adj);
+                        latlong_to_pix_vp(vp_proposed.clat, vp_proposed.clon, pixx, pixy, vp_proposed);
+                        vp_pix_to_latlong(vp_proposed, pixx, pixy, &lat_adj, &lon_adj);
 
-                        // and test to see if the result matches the pixel pan values available in the viewport passed
-
-                        //    Please note that not all ViewPorts seen here will contain useful pixel pan values
-                        //    In these cases, the adjustment is deemed to have failed, and no adjustment is made.
-                        //    Higher levels will presumably then need to request a full repaint.....
-                        double xdt, ydt;
-                        latlong_to_chartpix(lat_adj, lon_adj, xdt, ydt);
-
-                        double deltaxs = (xdt-xd_last)/ binary_scale_factor;
-                        double deltays = (ydt-yd_last)/ binary_scale_factor;
-
-                        bool b_miss = false;
-                        if(((int)wxRound(deltaxs) != vp_proposed.m_pan_delta.x))
-                        {
-                              if(m_b_cdebug)printf("+++++++Pan Miss x %g %d\n", deltaxs, vp_proposed.m_pan_delta.x);
-                              b_miss = true;
-                        }
-                        if(((int)wxRound(deltays) != vp_proposed.m_pan_delta.y))
-                        {
-                              if(m_b_cdebug)printf("+++++++Pan Miss y %g %d\n", deltays, vp_proposed.m_pan_delta.y);
-                              b_miss = true;
-                        }
-
-                        if(!b_miss)
-                        {
-                              if((fabs(xdt-xd) < 1.0) && (fabs(ydt-yd) < 1.0))
-                              {
-                                    vp_proposed.clat = lat_adj;
-                                    vp_proposed.clon = lon_adj;
-                                    ret_val = 1;
-                              }
-                              else
-                                    if(m_b_cdebug)printf(" Adjust VP failed\n");
-                        }
-                        else
-                              ret_val = 0;
-
+                        vp_proposed.clat = lat_adj;
+                        vp_proposed.clon = lon_adj;
+                        ret_val = 1;
                   }
       }
 
@@ -3159,7 +3058,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegi
             return GetView( source, dest, scale_type_corrected );
       }
 
-      if(scale_x <= 1.0)                                        // overzoom
+      if(scale_x < 1.0)                                        // overzoom
       {
             if(m_b_cdebug)printf("    MISS<<<>>>GVUC:  Overzoom\n");
             return GetView( source, dest, scale_type_corrected );
@@ -3378,7 +3277,18 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
       wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
 //      double factor = ((double)Rsrc.width)/((double)dest.width);
       double factor = m_raster_scale_factor;
-      if(m_b_cdebug)printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );
+      if(m_b_cdebug)
+      {
+            printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );
+            printf("Rect list:\n");
+            wxRegionIterator upd ( Region ); // get the requested rect list
+            while ( upd )
+            {
+                  wxRect rect = upd.GetRect();
+                  printf("   %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                  upd ++ ;
+            }
+      }
 
             //    Invalidate the cache if the scale has changed or the viewport size has changed....
       if((fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9) || (m_last_vprect != dest))
@@ -3487,7 +3397,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     A performance enhancement.....
      ScaleTypeEnum scale_type_zoom = RENDER_HIDEF;
      double binary_scale_factor = VPoint.view_scale_ppm / GetPPM();
-     if(binary_scale_factor < .250)
+     if(binary_scale_factor < .20)
            scale_type_zoom = RENDER_LODEF;
 
      bool bnewview = GetViewUsingCache(Rsrc, dest, Region, scale_type_zoom);
@@ -4552,7 +4462,16 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
  //             for(int h=0 ; h < 10 ; h++)
 //                    printf("east to pix %d  %g\n",  h, cPoints.wpx[h]);          // lon to pix
 
+/*
+             if ((0 != m_Chart_DU ) && (0 != m_Chart_Scale))
+             {
+                   double m_ppm_avg1 = m_Chart_DU * 39.37 / m_Chart_Scale;
+                   m_ppm_avg1 *= cos(m_proj_lat * PI / 180.);                    // correct to chart centroid
 
+                   printf("BSB chart ppm_avg:%g ppm_avg1:%g\n", m_ppm_avg, m_ppm_avg1);
+                   m_ppm_avg = m_ppm_avg1;
+             }
+*/
        }
 
        else if(m_projection == PROJECTION_POLYCONIC)
@@ -4653,15 +4572,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
              m_ppm_avg = 1.0;                      // absolute fallback to prevent div-0 errors
 
 
-/*
-       if ((0 != m_Chart_DU ) && (0 != m_Chart_Scale))
-       {
-             double m_ppm_avg1 = m_Chart_DU * 39.37 / m_Chart_Scale;
-             m_ppm_avg1 *= cos(m_proj_lat * PI / 180.);                    // correct to chart centroid
-
-             printf("%g %g\n", m_ppm_avg, m_ppm_avg1);
-       }
-*/
 
         // Do a last little test using a synthetic ViewPort of nominal size.....
         ViewPort vp;

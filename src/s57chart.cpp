@@ -1797,15 +1797,29 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
             prev_easting_lr = easting_ul + (m_last_vp.pix_width / m_view_scale_ppm);
             prev_northing_lr = northing_ul - (m_last_vp.pix_height / m_view_scale_ppm);
 
+
+            double dx = (easting_ul - prev_easting_ul) * m_view_scale_ppm;
+            double dy = (prev_northing_ul - northing_ul) * m_view_scale_ppm;
+
             rul.x = (int)round((easting_ul - prev_easting_ul) * m_view_scale_ppm);
             rul.y = (int)round((prev_northing_ul - northing_ul) * m_view_scale_ppm);
 
             rlr.x = (int)round((easting_lr - prev_easting_ul) * m_view_scale_ppm);
             rlr.y = (int)round((prev_northing_ul - northing_lr) * m_view_scale_ppm);
 
-            if((rul.x != 0) || (rul.y != 0))
+            if((fabs(dx - wxRound(dx)) > 1e-5) || (fabs(dy - wxRound(dy)) > 1e-5))
             {
-//                  printf("newvp due to rul\n");
+                  if(g_bDebugS57) printf("s57chart::DoRender  Cache miss on non-integer pixel delta %g %g\n", dx, dy);
+                  rul.x = 0;
+                  rul.y = 0;
+                  rlr.x = 0;
+                  rlr.y = 0;
+                  bNewVP = true;
+            }
+
+            else if((rul.x != 0) || (rul.y != 0))
+            {
+                  if(g_bDebugS57) printf("newvp due to rul\n");
                   bNewVP = true;
             }
     }
@@ -2720,6 +2734,8 @@ bool s57chart::BuildThumbnail(const wxString &bmpname)
 
        //   Save the file
        ret_code = pBMP->SaveFile(ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP);
+
+       delete pBMP;
 
        return ret_code;
 }
@@ -3856,6 +3872,7 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
 //              m_pVectorEdgeHelperTable[record_id] = feid;
 
           feid++;
+          delete pEdgeVectorRecordFeature;
           pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
     }
 
@@ -3870,6 +3887,7 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
 
     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF");
     poReader->SetOptions(papszReaderOptions);
+    CSLDestroy( papszReaderOptions );
 
 
 //    Debug
@@ -4278,6 +4296,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                         vee.index = index;
                         vee.nCount = count;
                         vee.pPoints = pPoints;
+                        vee.max_priority = -99;            // Default
 
                         ve_array.Add(vee);
 
@@ -4401,8 +4420,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                  nGeo1000 = nGeoFeature / 500;
 
 #ifdef __WXMSW__
+                 wxBeginBusyCursor();
+/*
                  SENC_prog = new wxProgressDialog(  _("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
                              wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_SMOOTH);
+*/
+                 wxEndBusyCursor();
 
 #endif
             }
@@ -4546,7 +4569,7 @@ void s57chart::ResetPointBBoxes(void)
 
             while ( top != NULL)
             {
-                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
                         top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
@@ -4561,7 +4584,7 @@ void s57chart::ResetPointBBoxes(void)
 
             while ( top != NULL)
             {
-                  if(top->obj->npt == 1)                    // do not reset multipoints
+                  if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
                         top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
@@ -4961,6 +4984,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                         //  Reset the options
                     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF");
                     poReader->SetOptions(papszReaderOptions);
+                    CSLDestroy( papszReaderOptions );
 
 //                    free(pVectorEdgeHelperTable);
 
@@ -5149,6 +5173,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON");
                       poReader->SetOptions(papszReaderOptions);
 
+
 //    Capture the beginning and end point connected nodes for each edge vector record
                       for(i=0 ; i < nEdgeVectorRecords ; i++)
                       {
@@ -5193,6 +5218,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                         //  Reset the options
                       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF");
                       poReader->SetOptions(papszReaderOptions);
+                      CSLDestroy( papszReaderOptions );
 
 
                       break;
@@ -5229,7 +5255,6 @@ void  s57chart::CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader)
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES, "ON");
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON");
       poReader->SetOptions(papszReaderOptions);
-
 
       int feid = 0;
       OGRLineString *pLS = NULL;
@@ -5273,6 +5298,7 @@ void  s57chart::CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader)
 
             //    Next vector record
             feid++;
+            delete pEdgeVectorRecordFeature;
             pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
       }
 
@@ -5284,6 +5310,7 @@ void  s57chart::CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader)
       //  Reset the options
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF");
       poReader->SetOptions(papszReaderOptions);
+      CSLDestroy( papszReaderOptions );
 }
 
 void  s57chart::CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader)
@@ -5296,7 +5323,6 @@ void  s57chart::CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader)
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES, "ON");
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON");
       poReader->SetOptions(papszReaderOptions);
-
 
       int feid = 0;
       OGRPoint *pP;
@@ -5333,6 +5359,7 @@ void  s57chart::CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader)
 
             //    Next vector record
             feid++;
+            delete pConnNodeRecordFeature;
             pConnNodeRecordFeature = poReader->ReadVector( feid, RCNM_VC );
       }
 
@@ -5344,6 +5371,7 @@ void  s57chart::CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader)
       //  Reset the options
       papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF");
       poReader->SetOptions(papszReaderOptions);
+      CSLDestroy( papszReaderOptions );
 }
 
 

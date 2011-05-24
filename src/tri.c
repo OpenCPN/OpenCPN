@@ -122,8 +122,6 @@ static int alloc_mem(int, int[]);
 
 static int nrecurse;
 
-CPL_CVSID("$Id: tri.c,v 1.10 2009/09/29 18:22:26 bdbcat Exp $");
-
 /*
 * \brief MSVC needs "__inline" instead of "inline" in C-source files.
 */

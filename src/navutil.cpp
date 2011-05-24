@@ -37,6 +37,7 @@
 #include <wx/image.h>
 #include <wx/filename.h>
 #include <wx/graphics.h>
+#include <wx/dir.h>
 
 #include "dychart.h"
 
@@ -57,12 +58,12 @@
 #include "routeman.h"
 #include "s52utils.h"
 #include "chartbase.h"
-#include "cm93.h"
 #include "tinyxml.h"
 #include "gpxdocument.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
+#include "cm93.h"
 #endif
 
 CPL_CVSID ( "$Id: navutil.cpp,v 1.77 2010/06/25 02:04:23 bdbcat Exp $" );
@@ -113,6 +114,7 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
@@ -258,6 +260,7 @@ extern int              g_SkewCompUpdatePeriod;
 extern int              g_toolbar_x;
 extern int              g_toolbar_y;
 extern long             g_toolbar_orient;
+extern int              g_iSDMMFormat;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -1145,7 +1148,6 @@ void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
             // Do it explicitely here for all platforms.
             dc.CalcBoundingBox ( r.x - sx2, r.y - sy2 );
             dc.CalcBoundingBox ( r.x + sx2, r.y + sy2 );
-
       }
 
       if ( m_bShowName )
@@ -1265,6 +1267,7 @@ Route::Route ( void )
       }
       else
             m_LayerID = 0;
+      m_Colour = wxEmptyString;
 }
 
 
@@ -1509,8 +1512,25 @@ void Route::Draw ( wxDC& dc, ViewPort &VP )
       }
       else
       {
-            dc.SetPen ( *g_pRouteMan->GetRoutePen() );
-            dc.SetBrush ( *g_pRouteMan->GetRouteBrush() );
+            if ( m_Colour == wxEmptyString )
+            {
+                  dc.SetPen ( *g_pRouteMan->GetRoutePen() );
+                  dc.SetBrush ( *g_pRouteMan->GetRouteBrush() );
+            }
+            else
+            {
+                  wxColour col;
+                  for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+                  {
+                        if ( m_Colour == ::GpxxColorNames[i] )
+                        {
+                              col = ::GpxxColors[i];
+                              break;
+                        }
+                  }
+                  dc.SetPen ( *wxThePenList->FindOrCreatePen(col, 2, wxSOLID) );
+                  dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
+            }
       }
 
 
@@ -1957,21 +1977,15 @@ void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
       // Can we prove this?
       if ( m_bVisible)
       {
-            wxPoint rpt1, rpt2;
-            DrawPointWhich ( dc_route, 1, &rpt1 );
-
             wxRoutePointListNode *node = pRoutePointList->GetFirst();
-            RoutePoint *prp1 = node->GetData();
-            node = node->GetNext();
-
             while ( node )
             {
 
                   RoutePoint *prp2 = node->GetData();
-                  prp2->Draw ( dc_route, &rpt2 );
-
-                  rpt1 = rpt2;
-                  prp1 = prp2;
+                  bool blink_save = prp2->m_bBlink;
+                  prp2->m_bBlink = false;
+                  prp2->Draw ( dc_route, NULL );
+                  prp2->m_bBlink = blink_save;
 
                   node = node->GetNext();
             }
@@ -2453,6 +2467,20 @@ void Track::Draw ( wxDC& dc, ViewPort &VP )
                               wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), 3 ) ;
                               dc.SetPen ( dPen );
                         }
+            if ( m_Colour != wxEmptyString ) //if we are using GPXX, change the previously selected...
+            {
+                  wxColour col;
+                  for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+                  {
+                        if ( m_Colour == ::GpxxColorNames[i] )
+                        {
+                              col = ::GpxxColors[i];
+                              break;
+                        }
+                  }
+                  dc.SetPen ( *wxThePenList->FindOrCreatePen(col, 2, wxSOLID) );
+                  dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
+            }
 
             prp->Draw ( dc, &rptn );
 
@@ -2586,6 +2614,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 {
 
       int read_int;
+      wxString val;
 
       int display_width, display_height;
       wxDisplaySize(&display_width, &display_height);
@@ -2655,7 +2684,9 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "InitialStackIndex" ),  &g_restore_stackindex, 0 );
       Read ( _T ( "InitialdBIndex" ),  &g_restore_dbindex, -1 );
-      Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
+
+#ifdef USE_S57
+       Read ( _T ( "CM93DetailFactor" ),  &g_cm93_zoom_factor, 0 );
       g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
       g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
 
@@ -2666,15 +2697,18 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_cm93detail_dialog_y < 0) || (g_cm93detail_dialog_y > display_height))
             g_cm93detail_dialog_y = 5;
 
+      Read ( _T ( "ShowCM93DetailSlider" ),  &g_bShowCM93DetailSlider, 0 );
+#endif
+
       Read ( _T ( "SkewCompUpdatePeriod" ),  &g_SkewCompUpdatePeriod, 10 );
 
-      Read ( _T ( "ShowCM93DetailSlider" ),  &g_bShowCM93DetailSlider, 0 );
 
       Read ( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
       Read ( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
+      Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -2810,6 +2844,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 #ifdef USE_S57
       if ( NULL != ps52plib )
       {
+            double dval;
             SetPath ( _T ( "/Settings/GlobalState" ) );
 
             Read ( _T ( "bShowS57Text" ), &read_int, 0 );
@@ -2845,7 +2880,6 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "bDeClutterText" ), &read_int, 0 );
             ps52plib->m_bDeClutterText = ! ( read_int == 0 );
 
-            double dval;
             if ( Read ( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) )
             {
                   S52_setMarinerParam ( S52_MAR_SAFETY_CONTOUR, dval );
@@ -2876,7 +2910,6 @@ int MyConfig::LoadMyConfig ( int iteration )
             g_PresLibData = valpres;
 
       wxString strd ( _T ( "S57DataLocation" ) );
-      wxString val;
       SetPath ( _T ( "/Directories" ) );
       Read ( strd, &val );              // Get the Directory name
 
@@ -3828,6 +3861,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
+      Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
@@ -3915,12 +3949,17 @@ void MyConfig::UpdateSettings()
 
       wxString st1;
 
-      if ( cc1 && cc1->VPoint.IsValid() )
+      if(cc1)
       {
-            st1.Printf ( _T ( "%10.4f,%10.4f" ), cc1->VPoint.clat, cc1->VPoint.clon );
-            Write ( _T ( "VPLatLon" ), st1 );
-            st1.Printf ( _T ( "%g" ), cc1->VPoint.view_scale_ppm );
-            Write ( _T ( "VPScale" ), st1 );
+            ViewPort vp = cc1->GetVP();
+
+            if ( vp.IsValid() )
+            {
+                  st1.Printf ( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
+                  Write ( _T ( "VPLatLon" ), st1 );
+                  st1.Printf ( _T ( "%g" ), vp.view_scale_ppm );
+                  Write ( _T ( "VPScale" ), st1 );
+            }
       }
 
       st1.Printf ( _T ( "%10.4f, %10.4f" ), gLat, gLon );
@@ -4342,6 +4381,12 @@ GpxRteElement *CreateGPXRte ( Route *pRoute )
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+      if ( pRoute->m_Colour != wxEmptyString )
+      {
+            GpxxExtensionsElement *gpxx = new GpxxExtensionsElement(_T("gpxx:RouteExtension"));
+            gpxx->LinkEndChild(new GpxSimpleElement(wxString(_T("gpxx:DisplayColor")), pRoute->m_Colour));
+            exts->LinkEndChild(gpxx);
+      }
 
       GpxRteElement *rte = new GpxRteElement(pRoute->m_RouteNameString, GPX_EMPTY_STRING, GPX_EMPTY_STRING, GPX_EMPTY_STRING, NULL, -1, GPX_EMPTY_STRING, exts, NULL);
 
@@ -4370,6 +4415,12 @@ GpxTrkElement *CreateGPXTrk ( Route *pRoute )
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+      if ( pRoute->m_Colour != wxEmptyString )
+      {
+            GpxxExtensionsElement *gpxx = new GpxxExtensionsElement(_T("gpxx:TrackExtension"));
+            gpxx->LinkEndChild(new GpxSimpleElement(wxString(_T("gpxx:DisplayColor")), pRoute->m_Colour));
+            exts->LinkEndChild(gpxx);
+      }
 
       GpxTrkElement *trk = new GpxTrkElement(pRoute->m_RouteNameString, GPX_EMPTY_STRING, GPX_EMPTY_STRING, GPX_EMPTY_STRING, NULL, -1, GPX_EMPTY_STRING, exts, NULL);
 
@@ -5442,6 +5493,20 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                                     if ( g_child != NULL && (!g_bIsNewLayer))
                                           pTentTrack->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
                               }
+                              else if ( ext_name.EndsWith ( _T ( "TrackExtension" ) ) ) //Parse GPXX color
+                              {
+                                    TiXmlNode *gpxx_child;
+					      for ( gpxx_child = ext_child->FirstChild(); gpxx_child != 0; gpxx_child = gpxx_child->NextSibling())
+                                    {
+                                          wxString gpxx_name = wxString::FromUTF8 ( gpxx_child->Value() );
+                                          if ( gpxx_name.EndsWith ( _T ( "DisplayColor" ) ) )
+                                          {
+                                                TiXmlNode *s_child = gpxx_child->FirstChild();
+                                                if ( s_child != NULL )
+					                        pTentTrack->m_Colour = wxString::FromUTF8 ( s_child->ToText()->Value() );
+                                          }
+                                    }
+                              }
                         }
                   }
             }
@@ -5624,6 +5689,20 @@ Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
                                     pTentRoute->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
                               }
                         }
+                        else if ( ext_name.EndsWith ( _T ( "TrackExtension" ) ) ) //Parse GPXX color
+                        {
+                              TiXmlNode *gpxx_child;
+					for ( gpxx_child = ext_child->FirstChild(); gpxx_child != 0; gpxx_child = gpxx_child->NextSibling())
+                              {
+                                    wxString gpxx_name = wxString::FromUTF8 ( gpxx_child->Value() );
+                                    if ( gpxx_name.EndsWith ( _T ( "DisplayColor" ) ) )
+                                    {
+                                          TiXmlNode *s_child = gpxx_child->FirstChild();
+                                          if ( s_child != NULL )
+					                  pTentRoute->m_Colour = wxString::FromUTF8 ( s_child->ToText()->Value() );
+                                    }
+                              }
+                        }
                   }
             }
       }
@@ -5713,6 +5792,20 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                               if ( g_child != NULL && (!g_bIsNewLayer))
                               {
                                     pTentRoute->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
+                              }
+                        }
+                        else if ( ext_name.EndsWith ( _T ( "RouteExtension" ) ) ) //Parse GPXX color
+                        {
+                              TiXmlNode *gpxx_child;
+					for ( gpxx_child = ext_child->FirstChild(); gpxx_child != 0; gpxx_child = gpxx_child->NextSibling())
+                              {
+                                    wxString gpxx_name = wxString::FromUTF8 ( gpxx_child->Value() );
+                                    if ( gpxx_name.EndsWith ( _T ( "DisplayColor" ) ) )
+                                    {
+                                          TiXmlNode *s_child = gpxx_child->FirstChild();
+                                          if ( s_child != NULL )
+					                  pTentRoute->m_Colour = wxString::FromUTF8 ( s_child->ToText()->Value() );
+                                    }
                               }
                         }
                   }
@@ -7096,42 +7189,29 @@ bool LogMessageOnce ( wxString &msg )
 /*          Some assorted utilities                                       */
 /**************************************************************************/
 
+/**************************************************************************/
+/*          Formats the coordinates to string                             */
+/**************************************************************************/
 wxString toSDMM ( int NEflag, double a, bool hi_precision )
 {
+      wxString s;
+      double mpy;
       short neg = 0;
       int d;
       long m;
+      double ang = a;
+      char c = 'N';
 
       if ( a < 0.0 )
       {
             a = -a;
             neg = 1;
       }
-
-      double mpy = 600.0;
-
-      if(hi_precision)
-            mpy = mpy * 1000.;
-
       d = ( int ) a;
-      m = ( long ) wxRound( ( a - ( double ) d ) * mpy );
-
       if ( neg )
             d = -d;
-
-      wxString s;
-
-      if ( !NEflag )
+      if(NEflag)
       {
-            if(hi_precision)
-                  s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 10000, m % 10000 );
-            else
-                  s.Printf ( _T ( "%d %02ld.%01ld'" ), d, m / 10,   m % 10 );
-      }
-      else
-      {
-            bool b_print = false;
-            char c;
             if ( NEflag == 1 )
             {
                   c = 'N';
@@ -7141,7 +7221,6 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
                         d = -d;
                         c = 'S';
                   }
-                  b_print = true;
             }
             else if ( NEflag == 2 )
             {
@@ -7152,60 +7231,126 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
                         d = -d;
                         c = 'W';
                   }
-                  b_print = true;
             }
-            if(b_print)
+      }
+
+      switch (g_iSDMMFormat)
+      {
+      case 0:
+            mpy = 600.0;
+
+            if(hi_precision)
+                  mpy = mpy * 1000;
+
+            m = ( long ) wxRound( ( a - ( double ) d ) * mpy );
+
+            if ( !NEflag || NEflag < 1 || NEflag > 2) //Does it EVER happen?
+            {
+                  if(hi_precision)
+                        s.Printf ( _T ( "%d %02ld.%04ld'" ), d, m / 10000, m % 10000 );
+                  else
+                        s.Printf ( _T ( "%d %02ld.%01ld'" ), d, m / 10,   m % 10 );
+            }
+            else
             {
                   if(hi_precision)
                         s.Printf ( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
-                  else
+                   else
                         s.Printf ( _T ( "%03d %02ld.%01ld %c" ), d, m / 10,   ( m % 10 ), c );
             }
+            break;
+      case 1:
+            if (hi_precision)
+                  s.Printf (_T ( "%03.6f" ), ang); //cca 11 cm - the GPX precision is higher, but as we use hi_precision almost everywhere it would be a little too much....
+            else
+                  s.Printf (_T ( "%03.4f" ), ang); //cca 11m
+            break;
+      case 2:
+            m = ( long ) ( ( a - ( double ) d ) * 60 );
+            mpy = 10.0;
+            if (hi_precision)
+                  mpy = mpy * 100;
+            long sec = (long) (( a - ( double ) d - ( ( ( double ) m ) / 60 ) ) * 3600 * mpy);
+
+            if ( !NEflag || NEflag < 1 || NEflag > 2) //Does it EVER happen?
+            {
+                  if(hi_precision)
+                        s.Printf ( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 1000, sec % 1000 );
+                  else
+                        s.Printf ( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
+            }
+            else
+            {
+                  if(hi_precision)
+                        s.Printf ( _T ( "%03d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                   else
+                        s.Printf ( _T ( "%03d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+            }
+            break;
       }
       return s;
 }
 
 /****************************************************************************/
-/* Convert dd mm.mmm' (DMM-Format) to degree.                               */
-/*        or dd°mm.m′ (degree sign or alternate minute sign)                */
+// Modified from the code posted by Andy Ross at
+//     http://www.mail-archive.com/flightgear-devel@flightgear.org/msg06702.html
+// Basically, it looks for a list of decimal numbers embedded in the
+// string and uses the first three as degree, minutes and seconds.  The
+// presence of a "S" or "W character indicates that the result is in a
+// hemisphere where the final answer must be negated.  Non-number
+// characters are treated as whitespace separating numbers.
+//
+// So there are lots of bogus strings you can feed it to get a bogus
+// answer, but that's not surprising.  It does, however, correctly parse
+// all the well-formed strings I can thing of to feed it.  I've tried all
+// the following:
+//
+// 37°54.204' N
+// N37 54 12
+// 37°54'12"
+// 37.9034
+// 122°18.621' W
+// 122w 18 37
+// -122.31035
 /****************************************************************************/
 double fromDMM(wxString sdms)
 {
-      wxString rdms = sdms;
+      wchar_t buf[64];
+      char narrowbuf[64];
+      int i, len, top=0;
+      double stk[32], sign=1;
 
-	  // Handle e.g. 16°53.2′N
-	wxString a("°", wxConvUTF8);
-      rdms.Replace(a, _T(" "));
-	wxString b("′", wxConvUTF8);
-      rdms.Replace(b, _T("'"));
+      wcsncpy(buf, sdms.wc_str(wxConvUTF8), 64);
+      len = wcslen(buf);
 
-      char str[50];
-      strncpy(str, rdms.mb_str(wxConvUTF8), 49);
+      for(i=0; i<len; i++) {
+            wchar_t c = buf[i];
+            if((c>='0' && c<='9') || c=='-' || c=='.' || c=='+')
+            {
+                  narrowbuf[i] = c;
+                  continue;  /* Digit characters are cool as is */
+            }
+            if(c == ',')
+            {
+                  narrowbuf[i] = '.'; /* convert to decimal dot */
+                  continue;
+            }
+            if((c|32) == 'w' || (c|32) == 's')
+                  sign = -1; /* These mean "negate" (note case insensitivity) */
+            narrowbuf[i] = 0;    /* Replace everything else with nuls */
+      }
 
-      float d = 0;
-      double m = 0.0;
-      char buf[20];
-      char buf1[20];
+      /* Build a stack of doubles */
+      stk[0] = stk[1] = stk[2] = 0;
+      for(i=0; i<len; i++) {
+            while(i<len && narrowbuf[i] == 0) i++;
+            if(i != len) {
+                  stk[top++] = atof(narrowbuf+i);
+                  i += strlen(narrowbuf+i);
+            }
+      }
 
-      buf[0] = buf1[0] = '\0';
-
-      sscanf(str, "%f%[ ]%s%[ 'NSWEnswe]", &d, buf, buf1, buf);
-      wxString minutes(buf1,  wxConvUTF8);
-      minutes.Replace(_T(","), _T("."));
-      minutes.ToDouble(&m);
-
-      m = (double) (fabs(d)) + m / 60.0;
-
-      char *hemi_str;
-      if(strpbrk(buf, "SWsw"))
-            hemi_str = buf;
-      else
-            hemi_str = buf1;
-
-      if (d >= 0 && strpbrk(hemi_str, "SWsw") == NULL)
-            return m;
-      else
-            return -m;
+      return sign * (stk[0] + (stk[1] + stk[2] / 60) / 60);
 
 }
 

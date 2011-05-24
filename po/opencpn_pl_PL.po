@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2010-11-28 13:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -624,6 +624,12 @@ msgstr "Namiar:              %03d Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Namiar:              b.d.\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 msgid "Boundaries"
 msgstr "Granice obszarów"
@@ -848,6 +854,11 @@ msgid "CoG"
 msgstr "COG"
 #
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "K&olor:"
+#
+# 
 msgid "Colors"
 msgstr "Kolory"
 #
@@ -906,7 +917,33 @@ msgid "Cursor: "
 msgstr "Kursor :  "
 #
 # 
+#, fuzzy
+msgid "Cyan"
+msgstr "Anuluj"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -921,9 +958,23 @@ msgstr "Dezaktywuj drogę"
 msgid "Deactivate Route"
 msgstr "Dezaktywuj drogę"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 msgid "Deep Depth"
 msgstr "Głęboka woda"
+#
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Kolor czcionki."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 msgid "Delete All"
@@ -1070,6 +1121,9 @@ msgstr "Włącz automat. potwierdzanie po (min.)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Uaktywnij funkcję skalowania pokrętłem"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 msgid "End Route"
 msgstr "Zakończ drogę"
@@ -1213,6 +1267,9 @@ msgstr "Idź do znaku/punktu drogi"
 msgid "Go to "
 msgstr "Idź do "
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1317,7 +1374,8 @@ msgid "Language/Fonts"
 msgstr "Język/Czcionki"
 #
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Czas ostatniego raportu:"
 #
 # 
@@ -1376,6 +1434,11 @@ msgstr "Licencja"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Waga:"
+#
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Waga:"
 #
 # 
@@ -1463,6 +1526,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -1737,10 +1803,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Tworzenie drogi OpenCPN"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "Ostrzeżenie OpenCPN"
@@ -1905,6 +1967,13 @@ msgid "Position"
 msgstr "Pozycja"
 #
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Wiek raportu:           %3d Sek.\n"
+#
+# 
 msgid "Position:               "
 msgstr "Pozycja:              "
 #
@@ -2001,8 +2070,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2117,14 +2185,8 @@ msgstr "Pozycja"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "OpenCPN musi odbudować bazę map z zapisów w pliku konfiguracyjnym...."
 #
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Okres ostatniego raportu:%3d sek.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2163,11 +2225,6 @@ msgstr "Usuń tę mapę ze sklejki."
 # 
 msgid "Rename Waypoints?"
 msgstr "Przemianować punkty drogi?"
-#
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Wiek raportu:           %3d Sek.\n"
 #
 # 
 msgid "Reserved 11"
@@ -2377,6 +2434,11 @@ msgid "Show Important Text Only"
 msgstr "Pokaż tylko istotne teksty"
 #
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Pokaż obiekty AIS"
+#
+# 
 msgid "Show Light Descriptions"
 msgstr "Pokaż charakterystyki świateł"
 #
@@ -2442,6 +2504,15 @@ msgstr "Pokazuje podgląd czcionki."
 # 
 msgid "Simplified"
 msgstr "Uproszczone"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Wymiary:        %5dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, c-format
@@ -2854,6 +2925,11 @@ msgid "Unlist contents"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Podkreślenie"
+#
+# 
 msgid "Update Control"
 msgstr "Kontrola aktualizacji katalogu"
 #
@@ -2976,6 +3052,9 @@ msgstr "Witamy w programie OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Czy znaki są podkreślone."
 #
+msgid "White"
+msgstr ""
+#
 # 
 msgid "WiFi Options"
 msgstr "Opcje WiFi"
@@ -3005,6 +3084,11 @@ msgstr "przesunięcie Y (dodatnie przesuwa mapę na N (Mmi/cos(szer.gg.))"
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Wyw."
 #
 # 
 msgid "Zoom In"
@@ -3058,6 +3142,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3067,6 +3152,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Przesunięcie CM93 wyłączone"
+#
 #
 #
 # 
@@ -3080,6 +3166,7 @@ msgstr ""
 #~ msgstr "Przesunięcie CM93 włączone"
 #
 #
+#
 # 
 # 
 # 
@@ -3089,6 +3176,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Wyłącz narzędzie przesuwania CM93"
+#
 #
 #
 # 
@@ -3102,6 +3190,7 @@ msgstr ""
 #~ msgstr "Narzędzie przesuwania CM93..."
 #
 #
+#
 # 
 # 
 # 
@@ -3111,6 +3200,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Włącz przesunięcia CM93"
+#
 #
 #
 # 
@@ -3123,6 +3213,7 @@ msgstr ""
 #~ msgstr "Ustaw przesunięcie CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -3131,6 +3222,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 # 
@@ -3144,11 +3236,13 @@ msgstr ""
 #~ msgstr "Plik mapy uszkodzony.. odrzucam mapę \n"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Zamknij OpenCPN"
+#
 #
 #
 # 
@@ -3164,6 +3258,7 @@ msgstr ""
 #~ msgstr "GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -3174,12 +3269,23 @@ msgstr ""
 #
 #
 # 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Okres ostatniego raportu:%3d sek.\n"
+#~ "\n"
+#
+#
+#
+# 
 # 
 # 
 # 
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nazwa statku:"
+#
 #
 #
 # 
@@ -3193,6 +3299,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Pokaż ikonę GRIB"
+#
 #
 #
 # 

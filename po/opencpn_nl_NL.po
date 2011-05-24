@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.423 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2011-04-27 19:06+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <fj.bonig@kpnplanet.nl>\n"
@@ -733,6 +733,12 @@ msgstr "Peiling:                  %03d°\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Peiling:                  niet beschikbaar\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 #
 #
 msgid "Boundaries"
@@ -971,6 +977,12 @@ msgstr "COG"
 #
 #
 #
+#, fuzzy
+msgid "Color:"
+msgstr "&Kleur: "
+#
+#
+#
 msgid "Colors"
 msgstr "Aantal kleuren voor diepteweergave"
 #
@@ -1036,8 +1048,35 @@ msgstr "Getijstroom"
 msgid "Cursor: "
 msgstr "Cursor: "
 #
+#
+#
+#, fuzzy
+msgid "Cyan"
+msgstr "Annuleer"
+#
 msgid "D/V"
 msgstr "dui/v"
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
+msgstr ""
 #
 #
 #
@@ -1054,10 +1093,25 @@ msgstr "Deactiveren"
 msgid "Deactivate Route"
 msgstr "Deactiveer route"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 #
 #
 msgid "Deep Depth"
 msgstr "Grote diepte"
+#
+#
+#
+#, fuzzy
+msgid "Default color"
+msgstr "Kleur lettertype "
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 #
 #
@@ -1229,6 +1283,9 @@ msgstr "Activeer time-out voor CPA/TCPA waarschuwing na bevestiging (minuten)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Activeer Zoom-met-Muiswiel-naar-Cursorpositie"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 #
 #
 msgid "End Route"
@@ -1378,6 +1435,9 @@ msgstr "Ga naar markeringspunt/routepunt"
 msgid "Go to "
 msgstr "Ga naar"
 #
+msgid "Green"
+msgstr ""
+#
 msgid "HSC"
 msgstr "HSV"
 #
@@ -1483,7 +1543,8 @@ msgstr "Taal/Lettertype"
 #
 #
 #
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Laatste rapportagetijdstip: "
 #
 #
@@ -1542,6 +1603,12 @@ msgstr "Licentie"
 #
 #
 msgid "Light"
+msgstr "licht"
+#
+#
+#
+#, fuzzy
+msgid "Light Gray"
 msgstr "licht"
 #
 msgid "Light Vessel/Rig"
@@ -1626,6 +1693,9 @@ msgstr "MMSI"
 #
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
+#
+msgid "Magenta"
+msgstr ""
 #
 #
 #
@@ -1913,9 +1983,6 @@ msgstr "OpenCPN Maak route"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC Maak bestand ..."
 #
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN S57 SENC Laad bestand"
-#
 #
 #
 msgid "OpenCPN Track Delete"
@@ -2094,6 +2161,14 @@ msgstr "Positie"
 #
 #
 #
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Ouderdom rapportage:           %3d sec\n"
+#
+#
+#
 msgid "Position:               "
 msgstr "Positie:"
 #
@@ -2193,7 +2268,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
@@ -2303,15 +2378,8 @@ msgstr "werkelijk (niet op positie)"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Vernieuw de kaartendatabase vanuit configuratiebestand ..."
 #
-#
-#
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Recente rapportageperiode:  %3d sec\n"
-"\n"
 #
 msgid "Red cross ship"
 msgstr ""
@@ -2351,12 +2419,6 @@ msgstr "Verwijder deze kaart uit samenvoeging."
 #
 msgid "Rename Waypoints?"
 msgstr "Hernoem routepunten?"
-#
-#
-#
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Ouderdom rapportage:           %3d sec\n"
 #
 msgid "Reserved 11"
 msgstr "gereserveerd 11"
@@ -2590,6 +2652,12 @@ msgstr "Toon alleen belangrijke tekst"
 #
 #
 #
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Toon op kaart"
+#
+#
+#
 msgid "Show Light Descriptions"
 msgstr "Toon vuureigenschappen"
 #
@@ -2665,6 +2733,16 @@ msgstr "Toon voorbeeld lettertype"
 #
 msgid "Simplified"
 msgstr "vereenvoudigd"
+#
+#
+#
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Grootte:                %dm x %dm x ---m\n"
+"\n"
 #
 #
 #
@@ -3109,6 +3187,12 @@ msgstr "Haal inhoud weg"
 #
 #
 #
+#, fuzzy
+msgid "Unspecified"
+msgstr "niet gedefinieerd"
+#
+#
+#
 msgid "Update Control"
 msgstr "Update Kaartmappen"
 #
@@ -3231,6 +3315,9 @@ msgstr "Welkom bij OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Onderstreept lettertype?"
 #
+msgid "White"
+msgstr ""
+#
 #
 #
 msgid "WiFi Options"
@@ -3257,6 +3344,12 @@ msgstr "     Y offset (in NM; positief verplaatst kaart naar noorden):"
 #
 msgid "Yat"
 msgstr "ple/v"
+#
+#
+#
+#, fuzzy
+msgid "Yellow"
+msgstr "Cel"
 #
 #
 #
@@ -3314,5 +3407,20 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN afsluiten"
+#
+#
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN S57 SENC Laad bestand"
+#
+#
+#
+#
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Recente rapportageperiode:  %3d sec\n"
+#~ "\n"

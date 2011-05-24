@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -39,7 +39,7 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    2
+#define     MY_API_VERSION_MINOR    5
 
 #include "../../../include/ocpn_plugin.h"
 

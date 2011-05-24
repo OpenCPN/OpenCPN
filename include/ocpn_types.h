@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -81,6 +81,7 @@ class ViewPort
 
             wxPoint GetPixFromLL(double lat, double lon) const;
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
+            wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
             wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
 
@@ -116,7 +117,6 @@ class ViewPort
 
             wxRect   rv_rect;
 
-            wxPoint  m_pan_delta;
       private:
             //    Methods
 

@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                                      *
- *   $EMAIL$                                                               *
+ *   bdbcat@yahoo.com                                                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -128,8 +128,8 @@ wxString GpxDocument::GetUUID(void)
 
 int GpxDocument::GetRandomNumber(int range_min, int range_max)
 {
-      int u = wxRound((double)rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min);
-      return u;
+      long u = (long)wxRound(((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) + range_min);
+      return (int)u;
 }
 
 void GpxDocument::AddCustomNamespace(const wxString &name, const wxString &url)
@@ -159,9 +159,10 @@ GpxRootElement::GpxRootElement(const wxString &creator, GpxMetadataElement *meta
 
       SetAttribute ( "version", "1.1" );
       SetAttribute ( "creator", creator.ToUTF8() );
-      SetAttribute( "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-      SetAttribute( "xmlns", "http://www.topografix.com/GPX/1/1");
-      SetAttribute( "xsi:schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd");
+      SetAttribute( "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+      SetAttribute( "xmlns", "http://www.topografix.com/GPX/1/1" );
+      SetAttribute( "xmlns:gpxx", "http://www.garmin.com/xmlschemas/GpxExtensions/v3" );
+      SetAttribute( "xsi:schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" );
       SetMetadata(metadata);
       if (waypoints) {
             wxListOfGpxWptsNode *waypoint = waypoints->GetFirst();
@@ -350,6 +351,15 @@ void GpxRootElement::RemoveExtensions()
 
 GpxExtensionsElement::GpxExtensionsElement() : TiXmlElement("extensions")
 {
+}
+
+GpxxExtensionsElement::GpxxExtensionsElement(const wxString &element_name) : TiXmlElement(element_name.mb_str())
+{
+      if ( element_name.EndsWith (_T("RouteExtension")) )
+      {
+            GpxSimpleElement * g = new GpxSimpleElement(wxString(_T("gpxx:IsAutoNamed")), _T("false")); //FIXME: the namespace should be taken from element_name...
+            LinkEndChild(g);
+      }
 }
 
 GpxLinkElement::GpxLinkElement(const wxString &uri, const wxString &description, const wxString &mime_type) : TiXmlElement("link")

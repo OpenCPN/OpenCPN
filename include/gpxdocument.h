@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                                  *
- *   $EMAIL$                                                                  *
+ *   bdbcat@yahoo.com                                                                  *
  *                                                                            *
  *   This program is free software; you can redistribute it and/or modify     *
  *   it under the terms of the GNU General Public License as published by     *
@@ -32,6 +32,9 @@
 #include <tinyxml.h>
 #include <tinystr.h>
 #include <stdio.h>
+
+const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it
+const wxColour GpxxColors[] = { wxColour(0x00, 0x00, 0x00), wxColour(0x60, 0x00, 0x00), wxColour(0x00, 0x60, 0x00), wxColour(0x80, 0x80, 0x00), wxColour(0x00, 0x00, 0x60), wxColour(0x60, 0x00, 0x60), wxColour(0x00, 0x80, 0x80), wxColour(0xC0, 0xC0, 0xC0), wxColour(0x60, 0x60, 0x60), wxColour(0xFF0000), wxColour(0x00, 0xFF, 0x00), wxColour(0xF0, 0xF0, 0x00), wxColour(0x00, 0x00, 0xFF), wxColour(0xFE, 0x00, 0xFE), wxColour(0x00, 0xFF, 0xFF), wxColour(0xFF, 0xFF, 0xFF) };
 
 // Forward declarations
 class GpxWptElement;
@@ -109,6 +112,12 @@ class GpxMetadataElement : public TiXmlElement
 {
 public:
       GpxMetadataElement(const wxString &name, const wxString &desc, GpxPersonElement *author, GpxCopyrightElement *copyright, GpxLinkElement *link, wxDateTime *time, const wxString &keywords, GpxBoundsElement *bounds, GpxExtensionsElement *extensions);
+};
+
+class GpxxExtensionsElement : public TiXmlElement
+{
+public:
+      GpxxExtensionsElement(const wxString &element_name);
 };
 
 typedef enum {

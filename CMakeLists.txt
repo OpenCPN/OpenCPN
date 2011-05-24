@@ -114,6 +114,13 @@ INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
+IF(UNIX)
+    FIND_PACKAGE(BZip2 REQUIRED)
+    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
+    FIND_PACKAGE(ZLIB REQUIRED)
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+ENDIF(UNIX)
+
 # For convenience we define the sources as a variable. You can add 
 # header files and cpp/c files and CMake will sort them out
 
@@ -207,7 +214,6 @@ SET(HDRS
 		include/wvschart.h
 		include/about.h
 		include/ais.h
-		include/cm93.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 		include/tinystr.h
@@ -237,7 +243,6 @@ SET(SRCS
 		src/wvschart.cpp
 		src/about.cpp
 		src/ais.cpp
-		src/cm93.cpp
                 src/pluginmanager.cpp
 		src/tinyxml.cpp
 		src/tinyxmlerror.cpp
@@ -270,7 +275,9 @@ IF (USE_S57)
 		src/s52plib.cpp
 		src/s52utils.cpp
 		src/s57chart.cpp
+		src/cm93.cpp
 		src/mygeom.cpp
+		include/cm93.h
 		src/tri.c
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
@@ -407,17 +414,6 @@ ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
 
-OPTION (USE_WIFI_CLIENT "Enable wifi client" OFF) 
-IF (USE_WIFI_CLIENT)
-	message (STATUS "WiFi client support: enabled")
-	ADD_DEFINITIONS(-DUSE_WIFI_CLIENT)
-	SET(SRCS ${SRCS}
-        	include/wificlient.h
-        	src/wificlient.cpp
-	)
-
-ENDIF (USE_WIFI_CLIENT)
-
 #TODO
 #dnl
 #dnl Use OpenGL tesselator or Internal tesselator
@@ -503,6 +499,8 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${OPENGL_LIBRARIES}
       ${GETTEXT_LIBRARY}
+      ${BZIP2_LIBRARIES}
+      ${ZLIB_LIBRARY}
 )
 ENDIF(UNIX)
 
@@ -716,7 +714,7 @@ IF(WIN32 AND NOT UNIX)
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
 #      " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME} /q:a /c:msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
 #      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q:a /c:\\\"VCREDI~1.EXE /q:a /c:\\\"\\\"msiexec /i vcredist.msi /qn\\\"\\\" \\\"' $0\\n"
-      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /qb' $0\\n"
+      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q' $0\\n"
       " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
 
 
@@ -793,6 +791,12 @@ IF(WIN32 AND NOT UNIX)
 ENDIF(WIN32 AND NOT UNIX)
 
 configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther
+
+# this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
+# apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
+ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
+
+SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/version.h)
 
 INCLUDE(CPack)
 

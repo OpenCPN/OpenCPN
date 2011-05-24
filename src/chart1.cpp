@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -44,6 +44,7 @@
 #include <wx/aui/aui.h>
 #include <version.h> //Gunther
 #include <wx/dialog.h>
+#include <wx/progdlg.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
   #include <wx/dialog.h>
@@ -77,11 +78,9 @@
 #include "about.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
-#include "cpl_error.h"
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
-#include "cm93.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -96,9 +95,9 @@
 #endif
 
 #ifdef USE_S57
+#include "cm93.h"
 #include "s52plib.h"
 #include "s57chart.h"
-///#include "s57.h"
 #include "cpl_csv.h"
 #endif
 
@@ -118,8 +117,9 @@
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
+WX_DEFINE_OBJARRAY(ArrayOfRect);
 
-class ocpnFloatingCompassDialog;
+class ocpnFloatingCompassWindow;
 
 
 //------------------------------------------------------------------------------
@@ -253,6 +253,7 @@ bool              g_bGarminPersistance;
 int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
 bool              g_bFullscreenToolbar;
+bool              g_bTransparentToolbar;
 
 
 bool              g_bNavAidShowRadarRings;            // toh, 2009.02.24
@@ -299,6 +300,9 @@ int             g_SkewCompUpdatePeriod;
 s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr   *m_pRegistrarMan;
+
+cm93manager       *s_pcm93mgr;
+CM93OffsetDialog  *g_pCM93OffsetDialog;
 #endif
 
 #ifdef USE_WIFI_CLIENT
@@ -336,12 +340,6 @@ AISTargetQueryDialog    *g_pais_query_dialog_active;
 int               g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 int               g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 int               g_ais_query_dialog_x, g_ais_query_dialog_y;
-
-bool            s_socket_test_running;
-bool            s_socket_test_passed;
-wxSocketClient  *s_t_sock;
-wxSocketServer  *s_s_sock;
-
 
 int              g_nframewin_x;
 int              g_nframewin_y;
@@ -432,8 +430,6 @@ DWORD       color_windowframe;
 DWORD       color_inactiveborder;
 
 #endif
-
-cm93manager       *s_pcm93mgr;
 
 //    AIS Global configuration
 bool             g_bShowAIS; // pjotrc 2010.02.09
@@ -531,19 +527,18 @@ bool              g_bAisTargetList_sortReverse;
 wxString          g_AisTargetList_column_spec;
 int               g_AisTargetList_count;
 
-CM93OffsetDialog *g_pCM93OffsetDialog;
-
 wxAuiManager      *g_pauimgr;
 wxAuiDefaultDockArt  *g_pauidockart;
 
 bool              g_blocale_changed;
 
 ocpnFloatingToolbarDialog     *g_FloatingToolbarDialog;
-ocpnFloatingCompassDialog     *g_FloatingCompassDialog;
+ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 
 int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
+int               g_iSDMMFormat;
 
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
@@ -718,16 +713,15 @@ class GrabberWin: public wxPanel
 
 
 //----------------------------------------------------------------------------------------------------------
-//    ocpnFloatingCompassDialog Specification
+//    ocpnFloatingCompassWindow Specification
 //----------------------------------------------------------------------------------------------------------
-class ocpnFloatingCompassDialog: public wxDialog
+class ocpnFloatingCompassWindow: public wxWindow
 {
-      DECLARE_CLASS( ocpnFloatingCompassDialog )
-                  DECLARE_EVENT_TABLE()
+      DECLARE_CLASS( ocpnFloatingCompassWindow )
 
       public:
-            ocpnFloatingCompassDialog( wxWindow *parent );
-            ~ocpnFloatingCompassDialog( );
+            ocpnFloatingCompassWindow( wxWindow *parent );
+            ~ocpnFloatingCompassWindow( );
             wxBitmap CreateBmp();
             void Update(bool bnew = false);
 
@@ -780,7 +774,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             void DestroyToolBar();
             void ToggleOrientation();
             void MoveDialogInScreenCoords(wxPoint posn, wxPoint posn_old);
-            void Position();
+            void RePosition();
             void SetColorScheme(ColorScheme cs);
             void SetGeometry();
             long GetOrient(){ return m_orient; }
@@ -799,6 +793,8 @@ class ocpnFloatingToolbarDialog: public wxDialog
             ColorScheme       m_cs;
 
             wxPoint           m_position;
+            int               m_dock_x;
+            int               m_dock_y;
 };
 
 
@@ -930,9 +926,7 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 
       if(event.Dragging())
       {
-
             wxPoint par_pos_old = GetParent()->GetPosition();
-//            printf("%d\n", par_pos_old.x);
 
             wxPoint par_pos = par_pos_old;
             par_pos.x += spt.x - s_gspt.x;
@@ -946,10 +940,11 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 
       }
 
-      wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
-      GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+//      wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
+//      GetParent()->GetEventHandler()->AddPendingEvent(*pev);
 
       gFrame->Raise();
+//      gFrame->SetFocus();
 }
 
 
@@ -960,17 +955,15 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 //---------------------------------------------------------------------------------------
 
 
-IMPLEMENT_CLASS ( ocpnFloatingCompassDialog, wxDialog )
-
-            BEGIN_EVENT_TABLE(ocpnFloatingCompassDialog, wxDialog)
-            END_EVENT_TABLE()
+IMPLEMENT_CLASS ( ocpnFloatingCompassWindow, wxWindow )
 
 
-ocpnFloatingCompassDialog::ocpnFloatingCompassDialog( wxWindow *parent)
+
+ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent)
 {
       m_pparent = parent;
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
-      wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
+      wxWindow::Create( parent, -1, /*_T("ocpnToolbarDialog"),*/ wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
 
       m_StatBmp.Create((_img_compass->GetWidth() + _img_gpsRed->GetWidth()) + 8, _img_compass->GetHeight() + 8);
@@ -993,12 +986,12 @@ ocpnFloatingCompassDialog::ocpnFloatingCompassDialog( wxWindow *parent)
 
 }
 
-ocpnFloatingCompassDialog::~ocpnFloatingCompassDialog()
+ocpnFloatingCompassWindow::~ocpnFloatingCompassWindow()
 {
       delete m_pStatBoxToolStaticBmp;
 }
 
-void ocpnFloatingCompassDialog::SetColorScheme(ColorScheme cs)
+void ocpnFloatingCompassWindow::SetColorScheme(ColorScheme cs)
 {
       wxColour back_color = GetGlobalColor(_T("GREY2"));
 
@@ -1010,7 +1003,7 @@ void ocpnFloatingCompassDialog::SetColorScheme(ColorScheme cs)
 
 }
 
-void ocpnFloatingCompassDialog::Update(bool bnew)
+void ocpnFloatingCompassWindow::Update(bool bnew)
 {
       if(bnew)
             m_last_gps_bmp_hash_index.Clear();        // force an update to occur
@@ -1031,17 +1024,14 @@ void ocpnFloatingCompassDialog::Update(bool bnew)
             m_topSizer->Fit(this);
       }
 
-      wxSize size_parent = GetParent()->GetClientSize();
-      wxPoint posn(size_parent.x - GetSize().x, 0);
-
-      wxPoint posn_screen = GetParent()->ClientToScreen(posn);
-      Move(posn_screen);
-
+      Raise();
       Show();
-//      Refresh(false);
+      Refresh(false);
+
+
 }
 
-wxBitmap ocpnFloatingCompassDialog::CreateBmp()
+wxBitmap ocpnFloatingCompassWindow::CreateBmp()
 {
       MyFrame *fp = wxDynamicCast(GetParent(), MyFrame);
       if(fp)
@@ -1187,8 +1177,15 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
       wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
-      SetTransparent(128);
-      m_opacity = 128;
+      m_opacity = 255;
+      m_fade_timer.SetOwner(this, FADE_TIMER);
+      if(g_bTransparentToolbar)
+      {
+            SetTransparent(128);
+            m_opacity = 128;
+            m_fade_timer.Start(5000);
+      }
+
 
       m_pGrabberwin = new GrabberWin(this);
 
@@ -1197,13 +1194,16 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_position = position;
       m_orient =  orient;
 
-      m_fade_timer.SetOwner(this, FADE_TIMER);
 
 // A top-level sizer
       m_topSizer = new wxBoxSizer ( wxHORIZONTAL );
       SetSizer( m_topSizer );
 
-      Position();
+      //    Set initial "Dock" parameters
+      m_dock_x = 0;
+      m_dock_y = 0;
+
+//      RePosition();
 
       Hide();
 }
@@ -1256,18 +1256,28 @@ void ocpnFloatingToolbarDialog::SetGeometry()
       }
 }
 
-void ocpnFloatingToolbarDialog::Position()
+void ocpnFloatingToolbarDialog::RePosition()
 {
-      if(cc1)
+      if(m_pparent && m_ptoolbar)
       {
-            wxSize cs = cc1->GetClientSize();
-            m_position.x = wxMin(cs.x - 20, m_position.x);
-            m_position.y = wxMin(cs.y - 20, m_position.y);
+            wxSize cs = m_pparent->GetClientSize();
+            if(-1 == m_dock_x)
+                  m_position.x = 0;
+            else if(1 == m_dock_x)
+                  m_position.x = cs.x - GetSize().x;
+
+            if(-1 == m_dock_y)
+                  m_position.y = 0;
+            else if(1 == m_dock_y)
+                  m_position.y = cs.y - GetSize().y;
+
+            m_position.x = wxMin(cs.x - GetSize().x, m_position.x);
+            m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
 
             m_position.x = wxMax(0, m_position.x);
             m_position.y = wxMax(0, m_position.y);
 
-            wxPoint screen_pos = cc1->ClientToScreen(m_position);
+            wxPoint screen_pos = m_pparent->ClientToScreen(m_position);
             Move(screen_pos);
       }
 }
@@ -1275,6 +1285,8 @@ void ocpnFloatingToolbarDialog::Position()
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
 {
+      wxPoint old_screen_pos = m_pparent->ClientToScreen(m_position);
+
       if(m_orient == wxTB_HORIZONTAL)
       {
             m_orient = wxTB_VERTICAL;
@@ -1290,6 +1302,21 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
 
       SetGeometry();
       Realize();
+      if(m_orient == wxTB_HORIZONTAL)
+      {
+            m_position.x -= m_pGrabberwin->GetPosition().x - GetSize().y;
+            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
+            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
+      }
+      else
+      {
+            m_position.x += GetSize().y -m_pGrabberwin->GetPosition().x;
+            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
+            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
+      }
+
+
+      RePosition();
 
       GetParent()->Refresh(false);
 
@@ -1297,20 +1324,28 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
 
 void ocpnFloatingToolbarDialog::MouseEvent ( wxMouseEvent& event )
 {
-      if(event.Entering() && (m_opacity < 255))
+      if(g_bTransparentToolbar)
       {
-            SetTransparent(255);
-            m_opacity = 255;
-      }
+            if(event.Entering() && (m_opacity < 255))
+            {
+                  SetTransparent(255);
+                  m_opacity = 255;
+            }
 
-      if(event.Leaving())
-            m_fade_timer.Start(5000, true);
+//            if(event.Leaving())
+//                  m_fade_timer.Start(5000, true);
+            m_fade_timer.Start(5000);           // retrigger the continuous timer
+
+      }
 }
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent& event)
 {
-      SetTransparent(128);
-      m_opacity = 128;
+      if(g_bTransparentToolbar)
+      {
+            SetTransparent(128);
+            m_opacity = 128;
+      }
 }
 
 
@@ -1325,30 +1360,46 @@ void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords(wxPoint posn, wxPoint p
 #define DOCK_MARGIN 40
 
       // X
+      m_dock_x = 0;
       if(pos_in_parent.x < pos_in_parent_old.x)            // moving left
       {
-            if(pos_in_parent.x < (DOCK_MARGIN + cc1->GetPosition().x))
-                  pos_in_parent.x = cc1->GetPosition().x;
+            if(pos_in_parent.x < DOCK_MARGIN )
+            {
+                  pos_in_parent.x = 0;
+                  m_dock_x = -1;
+            }
       }
       else if(pos_in_parent.x > pos_in_parent_old.x)            // moving right
       {
-            int max_right = cc1->GetPosition().x + cc1->GetClientSize().x - GetSize().x;
+            int max_right = m_pparent->GetClientSize().x - GetSize().x;
             if(pos_in_parent.x > (max_right - DOCK_MARGIN))
+            {
                   pos_in_parent.x = max_right;
+                  m_dock_x = 1;
+            }
       }
 
       // Y
+      m_dock_y = 0;
       if(pos_in_parent.y < pos_in_parent_old.y)            // moving up
       {
             if(pos_in_parent.y < DOCK_MARGIN)
+            {
                   pos_in_parent.y = 0;
+                  m_dock_y = -1;
+            }
       }
       else if(pos_in_parent.y > pos_in_parent_old.y)            // moving down
       {
-            int max_down = cc1->GetClientSize().y - GetSize().y;
+            int max_down = m_pparent->GetClientSize().y - GetSize().y;
             if(pos_in_parent.y > (max_down - DOCK_MARGIN))
+            {
                   pos_in_parent.y = max_down;
+                  m_dock_y = 1;
+            }
       }
+
+
 
       m_position = pos_in_parent;
 
@@ -1369,6 +1420,19 @@ void ocpnFloatingToolbarDialog::Realize()
 
             m_topSizer->Layout();
             m_topSizer->Fit(this);
+
+            //    Update "Dock" parameters
+            if(m_position.x == 0)
+                  m_dock_x = -1;
+            else if(m_position.x == m_pparent->GetClientSize().x - GetSize().x)
+                  m_dock_x = 1;
+
+            if(m_position.y == 0)
+                  m_dock_y = -1;
+            else if(m_position.y == m_pparent->GetClientSize().y - GetSize().y)
+                  m_dock_y = 1;
+
+
             Refresh(false);
       }
 }
@@ -1397,7 +1461,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
             m_ptoolbar->ClearBackground();
             m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
             m_ptoolbar->SetColorScheme(m_cs);
-    ;
+
 
             m_ptoolbar->SetToolBitmapSize(wxSize(32,32));
             m_ptoolbar->SetToolSeparation(5);                  // width of separator
@@ -1514,7 +1578,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(137591);
+//     _CrtSetBreakAlloc(141542);
 #endif
 
 
@@ -1667,11 +1731,6 @@ bool MyApp::OnInit()
         wxString vs = version.Trim(true);
         vs = vs.Trim(false);
         wxLogMessage(vs);
-
-#ifdef USE_CPL
-//      Set up a useable CPL library error handler
-        CPLSetErrorHandler( MyCPLErrorHandler );
-#endif
 
 
 //    Initialize embedded PNG icon graphics
@@ -1939,6 +1998,10 @@ bool MyApp::OnInit()
 
 
 #ifdef USE_S57
+
+//      Set up a useable CPL library error handler for S57 stuff
+        CPLSetErrorHandler( MyCPLErrorHandler );
+
 //      Init the s57 chart object, specifying the location of the required csv files
 
 //      If the config file contains an entry for s57 .csv files,
@@ -2169,7 +2232,9 @@ bool MyApp::OnInit()
               g_ShowMoored_Kts = 0.2;
               g_bShowTrackIcon = true;
               g_bTrackDaily = false;
+              g_PlanSpeed = 6.;
 
+#ifdef USE_S57
               if(ps52plib->m_bOK)
               {
                   ps52plib->m_bShowSoundg = true;
@@ -2179,8 +2244,8 @@ bool MyApp::OnInit()
                   ps52plib->m_bUseSCAMIN = true;
                   ps52plib->m_bShowAtonText = true;
               }
+#endif
 
-              g_PlanSpeed = 6.;
         }
 
 		g_StartTime = wxInvalidDateTime;
@@ -2281,7 +2346,7 @@ bool MyApp::OnInit()
         g_toolbar_x = wxMin(g_toolbar_x, cw);
         g_toolbar_y = wxMin(g_toolbar_y, ch);
 
-        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(gFrame, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
+        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(cc1, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
 
@@ -2574,9 +2639,13 @@ bool MyApp::OnInit()
 
         cc1->ReloadVP();                  // once more, and good to go
 
+        g_FloatingToolbarDialog->Raise();
         g_FloatingToolbarDialog->Show();
 
         gFrame->Raise();
+
+        cc1->Enable();
+        cc1->SetFocus();
 
         return TRUE;
 }
@@ -2655,7 +2724,6 @@ int MyApp::OnExit()
 
         delete pMessageOnceArray;
 
-        delete s_pcm93mgr;
 
         DeInitializeUserColors();
 
@@ -2664,6 +2732,7 @@ int MyApp::OnExit()
         delete pLayerList;
 
 #ifdef USE_S57
+        delete s_pcm93mgr;
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
 #endif
@@ -2697,72 +2766,6 @@ int MyApp::OnExit()
 }
 
 
-void MyApp::TestSockets(void)
-{
-//      wxWidgets for X11, starting with version 2.6 and extending however
-//      long, has a problem handling TCP/IP socket events.
-//      The problem relates to wxHashTable::Next()
-//      There is a workaround:  configure wxWidgets with --enable-compat24
-//      Anyway, we'll test here to be sure sockets work HERE.
-//      If they don't, we shall have to disable GPSD data input support
-
-
-//  Create a dynamic event handler in MyApp for wxSocketServer events
-        Connect( wxID_ANY, wxEVT_SOCKET, wxSocketEventHandler(MyApp::OnSocketEvent) );
-
-//      Make a localhost server
-        wxIPV4address serv_addr;
-        serv_addr.Service(3001);
-
-        s_s_sock = new wxSocketServer(serv_addr);
-        s_s_sock->SetEventHandler(*this, wxID_ANY);
-
-        s_s_sock->SetNotify(wxSOCKET_CONNECTION_FLAG);
-        s_s_sock->Notify(TRUE);
-
-// Create the test client socket
-        s_t_sock = new wxSocketClient();
-
-//      Connect() the test socket
-
-        wxIPV4address addr;
-        addr.AnyAddress();
-        addr.Service(3001);
-
-        s_socket_test_running = true;
-        s_socket_test_passed = false;
-
-        s_t_sock->Connect(addr, FALSE);       // Non-blocking connect
-
-//    Sleep and loop for N seconds
-#define SLEEP_TEST_SEC  1
-        for(int is=0 ; is<SLEEP_TEST_SEC * 10 ; is++)
-{
-    wxMilliSleep(100);
-}
-
-// Test requires at least one pass thru event loop.  Test will finish in first MyFrame::OnTimer
-
-}
-
-
-
-void MyApp::OnSocketEvent(wxSocketEvent& event)
-//  Used for testing wxSocketClient event handling
-{
-
-    switch(event.GetSocketEvent())
-    {
-        case wxSOCKET_CONNECTION :
-        case wxSOCKET_INPUT:
-        case wxSOCKET_OUTPUT:
-        case wxSOCKET_LOST:
-
-            s_socket_test_passed = true;
-            break;
-    }
-}
-
 
 void MyApp::TrackOff(void)
 {
@@ -2792,6 +2795,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_CLOSE(MyFrame::OnCloseWindow)
   EVT_MENU(wxID_EXIT, MyFrame::OnExit)
   EVT_SIZE(MyFrame::OnSize)
+  EVT_MOVE(MyFrame::OnMove)
   EVT_MENU(-1, MyFrame::OnToolLeftClick)
   EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
   EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
@@ -2813,7 +2817,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         m_ulLastNEMATicktime = 0;
         m_pStatusBar = NULL;
 
-        g_FloatingCompassDialog = new ocpnFloatingCompassDialog(this);
+        g_FloatingCompassDialog = new ocpnFloatingCompassWindow(this);
 
 
         m_toolBar = NULL;
@@ -2940,6 +2944,23 @@ void MyFrame::OnMaximize(wxMaximizeEvent& event)
       g_click_stop = 0;
 }
 
+ArrayOfRect MyFrame::GetCanvasReserveRects()
+{
+      ArrayOfRect ret_array;
+      if(g_FloatingCompassDialog)
+      {
+            //    Translate from CompassWindow's parent(gFrame) to CanvasWindow coordinates
+            wxPoint pos_in_frame = g_FloatingCompassDialog->GetPosition();
+            wxPoint pos_abs = ClientToScreen(pos_in_frame);
+            wxPoint pos_in_cc1 = cc1->ScreenToClient(pos_abs);
+            wxRect r(pos_in_cc1.x, pos_in_cc1.y, g_FloatingCompassDialog->GetSize().x, g_FloatingCompassDialog->GetSize().y);
+            ret_array.Add(r);
+      }
+
+      return ret_array;
+}
+
+
 void MyFrame::OnActivate(wxActivateEvent& event)
 {
 //    Code carefully in this method.
@@ -2987,9 +3008,10 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
                   break;
       }
 
+#ifdef USE_S57
       if(ps52plib)
              ps52plib->SetPLIBColorScheme(SchemeName);
-
+#endif
 
         //Search the user color table array to find the proper hash table
       Usercolortable_index = 0;
@@ -3227,6 +3249,14 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 //      Set up the toggle states
+
+    if (cc1)
+    {
+    //  Re-establish toggle states
+          tb->ToggleTool(ID_CURRENT, cc1->GetbShowCurrent());
+          tb->ToggleTool(ID_TIDE, cc1->GetbShowTide());
+    }
+
     if(pConfig)
         tb->ToggleTool(ID_FOLLOW, pConfig->st_bFollow);
 
@@ -3950,8 +3980,18 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
 
-    cc1->Destroy();
-    cc1 = NULL;
+#ifdef USE_S57
+      if(g_pCM93OffsetDialog)
+            g_pCM93OffsetDialog->Destroy();
+#endif
+
+      g_FloatingToolbarDialog->Destroy();
+
+      if(g_pAISTargetList)
+            g_pAISTargetList->Destroy();
+
+      cc1->Destroy();
+      cc1 = NULL;
 
     //      Delete all open charts in the cache
     if(ChartData)
@@ -4004,7 +4044,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       pAPilot = NULL;
     }
 
-    delete g_FloatingToolbarDialog;
+//    delete g_FloatingToolbarDialog;
     g_FloatingToolbarDialog = NULL;
 
     delete g_FloatingCompassDialog;
@@ -4038,6 +4078,18 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
     this->Destroy();
 
 }
+
+void MyFrame::OnMove(wxMoveEvent& event)
+{
+      if(g_FloatingToolbarDialog)
+            g_FloatingToolbarDialog->RePosition();
+
+      if(g_FloatingCompassDialog)
+            g_FloatingCompassDialog->Update(true);
+}
+
+
+
 
 
 void MyFrame::OnSize(wxSizeEvent& event)
@@ -4096,14 +4148,18 @@ void MyFrame::DoSetSize(void)
 
         if(g_FloatingToolbarDialog)
         {
-              g_FloatingToolbarDialog->Position();
+              g_FloatingToolbarDialog->RePosition();
               g_FloatingToolbarDialog->SetGeometry();
               g_FloatingToolbarDialog->Realize();
+              g_FloatingToolbarDialog->RePosition();
 
         }
 
         if(g_FloatingCompassDialog)
+        {
               g_FloatingCompassDialog->Update(true);
+              g_FloatingCompassDialog->Move(x - g_FloatingCompassDialog->GetSize().x, 0);
+        }
 
         if(console)
               PositionConsole();
@@ -4203,14 +4259,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_ZOOMIN:
     {
-            cc1->ZoomCanvasIn();
+            cc1->ZoomCanvasIn(2.0);
             DoChartUpdate();
             break;
     }
 
     case ID_ZOOMOUT:
     {
-            cc1->ZoomCanvasOut();
+            cc1->ZoomCanvasOut(2.0);
             DoChartUpdate();
             break;
     }
@@ -4915,7 +4971,7 @@ int MyFrame::DoOptionsDialog()
 
       }
 
-      SetChartUpdatePeriod(cc1->VPoint);              // Pick up changes to skew compensator
+      SetChartUpdatePeriod(cc1->GetVP());              // Pick up changes to skew compensator
 
 //    Restart the async classes
 #ifdef USE_WIFI_CLIENT
@@ -5107,46 +5163,50 @@ void MyFrame::SetupQuiltMode(void)
                         tLon = vLon;
                   }
 
-                        // Build a temporary chart stack based on tLat, tLon
-                  ChartStack TempStack;
-                  ChartData->BuildChartStack(&TempStack, tLat, tLon);
-
-
-                  //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
-                  //    This will (almost?) always be the reference chart....
-
-                  ChartBase *Candidate_Chart = NULL;
-                  int cur_max_scale = (int)1e8;
-
-                  ChartBase *pChart = cc1->GetFirstQuiltChart();
-                  while(pChart)
+                  if(!Current_Ch)
                   {
-                         //  Is this pChart in new stack?
-                        int tEntry = ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
-                        if(tEntry != -1)
-                        {
-                              if(pChart->GetNativeScale() < cur_max_scale)
-                              {
-                                    Candidate_Chart = pChart;
-                                    cur_max_scale = pChart->GetNativeScale();
-                              }
-                        }
-                        pChart = cc1->GetNextQuiltChart();
-                  }
 
-                  Current_Ch = Candidate_Chart;
+                              // Build a temporary chart stack based on tLat, tLon
+                        ChartStack TempStack;
+                        ChartData->BuildChartStack(&TempStack, tLat, tLon);
+
+
+                        //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
+                        //    This will (almost?) always be the reference chart....
+
+                        ChartBase *Candidate_Chart = NULL;
+                        int cur_max_scale = (int)1e8;
+
+                        ChartBase *pChart = cc1->GetFirstQuiltChart();
+                        while(pChart)
+                        {
+                              //  Is this pChart in new stack?
+                              int tEntry = ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
+                              if(tEntry != -1)
+                              {
+                                    if(pChart->GetNativeScale() < cur_max_scale)
+                                    {
+                                          Candidate_Chart = pChart;
+                                          cur_max_scale = pChart->GetNativeScale();
+                                    }
+                              }
+                              pChart = cc1->GetNextQuiltChart();
+                        }
+
+                        Current_Ch = Candidate_Chart;
 
                   //    If the quilt is empty, there is no "best" chart.
                   //    So, open the smallest scale chart in the current stack
-                  if(NULL == Current_Ch)
-                  {
-                       Current_Ch = ChartData->OpenStackChartConditional(&TempStack,
-                                    TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE, CHART_FAMILY_DONTCARE);
+                        if(NULL == Current_Ch)
+                        {
+                              Current_Ch = ChartData->OpenStackChartConditional(&TempStack,
+                                          TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE, CHART_FAMILY_DONTCARE);
+                        }
                   }
 
 
-
-                  //  Invalidate all the charts in the quilt, as any cached data may be region based and not have fullscreen coverage
+                  //  Invalidate all the charts in the quilt,
+                  // as any cached data may be region based and not have fullscreen coverage
                   cc1->InvalidateAllQuiltPatchs();
 
                   if(Current_Ch)
@@ -5315,9 +5375,7 @@ void MyFrame::OnMemFootTimer(wxTimerEvent& event)
 
 void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 {
-
-    g_tick++;
-
+      g_tick++;
 
 //      Listen for quitflag to be set, requesting application close
       if(quitflag)
@@ -5541,11 +5599,12 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
 //  Invalidate the ChartCanvas window appropriately
-        cc1->UpdateShips();
-
-        cc1->UpdateAIS();
-
-        cc1->UpdateAlerts();                // pjotrc 2010.02.22
+        if(!cc1->m_bFollow)
+        {
+              cc1->UpdateShips();
+              cc1->UpdateAIS();
+              cc1->UpdateAlerts();
+        }
 
         if(g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown())
               g_pais_query_dialog_active->UpdateText();
@@ -5863,7 +5922,7 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
-            SetChartUpdatePeriod(cc1->VPoint);
+            SetChartUpdatePeriod(cc1->GetVP());
 
             UpdateGPSCompassStatusBox();           // Pick up the rotation
 
@@ -5915,7 +5974,7 @@ void MyFrame::SelectdbChart(int dbindex)
             cc1->SetViewPoint(zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                               cc1->GetVPRotation());
 
-            SetChartUpdatePeriod(cc1->VPoint);
+            SetChartUpdatePeriod(cc1->GetVP());
 
             UpdateGPSCompassStatusBox();           // Pick up the rotation
 
@@ -6356,7 +6415,7 @@ bool MyFrame::DoChartUpdate(void)
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
                 double set_scale = cc1->GetVPScale();
-                if(!cc1->VPoint.IsValid())
+                if(!cc1->GetVP().IsValid())
                     set_scale = 1./200000.;
 
                 cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
@@ -6485,7 +6544,7 @@ bool MyFrame::DoChartUpdate(void)
                     double set_scale = cc1->GetVPScale();
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
-                    if(!cc1->VPoint.IsValid())
+                    if(!cc1->GetVP().IsValid())
                         set_scale = 1./200000.;
                     else                                    // otherwise, match scale if elected.
                     {
@@ -6526,7 +6585,7 @@ bool MyFrame::DoChartUpdate(void)
 update_finish:
 
             //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-        if(pCurrentStack && ((pCurrentStack->nEntry <= 1) && m_toolbar_scale_tools_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_tools_shown))
+        if(pCurrentStack && (((pCurrentStack->nEntry <= 1) && m_toolbar_scale_tools_shown) || ((pCurrentStack->nEntry > 1) && !m_toolbar_scale_tools_shown)))
             if(!bFirstAuto)
                   RequestNewToolbar();
 
@@ -7649,7 +7708,7 @@ void MyFrame::ResumeSockets(void)
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler
 //----------------------------------------------------------------------------------------------------------
-
+#ifdef USE_S57
 void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
@@ -7666,6 +7725,7 @@ void MyCPLErrorHandler( CPLErr eErrClass, int nError,
     wxString str(msg, wxConvUTF8);
     wxLogMessage(str);
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------
 //      Printing Framework Support
@@ -8151,6 +8211,8 @@ FILE *f;
 wxColour GetGlobalColor(wxString colorName)
 {
       wxColour ret_color;
+
+#ifdef USE_S57
       //    Use the S52 Presentation library if present
       if(ps52plib)
       {
@@ -8162,8 +8224,8 @@ wxColour GetGlobalColor(wxString colorName)
                         ret_color = ( *pcurrent_user_color_hash ) [colorName];
             }
       }
-
       else
+#endif
       {
             if(NULL != pcurrent_user_color_hash)
                   ret_color = ( *pcurrent_user_color_hash ) [colorName];
@@ -9269,6 +9331,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
             wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
             GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+            wxDELETE(pev);
 
             return;
       }
@@ -9297,6 +9360,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
             wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
             GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+            wxDELETE(pev);
 
             return;
       }
@@ -9336,6 +9400,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 
       wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
       GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+      wxDELETE(pev);
 
       event.Skip();
 

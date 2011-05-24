@@ -1585,7 +1585,6 @@ bool read_feature_record_table(FILE *stream, int n_features, Cell_Info_Block *pC
                   case 4:                                                     // AREA, 408c3d
                   {
 
-
                         if(!read_and_decode_ushort(stream, &n_elements))
                               return false;
 
@@ -1601,8 +1600,7 @@ bool read_feature_record_table(FILE *stream, int n_features, Cell_Info_Block *pC
                                      return false;
 
                               if((index & 0x1fff) > pCIB->m_nvector_records)
-                                    *(int *)(0) = 0;                              // error
-//                              return 0;               // error, bad pointer
+                                    return false;               // error in this cell, ignore all of it
 
                               geometry_descriptor *u = &pCIB->edge_vector_descriptor_block[(index & 0x1fff)];   //point to the vector descriptor
 
@@ -4946,42 +4944,6 @@ void cm93compchart::SetVPParms(const ViewPort &vpt)
 
       int cmscale = GetCMScaleFromVP(vpt);            // First order calculation of cmscale
 
-/*
-      double scale_mpp = 3000 / vpt.view_scale_ppm;
-
-      double scale_mpp_adj = scale_mpp;
-
-      double scale_breaks_adj[7];
-
-      for(int i=0 ; i < 7 ; i++)
-            scale_breaks_adj[i] = scale_breaks[i];
-
-
-
-      //    Completely intuitive exponential curve adjustment
-      if(g_cm93_zoom_factor)
-      {
-            double efactor = (double)(g_cm93_zoom_factor) * (.176 / 7.);
-            for(int i=0 ; i < 7 ; i++)
-            {
-                  double efr = efactor * (7 - i);
-                  scale_breaks_adj[i] = scale_breaks[i] * pow(10., efr);
-                  if(g_bDebugCM93)
-                        printf("g_cm93_zoom_factor: %2d  efactor: %6g efr:%6g, scale_breaks[i]:%6g  scale_breaks_adj[i]: %6g\n",
-                         g_cm93_zoom_factor, efactor, efr, scale_breaks[i], scale_breaks_adj[i]);
-            }
-      }
-
-      int cmscale = 7;
-      int brk_index = 0;
-      while(cmscale > 0)
-      {
-            if(scale_mpp_adj < scale_breaks_adj[brk_index])
-                  break;
-            cmscale--;
-            brk_index++;
-      }
-*/
       m_cmscale = PrepareChartScale(vpt, cmscale);
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
@@ -5075,13 +5037,6 @@ int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                   m_pcm93chart_current->SetVPParms(vpt);
 
 
-                  //    If full screen quilting, we don't care if the VP center is on the selected cell
-                  //    We know that there is at least some cell(s) of the selected scale on the screen, so that is enough
-                  if(vpt.b_quilt &&  vpt.b_FullScreenQuilt)
-                  {
-                        cellscale_is_useable = true;
-                        break;
-                  }
 
                   //    Check to see if the viewpoint center is actually on the selected chart
                   float yc = vpt.clat;
@@ -5090,9 +5045,7 @@ int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
 
                   //    Bound the clon to 0-360. degrees
                   while(xc < 0)
-                  {
                         xc += 360.;
-                  }
 
                   if(xc > 360.)
                         xc -= 360.;
@@ -5123,7 +5076,33 @@ int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale)
                         break;
                   }
 */
-                  else
+
+                  else if(vpt.b_quilt &&  vpt.b_FullScreenQuilt)
+                  {
+                        ViewPort vpa = vpt;
+                        ViewPort vp_positive = vpt;
+                        SetVPPositive(&vp_positive);
+
+                        covr_set *pcover = m_pcm93chart_current->GetCoverSet();
+                        if(pcover)
+                        {
+                              bool boverlap = false;
+                              for(unsigned int im=0 ; im < pcover->GetCoverCount() ; im++)
+                              {
+                                    M_COVR_Desc *mcd = pcover->GetCover(im);
+
+                                    if(!(_OUT == vp_positive.GetBBox().Intersect(mcd->m_covr_bbox)) || !(_OUT == vpa.GetBBox().Intersect(mcd->m_covr_bbox)))
+                                    {
+                                          boverlap = true;
+                                          break;
+                                    }
+                              }
+                              if(boverlap)
+                                    cellscale_is_useable = true;
+                        }
+                  }
+
+                  if(!cellscale_is_useable)
                   {
                         if(cmscale > 0)
                               cmscale--;        // revert to larger scale if the current scale cells do not contain VP
@@ -5396,7 +5375,6 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 #else
                         wxMemoryDC temp_dc;
 #endif
-//                        render_return = m_pcm93chart_current->RenderViewOnDC(temp_dc, vp_positive);
                         render_return = m_pcm93chart_current->RenderRegionViewOnDC(temp_dc, vp_positive, chart_region);
 
                         //    Save the current cm93 chart pointer for restoration later
@@ -5445,7 +5423,6 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     if(g_bDebugCM93)
                                           printf("  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, (char)('A' + m_cmscale -1));
 
-//                                    m_pcm93chart_current->RenderViewOnDC(build_dc, vp_positive);
                                     m_pcm93chart_current->RenderRegionViewOnDC(build_dc, vp_positive, Region);
 
                                     wxRegion sscale_region;
@@ -5921,15 +5898,22 @@ bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       int cmscale_actual = PrepareChartScale(vp_proposed, cmscale);     // this is the scale that will be used, based on cell coverage
 
+      if(g_bDebugCM93)
+            printf("  In AdjustVP,  adjustment subchart scale is %c\n", (char)('A' + cmscale_actual -1));
+
       //    We always need to do a VP adjustment, independent of this method's return value.
       //    so, do an AdjustVP() based on the chart scale that WILL BE USED
       //    And be sure to return false if that adjust method suggests so.
-      wxASSERT(NULL != m_pcm93chart_array[cmscale_actual]);
+
       bool single_adjust = false;
       if(m_pcm93chart_array[cmscale_actual])
             single_adjust = m_pcm93chart_array[cmscale_actual]->AdjustVP(vp_last, vp_proposed);
 
       if(m_cmscale != cmscale_actual)
+            return false;
+
+      //    In quilt mode, always indicate that the adjusted vp requires a full repaint
+      if(vp_last.b_quilt)
             return false;
 
       return single_adjust;

@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -43,6 +43,7 @@
 //#include <gio/gio.h>
 
 /////////////TH////////////////////////
+#ifndef OCPN_NO_SOCKETS
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -53,7 +54,10 @@
 #endif
 
 #include "wx/socket.h"
+#endif
 ////////////////////TH100126/////////////////
+
+
 #include <wx/datetime.h>
 
 
@@ -198,10 +202,12 @@ private:
       void OnTimerLIBGPS(wxTimerEvent& event);
       void OnTimerNMEA(wxTimerEvent& event);
 
+#ifndef OCPN_NO_SOCKETS
       wxIPV4address     m_addr;
-      struct gps_data_t *m_gps_data;
-
       wxSocketClient    *m_sock;
+#endif
+
+      struct gps_data_t *m_gps_data;
       bool              m_busy;
       wxTimer           TimerLIBGPS;
       wxTimer           TimerNMEA;

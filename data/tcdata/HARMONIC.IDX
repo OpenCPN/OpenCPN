@@ -7496,9 +7496,6 @@ cNAA:XX:XX: -72.0863  41.3997 -5:0 Thames River, Off Smith Cove
 cNAA:XX:XX: -72.0687  41.4608 -5:0 Thames River, Off Stoddard Hill
 ^-56   0.30 0 -31   0.10 0   2776 332 164 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -72.0787  41.5147 -5:0 Thames River, Lower Coal Dock
-^-32767 -327.67 0 -32767 -327.67 0   2781 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -72.1050  41.2667 -5:0 Goshen Point, 1.9 miles SSE of
 ^-44   0.50 0 -54   0.50 0   2786 285 62 1 The Race, Long Island Sound, New York Current
 
@@ -7643,9 +7640,6 @@ cNAA:XX:XX: -72.9167  41.2333 -5:0 New Haven Harbor entrance
 cNAA:XX:XX: -72.9070  41.2972 -5:0 City Point, 1.3 miles northeast of
 ^32   0.10 0 42   0.10 0   3021 15 215 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -72.9667  41.2145 -5:0 Oyster River Pt., 1.3 miles SSE of
-^-32767   0.10 0 -32767   0.10 0   3026 255 60 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -72.9680  41.1433 -5:0 Pond Point, 4.2 miles SSE of
 ^1   0.20 0 5   0.20 0   3031 265 65 1 The Race, Long Island Sound, New York Current
 
@@ -7669,9 +7663,6 @@ cNAA:XX:XX: -73.1038  41.2400 -5:0 Housatonic River, Fowler Island, 0.1 mile NNW
 
 cNAA:XX:XX: -73.0867  41.2778 -5:0 Housatonic River, Wooster Island, 0.1 mile southwe
 ^100   0.20 0 29   0.20 0   3066 20 220 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.0797  41.3122 -5:0 Housatonic River, Derby-Shelton Bridge, below
-^-32767 -327.67 0 -32767   0.10 0   3071 -32767 95 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.1188  41.1125 -5:0 Point No Point, 2.1 miles south of
 ^-9   0.50 0 1   0.40 0   3076 251 74 1 The Race, Long Island Sound, New York Current
@@ -7726,9 +7717,6 @@ cNAA:XX:XX: -73.2400  41.0842 -5:0 Pine Creek Point, 2.3 miles SSE of
 
 cNAA:XX:XX: -73.3653  41.1045 -5:0 Saugatuck River, 0.3 mi. NW of Bluff Pt
 ^9   0.20 0 29   0.10 0   3141 265 80 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.3833  41.1000 -5:0 Saugatuck R., 0.5 mile above Bluff Pt
-^-32767 -327.67 0 -32767 -327.67 0   3146 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.4055  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of
 ^54   0.30 0 68   0.30 0   3151 283 81 1 The Race, Long Island Sound, New York Current
@@ -7799,9 +7787,6 @@ cNAA:XX:XX: -73.5167  40.9000 -5:0 Oyster Bay, Harbor ent., south of Plum Point
 cNAA:XX:XX: -73.5333  40.8833 -5:0 Oyster Bay, Harbor, west of Soper Point
 ^37   0.20 0 -4   0.10 0   3226 333 140 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4833  40.8833 -5:0 Oyster Bay, Cold Spring Harbor
-^-32767 -327.67 0 -32767 -327.67 0   3231 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -73.5367  41.0147 -5:0 Stamford Harbor entrance
 ^-69   0.10 0 -118   0.30 0   3236 329 134 1 The Race, Long Island Sound, New York Current
 
@@ -7847,32 +7832,11 @@ cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of
 cNAA:XX:XX: -73.6562  40.9247 -5:0 Matinecock Point, 1.7 miles northwest of
 ^93   0.10 0 66   0.10 0   3281 234 55 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.6745  40.8620 -5:0 Hempstead Harbor, 0.3 mile north of
-^-32767 -327.67 0 -32767 -327.67 0   3286 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.6663  40.8583 -5:0 Hempstead Harbor, 0.5 mile east of
-^-32767   0.10 0 -32767   0.03 0   3291 157 331 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.6513  40.8130 -5:0 Old Town Wharf, 0.5 mile north of
-^-32767   0.10 0 -32767 -327.67 0   3296 196 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -73.6500  40.8280 -5:0 Hempstead Harbor, off Glenwood Landing
 ^-25   0.30 0 2   0.20 0   3301 138 320 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.7122  40.9167 -5:0 Delancey Point, 1 mile southeast of
 ^58   0.20 0 73   0.10 0   3306 244 59 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7122  40.9167 -5:0 Delancey Point, 1 mile southeast of
-^-32767   0.20 0 68   0.10 0   3306 239 69 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7167  40.9333 -5:0 Mamaroneck Harbor
-^-32767 -327.67 0 -32767 -327.67 0   3311 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7667  40.9000 -5:0 Echo Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   3316 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7667  40.8833 -5:0 Davids Island, channel 0.1 mile east of
-^-32767 -327.67 0 -32767 -327.67 0   3321 -32767 -32767 1 Throg's Neck, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.7572  40.8905 -5:0 Huckleberry Island, 0.2 mile NW of
 ^-174   0.20 0 -149   0.40 0   3326 69 234 1 Throg's Neck, Long Island Sound, New York Current
@@ -7938,14 +7902,8 @@ cNAA:XX:XX: -73.8468  40.7997 -5:0 Clason Point, 0.3 n.mi. S of
 cNAA:XX:XX: -73.8547  40.8010 -5:0 College Point Reef, 0.25 n.mi. NW of
 ^-27   0.40 0 -32   0.30 0   3426 74 261 1 Hell Gate (East River), New York Current
 
-cNAA:XX:XX: -73.8450  40.7650 -5:0 Flushing Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   3431 -32767 -32767 1 Hell Gate (East River), New York Current
-
 cNAA:XX:XX: -73.8833  40.7833 -5:0 Rikers I. chan., off La Guardia Field
 ^4   0.30 0 4   0.30 0   3436 88 261 1 Hell Gate (East River), New York Current
-
-cNAA:XX:XX: -73.8750  40.8150 -5:0 Bronx River (1 mile north of Hunts Pt )
-^-32767 -327.67 0 -32767 -327.67 0   3441 -32767 -32767 1 Hell Gate (East River), New York Current
 
 cNAA:XX:XX: -73.8833  40.8000 -5:0 Hunts Point, southwest of
 ^1   0.50 0 1   0.30 0   3446 108 280 1 Hell Gate (East River), New York Current
@@ -7982,9 +7940,6 @@ cNAA:XX:XX: -73.9513  40.7582 -5:0 Roosevelt Island, east of
 
 cNAA:XX:XX: -73.9695  40.7397 -5:0 Manhattan, off 31st Street
 ^9   0.40 0 -2   0.50 0   3501 0 175 1 Hell Gate (East River), New York Current
-
-cNAA:XX:XX: -73.9500  40.7333 -5:0 Newtown Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   3506 -32767 -32767 1 Hell Gate (East River), New York Current
 
 cNAA:XX:XX: -73.9667  40.7333 -5:0 Pier 67, off 19th Street
 ^-8   0.50 0 -8   0.40 0   3511 355 179 1 Hell Gate (East River), New York Current
@@ -8031,15 +7986,6 @@ cNAA:XX:XX: -73.9117  40.8733 -5:0 Broadway Bridge
 cNAA:XX:XX: -73.9217  40.8767 -5:0 Henry Hudson Bridge, 0.7 nmi. SE of
 ^12   0.20 0 -31   0.30 0   3581 137 326 1 Hell Gate (East River), New York Current
 
-cNAA:XX:XX: -73.1833  40.4833 -5:0 Fire Island Lighted Whistle Bouy 2FI
-^-32767 -327.67 0 -32767 -327.67 0   3586 -32767 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.2667  40.2667 -5:0 Fire Island Inlet, 22 miles S of
-^-32767 -327.67 0 -32767 -327.67 0   3591 -32767 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -72.5017  40.8867 -5:0 Shinnecock Canal, railroad bridge
-^0 -327.67 0 0   0.80 0   3596 -32767 180 1 The Narrows, midchannel, New York
-
 cNAA:XX:XX: -72.5017  40.8450 -5:0 Ponquogue bridge, Shinnecock Bay
 ^54   0.50 0 27   0.30 0   3601 250 90 1 The Narrows, midchannel, New York
 
@@ -8057,12 +8003,6 @@ cNAA:XX:XX: -73.6600  40.5950 -5:0 Long Beach, inside, between bridges
 
 cNAA:XX:XX: -73.7550  40.5900 -5:0 East Rockaway Inlet
 ^-106   1.30 0 -63   1.20 0   3626 42 227 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.8167  40.4500 -5:0 Ambrose Light
-^-32767 -327.67 0 -32767 -327.67 0   3631 -32767 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9167  40.4500 -5:0 Sandy Hook App. Lighted Horn Bouy 2A
-^-32767 -327.67 0 -32767 -327.67 0   3636 -32767 -32767 1 The Narrows, midchannel, New York
 
 cNAA:XX:XX: -73.9467  40.5383 -5:0 Rockaway Point
 ^-156   1.10 0 -98   0.50 0   3641 301 140 1 The Narrows, midchannel, New York
@@ -8127,83 +8067,14 @@ cNAA:XX:XX: -73.9683  40.8133 -5:0 Grants Tomb
 cNAA:XX:XX: -73.9500  40.8500 -5:0 George Washington Bridge
 ^101   0.90 0 110   1.10 0   3731 20 200 1 The Narrows, midchannel, New York
 
-cNAA:XX:XX: -73.9333  40.8833 -5:0 Spuyten Duyvil
-^131   0.90 0 117   1.10 0   3736 20 -32767 1 The Narrows, midchannel, New York
-
 cNAA:XX:XX: -73.9167  40.9000 -5:0 Riverdale
 ^131   0.80 0 122   1.00 0   3741 15 200 1 The Narrows, midchannel, New York
 
 cNAA:XX:XX: -73.9133  40.9117 -5:0 Mount St. Vincent College, SW of
 ^86   0.90 0 134   0.70 0   3746 7 190 1 The Narrows, midchannel, New York
 
-cNAA:XX:XX: -73.8833  41.0167 -5:0 Dobbs Ferry
-^150   0.80 0 144   0.90 0   3751 10 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.8833  41.0833 -5:0 Tarrytown
-^157   0.60 0 160   0.80 0   3756 0 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9000  41.1667 -5:0 Ossining
-^170   0.50 0 185   0.70 0   3761 320 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.2000 -5:0 Haverstraw
-^175   0.50 0 193   0.70 0   3766 335 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.2833 -5:0 Peekskill
-^190   0.50 0 213   0.60 0   3771 0 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9833  41.3167 -5:0 Bear Mountain Bridge
-^196   0.50 0 219   0.60 0   3776 0 -32767 1 The Narrows, midchannel, New York
-
 cNAA:XX:XX: -73.9667  41.3667 -5:0 Highland Falls
 ^204   0.60 0 224   0.60 0   3781 5 185 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.4000 -5:0 West Point, off Duck Island
-^212   0.50 0 231   0.60 0   3786 10 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -74.0000  41.5000 -5:0 Newburgh
-^230   0.50 0 243   0.60 0   3791 5 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.5833 -5:0 New Hamburg
-^245   0.60 0 251   0.60 0   3796 5 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.7000 -5:0 Poughkeepsie
-^266   0.60 0 261   0.60 0   3801 5 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.7833 -5:0 Hyde Park
-^282   0.70 0 270   0.70 0   3806 5 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9500  41.9333 -5:0 Kingston Point
-^309   0.80 0 294   0.80 0   3811 5 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9333  42.0000 -5:0 Barrytown
-^326   0.80 0 310   0.90 0   3816 10 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9333  42.0667 -5:0 Saugerties
-^343   0.90 0 329   1.00 0   3821 0 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9000  42.1500 -5:0 Silver Point
-^361   0.90 0 349   1.00 0   3826 30 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.8500  42.2167 -5:0 Catskill
-^376   0.90 0 369   1.00 0   3831 355 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.8000  42.2500 -5:0 Hudson
-^383   0.90 0 380   1.00 0   3836 30 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.7833  42.3500 -5:0 Coxsackie
-^405   0.90 0 415   0.90 0   3841 350 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.7833  42.4500 -5:0 New Baltimore
-^432   0.80 0 433   0.80 0   3846 355 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.7667  42.5333 -5:0 Castleton-on-Hudson
-^455   0.50 0 432   0.60 0   3851 15 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.7500  42.6500 -5:0 Albany
-^509   0.20 0 406   0.40 0   3856 20 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.7000  42.7333 -5:0 Troy (below the locks)
-^-32767 -327.67 0 -32767 -327.67 0   3861 -32767 190 1 The Narrows, midchannel, New York
 
 cNAA:XX:XX: -74.0017  40.4850 -5:0 Sandy Hook Channel
 ^-93   1.00 0 -66   0.90 0   3866 286 94 1 The Narrows, midchannel, New York
@@ -8223,9 +8094,6 @@ cNAA:XX:XX: -74.0967  40.5400 -5:0 New Dorp Beach, 1.2 miles south of
 cNAA:XX:XX: -74.0727  40.5183 -5:0 Old Orchard Shoal Lt., 1.2 mi. ENE of
 ^-139   0.40 0 -83   0.20 0   3891 270 85 1 The Narrows, midchannel, New York
 
-cNAA:XX:XX: -74.0617  40.5483 -5:0 New Dorp Beach, 1.8 miles SE of
-^-32767   0.30 0 -32767   0.30 0   3896 45 225 1 The Narrows, midchannel, New York
-
 cNAA:XX:XX: -74.0392  40.5467 -5:0 Midland Beach, 2.6 miles SE of
 ^0   0.50 0 0   0.60 0   3901 335 160 1 The Narrows, midchannel, New York
 
@@ -8241,17 +8109,8 @@ cNAA:XX:XX: -73.9533  40.5300 -5:0 Rockaway Inlet Jetty, 1 mile SW of
 cNAA:XX:XX: -74.0083  40.5700 -5:0 Coney Island Channel, west end
 ^-81   0.60 0 -24   0.60 0   3921 293 102 1 The Narrows, midchannel, New York
 
-cNAA:XX:XX: -73.9800  40.3967 -5:0 Highlands Bridge, Shrewsbury River
-^21   1.50 0 33   1.30 0   3926 170 -32767 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -73.9750  40.3650 -5:0 Seabright Bridge, Shrewsbury River
-^55   0.80 0 52   0.90 0   3931 185 -32767 1 The Narrows, midchannel, New York
-
 cNAA:XX:XX: -74.1267  40.4933 -5:0 Raritan Bay Reach Channel
 ^-125   0.40 0 -38   0.20 0   3936 285 94 1 The Narrows, midchannel, New York
-
-cNAA:XX:XX: -74.1983  40.4483 -5:0 Keyport Channel entrance
-^-32767 -327.67 0 -32767 -327.67 0   3941 -32767 -32767 1 The Narrows, midchannel, New York
 
 cNAA:XX:XX: -74.2100  40.4817 -5:0 Red Bank, 1.4 miles south of
 ^-105   0.40 0 -82   0.30 0   3946 278 79 1 The Narrows, midchannel, New York
@@ -8325,12 +8184,6 @@ cNAA:XX:XX: -74.1167  39.7667 -5:0 Barnegat Inlet
 cNAA:XX:XX: -74.1833  39.6500 -5:0 Manahawkin Drawbridge
 ^153   0.80 0 145   0.70 0   4046 30 210 1 Delaware Bay Entrance
 
-cNAA:XX:XX: -73.4167  39.0667 -5:0 Cape May, 72 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   4051 -32767 -32767 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -74.5333  38.9667 -5:0 Five-Fathom Bank NE. Buoy 2 FB
-^-32767 -327.67 0 -32767 -327.67 0   4056 -32767 -32767 1 Delaware Bay Entrance
-
 cNAA:XX:XX: -74.7113  38.7883 -5:0 Five Fathom Bank Traffic Lane
 ^-110   0.40 0 -62   0.30 0   4061 304 121 1 Delaware Bay Entrance
 
@@ -8384,9 +8237,6 @@ cNAA:XX:XX: -75.0883  38.8833 -5:0 Cape Henlopen, 5 miles north of
 
 cNAA:XX:XX: -75.1083  38.7933 -5:0 Breakwater Harbor
 ^-55   0.60 0 -74   0.70 0   4126 266 78 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -75.1583  38.7917 -5:0 Roosevelt Inlet (between jetties)
-^-32767   0.50 0 -32767   0.80 0   4131 206 30 1 Delaware Bay Entrance
 
 cNAA:XX:XX: -75.2105  38.8963 -5:0 Broadkill Slough
 ^-36   0.50 0 -3   0.50 0   4136 314 132 1 Delaware Bay Entrance
@@ -8442,9 +8292,6 @@ cNAA:XX:XX: -75.0450  39.2167 -5:0 Maurice River entrance
 cNAA:XX:XX: -74.9933  39.2867 -5:0 Mauricetown Bridge, Maurice River
 ^61   1.70 0 84   1.70 0   4206 0 180 1 Delaware Bay Entrance
 
-cNAA:XX:XX: -75.0400  39.3950 -5:0 Millville Drawbridge, Maurice River
-^-32767   0.10 0 -32767   0.30 0   4211 0 180 1 Delaware Bay Entrance
-
 cNAA:XX:XX: -75.3833  39.0667 -5:0 St. Jones River ent., 1 mile east of
 ^-1   0.40 0 11   0.50 0   4216 334 122 1 Delaware Bay Entrance
 
@@ -8471,9 +8318,6 @@ cNAA:XX:XX: -75.3033  39.2817 -5:0 Ben Davis Point, 0.8 mile southwest of
 
 cNAA:XX:XX: -75.3600  39.3483 -5:0 Cohansey River, 0.5 mile above entrance
 ^90   0.90 0 91   1.10 0   4251 74 254 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -75.2367  39.4267 -5:0 Bridgeton (Broad Street Bridge)
-^-32767   0.10 0 -32767   0.20 0   4256 0 180 1 Delaware Bay Entrance
 
 cNAA:XX:XX: -75.4678  39.3778 -5:0 Arnold Point, 2.2 n.mi. WSW of
 ^143   1.50 0 147   1.40 0   4261 324 145 1 Delaware Bay Entrance
@@ -8574,12 +8418,6 @@ cNAA:XX:XX: -75.2833  39.8467 -5:0 Crab Point, 0.5 mile east of
 cNAA:XX:XX: -75.2150  39.8667 -5:0 Hog Island, channel southeast of
 ^294   1.40 0 274   1.70 0   4416 54 231 1 Delaware Bay Entrance
 
-cNAA:XX:XX: -75.1950  39.8867 -5:0 Schuylkill River entrance
-^-32767   0.40 0 -32767   0.30 0   4421 356 178 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -75.2150  39.9038 -5:0 Schuylkill River
-^-32767   0.20 0 -32767   0.20 0   4426 351 172 1 Delaware Bay Entrance
-
 cNAA:XX:XX: -75.1730  39.8803 -5:0 Eagle Point, 0.2 n.mi. northwest of
 ^313   1.10 0 267   1.30 0   4431 91 271 1 Delaware Bay Entrance
 
@@ -8621,18 +8459,6 @@ cNAA:XX:XX: -74.8367  40.0950 -5:0 Burlington Island, channel east of
 
 cNAA:XX:XX: -74.7563  40.1338 -5:0 Newbold Island north of,  Main Channel
 ^387   0.50 0 268   0.40 0   4491 84 250 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -74.7367  40.1367 -5:0 Whitehill
-^-32767 -327.67 0 -32767   1.10 0   4496 -32767 233 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -75.0667  38.6167 -5:0 Indian River Inlet (bridge)
-^-32767   1.30 0 -32767   1.60 0   4501 265 85 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -74.7667  38.4167 -5:0 Fenwick Shoal Lighted Whistle Buoy 2
-^-32767 -327.67 0 -32767 -327.67 0   4506 -32767 -32767 1 Delaware Bay Entrance
-
-cNAA:XX:XX: -74.9333  37.9167 -5:0 Winter-Quarter Shoal Buoy 6WQS
-^-32767 -327.67 0 -32767 -327.67 0   4511 -32767 -32767 1 Delaware Bay Entrance
 
 cNAA:XX:XX: -75.7250  37.0883 -5:0 Smith Island Shoal, southeast of
 ^-96   0.40 0 -95   0.30 0   4516 298 68 1 Chesapeake Bay Entrance, Virginia Current
@@ -8817,9 +8643,6 @@ cNAA:XX:XX: -76.2020  38.0147 -5:0 Point Lookout, 5.9 n.mi. ESE of
 cNAA:XX:XX: -76.2020  38.0147 -5:0 Point Lookout, 5.9 n.mi. ESE of
 ^165   0.40 0 276   0.10 0   4791 330 167 1 Chesapeake Bay Entrance, Virginia Current
 
-cNAA:XX:XX: -76.2917  38.0383 -5:0 Point Lookout, 1.5 n.mi. east of
-^-32767 -327.67 0 -32767 -327.67 0   4796 -32767 -32767 1 Chesapeake Bay Entrance, Virginia Current
-
 cNAA:XX:XX: -76.2183  38.1100 -5:0 Point Lookin
 ^313   0.50 0 304   0.40 0   4801 10 160 1 Chesapeake Bay Entrance, Virginia Current
 
@@ -8852,9 +8675,6 @@ cNAA:XX:XX: -76.3133  38.3108 -5:0 Cedar Point, 2.9 n.mi. ENE of
 
 cNAA:XX:XX: -76.3517  38.3045 -5:0 Cedar Point, 1.1 miles ENE of
 ^-203   0.50 0 -156   0.80 0   4841 10 185 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.3658  38.3363 -5:0 Drum Point, 2.8 miles northeast of
-^-32767   0.20 0 -32767   0.50 0   4846 335 185 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.3603  38.3813 -5:0 Cove Point, 1.1 n.mi. east of
 ^-177   0.90 0 -160   0.90 0   4851 342 165 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -8973,9 +8793,6 @@ cNAA:XX:XX: -76.3778  39.0403 -5:0 Craighill Channel entrance, Buoy "2C"
 cNAA:XX:XX: -76.3778  39.0403 -5:0 Craighill Channel entrance, Buoy "2C"
 ^0   0.50 0 -6   0.60 0   4986 325 147 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -76.2717  39.0783 -5:0 Love Point, 2.8 miles NNE of
-^-32767 -327.67 0 -32767 -327.67 0   4991 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
 cNAA:XX:XX: -76.3122  39.0797 -5:0 Love Point, 2.5 miles north of
 ^-48   0.80 0 27   0.50 0   4996 55 240 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
@@ -9062,12 +8879,6 @@ cNAA:XX:XX: -76.0817  39.4805 -5:0 Spesutie Island, channel north of
 
 cNAA:XX:XX: -75.9975  39.4883 -5:0 Rocky Pt. (Elk Neck), 0.25 n.mi. SW of
 ^162   0.60 0 74   0.70 0   5126 9 196 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -75.9847  39.5292 -5:0 Red Point, 0.2 mile W of, Northeast River
-^102   0.90 0 117   0.60 0   5131 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.0847  39.5522 -5:0 Havre de Grace, Susquehanna River
-^-32767 -327.67 0 -32767 -327.67 0   5136 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.2267  37.0053 -5:0 Thimble Shoal Channel (west end)
 ^-15   1.10 0 -2   1.00 0   5141 293 116 1 Chesapeake Bay Entrance, Virginia Current
@@ -9222,9 +9033,6 @@ cNAA:XX:XX: -77.2700  37.3367 -5:0 Bermuda Hundred
 cNAA:XX:XX: -77.3467  37.3800 -5:0 Dutch Gap Canal, 0.5 mile east of
 ^328   1.00 0 319   0.70 0   5386 270 90 1 Chesapeake Bay Entrance, Virginia Current
 
-cNAA:XX:XX: -77.4167  37.5200 -5:0 Rocketts
-^-32767 -327.67 0 -32767 -327.67 0   5391 -32767 160 1 Chesapeake Bay Entrance, Virginia Current
-
 cNAA:XX:XX: -76.1533  37.1230 -5:0 York River Ent. Channel (SE end)
 ^50   1.30 0 92   0.80 0   5396 342 162 1 Chesapeake Bay Entrance, Virginia Current
 
@@ -9338,9 +9146,6 @@ cNAA:XX:XX: -76.4575  37.6328 -5:0 Orchard Point, 1.0 mile south of
 
 cNAA:XX:XX: -76.5067  37.6300 -5:0 Towles Point
 ^104   0.70 0 159   0.40 0   5556 274 103 1 Chesapeake Bay Entrance, Virginia Current
-
-cNAA:XX:XX: -76.5533  37.6713 -5:0 Rogue Point, 0.8 mile WNW of
-^-32767   0.70 0 -32767   0.50 0   5561 0 195 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -76.5987  37.7492 -5:0 Waterview, 1.3 miles NNE of
 ^139   0.90 0 195   0.40 0   5566 340 155 1 Chesapeake Bay Entrance, Virginia Current
@@ -9498,20 +9303,11 @@ cNAA:XX:XX: -76.3242  38.0208 -5:0 Point Lookout, 1.0 n.mi. south of
 cNAA:XX:XX: -76.3242  38.0208 -5:0 Point Lookout, 1.0 n.mi. south of
 ^125   0.70 0 278   0.20 0   5766 271 86 1 Chesapeake Bay Entrance, Virginia Current
 
-cNAA:XX:XX: -76.3500  38.0333 -5:0 Cornfield Point, 1 mile south of
-^-32767 -327.67 0 -32767 -327.67 0   5771 310 130 1 Chesapeake Bay Entrance, Virginia Current
-
 cNAA:XX:XX: -76.3550  38.0183 -5:0 Cornfield Point, midchannel
 ^278   0.60 0 269   0.50 0   5776 280 110 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -76.3583  37.9900 -5:0 Cornfield Point, 3.8 miles south of
 ^263   0.90 0 254   0.50 0   5781 315 100 1 Chesapeake Bay Entrance, Virginia Current
-
-cNAA:XX:XX: -76.4483  38.1300 -5:0 Fort Point, St. Marys River
-^-32767 -327.67 0 -32767 -327.67 0   5786 -32767 -32767 1 Chesapeake Bay Entrance, Virginia Current
-
-cNAA:XX:XX: -76.5200  38.0350 -5:0 Yeocomico River entrance
-^-32767 -327.67 0 -32767 -327.67 0   5791 -32767 -32767 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -76.5333  38.1300 -5:0 Piney Point, 0.2 mile south of
 ^218   1.60 0 209   0.50 0   5796 280 145 1 Chesapeake Bay Entrance, Virginia Current
@@ -9522,17 +9318,11 @@ cNAA:XX:XX: -76.5417  38.1150 -5:0 Piney Point, midchannel
 cNAA:XX:XX: -76.5517  38.0983 -5:0 Piney Point, 2.2 miles south of
 ^218   0.60 0 209   0.40 0   5806 280 130 1 Chesapeake Bay Entrance, Virginia Current
 
-cNAA:XX:XX: -76.6550  38.1450 -5:0 Lower Machodoc Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   5811 -32767 -32767 1 Chesapeake Bay Entrance, Virginia Current
-
 cNAA:XX:XX: -76.7217  38.1350 -5:0 White Point, Nomini Creek entrance
 ^253   1.50 0 244   1.00 0   5816 155 335 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -76.6950  38.2417 -5:0 Breton Bay entrance
 ^178   0.70 0 169   0.30 0   5821 30 200 1 Chesapeake Bay Entrance, Virginia Current
-
-cNAA:XX:XX: -76.7283  38.2417 -5:0 St. Clements Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   5826 -32767 -32767 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -76.7083  38.1950 -5:0 St. Clements I., 1.8 miles southeast of
 ^323   0.50 0 314   0.70 0   5831 250 85 1 Chesapeake Bay Entrance, Virginia Current
@@ -9546,20 +9336,11 @@ cNAA:XX:XX: -76.8217  38.2733 -5:0 Rock Point, Wicomico River entrance
 cNAA:XX:XX: -76.9450  38.2733 -5:0 Swan Point
 ^-114   0.40 0 -152   1.00 0   5846 350 140 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -77.0322  38.3150 -5:0 Dahlgren Harbor Channel
-^-32767 -327.67 0 -32767 -327.67 0   5851 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0333  38.3167 -5:0 Upper Machodoc Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   5856 270 90 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
 cNAA:XX:XX: -76.9900  38.3683 -5:0 Persimmon Point
 ^-69   1.50 0 -107   1.80 0   5861 325 175 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.9867  38.3563 -5:0 Potomac River Bridge, 0.4 mile south of
 ^-85   1.10 0 -98   1.80 0   5866 0 165 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0367  38.4650 -5:0 Chapel Point, Port Tobacco River
-^-32767 -327.67 0 -32767 -327.67 0   5871 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -77.1967  38.3467 -5:0 Maryland Point
 ^-64   1.40 0 -102   1.80 0   5876 270 80 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -9581,18 +9362,6 @@ cNAA:XX:XX: -77.0372  38.7937 -5:0 Jones Point, Alexandria
 
 cNAA:XX:XX: -77.0220  38.8513 -5:0 Hains Point
 ^20   0.80 0 4   0.40 0   5906 359 176 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0100  38.8633 -5:0 Anacostia River entrance
-^-32767 -327.67 0 -32767 -327.67 0   5911 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0063  38.8678 -5:0 South Capitol Street Bridge
-^-32767 -327.67 0 -32767 -327.67 0   5916 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0200  38.8633 -5:0 Washington Channel, Washington, D.C
-^-32767 -327.67 0 -32767 -327.67 0   5921 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -77.0333  38.8667 -5:0 Virginia Channel, Washington, D.C
-^-32767 -327.67 0 -32767 -327.67 0   5926 -32767 145 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.4012  38.3180 -5:0 Hog Point, 0.6 n.mi. north of
 ^-285   0.50 0 -359   0.60 0   5931 258 70 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -9620,9 +9389,6 @@ cNAA:XX:XX: -76.6722  38.5117 -5:0 Benedict, highway bridge
 
 cNAA:XX:XX: -76.6850  38.7467 -5:0 Lyons Creek Wharf
 ^-194   1.40 0 -232   1.10 0   5966 315 140 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.3117  38.5500 -5:0 Hills Point, 1.0 mile south of
-^-32767 -327.67 0 -32767 -327.67 0   5971 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.2442  38.5300 -5:0 Ragged Point, 1.5 miles east of
 ^-293   0.50 0 -269   0.20 0   5976 45 235 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -9660,15 +9426,6 @@ cNAA:XX:XX: -75.9663  38.6753 -5:0 Poplar Point, south of
 cNAA:XX:XX: -75.9987  38.7567 -5:0 Dover Bridge
 ^-79   1.10 0 -85   1.00 0   6021 50 235 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -76.1778  38.6953 -5:0 Oxford, Tred Avon River
-^-32767   0.40 0 -32767   0.20 0   6026 40 225 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.1033  38.7633 -5:0 Easton Pt., 0.5 mi. below, Tred Avon River
-^-32767 -327.67 0 -32767 -327.67 0   6031 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.2492  38.7388 -5:0 Mulberry Pt., 0.6 mi. S of, Broad Creek
-^-32767   0.40 0 -32767   0.20 0   6036 350 170 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
 cNAA:XX:XX: -76.3050  38.7292 -5:0 Bald Eagle Pt., east of, Harris Creek
 ^-247   0.50 0 -247   0.50 0   6041 10 175 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
@@ -9681,41 +9438,14 @@ cNAA:XX:XX: -76.3375  38.8388 -5:0 Kent Point, 1.4 n.mi. east of
 cNAA:XX:XX: -76.3267  38.8433 -5:0 Long Point, 1 mile southeast of
 ^-220   0.60 0 -220   0.50 0   6056 40 235 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -76.3258  38.8947 -5:0 Turkey Point, 1.3 miles WSW of
-^-32767 -327.67 0 -32767 -327.67 0   6061 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.2795  38.9138 -5:0 Parson Island, 1.4 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   6066 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.2388  38.9247 -5:0 Parson Island, 0.7 mile NNE of
-^-32767   0.20 0 -32767   0.20 0   6071 305 150 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.2530  38.8797 -5:0 Tilghman Point, 1 mile north of
-^-32767   0.40 0 -32767   0.40 0   6076 60 265 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
 cNAA:XX:XX: -76.1980  38.8547 -5:0 Wye River, west of Bruffs Island
 ^-153   0.80 0 -197   0.90 0   6081 30 190 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.2092  38.8055 -5:0 Deepwater Point, Miles River
 ^-228   0.60 0 -223   0.60 0   6086 215 25 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -76.1553  38.7738 -5:0 Long Point, 0.8 mi. east of, Miles River
-^-32767   0.40 0 -32767   0.20 0   6091 55 245 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5238  38.8555 -5:0 Cheston Point, south of, West River
-^-32767 -327.67 0 -32767 -327.67 0   6096 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.4905  38.9128 -5:0 South River entrance
-^-32767 -327.67 0 -32767 -327.67 0   6101 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
 cNAA:XX:XX: -76.4167  38.9733 -5:0 Greenbury Point, 1.8 miles east of
 ^-57   0.80 0 -51   0.80 0   6106 70 245 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.4750  38.9825 -5:0 Annapolis
-^-32767   0.50 0 -32767   0.40 0   6111 320 110 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5288  39.0305 -5:0 Brewer Point, Severn River
-^-32767   0.40 0 -32767   0.40 0   6116 275 155 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.4372  39.0578 -5:0 Mountain Point, Magothy River entrance
 ^-140   0.80 0 -89   0.40 0   6121 315 125 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -9734,27 +9464,6 @@ cNAA:XX:XX: -76.1205  39.1063 -5:0 Deep Point
 
 cNAA:XX:XX: -76.0612  39.2072 -5:0 Chestertown
 ^-21   0.80 0 -2   0.60 0   6146 25 220 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.4442  39.1783 -5:0 North Point, Brewerton Channel
-^-32767 -327.67 0 -32767 -327.67 0   6151 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5130  39.2013 -5:0 Brewerton Angle
-^-32767 -327.67 0 -32767 -327.67 0   6156 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5755  39.2575 -5:0 Fort McHenry Angle
-^-32767 -327.67 0 -32767 -327.67 0   6161 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.4983  39.2300 -5:0 Bear Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   6166 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5767  39.2183 -5:0 Curtis Creek entrance
-^-32767 -327.67 0 -32767 -327.67 0   6171 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.5750  39.2633 -5:0 Fort McHenry, NW Harbor entrance
-^-32767 -327.67 0 -32767 -327.67 0   6176 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
-
-cNAA:XX:XX: -76.6167  39.2567 -5:0 Middle Branch entrance
-^-32767 -327.67 0 -32767 -327.67 0   6181 -32767 -32767 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.4383  39.2500 -5:0 Lynch Point, Back River
 ^0   0.70 0 0   0.50 0   6186 310 130 1 BALTIMORE HARBOR APPROACH, Maryland Current
@@ -9840,9 +9549,6 @@ cNAA:XX:XX: -75.5467  35.7700 -5:0 Oregon Inlet, Herbert C. Bonner Bridge, WSW o
 cNAA:XX:XX: -75.7500  35.2000 -5:0 Hatteras Inlet
 ^162   1.20 0 138   1.00 0   6291 307 148 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -75.3000  35.1500 -5:0 Diamond Shoal Light, 3.9 miles SSW of
-^-32767 -327.67 0 -32767 -327.67 0   6296 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
 cNAA:XX:XX: -76.0188  35.0653 -5:0 Ocracoke Inlet, channel entrance
 ^168   1.00 0 103   1.20 0   6301 0 145 1 Charleston Harbor Entrance, South Carolina Current
 
@@ -9857,9 +9563,6 @@ cNAA:XX:XX: -76.0520  35.0797 -5:0 Ocracoke Inlet, Wallace Channel
 
 cNAA:XX:XX: -76.1000  35.0667 -5:0 Sheep Island Slue
 ^153   0.10 0 95   0.20 0   6321 310 95 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -76.0000  35.0167 -5:0 Ocracoke Inlet, 3.5 miles SSE of
-^-32767 -327.67 0 -32767 -327.67 0   6326 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -76.6555  34.6663 -5:0 Beaufort Inlet, Shackleford Banks, 0.8 mile S of
 ^79   0.80 0 30   0.70 0   6331 314 145 1 Charleston Harbor Entrance, South Carolina Current
@@ -9906,9 +9609,6 @@ cNAA:XX:XX: -76.6805  34.7378 -5:0 Beaufort Inlet, Newport Marshes, E of
 cNAA:XX:XX: -76.6797  34.7117 -5:0 Beaufort Inlet, Radio Island, E of
 ^55   0.70 0 20   0.60 0   6386 22 202 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -76.6667  34.7167 -5:0 Beaufort Inlet, Beaufort, off docks
-^-32767 -327.67 0 -32767 -327.67 0   6391 310 130 1 Charleston Harbor Entrance, South Carolina Current
-
 cNAA:XX:XX: -76.6538  34.7005 -5:0 Beaufort Inlet, Bird Shoal, SE of
 ^100   0.50 0 70   0.40 0   6396 126 304 1 Charleston Harbor Entrance, South Carolina Current
 
@@ -9920,9 +9620,6 @@ cNAA:XX:XX: -76.6175  34.7022 -5:0 Beaufort Inlet, Carrot Island
 
 cNAA:XX:XX: -76.6138  34.6783 -5:0 Beaufort Inlet, Middle Marshes, S of
 ^59   0.80 0 63   0.50 0   6411 123 275 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -76.4000  34.3000 -5:0 Cape Lookout Shoals Ltd. Whistle Buoy 14
-^-32767 -327.67 0 -32767 -327.67 0   6416 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -78.0075  33.8738 -5:0 Bald Head
 ^75   1.30 0 9   1.50 0   6421 34 190 1 Charleston Harbor Entrance, South Carolina Current
@@ -10047,12 +9744,6 @@ cNAA:XX:XX: -77.9538  34.2475 -5:0 Turning Basin, Northeast River
 cNAA:XX:XX: -77.9538  34.2475 -5:0 Turning Basin, Northeast River
 ^243   0.40 0 193   0.30 0   6521 26 200 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -77.8167  33.5667 -5:0 Frying Pan Shoals, off Cape Fear
-^-32767 -327.67 0 -32767 -327.67 0   6526 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -77.5667  33.4667 -5:0 Frying Pan Shoals Light, 14.3 mi. NW of
-^-32767 -327.67 0 -32767 -327.67 0   6531 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
 cNAA:XX:XX: -79.1845  33.2072 -5:0 Winyah Bay entrance
 ^107   1.10 0 65   1.00 0   6536 320 140 1 Charleston Harbor Entrance, South Carolina Current
 
@@ -10088,12 +9779,6 @@ cNAA:XX:XX: -79.2408  33.1358 -5:0 North Santee River entrance
 
 cNAA:XX:XX: -79.2750  33.1200 -5:0 South Santee River entrance
 ^20   0.90 0 27   0.80 0   6591 45 240 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -79.1000  32.7000 -5:0 Charleston Entrance, 37 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   6606 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -79.7167  32.6833 -5:0 Charleston Lighted Whistle Buoy 2C
-^-32767 -327.67 0 -32767 -327.67 0   6611 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -79.7260  32.6830 -5:0 Fort Sumter Range, Buoy "2"
 ^-65   0.20 0 -71   0.20 0   6616 280 104 1 Charleston Harbor Entrance, South Carolina Current
@@ -10200,17 +9885,11 @@ cNAA:XX:XX: -79.9292  32.8197 -5:0 Cooper River, Drum Island, 0.2 mile above
 cNAA:XX:XX: -79.9288  32.8272 -5:0 Cooper River, Daniel Island Reach, Buoy "48"
 ^61   0.70 0 53   0.70 0   6786 6 182 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -79.9350  32.8300 -5:0 Cooper River, Shipyard Creek entrance
-^41   0.30 0 -29   0.80 0   6791 -32767 197 1 Charleston Harbor Entrance, South Carolina Current
-
 cNAA:XX:XX: -79.9300  32.8328 -5:0 Cooper River, Daniel Island Reach
 ^89   0.80 0 42   1.20 0   6796 352 190 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -79.9292  32.8483 -5:0 Cooper River, Daniel Island Bend
 ^55   0.70 0 55   1.10 0   6801 335 153 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -79.9333  32.8475 -5:0 Cooper River, Daniel Island Bend, west side of
-^-32767 -327.67 0 -32767   0.50 0   6806 -32767 144 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -79.9588  32.8637 -5:0 Cooper River, North Charleston
 ^86   0.60 0 64   0.90 0   6811 335 142 1 Charleston Harbor Entrance, South Carolina Current
@@ -10335,12 +10014,6 @@ cNAA:XX:XX: -80.1067  32.7867 -5:0 Johns Island
 cNAA:XX:XX: -80.1333  32.7500 -5:0 Pleasant Point
 ^124   0.30 0 234   0.40 0   7011 8 196 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -79.8417  32.6400 -5:0 Folly Island, 3.5 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   7016 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -79.8683  32.6567 -5:0 Folly Island, 2.0 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   7021 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
-
 cNAA:XX:XX: -80.1567  32.5450 -5:0 Deveaux Banks, off North Edisto River entrance
 ^-16   0.80 0 -4   1.00 0   7026 306 126 1 Charleston Harbor Entrance, South Carolina Current
 
@@ -10433,9 +10106,6 @@ cNAA:XX:XX: -80.6917  32.5267 -5:0 Whale Branch River
 
 cNAA:XX:XX: -80.4650  32.3400 -5:0 Fripps Inlet, Fripps Island
 ^-29   0.70 0 -22   0.60 0   7176 299 104 1 Charleston Harbor Entrance, South Carolina Current
-
-cNAA:XX:XX: -80.4667  32.1000 -5:0 Martins Industry, 5 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   7181 -32767 -32767 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -80.5833  32.1333 -5:0 Southeast Channel entrance
 ^-30   0.80 0 -9   0.80 0   7186 310 150 1 Charleston Harbor Entrance, South Carolina Current
@@ -10536,9 +10206,6 @@ cNAA:XX:XX: -80.9167  32.0817 -5:0 Walls Cut, Turtle Island
 cNAA:XX:XX: -80.8983  32.1017 -5:0 Daufuskie Landing Light, south of
 ^7   0.70 0 2   0.80 0   7346 43 226 1 Savannah River Entrance, Georgia Current
 
-cNAA:XX:XX: -80.6667  31.9500 -5:0 Savannah Light, 1.2 miles southeast of
-^-32767 -327.67 0 -32767 -327.67 0   7351 -32767 -32767 1 Savannah River Entrance, Georgia Current
-
 cNAA:XX:XX: -80.8583  32.0367 -5:0 SAVANNAH RIVER ENTRANCE (between jetties)
 ^0   0.00 0 0   0.00 0   7356 286 110 1 Savannah River Entrance, Georgia Current
 
@@ -10589,9 +10256,6 @@ cNAA:XX:XX: -81.1350  32.1233 -5:0 King Island, west of
 
 cNAA:XX:XX: -81.1400  32.1467 -5:0 Port Wentworth, 0.2 mile above
 ^120   0.50 0 24   0.70 0   7436 22 210 1 Savannah River Entrance, Georgia Current
-
-cNAA:XX:XX: -81.1450  32.2317 -5:0 Seaboard Coast Line Railroad
-^-32767 -327.67 0 -32767 -327.67 0   7441 -32767 -32767 1 Savannah River Entrance, Georgia Current
 
 cNAA:XX:XX: -80.9383  31.9150 -5:0 Wassaw Island, N of E end, Wassaw Sound
 ^-48   0.70 0 -45   1.00 0   7446 292 108 1 Savannah River Entrance, Georgia Current
@@ -10875,14 +10539,8 @@ cNAA:XX:XX: -81.4317  30.9583 -5:0 Cumberland River, north entrance
 cNAA:XX:XX: -81.5133  30.8817 -5:0 Cabin Bluff, Cumberland River
 ^21   0.70 0 51   0.60 0   7861 171 355 1 Savannah River Entrance, Georgia Current
 
-cNAA:XX:XX: -81.4467  30.7100 -5:0 St. Marys River, Fort Clinch, 0.6 n.mi. NE of
-^-40   1.20 0 -17   1.70 0   7866 -32767 -32767 1 Miami Harbor Entrance, Florida Current
-
 cNAA:XX:XX: -81.4533  30.7100 -5:0 St. Marys River, Fort Clinch, 0.3 n.mi. N of
 ^-70   0.80 0 -37   1.00 0   7871 275 87 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -81.4550  30.7067 -5:0 St. Marys River, Fort Clinch, 0.1 n.mi. N of
-^-40   1.20 0 -21   1.60 0   7876 -32767 -32767 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -81.4550  30.7067 -5:0 St. Marys River, Fort Clinch, 0.1 n.mi. N of
 ^-57   0.80 0 -19   1.00 0   7876 265 93 1 Miami Harbor Entrance, Florida Current
@@ -10892,9 +10550,6 @@ cNAA:XX:XX: -81.4767  30.7150 -5:0 St. Marys River, Fort Clinch, 1.1 n.mi. NW of
 
 cNAA:XX:XX: -81.4767  30.7150 -5:0 St. Marys River, Fort Clinch, 1.1 n.mi. NW of
 ^-47   0.60 0 -12   0.80 0   7881 315 122 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -81.4850  30.7317 -5:0 Cumberland Island, Range B Channel
-^-52   0.70 0 -20   1.20 0   7886 -32767 -32767 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -81.4867  30.7650 -5:0 Drum Point Island, Range D Channel
 ^-39   0.60 0 -12   1.00 0   7891 350 170 1 Miami Harbor Entrance, Florida Current
@@ -10929,14 +10584,8 @@ cNAA:XX:XX: -81.4317  30.9583 -5:0 Cumberland River, north entrance
 cNAA:XX:XX: -81.5133  30.8817 -5:0 Cabin Bluff, Cumberland River
 ^21   0.70 0 51   0.60 0   7861 171 355 1 Savannah River Entrance, Georgia Current
 
-cNAA:XX:XX: -81.4467  30.7100 -5:0 St. Marys River, Fort Clinch, 0.6 n.mi. NE of
-^-40   1.20 0 -17   1.70 0   7866 -32767 -32767 1 Miami Harbor Entrance, Florida Current
-
 cNAA:XX:XX: -81.4533  30.7100 -5:0 St. Marys River, Fort Clinch, 0.3 n.mi. N of
 ^-70   0.80 0 -37   1.00 0   7871 275 87 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -81.4550  30.7067 -5:0 St. Marys River, Fort Clinch, 0.1 n.mi. N of
-^-40   1.20 0 -21   1.60 0   7876 -32767 -32767 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -81.4550  30.7067 -5:0 St. Marys River, Fort Clinch, 0.1 n.mi. N of
 ^-57   0.80 0 -19   1.00 0   7876 265 93 1 Miami Harbor Entrance, Florida Current
@@ -10946,9 +10595,6 @@ cNAA:XX:XX: -81.4767  30.7150 -5:0 St. Marys River, Fort Clinch, 1.1 n.mi. NW of
 
 cNAA:XX:XX: -81.4767  30.7150 -5:0 St. Marys River, Fort Clinch, 1.1 n.mi. NW of
 ^-47   0.60 0 -12   0.80 0   7881 315 122 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -81.4850  30.7317 -5:0 Cumberland Island, Range B Channel
-^-52   0.70 0 -20   1.20 0   7886 -32767 -32767 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -81.4867  30.7650 -5:0 Drum Point Island, Range D Channel
 ^-39   0.60 0 -12   1.00 0   7891 350 170 1 Miami Harbor Entrance, Florida Current
@@ -10982,9 +10628,6 @@ cNAA:XX:XX: -81.4800  30.5333 -5:0 Nassau River, SW of Mesa Marsh
 
 cNAA:XX:XX: -81.4517  30.4567 -5:0 Ft. George River
 ^-96   0.20 0 -85   0.60 0   7936 334 162 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -81.3000  30.3917 -5:0 St. Johns Point, 5 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   7941 -32767 -32767 1 St. Johns River Entrance, Florida Current
 
 cNAA:XX:XX: -81.3833  30.4000 -5:0 ST. JOHNS RIVER ENTRANCE (between jetties)
 ^0   0.00 0 0   0.00 0   7946 277 99 1 St. Johns River Entrance, Florida Current
@@ -11042,9 +10685,6 @@ cNAA:XX:XX: -80.0355  26.7722 -5:0 Lake Worth Inlet (between jetties)
 
 cNAA:XX:XX: -80.1197  26.1122 -5:0 Fort Lauderdale, New River
 ^-43   0.40 0 -6   0.30 0   8041 5 130 1 Miami Harbor Entrance, Florida Current
-
-cNAA:XX:XX: -80.0963  26.0938 -5:0 Pier 2, 1.3 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   8046 -32767 -32767 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -80.1053  26.0930 -5:0 Entrance (between jetties)
 ^-8   0.30 0 -43   0.40 0   8051 275 95 1 Miami Harbor Entrance, Florida Current
@@ -11109,9 +10749,6 @@ cNAA:XX:XX: -80.1790  25.7727 -5:0 Fishermans Channel, West end, SW of Dodge Isl
 cNAA:XX:XX: -80.1872  25.7702 -5:0 Miami River entrance
 ^15   0.10 0 -1   0.40 0   8136 261 71 1 Miami Harbor Entrance, Florida Current
 
-cNAA:XX:XX: -80.1167  25.5833 -5:0 Fowey Rocks Light, 1.5 miles SW of
-^-32767 -327.67 0 -32767 -327.67 0   8141 -32767 -32767 1 Miami Harbor Entrance, Florida Current
-
 cNAA:XX:XX: -80.2267  25.3867 -5:0 Caesar Creek, Biscayne Bay
 ^7   1.20 0 -14   1.00 0   8146 316 123 1 Key West, Florida Current
 
@@ -11132,9 +10769,6 @@ cNAA:XX:XX: -81.3133  24.7050 -5:0 No Name Key, northeast of
 
 cNAA:XX:XX: -81.8017  24.4733 -5:0 Key West, Main Ship Channel entrance
 ^-44   0.20 0 10   0.30 0   8176 40 178 1 Key West, Florida Current
-
-cNAA:XX:XX: -81.8050  24.5083 -5:0 Key West, Main Ship Channel
-^-32767 -327.67 0 -32767   0.20 0   8181 64 133 1 Key West, Florida Current
 
 cNAA:XX:XX: -81.8167  24.5483 -5:0 Key West, KEY WEST, 0.3 mi. W of Ft. Taylor
 ^0   0.00 0 0   0.00 0   8186 22 194 1 Key West, Florida Current
@@ -11175,20 +10809,8 @@ cNAA:XX:XX: -82.2223  26.6093 -5:0 Captiva Pass
 cNAA:XX:XX: -82.2567  26.7143 -5:0 Boca Grande Pass, Charlotte Harbor
 ^-15   1.70 0 -15   1.30 0   8246 57 251 1 Tampa Bay Entrance (Egmont Channel), Florida
 
-cNAA:XX:XX: -82.1978  26.6817 -5:0 Pine Island Sound
-^-32767 -327.67 0 -32767 -327.67 0   8251 11 191 1 Tampa Bay Entrance (Egmont Channel), Florida
-
-cNAA:XX:XX: -82.0683  26.6317 -5:0 Little Pine I. bridge, Matlacha Pass
-^-32767   0.40 0 -32767 -327.67 0   8256 132 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
-
 cNAA:XX:XX: -82.1517  26.7450 -5:0 Cape Haze, 2.3 mi. S of, Charlotte Hbr
 ^30   0.40 0 -20   0.40 0   8261 80 268 1 Tampa Bay Entrance (Egmont Channel), Florida
-
-cNAA:XX:XX: -82.0567  26.9450 -5:0 Punta Gorda, Peace River Bridge
-^-32767   0.30 0 -32767   0.20 0   8266 47 230 1 Tampa Bay Entrance (Egmont Channel), Florida
-
-cNAA:XX:XX: -82.2133  26.9583 -5:0 Myakka River bridge
-^108   0.40 0 107 -327.67 0   8271 304 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.2810  26.8123 -5:0 Gasparilla Pass
 ^-75   0.80 0 -35   0.80 0   8276 66 236 1 Tampa Bay Entrance (Egmont Channel), Florida
@@ -11271,9 +10893,6 @@ cNAA:XX:XX: -82.6250  27.6125 -5:0 Joe Island, 1.8 miles northwest of
 cNAA:XX:XX: -82.5945  27.6112 -5:0 Harbor Key, 1.3 miles west of
 ^-50   0.20 0 -66   0.30 0   8406 20 160 1 Tampa Bay Entrance (Egmont Channel), Florida
 
-cNAA:XX:XX: -82.6588  27.6758 -5:0 Pinellas Point, 2 miles southwest of
-^-32767 -327.67 0 -32767 -327.67 0   8411 -32767 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
-
 cNAA:XX:XX: -82.6417  27.6605 -5:0 Pinellas Point, 2.6 miles south of
 ^-46   0.60 0 -16   0.70 0   8416 30 210 1 Tampa Bay Entrance (Egmont Channel), Florida
 
@@ -11301,14 +10920,8 @@ cNAA:XX:XX: -82.6097  27.7245 -5:0 Lewis Island, 0.9 mile east of
 cNAA:XX:XX: -82.5500  27.7078 -5:0 Camp Key, 1.9 miles northwest of
 ^11   0.70 0 -43   0.80 0   8456 30 220 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
 
-cNAA:XX:XX: -82.5037  27.7213 -5:0 Shell Point, 1.1 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   8461 -32767 -32767 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
-
 cNAA:XX:XX: -82.5357  27.7253 -5:0 Cut E Channel, marker "2E"
 ^-44   0.70 0 -26   0.70 0   8466 44 226 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
-
-cNAA:XX:XX: -82.6102  27.7592 -5:0 Port of St. Petersburg approach, marker "S"
-^-32767 -327.67 0 -32767 -327.67 0   8471 -32767 -32767 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
 
 cNAA:XX:XX: -82.5722  27.7937 -5:0 Snell Isle, 1.8 miles east of
 ^38   0.30 0 -49   0.40 0   8476 350 170 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
@@ -11334,17 +10947,11 @@ cNAA:XX:XX: -82.5862  27.9258 -5:0 W Howard Frankland Bridge
 cNAA:XX:XX: -82.6242  27.9680 -5:0 Courtney Campbell Parkway
 ^37   0.50 0 -35   0.60 0   8511 340 140 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
 
-cNAA:XX:XX: -82.5220  27.7860 -5:0 Gadsden Pt. Cut-Cut G Channel junction
-^-32767 -327.67 0 -32767 -327.67 0   8516 -32767 -32767 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
-
 cNAA:XX:XX: -82.4473  27.8118 -5:0 Cut A Channel, marker "10", Hillsborough Bay
 ^-93   0.30 0 -54   0.20 0   8521 40 213 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
 
 cNAA:XX:XX: -82.4437  27.8460 -5:0 Cut C Channel, marker "21", Hillsborough Bay
 ^-74   0.40 0 -20   0.20 0   8526 7 183 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
-
-cNAA:XX:XX: -82.4213  27.8495 -5:0 Alafia River ent., 1.2 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   8531 -32767 -32767 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
 
 cNAA:XX:XX: -82.7350  27.6850 -5:0 Pass-a-Grille Channel
 ^-30   0.90 0 -30   1.00 0   8536 357 186 1 Tampa Bay Entrance (Egmont Channel), Florida
@@ -11352,29 +10959,17 @@ cNAA:XX:XX: -82.7350  27.6850 -5:0 Pass-a-Grille Channel
 cNAA:XX:XX: -82.6800  27.6933 -5:0 Bridge, 0.8 mi. south of Maximo Pt
 ^-65   0.90 0 -65   1.00 0   8541 78 255 1 Tampa Bay Entrance (Egmont Channel), Florida
 
-cNAA:XX:XX: -82.7067  27.7283 -5:0 Gulfport, south of
-^-32767 -327.67 0 -32767 -327.67 0   8546 -32767 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
-
 cNAA:XX:XX: -82.7617  27.7567 -5:0 Blind Pass (north end)
 ^-80   0.50 0 -80   0.30 0   8551 0 180 1 Tampa Bay Entrance (Egmont Channel), Florida
 
-cNAA:XX:XX: -82.7550  27.7700 -5:0 Treasure Island Causeway
-^-32767 -327.67 0 -32767 -327.67 0   8556 -32767 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
-
 cNAA:XX:XX: -82.7817  27.7833 -5:0 Johns Pass
 ^-90   0.00 0 -90   0.00 0   8561 44 214 1 Tampa Bay Entrance (Egmont Channel), Florida
-
-cNAA:XX:XX: -82.8333  27.7500 -5:0 Treasure Island, 3.5 miles southwest of
-^-32767 -327.67 0 -32767 -327.67 0   8566 -32767 -32767 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.8500  27.8767 -5:0 The Narrows (Indian Rocks Beach Bridge)
 ^-23   0.50 0 -77   0.10 0   8571 180 0 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.8233  27.9567 -5:0 Clearwater Pass, 0.2 mi. NE of Sand Key
 ^-144   1.00 0 -138   0.80 0   8576 179 348 1 Tampa Bay Entrance (Egmont Channel), Florida
-
-cNAA:XX:XX: -82.9167  28.0833 -5:0 St. Joseph Sound, off
-^-32767 -327.67 0 -32767 -327.67 0   8581 18 195 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.8300  28.1667 -5:0 Anclote Key, off
 ^178   0.30 0 162   0.50 0   8586 6 195 1 Miami Harbor Entrance, Florida Current
@@ -11391,17 +10986,11 @@ cNAA:XX:XX: -84.2017  30.1550 -5:0 St. Marks, St. Marks River
 cNAA:XX:XX: -87.3000  30.3350 -6:0 Pensacola Bay entrance, midchannel
 ^-48   1.10 0 18   1.20 0   8606 74 256 1 Mobile Bay Entrance, Alabama Current
 
-cNAA:XX:XX: -88.0533  30.1533 -6:0 Main Ship Channel entrance
-^-32767   0.50 0 -32767   0.70 0   8611 344 182 1 Mobile Bay Entrance, Alabama Current
-
 cNAA:XX:XX: -88.0350  30.2267 -6:0 MOBILE BAY ENTRANCE (off Mobile Point)
 ^0   0.00 0 0   0.00 0   8616 27 190 1 Mobile Bay Entrance, Alabama Current
 
 cNAA:XX:XX: -88.0283  30.3300 -6:0 Channel, 6 miles N of Mobile Point
 ^15   0.40 0 86   0.30 0   8621 32 208 1 Mobile Bay Entrance, Alabama Current
-
-cNAA:XX:XX: -88.0183  30.4900 -6:0 Great Point Clear, channel west of
-^-32767 -327.67 0 -32767 -327.67 0   8626 -32767 -32767 1 Mobile Bay Entrance, Alabama Current
 
 cNAA:XX:XX: -88.0333  30.6700 -6:0 Mobile River entrance
 ^336   0.20 0 164   0.50 0   8631 333 151 1 Mobile Bay Entrance, Alabama Current
@@ -11411,9 +11000,6 @@ cNAA:XX:XX: -88.0117  30.6817 -6:0 Tensaw River entrance (bridge)
 
 cNAA:XX:XX: -88.1300  30.2883 -6:0 Pass Aux Herons, Entrance to Mississippi Sound
 ^9   0.90 0 22   0.90 0   8641 68 245 1 Mobile Bay Entrance, Alabama Current
-
-cNAA:XX:XX: -88.5633  30.3717 -6:0 Pascagoula River highway bridge
-^-32767   0.90 0 -32767   0.80 0   8646 16 201 1 Mobile Bay Entrance, Alabama Current
 
 cNAA:XX:XX: -89.8517  29.3100 -6:0 Quatre Bayoux Pass, Barataria Bay
 ^97   0.90 0 43   0.90 0   8651 288 103 1 Mobile Bay Entrance, Alabama Current
@@ -11430,9 +11016,6 @@ cNAA:XX:XX: -89.9600  29.4367 -6:0 Barataria Bay, 1.1 mi. NE of Manilla
 cNAA:XX:XX: -90.0467  29.1983 -6:0 Caminada Pass, Barataria Bay
 ^104   1.10 0 56   1.00 0   8671 297 118 1 Mobile Bay Entrance, Alabama Current
 
-cNAA:XX:XX: -90.0350  30.0317 -6:0 Seabrook Bridge, New Orleans
-^-32767   0.90 0 -32767   0.60 0   8676 350 170 1 Mobile Bay Entrance, Alabama Current
-
 cNAA:XX:XX: -90.5733  29.0800 -6:0 Cat Island Pass, Terrebonne Bay
 ^-165   0.60 0 -160   0.60 0   8681 13 195 1 Galveston Bay Entrance, Texas Current
 
@@ -11444,12 +11027,6 @@ cNAA:XX:XX: -90.8083  29.0583 -6:0 Caillou Boca, Caillou Bay
 
 cNAA:XX:XX: -93.3450  29.7733 -6:0 Calcasieu Pass
 ^-18   1.00 0 132   1.00 0   8696 20 205 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -93.3205  29.1692 -6:0 Calcasieu Pass, 35 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   8701 -32767 -32767 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -93.3325  28.6633 -6:0 Calcasieu Pass, 67 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   8706 -32767 -32767 1 Galveston Bay Entrance, Texas Current
 
 cNAA:XX:XX: -93.8267  29.6500 -6:0 Sabine Pass, Texas Point, 1.7 miles SSE of
 ^-14   0.60 0 -15   0.70 0   8711 335 145 1 Galveston Bay Entrance, Texas Current
@@ -11468,15 +11045,6 @@ cNAA:XX:XX: -94.7050  29.3467 -6:0 GALVESTON BAY ENT. (between jetties)
 
 cNAA:XX:XX: -94.7683  29.3467 -6:0 Bolivar Roads, 0.5 mi. N of Ft. Point
 ^25   1.00 0 75   0.80 0   8736 287 111 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -94.7783  29.3300 -6:0 Quarantine Station, 0.3 mile S of
-^-32767   0.60 0 -32767   0.40 0   8741 196 9 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -94.8200  29.3100 -6:0 Galveston Channel, west end
-^-32767   1.00 0 -32767   0.60 0   8746 272 103 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -94.8855  29.2967 -6:0 Galveston Causeway RR. bridge
-^-24   0.40 0 -32767   0.40 0   8751 210 25 1 Galveston Bay Entrance, Texas Current
 
 cNAA:XX:XX: -94.7967  29.3633 -6:0 Houston Channel, W of Port Bolivar
 ^18   0.80 0 78   0.60 0   8756 330 166 1 Galveston Bay Entrance, Texas Current
@@ -11499,12 +11067,6 @@ cNAA:XX:XX: -97.0442  27.8338 -6:0 Aransas Pass
 cNAA:XX:XX: -97.2300  27.8150 -6:0 Port Ingleside
 ^24   0.70 0 131   0.50 0   8776 286 102 1 Aransas Pass, Texas
 
-cNAA:XX:XX: -94.0033  29.3033 -6:0 Sabine Bank
-^-32767 -327.67 0 -32767 -327.67 0   8781 -32767 -32767 1 Galveston Bay Entrance, Texas Current
-
-cNAA:XX:XX: -93.9933  28.6695 -6:0 Heald Bank, 28 miles SSE of
-^-32767 -327.67 0 -32767 -327.67 0   8786 -32767 -32767 1 Galveston Bay Entrance, Texas Current
-
 cNAA:XX:XX: -67.2267  18.0867 -4:0 Punta Ostiones, 1.5 miles west of
 ^-26   1.70 0 -4   1.30 0   8791 187 1 1 Vieques Passage, Puerto Rico
 
@@ -11517,35 +11079,11 @@ cNAA:XX:XX: -65.5700  18.2645 -4:0 Vieques Sound
 cNAA:XX:XX: -65.5833  18.3167 -4:0 Largo Shoals, west of
 ^-52   0.70 0 -93   1.00 0   8806 186 330 1 Vieques Passage, Puerto Rico
 
-cNAA:XX:XX: -65.6067  18.3100 -4:0 Ramos Cay, 0.3 mile SE of
-^-32767   0.30 0 -32767   0.10 0   8811 120 284 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -65.5800  18.3350 -4:0 Palominos Island, 0.9 mile SW of
-^-32767 -327.67 0 -32767   0.70 0   8816 -32767 307 1 Vieques Passage, Puerto Rico
-
 cNAA:XX:XX: -65.6167  18.3333 -4:0 Fajardo Harbor (channel)
 ^-73   0.50 0 -147   1.60 0   8821 162 339 1 Vieques Passage, Puerto Rico
 
-cNAA:XX:XX: -65.6230  18.3417 -4:0 Isla Marina, 0.2 mile west of     <13>
-^-32767 -327.67 0 -32767   1.00 0   8826 -32767 335 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -65.6217  18.3600 -4:0 Coronala Laja, 0.4 mile NW of     <13>
-^-32767 -327.67 0 -32767   0.40 0   8831 -32767 0 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -65.6150  18.3983 -4:0 Pasaje de San Juan     <13>
-^-32767 -327.67 0 -32767   1.70 0   8836 -32767 310 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -66.1100  18.4538 -4:0 Bahia de San Juan
-^-32767 -327.67 0 -32767 -327.67 0   8841 -32767 -32767 1 Vieques Passage, Puerto Rico
-
-cNAA:XX:XX: -66.1267  18.4717 -4:0 Bahia de San Juan entrance
-^-32767 -327.67 0 -32767 -327.67 0   8846 -32767 -32767 1 Vieques Passage, Puerto Rico
-
 cNAA:XX:XX: -156.9333  21.0333 -10:0 Kalohi Channel
 ^-195   0.40 0 -218   0.30 0   4181 75 227 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -156.7167  21.0667 -10:0 Pailolo Channel
-^-32767 -327.67 0 -32767 -327.67 0   4185 -32767 -32767 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -130.6167  54.7167 -8:0 Haystack Island, Tongass Passage
 ^0   0.70 0 0   0.70 0   2137 340 160 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11586,50 +11124,20 @@ cNAA:XX:XX: -130.1500  55.7167 -9:0 Miners Point
 cNAA:XX:XX: -130.0333  55.8833 -9:0 Lion Point
 ^-40   0.10 0 -40   0.10 0   2185 25 205 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -131.0833  54.8000 -9:0 Tree Point, 5 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   2189 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.1000  54.9500 -9:0 Duke Point, 3.5 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   2193 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.1167  55.0167 -9:0 Black Rock, 2 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   2197 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.1500  55.1000 -9:0 Mary Island, 1 mile east of
-^-32767 -327.67 0 -32767 -327.67 0   2201 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.2500  55.1833 -9:0 Middy Point, 2.9 miles ENE of
 ^127   0.10 0 108   0.10 0   2205 265 115 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.3333  55.2000 -9:0 Walker Island, 1.1 miles north of
 ^75   0.10 0 92   0.10 0   2209 320 105 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -131.4333  55.2333 -9:0 Angle Point, 0.5 mile southwest  of
-^-32767   0.10 0 -32767 -327.67 0   2213 290 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.4667  55.2500 -9:0 Reef Point, 0.7 mile northeast of
-^-32767 -327.67 0 -32767 -327.67 0   2217 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.5500  55.2833 -9:0 Race Point, 0.7 mile ENE of
 ^18   0.10 0 -3   0.10 0   2221 145 300 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.5000  55.3000 -9:0 Carroll Point, 0.7 mile northwest of
-^-32767 -327.67 0 -32767 -327.67 0   2225 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.6000  55.3167 -9:0 Saxman Spire, 0.2 mile south of
 ^-63   0.20 0 -135   0.20 0   2229 320 110 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.6500  55.3333 -9:0 Ketchikan
 ^-81   0.20 0 -9   0.10 0   2233 310 120 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.6833  55.3500 -9:0 Bar Point, southwest of
-^-32767   0.30 0 -32767 -327.67 0   2237 315 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.8000  55.4167 -9:0 Rosa Reef, 0.5 mile north of
-^-32767 -327.67 0 -32767 -327.67 0   2241 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.8667  55.4500 -9:0 Point Higgins, 1 mile west of
-^-32767   0.10 0 -32767   0.10 0   2245 10 200 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.4833  54.9667 -9:0 Hotspur Island, 0.5 mile southeast of
 ^-84   0.30 0 -79   0.30 0   2249 40 220 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11643,9 +11151,6 @@ cNAA:XX:XX: -131.5333  55.0000 -9:0 Harris Island
 cNAA:XX:XX: -131.4667  55.0000 -9:0 Ajax Reef
 ^-55   0.80 0 -55   0.80 0   2261 95 275 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -131.4167  55.0000 -9:0 Snipe Island Light, 1.2 miles SW of
-^-32767 -327.67 0 -32767   0.30 0   2265 -32767 250 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.3833  55.0000 -9:0 Snipe Island
 ^-50   1.10 0 -50   1.10 0   2269 70 250 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -11654,18 +11159,6 @@ cNAA:XX:XX: -131.5167  55.0167 -9:0 Grass Rock, Tamgas Harbor entrance
 
 cNAA:XX:XX: -131.3500  55.0333 -9:0 Indian Reef
 ^-50   1.00 0 -50   1.00 0   2277 30 210 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.3000  55.0333 -9:0 Indian Rock Buoy, 1.3 miles east of
-^-32767 -327.67 0 -32767   0.20 0   2281 -32767 195 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.3500  55.0333 -9:0 Indian Rock Buoy, 0.3 miles NW of
-^-32767 -327.67 0 -32767   0.30 0   2285 -32767 195 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.3167  55.0833 -9:0 Kwain Bay,2.0 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   2289 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.2500  55.0833 -9:0 Beaver Creek, Mary Island, 0.6 mile W of
-^-32767 -327.67 0 -32767 -327.67 0   2293 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.2667  55.1000 -9:0 Customhouse Cove, 1 mile west of
 ^-50   0.60 0 -50   0.60 0   2297 20 200 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11676,23 +11169,11 @@ cNAA:XX:XX: -131.6667  55.0333 -9:0 Hid Reef, 2.7 miles south of
 cNAA:XX:XX: -131.7000  55.1167 -9:0 Point McCartey Light
 ^-55   0.60 0 -55   0.60 0   2305 40 220 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -131.6667  55.1167 -9:0 Point McCartey Light, 1.5 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   2309 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.5667  55.1333 -9:0 Village Point, Metlakatla, 0.2 mile N of
-^-32767 -327.67 0 -32767 -327.67 0   2313 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.6333  55.1333 -9:0 Wharburton Island
 ^-55   0.60 0 -55   0.60 0   2317 25 205 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.6000  55.1833 -9:0 Driest Point
 ^-50   0.50 0 -50   0.50 0   2321 355 175 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.6833  55.2167 -9:0 Bostwick Point, 0.6 mile southeast of
-^-32767 -327.67 0 -32767 -327.67 0   2325 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.6333  55.2167 -9:0 Bostwick Point, 2.1 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   2329 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.6667  55.2500 -9:0 Blank Point
 ^-45   0.60 0 -45   0.60 0   2333 10 190 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11706,12 +11187,6 @@ cNAA:XX:XX: -131.6167  55.2833 -9:0 Walden Rocks
 cNAA:XX:XX: -131.1167  55.2000 -9:0 Point Sykes
 ^-50   0.30 0 -50   0.30 0   2345 40 220 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -130.9500  55.3000 -9:0 Point Nelson
-^-32767 -327.67 0 -32767 -327.67 0   2349 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -130.9833  55.3833 -9:0 Short Pass
-^-32767 -327.67 0 -32767 -327.67 0   2353 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.5333  55.9167 -9:0 Behm Narrows
 ^-132   0.10 0 -234   0.40 0   2357 62 264 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -11724,14 +11199,8 @@ cNAA:XX:XX: -131.9000  55.4667 -9:0 Guard Islands, 2 miles northwest of
 cNAA:XX:XX: -131.8667  54.7000 -9:0 Cape Chacon, 5 miles east of
 ^-64   0.40 0 -64   0.40 0   2369 45 225 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -131.5667  54.9167 -9:0 Duke Island, 2.8 miles WSW of
-^-32767   0.20 0 -32767   0.40 0   2373 88 238 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.6833  54.9333 -9:0 Percy Islands, 2 miles west of
 ^-60   0.40 0 -60   0.40 0   2377 340 160 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.6000  54.9833 -9:0 Point Davison, 0.8 mile south of
-^45   0.20 0 -11 -327.67 0   2381 45 240 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -131.5500  55.0000 -9:0 Grass Rock, 1 mile south of
 ^-55   0.20 0 -15   0.40 0   2385 25 235 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11739,23 +11208,8 @@ cNAA:XX:XX: -131.5500  55.0000 -9:0 Grass Rock, 1 mile south of
 cNAA:XX:XX: -131.9333  55.0833 -9:0 Moira Rock, 2 miles east of
 ^-55   0.40 0 -55   0.40 0   2389 5 185 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -132.0000  55.1000 -9:0 Moira Sound entrance
-^-32767 -327.67 0 -32767 -327.67 0   2393 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.9667  55.2500 -9:0 Halibut Creek, 1 mile east of
-^-32767 -327.67 0 -32767 -327.67 0   2397 350 160 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -131.8667  55.2333 -9:0 Halibut Creek, 4.5 miles east of
-^-32767   0.10 0 -32767   0.20 0   2401 10 115 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -132.0667  55.2833 -9:0 Cholmondeley Sound entrance
-^-32767 -327.67 0 -32767 -327.67 0   2405 259 57 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -131.9833  55.3000 -9:0 Skin Island, 3 miles east from
 ^-50   0.40 0 -50   0.40 0   2409 350 170 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -132.1333  55.4167 -9:0 Grindall Island, 1.3 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   2413 270 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -132.3167  55.4333 -9:0 Skowl Arm, Kasaan Bay
 ^95   0.10 0 313   0.10 0   2417 255 45 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11829,14 +11283,8 @@ cNAA:XX:XX: -132.3833  56.3333 -9:0 Young Rock, 2 miles south of
 cNAA:XX:XX: -132.4000  56.3833 -9:0 East Point, east of
 ^-25   0.50 0 -25   0.50 0   2509 10 190 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -132.4000  56.4667 -9:0 Wrangell Harbor entrance
-^-32767 -327.67 0 -32767 -327.67 0   2513 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -132.4500  56.4667 -9:0 Wrangell Harbor, 1.6 miles west of
 ^117   0.20 0 123   0.20 0   2517 50 235 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -132.4333  56.4667 -9:0 Point Shekesti, 2.3 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   2521 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -132.8333  56.1667 -9:0 Key Reef
 ^-10   0.40 0 -10   0.40 0   2525 10 190 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11868,14 +11316,8 @@ cNAA:XX:XX: -132.5333  54.6667 -9:0 Cape Muzon, 5 miles east of
 cNAA:XX:XX: -132.5333  54.7500 -9:0 Dewey Rocks, 2 miles west of
 ^-65   0.30 0 -65   0.30 0   2561 5 185 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -132.3833  54.8167 -9:0 Eureka Channel, off Leading Point
-^-32767 -327.67 0 -32767 -327.67 0   2565 28 235 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -132.5667  54.8167 -9:0 Boat Rocks, 2 miles west of
 ^-65   0.30 0 -65   0.30 0   2569 5 185 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -132.5500  54.8833 -9:0 Ship Islands, 2 miles southwest of
-^-32767 -327.67 0 -32767 -327.67 0   2573 358 177 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -132.6333  54.9667 -9:0 Webster Point, 1 mile west of
 ^-60   0.50 0 -60   0.50 0   2577 5 185 1 Wrangell Narrows (off Petersburg), Alaska
@@ -11982,17 +11424,8 @@ cNAA:XX:XX: -133.3167  55.9167 -9:0 Skookumchuck Pass
 cNAA:XX:XX: -133.3000  55.9667 -9:0 Brockman Island, east of
 ^-3   0.10 0 -26   0.20 0   2713 351 182 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -133.2667  55.9667 -9:0 Off Tonga Inlet
-^-32767 -327.67 0 -32767 -327.67 0   2717 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -133.3000  55.9833 -9:0 Tenass Island, 0.3 mile  SSW of
 ^-25   0.10 0 -91   0.20 0   2721 39 220 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.2833  56.1333 -9:0 Aneskett Point, 1.2 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   2725 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.3167  56.1500 -9:0 Aneskett Point, 1 mile WNW of
-^-32767 -327.67 0 -32767 -327.67 0   2729 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -133.3333  56.1667 -9:0 Aneskett Point, The Narrows, west of
 ^266   0.10 0 341   0.10 0   2733 65 248 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12024,9 +11457,6 @@ cNAA:XX:XX: -133.7500  56.0667 -9:0 Ruins Point, 2 miles west of
 cNAA:XX:XX: -133.7000  56.1500 -9:0 Shaken Bay Light, 3 miles west of
 ^-60   0.10 0 -60   0.60 0   2769 0 180 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -133.6333  56.1500 -9:0 Shaken Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   2773 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -133.7000  56.1667 -9:0 Shaken Bay Light, 2.8 miles WNW of
 ^-112   0.20 0 -107   0.20 0   2777 19 182 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -12036,14 +11466,8 @@ cNAA:XX:XX: -133.8333  56.1667 -9:0 Amelius Island, 1 mile east of
 cNAA:XX:XX: -133.8167  56.2500 -9:0 Beauclerc Island Light, 1 mile east of
 ^-22   0.10 0 -103   0.30 0   2785 70 205 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -133.7333  56.2833 -9:0 Labouchere Island, 2.2 miles W of
-^-32767 -327.67 0 -32767   0.20 0   2789 -32767 160 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -133.8167  56.3667 -9:0 Sumner Island, 1.8 miles south of
 ^-190   0.20 0 -67   0.20 0   2793 10 240 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.6500  56.3833 -9:0 Strait Island, 1 mile southeast of
-^-32767   0.10 0 -32767   0.90 0   2797 95 250 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -133.1167  56.3667 -9:0 Point Colpoys, 3 miles northeast of
 ^-31   0.30 0 -53   0.60 0   2801 76 242 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12051,20 +11475,8 @@ cNAA:XX:XX: -133.1167  56.3667 -9:0 Point Colpoys, 3 miles northeast of
 cNAA:XX:XX: -133.0167  56.4333 -9:0 Vichnefski Rock Light
 ^-30   0.10 0 -30   0.90 0   2805 40 220 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -132.7667  56.4667 -9:0 Station Island, 1 mile south of
-^-32767   0.10 0 -32767   0.60 0   2809 90 251 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -132.5667  56.5500 -9:0 Blaquiere Point, 1 mile SSW of
 ^-39   0.30 0 -33   0.30 0   2813 45 240 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.8333  56.4667 -9:0 Conclusion Island, west of
-^-32767 -327.67 0 -32767 -327.67 0   2817 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.7667  56.4833 -9:0 Conclusion Island, east of
-^-32767 -327.67 0 -32767 -327.67 0   2821 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -133.7333  56.5333 -9:0 Skiff Island, 2.1 miles northwest of
-^-32767 -327.67 0 -32767 -327.67 0   2825 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -133.7167  56.5667 -9:0 Southern entrance to Keku Strait
 ^26   0.20 0 -38   0.40 0   2829 5 184 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12153,23 +11565,11 @@ cNAA:XX:XX: -134.0500  58.0667 -9:0 Grave Point, Taku Harbor
 cNAA:XX:XX: -134.1333  58.1500 -9:0 Point Arden
 ^-5   0.30 0 -5   0.30 0   2941 355 175 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -134.0763  58.2367 -9:0 Taku Inlet, SE of Cooper Point
-^-32767 -327.67 0 -32767 -327.67 0   2945 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.0763  58.2367 -9:0 Taku Inlet, SE of Cooper Point
-^-32767 -327.67 0 -32767 -327.67 0   2945 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -134.0500  58.3333 -9:0 Taku Inlet, 0.2 mile off Flat Point
 ^17   0.20 0 -25   0.30 0   2949 39 200 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -134.0167  58.4000 -9:0 Taku Inlet, 0.2 mile off Taku Point
 ^22   0.30 0 -3   0.30 0   2953 357 203 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.2417  58.2075 -9:0 Gastineau Channel, Point Salisbury, west of
-^-32767 -327.67 0 -32767 -327.67 0   2957 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.2417  58.2075 -9:0 Gastineau Channel, Point Salisbury, west of
-^-32767 -327.67 0 -32767 -327.67 0   2957 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -134.3937  58.2830 -9:0 Gastineau Channel, Douglas, north of
 ^101   0.10 0 -2   0.20 0   2961 305 144 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12183,12 +11583,6 @@ cNAA:XX:XX: -134.4022  58.2958 -9:0 Gastineau Channel, Juneau Hbr. Ferry Pier, S
 cNAA:XX:XX: -134.4022  58.2958 -9:0 Gastineau Channel, Juneau Hbr. Ferry Pier, SW of
 ^-190   0.10 0 -40   0.03 0   2965 303 120 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -134.4067  58.2937 -9:0 Gastineau Channel, Juneau Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2969 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.4067  58.2937 -9:0 Gastineau Channel, Juneau Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2969 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -134.4070  58.2912 -9:0 Gastineau Channel, Union Oil Pier, 1.9 nmi. WNW of
 ^190   0.03 0 17   0.20 0   2973 306 94 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -12201,18 +11595,6 @@ cNAA:XX:XX: -134.4245  58.2963 -9:0 Gastineau Channel, West Juneau, NE of
 cNAA:XX:XX: -134.4408  58.3050 -9:0 Gastineau Channel, Aurora Basin, SW of
 ^30   0.10 0 -3   0.20 0   2981 289 163 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -134.0763  58.2563 -9:0 Gastineau Channel, Horse Island, east of
-^-32767 -327.67 0 -32767 -327.67 0   2985 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.0763  58.2563 -9:0 Gastineau Channel, Horse Island, east of
-^-32767 -327.67 0 -32767 -327.67 0   2985 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.7105  58.3195 -9:0 Gastineau Channel, Portland Island, SW of
-^-32767 -327.67 0 -32767 -327.67 0   2989 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -134.7105  58.3195 -9:0 Gastineau Channel, Portland Island, SW of
-^-32767 -327.67 0 -32767 -327.67 0   2989 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -134.8333  58.4333 -9:0 Favorite Channel
 ^122   0.20 0 100   0.20 0   2993 192 332 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -12222,23 +11604,11 @@ cNAA:XX:XX: -134.8850  58.4050 -9:0 Saginaw Channel, 2 mi. E of Pt.Retreat
 cNAA:XX:XX: -134.8850  58.4050 -9:0 Saginaw Channel, 2 mi. E of Pt.Retreat
 ^-56   0.30 0 59   0.10 0   2997 149 338 1 North Inian Pass, Cross Sound, Alaska
 
-cNAA:XX:XX: -134.9338  58.5362 -9:0 Sentinel Island, south of
-^-32767 -327.67 0 -32767 -327.67 0   3001 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -134.9338  58.5362 -9:0 Sentinel Island, south of
-^-32767 -327.67 0 -32767 -327.67 0   3001 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -134.9628  58.2488 -9:0 Clear Point, WNW of
-^-32767 -327.67 0 -32767 -327.67 0   3005 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
 cNAA:XX:XX: -134.9667  58.4167 -9:0 Point Retreat, 1 mile west of
 ^30   0.10 0 30   0.10 0   3009 345 165 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -135.0667  58.5833 -9:0 Vanderbilt Reef, 2 miles west of
 ^129   0.10 0 109   0.20 0   3013 340 151 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -135.0333  58.6992 -9:0 Point Bridget, NW of
-^-32767 -327.67 0 -32767 -327.67 0   3017 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -135.1967  58.8467 -9:0 Point Sherman, WSW of
 ^-58   0.10 0 72   0.04 0   3021 341 175 1 North Inian Pass, Cross Sound, Alaska
@@ -12247,16 +11617,7 @@ cNAA:XX:XX: -135.2333  58.9667 -9:0 Eldred Rock
 ^120   0.10 0 120   0.10 0   3025 350 170 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -135.3725  59.1047 -9:0 Glacier Point, Chilkat Inlet
-^-32767 -327.67 0 -32767 -327.67 0   3029 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -135.3725  59.1047 -9:0 Glacier Point, Chilkat Inlet
 ^-82   0.10 0 56   0.10 0   3029 325 145 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -135.2433  59.1067 -9:0 Seduction Pt., NE of, Chilkoot Inlet
-^-32767 -327.67 0 -32767 -327.67 0   3033 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -135.2433  59.1067 -9:0 Seduction Pt., NE of, Chilkoot Inlet
-^-32767 -327.67 0 -32767 -327.67 0   3033 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -135.3500  59.2167 -9:0 Battery Point, Chilkoot Inlet
 ^125   0.10 0 125   0.10 0   3037 345 165 1 North Inian Pass, Cross Sound, Alaska
@@ -12264,14 +11625,8 @@ cNAA:XX:XX: -135.3500  59.2167 -9:0 Battery Point, Chilkoot Inlet
 cNAA:XX:XX: -135.3667  59.2667 -9:0 Low Point, entrance to Taiya Inlet
 ^125   0.10 0 125   0.10 0   3041 5 185 1 North Inian Pass, Cross Sound, Alaska
 
-cNAA:XX:XX: -135.4497  56.2820 -9:0 Tanani Point, Lutak Inlet
-^-32767 -327.67 0 -32767 -327.67 0   3045 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
-
 cNAA:XX:XX: -135.3333  59.4500 -9:0 Skagway, Taiya Inlet
 ^130   0.10 0 130   0.10 0   3049 15 195 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -135.3287  59.4452 -9:0 Skagway River entrance
-^-32767 -327.67 0 -32767 -327.67 0   3053 -32767 -32767 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -134.6000  55.8833 -9:0 Hazy Islands
 ^-50   0.30 0 -50   0.30 0   3057 25 205 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12321,18 +11676,6 @@ cNAA:XX:XX: -134.8733  58.0250 -9:0 Point Augusta, ESE of
 cNAA:XX:XX: -135.5000  56.8333 -9:0 Biorka Channel
 ^16   0.10 0 2   0.10 0   3117 45 232 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -135.6167  56.9667 -9:0 Entrance
-^-32767 -327.67 0 -32767 -327.67 0   3121 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -135.4833  57.0333 -9:0 Vitskari Island, 3 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   3125 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -135.3667  57.0167 -9:0 Eastern Channel
-^-32767 -327.67 0 -32767 -327.67 0   3129 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -135.2333  57.0333 -9:0 Silver Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   3133 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -135.3333  57.0500 -9:0 Sitka Harbor, channel off Harbor Island
 ^-89   0.10 0 -135   0.10 0   3137 333 156 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -12345,29 +11688,17 @@ cNAA:XX:XX: -135.5500  57.1667 -9:0 East Channel (narrows)
 cNAA:XX:XX: -135.5500  57.1833 -9:0 East Channel north entrance
 ^-82   0.20 0 -82   0.20 0   3149 340 160 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -135.4167  57.1833 -9:0 South entrance
-^-32767 -327.67 0 -32767 -327.67 0   3153 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -135.4333  57.2500 -9:0 Allan Point, 1.5 miles west of
 ^-97   0.50 0 -72   0.50 0   3157 260 82 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -135.4667  57.1833 -9:0 South end
-^-32767   0.30 0 -32767   0.30 0   3161 324 130 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -135.5000  57.2167 -9:0 Creek Point
 ^-31   0.40 0 24   0.40 0   3165 298 126 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -135.5667  57.2500 -9:0 Whitestone Narrows
-^-32767   0.30 0 -32767   0.30 0   3169 178 338 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -135.5833  57.2667 -9:0 Wyvill Reef
 ^-58   0.40 0 -17   0.40 0   3173 150 323 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -135.6000  57.2833 -9:0 Highwater Island, west of
 ^-46   0.30 0 -24   0.30 0   3177 144 330 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -135.6667  57.3333 -9:0 North of Kane Islands
-^-32767 -327.67 0 -32767 -327.67 0   3181 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -135.8833  57.3500 -9:0 Sea Rock, 1 mile north of
 ^-50   0.30 0 -50   0.30 0   3185 65 245 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12429,17 +11760,11 @@ cNAA:XX:XX: -134.8833  57.4500 -9:0 Fairway Island
 cNAA:XX:XX: -134.8167  57.4500 -9:0 Morris Reef, south of
 ^-20   0.40 0 -20   0.40 0   3261 275 95 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -136.1000  57.6167 -9:0 Elbow Passage, south of Klag Island
-^18 -327.67 0 38 -327.67 0   3265 90 270 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -136.6333  58.1500 -9:0 Cape Spencer, 3 miles south of
 ^10   0.40 0 10   0.40 0   3269 70 250 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -136.6000  58.0833 -9:0 Yakobi Rock, 1 mile west of
 ^10   0.40 0 10   0.40 0   3273 45 225 1 North Inian Pass, Cross Sound, Alaska
-
-cNAA:XX:XX: -136.3667  58.2000 -9:0 Port Althrop ent., E of George I
-^-32767 -327.67 0 -32767 -327.67 0   3277 340 160 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -136.3833  58.2833 -9:0 NORTH INIAN PASS
 ^0   0.00 0 0   0.00 0   3281 75 260 1 North Inian Pass, Cross Sound, Alaska
@@ -12462,12 +11787,6 @@ cNAA:XX:XX: -135.5833  58.2833 -9:0 Pleasant Island, 3 miles south of
 cNAA:XX:XX: -137.6667  58.6167 -9:0 Lituya Bay entrance
 ^-6   1.40 0 36   1.20 0   3305 35 210 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -141.5033  59.8550 -9:0 Point Riou, 2.6 nautical miles SW of
-^-32767 -327.67 0 -32767 -327.67 0   3309 -32767 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
-cNAA:XX:XX: -141.6700  59.5583 -9:0 Claybluff Point Light, 5.2 nmi. SSW of
-^-32767 -327.67 0 -32767 -327.67 0   3313 -32767 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
 cNAA:XX:XX: -141.5950  59.9100 -9:0 Claybluff Point Light, 3.5 nmi. south of
 ^-182   0.20 0 -194   0.20 0   3317 104 209 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
@@ -12483,23 +11802,14 @@ cNAA:XX:XX: -141.4133  59.9700 -9:0 Carson Creek Entrance, 3.3 nmi. SE of
 cNAA:XX:XX: -141.4367  59.9867 -9:0 Carson Creek Entrance, 2.4 nmi. ESE of
 ^-180   0.20 0 -144   0.30 0   3333 54 244 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -141.3283  60.0350 -9:0 Kichyatt Point, 1.3 nautical miles NE of
-^-32767 -327.67 0 -32767 -327.67 0   3337 -32767 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
 cNAA:XX:XX: -144.3833  60.0500 -9:0 Wingham Island, off northeast corner
 ^11   0.40 0 33   0.40 0   3341 68 288 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -144.3000  60.0833 -9:0 Kanak Island, southeast of
 ^27   0.50 0 25   0.60 0   3345 67 255 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -147.8967  59.7237 -9:0 Cape Cleare, 3 mi S, of Montague I
-^-32767   0.30 0 -32767 -327.67 0   3349 279 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -147.2867  59.8667 -9:0 Wooded Islands, east of
 ^238   0.10 0 102   0.20 0   3353 82 211 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.2833  59.9500 -9:0 Box Point, 2.3 miles E of, Montague I
-^166 -327.67 0 68   0.10 0   3357 -32767 188 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -148.3242  59.9537 -9:0 Cape Puget, east of, Port Bainbridge
 ^92   0.03 0 138   0.10 0   3361 333 226 1 Sergius Narrows, Peril Strait, Alaska
@@ -12522,26 +11832,11 @@ cNAA:XX:XX: -148.2167  60.1167 -9:0 Bainbridge Passage
 cNAA:XX:XX: -148.2038  60.1267 -9:0 Bainbridge Passage (mid-passage)
 ^84   0.30 0 53   0.30 0   3385 52 208 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -147.9022  60.1642 -9:0 Knight I. Passage, N of Evans Pt
-^-32767 -327.67 0 -32767   0.10 0   3389 -32767 145 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -146.7483  60.1867 -9:0 Cape Hinchinbrook, SW of, Hinchinbrook I
 ^134   0.10 0 125   0.20 0   3393 317 180 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -147.3050  60.2678 -9:0 Greene I. and Gilmour Pt., between
-^-32767   0.10 0 -32767 -327.67 0   3397 37 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -146.8133  60.3117 -9:0 Bear Cape and Zaikof Point, between
 ^214   0.10 0 122   0.20 0   3401 352 162 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.9683  60.4108 -9:0 Montague Point, 4.5 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   3405 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.8578  60.4455 -9:0 Knight I. Passage, E of Pt. Newell
-^-32767 -327.67 0 -32767   0.10 0   3409 -32767 197 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.0200  60.5492 -9:0 Ship Channel, east of Smith Island
-^-32767 -327.67 0 -32767 -327.67 0   3413 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -146.7833  60.5517 -9:0 Johnston Point, 7 nmi. northwest of
 ^178   0.02 0 -32   0.10 0   3417 14 204 1 Sergius Narrows, Peril Strait, Alaska
@@ -12549,35 +11844,11 @@ cNAA:XX:XX: -146.7833  60.5517 -9:0 Johnston Point, 7 nmi. northwest of
 cNAA:XX:XX: -146.3412  60.4805 -9:0 Hinchinbrook I. and Hawkins I., between
 ^184   0.20 0 209   0.20 0   3421 163 350 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -146.5967  60.5542 -9:0 Johnston Pt., 4 mi. N of
-^-32767 -327.67 0 -32767 -327.67 0   3425 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.2533  60.5800 -9:0 Gravina Pt. and Makaka Pt., between
-^-32767 -327.67 0 -32767 -327.67 0   3429 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -145.8067  60.5992 -9:0 Salmo Point, N of, Hawkins Island
 ^172   0.03 0 240   0.02 0   3433 59 236 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -146.6058  60.6578 -9:0 Knowles Head, 1.5 miles S of
-^-32767 -327.67 0 118   0.10 0   3437 -32767 276 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -148.1250  60.6088 -9:0 Port Nellie Juan Entrance
 ^186   0.02 0 159   0.02 0   3441 190 42 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.5167  60.6000 -9:0 Eleanor Island-Naked Island, between
-^-32767 -327.67 0 -32767 -327.67 0   3445 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.8000  60.6892 -9:0 Perry I. and Lone I., between
-^-32767 -327.67 0 -32767 -327.67 0   3449 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -148.0333  60.6833 -9:0 Perry Passage
-^-32767 -327.67 0 -32767 -327.67 0   3453 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.0375  60.6933 -9:0 Ship Chan., between Naked I-Goose I
-^-32767 -327.67 0 -32767   0.04 0   3457 -32767 163 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -148.2500  60.7167 -9:0 Culross Passage
-^-32767 -327.67 0 -32767 -327.67 0   3461 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -148.1400  60.7728 -9:0 Wells Passage, north of Point Culross
 ^141   0.10 0 179   0.10 0   3465 266 106 1 Sergius Narrows, Peril Strait, Alaska
@@ -12585,41 +11856,14 @@ cNAA:XX:XX: -148.1400  60.7728 -9:0 Wells Passage, north of Point Culross
 cNAA:XX:XX: -147.2883  60.7892 -9:0 Storey Island, northeast of
 ^104   0.03 0 230   0.02 0   3469 282 146 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -146.7467  60.7675 -9:0 Bligh I. and Porcupine Pt., between
-^-32767   0.03 0 213   0.10 0   3473 56 270 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.4650  60.7942 -9:0 Fish Bay, southwest of
-^-32767 -327.67 0 -32767 -327.67 0   3477 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -147.0117  60.8472 -9:0 Ship Channel, west of Bligh Island
 ^165   0.02 0 230   0.02 0   3481 355 124 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -148.1800  60.8958 -9:0 Port Wells, southeast of Battles Bay
-^-32767 -327.67 0 -32767 -327.67 0   3485 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.5305  60.8817 -9:0 Unakwik Inlet, northeast of Olsen Island
-^-32767 -327.67 0 -32767 -327.67 0   3489 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -147.3292  60.8870 -9:0 Glacier Island, west of
-^-32767 -327.67 0 -32767 -327.67 0   3493 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.8708  60.8942 -9:0 Busby Island, WNW of
-^-32767 -327.67 0 -32767 -327.67 0   3497 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -147.0458  60.9242 -9:0 Columbia Bay East Entrance
 ^238   0.10 0 251   0.10 0   3501 297 122 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -146.8212  60.9608 -9:0 Valdez Arms, west of Rocky Point
-^-32767 -327.67 0 -32767 -327.67 0   3505 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
 cNAA:XX:XX: -146.6567  61.0762 -9:0 Valdez Narrows
 ^77   0.03 0 123   0.02 0   3509 48 201 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.3508  61.0950 -9:0 Jackson Point, northeast of
-^-32767 -327.67 0 -32767 -327.67 0   3513 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -146.5550  61.1155 -9:0 Shoup Bay, southeast of
-^-32767 -327.67 0 -32767 -327.67 0   3517 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -145.7667  60.5500 -9:0 Cordova, Orca Inlet
 ^-23   0.50 0 23   0.30 0   3521 212 26 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12629,15 +11873,6 @@ cNAA:XX:XX: -145.7500  60.5667 -9:0 Orca Cannery, 0.8 mile southwest of
 
 cNAA:XX:XX: -145.7500  60.6000 -9:0 Salmo Point, Hawkins I., 1.2 miles SE of
 ^3   0.20 0 45   0.30 0   3529 160 20 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -145.7833  60.6167 -9:0 Salmo Point, Hawkins I., 0.3 mile NW of
-^-32767 -327.67 0 -32767 -327.67 0   3533 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -145.7000  60.6167 -9:0 Shepard Point, 0.9 mile southwest of
-^-32767 -327.67 0 -32767 -327.67 0   3537 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -153.1878  58.8888 -9:0 Cape Douglas, northeast of
-^-32767   0.19 0 -32767   0.40 0   3541 167 167 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -152.8900  58.9408 -9:0 Cape Douglas, northeast of
 ^167   0.10 0 153   0.10 0   3545 312 167 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12656,9 +11891,6 @@ cNAA:XX:XX: -151.8950  59.1200 -9:0 Cape Elizabeth
 
 cNAA:XX:XX: -151.7833  59.1667 -9:0 Chugach Passage
 ^17   0.80 0 94   0.50 0   3565 355 170 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -152.9117  59.2967 -9:0 Augustine Island, 14.5 nmi. ESE of
-^-32767 -327.67 0 -32767 -327.67 0   3569 -32767 -32767 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -153.6203  59.4083 -9:0 Augustine Island, northwest of
 ^324   0.20 0 304   0.30 0   3573 60 229 1 Wrangell Narrows (off Petersburg), Alaska
@@ -12783,9 +12015,6 @@ cNAA:XX:XX: -150.0612  61.2070 -9:0 Point Woronzof, west of
 cNAA:XX:XX: -149.9483  61.2278 -9:0 Anchorage, west of
 ^421   1.00 0 427   0.90 0   3733 81 234 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -149.9063  61.2250 -9:0 Anchorage, 0.2 mile offshore
-^-32767   0.40 0 -32767   0.70 0   3737 28 207 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -149.9083  61.2458 -9:0 Anchorage Shipdock, northwest of
 ^437   1.00 0 428   1.20 0   3741 28 195 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -12803,9 +12032,6 @@ cNAA:XX:XX: -149.8667  61.3333 -9:0 Knik Arm, south of Goose Creek
 
 cNAA:XX:XX: -152.5000  58.4667 -9:0 Cape Current Narrows, Shuyak Strait
 ^135   0.70 0 135   0.70 0   3761 275 95 1 Sergius Narrows, Peril Strait, Alaska
-
-cNAA:XX:XX: -154.1167  58.3333 -9:0 Kukak Bay, Shelikof Strait
-^-32767 -327.67 0 -32767 -327.67 0   3765 -32767 -32767 1 Sergius Narrows, Peril Strait, Alaska
 
 cNAA:XX:XX: -152.9167  57.9667 -9:0 Kupreanof Strait, 0.8 mi. off Chernof Pt
 ^188   0.40 0 209   0.30 0   3773 298 101 1 Sergius Narrows, Peril Strait, Alaska
@@ -12831,20 +12057,11 @@ cNAA:XX:XX: -160.5167  55.3333 -9:0 Popof Strait
 cNAA:XX:XX: -160.7333  55.4333 -9:0 Unga Strait (1.4 miles N of Unga Spit)
 ^324   0.50 0 324   0.10 0   3801 282 114 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -161.4333  55.2667 -9:0 Ukolnoi Island, 3.3 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   3805 -32767 -32767 1 Isanotski Strait (False Pass Cnry), Alaska
-
-cNAA:XX:XX: -161.2500  55.3333 -9:0 Seal Cape Light, 0.8 mile south of
-^-32767 -327.67 0 -32767 -327.67 0   3809 -32767 -32767 1 Isanotski Strait (False Pass Cnry), Alaska
-
 cNAA:XX:XX: -163.1667  55.5000 -9:0 Amak Island, 5 miles north of
 ^292   0.20 0 290   0.20 0   3813 337 139 1 Isanotski Strait (False Pass Cnry), Alaska
 
 cNAA:XX:XX: -163.0167  55.3500 -9:0 Amak Island, 5 miles southeast of
 ^264   0.20 0 272   0.20 0   3817 350 200 1 Isanotski Strait (False Pass Cnry), Alaska
-
-cNAA:XX:XX: -163.4667  55.1167 -9:0 Bechevin Bay, off the entrance
-^-32767   0.20 0 -32767   0.10 0   3821 47 265 1 Isanotski Strait (False Pass Cnry), Alaska
 
 cNAA:XX:XX: -163.7833  55.0667 -9:0 Otter Point, off of, north side
 ^216   0.20 0 215   0.30 0   3825 89 258 1 Isanotski Strait (False Pass Cnry), Alaska
@@ -12854,9 +12071,6 @@ cNAA:XX:XX: -163.4000  54.8667 -9:0 ISANOTSKI STRAIT (False Pass Cnry)
 
 cNAA:XX:XX: -163.4333  54.9833 -9:0 Bechevin Bay, off Rocky Point
 ^-55   0.50 0 14   0.50 0   3833 331 139 1 Isanotski Strait (False Pass Cnry), Alaska
-
-cNAA:XX:XX: -163.0000  54.0000 -9:0 Davidson Bank
-^-32767 -327.67 0 -32767 -327.67 0   3837 -32767 -32767 1 Isanotski Strait (False Pass Cnry), Alaska
 
 cNAA:XX:XX: -164.8000  54.3667 -9:0 UNIMAK PASS (off Scotch Cap)
 ^0   0.00 0 0   0.00 0   3841 295 105 1 Unimak Pass (off Scotch Cap), Alaska
@@ -12894,20 +12108,11 @@ cNAA:XX:XX: -166.3000  53.7333 -9:0 Udagak Strait (narrows)
 cNAA:XX:XX: -167.9167  53.2500 -9:0 Umnak Pass, south approach
 ^-38   0.60 0 -23   1.00 0   3885 341 181 1 Unimak Pass (off Scotch Cap), Alaska
 
-cNAA:XX:XX: -167.8500  53.3000 -9:0 Konets Head-Emerald Island, between
-^-32767   1.00 0 -55   0.80 0   3889 331 125 1 Unimak Pass (off Scotch Cap), Alaska
-
 cNAA:XX:XX: -167.8000  53.3500 -9:0 Umnak Pass, southeast of Ship Rock
 ^11   1.10 0 20   0.90 0   3893 56 225 1 Unimak Pass (off Scotch Cap), Alaska
 
 cNAA:XX:XX: -167.8500  53.3833 -9:0 Umnak Pass, northwest of Ship Rock
 ^1   1.10 0 -28   1.10 0   3897 52 218 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -170.5333  52.6667 -10:0 Yunaska Island, 1 mile east of
-^-32767   0.50 0 -32767   0.80 0   3901 21 159 1 Isanotski Strait (False Pass Cnry), Alaska
-
-cNAA:XX:XX: -172.3833  52.3833 -10:0 Finch Cove, Seguam Island
-^-32767 -327.67 0 -32767 -327.67 0   3905 315 130 1 Isanotski Strait (False Pass Cnry), Alaska
 
 cNAA:XX:XX: -175.5667  51.9667 -10:0 Fenimore Rock, 1.2 miles southwest of
 ^-76   0.90 0 -137   1.00 0   3909 10 140 1 Unimak Pass (off Scotch Cap), Alaska
@@ -12933,9 +12138,6 @@ cNAA:XX:XX: -176.2333  51.8167 -10:0 Little Tanaga Strait, off Tana Pt
 cNAA:XX:XX: -176.4167  51.8000 -10:0 Kagalaska Strait, off Galas Point
 ^-81   0.70 0 -7   0.50 0   3937 310 175 1 Akutan Pass, Aleutian Islands, Alaska
 
-cNAA:XX:XX: -177.0833  51.7833 -10:0 Adak Strait, 1 mile NE of Naga Pt
-^-32767   0.60 0 -125   0.70 0   3941 10 190 1 Unimak Pass (off Scotch Cap), Alaska
-
 cNAA:XX:XX: -177.0000  51.7833 -10:0 Adak Strait, 4 miles ENE of Naga Point
 ^-54   0.60 0 -44   0.60 0   3945 10 195 1 Unimak Pass (off Scotch Cap), Alaska
 
@@ -12954,38 +12156,14 @@ cNAA:XX:XX: -178.2167  51.6500 -10:0 Tanaga Pass, 4 mi. off C. Amagalik
 cNAA:XX:XX: -178.6000  51.6167 -10:0 Ogliuga Island, pass East of, Delarof Is
 ^-139   0.20 0 -143   0.20 0   3965 36 220 1 Unimak Pass (off Scotch Cap), Alaska
 
-cNAA:XX:XX: -178.7500  51.7500 -10:0 Gareloi I., 0.5 mile SE of, Delarof Is
-^-32767 -327.67 0 -32767 -327.67 0   3969 55 245 1 Unimak Pass (off Scotch Cap), Alaska
-
 cNAA:XX:XX: -179.0333  51.3167 -10:0 Ulak Pass, Delarof Islands
 ^-20   0.70 0 -20   0.70 0   3973 326 125 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -179.8667  52.1667 -10:0 Petrel Bank, Semisopochnoi Island
-^-32767 -327.67 0 -32767 -327.67 0   3977 -32767 -32767 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -178.8500  51.5500 -10:0 Amchitka Island, south coast
-^-32767 -327.67 0 -32767 -327.67 0   3981 309 124 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -178.5167  51.7000 -10:0 Oglala Pass, Rat Islands
-^-32767 -327.67 0 -32767 -327.67 0   3985 -32767 -32767 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -178.5333  51.9000 -10:0 Little Sitkin Island, SE coast
-^-32767 -327.67 0 -32767 -327.67 0   3989 50 240 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -178.3333  51.8833 -10:0 Rat Island Pass, Rat Islands
-^-32767 -327.67 0 -32767   0.20 0   3993 -32767 110 1 Unimak Pass (off Scotch Cap), Alaska
 
 cNAA:XX:XX: -178.1167  51.8500 -10:0 Krysi Pass, Rat Islands
 ^3   0.70 0 -29   0.70 0   3997 40 210 1 Unimak Pass (off Scotch Cap), Alaska
 
 cNAA:XX:XX: -177.9000  51.9000 -10:0 Sea Lion Pass, Rat Islands
 ^6   0.70 0 -34   0.80 0   4001 12 195 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -175.8667  51.8167 -10:0 Tahoma Reef
-^-32767   0.30 0 -32767   0.30 0   4005 7 147 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -172.5333  52.9833 -10:0 Attu Island, 5 miles NE of Cape Wrangell
-^-32767 -327.67 0 -32767 -327.67 0   4009 64 201 1 Unimak Pass (off Scotch Cap), Alaska
 
 cNAA:XX:XX: -162.2000  55.7500 -9:0 Cape Lieskof, 3 miles west of
 ^-339   0.30 0 -278   0.30 0   4013 56 248 1 Kvichak Bay (off Naknek River Entrance), Alaska
@@ -13050,15 +12228,6 @@ cNAA:XX:XX: -162.1667  60.1333 -9:0 Apokak Creek entrance
 cNAA:XX:XX: -169.9500  57.1833 -9:0 Pribilof Islands, Walrus Island, 0.5 mile west of
 ^-400   0.40 0 -400   0.50 0   4093 18 210 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -169.9333  56.8667 -9:0 Pribilof Islands, St. Paul I.-St. George I., betwe
-^-32767   0.20 0 -32767 -327.67 0   4097 260 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
-cNAA:XX:XX: -170.1667  57.0500 -9:0 Pribilof Islands, Otter Island, 7 miles east of
-^-32767   0.40 0 -32767 -327.67 0   4101 245 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
-cNAA:XX:XX: -170.5667  57.1167 -9:0 Pribilof Islands, SW Pt. , St. Paul I., 6 mi. SW
-^-32767   0.20 0 -32767 -327.67 0   4105 330 -32767 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
 cNAA:XX:XX: -170.4500  57.1500 -9:0 Pribilof Islands, SW Point, St. Paul Island, 1 mil
 ^-535   0.80 0 -535   0.30 0   4109 330 170 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
@@ -13068,32 +12237,14 @@ cNAA:XX:XX: -166.0500  61.5000 -9:0 Hooper Bay entrance
 cNAA:XX:XX: -172.7167  60.3500 -9:0 St. Mathew I., southwest coast
 ^144   0.50 0 209   0.40 0   4121 292 119 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -169.5333  62.8833 -9:0 St. Lawrence Island, 4.5 miles SE of Southeast Cap
-^-32767   0.30 0 -32767   0.30 0   4125 97 251 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
 cNAA:XX:XX: -168.9333  63.1167 -9:0 St. Lawrence Island, Apavawook Cape, 1 mile south 
 ^-238   0.20 0 -219   0.40 0   4129 75 272 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
 cNAA:XX:XX: -168.8333  63.3333 -9:0 St. Lawrence Island, Off Northeast Cape
 ^-101   0.30 0 16   0.30 0   4133 95 258 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -172.3000  63.3833 -9:0 St. Lawrence Island, Tatik Point, 13 miles off of
-^-32767 -327.67 0 -32767 -327.67 0   4137 0 190 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
-cNAA:XX:XX: -172.0167  65.0000 -9:0 St. Lawrence Island, Gambell, 13 miles NNW of
-^-32767   0.70 0 -32767   0.20 0   4141 50 75 1 Kvichak Bay (off Naknek River Entrance), Alaska
-
 cNAA:XX:XX: -166.1667  64.5333 -9:0 Sledge Island, 2 miles north of
 ^-421   0.30 0 -418   0.20 0   4145 305 119 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -169.7333  64.9667 -9:0 King Island, 42 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   4149 30 30 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -168.8333  65.3333 -9:0 Fairway Rock, 18.5 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   4153 0 0 1 Unimak Pass (off Scotch Cap), Alaska
-
-cNAA:XX:XX: -168.6500  65.7000 -9:0 Fairway Rock, 4.8 miles NNE of
-^-32767 -327.67 0 -32767 -327.67 0   4157 20 20 1 Unimak Pass (off Scotch Cap), Alaska
 
 cNAA:XX:XX: -123.1500  48.4500 -8:0 Discovery Island, 3.3 miles northeast of
 ^76   0.80 0 59   0.60 0   1797 345 170 1 Admiralty Inlet, Washington Current
@@ -13103,9 +12254,6 @@ cNAA:XX:XX: -123.2333  48.5833 -8:0 Kellett Bluff, west of
 
 cNAA:XX:XX: -123.2500  48.6833 -8:0 Turn Point, Boundary Pass
 ^26   0.40 0 78   0.60 0   1805 80 260 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -123.0167  48.7667 -8:0 Skipjack Island, 2 miles NNE of
-^-32767 -327.67 0 -32767 -327.67 0   1809 40 205 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -123.1500  48.6833 -8:0 Johns Island, 0.8 mile north of
 ^-15   0.20 0 6   0.20 0   1813 90 350 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
@@ -13296,17 +12444,11 @@ cNAA:XX:XX: -126.6833  50.6333 -8:0 Owl Island, main ent. to Knight Inlet
 cNAA:XX:XX: -128.6500  52.6167 -8:0 Meyers Narrows, Meyers Passage
 ^-91   0.60 0 -67   0.60 0   2061 90 270 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -129.7500  53.1333 -8:0 Otter Passage, Nepean Sound
-^-50 -327.67 0 -39   1.30 0   2065 50 230 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -129.6833  53.6000 -8:0 Grenville Channel (narrow portion)
 ^52   0.40 0 56   1.00 0   2069 320 140 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -130.2167  54.1000 -8:0 Skeena River, Middle Passage
 ^68   0.60 0 68   0.60 0   2073 120 310 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -130.3667  54.2667 -8:0 Casey Point, Prince Rupert Harbor
-^66 -327.67 0 66   0.60 0   2077 340 160 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -130.2500  54.4000 -8:0 Tuck Narrows, Prince Rupert Harbor
 ^-7   1.40 0 17   1.40 0   2081 325 145 1 Wrangell Narrows (off Petersburg), Alaska
@@ -13389,9 +12531,6 @@ cNAA:XX:XX: -130.1500  55.7167 -9:0 Miners Point
 cNAA:XX:XX: -130.0333  55.8833 -9:0 Lion Point
 ^-40   0.10 0 -40   0.10 0   2185 25 205 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -124.1833  46.1833 -8:0 Lighted Horn Buoy R"C"
-^-32767 -327.67 0 -32767 -327.67 0   0873 -32767 -32767 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.9908  46.2528 -8:0 Sand Island Tower, southeast of
 ^72   1.60 0 38   1.60 0   0877 107 275 1 Grays Harbor Entrance, Washington
 
@@ -13406,12 +12545,6 @@ cNAA:XX:XX: -123.9980  46.2620 -8:0 Sand Island Tower, southeast of
 
 cNAA:XX:XX: -123.9680  46.2555 -8:0 Sand I., SSE of
 ^18   0.30 0 -16   0.40 0   0893 97 265 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.9980  46.2392 -8:0 Clatsop Spit, northeast of
-^-32767   0.40 0 -76   1.00 0   0897 131 313 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.8237  46.1987 -8:0 Astoria Range
-^-32767   0.60 0 38   1.00 0   0901 88 243 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.8878  46.1863 -8:0 Youngs Bay Entrance
 ^106   0.90 0 88   0.40 0   0905 93 260 1 Grays Harbor Entrance, Washington
@@ -13437,17 +12570,11 @@ cNAA:XX:XX: -123.9642  46.2422 -8:0 Chinook Point, WSW of
 cNAA:XX:XX: -123.7667  46.2192 -8:0 Tongue Point, northwest of
 ^151   0.40 0 24   0.90 0   0933 77 249 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.6567  46.2592 -8:0 Altoona, SSW of
-^-32767   0.30 0 79   0.70 0   0937 61 243 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.6733  46.2395 -8:0 Woody Island Channel
 ^72   0.50 0 96   0.30 0   0941 118 298 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.6292  46.2175 -8:0 Woody Island Channel (off Seal Island)
 ^158   0.30 0 85   0.40 0   0945 81 247 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.5350  46.2650 -8:0 Three Tree Point, 5 miles WSW of
-^269   0.10 0 -32767   0.90 0   0949 80 258 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.5033  46.2372 -8:0 Quinn Island, Prairie Channel
 ^199   0.30 0 55   0.50 0   0953 97 281 1 Grays Harbor Entrance, Washington
@@ -13455,41 +12582,14 @@ cNAA:XX:XX: -123.5033  46.2372 -8:0 Quinn Island, Prairie Channel
 cNAA:XX:XX: -123.4653  46.2178 -8:0 Clifton Channel
 ^221   0.30 0 81   0.40 0   0957 118 301 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.4350  46.2433 -8:0 Tenasillahe Island, northwest of
-^-32767 -327.67 0 -32767   0.80 0   0961 -32767 329 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.4042  46.2072 -8:0 Hunting Island, south of
 ^260   0.20 0 98   0.40 0   0965 125 295 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.4230  46.1742 -8:0 Puget Island, Wauna Range
-^-32767 -327.67 0 -32767   0.10 0   0969 -32767 315 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.3397  46.1445 -8:0 Puget Island, Westport Turn & Range
-^-32767 -327.67 0 -32767 -327.67 0   0973 -32767 -32767 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.3150  46.1562 -8:0 Cathlamet Channel, SE of Nassa Point
 ^316   0.10 0 99   0.60 0   0977 103 278 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.1838  46.1847 -8:0 Oak Point Channel
-^-32767 -327.67 0 -32767   0.40 0   0981 -32767 235 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.1242  46.1855 -8:0 Stella, southwest of
-^-32767 -327.67 0 -32767   0.04 0   0985 -32767 295 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.0428  46.1528 -8:0 Walker Island Channel
-^-32767 -327.67 0 -32767   0.10 0   0989 -32767 319 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.0458  46.1412 -8:0 Walker Island, south of
 ^346   0.20 0 161   0.40 0   0993 148 330 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.9870  46.1237 -8:0 Slaughters Channel
-^-32767 -327.67 0 -32767   0.20 0   0997 -32767 306 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.8908  46.0713 -8:0 Cottonwood Island, west of
-^-32767 -327.67 0 -32767   0.10 0   1001 -32767 325 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.8513  46.0028 -8:0 Kalma Upper Range
-^-32767 -327.67 0 -32767   0.30 0   1005 -32767 343 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.8000  46.6667 -8:0 South Bend, Willapa River
 ^19   0.60 0 24   0.50 0   1009 90 270 1 Grays Harbor Entrance, Washington
@@ -13515,20 +12615,11 @@ cNAA:XX:XX: -124.1000  46.9333 -8:0 Channel, 1.5 miles north of Westport
 cNAA:XX:XX: -124.0833  46.9333 -8:0 Channel, 2.1 miles NNE of Westport
 ^-2   0.60 0 -2   0.50 0   1037 21 249 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.8167  46.9667 -8:0 Aberdeen, Chehalis River
-^-32767 -327.67 0 -32767 -327.67 0   1041 42 230 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -124.1000  46.9167 -8:0 Westport, channel 0.4 mile NE of
 ^-41   1.00 0 -19   0.70 0   1045 113 310 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -124.6333  47.9167 -8:0 Quillayute River entrance
 ^-10   0.10 0 -26   0.40 0   1049 15 345 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -124.8333  48.1667 -8:0 Cape Alava, 4.4 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   1053 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -125.0000  48.5500 -8:0 Swiftsure Bank
-^-32767 -327.67 0 -32767 -327.67 0   1057 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -124.5833  48.4500 -8:0 STRAIT OF JUAN DE FUCA ENTRANCE
 ^0   0.00 0 0   0.00 0   1065 115 290 1 Strait of Juan de Fuca Entrance, Washington Current
@@ -13541,18 +12632,6 @@ cNAA:XX:XX: -123.5500  48.2000 -8:0 Angeles Point, 2.3 miles north of
 
 cNAA:XX:XX: -123.5333  48.2333 -8:0 RACE ROCKS, 4 miles south of
 ^0   0.00 0 0   0.00 0   1077 91 271 1 Strait of Juan de Fuca Entrance, Washington Current
-
-cNAA:XX:XX: -123.5167  48.2833 -8:0 Race Rocks, 0.5 mile southeast of
-^-70 -327.67 0 -83 -327.67 0   1081 -32767 -32767 1 Strait of Juan de Fuca Entrance, Washington Current
-
-cNAA:XX:XX: -123.5333  48.3000 -8:0 Race Passage
-^-81 -327.67 0 -113 -327.67 0   1085 -32767 -32767 1 Strait of Juan de Fuca Entrance, Washington Current
-
-cNAA:XX:XX: -123.4167  48.1333 -8:0 Port Angeles
-^-32767 -327.67 0 -32767 -327.67 0   1089 -32767 -32767 1 Strait of Juan de Fuca Entrance, Washington Current
-
-cNAA:XX:XX: -123.4000  48.1167 -8:0 Ediz Hook Light, 1.4 miles southeast of
-^-32767 -327.67 0 -32767 -327.67 0   1093 -32767 -32767 1 Strait of Juan de Fuca Entrance, Washington Current
 
 cNAA:XX:XX: -123.4167  48.1667 -8:0 Ediz Hook Light, 1.2 miles north of
 ^-32   0.50 0 -5   0.40 0   1097 80 295 1 Admiralty Inlet, Washington Current
@@ -13581,29 +12660,14 @@ cNAA:XX:XX: -123.0000  48.4000 -8:0 Cattle Point, 2.8 miles SSW of
 cNAA:XX:XX: -123.0167  48.3833 -8:0 Cattle Point, 5 miles SSW of
 ^74   0.60 0 80   0.30 0   1129 120 210 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.9167  48.1833 -8:0 Violet Point, 3.7 miles north of
-^-32767   0.20 0 -36   0.50 0   1133 100 270 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.9667  48.1667 -8:0 Violet Point, 3.2 miles northwest of
 ^-5   0.30 0 -8   0.40 0   1137 120 325 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.9667  48.1000 -8:0 Kamen Point, 1.3 miles southwest of
 ^-70   0.20 0 -66   0.40 0   1141 125 265 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.9000  48.1000 -8:0 Discovery Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   1145 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.8000  48.3167 -8:0 Smith Island, 2 miles east of
-^82   0.20 0 -32767   0.20 0   1149 -32767 220 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.8500  48.3000 -8:0 Smith Island, 1.4 miles SSW of
 ^-6   0.40 0 29   0.40 0   1153 90 280 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.7500  48.3000 -8:0 Smith Island, 3.7 miles ESE of
-^-32767 -327.67 0 -32767   0.30 0   1157 -32767 225 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.8000  48.2500 -8:0 Point Partridge, 1.6 miles NW of
-^-32767 -327.67 0 -32767   0.40 0   1161 -32767 175 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.8667  48.2333 -8:0 Point Partridge, 3.7 miles west of
 ^87   0.20 0 -24   0.80 0   1165 140 250 1 Admiralty Inlet, Washington Current
@@ -13626,9 +12690,6 @@ cNAA:XX:XX: -122.7000  48.1500 -8:0 Admiralty Head, 0.5 mile west of
 cNAA:XX:XX: -122.7333  48.1500 -8:0 Point Wilson, 0.8 mile east of
 ^-53   1.50 0 27   1.00 0   1189 165 280 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.7500  48.1167 -8:0 Port Townsend, 0.5 mile S of Pt. Hudson
-^-32767 -327.67 0 -32767 -327.67 0   1193 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.7333  48.1167 -8:0 Point Hudson, 0.5 mile east of
 ^-201   0.80 0 -162   0.20 0   1197 115 10 1 Admiralty Inlet, Washington Current
 
@@ -13644,9 +12705,6 @@ cNAA:XX:XX: -122.6833  48.1000 -8:0 Marrowstone Point, 0.3 mile northeast of
 cNAA:XX:XX: -122.6667  48.1167 -8:0 Marrowstone Point, 1.6 miles northeast of
 ^-16   1.20 0 -3   1.20 0   1213 152 344 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.6333  48.1333 -8:0 Marrowstone Point, 2.5 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   1217 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.6667  48.0333 -8:0 Nodule Point, 0.5 mile southeast of
 ^-87   1.20 0 -59   1.00 0   1221 160 339 1 Admiralty Inlet, Washington Current
 
@@ -13655,9 +12713,6 @@ cNAA:XX:XX: -122.6333  48.0333 -8:0 ADMIRALTY INLET (off Bush Point)
 
 cNAA:XX:XX: -122.6167  48.0333 -8:0 Bush Point Light, 0.5 mile NW of
 ^-32   1.10 0 -9   1.10 0   1229 141 309 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5500  47.9833 -8:0 Mutiny Bay, 3.3 miles SE of Bush Point
-^-32767   0.60 0 -32767   0.40 0   1233 133 354 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.6333  47.9833 -8:0 Olele Point, 1.8 miles ENE of
 ^-34   0.50 0 -34   0.50 0   1237 167 352 1 Admiralty Inlet, Washington Current
@@ -13668,29 +12723,8 @@ cNAA:XX:XX: -122.7333  48.0333 -8:0 Port Townsend Canal
 cNAA:XX:XX: -122.6333  47.9333 -8:0 Foulweather Bluff
 ^0   0.40 0 -15   0.40 0   1245 140 325 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.5833  47.8667 -8:0 Port Gamble Bay, 0.5 mile N of entrance
-^-32767 -327.67 0 -32767 -327.67 0   1249 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.5833  47.8500 -8:0 Port Gamble Bay entrance
 ^-63   0.60 0 4   0.30 0   1253 185 0 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5667  47.8333 -8:0 Port Gamble Bay
-^-32767 -327.67 0 -32767 -327.67 0   1257 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.6833  47.8167 -8:0 South Point
-^-32767   0.40 0 -32767   0.40 0   1261 218 40 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.7667  47.7000 -8:0 Hazel Point
-^-32767   0.30 0 -32767   0.30 0   1265 183 5 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -123.0333  47.5333 -8:0 Chinom Point
-^-32767 -327.67 0 -32767 -327.67 0   1269 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -123.0333  47.3500 -8:0 The Great Bend
-^-32767   0.30 0 -32767   0.20 0   1273 49 251 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5000  47.9833 -8:0 Useless Bay
-^-32767 -327.67 0 -32767 -327.67 0   1277 -32767 -32767 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.5833  47.9500 -8:0 Foulweather Bluff
 ^9   0.90 0 14   0.70 0   1281 115 335 1 Admiralty Inlet, Washington Current
@@ -13698,62 +12732,23 @@ cNAA:XX:XX: -122.5833  47.9500 -8:0 Foulweather Bluff
 cNAA:XX:XX: -122.4500  47.8000 -8:0 Edmonds, 2.7 miles WSW of
 ^44   0.10 0 13   0.20 0   1285 170 0 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.4667  47.8167 -8:0 Apple Cove Point, 0.5 mile east of
-^-32767   0.30 0 -32767   0.30 0   1289 168 8 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.4333  47.7667 -8:0 President Point, 1.5 miles east of
-^-32767   0.20 0 -32767   0.20 0   1293 203 24 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5000  47.7333 -8:0 Port Madison entrance
-^-32767 -327.67 0 -32767 -327.67 0   1297 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.5500  47.7167 -8:0 Agate Passage, north end
 ^-88   0.80 0 -18   0.70 0   1301 230 32 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.5667  47.7167 -8:0 Agate Passage, south end
 ^-85   2.00 0 0   1.40 0   1305 216 37 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.5833  47.6333 -8:0 Port Orchard
-^-32767 -327.67 0 -32767 -327.67 0   1309 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.6000  47.7000 -8:0 Port Orchard, off Keyport
-^-32767 -327.67 0 -32767 -327.67 0   1313 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.6333  47.7000 -8:0 Liberty  Bay entrance, Port Orchard
-^-32767   0.40 0 -32767   0.30 0   1317 280 113 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.4167  47.6833 -8:0 Shilshole Bay
-^-32767 -327.67 0 -32767 -327.67 0   1321 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.4333  47.6667 -8:0 West Point, 0.3 mile west of
 ^-44   0.40 0 -16   0.30 0   1325 225 15 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.4667  47.6667 -8:0 West Point, 1.2 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   1329 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.4000  47.6167 -8:0 Elliott Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   1333 -32767 -32767 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.4333  47.5833 -8:0 Alki Point, 0.3 mile west of
 ^-36   0.30 0 -13   0.20 0   1337 160 330 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.4667  47.5833 -8:0 Restoration Point, 0.6 mile ESE of
-^-32767   0.30 0 -32767   0.30 0   1341 135 34 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5000  47.5667 -8:0 Rich Passage, Approach, north of Blake Island
-^-32767   0.10 0 -32767   0.30 0   1345 301 71 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5333  47.5667 -8:0 Rich Passage, East end
-^-32767   0.50 0 -32767   0.40 0   1349 321 143 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.5333  47.5833 -8:0 Rich Passage, Off Pleasant Beach
 ^-14   0.80 0 36   1.10 0   1353 330 132 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.5667  47.5833 -8:0 Rich Passage, West end
 ^-44   1.50 0 46   1.20 0   1357 238 55 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.6000  47.5667 -8:0 Port Orchard, southwest of Waterman
-^-32767 -327.67 0 -32767 -327.67 0   1361 -32767 -32767 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -122.6167  47.5667 -8:0 Port Washington Narrows, south ent
 ^-9   0.60 0 55   0.70 0   1369 326 154 1 Admiralty Inlet, Washington Current
@@ -13764,23 +12759,11 @@ cNAA:XX:XX: -122.6667  47.6000 -8:0 Port Washington Narrows, north ent
 cNAA:XX:XX: -122.5000  47.5333 -8:0 Blake Island, southwest of
 ^-178   0.20 0 -66   0.20 0   1377 131 326 1 Admiralty Inlet, Washington Current
 
-cNAA:XX:XX: -122.4833  47.3500 -8:0 Quartermaster Harbor entrance
-^-32767   0.10 0 -32767   0.10 0   1389 349 167 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.5167  47.3333 -8:0 Dalco Passage
-^-32767   0.40 0 -32767 -327.67 0   1397 290 -32767 1 The Narrows (North End), Puget Sound, Washington Current
-
 cNAA:XX:XX: -122.5667  47.3333 -8:0 Gig Harbor entrance
 ^-39   0.30 0 -46   0.40 0   1401 16 176 1 The Narrows (North End), Puget Sound, Washington Current
 
 cNAA:XX:XX: -122.5500  47.3000 -8:0 The Narrows, THE NARROWS, north end (midstream)
 ^0   0.00 0 0   0.00 0   1405 136 334 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.5333  47.3000 -8:0 The Narrows, North End (east side)
-^-32767 -327.67 0 -32767   1.40 0   1409 -32767 340 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.5500  47.3000 -8:0 The Narrows, North End (west side)
-^-32767   0.90 0 5   0.40 0   1413 143 324 1 The Narrows (North End), Puget Sound, Washington Current
 
 cNAA:XX:XX: -122.5500  47.2833 -8:0 The Narrows, 0.1 mile east of Point Evans
 ^-6   1.30 0 -28   1.20 0   1417 201 23 1 The Narrows (North End), Puget Sound, Washington Current
@@ -13788,20 +12771,11 @@ cNAA:XX:XX: -122.5500  47.2833 -8:0 The Narrows, 0.1 mile east of Point Evans
 cNAA:XX:XX: -122.5500  47.2667 -8:0 The Narrows, South end (midstream)
 ^-5   1.20 0 -16   1.10 0   1421 218 22 1 The Narrows (North End), Puget Sound, Washington Current
 
-cNAA:XX:XX: -122.5833  47.2500 -8:0 Hale Passage, east end
-^-32767 -327.67 0 -32767   0.30 0   1425 -32767 93 1 The Narrows (North End), Puget Sound, Washington Current
-
 cNAA:XX:XX: -122.6500  47.2833 -8:0 Hale Passage, west end
 ^0   0.40 0 -140   0.60 0   1429 299 119 1 The Narrows (North End), Puget Sound, Washington Current
 
 cNAA:XX:XX: -122.5833  47.2167 -8:0 Gibson Point, 0.8 mile east of
 ^28   0.70 0 8   0.60 0   1437 203 29 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.6167  47.1500 -8:0 Cormorant Passage
-^-32767 -327.67 0 -32767   0.30 0   1441 -32767 26 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.6500  47.1500 -8:0 Nisqually Reach, E of Sandy Point
-^-32767 -327.67 0 -32767   0.30 0   1445 -32767 36 1 The Narrows (North End), Puget Sound, Washington Current
 
 cNAA:XX:XX: -122.7000  47.1167 -8:0 Nisqually Reach
 ^26   0.30 0 20   0.40 0   1449 259 44 1 The Narrows (North End), Puget Sound, Washington Current
@@ -13812,29 +12786,11 @@ cNAA:XX:XX: -122.6833  47.1833 -8:0 Balch Passage
 cNAA:XX:XX: -122.7167  47.2167 -8:0 Pitt Passage, east of Pitt Island
 ^-55   0.30 0 -103   0.50 0   1457 204 28 1 The Narrows (North End), Puget Sound, Washington Current
 
-cNAA:XX:XX: -122.7333  47.1667 -8:0 Drayton Passage
-^-32767 -327.67 0 -32767   0.10 0   1461 -32767 30 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.7833  47.1667 -8:0 Devils Head, west of
-^-32767 -327.67 0 -32767   0.20 0   1465 -32767 158 1 The Narrows (North End), Puget Sound, Washington Current
-
 cNAA:XX:XX: -122.8667  47.1667 -8:0 Dana Passage
 ^17   0.50 0 -6   0.80 0   1469 249 76 1 The Narrows (North End), Puget Sound, Washington Current
 
-cNAA:XX:XX: -122.9167  47.1333 -8:0 Budd Inlet entrance
-^-32767   0.20 0 -32767   0.10 0   1473 236 31 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.9167  47.0833 -8:0 Olympia, Budd Inlet
-^-32767 -327.67 0 -32767 -327.67 0   1477 -32767 -32767 1 The Narrows (North End), Puget Sound, Washington Current
-
 cNAA:XX:XX: -122.9333  47.1500 -8:0 Eld Inlet entrance
 ^-4   0.30 0 -36   0.20 0   1481 224 28 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.9000  47.1667 -8:0 Unsal Point, 0.3 mile south of
-^-32767 -327.67 0 -32767   0.40 0   1485 -32767 137 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.8833  47.1833 -8:0 Peale Passage, south end
-^-32767   0.10 0 -32767   0.10 0   1489 341 173 1 The Narrows (North End), Puget Sound, Washington Current
 
 cNAA:XX:XX: -122.9167  47.2167 -8:0 Peale Passage, north end
 ^-14   0.20 0 -56   0.40 0   1493 319 145 1 The Narrows (North End), Puget Sound, Washington Current
@@ -13860,15 +12816,6 @@ cNAA:XX:XX: -122.9333  47.2500 -8:0 Pickering Passage, off Graham Point
 cNAA:XX:XX: -122.8500  47.3000 -8:0 Pickering Passage, north end
 ^84   0.20 0 71   0.20 0   1521 250 67 1 The Narrows (North End), Puget Sound, Washington Current
 
-cNAA:XX:XX: -122.8500  47.2333 -8:0 Case Inlet, 1 mile SE of McMicken Island
-^-32767 -327.67 0 -32767 -327.67 0   1525 -32767 -32767 1 The Narrows (North End), Puget Sound, Washington Current
-
-cNAA:XX:XX: -122.3667  48.1000 -8:0 Port Susan
-^-32767 -327.67 0 -32767 -327.67 0   1533 -32767 -32767 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -122.5333  48.2667 -8:0 Skagit Bay, 1 mile north of Rocky Point
-^-32767   0.40 0 -32767   0.40 0   1541 60 236 1 Admiralty Inlet, Washington Current
-
 cNAA:XX:XX: -122.5333  48.3500 -8:0 Skagit Bay, 1 mi. S of Goat Island
 ^-67   0.30 0 -53   0.20 0   1545 139 312 1 Deception Pass, Washington Current
 
@@ -13881,9 +12828,6 @@ cNAA:XX:XX: -122.6167  48.4167 -8:0 Yokeko Point, Deception Pass
 cNAA:XX:XX: -122.6333  48.4000 -8:0 DECEPTION PASS, (Narrows)
 ^0   0.00 0 0   0.00 0   1557 90 270 1 Deception Pass, Washington Current
 
-cNAA:XX:XX: -122.7000  48.4000 -8:0 Deception Island, 1.0 mile west of
-^-32767   0.60 0 -32767   0.50 0   1561 35 210 1 ROSARIO STRAIT, WASHINGTON
-
 cNAA:XX:XX: -122.9167  48.3833 -8:0 Iceberg Point, 2.1 miles SSW of
 ^-34   1.00 0 81   0.40 0   1565 10 260 1 ROSARIO STRAIT, WASHINGTON
 
@@ -13895,12 +12839,6 @@ cNAA:XX:XX: -122.7833  48.4167 -8:0 Colville Island, 1.4 miles east of
 
 cNAA:XX:XX: -122.7333  48.4167 -8:0 Deception Island, 2.7 miles west of
 ^68   0.80 0 38   0.70 0   1577 15 190 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.7000  48.3833 -8:0 W Point, Whidbey I., 1.8 mi. SW of
-^-32767   0.60 0 -32767   0.50 0   1581 5 207 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.7000  48.4167 -8:0 Deception Island, 1.3 miles NW of
-^-32767   1.20 0 -32767   0.60 0   1585 17 161 1 ROSARIO STRAIT, WASHINGTON
 
 cNAA:XX:XX: -122.7833  48.4667 -8:0 ROSARIO STRAIT
 ^0   0.00 0 0   0.00 0   1589 335 175 1 ROSARIO STRAIT, WASHINGTON
@@ -13916,9 +12854,6 @@ cNAA:XX:XX: -122.7000  48.4667 -8:0 Burrows I.-Allan I., Passage between
 
 cNAA:XX:XX: -122.7333  48.4833 -8:0 Burrows Island Light, 0.8 miles WNW of
 ^29   1.00 0 13   1.10 0   1605 15 200 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.7000  48.4833 -8:0 Fidalgo Head-Burrows Island, between
-^-32767   1.60 0 -32   0.50 0   1609 270 90 1 ROSARIO STRAIT, WASHINGTON
 
 cNAA:XX:XX: -122.7000  48.5000 -8:0 Green Point, 0.8 mile northwest of
 ^-55   1.80 0 -8   1.00 0   1613 20 190 1 ROSARIO STRAIT, WASHINGTON
@@ -13965,20 +12900,8 @@ cNAA:XX:XX: -123.0167  48.7667 -8:0 Boundary Pass, 2 mi. NNE of Skipjack I
 cNAA:XX:XX: -122.6500  48.5167 -8:0 Guemes Channel, west entrance
 ^-21   0.80 0 -84   1.10 0   1669 95 255 1 ROSARIO STRAIT, WASHINGTON
 
-cNAA:XX:XX: -122.5833  48.5167 -8:0 Padilla Bay, 0.8 mi. NW of March Pt
-^-32767 -327.67 0 -32767 -327.67 0   1673 -32767 -32767 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.5667  48.5333 -8:0 Guemes Island, 0.5 mile east of
-^-32767 -327.67 0 -32767 -327.67 0   1677 -32767 -32767 1 ROSARIO STRAIT, WASHINGTON
-
 cNAA:XX:XX: -122.5667  48.5500 -8:0 Huckleberry Island, 0.5 mile north of
 ^-197   0.70 0 36   0.30 0   1681 6 253 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.5833  48.5833 -8:0 William Point Light, 0.8 mile W of
-^-32767   0.10 0 -32767   0.20 0   1685 -32767 230 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.5667  48.6500 -8:0 Eliza Island, 0.5 mile southeast of
-^-32767 -327.67 0 -32767 -327.67 0   1689 -32767 -32767 1 ROSARIO STRAIT, WASHINGTON
 
 cNAA:XX:XX: -122.6667  48.5667 -8:0 Bellingham Channel, off Cypress I. Light
 ^-48   1.10 0 -49   1.20 0   1693 45 185 1 ROSARIO STRAIT, WASHINGTON
@@ -13992,9 +12915,6 @@ cNAA:XX:XX: -122.6500  48.6000 -8:0 Sinclair Island Light, 0.6 mile SE of
 cNAA:XX:XX: -122.6500  48.6333 -8:0 Sinclair Island, 1 mile northeast of
 ^51   0.10 0 -29   0.40 0   1705 307 112 1 ROSARIO STRAIT, WASHINGTON
 
-cNAA:XX:XX: -122.6500  48.6500 -8:0 Sinclair Island, 1 mile NE of
-^-32767 -327.67 0 -32767   0.40 0   1709 -32767 110 1 ROSARIO STRAIT, WASHINGTON
-
 cNAA:XX:XX: -122.7167  48.6833 -8:0 Lawrence Point, Orcas I., 1.3 mi. NE of
 ^56   1.20 0 59   0.80 0   1713 345 145 1 ROSARIO STRAIT, WASHINGTON
 
@@ -14007,17 +12927,8 @@ cNAA:XX:XX: -122.7667  48.7333 -8:0 Clark Island, 1.6 miles north of
 cNAA:XX:XX: -122.8500  48.7667 -8:0 Matia Island, 1.4 miles north of
 ^2   0.60 0 59   0.30 0   1725 330 190 1 ROSARIO STRAIT, WASHINGTON
 
-cNAA:XX:XX: -122.9000  48.7500 -8:0 Parker Reef Light, 1 mile north of
-^-32767   0.90 0 -32767   0.40 0   1729 65 265 1 ROSARIO STRAIT, WASHINGTON
-
 cNAA:XX:XX: -122.8000  48.8167 -8:0 Puffin Island Light, 4.8 miles north of
 ^18   0.40 0 55   0.40 0   1733 325 210 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.7333  48.8167 -8:0 Neptune Beach, 1.2 miles NW of
-^-32767   0.40 0 -32767 -327.67 0   1737 359 -32767 1 ROSARIO STRAIT, WASHINGTON
-
-cNAA:XX:XX: -122.7167  48.8500 -8:0 Cherry Point, 1.5 miles SE of
-^-32767   0.30 0 -32767   0.20 0   1741 326 116 1 ROSARIO STRAIT, WASHINGTON
 
 cNAA:XX:XX: -122.9500  48.4333 -8:0 Cattle Point, 1.2 miles southeast of
 ^11   0.30 0 34   0.90 0   1745 340 195 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
@@ -14052,12 +12963,6 @@ cNAA:XX:XX: -123.0000  48.6667 -8:0 Point Disney, 1.6 miles east of
 cNAA:XX:XX: -122.9167  48.5833 -8:0 Harney Channel
 ^15   0.20 0 11   0.30 0   1785 250 120 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
 
-cNAA:XX:XX: -122.8500  48.5833 -8:0 East Sound entrance
-^-32767 -327.67 0 -32767 -327.67 0   1789 -32767 -32767 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
-
-cNAA:XX:XX: -122.8833  48.6500 -8:0 East Sound, 0.2 mile SW of Rosario Point
-^-32767 -327.67 0 -32767 -327.67 0   1793 -32767 -32767 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
-
 cNAA:XX:XX: -123.1500  48.4500 -8:0 Discovery Island, 3.3 miles northeast of
 ^76   0.80 0 59   0.60 0   1797 345 170 1 Admiralty Inlet, Washington Current
 
@@ -14066,9 +12971,6 @@ cNAA:XX:XX: -123.2333  48.5833 -8:0 Kellett Bluff, west of
 
 cNAA:XX:XX: -123.2500  48.6833 -8:0 Turn Point, Boundary Pass
 ^26   0.40 0 78   0.60 0   1805 80 260 1 Admiralty Inlet, Washington Current
-
-cNAA:XX:XX: -123.0167  48.7667 -8:0 Skipjack Island, 2 miles NNE of
-^-32767 -327.67 0 -32767 -327.67 0   1809 40 205 1 Admiralty Inlet, Washington Current
 
 cNAA:XX:XX: -123.1500  48.6833 -8:0 Johns Island, 0.8 mile north of
 ^-15   0.20 0 6   0.20 0   1813 90 350 1 SAN JUAN CHANNEL (south entrance), WASHINGTON
@@ -14115,9 +13017,6 @@ cNAA:XX:XX: -124.0667  44.6167 -8:0 Yaquina Bay entrance
 cNAA:XX:XX: -124.0500  44.6167 -8:0 Highway Bridge
 ^-62   0.50 0 -53   0.60 0   0853 44 222 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -124.0500  44.6333 -8:0 Newport (docks)
-^-32767 -327.67 0 -32767 -327.67 0   0857 37 228 1 Wrangell Narrows (off Petersburg), Alaska
-
 cNAA:XX:XX: -124.0167  44.6000 -8:0 Yaquina, Yaquina River
 ^-40   0.30 0 -46   0.30 0   0861 184 2 1 Wrangell Narrows (off Petersburg), Alaska
 
@@ -14126,9 +13025,6 @@ cNAA:XX:XX: -123.9500  44.6000 -8:0 Yaquina River, 1 mile below Toledo
 
 cNAA:XX:XX: -123.9333  45.5667 -8:0 Tillamook Bay entrance
 ^9   0.80 0 -18   0.80 0   0869 141 305 1 Wrangell Narrows (off Petersburg), Alaska
-
-cNAA:XX:XX: -124.1833  46.1833 -8:0 Lighted Horn Buoy R"C"
-^-32767 -327.67 0 -32767 -327.67 0   0873 -32767 -32767 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.9908  46.2528 -8:0 Sand Island Tower, southeast of
 ^72   1.60 0 38   1.60 0   0877 107 275 1 Grays Harbor Entrance, Washington
@@ -14144,12 +13040,6 @@ cNAA:XX:XX: -123.9980  46.2620 -8:0 Sand Island Tower, southeast of
 
 cNAA:XX:XX: -123.9680  46.2555 -8:0 Sand I., SSE of
 ^18   0.30 0 -16   0.40 0   0893 97 265 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.9980  46.2392 -8:0 Clatsop Spit, northeast of
-^-32767   0.40 0 -76   1.00 0   0897 131 313 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.8237  46.1987 -8:0 Astoria Range
-^-32767   0.60 0 38   1.00 0   0901 88 243 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.8878  46.1863 -8:0 Youngs Bay Entrance
 ^106   0.90 0 88   0.40 0   0905 93 260 1 Grays Harbor Entrance, Washington
@@ -14175,17 +13065,11 @@ cNAA:XX:XX: -123.9642  46.2422 -8:0 Chinook Point, WSW of
 cNAA:XX:XX: -123.7667  46.2192 -8:0 Tongue Point, northwest of
 ^151   0.40 0 24   0.90 0   0933 77 249 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.6567  46.2592 -8:0 Altoona, SSW of
-^-32767   0.30 0 79   0.70 0   0937 61 243 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.6733  46.2395 -8:0 Woody Island Channel
 ^72   0.50 0 96   0.30 0   0941 118 298 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.6292  46.2175 -8:0 Woody Island Channel (off Seal Island)
 ^158   0.30 0 85   0.40 0   0945 81 247 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.5350  46.2650 -8:0 Three Tree Point, 5 miles WSW of
-^269   0.10 0 -32767   0.90 0   0949 80 258 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.5033  46.2372 -8:0 Quinn Island, Prairie Channel
 ^199   0.30 0 55   0.50 0   0953 97 281 1 Grays Harbor Entrance, Washington
@@ -14193,47 +13077,14 @@ cNAA:XX:XX: -123.5033  46.2372 -8:0 Quinn Island, Prairie Channel
 cNAA:XX:XX: -123.4653  46.2178 -8:0 Clifton Channel
 ^221   0.30 0 81   0.40 0   0957 118 301 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.4350  46.2433 -8:0 Tenasillahe Island, northwest of
-^-32767 -327.67 0 -32767   0.80 0   0961 -32767 329 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.4042  46.2072 -8:0 Hunting Island, south of
 ^260   0.20 0 98   0.40 0   0965 125 295 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.4230  46.1742 -8:0 Puget Island, Wauna Range
-^-32767 -327.67 0 -32767   0.10 0   0969 -32767 315 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.3397  46.1445 -8:0 Puget Island, Westport Turn & Range
-^-32767 -327.67 0 -32767 -327.67 0   0973 -32767 -32767 1 Grays Harbor Entrance, Washington
 
 cNAA:XX:XX: -123.3150  46.1562 -8:0 Cathlamet Channel, SE of Nassa Point
 ^316   0.10 0 99   0.60 0   0977 103 278 1 Grays Harbor Entrance, Washington
 
-cNAA:XX:XX: -123.1838  46.1847 -8:0 Oak Point Channel
-^-32767 -327.67 0 -32767   0.40 0   0981 -32767 235 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.1242  46.1855 -8:0 Stella, southwest of
-^-32767 -327.67 0 -32767   0.04 0   0985 -32767 295 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -123.0428  46.1528 -8:0 Walker Island Channel
-^-32767 -327.67 0 -32767   0.10 0   0989 -32767 319 1 Grays Harbor Entrance, Washington
-
 cNAA:XX:XX: -123.0458  46.1412 -8:0 Walker Island, south of
 ^346   0.20 0 161   0.40 0   0993 148 330 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.9870  46.1237 -8:0 Slaughters Channel
-^-32767 -327.67 0 -32767   0.20 0   0997 -32767 306 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.8908  46.0713 -8:0 Cottonwood Island, west of
-^-32767 -327.67 0 -32767   0.10 0   1001 -32767 325 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -122.8513  46.0028 -8:0 Kalma Upper Range
-^-32767 -327.67 0 -32767   0.30 0   1005 -32767 343 1 Grays Harbor Entrance, Washington
-
-cNAA:XX:XX: -112.0333  24.5333 -7:0 Magdalena Bay entrance
-^-283   0.40 0 -226   0.30 0   0013 35 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -118.5333  32.4833 -8:0 China Point Light, 20 miles SSW of
-^-32767   0.30 0 -32767   0.10 0   0017 315 115 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -117.2262  32.6658 -8:0 Point Loma Light, 0.8 nmi. east of
 ^-18   0.50 0 -5   0.40 0   0021 328 174 1 San Diego Bay Entrance, California
@@ -14271,20 +13122,11 @@ cNAA:XX:XX: -117.1917  32.7192 -8:0 Harbor Island (east end), SSW of
 cNAA:XX:XX: -117.1833  32.7167 -8:0 San Diego, 0.5 mile west of
 ^-16   0.60 0 -12   0.50 0   0053 121 304 1 San Diego Bay Entrance, California
 
-cNAA:XX:XX: -117.1778  32.7220 -8:0 Airport CGS, 0.3 nmi. SE of
-^-32767 -327.67 0 -32767 -327.67 0   0057 -32767 -32767 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -117.1763  32.7170 -8:0 B St. Pier (San Diego)
-^-32767 -327.67 0 -32767 -327.67 0   0061 -32767 -32767 1 San Diego Bay Entrance, California
-
 cNAA:XX:XX: -117.1775  32.7083 -8:0 G St. Pier (San Diego), 0.22 nmi. SW of
 ^10   0.30 0 -3   0.30 0   0065 139 304 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -117.1775  32.7083 -8:0 G St. Pier (San Diego), 0.22 nmi. SW of
 ^-23   0.30 0 -18   0.20 0   0065 125 301 1 San Diego Bay Entrance, California
-
-cNAA:XX:XX: -117.1653  32.7055 -8:0 Fifth Avenue Marina Entrance
-^-12   0.10 0 106   0.00 0   0069 31 -32767 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -117.1638  32.6980 -8:0 Coronado, off northeast end
 ^-24   0.70 0 -51   0.50 0   0073 128 317 1 San Diego Bay Entrance, California
@@ -14310,12 +13152,6 @@ cNAA:XX:XX: -117.1255  32.6622 -8:0 National City, WSW of Pier 12
 cNAA:XX:XX: -117.1228  32.6450 -8:0 Sweetwater Channel, southwest of
 ^29   0.10 0 -5   0.20 0   0093 203 348 1 San Diego Bay Entrance, California
 
-cNAA:XX:XX: -118.2667  33.6000 -8:0 San Pedro Channel
-^-32767 -327.67 0 -32767 -327.67 0   0097 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -118.4333  33.9000 -8:0 El Segundo, Santa Monica Bay
-^-32767 -327.67 0 -32767 -327.67 0   0105 330 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
 cNAA:XX:XX: -120.6667  34.5667 -8:0 Point Arguello
 ^-141   0.20 0 -141   0.20 0   0109 5 185 1 San Francisco Bay Entrance (Golden Gate), California Current
 
@@ -14331,29 +13167,14 @@ cNAA:XX:XX: -121.9167  36.3000 -8:0 Point Sur
 cNAA:XX:XX: -121.9500  36.6333 -8:0 Point Pinos
 ^-61   0.20 0 -61   0.20 0   0125 35 215 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.0167  36.9167 -8:0 Point Santa Cruz, 2 miles south of
-^-32767 -327.67 0 -32767 -327.67 0   0129 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3667  37.0833 -8:0 Ano Nuevo Island, 2 miles SW of
-^-32767 -327.67 0 -32767 -327.67 0   0133 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.5667  37.5333 -8:0 Point Montara, 2 miles west of
-^-32767 -327.67 0 -32767 -327.67 0   0137 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
 cNAA:XX:XX: -122.7000  37.7500 -8:0 Point Lobos, 8.7 miles WSW of
 ^-30   0.10 0 -30   0.10 0   0141 135 315 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.6388  37.8045 -8:0 Point Bonita Lt., 5.27 nmi. WSW of
 ^-112   0.20 0 -101   0.20 0   0145 95 266 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.6167  37.7833 -8:0 Point Lobos, 5 miles west of
-^-32767   0.20 0 -32767   0.20 0   0149 20 236 1 San Francisco Bay Entrance (Golden Gate), California Current
-
 cNAA:XX:XX: -122.5887  37.7875 -8:0 Point Lobos, 3.73 nmi. W of
 ^-134   0.30 0 -70   0.20 0   0153 92 241 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.5667  37.7667 -8:0 Point Lobos, 2.5 miles west of
-^-32767   0.30 0 -32767   0.50 0   0157 80 269 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.5355  37.7717 -8:0 Point Lobos, 1.3 nmi. SW of
 ^-84   0.40 0 -23   0.30 0   0161 8 182 1 San Francisco Bay Entrance (Golden Gate), California Current
@@ -14363,15 +13184,6 @@ cNAA:XX:XX: -122.5333  37.7500 -8:0 South Channel
 
 cNAA:XX:XX: -122.5978  37.7205 -8:0 Point Lobos, 5.47 nmi. SW of
 ^-119   0.20 0 -101   0.20 0   0169 48 211 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.6167  37.8333 -8:0 Bonita Channel approach
-^-32767   0.20 0 -32767   0.20 0   0173 61 290 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.5667  37.8333 -8:0 Bonita Channel, off Tennessee Cove
-^-32767   0.40 0 -32767   0.20 0   0177 112 325 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.5333  37.8167 -8:0 Bonita Channel, off Point Bonita
-^-32767   0.40 0 -32767   0.10 0   0181 115 355 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.5162  37.8208 -8:0 Point Bonita, 0.8 nmi. NE of
 ^-289   0.30 0 -311   0.30 0   0185 64 267 1 San Francisco Bay Entrance (Golden Gate), California Current
@@ -14438,45 +13250,6 @@ cNAA:XX:XX: -122.4617  37.8217 -8:0 Golden Gate Bridge, 0.8 mile east of
 
 cNAA:XX:XX: -122.4663  37.8117 -8:0 Fort Point, 0.5 nmi. east of
 ^-87   0.20 0 -62   0.40 0   0225 99 287 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.4417  37.8083 -8:0 St. Francis Yacht Club breakwater
-^-10 -327.67 0 -110 -327.67 0   0226 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.4283  37.8100 -8:0 Aquatic Park, 0.2 mile west of
-^-35 -327.67 0 -125 -327.67 0   0227 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.4083  37.8100 -8:0 San Francisco Bay Pier 37
-^-95 -327.67 0 -140 -327.67 0   0228 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.4000  37.8067 -8:0 San Francisco Bay Pier 29
-^-70 -327.67 0 -140 -327.67 0   0229 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3933  37.8000 -8:0 San Francisco Bay Pier 7
-^-55 -327.67 0 -125 -327.67 0   0230 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3883  37.7950 -8:0 San Francisco Bay Pier 14
-^-55 -327.67 0 -180 -327.67 0   0231 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3833  37.7900 -8:0 San Francisco Bay Pier 26
-^-100 -327.67 0 -110 -327.67 0   0232 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3833  37.7833 -8:0 San Francisco Bay Pier 38
-^-25 -327.67 0 -145 -327.67 0   0233 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3800  37.7733 -8:0 San Francisco Bay Pier 50
-^-100 -327.67 0 -140 -327.67 0   0234 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3783  37.7600 -8:0 San Francisco Bay Bethlehem Pier No  8
-^-80 -327.67 0 -115 -327.67 0   0235 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3733  37.7417 -8:0 San Francisco Bay Pier 90, .05 mile south of
-^-110 -327.67 0 -125 -327.67 0   0236 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3550  37.7283 -8:0 Point Avisadero
-^-85 -327.67 0 -40 -327.67 0   0237 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3583  37.7167 -8:0 Point Avisadero, 0.8 mile south of
-^-90 -327.67 0 -205 -327.67 0   0238 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.4333  37.8333 -8:0 Alcatraz Island, 0.2 mile west of
 ^-30   0.80 0 -8   0.60 0   0239 70 266 1 San Francisco Bay Entrance (Golden Gate), California Current
@@ -14688,9 +13461,6 @@ cNAA:XX:XX: -122.4230  37.8455 -8:0 Point Blunt, Angel I., 0.5 nmi. SW of
 cNAA:XX:XX: -122.4167  37.8467 -8:0 Point Blunt, Angel I., 0.25 mile S of
 ^-32   0.60 0 -8   0.70 0   0453 103 258 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.4050  37.8450 -8:0 Pt. Blunt, Angel I., 0.8 mi. SE of
-^-32767   0.30 0 -11   0.40 0   0457 86 297 1 San Francisco Bay Entrance (Golden Gate), California Current
-
 cNAA:XX:XX: -122.4122  37.8528 -8:0 Pt. Blunt, Angel I., 0.25 nmi. east of
 ^61   0.30 0 -15   0.50 0   0461 49 185 1 San Francisco Bay Entrance (Golden Gate), California Current
 
@@ -14730,10 +13500,7 @@ cNAA:XX:XX: -122.4420  37.8717 -8:0 Raccoon Strait
 cNAA:XX:XX: -122.4420  37.8717 -8:0 Raccoon Strait
 ^-88   0.50 0 -24   0.40 0   0485 65 245 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.4383  37.8717 -8:0 Raccoon Strait, off Hospital Cove
-^-32767   0.50 0 -38   0.50 0   0489 37 223 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.4350  37.8833 -8:0 Bluff Point, 0.1 mile east of
+NAA:XX:XX: -122.4350  37.8833 -8:0 Bluff Point, 0.1 mile east of
 ^20   0.60 0 -14   0.60 0   0493 9 147 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.4130  37.8872 -8:0 Bluff Point, 1.15 nmi. east of
@@ -14759,9 +13526,6 @@ cNAA:XX:XX: -122.3112  37.8522 -8:0 Berkley Yacht Harbor, 0.9 nmi. south of
 
 cNAA:XX:XX: -122.3588  37.8770 -8:0 Fleming Point, 1.72 nmi. SW of
 ^-108   0.20 0 -56   0.10 0   0521 82 259 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -122.3725  37.9030 -8:0 Point Potrero Reach (buoy "10")
-^-32767 -327.67 0 -32767 -327.67 0   0525 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 cNAA:XX:XX: -122.4000  37.9050 -8:0 Point Richmond, 0.5 mile west of
 ^-25   0.30 0 13   0.30 0   0529 332 142 1 San Francisco Bay Entrance (Golden Gate), California Current
@@ -14988,9 +13752,6 @@ cNAA:XX:XX: -124.0667  40.0000 -8:0 Point Delgada
 cNAA:XX:XX: -124.3667  40.2500 -8:0 Punta Gorda
 ^-96   0.30 0 -96   0.30 0   0781 335 155 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -124.5000  40.4333 -8:0 Cape Mendocino Light, 4.6 mi. W of
-^-32767 -327.67 0 -32767 -327.67 0   0785 -32767 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
 cNAA:XX:XX: -124.2833  40.7000 -8:0 Table Bluff Light
 ^-71   0.30 0 -71   0.30 0   0789 10 190 1 San Francisco Bay Entrance (Golden Gate), California Current
 
@@ -15023,63 +13784,6 @@ cNAA:XX:XX: -79.0833  8.5000 -5:0 Bayoneta I., 1.5 miles W of, Perlas Is
 
 cNAA:XX:XX: -79.7167  8.6500 -5:0 Chame Bay Entrance, near Chame Point
 ^130   0.60 0 130   0.40 0   0005 210 65 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -84.8167  9.9667 -6:0 Puntarenas, Gulf of Nicoya
-^1 -327.67 0 44 -327.67 0   0009 300 -32767 1 San Francisco Bay Entrance (Golden Gate), California Current
-
-cNAA:XX:XX: -123.5833  49.0167 -8:0 PORLIER PASS
-^0   0.00 0 0   0.00 0   12001 -32767 -32767 1 PORLIER PASS
-
-cNAA:XX:XX: -123.7000  49.1333 -8:0 GABRIOLA PASSAGE
-^0   0.00 0 0   0.00 0   12002 -32767 -32767 1 GABRIOLA PASSAGE
-
-cNAA:XX:XX: -123.8167  49.1333 -8:0 DODD NARROWS
-^0   0.00 0 0   0.00 0   12003 -32767 -32767 1 DODD NARROWS
-
-cNAA:XX:XX: -123.9000  49.7333 -8:0 SECHELT RAPIDS
-^0   0.00 0 0   0.00 0   12004 -32767 -32767 1 SECHELT RAPIDS
-
-cNAA:XX:XX: -125.1500  50.4000 -8:0 GILLARD PASSAGE
-^0   0.00 0 0   0.00 0   12005 -32767 -32767 1 GILLARD PASSAGE
-
-cNAA:XX:XX: -126.1333  50.4667 -8:0 JOHNSTONE STR. CEN.
-^0   0.00 0 0   0.00 0   12006 -32767 -32767 1 JOHNSTONE STR. CEN.
-
-cNAA:XX:XX: -127.5000  51.1000 -8:0 NAKWAKTO RAPIDS
-^0   0.00 0 0   0.00 0   12007 -32767 -32767 1 NAKWAKTO RAPIDS
-
-cNAA:XX:XX: -123.5333  48.2333 -8:0 JUAN DE FUCA
-^0   0.00 0 0   0.00 0   12008 -32767 -32767 1 Strait of Juan de Fuca Entrance, Washington Current
-
-cNAA:XX:XX: -126.8167  50.6000 -8:0 WEYNTON PASSAGE
-^0   0.00 0 0   0.00 0   12009 -32767 -32767 1 WEYNTON PASSAGE
-
-cNAA:XX:XX: -123.5333  48.3000 -8:0 RACE PASSAGE
-^0   0.00 0 0   0.00 0   12010 -32767 -32767 1 RACE PASSAGE
-
-cNAA:XX:XX: -127.5500  50.5500 -8:0 QUATSINO NARROWS
-^0   0.00 0 0   0.00 0   12011 -32767 -32767 1 QUATSINO NARROWS
-
-cNAA:XX:XX: -123.3000  48.8667 -8:0 ACTIVE PASS
-^0   0.00 0 0   0.00 0   12012 -32767 -32767 1 ACTIVE PASS
-
-cNAA:XX:XX: -123.1333  49.3167 -8:0 FIRST NARROWS
-^0   0.00 0 0   0.00 0   12013 -32767 -32767 1 FIRST NARROWS
-
-cNAA:XX:XX: -123.0167  49.3000 -8:0 SECOND NARROWS
-^0   0.00 0 0   0.00 0   12014 -32767 -32767 1 SECOND NARROWS
-
-cNAA:XX:XX: -125.1500  50.2333 -8:0 SURGE NARROWS
-^0   0.00 0 0   0.00 0   12015 -32767 -32767 1 SURGE NARROWS
-
-cNAA:XX:XX: -125.3500  50.1333 -8:0 SEYMOUR NARROWS
-^0   0.00 0 0   0.00 0   12016 -32767 -32767 1 Seymour Narrows, British Columbia Current
-
-cNAA:XX:XX: -128.5000  52.8833 -8:0 HIEKISH NARROWS
-^0   0.00 0 0   0.00 0   12017 -32767 -32767 1 HIEKISH NARROWS
-
-cNAA:XX:XX: -66.9333  44.7500 -4:0 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-^0   0.00 0 0   0.00 0   12018 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -65.3000  43.3667 -4:0 Brazil Rock, 6 miles east of
 ^-122   0.40 0 -116   0.40 0   0001 275 50 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15150,9 +13854,6 @@ cNAA:XX:XX: -67.5727  44.5285 -5:0 Moosabec Reach, east end
 cNAA:XX:XX: -67.6500  44.5208 -5:0 Moosabec Reach, west end
 ^-103   0.40 0 -120   0.50 0   0111 92 253 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.1667  44.3833 -5:0 Bar Harbor, 1.2 miles east of
-^-32767   0.10 0 -32767   0.30 0   0116 328 148 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
 cNAA:XX:XX: -68.4650  44.1950 -5:0 Casco Passage, east end, Blue Hill Bay
 ^-109   0.30 0 -62   0.30 0   0121 86 284 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
@@ -15167,9 +13868,6 @@ cNAA:XX:XX: -68.6205  44.1620 -5:0 Grog Island, E of, Deer Island Thorofare
 
 cNAA:XX:XX: -68.6463  44.1530 -5:0 Russ Island, N of, Deer Island Thorofare
 ^-132   0.20 0 -149   0.20 0   0141 74 265 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.6763  44.1475 -5:0 Crotch Island-Moose Island, between
-^-32767 -327.67 0 -32767 -327.67 0   0146 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.5833  44.0833 -5:0 Isle au Haut, 0.8 mile E of Rich's Pt
 ^-53   0.60 0 -67   0.60 0   0151 336 139 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15201,26 +13899,17 @@ cNAA:XX:XX: -68.8437  44.2222 -5:0 East Penobscot Bay, Scrag Island, 0.3 nautica
 cNAA:XX:XX: -68.8363  44.2383 -5:0 East Penobscot Bay, Great Spruce Head Island, west
 ^-74   0.20 0 -26   0.10 0   0196 3 174 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.8445  44.2512 -5:0 East Penobscot Bay, Horse Head Island, 0.2 nmi. EN
-^-32767 -327.67 0 -32767 -327.67 0   0201 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
 cNAA:XX:XX: -68.7563  44.2605 -5:0 East Penobscot Bay, Pickering Island, south of
 ^-165   0.20 0 -116   0.20 0   0206 300 150 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7312  44.2742 -5:0 East Penobscot Bay, Little Eaton Island, NNE of
 ^-43   0.20 0 2   0.10 0   0211 300 106 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.7547  44.2747 -5:0 East Penobscot Bay, Pickering Island, north of
-^-32767 -327.67 0 -32767 -327.67 0   0216 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
 cNAA:XX:XX: -68.7812  44.2753 -5:0 East Penobscot Bay, Hog Island, ESE of
 ^-13   0.10 0 -33   0.20 0   0221 24 180 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7238  44.2797 -5:0 East Penobscot Bay, Little Deer I.-Sheep I., betwe
 ^-13   0.20 0 33   0.20 0   0226 310 124 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.7547  44.2828 -5:0 East Penobscot Bay, Swains Ledge, WSW of
-^-32767 -327.67 0 -32767 -327.67 0   0231 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7312  44.2855 -5:0 East Penobscot Bay, Swains Ledge, 0.3 nautical mil
 ^-46   0.20 0 -55   0.20 0   0236 358 170 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15231,26 +13920,8 @@ cNAA:XX:XX: -68.8167  44.2930 -5:0 East Penobscot Bay, Pond Island-Western Islan
 cNAA:XX:XX: -68.7558  44.3028 -5:0 East Penobscot Bay, Birch Island, northwest of
 ^-104   0.10 0 -56   0.10 0   0246 22 200 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.8100  44.3028 -5:0 East Penobscot Bay, Pond Island, north of
-^-32767 -327.67 0 -32767 -327.67 0   0251 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.7105  44.3047 -5:0 East Penobscot Bay, Howard Ledges, ENE of, Eggemog
-^-32767 -327.67 0 -32767 -327.67 0   0256 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.7013  44.3050 -5:0 East Penobscot Bay, Howard Ledges, NE of, Eggemogg
-^-32767 -327.67 0 -32767 -327.67 0   0261 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.7888  44.3078 -5:0 East Penobscot Bay, Spectacle Island, 0.2 nmi. NW 
-^-32767 -327.67 0 -32767 -327.67 0   0266 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
 cNAA:XX:XX: -68.7403  44.3133 -5:0 East Penobscot Bay, Pumpkin Island, north of
 ^-194   0.10 0 -114   0.10 0   0271 290 90 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.8892  44.3143 -5:0 Isleboro Harbor, Penobscot Bay
-^-32767 -327.67 0 -32767 -327.67 0   0276 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.7467  44.3233 -5:0 Thrum Cap I., E of, East Penobscot Bay
-^-32767 -327.67 0 -32767 -327.67 0   0281 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.8547  44.3762 -5:0 Turtle Head Pt., ESE of, Penobscot Bay
 ^-60   0.30 0 -36   0.30 0   0286 338 171 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15275,12 +13946,6 @@ cNAA:XX:XX: -68.8453  44.3795 -5:0 Dice Head, west of, Penobscot Bay
 
 cNAA:XX:XX: -68.8453  44.3795 -5:0 Dice Head, west of, Penobscot Bay
 ^13   0.30 0 -26   0.20 0   0296 312 135 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.8875  44.4187 -5:0 Sears Island, S of, Penobscot Bay
-^-32767   0.20 0 -32767   0.20 0   0301 12 237 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.8875  44.4187 -5:0 Sears Island, S of, Penobscot Bay
-^-32767   0.20 0 -32767   0.20 0   0301 80 270 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7583  44.4258 -5:0 Jones Point, Bagaduce River
 ^-37   1.80 0 -39   1.80 0   0306 53 237 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15338,9 +14003,6 @@ cNAA:XX:XX: -68.9178  44.0230 -5:0 West Penobscot Bay, Little Hurricane Island, 
 
 cNAA:XX:XX: -68.8730  44.0297 -5:0 West Penobscot Bay, Heron Neck, Green Island
 ^-107   0.40 0 -58   0.30 0   0356 344 165 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.8483  44.0375 -5:0 West Penobscot Bay, The Reach, Norton Point
-^-32767 -327.67 0 -32767 -327.67 0   0361 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7580  44.0412 -5:0 Isle au Haut Bay, Triangle Ledge, SSE of
 ^14   0.30 0 -26   0.40 0   0366 354 197 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15407,9 +14069,6 @@ cNAA:XX:XX: -68.9805  44.1667 -5:0 West Penobscot Bay, Mark Island, 0.3 nmi., SS
 
 cNAA:XX:XX: -68.9550  44.1808 -5:0 West Penobscot Bay, Saddle Island, northwest of
 ^-223   0.10 0 -236   0.20 0   0456 10 225 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -68.9820  44.1812 -5:0 West Penobscot Bay, Mark Island, 0.3 nautical mile
-^-32767 -327.67 0 -32767 -327.67 0   0461 -32767 -32767 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.9470  44.1867 -5:0 West Penobscot Bay, Lasell Island, SSW of
 ^-107   0.20 0 -174   0.20 0   0466 22 217 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
@@ -15485,9 +14144,6 @@ cNAA:XX:XX: -68.9437  44.3575 -5:0 Temple Heights, NNE of, W Penobscot Bay
 
 cNAA:XX:XX: -68.9437  44.3575 -5:0 Temple Heights, NNE of, W Penobscot Bay
 ^-28   0.20 0 -47   0.20 0   0541 333 164 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
-
-cNAA:XX:XX: -69.4483  43.9417 -5:0 Muscongus Sound
-^-32767 -327.67 0 -32767 -327.67 0   0546 -32767 -32767 1 Portsmouth Harbor Entrance, New Hampshire Current
 
 cNAA:XX:XX: -69.5833  43.8750 -5:0 Damariscotta River, off Cavis Point
 ^-49   0.50 0 -84   0.60 0   0551 350 215 1 Portsmouth Harbor Entrance, New Hampshire Current
@@ -15594,12 +14250,6 @@ cNAA:XX:XX: -70.2183  43.6500 -5:0 Spring Point, 0.2 nautical mile east of
 cNAA:XX:XX: -70.2050  43.6533 -5:0 House Island, east of
 ^-90   0.50 0 -127   0.40 0   0711 12 175 1 Portsmouth Harbor Entrance, New Hampshire Current
 
-cNAA:XX:XX: -70.2417  43.6583 -5:0 Portland Breakwater Light, 0.3 mi. NW of     <4>
-^-32767   0.30 0 -32767   0.30 0   0716 0 48 1 Portsmouth Harbor Entrance, New Hampshire Current
-
-cNAA:XX:XX: -70.2450  43.6583 -5:0 Grand Trunk Wharves, off ends
-^-32767   0.50 0 -32767   0.20 0   0721 250 40 1 Portsmouth Harbor Entrance, New Hampshire Current
-
 cNAA:XX:XX: -70.2250  43.6600 -5:0 Diamond I. Ledge, midchannel SW of
 ^-86   0.80 0 -71   0.50 0   0726 300 150 1 Portsmouth Harbor Entrance, New Hampshire Current
 
@@ -15671,9 +14321,6 @@ cNAA:XX:XX: -70.7167  43.0833 -5:0 Jamaica Island, northeast of
 
 cNAA:XX:XX: -70.7333  43.0833 -5:0 Seavey Island, north of
 ^15   1.20 0 15   1.00 0   0841 260 80 1 Portsmouth Harbor Entrance, New Hampshire Current
-
-cNAA:XX:XX: -70.7333  43.0833 -5:0 Clark I. and Seavey I., between
-^-32767   1.50 0 -32767 -327.67 0   0846 200 -32767 1 Portsmouth Harbor Entrance, New Hampshire Current
 
 cNAA:XX:XX: -70.7247  43.0738 -5:0 Clark Island, south of
 ^23   1.30 0 36   1.30 0   0851 270 85 1 Portsmouth Harbor Entrance, New Hampshire Current
@@ -15759,27 +14406,6 @@ cNAA:XX:XX: -70.6733  42.6100 -5:0 Blynman Canal ent., Gloucester Harbor
 cNAA:XX:XX: -70.8167  42.5000 -5:0 Marblehead Channel
 ^69   0.40 0 69   0.30 0   0986 285 105 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.8613  42.4792 -5:0 Ram Island, 0.2 n.mi. NNE of
-^-32767 -327.67 0 -32767 -327.67 0   0991 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.8592  42.4742 -5:0 Ram Island, 0.2 n.mi. southeast of
-^-32767 -327.67 0 -32767 -327.67 0   0996 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.8450  42.4588 -5:0 Great Pig Rocks, southeast of
-^-32767 -327.67 0 -32767 -327.67 0   1001 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.8950  42.4540 -5:0 Galloupes Point, 0.4 n.mi. south of
-^-32767 -327.67 0 -32767 -327.67 0   1006 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9140  42.4475 -5:0 Little Nahant, 0.9 n.mi. northeast of
-^-32767 -327.67 0 -32767 -327.67 0   1011 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.8988  42.4375 -5:0 Egg Rock, 0.2 n.mi. north of
-^-32767 -327.67 0 -32767 -327.67 0   1016 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9033  42.4308 -5:0 Egg Rock, southwest of
-^-32767 -327.67 0 -32767 -327.67 0   1021 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.8670  42.4333 -5:0 Nahant, 1.8 n.mi. NE of East Point
 ^32   0.60 0 15   0.60 0   1026 252 144 1 Boston Harbor, Massachusetts Current
 
@@ -15818,12 +14444,6 @@ cNAA:XX:XX: -70.9178  42.4020 -5:0 Bass Point, 1.2 n.mi. southeast of
 
 cNAA:XX:XX: -70.9178  42.4020 -5:0 Bass Point, 1.2 n.mi. southeast of
 ^-29   0.20 0 31   0.20 0   1046 250 91 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9422  42.4095 -5:0 Bass Point, 0.5 n.mi. SSW of
-^-32767 -327.67 0 -32767 -327.67 0   1051 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9542  42.4188 -5:0 Bass Point, 0.7 n.mi. west of
-^-32767 -327.67 0 -32767 -327.67 0   1056 -32767 -32767 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.9472  42.4312 -5:0 Little Nahant Cupola, 0.6 n.mi. west of
 ^-2   0.40 0 92   0.40 0   1061 33 219 1 Boston Harbor, Massachusetts Current
@@ -15915,9 +14535,6 @@ cNAA:XX:XX: -70.9133  42.3495 -5:0 Aldridge Ledge, 0.2 n.mi. north of
 cNAA:XX:XX: -70.9133  42.3495 -5:0 Aldridge Ledge, 0.2 n.mi. north of
 ^8   0.60 0 52   0.60 0   1151 223 42 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.9133  42.3392 -5:0 Lovell Island and Calf Island, between
-^-32767 -327.67 0 -32767 -327.67 0   1156 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.9155  42.3288 -5:0 Black Rock Channel
 ^-8   0.60 0 24   0.80 0   1161 247 46 1 Boston Harbor, Massachusetts Current
 
@@ -15975,9 +14592,6 @@ cNAA:XX:XX: -70.9738  42.3400 -5:0 Long Island Head, 0.9 n.mi. NW of
 cNAA:XX:XX: -70.9775  42.3472 -5:0 Deer Island Flats
 ^-27   0.40 0 -92   0.40 0   1221 327 107 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.9790  42.3520 -5:0 Deer Island Light, 1.3 n.mi. NW of
-^-32767 -327.67 0 -32767 -327.67 0   1226 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.9870  42.3628 -5:0 Snake Island, southwest of
 ^-5   0.40 0 31   0.40 0   1231 312 134 1 Boston Harbor, Massachusetts Current
 
@@ -16026,17 +14640,11 @@ cNAA:XX:XX: -71.0037  42.3388 -5:0 Fort Independence, 0.3 n.mi. east of
 cNAA:XX:XX: -71.0067  42.3438 -5:0 Fort Independence, 0.4 n.mi. NW of
 ^-12   0.40 0 -32   0.50 0   1281 288 113 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -71.0328  42.3428 -5:0 South Boston, Reserved Channel
-^-32767 -327.67 0 -32767 -327.67 0   1286 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -71.0308  42.3522 -5:0 South Boston, Pier 4, 0.2 n.mi. NNE of
 ^38   0.30 0 16   0.30 0   1291 299 118 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -71.0308  42.3522 -5:0 South Boston, Pier 4, 0.2 n.mi. NNE of
 ^-14   0.30 0 102   0.10 0   1291 30 120 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -71.0563  42.3697 -5:0 Charles River
-^-32767 -327.67 0 -32767 -327.67 0   1296 -32767 -32767 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -71.0467  42.3758 -5:0 East Boston, Pier 10, southeast of
 ^95   0.20 0 28   0.30 0   1301 17 194 1 Boston Harbor, Massachusetts Current
@@ -16128,12 +14736,6 @@ cNAA:XX:XX: -70.9255  42.3112 -5:0 Georges Island, 0.4 n.mi. SSE of
 cNAA:XX:XX: -70.9488  42.3288 -5:0 Nubble Channel
 ^-12   0.70 0 45   0.60 0   1411 187 6 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.9350  42.3170 -5:0 Georges Island, 0.2 n.mi. WSW of
-^-32767 -327.67 0 -32767 -327.67 0   1416 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9350  42.3170 -5:0 Georges Island, 0.2 n.mi. WSW of
-^-32767 -327.67 0 -32767 -327.67 0   1416 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.9267  42.3033 -5:0 Hull Gut
 ^-10   1.10 0 -1   1.50 0   1421 163 350 1 Boston Harbor, Massachusetts Current
 
@@ -16224,14 +14826,8 @@ cNAA:XX:XX: -70.9653  42.2872 -5:0 Peddocks Island, west of
 cNAA:XX:XX: -70.9822  42.2917 -5:0 Moon Head, 0.9 n.mi. southeast of
 ^39   0.30 0 92   0.30 0   1501 227 33 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -71.0017  42.2900 -5:0 Squantum, 0.3 n.mi. southeast of
-^-32767 -327.67 0 -32767 -327.67 0   1506 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.8805  42.2755 -5:0 Weir River entrance
 ^18   0.70 0 47   0.60 0   1511 76 272 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.8933  42.2900 -5:0 Strawberry Hill, 0.4 n.mi. west of
-^-32767 -327.67 0 -32767 -327.67 0   1516 -32767 -32767 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.8950  42.2662 -5:0 Crow Point, 0.2 n.mi. north of
 ^14   0.30 0 9   0.20 0   1521 146 319 1 Boston Harbor, Massachusetts Current
@@ -16250,12 +14846,6 @@ cNAA:XX:XX: -70.9162  42.2925 -5:0 Windmill Point, 0.7 n.mi. SSE of
 
 cNAA:XX:XX: -70.9125  42.2805 -5:0 Bumkin Island, 0.4 n.mi. west of
 ^-14   0.50 0 28   0.20 0   1536 195 303 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9253  42.2917 -5:0 Peddocks Island, east of
-^-32767 -327.67 0 -32767 -327.67 0   1541 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.9253  42.2917 -5:0 Peddocks Island, east of
-^-32767 -327.67 0 -32767 -327.67 0   1541 -32767 -32767 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.9330  42.2812 -5:0 Sheep Island, 0.3 n.mi. west of
 ^20   0.90 0 80   0.40 0   1546 75 305 1 Boston Harbor, Massachusetts Current
@@ -16299,12 +14889,6 @@ cNAA:XX:XX: -70.9680  42.2380 -5:0 Pine Point, southeast of
 cNAA:XX:XX: -70.9703  42.2500 -5:0 Philip Head, Town River Bay
 ^20   0.30 0 76   0.20 0   1596 289 95 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.9797  42.2538 -5:0 Hole Point Reach, Town River
-^-32767 -327.67 0 -32767 -327.67 0   1601 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.2667  42.1833 -5:0 Race Point, 7 miles north of
-^-1   1.40 0 -1   1.20 0   1606 290 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.2500  42.0833 -5:0 Race Point, 1 mile northwest of
 ^-6   0.90 0 -6   0.80 0   1611 226 61 1 Boston Harbor, Massachusetts Current
 
@@ -16317,38 +14901,17 @@ cNAA:XX:XX: -70.0500  41.9000 -5:0 Wellfleet Harbor
 cNAA:XX:XX: -70.2733  41.7267 -5:0 Barnstable Harbor
 ^19   1.10 0 22   1.20 0   1626 192 4 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.4833  41.7667 -5:0 Sandwich Harbor
-^-32767 -327.67 0 -32767 -327.67 0   1631 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -70.5167  41.8000 -5:0 Sagamore Beach
-^-32767 -327.67 0 -32767 -327.67 0   1636 -32767 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.5000  41.8500 -5:0 Ellisville Harbor, 1 mile east of
 ^14   0.30 0 14   0.20 0   1641 200 20 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.5333  41.9333 -5:0 Manomet Point
 ^4   1.00 0 4   0.70 0   1646 155 10 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.5833  42.0000 -5:0 Gurnet Point, 1 mile east of
-^-6   1.30 0 -6   0.80 0   1651 250 -32767 1 Boston Harbor, Massachusetts Current
-
 cNAA:XX:XX: -70.6500  41.9667 -5:0 Plymouth Harbor
 ^4   0.50 0 4   0.30 0   1656 245 10 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.5833  42.1000 -5:0 Farnham Rock, 1 mile east of
 ^-21   1.00 0 -21   0.80 0   1661 180 10 1 Boston Harbor, Massachusetts Current
-
-cNAA:XX:XX: -69.9000  41.9333 -5:0 Nauset Beach Light, 5 miles northeast of
-^-32767 -327.67 0 -32767 -327.67 0   1666 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -69.5000  41.5833 -5:0 Monomoy Point, 23 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   1681 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -69.6167  40.6167 -5:0 Nantucket Shoals
-^-32767 -327.67 0 -32767 -327.67 0   1686 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -69.3500  41.3333 -5:0 Nantucket Island, 28 miles east of
-^-32767 -327.67 0 -32767 -327.67 0   1691 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -69.9833  41.2267 -5:0 Old Man Shoal, Nantucket Shoals
 ^83   0.90 0 77   0.90 0   1696 80 225 1 Pollock Rip Channel, Massachusetts Current
@@ -16359,9 +14922,6 @@ cNAA:XX:XX: -70.0967  41.1900 -5:0 Miacomet Pond, 3.0 miles SSE of
 cNAA:XX:XX: -70.2817  41.2262 -5:0 Tuckernuck Island, 4.2 miles SSW of
 ^248   0.30 0 137   0.60 0   1706 90 280 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -70.6650  41.3250 -5:0 Martha's Vineyard, 1.4 miles S of
-^-32767   0.10 0 -32767   0.10 0   1711 230 95 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -69.9233  41.5650 -5:0 Pollock Rip Channel, east end
 ^-14   1.00 0 -23   1.10 0   1716 53 212 1 Pollock Rip Channel, Massachusetts Current
 
@@ -16370,9 +14930,6 @@ cNAA:XX:XX: -69.9833  41.5500 -5:0 POLLOCK RIP CHANNEL (Butler Hole)
 
 cNAA:XX:XX: -70.0217  41.5500 -5:0 Monomoy Pt., channel 0.2 mile west of
 ^0   0.80 0 18   1.20 0   1731 170 346 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.0283  41.6433 -5:0 Chatham Roads
-^-32767 -327.67 0 -32767 -327.67 0   1736 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -69.9750  41.6567 -5:0 Stage Harbor, west of Morris Island
 ^187   0.30 0 144   0.60 0   1741 335 144 1 Pollock Rip Channel, Massachusetts Current
@@ -16400,9 +14957,6 @@ cNAA:XX:XX: -70.1133  41.3900 -5:0 Great Point, 3 miles west of
 
 cNAA:XX:XX: -70.1733  41.4050 -5:0 Tuckernuck Shoal, off east end
 ^82   0.50 0 69   0.50 0   1781 113 287 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.1050  41.3208 -5:0 Brant Point, 2 miles NNW of
-^-32767   0.20 0 -32767   0.20 0   1786 90 275 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.1000  41.3067 -5:0 Nantucket Harbor entrance channel
 ^202   0.60 0 164   0.90 0   1791 171 350 1 Pollock Rip Channel, Massachusetts Current
@@ -16440,9 +14994,6 @@ cNAA:XX:XX: -70.2850  41.5500 -5:0 Broken Ground-Horseshoe Shoal, between
 cNAA:XX:XX: -70.2567  41.5883 -5:0 Point Gammon, 1.2 miles south of
 ^75   0.50 0 66   0.60 0   1846 105 260 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -70.2917  41.6233 -5:0 Hyannis Harbor, entrance off breakwater
-^-32767 -327.67 0 -32767 -327.67 0   1851 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -70.2733  41.6317 -5:0 Lewis Bay entrance channel
 ^166   0.50 0 164   0.80 0   1856 4 184 1 Pollock Rip Channel, Massachusetts Current
 
@@ -16469,9 +15020,6 @@ cNAA:XX:XX: -70.5367  41.4650 -5:0 East Chop-Squash Meadow, between
 
 cNAA:XX:XX: -70.5583  41.4850 -5:0 East Chop, 1 mile north of
 ^160   1.10 0 137   1.30 0   1896 116 297 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.5867  41.4683 -5:0 Vineyard Haven
-^-32767 -327.67 0 -32767 -327.67 0   1901 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.5950  41.4933 -5:0 West Chop, 0.8 mile north of
 ^169   1.60 0 140   1.80 0   1906 96 282 1 Pollock Rip Channel, Massachusetts Current
@@ -16512,12 +15060,6 @@ cNAA:XX:XX: -70.8533  41.4017 -5:0 Gay Head, 3 miles north of
 cNAA:XX:XX: -70.8633  41.3633 -5:0 Gay Head, 1.5 miles northwest of
 ^90   1.00 0 102   1.20 0   1971 12 249 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -71.0000  41.3833 -5:0 Cuttyhunk Island, 3.2 miles southwest of
-^-32767 -327.67 0 -32767 -327.67 0   1976 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -71.0983  41.3300 -5:0 Browns Ledge
-^-32767 -327.67 0 -32767 -327.67 0   1981 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -70.6700  41.5133 -5:0 Woods Hole, South end
 ^29   0.40 0 77   0.20 0   1986 135 318 1 Cape Cod Canal, Massachusetts Current
 
@@ -16551,9 +15093,6 @@ cNAA:XX:XX: -70.9083  41.4233 -5:0 Canapitsit Channel
 cNAA:XX:XX: -71.0883  41.5083 -5:0 Westport River entrance
 ^9   1.10 0 -26   1.50 0   2036 290 108 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -71.0167  41.4500 -5:0 Gooseberry Neck, 2 miles SSE of
-^-32767 -327.67 0 -32767 -327.67 0   2041 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -70.9700  41.4217 -5:0 Ribbon Reef-Sow & Pigs Reef, between
 ^-19   0.40 0 -164   0.70 0   2046 62 237 1 Pollock Rip Channel, Massachusetts Current
 
@@ -16569,53 +15108,20 @@ cNAA:XX:XX: -70.9033  41.4367 -5:0 Gull I. and Nashawena I., between
 cNAA:XX:XX: -70.7383  41.5067 -5:0 Weepecket Island, south of
 ^-196   0.40 0 -88   0.40 0   2066 69 255 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -70.6633  41.5400 -5:0 Quamquisset Harbor entrance
-^-32767 -327.67 0 -32767 -327.67 0   2071 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.6550  41.6083 -5:0 West Falmouth Harbor entrance
-^-32767 -327.67 0 -32767 -327.67 0   2076 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.6533  41.6467 -5:0 Megansett Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2081 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -70.6733  41.6850 -5:0 Abiels Ledge, 0.4 mile south of
 ^26   0.40 0 -6   0.60 0   2086 35 216 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.9183  41.5333 -5:0 Dumpling Rocks, 0.2 mile southeast of
 ^-103   0.40 0 -92   0.60 0   2091 66 190 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -70.9500  41.5833 -5:0 Apponaganset Bay
-^-32767 -327.67 0 -32767 -327.67 0   2096 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.9167  41.6000 -5:0 Clarks Cove
-^-32767 -327.67 0 -32767 -327.67 0   2101 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.8400  41.5933 -5:0 West Island and Long Island, between
-^-32767 -327.67 0 -32767 -327.67 0   2111 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -70.8100  41.5667 -5:0 West Island, 1 mile southeast of
 ^-43   0.40 0 -88   0.50 0   2116 79 203 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.8367  41.6183 -5:0 Nasketucket Bay
-^-32767 -327.67 0 -32767 -327.67 0   2121 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.7833  41.6333 -5:0 Mattapoisett Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2126 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.7333  41.6833 -5:0 Sippican Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2131 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.7167  41.7333 -5:0 Wareham River, off Long Beach Point
 ^-101   0.30 0 -82   0.40 0   2136 22 202 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.7067  41.7450 -5:0 Wareham River, off Barneys Point
 ^-109   0.40 0 -82   0.40 0   2141 10 185 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -70.6450  41.7317 -5:0 Onset Bay, south of Onset Island
-^-32767 -327.67 0 -32767 -327.67 0   2146 -32767 -32767 1 Cape Cod Canal, Massachusetts Current
-
-cNAA:XX:XX: -70.6550  41.7350 -5:0 Onset Bay, south of Wickets Island
-^-32767 -327.67 0 -32767 -327.67 0   2151 -32767 -32767 1 Cape Cod Canal, Massachusetts Current
 
 cNAA:XX:XX: -70.6133  41.7417 -5:0 CAPE COD CANAL, railroad bridge
 ^0   0.00 0 0   0.00 0   2156 70 250 1 Cape Cod Canal, Massachusetts Current
@@ -16656,12 +15162,6 @@ cNAA:XX:XX: -71.3783  41.4567 -5:0 Castle Hill, west of, East Passage
 cNAA:XX:XX: -71.3500  41.4800 -5:0 Bull Point, east of
 ^-70   0.60 0 -70   0.80 0   2221 1 206 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -71.3800  41.4750 -5:0 Mackerel Cove
-^-32767 -327.67 0 -32767 -327.67 0   2226 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -71.3333  41.4833 -5:0 Newport Harbor, S and E of Goat Island
-^-32767 -327.67 0 -32767 -327.67 0   2231 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -71.3317  41.5033 -5:0 Rose Island, northeast of
 ^-117   0.40 0 -77   0.50 0   2236 310 124 1 Pollock Rip Channel, Massachusetts Current
 
@@ -16701,9 +15201,6 @@ cNAA:XX:XX: -71.2117  41.6800 -5:0 Mount Hope Point, northeast of
 cNAA:XX:XX: -71.2450  41.6983 -5:0 Kickamuit R. (Narrows), Mt. Hope Bay
 ^-124   0.70 0 -79   1.00 0   2296 0 191 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -71.2967  41.7117 -5:0 Warren River entrance
-^-32767 -327.67 0 -32767 -327.67 0   2301 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
 cNAA:XX:XX: -71.2883  41.7283 -5:0 Warren, Warren River
 ^-14   0.50 0 -22   0.50 0   2306 358 171 1 Pollock Rip Channel, Massachusetts Current
 
@@ -16721,12 +15218,6 @@ cNAA:XX:XX: -71.4100  41.5050 -5:0 Dutch Island, west of
 
 cNAA:XX:XX: -71.3967  41.5300 -5:0 Jamestown-North Kingstown Bridge
 ^-136   0.20 0 -82   0.70 0   2331 12 176 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -71.4333  41.5667 -5:0 Wickford Harbor
-^-32767 -327.67 0 -32767 -327.67 0   2336 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
-
-cNAA:XX:XX: -71.3933  41.6667 -5:0 Greenwich Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   2341 -32767 -32767 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -71.3533  41.6583 -5:0 Patience Island, narrows east of
 ^-161   0.40 0 -164   0.50 0   2346 354 157 1 Pollock Rip Channel, Massachusetts Current
@@ -16749,17 +15240,11 @@ cNAA:XX:XX: -71.3800  41.8267 -5:0 Cold Spring Pt., Seekonk River
 cNAA:XX:XX: -71.4958  41.3580 -5:0 Point Judith, Harbor of Refuge, south entrance
 ^-122   0.20 0 -137   0.30 0   2376 329 141 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -71.5167  41.3667 -5:0 Point Judith, Harbor of Refuge, west entrance
-^-32767 -327.67 0 -32767 -327.67 0   2381 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -71.5167  41.3833 -5:0 Point Judith, Pond entrance
 ^-182   0.70 0 -187   0.50 0   2386 351 186 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -71.5108  41.3312 -5:0 Point Judith, 2.4 miles southwest of
 ^-27   0.30 0 27   0.20 0   2391 258 90 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -71.5500  41.3000 -5:0 Point Judith, 4.5 miles southwest of
-^-32767 -327.67 0 -32767 -327.67 0   2396 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -71.5333  41.3000 -5:0 Block Island, four miles north of
 ^-19   0.30 0 30   0.30 0   2401 285 76 1 The Race, Long Island Sound, New York Current
@@ -16788,17 +15273,11 @@ cNAA:XX:XX: -71.5917  41.1995 -5:0 Block Island, Great Salt Pond entrance
 cNAA:XX:XX: -71.6000  41.2000 -5:0 Block Island, Great Salt Pond ent., 1 mile NW of
 ^-41   0.20 0 -115   0.10 0   2441 158 35 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -71.5855  41.2300 -5:0 Block Island, Sandy Point, 0.4 mile west of
-^-32767 -327.67 0 -32767   0.20 0   2446 -32767 11 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -71.5962  41.3483 -5:0 Green Hill Point, 1.1 miles south of
 ^-45   0.20 0 -25   0.10 0   2451 258 70 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -71.6333  41.2850 -5:0 Sandy Point, 4.1 miles northwest of
 ^17   0.30 0 31   0.20 0   2456 270 84 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -71.6333  41.2000 -5:0 Grace Point, 2.0 miles northwest of
-^-32767 -327.67 0 -32767 -327.67 0   2461 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -71.7137  41.3133 -5:0 Quonochontaug Beach, 1.1 miles S of
 ^-30   0.40 0 46   0.10 0   2466 248 78 1 The Race, Long Island Sound, New York Current
@@ -16853,9 +15332,6 @@ cNAA:XX:XX: -71.9967  41.2458 -5:0 Mt. Prospect, 0.6 mile SSE of
 
 cNAA:XX:XX: -71.9667  41.2167 -5:0 Cerberus Shoal and Fishers I., between
 ^-46   0.50 0 6   0.40 0   2551 264 96 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -72.0350  41.1783 -5:0 Little Gull Island, 3.7 miles ESE of
-^-32767 -327.67 0 -32767 -327.67 0   2556 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -72.0333  41.1317 -5:0 Gardiners Island, 3 miles northeast of
 ^-34   0.30 0 -26   0.30 0   2561 305 138 1 The Race, Long Island Sound, New York Current
@@ -16988,9 +15464,6 @@ cNAA:XX:XX: -72.0863  41.3997 -5:0 Thames River, Off Smith Cove
 
 cNAA:XX:XX: -72.0687  41.4608 -5:0 Thames River, Off Stoddard Hill
 ^-56   0.30 0 -31   0.10 0   2776 332 164 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -72.0787  41.5147 -5:0 Thames River, Lower Coal Dock
-^-32767 -327.67 0 -32767 -327.67 0   2781 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -72.1050  41.2667 -5:0 Goshen Point, 1.9 miles SSE of
 ^-44   0.50 0 -54   0.50 0   2786 285 62 1 The Race, Long Island Sound, New York Current
@@ -17136,9 +15609,6 @@ cNAA:XX:XX: -72.9167  41.2333 -5:0 New Haven Harbor entrance
 cNAA:XX:XX: -72.9070  41.2972 -5:0 City Point, 1.3 miles northeast of
 ^32   0.10 0 42   0.10 0   3021 15 215 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -72.9667  41.2145 -5:0 Oyster River Pt., 1.3 miles SSE of
-^-32767   0.10 0 -32767   0.10 0   3026 255 60 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -72.9680  41.1433 -5:0 Pond Point, 4.2 miles SSE of
 ^1   0.20 0 5   0.20 0   3031 265 65 1 The Race, Long Island Sound, New York Current
 
@@ -17162,9 +15632,6 @@ cNAA:XX:XX: -73.1038  41.2400 -5:0 Housatonic River, Fowler Island, 0.1 mile NNW
 
 cNAA:XX:XX: -73.0867  41.2778 -5:0 Housatonic River, Wooster Island, 0.1 mile southwe
 ^100   0.20 0 29   0.20 0   3066 20 220 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.0797  41.3122 -5:0 Housatonic River, Derby-Shelton Bridge, below
-^-32767 -327.67 0 -32767   0.10 0   3071 -32767 95 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.1188  41.1125 -5:0 Point No Point, 2.1 miles south of
 ^-9   0.50 0 1   0.40 0   3076 251 74 1 The Race, Long Island Sound, New York Current
@@ -17219,9 +15686,6 @@ cNAA:XX:XX: -73.2400  41.0842 -5:0 Pine Creek Point, 2.3 miles SSE of
 
 cNAA:XX:XX: -73.3653  41.1045 -5:0 Saugatuck River, 0.3 mi. NW of Bluff Pt
 ^9   0.20 0 29   0.10 0   3141 265 80 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.3833  41.1000 -5:0 Saugatuck R., 0.5 mile above Bluff Pt
-^-32767 -327.67 0 -32767 -327.67 0   3146 -32767 -32767 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.4055  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of
 ^54   0.30 0 68   0.30 0   3151 283 81 1 The Race, Long Island Sound, New York Current
@@ -17292,9 +15756,6 @@ cNAA:XX:XX: -73.5167  40.9000 -5:0 Oyster Bay, Harbor ent., south of Plum Point
 cNAA:XX:XX: -73.5333  40.8833 -5:0 Oyster Bay, Harbor, west of Soper Point
 ^37   0.20 0 -4   0.10 0   3226 333 140 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4833  40.8833 -5:0 Oyster Bay, Cold Spring Harbor
-^-32767 -327.67 0 -32767 -327.67 0   3231 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -73.5367  41.0147 -5:0 Stamford Harbor entrance
 ^-69   0.10 0 -118   0.30 0   3236 329 134 1 The Race, Long Island Sound, New York Current
 
@@ -17340,32 +15801,11 @@ cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of
 cNAA:XX:XX: -73.6562  40.9247 -5:0 Matinecock Point, 1.7 miles northwest of
 ^93   0.10 0 66   0.10 0   3281 234 55 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.6745  40.8620 -5:0 Hempstead Harbor, 0.3 mile north of
-^-32767 -327.67 0 -32767 -327.67 0   3286 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.6663  40.8583 -5:0 Hempstead Harbor, 0.5 mile east of
-^-32767   0.10 0 -32767   0.03 0   3291 157 331 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.6513  40.8130 -5:0 Old Town Wharf, 0.5 mile north of
-^-32767   0.10 0 -32767 -327.67 0   3296 196 -32767 1 The Race, Long Island Sound, New York Current
-
 cNAA:XX:XX: -73.6500  40.8280 -5:0 Hempstead Harbor, off Glenwood Landing
 ^-25   0.30 0 2   0.20 0   3301 138 320 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.7122  40.9167 -5:0 Delancey Point, 1 mile southeast of
 ^58   0.20 0 73   0.10 0   3306 244 59 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7122  40.9167 -5:0 Delancey Point, 1 mile southeast of
-^-32767   0.20 0 68   0.10 0   3306 239 69 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7167  40.9333 -5:0 Mamaroneck Harbor
-^-32767 -327.67 0 -32767 -327.67 0   3311 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7667  40.9000 -5:0 Echo Bay entrance
-^-32767 -327.67 0 -32767 -327.67 0   3316 -32767 -32767 1 The Race, Long Island Sound, New York Current
-
-cNAA:XX:XX: -73.7667  40.8833 -5:0 Davids Island, channel 0.1 mile east of
-^-32767 -327.67 0 -32767 -327.67 0   3321 -32767 -32767 1 Throg's Neck, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.7572  40.8905 -5:0 Huckleberry Island, 0.2 mile NW of
 ^-174   0.20 0 -149   0.40 0   3326 69 234 1 Throg's Neck, Long Island Sound, New York Current

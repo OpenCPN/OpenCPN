@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -44,15 +44,11 @@ WX_DEFINE_ARRAY(S57attVal *, wxArrayOfS57attVal);
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
-//class LUPHash;
 class RuleHash;
 
-//WX_DECLARE_HASH_MAP( wxString, LUPrec*, wxStringHash , wxStringEqual, LUPHash );
 WX_DECLARE_HASH_MAP( wxString, Rule*, wxStringHash , wxStringEqual, RuleHash );
 
 WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
-
-WX_DECLARE_STRING_HASH_MAP( wxColour, ColourHash );
 
 WX_DECLARE_LIST(S57Obj, ObjList);
 

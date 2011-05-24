@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -701,6 +701,12 @@ msgstr "Pejling:                %03d.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Pejling:                Ikke tilgængelig\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 msgid "Boundaries"
@@ -953,6 +959,13 @@ msgstr ""
 #
 # 
 # 
+# & ..?
+#, fuzzy
+msgid "Color:"
+msgstr "F&arve"
+#
+# 
+# 
 msgid "Colors"
 msgstr "Farver"
 #
@@ -1016,7 +1029,34 @@ msgid "Cursor: "
 msgstr "Markør: "
 #
 # 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Annuller"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1031,9 +1071,24 @@ msgstr "Deaktiver"
 msgid "Deactivate Route"
 msgstr "Deaktiver rute"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 msgid "Deep Depth"
 msgstr "Stor dybde"
+#
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Farve"
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 msgid "Delete All"
@@ -1199,6 +1254,9 @@ msgstr "Aktiver Target Alert Acknowledge timeout (minutter)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Aktiver zoom til cursor med musehjul"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 msgid "End Route"
@@ -1355,6 +1413,9 @@ msgstr "Gå Til Mærke/WP"
 msgid "Go to "
 msgstr "Gå til"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1470,7 +1531,8 @@ msgid "Language/Fonts"
 msgstr "Sprog/skrifttyper"
 #
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Seneste data kl:"
 #
 # 
@@ -1537,6 +1599,13 @@ msgstr "Licens"
 # & ..? Translation???
 #, fuzzy
 msgid "Light"
+msgstr "&Skrifteffekt:"
+#
+# 
+# 
+# & ..? Translation???
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Skrifteffekt:"
 #
 # 
@@ -1629,6 +1698,9 @@ msgstr ""
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -1947,10 +2019,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN rute oprettelse"
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr ""
-#
-# 
 # 
 #, fuzzy
 msgid "OpenCPN Track Delete"
@@ -2136,6 +2204,13 @@ msgid "Position"
 msgstr ""
 #
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Alder på data:             %3d Sek.\n"
+#
+# 
 msgid "Position:               "
 msgstr "Position:             "
 #
@@ -2241,8 +2316,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2358,14 +2432,8 @@ msgstr ""
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Genindlæser kort database ud fra opsætninger..."
 #
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Nyeste data interval:   %3d Sek.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2410,11 +2478,6 @@ msgstr "Slet dette kort fra quiltning"
 # 
 msgid "Rename Waypoints?"
 msgstr "Omdøb waypoints"
-#
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Alder på data:             %3d Sek.\n"
 #
 # 
 msgid "Reserved 11"
@@ -2660,6 +2723,12 @@ msgstr "Vis kun vigtig tekst"
 #
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Vis spor for fartøjer"
+#
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Vis lys karakteristikker"
 #
@@ -2740,6 +2809,15 @@ msgstr "Viser skrifttype."
 # 
 msgid "Simplified"
 msgstr "Simplificeret"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Str.:                 %dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, c-format
@@ -3200,6 +3278,13 @@ msgstr ""
 #
 # 
 # 
+# & ..?
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Understreget"
+#
+# 
+# 
 msgid "Update Control"
 msgstr "Opdatering"
 #
@@ -3329,6 +3414,9 @@ msgstr "Velkommen til OpenCPN"
 msgid "Whether the font is underlined."
 msgstr "Understreget"
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 msgid "WiFi Options"
@@ -3359,6 +3447,11 @@ msgstr ""
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Kald"
 #
 # 
 # 
@@ -3413,6 +3506,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3425,6 +3519,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 # 
@@ -3446,6 +3541,7 @@ msgstr ""
 #~ msgstr "&Slet alle ruter..."
 #
 #
+#
 # 
 # 
 # 
@@ -3463,6 +3559,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 #
 # 
@@ -3484,6 +3581,7 @@ msgstr ""
 #~ msgstr "(Aktivt spor)"
 #
 #
+#
 # 
 # 
 # 
@@ -3500,6 +3598,7 @@ msgstr ""
 #~ msgstr "Kaldesignal:"
 #
 #
+#
 # 
 # 
 # 
@@ -3510,6 +3609,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 #
 # 
@@ -3535,6 +3635,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3554,6 +3655,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3568,12 +3670,14 @@ msgstr ""
 #~ msgstr "Hastighed, knob"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Afslut OpenCPN"
+#
 #
 #
 # 
@@ -3590,6 +3694,7 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB)"
 #
 #
+#
 # 
 # 
 # 
@@ -3602,6 +3707,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 # 
@@ -3618,6 +3724,7 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB) visning"
 #
 #
+#
 # 
 # 
 # 
@@ -3632,6 +3739,7 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB) folder"
 #
 #
+#
 # 
 # 
 # 
@@ -3640,6 +3748,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Maritim standard"
+#
 #
 #
 # 
@@ -3656,6 +3765,7 @@ msgstr ""
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -3668,6 +3778,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 # 
@@ -3684,6 +3795,7 @@ msgstr ""
 #~ msgstr "Zoom eller skaler ud for at se skjult CRAIN GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -3698,6 +3810,7 @@ msgstr ""
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -3708,6 +3821,7 @@ msgstr ""
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Tilføjelse, navn"
+#
 #
 #
 # 
@@ -3725,6 +3839,16 @@ msgstr ""
 #
 #
 # 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Nyeste data interval:   %3d Sek.\n"
+#~ "\n"
+#
+#
+#
+# 
 # 
 # 
 # 
@@ -3736,6 +3860,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Havoverflade temperatur, C"
+#
 #
 #
 # 
@@ -3752,6 +3877,7 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB) folder"
 #
 #
+#
 # 
 # 
 # 
@@ -3760,6 +3886,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Fartøjsnavn:"
+#
 #
 #
 # 
@@ -3776,6 +3903,7 @@ msgstr ""
 #~ msgstr "Vis meteorologiikon(GRIB)"
 #
 #
+#
 # 
 # 
 # 
@@ -3788,6 +3916,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant bølgehøjde, m"
+#
 #
 #
 # 
@@ -3804,6 +3933,7 @@ msgstr ""
 #~ msgstr "Brug højopløsningsgrafik"
 #
 #
+#
 # 
 # 
 # 
@@ -3816,6 +3946,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
+#
 #
 #
 # 

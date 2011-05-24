@@ -7,7 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -541,12 +541,6 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
                 m_SplitButton->Enable(true);
           }
 
-//          vLat = cc1->VPoint.clat = prp->m_lat;
-//          vLon = cc1->VPoint.clon = prp->m_lon;
-//          cc1->SetVPScale ( cc1->GetVPScale() );
-//          cc1->Refresh();
-//          cc1->SetViewPoint(prp->m_lat, prp->m_lon);
-//          cc1->Refresh(false);
           gFrame->JumpToPosition(prp->m_lat, prp->m_lon, cc1->GetVPScale());
 
       }
@@ -637,7 +631,7 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add(itemStaticText12a, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
-	m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),wxDefaultPosition, wxDefaultSize, 0 );
+    m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add(m_StartTimeLabel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
     m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
@@ -657,9 +651,23 @@ void RouteProp::CreateControls()
         _("Local @ PC"),
         _("LMT @ Location")
     };
+    wxBoxSizer* bSizer2;
+    bSizer2 = new wxBoxSizer( wxHORIZONTAL );
     pDispTz = new wxRadioBox( itemDialog1, ID_TIMEZONESEL, _("Times shown as"), wxDefaultPosition, wxDefaultSize,
                                3, pDispTimeZone, 3, wxRA_SPECIFY_COLS );
-    itemStaticBoxSizer3->Add(pDispTz, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5);
+    bSizer2->Add(pDispTz, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5);
+
+    m_staticText1 = new wxStaticText( this, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_staticText1->Wrap( -1 );
+    bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString m_chColorChoices[] = { _("Default color"), _("Black"), _("Dark Red"), _("Dark Green"), _("Dark Yellow"), _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"), _("Light Gray"), _("Dark Gray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };
+    int m_chColorNChoices = sizeof( m_chColorChoices ) / sizeof( wxString );
+    m_chColor = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chColorNChoices, m_chColorChoices, 0 );
+    m_chColor->SetSelection( 0 );
+    bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    itemStaticBoxSizer3->Add( bSizer2, 1, wxEXPAND, 0 );
 
     wxStaticBox* itemStaticBoxSizer14Static = new wxStaticBox(itemDialog1, wxID_ANY, _("Waypoints"));
     wxStaticBoxSizer* itemStaticBoxSizer14 = new wxStaticBoxSizer(itemStaticBoxSizer14Static, wxVERTICAL);
@@ -1300,10 +1308,25 @@ bool RouteProp::UpdateProperties()
       #endif
       }
 
+      if ( m_pRoute->m_Colour == wxEmptyString )
+            m_chColor->Select(0);
+      else
+      {
+            for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+            {
+                  if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
+                  {
+                        m_chColor->Select( i + 1 );
+                        break;
+                  }
+            }
+      }
+
       ::wxEndBusyCursor();
 
       return true;
 }
+
 wxString RouteProp::MakeTideInfo(int jx, time_t tm, int tz_selection, long LMT_Offset)
 	{
 	  int ev = 0;
@@ -1346,6 +1369,10 @@ bool RouteProp::SaveChanges(void)
       m_pRoute->m_RouteNameString = m_RouteNameCtl->GetValue();
       m_pRoute->m_RouteStartString = m_RouteStartCtl->GetValue();
       m_pRoute->m_RouteEndString = m_RouteDestCtl->GetValue();
+      if (m_chColor->GetSelection() == 0)
+            m_pRoute->m_Colour = wxEmptyString;
+      else
+            m_pRoute->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
 
       pConfig->UpdateRoute(m_pRoute);
       pConfig->UpdateSettings();

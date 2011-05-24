@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-06 23:46-0400\n"
+"POT-Creation-Date: 2011-05-23 18:34-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -862,6 +862,12 @@ msgstr "Kurss:                %03d Deg.\n"
 msgid "Bearing:                Unavailable\n"
 msgstr "Kurss:            Kättesaamatu\n"
 #
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1156,6 +1162,13 @@ msgstr "CoG"
 # 
 # 
 # 
+#, fuzzy
+msgid "Color:"
+msgstr "V&ärv:"
+#
+# 
+# 
+# 
 msgid "Colors"
 msgstr "Värvid"
 #
@@ -1234,7 +1247,35 @@ msgid "Cursor: "
 msgstr "Kursor: "
 #
 # 
+# 
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "Tühista"
+#
+# 
 msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
 msgstr ""
 #
 # 
@@ -1255,11 +1296,27 @@ msgstr "Deaktiveeri"
 msgid "Deactivate Route"
 msgstr "Deaktiveeri teekond"
 #
+msgid "Decimal degrees"
+msgstr ""
+#
 # 
 # 
 # 
 msgid "Deep Depth"
 msgstr "Sügav sügavus"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Teksti värv"
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
 #
 # 
 # 
@@ -1468,6 +1525,9 @@ msgstr "Aktiveeri sihtkoha alarmi lõpp  (minutites)"
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Luba rulli-suurendus kursorile"
 #
+msgid "Enable transparent toolbar"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1653,6 +1713,9 @@ msgstr "Mine Punkti/Teepunkti"
 msgid "Go to "
 msgstr "Mine"
 #
+msgid "Green"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr ""
@@ -1787,7 +1850,8 @@ msgstr "Keeled/Fondid"
 # 
 # 
 # 
-msgid "Latest Report Time:      "
+#, fuzzy
+msgid "Last Position Report Time:  "
 msgstr "Viimane raport aeg:"
 #
 # 
@@ -1862,6 +1926,13 @@ msgstr "Litsents"
 # 
 #, fuzzy
 msgid "Light"
+msgstr "&Paksus:"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Light Gray"
 msgstr "&Paksus:"
 #
 # 
@@ -1965,6 +2036,9 @@ msgstr "MMSI"
 #
 # 
 msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
 msgstr ""
 #
 # 
@@ -2322,10 +2396,6 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPNS57 SENC fail loo..."
 #
 # 
-msgid "OpenCPN S57 SENC File Load"
-msgstr "OpenCPN S57 SENC fail laadimine"
-#
-# 
 # 
 # 
 #, fuzzy
@@ -2547,6 +2617,15 @@ msgstr "Asukoht"
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Raporti vanus:          %3d Sec.\n"
+#
+# 
+# 
+# 
 msgid "Position:               "
 msgstr "Koht:"
 #
@@ -2664,8 +2743,7 @@ msgstr ""
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
-# 
-msgid "Pushtow, nine on more barges"
+msgid "Pushtow, nine or more barges"
 msgstr ""
 #
 # 
@@ -2806,16 +2884,8 @@ msgstr "Asukoht"
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "OpenCPN vajab uuendusi kaartide andmebaasi failidest...."
 #
-# 
-# 
-# 
-#, c-format
-msgid ""
-"Recent Report Period:   %3d Sec.\n"
-"\n"
+msgid "Red"
 msgstr ""
-"Viimane raporti periood:     %3d Sec.\n"
-"\n"
 #
 # 
 msgid "Red cross ship"
@@ -2866,13 +2936,6 @@ msgstr "Eemalda see kaart kihtidest"
 # 
 msgid "Rename Waypoints?"
 msgstr "Muudan Teepunkti nime?"
-#
-# 
-# 
-# 
-#, c-format
-msgid "Report Age:             %3d Sec.\n"
-msgstr "Raporti vanus:          %3d Sec.\n"
 #
 # 
 msgid "Reserved 11"
@@ -3160,6 +3223,13 @@ msgstr "Näita ainult olulist teksti"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "Näita AIS-i sihtmärke"
+#
+# 
+# 
+# 
 msgid "Show Light Descriptions"
 msgstr "Näita tulede kirjeldust"
 #
@@ -3253,6 +3323,17 @@ msgstr "Näita fondi eelvaadet."
 # 
 msgid "Simplified"
 msgstr "Lihtsustatud"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm \n"
+"\n"
+msgstr ""
+"Suurus:            %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -3795,6 +3876,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Alajoon"
+#
+# 
+# 
+# 
 msgid "Update Control"
 msgstr "Uuenda kontrolli"
 #
@@ -3943,6 +4031,9 @@ msgstr "Tere tulemast OpenCPN-i"
 msgid "Whether the font is underlined."
 msgstr "Kui font on allajoonitud"
 #
+msgid "White"
+msgstr ""
+#
 # 
 # 
 # 
@@ -3978,6 +4069,13 @@ msgstr "Y nihe (positiivselt liigutab kaardi põhja) (miili/cos/(lat)) :"
 # 
 msgid "Yat"
 msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Kutsung"
 #
 # 
 # 
@@ -4045,6 +4143,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4053,6 +4152,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
+#
 #
 #
 # 
@@ -4065,6 +4165,7 @@ msgstr ""
 #~ msgstr "CM93 nihe sees"
 #
 #
+#
 # 
 # 
 # 
@@ -4073,6 +4174,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
+#
 #
 #
 # 
@@ -4085,6 +4187,7 @@ msgstr ""
 #~ msgstr "CM93 nihke tööriist..."
 #
 #
+#
 # 
 # 
 # 
@@ -4093,6 +4196,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
+#
 #
 #
 # 
@@ -4105,6 +4209,7 @@ msgstr ""
 #~ msgstr "Sea CM93 nihe"
 #
 #
+#
 # 
 # 
 # 
@@ -4113,6 +4218,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 # 
@@ -4127,6 +4233,7 @@ msgstr ""
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
 #
+#
 # 
 # 
 # 
@@ -4134,6 +4241,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Välju OpenCPN"
+#
 #
 #
 # 
@@ -4145,6 +4253,23 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Mere standard"
+#
+#
+# 
+#~ msgid "OpenCPN S57 SENC File Load"
+#~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
+#
+# 
+# 
+# 
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Viimane raporti periood:     %3d Sec.\n"
+#~ "\n"
+#
 #
 #
 # 

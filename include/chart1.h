@@ -6,7 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -39,15 +39,18 @@
 
 #include "ocpn_types.h"
 
-#include "cpl_error.h"
-
 #include "nmea0183.h"
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
+WX_DECLARE_STRING_HASH_MAP( wxColour, ColourHash );
 
-//    Global Static utility functions
+#ifdef USE_S57
+#include "cpl_error.h"
+
+//    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
+#endif
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
@@ -174,6 +177,7 @@ class ChartDirInfo
 };
 
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
+WX_DECLARE_OBJARRAY(wxRect, ArrayOfRect);
 
 
 class MyApp: public wxApp
@@ -182,8 +186,6 @@ class MyApp: public wxApp
     bool OnInit();
     int OnExit();
 
-    void TestSockets(void);
-    void OnSocketEvent(wxSocketEvent& event);
     void TrackOff(void);
 
 };
@@ -201,6 +203,7 @@ class MyFrame: public wxFrame
     void OnCloseWindow(wxCloseEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnSize(wxSizeEvent& event);
+    void OnMove(wxMoveEvent& event);
     void OnFrameTimer1(wxTimerEvent& event);
     bool DoChartUpdate(void);
     void OnEvtNMEA(wxCommandEvent& event);
@@ -275,6 +278,8 @@ class MyFrame: public wxFrame
 
     void ChartsRefresh(void);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
+
+    ArrayOfRect GetCanvasReserveRects();
 
     wxStatusBar         *m_pStatusBar;
     int                 nRoute_State;
