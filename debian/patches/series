@@ -1,5 +1,4 @@
 fix-plugin-path.patch
-rm_embedded_zlib.patch
 use_xtide_coastline.patch
 ref_debian_gpl2.patch
 ref_debian_doc_dir.patch

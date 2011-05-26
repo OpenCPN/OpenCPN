@@ -2,9 +2,9 @@ Description: point to Debian-package doc dir
 Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/about.cpp
 ===================================================================
---- opencpn.orig/src/about.cpp	2011-04-21 01:00:16.956585284 +1200
-+++ opencpn/src/about.cpp	2011-04-21 01:01:57.900856458 +1200
-@@ -397,7 +397,8 @@
+--- opencpn.orig/src/about.cpp	2011-05-24 20:03:38.014938255 +1200
++++ opencpn/src/about.cpp	2011-05-24 20:03:45.214915189 +1200
+@@ -449,7 +449,8 @@
              wxString def_lang_canonical = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT)->CanonicalName;
  
              wxString help_locn = _T("doc/help_");
