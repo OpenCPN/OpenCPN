@@ -1126,8 +1126,11 @@ s57chart::~s57chart()
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it )
     {
           VE_Element *value = it->second;
-          free(value->pPoints);
-          delete value;
+          if(value)
+          {
+            free(value->pPoints);
+            delete value;
+          }
     }
     m_ve_hash.clear();
 
@@ -1136,34 +1139,16 @@ s57chart::~s57chart()
     for( itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc )
     {
           VC_Element *value = itc->second;
-          free(value->pPoint);
-          delete value;
+          if(value)
+          {
+                free(value->pPoint);
+                delete value;
+          }
     }
     m_vc_hash.clear();
 
 
-/*
-    //    Free the vector(edge) tables for entire chart
-    for(int i=0 ; i < m_nve_elements ; i++)
-    {
-          VE_Element *pvee = m_pve_array[i];
-          if(pvee)
-                free(pvee->pPoints);
-          delete pvee;
-    }
-    free (m_pve_array);
-
-    for(int j=0 ; j < m_nvc_elements ; j++)
-    {
-          VC_Element *pvce = m_pvc_array[j];
-          if(pvce)
-                free(pvce->pPoint);
-          delete pvce;
-    }
-    free(m_pvc_array);
-*/
 }
-
 
 
 void s57chart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
@@ -4464,6 +4449,69 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
       m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
       m_ID = SENCFileName.GetName();
+
+      // Validate hash maps....
+
+      ObjRazRules *top;
+      ObjRazRules *nxx;
+
+      for (int i=0; i<PRIO_NUM; ++i)
+      {
+            for(int j=0 ; j<LUPNAME_NUM ; j++)
+            {
+                  top = razRules[i][j];
+                  while ( top != NULL)
+                  {
+                        S57Obj *obj = top->obj;
+
+///
+                        for ( int iseg=0 ; iseg < obj->m_n_lsindex ; iseg++ )
+                        {
+                              int seg_index = iseg * 3;
+                              int *index_run = &obj->m_lsindex_array[seg_index];
+
+                  //  Get first connected node
+                              int inode = *index_run++;
+                              if (( inode >= 0 ))
+                              {
+                                    if(m_vc_hash.find( inode ) == m_vc_hash.end())
+                                    {
+                                          //    Must be a bad index in the SENC file
+                                          //    Stuff a recognizable flag to indicate invalidity
+                                          index_run--;
+                                          *index_run = -1;
+                                          index_run++;
+                                    }
+                              }
+
+                  //  Get the edge
+//                              int enode = *index_run++;
+                              index_run++;
+
+                  //  Get last connected node
+                              int jnode = *index_run++;
+                              if (( jnode >= 0 ))
+                              {
+                                    if(m_vc_hash.find( jnode ) == m_vc_hash.end())
+                                    {
+                                          //    Must be a bad index in the SENC file
+                                          //    Stuff a recognizable flag to indicate invalidity
+                                          index_run--;
+                                          *index_run = -2;
+                                          index_run++;
+                                    }
+
+                              }
+                        }
+///
+                        nxx  = top->next;
+                        top = nxx;
+                  }
+            }
+      }
+
+
+
       return ret_val;
 }
 
@@ -4946,6 +4994,15 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                           {
                               start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0");
                               end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1");
+
+                              //    Make sure the start and end points exist....
+                              //    Note this poReader method was converted to Public access to
+                              //     facilitate this test.  There might be another clean way....
+                              //    Problem first found on Holand ENC 1R5YM009.000
+                              if(!poReader->FetchPoint( RCNM_VC, start_rcid, NULL, NULL, NULL, NULL))
+                                    start_rcid = -1;
+                              if(!poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL))
+                                    end_rcid = -2;
 
                               int edge_ornt = 1; //pORNT[i]; //pEdgeVectorRecordFeature->GetFieldAsInteger( "ORNT");
 
