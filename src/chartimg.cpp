@@ -4245,6 +4245,9 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
       int nlonmin, nlonmax, nlatmax, nlatmin;
       nlonmin =0; nlonmax=0; nlatmax=0; nlatmin=0;
 
+      if(0 == nRefpoint)                  // bad chart georef...
+            return (1);
+
       for(n=0 ; n<nRefpoint ; n++)
       {
             //    Longitude
