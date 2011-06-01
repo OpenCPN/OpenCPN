@@ -53,6 +53,7 @@ extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
+extern double parseLatLon(wxString latlon);
 
 // ----------------------------------------------------------------------------
 // resources

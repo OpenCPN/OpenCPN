@@ -114,6 +114,7 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
+extern int              g_iSDMMFormat;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
@@ -2708,6 +2709,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
+      Read ( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees, Minutes, Seconds"
       Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
@@ -3861,6 +3863,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
+      Write ( _T ( "SDMMFormat" ), g_iSDMMFormat );
       Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
@@ -7238,7 +7241,6 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
       {
       case 0:
             mpy = 600.0;
-
             if(hi_precision)
                   mpy = mpy * 1000;
 
@@ -7319,6 +7321,27 @@ double fromDMM(wxString sdms)
       char narrowbuf[64];
       int i, len, top=0;
       double stk[32], sign=1;
+
+      //First round of string modifications to accomodate some known strange formats
+      wxString replhelper;
+      replhelper = wxString::FromUTF8("´·"); //UKHO PDFs
+      sdms.Replace(replhelper , _T("."));
+      replhelper = wxString::FromUTF8("\"·"); //Don't know if used, but to make sure
+      sdms.Replace(replhelper , _T("."));
+      replhelper = wxString::FromUTF8("·");
+      sdms.Replace(replhelper, _T("."));
+
+      replhelper = wxString::FromUTF8("s. š."); //Another example: cs.wikipedia.org (someone was too active translating...)
+      sdms.Replace(replhelper, _T("N"));
+      replhelper = wxString::FromUTF8("j. š.");
+      sdms.Replace(replhelper, _T("S"));
+      sdms.Replace(_T("v. d."), _T("E"));
+      sdms.Replace(_T("z. d."), _T("W"));
+
+      //If the string contains hemisphere specified by a letter, then '-' is for sure a separator...
+      sdms.UpperCase();
+      if (sdms.Contains(_T("N")) || sdms.Contains(_T("S")) || sdms.Contains(_T("E")) || sdms.Contains(_T("W")))
+            sdms.Replace(_T("-"), _T(" "));
 
       wcsncpy(buf, sdms.wc_str(wxConvUTF8), 64);
       len = wcslen(buf);

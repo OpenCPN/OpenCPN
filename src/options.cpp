@@ -115,6 +115,7 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
+extern int              g_iSDMMFormat;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bEnableZoomToCursor;
