@@ -335,6 +335,10 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
       ThreadPositionData.kSog = 0.;
       ThreadPositionData.nSats = 0;
 
+#ifndef OCPN_NO_SOCKETS
+      m_sock = NULL;
+#endif
+
 //      Create and manage NMEA data stream source
 
 //    Decide upon NMEA source
@@ -571,7 +575,6 @@ Would you like to use this version of libgps anyway?"),
 #ifndef OCPN_NO_SOCKETS
 
 //      NMEA Data Source is private TCP/IP Server
-        m_sock = NULL;
 
         if(m_data_source_string.Contains(_T("GPSD")))
         {
