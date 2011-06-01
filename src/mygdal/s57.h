@@ -363,8 +363,6 @@ class S57Reader
     void                AssembleLineGeometry( DDFRecord *, OGRFeature * );
     void                AssembleAreaGeometry( DDFRecord *, OGRFeature * );
 
-    int                 FetchPoint( int, int,
-                                    double *, double *, double * = NULL, int * = NULL );
 
     OGRFeatureDefn     *FindFDefn( DDFRecord * );
     int                 ParseName( DDFField *, int = 0, int * = NULL );
@@ -377,6 +375,9 @@ class S57Reader
   public:
                         S57Reader( const char * );
                        ~S57Reader();
+
+   int                 FetchPoint( int, int,
+                                   double *, double *, double * = NULL, int * = NULL );
 
     void                SetClassBased( S57ClassRegistrar * );
     void                SetOptions( char ** );
