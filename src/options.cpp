@@ -243,6 +243,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
             wxWindow* page = itemNotebook4->GetPage(i);
+//            if(ID_PANELPIM == page->GetId())
+//                  continue;
 
             wxScrolledWindow* scrolledWindow = wxDynamicCast(page, wxScrolledWindow);
             if (scrolledWindow)
@@ -263,7 +265,9 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
             wxWindow* page = itemNotebook4->GetPage(i);
+
             wxSizer* pageSizer = page->GetSizer();
+            page->SetMinSize(largest_unscrolled_page_size);
             pageSizer->SetMinSize(largest_unscrolled_page_size);
             pageSizer->SetVirtualSizeHints(page);
       }
@@ -1281,6 +1285,8 @@ void options::CreateControls()
 
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize, g_pi_manager->GetPlugInArray() );
+    m_pPlugInCtrl->SetScrollRate(1, 1);
+
     itemNotebook4->AddPage( m_pPlugInCtrl, _("PlugIns") );
 
 
