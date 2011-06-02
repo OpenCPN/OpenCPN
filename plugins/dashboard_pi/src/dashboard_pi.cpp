@@ -914,7 +914,7 @@ void dashboard_pi::UpdateAuiStatus(void)
 
       //    We use this callback here to keep the context menu selection in sync with the window state
 
-      SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()== 0 );
+      SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()!= 0 );
 }
 
 bool dashboard_pi::LoadConfig(void)
