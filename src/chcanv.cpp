@@ -310,6 +310,9 @@ enum
         ID_DEF_MENU_QUILTREMOVE,
         ID_DEF_MENU_COGUP,
         ID_DEF_MENU_NORTHUP,
+        ID_DEF_MENU_TIDEINFO,
+        ID_DEF_MENU_CURRENTINFO,
+
         ID_DEF_MENU_LAST
 
 };
@@ -2793,6 +2796,10 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_TK_MENU_DELETE,           ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_DEF_MENU_QUILTREMOVE,     ChartCanvas::PopupMenuHandler )
+
+        EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
+
 
 END_EVENT_TABLE()
 
@@ -6435,6 +6442,9 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         //  Set the position of the console
         PositionConsole();
 
+        //  Inform the parent Frame that I am being resized...
+        gFrame->ProcessCanvasResize();
+
 //    Set up the scroll margins
         xr_margin = m_canvas_width  * 95/100;
         xl_margin = m_canvas_width  * 5/100;
@@ -7589,7 +7599,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
 
                       bool bseltc = false;
-                      if(0 == seltype)
+//                      if(0 == seltype)
                       {
                                   if (  pFindCurrent )
                                   {
@@ -7631,18 +7641,30 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                               pIDX_best_candidate = ( IDX_entry * ) (pFind->m_pData1);
                                         }
 
+                                        m_pIDXCandidate = pIDX_best_candidate;
 
-
-                                        DrawTCWindow ( x, y, ( void * ) pIDX_best_candidate );
-                                        Refresh ( false );
-                                        bseltc = true;
+                                        if(0 == seltype)
+                                        {
+                                              DrawTCWindow ( x, y, ( void * ) pIDX_best_candidate );
+                                              Refresh ( false );
+                                              bseltc = true;
+                                        }
+                                        else
+                                              seltype |= SELTYPE_CURRENTPOINT;
                                   }
 
                                   else if ( pFindTide )
                                   {
-                                        DrawTCWindow ( x, y, ( void * ) pFindTide->m_pData1 );
-                                        Refresh ( false );
-                                        bseltc = true;
+                                        m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
+
+                                        if(0 == seltype)
+                                        {
+                                              DrawTCWindow ( x, y, ( void * ) pFindTide->m_pData1 );
+                                              Refresh ( false );
+                                              bseltc = true;
+                                        }
+                                        else
+                                              seltype |= SELTYPE_TIDEPOINT;
                                   }
 
                       }
@@ -7969,6 +7991,12 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               pdef_menu->Append ( ID_DEF_MENU_QUILTREMOVE,  _( "Remove this chart from quilt." ) );
         }
 
+
+        if(seltype & SELTYPE_TIDEPOINT)
+              pdef_menu->Append ( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
+
+        if(seltype & SELTYPE_CURRENTPOINT)
+              pdef_menu->Append ( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
 
 #ifdef __WXMSW__
         //  If we dismiss the context menu without action, we need to discard some mouse events....
@@ -8393,7 +8421,22 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                     break;
               }
 
-                case ID_RT_MENU_REVERSE:
+              case ID_DEF_MENU_CURRENTINFO:
+              {
+                    DrawTCWindow ( popx, popy, ( void * ) m_pIDXCandidate );
+                    Refresh ( false );
+
+                    break;
+              }
+
+              case ID_DEF_MENU_TIDEINFO:
+              {
+                    DrawTCWindow ( popx, popy, ( void * ) m_pIDXCandidate );
+                    Refresh ( false );
+
+                    break;
+              }
+              case ID_RT_MENU_REVERSE:
                 {
                         if (m_pSelectedRoute->m_bIsInLayer) break;
 

@@ -476,6 +476,8 @@ private:
       int         m_brightmod;
 
       bool        m_bzooming;
+      IDX_entry   *m_pIDXCandidate;
+
 
 
 
