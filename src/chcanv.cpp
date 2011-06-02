@@ -257,6 +257,9 @@ CPL_CVSID ( "$Id: chcanv.cpp,v 1.107 2010/06/25 02:03:34 bdbcat Exp $" );
  #include "bitmaps/tidesml.xpm"
 #endif
 
+#define MIN_BRIGHT 10
+#define MAX_BRIGHT 100
+
 //    Constants for right click menus
 enum
 {
@@ -1092,16 +1095,18 @@ bool Quilt::IsChartSmallestScale(int dbIndex)
       int target_dbindex = -1;
 
       unsigned int target_stack_index = 0;
-      while((target_stack_index < (m_extended_stack_array.GetCount()-1)))
+      if(m_extended_stack_array.GetCount())
       {
-            int test_db_index = m_extended_stack_array.Item(target_stack_index);
+            while((target_stack_index < (m_extended_stack_array.GetCount()-1)))
+            {
+                  int test_db_index = m_extended_stack_array.Item(target_stack_index);
 
-            if(specified_type == ChartData->GetDBChartType(test_db_index))
-                  target_dbindex = test_db_index;
+                  if(specified_type == ChartData->GetDBChartType(test_db_index))
+                        target_dbindex = test_db_index;
 
-            target_stack_index++;
+                  target_stack_index++;
+            }
       }
-
       return (dbIndex == target_dbindex);
 }
 
@@ -3496,18 +3501,18 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         if(!m_bbrightdir)
                         {
                               g_nbrightness -= 10;
-                              if(g_nbrightness <= 0)
+                              if(g_nbrightness <= MIN_BRIGHT)
                               {
-                                    g_nbrightness = 0;
+                                    g_nbrightness = MIN_BRIGHT;
                                     m_bbrightdir = true;
                               }
                         }
                         else
                         {
                               g_nbrightness += 10;
-                              if(g_nbrightness >= 100)
+                              if(g_nbrightness >= MAX_BRIGHT)
                               {
-                                    g_nbrightness = 100;
+                                    g_nbrightness = MAX_BRIGHT;
                                     m_bbrightdir = false;
                               }
                         }
@@ -5270,6 +5275,9 @@ void ChartCanvas::GridDraw( wxDC& dc)
            dc.DrawLine(0,r.y,w,r.y);                             // draw grid line
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),0,r.y); // draw text
            lat = lat + gridlatMajor;
+
+           if(fabs(lat - wxRound(lat)) < 1e-5)
+                 lat = wxRound(lat);
      }
 
      // calculate position of first minor latitude grid line
@@ -5305,6 +5313,10 @@ void ChartCanvas::GridDraw( wxDC& dc)
            {
                  lon = lon - 360.0;
            }
+
+           if(fabs(lon - wxRound(lon)) < 1e-5)
+                 lon = wxRound(lon);
+
      }
 
      // calculate position of first minor longitude grid line
@@ -5432,8 +5444,10 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
                  //      Target data speed must be valid
                  //      unless the target is moored, anchored, or "not under command"
-            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
-                  return;
+//  Removed for 2.4.523+
+//  So as to render targets with unavailable SOG/COG, but with position known.
+//            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
+//                  return;
 
                  // And we never draw ownship
             if(td->b_OwnShip)
@@ -8040,7 +8054,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         parent_frame->DoChartUpdate();
 
-                        parent_frame->SelectChartFromStack (0, false, CHART_TYPE_UNKNOWN, CHART_FAMILY_RASTER);
+                        parent_frame->SelectChartFromStack (0, false, CHART_TYPE_DONTCARE, CHART_FAMILY_RASTER);
                         break;
 
                 case ID_DEF_MENU_SCALE_IN:
