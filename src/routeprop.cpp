@@ -247,24 +247,26 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
 #define     UTCINPUT    0
 #define	LTINPUT     1	// i.e. this PC local time
 #define	LMTINPUT    2	// i.e. the remote location LMT time
-#define     INPUT_FORMAT      true
-#define     DISPLAY_FORMAT    false
+#define     INPUT_FORMAT      1
+#define     DISPLAY_FORMAT    2
+#define     TIMESTAMP_FORMAT  3
 
-wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, bool input_format)
+wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, int format)
 {
 	wxString s = _T("");
 	wxString f;
-		if (input_format) f = _T("%m/%d/%Y %H:%M");
+		if (format == INPUT_FORMAT) f = _T("%m/%d/%Y %H:%M");
+            else if (format == TIMESTAMP_FORMAT) f = _T("%m/%d/%Y %H:%M:%S");
 	      else f = _T(" %m/%d %H:%M");
 		switch (tz_selection) {
 			 case 0: s.Append(ts.Format(f));
-                         if (!input_format) s.Append(_T(" UT"));
+                         if (format != INPUT_FORMAT) s.Append(_T(" UT"));
                          break;
 			 case 1: s.Append(ts.FromUTC().Format(f)); break;
 			 case 2:
 				 wxTimeSpan lmt(0,0,(int)LMT_offset,0);
 				 s.Append(ts.Add(lmt).Format(f));
-                         if (!input_format) s.Append(_T(" LMT"));
+                         if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
 		 }
 	return(s);
 }
@@ -1235,7 +1237,7 @@ bool RouteProp::UpdateProperties()
                   else
                   {          // it is a track point...
 		            wxDateTime timestamp = prp->m_CreateTime;
-		            time_form = ts2s(timestamp,tz_selection,LMT_Offset,DISPLAY_FORMAT);
+		            time_form = ts2s(timestamp,tz_selection,LMT_Offset,TIMESTAMP_FORMAT);
                   }
 
                   if (enroute && (arrival || m_starttime.IsValid())) m_wpList->SetItem(item_line_index, 6, time_form);
