@@ -99,6 +99,9 @@ WX_DEFINE_ARRAY_PTR(PlugInMenuItemContainer *, ArrayOfPlugInMenuItems);
 class PlugInToolbarToolContainer
 {
       public:
+            PlugInToolbarToolContainer();
+            ~PlugInToolbarToolContainer();
+
             opencpn_plugin    *m_pplugin;
             int               id;
             wxString          label;
@@ -180,7 +183,7 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
 private:
-
+      bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
 
       MyFrame                 *pParent;
@@ -203,7 +206,7 @@ private:
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
 
-class PluginListPanel: public wxPanel
+class PluginListPanel: public wxScrolledWindow
 {
 public:
       PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray );
