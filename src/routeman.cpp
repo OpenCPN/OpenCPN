@@ -34,6 +34,7 @@
 #endif //precompiled headers
 
 #include "wx/image.h"
+#include "wx/tokenzr.h"
 
 #include "dychart.h"
 
@@ -115,8 +116,10 @@ extern Routeman         *g_pRouteMan;
 
 extern wxRect           g_blink_rect;
 extern wxString         g_SData_Locn;     // 09.10.07; toh
+extern wxString         g_PrivateDataDir;
 
 extern double           gLat, gLon, gSog, gCog;
+extern double           gVar;
 
 extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
 extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
@@ -565,67 +568,123 @@ bool Routeman::DeactivateRoute()
 
 bool Routeman::UpdateAutopilot()
 {
-        wxString str_buf;
+      if(!pAPilot->IsOK())
+            return false;
 
-        if(pAPilot->IsOK())
-        {
-                m_NMEA0183.TalkerID = _T("EC");
-
-                SENTENCE snt;
-                m_NMEA0183.Rmb.IsDataValid = NTrue;
-                m_NMEA0183.Rmb.CrossTrackError = CurrentXTEToActivePoint;
-
-                if(XTEDir < 0)
-                      m_NMEA0183.Rmb.DirectionToSteer = Left;
-                else
-                      m_NMEA0183.Rmb.DirectionToSteer = Right;
+      //    Get the requested A/P sentence
+      wxString ap_sentence = _T("RMB");               // default
+      pConfig->SetPath ( _T ( "/Settings" ) );
+      pConfig->Read ( _T("AutoPilot NMEA Sentence Out"), &ap_sentence );
 
 
-                m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(6);
-                m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(6);
+      wxString str_buf;
 
-//                str_buf.Printf(_T("%03d"), pActiveRoute->GetIndexOf(pActiveRouteSegmentBeginPoint));
-//                wxString from = str_buf;
-//                m_NMEA0183.Rmb.From = from;
+      wxStringTokenizer tkz(ap_sentence, _T(";"));
+      while ( tkz.HasMoreTokens() )
+      {
+            wxString token = tkz.GetNextToken();
 
-//                str_buf.Printf(_T("%03d"), pActiveRoute->GetIndexOf(pActivePoint));
-//                wxString to = str_buf;
-//                m_NMEA0183.Rmb.To = to;
+            if(token.IsSameAs(_T("RMB"), false))
+            {
 
-                if(pActivePoint->m_lat < 0.)
-                      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat, _T("S"));
-                else
-                      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(pActivePoint->m_lat, _T("N"));
+                  m_NMEA0183.TalkerID = _T("EC");
 
-                if(pActivePoint->m_lon < 0.)
-                      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(-pActivePoint->m_lon, _T("W"));
-                else
-                      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(pActivePoint->m_lon, _T("E"));
+                  SENTENCE snt;
+                  m_NMEA0183.Rmb.IsDataValid = NTrue;
+                  m_NMEA0183.Rmb.CrossTrackError = CurrentXTEToActivePoint;
 
- //               m_NMEA0183.Rmb.DestinationPosition.Latitude.Latitude = pActivePoint->m_lat;
- //               m_NMEA0183.Rmb.DestinationPosition.Latitude.Northing = North;
-
- //               m_NMEA0183.Rmb.DestinationPosition.Longitude.Longitude = fabs(pActivePoint->m_lon);
- //               m_NMEA0183.Rmb.DestinationPosition.Longitude.Easting = West;
+                  if(XTEDir < 0)
+                        m_NMEA0183.Rmb.DirectionToSteer = Left;
+                  else
+                        m_NMEA0183.Rmb.DirectionToSteer = Right;
 
 
-                m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
-                m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
-                m_NMEA0183.Rmb.DestinationClosingVelocityKnots = gSog;
+                  m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(6);
+                  m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(6);
 
-                if(m_bArrival)
-                      m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
-                else
-                      m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
-                m_NMEA0183.Rmb.Write(snt);
+                  if(pActivePoint->m_lat < 0.)
+                        m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat, _T("S"));
+                  else
+                        m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(pActivePoint->m_lat, _T("N"));
 
-        //      stats->pTStat2->TextDraw(( const char *)snt.Sentence);
+                  if(pActivePoint->m_lon < 0.)
+                        m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(-pActivePoint->m_lon, _T("W"));
+                  else
+                        m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(pActivePoint->m_lon, _T("E"));
 
-                pAPilot->AutopilotOut(snt.Sentence);
-                }
+                  m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
+                  m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
+                  m_NMEA0183.Rmb.DestinationClosingVelocityKnots = gSog;
 
-        return true;
+                  if(m_bArrival)
+                        m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
+                  else
+                        m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
+
+                  m_NMEA0183.Rmb.Write(snt);
+
+            //      stats->pTStat2->TextDraw(( const char *)snt.Sentence);
+//                  char t[200];
+//                  strncpy(t, snt.Sentence, 199);
+//                  printf("%s", t);
+
+                  pAPilot->AutopilotOut(snt.Sentence);
+            }
+
+            if(token.IsSameAs(_T("RMC"), false))
+            {
+
+                  m_NMEA0183.TalkerID = _T("EC");
+
+                  SENTENCE snt;
+                  m_NMEA0183.Rmc.IsDataValid = NTrue;
+
+                  if(gLat < 0.)
+                        m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
+                  else
+                        m_NMEA0183.Rmc.Position.Latitude.Set(gLat, _T("N"));
+
+                  if(gLon < 0.)
+                        m_NMEA0183.Rmc.Position.Longitude.Set(-gLon, _T("W"));
+                  else
+                        m_NMEA0183.Rmc.Position.Longitude.Set(gLon, _T("E"));
+
+
+                  m_NMEA0183.Rmc.SpeedOverGroundKnots = gSog;
+                  m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = gCog;
+
+                  if(gVar < 0.)
+                  {
+                        m_NMEA0183.Rmc.MagneticVariation = -gVar;
+                        m_NMEA0183.Rmc.MagneticVariationDirection = West;
+                  }
+                  else
+                  {
+                        m_NMEA0183.Rmc.MagneticVariation = gVar;
+                        m_NMEA0183.Rmc.MagneticVariationDirection = East;
+                  }
+
+                  wxDateTime now = wxDateTime::Now();
+                  wxDateTime utc = now.ToUTC();
+                  wxString time = utc.Format(_T("%H%M%S"));
+                  m_NMEA0183.Rmc.UTCTime = time;
+
+                  wxString date = utc.Format(_T("%d%m%y"));
+                  m_NMEA0183.Rmc.Date = date;
+
+                  m_NMEA0183.Rmc.Write(snt);
+
+                  pAPilot->AutopilotOut(snt.Sentence);
+
+//                  char t[200];
+//                  strncpy(t, snt.Sentence, 199);
+//                  printf("%s", t);
+
+            }
+
+      }           // while
+      return true;
 }
 
 void Routeman::DeleteRoute(Route *pRoute)
@@ -1150,8 +1209,12 @@ WayPointman::WayPointman()
       MAKEICONARRAYS("activepoint", activepoint, "Active WP")
 
 // Load user defined icons; toh, 09.10.07
-      wxString UserIconPath = g_SData_Locn;
+      wxString UserIconPath = g_PrivateDataDir;  //g_SData_Locn;
+      wxChar sep = wxFileName::GetPathSeparator();
+      if (UserIconPath.Last() != sep)
+            UserIconPath.Append(sep);
       UserIconPath.Append(_T("UserIcons"));
+
       if(wxDir::Exists(UserIconPath))
       {
             wxArrayString FileList;
@@ -1163,14 +1226,8 @@ WayPointman::WayPointman()
             {
                   wxString name = FileList.Item(ifile);
 
-                  wxString iconname = name.BeforeFirst('.');
-
-      #ifdef __WXMSW__
-                  iconname = iconname.AfterLast('\\');
-      #else
-                  iconname = iconname.AfterLast('/');
-      #endif
-
+                  wxFileName fn(name);
+                  wxString iconname = fn.GetName();
                   wxBitmap icon1;
 
                   if (icon1.LoadFile(name,wxBITMAP_TYPE_XPM))
