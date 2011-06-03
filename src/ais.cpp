@@ -138,6 +138,11 @@ static      GenericPosDat     AISPositionData;
 //extern unsigned int                 rx_share_buffer_length;
 //extern ENUM_BUFFER_STATE            rx_share_buffer_state;
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+
+#endif
 
 
 #include <wx/listimpl.cpp>
@@ -406,7 +411,7 @@ AIS_Target_Data::AIS_Target_Data()
     TCPA = 100;
 
     Range_NM = -1.;
-    Brg = 0;
+    Brg = -1.;
 
     DimA = DimB = DimC = DimD = 0;;
 
@@ -488,11 +493,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Append(_T("\n"));
             result.Append(line);
 
-            if(IMO > 0)
-                  line.Printf(_T("IMO:                 %8d\n"), IMO);
-            else
-                  line.Printf(_T("IMO:\n"));
-            result.Append(line);
+            if(Class != AIS_CLASS_B)
+            {
+                  if(IMO > 0)
+                        line.Printf(_T("IMO:                 %8d\n"), IMO);
+                  else
+                        line.Printf(_T("IMO:\n"));
+                  result.Append(line);
+            }
       }
 
       line.Printf(_("Class:                "));
@@ -504,11 +512,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       {
 
             //      Nav Status
-            line.Printf(_("Navigational Status:  "));
-            if((NavStatus <= 21) && (NavStatus >= 0))
-                  line.Append(  wxGetTranslation(ais_status[NavStatus]) );
-            line.Append(_T("\n"));
-            result.Append(line);
+            if(Class != AIS_CLASS_B)
+            {
+                  line.Printf(_("Navigational Status:  "));
+                  if((NavStatus <= 21) && (NavStatus >= 0))
+                        line.Append(  wxGetTranslation(ais_status[NavStatus]) );
+                  line.Append(_T("\n"));
+                  result.Append(line);
+            }
 
 
       //      Ship type
@@ -578,14 +589,17 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                   line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
             if (Class == AIS_ATON)
-                  line.Printf(_("Size:                 %dm x %dm \n\n"), (DimA + DimB));
+                  line.Printf(_("Size:                 %dm x %dm \n\n"), DimA, DimB);
+
+            if(Class == AIS_CLASS_B)
+                  line.Printf(_("Size:                 %dm x %dm\n\n"), (DimA + DimB), (DimC + DimD));
 
             if (NavStatus != ATON_VIRTUAL)
                   result.Append(line);
 
       }
 
-      if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
+      if (Class == AIS_CLASS_A )
       {
             line.Printf(_("Destination:          "));
             line.Append( trimAISField(Destination) );
@@ -609,12 +623,20 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
             result.Append(line);
             result.Append(_T("\n"));
+      }
 
+      if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
+      {
             int crs = wxRound(COG);
-            if((b_positionValid) && (crs < 360))
-                  line.Printf(_("Course:                 %03d Deg.\n"), crs);
-            else if((b_positionValid) && (crs == 360))
-                  line.Printf(_("Course:                 000 Deg.\n"));
+            if(b_positionValid)
+            {
+                  if(crs < 360)
+                        line.Printf(_("Course:                 %03d Deg.\n"), crs);
+                  else if(COG == 360.0)
+                        line.Printf(_("Course:                 Unavailable\n"));
+                  else if(crs == 360)
+                        line.Printf(_("Course:                 000 Deg.\n"));
+            }
             else
                   line.Printf(_("Course:                 Unavailable\n"));
             result.Append(line);
@@ -624,6 +646,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else
                   line.Printf(_("Speed:                  Unavailable\n"));
             result.Append(line);
+
+            if((int)HDG != 511)
+            {
+                  line.Printf(_("Heading:                %03d Deg.\n"), (int)HDG);
+                  result.Append(line);
+            }
 
             if(ROTAIS != -128)
             {
@@ -651,8 +679,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Printf(_("Range:                  Unavailable\n"));
       result.Append(line);
 
-      int brg = wxRound(Brg);
-      if(b_positionValid && bGPSValid)
+      int brg = (int)wxRound(Brg);
+      if(b_positionValid && bGPSValid && (Brg >= 0.))
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
             line.Printf(_("Bearing:                Unavailable\n"));
@@ -816,11 +844,14 @@ wxString AIS_Target_Data::GetRolloverString( void )
             if((Class != AIS_ATON) && (Class != AIS_BASE))
             {
                   result.Append(wxGetTranslation(Get_vessel_type_string(false)));
-                  if((NavStatus <= 15) && (NavStatus >= 0) )
+                  if(Class != AIS_CLASS_B)
                   {
-                        result.Append(_T(" ("));
-                        result.Append(wxGetTranslation(ais_status[NavStatus]));
-                        result.Append(_T(")"));
+                        if((NavStatus <= 15) && (NavStatus >= 0) )
+                        {
+                              result.Append(_T(" ("));
+                              result.Append(wxGetTranslation(ais_status[NavStatus]));
+                              result.Append(_T(")"));
+                        }
                   }
             }
       }
@@ -828,19 +859,23 @@ wxString AIS_Target_Data::GetRolloverString( void )
       {
             if (result.Len())
                   result.Append(_T("\n"));
-            t.Printf(_T("%.2fKts"), SOG); result.Append(t);
+            t.Printf(_T("SOG: %.2fKts"), SOG); result.Append(t);
             result.Append(_T(" "));
 
             int crs = wxRound(COG);
-            if((b_positionValid) && (crs < 360))
-                  t.Printf(_("Course:                 %03d Deg.\n"), crs);
-            else if((b_positionValid) && (crs == 360))
-                  t.Printf(_("Course:                 000 Deg.\n"));
+            if(b_positionValid)
+            {
+                  if(crs < 360)
+                        t.Printf(_(" COG: %03d Deg."), crs);
+                  else if(COG == 360.0)
+                        t.Printf(_(" COG: Unavailable"));
+                  else if(crs == 360)
+                        t.Printf(_(" COG: 000 Deg."));
+            }
             else
-                  t.Printf(_("Course:                 Unavailable\n"));
+                  t.Printf(_(" COG: Unavailable"));
             result.Append(t);
 
-//            t.Printf(_T("%.0fDeg"), COG); result.Append(t);
       }
       if (g_bAISRolloverShowCPA && bCPA_Valid)
       {
@@ -1256,21 +1291,40 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                         if(message.Mid(3,3).IsSameAs(_T("VDO")))
                         {
                               //    This is an ownship message, presumably from a transponder
-                              //    Simulate an ownship GPS position report upstream
+                              //    Simulate an ownship GPS position report upstream for message IDs 1,2,3
 
                               if(m_pLatestTargetData && (nr == AIS_NoError) && g_bGPSAISMux && m_pLatestTargetData->b_positionValid)
                               {
-                                    AISPositionData.kLat = m_pLatestTargetData->Lat;
-                                    AISPositionData.kLon = m_pLatestTargetData->Lon;
-                                    AISPositionData.kCog = m_pLatestTargetData->COG;
-                                    AISPositionData.kSog = m_pLatestTargetData->SOG;
+                                    switch(m_pLatestTargetData->MID)
+                                    {
+                                          case 1:
+                                          case 2:
+                                          case 3:
+                                          {
+                                                AISPositionData.kLat = m_pLatestTargetData->Lat;
+                                                AISPositionData.kLon = m_pLatestTargetData->Lon;
 
-//                                    printf("ownship Lat %g\n",AISPositionData.kLat);
-                                    wxCommandEvent event( EVT_NMEA,  m_handler_id );
-                                    event.SetEventObject( (wxObject *)this );
-                                    event.SetExtraLong(EVT_NMEA_DIRECT);
-                                    event.SetClientData(&AISPositionData);
-                                    m_pMainEventHandler->AddPendingEvent(event);
+                                                if(m_pLatestTargetData->COG == 360.0)
+                                                      AISPositionData.kCog = NAN;
+                                                else
+                                                      AISPositionData.kCog = m_pLatestTargetData->COG;
+
+
+                                                if(m_pLatestTargetData->SOG > 102.2)
+                                                      AISPositionData.kSog = NAN;
+                                                else
+                                                      AISPositionData.kSog = m_pLatestTargetData->SOG;
+
+                                                wxCommandEvent event( EVT_NMEA,  m_handler_id );
+                                                event.SetEventObject( (wxObject *)this );
+                                                event.SetExtraLong(EVT_NMEA_DIRECT);
+                                                event.SetClientData(&AISPositionData);
+                                                m_pMainEventHandler->AddPendingEvent(event);
+                                                break;
+                                          }
+                                          default:
+                                                break;
+                                    }
                               }
                         }
                         g_pi_manager->SendAISSentenceToAllPlugIns(message);
@@ -1859,6 +1913,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   {
                         int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
                         bstr->GetStr(273,nx, &ptd->ShipNameExtension[0], 20);
+                        ptd->ShipNameExtension[20] = 0;
                   }
 
                 ptd->b_nameValid = true;
@@ -2143,8 +2198,21 @@ void AIS_Decoder::UpdateAllAlarms(void)
 
 void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
 {
-      if(!ptarget->b_positionValid)
+      ptarget->Range_NM = -1.;            // Defaults
+      ptarget->Brg = -1.;
+
+      if(!ptarget->b_positionValid || !bGPSValid)
+      {
+            ptarget->bCPA_Valid = false;
             return;
+      }
+
+      //    Compute the current Range/Brg to the target
+      double brg, dist;
+      DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
+      ptarget->Range_NM = dist;
+      ptarget->Brg = brg;
+
 
       //    There can be no collision between ownship and itself....
       //    This can happen if AIVDO messages are received, and there is another source of ownship position, like NMEA GLL
@@ -2154,19 +2222,6 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             ptarget->CPA = 100;
             ptarget->TCPA = -100;
             ptarget->bCPA_Valid = false;
-            return;
-      }
-
-      if(!bGPSValid)
-      {
-            ptarget->bCPA_Valid = false;
-
-            //    Compute the current Range/Brg to the target, even though ownship position may not be valid
-            double brg, dist;
-            DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
-            ptarget->Range_NM = dist;
-            ptarget->Brg = brg;
-
             return;
       }
 
@@ -2261,12 +2316,6 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             if(ptarget->TCPA  < 0)
                   ptarget->bCPA_Valid = false;
       }
-
-      //    Compute the current Range/Brg to the target
-      double brg, dist;
-      DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
-      ptarget->Range_NM = dist;
-      ptarget->Brg = brg;
 }
 
 
@@ -3698,7 +3747,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
             switch (column)
             {
                   case tlNAME:
-                        if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
+                        if( (pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
                         {
@@ -3709,9 +3758,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                                     ret = uret;
 
                               if(strlen(pAISTarget->ShipNameExtension))
-                                    ret.Append(
-									wxString(pAISTarget->ShipNameExtension, wxConvUTF8));
-
+                                    ret.Append(wxString(pAISTarget->ShipNameExtension, wxConvUTF8));
                         }
                         break;
 
@@ -3728,7 +3775,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         break;
 
                   case tlTYPE:
-                        if( /*(pAISTarget->Class == AIS_ATON) ||*/ (pAISTarget->Class == AIS_BASE))
+                        if((pAISTarget->Class == AIS_BASE))
                               ret =  _("-");
                         else
                               ret = wxGetTranslation(pAISTarget->Get_vessel_type_string(false));
@@ -3747,9 +3794,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlBRG:
                   {
-                        if(pAISTarget->b_positionValid && bGPSValid)
-
-                             ret.Printf(_T("%5.0f"), pAISTarget->Brg);
+                        if(pAISTarget->b_positionValid && bGPSValid && (pAISTarget->Brg >= 0.))
+                              ret.Printf(_T("%5.0f"), pAISTarget->Brg);
                         else
                              ret = _("-");
                         break;
@@ -3822,7 +3868,12 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
       {
             case tlNAME:
                   s1 =  trimAISField(t1->ShipName);
+                  if( (t1->Class == AIS_BASE))
+                        s1 =  _T("-");
+
                   s2 =  trimAISField(t2->ShipName);
+                  if( (t2->Class == AIS_BASE))
+                        s2 =  _T("-");
                   break;
 
             case tlCALL:
@@ -3843,7 +3894,12 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
 
             case tlTYPE:
                   s1 = t1->Get_vessel_type_string(false);
+                  if( (t1->Class == AIS_BASE))
+                        s1 =  _T("-");
+
                   s2 = t2->Get_vessel_type_string(false);
+                  if( (t2->Class == AIS_BASE))
+                        s2 =  _T("-");
                   break;
 
             case tlNAVSTATUS:
@@ -3852,10 +3908,18 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
                         s1 =  ais_status[t1->NavStatus];
                   else
                         s1 = _("-");
+
+                  if( (t1->Class == AIS_BASE))
+                        s1 =  _T("-");
+
                   if((t2->NavStatus <= 15) && (t2->NavStatus >= 0))
                         s2 =  ais_status[t2->NavStatus];
                   else
                         s2 = _("-");
+
+                  if( (t2->Class == AIS_BASE))
+                        s2 =  _T("-");
+
                   break;
             }
 
@@ -3869,16 +3933,45 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
 
             case tlCOG:
             {
-                  n1 = t1->COG;
-                  n2 = t2->COG;
+                  if( (t1->COG >= 360.0) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                        n1=-1.0;
+                  else
+                  {
+                        int crs = wxRound( t1->COG);
+                        if(crs == 360)
+                              n1=0.;
+                        else
+                              n1=crs;
+                  }
+
+
+                  if( (t2->COG >= 360.0) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                        n2=-1.0;
+                  else
+                  {
+                        int crs = wxRound( t2->COG);
+                        if(crs == 360)
+                              n2=0.;
+                        else
+                              n2=crs;
+                  }
+
                   b_cmptype_num = true;
                   break;
             }
 
             case tlSOG:
             {
-                  n1 = t1->SOG;
-                  n2 = t2->SOG;
+                  if( (t1->SOG > 100.) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                        n1 = -1.0;
+                  else
+                        n1 = t1->SOG;
+
+                  if( (t2->SOG > 100.) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                        n2 = -1.0;
+                  else
+                        n2 = t2->SOG;
+
                   b_cmptype_num = true;
                   break;
             }
