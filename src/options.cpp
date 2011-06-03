@@ -116,6 +116,7 @@ extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
+extern bool             g_bShowLayers;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
@@ -1265,6 +1266,9 @@ void options::CreateControls()
     pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
     itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
+    pShowLayers = new wxCheckBox( itemPanelAdvanced, ID_SHOWLAYERSCHECKBOX, _("Show layers initially"));
+    itemStaticBoxSizerGUIOption->Add(pShowLayers, 1, wxALIGN_LEFT|wxALL, border_size);
+
     wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer(2);
     pFormatGrid->AddGrowableCol(1);
     itemStaticBoxSizerGUIOption->Add(pFormatGrid, 0, wxALL|wxEXPAND, border_size);
@@ -1393,6 +1397,7 @@ void options::SetInitialSettings()
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
       pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
       pTransparentToolbar->SetValue(g_bTransparentToolbar);
+      pShowLayers->SetValue(g_bShowLayers);
       pSDMMFormat->Select(g_iSDMMFormat);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
@@ -1780,6 +1785,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
+    g_bShowLayers = pShowLayers->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();

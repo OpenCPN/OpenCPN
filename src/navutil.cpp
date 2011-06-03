@@ -114,6 +114,7 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bShowLayers;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
@@ -2553,7 +2554,7 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 
 Layer::Layer ( void )
 {
-      m_bIsVisibleOnChart = true;
+      m_bIsVisibleOnChart = g_bShowLayers;
       m_bIsVisibleOnListing = false;
       m_bHasVisibleNames = true;
       m_NoOfItems = 0;
@@ -2719,6 +2720,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
       Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
+      Read ( _T ( "ShowLayers" ), &g_bShowLayers, 1);
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
@@ -3874,6 +3876,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
       Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
+      Write ( _T ( "ShowLayers" ), g_bShowLayers );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
@@ -4573,13 +4576,15 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                                                       pWp->m_bIsolatedMark = true;      // This is an isolated mark
                                                       pWp->m_bIsInLayer = g_bIsNewLayer;
                                                       AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
-                                                      pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
-                                                      pWp->m_ConfigWPNum = m_NextWPNum;
-
-                                                      if (g_bIsNewLayer)
+                                                      if (g_bIsNewLayer) {
                                                             pWp->m_LayerID = g_LayerIdx;
+                                                            pWp->m_bIsVisible = g_bShowLayers;
+                                                      }
                                                       else
                                                             pWp->m_LayerID = 0;
+                                                      if (!g_bIsNewLayer || g_bShowLayers)
+                                                            pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                                                      pWp->m_ConfigWPNum = m_NextWPNum;
                                                       m_NextWPNum++;
                                                 }
                                                 if (islayer)
@@ -5566,6 +5571,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                   }
                   pRouteList->Append ( pTentTrack );
 
+                  if (g_bIsNewLayer)
+                        pTentTrack->SetVisible(g_bShowLayers);
+                  else
                   if(b_propviz)
                         pTentTrack->SetVisible(b_viz);
                   else if(b_fullviz)
@@ -5824,7 +5832,9 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                   }
             }
       }
-
+      if (g_bIsNewLayer)
+            pTentRoute->SetVisible(g_bShowLayers);
+      else
       if(b_propviz)
             pTentRoute->SetVisible(b_viz);
       else if(b_fullviz)

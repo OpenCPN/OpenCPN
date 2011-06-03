@@ -254,6 +254,7 @@ bool              g_bGarminPersistance;
 int               g_nNMEADebug;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
 bool              g_bFullscreenToolbar;
+bool              g_bShowLayers;
 bool              g_bTransparentToolbar;
 
 

@@ -123,6 +123,7 @@ enum {
         ID_FULLSCREENQUILT,
         ID_FSTOOLBARCHECKBOX,
         ID_TRANSTOOLBARCHECKBOX,
+        ID_SHOWLAYERSCHECKBOX,
         ID_SDMMFORMATCHOICE
 
 
@@ -338,6 +339,7 @@ public:
     wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
+    wxCheckBox              *pShowLayers;
     wxChoice                *pSDMMFormat;
 
     wxCheckBox              *pTrackShowIcon;
