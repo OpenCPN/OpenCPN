@@ -197,6 +197,8 @@ class MyFrame: public wxFrame
 
     ~MyFrame();
 
+    int GetApplicationMemoryUse(void);
+
     void OnEraseBackground(wxEraseEvent& event);
     void OnActivate(wxActivateEvent& event);
     void OnMaximize(wxMaximizeEvent& event);
@@ -225,6 +227,8 @@ class MyFrame: public wxFrame
     void SelectQuiltRefdbChart(int db_index);
 
     void JumpToPosition(double lat, double lon, double scale);
+
+    void ProcessCanvasResize(void);
 
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void SetChartThumbnail(int index);
@@ -269,8 +273,6 @@ class MyFrame: public wxFrame
 
     ColorScheme GetColorScheme();
     void SetAndApplyColorScheme(ColorScheme cs);
-
-    bool GetMemoryStatus(int& mem_total, int& mem_used);
 
     void OnFrameTCTimer(wxTimerEvent& event);
     void OnFrameCOGTimer(wxTimerEvent& event);

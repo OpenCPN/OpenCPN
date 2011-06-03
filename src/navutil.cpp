@@ -114,7 +114,6 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
-extern int              g_iSDMMFormat;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
@@ -123,6 +122,8 @@ extern bool             g_bskew_comp;
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
+
+extern int              g_iSDMMFormat;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -183,6 +184,7 @@ extern bool             g_bTrackDistance;
 extern int              gps_watchdog_timeout_ticks;
 
 extern int              g_nCacheLimit;
+extern int              g_memCacheLimit;
 
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
@@ -2630,7 +2632,14 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
       }
 
-      Read ( _T ( "nCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+      Read ( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+
+      int mem_limit;
+      Read ( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+
+      if(mem_limit > 0)
+            g_memCacheLimit = mem_limit;
+
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
       Read ( _T ( "GPSDogTimeout" ),  &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );
@@ -2709,13 +2718,14 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
-      Read ( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees, Minutes, Seconds"
       Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
       Read ( _T ( "ShowChartOutlines" ),  &g_bShowOutlines, 0 );
       Read ( _T ( "GarminPersistance" ),  &g_bGarminPersistance, 0 );
+
+      Read ( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );
 
@@ -3863,13 +3873,13 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "ShowGrid" ), g_bDisplayGrid );
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
-      Write ( _T ( "SDMMFormat" ), g_iSDMMFormat );
       Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
       Write ( _T ( "GarminPersistance" ),  g_bGarminPersistance );
       Write ( _T ( "UseGarminHost" ),  g_bGarminHost );
+      Write ( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
       Write ( _T ( "FilterNMEA_Avg" ),  g_bfilter_cogsog );
       Write ( _T ( "FilterNMEA_Sec" ),  g_COGFilterSec );

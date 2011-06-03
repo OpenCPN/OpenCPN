@@ -115,7 +115,6 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
-extern int              g_iSDMMFormat;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bEnableZoomToCursor;
@@ -126,6 +125,7 @@ extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
 extern bool             g_bTrackTime;
 extern bool             g_bTrackDistance;
+extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;

@@ -1122,6 +1122,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
       if(m_bbusy)
             return false;
 
+      ChartData->UnLockCache();
+
       ViewPort vp_local = vp_in;                   // need a non-const copy
 
       //    Get Reference Chart parameters
@@ -1693,6 +1695,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             }
       }
 
+/*
       //    If using chart database < 1.6
       //    Walk the list again, removing any skewed chart entries
       if(ChartData->GetVersion() < 16)
@@ -1718,7 +1721,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         il++;
             }
       }
-
+*/
       //    Generate the final render regions for the patches, one by one, smallest to largest scale
       wxRegion unrendered_region(vp_local.rv_rect);
 
@@ -1835,7 +1838,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   ChartData->OpenChartFromDB(pqc->dbIndex, FULL_INIT);
       }
 
-
       //    Build and maintain the array of indexes in this quilt
 
       m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -1937,6 +1939,24 @@ bool Quilt::Compose(const ViewPort &vp_in)
             }
       }
 
+      //    And try to prove that all required charts are in the cache
+      //    If one is missing, remove its patch from the quilt
+      //    This will probably leave a "black hole" in the quilt...
+      for(unsigned int k = 0 ; k < m_PatchList.GetCount() ; k++)
+      {
+            wxPatchListNode *pnode = m_PatchList.Item(k);
+            QuiltPatch *pqp = pnode->GetData();
+
+            if(pqp->b_Valid)
+            {
+                  if(!ChartData->IsChartInCache(pqp->dbIndex))
+                  {
+                        pqp->b_Valid = false;
+                        wxLogMessage(_T("   Quilt Compose cache miss..."));
+                  }
+            }
+      }
+
 /*  This was some debug code looking for inconsistent quilt
       //   Find the index into the extended array corresponding to the current db index
       int current_ref_stack_index = -1;
@@ -1957,6 +1977,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
       m_bcomposed = true;
 
       m_vp_quilt = vp_in;                 // save the corresponding ViewPort locally
+
+      ChartData->LockCache();
 
       return true;
 }
@@ -3838,6 +3860,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
       //    If currently creating a route, do not show this rollover window
       if ( parent_frame->nRoute_State )
             showRollover = false;
+
+      //    Similar for AIS target rollover window
+      if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() )
+            showRollover = false;
+
 
       if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
       {

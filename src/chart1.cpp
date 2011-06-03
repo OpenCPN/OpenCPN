@@ -59,6 +59,7 @@
   #include <stdlib.h>
   #include <math.h>
   #include <time.h>
+  #include <psapi.h>
 #endif
 
 #ifndef __WXMSW__
@@ -256,6 +257,9 @@ bool              g_bFullscreenToolbar;
 bool              g_bTransparentToolbar;
 
 
+int               g_iSDMMFormat;
+
+
 bool              g_bNavAidShowRadarRings;            // toh, 2009.02.24
 int               g_iNavAidRadarRingsNumberVisible;   // toh, 2009.02.24
 float             g_fNavAidRadarRingsStep;            // toh, 2009.02.24
@@ -365,6 +369,7 @@ bool             g_bUseRMC;
 bool             g_bUseGLL;
 
 int              g_nCacheLimit;
+int              g_memCacheLimit;
 bool             g_bGDAL_Debug;
 
 double           g_VPRotate;                   // Viewport rotation angle, used on "Course Up" mode
@@ -403,6 +408,7 @@ struct sigaction sa_all;
 struct sigaction sa_all_old;
 #endif
 
+bool GetMemoryStatus(int& mem_total, int& mem_used);
 
 
 
@@ -538,7 +544,6 @@ ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
-int               g_iSDMMFormat;
 
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
@@ -1624,6 +1629,13 @@ bool MyApp::OnInit()
 //      Init the private memory manager
         malloc_max = 0;
 
+        //  On Windows platforms, establish a default cache managment policy
+        //  as allowing OpenCPN a percentage of available physical memory
+#ifdef __WXMSW__
+        GetMemoryStatus(mem_total, mem_initial);
+        g_memCacheLimit = (int)(mem_total * 0.5);
+#endif
+
 //      wxHandleFatalExceptions(true);
 
 // Set up default FONT encoding, which should have been done by wxWidgets some time before this......
@@ -1766,6 +1778,16 @@ bool MyApp::OnInit()
         g_pcsv_locn = new wxString();
         pInit_Chart_Dir = new wxString();
 
+        //      Establish the prefix of the location of user specific data files
+#ifdef __WXMSW__
+        g_PrivateDataDir = *pHome_Locn;                     // should be {Documents and Settings}\......
+#elif defined __WXMAC__
+        g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
+#else
+        g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
+#endif
+
+
 //      Create an array string to hold repeating messages, so they don't
 //      overwhelm the log
         pMessageOnceArray = new wxArrayString;
@@ -1820,15 +1842,6 @@ bool MyApp::OnInit()
         Config_File.Append(_T("opencpn.conf"));
 #endif
 
-
-//      Establish the prefix of the location of user specific data files
-#ifdef __WXMSW__
-        g_PrivateDataDir = *pHome_Locn;                     // should be {Documents and Settings}\......
-#elif defined __WXMAC__
-        g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
-#else
-        g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
-#endif
 
 
 
@@ -2551,12 +2564,13 @@ bool MyApp::OnInit()
 
 //      All set to go.....
 
-#ifndef __WXMSW__
 //      Record initial memory status
-        gFrame->GetMemoryStatus(mem_total, mem_initial);
+        GetMemoryStatus(mem_total, mem_initial);
         wxLogMessage(_T("MemoryStatus:  mem_total: %d kb,  mem_initial: %d kb"),
                                         mem_total, mem_initial);
-#endif
+
+//        int memsize = GetApplicationMemoryUse();
+
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -3270,7 +3284,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if (g_bShowTrackIcon)
           tb->ToggleTool(ID_TRACK, g_bTrackActive);
 
-    SetStatusBarPane(-1);                   // don't show help on status bar
+     SetStatusBarPane(-1);                   // don't show help on status bar
 
     return tb;
 }
@@ -4089,6 +4103,29 @@ void MyFrame::OnMove(wxMoveEvent& event)
 }
 
 
+void MyFrame::ProcessCanvasResize(void)
+{
+      if(g_FloatingToolbarDialog)
+      {
+            g_FloatingToolbarDialog->RePosition();
+            g_FloatingToolbarDialog->SetGeometry();
+            g_FloatingToolbarDialog->Realize();
+            g_FloatingToolbarDialog->RePosition();
+
+      }
+
+      if(g_FloatingCompassDialog)
+      {
+            g_FloatingCompassDialog->Update(true);
+
+            wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+            wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
+            wxPoint pos_in_frame = ScreenToClient(pos_abs);
+
+            g_FloatingCompassDialog->Move(pos_in_frame);
+      }
+
+}
 
 
 
@@ -5078,6 +5115,8 @@ void MyFrame::SetupQuiltMode(void)
 
       if(cc1->GetQuiltMode())                               // going to quilt mode
       {
+            ChartData->LockCache();
+
             stats->pPiano->SetNoshowIndexArray(g_quilt_noshow_index_array);
             stats->pPiano->SetVizIcon(_img_viz);
             stats->pPiano->SetInVizIcon(_img_redX);
@@ -5151,6 +5190,8 @@ void MyFrame::SetupQuiltMode(void)
       {
             if(ChartData && ChartData->IsValid())
             {
+                  ChartData->UnLockCache();
+
                   double tLat, tLon;
                   if(cc1->m_bFollow == true)
                   {
@@ -5373,8 +5414,47 @@ void MyFrame::OnMemFootTimer(wxTimerEvent& event)
 }
 
 
+int ut_index;
+
 void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 {
+      if(0)
+      {
+      if(ChartData)
+      {
+            if(ut_index <   ChartData->GetChartTableEntries())
+            {
+                  const ChartTableEntry *cte = &ChartData->GetChartTableEntry(ut_index);
+                  double lat = (cte->GetLatMax() + cte->GetLatMin())/2;
+                  double lon = (cte->GetLonMax() + cte->GetLonMin())/2;
+
+                  vLat = lat;
+                  vLon = lon;
+//                  DoChartUpdate();
+
+                  cc1->SetViewPoint(lat, lon);
+
+                  if(cc1->GetQuiltMode())
+                  {
+                        if(cc1->IsChartQuiltableRef(ut_index))
+                        {
+                              SelectQuiltRefdbChart(ut_index);
+                        }
+                  }
+                  else
+                        SelectdbChart(ut_index);
+
+
+                  double ppm = cc1->GetCanvasScaleFactor()/cte->GetScale();
+                  ppm /= 2;
+                  cc1->SetVPScale( ppm);
+
+                  cc1->ReloadVP();
+
+                  ut_index ++;
+            }
+      }
+      }
       g_tick++;
 
 //      Listen for quitflag to be set, requesting application close
@@ -6747,10 +6827,12 @@ void MyFrame::OnPianoMenuDisableChart(wxCommandEvent& event)
 }
 
 
-//      Linux memory monitor support
+//      Memory monitor support
 
-bool MyFrame::GetMemoryStatus(int& mem_total, int& mem_used)
+bool GetMemoryStatus(int& mem_total, int& mem_used)
 {
+
+#ifdef __LINUX__
 
 //      Use filesystem /proc/meminfo to determine memory status
 
@@ -6875,6 +6957,70 @@ Hugepagesize:     4096 kB
         mem_used = (m_total - m_free) - (m_cached + m_buffers);
 
         mem_total = m_total;
+#endif
+
+#ifdef __WXMSW__
+        HANDLE hProcess;
+        PROCESS_MEMORY_COUNTERS pmc;
+
+        unsigned long processID = wxGetProcessId();
+
+        hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
+                    PROCESS_VM_READ,
+                    FALSE, processID );
+        if (NULL == hProcess)
+              return 0;
+
+        if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) )
+        {
+/*
+              printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
+              printf( "\tPeakWorkingSetSize: 0x%08X\n",
+              pmc.PeakWorkingSetSize );
+              printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
+              printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
+              pmc.QuotaPeakPagedPoolUsage );
+              printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
+              pmc.QuotaPagedPoolUsage );
+              printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
+              pmc.QuotaPeakNonPagedPoolUsage );
+              printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
+              pmc.QuotaNonPagedPoolUsage );
+              printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
+              printf( "\tPeakPagefileUsage: 0x%08X\n",
+              pmc.PeakPagefileUsage );
+*/
+              mem_used = pmc.WorkingSetSize / 1024;
+        }
+
+        CloseHandle( hProcess );
+
+
+        MEMORYSTATUSEX statex;
+
+        statex.dwLength = sizeof (statex);
+
+        GlobalMemoryStatusEx (&statex);
+/*
+        _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
+                  WIDTH, statex.dwMemoryLoad);
+        _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
+                  WIDTH, statex.ullTotalPhys/DIV);
+        _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
+                  WIDTH, statex.ullAvailPhys/DIV);
+        _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
+                  WIDTH, statex.ullTotalPageFile/DIV);
+        _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
+                  WIDTH, statex.ullAvailPageFile/DIV);
+        _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
+                  WIDTH, statex.ullTotalVirtual/DIV);
+        _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
+                  WIDTH, statex.ullAvailVirtual/DIV);
+*/
+
+        mem_total = statex.ullTotalPhys / 1024;
+
+#endif
 
         return true;
 
@@ -10325,7 +10471,7 @@ void ToolTipWin::OnPaint(wxPaintEvent& event)
 
 //    Application memory footprint management
 
-int GetApplicationMemoryUse(void)
+int MyFrame::GetApplicationMemoryUse(void)
 {
       int memsize = -1;
 #ifdef __LINUX__
@@ -10365,6 +10511,44 @@ int GetApplicationMemoryUse(void)
 
       if(fWin)
             fWin->SetFocus();
+
+#endif
+
+#ifdef __WXMSW__
+      HANDLE hProcess;
+      PROCESS_MEMORY_COUNTERS pmc;
+
+      unsigned long processID = wxGetProcessId();
+
+      hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
+                  PROCESS_VM_READ,
+                  FALSE, processID );
+      if (NULL == hProcess)
+            return 0;
+
+      if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) )
+      {
+/*
+            printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
+            printf( "\tPeakWorkingSetSize: 0x%08X\n",
+                    pmc.PeakWorkingSetSize );
+            printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
+            printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
+                    pmc.QuotaPeakPagedPoolUsage );
+            printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
+                    pmc.QuotaPagedPoolUsage );
+            printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
+                    pmc.QuotaPeakNonPagedPoolUsage );
+            printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
+                    pmc.QuotaNonPagedPoolUsage );
+            printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
+            printf( "\tPeakPagefileUsage: 0x%08X\n",
+                    pmc.PeakPagefileUsage );
+*/
+            memsize = pmc.WorkingSetSize / 1024;
+      }
+
+      CloseHandle( hProcess );
 
 #endif
 
