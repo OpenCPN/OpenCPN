@@ -59,6 +59,7 @@
 #include "rudder_angle.h"
 #include "gps.h"
 #include "depth.h"
+#include "clock.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;
@@ -141,6 +142,7 @@ private:
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
+      void SendUtcTimeToAllInstruments(int st, wxDateTime value);
       int GetDashboardWindowShownCount();
 
       wxFileConfig     *m_pconfig;
@@ -237,6 +239,7 @@ public:
       void SetInstrumentWidth(int width);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
+      void SendUtcTimeToAllInstruments(int st, wxDateTime value);
       //const wxSize DoGetBestSize();
       /*TODO: OnKeyPress pass event to main window or disable focus*/
 

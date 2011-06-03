@@ -91,6 +91,8 @@ SET(SRC_DASHBOARD
  		src/wind.h
             src/depth.cpp
             src/depth.h
+	    src/clock.cpp
+            src/clock.h
             src/icons.cpp
             src/icons.h
  	)

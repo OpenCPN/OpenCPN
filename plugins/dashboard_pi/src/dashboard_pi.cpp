@@ -86,7 +86,10 @@ enum
       ID_DBP_D_RSA,
       ID_DBP_I_SAT,
       ID_DBP_D_GPS,
-      ID_DBP_I_PTR
+      ID_DBP_I_PTR,
+      ID_DBP_I_CLK,
+      ID_DBP_I_SUN,
+      ID_DBP_I_MON
 };
 
 wxString getInstrumentCaption(unsigned int id)
@@ -137,6 +140,12 @@ wxString getInstrumentCaption(unsigned int id)
             return _("GPS status");
       case ID_DBP_I_PTR:
             return _("Cursor");
+      case ID_DBP_I_CLK:
+            return _("Clock");
+      case ID_DBP_I_SUN:
+            return _("Sunrise/Sunset");
+      case ID_DBP_I_MON:
+            return _("Moon phase");
       }
       return _T("");
 }
@@ -172,6 +181,12 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_D_RSA:
       case ID_DBP_D_GPS:
             item.SetImage(1);
+            break;
+      case ID_DBP_I_CLK:
+            break;
+      case ID_DBP_I_SUN:
+            break;
+      case ID_DBP_I_MON:
             break;
       }
 }
@@ -312,6 +327,17 @@ void dashboard_pi::SendSentenceToAllInstruments(int st, double value, wxString u
       }
 }
 
+void dashboard_pi::SendUtcTimeToAllInstruments(int st, wxDateTime value)
+{
+      for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++)
+      {
+            DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item(i)->m_pDashboardWindow;
+            if ( dashboard_window )
+                  dashboard_window->SendUtcTimeToAllInstruments( st, value );
+      }
+}
+
+
 void dashboard_pi::SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4])
 {
       for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++)
@@ -328,6 +354,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
 
       if(m_NMEA0183.PreParse())
       {
+            SendUtcTimeToAllInstruments(OCPN_DBP_STC_CLK | OCPN_DBP_STC_MON, mUTCDateTime);
             if(m_NMEA0183.LastSentenceIDReceived == _T("DBT"))
             {
                   if(m_NMEA0183.Parse())
@@ -1462,7 +1489,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizer01->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
-      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_PTR; i++)
+      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_MON; i++)
       {
             wxListItem item;
             getListItemForInstrument(item, i);
@@ -1640,6 +1667,15 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
             case ID_DBP_I_PTR:
                   instrument = new DashboardInstrument_Position(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO);
                   break;
+            case ID_DBP_I_CLK:
+                  instrument = new DashboardInstrument_Clock(this, wxID_ANY, getInstrumentCaption(id));
+                  break;
+            case ID_DBP_I_SUN:
+                  instrument = new DashboardInstrument_Sun(this, wxID_ANY, getInstrumentCaption(id));
+                  break;
+            case ID_DBP_I_MON:
+                  instrument = new DashboardInstrument_Moon(this, wxID_ANY, getInstrumentCaption(id));
+                  break;
             }
             m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));
             itemBoxSizer->Add(instrument, 0, wxALL, 0);
@@ -1681,6 +1717,19 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sat
             if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_GPS) &&
                         m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_GPS)))
                   ((DashboardInstrument_GPS*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetSatInfo(cnt, seq, sats);
+      }
+}
+
+void DashboardWindow::SendUtcTimeToAllInstruments(int st, wxDateTime value)
+{
+      for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++)
+      {
+            if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_MON) &&
+                        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Moon)))
+                  ((DashboardInstrument_Moon*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
+            if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_CLK) &&
+                        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)))
+                  ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
       }
 }
 
