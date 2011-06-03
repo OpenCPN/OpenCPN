@@ -347,7 +347,8 @@ bool PlugInManager::DeactivateAllPlugIns()
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            DeactivatePlugIn(pic);
+            if(pic && pic->m_bEnabled && pic->m_bInitState)
+                  DeactivatePlugIn(pic);
       }
       return true;
 }
