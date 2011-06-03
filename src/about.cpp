@@ -244,10 +244,10 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
 
 void about::Update()
 {
-      wxColour cb = GetGlobalColor( _T("DILG1") );
-      SetBackgroundColour(cb);
+      SetBackgroundColour(GetGlobalColor(_T("DILG0")));
 
-      wxColour cf = GetGlobalColor( _T( "UINFD" ) );          // or UINFF
+      wxColour cb = GetGlobalColor(_T("DILG2"));
+      wxColour cf = GetGlobalColor(_T("DILG3"));
       SetForegroundColour( cf );
 
       itemPanelAbout->SetBackgroundColour(cb);
