@@ -145,8 +145,9 @@ unsigned char SENTENCE::ComputeChecksum( void ) const
 {
    unsigned char checksum_value = 0;
 
-   char str_ascii[100];
+   char str_ascii[101];
    strncpy(str_ascii, (const char *)Sentence.mb_str(), 99);
+   str_ascii[100] = '\0';
 
    int string_length = strlen(str_ascii);
    int index = 1; // Skip over the $ at the begining of the sentence

@@ -2247,6 +2247,8 @@ bool MyApp::OnInit()
               g_bShowTrackIcon = true;
               g_bTrackDaily = false;
               g_PlanSpeed = 6.;
+              g_bFullScreenQuilt = true;
+              g_bQuiltEnable = true;
 
 #ifdef USE_S57
               if(ps52plib->m_bOK)
@@ -2561,7 +2563,20 @@ bool MyApp::OnInit()
 
         }
 
+        //  Delete any stack built by no-chart startup case
+        if (pCurrentStack)
+              delete pCurrentStack;
+
         pCurrentStack = new ChartStack;
+
+        //  A useability enhancement....
+        //  if the chart database is truly empty on startup, switch to SCMode
+        //  so that the WVS chart will at least be shown
+        if(ChartData && (0 == ChartData->GetChartTableEntries()))
+        {
+            cc1->SetQuiltMode(false);
+            gFrame->SetupQuiltMode();
+        }
 
 //      All set to go.....
 
@@ -3390,8 +3405,8 @@ void MyFrame::RequestNewToolbar()
                   DestroyMyToolbar();
 
             m_toolBar = CreateAToolbar();
+            g_FloatingToolbarDialog->Show();
       }
-      g_FloatingToolbarDialog->Show();
 }
 
 

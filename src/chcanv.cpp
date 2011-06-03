@@ -1149,32 +1149,34 @@ bool Quilt::Compose(const ViewPort &vp_in)
       EmptyCandidateArray();
       m_extended_stack_array.Clear();
 
-      int n_charts = 0;
-      if(pCurrentStack)
-            n_charts = pCurrentStack->nEntry;
-
       bool b_need_resort = false;
 
-      //    Walk the current ChartStack...
-      for(int ics=0 ; ics < n_charts ; ics++)
+      int n_charts = 0;
+      if(pCurrentStack)
       {
-            int i = pCurrentStack->GetDBIndex(ics);
-            m_extended_stack_array.Add(i);
+            n_charts = pCurrentStack->nEntry;
 
-            double chart_skew = ChartData->GetDBChartSkew(i);
-            if(chart_skew > 180.)
-                  chart_skew -= 360.;
-
-            // only unskewed charts of the proper projection and type may be quilted....
-            if((m_reference_type == ChartData->GetDBChartType(i)) &&
-               (fabs(chart_skew) < 1.0) &&
-                (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+            //    Walk the current ChartStack...
+            for(int ics=0 ; ics < n_charts ; ics++)
             {
-                  QuiltCandidate *qcnew = new QuiltCandidate;
-                  qcnew->dbIndex = i;
-                  qcnew->ChartScale = ChartData->GetDBChartScale(i);
-                  m_pcandidate_array->Add(qcnew);
-           }
+                  int i = pCurrentStack->GetDBIndex(ics);
+                  m_extended_stack_array.Add(i);
+
+                  double chart_skew = ChartData->GetDBChartSkew(i);
+                  if(chart_skew > 180.)
+                        chart_skew -= 360.;
+
+                  // only unskewed charts of the proper projection and type may be quilted....
+                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
+                     (fabs(chart_skew) < 1.0) &&
+                      (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+                  {
+                        QuiltCandidate *qcnew = new QuiltCandidate;
+                        qcnew->dbIndex = i;
+                        qcnew->ChartScale = ChartData->GetDBChartScale(i);
+                        m_pcandidate_array->Add(qcnew);
+                 }
+            }
       }
       if(vp_in.b_FullScreenQuilt)
       {
@@ -4438,6 +4440,10 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             VPoint.skew = 0.;                                     // Quilting supports 0 Skew
 
         }
+
+        if(!VPoint.GetBBox().GetValid())
+              VPoint.SetBoxes();
+
         if(VPoint.GetBBox().GetValid())
         {
 

@@ -1994,8 +1994,9 @@ bool AIS_Decoder::NMEACheckSumOK(const wxString& str_in)
    unsigned char checksum_value = 0;
    int sentence_hex_sum;
 
-   char str_ascii[AIS_MAX_MESSAGE_LEN];
+   char str_ascii[AIS_MAX_MESSAGE_LEN + 1];
    strncpy(str_ascii, str_in.mb_str(), AIS_MAX_MESSAGE_LEN);
+   str_ascii[AIS_MAX_MESSAGE_LEN] = '\0';
 
    int string_length = strlen(str_ascii);
 

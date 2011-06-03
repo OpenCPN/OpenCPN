@@ -3987,8 +3987,11 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, const wxString& st
    // Create this writes OVERLAPPED structure hEvent.
       osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
       if (osWrite.hEvent == NULL)
+      {
       // Error creating overlapped event handle.
+            free(pszBuf);
             return 0;
+      }
 
    // Issue write.
       if (!WriteFile((HANDLE)port_descriptor, pszBuf, dwSize, &dwWritten, &osWrite))

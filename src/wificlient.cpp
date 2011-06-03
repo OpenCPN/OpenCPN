@@ -244,7 +244,7 @@ void WIFIWindow::OnSocketEvent(wxSocketEvent& event)
         int total_length = *pint;
 
 //  get some memory to read the rest
-        pbuffer = new unsigned char[total_length];
+        pbuffer = (unsigned char*) malloc(total_length * sizeof(unsigned char));
 
         m_sock->Read(pbuffer, total_length-5);
 
@@ -425,7 +425,7 @@ void WIFIWindow::OnSocketEvent(wxSocketEvent& event)
                 break;
         }       //switch
 
-        delete pbuffer;
+        free(pbuffer);
 
     }       // if
 

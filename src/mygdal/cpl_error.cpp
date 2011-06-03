@@ -508,6 +508,7 @@ void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
                     }
                     sprintf( path, "%s_%d%s", cpl_log_base,
                              i++, ".log" );
+                    free(cpl_log_base);
                 }
             }
 

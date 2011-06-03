@@ -373,8 +373,7 @@ OGRFeature *S57Reader::NextPendingMultiPoint()
     poSrcPoint = (OGRPoint *) poMPGeom->getGeometryRef( iPointOffset++ );
     poPoint->SetGeometry( poSrcPoint );
 
-    if( poPoint != NULL )
-        poPoint->SetField( "DEPTH", poSrcPoint->getZ() );
+    poPoint->SetField( "DEPTH", poSrcPoint->getZ() );
 
     if( iPointOffset >= poMPGeom->getNumGeometries() )
         ClearPendingMultiPoint();
