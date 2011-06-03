@@ -120,6 +120,10 @@ ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
       pBRG->SetALabel(_T("BRG"));
       m_pitemStaticBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT|wxALL, 2);
 
+      pVMG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+      pVMG->SetALabel(_T("VMG"));
+      m_pitemStaticBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT|wxALL, 2);
+
       pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pRNG->SetALabel(_T("RNG"));
       m_pitemStaticBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT|wxALL, 2);
@@ -170,6 +174,7 @@ void ConsoleCanvas::SetColorScheme(ColorScheme cs)
     pBRG->SetColorScheme(cs);
     pRNG->SetColorScheme(cs);
     pTTG->SetColorScheme(cs);
+    pVMG->SetColorScheme(cs);
 
     pCDI->SetColorScheme(cs);
 }
@@ -233,6 +238,16 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                       pXTE->SetALabel(wxString(_("XTE         L")));
                   else
                       pXTE->SetALabel(wxString(_("XTE         R")));
+
+//    VMG
+                  // VMG is always to next waypoint, not to end of route
+                  // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
+                  double VMG;
+                  double BRG;
+                  BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
+                  VMG = gSog * cos((BRG-gCog) *PI/180.);
+                  str_buf.Printf(_T("%6.2f"), VMG);
+                  pVMG->SetAValue(str_buf);
 
 //    TTG
                   wxString ttg_s;
@@ -396,6 +411,7 @@ void ConsoleCanvas::UpdateFonts(void)
       pXTE->RefreshFonts();
       pTTG->RefreshFonts();
       pRNG->RefreshFonts();
+      pVMG->RefreshFonts();
 
       m_pitemStaticBoxSizerLeg->SetSizeHints(this);
       Layout();
