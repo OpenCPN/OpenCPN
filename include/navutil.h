@@ -393,6 +393,8 @@ public:
       bool ExportGPXRoute(wxWindow* parent, Route *pRoute);
       bool ExportGPXWaypoint(wxWindow* parent, RoutePoint *pRoutePoint);
 
+      void CreateRotatingNavObjBackup();
+
       int m_NextRouteNum;
       int m_NextWPNum;
 

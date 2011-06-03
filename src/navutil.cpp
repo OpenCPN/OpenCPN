@@ -255,6 +255,8 @@ extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
 
+int                     g_navobjbackups;
+
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
 extern bool             g_bQuiltStart;
@@ -2613,6 +2615,23 @@ MyConfig::MyConfig ( const wxString &appName, const wxString &vendorName, const 
 }
 
 
+void MyConfig::CreateRotatingNavObjBackup()
+{
+      //Rotate navobj backups
+      if (g_navobjbackups > 0) 
+      {
+            for (int i = g_navobjbackups - 1; i >= 1; i--)
+                  if(wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
+                        wxCopyFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i), wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i + 1));
+            wxCopyFile(m_sNavObjSetFile, wxString::Format( _T("%s.1"), m_sNavObjSetFile.c_str()) );
+      }
+      //try to clean the backups the user doesn't want - breaks if he deleted some by hand as it tries to be effective...
+      for (int i = g_navobjbackups + 1; i <= 99; i++)
+            if (wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
+                  wxRemoveFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i));
+            else
+                  break;
+}
 
 int MyConfig::LoadMyConfig ( int iteration )
 {
@@ -2747,6 +2766,13 @@ int MyConfig::LoadMyConfig ( int iteration )
             g_locale = _T("en_US");
             Read ( _T ( "Locale" ), &g_locale );
       }
+
+      //We allow 0-99 backups ov navobj.xml
+      Read ( _T ( "KeepNavobjBackups" ),  &g_navobjbackups, 5 );
+      if (g_navobjbackups > 99)
+            g_navobjbackups = 99;
+      if (g_navobjbackups < 0)
+            g_navobjbackups = 0;
 
       SetPath ( _T ( "/Settings/GlobalState" ) );
       Read ( _T ( "bFollow" ), &st_bFollow );
@@ -3458,6 +3484,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       if ( 0 == iteration )
       {
+            CreateRotatingNavObjBackup();
+
             if ( NULL == m_pNavObjectInputSet )
 		      m_pNavObjectInputSet = new NavObjectCollection (  );
 
@@ -3936,6 +3964,8 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "PlanSpeed" ), st0 );
 
       Write ( _T ( "Locale" ), g_locale );
+
+      Write ( _T ( "KeepNavobjBackups" ), g_navobjbackups );
 
 
 //    S57 Object Filter Settings
