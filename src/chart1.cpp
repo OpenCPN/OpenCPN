@@ -143,8 +143,6 @@ ConsoleCanvas   *console;
 NMEAHandler     *g_pnmea;
 StatWin         *stats;
 
-//wxToolBar       *toolBar;
-
 MyConfig        *pConfig;
 
 ChartBase       *Current_Vector_Ch;
@@ -784,6 +782,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             void SetColorScheme(ColorScheme cs);
             void SetGeometry();
             long GetOrient(){ return m_orient; }
+            void RefreshFadeTimer();
 
       private:
 
@@ -1349,11 +1348,21 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent& event)
 {
       if(g_bTransparentToolbar)
       {
-            SetTransparent(128);
+            if(128 != m_opacity)
+                  SetTransparent(128);
             m_opacity = 128;
       }
+
+      m_fade_timer.Start(5000);           // retrigger the continuous timer
+
 }
 
+void ocpnFloatingToolbarDialog::RefreshFadeTimer()
+{
+      SetTransparent(255);
+      m_opacity = 255;
+      m_fade_timer.Start(500);           // retrigger the continuous timer
+}
 
 
 void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords(wxPoint posn, wxPoint posn_old)
@@ -4364,6 +4373,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
 //              Apply various system settings
             ApplyGlobalSettings(true, bnewtoolbar);                 // flying update
+
+            if(g_FloatingToolbarDialog)
+                  g_FloatingToolbarDialog->RefreshFadeTimer();
+
 
 //  The chart display options may have changed, especially on S57 ENC,
 //  So, flush the cache and redraw
