@@ -3788,7 +3788,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                               ret =  wxGetTranslation(ais_status[pAISTarget->NavStatus]);
                         else
                               ret = _("-");
-                        if( (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                        if( (pAISTarget->Class == AIS_ATON)||(pAISTarget->Class == AIS_BASE)||(pAISTarget->Class == AIS_CLASS_B))
                               ret =  _("-");
                         break;
                   }
