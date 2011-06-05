@@ -123,6 +123,21 @@ ChartDB::ChartDB(MyFrame *parent)
 
       SetValid(false);                           // until loaded or created
       UnLockCache();
+
+      //    Report cache policy
+      if(g_memCacheLimit)
+      {
+            wxString msg;
+            msg.Printf(_T("ChartDB Cache policy:  Application target is %d MBytes"), g_memCacheLimit / 1024);
+            wxLogMessage(msg);
+      }
+      else
+      {
+            wxString msg;
+            msg.Printf(_T("ChartDB Cache policy:  Max open chart limit is %d."), g_nCacheLimit);
+            wxLogMessage(msg);
+      }
+
 }
 
 
