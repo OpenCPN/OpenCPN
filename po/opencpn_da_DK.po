@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-04 22:49-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -185,6 +185,19 @@ msgstr " %H Timer  %M Minutter"
 msgid " - "
 msgstr ""
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Ingen kort er tilgængelige"
+#
 # 
 # 
 msgid " ChartFile:  "
@@ -353,10 +366,6 @@ msgstr "&Start spor"
 # & ..?
 msgid "&Style:"
 msgstr "&Typografi:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1425,6 +1434,11 @@ msgid "HW"
 msgstr ""
 #
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Pejling:                %03d.\n"
+#
+# 
 # 
 msgid "Help"
 msgstr "Hjælp"
@@ -1465,12 +1479,6 @@ msgstr "Ikon"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Importer GPX-fil"
-#
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Importer GPX-fil"
 #
 # 
@@ -2690,6 +2698,13 @@ msgstr "Vis kortområder"
 #
 # 
 # 
+# Translation?
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Waypoint information"
+#
+# 
+# 
 msgid "Show Currents"
 msgstr "Vis strømforhold"
 #
@@ -2756,6 +2771,13 @@ msgstr "Vis status bjælke"
 #
 # 
 # 
+# Translation?
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Waypoint information"
+#
+# 
+# 
 msgid "Show Tides"
 msgstr "Vis tidevandstabel"
 #
@@ -2770,6 +2792,9 @@ msgstr "Vis ikon for spor"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Vis waypointnavn"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -2809,6 +2834,15 @@ msgstr "Viser skrifttype."
 # 
 msgid "Simplified"
 msgstr "Simplificeret"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Str.:                 %dm x %dm x ---m\n"
+"\n"
 #
 # 
 #, fuzzy, c-format
@@ -3004,6 +3038,12 @@ msgstr "Midlertidig GOTO rute"
 # 
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Midlertidig GOTO rute"
+#
+# 
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Send"
 #
@@ -3094,18 +3134,6 @@ msgstr "Til waypoint"
 # 
 msgid "Today"
 msgstr "I dag"
-#
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Slå spor til/fra"
-#
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Rute"
 #
 # 
 # 
@@ -3507,6 +3535,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3519,6 +3548,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 #
@@ -3542,6 +3572,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3559,6 +3590,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 #
 #
@@ -3582,6 +3614,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3599,6 +3632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3609,6 +3643,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 #
 #
@@ -3636,6 +3671,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3656,6 +3692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3671,12 +3708,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Afslut OpenCPN"
+#
 #
 #
 #
@@ -3695,6 +3734,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3707,6 +3747,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 #
@@ -3725,6 +3766,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3739,6 +3781,14 @@ msgstr ""
 #~ msgstr "Meteorologi(GRIB) folder"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Importer GPX-fil"
+#
+#
+#
 #
 # 
 # 
@@ -3748,6 +3798,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Maritim standard"
+#
 #
 #
 #
@@ -3766,6 +3817,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3778,6 +3830,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -3796,6 +3849,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3811,6 +3865,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3821,6 +3876,7 @@ msgstr ""
 # 
 #~ msgid "PlugIn Name"
 #~ msgstr "Tilføjelse, navn"
+#
 #
 #
 #
@@ -3838,6 +3894,7 @@ msgstr ""
 #~ msgstr "Tryk, mBar"
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
@@ -3845,6 +3902,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Nyeste data interval:   %3d Sek.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3863,6 +3921,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3878,6 +3937,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3886,6 +3946,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Fartøjsnavn:"
+#
 #
 #
 #
@@ -3904,6 +3965,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3916,6 +3978,21 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant bølgehøjde, m"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Slå spor til/fra"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Rute"
+#
 #
 #
 #
@@ -3934,6 +4011,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3946,6 +4024,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
+#
 #
 #
 #

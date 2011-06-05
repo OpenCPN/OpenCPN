@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-04 22:49-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -238,6 +238,20 @@ msgstr " %H Tundi  %M Minutit"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Kaart pole saadaval"
+#
 # 
 # 
 # 
@@ -449,10 +463,6 @@ msgstr "&Alusta jälje näitamist"
 # 
 msgid "&Style:"
 msgstr "&Stiil:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1727,6 +1737,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Kurss:                %03d Deg.\n"
+#
+# 
+# 
+# 
 msgid "Help"
 msgstr "Abi"
 #
@@ -1769,13 +1786,6 @@ msgstr "Ikoon"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Impordi GPX fail"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Impordi GPX fail"
 #
 # 
@@ -3185,6 +3195,13 @@ msgstr "Näita kaardi piirjooni"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Koha informatsioon"
+#
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Näita hoovuseid"
 #
@@ -3261,6 +3278,13 @@ msgstr "Näita staatuse riba"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Koha informatsioon"
+#
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Näita tõusu/mõõna jaamasid"
 #
@@ -3276,6 +3300,9 @@ msgstr "Näita jälje ikooni"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Näita nime"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3323,6 +3350,17 @@ msgstr "Näita fondi eelvaadet."
 # 
 msgid "Simplified"
 msgstr "Lihtsustatud"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Suurus:            %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -3555,6 +3593,13 @@ msgstr "Ajutiselt MOB teekonnale"
 # 
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Ajutiselt MOB teekonnale"
+#
+# 
+# 
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Saada"
 #
@@ -3659,20 +3704,6 @@ msgstr "Teepunkti"
 # 
 msgid "Today"
 msgstr "Täna"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Lülita jälgimisele"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Teekonna nimi"
 #
 # 
 # 
@@ -4144,6 +4175,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4152,6 +4184,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
+#
 #
 #
 #
@@ -4166,6 +4199,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4174,6 +4208,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
+#
 #
 #
 #
@@ -4188,6 +4223,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4196,6 +4232,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
+#
 #
 #
 #
@@ -4210,6 +4247,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4218,6 +4256,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -4234,6 +4273,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4241,6 +4281,15 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Välju OpenCPN"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Impordi GPX fail"
+#
 #
 #
 #
@@ -4255,9 +4304,11 @@ msgstr ""
 #~ msgstr "Mere standard"
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
 #
 #
 # 
@@ -4272,6 +4323,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4281,3 +4333,19 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Laeva nimi:"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Lülita jälgimisele"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Teekonna nimi"

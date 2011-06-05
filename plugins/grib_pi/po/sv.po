@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 2.2.1111\n"
+"Project-Id-Version: 2.4 build 523\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-12-11 10:26-0500\n"
-"PO-Revision-Date: 2011-05-03 20:17+0100\n"
+"PO-Revision-Date: 2011-05-27 20:06+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "MIME-Version: 1.0\n"

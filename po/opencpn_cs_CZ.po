@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-04 22:49-0400\n"
 "PO-Revision-Date: 2010-11-26 12:30+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -235,6 +235,20 @@ msgstr " %H Hodin  %M Minut"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Žádná mapa není k dispozici"
+#
 # 
 # 
 # 
@@ -444,10 +458,6 @@ msgstr "Zahájit &stopu"
 # 
 msgid "&Style:"
 msgstr "&Styl:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1703,6 +1713,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Kurs:              %03d St.\n"
+#
+# 
+# 
+# 
 msgid "Help"
 msgstr "Nápověda"
 #
@@ -1745,13 +1762,6 @@ msgstr "Ikona"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Importuj GPX soubor"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Importuj GPX soubor"
 #
 # 
@@ -3143,6 +3153,13 @@ msgstr "Zobrazit obrysy mapy"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Info o značce"
+#
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Ukaž proudy"
 #
@@ -3219,6 +3236,13 @@ msgstr "Zobrazit stavovou řádku"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Info o značce"
+#
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Ukaž přílivy"
 #
@@ -3234,6 +3258,9 @@ msgstr "Zobrazit ikonu stopy"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Zobraz jméno"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3280,6 +3307,17 @@ msgstr "Ukázat náhled fontu."
 # 
 msgid "Simplified"
 msgstr "Zjednodušený"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Velikost:                %dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -3507,6 +3545,12 @@ msgstr "Dočasná trasa k MOB"
 #
 # 
 # 
+#, fuzzy
+msgid "Temporary layer"
+msgstr "Dočasná trasa k MOB"
+#
+# 
+# 
 # 
 #, fuzzy
 msgid "Tender"
@@ -3613,20 +3657,6 @@ msgstr "K trasovému bodu"
 # 
 msgid "Today"
 msgstr "Dnes"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Přepni záznam stopy"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Název trasy"
 #
 # 
 # 
@@ -4089,6 +4119,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4098,6 +4129,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
+#
 #
 #
 #
@@ -4113,6 +4145,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4122,6 +4155,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
+#
 #
 #
 #
@@ -4137,6 +4171,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4146,6 +4181,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
+#
 #
 #
 #
@@ -4160,6 +4196,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4168,6 +4205,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -4185,6 +4223,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4192,6 +4231,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Ukonči OpenCPN"
+#
 #
 #
 #
@@ -4210,6 +4250,15 @@ msgstr ""
 #~ msgstr "GRIB"
 #
 #
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Importuj GPX soubor"
+#
+#
+#
 #
 # 
 # 
@@ -4220,6 +4269,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 #
 # 
@@ -4234,6 +4284,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4243,6 +4294,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Jméno lodě:"
+#
 #
 #
 #
@@ -4259,6 +4311,23 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Zobrazit ikonu GRIB"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Přepni záznam stopy"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Název trasy"
+#
 #
 #
 #

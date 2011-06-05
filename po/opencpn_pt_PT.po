@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6 (Pt01)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-04 22:49-0400\n"
 "PO-Revision-Date: 2010-02-05 16:06+0100\n"
 "Last-Translator: as <as400big@gmail.com>\n"
 "Language-Team: Minhota <zemaria@zemaria.biz>\n"
@@ -250,6 +250,21 @@ msgstr " %H Horas  %M Minutos"
 # 
 msgid " - "
 msgstr ""
+#
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Não há Carta Disponível"
 #
 # 
 # 
@@ -511,10 +526,6 @@ msgstr "Mostrar Rastro da Embarcação Alvo"
 # 
 msgid "&Style:"
 msgstr "&Estilo:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1979,6 +1990,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Proa:              %5.0f Deg.\n"
+#
+# 
+# 
+# 
+# 
 msgid "Help"
 msgstr "Ajuda"
 #
@@ -2026,14 +2045,6 @@ msgstr "Ícone"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Importar Fichero GPX"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Importar Fichero GPX"
 #
 # 
@@ -3605,6 +3616,14 @@ msgstr "Mostrar limites das Cartas"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Ícone"
+#
+# 
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Mostrar Correntes"
 #
@@ -3693,6 +3712,14 @@ msgstr "Mostrar na Barra de Estado"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Ícone"
+#
+# 
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Mostrar Marés"
 #
@@ -3710,6 +3737,9 @@ msgstr "Mostrar Ícone Rastro"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Mostrar Nome"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3763,6 +3793,18 @@ msgstr "Mostrar pré-visualização da Fonte."
 # 
 msgid "Simplified"
 msgstr "Simplificados"
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Dimensões:                %5dm x %dm x ---m\n"
+"\n"
 #
 # 
 # 
@@ -4018,6 +4060,14 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Importar Fichero GPX"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Enviar"
 #
@@ -4139,22 +4189,6 @@ msgstr "Para Waypoint"
 # 
 msgid "Today"
 msgstr "Hoje"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Comutar Rastro"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Rota"
 #
 # 
 # 
@@ -4643,6 +4677,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4660,6 +4695,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -4688,6 +4724,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4710,6 +4747,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Apagar todas as Rotas..."
+#
 #
 #
 #
@@ -4738,6 +4776,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4759,6 +4798,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4771,6 +4811,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Ficheiro de carta corrompido.. a desactivar carta \n"
+#
 #
 #
 #
@@ -4795,6 +4836,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4823,6 +4865,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4858,6 +4901,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4886,6 +4930,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4907,6 +4952,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4915,6 +4961,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair do OpenCPN"
+#
 #
 #
 #
@@ -4950,6 +4997,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4974,6 +5022,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4988,6 +5037,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -5010,6 +5060,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5026,6 +5077,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 #
 #
@@ -5048,6 +5100,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5058,6 +5111,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Standard Marítimo"
+#
 #
 #
 #
@@ -5080,6 +5134,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5096,6 +5151,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -5119,6 +5175,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5136,6 +5193,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -5157,6 +5215,7 @@ msgstr ""
 #~ msgstr "Pressão, mBar"
 #
 #
+#
 # 
 # 
 # 
@@ -5168,6 +5227,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período das aquisições mais recentes:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5188,6 +5248,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 #
@@ -5216,6 +5277,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5226,6 +5288,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 #
 #
@@ -5253,6 +5316,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5277,6 +5341,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5291,6 +5356,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar Ícone GRIB"
+#
 #
 #
 #
@@ -5312,6 +5378,25 @@ msgstr ""
 #~ msgstr "Altura de Vaga Significativa, m"
 #
 #
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Comutar Rastro"
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Rota"
+#
+#
+#
 #
 # 
 # 
@@ -5327,6 +5412,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos Alta Definição"
+#
 #
 #
 #
@@ -5349,6 +5435,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5365,6 +5452,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 #
 #

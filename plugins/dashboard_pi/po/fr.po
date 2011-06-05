@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-11 10:26-0500\n"
-"PO-Revision-Date: 2010-12-14 11:08+0100\n"
+"POT-Creation-Date: 2011-03-24 19:17+0100\n"
+"PO-Revision-Date: 2011-05-27 07:43+0100\n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,19 +19,23 @@ msgstr ""
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 #: src/gps.cpp:125
+#: src/dashboard_pi.cpp:515
 msgid "N"
 msgstr "N"
 
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 msgid "NE"
 msgstr "NE"
 
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 #: src/gps.cpp:126
 msgid "E"
 msgstr "E"
@@ -39,12 +43,14 @@ msgstr "E"
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 msgid "SE"
 msgstr "SE"
 
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 #: src/gps.cpp:127
 msgid "S"
 msgstr "S"
@@ -52,12 +58,14 @@ msgstr "S"
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 msgid "SW"
 msgstr "SO"
 
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 #: src/gps.cpp:128
 msgid "W"
 msgstr "O"
@@ -65,6 +73,7 @@ msgstr "O"
 #
 #
 #: src/compass.cpp:128
+#: src/wind.cpp:85
 msgid "NW"
 msgstr "NO"
 
@@ -176,22 +185,25 @@ msgstr "Etat du GPS"
 
 #
 #
-#: src/dashboard_pi.cpp:219
-#: src/dashboard_pi.cpp:222
-#: src/dashboard_pi.cpp:281
-#: src/dashboard_pi.cpp:722
+#: src/dashboard_pi.cpp:220
+#: src/dashboard_pi.cpp:284
+#: src/dashboard_pi.cpp:958
+#: src/dashboard_pi.cpp:966
+#: src/dashboard_pi.cpp:1107
+#: src/dashboard_pi.cpp:1142
+#: src/dashboard_pi.cpp:1334
 msgid "Dashboard"
 msgstr "TABLEAU DE BORD"
 
 #
 #
-#: src/dashboard_pi.cpp:287
+#: src/dashboard_pi.cpp:290
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Greffon tableau de bord pour OpenCPN"
 
 #
 #
-#: src/dashboard_pi.cpp:292
+#: src/dashboard_pi.cpp:295
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
@@ -201,88 +213,112 @@ msgstr ""
 
 #
 #
-#: src/dashboard_pi.cpp:715
+#: src/dashboard_pi.cpp:1088
 msgid "Dashboard preferences"
 msgstr "Préférences du tableau de bord"
 
+#: src/dashboard_pi.cpp:1149
+msgid "show this dashboard"
+msgstr "Montrer ce tableau de bord"
+
+#: src/dashboard_pi.cpp:1154
+msgid "Caption:"
+msgstr "Titre :"
+
+#: src/dashboard_pi.cpp:1159
+msgid "Orientation:"
+msgstr "Orientation :"
+
+#: src/dashboard_pi.cpp:1162
+msgid "Vertical"
+msgstr "Vertical"
+
+#: src/dashboard_pi.cpp:1163
+msgid "Horizontal"
+msgstr "Horizontal"
+
 #
 #
-#: src/dashboard_pi.cpp:729
+#: src/dashboard_pi.cpp:1166
 msgid "Instrument width:"
 msgstr "Largeur des instruments :"
 
 #
-#: src/dashboard_pi.cpp:736
-msgid "Fonts"
-msgstr "Polices"
-
 #
-#: src/dashboard_pi.cpp:742
-msgid "Title:"
-msgstr "Titre :"
-
-#
-#: src/dashboard_pi.cpp:746
-msgid "Data:"
-msgstr "Données :"
-
-#
-#: src/dashboard_pi.cpp:750
-msgid "Label:"
-msgstr "Contenu :"
-
-#
-#: src/dashboard_pi.cpp:754
-msgid "Small:"
-msgstr "Petit :"
-
-#
-#
-#: src/dashboard_pi.cpp:766
-#: src/dashboard_pi.cpp:773
-#: src/dashboard_pi.cpp:1066
+#: src/dashboard_pi.cpp:1175
+#: src/dashboard_pi.cpp:1182
+#: src/dashboard_pi.cpp:1447
 msgid "Instruments"
 msgstr "Instruments"
 
 #
 #
-#: src/dashboard_pi.cpp:781
+#: src/dashboard_pi.cpp:1190
 msgid "Add"
 msgstr "Ajouter"
 
 #
 #
-#: src/dashboard_pi.cpp:785
+#: src/dashboard_pi.cpp:1194
 msgid "Edit"
 msgstr "Editer"
 
 #
 #
-#: src/dashboard_pi.cpp:789
+#: src/dashboard_pi.cpp:1198
 msgid "Delete"
 msgstr "Supprimer"
 
 #
 #
-#: src/dashboard_pi.cpp:794
+#: src/dashboard_pi.cpp:1203
 msgid "Up"
 msgstr "Monter"
 
 #
 #
-#: src/dashboard_pi.cpp:798
+#: src/dashboard_pi.cpp:1207
 msgid "Down"
 msgstr "Descendre"
 
+#: src/dashboard_pi.cpp:1215
+msgid "Appearance"
+msgstr "Apparence"
+
+#
+#: src/dashboard_pi.cpp:1217
+msgid "Fonts"
+msgstr "Polices"
+
+#
+#: src/dashboard_pi.cpp:1223
+msgid "Title:"
+msgstr "Titre :"
+
+#
+#: src/dashboard_pi.cpp:1227
+msgid "Data:"
+msgstr "Données :"
+
+#
+#: src/dashboard_pi.cpp:1231
+msgid "Label:"
+msgstr "Contenu :"
+
+#
+#: src/dashboard_pi.cpp:1235
+msgid "Small:"
+msgstr "Petit :"
+
 #
 #
-#: src/dashboard_pi.cpp:1052
+#: src/dashboard_pi.cpp:1433
 msgid "Add instrument"
 msgstr "Ajouter un instrument"
 
 #
 #
-#: src/dashboard_pi.cpp:1056
+#: src/dashboard_pi.cpp:1437
 msgid "Select instrument to add:"
 msgstr "Séléctionnez l'instrument à ajouter"
 
