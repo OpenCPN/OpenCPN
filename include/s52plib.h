@@ -150,6 +150,7 @@ public:
       int RenderCARC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
       char *RenderCS(ObjRazRules *rzRules, Rules *rules);
 
+      void UpdateOBJLArray(S57Obj *obj);
       int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
       int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
 

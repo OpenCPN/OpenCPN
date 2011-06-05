@@ -2267,32 +2267,34 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
       int      len    = 0;
 
       // parse constant parameter with concatenation operator "'"
-      if ( str != NULL && *str == APOS )
+      if ( str != NULL )
       {
-            str++;
-            while ( *str != APOS )
+            if ( *str == APOS )
             {
-                  *buf++ = *str++;
+                  str++;
+                  while ( *str != APOS )
+                  {
+                        *buf++ = *str++;
+                  }
+                  *buf = '\0';
+                  str++;  // skip "'"
+                  str++;  // skip ","
+
+                  return str;
             }
-            *buf = '\0';
-            str++;  // skip "'"
-            str++;  // skip ","
 
-            return str;
+            while ( *str!=',' && *str!=')' && *str!='\0' /*&& len<bsz*/ )
+            {
+                  *tmp++ = *str++;
+                  ++len;
+            }
+
+            //if (len > bsz)
+            //    printf("ERROR: chopping input S52 line !? \n");
+
+            *tmp = '\0';
+            str++;        // skip ',' or ')'
       }
-
-      while ( *str!=',' && *str!=')' && *str!='\0' /*&& len<bsz*/ )
-      {
-            *tmp++ = *str++;
-            ++len;
-      }
-
-      //if (len > bsz)
-      //    printf("ERROR: chopping input S52 line !? \n");
-
-      *tmp = '\0';
-      str++;        // skip ',' or ')'
-
       if ( len<6 )
             return str;
 
@@ -4685,6 +4687,20 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 
       if ( !ObjectRenderCheckCat ( rzRules, vp ) )
       {
+            //  This is an "out-of-spec" optimization
+            //    Conditional symbology for rocks and wrecks is expensive
+            //    because we have to find the DEPARE or DRGARE that it is in,
+            //    and compare the depths to establish safety limits,
+            //    and then potentially move the hazard to DISPLAYBASE category.
+            //
+            //    Lets only consider and allow this case for large scale chart views....
+            if( (!strncmp(rzRules->LUP->OBCL, "UWTROC", 6)) ||
+                 (!strncmp(rzRules->LUP->OBCL, "WRECKS", 6)) )
+            {
+                  if(vp->chart_scale > 20000.)
+                        return 0;
+            }
+
             if(!ObjectRenderCheckCS( rzRules, vp ))
                   return 0;
       }
@@ -4777,6 +4793,38 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
       return 1;
 }
 
+void s52plib::UpdateOBJLArray(S57Obj *obj)
+{
+      //    Search the array for this object class
+
+      bool bNeedNew = true;
+      OBJLElement *pOLE;
+
+      for(unsigned int iPtr = 0 ; iPtr < pOBJLArray->GetCount() ; iPtr++)
+      {
+            pOLE = (OBJLElement *)(pOBJLArray->Item(iPtr));
+            if(!strncmp(pOLE->OBJLName, obj->FeatureName, 6))
+            {
+                  obj->iOBJL = iPtr;
+                  bNeedNew = false;
+                  break;
+            }
+      }
+
+      //    Not found yet, so add an element
+      if(bNeedNew)
+      {
+            pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
+            strncpy(pOLE->OBJLName, obj->FeatureName, 6);
+            pOLE->nViz = 1;
+
+            ps52plib->pOBJLArray->Add((void *)pOLE);
+            obj->iOBJL  = pOBJLArray->GetCount() - 1;
+      }
+
+
+}
+
 
 int s52plib::SetLineFeaturePriority ( ObjRazRules *rzRules, int npriority )
 {
@@ -4798,6 +4846,9 @@ int s52plib::SetLineFeaturePriority ( ObjRazRules *rzRules, int npriority )
 
       if ( m_nDisplayCategory == MARINERS_STANDARD )
       {
+            if(-1 == rzRules->obj->iOBJL)
+                  UpdateOBJLArray(rzRules->obj);
+
             if ( ! ( ( OBJLElement * ) ( pOBJLArray->Item ( rzRules->obj->iOBJL ) ) )->nViz )
                   b_catfilter = false;
       }
@@ -6783,6 +6834,9 @@ bool s52plib::ObjectRenderCheckCat ( ObjRazRules *rzRules, ViewPort *vp )
 
       if ( m_nDisplayCategory == MARINERS_STANDARD )
       {
+            if(-1 == rzRules->obj->iOBJL)
+                  UpdateOBJLArray(rzRules->obj);
+
             if ( ! ( ( OBJLElement * ) ( pOBJLArray->Item ( rzRules->obj->iOBJL ) ) )->nViz )
                   b_catfilter = false;
       }

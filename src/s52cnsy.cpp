@@ -725,32 +725,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 
         delete pobj_list;
     }
-/*
-        while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
 
-            if (LINES_T  == S57_getObjtype(geoTmp)) {
-                GString *drval2str = S57_getAttVal(geoTmp, "DRVAL2");
-                double   drval2    = (NULL == drval2str) ? 0.0 : atof(drval2str->str);
-
-                if (drval2 < safety_contour) {
-                    danger = TRUE;
-                    break;
-                }
-
-            } else {
-                //
-                GString *drval1str = S57_getAttVal(geoTmp, "DRVAL1");
-                double   drval1    = (NULL == drval1str) ? 0.0 : atof(drval1str->str);
-
-                if (drval1 >= safety_contour) {
-                    danger = TRUE;
-                    break;
-                }
-            }
-
-        }
-
-*/
     if (TRUE == danger)
     {
               int watlev;
@@ -2695,7 +2670,7 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
         wxString *quaposstr = GetStringAttrWXS(obj, "QUAPOS");
         int quapos = (NULL == quaposstr)? 0 : atoi(quaposstr->mb_str());
 
-        if (NULL != quaposstr)
+        if (0 != quapos)
         {
             if (2 <= quapos && quapos < 10)
             {

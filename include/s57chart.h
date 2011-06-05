@@ -230,7 +230,7 @@ private:
       bool CreateHeaderDataFromSENC(void);
       bool GetBaseFileAttr(wxFileName fn);
 
-      void ResetPointBBoxes(void);
+      void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
 
            //    Access to raw ENC DataSet
       bool InitENCMinimal( const wxString& FullPath );

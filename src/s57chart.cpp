@@ -148,6 +148,7 @@ S57Obj::S57Obj()
         nRef = 0;
 
         bIsAton = false;
+        bIsAssociable = false;
         m_n_lsindex = 0;
         m_lsindex_array = NULL;
         m_n_edge_max_points = 0;
@@ -279,6 +280,8 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
     //      Build/Maintain a list of found OBJL types for later use
     //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
+            iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
+/*
             bool bNeedNew = true;
             OBJLElement *pOLE;
 
@@ -302,7 +305,7 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                 ps52plib->pOBJLArray->Add((void *)pOLE);
                 iOBJL  = ps52plib->pOBJLArray->GetCount() - 1;
             }
-
+*/
 
     //      Walk thru the attributes, adding interesting ones
             int hdr_len = 0;
@@ -674,6 +677,9 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
 //            int rrt = 5;
                  Primitive_type = GEO_AREA;
 
+                 if(!strncmp(FeatureName, "DEPARE", 6) || !strncmp(FeatureName, "DRGARE", 6))
+                       bIsAssociable = true;
+
                     int ll = strlen(buf);
                     if(ll > llmax)
                         llmax = ll;
@@ -986,6 +992,7 @@ wxString S57Obj::GetAttrValueAsString ( char *AttrName )
 
 render_canvas_parms::render_canvas_parms()
 {
+      pix_buff = NULL;
 }
 
 render_canvas_parms::render_canvas_parms(int xr, int yr, int widthr, int heightr, wxColour color)
@@ -1624,12 +1631,12 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
             UpdateLUPs(this);                               // and update the LUPs
             ClearRenderedTextCache();                       // and reset the text renderer,
                                                             //for the case where depth(height) units change
-            ResetPointBBoxes();
+            ResetPointBBoxes(m_last_vp, VPoint);
       }
 
       if(VPoint.view_scale_ppm != m_last_vp.view_scale_ppm)
       {
-            ResetPointBBoxes();
+            ResetPointBBoxes(m_last_vp, VPoint);
       }
 
       SetLinePriorities();
@@ -2635,7 +2642,9 @@ bool s57chart::BuildThumbnail(const wxString &bmpname)
 //      First, make a copy for the curent OBJLArray viz settings, setting current value to invisible
 
       unsigned int OBJLCount = ps52plib->pOBJLArray->GetCount();
-      int *psave_viz = new int[OBJLCount];
+//      int *psave_viz = new int[OBJLCount];
+      int *psave_viz = (int *)malloc(OBJLCount * sizeof(int));
+
       int *psvr = psave_viz;
       OBJLElement *pOLE;
       unsigned int iPtr;
@@ -2695,7 +2704,8 @@ bool s57chart::BuildThumbnail(const wxString &bmpname)
 //      Reset the color scheme
        ps52plib->RestoreColorScheme();
 
-       delete psave_viz;
+//       delete psave_viz;
+       free(psave_viz);
 
 //      Clone pDIB into pThumbData;
        wxBitmap *pBMP;
@@ -3150,8 +3160,8 @@ bool s57chart::GetNearestSafeContour(double safe_cnt, double &next_safe_cnt)
 
 ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj)
 {
-      int j;
       int disPrioIdx;
+      bool gotit;
 
       ListOfS57Obj *pobj_list = new ListOfS57Obj;
       pobj_list->Clear();
@@ -3165,19 +3175,24 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj)
       {
             case GEO_POINT:
                   ObjRazRules *top;
-                  disPrioIdx = 1;
+                  disPrioIdx = 1;         // PRIO_GROUP1:S57 group 1 filled areas
 
+/*
                   for(j=0 ; j<LUPNAME_NUM ; j++)
                   {
                         top = razRules[disPrioIdx][j];
                         while ( top != NULL)
                         {
-                              if(!strncmp(top->obj->FeatureName, "DEPARE", 6) || !strncmp(top->obj->FeatureName, "DRGARE", 6))
+//                              if(!strncmp(top->obj->FeatureName, "DEPARE", 6) || !strncmp(top->obj->FeatureName, "DRGARE", 6))
+                              if(top->obj->bIsAssociable)
                               {
                                     if(top->obj->BBObj.PointInBox( lon, lat, 0.0))
                                     {
                                           if(IsPointInObjArea(lat, lon, 0.0, top->obj))
+                                          {
                                               pobj_list->Append(top->obj);
+                                              break;
+                                          }
                                     }
                               }
 
@@ -3185,6 +3200,51 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj)
                               top = nxx;
                         }
                   }
+*/
+
+                  gotit = false;
+                  top = razRules[disPrioIdx][3];     // PLAIN_BOUNDARIES
+                  while ( top != NULL)
+                  {
+                        if(top->obj->bIsAssociable)
+                        {
+                              if(top->obj->BBObj.PointInBox( lon, lat, 0.0))
+                              {
+                                    if(IsPointInObjArea(lat, lon, 0.0, top->obj))
+                                    {
+                                          pobj_list->Append(top->obj);
+                                          gotit = true;
+                                          break;
+                                    }
+                              }
+                        }
+
+                        ObjRazRules *nxx  = top->next;
+                        top = nxx;
+                  }
+
+                  if(!gotit)
+                  {
+                        top = razRules[disPrioIdx][4];     // SYMBOLIZED_BOUNDARIES
+                        while ( top != NULL)
+                        {
+                              if(top->obj->bIsAssociable)
+                              {
+                                    if(top->obj->BBObj.PointInBox( lon, lat, 0.0))
+                                    {
+                                          if(IsPointInObjArea(lat, lon, 0.0, top->obj))
+                                          {
+                                                pobj_list->Append(top->obj);
+                                                break;
+                                          }
+                                    }
+                              }
+
+                              ObjRazRules *nxx  = top->next;
+                              top = nxx;
+                        }
+                  }
+
 
                   break;
 
@@ -4606,10 +4666,15 @@ int s57chart::_insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner)
    return 1;
 }
 
-void s57chart::ResetPointBBoxes(void)
+void s57chart::ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this)
 {
       ObjRazRules *top;
       ObjRazRules *nxx;
+
+      double box_margin = 0.25;
+
+      //    Assume a 50x50 pixel box
+      box_margin = (50. / vp_this.view_scale_ppm) / (1852. * 60.);  //degrees
 
       for (int i=0; i<PRIO_NUM; ++i)
       {
@@ -4620,8 +4685,8 @@ void s57chart::ResetPointBBoxes(void)
                   if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
-                        top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
-                        top->obj->BBObj.SetMax(top->obj->m_lon +.25, top->obj->m_lat + .25);
+                        top->obj->BBObj.SetMin(top->obj->m_lon - box_margin, top->obj->m_lat - box_margin);
+                        top->obj->BBObj.SetMax(top->obj->m_lon + box_margin, top->obj->m_lat + box_margin);
                   }
 
                   nxx  = top->next;
@@ -4635,8 +4700,8 @@ void s57chart::ResetPointBBoxes(void)
                   if(!top->obj->geoPtMulti)                      // do not reset multipoints
                   {
                         top->obj->bBBObj_valid = false;
-                        top->obj->BBObj.SetMin(top->obj->m_lon -.25, top->obj->m_lat - .25);
-                        top->obj->BBObj.SetMax(top->obj->m_lon +.25, top->obj->m_lat + .25);
+                        top->obj->BBObj.SetMin(top->obj->m_lon - box_margin, top->obj->m_lat - box_margin);
+                        top->obj->BBObj.SetMax(top->obj->m_lon + box_margin, top->obj->m_lat + box_margin);
                   }
 
                   nxx  = top->next;

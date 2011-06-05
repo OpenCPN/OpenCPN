@@ -307,11 +307,10 @@ covr_set::~covr_set()
                         int wkbsize = m_covr_array_outlines[i].GetWKBSize();
                         if(wkbsize)
                         {
-                              char *p = new char[wkbsize];
+                              char *p = (char*) malloc(wkbsize * sizeof(char));
                               m_covr_array_outlines[i].WriteWKB(p);
                               ofs.Write(p, wkbsize);
-                              delete p;
-
+                              free(p);
                         }
                   }
                   ofs.Close();
@@ -1710,7 +1709,6 @@ bool read_feature_record_table(FILE *stream, int n_features, Cell_Info_Block *pC
                         *w = prelated_object;                       // fwd link
 
                         prelated_object->p_related_object_pointer_array = pobj;              // back link, array of 1 element
-
                         w++;
                   }
             }
@@ -2416,23 +2414,30 @@ int cm93chart::CreateObjChain(int cell_index, int subcell)
                         // set rigid platform
                               if (!strncmp(obj->FeatureName, "BCN",    3))
                                      pRigidATONArray->Add(obj);
+
+
+                              //    Mark the object as an ATON
+                              if ((!strncmp(obj->FeatureName,   "LIT",    3)) ||
+                                    (!strncmp(obj->FeatureName, "LIGHTS", 6)) ||
+                                    (!strncmp(obj->FeatureName, "BCN",    3)) ||
+                                    (!strncmp(obj->FeatureName, "_slgto", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_boygn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_bcngn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_extgn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "TOWERS", 6)) ||
+                                    (!strncmp(obj->FeatureName, "BOY",    3)))
+                              {
+                                    obj->bIsAton = true;
+                              }
                         }
 
-                        //    Mark the object as an ATON
-                        if ((!strncmp(obj->FeatureName,   "LIT",    3)) ||
-                              (!strncmp(obj->FeatureName, "LIGHTS", 6)) ||
-                              (!strncmp(obj->FeatureName, "BCN",    3)) ||
-                              (!strncmp(obj->FeatureName, "_slgto", 6)) ||
-                              (!strncmp(obj->FeatureName, "_boygn", 6)) ||
-                              (!strncmp(obj->FeatureName, "_bcngn", 6)) ||
-                              (!strncmp(obj->FeatureName, "_extgn", 6)) ||
-                              (!strncmp(obj->FeatureName, "TOWERS", 6)) ||
-                              (!strncmp(obj->FeatureName, "BOY",    3)))
+                        //    Mark th object as an "associable depth area"
+                        //    Flag is used by conditional symbology
+                        if (GEO_AREA == obj->Primitive_type)
                         {
-                              obj->bIsAton = true;
+                              if(!strncmp(obj->FeatureName, "DEPARE", 6) || !strncmp(obj->FeatureName, "DRGARE", 6))
+                                    obj->bIsAssociable = true;
                         }
-
-
 
 
 //      This is where Simplified or Paper-Type point features are selected
@@ -4054,13 +4059,14 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
    //      Build/Maintain a list of found OBJL types for later use
    //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
-      bool bNeedNew = true;
-      OBJLElement *pOLE;
-
-
 
       if(pobj)
       {
+            pobj->iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
+/*
+            bool bNeedNew = true;
+            OBJLElement *pOLE;
+
             for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
             {
             pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
@@ -4081,6 +4087,7 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   ps52plib->pOBJLArray->Add((void *)pOLE);
                   pobj->iOBJL  = ps52plib->pOBJLArray->GetCount() - 1;
             }
+*/
       }
 
 
