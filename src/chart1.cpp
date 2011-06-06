@@ -134,6 +134,8 @@ wxLog           *logger;
 wxLog           *Oldlogger;
 bool            g_bFirstRun;
 
+int             g_unit_test_1;
+
 ComPortManager  *g_pCommMan;
 
 MyFrame         *gFrame;
@@ -1513,6 +1515,20 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
 IMPLEMENT_APP(MyApp)
 
 #include "wx/dynlib.h"
+
+void MyApp::OnInitCmdLine(wxCmdLineParser& parser)
+{
+      //    Add some OpenCPN specific command line options
+      parser.AddSwitch(_T("unit_test_1"));
+}
+
+bool MyApp::OnCmdLineParsed(wxCmdLineParser& parser)
+{
+      g_unit_test_1 = parser.Found(_T("unit_test_1"));
+
+      return true;
+}
+
 
 bool MyApp::OnInit()
 {
@@ -5508,42 +5524,47 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 //      GetMemoryStatus(&g_mem_total, &g_mem_used);
 //      printf("%d / %d\n", g_mem_used, g_mem_total);
 
-      if(0)
+      if(g_unit_test_1)
       {
-      if(ChartData)
-      {
-            if(ut_index <   ChartData->GetChartTableEntries())
+//            if((0 == ut_index) && GetQuiltMode())
+//                  ToggleQuiltMode();
+
+            cc1->m_bFollow = false;
+            if (m_toolBar)
+                  m_toolBar->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
+
+            if(ChartData)
             {
-                  const ChartTableEntry *cte = &ChartData->GetChartTableEntry(ut_index);
-                  double lat = (cte->GetLatMax() + cte->GetLatMin())/2;
-                  double lon = (cte->GetLonMax() + cte->GetLonMin())/2;
-
-                  vLat = lat;
-                  vLon = lon;
-//                  DoChartUpdate();
-
-                  cc1->SetViewPoint(lat, lon);
-
-                  if(cc1->GetQuiltMode())
+                  if(ut_index <   ChartData->GetChartTableEntries())
                   {
-                        if(cc1->IsChartQuiltableRef(ut_index))
+                        const ChartTableEntry *cte = &ChartData->GetChartTableEntry(ut_index);
+                        double lat = (cte->GetLatMax() + cte->GetLatMin())/2;
+                        double lon = (cte->GetLonMax() + cte->GetLonMin())/2;
+
+                        vLat = lat;
+                        vLon = lon;
+
+                        cc1->SetViewPoint(lat, lon);
+
+                        if(cc1->GetQuiltMode())
                         {
-                              SelectQuiltRefdbChart(ut_index);
+                              if(cc1->IsChartQuiltableRef(ut_index))
+                                    SelectQuiltRefdbChart(ut_index);
                         }
+                        else
+                              SelectdbChart(ut_index);
+
+
+                        double ppm = cc1->GetCanvasScaleFactor()/cte->GetScale();
+                        ppm /= 2;
+                        cc1->SetVPScale( ppm);
+
+                        cc1->ReloadVP();
+
+
+                        ut_index ++;
                   }
-                  else
-                        SelectdbChart(ut_index);
-
-
-                  double ppm = cc1->GetCanvasScaleFactor()/cte->GetScale();
-                  ppm /= 2;
-                  cc1->SetVPScale( ppm);
-
-                  cc1->ReloadVP();
-
-                  ut_index ++;
             }
-      }
       }
       g_tick++;
 

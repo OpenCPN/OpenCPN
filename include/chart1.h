@@ -32,6 +32,7 @@
 
 #include "wx/print.h"
 #include "wx/datetime.h"
+#include <wx/cmdline.h>
 
 #ifdef __WXMSW__
 #include "wx/msw/private.h"
@@ -185,6 +186,8 @@ class MyApp: public wxApp
   public:
     bool OnInit();
     int OnExit();
+    void OnInitCmdLine(wxCmdLineParser& parser);
+    bool OnCmdLineParsed(wxCmdLineParser& parser);
 
     void TrackOff(void);
 
