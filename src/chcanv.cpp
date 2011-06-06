@@ -8484,7 +8484,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         pConfig->UpdateRoute ( m_pSelectedRoute );
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                               pRoutePropDialog->UpdateProperties();
@@ -8566,7 +8566,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_pSelectedRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
                         pConfig->UpdateRoute ( m_pSelectedRoute );
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                               pRoutePropDialog->UpdateProperties();
@@ -8605,7 +8605,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                               if(!g_pRouteMan->IsRouteValid(m_pSelectedRoute))
                                     m_pSelectedRoute = NULL;
 
-                              if ( pRoutePropDialog )
+                              if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                               {
                                   pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                                   pRoutePropDialog->UpdateProperties();
@@ -8649,7 +8649,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                           //  Add this point back into the selectables
                           pSelect->AddSelectableRoutePoint(m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, m_pFoundRoutePoint);
 
-                          if ( pRoutePropDialog )
+                          if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                           {
                                 pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                                 pRoutePropDialog->UpdateProperties();
@@ -8740,7 +8740,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_pFoundRoutePoint = NULL;
                         m_pFoundRoutePointSecond = NULL;
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedTrack );
                               pRoutePropDialog->UpdateProperties();
@@ -8884,7 +8884,7 @@ void ChartCanvas::FinishRoute(void)
             if ( m_pMouseRoute )
                   m_pMouseRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
 
-            if ( pRoutePropDialog )
+            if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
             {
                   pRoutePropDialog->SetRouteAndUpdate ( m_pMouseRoute );
                   pRoutePropDialog->UpdateProperties();
