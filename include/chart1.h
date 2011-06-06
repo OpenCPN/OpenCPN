@@ -278,7 +278,7 @@ class MyFrame: public wxFrame
     void OnFrameCOGTimer(wxTimerEvent& event);
     void SetupQuiltMode(void);
 
-    void ChartsRefresh(void);
+    void ChartsRefresh(int dbi_hint);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
 
     ArrayOfRect GetCanvasReserveRects();

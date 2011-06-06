@@ -241,6 +241,7 @@ public:
     int  GetVersion(){ return m_dbversion; }
     wxString GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_width, int *line_count);
     int FinddbIndex(wxString PathToFind);
+    wxString GetDBChartFileName(int dbIndex);
 
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
@@ -427,6 +428,8 @@ public:
     int  GetDBPlyPoint(int dbIndex, int plyindex, float *lat, float *lon);
     int  GetDBAuxPlyPoint(int dbIndex, int plyindex, int iAuxPly, float *lat, float *lon);
     int  GetVersion(){ return m_dbversion; }
+    zwxString GetDBChartFileName(int dbIndex);
+
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);

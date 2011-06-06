@@ -1654,6 +1654,8 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
       pListBox->Append(SelDir);
 
+      k_charts |= CHANGE_CHARTS;
+
       event.Skip();
 }
 
@@ -2067,19 +2069,6 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
 
       UpdateWorkArrayFromTextCtl();
 
-/*      int n = pListBox->GetCount();
-      if(m_pWorkDirList)
-      {
-            m_pWorkDirList->Clear();
-
-
-            for(int i=0 ; i<n ; i++)
-            {
-                  dirname = pListBox->GetString(i);
-                  if(!dirname.IsEmpty())
-                        m_pWorkDirList->Add(dirname);
-            }
-*/
       if(m_pWorkDirList)
       {
             pListBox->Clear();
@@ -2094,6 +2083,8 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
                   }
             }
       }
+
+      k_charts |= CHANGE_CHARTS;
 
       event.Skip();
 }

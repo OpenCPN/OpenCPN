@@ -131,13 +131,14 @@ enum {
 
 //    Define an int bit field for dialog return value
 //    To indicate which types of settings have changed
-#define     GENERIC_CHANGED   1
-#define     S52_CHANGED       2
-#define     FONT_CHANGED      4
-#define     FORCE_UPDATE      8
+#define     GENERIC_CHANGED    1
+#define     S52_CHANGED        2
+#define     FONT_CHANGED       4
+#define     FORCE_UPDATE       8
 #define     VISIT_CHARTS      16
 #define     LOCALE_CHANGED    32
 #define     TOOLBAR_CHANGED   64
+#define     CHANGE_CHARTS    128
 
 
 
@@ -407,12 +408,12 @@ static int lang_list[] = {
             wxLANGUAGE_BURMESE,
             wxLANGUAGE_CAMBODIAN,
             wxLANGUAGE_CATALAN,
-            wxLANGUAGE_CHINESE,
-            wxLANGUAGE_CHINESE_SIMPLIFIED,
-            wxLANGUAGE_CHINESE_TRADITIONAL,
-            wxLANGUAGE_CHINESE_HONGKONG,
-            wxLANGUAGE_CHINESE_MACAU,
-            wxLANGUAGE_CHINESE_SINGAPORE,
+//            wxLANGUAGE_CHINESE,
+//            wxLANGUAGE_CHINESE_SIMPLIFIED,
+//            wxLANGUAGE_CHINESE_TRADITIONAL,
+//            wxLANGUAGE_CHINESE_HONGKONG,
+//            wxLANGUAGE_CHINESE_MACAU,
+//            wxLANGUAGE_CHINESE_SINGAPORE,
             wxLANGUAGE_CHINESE_TAIWAN,
             wxLANGUAGE_CORSICAN,
             wxLANGUAGE_CROATIAN,

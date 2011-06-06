@@ -206,7 +206,7 @@ int             file_user_id;
 
 int             quitflag;
 int             g_tick;
-int             mem_total, mem_initial;
+int             g_mem_total, g_mem_used, g_mem_initial;
 
 bool            s_bSetSystemTime;
 
@@ -407,7 +407,7 @@ struct sigaction sa_all;
 struct sigaction sa_all_old;
 #endif
 
-bool GetMemoryStatus(int& mem_total, int& mem_used);
+bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 
 
@@ -1639,11 +1639,17 @@ bool MyApp::OnInit()
 //      Init the private memory manager
         malloc_max = 0;
 
+        //      Record initial memory status
+        GetMemoryStatus(&g_mem_total, &g_mem_initial);
+
         //  On Windows platforms, establish a default cache managment policy
         //  as allowing OpenCPN a percentage of available physical memory
 #ifdef __WXMSW__
-        GetMemoryStatus(mem_total, mem_initial);
-        g_memCacheLimit = (int)(mem_total * 0.5);
+        if(0 == g_memCacheLimit)
+        {
+              if(CACHE_N_LIMIT_DEFAULT == g_nCacheLimit)
+                  g_memCacheLimit = (int)(g_mem_initial * 0.5);
+        }
 #endif
 
 //      wxHandleFatalExceptions(true);
@@ -1736,14 +1742,17 @@ bool MyApp::OnInit()
 
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
+
+        logger->SetTimestamp(_T("%H:%M:%S %Z"));
+
 //      Send init message
         wxLogMessage(_T("\n\n"));
 
 
-        wxDateTime now = wxDateTime::Now();
-        now.MakeGMT(true);                    // no DST
+        wxDateTime date_now = wxDateTime::Now();
+//        date_now.MakeGMT(true);                    // no DST
 
-        wxString imsg = now.FormatISODate();
+        wxString imsg = date_now.FormatISODate();
         wxLogMessage(imsg);
 
         imsg = _T(" -------Starting opencpn-------");
@@ -1754,6 +1763,8 @@ bool MyApp::OnInit()
         vs = vs.Trim(false);
         wxLogMessage(vs);
 
+        wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
+                     g_mem_total/1024, g_mem_initial/1024);
 
 //    Initialize embedded PNG icon graphics
 #ifdef OCPN_USE_PNGICONS
@@ -2588,14 +2599,6 @@ bool MyApp::OnInit()
         }
 
 //      All set to go.....
-
-//      Record initial memory status
-        GetMemoryStatus(mem_total, mem_initial);
-        wxLogMessage(_T("MemoryStatus:  mem_total: %d kb,  mem_initial: %d kb"),
-                                        mem_total, mem_initial);
-
-//        int memsize = GetApplicationMemoryUse();
-
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -4878,9 +4881,21 @@ int MyFrame::DoOptionsDialog()
 
       if(rr)
       {
-            if(rr & VISIT_CHARTS)
+            if((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE)))
             {
                   FrameTimer1.Stop();                  // stop other asynchronous activity
+
+
+                  //    Capture the currently open chart
+                  wxString chart_file_name;
+                  if(cc1->GetQuiltMode())
+                  {
+                        int dbi = cc1->GetQuiltRefChartdbIndex();
+                        chart_file_name = ChartData->GetDBChartFileName(dbi);
+                  }
+                  else if(Current_Ch)
+                        chart_file_name = Current_Ch->GetFullPath();
+
 
                   cc1->InvalidateQuilt();
                   cc1->SetQuiltRefChart(-1);
@@ -4927,7 +4942,9 @@ int MyFrame::DoOptionsDialog()
 
                   pConfig->UpdateChartDirs(g_ChartDirArray);
 
-                  ChartsRefresh();
+                  //    Re-open the correct file
+                  int dbii = ChartData->FinddbIndex(chart_file_name);
+                  ChartsRefresh(dbii);
 
             }
 
@@ -5066,7 +5083,7 @@ int MyFrame::DoOptionsDialog()
 }
 
 // Flav: This method reloads all charts for convenience
-void MyFrame::ChartsRefresh(void)
+void MyFrame::ChartsRefresh(int dbi_hint)
 {
       ::wxBeginBusyCursor();
 
@@ -5087,13 +5104,54 @@ void MyFrame::ChartsRefresh(void)
       pCurrentStack = new ChartStack;
       ChartData->BuildChartStack(pCurrentStack, vLat, vLon);
 
+      if(-1 != dbi_hint)
+      {
+            if(cc1->GetQuiltMode())
+            {
+                  pCurrentStack->SetCurrentEntryFromdbIndex(dbi_hint);
+                  cc1->SetQuiltRefChart(dbi_hint);
+            }
+            else
+            {
+                  //      Open the saved chart
+                  ChartBase *pTentative_Chart;
+                  pTentative_Chart = ChartData->OpenChartFromDB(dbi_hint, FULL_INIT);
+
+                  if(pTentative_Chart)
+                  {
+                        if(Current_Ch)
+                              Current_Ch->Deactivate();
+
+                        Current_Ch = pTentative_Chart;
+                        Current_Ch->Activate();
+
+                        pCurrentStack->CurrentStackEntry = ChartData->GetStackEntry(pCurrentStack, Current_Ch->GetFullPath());
+                  }
+                  else
+                        SetChartThumbnail(dbi_hint);       // need to reset thumbnail on failed chart open
+            }
+
+        //          Refresh the Piano Bar
+            if(stats)
+            {
+                  ArrayOfInts piano_active_chart_index_array;
+                  piano_active_chart_index_array.Add(pCurrentStack->GetCurrentEntrydbIndex());
+                  stats->pPiano->SetActiveKeyArray(piano_active_chart_index_array);
+
+                  stats->Refresh(true);
+            }
+
+      }
+      else
+      {
       //    Select reference chart from the stack, as though clicked by user
       //    Make it the smallest scale chart on the stack
-      pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry-1;
-      int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
-      cc1->SetQuiltRefChart(selected_index);
+            pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry-1;
+            int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+            cc1->SetQuiltRefChart(selected_index);
+      }
 
-      //    Choose the correct single chart, or set the quilt mode as appropriate
+      //    Validate the correct single chart, or set the quilt mode as appropriate
       SetupQuiltMode();
 
       cc1->ReloadVP();
@@ -5447,6 +5505,9 @@ int ut_index;
 
 void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 {
+//      GetMemoryStatus(&g_mem_total, &g_mem_used);
+//      printf("%d / %d\n", g_mem_used, g_mem_total);
+
       if(0)
       {
       if(ChartData)
@@ -6015,7 +6076,7 @@ void MyFrame::SelectChartFromStack(int index, bool bDir, ChartTypeEnum New_Type,
                   pCurrentStack->CurrentStackEntry = ChartData->GetStackEntry(pCurrentStack, Current_Ch->GetFullPath());
             }
             else
-                SetChartThumbnail(index);       // need to reset thumbnail on failed chart open
+                SetChartThumbnail(-1);   // need to reset thumbnail on failed chart open
 
 
 
@@ -6858,134 +6919,100 @@ void MyFrame::OnPianoMenuDisableChart(wxCommandEvent& event)
 
 //      Memory monitor support
 
-bool GetMemoryStatus(int& mem_total, int& mem_used)
+bool GetMemoryStatus(int *mem_total, int *mem_used)
 {
 
 #ifdef __LINUX__
 
-//      Use filesystem /proc/meminfo to determine memory status
+//      Use filesystem /proc/pid/status to determine memory status
 
-    char *p;
-    char buf[2000];
-    int len;
 
-//      Open and read the file
-    int     fd = open("/proc/meminfo", O_RDONLY);
+      unsigned long processID = wxGetProcessId();
+      wxTextFile file;
+      wxString file_name;
 
-    if (fd == -1)
-    {
-        mem_total = 0;
-        mem_used = 0;
-        return false;
-    }
+      if(mem_used)
+      {
+            *mem_used = 0;
+            file_name.Printf(_T("/proc/%d/status"), (int)processID);
+            if(file.Open(file_name))
+            {
+                  bool b_found = false;
+                  wxString str;
+                  for ( str = file.GetFirstLine(); !file.Eof(); str = file.GetNextLine() )
+                  {
+                        wxStringTokenizer tk(str, _T(" :"));
+                        while ( tk.HasMoreTokens() )
+                        {
+                              wxString token = tk.GetNextToken();
+                              if(token == _T("VmSize"))
+                              {
+                                    wxStringTokenizer tkm(str, _T(" "));
+                                    wxString mem = tkm.GetNextToken();
+                                    long mem_extract = 0;
+                                    while(mem.Len())
+                                    {
+                                          mem.ToLong(&mem_extract);
+                                          if(mem_extract)
+                                                break;
+                                          mem = tkm.GetNextToken();
+                                    }
 
-    len = read(fd, buf, sizeof(buf) - 1);
-    if (len <= 0) {
-        close(fd);
-        return false;
-    }
-    close(fd);
-    buf[len] = 0;
+                                    *mem_used = mem_extract;
+                                    b_found = true;
+                                    break;
+                              }
+                              else
+                                    break;
+                        }
+                        if(b_found)
+                              break;
+                  }
+            }
+      }
 
-    p = buf;
+      if(mem_total)
+      {
+            *mem_total = 0;
+            wxTextFile file_info;
+            file_name = _T("/proc/meminfo");
+            if(file_info.Open(file_name))
+            {
+                  bool b_found = false;
+                  wxString str;
+                  for ( str = file_info.GetFirstLine(); !file_info.Eof(); str = file_info.GetNextLine() )
+                  {
+                        wxStringTokenizer tk(str, _T(" :"));
+                        while ( tk.HasMoreTokens() )
+                        {
+                              wxString token = tk.GetNextToken();
+                              if(token == _T("MemTotal"))
+                              {
+                                    wxStringTokenizer tkm(str, _T(" "));
+                                    wxString mem = tkm.GetNextToken();
+                                    long mem_extract = 0;
+                                    while(mem.Len())
+                                    {
+                                          mem.ToLong(&mem_extract);
+                                          if(mem_extract)
+                                                break;
+                                          mem = tkm.GetNextToken();
+                                    }
 
-//      Parse the file contents
-//      Here is an example....at least vaild for kernel 2.6
-/*
-MemTotal:       255684 kB
-MemFree:          5996 kB
-Buffers:         15260 kB
-Cached:          99840 kB
-SwapCached:         48 kB
-Active:         176736 kB
-Inactive:        45696 kB
-HighTotal:           0 kB
-HighFree:            0 kB
-LowTotal:       255684 kB
-LowFree:          5996 kB
-SwapTotal:      610460 kB
-SwapFree:       610412 kB
-.
-.
-.
-Hugepagesize:     4096 kB
-*/
+                                    *mem_total = mem_extract;
+                                    b_found = true;
+                                    break;
+                              }
+                              else
+                                    break;
+                        }
+                        if(b_found)
+                              break;
+                  }
+            }
+      }
 
-        char *s;
-        char sbuf[100];
-        char stoken[20];
-        char skb[20];
-        int sval, val_cnt;
 
-        int m_total, m_active, m_inactive, m_buffers, m_cached, m_free;
-
-        m_free = 0;
-        m_total = 0;
-        m_buffers = 0;
-        m_cached = 0;
-
-        val_cnt = 0;
-
-//      Loop on the whole file
-        while(*p)
-        {
-//      Extract line by line
-                s=sbuf;
-                while ((*p != '\n') && *p)
-                        *s++ = *p++;
-                *s = 0;
-                p++;                    // skip \n
-
-//      Parse  the sbuf line
-                sscanf(sbuf, "%s %d %s\n", stoken, &sval, skb);
-
-//      Look for and extract the required numbers
-
-                if(!strcmp(stoken, "MemTotal:"))
-                {
-                        m_total = sval;
-                        val_cnt++;
-                }
-                else if(!strcmp(stoken, "Active:"))
-                {
-                        m_active = sval;
-                        val_cnt++;
-                }
-                else if(!strcmp(stoken, "Inactive:"))
-                {
-                        m_inactive = sval;
-                        val_cnt++;
-                }
-                else if(!strcmp(stoken, "Buffers:"))
-                {
-                        m_buffers = sval;
-                        val_cnt++;
-                }
-                else if(!strcmp(stoken, "Cached:"))
-                {
-                        m_cached = sval;
-                        val_cnt++;
-                }
-
-                else if(!strcmp(stoken, "MemFree:"))
-                {
-                        m_free = sval;
-                        val_cnt++;
-                }
-
-                if(val_cnt == 6)
-                        break;
-        }
-
-//      Do the math....
-
-//      int m_used = m_active + m_inactive - (m_buffers + m_cached);
-//      mem_used = m_used;
-
-        //      Maybe a good estimate of actual RAM available
-        mem_used = (m_total - m_free) - (m_cached + m_buffers);
-
-        mem_total = m_total;
 #endif
 
 #ifdef __WXMSW__
@@ -6994,61 +7021,63 @@ Hugepagesize:     4096 kB
 
         unsigned long processID = wxGetProcessId();
 
-        hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
-                    PROCESS_VM_READ,
-                    FALSE, processID );
-        if (NULL == hProcess)
-              return 0;
-
-        if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) )
+        if(mem_used)
         {
-/*
-              printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
-              printf( "\tPeakWorkingSetSize: 0x%08X\n",
-              pmc.PeakWorkingSetSize );
-              printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
-              printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
-              pmc.QuotaPeakPagedPoolUsage );
-              printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
-              pmc.QuotaPagedPoolUsage );
-              printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
-              pmc.QuotaPeakNonPagedPoolUsage );
-              printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
-              pmc.QuotaNonPagedPoolUsage );
-              printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
-              printf( "\tPeakPagefileUsage: 0x%08X\n",
-              pmc.PeakPagefileUsage );
-*/
-              mem_used = pmc.WorkingSetSize / 1024;
+            hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
+                        PROCESS_VM_READ,
+                        FALSE, processID );
+
+            if( hProcess && GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) )
+            {
+      /*
+                  printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
+                  printf( "\tPeakWorkingSetSize: 0x%08X\n",
+                  pmc.PeakWorkingSetSize );
+                  printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
+                  printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
+                  pmc.QuotaPeakPagedPoolUsage );
+                  printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
+                  pmc.QuotaPagedPoolUsage );
+                  printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
+                  pmc.QuotaPeakNonPagedPoolUsage );
+                  printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
+                  pmc.QuotaNonPagedPoolUsage );
+                  printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
+                  printf( "\tPeakPagefileUsage: 0x%08X\n",
+                  pmc.PeakPagefileUsage );
+      */
+                  *mem_used = pmc.WorkingSetSize / 1024;
+            }
+
+            CloseHandle( hProcess );
         }
 
-        CloseHandle( hProcess );
+        if(mem_total)
+        {
+            MEMORYSTATUSEX statex;
 
+            statex.dwLength = sizeof (statex);
 
-        MEMORYSTATUSEX statex;
+            GlobalMemoryStatusEx (&statex);
+      /*
+            _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
+                        WIDTH, statex.dwMemoryLoad);
+            _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
+                        WIDTH, statex.ullTotalPhys/DIV);
+            _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
+                        WIDTH, statex.ullAvailPhys/DIV);
+            _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
+                        WIDTH, statex.ullTotalPageFile/DIV);
+            _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
+                        WIDTH, statex.ullAvailPageFile/DIV);
+            _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
+                        WIDTH, statex.ullTotalVirtual/DIV);
+            _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
+                        WIDTH, statex.ullAvailVirtual/DIV);
+      */
 
-        statex.dwLength = sizeof (statex);
-
-        GlobalMemoryStatusEx (&statex);
-/*
-        _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
-                  WIDTH, statex.dwMemoryLoad);
-        _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
-                  WIDTH, statex.ullTotalPhys/DIV);
-        _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
-                  WIDTH, statex.ullAvailPhys/DIV);
-        _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
-                  WIDTH, statex.ullTotalPageFile/DIV);
-        _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
-                  WIDTH, statex.ullAvailPageFile/DIV);
-        _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
-                  WIDTH, statex.ullTotalVirtual/DIV);
-        _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
-                  WIDTH, statex.ullAvailVirtual/DIV);
-*/
-
-        mem_total = statex.ullTotalPhys / 1024;
-
+            *mem_total = statex.ullTotalPhys / 1024;
+        }
 #endif
 
         return true;

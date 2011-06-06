@@ -60,9 +60,7 @@ extern int          g_memCacheLimit;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
-
-
-CPL_CVSID("$Id: chartdb.cpp,v 1.42 2010/06/13 21:04:55 bdbcat Exp $");
+bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 
 // ============================================================================
@@ -577,8 +575,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             {
 
           //    Check memory status to see if enough room to open another chart
-                  int app_mem_used = pParent->GetApplicationMemoryUse();
-                  if((app_mem_used > g_memCacheLimit) && !m_b_locked)
+                  int mem_total, mem_used;
+                  GetMemoryStatus(&mem_total, &mem_used);
+                  if((mem_used > g_memCacheLimit) && !m_b_locked)
                   {
                         // Search the cache for oldest entry that is not Current_Ch
                         unsigned int nCache = pChartCache->GetCount();

@@ -1525,6 +1525,20 @@ int ChartDatabase::GetDBChartProj(int dbIndex)
 }
 
 //-------------------------------------------------------------------
+//    Get DBChart FullFileName
+//-------------------------------------------------------------------
+wxString ChartDatabase::GetDBChartFileName(int dbIndex)
+{
+      if((bValid) && (dbIndex >= 0) && (dbIndex < (int)chartTable.size()))
+      {
+            return wxString(chartTable[dbIndex].GetpFullPath(), wxConvUTF8);
+      }
+      else
+            return _T("");
+}
+
+
+//-------------------------------------------------------------------
 //    Get DBChart Type
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartType(int dbIndex)

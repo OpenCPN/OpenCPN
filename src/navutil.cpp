@@ -2618,7 +2618,7 @@ MyConfig::MyConfig ( const wxString &appName, const wxString &vendorName, const 
 void MyConfig::CreateRotatingNavObjBackup()
 {
       //Rotate navobj backups
-      if (g_navobjbackups > 0) 
+      if (g_navobjbackups > 0)
       {
             for (int i = g_navobjbackups - 1; i >= 1; i--)
                   if(wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
@@ -2658,7 +2658,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
 
       if(mem_limit > 0)
-            g_memCacheLimit = mem_limit;
+            g_memCacheLimit = mem_limit * 1024;       // convert to MBytes
 
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
