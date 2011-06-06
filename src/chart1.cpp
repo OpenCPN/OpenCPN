@@ -2910,7 +2910,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
         //    If the selected port is the same as AIS port, override the name to force the
        //    NMEA class to expect muxed data from AIS decoder
-        if(pNMEADataSource->IsSameAs(*pAIS_Port))
+        if((pNMEADataSource->IsSameAs(*pAIS_Port)) && (!pNMEADataSource->Upper().Contains(_T("NONE"))))
               g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent, false );
         else
               g_pnmea = new NMEAHandler(ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate, &m_mutexNMEAEvent, g_bGarminHost );
