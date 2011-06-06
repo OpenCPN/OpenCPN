@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: 2010-10-18 00:02+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -4208,6 +4208,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4223,6 +4225,8 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
+#
 #
 #
 #
@@ -4248,6 +4252,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4259,6 +4265,8 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
+#
 #
 #
 #
@@ -4287,6 +4295,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4302,6 +4312,8 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Geschw. Gezeitenstrom, kn"
+#
+#
 #
 #
 #
@@ -4325,6 +4337,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4332,6 +4346,8 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN beenden"
+#
+#
 #
 #
 #
@@ -4349,6 +4365,8 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
 #
 #
 #
@@ -4372,6 +4390,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4387,6 +4407,8 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-Anzeige Einstellungen"
+#
+#
 #
 #
 #
@@ -4408,12 +4430,16 @@ msgstr ""
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
 #
+#
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "GPX-Datei importieren"
+#
+#
 #
 #
 #
@@ -4427,6 +4453,8 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Benutzerdef. Auswahl"
+#
+#
 #
 #
 #
@@ -4452,6 +4480,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4469,6 +4499,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten HTSGW GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
+#
 #
 #
 #
@@ -4494,6 +4526,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4511,6 +4545,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Zur Ansicht der unterdrückten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
+#
 #
 #
 #
@@ -4534,6 +4570,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4552,6 +4590,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4561,6 +4601,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Dauer letzte Meldung:     %3d Sek.\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -4584,6 +4626,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4603,6 +4647,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4612,6 +4658,8 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Schiffsname: "
+#
+#
 #
 #
 #
@@ -4633,6 +4681,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4650,6 +4700,8 @@ msgstr ""
 #~ msgstr "Signifik. Wellenhöhe, m"
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4658,12 +4710,16 @@ msgstr ""
 #~ msgstr "Tracking an-/ ausschalten"
 #
 #
+#
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Routen-Name"
+#
+#
 #
 #
 #
@@ -4681,6 +4737,8 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Hochäuflösende Grafik verwenden"
+#
+#
 #
 #
 #
@@ -4704,6 +4762,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4719,6 +4779,8 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Windrichtung"
+#
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.523\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: 2011-05-27 00:51+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -2407,16 +2407,24 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Kar&t, på/av"
+#
+#
 #
 #
 #~ msgid "Import new layer"
 #~ msgstr "Importer nytt lag"
 #
 #
+#
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC Fil-lasting"
+#
+#
 #
 #
 #~ msgid ""
@@ -2427,8 +2435,12 @@ msgstr "wgsoy"
 #~ "\n"
 #
 #
+#
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Slå på/av liste"
+#
+#
 #
 #
 #~ msgid "Toggle Names"

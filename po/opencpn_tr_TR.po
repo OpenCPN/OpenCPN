@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -3200,6 +3200,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3209,6 +3211,8 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
+#
 #
 #
 #
@@ -3226,6 +3230,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3235,6 +3241,8 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
+#
 #
 #
 #
@@ -3252,6 +3260,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3265,6 +3275,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3274,6 +3286,8 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
+#
 #
 #
 #
@@ -3295,6 +3309,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3308,6 +3324,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -3329,6 +3347,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3338,6 +3358,8 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
+#
 #
 #
 #
@@ -3355,11 +3377,15 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN'den Çıkış"
+#
+#
 #
 #
 #
@@ -3377,6 +3403,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3386,6 +3414,8 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
 #
 #
 #
@@ -3403,6 +3433,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3412,6 +3444,8 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB Ekranı"
+#
+#
 #
 #
 #
@@ -3427,10 +3461,14 @@ msgstr ""
 #~ msgstr "GRIB Dosyası Klasörü"
 #
 #
+#
+#
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Dışarıdan GPX dosyası al"
+#
+#
 #
 #
 #
@@ -3442,6 +3480,8 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Denizci Standartı"
+#
+#
 #
 #
 #
@@ -3461,6 +3501,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3472,6 +3514,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
+#
 #
 #
 #
@@ -3491,6 +3535,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3502,6 +3548,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı SEATEMP GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
+#
 #
 #
 #
@@ -3518,6 +3566,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -3526,6 +3576,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Güncel Rapor Peryodu:     %3d Sec.\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -3543,6 +3595,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3552,6 +3606,8 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
+#
 #
 #
 #
@@ -3569,6 +3625,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3582,6 +3640,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3589,6 +3649,8 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
+#
 #
 #
 #
@@ -3606,6 +3668,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3615,6 +3679,8 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "GRIB kutusunu göster"
+#
+#
 #
 #
 #
@@ -3632,6 +3698,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3643,16 +3711,22 @@ msgstr ""
 #~ msgstr "Anlamlı Dalga Yüksekliği, m."
 #
 #
+#
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "İzleme şeklini değiştir"
 #
 #
+#
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota İsmi"
+#
+#
 #
 #
 #
@@ -3670,6 +3744,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -3679,6 +3755,8 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
+#
 #
 #
 #

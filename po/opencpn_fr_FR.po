@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -368,7 +368,7 @@ msgstr ""
 "- Sinon, une autre application utilisant le même port est peut être active. "
 "Dans ce cas, fermez la."
 #
-#
+# Couche
 msgid "(Unnamed Layer)"
 msgstr "(Couche sans nom)"
 #
@@ -498,6 +498,7 @@ msgstr "Mosaïque des cartes : Ajouter cette carte"
 msgid "Additional information"
 msgstr "Information complémentaire"
 #
+# AIS
 msgid "Aground"
 msgstr "Echoué"
 #
@@ -521,7 +522,6 @@ msgstr "Êtes vous sûr de vouloir effacer <TOUTES> les routes ?"
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Êtes vous certain de vouloir effacer <TOUTES> les traces ?"
 #
-#
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Êtes vous sûr de vouloir effacer <TOUTES> les marques ?"
 #
@@ -533,7 +533,7 @@ msgstr "Êtes vous certain de vouloir effacer cette trace ?"
 msgid "Assumed 1 Mile Point"
 msgstr "Longueur : 1 mille."
 #
-#
+# AIS
 msgid "At Anchor"
 msgstr "Au mouillage"
 #
@@ -571,13 +571,9 @@ msgstr "B"
 msgid "Barge, tanker, chemical"
 msgstr "Chaland, citerne, chimiquier"
 #
-#
-#, fuzzy
 msgid "Base"
 msgstr "Emet. fixe"
 #
-#
-#, fuzzy
 msgid "Base Station"
 msgstr "Station  fixe"
 #
@@ -619,10 +615,10 @@ msgid "Bearing:                Unavailable\n"
 msgstr "Relèvement          : Indisponible\n"
 #
 msgid "Black"
-msgstr ""
+msgstr "Noir"
 #
 msgid "Blue"
-msgstr ""
+msgstr "Bleu"
 #
 #
 msgid "Boundaries"
@@ -742,6 +738,7 @@ msgstr "Balise cardinale S"
 msgid "Cardinal W Beacon"
 msgstr "Balise cardinale O"
 #
+# AIS
 msgid "Cargo Ship"
 msgstr "Cargo"
 #
@@ -824,9 +821,8 @@ msgid "CoG"
 msgstr "COG"
 #
 # Toolbox/Langue
-#, fuzzy
 msgid "Color:"
-msgstr "C&ouleur :"
+msgstr "Couleur :"
 #
 #
 msgid "Colors"
@@ -838,6 +834,7 @@ msgstr "Légende de la console"
 msgid "Console Value"
 msgstr "Valeur de la console"
 #
+# AIS
 msgid "Constrained by draught"
 msgstr "Handicapé par son tirant d'eau"
 #
@@ -881,33 +878,32 @@ msgid "Cursor: "
 msgstr "Curs. : "
 #
 #
-#, fuzzy
 msgid "Cyan"
-msgstr "Annuler"
+msgstr "Cyan"
 #
 msgid "D/V"
 msgstr "Plong."
 #
 msgid "Dark Blue"
-msgstr ""
+msgstr "Bleu foncé"
 #
 msgid "Dark Cyan"
-msgstr ""
+msgstr "Cyan foncé"
 #
 msgid "Dark Gray"
-msgstr ""
+msgstr "Gris foncé"
 #
 msgid "Dark Green"
-msgstr ""
+msgstr "Vert foncé"
 #
 msgid "Dark Magenta"
-msgstr ""
+msgstr "Magenta foncé"
 #
 msgid "Dark Red"
-msgstr ""
+msgstr "Rouge foncé"
 #
 msgid "Dark Yellow"
-msgstr ""
+msgstr "Jaune foncé"
 #
 #
 msgid "De-Clutter Text (exp.)"
@@ -922,22 +918,21 @@ msgid "Deactivate Route"
 msgstr "Route : Désactiver"
 #
 msgid "Decimal degrees"
-msgstr ""
+msgstr "Degrés décimaux"
 #
 #
 msgid "Deep Depth"
 msgstr "Eaux profondes"
 #
 # Toolbox/Langue
-#, fuzzy
 msgid "Default color"
-msgstr "Couleur de police"
+msgstr "Couleur par défaut"
 #
 msgid "Degrees, Decimal minutes"
-msgstr ""
+msgstr "Degrés, Minutes décimales"
 #
 msgid "Degrees, Minutes, Seconds"
-msgstr ""
+msgstr "Degrés, Minutes, Secondes"
 #
 #
 msgid "Delete All"
@@ -1076,12 +1071,13 @@ msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Activer le zoom par la molette de la souris"
 #
 msgid "Enable transparent toolbar"
-msgstr ""
+msgstr "Barre d'icônes : Permettre la transparence"
 #
 # Menu contextuel : Route
 msgid "End Route"
 msgstr "Route : Terminer"
 #
+# AIS
 msgid "Engaged in Fishing"
 msgstr "Pêche en cours"
 #
@@ -1204,7 +1200,7 @@ msgid "Go to "
 msgstr "Aller au curseur (avec route)"
 #
 msgid "Green"
-msgstr ""
+msgstr "Vert"
 #
 msgid "HSC"
 msgstr "grd. vit."
@@ -1225,12 +1221,15 @@ msgstr "Aide"
 msgid "Here"
 msgstr "Ici"
 #
+# Couche
 msgid "Hide WPT names"
-msgstr "Masquer les nom des points de trace"
+msgstr "WP : Masquer les noms"
 #
+# Couches
 msgid "Hide from chart"
 msgstr "Cacher sur la carte"
 #
+# AIS
 msgid "High Speed Craft"
 msgstr "Bateau grande vitesse"
 #
@@ -1294,8 +1293,6 @@ msgstr "Langue"
 msgid "Language/Fonts"
 msgstr "Langues / polices"
 #
-#
-#, fuzzy
 msgid "Last Position Report Time:  "
 msgstr "Heure du dernier rapport   : "
 #
@@ -1303,13 +1300,15 @@ msgstr "Heure du dernier rapport   : "
 msgid "Latitude"
 msgstr "Latitude"
 #
+# AIS
 msgid "Law Enforcement Vessel"
 msgstr "Police maritime"
 #
-#
+# Couche
 msgid "Layer Name"
 msgstr "Nom de la couche"
 #
+# Couche
 msgid "Layers"
 msgstr "Couches"
 #
@@ -1350,9 +1349,8 @@ msgid "Light"
 msgstr "Feu"
 #
 #
-#, fuzzy
 msgid "Light Gray"
-msgstr "Feu"
+msgstr "Gris clair"
 #
 msgid "Light Vessel/Rig"
 msgstr "Bateau feu/Plate-forme"
@@ -1370,9 +1368,9 @@ msgstr "Liens"
 msgid "Liquified gas tanker"
 msgstr "Navire-citerne pour gaz liquéfié"
 #
-#
+# Couche
 msgid "List contents"
-msgstr "Liste des contenus"
+msgstr "Recopier"
 #
 msgid "Local @ PC"
 msgstr ""
@@ -1390,8 +1388,6 @@ msgstr "Remorquage long"
 msgid "Longitude"
 msgstr "Longitude"
 #
-#
-#, fuzzy
 msgid "Look Ahead Mode"
 msgstr "Décentrer la carte pour voir en avant du bateau"
 #
@@ -1429,7 +1425,7 @@ msgid "M_COVR ID"
 msgstr "M_COVRD ID"
 #
 msgid "Magenta"
-msgstr ""
+msgstr "Magenta"
 #
 #
 msgid "Mariner's Standard"
@@ -1482,6 +1478,7 @@ msgstr "Mesurer ..."
 msgid "Med/V"
 msgstr "Nav. sanit."
 #
+# AIS
 msgid "Medical Transport"
 msgstr "Transport sanitaires"
 #
@@ -1500,9 +1497,11 @@ msgstr "Mètres"
 msgid "Mil/V"
 msgstr "Nav Mil."
 #
+# AIS
 msgid "Military Vessel"
 msgstr "Navire militaire"
 #
+# AIS
 msgid "Moored"
 msgstr "Mouillé"
 #
@@ -1595,9 +1594,11 @@ msgstr "CPA : Pas de calcul si la distance est supérieure à ... (milles) :"
 msgid "No Chart Available"
 msgstr "Pas de carte disponible"
 #
+# Couche
 msgid "No. of items"
-msgstr "N° d'item"
+msgstr "Nombre d'objet(s)"
 #
+# AIS
 msgid "Not Under Command"
 msgstr "Non maitre de sa manoeuvre"
 #
@@ -1715,15 +1716,17 @@ msgstr "Carte papier"
 msgid "Pass/V"
 msgstr "Nav. Pas."
 #
+# AIS
 msgid "Passenger Ship"
 msgstr "Navire à passagers"
 #
 msgid "Passenger ship without accomodation"
-msgstr "Bateau de passagers sans aménagement"
+msgstr "Bateau d'excursions journalières"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Bateau de passagers, ferry, bateau de croisière, bateau-hôpital"
 #
+# AIS
 msgid "Pilot Vessel"
 msgstr "Bateau pilote"
 #
@@ -1759,9 +1762,9 @@ msgstr "Activer la cloche de bord."
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Redémarrez OpenCPN pour mettre à jour la langue"
 #
-#
+# AIS
 msgid "Pleasure craft"
-msgstr "NNavire de plaisance"
+msgstr "Navire de plaisance"
 #
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Bateau de plaisance, longueur > à 20 mètres"
@@ -1794,6 +1797,7 @@ msgstr "Compléments"
 msgid "Points"
 msgstr "Choix des visuels de signalisation :"
 #
+# AIS
 msgid "Pollution Control Vessel"
 msgstr "Navire de contrôle de pollution"
 #
@@ -1810,6 +1814,7 @@ msgstr "Babord"
 msgid "Port Hand Mark"
 msgstr "Marque latérale tribord"
 #
+# AIS
 msgid "Port Tender"
 msgstr "Bateau de services de port"
 #
@@ -1817,12 +1822,11 @@ msgstr "Bateau de services de port"
 msgid "Position"
 msgstr "Position"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
-msgstr "Dernier rapport            : %3d Sec.\n"
+msgstr "Age du dernier rapport            : %3d Sec.\n"
 #
 #
 msgid "Position:               "
@@ -1910,7 +1914,6 @@ msgstr "Pousseur, quatre chalands dont au moins une citerne ou un gazier"
 msgid "Pushtow, four cargo barges"
 msgstr "Pousseur, quatre chalands de marchandises diverses"
 #
-#, fuzzy
 msgid "Pushtow, nine or more barges"
 msgstr "Pousseur, neuf chalands de marchandises diverses ou plus"
 #
@@ -1993,14 +1996,15 @@ msgstr "Vitesse de rotation : >5d Deg./Min. Gauche\n"
 msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 msgstr "Vitesse de rotation :  >5d Deg./Min. Droite\n"
 #
+# AIS
 msgid "Real"
 msgstr "Réel"
 #
-#
+# AIS
 msgid "Real (On Position)"
 msgstr "Réel (Etat On)"
 #
-#
+# AIS
 msgid "Real(Off Position)"
 msgstr "Réel (Etat Off)"
 #
@@ -2011,14 +2015,13 @@ msgstr ""
 "configuration ...."
 #
 msgid "Red"
-msgstr ""
+msgstr "Rouge"
 #
 msgid "Red cross ship"
 msgstr "Bateau-hôpital"
 #
 msgid "Ref. Pt"
 msgstr "Point de réf."
-#
 #
 msgid "Reference Point"
 msgstr "Point de référence :"
@@ -2046,18 +2049,23 @@ msgstr "Mosaïque des cartes : Retirer cette carte"
 msgid "Rename Waypoints?"
 msgstr "Renommer les waypoint ?"
 #
+# AIS
 msgid "Reserved 11"
 msgstr "Reservé 11"
 #
+# AIS
 msgid "Reserved 12"
 msgstr "Reservé 12"
 #
+# AIS
 msgid "Reserved 13"
 msgstr "Reservé 13"
 #
+# AIS
 msgid "Reserved 14"
 msgstr "Reservé 14"
 #
+# AIS
 msgid "Restricted Manoeuvrability"
 msgstr "Manoeuvrabilité réduite"
 #
@@ -2082,9 +2090,8 @@ msgstr "Info par survol d'une cible."
 msgid "Route"
 msgstr "Route"
 #
-#
 msgid "Route Manager"
-msgstr "Gestionnaire de routes, traces et waypoint."
+msgstr "Gestionnaire de routes, traces, waypoint et couches."
 #
 #
 msgid "Route Name"
@@ -2124,6 +2131,7 @@ msgstr "Eau libre"
 msgid "Safety Depth"
 msgstr "Profondeur de sécurité"
 #
+# AIS
 msgid "Sailing Vessel"
 msgstr "Navire à voile"
 #
@@ -2135,6 +2143,7 @@ msgstr "Augmenter l'échelle"
 msgid "Scale Out"
 msgstr "Diminuer l'échelle"
 #
+# AIS
 msgid "Search and Rescue Vessel"
 msgstr "Navire de recherche et sauvetage en mer"
 #
@@ -2242,9 +2251,8 @@ msgid "Show Important Text Only"
 msgstr "Afficher : Textes importants seulement"
 #
 #
-#, fuzzy
 msgid "Show Lat/Long as"
-msgstr "Montrer sur la carte"
+msgstr "Montrer lat/Long en :"
 #
 #
 msgid "Show Light Descriptions"
@@ -2279,14 +2287,14 @@ msgstr "Afficher les marées"
 msgid "Show Track icon"
 msgstr "Afficher l'icône de trace"
 #
-#
+# Couche
 msgid "Show WPT names"
-msgstr "Montrer les noms des points de trace"
+msgstr "WP : Montrer les noms"
 #
 msgid "Show layers initially"
 msgstr ""
 #
-#
+# Couches
 msgid "Show on chart"
 msgstr "Montrer sur la carte"
 #
@@ -2306,7 +2314,7 @@ msgid "Show target tracks"
 msgstr "Afficher leurs traces"
 #
 msgid "Show toolbar in fullscreen mode"
-msgstr "Montrer la barre d'icônes en mode plein écran"
+msgstr "Barre d'icônes : La montrer en mode plein écran"
 #
 # Toolbox/Langue
 msgid "Shows the font preview."
@@ -2322,16 +2330,16 @@ msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
-"Taille              : %dm x %dm x ---m\n"
+"Taille              : %dm x %dm \n"
 "\n"
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm \n"
 "\n"
 msgstr ""
-"Taille              : %dm x %dm x ---m\n"
+"Taille              : %dm x %dm \n"
 "\n"
 #
 #
@@ -2475,6 +2483,7 @@ msgstr "Chaland-citerne, vrac liquide, de type C"
 msgid "Tankbarge, liquid cargo, type N"
 msgstr "Chaland-citerne, vrac liquide, de type N"
 #
+# AIS
 msgid "Tanker"
 msgstr "Pétrolier"
 #
@@ -2619,20 +2628,21 @@ msgstr "Echelle vraie : %8.0f  Zoom %4.1fx"
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "Echelle vraie : %8.0f  Zoom %4.2fx"
 #
+# AIS
 msgid "Tug"
 msgstr "Remorqueur"
 #
 msgid "Tug freighter, coupled"
-msgstr "Remorqueur, bateau-citerne"
+msgstr "Remorqueur, péniche a couple"
 #
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "Remorqueur assistant un navire ou en tandem"
 #
 msgid "Tug, freighter"
-msgstr "Remorqueur, péniche"
+msgstr "Péniche remorqueur"
 #
 msgid "Tug, freighter/tanker, coupled"
-msgstr "Remorqueur avec bateau-citerne à couple"
+msgstr "Remorqueur, bateau-citerne à couple"
 #
 msgid "Tug, one or more tows"
 msgstr "Remorqueur, un ou plusieurs remorqués"
@@ -2641,7 +2651,7 @@ msgid "Tug, single"
 msgstr "Remorqueur, seul"
 #
 msgid "Tug, tanker"
-msgstr "Remorqueur, bateau-citerne"
+msgstr "Bateau-citerne remorqueur"
 #
 msgid "Type"
 msgstr "Type"
@@ -2670,18 +2680,20 @@ msgstr ""
 msgid "Unable to load libgps.so"
 msgstr "Impossible de charger le module libgps.so"
 #
-#
+# AIS
 msgid "Undefined"
 msgstr "Non défini"
 #
+# AIS
 msgid "Under way sailing"
 msgstr "A la voile"
 #
+# AIS
 msgid "Underway"
 msgstr "Faisant route"
 #
 msgid "Unit carrier maritime"
-msgstr "Porteur de charge unique, maritime"
+msgstr "Porte containers de haute mer"
 #
 #
 msgid "Units"
@@ -2695,13 +2707,13 @@ msgstr "Inc."
 msgid "Unknown"
 msgstr "Inconnue"
 #
+# Couches
 msgid "Unlist contents"
-msgstr "Conten,us non listyés"
+msgstr "Ne pas recopier"
 #
-#
-#, fuzzy
+# AIS
 msgid "Unspecified"
-msgstr "Non défini"
+msgstr "Non spécifié"
 #
 #
 msgid "Update Control"
@@ -2735,18 +2747,23 @@ msgstr "Réglage personnel Y (mètres)"
 msgid "Vector Charts"
 msgstr "Cartes vectorielles"
 #
+# AIS
 msgid "Vessel Diving"
 msgstr "Navire avec plongeurs"
 #
+# AIS
 msgid "Vessel Dredging"
 msgstr "Navire draguant"
 #
+# AIS
 msgid "Vessel Fishing"
 msgstr "Bateau en pêche"
 #
+# AIS
 msgid "Vessel Towing"
 msgstr "Navire remorquant"
 #
+# AIS
 msgid "Vessel Towing, Long"
 msgstr "Navire remorquant, grande longueur"
 #
@@ -2758,12 +2775,14 @@ msgid ""
 "dredge"
 msgstr "Navire, bateau-atelier, derrick flottant, cablier, baliseur, drague"
 #
+# AIS
 msgid "Virtual"
 msgstr "Virtuel"
 #
 msgid "Virtual (Off Position)"
 msgstr "Virtuel (Etat Off)"
 #
+# AIS
 msgid "Virtual (On Position)"
 msgstr "Virtuel (Etat On)"
 #
@@ -2811,12 +2830,13 @@ msgid "Whether the font is underlined."
 msgstr "Police soulignée ou non."
 #
 msgid "White"
-msgstr ""
+msgstr "Blanc"
 #
 #
 msgid "WiFi Options"
 msgstr "Options Wifi"
 #
+# AIS
 msgid "Wing In Ground Effect"
 msgstr "Avion à effet de sol (WIG)"
 #
@@ -2838,9 +2858,8 @@ msgid "Yat"
 msgstr "Yat"
 #
 #
-#, fuzzy
 msgid "Yellow"
-msgstr "Cellule"
+msgstr "Jaune"
 #
 #
 msgid "Zoom In"
@@ -2884,32 +2903,22 @@ msgstr "WGS X"
 msgid "wgsoy"
 msgstr "WGS Y"
 #
+#
+# Couche
 #~ msgid "&Toggle Chart"
-#~ msgstr "&Bascule de la carte"
+#~ msgstr "&Mode carte"
 #
 #
-#
+# Couche
 #~ msgid "Import new layer"
-#~ msgstr "Importer une nouvelle couche"
-#
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN charge le fichier des cartes S57"
+#~ msgstr "Importer"
 #
 #
-#
-#~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Fréquence rapports récents : %3d Sec.\n"
-#~ "\n"
-#
-#
-#
+# Couche
 #~ msgid "Toggle Listing"
-#~ msgstr "Liste des bascules"
+#~ msgstr "Liste des modes"
 #
 #
-#
+# Couche
 #~ msgid "Toggle Names"
-#~ msgstr "Noms des bascules :"
+#~ msgstr "Mode noms"

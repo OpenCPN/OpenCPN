@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.527\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Jump To Position"
 msgstr ""
 
-#: include/about.h:70 src/chart1.cpp:3280
+#: include/about.h:70 src/chart1.cpp:3283
 msgid "About OpenCPN"
 msgstr ""
 
@@ -149,169 +149,169 @@ msgstr ""
 msgid "Welcome to OpenCPN"
 msgstr ""
 
-#: src/chart1.cpp:1725 src/chart1.cpp:2537 src/chart1.cpp:4979
+#: src/chart1.cpp:1731 src/chart1.cpp:2548 src/chart1.cpp:4996
 #: src/navutil.cpp:1234 src/navutil.cpp:2214
 msgid "OpenCPN Info"
 msgstr ""
 
-#: src/chart1.cpp:1920
+#: src/chart1.cpp:1931
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:2458
+#: src/chart1.cpp:2469
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:2515
+#: src/chart1.cpp:2526
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/chart1.cpp:2518
+#: src/chart1.cpp:2529
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/chart1.cpp:2519
+#: src/chart1.cpp:2530
 msgid "Estimated time : "
 msgstr ""
 
-#: src/chart1.cpp:2520
+#: src/chart1.cpp:2531
 msgid "Remaining time : "
 msgstr ""
 
-#: src/chart1.cpp:2521 src/chart1.cpp:4904
+#: src/chart1.cpp:2532 src/chart1.cpp:4919
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/chart1.cpp:2535
+#: src/chart1.cpp:2546
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 
-#: src/chart1.cpp:3117 src/chcanv.cpp:7993 src/chcanv.cpp:8434 src/ais.cpp:4229
+#: src/chart1.cpp:3120 src/chcanv.cpp:7993 src/chcanv.cpp:8434 src/ais.cpp:4229
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chart1.cpp:3206 src/chcanv.cpp:7964
+#: src/chart1.cpp:3209 src/chcanv.cpp:7964
 msgid "Zoom In"
 msgstr ""
 
-#: src/chart1.cpp:3208 src/chcanv.cpp:7965
+#: src/chart1.cpp:3211 src/chcanv.cpp:7965
 msgid "Zoom Out"
 msgstr ""
 
-#: src/chart1.cpp:3214
+#: src/chart1.cpp:3217
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:3216
+#: src/chart1.cpp:3219
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:3230
+#: src/chart1.cpp:3233
 msgid "Create Route"
 msgstr ""
 
-#: src/chart1.cpp:3232
+#: src/chart1.cpp:3235
 msgid "Auto Follow"
 msgstr ""
 
-#: src/chart1.cpp:3236 src/chart1.cpp:4832
+#: src/chart1.cpp:3239 src/chart1.cpp:4835
 msgid "ToolBox"
 msgstr ""
 
-#: src/chart1.cpp:3238
+#: src/chart1.cpp:3241
 msgid "Show ENC Text"
 msgstr ""
 
-#: src/chart1.cpp:3246
+#: src/chart1.cpp:3249
 msgid "Show AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:3252
+#: src/chart1.cpp:3255
 msgid "Show Currents"
 msgstr ""
 
-#: src/chart1.cpp:3254
+#: src/chart1.cpp:3257
 msgid "Show Tides"
 msgstr ""
 
-#: src/chart1.cpp:3259
+#: src/chart1.cpp:3262
 msgid "Print Chart"
 msgstr ""
 
-#: src/chart1.cpp:3263 src/routemanagerdialog.cpp:385
+#: src/chart1.cpp:3266 src/routemanagerdialog.cpp:385
 msgid "Route Manager"
 msgstr ""
 
-#: src/chart1.cpp:3268
+#: src/chart1.cpp:3271
 msgid "Toggle Tracking"
 msgstr ""
 
-#: src/chart1.cpp:3274
+#: src/chart1.cpp:3277
 msgid "Change Color Scheme"
 msgstr ""
 
-#: src/chart1.cpp:3277
+#: src/chart1.cpp:3280
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/chart1.cpp:4437
+#: src/chart1.cpp:4440
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 
-#: src/chart1.cpp:4575 src/chart1.cpp:4619
+#: src/chart1.cpp:4578 src/chart1.cpp:4622
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:4587
+#: src/chart1.cpp:4590
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/chart1.cpp:4598
+#: src/chart1.cpp:4601
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/chart1.cpp:4599
+#: src/chart1.cpp:4602
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/chart1.cpp:4979
+#: src/chart1.cpp:4996
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr ""
 
-#: src/chart1.cpp:5642 src/chcanv.cpp:3908 src/chcanv.cpp:6762
+#: src/chart1.cpp:5703 src/chcanv.cpp:3908 src/chcanv.cpp:6762
 msgid "Cursor: "
 msgstr ""
 
-#: src/chart1.cpp:5652 src/chcanv.cpp:3917 src/chcanv.cpp:6771
+#: src/chart1.cpp:5713 src/chcanv.cpp:3917 src/chcanv.cpp:6771
 #, c-format
 msgid "From Ownship: %03d Deg  %6.2f NMi"
 msgstr ""
 
-#: src/chart1.cpp:6773
+#: src/chart1.cpp:6834
 msgid "Add this chart to quilt."
 msgstr ""
 
-#: src/chart1.cpp:6779 src/chcanv.cpp:8024
+#: src/chart1.cpp:6840 src/chcanv.cpp:8024
 msgid "Remove this chart from quilt."
 msgstr ""
 
-#: src/chart1.cpp:7073
+#: src/chart1.cpp:7102
 msgid "Chart Print"
 msgstr ""
 
-#: src/chart1.cpp:7077
+#: src/chart1.cpp:7106
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 
-#: src/chart1.cpp:7634
+#: src/chart1.cpp:7663
 msgid " Ship: "
 msgstr ""
 
-#: src/chart1.cpp:10450
+#: src/chart1.cpp:10479
 msgid "ToolTips"
 msgstr ""
 
@@ -356,8 +356,8 @@ msgid "User Y Offset (Metres)"
 msgstr ""
 
 #: src/cm93.cpp:6273 src/chcanv.cpp:11190 src/chcanv.cpp:12920
-#: src/chcanv.cpp:13458 src/routeprop.cpp:696 src/routeprop.cpp:1685
-#: src/routeprop.cpp:2135
+#: src/chcanv.cpp:13458 src/routeprop.cpp:696 src/routeprop.cpp:1688
+#: src/routeprop.cpp:2138
 msgid "OK"
 msgstr ""
 
@@ -818,22 +818,22 @@ msgstr ""
 msgid "RouteLegInfoRollover"
 msgstr ""
 
-#: src/chcanv.cpp:13434 src/routeprop.cpp:1661 src/routeprop.cpp:2094
+#: src/chcanv.cpp:13434 src/routeprop.cpp:1664 src/routeprop.cpp:2097
 msgid "Position"
 msgstr ""
 
-#: src/chcanv.cpp:13439 src/routeprop.cpp:729 src/routeprop.cpp:1666
-#: src/routeprop.cpp:2099
+#: src/chcanv.cpp:13439 src/routeprop.cpp:729 src/routeprop.cpp:1669
+#: src/routeprop.cpp:2102
 msgid "Latitude"
 msgstr ""
 
-#: src/chcanv.cpp:13446 src/routeprop.cpp:734 src/routeprop.cpp:1673
-#: src/routeprop.cpp:2105
+#: src/chcanv.cpp:13446 src/routeprop.cpp:734 src/routeprop.cpp:1676
+#: src/routeprop.cpp:2108
 msgid "Longitude"
 msgstr ""
 
-#: src/chcanv.cpp:13455 src/routeprop.cpp:693 src/routeprop.cpp:1682
-#: src/routeprop.cpp:2132 src/routeman.cpp:1063
+#: src/chcanv.cpp:13455 src/routeprop.cpp:693 src/routeprop.cpp:1685
+#: src/routeprop.cpp:2135 src/routeman.cpp:1063
 msgid "Cancel"
 msgstr ""
 
@@ -953,11 +953,11 @@ msgstr ""
 msgid "_plus"
 msgstr ""
 
-#: src/routeprop.cpp:597 src/routeprop.cpp:1629
+#: src/routeprop.cpp:597 src/routeprop.cpp:1632
 msgid "Properties"
 msgstr ""
 
-#: src/routeprop.cpp:601 src/routeprop.cpp:2086 src/ais.cpp:4060
+#: src/routeprop.cpp:601 src/routeprop.cpp:2089 src/ais.cpp:4060
 msgid "Name"
 msgstr ""
 
@@ -1113,51 +1113,51 @@ msgstr ""
 msgid "Next tide event"
 msgstr ""
 
-#: src/routeprop.cpp:855
+#: src/routeprop.cpp:858
 msgid "Avg. speed (Kts)"
 msgstr ""
 
-#: src/routeprop.cpp:860
+#: src/routeprop.cpp:863
 msgid "Plan speed (Kts)"
 msgstr ""
 
-#: src/routeprop.cpp:1059
+#: src/routeprop.cpp:1062
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr ""
 
-#: src/routeprop.cpp:1061
+#: src/routeprop.cpp:1064
 msgid " %H Hours  %M Minutes"
 msgstr ""
 
-#: src/routeprop.cpp:1158
+#: src/routeprop.cpp:1161
 msgid "Start"
 msgstr ""
 
-#: src/routeprop.cpp:1266
+#: src/routeprop.cpp:1269
 msgid "--"
 msgstr ""
 
-#: src/routeprop.cpp:1634
+#: src/routeprop.cpp:1637
 msgid "Mark Name"
 msgstr ""
 
-#: src/routeprop.cpp:1640
+#: src/routeprop.cpp:1643
 msgid "Show Name"
 msgstr ""
 
-#: src/routeprop.cpp:1643 src/routeprop.cpp:1706
+#: src/routeprop.cpp:1646 src/routeprop.cpp:1709
 msgid "Description"
 msgstr ""
 
-#: src/routeprop.cpp:1653
+#: src/routeprop.cpp:1656
 msgid "Mark Icon"
 msgstr ""
 
-#: src/routeprop.cpp:1700 src/routemanagerdialog.cpp:566
+#: src/routeprop.cpp:1703 src/routemanagerdialog.cpp:566
 msgid "Icon"
 msgstr ""
 
-#: src/routeprop.cpp:2112
+#: src/routeprop.cpp:2115
 msgid "Links"
 msgstr ""
 
@@ -2911,55 +2911,55 @@ msgstr ""
 msgid "PlugIns"
 msgstr ""
 
-#: src/options.cpp:2163
+#: src/options.cpp:2154
 msgid "Available Chart Directories"
 msgstr ""
 
-#: src/options.cpp:2174
+#: src/options.cpp:2165
 msgid "Active Chart Directories"
 msgstr ""
 
-#: src/options.cpp:2190
+#: src/options.cpp:2181
 msgid "Delete Selection"
 msgstr ""
 
-#: src/options.cpp:2194
+#: src/options.cpp:2185
 msgid "Update Control"
 msgstr ""
 
-#: src/options.cpp:2197
+#: src/options.cpp:2188
 msgid "Force Full Database Rebuild"
 msgstr ""
 
-#: src/options.cpp:2214
+#: src/options.cpp:2205
 msgid "All files (*.*)|*.*"
 msgstr ""
 
-#: src/options.cpp:2223
+#: src/options.cpp:2214
 msgid "Add Selection"
 msgstr ""
 
-#: src/options.cpp:2283
+#: src/options.cpp:2274
 msgid "Language"
 msgstr ""
 
-#: src/options.cpp:2372
+#: src/options.cpp:2363
 msgid "Font Options"
 msgstr ""
 
-#: src/options.cpp:2376
+#: src/options.cpp:2367
 msgid "Text Element"
 msgstr ""
 
-#: src/options.cpp:2394
+#: src/options.cpp:2385
 msgid "Choose Font..."
 msgstr ""
 
-#: src/options.cpp:2492
+#: src/options.cpp:2483
 msgid "Select Sound File"
 msgstr ""
 
-#: src/options.cpp:2493
+#: src/options.cpp:2484
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr ""
 

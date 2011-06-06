@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-04 22:49-0400\n"
+"POT-Creation-Date: 2011-06-05 21:25-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -4071,8 +4071,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
+#
 #
 #
 #
@@ -4117,13 +4121,19 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
 #
 #
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
+#
 #
 #
 #
@@ -4157,8 +4167,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
+#
+#
 #
 #
 #
@@ -4181,8 +4195,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
+#
+#
 #
 #
 #
@@ -4205,8 +4223,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
+#
+#
 #
 #
 #
@@ -4218,6 +4240,8 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
+#
 #
 #
 #
@@ -4241,8 +4265,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
+#
 #
 #
 #
@@ -4288,11 +4316,15 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -4305,8 +4337,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Mostra Liste"
+#
+#
 #
 #
 #
