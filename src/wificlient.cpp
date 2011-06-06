@@ -337,12 +337,12 @@ void WIFIWindow::OnSocketEvent(wxSocketEvent& event)
                 {
                     if(station_data[ilocal].bisvalid)
                     {
-                        stats->pWiFi->SetStationQuality(ilocal, station_data[ilocal].sig_quality);
-                        stats->pWiFi->SetStationSecureFlag(ilocal, station_data[ilocal].secure);
-                        stats->pWiFi->SetStationAge(ilocal, station_data[ilocal].age);
+//                        stats->pWiFi->SetStationQuality(ilocal, station_data[ilocal].sig_quality);
+//                        stats->pWiFi->SetStationSecureFlag(ilocal, station_data[ilocal].secure);
+//                        stats->pWiFi->SetStationAge(ilocal, station_data[ilocal].age);
                     }
-                    else
-                        stats->pWiFi->SetStationQuality(ilocal, 0);
+//                    else
+//                        stats->pWiFi->SetStationQuality(ilocal, 0);
                 }
             stats->Refresh(true);
 
@@ -445,7 +445,7 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
         {
             if(m_watchtick++ > WIFI_DOG_TIMEOUT)       // nothing received recently
             {
-                stats->pWiFi->SetServerStatus(false);
+//                stats->pWiFi->SetServerStatus(false);
                 stats->Refresh(true);
 
                 // Try to totally reset the socket
@@ -462,8 +462,8 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
 
                 m_watchtick = 0;
             }
-            else
-                stats->pWiFi->SetServerStatus(true);
+//            else
+//                stats->pWiFi->SetServerStatus(true);
         }
 
         unsigned char c = WIFI_TRANSMIT_DATA_EXT;       // and call for more data
@@ -473,7 +473,7 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
     {
         if(stats)
         {
-            stats->pWiFi->SetServerStatus(false);
+//            stats->pWiFi->SetServerStatus(false);
             stats->Refresh(true);
         }
         m_sock->Connect(addr, FALSE);       // Non-blocking connect
