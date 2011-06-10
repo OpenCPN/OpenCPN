@@ -941,12 +941,12 @@ bool RouteProp::UpdateProperties()
       if(m_pRoute)
       {
             if (m_pRoute->m_bIsTrack) {
-                  m_ExtendButton->SetLabel(_T("Extend Track"));
-                  m_SplitButton->SetLabel(_T("Split Track"));
+                  m_ExtendButton->SetLabel(_("Extend Track"));
+                  m_SplitButton->SetLabel(_("Split Track"));
             }
             else {
-                  m_ExtendButton->SetLabel(_T("Extend Route"));
-                  m_SplitButton->SetLabel(_T("Split Route"));
+                  m_ExtendButton->SetLabel(_("Extend Route"));
+                  m_SplitButton->SetLabel(_("Split Route"));
             }
 
             m_pRoute->UpdateSegmentDistances();           // get segment and total distance
@@ -955,7 +955,7 @@ bool RouteProp::UpdateProperties()
 
             wxListItem column_info;
 		if(m_wpList->GetColumn(8, column_info)) {
-			wxString c = _T("Next tide event");
+			wxString c = _("Next tide event");
 			if (gpIDX && m_starttime.IsValid()) {
 				  if(!m_pRoute->m_bIsTrack) {
 						c = _T("@~~");
@@ -974,15 +974,15 @@ bool RouteProp::UpdateProperties()
 		{
 			  if(m_pRoute->m_bIsTrack)
 			  {
-					column_info.SetText(_T("Timestamp"));
+					column_info.SetText(_("Timestamp"));
 					m_wpList->SetColumn(6, column_info);
 			  }
 			  else
 			  {
 					if (m_starttime.IsValid())
-						column_info.SetText(_T("ETA"));
+						column_info.SetText(_("ETA"));
 					else
-						column_info.SetText(_T("ETE"));
+						column_info.SetText(_("ETE"));
 					m_wpList->SetColumn(6, column_info);
 			  }
 		}
