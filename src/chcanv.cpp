@@ -7897,7 +7897,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               if ((m_pFoundRoutePoint == pAnchorWatchPoint1) || (m_pFoundRoutePoint == pAnchorWatchPoint2))       //pjotrc 2010.02.15
                     pdef_menu->Append ( ID_WP_MENU_CLEAR_ANCHORWATCH,   _( "Clear Anchor Watch" ) );                //pjotrc 2010.02.15
               else                                                                                                //pjotrc 2010.02.15
-                    if ((NULL == pAnchorWatchPoint1) || (NULL == pAnchorWatchPoint2)) {                             //pjotrc 2010.02.15
+                    if (!(m_pFoundRoutePoint->m_bIsInLayer) && ((NULL == pAnchorWatchPoint1) || (NULL == pAnchorWatchPoint2))) {                             //pjotrc 2010.02.15
 
                     double dist;
                     double brg;                                                                                               //pjotrc 2010.02.15

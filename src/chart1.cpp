@@ -952,6 +952,7 @@ void GrabberWin::MouseEvent(wxMouseEvent& event)
 
       gFrame->Raise();
 //      gFrame->SetFocus();
+
 }
 
 
@@ -1307,21 +1308,14 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
             m_ptoolbar->SetWindowStyleFlag(m_ptoolbar->GetWindowStyleFlag() | wxTB_HORIZONTAL);
       }
 
+      wxPoint grabber_point_abs = ClientToScreen(m_pGrabberwin->GetPosition());
+
       SetGeometry();
       Realize();
-      if(m_orient == wxTB_HORIZONTAL)
-      {
-            m_position.x -= m_pGrabberwin->GetPosition().x - GetSize().y;
-            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
-            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
-      }
-      else
-      {
-            m_position.x += GetSize().y -m_pGrabberwin->GetPosition().x;
-            wxPoint new_screen_pos = m_pparent->ClientToScreen(m_position);
-            MoveDialogInScreenCoords(new_screen_pos, old_screen_pos);
-      }
 
+      wxPoint pos_abs = grabber_point_abs;
+      pos_abs.x -= m_pGrabberwin->GetPosition().x;
+      MoveDialogInScreenCoords(pos_abs, old_screen_pos);
 
       RePosition();
 
@@ -1759,7 +1753,9 @@ bool MyApp::OnInit()
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
 
+#ifndef __WXMSW__
         logger->SetTimestamp(_T("%H:%M:%S %Z"));
+#endif
 
 //      Send init message
         wxLogMessage(_T("\n\n"));
@@ -2666,10 +2662,13 @@ bool MyApp::OnInit()
 //        g_COGAvg = 45.0;
 
         // Import Layer-wise any .gpx files from /Layers directory
-        wxString layerdir(_T("layers"));
+        wxString layerdir = g_PrivateDataDir;  //g_SData_Locn;
+        wxChar sep = wxFileName::GetPathSeparator();
+        if (layerdir.Last() != sep)
+            layerdir.Append(sep);
+        layerdir.Append(_T("layers"));
         wxArrayString file_array;
         g_LayerIdx = 0;
-        layerdir.Prepend(g_SData_Locn);
 
         if(wxDir::Exists(layerdir))
         {

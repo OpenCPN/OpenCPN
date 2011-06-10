@@ -327,7 +327,10 @@ bool Select::AddSelectableRoutePoint ( float slat, float slon, RoutePoint *pRout
       pSelItem->m_bIsSelected = false;
       pSelItem->m_pData1 = pRoutePointAdd;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoutePointAdd->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
@@ -347,7 +350,10 @@ bool Select::AddSelectableRouteSegment ( float slat1, float slon1, float slat2, 
       pSelItem->m_pData2 = pRoutePointAdd2;
       pSelItem->m_pData3 = pRoute;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoute->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
@@ -678,7 +684,10 @@ bool Select::AddSelectableTrackSegment ( float slat1, float slon1, float slat2, 
       pSelItem->m_pData2 = pRoutePointAdd2;
       pSelItem->m_pData3 = pRoute;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoute->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
