@@ -5896,7 +5896,8 @@ void RenderShadowText(wxDC *pdc, wxFont *pFont, wxString& str, int x, int y)
 
 void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
 {
-      g_FloatingCompassDialog->Update(b_force_new);
+      if(g_FloatingCompassDialog)
+            g_FloatingCompassDialog->Update(b_force_new);
 }
 
 
