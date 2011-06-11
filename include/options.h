@@ -237,6 +237,7 @@ public:
     wxCheckBox              *pGarminHost;
     wxCheckBox              *pFilterNMEA;
     wxTextCtrl              *pFilterSecs;
+    wxTextCtrl              *pCOGUPUpdateSecs;
 
 //    For "S57" page
     wxScrolledWindow        *ps57Ctl;

@@ -139,6 +139,7 @@ extern int              g_NMEALogWindow_sx, g_NMEALogWindow_sy;
 extern bool             g_bUseRaster;
 extern bool             g_bUseVector;
 extern bool             g_bUseCM93;
+extern int              g_COGAvgSec;
 
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
@@ -767,6 +768,17 @@ void options::CreateControls()
       pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) );
       pFilterGrid->Add(pFilterSecs, 0, wxALIGN_RIGHT, 2);
 
+      //    Course Up display update period
+      wxFlexGridSizer *pCOGUPFilterGrid = new wxFlexGridSizer(2);
+      pCOGUPFilterGrid->AddGrowableCol(1);
+      itemNMEAStaticBoxSizer->Add(pCOGUPFilterGrid, 0, wxALL|wxEXPAND, border_size);
+
+      wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC, _("Course-Up Mode Display Update Period (Sec.)"));
+      pCOGUPFilterGrid->Add(itemStaticTextCOGUPFilterSecs, 0, wxALIGN_LEFT|wxADJUST_MINSIZE, border_size);
+
+      pCOGUPUpdateSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) );
+      pCOGUPFilterGrid->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT, 2);
+
 //    Add Autopilot serial output port controls
       wxStaticBox* itemNMEAAutoStaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("Autopilot Output Port"));
       wxStaticBoxSizer* itemNMEAAutoStaticBoxSizer = new wxStaticBoxSizer(itemNMEAAutoStaticBox, wxVERTICAL);
@@ -1369,6 +1381,9 @@ void options::SetInitialSettings()
       s.Printf(_T("%d"), g_COGFilterSec);
       pFilterSecs->SetValue(s);
 
+      s.Printf(_T("%d"), g_COGAvgSec);
+      pCOGUPUpdateSecs->SetValue(s);
+
       pPrintShowIcon->SetValue(g_bShowPrintIcon);
       pCDOOutlines->SetValue(g_bShowOutlines);
       pCDOQuilting->SetValue(g_bQuiltEnable);
@@ -1769,6 +1784,10 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
+
+    long update_val = 1;
+    pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
+    g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
 
 //    g_bAutoAnchorMark = pAutoAnchorMark->GetValue();
 

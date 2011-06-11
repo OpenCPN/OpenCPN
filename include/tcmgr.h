@@ -242,7 +242,7 @@ private:
       void free_abbreviation_list();
       void clean_string(char *str);
       int allocate_copy_string(char **dst, const char *string);
-      void skipnl (FILE *fp);
+      int skipnl (FILE *fp);
       int next_line (FILE *fp, char linrec[linelen], int end_ok);
       int slackcmp (char *a, char *b);
       char *nojunk (char *linrec);
