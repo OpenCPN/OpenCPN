@@ -825,8 +825,6 @@ void RouteProp::SetDialogTitle(wxString title)
 
 void RouteProp::SetRouteAndUpdate(Route *pR)
 {
-      if(NULL == pR)
-            return;
 
       //  Fetch any config file values
 
@@ -1313,20 +1311,22 @@ bool RouteProp::UpdateProperties()
       #endif
       }
 
-      if ( m_pRoute->m_Colour == wxEmptyString )
-            m_chColor->Select(0);
-      else
+      if(m_pRoute)
       {
-            for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+            if ( m_pRoute->m_Colour == wxEmptyString )
+                  m_chColor->Select(0);
+            else
             {
-                  if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
+                  for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
                   {
-                        m_chColor->Select( i + 1 );
-                        break;
+                        if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
+                        {
+                              m_chColor->Select( i + 1 );
+                              break;
+                        }
                   }
             }
       }
-
       ::wxEndBusyCursor();
 
       return true;
