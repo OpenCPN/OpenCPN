@@ -222,16 +222,19 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
 
       for (a=0;a<num_csts;a++)
       {
-            fscanf (fp, "%s", linrec);
+            if(EOF == fscanf (fp, "%s", linrec))
+                  return;
             for (b=0;b<num_epochs;b++)
             {
-                  fscanf (fp, "%lf", &(cst_epochs[a][b]));
+                  if(EOF == fscanf (fp, "%lf", &(cst_epochs[a][b])))
+                        return;
                   cst_epochs[a][b] *= M_PI / 180.0;
             }
       }
 
       /* Sanity check */
-      fscanf (fp, "%s", linrec) ;
+      if(EOF == fscanf (fp, "%s", linrec))
+            return;
       skipnl (fp);
 
       /* Load node factor table */
@@ -1461,10 +1464,12 @@ int TCMgr::next_line (FILE *fp, char linrec[linelen], int end_ok)
 }
 
 /* Remove lingering carriage return, but do nothing else */
-void TCMgr::skipnl (FILE *fp)
+int TCMgr::skipnl (FILE *fp)
  {
   char linrec[linelen];
-  fgets (linrec, linelen, fp);
+  if(NULL == fgets (linrec, linelen, fp))
+      return 0;
+  return 1;
 }
 
 
