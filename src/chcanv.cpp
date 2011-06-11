@@ -1257,7 +1257,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                               if(chart_fractional_area < .10)
                               {
-                                    b_add = false;
+//                                    b_add = false;
 //                                    printf("Skipping S57 less than 10 percent\n");
                               }
                         }
@@ -1434,7 +1434,15 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         continue;                           // already did this one
 
                   const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqc->dbIndex);
-                  if(cte.GetScale() >= m_reference_scale)
+
+                  bool b_S57larger_scale = false;
+                  if(CHART_TYPE_S57 == m_reference_type)
+                  {
+//                        if(cte.GetScale() > m_reference_scale/5)
+//                              b_S57larger_scale = true;
+                  }
+
+                  if((cte.GetScale() >= m_reference_scale) || b_S57larger_scale)
                   {
                         //  If this chart appears in the no-show array, then simply include it, but
                         //  don't subtract its region when determining the smaller scale charts to include.....
@@ -9757,9 +9765,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxCoord w, h;
         scratch_dc.GetSize(&w, &h);
         if(g_bDisplayGrid)
-              ScaleBarDraw( scratch_dc, 60, h - 20 );
+              ScaleBarDraw( scratch_dc, 60, h - 50 );
         else
-              ScaleBarDraw( scratch_dc, 20, h - 20 );
+              ScaleBarDraw( scratch_dc, 20, h - 50 );
 
 
         // Maybe draw a Grid

@@ -2647,7 +2647,7 @@ bool MyApp::OnInit()
         gFrame->DoChartUpdate();
 
         gFrame->RequestNewToolbar();
-        g_FloatingCompassDialog->Update(true);
+//        gFrame->UpdateGPSCompassStatusBox(true);
 
 //      Start up the ticker....
         gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
@@ -4045,7 +4045,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       g_FloatingToolbarDialog->Destroy();
 
       if(g_pAISTargetList)
+      {
+            g_pAISTargetList->Disconnect_decoder();
             g_pAISTargetList->Destroy();
+      }
 
       cc1->Destroy();
       cc1 = NULL;
@@ -4141,8 +4144,7 @@ void MyFrame::OnMove(wxMoveEvent& event)
       if(g_FloatingToolbarDialog)
             g_FloatingToolbarDialog->RePosition();
 
-      if(g_FloatingCompassDialog)
-            g_FloatingCompassDialog->Update(true);
+      UpdateGPSCompassStatusBox(true);
 }
 
 
@@ -4159,13 +4161,13 @@ void MyFrame::ProcessCanvasResize(void)
 
       if(g_FloatingCompassDialog)
       {
-            g_FloatingCompassDialog->Update(true);
 
             wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
             wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
             wxPoint pos_in_frame = ScreenToClient(pos_abs);
-
             g_FloatingCompassDialog->Move(pos_in_frame);
+
+            UpdateGPSCompassStatusBox(true);
       }
 
 }
@@ -4237,8 +4239,8 @@ void MyFrame::DoSetSize(void)
 
         if(g_FloatingCompassDialog)
         {
-              g_FloatingCompassDialog->Update(true);
-              g_FloatingCompassDialog->Move(x - g_FloatingCompassDialog->GetSize().x, 0);
+             g_FloatingCompassDialog->Move(x - g_FloatingCompassDialog->GetSize().x, 0);
+             UpdateGPSCompassStatusBox(true);
         }
 
         if(console)
@@ -5895,6 +5897,33 @@ void RenderShadowText(wxDC *pdc, wxFont *pFont, wxString& str, int x, int y)
 
 void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
 {
+      //    Look for overlap
+
+      if(g_FloatingCompassDialog && g_FloatingToolbarDialog)
+      {
+            wxRect cd_rect = g_FloatingCompassDialog->GetScreenRect();
+            wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+            if(tb_rect.Intersects(cd_rect))
+            {
+                  if(cd_rect.y > 100)
+                  {
+                        wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+                        wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
+                        wxPoint pos_in_frame = ScreenToClient(pos_abs);
+
+                        g_FloatingCompassDialog->Move(pos_in_frame);
+                  }
+                  else
+                  {
+                        wxPoint posn_in_canvas = wxPoint(5, cc1->GetSize().y - (g_FloatingCompassDialog->GetSize().y + 4));
+                        wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
+                        wxPoint pos_in_frame = ScreenToClient(pos_abs);
+
+                        g_FloatingCompassDialog->Move(pos_in_frame);
+                  }
+            }
+      }
+
       if(g_FloatingCompassDialog)
             g_FloatingCompassDialog->Update(b_force_new);
 }
@@ -8852,6 +8881,131 @@ void SetSystemColors ( ColorScheme cs )
 // private classes
 // ----------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------
+// Toolbar Tooltip Popup Window Definition
+//----------------------------------------------------------------------------
+class ToolTipWin: public wxDialog
+{
+      public:
+            ToolTipWin(wxWindow *parent);
+            ~ToolTipWin();
+
+            void OnPaint(wxPaintEvent& event);
+
+            void SetColorScheme(ColorScheme cs);
+            void SetString(wxString &s){ m_string = s; }
+            void SetPosition(wxPoint pt){ m_position = pt; }
+            void SetBitmap(void);
+
+
+      private:
+
+            wxString          m_string;
+            wxSize            m_size;
+            wxPoint           m_position;
+            wxBitmap          *m_pbm;
+            wxColour          m_back_color;
+            wxColour          m_text_color;
+
+
+
+            DECLARE_EVENT_TABLE()
+};
+
+
+
+//-----------------------------------------------------------------------
+//
+//    Toolbar Tooltip window implementation
+//
+//-----------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ToolTipWin, wxDialog)
+            EVT_PAINT(ToolTipWin::OnPaint)
+
+            END_EVENT_TABLE()
+
+// Define a constructor
+ToolTipWin::ToolTipWin(wxWindow *parent):
+            wxDialog(parent, wxID_ANY, _T(""), wxPoint(0,0), wxSize(1,1), wxNO_BORDER | wxSTAY_ON_TOP)
+{
+      m_pbm = NULL;
+
+      m_back_color = GetGlobalColor ( _T ( "UIBCK" ) );
+      m_text_color = GetGlobalColor ( _T ( "UITX1" ) );
+
+      SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+      SetBackgroundColour(m_back_color);
+      Hide();
+}
+
+ToolTipWin::~ToolTipWin()
+{
+      delete m_pbm;
+}
+
+void ToolTipWin::SetColorScheme(ColorScheme cs)
+{
+      m_back_color = GetGlobalColor ( _T ( "UIBCK" ) );
+      m_text_color = GetGlobalColor ( _T ( "UITX1" ) );
+}
+
+void ToolTipWin::SetBitmap()
+{
+      int h, w;
+
+      wxClientDC cdc(GetParent());
+
+
+      wxFont *plabelFont = pFontMgr->GetFont(_("ToolTips"));
+      cdc.GetTextExtent(m_string, &w, &h,  NULL, NULL, plabelFont);
+
+      m_size.x = w + 8;
+      m_size.y = h + 4;
+
+      wxMemoryDC mdc;
+
+      delete m_pbm;
+      m_pbm = new wxBitmap( m_size.x, m_size.y, -1);
+      mdc.SelectObject(*m_pbm);
+
+      wxPen pborder(m_text_color);
+      wxBrush bback(m_back_color);
+      mdc.SetPen(pborder);
+      mdc.SetBrush(bback);
+
+      mdc.DrawRectangle( 0, 0, m_size.x, m_size.y);
+
+      //    Draw the text
+      mdc.SetFont(*plabelFont);
+      mdc.SetTextForeground(m_text_color);
+      mdc.SetTextBackground(m_back_color);
+
+      mdc.DrawText(m_string, 4, 2);
+
+      int parent_width;
+      cdc.GetSize(&parent_width, NULL);
+      SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
+
+
+}
+
+void ToolTipWin::OnPaint(wxPaintEvent& event)
+{
+      int width, height;
+      GetClientSize(&width, &height );
+      wxPaintDC dc(this);
+
+      if(m_string.Len())
+      {
+            wxMemoryDC mdc;
+            mdc.SelectObject(*m_pbm);
+            dc.Blit(0, 0, width, height, &mdc, 0,0);
+      }
+}
+
+
+
+
 class ocpnToolBarTool : public wxToolBarToolBase
 {
       public:
@@ -9441,10 +9595,15 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent& event)
                   {
                         m_pToolTipWin->SetString(s);
 
-                        m_pToolTipWin->SetPosition(wxPoint(m_last_ro_tool->m_x, 0));
+                        wxPoint pos_in_toolbar(m_last_ro_tool->m_x, m_last_ro_tool->m_y);
+                        pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
+
+                        m_pToolTipWin->SetPosition(GetParent()->ClientToScreen(pos_in_toolbar));
                         m_pToolTipWin->SetBitmap();
 //                        m_pToolTipWin->Refresh(false);
                         m_pToolTipWin->Show();
+                        gFrame->Raise();
+
                   }
             }
 
@@ -9457,23 +9616,15 @@ int  s_dragx, s_dragy;
 void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
 {
       if(event.Leaving())
-      {
-            if(m_pToolTipWin)
-                  m_pToolTipWin->Hide();
-
             m_one_shot = 500;                   // inital value
-      }
 
       if(event.Entering())
-      {
             m_one_shot = 500;
-      }
 
 
       wxCoord x, y;
       event.GetPosition(&x, &y);
       ocpnToolBarTool *tool = (ocpnToolBarTool *)FindToolForPosition(x, y);
-
       if (event.LeftDown())
       {
             CaptureMouse();
@@ -9491,7 +9642,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
             //    ToolTips
             if(NULL == m_pToolTipWin)
             {
-                  m_pToolTipWin = new ToolTipWin(this->GetParent());
+                  m_pToolTipWin = new ToolTipWin(GetParent());
                   m_pToolTipWin->SetColorScheme(m_currentColorScheme);
                   m_pToolTipWin->Hide();
             }
@@ -9504,7 +9655,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
                   m_tooltip_timer.Start(m_one_shot, wxTIMER_ONE_SHOT);
             }
 
-            //    Tool highlighting
+            //    Tool Rollover highlighting
             if(1)
             {
                   if(tool != m_last_ro_tool)
@@ -9539,6 +9690,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
             }
       }
 
+      m_last_ro_tool = tool;
 
 
 
@@ -10451,100 +10603,6 @@ void ocpnToolBarSimple::OnMouseEnter(int id)
       }
 
       (void)GetEventHandler()->ProcessEvent(event);
-}
-
-
-
-//-----------------------------------------------------------------------
-//
-//    Toolbar Tooltip window implementation
-//
-//-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ToolTipWin, wxWindow)
-            EVT_PAINT(ToolTipWin::OnPaint)
-
-            END_EVENT_TABLE()
-
-// Define a constructor
-ToolTipWin::ToolTipWin(wxWindow *parent):
-            wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(1,1), wxNO_BORDER)
-{
-      m_pbm = NULL;
-
-      m_back_color = GetGlobalColor ( _T ( "UIBCK" ) );
-      m_text_color = GetGlobalColor ( _T ( "UITX1" ) );
-
-      SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-      SetBackgroundColour(m_back_color);
-      Hide();
-}
-
-ToolTipWin::~ToolTipWin()
-{
-      delete m_pbm;
-}
-
-void ToolTipWin::SetColorScheme(ColorScheme cs)
-{
-      m_back_color = GetGlobalColor ( _T ( "UIBCK" ) );
-      m_text_color = GetGlobalColor ( _T ( "UITX1" ) );
-}
-
-void ToolTipWin::SetBitmap()
-{
-      int h, w;
-
-      wxClientDC cdc(GetParent());
-
-
-      wxFont *plabelFont = pFontMgr->GetFont(_("ToolTips"));
-      cdc.GetTextExtent(m_string, &w, &h,  NULL, NULL, plabelFont);
-
-      m_size.x = w + 8;
-      m_size.y = h + 4;
-
-      wxMemoryDC mdc;
-
-      delete m_pbm;
-      m_pbm = new wxBitmap( m_size.x, m_size.y, -1);
-      mdc.SelectObject(*m_pbm);
-
-      wxPen pborder(m_text_color);
-      wxBrush bback(m_back_color);
-      mdc.SetPen(pborder);
-      mdc.SetBrush(bback);
-
-      mdc.DrawRectangle( 0, 0, m_size.x, m_size.y);
-
-      //    Draw the text
-      mdc.SetFont(*plabelFont);
-      mdc.SetTextForeground(m_text_color);
-      mdc.SetTextBackground(m_back_color);
-
-      mdc.DrawText(m_string, 4, 2);
-
-      int parent_width;
-      cdc.GetSize(&parent_width, NULL);
-      if((m_position.x + m_size.x) > parent_width)
-            SetSize(parent_width - m_size.x, 2, m_size.x, m_size.y);         // Dont overlap Right Hand Side
-      else
-            SetSize(m_position.x, 2, m_size.x, m_size.y);
-
-
-}
-
-void ToolTipWin::OnPaint(wxPaintEvent& event)
-{
-      int width, height;
-      GetClientSize(&width, &height );
-      wxPaintDC dc(this);
-
-      if(m_string.Len())
-      {
-            wxMemoryDC mdc;
-            mdc.SelectObject(*m_pbm);
-            dc.Blit(0, 0, width, height, &mdc, 0,0);
-      }
 }
 
 

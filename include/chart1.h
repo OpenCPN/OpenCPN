@@ -760,37 +760,6 @@ class ocpnToolBarSimple : public wxControl
                         DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnToolBarSimple)
 };
 
-//----------------------------------------------------------------------------
-// Toolbar Tooltip Popup Window
-//----------------------------------------------------------------------------
-class ToolTipWin: public wxWindow
-{
-      public:
-            ToolTipWin(wxWindow *parent);
-            ~ToolTipWin();
-
-            void OnPaint(wxPaintEvent& event);
-
-            void SetColorScheme(ColorScheme cs);
-            void SetString(wxString &s){ m_string = s; }
-            void SetPosition(wxPoint pt){ m_position = pt; }
-            void SetBitmap(void);
-
-
-      private:
-
-            wxString          m_string;
-            wxSize            m_size;
-            wxPoint           m_position;
-            wxBitmap          *m_pbm;
-            wxColour          m_back_color;
-            wxColour          m_text_color;
-
-
-
-            DECLARE_EVENT_TABLE()
-};
-
 
 
 
