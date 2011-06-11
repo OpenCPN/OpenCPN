@@ -4019,6 +4019,10 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
+            BEGIN_EVENT_TABLE(AISTargetListDialog, wxPanel)
+            EVT_CLOSE(AISTargetListDialog::OnClose)
+
+            END_EVENT_TABLE()
 
 AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder)
       :wxPanel( parent, wxID_ANY, wxDefaultPosition, wxSize( 780, 250 ), wxBORDER_NONE )
@@ -4156,11 +4160,21 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
 AISTargetListDialog::~AISTargetListDialog( )
 {
+     Disconnect_decoder();
+     g_pAISTargetList = NULL;
+}
+
+void AISTargetListDialog::OnClose(wxCloseEvent &event)
+{
+      Disconnect_decoder();
+}
+void AISTargetListDialog::Disconnect_decoder()
+{
       if(m_pdecoder)
             m_pdecoder->SetNoErase(false);
-
-      g_pAISTargetList = NULL;
+      m_pdecoder = NULL;
 }
+
 
 void AISTargetListDialog::SetColorScheme()
 {

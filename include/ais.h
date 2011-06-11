@@ -509,6 +509,9 @@ class AISTargetListDialog: public wxPanel
             AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder );
            ~AISTargetListDialog( );
 
+            void OnClose(wxCloseEvent &event);
+            void Disconnect_decoder();
+
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
 
@@ -537,6 +540,7 @@ class AISTargetListDialog: public wxPanel
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxSize            m_size_min;
 
+            DECLARE_EVENT_TABLE()
 
 };
 
