@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.4.527\n"
+"Project-Id-Version: opencpn 2.4.611\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: include/routeprop.h:72 src/chcanv.cpp:7853 src/chcanv.cpp:8691
+#: include/routeprop.h:72 src/chcanv.cpp:7861 src/chcanv.cpp:8699
 #: src/routemanagerdialog.cpp:1045
 msgid "Route Properties"
 msgstr ""
@@ -34,8 +34,8 @@ msgid "Options"
 msgstr ""
 
 #: include/chcanv.h:590 include/chcanv.h:602 include/chcanv.h:693
-#: include/chcanv.h:705 src/chcanv.cpp:7930 src/chcanv.cpp:7942
-#: src/chcanv.cpp:8409
+#: include/chcanv.h:705 src/chcanv.cpp:7938 src/chcanv.cpp:7950
+#: src/chcanv.cpp:8417
 msgid "Object Query"
 msgstr ""
 
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Jump To Position"
 msgstr ""
 
-#: include/about.h:70 src/chart1.cpp:3283
+#: include/about.h:70 src/chart1.cpp:3298
 msgid "About OpenCPN"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgstr ""
 msgid " Updated:  "
 msgstr ""
 
-#: src/chartdbs.cpp:832 src/chcanv.cpp:11758
+#: src/chartdbs.cpp:832 src/chcanv.cpp:11766
 msgid "\n"
 msgstr ""
 
@@ -128,7 +128,7 @@ msgstr ""
 msgid "OpenCPN Chart Add...."
 msgstr ""
 
-#: src/chart1.cpp:676
+#: src/chart1.cpp:678
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -145,218 +145,218 @@ msgid ""
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr ""
 
-#: src/chart1.cpp:687
+#: src/chart1.cpp:689
 msgid "Welcome to OpenCPN"
 msgstr ""
 
-#: src/chart1.cpp:1731 src/chart1.cpp:2548 src/chart1.cpp:4996
-#: src/navutil.cpp:1234 src/navutil.cpp:2214
+#: src/chart1.cpp:1741 src/chart1.cpp:2560 src/chart1.cpp:5013
+#: src/navutil.cpp:1243 src/navutil.cpp:2223
 msgid "OpenCPN Info"
 msgstr ""
 
-#: src/chart1.cpp:1931
+#: src/chart1.cpp:1943
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:2469
+#: src/chart1.cpp:2481
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:2526
+#: src/chart1.cpp:2538
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/chart1.cpp:2529
+#: src/chart1.cpp:2541
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/chart1.cpp:2530
+#: src/chart1.cpp:2542
 msgid "Estimated time : "
 msgstr ""
 
-#: src/chart1.cpp:2531
+#: src/chart1.cpp:2543
 msgid "Remaining time : "
 msgstr ""
 
-#: src/chart1.cpp:2532 src/chart1.cpp:4919
+#: src/chart1.cpp:2544 src/chart1.cpp:4936
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/chart1.cpp:2546
+#: src/chart1.cpp:2558
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 
-#: src/chart1.cpp:3120 src/chcanv.cpp:7993 src/chcanv.cpp:8434 src/ais.cpp:4229
+#: src/chart1.cpp:3135 src/chcanv.cpp:8001 src/chcanv.cpp:8442 src/ais.cpp:4243
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chart1.cpp:3209 src/chcanv.cpp:7964
+#: src/chart1.cpp:3224 src/chcanv.cpp:7972
 msgid "Zoom In"
 msgstr ""
 
-#: src/chart1.cpp:3211 src/chcanv.cpp:7965
+#: src/chart1.cpp:3226 src/chcanv.cpp:7973
 msgid "Zoom Out"
 msgstr ""
 
-#: src/chart1.cpp:3217
+#: src/chart1.cpp:3232
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:3219
+#: src/chart1.cpp:3234
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:3233
+#: src/chart1.cpp:3248
 msgid "Create Route"
 msgstr ""
 
-#: src/chart1.cpp:3235
+#: src/chart1.cpp:3250
 msgid "Auto Follow"
 msgstr ""
 
-#: src/chart1.cpp:3239 src/chart1.cpp:4835
+#: src/chart1.cpp:3254 src/chart1.cpp:4852
 msgid "ToolBox"
 msgstr ""
 
-#: src/chart1.cpp:3241
+#: src/chart1.cpp:3256
 msgid "Show ENC Text"
 msgstr ""
 
-#: src/chart1.cpp:3249
+#: src/chart1.cpp:3264
 msgid "Show AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:3255
+#: src/chart1.cpp:3270
 msgid "Show Currents"
 msgstr ""
 
-#: src/chart1.cpp:3257
+#: src/chart1.cpp:3272
 msgid "Show Tides"
 msgstr ""
 
-#: src/chart1.cpp:3262
+#: src/chart1.cpp:3277
 msgid "Print Chart"
 msgstr ""
 
-#: src/chart1.cpp:3266 src/routemanagerdialog.cpp:385
+#: src/chart1.cpp:3281 src/routemanagerdialog.cpp:385
 msgid "Route Manager"
 msgstr ""
 
-#: src/chart1.cpp:3271
+#: src/chart1.cpp:3286
 msgid "Toggle Tracking"
 msgstr ""
 
-#: src/chart1.cpp:3277
+#: src/chart1.cpp:3292
 msgid "Change Color Scheme"
 msgstr ""
 
-#: src/chart1.cpp:3280
+#: src/chart1.cpp:3295
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/chart1.cpp:4440
+#: src/chart1.cpp:4457
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 
-#: src/chart1.cpp:4578 src/chart1.cpp:4622
+#: src/chart1.cpp:4595 src/chart1.cpp:4639
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:4590
+#: src/chart1.cpp:4607
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/chart1.cpp:4601
+#: src/chart1.cpp:4618
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/chart1.cpp:4602
+#: src/chart1.cpp:4619
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/chart1.cpp:4996
+#: src/chart1.cpp:5013
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr ""
 
-#: src/chart1.cpp:5703 src/chcanv.cpp:3908 src/chcanv.cpp:6762
+#: src/chart1.cpp:5725 src/chcanv.cpp:3916 src/chcanv.cpp:6770
 msgid "Cursor: "
 msgstr ""
 
-#: src/chart1.cpp:5713 src/chcanv.cpp:3917 src/chcanv.cpp:6771
+#: src/chart1.cpp:5735 src/chcanv.cpp:3925 src/chcanv.cpp:6779
 #, c-format
 msgid "From Ownship: %03d Deg  %6.2f NMi"
 msgstr ""
 
-#: src/chart1.cpp:6834
+#: src/chart1.cpp:6884
 msgid "Add this chart to quilt."
 msgstr ""
 
-#: src/chart1.cpp:6840 src/chcanv.cpp:8024
+#: src/chart1.cpp:6890 src/chcanv.cpp:8032
 msgid "Remove this chart from quilt."
 msgstr ""
 
-#: src/chart1.cpp:7102
+#: src/chart1.cpp:7152
 msgid "Chart Print"
 msgstr ""
 
-#: src/chart1.cpp:7106
+#: src/chart1.cpp:7156
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 
-#: src/chart1.cpp:7663
+#: src/chart1.cpp:7713
 msgid " Ship: "
 msgstr ""
 
-#: src/chart1.cpp:10479
+#: src/chart1.cpp:8959
 msgid "ToolTips"
 msgstr ""
 
-#: src/cm93.cpp:6216
+#: src/cm93.cpp:6219
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr ""
 
-#: src/cm93.cpp:6233
+#: src/cm93.cpp:6236
 msgid "Cell"
 msgstr ""
 
-#: src/cm93.cpp:6236
+#: src/cm93.cpp:6239
 msgid "M_COVR ID"
 msgstr ""
 
-#: src/cm93.cpp:6239
+#: src/cm93.cpp:6242
 msgid "Cell Scale"
 msgstr ""
 
-#: src/cm93.cpp:6242
+#: src/cm93.cpp:6245
 msgid "wgsox"
 msgstr ""
 
-#: src/cm93.cpp:6245
+#: src/cm93.cpp:6248
 msgid "wgsoy"
 msgstr ""
 
-#: src/cm93.cpp:6248
+#: src/cm93.cpp:6251
 msgid "User X Offset"
 msgstr ""
 
-#: src/cm93.cpp:6251
+#: src/cm93.cpp:6254
 msgid "User Y Offset"
 msgstr ""
 
-#: src/cm93.cpp:6259
+#: src/cm93.cpp:6262
 msgid "User X Offset (Metres)"
 msgstr ""
 
-#: src/cm93.cpp:6266
+#: src/cm93.cpp:6269
 msgid "User Y Offset (Metres)"
 msgstr ""
 
-#: src/cm93.cpp:6273 src/chcanv.cpp:11190 src/chcanv.cpp:12920
-#: src/chcanv.cpp:13458 src/routeprop.cpp:696 src/routeprop.cpp:1688
+#: src/cm93.cpp:6276 src/chcanv.cpp:11198 src/chcanv.cpp:12928
+#: src/chcanv.cpp:13466 src/routeprop.cpp:696 src/routeprop.cpp:1688
 #: src/routeprop.cpp:2138
 msgid "OK"
 msgstr ""
@@ -526,418 +526,418 @@ msgstr ""
 msgid "Route"
 msgstr ""
 
-#: src/chcanv.cpp:3638
+#: src/chcanv.cpp:3646
 msgid "New Mark"
 msgstr ""
 
-#: src/chcanv.cpp:3824
+#: src/chcanv.cpp:3832
 msgid "Leg: from "
 msgstr ""
 
-#: src/chcanv.cpp:3826
+#: src/chcanv.cpp:3834
 msgid " to "
 msgstr ""
 
-#: src/chcanv.cpp:4498
+#: src/chcanv.cpp:4506
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
 msgstr ""
 
-#: src/chcanv.cpp:4500
+#: src/chcanv.cpp:4508
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr ""
 
-#: src/chcanv.cpp:4503
+#: src/chcanv.cpp:4511
 #, c-format
 msgid "TrueScale: %8.0f             "
 msgstr ""
 
-#: src/chcanv.cpp:7007
+#: src/chcanv.cpp:7015
 msgid "Use nearby waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:7007
+#: src/chcanv.cpp:7015
 msgid "OpenCPN Route Create"
 msgstr ""
 
-#: src/chcanv.cpp:7839 src/chcanv.cpp:8711 src/routemanagerdialog.cpp:1438
+#: src/chcanv.cpp:7847 src/chcanv.cpp:8719 src/routemanagerdialog.cpp:1438
 msgid "Track Properties"
 msgstr ""
 
-#: src/chcanv.cpp:7840
+#: src/chcanv.cpp:7848
 msgid "Delete Track"
 msgstr ""
 
-#: src/chcanv.cpp:7847
+#: src/chcanv.cpp:7855
 msgid "Activate Route"
 msgstr ""
 
-#: src/chcanv.cpp:7848
+#: src/chcanv.cpp:7856
 msgid "Deactivate Route"
 msgstr ""
 
-#: src/chcanv.cpp:7849
+#: src/chcanv.cpp:7857
 msgid "Insert Waypoint"
 msgstr ""
 
-#: src/chcanv.cpp:7850
+#: src/chcanv.cpp:7858
 msgid "Append Waypoint"
 msgstr ""
 
-#: src/chcanv.cpp:7851
+#: src/chcanv.cpp:7859
 msgid "Delete Route"
 msgstr ""
 
-#: src/chcanv.cpp:7852
+#: src/chcanv.cpp:7860
 msgid "Reverse Route"
 msgstr ""
 
-#: src/chcanv.cpp:7866
+#: src/chcanv.cpp:7874
 msgid "Activate Waypoint"
 msgstr ""
 
-#: src/chcanv.cpp:7867
+#: src/chcanv.cpp:7875
 msgid "Activate Next in Route"
 msgstr ""
 
-#: src/chcanv.cpp:7868
+#: src/chcanv.cpp:7876
 msgid "Remove Waypoint from Route"
 msgstr ""
 
-#: src/chcanv.cpp:7870
+#: src/chcanv.cpp:7878
 msgid "Delete Waypoint"
 msgstr ""
 
-#: src/chcanv.cpp:7871 src/chcanv.cpp:7895
+#: src/chcanv.cpp:7879 src/chcanv.cpp:7903
 msgid "Mark/WP Properties"
 msgstr ""
 
-#: src/chcanv.cpp:7876 src/chcanv.cpp:7910
+#: src/chcanv.cpp:7884 src/chcanv.cpp:7918
 msgid "Additional information"
 msgstr ""
 
-#: src/chcanv.cpp:7891
+#: src/chcanv.cpp:7899
 msgid "Go To Mark/WP"
 msgstr ""
 
-#: src/chcanv.cpp:7894
+#: src/chcanv.cpp:7902
 msgid "Delete Mark"
 msgstr ""
 
-#: src/chcanv.cpp:7898
+#: src/chcanv.cpp:7906
 msgid "Clear Anchor Watch"
 msgstr ""
 
-#: src/chcanv.cpp:7906
+#: src/chcanv.cpp:7914
 msgid "Set Anchor Watch"
 msgstr ""
 
-#: src/chcanv.cpp:7922 src/chcanv.cpp:7960
+#: src/chcanv.cpp:7930 src/chcanv.cpp:7968
 msgid "Max Detail Here"
 msgstr ""
 
-#: src/chcanv.cpp:7923 src/chcanv.cpp:7961
+#: src/chcanv.cpp:7931 src/chcanv.cpp:7969
 msgid "Scale In"
 msgstr ""
 
-#: src/chcanv.cpp:7924 src/chcanv.cpp:7962
+#: src/chcanv.cpp:7932 src/chcanv.cpp:7970
 msgid "Scale Out"
 msgstr ""
 
-#: src/chcanv.cpp:7966
+#: src/chcanv.cpp:7974
 msgid "End Route"
 msgstr ""
 
-#: src/chcanv.cpp:7971
+#: src/chcanv.cpp:7979
 msgid "Drop Mark Here"
 msgstr ""
 
-#: src/chcanv.cpp:7972
+#: src/chcanv.cpp:7980
 msgid "Move Boat Here"
 msgstr ""
 
-#: src/chcanv.cpp:7974
+#: src/chcanv.cpp:7982
 msgid "Go To Here"
 msgstr ""
 
-#: src/chcanv.cpp:7975
+#: src/chcanv.cpp:7983
 msgid "Jump To Position..."
 msgstr ""
 
-#: src/chcanv.cpp:7979
+#: src/chcanv.cpp:7987
 msgid "Set Course Up Mode"
 msgstr ""
 
-#: src/chcanv.cpp:7981
+#: src/chcanv.cpp:7989
 msgid "Set North Up Mode"
 msgstr ""
 
-#: src/chcanv.cpp:7985
+#: src/chcanv.cpp:7993
 msgid "Measure....."
 msgstr ""
 
-#: src/chcanv.cpp:7987
+#: src/chcanv.cpp:7995
 msgid "Measure Off"
 msgstr ""
 
-#: src/chcanv.cpp:7995 src/ais.cpp:4147
+#: src/chcanv.cpp:8003 src/ais.cpp:4151
 msgid "AIS target list"
 msgstr ""
 
-#: src/chcanv.cpp:8003
+#: src/chcanv.cpp:8011
 msgid "Enable CM93 Detail Slider"
 msgstr ""
 
-#: src/chcanv.cpp:8013
+#: src/chcanv.cpp:8021
 msgid "CM93 Offset Dialog"
 msgstr ""
 
-#: src/chcanv.cpp:8029
+#: src/chcanv.cpp:8037
 msgid "Show Tide Information"
 msgstr ""
 
-#: src/chcanv.cpp:8032
+#: src/chcanv.cpp:8040
 msgid "Show Current Information"
 msgstr ""
 
-#: src/chcanv.cpp:8150
+#: src/chcanv.cpp:8158
 msgid "Temporary GOTO Route"
 msgstr ""
 
-#: src/chcanv.cpp:8151 src/chcanv.cpp:8203 src/routemanagerdialog.cpp:1816
+#: src/chcanv.cpp:8159 src/chcanv.cpp:8211 src/routemanagerdialog.cpp:1816
 msgid "Here"
 msgstr ""
 
-#: src/chcanv.cpp:8152
+#: src/chcanv.cpp:8160
 msgid "There"
 msgstr ""
 
-#: src/chcanv.cpp:8200 src/routemanagerdialog.cpp:1597
+#: src/chcanv.cpp:8208 src/routemanagerdialog.cpp:1597
 #: src/routemanagerdialog.cpp:1813
 msgid "(Unnamed Waypoint)"
 msgstr ""
 
-#: src/chcanv.cpp:8201 src/routemanagerdialog.cpp:1814
+#: src/chcanv.cpp:8209 src/routemanagerdialog.cpp:1814
 msgid "Go to "
 msgstr ""
 
-#: src/chcanv.cpp:8343
+#: src/chcanv.cpp:8351
 msgid "cm93 Detail"
 msgstr ""
 
-#: src/chcanv.cpp:8479 src/routemanagerdialog.cpp:1102
+#: src/chcanv.cpp:8487 src/routemanagerdialog.cpp:1102
 msgid "Rename Waypoints?"
 msgstr ""
 
-#: src/chcanv.cpp:8726
+#: src/chcanv.cpp:8734
 msgid "Are you sure you want to delete this track?"
 msgstr ""
 
-#: src/chcanv.cpp:8726
+#: src/chcanv.cpp:8734
 msgid "OpenCPN Track Delete"
 msgstr ""
 
-#: src/chcanv.cpp:10137 src/options.cpp:949
+#: src/chcanv.cpp:10145 src/options.cpp:961
 msgid "Feet"
 msgstr ""
 
-#: src/chcanv.cpp:10138
+#: src/chcanv.cpp:10146
 msgid "Meters"
 msgstr ""
 
-#: src/chcanv.cpp:10139 src/options.cpp:951
+#: src/chcanv.cpp:10147 src/options.cpp:963
 msgid "Fathoms"
 msgstr ""
 
-#: src/chcanv.cpp:10150 src/chcanv.cpp:10152
+#: src/chcanv.cpp:10158 src/chcanv.cpp:10160
 msgid "OverZoom"
 msgstr ""
 
-#: src/chcanv.cpp:10575
+#: src/chcanv.cpp:10583
 msgid "ExtendedTideIcon"
 msgstr ""
 
-#: src/chcanv.cpp:11075
+#: src/chcanv.cpp:11083
 msgid "Tide"
 msgstr ""
 
-#: src/chcanv.cpp:11082
+#: src/chcanv.cpp:11090
 msgid "Current"
 msgstr ""
 
-#: src/chcanv.cpp:11197
+#: src/chcanv.cpp:11205
 msgid "Prev"
 msgstr ""
 
-#: src/chcanv.cpp:11206
+#: src/chcanv.cpp:11214
 msgid "Next"
 msgstr ""
 
-#: src/chcanv.cpp:11436
+#: src/chcanv.cpp:11444
 msgid "HW"
 msgstr ""
 
-#: src/chcanv.cpp:11436
+#: src/chcanv.cpp:11444
 msgid "LW"
 msgstr ""
 
-#: src/chcanv.cpp:11579
+#: src/chcanv.cpp:11587
 msgid "Reference Station :"
 msgstr ""
 
-#: src/chcanv.cpp:11687
+#: src/chcanv.cpp:11695
 msgid "Today"
 msgstr ""
 
-#: src/chcanv.cpp:11689 src/chcanv.cpp:11694
+#: src/chcanv.cpp:11697 src/chcanv.cpp:11702
 msgid "Tomorrow"
 msgstr ""
 
-#: src/chcanv.cpp:12583
+#: src/chcanv.cpp:12591
 msgid "AISTargetQuery"
 msgstr ""
 
-#: src/chcanv.cpp:12681 src/options.cpp:417
+#: src/chcanv.cpp:12689 src/options.cpp:418
 msgid "Ok"
 msgstr ""
 
-#: src/chcanv.cpp:12860
+#: src/chcanv.cpp:12868
 msgid "Chart"
 msgstr ""
 
-#: src/chcanv.cpp:13157 src/chcanv.cpp:13214
+#: src/chcanv.cpp:13165 src/chcanv.cpp:13222
 msgid "AISRollover"
 msgstr ""
 
-#: src/chcanv.cpp:13163 src/chcanv.cpp:13217
+#: src/chcanv.cpp:13171 src/chcanv.cpp:13225
 msgid "TideCurrentGraphRollover"
 msgstr ""
 
-#: src/chcanv.cpp:13169 src/chcanv.cpp:13221
+#: src/chcanv.cpp:13177 src/chcanv.cpp:13229
 msgid "RouteLegInfoRollover"
 msgstr ""
 
-#: src/chcanv.cpp:13434 src/routeprop.cpp:1664 src/routeprop.cpp:2097
+#: src/chcanv.cpp:13442 src/routeprop.cpp:1664 src/routeprop.cpp:2097
 msgid "Position"
 msgstr ""
 
-#: src/chcanv.cpp:13439 src/routeprop.cpp:729 src/routeprop.cpp:1669
+#: src/chcanv.cpp:13447 src/routeprop.cpp:729 src/routeprop.cpp:1669
 #: src/routeprop.cpp:2102
 msgid "Latitude"
 msgstr ""
 
-#: src/chcanv.cpp:13446 src/routeprop.cpp:734 src/routeprop.cpp:1676
+#: src/chcanv.cpp:13454 src/routeprop.cpp:734 src/routeprop.cpp:1676
 #: src/routeprop.cpp:2108
 msgid "Longitude"
 msgstr ""
 
-#: src/chcanv.cpp:13455 src/routeprop.cpp:693 src/routeprop.cpp:1685
+#: src/chcanv.cpp:13463 src/routeprop.cpp:693 src/routeprop.cpp:1685
 #: src/routeprop.cpp:2135 src/routeman.cpp:1063
 msgid "Cancel"
 msgstr ""
 
-#: src/navutil.cpp:1121 src/navutil.cpp:1122
+#: src/navutil.cpp:1130 src/navutil.cpp:1131
 msgid "Marks"
 msgstr ""
 
-#: src/navutil.cpp:1230
+#: src/navutil.cpp:1239
 msgid "Waypoint(s) Uploaded successfully."
 msgstr ""
 
-#: src/navutil.cpp:1232
+#: src/navutil.cpp:1241
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr ""
 
-#: src/navutil.cpp:2210
+#: src/navutil.cpp:2219
 msgid "Route Uploaded successfully."
 msgstr ""
 
-#: src/navutil.cpp:2212
+#: src/navutil.cpp:2221
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr ""
 
-#: src/navutil.cpp:4224 src/navutil.cpp:4271 src/navutil.cpp:4312
+#: src/navutil.cpp:4233 src/navutil.cpp:4280 src/navutil.cpp:4321
 msgid "Export GPX file"
 msgstr ""
 
-#: src/navutil.cpp:4239 src/navutil.cpp:4286 src/navutil.cpp:4327
+#: src/navutil.cpp:4248 src/navutil.cpp:4295 src/navutil.cpp:4336
 msgid "Overwrite existing file?"
 msgstr ""
 
-#: src/navutil.cpp:4517
+#: src/navutil.cpp:4526
 msgid "Import GPX file"
 msgstr ""
 
-#: src/navutil.cpp:6672
+#: src/navutil.cpp:6681
 msgid "&Font family:"
 msgstr ""
 
-#: src/navutil.cpp:6678 src/navutil.cpp:6680
+#: src/navutil.cpp:6687 src/navutil.cpp:6689
 msgid "The font family."
 msgstr ""
 
-#: src/navutil.cpp:6685
+#: src/navutil.cpp:6694
 msgid "&Style:"
 msgstr ""
 
-#: src/navutil.cpp:6689 src/navutil.cpp:6691
+#: src/navutil.cpp:6698 src/navutil.cpp:6700
 msgid "The font style."
 msgstr ""
 
-#: src/navutil.cpp:6696
+#: src/navutil.cpp:6705
 msgid "&Weight:"
 msgstr ""
 
-#: src/navutil.cpp:6700 src/navutil.cpp:6702
+#: src/navutil.cpp:6709 src/navutil.cpp:6711
 msgid "The font weight."
 msgstr ""
 
-#: src/navutil.cpp:6709
+#: src/navutil.cpp:6718
 msgid "C&olour:"
 msgstr ""
 
-#: src/navutil.cpp:6719 src/navutil.cpp:6721
+#: src/navutil.cpp:6728 src/navutil.cpp:6730
 msgid "The font colour."
 msgstr ""
 
-#: src/navutil.cpp:6727
+#: src/navutil.cpp:6736
 msgid "&Point size:"
 msgstr ""
 
-#: src/navutil.cpp:6732 src/navutil.cpp:6734
+#: src/navutil.cpp:6741 src/navutil.cpp:6743
 msgid "The font point size."
 msgstr ""
 
-#: src/navutil.cpp:6741
+#: src/navutil.cpp:6750
 msgid "&Underline"
 msgstr ""
 
-#: src/navutil.cpp:6744 src/navutil.cpp:6746
+#: src/navutil.cpp:6753 src/navutil.cpp:6755
 msgid "Whether the font is underlined."
 msgstr ""
 
-#: src/navutil.cpp:6753
+#: src/navutil.cpp:6762
 msgid "Preview:"
 msgstr ""
 
-#: src/navutil.cpp:6758 src/navutil.cpp:6760
+#: src/navutil.cpp:6767 src/navutil.cpp:6769
 msgid "Shows the font preview."
 msgstr ""
 
-#: src/navutil.cpp:6767 src/options.cpp:421
+#: src/navutil.cpp:6776 src/options.cpp:422
 msgid "&Cancel"
 msgstr ""
 
-#: src/navutil.cpp:6769
+#: src/navutil.cpp:6778
 msgid "Click to cancel the font selection."
 msgstr ""
 
-#: src/navutil.cpp:6772
+#: src/navutil.cpp:6781
 msgid "&OK"
 msgstr ""
 
-#: src/navutil.cpp:6774 src/navutil.cpp:6776
+#: src/navutil.cpp:6783 src/navutil.cpp:6785
 msgid "Click to confirm the font selection."
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-#: src/routeprop.cpp:601 src/routeprop.cpp:2089 src/ais.cpp:4060
+#: src/routeprop.cpp:601 src/routeprop.cpp:2089 src/ais.cpp:4064
 msgid "Name"
 msgstr ""
 
@@ -1077,11 +1077,11 @@ msgstr ""
 msgid "Waypoints"
 msgstr ""
 
-#: src/routeprop.cpp:685
+#: src/routeprop.cpp:685 src/routeprop.cpp:946
 msgid "Extend Route"
 msgstr ""
 
-#: src/routeprop.cpp:689
+#: src/routeprop.cpp:689 src/routeprop.cpp:947
 msgid "Split Route"
 msgstr ""
 
@@ -1109,31 +1109,51 @@ msgstr ""
 msgid "Speed (Kts)"
 msgstr ""
 
-#: src/routeprop.cpp:749
+#: src/routeprop.cpp:749 src/routeprop.cpp:956
 msgid "Next tide event"
 msgstr ""
 
-#: src/routeprop.cpp:858
+#: src/routeprop.cpp:856
 msgid "Avg. speed (Kts)"
 msgstr ""
 
-#: src/routeprop.cpp:863
+#: src/routeprop.cpp:861
 msgid "Plan speed (Kts)"
 msgstr ""
 
-#: src/routeprop.cpp:1062
+#: src/routeprop.cpp:942
+msgid "Extend Track"
+msgstr ""
+
+#: src/routeprop.cpp:943
+msgid "Split Track"
+msgstr ""
+
+#: src/routeprop.cpp:975
+msgid "Timestamp"
+msgstr ""
+
+#: src/routeprop.cpp:981
+msgid "ETA"
+msgstr ""
+
+#: src/routeprop.cpp:983
+msgid "ETE"
+msgstr ""
+
+#: src/routeprop.cpp:1060
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr ""
 
-#: src/routeprop.cpp:1064
+#: src/routeprop.cpp:1062
 msgid " %H Hours  %M Minutes"
 msgstr ""
 
-#: src/routeprop.cpp:1161
+#: src/routeprop.cpp:1159
 msgid "Start"
 msgstr ""
 
-#: src/routeprop.cpp:1269
+#: src/routeprop.cpp:1267
 msgid "--"
 msgstr ""
 
@@ -1206,7 +1226,7 @@ msgstr ""
 msgid "&Delete All"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:500 src/options.cpp:1181
+#: src/routemanagerdialog.cpp:500 src/options.cpp:1193
 msgid "Tracks"
 msgstr ""
 
@@ -2037,7 +2057,7 @@ msgstr ""
 msgid "Aid to Navigation"
 msgstr ""
 
-#: src/ais.cpp:969 src/options.cpp:843
+#: src/ais.cpp:969 src/options.cpp:855
 msgid "Base"
 msgstr ""
 
@@ -2347,619 +2367,623 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: src/ais.cpp:4065
+#: src/ais.cpp:4069
 msgid "Call"
 msgstr ""
 
-#: src/ais.cpp:4070
+#: src/ais.cpp:4074
 msgid "MMSI"
 msgstr ""
 
-#: src/ais.cpp:4075
+#: src/ais.cpp:4079
 msgid "Class"
 msgstr ""
 
-#: src/ais.cpp:4080
+#: src/ais.cpp:4084
 msgid "Type"
 msgstr ""
 
-#: src/ais.cpp:4085
+#: src/ais.cpp:4089
 msgid "Nav Status"
 msgstr ""
 
-#: src/ais.cpp:4090
+#: src/ais.cpp:4094
 msgid "Brg"
 msgstr ""
 
-#: src/ais.cpp:4095
+#: src/ais.cpp:4099
 msgid "Range"
 msgstr ""
 
-#: src/ais.cpp:4100
+#: src/ais.cpp:4104
 msgid "CoG"
 msgstr ""
 
-#: src/ais.cpp:4105
+#: src/ais.cpp:4109
 msgid "SoG"
 msgstr ""
 
-#: src/ais.cpp:4118
+#: src/ais.cpp:4122
 msgid "Target info"
 msgstr ""
 
-#: src/ais.cpp:4123
+#: src/ais.cpp:4127
 msgid "Jump To"
 msgstr ""
 
-#: src/ais.cpp:4127
+#: src/ais.cpp:4131
 msgid "Limit range: NM"
 msgstr ""
 
-#: src/options.cpp:427
+#: src/options.cpp:428
 msgid "Settings"
 msgstr ""
 
-#: src/options.cpp:435
+#: src/options.cpp:436
 msgid "Navigation Data"
 msgstr ""
 
-#: src/options.cpp:438
+#: src/options.cpp:439
 msgid "Show Status Bar"
 msgstr ""
 
-#: src/options.cpp:443
+#: src/options.cpp:444
 msgid "Printing"
 msgstr ""
 
-#: src/options.cpp:446
+#: src/options.cpp:447
 msgid "Show Printing Icon"
 msgstr ""
 
-#: src/options.cpp:451
+#: src/options.cpp:452
 msgid "Chart Display Options"
 msgstr ""
 
-#: src/options.cpp:456
+#: src/options.cpp:457
 msgid "Enable Chart Quilting"
 msgstr ""
 
-#: src/options.cpp:460
+#: src/options.cpp:461
 msgid "Disable Full Screen Quilting"
 msgstr ""
 
-#: src/options.cpp:464
+#: src/options.cpp:465
 msgid "Course UP Mode"
 msgstr ""
 
-#: src/options.cpp:468
+#: src/options.cpp:469
 msgid "Look Ahead Mode"
 msgstr ""
 
-#: src/options.cpp:472
+#: src/options.cpp:473
 msgid "Show Chart Outlines"
 msgstr ""
 
-#: src/options.cpp:476
+#: src/options.cpp:477
 msgid "Show Grid"
 msgstr ""
 
-#: src/options.cpp:480
+#: src/options.cpp:481
 msgid "Show Depth Units"
 msgstr ""
 
-#: src/options.cpp:484
+#: src/options.cpp:485
 msgid "Show skewed raster charts as North-Up"
 msgstr ""
 
-#: src/options.cpp:496
+#: src/options.cpp:497
 msgid "Select Chart Types for Quilting"
 msgstr ""
 
-#: src/options.cpp:500
+#: src/options.cpp:501
 msgid "Raster"
 msgstr ""
 
-#: src/options.cpp:503
+#: src/options.cpp:504
 msgid "ENC/Vector"
 msgstr ""
 
-#: src/options.cpp:506
+#: src/options.cpp:507
 msgid "CM93"
 msgstr ""
 
-#: src/options.cpp:512
+#: src/options.cpp:513
 msgid "OwnShip Display Options"
 msgstr ""
 
-#: src/options.cpp:520
+#: src/options.cpp:521
 msgid "OwnShip COG arrow predictor length (Minutes):"
 msgstr ""
 
-#: src/options.cpp:531
+#: src/options.cpp:532
 msgid "CM93 Offset Display"
 msgstr ""
 
-#: src/options.cpp:536
+#: src/options.cpp:537
 msgid "Activate CM93 Offset"
 msgstr ""
 
-#: src/options.cpp:543
+#: src/options.cpp:544
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr ""
 
-#: src/options.cpp:549
+#: src/options.cpp:550
 msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 msgstr ""
 
-#: src/options.cpp:561
+#: src/options.cpp:562
 msgid "WiFi Options"
 msgstr ""
 
-#: src/options.cpp:566
+#: src/options.cpp:567
 msgid "TCP/IP WiFi Data Server"
 msgstr ""
 
-#: src/options.cpp:585
+#: src/options.cpp:586
 msgid "GPS"
 msgstr ""
 
-#: src/options.cpp:595
+#: src/options.cpp:596
 msgid "NMEA Options"
 msgstr ""
 
-#: src/options.cpp:601
+#: src/options.cpp:602
 msgid "NMEA Data Source"
 msgstr ""
 
-#: src/options.cpp:612
+#: src/options.cpp:613
 msgid "GPSD Data Server"
 msgstr ""
 
-#: src/options.cpp:734
+#: src/options.cpp:735
 msgid "NMEA Baud Rate"
 msgstr ""
 
-#: src/options.cpp:749
+#: src/options.cpp:750
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 
-#: src/options.cpp:753
+#: src/options.cpp:754
 msgid "Show GPS/NMEA data stream window"
 msgstr ""
 
-#: src/options.cpp:757
+#: src/options.cpp:758
 msgid "Filter NMEA Course and Speed data"
 msgstr ""
 
-#: src/options.cpp:764
+#: src/options.cpp:765
 msgid "Filter Period (Sec.)"
 msgstr ""
 
-#: src/options.cpp:771
+#: src/options.cpp:776
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+
+#: src/options.cpp:783
 msgid "Autopilot Output Port"
 msgstr ""
 
-#: src/options.cpp:800
+#: src/options.cpp:812
 msgid "Charts"
 msgstr ""
 
-#: src/options.cpp:809
+#: src/options.cpp:821
 msgid "Vector Charts"
 msgstr ""
 
-#: src/options.cpp:814
+#: src/options.cpp:826
 msgid "Chart Display Filters"
 msgstr ""
 
-#: src/options.cpp:818
+#: src/options.cpp:830
 msgid "Mariner's Standard"
 msgstr ""
 
-#: src/options.cpp:830
+#: src/options.cpp:842
 msgid "Clear All"
 msgstr ""
 
-#: src/options.cpp:833
+#: src/options.cpp:845
 msgid "Select All"
 msgstr ""
 
-#: src/options.cpp:844
+#: src/options.cpp:856
 msgid "Standard"
 msgstr ""
 
-#: src/options.cpp:845
+#: src/options.cpp:857
 msgid "Other"
 msgstr ""
 
-#: src/options.cpp:846
+#: src/options.cpp:858
 msgid "Mariners Standard"
 msgstr ""
 
-#: src/options.cpp:848
+#: src/options.cpp:860
 msgid "Display Category"
 msgstr ""
 
-#: src/options.cpp:854
+#: src/options.cpp:866
 msgid "Show Soundings"
 msgstr ""
 
-#: src/options.cpp:858
+#: src/options.cpp:870
 msgid "META Objects"
 msgstr ""
 
-#: src/options.cpp:862
+#: src/options.cpp:874
 msgid "Show Important Text Only"
 msgstr ""
 
-#: src/options.cpp:866
+#: src/options.cpp:878
 msgid "Use SCAMIN"
 msgstr ""
 
-#: src/options.cpp:870
+#: src/options.cpp:882
 msgid "Show ATON labels"
 msgstr ""
 
-#: src/options.cpp:874
+#: src/options.cpp:886
 msgid "Show Light Descriptions"
 msgstr ""
 
-#: src/options.cpp:878
+#: src/options.cpp:890
 msgid "De-Clutter Text (exp.)"
 msgstr ""
 
-#: src/options.cpp:882
+#: src/options.cpp:894
 msgid "Chart Display Style"
 msgstr ""
 
-#: src/options.cpp:887
+#: src/options.cpp:899
 msgid "Paper Chart"
 msgstr ""
 
-#: src/options.cpp:888
+#: src/options.cpp:900
 msgid "Simplified"
 msgstr ""
 
-#: src/options.cpp:890
+#: src/options.cpp:902
 msgid "Points"
 msgstr ""
 
-#: src/options.cpp:895
+#: src/options.cpp:907
 msgid "Plain"
 msgstr ""
 
-#: src/options.cpp:896
+#: src/options.cpp:908
 msgid "Symbolized"
 msgstr ""
 
-#: src/options.cpp:898
+#: src/options.cpp:910
 msgid "Boundaries"
 msgstr ""
 
-#: src/options.cpp:903
+#: src/options.cpp:915
 msgid "2 Color"
 msgstr ""
 
-#: src/options.cpp:904
+#: src/options.cpp:916
 msgid "4 Color"
 msgstr ""
 
-#: src/options.cpp:906
+#: src/options.cpp:918
 msgid "Colors"
 msgstr ""
 
-#: src/options.cpp:912
+#: src/options.cpp:924
 msgid "CM93 Zoom Detail"
 msgstr ""
 
-#: src/options.cpp:920
+#: src/options.cpp:932
 msgid "Depth Settings"
 msgstr ""
 
-#: src/options.cpp:924
+#: src/options.cpp:936
 msgid "Depth Settings(m)"
 msgstr ""
 
-#: src/options.cpp:928
+#: src/options.cpp:940
 msgid "Shallow Depth"
 msgstr ""
 
-#: src/options.cpp:934
+#: src/options.cpp:946
 msgid "Safety Depth"
 msgstr ""
 
-#: src/options.cpp:940
+#: src/options.cpp:952
 msgid "Deep Depth"
 msgstr ""
 
-#: src/options.cpp:950
+#: src/options.cpp:962
 msgid "Metres"
 msgstr ""
 
-#: src/options.cpp:954
+#: src/options.cpp:966
 msgid "Chart Depth Units"
 msgstr ""
 
-#: src/options.cpp:960
+#: src/options.cpp:972
 msgid "CM93 Offsets"
 msgstr ""
 
-#: src/options.cpp:965
+#: src/options.cpp:977
 msgid "Enable Manual CM93 Offsets"
 msgstr ""
 
-#: src/options.cpp:972
+#: src/options.cpp:984
 msgid "AIS"
 msgstr ""
 
-#: src/options.cpp:979
+#: src/options.cpp:991
 msgid "AIS General"
 msgstr ""
 
-#: src/options.cpp:984
+#: src/options.cpp:996
 msgid "AIS Data Port"
 msgstr ""
 
-#: src/options.cpp:1020
+#: src/options.cpp:1032
 msgid "CPA Calculation"
 msgstr ""
 
-#: src/options.cpp:1028
+#: src/options.cpp:1040
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr ""
 
-#: src/options.cpp:1034
+#: src/options.cpp:1046
 msgid "Warn if CPA less than (NMi):"
 msgstr ""
 
-#: src/options.cpp:1040
+#: src/options.cpp:1052
 msgid "  ..And TCPA is less than (Minutes):"
 msgstr ""
 
-#: src/options.cpp:1047
+#: src/options.cpp:1059
 msgid "Lost Targets"
 msgstr ""
 
-#: src/options.cpp:1055
+#: src/options.cpp:1067
 msgid "Mark targets as lost after (Minutes:):"
 msgstr ""
 
-#: src/options.cpp:1061
+#: src/options.cpp:1073
 msgid "Remove lost targets after (Minutes:):"
 msgstr ""
 
-#: src/options.cpp:1068
+#: src/options.cpp:1080
 msgid "Display"
 msgstr ""
 
-#: src/options.cpp:1076
+#: src/options.cpp:1088
 msgid "Show target COG arrows"
 msgstr ""
 
-#: src/options.cpp:1082
+#: src/options.cpp:1094
 msgid "      COG arrow predictor length (Minutes):"
 msgstr ""
 
-#: src/options.cpp:1088
+#: src/options.cpp:1100
 msgid "Show target tracks"
 msgstr ""
 
-#: src/options.cpp:1094
+#: src/options.cpp:1106
 msgid "      Target track length (Minutes):"
 msgstr ""
 
-#: src/options.cpp:1101
+#: src/options.cpp:1113
 msgid "Supress anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:1107
+#: src/options.cpp:1119
 msgid "      Max moored target speed (Kts.):"
 msgstr ""
 
-#: src/options.cpp:1114
+#: src/options.cpp:1126
 msgid "Rollover"
 msgstr ""
 
-#: src/options.cpp:1118
+#: src/options.cpp:1130
 msgid "      \"Ship Name\" MMSI (Call Sign)"
 msgstr ""
 
-#: src/options.cpp:1121
+#: src/options.cpp:1133
 msgid "[Class] Type (Status)"
 msgstr ""
 
-#: src/options.cpp:1124
+#: src/options.cpp:1136
 msgid "SOG COG"
 msgstr ""
 
-#: src/options.cpp:1127
+#: src/options.cpp:1139
 msgid "CPA TCPA"
 msgstr ""
 
-#: src/options.cpp:1131
+#: src/options.cpp:1143
 msgid "CPA/TCPA Alerts"
 msgstr ""
 
-#: src/options.cpp:1139
+#: src/options.cpp:1151
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr ""
 
-#: src/options.cpp:1142
+#: src/options.cpp:1154
 msgid "Select Alert Sound"
 msgstr ""
 
-#: src/options.cpp:1145
+#: src/options.cpp:1157
 msgid "Play Sound on CPA/TCPA Alerts"
 msgstr ""
 
-#: src/options.cpp:1148
+#: src/options.cpp:1160
 msgid "Test Alert Sound"
 msgstr ""
 
-#: src/options.cpp:1151
+#: src/options.cpp:1163
 msgid "Supress Alerts for anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:1157
+#: src/options.cpp:1169
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr ""
 
-#: src/options.cpp:1167
+#: src/options.cpp:1179
 msgid "Language/Fonts"
 msgstr ""
 
-#: src/options.cpp:1175
+#: src/options.cpp:1187
 msgid "Etc."
 msgstr ""
 
-#: src/options.cpp:1184
+#: src/options.cpp:1196
 msgid "Show Track icon"
 msgstr ""
 
-#: src/options.cpp:1186
+#: src/options.cpp:1198
 msgid "Automatic Daily Tracks"
 msgstr ""
 
-#: src/options.cpp:1193
+#: src/options.cpp:1205
 msgid "Place Trackpoints at time interval (Seconds):"
 msgstr ""
 
-#: src/options.cpp:1200
+#: src/options.cpp:1212
 msgid "Place Trackpoints at distance interval (NMi):"
 msgstr ""
 
-#: src/options.cpp:1207
+#: src/options.cpp:1219
 msgid "Radar rings"
 msgstr ""
 
-#: src/options.cpp:1211
+#: src/options.cpp:1223
 msgid "Show radar rings"
 msgstr ""
 
-#: src/options.cpp:1220
+#: src/options.cpp:1232
 msgid "Number of radar rings shown"
 msgstr ""
 
-#: src/options.cpp:1226
+#: src/options.cpp:1238
 msgid "Distance between rings"
 msgstr ""
 
-#: src/options.cpp:1233
+#: src/options.cpp:1245
 msgid "&Nautical miles"
 msgstr ""
 
-#: src/options.cpp:1234
+#: src/options.cpp:1246
 msgid "&Kilometers"
 msgstr ""
 
-#: src/options.cpp:1236
+#: src/options.cpp:1248
 msgid "Units"
 msgstr ""
 
-#: src/options.cpp:1243
+#: src/options.cpp:1255
 msgid "Waypoint Locking"
 msgstr ""
 
-#: src/options.cpp:1246
+#: src/options.cpp:1258
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
 msgstr ""
 
-#: src/options.cpp:1252
+#: src/options.cpp:1264
 msgid "GUI Options"
 msgstr ""
 
-#: src/options.cpp:1256
+#: src/options.cpp:1268
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr ""
 
-#: src/options.cpp:1260
+#: src/options.cpp:1272
 msgid "Preserve scale when switching charts"
 msgstr ""
 
-#: src/options.cpp:1263
+#: src/options.cpp:1275
 msgid "Play ships bells"
 msgstr ""
 
-#: src/options.cpp:1266
+#: src/options.cpp:1278
 msgid "Show toolbar in fullscreen mode"
 msgstr ""
 
-#: src/options.cpp:1269
+#: src/options.cpp:1281
 msgid "Enable transparent toolbar"
 msgstr ""
 
-#: src/options.cpp:1272
+#: src/options.cpp:1284
 msgid "Show layers initially"
 msgstr ""
 
-#: src/options.cpp:1279
+#: src/options.cpp:1291
 msgid "Show Lat/Long as"
 msgstr ""
 
-#: src/options.cpp:1283
+#: src/options.cpp:1295
 msgid "Degrees, Decimal minutes"
 msgstr ""
 
-#: src/options.cpp:1284
+#: src/options.cpp:1296
 msgid "Decimal degrees"
 msgstr ""
 
-#: src/options.cpp:1285
+#: src/options.cpp:1297
 msgid "Degrees, Minutes, Seconds"
 msgstr ""
 
-#: src/options.cpp:1297
+#: src/options.cpp:1309
 msgid "PlugIns"
 msgstr ""
 
-#: src/options.cpp:2154
+#: src/options.cpp:2173
 msgid "Available Chart Directories"
 msgstr ""
 
-#: src/options.cpp:2165
+#: src/options.cpp:2184
 msgid "Active Chart Directories"
 msgstr ""
 
-#: src/options.cpp:2181
+#: src/options.cpp:2200
 msgid "Delete Selection"
 msgstr ""
 
-#: src/options.cpp:2185
+#: src/options.cpp:2204
 msgid "Update Control"
 msgstr ""
 
-#: src/options.cpp:2188
+#: src/options.cpp:2207
 msgid "Force Full Database Rebuild"
 msgstr ""
 
-#: src/options.cpp:2205
+#: src/options.cpp:2224
 msgid "All files (*.*)|*.*"
 msgstr ""
 
-#: src/options.cpp:2214
+#: src/options.cpp:2233
 msgid "Add Selection"
 msgstr ""
 
-#: src/options.cpp:2274
+#: src/options.cpp:2293
 msgid "Language"
 msgstr ""
 
-#: src/options.cpp:2363
+#: src/options.cpp:2382
 msgid "Font Options"
 msgstr ""
 
-#: src/options.cpp:2367
+#: src/options.cpp:2386
 msgid "Text Element"
 msgstr ""
 
-#: src/options.cpp:2385
+#: src/options.cpp:2404
 msgid "Choose Font..."
 msgstr ""
 
-#: src/options.cpp:2483
+#: src/options.cpp:2502
 msgid "Select Sound File"
 msgstr ""
 
-#: src/options.cpp:2484
+#: src/options.cpp:2503
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr ""
 

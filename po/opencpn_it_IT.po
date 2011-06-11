@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -1189,6 +1189,9 @@ msgstr "Indirizzo IP non trovato"
 msgid "Course UP Mode"
 msgstr "Modalità 'Rotta in Alto' (Course Up)"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #
 #
 #
@@ -1446,6 +1449,12 @@ msgstr ""
 #
 #
 #
+#, fuzzy
+msgid "ETA"
+msgstr "ETA          : "
+#
+#
+#
 #
 msgid "ETA          "
 msgstr ""
@@ -1460,6 +1469,9 @@ msgstr "ETA          : "
 #
 msgid "ETA:                  "
 msgstr "ETA          : "
+#
+msgid "ETE"
+msgstr ""
 #
 #
 #
@@ -1547,6 +1559,13 @@ msgstr "Esporta file GPX"
 #
 msgid "Extend Route"
 msgstr "Estendi Rotta"
+#
+#
+#
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Elimina Traccia"
 #
 #
 msgid "ExtendedTideIcon"
@@ -3402,6 +3421,13 @@ msgstr "Dividi Rotta"
 #
 #
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "&Inizio Traccia"
+#
+#
+#
+#
 msgid "Standard"
 msgstr "Standard"
 #
@@ -3593,6 +3619,9 @@ msgstr "Tempo di percorrenza"
 #
 msgid "Times shown as"
 msgstr "Orari mostrati come:"
+#
+msgid "Timestamp"
+msgstr ""
 #
 #
 #
@@ -4073,8 +4102,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -4123,6 +4154,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
@@ -4130,8 +4162,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
 #
 #
 #
@@ -4169,8 +4203,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
+#
 #
 #
 #
@@ -4197,8 +4233,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
+#
 #
 #
 #
@@ -4225,8 +4263,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
+#
 #
 #
 #
@@ -4240,6 +4280,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -4267,8 +4308,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -4318,11 +4361,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4339,8 +4384,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Mostra Liste"
+#
 #
 #
 #

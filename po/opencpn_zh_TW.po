@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.506\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: 2011-05-26 16:59+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -886,6 +886,9 @@ msgstr "無法解析 TCP/IP 主機 '"
 msgid "Course UP Mode"
 msgstr "航向朝上模式"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1074,6 +1077,11 @@ msgid "ENC/Vector"
 msgstr "ENC/向量圖"
 #
 #
+#, fuzzy
+msgid "ETA"
+msgstr "ETA:"
+#
+#
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1084,6 +1092,9 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                  "
+#
+msgid "ETE"
+msgstr ""
 #
 #
 msgid "ETE/Timestamp"
@@ -1151,6 +1162,11 @@ msgstr "匯出 GPX 檔案"
 #
 msgid "Extend Route"
 msgstr "延伸航路"
+#
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "刪除航跡"
 #
 #
 msgid "ExtendedTideIcon"
@@ -2590,6 +2606,11 @@ msgid "Split Route"
 msgstr "分離航路"
 #
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "開始軌跡(&S)"
+#
+#
 msgid "Standard"
 msgstr "標準"
 #
@@ -2738,6 +2759,11 @@ msgstr "航程所需時間"
 #
 msgid "Times shown as"
 msgstr "時間顯示成"
+#
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/時間戳記"
 #
 #
 msgid "To"
@@ -3114,8 +3140,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
 #
 #
 #
@@ -3130,6 +3158,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
 #
@@ -3137,8 +3166,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -3153,8 +3184,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Offset Off"
+#
 #
 #
 #
@@ -3169,8 +3202,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Offset Tool Off"
+#
 #
 #
 #
@@ -3185,6 +3220,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
@@ -3193,8 +3229,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -3210,9 +3248,11 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 #
@@ -3225,8 +3265,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC 檔案載入"
+#
 #
 #
 #
@@ -3243,8 +3285,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "切換航跡顯示"
+#
 #
 #
 #

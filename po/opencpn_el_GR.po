@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -903,6 +903,9 @@ msgstr "Δεν μπορώ να αποφανθώ για το TCP/IP host '"
 msgid "Course UP Mode"
 msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1095,6 +1098,11 @@ msgid "ENC/Vector"
 msgstr "ENC/Διάνυσμα"
 #
 # 
+#, fuzzy
+msgid "ETA"
+msgstr "ΕΤΑ:"
+#
+# 
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1105,6 +1113,9 @@ msgstr "ΕΤΑ:"
 # 
 msgid "ETA:                  "
 msgstr "ΕΤΑ:                  "
+#
+msgid "ETE"
+msgstr ""
 #
 # 
 msgid "ETE/Timestamp"
@@ -1175,6 +1186,11 @@ msgstr "Εξαγωγή Αρχείου GPX"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Τέλος Ταξιδιού"
+#
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Διαγραφή Ίχνους (πορείας)"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -2649,6 +2665,11 @@ msgid "Split Route"
 msgstr "Διαγραφή Ταξιδιού(Route)"
 #
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
+#
+# 
 msgid "Standard"
 msgstr "Βασικό"
 #
@@ -2798,6 +2819,11 @@ msgstr "Χρόνος ταξιδίου"
 # 
 msgid "Times shown as"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/ σφραγίδα χρόνου"
 #
 # 
 msgid "To"
@@ -3184,6 +3210,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3193,6 +3220,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
 #
 #
 #
@@ -3214,6 +3242,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3223,6 +3252,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
 #
 #
 #
@@ -3244,6 +3274,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3253,6 +3284,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
 #
 #
 #
@@ -3273,6 +3305,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3281,6 +3314,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -3302,6 +3336,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3311,10 +3346,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Εισαγωγή Αρχείου GPX"
+#
 #
 #
 #
@@ -3333,9 +3370,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
 #
 #
 #
@@ -3354,6 +3393,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3365,10 +3405,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

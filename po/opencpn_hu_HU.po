@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -680,6 +680,9 @@ msgstr "TCP/IP állomás névfeloldása sikertelen '"
 msgid "Course UP Mode"
 msgstr "Irány fent mód"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #, c-format
 msgid "Course:                 %03d Deg.\n"
 msgstr "Iránylat:                 %03d fok\n"
@@ -831,6 +834,9 @@ msgstr "Mindet exportál"
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
+msgid "ETA"
+msgstr ""
+#
 msgid "ETA          "
 msgstr ""
 #
@@ -838,6 +844,9 @@ msgid "ETA:"
 msgstr ""
 #
 msgid "ETA:                  "
+msgstr ""
+#
+msgid "ETE"
 msgstr ""
 #
 msgid "ETE/Timestamp"
@@ -890,6 +899,10 @@ msgstr "GPX fájl exportálása"
 #
 msgid "Extend Route"
 msgstr "Útvonal kiterjesztése"
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Útvonal törlése"
 #
 msgid "ExtendedTideIcon"
 msgstr ""
@@ -1986,6 +1999,10 @@ msgstr "Sebesség:                %5.2f csomó\n"
 msgid "Split Route"
 msgstr "Útvonal felbontása"
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "Nyomvonal indítása"
+#
 msgid "Standard"
 msgstr ""
 #
@@ -2100,6 +2117,9 @@ msgstr "Út időtartama"
 #
 msgid "Times shown as"
 msgstr "Idők mutatása mint"
+#
+msgid "Timestamp"
+msgstr ""
 #
 msgid "To"
 msgstr "Hova"
@@ -2388,8 +2408,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
+#
 #
 #
 #
@@ -2398,8 +2420,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
+#
 #
 #
 #
@@ -2412,8 +2436,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
 #
 #
 #

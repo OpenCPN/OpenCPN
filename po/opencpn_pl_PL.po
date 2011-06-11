@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -887,6 +887,9 @@ msgstr "Nie można rozwiązać adresu węzła TCP/IP"
 msgid "Course UP Mode"
 msgstr "Obracaj wg kursu do góry"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1075,6 +1078,11 @@ msgid "ENC/Vector"
 msgstr "ENC/Wektorowe"
 #
 #
+#, fuzzy
+msgid "ETA"
+msgstr "ETA:"
+#
+#
 msgid "ETA          "
 msgstr "ETA                  "
 #
@@ -1085,6 +1093,9 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:         "
+#
+msgid "ETE"
+msgstr ""
 #
 #
 msgid "ETE/Timestamp"
@@ -1152,6 +1163,11 @@ msgstr "Eksportuj plik GPX"
 #
 msgid "Extend Route"
 msgstr "Przedłuż drogę"
+#
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Usuń ślad"
 #
 #
 msgid "ExtendedTideIcon"
@@ -2590,6 +2606,11 @@ msgid "Split Route"
 msgstr "Podziel drogę"
 #
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "&Zacznij ślad"
+#
+#
 msgid "Standard"
 msgstr "Standard"
 #
@@ -2738,6 +2759,11 @@ msgstr "Czas w drodze"
 #
 msgid "Times shown as"
 msgstr "Czas pokazany jako"
+#
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Znacznik czasu"
 #
 #
 msgid "To"
@@ -3113,8 +3139,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Wł./Wył. na mapie"
+#
 #
 #
 #
@@ -3143,8 +3171,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -3173,8 +3203,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -3201,9 +3233,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -3223,6 +3257,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Importuj nową warstwę"
 #
@@ -3230,8 +3265,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 #

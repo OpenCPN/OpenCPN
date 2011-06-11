@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.4 build 523\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-24 19:17+0100\n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
 "PO-Revision-Date: 2011-05-27 22:02+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -17,310 +17,204 @@ msgstr ""
 "Language: \n"
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
-
 #
 #
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:125
-#: src/dashboard_pi.cpp:515
-msgid "N"
-msgstr "N"
-
+msgid "Add"
+msgstr "Lägg till"
 #
 #
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "NE"
-msgstr "NO"
-
+msgid "Add instrument"
+msgstr "Lägg till instrument"
 #
 #
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:126
-msgid "E"
-msgstr "O"
-
-#
-#
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "SE"
-msgstr "SO"
-
-#
-#
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:127
-msgid "S"
-msgstr "S"
-
-#
-#
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "SW"
-msgstr "SV"
-
-#
-#
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:128
-msgid "W"
-msgstr "V"
-
-#
-#
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "NW"
-msgstr "NV"
-
-#
-#
-#: src/dashboard_pi.cpp:96
-msgid "Position"
-msgstr "Position"
-
-#
-#
-#: src/dashboard_pi.cpp:98
-msgid "SOG"
-msgstr "SOG"
-
-#
-#
-#: src/dashboard_pi.cpp:100
-msgid "Speedometer"
-msgstr "Hastighetsmätare"
-
-#
-#
-#: src/dashboard_pi.cpp:102
-msgid "COG"
-msgstr "COG"
-
-#
-#
-#: src/dashboard_pi.cpp:104
-msgid "Compass"
-msgstr "Kompass"
-
-#
-#
-#: src/dashboard_pi.cpp:106
-msgid "STW"
-msgstr "STW"
-
-#
-#
-#: src/dashboard_pi.cpp:108
-msgid "HDG"
-msgstr "HDG"
-
-#
-#
-#: src/dashboard_pi.cpp:110
 msgid "Apparent wind"
 msgstr "Skenbar vind"
-
+#
+msgid "Appearance"
+msgstr "Utseende"
 #
 #
-#: src/dashboard_pi.cpp:112
-msgid "Wind angle"
-msgstr "Vindvinkel"
-
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr "Titel:"
+#
+msgid "Clock"
+msgstr ""
 #
 #
-#: src/dashboard_pi.cpp:114
-#: src/dashboard_pi.cpp:116
-msgid "Wind speed"
-msgstr "Vindstyrka"
-
+msgid "Compass"
+msgstr "Kompass"
+#
+msgid "Cursor"
+msgstr ""
 #
 #
-#: src/dashboard_pi.cpp:118
-msgid "True wind"
-msgstr "Sann vind"
-
-#
-#
-#: src/dashboard_pi.cpp:120
-#: src/dashboard_pi.cpp:122
-msgid "Depth"
-msgstr "Djup"
-
-#
-#
-#: src/dashboard_pi.cpp:124
-msgid "Temp"
-msgstr "Temp"
-
-#
-#
-#: src/dashboard_pi.cpp:126
-#: src/dashboard_pi.cpp:128
-msgid "VMG"
-msgstr "VMG"
-
-#
-#
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "Rudder angle"
-msgstr "Rodervinkel"
-
-#
-#
-#: src/dashboard_pi.cpp:134
-msgid "GPS in view"
-msgstr "Synliga satelliter"
-
-#
-#
-#: src/dashboard_pi.cpp:136
-msgid "GPS status"
-msgstr "GPS status"
-
-#
-#
-#: src/dashboard_pi.cpp:220
-#: src/dashboard_pi.cpp:284
-#: src/dashboard_pi.cpp:958
-#: src/dashboard_pi.cpp:966
-#: src/dashboard_pi.cpp:1107
-#: src/dashboard_pi.cpp:1142
-#: src/dashboard_pi.cpp:1334
 msgid "Dashboard"
 msgstr "Instrumentpanel"
-
 #
 #
-#: src/dashboard_pi.cpp:290
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Instrumentpanel för OpenCPN"
-
 #
 #
-#: src/dashboard_pi.cpp:295
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Instrumentpanel för OpenCPN\n"
 "Visar navigationsinstrument baserade på tillgänglig NMEA-information."
-
 #
 #
-#: src/dashboard_pi.cpp:1088
 msgid "Dashboard preferences"
 msgstr "Inställningar"
-
-#: src/dashboard_pi.cpp:1149
-msgid "show this dashboard"
-msgstr "Visa den här panelen"
-
-#: src/dashboard_pi.cpp:1154
-msgid "Caption:"
-msgstr "Titel:"
-
-#: src/dashboard_pi.cpp:1159
-msgid "Orientation:"
-msgstr "Orientering:"
-
-#: src/dashboard_pi.cpp:1162
-msgid "Vertical"
-msgstr "Vertikal"
-
-#: src/dashboard_pi.cpp:1163
-msgid "Horizontal"
-msgstr "Horisontell"
-
 #
-#
-#: src/dashboard_pi.cpp:1166
-msgid "Instrument width:"
-msgstr "Instrumentbredd:"
-
-#
-#
-#: src/dashboard_pi.cpp:1175
-#: src/dashboard_pi.cpp:1182
-#: src/dashboard_pi.cpp:1447
-msgid "Instruments"
-msgstr "Instrument"
-
-#
-#
-#: src/dashboard_pi.cpp:1190
-msgid "Add"
-msgstr "Lägg till"
-
-#
-#
-#: src/dashboard_pi.cpp:1194
-msgid "Edit"
-msgstr "Ändra"
-
-#
-#
-#: src/dashboard_pi.cpp:1198
-msgid "Delete"
-msgstr "Ta bort"
-
-#
-#
-#: src/dashboard_pi.cpp:1203
-msgid "Up"
-msgstr "Upp"
-
-#
-#
-#: src/dashboard_pi.cpp:1207
-msgid "Down"
-msgstr "Ner"
-
-#: src/dashboard_pi.cpp:1215
-msgid "Appearance"
-msgstr "Utseende"
-
-#
-#: src/dashboard_pi.cpp:1217
-msgid "Fonts"
-msgstr "Typsnitt"
-
-#
-#: src/dashboard_pi.cpp:1223
-msgid "Title:"
-msgstr "Titel:"
-
-#
-#: src/dashboard_pi.cpp:1227
 msgid "Data:"
 msgstr "Data:"
-
 #
-#: src/dashboard_pi.cpp:1231
+#
+msgid "Delete"
+msgstr "Ta bort"
+#
+#
+msgid "Depth"
+msgstr "Djup"
+#
+#
+msgid "Down"
+msgstr "Ner"
+#
+#
+msgid "E"
+msgstr "O"
+#
+#
+msgid "Edit"
+msgstr "Ändra"
+#
+msgid "Fonts"
+msgstr "Typsnitt"
+#
+#
+msgid "GPS in view"
+msgstr "Synliga satelliter"
+#
+#
+msgid "GPS status"
+msgstr "GPS status"
+#
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr "Horisontell"
+#
+#
+msgid "Instrument width:"
+msgstr "Instrumentbredd:"
+#
+#
+msgid "Instruments"
+msgstr "Instrument"
+#
 msgid "Label:"
 msgstr "Beskrivning:"
-
 #
-#: src/dashboard_pi.cpp:1235
-msgid "Small:"
-msgstr "Liten:"
-
+msgid "Moon phase"
+msgstr ""
 #
 #
-#: src/dashboard_pi.cpp:1433
-msgid "Add instrument"
-msgstr "Lägg till instrument"
-
+msgid "N"
+msgstr "N"
 #
 #
-#: src/dashboard_pi.cpp:1437
+msgid "NE"
+msgstr "NO"
+#
+#
+msgid "NW"
+msgstr "NV"
+#
+msgid "Orientation:"
+msgstr "Orientering:"
+#
+#
+msgid "Position"
+msgstr "Position"
+#
+#
+msgid "Rudder angle"
+msgstr "Rodervinkel"
+#
+#
+msgid "S"
+msgstr "S"
+#
+#
+msgid "SE"
+msgstr "SO"
+#
+#
+msgid "SOG"
+msgstr "SOG"
+#
+#
+msgid "STW"
+msgstr "STW"
+#
+#
+msgid "SW"
+msgstr "SV"
+#
+#
 msgid "Select instrument to add:"
 msgstr "Välj instrument att lägga till"
-
+#
+msgid "Small:"
+msgstr "Liten:"
+#
+#
+msgid "Speedometer"
+msgstr "Hastighetsmätare"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+#
+msgid "Temp"
+msgstr "Temp"
+#
+msgid "Title:"
+msgstr "Titel:"
+#
+#
+msgid "True wind"
+msgstr "Sann vind"
+#
+#
+msgid "Up"
+msgstr "Upp"
+#
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "Vertikal"
+#
+#
+msgid "W"
+msgstr "V"
+#
+#
+msgid "Wind angle"
+msgstr "Vindvinkel"
+#
+#
+msgid "Wind speed"
+msgstr "Vindstyrka"
+#
+msgid "show this dashboard"
+msgstr "Visa den här panelen"

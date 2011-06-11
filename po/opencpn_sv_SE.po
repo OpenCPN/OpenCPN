@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 523\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: 2011-05-28 11:43+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -690,6 +690,9 @@ msgstr "Kan inte tolka TCP/IP datornamn '"
 msgid "Course UP Mode"
 msgstr "Aktivera Kurs Upp"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #, c-format
 msgid "Course:                 %03d Deg.\n"
 msgstr "Kurs:                 %03d°\n"
@@ -838,6 +841,11 @@ msgstr "E&xportera alla..."
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
+#
+#
+msgid "ETA"
+msgstr "ETA"
+#
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -846,6 +854,12 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                  "
+#
+#
+#
+#, fuzzy
+msgid "ETE"
+msgstr "ETA"
 #
 msgid "ETE/Timestamp"
 msgstr "ETE/Tidmarkering"
@@ -897,6 +911,10 @@ msgstr "Exportera GPXfil"
 #
 msgid "Extend Route"
 msgstr "Utöka Rutt"
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Radera Spår"
 #
 msgid "ExtendedTideIcon"
 msgstr "Utökad Tidvattenikon"
@@ -1996,6 +2014,10 @@ msgstr "Fart:                 %5.2f Knop\n"
 msgid "Split Route"
 msgstr "Dela Rutt"
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "Starta Spår"
+#
 msgid "Standard"
 msgstr "Standard"
 #
@@ -2109,6 +2131,10 @@ msgstr "Återstående tid till destination"
 #
 msgid "Times shown as"
 msgstr "Tid visas som"
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Tidmarkering"
 #
 msgid "To"
 msgstr "Till"
@@ -2400,8 +2426,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "Avsluta"
+#
 #
 #
 #
@@ -2410,8 +2438,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
+#
 #
 #
 #
@@ -2420,8 +2450,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt Spår)"
+#
 #
 #
 #
@@ -2430,8 +2462,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93-korrektion på"
+#
 #
 #
 #
@@ -2440,8 +2474,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Ställ in CM93-korrektion....."
+#
 #
 #
 #
@@ -2450,8 +2486,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Anropssignal:  "
+#
 #
 #
 #
@@ -2460,13 +2498,16 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Cell Y Offset"
 #~ msgstr "Cell Y-korrektion"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Sjökortet går ej att läsa, kortet inaktiveras \n"
+#
 #
 #
 #
@@ -2479,8 +2520,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Class:     "
 #~ msgstr "Klass:     "
+#
 #
 #
 #
@@ -2493,8 +2536,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Strömhastighet, Knop."
+#
 #
 #
 #
@@ -2503,13 +2548,10 @@ msgstr "wgsoy"
 #
 #
 #
-#~ msgid "ETA"
-#~ msgstr "ETA"
-#
-#
 #
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Okänd"
+#
 #
 #
 #
@@ -2518,8 +2560,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
+#
 #
 #
 #
@@ -2528,8 +2572,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "GPX"
 #~ msgstr "GPX"
+#
 #
 #
 #
@@ -2538,8 +2584,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "GRIB Data"
 #~ msgstr "Väderdata"
+#
 #
 #
 #
@@ -2548,8 +2596,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Mapp för väderfiler"
+#
 #
 #
 #
@@ -2558,8 +2608,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Marinstandard"
+#
 #
 #
 #
@@ -2568,8 +2620,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa regndata"
+#
 #
 #
 #
@@ -2578,8 +2632,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB strömmar"
+#
 #
 #
 #
@@ -2588,13 +2644,16 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugIn Name"
 #~ msgstr "PlugIn Namn"
 #
 #
 #
+#
 #~ msgid "Pressure, mBar"
 #~ msgstr "Barometertryck, mBar"
+#
 #
 #
 #
@@ -2607,8 +2666,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Route Manager..."
 #~ msgstr "Rutthantering..."
+#
 #
 #
 #
@@ -2617,8 +2678,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Välj mapp för väderfiler"
+#
 #
 #
 #
@@ -2627,8 +2690,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "ShipName:  "
 #~ msgstr "Båtnamn:   "
+#
 #
 #
 #
@@ -2637,8 +2702,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
+#
 #
 #
 #
@@ -2647,8 +2714,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant våghöjd, m"
+#
 #
 #
 #
@@ -2657,8 +2726,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Toggle Names"
 #~ msgstr "Växla namn"
+#
 #
 #
 #
@@ -2667,8 +2738,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
+#
 #
 #
 #
@@ -2677,8 +2750,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Vindhastighet, knop"
+#
 #
 #
 #

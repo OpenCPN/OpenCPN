@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -185,15 +185,13 @@ msgstr " - "
 #
 #, c-format
 msgid " COG: %03d Deg."
-msgstr ""
+msgstr " COG : %03d Deg."
 #
 msgid " COG: 000 Deg."
-msgstr ""
+msgstr " COG : 000 Deg."
 #
-#
-#, fuzzy
 msgid " COG: Unavailable"
-msgstr "Pas de carte disponible"
+msgstr " COG : Indisponible"
 #
 #
 msgid " ChartFile:  "
@@ -849,6 +847,9 @@ msgstr "Résolution hôte TCP/IP impossible '"
 msgid "Course UP Mode"
 msgstr "Cap vers le haut : Activer"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1031,6 +1032,10 @@ msgstr "E&xporter tout ..."
 msgid "ENC/Vector"
 msgstr "ENC/Vectorielle"
 #
+#, fuzzy
+msgid "ETA"
+msgstr "Heure est. d'arrivée:"
+#
 #
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
@@ -1041,6 +1046,9 @@ msgstr "Heure est. d'arrivée:"
 #
 msgid "ETA:                  "
 msgstr "Heure est. d'arrivée:"
+#
+msgid "ETE"
+msgstr ""
 #
 #
 msgid "ETE/Timestamp"
@@ -1104,6 +1112,11 @@ msgstr "Exporter un fichier GPX"
 #
 msgid "Extend Route"
 msgstr "Etendre la route"
+#
+# Menu contextuel : Trace
+#, fuzzy
+msgid "Extend Track"
+msgstr "Trace : Supprimer"
 #
 msgid "ExtendedTideIcon"
 msgstr "Hauteur de marée ( sous l'indicateur)"
@@ -1208,8 +1221,7 @@ msgstr "grd. vit."
 msgid "HW"
 msgstr "PM"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "Heading:                %03d Deg.\n"
 msgstr "Relèvement          : %03d   Deg.\n"
 #
@@ -1370,7 +1382,7 @@ msgstr "Navire-citerne pour gaz liquéfié"
 #
 # Couche
 msgid "List contents"
-msgstr "Recopier"
+msgstr "---> Routes/Traces/WP"
 #
 msgid "Local @ PC"
 msgstr ""
@@ -2222,9 +2234,8 @@ msgid "Show Chart Outlines"
 msgstr "Cartes : Afficher la bordure"
 #
 # Menu contextuel : WWaypoint/marque
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Propriétés de la marque"
+msgstr "Courants : Montrer les informations"
 #
 #
 msgid "Show Currents"
@@ -2275,9 +2286,8 @@ msgid "Show Status Bar"
 msgstr "Afficher la barre d'état"
 #
 # Menu contextuel : WWaypoint/marque
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Propriétés de la marque"
+msgstr "Marée : Montrer les informations"
 #
 #
 msgid "Show Tides"
@@ -2292,7 +2302,7 @@ msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
 #
 msgid "Show layers initially"
-msgstr ""
+msgstr "Montrer les couches initiales"
 #
 # Couches
 msgid "Show on chart"
@@ -2324,8 +2334,7 @@ msgstr "Afficher la pré-visualisation de police"
 msgid "Simplified"
 msgstr "Simplifiés"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
@@ -2426,6 +2435,11 @@ msgstr "Vitesse             : %5.2f noeuds.\n"
 msgid "Split Route"
 msgstr "Dédoubler la route"
 #
+# Menu contextuel : Trace
+#, fuzzy
+msgid "Split Track"
+msgstr "Trace : Supprimer"
+#
 #
 msgid "Standard"
 msgstr "Standard"
@@ -2496,9 +2510,8 @@ msgstr "Route temporaire"
 msgid "Temporary MOB Route"
 msgstr "Route de retour au MOB"
 #
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Route de retour au MOB"
+msgstr "Couche temporaire"
 #
 #
 msgid "Tender"
@@ -2562,6 +2575,11 @@ msgstr "Durée prévisible de navigation"
 #
 msgid "Times shown as"
 msgstr "Date montrée comme"
+#
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Horodatage"
 #
 #
 msgid "To"
@@ -2709,7 +2727,7 @@ msgstr "Inconnue"
 #
 # Couches
 msgid "Unlist contents"
-msgstr "Ne pas recopier"
+msgstr "Annul. Routes/Traces/WP"
 #
 # AIS
 msgid "Unspecified"
@@ -2902,23 +2920,3 @@ msgstr "WGS X"
 #
 msgid "wgsoy"
 msgstr "WGS Y"
-#
-#
-# Couche
-#~ msgid "&Toggle Chart"
-#~ msgstr "&Mode carte"
-#
-#
-# Couche
-#~ msgid "Import new layer"
-#~ msgstr "Importer"
-#
-#
-# Couche
-#~ msgid "Toggle Listing"
-#~ msgstr "Liste des modes"
-#
-#
-# Couche
-#~ msgid "Toggle Names"
-#~ msgstr "Mode noms"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-11 10:26-0500\n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
 "PO-Revision-Date: 2011-05-30 20:56+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -16,193 +16,166 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-Country: HUNGARY\n"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:125
-msgid "N"
-msgstr "É"
-
-#: src/compass.cpp:128
-msgid "NE"
-msgstr "ÉK"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:126
-msgid "E"
-msgstr "K"
-
-#: src/compass.cpp:128
-msgid "SE"
-msgstr "DK"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:127
-msgid "S"
-msgstr "D"
-
-#: src/compass.cpp:128
-msgid "SW"
-msgstr "DNy"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:128
-msgid "W"
-msgstr "Ny"
-
-#: src/compass.cpp:128
-msgid "NW"
-msgstr "ÉNy"
-
-#: src/dashboard_pi.cpp:96
-msgid "Position"
-msgstr "Pozíció"
-
-#: src/dashboard_pi.cpp:98
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:100
-msgid "Speedometer"
-msgstr "Sebesség"
-
-#: src/dashboard_pi.cpp:102
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:104
-msgid "Compass"
-msgstr "Iránytű"
-
-#: src/dashboard_pi.cpp:106
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:108
-msgid "HDG"
-msgstr "HDG"
-
-#: src/dashboard_pi.cpp:110
+#
+msgid "Add"
+msgstr "Hozzáad"
+#
+msgid "Add instrument"
+msgstr "Műszer hozzáadása"
+#
 msgid "Apparent wind"
 msgstr "Látszólagos szél"
-
-#: src/dashboard_pi.cpp:112
-msgid "Wind angle"
-msgstr "Szélirány"
-
-#: src/dashboard_pi.cpp:114
-#: src/dashboard_pi.cpp:116
-msgid "Wind speed"
-msgstr "Szélsebesség"
-
-#: src/dashboard_pi.cpp:118
-msgid "True wind"
-msgstr "Valós szél"
-
-#: src/dashboard_pi.cpp:120
-#: src/dashboard_pi.cpp:122
-msgid "Depth"
-msgstr "Mélység"
-
-#: src/dashboard_pi.cpp:124
-msgid "Temp"
-msgstr "Hőmérséklet"
-
-#: src/dashboard_pi.cpp:126
-#: src/dashboard_pi.cpp:128
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "Rudder angle"
-msgstr "Kormánylapát szög"
-
-#: src/dashboard_pi.cpp:134
-msgid "GPS in view"
-msgstr "GPS műholdak"
-
-#: src/dashboard_pi.cpp:136
-msgid "GPS status"
-msgstr "GPS állapot"
-
-#: src/dashboard_pi.cpp:219
-#: src/dashboard_pi.cpp:222
-#: src/dashboard_pi.cpp:281
-#: src/dashboard_pi.cpp:722
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "Iránytű"
+#
+msgid "Cursor"
+msgstr ""
+#
 msgid "Dashboard"
 msgstr "Műszerfal"
-
-#: src/dashboard_pi.cpp:287
+#
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "OpenCPN műszerfal plugin"
-
-#: src/dashboard_pi.cpp:292
+#
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "OpenCPN Műszerfal plugin\n"
 "Navigációs műszerfalon NMEA adatokat jelenít meg."
-
-#: src/dashboard_pi.cpp:715
+#
 msgid "Dashboard preferences"
 msgstr "Műszerfal beállítások"
-
-#: src/dashboard_pi.cpp:729
-msgid "Instrument width:"
-msgstr "Műszer szélesség:"
-
-#: src/dashboard_pi.cpp:736
-msgid "Fonts"
-msgstr "Betűtípusok"
-
-#: src/dashboard_pi.cpp:742
-msgid "Title:"
-msgstr "Cím:"
-
-#: src/dashboard_pi.cpp:746
+#
 msgid "Data:"
 msgstr "Adat:"
-
-#: src/dashboard_pi.cpp:750
-msgid "Label:"
-msgstr "Címke:"
-
-#: src/dashboard_pi.cpp:754
-msgid "Small:"
-msgstr "Kicsi:"
-
-#: src/dashboard_pi.cpp:766
-#: src/dashboard_pi.cpp:773
-#: src/dashboard_pi.cpp:1066
-msgid "Instruments"
-msgstr "Műszerek"
-
-#: src/dashboard_pi.cpp:781
-msgid "Add"
-msgstr "Hozzáad"
-
-#: src/dashboard_pi.cpp:785
-msgid "Edit"
-msgstr "Szerkeszt"
-
-#: src/dashboard_pi.cpp:789
+#
 msgid "Delete"
 msgstr "Töröl"
-
-#: src/dashboard_pi.cpp:794
-msgid "Up"
-msgstr "Fel"
-
-#: src/dashboard_pi.cpp:798
+#
+msgid "Depth"
+msgstr "Mélység"
+#
 msgid "Down"
 msgstr "Le"
-
-#: src/dashboard_pi.cpp:1052
-msgid "Add instrument"
-msgstr "Műszer hozzáadása"
-
-#: src/dashboard_pi.cpp:1056
+#
+msgid "E"
+msgstr "K"
+#
+msgid "Edit"
+msgstr "Szerkeszt"
+#
+msgid "Fonts"
+msgstr "Betűtípusok"
+#
+msgid "GPS in view"
+msgstr "GPS műholdak"
+#
+msgid "GPS status"
+msgstr "GPS állapot"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "Műszer szélesség:"
+#
+msgid "Instruments"
+msgstr "Műszerek"
+#
+msgid "Label:"
+msgstr "Címke:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "É"
+#
+msgid "NE"
+msgstr "ÉK"
+#
+msgid "NW"
+msgstr "ÉNy"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "Pozíció"
+#
+msgid "Rudder angle"
+msgstr "Kormánylapát szög"
+#
+msgid "S"
+msgstr "D"
+#
+msgid "SE"
+msgstr "DK"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "DNy"
+#
 msgid "Select instrument to add:"
 msgstr "Hozzáadandó műszer kiválasztása:"
-
+#
+msgid "Small:"
+msgstr "Kicsi:"
+#
+msgid "Speedometer"
+msgstr "Sebesség"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Hőmérséklet"
+#
+msgid "Title:"
+msgstr "Cím:"
+#
+msgid "True wind"
+msgstr "Valós szél"
+#
+msgid "Up"
+msgstr "Fel"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "Ny"
+#
+msgid "Wind angle"
+msgstr "Szélirány"
+#
+msgid "Wind speed"
+msgstr "Szélsebesség"
+#
+msgid "show this dashboard"
+msgstr ""

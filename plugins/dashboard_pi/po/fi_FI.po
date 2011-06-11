@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 22:58-0500\n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
 "PO-Revision-Date: 2010-12-09 22:33+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -16,193 +16,166 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:125
-msgid "N"
-msgstr "N"
-
-#: src/compass.cpp:128
-msgid "NE"
-msgstr "NE"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:126
-msgid "E"
-msgstr "E"
-
-#: src/compass.cpp:128
-msgid "SE"
-msgstr "SE"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:127
-msgid "S"
-msgstr "S"
-
-#: src/compass.cpp:128
-msgid "SW"
-msgstr "SW"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:128
-msgid "W"
-msgstr "W"
-
-#: src/compass.cpp:128
-msgid "NW"
-msgstr "NW"
-
-#: src/dashboard_pi.cpp:96
-msgid "Position"
-msgstr "Sijainti"
-
-#: src/dashboard_pi.cpp:98
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:100
-msgid "Speedometer"
-msgstr "Nopeusmittari"
-
-#: src/dashboard_pi.cpp:102
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:104
-msgid "Compass"
-msgstr "Kompassi"
-
-#: src/dashboard_pi.cpp:106
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:108
-msgid "HDG"
-msgstr "HDG"
-
-#: src/dashboard_pi.cpp:110
+#
+msgid "Add"
+msgstr "Lisää"
+#
+msgid "Add instrument"
+msgstr "Lisää mittari"
+#
 msgid "Apparent wind"
 msgstr "Suhteellinen tuuli"
-
-#: src/dashboard_pi.cpp:112
-msgid "Wind angle"
-msgstr "Tuulikulma"
-
-#: src/dashboard_pi.cpp:114
-#: src/dashboard_pi.cpp:116
-msgid "Wind speed"
-msgstr "Tuulennopeus"
-
-#: src/dashboard_pi.cpp:118
-msgid "True wind"
-msgstr "Tosituuli"
-
-#: src/dashboard_pi.cpp:120
-#: src/dashboard_pi.cpp:122
-msgid "Depth"
-msgstr "Syvyys"
-
-#: src/dashboard_pi.cpp:124
-msgid "Temp"
-msgstr "Lämpö"
-
-#: src/dashboard_pi.cpp:126
-#: src/dashboard_pi.cpp:128
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "Rudder angle"
-msgstr "Ruorikulma"
-
-#: src/dashboard_pi.cpp:134
-msgid "GPS in view"
-msgstr "Näkyvät satelliitit"
-
-#: src/dashboard_pi.cpp:136
-msgid "GPS status"
-msgstr "GPS tilanne"
-
-#: src/dashboard_pi.cpp:219
-#: src/dashboard_pi.cpp:222
-#: src/dashboard_pi.cpp:281
-#: src/dashboard_pi.cpp:722
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "Kompassi"
+#
+msgid "Cursor"
+msgstr ""
+#
 msgid "Dashboard"
 msgstr "Mittaritaulu"
-
-#: src/dashboard_pi.cpp:287
+#
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Mittaripaneeli OpenCPN:lle"
-
-#: src/dashboard_pi.cpp:292
+#
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Mittaritaulu OpenCPN:lle\n"
 "Näyttää mittarit NMEA-tuloille."
-
-#: src/dashboard_pi.cpp:715
+#
 msgid "Dashboard preferences"
 msgstr "Mittaripaneelin asetukset"
-
-#: src/dashboard_pi.cpp:729
-msgid "Instrument width:"
-msgstr "Mittarileveys:"
-
-#: src/dashboard_pi.cpp:736
-msgid "Fonts"
-msgstr "Kirjasimet"
-
-#: src/dashboard_pi.cpp:742
-msgid "Title:"
-msgstr "Otsikko:"
-
-#: src/dashboard_pi.cpp:746
+#
 msgid "Data:"
 msgstr "Data:"
-
-#: src/dashboard_pi.cpp:750
-msgid "Label:"
-msgstr "Kuvaus:"
-
-#: src/dashboard_pi.cpp:754
-msgid "Small:"
-msgstr "Pieni:"
-
-#: src/dashboard_pi.cpp:766
-#: src/dashboard_pi.cpp:773
-#: src/dashboard_pi.cpp:1066
-msgid "Instruments"
-msgstr "Mittarit"
-
-#: src/dashboard_pi.cpp:781
-msgid "Add"
-msgstr "Lisää"
-
-#: src/dashboard_pi.cpp:785
-msgid "Edit"
-msgstr "Muuta"
-
-#: src/dashboard_pi.cpp:789
+#
 msgid "Delete"
 msgstr "Poista"
-
-#: src/dashboard_pi.cpp:794
-msgid "Up"
-msgstr "Ylös"
-
-#: src/dashboard_pi.cpp:798
+#
+msgid "Depth"
+msgstr "Syvyys"
+#
 msgid "Down"
 msgstr "Alas"
-
-#: src/dashboard_pi.cpp:1052
-msgid "Add instrument"
-msgstr "Lisää mittari"
-
-#: src/dashboard_pi.cpp:1056
+#
+msgid "E"
+msgstr "E"
+#
+msgid "Edit"
+msgstr "Muuta"
+#
+msgid "Fonts"
+msgstr "Kirjasimet"
+#
+msgid "GPS in view"
+msgstr "Näkyvät satelliitit"
+#
+msgid "GPS status"
+msgstr "GPS tilanne"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "Mittarileveys:"
+#
+msgid "Instruments"
+msgstr "Mittarit"
+#
+msgid "Label:"
+msgstr "Kuvaus:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NE"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "Sijainti"
+#
+msgid "Rudder angle"
+msgstr "Ruorikulma"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SE"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
 msgid "Select instrument to add:"
 msgstr "Valitse lisättävä mittari:"
-
+#
+msgid "Small:"
+msgstr "Pieni:"
+#
+msgid "Speedometer"
+msgstr "Nopeusmittari"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Lämpö"
+#
+msgid "Title:"
+msgstr "Otsikko:"
+#
+msgid "True wind"
+msgstr "Tosituuli"
+#
+msgid "Up"
+msgstr "Ylös"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Wind angle"
+msgstr "Tuulikulma"
+#
+msgid "Wind speed"
+msgstr "Tuulennopeus"
+#
+msgid "show this dashboard"
+msgstr ""

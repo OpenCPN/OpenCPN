@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.506 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
-"PO-Revision-Date: 2011-06-05 20:18+0100\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
+"PO-Revision-Date: 2011-06-07 19:05+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"
@@ -218,16 +218,15 @@ msgstr " - "
 #
 #, c-format
 msgid " COG: %03d Deg."
-msgstr ""
+msgstr "COG: %03d°"
 #
 msgid " COG: 000 Deg."
-msgstr ""
+msgstr "COG: 000°"
 #
 #
 #
-#, fuzzy
 msgid " COG: Unavailable"
-msgstr "Geen kaart beschikbaar"
+msgstr "COG: niet beschikbaar"
 #
 #
 #
@@ -1021,6 +1020,9 @@ msgstr "Kan TCP/IP host niet vinden"
 msgid "Course UP Mode"
 msgstr "Koers-Boven presentatie"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 #
 #
 #, c-format
@@ -1239,6 +1241,12 @@ msgstr "ENC/Vector"
 #
 #
 #
+#, fuzzy
+msgid "ETA"
+msgstr "ETA:"
+#
+#
+#
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1251,6 +1259,9 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                 "
+#
+msgid "ETE"
+msgstr ""
 #
 #
 #
@@ -1327,6 +1338,12 @@ msgstr "Exporteer GPX-bestand"
 msgid "Extend Route"
 msgstr "Route uitbreiden"
 #
+#
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Track verwijderen"
+#
 msgid "ExtendedTideIcon"
 msgstr "Uitgebreid getij-icoon"
 #
@@ -1344,7 +1361,7 @@ msgid "Failed to load libgps.so.19"
 msgstr "Kon libgps.so.19 niet laden."
 #
 msgid "Fast ship"
-msgstr "snel vaartuig"
+msgstr "snel schip"
 #
 #
 #
@@ -1366,7 +1383,7 @@ msgid "Filter Period (Sec.)"
 msgstr "     Filterperiode (seconden)"
 #
 msgid "Fishing boat"
-msgstr "visserschip"
+msgstr "visservaartuig"
 #
 msgid "Fix.Struct."
 msgstr "platform"
@@ -1419,7 +1436,7 @@ msgstr "Opties Gebruikersinterface"
 #
 #
 msgid "Gas tanker"
-msgstr "gastanker"
+msgstr "gas-tankschip"
 #
 msgid "General cargo Vessel maritime"
 msgstr "vrachtschip (zee) "
@@ -1450,7 +1467,7 @@ msgstr "HW"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "Heading:                %03d Deg.\n"
 msgstr "Peiling:                  %03d°\n"
 #
@@ -2271,10 +2288,10 @@ msgid "Pushtow, four cargo barges"
 msgstr "duwboot met 4 vrachtduwbakken"
 #
 msgid "Pushtow, nine or more barges"
-msgstr "duwboot meer dan 8 VRDB"
+msgstr "duwboot met 9 of meer VRDB"
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr "duwboot > 8 DB - min. 1 (G) TDB"
+msgstr "duwboot 9 of meer DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, one cargo barge"
 msgstr "duwboot met 1 vrachtduwbak"
@@ -2384,7 +2401,7 @@ msgid "Red"
 msgstr "rood"
 #
 msgid "Red cross ship"
-msgstr "hospitaalschip"
+msgstr "rode kruis schip"
 #
 msgid "Ref. Pt"
 msgstr "ref.pt"
@@ -2623,9 +2640,8 @@ msgstr "Toon kaartgrenzen"
 #
 #
 #
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Markeringspunt-informatie"
+msgstr "Toon getijstroominformatie"
 #
 #
 #
@@ -2689,9 +2705,8 @@ msgstr "Toon statusbalk"
 #
 #
 #
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Markeringspunt-informatie"
+msgstr "Toon getijhoogteinformatie"
 #
 #
 #
@@ -2709,7 +2724,7 @@ msgid "Show WPT names"
 msgstr "Toon namen"
 #
 msgid "Show layers initially"
-msgstr ""
+msgstr "Toon kaartlagen initieel"
 #
 #
 #
@@ -2751,7 +2766,7 @@ msgstr "vereenvoudigd"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
@@ -2869,6 +2884,12 @@ msgstr "Route splitsen"
 #
 #
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "&Start track"
+#
+#
+#
 msgid "Standard"
 msgstr "standaard"
 #
@@ -2950,9 +2971,8 @@ msgstr "Tijdelijke MOB route"
 #
 #
 #
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Tijdelijke MOB route"
+msgstr "Tijdelijke kaartlaag"
 #
 #
 #
@@ -3028,6 +3048,12 @@ msgstr "Vaartijd"
 #
 msgid "Times shown as"
 msgstr "Tijden in "
+#
+#
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "Vaartijd/Tijdstip"
 #
 #
 #
@@ -3128,7 +3154,7 @@ msgid "Tug, freighter/tanker, coupled"
 msgstr "gekoppelde sleep-sch. min. 1 SL-TS"
 #
 msgid "Tug, one or more tows"
-msgstr "sleepboot, 1 of meer slepen"
+msgstr "sleepboot, 1 of meer aanhangen"
 #
 msgid "Tug, single"
 msgstr "sleepboot, losvarend"
@@ -3421,29 +3447,3 @@ msgstr "WGS X offset"
 #
 msgid "wgsoy"
 msgstr "WGS Y offset"
-#
-#
-#
-#~ msgid "&Toggle Chart"
-#~ msgstr "&Wissel kaart"
-#
-#
-#
-#
-#
-#~ msgid "Import new layer"
-#~ msgstr "Importeer nieuwe kaartlaag"
-#
-#
-#
-#
-#
-#~ msgid "Toggle Listing"
-#~ msgstr "Lijst Aan/Uit"
-#
-#
-#
-#
-#
-#~ msgid "Toggle Names"
-#~ msgstr "Wissel namen"

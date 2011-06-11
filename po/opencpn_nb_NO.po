@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.523\n"
+"Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 21:25-0400\n"
-"PO-Revision-Date: 2011-05-27 00:51+0100\n"
+"POT-Creation-Date: 2011-06-11 10:23-0400\n"
+"PO-Revision-Date: 2011-06-06 22:38+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
@@ -155,14 +155,13 @@ msgstr " - "
 #
 #, c-format
 msgid " COG: %03d Deg."
-msgstr ""
+msgstr " COG: %03d Gra."
 #
 msgid " COG: 000 Deg."
-msgstr ""
+msgstr " COG: 000 Gra."
 #
-#, fuzzy
 msgid " COG: Unavailable"
-msgstr "Ingen kart er tilgjengelig"
+msgstr " COG: Utilgjengelig"
 #
 msgid " ChartFile:  "
 msgstr " Kartfil:  "
@@ -494,10 +493,10 @@ msgid "Bearing:                Unavailable\n"
 msgstr "Kurs:                Utilgjengelig\n"
 #
 msgid "Black"
-msgstr ""
+msgstr "Sort"
 #
 msgid "Blue"
-msgstr ""
+msgstr "Blå"
 #
 msgid "Boundaries"
 msgstr "Grenser"
@@ -667,9 +666,8 @@ msgstr "Lukk"
 msgid "CoG"
 msgstr "COG"
 #
-#, fuzzy
 msgid "Color:"
-msgstr "F&arge:"
+msgstr "Farge:"
 #
 msgid "Colors"
 msgstr "Farger"
@@ -691,6 +689,9 @@ msgstr "Kunne ikke løse TCP/IP vert '"
 #
 msgid "Course UP Mode"
 msgstr "Kurs opp"
+#
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
 #
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -714,33 +715,32 @@ msgstr "Strøm"
 msgid "Cursor: "
 msgstr "Kursor: "
 #
-#, fuzzy
 msgid "Cyan"
-msgstr "Avbryt"
+msgstr "Cyan"
 #
 msgid "D/V"
 msgstr "D/V"
 #
 msgid "Dark Blue"
-msgstr ""
+msgstr "Mørk Blå"
 #
 msgid "Dark Cyan"
-msgstr ""
+msgstr "Mørk Cyan"
 #
 msgid "Dark Gray"
-msgstr ""
+msgstr "Mørk Grå"
 #
 msgid "Dark Green"
-msgstr ""
+msgstr "Mørk Grønn"
 #
 msgid "Dark Magenta"
-msgstr ""
+msgstr "Mørk Magenta"
 #
 msgid "Dark Red"
-msgstr ""
+msgstr "Mørk Rød"
 #
 msgid "Dark Yellow"
-msgstr ""
+msgstr "Mørk Gul"
 #
 msgid "De-Clutter Text (exp.)"
 msgstr "Ryddig visning av ENC-tekst"
@@ -752,20 +752,19 @@ msgid "Deactivate Route"
 msgstr "Deaktiver rute"
 #
 msgid "Decimal degrees"
-msgstr ""
+msgstr "Desimal grader"
 #
 msgid "Deep Depth"
 msgstr "Klart farvann (dybde)"
 #
-#, fuzzy
 msgid "Default color"
-msgstr "Font farge."
+msgstr "Standard farge"
 #
 msgid "Degrees, Decimal minutes"
-msgstr ""
+msgstr "Grader, Desimal minutter"
 #
 msgid "Degrees, Minutes, Seconds"
-msgstr ""
+msgstr "Grader, Minutter, Sekunder"
 #
 msgid "Delete All"
 msgstr "Slett alle"
@@ -842,6 +841,10 @@ msgstr "E&ksporter alle..."
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
+#, fuzzy
+msgid "ETA"
+msgstr "ETA:"
+#
 msgid "ETA          "
 msgstr "ETA"
 #
@@ -850,6 +853,9 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                  "
+#
+msgid "ETE"
+msgstr ""
 #
 msgid "ETE/Timestamp"
 msgstr "ETE/Tids stempel"
@@ -876,7 +882,7 @@ msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Aktiver Mushjul-Zoom-til-Kursor"
 #
 msgid "Enable transparent toolbar"
-msgstr ""
+msgstr "Aktiver gjennomsiktig verktøylinje"
 #
 msgid "End Route"
 msgstr "Avslutt rute"
@@ -901,6 +907,10 @@ msgstr "Eksporter GPX fil"
 #
 msgid "Extend Route"
 msgstr "Utvid rute"
+#
+#, fuzzy
+msgid "Extend Track"
+msgstr "Slett slepestrek"
 #
 msgid "ExtendedTideIcon"
 msgstr "UtvidetTidevannsIkon"
@@ -985,7 +995,7 @@ msgid "Go to "
 msgstr "Gå til"
 #
 msgid "Green"
-msgstr ""
+msgstr "Grønn"
 #
 msgid "HSC"
 msgstr "HSC"
@@ -993,7 +1003,7 @@ msgstr "HSC"
 msgid "HW"
 msgstr "HW"
 #
-#, fuzzy, c-format
+#, c-format
 msgid "Heading:                %03d Deg.\n"
 msgstr "Kurs:                %03d Gra.\n"
 #
@@ -1063,9 +1073,8 @@ msgstr "Språk"
 msgid "Language/Fonts"
 msgstr "Språk og Skrift"
 #
-#, fuzzy
 msgid "Last Position Report Time:  "
-msgstr "Siste rapport - tid:      "
+msgstr "Tid for siste posisjonsrapport:  "
 #
 msgid "Latitude"
 msgstr "Breddegrad"
@@ -1109,9 +1118,8 @@ msgstr "Lisens"
 msgid "Light"
 msgstr "Lys"
 #
-#, fuzzy
 msgid "Light Gray"
-msgstr "Lys"
+msgstr "Lys Grå"
 #
 msgid "Light Vessel/Rig"
 msgstr "Fyrfartøy/rigg"
@@ -1177,7 +1185,7 @@ msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
 msgid "Magenta"
-msgstr ""
+msgstr "Magenta"
 #
 msgid "Mariner's Standard"
 msgstr "Mariner's Standard"
@@ -1503,11 +1511,13 @@ msgstr "Havneoppsyn"
 msgid "Position"
 msgstr "Posisjon"
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
-msgstr "Rapportens alder:             %3d Sek.\n"
+msgstr ""
+"Alder for posisjonsrapport:       %3d Sek.\n"
+"\n"
 #
 msgid "Position:               "
 msgstr "Posisjon:"
@@ -1583,7 +1593,6 @@ msgstr "Skyv og slep, fire lektere, minst en tanker eller gasslekter"
 msgid "Pushtow, four cargo barges"
 msgstr "Skyv og slep, fire lastelektere"
 #
-#, fuzzy
 msgid "Pushtow, nine or more barges"
 msgstr "Skyv og slep, ni eller flere lektere"
 #
@@ -1669,7 +1678,7 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Gjenoppbygger kartdatabase av konfigurasjonsfil oppføringer..."
 #
 msgid "Red"
-msgstr ""
+msgstr "Rød"
 #
 msgid "Red cross ship"
 msgstr "Rødekorsbåt"
@@ -1833,9 +1842,8 @@ msgstr "Vis CPA/TCPA Varseldialog"
 msgid "Show Chart Outlines"
 msgstr "Vis kartomriss"
 #
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Merke informasjon"
+msgstr "Vis nåværende informasjon"
 #
 msgid "Show Currents"
 msgstr "Vis strømmer"
@@ -1855,9 +1863,8 @@ msgstr "Vis rutenett"
 msgid "Show Important Text Only"
 msgstr "Vis bare viktig tekst"
 #
-#, fuzzy
 msgid "Show Lat/Long as"
-msgstr "Vis på kart"
+msgstr "Vis lengde og breddegrad som"
 #
 msgid "Show Light Descriptions"
 msgstr "Vis lyskarakteristikk"
@@ -1874,9 +1881,8 @@ msgstr "Vis loddskudd"
 msgid "Show Status Bar"
 msgstr "Vis statuslinje"
 #
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Merke informasjon"
+msgstr "Vis tidevannsinformasjon"
 #
 msgid "Show Tides"
 msgstr "Vis tidevann"
@@ -1888,7 +1894,7 @@ msgid "Show WPT names"
 msgstr "Vis VPT-navn"
 #
 msgid "Show layers initially"
-msgstr ""
+msgstr "Vis lag først"
 #
 msgid "Show on chart"
 msgstr "Vis på kart"
@@ -1914,20 +1920,20 @@ msgstr "Viser forhåndsvisning av skrift."
 msgid "Simplified"
 msgstr "ENC standard"
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
-"Størrelse:                 %dm x %dm x ---m\n"
+"Størrelse:                 %dm x %dm\n"
 "\n"
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm \n"
 "\n"
 msgstr ""
-"Størrelse:                 %dm x %dm x ---m\n"
+"Størrelse:                 %dm x %dm \n"
 "\n"
 #
 #, c-format
@@ -2002,6 +2008,10 @@ msgstr "Fart:                %5.2f Kts.\n"
 msgid "Split Route"
 msgstr "Splitt rute"
 #
+#, fuzzy
+msgid "Split Track"
+msgstr "&Start slepestrek"
+#
 msgid "Standard"
 msgstr "Standard"
 #
@@ -2063,9 +2073,8 @@ msgstr "Midlertidig GÅTIL rute"
 msgid "Temporary MOB Route"
 msgstr "Midlertidig MOB rute"
 #
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Midlertidig MOB rute"
+msgstr "Midlertidig lag"
 #
 msgid "Tender"
 msgstr "Hjelper"
@@ -2115,6 +2124,10 @@ msgstr "Tid underveis"
 #
 msgid "Times shown as"
 msgstr "Tider vist som"
+#
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Tids stempel"
 #
 msgid "To"
 msgstr "Til"
@@ -2239,9 +2252,8 @@ msgstr "Ukjent"
 msgid "Unlist contents"
 msgstr "Fjern innhold fra liste"
 #
-#, fuzzy
 msgid "Unspecified"
-msgstr "Udefinert"
+msgstr "Uspesifisert"
 #
 msgid "Update Control"
 msgstr "Oppdateringskontroll"
@@ -2340,7 +2352,7 @@ msgid "Whether the font is underlined."
 msgstr "Om skriften skal være understreket."
 #
 msgid "White"
-msgstr ""
+msgstr "Hvit"
 #
 msgid "WiFi Options"
 msgstr "WiFi alternativer"
@@ -2363,9 +2375,8 @@ msgstr "Y forskyvning (Positiv, flytter kart mot nord) (Nm projisert) :"
 msgid "Yat"
 msgstr "Yat"
 #
-#, fuzzy
 msgid "Yellow"
-msgstr "Celle"
+msgstr "Gul"
 #
 msgid "Zoom In"
 msgstr "Zoom inn"
@@ -2405,43 +2416,3 @@ msgstr "wgsox"
 #
 msgid "wgsoy"
 msgstr "wgsoy"
-#
-#
-#
-#
-#~ msgid "&Toggle Chart"
-#~ msgstr "Kar&t, på/av"
-#
-#
-#
-#
-#~ msgid "Import new layer"
-#~ msgstr "Importer nytt lag"
-#
-#
-#
-#
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN S57 SENC Fil-lasting"
-#
-#
-#
-#
-#~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Seneste rapport periode:   %3d Sek.\n"
-#~ "\n"
-#
-#
-#
-#
-#~ msgid "Toggle Listing"
-#~ msgstr "Slå på/av liste"
-#
-#
-#
-#
-#~ msgid "Toggle Names"
-#~ msgstr "Slå på/av navn"
