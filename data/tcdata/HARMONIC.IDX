@@ -267,14 +267,14 @@ TAsi:Jpn:: 131.417 31.5833 9:0 Aburatu, Miyazaki, Japan
 TAsi:Jpn:: 139.617 35.15 9:0 Aburatubo, Kanagawa, Japan
 TNAA:Can:Nun: -64.9167 61.35 -4:0 Acadia Cove, Nunavut
 TNAP:Mex:: -99.9117 16.84 -6:0 Acapulco, Guerrero, Mexico
-CNAP:Can:BC: -123.3 48.8667 -8:0 Active Pass, British Columbia Current
+#CNAP:Can:BC: -123.3 48.8667 -8:0 Active Pass, British Columbia Current
 TAsi:Jpn:: 128.317 26.7333 9:0 Ada, Okinawa, Japan
 TNAP:Can:BC: -127.5167 51.6 -8:0 Addenbroke Island, British Columbia
 TNAP:Can:BC: -127.8167 51.6 -8:0 Addenbroke Island, British Columbia (2)
 TAuA:Aus:: 138.5 -34.85 9:30 Adelaide Inner Harbour, Australia
 TAuA:Aus:: 138.4833 -34.7833 9:30 Adelaide Outer Harbour, Australia
 TAuA:Aus:: 123.15 -15.5167 8:0 Adele Island, Australia
-CNAP:US:WA: -122.6367 48.03 -8:0 Admiralty Inlet, Washington Current
+#CNAP:US:WA: -122.6367 48.03 -8:0 Admiralty Inlet, Washington Current
 TNAA:Can:Nun: -100.9833 69.45 -6:0 Admiralty Island, Nunavut
 TAuA:Aus:: 128.1833 -15.1167 8:0 Adolphus Island, Australia
 TNAA:Can:NovS: -64.7833 45.3333 -4:0 Advocate, Nova Scotia
@@ -294,7 +294,7 @@ TAsi:Jpn:: 139.483 34.0667 9:0 Ako (Miyake Sima), Tokyo, Japan
 TNAA:Can:Qbc: -78.2167 60.8 -5:0 Akulivik, Hudson Bay, Quebec
 TAsi:Jpn:: 130.2 32.0167 9:0 Akune, Kagosima, Japan
 TAtl:Icel:: -18.1167 65.6833 0:0 Akureyri, Iceland
-CNAP:US:AK: -166.0517 54.0217 -9:0 Akutan Pass, Aleutian Islands, Alaska Current
+#CNAP:US:AK: -166.0517 54.0217 -9:0 Akutan Pass, Aleutian Islands, Alaska Current
 TNAP:US:CA: -122.2983 37.7717 -8:0 Alameda, San Francisco Bay, California
 TNAP:US:CA: -122.2983 37.7717 -8:0 Alameda, San Francisco Bay, California (2)
 TNAP:US:CA: -122.2983 37.7717 -8:0 Alameda, San Francisco Bay, California (3)
@@ -343,7 +343,7 @@ TNAA:US:MD: -77.3533 38.4183 -5:0 Aquia Creek, Virginia
 TAsi:Jpn:: 128.683 32.6667 9:0 Arakawa (Tamanoura), Nagasaki, Japan
 TAsi:Jpn:: 129.05 32.9167 9:0 Arakawa, Nagasaki, Japan
 TNAG:US:TX: -97.0517 27.8383 -6:0 Aransas Channel, Texas
-CNAG:US:TX: -97.045 27.8333 -6:0 Aransas Pass, Texas Current
+#CNAG:US:TX: -97.045 27.8333 -6:0 Aransas Pass, Texas Current
 TAuA:Aus:: 141.65 -13.3333 10:0 Archer River, Australia
 TNAA:Can:Nun: -85.0167 73.0333 -5:0 Arctic Bay, Nunavut
 TAuA:Aus:: 137.9167 -34.4333 9:30 Ardrossan, Australia
@@ -405,7 +405,7 @@ TNAA:Can:NovS: -61.9167 45.8667 -4:0 Ballantyne Cove, Nova Scotia
 TAuA:Aus:: 153.5833 -28.8667 10:0 Ballina, Australia
 TNAA:US:MD: -76.347 39.16 -5:0 Baltimore (Chesapeake Bay), Maryland
 TNAA:US:MD: -76.5783 39.2667 -5:0 Baltimore (Fort McHenry), Maryland
-CNAA:US:MD: -76.3683 39.0133 -5:0 Baltimore Harbor Approach, Maryland Current
+#CNAA:US:MD: -76.3683 39.0133 -5:0 Baltimore Harbor Approach, Maryland Current
 TNAP:Can:BC: -125.1333 48.8333 -8:0 Bamfield, British Columbia
 TNAP:Can:BC: -125.1333 48.8333 -8:0 Bamfield, British Columbia (2)
 TAuA::: 142.1 -10.7 10:0 Bampfield Head, Endeavour Strait
@@ -441,7 +441,7 @@ TNAA:Can:NovS: -60.45 47.0167 -4:0 Bay St. Lawrence, Nova Scotia
 TNAG:US:MS: -89.3283 30.3067 -6:0 Bay St. Louis, Mississippi
 TNAG:US:MS: -89.325 30.325 -6:0 Bay Waveland Yacht Club, Bay St. Louis, Mississippi
 TAuA:Aus:: 139.0667 -16.9 10:0 Bayley Island, Australia
-CNAA:US:NY: -74.1433 40.6417 -5:0 Bayonne Bridge, Kill van Kull, New York Current
+#CNAA:US:NY: -74.1433 40.6417 -5:0 Bayonne Bridge, Kill van Kull, New York Current
 CNAA:US:NY: -74.1423 40.6417 -5:0 Bayonne Bridge, Kill van Kull, New York Current (2)
 TNAA:US:NY: -74.1467 40.64 -5:0 Bayonne Bridge, Staten Island, New York
 TNAG:US:MS: -89.9683 29.255 -6:0 Bayou Rigaud, Grand Isle, Mississippi River Delta, Louisiana
@@ -544,7 +544,7 @@ TAuA:PNGu:: 147.25 -9.5 10:0 Bootless Inlet, Papua New Guinea
 TEur:Ger:: 6.75 53.55 1:0 Borkum, Fischerbalje, Germany
 TNAP:Can:BC: -129.2833 52.7333 -8:0 Borrowman Bay, British Columbia
 TNAP:Can:BC: -129.2833 52.7333 -8:0 Borrowman Bay, British Columbia (2)
-CNAA:US:MA: -70.9567 42.3383 -5:0 Boston Harbor, Massachusetts Current
+#CNAA:US:MA: -70.9567 42.3383 -5:0 Boston Harbor, Massachusetts Current
 TNAA:US:MA: -71.0517 42.355 -5:0 Boston, Massachusetts
 TAuA:Aus:: 151.2167 -33.9833 10:0 Botany Bay, Australia
 TNAA:Can:Newf: -55.3333 49.1333 -3:30 Botwood, Newfoundland
@@ -661,7 +661,7 @@ TNAA:Can:NovS: -63.4667 45.8833 -4:0 Cape Cliff, Nova Scotia
 TNAA:Can:Nun: -79.3667 74.8667 -5:0 Cape Cockburn, Nunavut
 TNAA:US:MA: -70.5067 41.7717 -5:0 Cape Cod Canal (East Entrance), Massachusetts
 TNAA:US:MA: -70.6183 41.7417 -5:0 Cape Cod Canal, Buzzards Bay Entrance, Massachusetts
-CNAA:US:MA: -70.6133 41.7417 -5:0 Cape Cod Canal, Massachusetts Current
+#CNAA:US:MA: -70.6133 41.7417 -5:0 Cape Cod Canal, Massachusetts Current
 TAuA:Aus:: 132.5667 -11 9:30 Cape Croker, Australia
 TNAA:Can:NovS: -64.7667 45.2833 -4:0 Cape D'or, Nova Scotia
 TNAA:Can:Nun: -129.65 70.2667 -7:0 Cape Dalhousie, Nunavut/NWT
@@ -716,7 +716,7 @@ TNAA:Can:Qbc: -66.1333 48.1 -5:0 Carleton Centre, Quebec
 TAuA:Aus:: 149.3 -20.7833 10:0 Carlisle Island, Australia
 TNAA:Can:Newf: -54.2833 49.4 -3:30 Carmanville, Newfoundland
 TAuA:Aus:: 113.65 -24.8667 8:0 Carnarvon, Australia
-CNAP:US:CA: -122.2183 38.0617 -8:0 Carquinez Strait, California Current
+#CNAP:US:CA: -122.2183 38.0617 -8:0 Carquinez Strait, California Current
 TNAA:Can:Labr: -57.0333 53.7 -3:30 Cartwright Harbour, Labrador
 TNAP:Can:BC: -130.3667 54.2833 -8:0 Casey Cove, British Columbia
 TNAP:Can:BC: -130.3667 54.2833 -8:0 Casey Cove, British Columbia (2)
@@ -739,7 +739,7 @@ TNAA:Can:Qbc: -72.35 46.4333 -5:0 Champlain, Quebec
 TNAA:Can:Newf: -54.4167 49.6667 -3:30 Change Island, Newfoundland
 TNAG:US:FL: -81.725 24.6033 -5:0 Channel Key, west side, Florida
 TNAP:US:WA: -122.9 48.45 -8:0 Charles Island, Washington
-CNAA:US:SC: -79.87 32.7567 -5:0 Charleston Harbor Entrance, South Carolina Current
+#CNAA:US:SC: -79.87 32.7567 -5:0 Charleston Harbor Entrance, South Carolina Current
 TNAP:US:OR: -124.3217 43.345 -8:0 Charleston, Oregon
 TNAA:US:SC: -79.925 32.7817 -5:0 Charleston, South Carolina
 TNAA:US:MD: -75.97 39.5733 -5:0 Charlestown, Northeast River, Maryland
@@ -757,9 +757,9 @@ TNAP:Can:BC: -123.7 48.9167 -8:0 Chemanius, British Columbia
 TNAP:Can:BC: -123.7 48.9167 -8:0 Chemanius, British Columbia (2)
 TNAP:US:WA: -122.7583 48.8633 -8:0 Cherry Point, Washington
 TNAA:US:VA: -76.1133 36.9667 -5:0 Chesapeake Bay Bridge-Tunnel, Virginia
-CNAA:US:VA: -75.9983 36.98 -5:0 Chesapeake Bay Entrance, Virginia Current
+#CNAA:US:VA: -75.9983 36.98 -5:0 Chesapeake Bay Entrance, Virginia Current
 TNAA:US:MD: -76.5333 38.6833 -5:0 Chesapeake Beach, Maryland
-CNAA:US:DE: -75.8167 39.5333 -5:0 Chesapeake and Delaware Canal, Maryland/Delaware Current
+#CNAA:US:DE: -75.8167 39.5333 -5:0 Chesapeake and Delaware Canal, Maryland/Delaware Current
 TNAP:Can:BC: -124.8333 49.05 -8:0 Chesnucknuw Creek, British Columbia
 TNAA:Can:Nun: -90.7 63.0333 -6:0 Chesterfield Inlet, Nunavut-74.1167 39.7667
 TNAA:Can:NovS: -61.0167 46.6333 -4:0 Cheticamp, Nova Scotia
@@ -878,7 +878,7 @@ TNAA:US:FL: -80.9633 29.1467 -5:0 Daytona Beach Shores (Sunglow Pier), Florida
 TNAA:US:FL: -80.9633 29.1467 -5:0 Daytona Beach Shores (Sunglow Pier), Florida (2)
 TNAA:US:FL: -80.9633 29.1467 -5:0 Daytona Beach Shores (Sunglow Pier), Florida (3)
 TNAA:Can:Qbc: -74.75 62.15 -4:0 Deception Bay, Quebec
-CNAP:US:WA: -122.6333 48.4 -8:0 Deception Pass, Washington Current
+#CNAP:US:WA: -122.6333 48.4 -8:0 Deception Pass, Washington Current
 TAuA:PNGu:: 148.7167 -10.2333 10:0 Dedele Point, Papua New Guinea
 TNAP:Can:BC: -122.95 49.3333 -8:0 Deep Cove, British Columbia
 TNAP:Can:BC: -122.95 49.3333 -8:0 Deep Cove, British Columbia (2)
@@ -886,7 +886,7 @@ TNAA:Can:NovS: -65.8333 44.6667 -4:0 Deep Cove, Nova Scotia
 TNAA:Can:Nun: -91.4833 63.6167 -6:0 Deer Island, Nunavut
 TAuA:Aus:: 124.1833 -15.3333 8:0 Degerando Island, Australia
 TNAP:Can:BC: -123.7167 49.1333 -8:0 Degnen Bay, British Columbia
-CNAA:US:DE: -75.0433 38.7817 -5:0 Delaware Bay Entrance, Delaware Current
+#CNAA:US:DE: -75.0433 38.7817 -5:0 Delaware Bay Entrance, Delaware Current
 TEur:Neth:: 6.9333 53.3333 1:0 Delfzijl, Netherlands
 TEur:Neth:: 4.75 52.9667 1:0 Den Helder, Netherlands
 TEur:Neth:: 5.1333 52.9333 1:0 Den Oever, Netherlands
@@ -915,7 +915,7 @@ TNAA:Can:Qbc: -71.5667 61.6833 -5:0 Doctor Island, Quebec
 TNAA:US:FL: -81.7583 30.12 -5:0 Doctors Lake, Peoria Point, Florida
 TNAA:US:FL: -81.7583 30.12 -5:0 Doctors Lake, Peoria Point, Florida (2)
 TNAA:US:FL: -81.7583 30.12 -5:0 Doctors Lake, Peoria Point, Florida (3)
-CNAP:Can:BC: -123.8167 49.1367 -8:0 Dodd Narrows, British Columbia Current
+#CNAP:Can:BC: -123.8167 49.1367 -8:0 Dodd Narrows, British Columbia Current
 TAsi:Jpn:: 132.3 33.9167 9:0 Doi, Yamaguti, Japan
 TAsi:Jpn:: 134.583 34.2167 9:0 Donoura, Tokusima, Japan
 TAuA:Aus:: 148.6333 -20.1833 10:0 Double Bay, Australia
@@ -1049,7 +1049,7 @@ TNAP:Can:BC: -123.55 48.5 -8:0 Finlayson Arm, British Columbia
 TNAP:Can:BC: -123.3 48.4667 -8:0 Finnerty Cove, British Columbia
 TNAP:Can:BC: -123.3 48.4667 -8:0 Finnerty Cove, British Columbia (2)
 TAuA:PNGu:: 147.85 -6.55 10:0 Finsch Harbour, Papua New Guinea
-CNAP:Can:BC: -123.1333 49.3167 -8:0 First Narrows, British Columbia Current
+#CNAP:Can:BC: -123.1333 49.3167 -8:0 First Narrows, British Columbia Current
 TEur:Eng:: -4.9826 52.0128 0:0 Fishguard, Wales - READ flaterco.com/pol.html
 TAuA:Aus:: 146 -16.9167 10:0 Fitzroy Island, Australia
 TNAA:Can:NovS: -64.1167 45.3833 -4:0 Five Islands, Nova Scotia
@@ -1111,12 +1111,12 @@ TNAA:Can:NovS: -66.85 40.75 -4:0 Fundy (Offshore 4), Nova Scotia
 TNAA:Can:NovS: -67.7167 42.4667 -4:0 Fundy (Offshore 6), Nova Scotia
 TAuA:Aus:: 149.9167 -37.5667 10:0 Gabo Island, Australia
 TNAP:Can:BC: -123.7167 49.1333 -8:0 Gabriola Pass, British Columbia
-CNAP:Can:BC: -123.7 49.1283 -8:0 Gabriola Passage, British Columbia Current
+#CNAP:Can:BC: -123.7 49.1283 -8:0 Gabriola Passage, British Columbia Current
 TAsi:Jpn:: 127.967 27.0333 9:0 Gakiya, Okinawa, Japan
 TNAG:US:TX: -94.7933 29.31 -6:0 Galveston (Galveston Channel), Texas
 TNAG:US:TX: -94.7867 29.3133 -6:0 Galveston (Galveston Channel), Texas (2) (expired 1993-12-31)
 TNAG:US:TX: -94.79 29.2867 -6:0 Galveston (Pleasure Pier), Texas
-CNAG:US:TX: -94.705 29.3467 -6:0 Galveston Bay Entrance, Texas Current
+#CNAG:US:TX: -94.705 29.3467 -6:0 Galveston Bay Entrance, Texas Current
 TAsi:Jpn:: 137.233 34.8167 9:0 Gamagori, Aichi, Japan
 TAtl:Faer:: -6.823 61.9642 0:0 Gamlagætt, Faroe Islands
 TNAP:Can:BC: -123.5 48.85 -8:0 Ganges Harbour, British Columbia
@@ -1150,7 +1150,7 @@ TNAA:Can:Qbc: -60.6833 50.2167 -4:0 Gethsemani, Quebec
 TNAA:US:ME: -67.7667 44.55 -5:0 Gibbs Island, Pleasant River, Maine
 TNAP:Can:BC: -123.5 49.4 -8:0 Gibsons, British Columbia
 TNAP:Can:BC: -123.5 49.4 -8:0 Gibsons, British Columbia (2)
-CNAP:Can:BC: -125.1567 50.3933 -8:0 Gillard Pass, British Columbia Current
+#CNAP:Can:BC: -125.1567 50.3933 -8:0 Gillard Pass, British Columbia Current
 TNAA:Can:Qbc: -76.6333 56.55 -5:0 Gillies Island, Quebec
 TAsi:Jpn:: 126.767 26.3333 9:0 Gima, Okinawa, Japan
 TNAA:US:MD: -76.555 38.9583 -5:0 Gingerville Creek, Maryland
@@ -1180,7 +1180,7 @@ TNAP:Can:BC: -131.2167 52.1 -8:0 Gordon Islands, British Columbia (2)
 TNAA:Can:Newb: -65.4 47.0833 -4:0 Gordon Point, New Brunswick
 TNAP:Can:BC: -123.4167 48.45 -8:0 Gorge (Victoria), British Columbia
 TNAP:Can:BC: -124.9833 50.1 -8:0 Gorge Harbour, British Columbia
-CNAP:Can:BC: -123.4 48.45 -8:0 Gorge-Tillicum Bridge, British Columbia Current
+#CNAP:Can:BC: -123.4 48.45 -8:0 Gorge-Tillicum Bridge, British Columbia Current
 TAuA:Aus:: 151.35 -33.4333 10:0 Gosford, Australia
 TNAP:Can:BC: -128.4333 51.9 -8:0 Gosling Island, British Columbia
 TNAP:Can:BC: -128.4333 51.9 -8:0 Gosling Island, British Columbia (2)
@@ -1194,7 +1194,7 @@ TNAP:Can:BC: -129.8 55.4167 -8:0 Granby Bay, British Columbia (2)
 TNAA:Can:Newf: -59.1667 47.6 -3:30 Grand Bay, Newfoundland
 TNAA:Can:NovS: -66.2 44.4 -4:0 Grand Eddy, Nova Scotia
 TNAG:US:LA: -89.9567 29.2633 -6:0 Grand Isle, USCG Station, East Point, Louisiana
-CNAA:Can:NovS: -66.9317 44.7533 -4:0 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+#CNAA:Can:NovS: -66.9317 44.7533 -4:0 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 TNAA:Can:NovS: -61.55 47.55 -4:0 Grande Entree, Nova Scotia
 TNAA:Can:Qbc: -69.8667 47.6167 -5:0 Grande Île, Quebec
 TNAA:Can:Qbc: -64.5 48.4 -5:0 Grande-Rivière, Quebec
@@ -1202,7 +1202,7 @@ TNAA:Can:Qbc: -65.1333 49.2333 -5:0 Grande-Vallée, Quebec
 TNAG:US:FL: -80.9333 24.7667 -5:0 Grassy Key (North), Florida
 TNAG:US:FL: -80.9583 24.755 -5:0 Grassy Key, south side, Hawk Channel, Florida
 TAuA:Aus:: 144.0833 -40.0667 10:0 Grassy, King Island, Tasmania
-CNAP:US:WA: -124.125 46.9167 -8:0 Grays Harbor Entrance, Washington Current
+#CNAP:US:WA: -124.125 46.9167 -8:0 Grays Harbor Entrance, Washington Current
 TAuA:Aus:: 146.2333 -39.0833 10:0 Great Glennie Island, Australia
 TNAA:Can:Newf: -55.3667 46.9 -3:30 Great St. Lawrence Harbour, Newfoundland
 TNAA:Can:Qbc: -77.7667 55.2667 -5:0 Great Whale River, Quebec
@@ -1319,10 +1319,10 @@ TAnt:Ant:: 73.3833 -53.0167 6:0 Heard Island, Antarctica
 TNAA:Can:Newf: -53.3667 47.8667 -3:30 Heart's Content, Newfoundland
 TNAA:Can:Qbc: -61.7 49.0833 -4:0 Heath Point, Quebec
 TNAA:Can:Labr: -62.6167 58.1833 -4:0 Hebron, Hebron Fjord, Labrador
-CNAP:Can:BC: -128.5 52.8667 -8:0 Heikish Narrows, British Columbia Current
+#CNAP:Can:BC: -128.5 52.8667 -8:0 Heikish Narrows, British Columbia Current
 TNAA:Can:Nun: -62.9667 62.0167 0:0 Hejka Drill Site, Nunavut
 TEur:Ger:: 7.883 54.183 1:0 Helgoland, Germany
-CNAA:US:NY: -73.9333 40.7833 -5:0 Hell Gate (East River), New York Current
+#CNAA:US:NY: -73.9333 40.7833 -5:0 Hell Gate (East River), New York Current
 TNAA:Can:Nun: -89.4167 76.9 -6:0 Hell Gate, Nunavut
 TNAA:Can:Labr: -55.85 51.9833 -3:30 Henley Harbour, Labrador
 TAsi:Jpn:: 128.183 26.75 9:0 Hentona, Okinawa, Japan
@@ -1479,7 +1479,7 @@ TNAP:Can:BC: -124.05 49.6333 -8:0 Irvines Landing, British Columbia
 TNAP:Can:BC: -124.05 49.6333 -8:0 Irvines Landing, British Columbia (2)
 TNAA:Can:NovS: -61.6667 45.1833 -4:0 Isaac's Harbour, Nova Scotia
 TNAA:Can:Nun: -103.5333 78.7833 -7:0 Isachsen, Nunavut/NWT
-CNAP:US:AK: -163.4 54.8667 -9:0 Isanotski Strait (False Pass cannery), Alaska Current
+#CNAP:US:AK: -163.4 54.8667 -9:0 Isanotski Strait (False Pass cannery), Alaska Current
 TAsi:Jpn:: 124.167 24.3333 9:0 Isigaki, Okinawa, Japan
 TAsi:Jpn:: 141.117 38.3167 9:0 Isihama (Matusima Wan), Miyagi, Japan
 TAsi:Jpn:: 127.85 26.4167 9:0 Isikawa, Okinawa, Japan
@@ -1537,10 +1537,10 @@ TNAA:Can:NovS: -64.4667 45.6833 -4:0 Joggins Wharf, Nova Scotia
 TNAG:US:FL: -82.6383 28.6917 -5:0 Johns Island, Chassahowitzka Bay, Florida
 TNAP:Can:BC: -127.5333 51.1167 -8:0 Johnson Point, British Columbia
 TPac:Jons:: -169.53 16.7383 -10:0 Johnston Atoll, Pacific Ocean
-CNAP:Can:BC: -126.1367 50.4717 -8:0 Johnstone Strait Central, British Columbia Current
+#CNAP:Can:BC: -126.1367 50.4717 -8:0 Johnstone Strait Central, British Columbia Current
 TNAA:Can:NovS: -60.75 45.8 -4:0 Johnstown, Nova Scotia
 TNAA:Can:Labr: -58.2333 54.2167 -3:30 Jordans Point, Labrador
-CNAP:Can:BC: -123.53 48.2317 -8:0 Juan De Fuca Strait (East), British Columbia Current
+#CNAP:Can:BC: -123.53 48.2317 -8:0 Juan De Fuca Strait (East), British Columbia Current
 TAtl:Grn:: -46.0333 60.7167 -3:0 Julianehaab, Greenland
 TNAA:US:FL: -81.63 30.135 -5:0 Julington Creek, Florida
 TNAA:US:FL: -81.63 30.135 -5:0 Julington Creek, Florida (2)
@@ -1627,7 +1627,7 @@ TAsi:Jpn:: 141.617 38.8833 9:0 Kesennuma, Miyagi, Japan
 TNAP:US:AK: -131.625 55.3333 -9:0 Ketchikan, Alaska
 TNAG:US:FL: -81.0167 24.7183 -5:0 Key Colony Beach, Florida
 TNAG:US:FL: -81.8083 24.5533 -5:0 Key West (Naval Base), Florida
-CNAG:US:FL: -81.8167 24.5483 -5:0 Key West, Florida Current
+#CNAG:US:FL: -81.8167 24.5483 -5:0 Key West, Florida Current
 TNAP:Can:BC: -129.8 54.2333 -8:0 Khyex Point, British Columbia
 TNAP:Can:BC: -129.8 54.2333 -8:0 Khyex Point, British Columbia (2)
 TAuA:Solm:: 155.6333 -6.2 10:0 Kieta Harbour, Solomon Islands
@@ -1719,7 +1719,7 @@ TAsi:Jpn:: 130.2 32.6 9:0 Kutinotu, Nagasaki, Japan
 TAsi:Jpn:: 141.133 45.1833 9:0 Kutugata, Hokkaido, Japan
 TAsi:Jpn:: 141.817 40.1833 9:0 Kuzi (Iwate), Iwate, Japan
 TAsi:Jpn:: 129.25 28.2333 9:0 Kuzi Wan (Osima Kaikyo), Kagosima, Japan
-CNAP:US:AK: -157.25 58.7033 -9:0 Kvichak Bay (off Naknek River entrance), Alaska Current
+#CNAP:US:AK: -157.25 58.7033 -9:0 Kvichak Bay (off Naknek River entrance), Alaska Current
 TPac:Mars:: 167.7383 8.7367 12:0 Kwajalein Atoll, Marshall Islands
 TNAP:Can:BC: -129.5833 54.2167 -8:0 Kwinitsa Creek, British Columbia
 TNAP:Can:BC: -129.5833 54.2167 -8:0 Kwinitsa Creek, British Columbia (2)
@@ -1963,7 +1963,7 @@ TNAA:Can:NovS: -66.1667 44.2 -4:0 Meteghan, Nova Scotia
 TNAP:Can:BC: -128.6167 52.6 -8:0 Meyers Narrows, British Columbia
 TNAP:Can:BC: -128.6167 52.6 -8:0 Meyers Narrows, British Columbia (2)
 TNAA:US:FL: -80.1317 25.7683 -5:0 Miami Harbor Entrance, Florida
-CNAA:US:FL: -80.1367 25.765 -5:0 Miami Harbor Entrance, Florida Current
+#CNAA:US:FL: -80.1367 25.765 -5:0 Miami Harbor Entrance, Florida Current
 TNAP:Can:BC: -123.1667 49.1833 -8:0 Middle Arm, British Columbia
 TNAA:Can:Newf: -52.7 47.6667 -3:30 Middle Cove, Newfoundland
 TAuA:Aus:: 150.25 -21.65 10:0 Middle Island Anchorage, Australia
@@ -2016,7 +2016,7 @@ TAsi:Jpn:: 129.867 32.75 9:0 Mizu-No-Ura (Kyusyu/w.), Nagasaki, Japan
 TAsi:Jpn:: 133.75 34.5167 9:0 Mizusima, Okayama, Japan
 TAuA::: 142.2167 -10.2333 10:0 Moa Island, Torres Strait
 TNAG:US:AL: -88.0367 30.705 -6:0 Mobile (Mobile State Docks), Alabama
-CNAG:US:AL: -88.0333 30.2333 -6:0 Mobile Bay Entrance, Alabama Current
+#CNAG:US:AL: -88.0333 30.2333 -6:0 Mobile Bay Entrance, Alabama Current
 TAsi:Jpn:: 129.383 34.3 9:0 Modo Ura, Nagasaki, Japan
 TNAP:Can:BC: -130.7333 54.45 -8:0 Moffatt Islands, British Columbia
 TNAP:Can:BC: -130.7333 54.45 -8:0 Moffatt Islands, British Columbia (2)
@@ -2103,7 +2103,7 @@ TAsi:Jpn:: 140.583 36.3333 9:0 Nakaminato, Ibaraki, Japan
 TAsi:Jpn:: 131.25 33.6 9:0 Nakatu, Oita, Japan
 TAsi:Jpn:: 126.817 26.35 9:0 Nakazato, Okinawa, Japan
 TAsi:Jpn:: 129.767 33.0667 9:0 Nakura, Nagasaki, Japan
-CNAP:Can:BC: -127.5033 51.0967 -8:0 Nakwakto Rapids, British Columbia Current
+#CNAP:Can:BC: -127.5033 51.0967 -8:0 Nakwakto Rapids, British Columbia Current
 TNAP:Can:BC: -127.8667 51.8667 -8:0 Namu, British Columbia
 TNAP:Can:BC: -127.8667 51.8667 -8:0 Namu, British Columbia (2)
 TNAP:Can:BC: -123.9333 49.1667 -8:0 Nanaimo, British Columbia
@@ -2199,7 +2199,7 @@ TNAP:Can:BC: -123.5833 49 -8:0 North Galiano, British Columbia
 TAuA:Aus:: 133.4333 -11.55 9:30 North Goulburn Island, Australia
 TNAA:Can:Newf: -54.1 47.85 -3:30 North Harbour, Newfoundland
 TNAA:Can:Newb: -66.75 44.7667 -4:0 North Head, New Brunswick
-CNAP:US:AK: -136.3833 58.2833 -9:0 North Inian Pass, Cross Sound, Alaska Current
+#CNAP:US:AK: -136.3833 58.2833 -9:0 North Inian Pass, Cross Sound, Alaska Current
 TAuA:Aus:: 113.6 -28.3 8:0 North Island, Australia
 TNAA:Can:Qbc: -77.75 60 -5:0 North Kopak Island, Quebec
 TNAA:Can:NovS: -62.0667 46.4667 -4:0 North Lake Harbour, Prince Edward Island
@@ -2290,7 +2290,7 @@ TAsi:Jpn:: 139.517 42.1667 9:0 Okusiri, Hokkaido, Japan
 TAsi:Jpn:: 132.383 33.3333 9:0 Okuti Wan, Ehime, Japan
 TNAA:Can:NovS: -61.4667 47.5667 -4:0 Old Harry, Nova Scotia
 TNAA:US:CT: -72.35 41.2833 -5:0 Old Saybrook Point, Connecticut
-CNAG:US:FL: -82.5533 27.865 -5:0 Old Tampa Bay Entrance (Port Tampa), Florida Current
+#CNAG:US:FL: -82.5533 27.865 -5:0 Old Tampa Bay Entrance (Port Tampa), Florida Current
 TNAA:Can:Newb: -64.8667 47.5167 -4:0 Old Tracadie Gully entrance, New Brunswick
 TAsi:Jpn:: 140.9 41.5333 9:0 Oma, Aomori, Japan
 TAsi:Jpn:: 138.233 34.6 9:0 Omae Saki, Sizuoka, Japan
@@ -2411,7 +2411,7 @@ TEur:Neth:: 4.65 52.7667 1:0 Petten zuid, Netherlands
 TNAA:US:DE: -75.1417 39.9333 -5:0 Philadelphia, Delaware River
 TNAA:US:PA: -75.135 39.9517 -5:0 Philadelphia, Municipal Pier 11, Pennsylvania
 TNAA:US:PA: -75.1383 39.9533 -5:0 Philadelphia, Pennsylvania
-CNAA:US:PA: -75.1333 39.95 -5:0 Philadelphia, Pennsylvania Current
+#CNAA:US:PA: -75.1333 39.95 -5:0 Philadelphia, Pennsylvania Current
 TNAA:US:FL: -81.6367 30.3833 -5:0 Phoenix Park, Florida
 TNAA:US:FL: -81.6367 30.3833 -5:0 Phoenix Park, Florida (2)
 TNAA:US:FL: -81.6367 30.3833 -5:0 Phoenix Park, Florida (3)
@@ -2461,14 +2461,14 @@ TNAA:Can:Qbc: -64.1739 48.6253 -5:0 Pointe Saint-Pierre, Quebec
 TNAA:Can:Qbc: -70.05 47.6167 -5:0 Pointe-Au-Pic, Quebec
 TNAA:Can:Qbc: -70.0333 47.4833 -5:0 Pointe-Aux-Orignaux, Quebec
 TNAA:Can:Qbc: -68.4667 48.5167 -5:0 Pointe-au-Pere, Quebec
-CNAA:US:MA: -69.985 41.5467 -5:0 Pollock Rip Channel, Massachusetts Current
+#CNAA:US:MA: -69.985 41.5467 -5:0 Pollock Rip Channel, Massachusetts Current
 TPac:Carl:: 158.22 6.98 11:0 Ponape Harbor, Caroline Islands
 TNAA:US:FL: -80.915 29.0633 -5:0 Ponce de Leon Inlet (inside), Florida
 TAuA:Aus:: 136.8167 -35.25 9:30 Pondalowie Bay, Australia
 TNAA:US:NY: -72.5 40.85 -5:0 Ponquogue Bridge, Shinnecock Bay, Long Island, New York
 TNAP:Can:BC: -123.5805 49.018 -8:0 Porlier Pass, British Columbia
 TNAP:Can:BC: -123.5800 49.015 -8:0 Porlier Pass, British Columbia (2)
-CNAP:Can:BC: -123.585 49.015 -8:0 Porlier Pass, British Columbia Current
+#CNAP:Can:BC: -123.585 49.015 -8:0 Porlier Pass, British Columbia Current
 TNAP:Can:BC: -123.75 49.4833 -8:0 Porpoise Bay, British Columbia
 TNAP:Can:BC: -123.75 49.4833 -8:0 Porpoise Bay, British Columbia (2)
 TNAP:Can:BC: -124.8167 49.2333 -8:0 Port Alberni, British Columbia
@@ -2581,7 +2581,7 @@ TNAA:US:ME: -70.2467 43.6567 -5:0 Portland, Maine
 TNAA:Can:Qbc: -71.8833 46.6833 -5:0 Portneuf, Quebec
 TEur:Scot:: -5.1189 54.8424 0:0 Portpatrick, Scotland - READ flaterco.com/pol.html
 TEur:Ire:: -6.65 55.2 0:0 Portrush, Northern Ireland - READ flaterco.com/pol.html
-CNAA:US:NH: -70.7 43.0667 -5:0 Portsmouth Harbor Entrance, New Hampshire Current
+#CNAA:US:NH: -70.7 43.0667 -5:0 Portsmouth Harbor Entrance, New Hampshire Current
 TEur:Eng:: -1.1117 50.8008 0:0 Portsmouth, England - READ flaterco.com/pol.html
 TNAA:US:VA: -76.2933 36.8217 -5:0 Portsmouth, Norfolk Naval Shipyard, Virginia
 TNAA:Can:Newf: -52.8667 47.6167 -3:30 Portugal Cove, Newfoundland
@@ -2598,7 +2598,7 @@ TNAA:Can:NovS: -63.0333 46.05 -4:0 Prim Point, Prince Edward Island
 TNAA:Can:Nun: -93 63.9167 -6:0 Primrose Island, Nunavut
 TNAP:Can:BC: -130.3333 54.3167 -8:0 Prince Rupert, British Columbia
 TNAP:Can:BC: -130.3333 54.3167 -8:0 Prince Rupert, British Columbia (2)
-CNAP:Can:BC: -123.85 50.1667 -8:0 Princess Louisa Inlet, British Columbia Current
+#CNAP:Can:BC: -123.85 50.1667 -8:0 Princess Louisa Inlet, British Columbia Current
 TNAG:Mex:: -83.325 21.3 -6:0 Progreso, Yucatán, Mexico
 TNAA:Can:NovS: -63.7833 44.45 -4:0 Prospect, Nova Scotia
 TAuA::: 141.4833 -10.5167 10:0 Proudfoot Shoal, Torres Strait
@@ -2624,7 +2624,7 @@ TNAP:Can:BC: -130.7667 54.2167 -8:0 Qlawdzeet Anchorage, British Columbia
 TNAP:Can:BC: -130.7667 54.2167 -8:0 Qlawdzeet Anchorage, British Columbia (2)
 TNAP:Can:BC: -125.2167 50.05 -8:0 Quathiaski Cove, British Columbia
 TNAP:Can:BC: -125.2167 50.05 -8:0 Quathiaski Cove, British Columbia (2)
-CNAP:Can:BC: -127.555 50.555 -8:0 Quatsino Narrows, British Columbia Current
+#CNAP:Can:BC: -127.555 50.555 -8:0 Quatsino Narrows, British Columbia Current
 TNAP:Can:BC: -127.6340 50.5340 -8:0 Quatsino Village, British Columbia
 TNAP:Can:BC: -132.0667 53.25 -8:0 Queen Charlotte, British Columbia
 TNAP:Can:BC: -132.0667 53.25 -8:0 Queen Charlotte, British Columbia (2)
@@ -2634,7 +2634,7 @@ TNAA:Can:Qbc: -71.1667 46.8333 -5:0 Quebec (Lauzon), Quebec (2)
 TNAA:Can:Qbc: -71.1667 46.8333 -5:0 Quebec (Lauzon), Quebec (3)
 TAuA:PNGu:: 152.1833 -4.2 10:0 Rabaul, Papua New Guinea
 TAuA:Aus:: 146.5167 -38.9167 10:0 Rabbit Island, Australia
-CNAP:Can:BC: -123.5367 48.3067 -8:0 Race Passage, British Columbia Current
+#CNAP:Can:BC: -123.5367 48.3067 -8:0 Race Passage, British Columbia Current
 TNAA:Can:Nun: -91.0833 74.7167 -6:0 Radstock Bay, Nunavut
 TNAA:Can:Nun: -135.1167 69.5333 -7:0 Rae Island, Nunavut/NWT
 TNAA:Can:Nun: -105.7 75.3667 -7:0 Rae Point, Nunavut/NWT
@@ -2706,7 +2706,7 @@ TNAA:US:MD: -76.4 39.25 -5:0 Rocky Point, Back River, Maryland
 TNAA:Can:Qbc: -79.05 54.3833 -5:0 Roggan-River, Quebec
 TEur:Neth:: 3.7 51.6333 1:0 Roompot binnen, Netherlands
 TEur:Neth:: 3.6667 51.6167 1:0 Roompot buiten, Netherlands
-CNAP:US:WA: -122.78 48.4583 -8:0 Rosario Strait, Washington Current
+#CNAP:US:WA: -122.78 48.4583 -8:0 Rosario Strait, Washington Current
 TNAP:Can:BC: -131.0833 52.15 -8:0 Rose Harbour, British Columbia
 TNAP:Can:BC: -131.0833 52.15 -8:0 Rose Harbour, British Columbia (2)
 TAuA:Aus:: 135.7167 -14.2833 9:30 Rose River, Australia
@@ -2772,14 +2772,14 @@ TAsi:Jpn:: 140.117 35.5833 9:0 Samugawa, Tiba, Japan
 TNAP:Mex:BCS: -112.1167 24.7833 -7:0 San Carlos, Baja California Sur, Mexico
 TNAP:Mex:BCS: -112.12 24.79 -7:0 San Carlos, Baja California Sur, Mexico (2)
 TNAP:Mex:BCS: -112.12 24.79 -7:0 San Carlos, Baja Ca-132.96lifornia Sur, Mexico (3)
-CNAP:US:CA: -117.23 32.6817 -8:0 San Diego Bay Entrance, California Current
+#CNAP:US:CA: -117.23 32.6817 -8:0 San Diego Bay Entrance, California Current
 TNAP:US:CA: -117.1733 32.7133 -8:0 San Diego, California
 TNAP:US:CA: -117.167 32.717 -8:0 San Diego, California (2)
 TNAP:Mex:BCS: -114.7667 31.0333 -8:0 San Felipe, Baja California Norte, Mexico
-CNAP:US:CA: -122.4833 37.8167 -8:0 San Francisco Bay Entrance (Golden Gate), California Current
+#CNAP:US:CA: -122.4833 37.8167 -8:0 San Francisco Bay Entrance (Golden Gate), California Current
 TNAP:US:CA: -122.465 37.8067 -8:0 San Francisco, California
 TNAP:US:CA: -122.3867 37.79 -8:0 San Francisco, Pier 22 1/2, California
-CNAP:US:WA: -122.95 48.4667 -8:0 San Juan Channel (South Entrance), Washington Current
+#CNAP:US:WA: -122.95 48.4667 -8:0 San Juan Channel (South Entrance), Washington Current
 TCar:PR:: -66.1167 18.4617 -4:0 San Juan, Puerto Rico
 TCar:PR:: -66.1157 18.4620 -4:0 San Juan, Puerto Rico (3)
 TNAG:US:TX: -95.1133 29.095 -6:0 San Luis Pass, Texas
@@ -2824,7 +2824,7 @@ TNAA:Can:Newf: -56.7 51.3333 -3:30 Savage Cove, Newfoundland
 TNAA:Can:NovS: -62.85 46.4333 -4:0 Savage Harbour, Prince Edward Island
 TNAA:US:GA: -81.0917 32.0817 -5:0 Savannah (Bull Street), Georgia
 TNAA:US:GA: -80.9017 32.0333 -5:0 Savannah River Entrance, Georgia
-CNAA:US:GA: -80.8583 32.0367 -5:0 Savannah River Entrance, Georgia Current
+#CNAA:US:GA: -80.8583 32.0367 -5:0 Savannah River Entrance, Georgia Current
 TNAA:US:GA: -81.0817 32.08 -5:0 Savannah, Georgia (expired 1988-12-31)
 TAuA:Aus:: 149.6167 -20.8667 10:0 Scawfell Island, Australia
 TEur:Neth:: 4.25 52.1 1:0 Scheveningen, Netherlands
@@ -2848,8 +2848,8 @@ TNAA:US:ME: -70.7317 43.0833 -5:0 Seavey Island (Back Channel), disputed waters,
 TNAA:US:FL: -80.4483 27.86 -5:0 Sebastian Inlet bridge, Indian River, Florida
 TNAA:US:FL: -80.465 27.8117 -5:0 Sebastian, Indian River, Florida
 TNAA:US:NJ: -74.07 40.7983 -5:0 Secaucus, New Jersey
-CNAP:Can:BC: -123.8983 49.7383 -8:0 Sechelt Rapids, British Columbia Current
-CNAP:Can:BC: -123.0167 49.3 -8:0 Second Narrows, British Columbia Current
+#CNAP:Can:BC: -123.8983 49.7383 -8:0 Sechelt Rapids, British Columbia Current
+#CNAP:Can:BC: -123.0167 49.3 -8:0 Second Narrows, British Columbia Current
 TAuA:Aus:: 138.2167 -35.5 9:30 Second Valley, Australia
 TNAP:Can:BC: -131.3833 52.4333 -8:0 Section Cove, British Columbia
 TNAP:Can:BC: -131.3833 52.4333 -8:0 Section Cove, British Columbia (2)
@@ -2864,7 +2864,7 @@ TNAA:US:FL: -80.1583 27.1833 -5:0 Seminole Shores, Florida
 TAsi:Jpn:: 130.217 31.85 9:0 Sendai (Kagosima), Kagosima, Japan
 TAuA:PNGu:: 144.5667 -3.85 10:0 Sepik River, Papua New Guinea
 TNAA:Can:Qbc: -66.4 50.2167 -5:0 Sept-Îles, Quebec
-CNAP:US:AK: -135.6267 57.4067 -9:0 Sergius Narrows, Peril Strait, Alaska Current
+#CNAP:US:AK: -135.6267 57.4067 -9:0 Sergius Narrows, Peril Strait, Alaska Current
 TAuA:Aus:: 114.6833 -21.6 8:0 Serrurier Island, Australia
 TAsi:Jpn:: 139.85 42.4667 9:0 Setana, Hokkaido, Japan
 TAsi:Jpn:: 133.083 34.3 9:0 Setoda, Hirosima, Japan
@@ -2874,7 +2874,7 @@ TNAA:Can:Nun: -82.1167 69.7833 -5:0 Sevigny Point, Nunavut
 TNAP:US:AK: -149.4267 60.12 -9:0 Seward, Resurrection Bay, Alaska
 TNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia
 TNAP:Can:BC: -125.349 50.1343 -8:0 Seymour Narrows, British Columbia (2)
-CNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia Current
+#CNAP:Can:BC: -125.35 50.1333 -8:0 Seymour Narrows, British Columbia Current
 TAtl:Icel:: -13.59 65.16 0:0 Seyðisfjörður, Iceland
 TAuA:Aus:: 124.3333 -16.3833 8:0 Shale Island, Australia
 TAuA:PNGu:: 152.55 -9.25 10:0 Sharp Island, Papua New Guinea
@@ -2997,7 +2997,7 @@ TNAP:Can:BC: -123.15 49.7 -8:0 Squamish, British Columbia
 TNAP:Can:BC: -123.15 49.7 -8:0 Squamish, British Columbia (2)
 TNAP:Can:BC: -123.15 49.7 -8:0 Squamish, British Columbia (3)
 TNAA:US:MA: -70.7683 41.3117 -5:0 Squibnocket Point, Martha's Vineyard, Massachusetts
-TNAP:Can:BC: -124.0167 49.45 -8:0 Squitty Bay, British Columbia
+TNAP:Can:BC: -124.1695 49.4528 -8:0 Squitty Bay, British Columbia
 TNAA:Can:Qbc: -70.3667 47.45 0:0 St-Bernard-de-l'ile-, Quebec
 TNAA:Can:Qbc: -70.8167 47 -5:0 St-Francois, Quebec
 TNAA:Can:Qbc: -70.0167 47.5167 -5:0 St-Irénée, Quebec
@@ -3025,7 +3025,7 @@ TAuA:Aus:: 133.3 -32.5 9:30 St. Francis Island, Australia
 TNAA:Can:Newf: -58.05 48.4333 -3:30 St. Georges, Newfoundland
 TEur:Fr:: -2.1167 49.1833 0:0 St. Helier, Jersey, Channel Islands - READ flaterco.com/pol.html
 TNAA:Can:Newf: -52.7 47.5667 -3:30 St. John's, Newfoundland
-CNAA:US:FL: -81.3833 30.4 -5:0 St. Johns River Entrance, Florida Current
+#CNAA:US:FL: -81.3833 30.4 -5:0 St. Johns River Entrance, Florida Current
 CNAA:US:FL: -81.3843 30.4 -5:0 St. Johns River Entrance, Florida Current (3)
 TNAA:US:FL: -81.4294 30.3969 -5:0 St. Johns River at Bar Pilot Dock, Florida
 TNAA:US:FL: -81.6922 30.1911 -5:0 St. Johns River at Buckman Bridge, Florida
@@ -3072,7 +3072,7 @@ TNAP:Can:BC: -123.75 49.6667 -8:0 Storm Bay, British Columbia
 TNAP:Can:BC: -123.75 49.6667 -8:0 Storm Bay, British Columbia (2)
 TEur:Scot:: -6.3882 58.2079 0:0 Stornoway, Isle of Lewis, Scotland - READ flaterco.com/pol.html
 TNAA:Can:NovS: -61.1833 45.4667 -4:0 Strait Of Canso Bass, Nova Scotia
-CNAP:US:WA: -124.5833 48.45 -8:0 Strait of Juan de Fuca Entrance, Washington Current
+#CNAP:US:WA: -124.5833 48.45 -8:0 Strait of Juan de Fuca Entrance, Washington Current
 TNAA:Can:Nun: -84.4 73.05 -5:0 Strathcona Sound, Nunavut
 TAtl:Faer:: -6.7565 62.1093 0:0 Strendur, Faroe Islands
 TNAA:Can:Nun: -78.8667 52.0333 -5:0 Strutton Island, Nunavut
@@ -3101,7 +3101,7 @@ TNAP:Can:BC: -128.9 53.0333 -8:0 Surf Inlet, British Columbia
 TNAP:Can:BC: -128.9 53.0333 -8:0 Surf Inlet, British Columbia (2)
 TNAP:Can:BC: -125.1167 50.2167 -8:0 Surge Narrows, British Columbia
 TNAP:Can:BC: -125.1167 50.2167 -8:0 Surge Narrows, British Columbia (2)
-CNAP:Can:BC: -125.15 50.2333 -8:0 Surge Narrows, British Columbia Current
+#CNAP:Can:BC: -125.15 50.2333 -8:0 Surge Narrows, British Columbia Current
 TSAC:Surn:: -55.2333 6 -3:30 Surinam River, Surinam
 TAuA:Aus:: 143.9667 -40.1333 10:0 Surprise Bay, Tasmania
 TNAA:Can:Nun: -90.0333 78.0333 -6:0 Surprise Fiord, Nunavut
@@ -3151,8 +3151,8 @@ TAsi:Jpn:: 130.217 32.95 9:0 Takezaki Sima (Oura), Saga, Japan
 TAsi:Jpn:: 136.767 36.9333 9:0 Taki, Ishikawa, Japan
 TAsi:Jpn:: 133.35 33.9833 9:0 Takihama, Ehime, Japan
 TAsi:Jpn:: 128.617 32.6167 9:0 Tamanoura, Nagasaki, Japan
-CNAG:US:FL: -82.655 27.62 -5:0 Tampa Bay (Sunshine Skyway Bridge), Florida Current
-CNAG:US:FL: -82.76 27.605 -5:0 Tampa Bay Entrance (Egmont Channel), Florida Current
+#CNAG:US:FL: -82.655 27.62 -5:0 Tampa Bay (Sunshine Skyway Bridge), Florida Current
+#CNAG:US:FL: -82.76 27.605 -5:0 Tampa Bay Entrance (Egmont Channel), Florida Current
 CNAG:US:FL: -82.7683 27.6083 -5:0 Tampa Bay Entrance, Florida Current
 TNAG:Mex:: -97.85 22.2167 -6:0 Tampico Harbor (Madero), Tamaulipas, Mexico
 TNAG:Mex:: -97.855 22.2167 -6:0 Tampico, Tamaulipas, Mexico
@@ -3195,16 +3195,16 @@ TEur:Neth:: 4.7333 53.1167 1:0 Texel Noordzee, Netherlands
 TAtl:Grn:: -61.6333 81.6 -4:0 Thank God Harbour, Polaris Bugt, Greenland
 TCar:Bahm:: -75.4333 24.3167 -5:0 The Bight, Cat Island, Bahamas
 TNAA:US:SC: -80.7 32.1833 -5:0 The Folly, Hilton Head Island, South Carolina
-CNAP:US:WA: -122.55 47.3 -8:0 The Narrows (North End), Puget Sound, Washington Current
-CNAA:US:NY: -74.0467 40.61 -5:0 The Narrows, Midchannel, New York Harbor, New York Current
+#CNAP:US:WA: -122.55 47.3 -8:0 The Narrows (North End), Puget Sound, Washington Current
+#CNAA:US:NY: -74.0467 40.61 -5:0 The Narrows, Midchannel, New York Harbor, New York Current
 CNAA:US:NY: -74.0477 40.611 -5:0 The Narrows, Midchannel, New York Harbor, New York Current (2)
-CNAA:US:NY: -72.06 41.2367 -5:0 The Race, Long Island Sound, New York Current
+#CNAA:US:NY: -72.06 41.2367 -5:0 The Race, Long Island Sound, New York Current
 TAuA:Aus:: 133.65 -32.15 9:30 Thevenard, Australia
 TAuA:Aus:: 136.35 -34.95 9:30 Thistle Island, Australia
 TNAA:US:MD: -76.4333 38.9 -5:0 Thomas Point Shoal Light, Maryland
 TAuA:Solm:: 159.7 -8.4333 10:0 Thousand Ships Bay, Solomon Islands
 TNAP:US:CA: -121.6833 38.0833 -8:0 Threemile Slough Entrance, San Joaquin River, California
-CNAA:US:NY: -73.7883 40.8017 -5:0 Throg's Neck, Long Island Sound, New York Current
+#CNAA:US:NY: -73.7883 40.8017 -5:0 Throg's Neck, Long Island Sound, New York Current
 TAuA::: 142.2167 -10.5833 10:0 Thursday Island, Torres Strait
 TAsi:Jpn:: 140.05 35.5667 9:0 Tiba Light, Tiba, Japan
 TNAA:Can:Newb: -64.0167 46 -4:0 Tidnish Head, New Brunswick
@@ -3339,7 +3339,7 @@ TEur:Scot:: -5.1575 57.8955 0:0 Ullapool, Scotland - READ flaterco.com/pol.html
 TAuA:PNGu:: 143.7833 -8.5 10:0 Umuda Island, Papua New Guinea
 TNAP:US:AK: -166.5367 53.88 -9:0 Unalaska, Alaska
 TAuA:Aus:: 152.9833 -25.5 10:0 Ungowa, Australia
-CNAP:US:AK: -164.8 54.365 -9:0 Unimak Pass (off Scotch Cap), Alaska Current
+#CNAP:US:AK: -164.8 54.365 -9:0 Unimak Pass (off Scotch Cap), Alaska Current
 TNAP:Can:BC: -132.7833 49.5833 -8:0 Union Seamount, British Columbia
 TAuA:Aus:: 146.7167 -17.8667 10:0 Unnamed Reef No. 1, Australia
 TAuA:Aus:: 149.8333 -19.6167 10:0 Unnamed Reef No. 2, Australia
@@ -3473,7 +3473,7 @@ TAuA:NZ:: 171.6 -41.75 12:0 Westport, New Zealand
 TNAA:Can:NovS: -66.35 44.2667 -4:0 Westport, St. Mary Bay, Nova Scotia
 TAuA:PNGu:: 143.6333 -3.55 10:0 Wewak, Papua New Guinea
 TEur:Eng:: -2.4486 50.6077 0:0 Weymouth, England - READ flaterco.com/pol.html
-CNAP:Can:BC: -126.8117 50.6033 -8:0 Weynton Passage, British Columbia Current
+#CNAP:Can:BC: -126.8117 50.6033 -8:0 Weynton Passage, British Columbia Current
 TNAP:Can:BC: -123.3333 48.8833 -8:0 Whaler Bay, British Columbia
 TNAP:Can:BC: -123.3333 48.8833 -8:0 Whaler Bay, British Columbia (2)
 TNAP:Can:BC: -125.05 50.1 -8:0 Whaletown Bay, British Columbia
@@ -3519,7 +3519,7 @@ TNAA:Can:Newf: -54.1667 47.7833 -3:30 Woody Island, Newfoundland
 TAuA:Aus:: 137.75 -35 9:30 Wool Bay, Australia
 TEur:Eng:: -3.5681 54.65 0:0 Workington, England - READ flaterco.com/pol.html
 TNAA:Can:Nun: -62.05 82 -4:0 Wrangel Bay, Nunavut
-CNAP:US:AK: -132.9667 56.8167 -9:0 Wrangell Narrows (off Petersburg), Alaska Current
+#CNAP:US:AK: -132.9667 56.8167 -9:0 Wrangell Narrows (off Petersburg), Alaska Current
 TNAA:US:NC: -77.795 34.21 -5:0 Wrightsville Beach, North Carolina
 TAuA:Aus:: 128.1 -15.45 8:0 Wyndham, Australia
 TAuA:Aus:: 134.9 -11.9667 9:30 Yabooma Island, Australia
@@ -6908,8 +6908,8 @@ tNAG:Mex:: -97.5167 25.8833 -6:0 Matamoros
 &55 1 0 40 1 0 3829 1 Tampico, Tamaulipas, Mexico
 tNAG:Mex:: -97.3333 21 -6:0 Tuxpan
 &2 1.21 0 4 1.21 0 3833 1 Tampico, Tamaulipas, Mexico
-tNAG:Mex:: -90.5333 19.8333 -6:0 Campeche
-&0 1 0 0 1 0 3834 2 Campeche City, Campeche, Mexico
+#tNAG:Mex:: -90.5333 19.8333 -6:0 Campeche
+#&0 1 0 0 1 0 3834 2 Campeche City, Campeche, Mexico
 tNAG:Mex:: -96.1333 19.2 -6:0 Veracruz
 &-19 1.21 0 -12 1.21 0 3835 1 Tampico, Tamaulipas, Mexico
 tNAG:Mex:: -95.7667 18.7667 -6:0 Alvarado
@@ -7078,7 +7078,7 @@ tCar:Jam:: -77.2333 18.4167 -5:0 St. Anns Bay
 tCar:Jam:: -81.3333 19.3333 -5:0 Grand Cayman
 &-481 0.93 0 -481 0.93 0 3983 1 Galveston (Galveston Channel), Texas
 ICar:Jam:: 0 0 0:0        Haiti & Dominican Rep.
-tCar:Jam:: -72.35 18.55 -5:0 Bahia de Cienfuegos: Port-au-Prince
+tCar:Jam:: -72.35 18.55 -5:0 Port-au-Prince
 &-35 0.99 0 38 0.99 0 3985 1 San Juan, Puerto Rico
 tCar:Jam:: -71.7667 19.7167 -5:0 Massacre, riviere du entr
 &-64 1.44 0 -67 1.44 0 3987 1 San Juan, Puerto Rico
@@ -7122,11 +7122,11 @@ tCar:PR:: -67.15 18.2167 -4:0 Mayaguez
 tCar:PR:: -67.1833 18.0833 -4:0 Puerto Real
 &-33 0.72 0 -26 0.72 0 4033 1 San Juan, Puerto Rico
 ICar:StThm:: 0 0 0:0      VIRGIN  ISLANDS
-tCar:StThm:: -64.9167 18.3667 -4:0 Bahia de Cienfuegos: Magens Bay, St. Thomas Isl
+tCar:StThm:: -64.9167 18.3667 -4:0 Magens Bay, St. Thomas Isl
 &-16 0.89 0 -7 0.89 0 4035 1 San Juan, Puerto Rico
-tCar:StThm:: -64.9333 18.3333 -4:0 Bahia de Cienfuegos: Charlotte Amalie, St. Thomas Isl
+tCar:StThm:: -64.9333 18.3333 -4:0 Charlotte Amalie, St. Thomas Isl
 &-492 0.57 0 -496 0.57 0 4037 1 Galveston (Galveston Channel), Texas
-tCar:StCrx:: -64.7 17.75 -4:0 Bahia de Cienfuegos: Chritiansted, St. Croix Isl
+tCar:StCrx:: -64.7 17.75 -4:0 Chritiansted, St. Croix Isl
 &-557 0.57 0 -563 0.57 0 4039 1 Galveston (Galveston Channel), Texas
 tCar:StBar:: -62.85 17.9 -4:0 St. Barthelemy
 &-600 1 0 -558 1 0 4041 1 Galveston (Galveston Channel), Texas
@@ -7136,15 +7136,14 @@ tCar:Domi:: -61.4 15.3 -4:0 Roseau, Dominica
 &-389 0.65 0 -365 0.65 0 4047 1 Key West (Naval Base), Florida
 tCar:Mart:: -61.05 14.5833 -4:0 Fort-de-France, Martinique
 &-415 0.38 0 -378 0.38 0 4049 1 Key West (Naval Base), Florida
-tCar:StLuc:: -61 14.0167 -4:0 Castries, sta. Lucia
+tCar:StLuc:: -61 14.0167 -4:0 Castries, St. Lucia
 &-429 0.62 0 -425 0.62 0 4051 1 Key West (Naval Base), Florida
-tCar:StLuc:: -60.9667 13.7333 -4:0 Vieux Fort Bay, Sta. Lucia
+tCar:StLuc:: -60.9667 13.7333 -4:0 Vieux Fort Bay, St. Lucia
 &-362 0.69 0 -338 0.69 0 4053 1 Key West (Naval Base), Florida
 tCar:StLuc:: -61.2167 13.1667 -4:0 Kingstown, St. Vincent
 &-429 1.53 0 -398 1.53 0 4055 1 Key West (Naval Base), Florida
 tCar:Barb:: -59.6333 13.1 -4:0 Bridgetown, Barbados
 &-388 1.3 0 -347 1.3 0 4057 1 Key West (Naval Base), Florida
-tCar:Barb:: -59.9333 13.4 -4:0 Bridgetown, Barbados-TEST
 &-388 1.3 0 -347 1.3 0 4057 1 Key West (Naval Base), Florida
 tCar:Gren:: -61.75 12.0667 -4:0 Grenada
 &-446 0.92 0 -411 0.92 0 4059 1 Key West (Naval Base), Florida
@@ -7418,10 +7417,6 @@ tNAP:US:CA: -124.1833 41.75 -8:0 Crescent City
 
 
 
-
-
-
-
 cNAA:XX:XX: -73.1112  41.0795 -5:0 Stratford Point, 4.3 miles south of, depth 15 feet 
 ^33   0.40 0 14   0.30 0   3096 254 75 1 The Race, Long Island Sound, New York Current
 
@@ -7552,187 +7547,187 @@ cNAA:XX:XX: -73.9217  40.8767 -5:0 Henry Hudson Bridge, 0.7 nmi. SE of
 ^12   0.20 0 -31   0.30 0   3581 137 326 1 Hell Gate (East River), New York Current
 
 cNAA:XX:XX: -72.5017  40.8450 -5:0 Ponquogue bridge, Shinnecock Bay
-^54   0.50 0 27   0.30 0   3601 250 90 1 The Narrows, midchannel, New York
+^54   0.50 0 27   0.30 0   3601 250 90 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -72.4783  40.8433 -5:0 Shinnecock Inlet
-^-6   1.50 0 -30   1.20 0   3606 350 170 1 The Narrows, midchannel, New York
+^-6   1.50 0 -30   1.20 0   3606 350 170 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.3067  40.6297 -5:0 Fire I. Inlet, 0.5 mi. S of Oak Beach
-^-3   1.40 0 29   1.20 0   3611 82 244 1 The Narrows, midchannel, New York
+^-3   1.40 0 29   1.20 0   3611 82 244 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.5667  40.5917 -5:0 Jones Inlet
-^-75   1.80 0 -48   1.30 0   3616 35 217 1 The Narrows, midchannel, New York
+^-75   1.80 0 -48   1.30 0   3616 35 217 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.6600  40.5950 -5:0 Long Beach, inside, between bridges
-^-54   0.30 0 32   0.30 0   3621 76 277 1 The Narrows, midchannel, New York
+^-54   0.30 0 32   0.30 0   3621 76 277 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.7550  40.5900 -5:0 East Rockaway Inlet
-^-106   1.30 0 -63   1.20 0   3626 42 227 1 The Narrows, midchannel, New York
+^-106   1.30 0 -63   1.20 0   3626 42 227 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9467  40.5383 -5:0 Rockaway Point
-^-156   1.10 0 -98   0.50 0   3641 301 140 1 The Narrows, midchannel, New York
+^-156   1.10 0 -98   0.50 0   3641 301 140 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9350  40.5617 -5:0 Rockaway Inlet
-^-115   1.10 0 -93   1.30 0   3646 85 244 1 The Narrows, midchannel, New York
+^-115   1.10 0 -93   1.30 0   3646 85 244 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.8967  40.5700 -5:0 Rockaway Inlet
-^-113   0.90 0 -75   0.80 0   3651 66 261 1 The Narrows, midchannel, New York
+^-113   0.90 0 -75   0.80 0   3651 66 261 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.8833  40.5833 -5:0 Barren Island, east of
-^-119   0.70 0 -123   0.90 0   3656 4 192 1 The Narrows, midchannel, New York
+^-119   0.70 0 -123   0.90 0   3656 4 192 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.8833  40.6267 -5:0 Canarsie, (midchannel, off pier)
-^-114   0.30 0 -78   0.40 0   3661 45 222 1 The Narrows, midchannel, New York
+^-114   0.30 0 -78   0.40 0   3661 45 222 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.8167  40.5833 -5:0 Beach Channel (bridge)
-^-108   1.10 0 -57   1.00 0   3666 62 225 1 The Narrows, midchannel, New York
+^-108   1.10 0 -57   1.00 0   3666 62 225 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.7850  40.6100 -5:0 Grass Hassock Channel
-^-81   0.60 0 -57   0.50 0   3671 52 228 1 The Narrows, midchannel, New York
+^-81   0.60 0 -57   0.50 0   3671 52 228 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9800  40.5167 -5:0 Ambrose Channel
-^-57   0.90 0 -25   0.80 0   3676 303 123 1 The Narrows, midchannel, New York
+^-57   0.90 0 -25   0.80 0   3676 303 123 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0250  40.5583 -5:0 Norton Point, WSW of
-^-13   0.60 0 26   0.60 0   3681 341 166 1 The Narrows, midchannel, New York
+^-13   0.60 0 26   0.60 0   3681 341 166 1 The Narrows, Midchannel, New York Harbor, New York Current
 
-cNAA:XX:XX: -74.0467  40.6090 -5:0 THE NARROWS, midchannel
-^0   0.00 0 0   0.00 0   3686 340 160 1 The Narrows, midchannel, New York
+cNAA:XX:XX: -74.0467  40.6090 -5:0 THE NARROWS, Midchannel
+^0   0.00 0 0   0.00 0   3686 340 160 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0567  40.6317 -5:0 Bay Ridge, west of
-^-11   0.80 0 42   0.70 0   3691 354 185 1 The Narrows, midchannel, New York
+^-11   0.80 0 42   0.70 0   3691 354 185 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0317  40.6550 -5:0 Bay Ridge Channel
-^-58   0.60 0 4   0.30 0   3696 32 212 1 The Narrows, midchannel, New York
+^-58   0.60 0 4   0.30 0   3696 32 212 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0317  40.6560 -5:0 Bay Ridge Channel
-^-95   0.40 0 -50   0.20 0   3696 37 225 1 The Narrows, midchannel, New York
+^-95   0.40 0 -50   0.20 0   3696 37 225 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0200  40.6667 -5:0 Red Hook Channel
-^-63   0.60 0 -8   0.40 0   3701 353 170 1 The Narrows, midchannel, New York
+^-63   0.60 0 -8   0.40 0   3701 353 170 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0580  40.6575 -5:0 Robbins Reef Light, east of
-^16   0.80 0 2   0.80 0   3706 16 204 1 The Narrows, midchannel, New York
+^16   0.80 0 2   0.80 0   3706 16 204 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0417  40.6750 -5:0 Red Hook, 1 mile west of
-^41   0.80 0 47   1.20 0   3711 24 206 1 The Narrows, midchannel, New York
+^41   0.80 0 47   1.20 0   3711 24 206 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0300  40.6900 -5:0 Statue of Liberty, east of
-^57   0.80 0 56   1.00 0   3716 31 205 1 The Narrows, midchannel, New York
+^57   0.80 0 56   1.00 0   3716 31 205 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0200  40.7083 -5:0 Hudson River entrance
-^49   0.80 0 82   0.70 0   3721 9 199 1 The Narrows, midchannel, New York
+^49   0.80 0 82   0.70 0   3721 9 199 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9683  40.8133 -5:0 Grants Tomb
-^70   1.00 0 102   0.90 0   3726 24 210 1 The Narrows, midchannel, New York
+^70   1.00 0 102   0.90 0   3726 24 210 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9683  40.8133 -5:0 Grants Tomb
-^64   1.10 0 118   0.90 0   3726 25 208 1 The Narrows, midchannel, New York
+^64   1.10 0 118   0.90 0   3726 25 208 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9500  40.8510 -5:0 George Washington Bridge
-^101   0.90 0 110   1.10 0   3731 20 200 1 The Narrows, midchannel, New York
+^101   0.90 0 110   1.10 0   3731 20 200 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9167  40.9000 -5:0 Riverdale
-^131   0.80 0 122   1.00 0   3741 15 200 1 The Narrows, midchannel, New York
+^131   0.80 0 122   1.00 0   3741 15 200 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9133  40.9117 -5:0 Mount St. Vincent College, SW of
-^86   0.90 0 134   0.70 0   3746 7 190 1 The Narrows, midchannel, New York
+^86   0.90 0 134   0.70 0   3746 7 190 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9667  41.3667 -5:0 Highland Falls
-^204   0.60 0 224   0.60 0   3781 5 185 1 The Narrows, midchannel, New York
+^204   0.60 0 224   0.60 0   3781 5 185 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0017  40.4850 -5:0 Sandy Hook Channel
-^-93   1.00 0 -66   0.90 0   3866 286 94 1 The Narrows, midchannel, New York
+^-93   1.00 0 -66   0.90 0   3866 286 94 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0217  40.4798 -5:0 Sandy Hook Chan., 0.4 mi. W of N. Tip
-^-111   1.20 0 -90   0.80 0   3871 235 50 1 The Narrows, midchannel, New York
+^-111   1.20 0 -90   0.80 0   3871 235 50 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0600  40.4800 -5:0 Sandy Hook Pt., 2 mi. W of (channel)
-^-105   0.40 0 -110   0.30 0   3876 263 86 1 The Narrows, midchannel, New York
+^-105   0.40 0 -110   0.30 0   3876 263 86 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0467  40.4983 -5:0 Chapel Hill South Channel
-^-132   0.40 0 -100   0.30 0   3881 255 75 1 The Narrows, midchannel, New York
+^-132   0.40 0 -100   0.30 0   3881 255 75 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0967  40.5400 -5:0 New Dorp Beach, 1.2 miles south of
-^-259   0.20 0 -275   0.20 0   3886 225 30 1 The Narrows, midchannel, New York
+^-259   0.20 0 -275   0.20 0   3886 225 30 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0727  40.5183 -5:0 Old Orchard Shoal Lt., 1.2 mi. ENE of
-^-139   0.40 0 -83   0.20 0   3891 270 85 1 The Narrows, midchannel, New York
+^-139   0.40 0 -83   0.20 0   3891 270 85 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0392  40.5467 -5:0 Midland Beach, 2.6 miles SE of
-^0   0.50 0 0   0.60 0   3901 335 160 1 The Narrows, midchannel, New York
+^0   0.50 0 0   0.60 0   3901 335 160 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0050  40.5517 -5:0 Coney Island Lt., 1.5 miles SSE of
-^-87   0.60 0 -58   0.60 0   3906 310 125 1 The Narrows, midchannel, New York
+^-87   0.60 0 -58   0.60 0   3906 310 125 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0667  40.5833 -5:0 Hoffman Island, 0.2 mile west of
-^-103   0.50 0 -17   0.40 0   3911 20 210 1 The Narrows, midchannel, New York
+^-103   0.50 0 -17   0.40 0   3911 20 210 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -73.9533  40.5300 -5:0 Rockaway Inlet Jetty, 1 mile SW of
-^-136   0.70 0 -88   0.70 0   3916 287 142 1 The Narrows, midchannel, New York
+^-136   0.70 0 -88   0.70 0   3916 287 142 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0083  40.5700 -5:0 Coney Island Channel, west end
-^-81   0.60 0 -24   0.60 0   3921 293 102 1 The Narrows, midchannel, New York
+^-81   0.60 0 -24   0.60 0   3921 293 102 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1267  40.4933 -5:0 Raritan Bay Reach Channel
-^-125   0.40 0 -38   0.20 0   3936 285 94 1 The Narrows, midchannel, New York
+^-125   0.40 0 -38   0.20 0   3936 285 94 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2100  40.4817 -5:0 Red Bank, 1.4 miles south of
-^-105   0.40 0 -82   0.30 0   3946 278 79 1 The Narrows, midchannel, New York
+^-105   0.40 0 -82   0.30 0   3946 278 79 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1867  40.5067 -5:0 Seguine Point
-^-122   0.40 0 -48   0.20 0   3951 281 79 1 The Narrows, midchannel, New York
+^-122   0.40 0 -48   0.20 0   3951 281 79 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 #cNAA:XX:XX: -74.1867  40.5067 -5:0 Seguine Point
-#^-218   0.30 0 -13   0.10 0   3951 285 105 1 The Narrows, midchannel, New York
+#^-218   0.30 0 -13   0.10 0   3951 285 105 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2300  40.4917 -5:0 Ward Point, ESE
-^-115   0.40 0 -11   0.30 0   3956 244 48 1 The Narrows, midchannel, New York
+^-115   0.40 0 -11   0.30 0   3956 244 48 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2833  40.4983 -5:0 Railroad Bridge, Raritan River
-^-132   0.50 0 -75   0.40 0   3961 326 147 1 The Narrows, midchannel, New York
+^-132   0.50 0 -75   0.40 0   3961 326 147 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.3683  40.4717 -5:0 Washington Canal, north entrance
-^-72   0.90 0 -90   0.80 0   3966 240 60 1 The Narrows, midchannel, New York
+^-72   0.90 0 -90   0.80 0   3966 240 60 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.3783  40.4783 -5:0 South River entrance
-^-115   0.60 0 -27   0.50 0   3971 180 0 1 The Narrows, midchannel, New York
+^-115   0.60 0 -27   0.50 0   3971 180 0 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2550  40.5133 -5:0 Tottenville, Arthur Kill
-^-74   0.60 0 -33   0.50 0   3976 23 211 1 The Narrows, midchannel, New York
+^-74   0.60 0 -33   0.50 0   3976 23 211 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 #cNAA:XX:XX: -74.2550  40.5133 -5:0 Tottenville, Arthur Kill
-#^-93   0.40 0 -48   0.20 0   3976 26 207 1 The Narrows, midchannel, New York
+#^-93   0.40 0 -48   0.20 0   3976 26 207 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2233  40.5567 -5:0 Tufts Point-Smoking Point
-^-48   0.70 0 -24   0.60 0   3981 109 267 1 The Narrows, midchannel, New York
+^-48   0.70 0 -24   0.60 0   3981 109 267 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.2083  40.5883 -5:0 Tremley Point Reach
-^-18   0.50 0 31   0.40 0   3986 15 198 1 The Narrows, midchannel, New York
+^-18   0.50 0 31   0.40 0   3986 15 198 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1817  40.6467 -5:0 Elizabethport
-^5   0.80 0 32   0.60 0   3991 90 262 1 The Narrows, midchannel, New York
+^5   0.80 0 32   0.60 0   3991 90 262 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1443  40.6417 -5:0  BERGEN POINT REACH, (BAYONNE BRIDGE)
 ^0   0.00 0 0   0.00 0   3996 259 76 1 Bayonne Bridge, Kill van Kull, New York Current
 
 cNAA:XX:XX: -74.1300  40.6450 -5:0 Bergen Point, East Reach
-^-94   0.60 0 -95   0.60 0   4001 274 94 1 The Narrows, midchannel, New York
+^-94   0.60 0 -95   0.60 0   4001 274 94 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0850  40.6500 -5:0 New Brighton
-^-104   0.80 0 -84   0.90 0   4006 262 72 1 The Narrows, midchannel, New York
+^-104   0.80 0 -84   0.90 0   4006 262 72 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 #cNAA:XX:XX: -74.0850  40.6500 -5:0 New Brighton
-#^-120   0.80 0 -98   0.70 0   4006 259 75 1 The Narrows, midchannel, New York
+#^-120   0.80 0 -98   0.70 0   4006 259 75 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1400  40.6600 -5:0 South Reach, Newark Bay
-^-56   0.40 0 -51   0.40 0   4011 31 218 1 The Narrows, midchannel, New York
+^-56   0.40 0 -51   0.40 0   4011 31 218 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1000  40.7333 -5:0 Lincoln Highway Bridge, north of
-^-6   0.50 0 47   0.40 0   4016 17 181 1 The Narrows, midchannel, New York
+^-6   0.50 0 47   0.40 0   4016 17 181 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.1167  40.7333 -5:0 Lincoln Highway Bridge
-^-31   0.40 0 -12   0.30 0   4021 9 180 1 The Narrows, midchannel, New York
+^-31   0.40 0 -12   0.30 0   4021 9 180 1 The Narrows, Midchannel, New York Harbor, New York Current
 
 cNAA:XX:XX: -74.0333  40.1000 -5:0 Manasquan Inlet
 ^-43   1.20 0 -72   1.40 0   4026 300 120 1 Delaware Bay Entrance
@@ -7779,7 +7774,7 @@ cNAA:XX:XX: -74.9780  38.9062 -5:0 Cape May Point, 1.4 n.mi. SSW of
 cNAA:XX:XX: -74.9855  38.8900 -5:0 Cape May Point, 2.7 n.mi. SSW of
 ^-90   0.90 0 -47   0.60 0   4096 299 146 1 Delaware Bay Entrance
 
-cNAA:XX:XX: -75.0430  38.7808 -5:0 DELAWARE BAY ENTRANCE
+cNAA:XX:XX: -75.0433  38.7817 -5:0 DELAWARE BAY ENTRANCE
 ^0   0.00 0 0   0.00 0   4101 327 147 1 Delaware Bay Entrance
 
 cNAA:XX:XX: -75.0817  38.7995 -5:0 Cape Henlopen, 0.7 n.mi. ESE of
@@ -7998,6 +7993,9 @@ cNAA:XX:XX: -75.1267  39.9083 -5:0 Greenwich Point, northeast of
 cNAA:XX:XX: -75.1367  39.9400 -5:0 Camden Marine Terminals, E of Chan
 ^353   0.90 0 308   0.80 0   4446 5 174 1 Delaware Bay Entrance
 
+cNAA:XX:XX: -75.1333 39.95 -5:0 PHILADELPHIA, Pennsylvania Current
+^0   0.00 0 0   0.00 0  4447 20 200 1 Philadelphia, Pennsylvania Current
+
 cNAA:XX:XX: -75.1188  39.9672 -5:0 Petty Island (west end), Main Channel
 ^334   1.30 0 280   1.30 0   4451 66 248 1 Delaware Bay Entrance
 
@@ -8046,7 +8044,7 @@ cNAA:XX:XX: -76.0105  36.9588 -5:0 Cape Henry Light, 2.0 n.mi. north of
 #cNAA:XX:XX: -76.0105  36.9588 -5:0 Cape Henry Light, 2.0 n.mi. north of
 #^-63   1.10 0 34   0.40 0   4531 263 111 1 Chesapeake Bay Entrance, Virginia Current
 
-cNAA:XX:XX: -75.9980  36.9810 -5:0 Chesapeake Bay Entrance, Virginia Current
+cNAA:XX:XX: -75.9983  36.9800 -5:0 Chesapeake Bay Entrance, Virginia Current
 ^0   0.00 0 0   0.00 0   4536 300 129 1 Chesapeake Bay Entrance, Virginia Current
 
 cNAA:XX:XX: -75.9883  37.0017 -5:0 Cape Henry Light, 4.6 miles north of
@@ -8349,7 +8347,7 @@ cNAA:XX:XX: -76.3800  39.0040 -5:0 Sandy Point, 0.8 n.mi. ESE of
 #cNAA:XX:XX: -76.3800  39.0040 -5:0 Sandy Point, 0.8 n.mi. ESE of
 #^-59   1.00 0 -59   1.00 0   4976 21 197 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
-cNAA:XX:XX: -76.3683  39.0130 -5:0 BALTIMORE HARBOR APPROACH, (off Sandy Point)
+cNAA:XX:XX: -76.3683  39.0133 -5:0 BALTIMORE HARBOR APPROACH, (off Sandy Point)
 ^0   0.00 0 0   0.00 0   4981 25 189 1 BALTIMORE HARBOR APPROACH, Maryland Current
 
 cNAA:XX:XX: -76.3778  39.0403 -5:0 Craighill Channel entrance, Buoy "2C"
@@ -9060,7 +9058,7 @@ cNAA:XX:XX: -75.8662  39.5278 -5:0 Back Creek, 0.3 n.mi. W of Sandy Pt
 #cNAA:XX:XX: -75.8662  39.5278 -5:0 Back Creek, 0.3 n.mi. W of Sandy Pt
 #^-6   0.60 0 8   0.60 0   6231 52 240 1 Chesapeake and Delaware Canal, Maryland/Delaware Current
 
-cNAA:XX:XX: -75.8117  39.5283 -5:0 Chesapeake and Delaware Canal, Maryland/Delaware Current
+cNAA:XX:XX: -75.8117  39.5283 -5:0 CHESAPEAKE AND DELAWARE CANAL, Maryland/Delaware Current
 ^0   0.00 0 0   0.00 0   6236 110 290 1 Chesapeake and Delaware Canal, Maryland/Delaware Current
 
 cNAA:XX:XX: -75.8072  39.5278 -5:0 Chesapeake City Bridge, 0.45 n.mi. E of
@@ -9363,7 +9361,7 @@ cNAA:XX:XX: -79.8445  32.7405 -5:0 Fort Sumter Range, Buoy "20"
 cNAA:XX:XX: -79.8503  32.7312 -5:0 South Jetty, break in
 ^38   0.70 0 6   1.40 0   6651 2 204 1 Charleston Harbor Entrance, South Carolina Current
 
-cNAA:XX:XX: -79.8703  32.7560 -5:0 CHARLESTON HARBOR Entrance
+cNAA:XX:XX: -79.8700  32.7567 -5:0 CHARLESTON HARBOR Entrance
 ^0   0.00 0 0   0.00 0   6656 313 127 1 Charleston Harbor Entrance, South Carolina Current
 
 cNAA:XX:XX: -79.8672  32.7612 -5:0 Ft. Sumter, 0.6 n.mi. NW of
@@ -9768,7 +9766,7 @@ cNAA:XX:XX: -80.9167  32.0817 -5:0 Walls Cut, Turtle Island
 cNAA:XX:XX: -80.8983  32.1017 -5:0 Daufuskie Landing Light, south of
 ^7   0.70 0 2   0.80 0   7346 43 226 1 Savannah River Entrance, Georgia Current
 
-cNAA:XX:XX: -80.8573  32.0367 -5:0 SAVANNAH RIVER ENTRANCE (between jetties)
+cNAA:XX:XX: -80.8583  32.0367 -5:0 SAVANNAH RIVER ENTRANCE (between jetties)
 ^0   0.00 0 0   0.00 0   7356 286 110 1 Savannah River Entrance, Georgia Current
 
 cNAA:XX:XX: -80.9017  32.0367 -5:0 Fort Pulaski
@@ -10155,7 +10153,7 @@ cNAA:XX:XX: -81.4800  30.5333 -5:0 Nassau River, SW of Mesa Marsh
 cNAA:XX:XX: -81.4517  30.4567 -5:0 Ft. George River
 ^-96   0.20 0 -85   0.60 0   7936 334 162 1 Miami Harbor Entrance, Florida Current
 
-cNAA:XX:XX: -81.3833  30.3992 -5:0 ST. JOHNS RIVER ENTRANCE, (between jetties)
+cNAA:XX:XX: -81.3833  30.399 -5:0 ST. JOHNS RIVER ENTRANCE, (between jetties)
 ^0   0.00 0 0   0.00 0   7946 277 99 1 St. Johns River Entrance, Florida Current
 
 cNAA:XX:XX: -81.4333  30.3933 -5:0 Mayport
@@ -10242,7 +10240,7 @@ cNAA:XX:XX: -80.1327  25.7640 -5:0 Government Cut, Midway, north side
 #cNAA:XX:XX: -80.1327  25.7640 -5:0 Government Cut, Midway, north side
 #^-11   0.40 0 -10   0.30 0   8091 288 104 1 Miami Harbor Entrance, Florida Current
 
-cNAA:XX:XX: -80.1362  25.7650 -5:0 Government Cut, MIAMI HARBOR ENTRANCE
+cNAA:XX:XX: -80.1367  25.7650 -5:0 Government Cut, MIAMI HARBOR ENTRANCE
 ^0   0.00 0 0   0.00 0   8096 293 112 1 Miami Harbor Entrance, Florida Current
 
 cNAA:XX:XX: -80.1362  25.7650 -5:0 Government Cut, MIAMI HARBOR ENTRANCE
@@ -10296,7 +10294,7 @@ cNAA:XX:XX: -81.3133  24.7060 -5:0 No Name Key, northeast of
 cNAA:XX:XX: -81.8017  24.4733 -5:0 Key West, Main Ship Channel entrance
 ^-44   0.20 0 10   0.30 0   8176 40 178 1 Key West, Florida Current
 
-cNAA:XX:XX: -81.8177  24.5483 -5:0 Key West, KEY WEST, 0.3 mi. W of Ft. Taylor
+cNAA:XX:XX: -81.8167  24.5483 -5:0  KEY WEST, 0.3 mi. W of Ft. Taylor
 ^0   0.00 0 0   0.00 0   8186 22 194 1 Key West, Florida Current
 
 cNAA:XX:XX: -81.8100  24.5583 -5:0 Key West, Ft. Taylor, 0.6 mile N of
@@ -10377,7 +10375,7 @@ cNAA:XX:XX: -82.8677  27.6005 -5:0 Egmont Channel, marker "10"
 cNAA:XX:XX: -82.8183  27.6083 -5:0 Egmont Channel ,(3 mi. W of Egmont Key Lt )
 ^-30   0.40 0 -30   0.50 0   8336 65 260 1 Tampa Bay Entrance (Egmont Channel), Florida
 
-cNAA:XX:XX: -82.7603  27.6043 -5:0 TAMPA BAY ENTRANCE ,(Egmont Channel)
+cNAA:XX:XX: -82.76 27.605 -5:0 TAMPA BAY ENTRANCE ,(Egmont Channel)
 ^0   0.00 0 0   0.00 0   8341 120 298 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.7673  27.5617 -5:0 Southwest Channel, (S of Egmont Key)
@@ -10408,7 +10406,7 @@ cNAA:XX:XX: -82.7247  27.7083 -5:0 Cats Point ,(bridge west of)
 ^-87   0.50 0 -132   0.50 0   8386 15 150 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.6553  27.6203 -5:0 SUNSHINE SKYWAY BRIDGE
-^0   0.00 0 0   0.00 0   8391 60 235 1 Sunshine Skyway Bridge, Tampa Bay, Florida
+^0   0.00 0 0   0.00 0   8391 60 235 1 Tampa Bay (Sunshine Skyway Bridge), Florida Current
 
 cNAA:XX:XX: -82.6255  27.6388 -5:0 Cut A & B, Channel Junction
 ^25   0.80 0 23   0.70 0   8396 45 225 1 Tampa Bay Entrance (Egmont Channel), Florida
@@ -10441,43 +10439,43 @@ cNAA:XX:XX: -82.5622  27.6537 -5:0 Piney Point, 0.6 mile NNW of
 ^12   0.30 0 -45   0.40 0   8446 355 215 1 Tampa Bay Entrance (Egmont Channel), Florida
 
 cNAA:XX:XX: -82.6097  27.7245 -5:0 Lewis Island, 0.9 mile east of
-^4   0.80 0 -65   0.90 0   8451 5 160 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^4   0.80 0 -65   0.90 0   8451 5 160 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5500  27.7078 -5:0 Camp Key, 1.9 miles northwest of
-^11   0.70 0 -43   0.80 0   8456 30 220 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^11   0.70 0 -43   0.80 0   8456 30 220 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5357  27.7253 -5:0 Cut E Channel, marker "2E"
-^-44   0.70 0 -26   0.70 0   8466 44 226 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^-44   0.70 0 -26   0.70 0   8466 44 226 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5722  27.7937 -5:0 Snell Isle, 1.8 miles east of
-^38   0.30 0 -49   0.40 0   8476 350 170 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^38   0.30 0 -49   0.40 0   8476 350 170 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5732  27.8370 -5:0 Ross Island, 1 mile east of, marker "4"
-^1   0.60 0 4   0.50 0   8481 347 175 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^1   0.60 0 4   0.50 0   8481 347 175 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
-cNAA:XX:XX: -82.5537  27.8650 -5:0 OLD TAMPA BAY ENTRANCE, (Port Tampa)
-^0   0.00 0 0   0.00 0   8486 25 207 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+cNAA:XX:XX: -82.5533  27.8650 -5:0 OLD TAMPA BAY ENTRANCE, (Port Tampa)
+^0   0.00 0 0   0.00 0   8486 25 207 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5853  27.8620 -5:0 Weedon I. powerplant channel, marker "10"
-^17   0.70 0 3   0.50 0   8491 359 204 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^17   0.70 0 3   0.50 0   8491 359 204 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5805  27.8792 -5:0 Gandy Bridge, west channel
-^9   0.90 0 -55   0.90 0   8496 0 155 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^9   0.90 0 -55   0.90 0   8496 0 155 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5523  27.8832 -5:0 Gandy Bridge, east channel
-^10   0.60 0 9   0.60 0   8501 359 179 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^10   0.60 0 9   0.60 0   8501 359 179 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.5862  27.9258 -5:0 W Howard Frankland Bridge
-^19   0.30 0 -12   0.20 0   8506 285 140 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^19   0.30 0 -12   0.20 0   8506 285 140 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.6242  27.9680 -5:0 Courtney Campbell Parkway
-^37   0.50 0 -35   0.60 0   8511 340 140 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^37   0.50 0 -35   0.60 0   8511 340 140 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.4473  27.8118 -5:0 Cut A Channel, marker "10", Hillsborough Bay
-^-93   0.30 0 -54   0.20 0   8521 40 213 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^-93   0.30 0 -54   0.20 0   8521 40 213 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.4437  27.8460 -5:0 Cut C Channel, marker "21", Hillsborough Bay
-^-74   0.40 0 -20   0.20 0   8526 7 183 1 OLD TAMPA BAY ENTRANCE (Port Tampa), Florida
+^-74   0.40 0 -20   0.20 0   8526 7 183 1 Old Tampa Bay Entrance (Port Tampa), Florida Current
 
 cNAA:XX:XX: -82.7350  27.6850 -5:0 Pass-a-Grille Channel
 ^-30   0.90 0 -30   1.00 0   8536 357 186 1 Tampa Bay Entrance (Egmont Channel), Florida
@@ -10566,7 +10564,7 @@ cNAA:XX:XX: -93.9017  29.7600 -6:0 Sabine Pass, Port Arthur Canal entrance
 cNAA:XX:XX: -93.8950  29.7658 -6:0 Sabine Pass, Mesquite Pt., La. Causeway bridge
 ^-21   0.90 0 -20   1.00 0   8726 330 150 1 Galveston Bay Entrance, Texas Current
 
-cNAA:XX:XX: -94.7060  29.3467 -6:0 GALVESTON BAY ENT., (between jetties)
+cNAA:XX:XX: -94.7050  29.3467 -6:0 GALVESTON BAY ENT., (between jetties)
 ^0   0.00 0 0   0.00 0   8731 299 102 1 Galveston Bay Entrance, Texas Current
 
 cNAA:XX:XX: -94.7683  29.3467 -6:0 Bolivar Roads, 0.5 mi. N of Ft. Point
@@ -10581,11 +10579,11 @@ cNAA:XX:XX: -94.8750  29.5033 -6:0 Houston Ship Channel ,(Red Fish Bar)
 cNAA:XX:XX: -96.3233  28.4217 -6:0 Matagorda Channel ,(entrance jetty)
 ^-56   1.20 0 -18   0.80 0   8766 317 142 1 Galveston Bay Entrance, Texas Current
 
-cNAA:XX:XX: -97.0442  27.8338 -6:0 Aransas Pass
-^0   0.00 0 0   0.00 0   8771 300 118 1 Aransas Pass, Texas
+cNAA:XX:XX: -97.045  27.8333 -6:0 Aransas Pass
+^0   0.00 0 0   0.00 0   8771 300 118 1 Aransas Pass, Texas Current 
 
 cNAA:XX:XX: -97.2300  27.8150 -6:0 Port Ingleside
-^24   0.70 0 131   0.50 0   8776 286 102 1 Aransas Pass, Texas
+^24   0.70 0 131   0.50 0   8776 286 102 1 Aransas Pass, Texas Curren
 
 cNAA:XX:XX: -67.2267  18.0867 -4:0 Punta Ostiones, 1.5 miles west of
 ^-26   1.70 0 -4   1.30 0   8791 187 1 1 Vieques Passage, Puerto Rico
@@ -11223,9 +11221,9 @@ cNAA:XX:XX: -135.6833  57.3667 -9:0 Kakul Narrows
 cNAA:XX:XX: -135.6500  57.3833 -9:0 Suloia Point
 ^20   0.40 0 20   0.40 0   3201 30 210 1 Sergius Narrows, Peril Strait, Alaska
 
-cNAA:XX:XX: -135.6333  57.4000 -9:0 SERGIUS NARROWS
+cNAA:XX:XX: -135.6267  57.4067 -9:0 SERGIUS NARROWS
 ^0   0.00 0 0   0.00 0   3205 62 240 1 Sergius Narrows, Peril Strait, Alaska
-
+ 
 cNAA:XX:XX: -135.5833  57.4167 -9:0 Point Siroi
 ^23   0.30 0 22   0.40 0   3209 59 283 1 Sergius Narrows, Peril Strait, Alaska
 
@@ -11274,7 +11272,7 @@ cNAA:XX:XX: -136.6333  58.1500 -9:0 Cape Spencer, 3 miles south of
 cNAA:XX:XX: -136.6000  58.0833 -9:0 Yakobi Rock, 1 mile west of
 ^10   0.40 0 10   0.40 0   3273 45 225 1 North Inian Pass, Cross Sound, Alaska
 
-cNAA:XX:XX: -136.3833  58.2843 -9:0 NORTH INIAN PASS
+cNAA:XX:XX: -136.3833  58.2833 -9:0 NORTH INIAN PASS
 ^0   0.00 0 0   0.00 0   3281 75 260 1 North Inian Pass, Cross Sound, Alaska
 
 cNAA:XX:XX: -136.3500  58.2167 -9:0 South Inian Pass
@@ -11574,104 +11572,104 @@ cNAA:XX:XX: -163.0167  55.3500 -9:0 Amak Island, 5 miles southeast of
 cNAA:XX:XX: -163.7833  55.0667 -9:0 Otter Point, off of, north side
 ^216   0.20 0 215   0.30 0   3825 89 258 1 Isanotski Strait (False Pass cannery), Alaska Current
 
-cNAA:XX:XX: -163.3990  54.8667 -9:0 ISANOTSKI STRAIT (False Pass Cnry)
+cNAA:XX:XX: -163.4000  54.8667 -9:0 ISANOTSKI STRAIT (False Pass Cnry)
 ^0   0.00 0 0   0.00 0   3829 358 187 1 Isanotski Strait (False Pass cannery), Alaska Current
 
 cNAA:XX:XX: -163.4333  54.9833 -9:0 Bechevin Bay, off Rocky Point
 ^-55   0.50 0 14   0.50 0   3833 331 139 1 Isanotski Strait (False Pass cannery), Alaska Current
 
 cNAA:XX:XX: -164.8000  54.3667 -9:0 UNIMAK PASS (off Scotch Cap)
-^0   0.00 0 0   0.00 0   3841 295 105 1 Unimak Pass (off Scotch Cap), Alaska
+^0   0.00 0 0   0.00 0   3841 295 105 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -165.2000  54.4167 -9:0 Unimak Pass, 11 miles WSW of Sennett Pt
-^-43   0.60 0 77   0.20 0   3845 301 106 1 Unimak Pass (off Scotch Cap), Alaska
+^-43   0.60 0 77   0.20 0   3845 301 106 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -165.3000  54.2333 -9:0 Unimak Pass, 2.4 miles N of Tanginak I
-^44   0.40 0 -48   0.50 0   3849 298 144 1 Unimak Pass (off Scotch Cap), Alaska
+^44   0.40 0 -48   0.50 0   3849 298 144 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -165.4667  54.1167 -9:0 Avatanak Strait
-^44   1.20 0 47   1.10 0   3853 50 258 1 Unimak Pass (off Scotch Cap), Alaska
+^44   1.20 0 47   1.10 0   3853 50 258 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -165.2333  54.1000 -9:0 Derbin Strait
-^0   1.00 0 -12   1.00 0   3857 342 148 1 Akutan Pass, Aleutian Islands, Alaska
+^0   1.00 0 -12   1.00 0   3857 342 148 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -164.8833  54.1500 -9:0 Ugamak Strait, off Kaligagan Island
-^31   0.60 0 11   0.80 0   3861 324 116 1 Akutan Pass, Aleutian Islands, Alaska
+^31   0.60 0 11   0.80 0   3861 324 116 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -164.9167  54.2000 -9:0 Ugamak Strait ,(North end)
-^56   0.60 0 70   0.30 0   3865 322 122 1 Akutan Pass, Aleutian Islands, Alaska
+^56   0.60 0 70   0.30 0   3865 322 122 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -166.0500  54.0167 -9:0 AKUTAN PASS
-^0   0.00 0 0   0.00 0   3869 294 113 1 Akutan Pass, Aleutian Islands, Alaska
+^0   0.00 0 0   0.00 0   3869 294 113 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -166.0667  53.9833 -9:0 Baby Pass
-^-3   0.70 0 -16   0.90 0   3873 303 129 1 Akutan Pass, Aleutian Islands, Alaska
+^-3   0.70 0 -16   0.90 0   3873 303 129 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -166.2000  53.9500 -9:0 Unalga Pass
-^1   1.10 0 1   1.00 0   3877 320 128 1 Akutan Pass, Aleutian Islands, Alaska
+^1   1.10 0 1   1.00 0   3877 320 128 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -166.3000  53.7333 -9:0 Udagak Strait, (narrows)
-^-131   0.60 0 -123   0.30 0   3881 286 142 1 Unimak Pass (off Scotch Cap), Alaska
+^-131   0.60 0 -123   0.30 0   3881 286 142 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -167.9167  53.2500 -9:0 Umnak Pass, south approach
-^-38   0.60 0 -23   1.00 0   3885 341 181 1 Unimak Pass (off Scotch Cap), Alaska
+^-38   0.60 0 -23   1.00 0   3885 341 181 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -167.8000  53.3500 -9:0 Umnak Pass, southeast of Ship Rock
-^11   1.10 0 20   0.90 0   3893 56 225 1 Unimak Pass (off Scotch Cap), Alaska
+^11   1.10 0 20   0.90 0   3893 56 225 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -167.8500  53.3833 -9:0 Umnak Pass, northwest of Ship Rock
-^1   1.10 0 -28   1.10 0   3897 52 218 1 Unimak Pass (off Scotch Cap), Alaska
+^1   1.10 0 -28   1.10 0   3897 52 218 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -175.5667  51.9667 -10:0 Fenimore Rock, 1.2 miles southwest of
-^-76   0.90 0 -137   1.00 0   3909 10 140 1 Unimak Pass (off Scotch Cap), Alaska
+^-76   0.90 0 -137   1.00 0   3909 10 140 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -175.8667  51.9500 -10:0 Igitkin Pass, 0.8 mile N of Tanager Pt
-^-41   0.90 0 -85   0.70 0   3913 40 245 1 Unimak Pass (off Scotch Cap), Alaska
+^-41   0.90 0 -85   0.70 0   3913 40 245 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -175.8833  51.9333 -10:0 Chugul Pass, 0.8 mile SW of Tanager Pt
-^-165   0.50 0 -48   0.50 0   3917 325 160 1 Unimak Pass (off Scotch Cap), Alaska
+^-165   0.50 0 -48   0.50 0   3917 325 160 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -175.9333  51.9333 -10:0 Chugul Pass, 2 miles NE of Cape Ruin
-^30   0.40 0 -54   0.50 0   3921 335 150 1 Unimak Pass (off Scotch Cap), Alaska
+^30   0.40 0 -54   0.50 0   3921 335 150 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -175.9667  51.9167 -10:0 Chugul Pass, 0.5 mile NE of Cape Ruin
-^-72   0.40 0 -18   0.60 0   3925 305 120 1 Unimak Pass (off Scotch Cap), Alaska
+^-72   0.40 0 -18   0.60 0   3925 305 120 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -176.0667  51.8500 -10:0 Umak Pass, off Narrows Point
 ^-9   0.90 0 6   0.80 0   3929 305 130 1 Isanotski Strait (False Pass cannery), Alaska Current
 
 cNAA:XX:XX: -176.2333  51.8167 -10:0 Little Tanaga Strait, off Tana Pt
-^-49   0.70 0 -33   0.60 0   3933 320 130 1 Akutan Pass, Aleutian Islands, Alaska
+^-49   0.70 0 -33   0.60 0   3933 320 130 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -176.4167  51.8000 -10:0 Kagalaska Strait, off Galas Point
-^-81   0.70 0 -7   0.50 0   3937 310 175 1 Akutan Pass, Aleutian Islands, Alaska
+^-81   0.70 0 -7   0.50 0   3937 310 175 1 Akutan Pass, Aleutian Islands, Alaska Current
 
 cNAA:XX:XX: -177.0000  51.7833 -10:0 Adak Strait, 4 miles ENE of Naga Point
-^-54   0.60 0 -44   0.60 0   3945 10 195 1 Unimak Pass (off Scotch Cap), Alaska
+^-54   0.60 0 -44   0.60 0   3945 10 195 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -176.9500  51.8000 -10:0 Adak Strait, off Argonne Point
-^-232   1.00 0 -92   0.60 0   3949 10 200 1 Unimak Pass (off Scotch Cap), Alaska
+^-232   1.00 0 -92   0.60 0   3949 10 200 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -177.8000  51.7167 -10:0 Kanaga Pass, 0.3 mile NW of Annoy Rock
-^-3   0.70 0 -23   0.70 0   3953 0 195 1 Unimak Pass (off Scotch Cap), Alaska
+^-3   0.70 0 -23   0.70 0   3953 0 195 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -177.7500  51.7500 -10:0 Kanaga Pass, 2.2 miles NE of Annoy Rock
-^-24   0.80 0 -54   0.70 0   3957 20 225 1 Unimak Pass (off Scotch Cap), Alaska
+^-24   0.80 0 -54   0.70 0   3957 20 225 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -178.2167  51.6500 -10:0 Tanaga Pass, 4 mi. off C. Amagalik
-^-105   0.50 0 -105   0.50 0   3961 315 200 1 Unimak Pass (off Scotch Cap), Alaska
+^-105   0.50 0 -105   0.50 0   3961 315 200 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -178.6000  51.6167 -10:0 Ogliuga Island, pass East of, Delarof Is
-^-139   0.20 0 -143   0.20 0   3965 36 220 1 Unimak Pass (off Scotch Cap), Alaska
+^-139   0.20 0 -143   0.20 0   3965 36 220 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -179.0333  51.3167 -10:0 Ulak Pass, Delarof Islands
-^-20   0.70 0 -20   0.70 0   3973 326 125 1 Unimak Pass (off Scotch Cap), Alaska
+^-20   0.70 0 -20   0.70 0   3973 326 125 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -178.1167  51.8500 -10:0 Krysi Pass, Rat Islands
-^3   0.70 0 -29   0.70 0   3997 40 210 1 Unimak Pass (off Scotch Cap), Alaska
+^3   0.70 0 -29   0.70 0   3997 40 210 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -177.9000  51.9000 -10:0 Sea Lion Pass, Rat Islands
-^6   0.70 0 -34   0.80 0   4001 12 195 1 Unimak Pass (off Scotch Cap), Alaska
+^6   0.70 0 -34   0.80 0   4001 12 195 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -162.2000  55.7500 -9:0 Cape Lieskof, 3 miles west of
 ^-339   0.30 0 -278   0.30 0   4013 56 248 1 Kvichak Bay (off Naknek River Entrance), Alaska
@@ -11694,7 +11692,7 @@ cNAA:XX:XX: -160.7833  55.8333 -9:0 Johnston Channel, off Halftide Rock
 cNAA:XX:XX: -158.8833  56.9833 -9:0 Port Heiden
 ^-143   0.40 0 -74   0.40 0   4037 67 233 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -157.2500  58.7000 -9:0 KVICHAK BAY (off Naknek River entrance)
+cNAA:XX:XX: -157.2500  58.7033 -9:0 KVICHAK BAY (off Naknek River entrance)
 ^0   0.00 0 0   0.00 0   4041 53 239 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
 cNAA:XX:XX: -156.9333  58.7333 -9:0 Morakas Point, Naknek River
@@ -11752,7 +11750,7 @@ cNAA:XX:XX: -168.8333  63.3333 -9:0 St. Lawrence Island, Off Northeast Cape
 ^-101   0.30 0 16   0.30 0   4133 95 258 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
 cNAA:XX:XX: -166.1667  64.5333 -9:0 Sledge Island, 2 miles north of
-^-421   0.30 0 -418   0.20 0   4145 305 119 1 Unimak Pass (off Scotch Cap), Alaska
+^-421   0.30 0 -418   0.20 0   4145 305 119 1 Unimak Pass (off Scotch Cap), Alaska Current
 
 cNAA:XX:XX: -122.7667  48.9833 -8:0 Drayton Harbor Entrance
 ^-27   0.60 0 48   0.40 0   1841 133 313 1 Admiralty Inlet, Washington Current
@@ -11763,13 +11761,13 @@ cNAA:XX:XX: -122.9333  48.7667 -8:0 Sucia I., 0.5 mile WNW of Lawson Bluff
 cNAA:XX:XX: -123.5500  48.7823 -8:0 Sansum Narrows
 ^24   0.50 0 -37   0.50 0   1849 0 180 1 Active Pass, British Columbia Current
 
-cNAA:XX:XX: -123.3000  48.8833 -8:0 ACTIVE PASS
+cNAA:XX:XX: -123.3077  48.867 -8:0 ACTIVE PASS
 ^0   0.00 0 0   0.00 0   1853 45 225 1 Active Pass, British Columbia Current
 
 cNAA:XX:XX: -123.5833  49.0167 -8:0 Porlier Pass
 ^-20   1.30 0 -28   1.30 0   1857 45 225 1 Active Pass, British Columbia Current
 
-cNAA:XX:XX: -123.7000  49.1333 -8:0 Gabriola Pass
+cNAA:XX:XX: -123.7000  49.1292 -8:0 Gabriola Pass
 ^-35   1.10 0 -32   1.10 0   1861 90 270 1 Active Pass, British Columbia Current
 
 cNAA:XX:XX: -123.8167  49.1333 -8:0 Dodd Narrows
@@ -11817,7 +11815,7 @@ cNAA:XX:XX:  -125.8833  50.3901-8:0 Race Passage
 cNAA:XX:XX: -125.8509  50.4075 -8:0 Current Passage
 ^-60   0.50 0 -60   0.50 0   1937 120 300 1 Seymour Narrows, British Columbia Current
 
-cNAA:XX:XX: -126.1000  50.4667 -8:0 Ransom Point
+cNAA:XX:XX: -126.0640  50.4727 -8:0 Ransom Point
 ^-60   0.30 0 -60   0.30 0   1941 110 290 1 Seymour Narrows, British Columbia Current
 
 cNAA:XX:XX: -126.2833  50.5000 -8:0 Off Broken Island
@@ -11865,7 +11863,7 @@ cNAA:XX:XX: -127.8833  50.8833 -8:0 Heath Point
 cNAA:XX:XX: -128.0000  50.9000 -8:0 Nawhitti Bar
 ^-270   0.40 0 -287   0.40 0   2001 100 280 1 Seymour Narrows, British Columbia Current
 
-cNAA:XX:XX: -125.1667  50.2333 -8:0 Surge Narrows, Okisollo Channel
+cNAA:XX:XX: -125.1580  50.2313 -8:0 Surge Narrows, Okisollo Channel
 ^-45   0.70 0 -45   0.70 0   2005 140 320 1 Seymour Narrows, British Columbia Current
 
 cNAA:XX:XX: -125.2093  50.3000 -8:0 Hole In The Wall, Okisollo Channel
@@ -11970,7 +11968,7 @@ cNAA:XX:XX: -130.4833  54.6667 -8:0 Portland Inlet, 2 miles S. of Wales Pt
 cNAA:XX:XX: -130.6167  54.7167 -8:0 Haystack Island, Tongass Passage
 ^0   0.70 0 0   0.70 0   2137 340 160 1 Wrangell Narrows (off Petersburg), Alaska
 
-cNAA:XX:XX: -130.6333  54.7833 -8:0 Point Phipp
+cNAA:XX:XX:  -130.6266 54.7792 -8:0 Point Phipp
 ^0   0.80 0 0   0.80 0   2141 65 245 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -130.4833  54.8333 -8:0 Narrows
@@ -11983,31 +11981,31 @@ cNAA:XX:XX: -130.0333  55.8833 -9:0 Lion Point
 ^-40   0.10 0 -40   0.10 0   2185 25 205 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -123.8000  46.6667 -8:0 South Bend, Willapa River
-^19   0.60 0 24   0.50 0   1009 90 270 1 Grays Harbor Entrance, Washington
+^19   0.60 0 24   0.50 0   1009 90 270 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1667  46.9333 -8:0 Entrance, 0.2 mile south of north jetty
-^-28   1.30 0 10   0.60 0   1013 70 243 1 Grays Harbor Entrance, Washington
+^-28   1.30 0 10   0.60 0   1013 70 243 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1500  46.9167 -8:0 Entrance, Point Chehalis Range
-^8   0.90 0 -22   1.10 0   1017 92 268 1 Grays Harbor Entrance, Washington
+^8   0.90 0 -22   1.10 0   1017 92 268 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1167  46.9167 -8:0 Entrance, 0.6 mile WNW of Westport
-^0   1.20 0 6   0.70 0   1021 44 238 1 Grays Harbor Entrance, Washington
+^0   1.20 0 6   0.70 0   1021 44 238 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1333  46.9167 -8:0 GRAYS HARBOR ENTRANCE
-^0   0.00 0 0   0.00 0   1025 61 242 1 Grays Harbor Entrance, Washington
+^0   0.00 0 0   0.00 0   1025 61 242 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1333  46.9167 -8:0 Entrance, 1.1 miles NW of Westport
-^4   0.90 0 -5   0.90 0   1029 78 233 1 Grays Harbor Entrance, Washington
+^4   0.90 0 -5   0.90 0   1029 78 233 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1000  46.9333 -8:0 Channel, 1.5 miles north of Westport
-^-22   0.70 0 -4   0.60 0   1033 36 226 1 Grays Harbor Entrance, Washington
+^-22   0.70 0 -4   0.60 0   1033 36 226 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.0833  46.9333 -8:0 Channel, 2.1 miles NNE of Westport
-^-2   0.60 0 -2   0.50 0   1037 21 249 1 Grays Harbor Entrance, Washington
+^-2   0.60 0 -2   0.50 0   1037 21 249 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.1000  46.9167 -8:0 Westport, channel 0.4 mile NE of
-^-41   1.00 0 -19   0.70 0   1045 113 310 1 Grays Harbor Entrance, Washington
+^-41   1.00 0 -19   0.70 0   1045 113 310 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -124.6333  47.9167 -8:0 Quillayute River entrance
 ^-10   0.10 0 -26   0.40 0   1049 15 345 1 San Francisco Bay Entrance (Golden Gate), California Current
@@ -12222,7 +12220,7 @@ cNAA:XX:XX: -122.5833  48.4000 -8:0 Skagit Bay,  channel SW of Hope Island
 cNAA:XX:XX: -122.6167  48.4167 -8:0 Yokeko Point, Deception Pass
 ^4   0.40 0 -25   0.40 0   1553 64 222 1 Deception Pass, Washington Current
 
-cNAA:XX:XX: -122.6333  48.4010 -8:0 DECEPTION PASS, (Narrows)
+cNAA:XX:XX: -122.6333  48.4000 -8:0 DECEPTION PASS, (Narrows)
 ^0   0.00 0 0   0.00 0   1557 90 270 1 Deception Pass, Washington Current
 
 cNAA:XX:XX: -122.9167  48.3833 -8:0 Iceberg Point, 2.1 miles SSW of
@@ -12237,7 +12235,7 @@ cNAA:XX:XX: -122.7833  48.4167 -8:0 Colville Island, 1.4 miles east of
 cNAA:XX:XX: -122.7333  48.4167 -8:0 Deception Island, 2.7 miles west of
 ^68   0.80 0 38   0.70 0   1577 15 190 1 Rosario Strait, Washington Current
 
-cNAA:XX:XX: -122.7833  48.4667 -8:0 ROSARIO STRAIT
+cNAA:XX:XX: -122.7800 48.4583 -8:0 ROSARIO STRAIT
 ^0   0.00 0 0   0.00 0   1589 335 175 1 Rosario Strait, Washington Current
 
 cNAA:XX:XX: -122.8167  48.4833 -8:0 Lopez Pass
@@ -12330,7 +12328,7 @@ cNAA:XX:XX: -122.8000  48.8167 -8:0 Puffin Island Light, 4.8 miles north of
 cNAA:XX:XX: -122.9500  48.4333 -8:0 Cattle Point, 1.2 miles southeast of
 ^11   0.30 0 34   0.90 0   1745 340 195 1 San Juan Channel (South Entrance), Washington Current
 
-cNAA:XX:XX: -122.9509  48.4660 -8:0 SAN JUAN CHANNEL (south entrance)
+cNAA:XX:XX: -122.9500  48.4667 -8:0 SAN JUAN CHANNEL (south entrance)
 ^0   0.00 0 0   0.00 0   1749 10 180 1 San Juan Channel (South Entrance), Washington Current
 
 cNAA:XX:XX: -122.9500  48.4833 -8:0 Kings Point, Lopez Island, 1 mile NNW of
@@ -12424,64 +12422,64 @@ cNAA:XX:XX: -123.9333  45.5667 -8:0 Tillamook Bay entrance
 ^9   0.80 0 -18   0.80 0   0869 141 305 1 Wrangell Narrows (off Petersburg), Alaska
 
 cNAA:XX:XX: -123.9908  46.2528 -8:0 Sand Island Tower, southeast of
-^72   1.60 0 38   1.60 0   0877 107 275 1 Grays Harbor Entrance, Washington
+^72   1.60 0 38   1.60 0   0877 107 275 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9942  46.2462 -8:0 Clatsop Spit, NNE of
-^45   1.40 0 56   1.10 0   0881 114 289 1 Grays Harbor Entrance, Washington
+^45   1.40 0 56   1.10 0   0881 114 289 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9945  46.2578 -8:0 Sand Island Tower, southeast of
-^39   1.10 0 27   0.70 0   0885 92 262 1 Grays Harbor Entrance, Washington
+^39   1.10 0 27   0.70 0   0885 92 262 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9980  46.2620 -8:0 Sand Island Tower, southeast of
-^28   0.60 0 20   0.30 0   0889 8 202 1 Grays Harbor Entrance, Washington
+^28   0.60 0 20   0.30 0   0889 8 202 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9680  46.2555 -8:0 Sand I., SSE of
-^18   0.30 0 -16   0.40 0   0893 97 265 1 Grays Harbor Entrance, Washington
+^18   0.30 0 -16   0.40 0   0893 97 265 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.8878  46.1863 -8:0 Youngs Bay Entrance
-^106   0.90 0 88   0.40 0   0905 93 260 1 Grays Harbor Entrance, Washington
+^106   0.90 0 88   0.40 0   0905 93 260 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.8683  46.1778 -8:0 Youngs Bay Bridge
-^10   0.40 0 50   0.30 0   0909 135 320 1 Grays Harbor Entrance, Washington
+^10   0.40 0 50   0.30 0   0909 135 320 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9345  46.2112 -8:0 Hammond, northeast of ship channel
-^57   0.40 0 26   0.60 0   0913 134 307 1 Grays Harbor Entrance, Washington
+^57   0.40 0 26   0.60 0   0913 134 307 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9153  46.2395 -8:0 McGowan, SSW of
-^88   0.90 0 21   1.60 0   0917 107 282 1 Grays Harbor Entrance, Washington
+^88   0.90 0 21   1.60 0   0917 107 282 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.8483  46.2417 -8:0 Point Ellice, east of
-^55   0.80 0 51   0.90 0   0921 65 254 1 Grays Harbor Entrance, Washington
+^55   0.80 0 51   0.90 0   0921 65 254 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9675  46.2278 -8:0 Point Adams, NNE OF
-^76   0.80 0 26   0.90 0   0925 139 297 1 Grays Harbor Entrance, Washington
+^76   0.80 0 26   0.90 0   0925 139 297 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.9642  46.2422 -8:0 Chinook Point, WSW of
-^29   1.20 0 45   0.90 0   0929 117 287 1 Grays Harbor Entrance, Washington
+^29   1.20 0 45   0.90 0   0929 117 287 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.7667  46.2192 -8:0 Tongue Point, northwest of
-^151   0.40 0 24   0.90 0   0933 77 249 1 Grays Harbor Entrance, Washington
+^151   0.40 0 24   0.90 0   0933 77 249 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.6733  46.2395 -8:0 Woody Island Channel
-^72   0.50 0 96   0.30 0   0941 118 298 1 Grays Harbor Entrance, Washington
+^72   0.50 0 96   0.30 0   0941 118 298 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.6292  46.2175 -8:0 Woody Island Channel (off Seal Island)
-^158   0.30 0 85   0.40 0   0945 81 247 1 Grays Harbor Entrance, Washington
+^158   0.30 0 85   0.40 0   0945 81 247 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.5033  46.2372 -8:0 Quinn Island, Prairie Channel
-^199   0.30 0 55   0.50 0   0953 97 281 1 Grays Harbor Entrance, Washington
+^199   0.30 0 55   0.50 0   0953 97 281 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.4653  46.2178 -8:0 Clifton Channel
-^221   0.30 0 81   0.40 0   0957 118 301 1 Grays Harbor Entrance, Washington
+^221   0.30 0 81   0.40 0   0957 118 301 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.4042  46.2072 -8:0 Hunting Island, south of
-^260   0.20 0 98   0.40 0   0965 125 295 1 Grays Harbor Entrance, Washington
+^260   0.20 0 98   0.40 0   0965 125 295 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.3150  46.1562 -8:0 Cathlamet Channel, SE of Nassa Point
-^316   0.10 0 99   0.60 0   0977 103 278 1 Grays Harbor Entrance, Washington
+^316   0.10 0 99   0.60 0   0977 103 278 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -123.0458  46.1412 -8:0 Walker Island, south of
-^346   0.20 0 161   0.40 0   0993 148 330 1 Grays Harbor Entrance, Washington
+^346   0.20 0 161   0.40 0   0993 148 330 1 Grays Harbor Entrance, Washington Current
 
 cNAA:XX:XX: -117.2262  32.6658 -8:0 Point Loma Light, 0.8 nmi. east of
 ^-18   0.50 0 -5   0.40 0   0021 328 174 1 San Diego Bay Entrance, California
@@ -12489,7 +12487,7 @@ cNAA:XX:XX: -117.2262  32.6658 -8:0 Point Loma Light, 0.8 nmi. east of
 #cNAA:XX:XX: -117.2262  32.6658 -8:0 Point Loma Light, 0.8 nmi. east of
 #^-68   0.40 0 -8   0.20 0   0021 333 166 1 San Diego Bay Entrance, California
 
-cNAA:XX:XX: -117.2300  32.6807 -8:0 SAN DIEGO BAY ENTRANCE
+cNAA:XX:XX: -117.2300  32.6817 -8:0 SAN DIEGO BAY ENTRANCE
 ^0   0.00 0 0   0.00 0   0025 355 173 1 San Diego Bay Entrance, California
 
 cNAA:XX:XX: -117.2322  32.6845 -8:0 Ballast Point, south of
@@ -12627,13 +12625,13 @@ cNAA:XX:XX: -122.4885  37.7978 -8:0 Baker Beach (South Bay), 0.3 nmi. NW of
 cNAA:XX:XX: -122.4828  37.8092 -8:0 Fort Point, 0.3 nmi. west of
 ^-128   0.50 0 12   0.20 0   0209 44 335 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.5022  37.8105 -8:0 SAN FRANCISCO BAY ENT. (S of Pt. Diablo)
+cNAA:XX:XX: -122.5022  37.8105 -8:0 SAN FRANCISCO BAY ENT., (S of Pt. Diablo)
 ^0   0.00 0 0   0.00 0   0213 65 245 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-cNAA:XX:XX: -122.4728  37.8200 -8:0 Golden Gate Bridge 0.46 nmi. east of
+cNAA:XX:XX: -122.4728  37.8200 -8:0 Golden Gate Bridge, 0.46 nmi. east of
 ^-20   0.90 0 -28   0.70 0   0217 60 250 1 San Francisco Bay Entrance (Golden Gate), California Current
 
-#cNAA:XX:XX: -122.4728  37.8200 -8:0 Golden Gate Bridge 0.46 nmi. east of
+#cNAA:XX:XX: -122.4728  37.8200 -8:0 Golden Gate Bridge, 0.46 nmi. east of
 #^-42   0.90 0 -34   0.60 0   0217 74 251 1 San Francisco Bay Entrance (Golden Gate), California Current
 
 #cNAA:XX:XX: -122.4728  37.8200 -8:0 Golden Gate Bridge 0.46 nmi. east of
@@ -13011,7 +13009,7 @@ cNAA:XX:XX: -122.2428  38.0742 -8:0 Mare Island Strait (Buoy "4")
 cNAA:XX:XX: -122.2500  38.0833 -8:0 Mare Island Strait, off South Vallejo
 ^-117   0.70 0 -94   0.80 0   0621 325 166 1 Carquinez Strait, California Current
 
-cNAA:XX:XX: -122.2183  38.0613 -8:0 CARQUINEZ STRAIT (west end, bridge)
+cNAA:XX:XX: -122.2183  38.0617 -8:0 CARQUINEZ STRAIT (west end, bridge)
 ^0   0.00 0 0   0.00 0   0625 103 283 1 Carquinez Strait, California Current
 
 cNAA:XX:XX: -122.1497  38.0330 -8:0 Martinez Marina, 0.65 nmi. NW of
@@ -13197,28 +13195,28 @@ cNAA:XX:XX: -123.7172  49.1283 -8:0 GABRIOLA PASSAGE
 cNAA:XX:XX: -123.8174  49.1353 -8:0 DODD NARROWS
 ^0   0.00 0 0   0.00 0   12003 350 170  1 Dodd Narrows, British Columbia Current
 
-cNAA:XX:XX: -123.8993  49.7392 -8:0 SECHELT RAPIDS
+cNAA:XX:XX: -123.8983  49.7383 -8:0 SECHELT RAPIDS
 ^0   0.00 0 0   0.00 0   12004 135 315 1 Sechelt Rapids, British Columbia Current
 
 cNAA:XX:XX: -125.1595  50.3930 -8:0 GILLARD PASS, Dent Rapids
 ^0   0.00 0 0   0.00 0   12005 90 270 1 Gillard Pass, British Columbia Current
 
 cNAA:XX:XX: -126.1333  50.4667 -8:0 JOHNSTONE STR. CEN.
-^0   0.00 0 0   0.00 0   12006 90 270 1 Johnstone Str. Cen., British Columbia Current 
+^0   0.00 0 0   0.00 0   12006 90 270 1 Johnstone Strait Central, British Columbia Current
 
-cNAA:XX:XX: -127.5047 51.0967 -8:0 NAKWAKTO RAPIDS Seymour Inlet
+cNAA:XX:XX: -127.505279  51.095855-8:0 NAKWAKTO RAPIDS, Seymour Inlet
 ^0   0.00 0 0   0.00 0   12007 0 180 1 Nakwakto Rapids, British Columbia Current
 
-cNAA:XX:XX: -123.5300  48.23 -8:0 JUAN DE FUCA EAST
+cNAA:XX:XX: -123.5300  48.2317 -8:0 JUAN DE FUCA EAST
 ^0   0.00 0 0   0.00 0   12008 90 270 1 Juan De Fuca Strait (East), British Columbia Current
 
 cNAA:XX:XX: -126.8167  50.6000 -8:0 WEYNTON PASSAGE
-^0   0.00 0 0   0.00 0   12009 220 40 1 WEYNTON PASSAGE, British Columbia Current
+^0   0.00 0 0   0.00 0   12009 220 40 1 Weynton Passage, British Columbia Current
 
-cNAA:XX:XX: -123.5403  48.3062 -8:0 RACE PASSAGE, Race Rocks
-^0   0.00 0 0   0.00 0   12010 90 270 1 RACE PASSAGE, British Columbia Current
-
-cNAA:XX:XX: -127.5584  50.5500 -8:0 QUATSINO NARROWS
+cNAA:XX:XX: -123.5367  48.3067 -8:0 RACE PASSAGE, Race Rocks
+^0   0.00 0 0   0.00 0   12010 90 270 1 Race Passage, British Columbia Current
+ 
+cNAA:XX:XX: -127.5584  50.5522 -8:0 QUATSINO NARROWS
 ^0   0.00 0 0   0.00 0   12011 10 190 1 Quatsino Narrows, British Columbia Current
 
 cNAA:XX:XX: -123.1403  49.3159 -8:0 FIRST NARROWS, Burrard Inlet
@@ -13287,7 +13285,7 @@ cNAA:XX:XX: -66.2500  44.7333 -4:0 Prim Point, 20 miles west of
 cNAA:XX:XX: -65.9500  44.9667 -4:0 Cape Spencer, 14 miles south of
 ^51   0.70 0 57   0.70 0   0076 50 245 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -66.9327  44.7533 -4:0 BAY OF FUNDY ENTRANCE
+cNAA:XX:XX: -66.9317  44.7533 -4:0 BAY OF FUNDY ENTRANCE
 ^0   0.00 0 0   0.00 0   0081 32 212 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -66.9833  44.9000 -5:0 Eastport, Friar Roads
@@ -14019,7 +14017,7 @@ cNAA:XX:XX: -70.9462  42.3408 -5:0 Deer Island Light, 0.4 n.mi. east of
 cNAA:XX:XX: -70.9397  42.3375 -5:0 Deer Island Light, 0.7 n.mi. ESE of
 ^-23   0.90 0 25   0.50 0   1191 233 62 1 Boston Harbor, Massachusetts Current
 
-cNAA:XX:XX: -70.9562  42.3378 -5:0 BOSTON HARBOR (Deer Island Light)
+cNAA:XX:XX: -70.9567  42.3383 -5:0 BOSTON HARBOR (Deer Island Light)
 ^0   0.00 0 0   0.00 0   1196 254 111 1 Boston Harbor, Massachusetts Current
 
 cNAA:XX:XX: -70.9570  42.3353 -5:0 Deer Island Light, 0.3 n.mi. SSE of
@@ -14379,7 +14377,7 @@ cNAA:XX:XX: -70.2817  41.2262 -5:0 Tuckernuck Island, 4.2 miles SSW of
 cNAA:XX:XX: -69.9233  41.5650 -5:0 Pollock Rip Channel, east end
 ^-14   1.00 0 -23   1.10 0   1716 53 212 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -69.9833  41.5500 -5:0 POLLOCK RIP CHANNEL (Butler Hole)
+cNAA:XX:XX: -69.985  41.5467 -5:0 POLLOCK RIP CHANNEL, (Butler Hole)
 ^0   0.00 0 0   0.00 0   1721 37 226 1 Pollock Rip Channel, Massachusetts Current
 
 cNAA:XX:XX: -70.0217  41.5500 -5:0 Monomoy Pt., channel 0.2 mile west of
@@ -14577,7 +14575,7 @@ cNAA:XX:XX: -70.7167  41.7333 -5:0 Wareham River, off Long Beach Point
 cNAA:XX:XX: -70.7067  41.7450 -5:0 Wareham River, off Barneys Point
 ^-109   0.40 0 -82   0.40 0   2141 10 185 1 Pollock Rip Channel, Massachusetts Current
 
-cNAA:XX:XX: -70.6143  41.7417 -5:0 CAPE COD CANAL, railroad bridge
+cNAA:XX:XX: -70.6133  41.7417 -5:0 CAPE COD CANAL, railroad bridge
 ^0   0.00 0 0   0.00 0   2156 70 250 1 Cape Cod Canal, Massachusetts Current
 
 cNAA:XX:XX: -70.5833  41.7500 -5:0 Bourne Highway bridge
@@ -14880,7 +14878,7 @@ cNAA:XX:XX: -72.0280  41.2928 -5:0 North Hill Point, 1.1 miles NNW of
 cNAA:XX:XX: -72.0433  41.2450 -5:0 The Race, Race Point, 0.4 mile southwest of
 ^-3   1.00 0 -34   1.20 0   2711 288 135 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -72.0597  41.2333 -5:0 The Race, THE RACE, 0.6 n.mi. NW of Valiant Rock
+cNAA:XX:XX: -72.0597  41.2333 -5:0 THE RACE, 0.6 n.mi. NW of Valiant Rock
 ^0   0.00 0 0   0.00 0   2721 302 112 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -72.1000  41.2167 -5:0 The Race, 0.5 mile NE of Little Gull Island
