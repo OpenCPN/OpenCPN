@@ -669,7 +669,8 @@ CMake variables
 	!include /NONFATAL "Langstrings_FINNISH.nsh"
 	!insertmacro MUI_LANGUAGE "Norwegian"
 	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
-
+	!insertmacro MUI_LANGUAGE "SimpChinese"
+	!include /NONFATAL "Langstrings_CHINESETW.nsh"
 
 ;-------------------------------- 
 ;# Reserve Files

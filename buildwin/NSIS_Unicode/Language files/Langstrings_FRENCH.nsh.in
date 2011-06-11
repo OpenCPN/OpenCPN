@@ -119,7 +119,7 @@ LangString Page_Confirm_Subtitle ${LANG_FRENCH} "Verifier les options d'installa
 LangString Installation_Type ${LANG_FRENCH} "Type d'installation"
 
 #LangString Installation_Directory ${LANG_ENGLISH} "Destination location"
-LangString Installation_Directory ${LANG_FRENCH} "Adresse d'installation"
+
 
 #LangString Create_Shortcuts ${LANG_ENGLISH} "Create shortcuts"
 LangString Create_Shortcuts ${LANG_FRENCH} "Créer un raccourci"
@@ -185,7 +185,7 @@ LangString SecSetConfigLang_Text ${LANG_FRENCH} "Langue sélectionnée :  $LANG_
 LangString SecSetConfigChartDir_Text ${LANG_FRENCH} "Sélectionner un répertoire de cartes"
 
 #LangString SecGrpResetConfig_Desc ${LANG_ENGLISH} "Deletes ALL files and subdirectories in the configuration folder."
-LangString SecGrpResetConfig_Desc ${LANG_FRENCH} "Supprime TOUS le contenu du répertoire de configuration."
+LangString SecGrpResetConfig_Desc ${LANG_FRENCH} "Supprime TOUT le contenu du répertoire de configuration."
 
 #LangString SecDeleteConfigFile_Desc ${LANG_ENGLISH} "Deletes the configuration file. This file helds also Routes and Waypoints."
 LangString SecDeleteConfigFile_Desc ${LANG_FRENCH} "Supprime le fichier de configuration ."
@@ -218,7 +218,7 @@ LangString SecShortcutDesktop_Desc ${LANG_FRENCH} "Crée un raccourci pour OpenC
 LangString SecSetConfig_Desc ${LANG_FRENCH} "Prédéfinit la langue et le(s) répertoire(s) des cartes pour OpenCPN. Après sélection, une page de configuration sera proposée."
 
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
-LangString UnSecDeleteConfigFolder_Desc ${LANG_FRENCH} "Supprime le répertoire de configuration et tous son contenu."
+LangString UnSecDeleteConfigFolder_Desc ${LANG_FRENCH} "Supprime le répertoire de configuration et tout son contenu."
 
 #LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 LangString Uninstall_Link ${LANG_FRENCH} "Désinstalle  @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
@@ -336,3 +336,23 @@ LangString Banner_Installation_Found_Plural ${LANG_FRENCH} "$counter_tmp install
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_FRENCH} "Supprimer le répertoire de configuration"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

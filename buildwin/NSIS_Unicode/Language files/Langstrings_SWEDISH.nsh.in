@@ -10,7 +10,7 @@ LangString Installer_Unsupported_Windows_Version ${LANG_SWEDISH} "Din Windowsver
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_SWEDISH} "Installationen körs redan."
 
-#LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
+#LangString Installer ${LANG_ENGLISH} "installer"
 LangString Uninstaller_Running ${LANG_SWEDISH} "Avinstallationen körs redan."
 
 #LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
