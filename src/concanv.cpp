@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: concanv.cpp,v 1.24 2010/05/27 19:00:01 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Console Canvas
@@ -24,25 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: concanv.cpp,v $
- * Revision 1.24  2010/05/27 19:00:01  bdbcat
- * 527a
- *
- * Revision 1.23  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.22  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.21  2009/12/26 21:15:03  bdbcat
- * Messages
- *
- * Revision 1.20  2009/12/22 21:34:05  bdbcat
- * Cleanup Messages
- *
- * Revision 1.19  2009/12/10 21:03:54  bdbcat
- * Beta 1210
  *
  *
  *
@@ -73,8 +53,6 @@ extern FontMgr          *pFontMgr;
 extern                  double gCog;
 extern                  double gSog;
 
-
-CPL_CVSID("$Id: concanv.cpp,v 1.24 2010/05/27 19:00:01 bdbcat Exp $");
 
 
 //------------------------------------------------------------------------------
@@ -228,7 +206,10 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                         pRNG->SetAValue(srng);
 
 //    Brg
-                  str_buf.Printf(_T("%6.0f"), g_pRouteMan->GetCurrentBrgToActivePoint());
+                  float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
+                  if(dcog >= 359.5)
+                        dcog = 0;
+                  str_buf.Printf(_T("%6.0f"), dcog);
                   pBRG->SetAValue(str_buf);
 
 //    XTE
