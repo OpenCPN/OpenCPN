@@ -5791,7 +5791,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
 //  Invalidate the ChartCanvas window appropriately
-        if(!cc1->m_bFollow)
+        if((!cc1->m_bFollow) || g_bCourseUp)
         {
               cc1->UpdateShips();
               cc1->UpdateAIS();
