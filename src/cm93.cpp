@@ -4721,7 +4721,8 @@ void SetVPPositive(ViewPort *pvp)
 {
       while(pvp->GetBBox().GetMinX() < 0)
       {
-            pvp->clon += 360.;
+            if(pvp->clon < 0.)
+                  pvp->clon += 360.;
             wxPoint2DDouble t(360., 0.);
             pvp->GetBBox().Translate(t);
       }
@@ -5286,12 +5287,12 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
 
                   wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, DrawBuf );
 
+
                   if(!rgn_covr.Empty())
                   {
                   //    No sense in increasing the region beyond the current VPoint size,
                   //    Just makes subsequent region iterator loops HUGE....
-                        rgn_covr.Intersect(VPoint.rv_rect);
-
+                        rgn_covr.Intersect(0,0,VPoint.rv_rect.width, VPoint.rv_rect.height);
                         pValidRegion->Union(rgn_covr);
                   }
             }
@@ -5349,6 +5350,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
       ViewPort vp_positive = VPoint;
 
       SetVPPositive(&vp_positive);
+
       bool render_return = true;
       if(m_pcm93chart_current)
       {
@@ -5367,6 +5369,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                   wxRegion vpr_empty = Region;
 
                   wxRegion chart_region;
+
                   GetValidCanvasRegion(vp_positive, &chart_region);
                   m_pcm93chart_current->m_render_region = chart_region;
 
@@ -5445,7 +5448,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     while ( upd )
                                     {
                                           wxRect rect = upd.GetRect();
-                                          rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+//                                          rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                                           dumm_dc.Blit(rect.x, rect.y, rect.width, rect.height, &build_dc, rect.x, rect.y);
                                           upd ++ ;
                                     }
@@ -5463,7 +5466,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                         while ( updt )
                         {
                               wxRect rect = updt.GetRect();
-                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+//                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                               dumm_dc.Blit(rect.x, rect.y, rect.width, rect.height, &temp_dc, rect.x, rect.y);
                               updt ++ ;
                         }
