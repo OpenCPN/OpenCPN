@@ -4721,8 +4721,8 @@ void SetVPPositive(ViewPort *pvp)
 {
       while(pvp->GetBBox().GetMinX() < 0)
       {
-            if(pvp->clon < 0.)
-                  pvp->clon += 360.;
+//            if(pvp->clon < 0.)
+            pvp->clon += 360.;
             wxPoint2DDouble t(360., 0.);
             pvp->GetBBox().Translate(t);
       }
