@@ -483,7 +483,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Append(_T("\n\n"));
             result.Append(line);
       }
-      line.Printf(_T("MMSI:                 %09d\n"), MMSI);
+      line.Printf(_("MMSI:                 %09d\n"), MMSI);
       result.Append(line);
 
       if((Class != AIS_ATON) && (Class != AIS_BASE))
@@ -496,9 +496,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             if(Class != AIS_CLASS_B)
             {
                   if(IMO > 0)
-                        line.Printf(_T("IMO:                 %8d\n"), IMO);
+                        line.Printf(_("IMO:                 %8d\n"), IMO);
                   else
-                        line.Printf(_T("IMO:\n"));
+                        line.Printf(_("IMO:\n"));
                   result.Append(line);
             }
       }
