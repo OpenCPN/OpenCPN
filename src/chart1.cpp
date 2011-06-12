@@ -2334,7 +2334,7 @@ bool MyApp::OnInit()
 // Create the main frame window
         wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
-          gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(0, 0), new_frame_size, app_style ); //Gunther
+          gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(cx,cy), new_frame_size, app_style ); //Gunther
 
         g_pauimgr = new wxAuiManager;
 //        g_pauidockart= new wxAuiDefaultDockArt;
