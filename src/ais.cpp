@@ -588,10 +588,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else
                   line.Printf(_("Size:                 %dm x %dm x %4.1fm\n\n"), (DimA + DimB), (DimC + DimD), Draft);
 
-            if (Class == AIS_ATON)
-                  line.Printf(_("Size:                 %dm x %dm \n\n"), DimA, DimB);
-
-            if(Class == AIS_CLASS_B)
+            if((Class == AIS_CLASS_B) || (Class == AIS_ATON))
                   line.Printf(_("Size:                 %dm x %dm\n\n"), (DimA + DimB), (DimC + DimD));
 
             if (NavStatus != ATON_VIRTUAL)
