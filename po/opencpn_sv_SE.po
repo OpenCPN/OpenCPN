@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Version 2.4 build 523\n"
+"Project-Id-Version: Version 2.4 build 611\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:23-0400\n"
-"PO-Revision-Date: 2011-05-28 11:43+0100\n"
+"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"PO-Revision-Date: 2011-06-12 11:03+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "MIME-Version: 1.0\n"
@@ -154,14 +154,13 @@ msgstr " - "
 #
 #, c-format
 msgid " COG: %03d Deg."
-msgstr ""
+msgstr " COG: %03d°"
 #
 msgid " COG: 000 Deg."
-msgstr ""
+msgstr " COG: 000°"
 #
-#, fuzzy
 msgid " COG: Unavailable"
-msgstr "Inget sjökort tillgängligt"
+msgstr "COG: Ej tillgänglig"
 #
 msgid " ChartFile:  "
 msgstr " Sjökortsfil:  "
@@ -688,10 +687,10 @@ msgid "Could not resolve TCP/IP host '"
 msgstr "Kan inte tolka TCP/IP datornamn '"
 #
 msgid "Course UP Mode"
-msgstr "Aktivera Kurs Upp"
+msgstr "Aktivera Kurs-Upp"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr ""
+msgstr "Kurs-Upp läge, skärmuppdateringsperiod (Sek.)"
 #
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -841,8 +840,6 @@ msgstr "E&xportera alla..."
 msgid "ENC/Vector"
 msgstr "ENC/Vektor"
 #
-#
-#
 msgid "ETA"
 msgstr "ETA"
 #
@@ -855,11 +852,8 @@ msgstr "ETA:"
 msgid "ETA:                  "
 msgstr "ETA:                  "
 #
-#
-#
-#, fuzzy
 msgid "ETE"
-msgstr "ETA"
+msgstr "ETE"
 #
 msgid "ETE/Timestamp"
 msgstr "ETE/Tidmarkering"
@@ -912,9 +906,8 @@ msgstr "Exportera GPXfil"
 msgid "Extend Route"
 msgstr "Utöka Rutt"
 #
-#, fuzzy
 msgid "Extend Track"
-msgstr "Radera Spår"
+msgstr "Utöka Spår"
 #
 msgid "ExtendedTideIcon"
 msgstr "Utökad Tidvattenikon"
@@ -1007,9 +1000,9 @@ msgstr "HSC"
 msgid "HW"
 msgstr "HW"
 #
-#, fuzzy, c-format
+#, c-format
 msgid "Heading:                %03d Deg.\n"
-msgstr "Bäring:               %03d°\n"
+msgstr "Bäring:              %03d°\n"
 #
 msgid "Help"
 msgstr "Hjälp"
@@ -1031,6 +1024,13 @@ msgstr "Bärplansbåt"
 #
 msgid "I&mport GPX..."
 msgstr "&Importera GPX..."
+#
+msgid "IMO:\n"
+msgstr ""
+#
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "Typ:                  "
 #
 msgid "Icon"
 msgstr "Symbol"
@@ -1156,7 +1156,7 @@ msgid "Longitude"
 msgstr "Longitud"
 #
 msgid "Look Ahead Mode"
-msgstr "Aktivera Titta Framåt"
+msgstr "Aktivera framåtseende visning"
 #
 msgid "Lost Targets"
 msgstr "Förlorade mål"
@@ -1184,6 +1184,10 @@ msgstr "META-objekt"
 #
 msgid "MMSI"
 msgstr "MMSI"
+#
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "Typ:                  "
 #
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
@@ -1817,7 +1821,7 @@ msgid "Set Anchor Watch"
 msgstr "Aktivera ankarvakt"
 #
 msgid "Set Course Up Mode"
-msgstr "Aktivera Kurs Upp"
+msgstr "Aktivera Kurs-Upp"
 #
 msgid "Set North Up Mode"
 msgstr "Aktivera Nord Upp"
@@ -1846,9 +1850,8 @@ msgstr "Visa varningsmeny för CPA/TCPA"
 msgid "Show Chart Outlines"
 msgstr "Visa sjökortsgränser"
 #
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Waypointsymbol"
+msgstr "Visa ströminformation"
 #
 msgid "Show Currents"
 msgstr "Visa strömmar"
@@ -1886,9 +1889,8 @@ msgstr "Visa djupinformation"
 msgid "Show Status Bar"
 msgstr "Visa statusfält"
 #
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Waypointsymbol"
+msgstr "Visa tidvatteninformation"
 #
 msgid "Show Tides"
 msgstr "Visa tidvatten"
@@ -1900,7 +1902,7 @@ msgid "Show WPT names"
 msgstr "Visa Waypoint-namn"
 #
 msgid "Show layers initially"
-msgstr ""
+msgstr "Visa lager vid uppstart"
 #
 msgid "Show on chart"
 msgstr "Visa på sjökort"
@@ -1926,20 +1928,12 @@ msgstr "Förhandsgranska teckensnitt."
 msgid "Simplified"
 msgstr "Förenklad"
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
-"Storlek:              %dm x %dm \n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm \n"
-"\n"
-msgstr ""
-"Storlek:              %dm x %dm \n"
+"Storlek:              %dm x %dm\n"
 "\n"
 #
 #, c-format
@@ -2014,9 +2008,8 @@ msgstr "Fart:                 %5.2f Knop\n"
 msgid "Split Route"
 msgstr "Dela Rutt"
 #
-#, fuzzy
 msgid "Split Track"
-msgstr "Starta Spår"
+msgstr "Dela Spår"
 #
 msgid "Standard"
 msgstr "Standard"
@@ -2079,9 +2072,8 @@ msgstr "Temporär GOTO Rutt"
 msgid "Temporary MOB Route"
 msgstr "Temporär MOB Rutt"
 #
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Temporär MOB Rutt"
+msgstr "Temporärt lager"
 #
 msgid "Tender"
 msgstr "Servicefartyg"
@@ -2132,9 +2124,8 @@ msgstr "Återstående tid till destination"
 msgid "Times shown as"
 msgstr "Tid visas som"
 #
-#, fuzzy
 msgid "Timestamp"
-msgstr "ETE/Tidmarkering"
+msgstr "Tidmarkering"
 #
 msgid "To"
 msgstr "Till"
@@ -2424,92 +2415,47 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
-#
-#
-#
 #~ msgid "&Close"
 #~ msgstr "Avsluta"
-#
-#
-#
 #
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Ra&dera alla Rutter"
 #
-#
-#
-#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Ra&dera alla Spår"
-#
-#
-#
 #
 #~ msgid "&Toggle Chart"
 #~ msgstr "Växla sjökort"
 #
-#
-#
-#
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktivt Spår)"
-#
-#
-#
 #
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93-korrektion av"
 #
-#
-#
-#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93-korrektion på"
-#
-#
-#
 #
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 korrektionsinställning"
 #
-#
-#
-#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Ställ in CM93-korrektion....."
-#
-#
-#
 #
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93-korrektion på"
 #
-#
-#
-#
 #~ msgid "CallSign:  "
 #~ msgstr "Anropssignal:  "
-#
-#
-#
 #
 #~ msgid "Cell X Offset"
 #~ msgstr "Cell X-korrektion"
 #
-#
-#
-#
 #~ msgid "Cell Y Offset"
 #~ msgstr "Cell Y-korrektion"
 #
-#
-#
-#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Sjökortet går ej att läsa, kortet inaktiveras \n"
-#
-#
-#
 #
 #~ msgid ""
 #~ "Class unknown\n"
@@ -2518,14 +2464,8 @@ msgstr "wgsoy"
 #~ "Okänd klass\n"
 #~ "\n"
 #
-#
-#
-#
 #~ msgid "Class:     "
 #~ msgstr "Klass:     "
-#
-#
-#
 #
 #~ msgid ""
 #~ "Class:     B\n"
@@ -2534,128 +2474,65 @@ msgstr "wgsoy"
 #~ "Klass:     B\n"
 #~ "\n"
 #
-#
-#
-#
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Strömhastighet, Knop."
-#
-#
-#
 #
 #~ msgid "Delete All Routes..."
 #~ msgstr "Radera alla Rutter"
 #
-#
-#
-#
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                  Okänd"
-#
-#
-#
 #
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Avsluta OpenCPN"
 #
-#
-#
-#
 #~ msgid "Export...."
 #~ msgstr "Exportera...."
-#
-#
-#
 #
 #~ msgid "Failed to create ocpCursor."
 #~ msgstr "Misslyckades att skapa ocpCursor"
 #
-#
-#
-#
 #~ msgid "GPX"
 #~ msgstr "GPX"
-#
-#
-#
 #
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
-#
-#
-#
 #~ msgid "GRIB Data"
 #~ msgstr "Väderdata"
-#
-#
-#
 #
 #~ msgid "GRIB Display Control"
 #~ msgstr "Inställning för väder"
 #
-#
-#
-#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Mapp för väderfiler"
-#
-#
-#
 #
 #~ msgid "Import new layer"
 #~ msgstr "Importera nytt lager"
 #
-#
-#
-#
 #~ msgid "MarinersStandard"
 #~ msgstr "Marinstandard"
-#
-#
-#
 #
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC läser fil"
 #
-#
-#
-#
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa regndata"
-#
-#
-#
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa signifikant våghöjd"
 #
-#
-#
-#
 #~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB strömmar"
-#
-#
-#
 #
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Öka skalan eller zooma ut för att visa GRIB vattentemperatur"
 #
-#
-#
-#
 #~ msgid "PlugIn Name"
 #~ msgstr "PlugIn Namn"
 #
-#
-#
-#
 #~ msgid "Pressure, mBar"
 #~ msgstr "Barometertryck, mBar"
-#
-#
-#
 #
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
@@ -2664,98 +2541,57 @@ msgstr "wgsoy"
 #~ "Senaste rapportperiod:   %3d Sek.\n"
 #~ "\n"
 #
-#
-#
-#
 #~ msgid "Route Manager..."
 #~ msgstr "Rutthantering..."
-#
-#
-#
 #
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Vattentemperatur, C"
 #
-#
-#
-#
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Välj mapp för väderfiler"
-#
-#
-#
 #
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Skicka Rutt till GPS"
 #
-#
-#
-#
 #~ msgid "ShipName:  "
 #~ msgstr "Båtnamn:   "
-#
-#
-#
 #
 #~ msgid "Show GPX icons"
 #~ msgstr "Aktivera GPX menyer"
 #
-#
-#
-#
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Aktivera vädermeny"
-#
-#
-#
 #
 #~ msgid "Show GRIB icon"
 #~ msgstr "Aktivera vädermeny"
 #
-#
-#
-#
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Signifikant våghöjd, m"
 #
-#
-#
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Storlek:              %dm x %dm \n"
+#~ "\n"
 #
 #~ msgid "Toggle Listing"
 #~ msgstr "Växla visning"
 #
-#
-#
-#
 #~ msgid "Toggle Names"
 #~ msgstr "Växla namn"
-#
-#
-#
 #
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Använd högupplöst grafik"
 #
-#
-#
-#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
-#
-#
-#
 #
 #~ msgid "Wind Direction"
 #~ msgstr "Vindriktning"
 #
-#
-#
-#
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Vindhastighet, knop"
-#
-#
-#
 #
 #~ msgid "Övrigt"
 #~ msgstr "Etc."

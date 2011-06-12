@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.506 beta\n"
+"Project-Id-Version: OpenCPN 2.4.611 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:23-0400\n"
-"PO-Revision-Date: 2011-06-07 19:05+0100\n"
+"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"PO-Revision-Date: 2011-06-12 12:15+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "     Vectorlengte (in tijdminuten): "
 #
 #
 msgid "      Max moored target speed (Kts.):"
-msgstr "     Max. vaart ten anker liggende objecten (knopen): "
+msgstr "     Max. vaart geankerde objecten (knopen): "
 #
 #
 #
@@ -272,7 +272,7 @@ msgstr " Schip: "
 #
 #
 msgid " Soundings:  "
-msgstr " Referentievlak: "
+msgstr " Reductievlak: "
 #
 #
 #
@@ -1021,7 +1021,7 @@ msgid "Course UP Mode"
 msgstr "Koers-Boven presentatie"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr ""
+msgstr "Schermverversing bij Koers-Boven elke (seconden)"
 #
 #
 #
@@ -1166,7 +1166,7 @@ msgstr "Diepteinstellingen"
 #
 #
 msgid "Depth Settings(m)"
-msgstr "Diepteverloop (m) "
+msgstr "Dieptegrenzen (m) "
 #
 #
 #
@@ -1241,9 +1241,8 @@ msgstr "ENC/Vector"
 #
 #
 #
-#, fuzzy
 msgid "ETA"
-msgstr "ETA:"
+msgstr "ETA"
 #
 #
 #
@@ -1261,7 +1260,7 @@ msgid "ETA:                  "
 msgstr "ETA:                 "
 #
 msgid "ETE"
-msgstr ""
+msgstr "Vaartijd"
 #
 #
 #
@@ -1340,9 +1339,8 @@ msgstr "Route uitbreiden"
 #
 #
 #
-#, fuzzy
 msgid "Extend Track"
-msgstr "Track verwijderen"
+msgstr "Track uitbreiden"
 #
 msgid "ExtendedTideIcon"
 msgstr "Uitgebreid getij-icoon"
@@ -1497,6 +1495,15 @@ msgstr "draagvleugelboot"
 #
 msgid "I&mport GPX..."
 msgstr "I&mporteer GPX-bestand ..."
+#
+msgid "IMO:\n"
+msgstr ""
+#
+#
+#
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:                 "
 #
 #
 #
@@ -1710,6 +1717,12 @@ msgstr "Toon metagegevens"
 #
 msgid "MMSI"
 msgstr "MMSI"
+#
+#
+#
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:                 "
 #
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
@@ -2163,7 +2176,7 @@ msgstr "Polyconisch"
 #
 #
 msgid "Port"
-msgstr "haven"
+msgstr "bakboord"
 #
 msgid "Port Hand"
 msgstr "'bakboordszijde'"
@@ -2778,16 +2791,6 @@ msgstr ""
 #
 #, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
-"\n"
-msgstr ""
-"Grootte:                %dm x %dm \n"
-"\n"
-#
-#
-#
-#, c-format
-msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
 "\n"
 msgstr ""
@@ -2884,9 +2887,8 @@ msgstr "Route splitsen"
 #
 #
 #
-#, fuzzy
 msgid "Split Track"
-msgstr "&Start track"
+msgstr "Track splitsen"
 #
 #
 #
@@ -2902,20 +2904,20 @@ msgid "Start"
 msgstr "Start"
 #
 msgid "Stbd"
-msgstr "stbd"
+msgstr "stuurboord"
 #
 msgid "Stbd Hand"
-msgstr "'stbd zijde'"
+msgstr "'stuurboordszijde'"
 #
 #
 #
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Onderdruk waarschuwingen voor ten anker liggende en gemeerde objecten"
+msgstr "Onderdruk waarschuwingen voor geankerde en gemeerde objecten"
 #
 #
 #
 msgid "Supress anchored/moored targets"
-msgstr "Onderdruk ten anker liggende en gemeerde objecten"
+msgstr "Onderdruk geankerde en gemeerde objecten"
 #
 #
 #
@@ -3051,9 +3053,8 @@ msgstr "Tijden in "
 #
 #
 #
-#, fuzzy
 msgid "Timestamp"
-msgstr "Vaartijd/Tijdstip"
+msgstr "Tijdstip"
 #
 #
 #
@@ -3142,13 +3143,13 @@ msgid "Tug"
 msgstr "sleepboot"
 #
 msgid "Tug freighter, coupled"
-msgstr "gekoppelde sleep - vrachtschepen"
+msgstr "gekoppelde sleep-vrachtschepen"
 #
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "sleepboot assisterend"
 #
 msgid "Tug, freighter"
-msgstr "sleep vrachtschepen"
+msgstr "sleep-vrachtschip"
 #
 msgid "Tug, freighter/tanker, coupled"
 msgstr "gekoppelde sleep-sch. min. 1 SL-TS"
@@ -3160,7 +3161,7 @@ msgid "Tug, single"
 msgstr "sleepboot, losvarend"
 #
 msgid "Tug, tanker"
-msgstr "sleep, tankschip"
+msgstr "sleep-tankschip"
 #
 #
 #
@@ -3295,7 +3296,7 @@ msgid ""
 "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 "dredge"
 msgstr ""
-"vaartuig, onderhoudsvaartuig, kraanbak, kabelschip, boeienlegger, "
+"vaartuig, onderhoudsvaartuig, kraanbak, kabellegger, boeienlegger, "
 "baggervaartuig"
 #
 msgid "Virtual"
@@ -3369,7 +3370,7 @@ msgid "WiFi Options"
 msgstr "WiFi opties"
 #
 msgid "Wing In Ground Effect"
-msgstr "vaartuig grondeffect"
+msgstr "vaartuig grondeffect (WIG)"
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "     X offset (in NM; positief verplaatst kaart naar oosten):"
@@ -3447,3 +3448,13 @@ msgstr "WGS X offset"
 #
 msgid "wgsoy"
 msgstr "WGS Y offset"
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %dm x %dm \n"
+#~ "\n"

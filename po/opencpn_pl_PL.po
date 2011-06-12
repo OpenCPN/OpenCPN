@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:23-0400\n"
+"POT-Creation-Date: 2011-06-12 13:06-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -1322,6 +1322,14 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "I&mportuj GPX..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+#
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:         "
+#
 #
 msgid "Icon"
 msgstr "Ikona"
@@ -1527,6 +1535,11 @@ msgstr "META Obiekty"
 #
 msgid "MMSI"
 msgstr "MMSI"
+#
+#
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:         "
 #
 #
 msgid "M_COVR ID"
@@ -2513,15 +2526,6 @@ msgstr ""
 #
 #, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
-"\n"
-msgstr ""
-"Wymiary:        %dm x %dm \n"
-"\n"
-#
-#
-#, c-format
-msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
 "\n"
 msgstr ""
@@ -3140,8 +3144,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Wł./Wył. na mapie"
+#
 #
 #
 #
@@ -3172,8 +3178,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -3204,8 +3212,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -3234,9 +3244,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -3258,8 +3270,19 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Importuj nową warstwę"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:        %dm x %dm \n"
+#~ "\n"
+#
 #
 #
 #
@@ -3268,6 +3291,7 @@ msgstr ""
 #
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 #

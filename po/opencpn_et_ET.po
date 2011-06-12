@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:23-0400\n"
+"POT-Creation-Date: 2011-06-12 13:06-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -1796,6 +1796,16 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "&Impordi..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:                  "
+#
 # 
 # 
 # 
@@ -2063,6 +2073,13 @@ msgstr "META objektid"
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:                  "
 #
 # 
 msgid "M_COVR ID"
@@ -3385,17 +3402,6 @@ msgstr ""
 # 
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm \n"
-"\n"
-msgstr ""
-"Suurus:            %dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-# 
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
@@ -4213,6 +4219,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4221,6 +4228,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
+#
 #
 #
 #
@@ -4243,6 +4251,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4251,6 +4260,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
+#
 #
 #
 #
@@ -4273,6 +4283,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4281,6 +4292,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
+#
 #
 #
 #
@@ -4303,6 +4315,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4311,6 +4324,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -4335,6 +4349,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4347,12 +4362,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Impordi GPX fail"
+#
 #
 #
 #
@@ -4375,9 +4392,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
 #
 #
 #
@@ -4400,6 +4419,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4411,6 +4431,19 @@ msgstr ""
 #~ msgstr "Laeva nimi:"
 #
 #
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Suurus:            %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
 #
 #
 #
@@ -4420,6 +4453,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 #

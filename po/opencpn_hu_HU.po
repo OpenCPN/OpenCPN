@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:23-0400\n"
+"POT-Creation-Date: 2011-06-12 13:06-0400\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -1021,6 +1021,13 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "CPX import..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "Típus:"
+#
 msgid "Icon"
 msgstr "Kép"
 #
@@ -1175,6 +1182,10 @@ msgstr "META objektumok"
 #
 msgid "MMSI"
 msgstr "MMSI"
+#
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "Típus:"
 #
 msgid "M_COVR ID"
 msgstr ""
@@ -1919,14 +1930,6 @@ msgstr ""
 "Méret:                 %dm x %dm x ---m\n"
 "\n"
 #
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm \n"
-"\n"
-msgstr ""
-"Méret:                 %dm x %dm x ---m\n"
-"\n"
-#
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
@@ -2409,8 +2412,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
+#
 #
 #
 #
@@ -2421,8 +2426,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
+#
 #
 #
 #
@@ -2435,10 +2442,21 @@ msgstr ""
 #~ "\n"
 #
 #
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Méret:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
 #
 #
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
 #
 #
 #
