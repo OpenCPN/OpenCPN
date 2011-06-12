@@ -682,6 +682,8 @@ class ocpnToolBarSimple : public wxControl
     // the size of the toolbar bitmaps
             wxCoord m_defaultWidth, m_defaultHeight;
 
+            void        HideTooltip();
+            void        ShowTooltip(){ m_btooltip_show = true; }
 
       protected:
     // common part of all ctors
@@ -742,6 +744,7 @@ class ocpnToolBarSimple : public wxControl
 
             wxTimer                 m_tooltip_timer;
             int                     m_one_shot;
+            bool                    m_btooltip_show;
 
     // scrolling data
             int                   m_xScrollPixelsPerLine;

@@ -776,6 +776,8 @@ class ocpnFloatingToolbarDialog: public wxDialog
             bool IsToolbarShown(){ return (m_ptoolbar != 0); }
             void Realize();
             ocpnToolBarSimple *GetToolbar();
+            void Submerge();
+            void Surface();
 
             void DestroyToolBar();
             void ToggleOrientation();
@@ -1183,7 +1185,10 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 {
       m_pparent = parent;
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
-      wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(0, 0), wxSize(-1, -1), wstyle );
+#ifdef __WXOSX__
+      wstyle |= wxSTAY_ON_TOP;
+#endif
+      wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint(-1, -1), wxSize(-1, -1), wstyle );
 
       m_opacity = 255;
       m_fade_timer.SetOwner(this, FADE_TIMER);
@@ -1288,6 +1293,22 @@ void ocpnFloatingToolbarDialog::RePosition()
             wxPoint screen_pos = m_pparent->ClientToScreen(m_position);
             Move(screen_pos);
       }
+}
+
+void ocpnFloatingToolbarDialog::Submerge()
+{
+      Hide();
+      if(m_ptoolbar)
+            m_ptoolbar->HideTooltip();
+}
+
+void ocpnFloatingToolbarDialog::Surface()
+{
+      Show();
+      RePosition();
+      Show();
+      if(m_ptoolbar)
+            m_ptoolbar->ShowTooltip();
 }
 
 
@@ -4720,6 +4741,7 @@ void MyFrame::ToggleCourseUp(void)
       DoCOGSet();
       UpdateGPSCompassStatusBox(true);
       DoChartUpdate();
+      SendSizeEvent();        // This will invalidate/resize/revalidate all the cached bitmaps
       cc1->ReloadVP();
 }
 
@@ -4892,9 +4914,22 @@ int MyFrame::DoOptionsDialog()
       if(g_pnmea)
             g_pnmea->Pause();
 
+      bool b_sub = false;
+      wxRect bx_rect = pSetDlg->GetScreenRect();
+      wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+      if(tb_rect.Intersects(bx_rect))
+            b_sub = true;
+
+      if(b_sub && g_FloatingToolbarDialog)
+            g_FloatingToolbarDialog->Submerge();
 
 // And here goes the (modal) dialog
       int rr = pSetDlg->ShowModal();
+
+      if(b_sub && g_FloatingToolbarDialog)
+      {
+            g_FloatingToolbarDialog->Surface();
+      }
 
       if(rr)
       {
@@ -9169,6 +9204,7 @@ void ocpnToolBarSimple::Init()
       m_toolOutlineColour.Set(_T("BLACK"));
       m_pToolTipWin = NULL;
       m_last_ro_tool = NULL;
+      ShowTooltip();
 
 }
 
@@ -9389,6 +9425,20 @@ ocpnToolBarSimple::~ocpnToolBarSimple()
 
 }
 
+void ocpnToolBarSimple::HideTooltip()
+{
+      m_btooltip_show = false;
+
+      if(m_pToolTipWin)
+      {
+            m_pToolTipWin->Hide();
+            m_pToolTipWin->Destroy();
+            m_pToolTipWin = NULL;
+      }
+      m_tooltip_timer.Stop();
+}
+
+
 void ocpnToolBarSimple::SetColorScheme(ColorScheme cs)
 {
       if(m_pToolTipWin)
@@ -9585,7 +9635,7 @@ void ocpnToolBarSimple::OnKillFocus(wxFocusEvent& WXUNUSED(event))
 
 void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent& event)
 {
-      if(m_pToolTipWin && (!m_pToolTipWin->IsShown()))
+      if( m_btooltip_show && IsShown() && m_pToolTipWin && (!m_pToolTipWin->IsShown()))
       {
             if(m_last_ro_tool)
             {
@@ -9637,7 +9687,7 @@ void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent & event)
                   ReleaseMouse();
       }
 
-      if(tool && tool->IsButton())
+      if(tool && tool->IsButton() && IsShown())
       {
             //    ToolTips
             if(NULL == m_pToolTipWin)
