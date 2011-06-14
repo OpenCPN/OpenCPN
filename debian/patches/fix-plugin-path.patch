@@ -3,9 +3,9 @@ Description: Look for .so plugins in /usr/lib/opencpn-plugins/
 Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/pluginmanager.cpp
 ===================================================================
---- opencpn.orig/src/pluginmanager.cpp	2011-04-15 20:58:59.296628331 +1200
-+++ opencpn/src/pluginmanager.cpp	2011-04-15 20:59:16.701862358 +1200
-@@ -106,7 +106,8 @@
+--- opencpn.orig/src/pluginmanager.cpp	2011-06-15 07:31:01.063910240 +1200
++++ opencpn/src/pluginmanager.cpp	2011-06-15 08:31:00.678910033 +1200
+@@ -126,7 +126,8 @@
  
  bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
  {

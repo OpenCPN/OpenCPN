@@ -1,3 +1,9 @@
+opencpn (2.4.612-1) unstable; urgency=low
+
+  * Packaged for upstream git beta version 2.4.612
+
+ -- Hamish B <hamish_b@yahoo.com>  Wed, 15 Jun 2011 08:43:50 +1200
+
 opencpn (2.4.606-1) unstable; urgency=low
 
   * New upstream release.
