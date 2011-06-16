@@ -856,7 +856,7 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 
             SaveConfig();
             ApplyConfig();
-            SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()==0 );
+            SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()!=0 );
       }
       dialog->Destroy();
 }
@@ -907,7 +907,7 @@ void dashboard_pi::OnPaneClose( wxAuiManagerEvent& event )
                   }
             }
       }
-      SetToolbarItemState( m_toolbar_item_id, cnt==0 );
+      SetToolbarItemState( m_toolbar_item_id, cnt!=0 );
 
       event.Skip();
 }
@@ -1580,7 +1580,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
       for (size_t i = 0; i < list.GetCount(); i++)
       {
             int id = list.Item(i);
-            DashboardInstrument *instrument;
+            DashboardInstrument *instrument = NULL;
             switch (id)
             {
             case ID_DBP_I_POS:
@@ -1677,8 +1677,11 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Moon(this, wxID_ANY, getInstrumentCaption(id));
                   break;
             }
-            m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));
-            itemBoxSizer->Add(instrument, 0, wxALL, 0);
+            if(instrument)
+            {
+                   m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));
+                   itemBoxSizer->Add(instrument, 0, wxALL, 0);
+            }
       }
 }
 
