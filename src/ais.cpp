@@ -1195,7 +1195,7 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
 {
       MAKEHASHERI(8000, _("Vessel, type unknown"))
       MAKEHASHERI(8150, _("Freightbarge"))
-      MAKEHASHERI(8150, _("Tankbarge"))
+      MAKEHASHERI(8160, _("Tankbarge"))
       MAKEHASHERI(8163, _("Tankbarge, dry cargo as if liquid (e.g. cement)"))
       MAKEHASHERI(8450, _("Service vessel, police patrol, port service"))
       MAKEHASHERI(8430, _("Pushboat, single"))
