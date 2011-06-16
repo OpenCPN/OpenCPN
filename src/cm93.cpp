@@ -5160,7 +5160,7 @@ double cm93compchart::GetNormalScaleMin(double canvas_scale_factor, bool b_allow
             //Adjust overzoom factor based on  b_allow_overzoom option setting
       double oz_factor;
       if(b_allow_overzoom)
-            oz_factor = 256.;
+            oz_factor = 40.;
       else
             oz_factor = 4.;
 
@@ -5189,12 +5189,12 @@ double cm93compchart::GetNormalScaleMin(double canvas_scale_factor, bool b_allow
                   case  4: return 100000.   / oz_factor;            // D
                   case  5: return 50000.    / oz_factor;            // E
                   case  6: return 20000.    / oz_factor;            // F
-                  case  7: return 7500.     / oz_factor;            // G
-                  default: return 7500.     / oz_factor;
+                  case  7: return 500.;                             // G
+                  default: return 500.     / oz_factor;
             }
       }
       else
-            return 7500. / oz_factor;
+            return 500.;
 }
 
 double cm93compchart::GetNormalScaleMax(double canvas_scale_factor, int canvas_width)
