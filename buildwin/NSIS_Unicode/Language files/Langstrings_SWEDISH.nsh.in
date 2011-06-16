@@ -336,3 +336,7 @@ LangString Banner_Installation_Found_Plural ${LANG_SWEDISH} "Hittade $counter_tm
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_SWEDISH} "Radera konfigurationskatalogen"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"

@@ -336,3 +336,6 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_GERMAN} "Konfigurations-Ordner l√
 
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 LangString Uninstall_Folder_Name ${LANG_GERMAN} "Deinstallation"
+
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_GERMAN} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"

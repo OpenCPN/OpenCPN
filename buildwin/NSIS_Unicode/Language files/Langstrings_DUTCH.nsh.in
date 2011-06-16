@@ -336,3 +336,7 @@ LangString Banner_Installation_Found_Plural ${LANG_DUTCH} "$counter_tmp installa
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_DUTCH} "Verwijder configuratiemap"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ Versie @PACKAGE_VERSION@"

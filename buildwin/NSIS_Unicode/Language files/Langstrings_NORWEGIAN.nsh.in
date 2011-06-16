@@ -336,3 +336,7 @@ LangString Banner_Installation_Found_Plural ${LANG_NORWEGIAN} "Fant $counter_tmp
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_NORWEGIAN} "Slett konfigurasjonsmappe"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_NORWEGIAN} "@CPACK_PACKAGE_NAME@ Versjon @PACKAGE_VERSION@"

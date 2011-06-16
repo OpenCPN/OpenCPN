@@ -337,22 +337,6 @@ LangString Banner_Installation_Found_Plural ${LANG_FRENCH} "$counter_tmp install
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_FRENCH} "Supprimer le répertoire de configuration"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_FRENCH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
