@@ -2534,7 +2534,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             //    Case:  vpBBox is completely inside the chart box
             if(_IN == chart_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
             {
-                  return wxRegion(rv_rect);
+                  return wxRegion(0,0, rv_rect.width, rv_rect.height);
             }
 
             //    The ViewPort and the chart region overlap in some way....
@@ -9329,6 +9329,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         svp.pix_width = svp.rv_rect.width;
         svp.pix_height = svp.rv_rect.height;
 
+//        printf("Onpaint pix %d %d\n", VPoint.pix_width, VPoint.pix_height);
+//        printf("OnPaint rv_rect %d %d\n", VPoint.rv_rect.width, VPoint.rv_rect.height);
+
         wxRegion chart_get_region(wxRect(0,0,svp.pix_width, svp.pix_height));
 
         //  If we are going to use the cached rotated image, there is no need to fetch any chart data
@@ -9341,6 +9344,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         {
               if(m_pQuilt && !m_pQuilt->IsComposed())
                     return;
+
+              if((m_working_bm.GetWidth() != svp.pix_width) || (m_working_bm.GetHeight() != svp.pix_height))
+                    m_working_bm.Create(svp.pix_width, svp.pix_height, -1); // make sure the target is big enoug
 
               if(!g_bCourseUp)
               {
@@ -9373,7 +9379,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                                     if(dx || dy)
                                     {
                                           //  Blit the reuseable portion of the cached wxBitmap to a working bitmap
-
                                           temp_dc.SelectObject ( m_working_bm );
 
                                           wxMemoryDC cache_dc;
@@ -9449,6 +9454,8 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
             //  Save the fully rendered quilt image as a wxBitmap member of this class
                   if(b_save)
                   {
+//                        if((m_cached_chart_bm.GetWidth() != svp.pix_width) || (m_cached_chart_bm.GetHeight() != svp.pix_height))
+//                              m_cached_chart_bm.Create(svp.pix_width, svp.pix_height, -1); // target wxBitmap is big enough
                         wxMemoryDC scratch_dc_0;
                         scratch_dc_0.SelectObject ( m_cached_chart_bm);
                         scratch_dc_0.Blit ( 0, 0, svp.pix_width, svp.pix_height, &temp_dc, 0, 0  );
@@ -9461,7 +9468,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
             else            // quilted, course-up
             {
-                  m_working_bm.Create(svp.pix_width, svp.pix_height, -1);         // make sure the target wxBitmap is big enough
                   temp_dc.SelectObject ( m_working_bm );
                   wxRegion chart_get_all_region(wxRect(0,0,svp.pix_width, svp.pix_height));
                   m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_all_region );
