@@ -5,8 +5,10 @@ Maintainer: Debian GIS Project <debian-gis@lists.debian.org>
 Uploaders: Anton Martchukov <anton@martchukov.com>, Hamish Bowman <hamish_b@yahoo.com>
 Build-Depends: debhelper (>= 7.0.50~), cmake, libglu-dev, libwxbase2.8-dev,
    libwxgtk2.8-dev, libgtk2.0-dev, zlib1g-dev, libbz2-dev, libgps-dev
-Standards-Version: 3.8.4
+Standards-Version: 3.9.2
 Homepage: http://www.opencpn.org/
+Vcs-Svn: svn://svn.debian.org/svn/pkg-grass/packages/opencpn/trunk/?rev=0&sc=0
+Vcs-Browser: http://svn.debian.org/viewsvn/pkg-grass/packages/opencpn/trunk/debian/
 
 Package: opencpn
 Architecture: any
