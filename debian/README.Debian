@@ -1,0 +1,8 @@
+User-visible differences from upstream:
+
+ - The plugins directory is moved to /usr/lib/opencpn-plugins/
+ - Xtide's higher-resolution vector shoreline is used for the default backdrop.
+
+
+--
+HB 17 June 2011
