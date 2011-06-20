@@ -151,7 +151,7 @@ typedef
                      unsigned char reserved6;
                      unsigned char reserved7;
                      unsigned char datasz[4];
-                     unsigned char databuf[1]; /* actually a variable length array... */
+                     unsigned char databuf[5]; /* actually a variable length array... */
                      } gusb_pkt;
                      unsigned char dbuf[1024];
               } garmin_usb_packet;
