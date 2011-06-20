@@ -129,14 +129,9 @@ extern PlugInManager    *g_pi_manager;
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
 static      GenericPosDat     AISPositionData;
+extern ComPortManager   *g_pCommMan;
 
-//-------------------------------------------------------------------------------------------------------------
-//    OCP_AIS_Thread Static data store
-//-------------------------------------------------------------------------------------------------------------
 
-//extern char                         rx_share_buffer[];
-//extern unsigned int                 rx_share_buffer_length;
-//extern ENUM_BUFFER_STATE            rx_share_buffer_state;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -677,6 +672,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       result.Append(line);
 
       int brg = (int)wxRound(Brg);
+      if(Brg > 359.5)
+            brg = 0;
       if(b_positionValid && bGPSValid && (Brg >= 0.))
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
@@ -2399,7 +2396,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
                   wxString msg(AIS_data_ip);
                   msg.Prepend(_("Could not resolve TCP/IP host '"));
                   msg.Append(_("'\n Suggestion: Try 'xxx.xxx.xxx.xxx' notation"));
-                  wxMessageDialog md(pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  OCPNMessageDialog md(pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
 
                   m_sock->Notify(FALSE);
@@ -2445,7 +2442,7 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
                   wxString msg(mcomx);
                   msg.Prepend(_("  Could not open AIS serial port '"));
                   msg.Append(_("'\nSuggestion: Try closing other applications."));
-                  wxMessageDialog md(pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  OCPNMessageDialog md(pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
 
                   return AIS_NO_SERIAL;
@@ -2455,6 +2452,11 @@ AIS_Error AIS_Decoder::OpenDataSource(wxFrame *pParent, const wxString& AISDataS
                   CloseHandle(m_hSerialComm);
 
 //    Kick off the AIS RX thread
+            //    Kick off the NMEA RX thread
+//            m_pSecondary_Thread = new OCP_NMEA_Thread(this, frame, pMutex, m_pPortMutex, comx, g_pCommMan, strBaudRate);
+//            m_Thread_run_flag = 1;
+//            pAIS_Thread->Run();
+
             pAIS_Thread = new OCP_AIS_Thread(this, comx);
             m_Thread_run_flag = 1;
             pAIS_Thread->Run();
@@ -3345,7 +3347,8 @@ void *OCP_AIS_Thread::Entry()
       if (osReader.hEvent == NULL)
             goto fail_point;                                     // Error creating overlapped event; abort.
 
-
+///
+///
 //    The main loop
       not_done = true;
 
@@ -3354,10 +3357,48 @@ void *OCP_AIS_Thread::Entry()
             if(TestDestroy())
                   not_done = false;                                     // smooth exit
 
+            //    Was port closed due to error condition?
+            while(!m_hSerialComm)
+            {
+                  if(TestDestroy())
+                        goto fail_point;                               // smooth exit
+
+                  int fd;
+                  if ((fd = g_pCommMan->OpenComPort(*m_pPortName, 38400)) > 0)
+                  {
+                        m_hSerialComm = (HANDLE)fd;
+                  }
+                  else
+                  {
+                        m_hSerialComm = NULL;
+                        wxThread::Sleep(2000);                        // stall for a bit
+                  }
+
+            }
+
             if (!fWaitingOnRead)
             {
                         // Issue read operation.
                 if (!ReadFile(m_hSerialComm, buf, READ_LEN_REQUEST, &dwRead, &osReader))
+                {
+                      dwError = GetLastError();
+                      if (dwError != ERROR_IO_PENDING)     // retry port on all unknown errors
+                      {
+                            g_pCommMan->CloseComPort((int)m_hSerialComm);
+                            m_hSerialComm = NULL;
+                            dwRead = 0;
+                            fWaitingOnRead = FALSE;
+                      }
+                      else                              // read delayed
+                            fWaitingOnRead = TRUE;
+                }
+                else
+                {      // read completed immediately
+                      HandleRead(buf, dwRead);                         // read completed immediately
+                      fWaitingOnRead = FALSE;
+                }
+            }
+/*
                 {
                     dwError = GetLastError();
 
@@ -3372,9 +3413,44 @@ void *OCP_AIS_Thread::Entry()
                 else
                       HandleRead(buf, dwRead);                         // read completed immediately
             }
+*/
+
+                if (fWaitingOnRead)
+                {
+                  //    Loop forever, checking for thread exit request
+                      while(fWaitingOnRead)
+                      {
+                            if(TestDestroy())
+                                  goto fail_point;                               // smooth exit
 
 
+                            dwRes = WaitForSingleObject(osReader.hEvent, READ_TIMEOUT);
+                            switch(dwRes)
+                            {
+                                  case WAIT_OBJECT_0:
+                                        if (!GetOverlappedResult(m_hSerialComm, &osReader, &dwRead, FALSE))
+                                        {
+                                              g_pCommMan->CloseComPort((int)m_hSerialComm);
+                                              m_hSerialComm = NULL;
+                                              dwRead = 0;
+                                              fWaitingOnRead = FALSE;
+                                        }
+                                        else
+                                        {
+                                              if(dwRead)
+                                                    HandleRead(buf, dwRead);                   // Read completed successfully.
+                                              fWaitingOnRead = FALSE;
+                                        }
+                                        break;
 
+
+                                  default:
+                                        break;
+                            }     // switch
+                      }           // while
+                }                 // if
+
+/*
             if (fWaitingOnRead)
             {
                 dwRes = WaitForSingleObject(osReader.hEvent, READ_TIMEOUT);
@@ -3408,6 +3484,8 @@ void *OCP_AIS_Thread::Entry()
                           break;
                 }                   // switch
             }                       // if
+
+*/
       }                 // big while
 
 
@@ -3793,7 +3871,13 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                   case tlBRG:
                   {
                         if(pAISTarget->b_positionValid && bGPSValid && (pAISTarget->Brg >= 0.))
-                              ret.Printf(_T("%5.0f"), pAISTarget->Brg);
+                        {
+                              int brg = (int)wxRound(pAISTarget->Brg);
+                              if(pAISTarget->Brg > 359.5)
+                                    brg = 0;
+
+                              ret.Printf(_T("%03d"), brg);
+                        }
                         else
                              ret = _("-");
                         break;
