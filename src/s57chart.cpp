@@ -64,8 +64,6 @@
 #endif
 
 
-CPL_CVSID("$Id: s57chart.cpp,v 1.61 2010/06/24 01:48:02 bdbcat Exp $");
-
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 
 
@@ -86,6 +84,8 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
+
+extern wxProgressDialog *s_ProgDialog;
 
 static jmp_buf env_ogrf;                    // the context saved by setjmp();
 
@@ -109,7 +109,6 @@ WX_DEFINE_OBJARRAY(ArrayOfVC_Elements);
 static int              s_bInS57;         // Exclusion flag to prvent recursion in this class init call.
                                           // Init() is not reentrant due to static wxProgressDialog callback....
 
-wxProgressDialog *s_ProgDialog;
 int s_cnt;
 
 static bool s_ProgressCallBack(void)
@@ -3813,11 +3812,10 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
     Title.append(SENCfile.GetFullPath());
 
 
-//    wxProgressDialog    *SENC_prog;
     s_ProgDialog = new wxProgressDialog(  Title, Message, m_nGeoRecords, NULL,
                                        wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
                                        wxPD_ESTIMATED_TIME |
-                                       wxPD_REMAINING_TIME  | wxPD_SMOOTH);
+                                       wxPD_REMAINING_TIME  | wxPD_SMOOTH | wxSTAY_ON_TOP);
 
 
 
@@ -4079,6 +4077,7 @@ abort_point:
 //    VSIFClose( s_fpdebug);
 
     delete s_ProgDialog;
+    s_ProgDialog = NULL;
 
     fclose(fps57);
 
@@ -4135,7 +4134,7 @@ abort_point:
 */
 
        if(bbad_update)
-             wxMessageBox(_T("Errors encountered processing ENC update file(s).\nENC features may be incomplete or inaccurate."),
+             OCPNMessageBox(_T("Errors encountered processing ENC update file(s).\nENC features may be incomplete or inaccurate."),
                           _T("OpenCPN Create SENC"), wxOK | wxICON_EXCLAMATION);
 
       return ret_code;
