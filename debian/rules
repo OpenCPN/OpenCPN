@@ -8,7 +8,7 @@
 #  logic be made to happen here?
 # Specifically, -O3's function inlining is desired.
 CFLAGS=-Wall
-CXXFLAGS=-Wall
+CXXFLAGS=-Wall -O3
 
 %:
 	dh  $@
