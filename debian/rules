@@ -3,6 +3,12 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+# Optimization and debugging flags are added in CMakeLists.txt. To support
+#  DEB_BUILD_OPTIONS's noopt perhaps that should be patched away and that
+#  logic be made to happen here?
+# Specifically, -O3's function inlining is desired.
+CFLAGS=-Wall
+CXXFLAGS=-Wall
 
 %:
 	dh  $@
@@ -26,3 +32,9 @@ override_dh_install:
 	#READMEs already installed to the opencpn-data/docs dir
 	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README.bells
 	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/tcdata/README.harmonics
+
+override_dh_installdocs:
+	dh_installdocs
+	rm -rf $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/css/
+	rm -rf $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/js/
+
