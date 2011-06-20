@@ -89,8 +89,6 @@
 #include "ogr_geometry.h"
 #include "ogr_p.h"
 
-CPL_CVSID("$Id: ogrlinearring.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $");
-
 /************************************************************************/
 /*                           OGRLinearRing()                            */
 /************************************************************************/
@@ -137,7 +135,7 @@ OGRLinearRing::OGRLinearRing( OGRLinearRing * poSrcRing )
 /*                          getGeometryName()                           */
 /************************************************************************/
 
-const char * OGRLinearRing::getGeometryName() const 
+const char * OGRLinearRing::getGeometryName() const
 
 {
     return "LINEARRING";
@@ -161,7 +159,7 @@ int OGRLinearRing::WkbSize() const
 /*      Disable method for this class.                                  */
 /************************************************************************/
 
-OGRErr OGRLinearRing::importFromWkb( unsigned char *pabyData, int nSize ) 
+OGRErr OGRLinearRing::importFromWkb( unsigned char *pabyData, int nSize )
 
 {
     (void) pabyData;
@@ -176,7 +174,7 @@ OGRErr OGRLinearRing::importFromWkb( unsigned char *pabyData, int nSize )
 /*      Disable method for this class.                                  */
 /************************************************************************/
 
-OGRErr OGRLinearRing::exportToWkb( OGRwkbByteOrder eByteOrder, 
+OGRErr OGRLinearRing::exportToWkb( OGRwkbByteOrder eByteOrder,
                                    unsigned char * pabyData ) const
 
 {
@@ -193,9 +191,9 @@ OGRErr OGRLinearRing::exportToWkb( OGRwkbByteOrder eByteOrder,
 /*      method!                                                         */
 /************************************************************************/
 
-OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D, 
+OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
                                       unsigned char * pabyData,
-                                      int nBytesAvailable ) 
+                                      int nBytesAvailable )
 
 {
     if( nBytesAvailable < 4 && nBytesAvailable != -1 )
@@ -205,9 +203,9 @@ OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
 /*      Get the vertex count.                                           */
 /* -------------------------------------------------------------------- */
     int         nNewNumPoints;
-    
+
     memcpy( &nNewNumPoints, pabyData, 4 );
-    
+
     if( OGR_SWAP( eByteOrder ) )
         nNewNumPoints = CPL_SWAP32(nNewNumPoints);
 
@@ -217,7 +215,7 @@ OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
         Make3D();
     else
         Make2D();
-    
+
 /* -------------------------------------------------------------------- */
 /*      Get the vertices                                                */
 /* -------------------------------------------------------------------- */
@@ -234,7 +232,7 @@ OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
             memcpy( padfZ + i, pabyData + 4 + 24 * i + 16, 8 );
         }
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Byte swap if needed.                                            */
 /* -------------------------------------------------------------------- */
@@ -291,7 +289,7 @@ OGRErr  OGRLinearRing::_exportToWkb( OGRwkbByteOrder eByteOrder, int b3D,
     }
     else
     {
-        nWords = 2 * nPointCount; 
+        nWords = 2 * nPointCount;
         memcpy( pabyData+4, paoPoints, 16 * nPointCount );
     }
 
@@ -310,7 +308,7 @@ OGRErr  OGRLinearRing::_exportToWkb( OGRwkbByteOrder eByteOrder, int b3D,
             CPL_SWAPDOUBLE( pabyData + 4 + 8 * i );
         }
     }
-    
+
     return OGRERR_NONE;
 }
 

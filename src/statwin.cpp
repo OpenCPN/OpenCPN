@@ -72,8 +72,6 @@
 extern ChartDB          *ChartData;
 //extern ChartStack       *pCurrentStack;
 
-CPL_CVSID("$Id: statwin.cpp,v 1.24 2010/06/13 21:05:49 bdbcat Exp $");
-
 //------------------------------------------------------------------------------
 //    StatWin Implementation
 //------------------------------------------------------------------------------

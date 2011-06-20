@@ -107,8 +107,6 @@
 
 #endif
 
-CPL_CVSID("$Id: mygeom.cpp,v 1.20 2010/06/11 16:10:08 bdbcat Exp $");
-
 //------------------------------------------------------------------------------
 //          Some local definitions for opengl/glu types,
 //            just enough to build the glu tesselator option.

@@ -28,7 +28,7 @@
  * TODO:
  *  - add some assertions to ensure that arguments are widely legal.  For
  *    instance validation of access strings to fopen().
- * 
+ *
  * $Log: cpl_vsisimple.cpp,v $
  * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
  * Initial import as opencpn, GNU Automake compliant.
@@ -91,8 +91,6 @@
 
 #include "cpl_vsi.h"
 #include "cpl_error.h"
-
-CPL_CVSID("$Id: cpl_vsisimple.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
 
 /* for stat() */
 
@@ -158,7 +156,7 @@ int VSIFSeek( FILE * fp, long nOffset, int nWhence )
     {
         VSIDebug3( "VSIFSeek(%p,%d,%d-Unknown)", fp, nOffset, nWhence );
     }
-#endif 
+#endif
 
     return( fseek( fp, nOffset, nWhence ) );
 }
@@ -195,7 +193,7 @@ size_t VSIFRead( void * pBuffer, size_t nSize, size_t nCount, FILE * fp )
 {
     size_t nResult = fread( pBuffer, nSize, nCount, fp );
 
-    VSIDebug3( "VSIFRead(%p,%ld) = %ld", 
+    VSIDebug3( "VSIFRead(%p,%ld) = %ld",
                fp, (long) nSize * nCount, (long) nResult * nSize );
 
     return nResult;
@@ -210,7 +208,7 @@ size_t VSIFWrite( void * pBuffer, size_t nSize, size_t nCount, FILE * fp )
 {
     size_t nResult = fwrite( pBuffer, nSize, nCount, fp );
 
-    VSIDebug3( "VSIFWrite(%p,%ld) = %ld", 
+    VSIDebug3( "VSIFWrite(%p,%ld) = %ld",
                fp, (long) nSize * nCount, (long) nResult );
 
     return nResult;
@@ -418,7 +416,7 @@ unsigned long VSITime( unsigned long * pnTimeToSet )
 
 {
     time_t tTime;
-        
+
     tTime = time( NULL );
 
     if( pnTimeToSet != NULL )

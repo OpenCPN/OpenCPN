@@ -59,8 +59,6 @@ extern s52plib          *ps52plib;
 void DrawWuLine ( wxDC *pDC, int X0, int Y0, int X1, int Y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr ( S57Obj *obj, const char *AttrName, double &val );
 
-CPL_CVSID ( "$Id: s52plib.cpp,v 1.52 2010/06/13 21:05:43 bdbcat Exp $" );
-
 
 //    Implement the Bounding Box list
 #include <wx/listimpl.cpp>

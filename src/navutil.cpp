@@ -66,8 +66,6 @@
 #include "cm93.h"
 #endif
 
-CPL_CVSID ( "$Id: navutil.cpp,v 1.77 2010/06/25 02:04:23 bdbcat Exp $" );
-
 //    Statics
 
 extern ChartCanvas      *cc1;
@@ -1240,7 +1238,7 @@ bool RoutePoint::SendToGPS ( wxString& com_name, wxGauge *pProgress )
       else
             msg = _("Error on Waypoint Upload.  Please check logfiles...");
 
-      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
+      OCPNMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
       return result;
 }
@@ -2220,7 +2218,7 @@ bool Route::SendToGPS ( wxString& com_name, bool bsend_waypoints, wxGauge *pProg
       else
             msg = _("Error on Route Upload.  Please check logfiles...");
 
-      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
+      OCPNMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
       return result;
 }
@@ -4245,7 +4243,7 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return false;
@@ -4292,7 +4290,7 @@ bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return false;
@@ -4333,7 +4331,7 @@ void MyConfig::ExportGPX ( wxWindow* parent )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return;

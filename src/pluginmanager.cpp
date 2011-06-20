@@ -136,7 +136,11 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
 #ifdef __WXMSW__
       wxString pispec = _T("*_pi.dll");
 #else
+#ifdef __WXOSX__
+      wxString pispec = _T("*_pi.dylib");
+#else
       wxString pispec = _T("*_pi.so");
+#endif
 #endif
 
       if(pi_dir.IsOpened())

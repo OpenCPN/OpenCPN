@@ -222,7 +222,7 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
       //            msg.Printf(_T("getDaylightEvent lat=%f lon=%f\n riset=%d rsalt=%f\n y=%d m=%d d=%d\n sun=%f lt=%f\n ut=%f\n"),
 					 // lat, lon, +1, rsalt, y, m, d, sunrise, lt, ut);
 				  //msg.Append(utcDateTime.Format());
-      //            wxMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
+      //            OCPNMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
       //            md1.ShowModal();
 
 			if (fabs(lt-sunrise)<0.15) return(SUNRISE);
@@ -329,7 +329,12 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
       wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
 */
-      Create(parent, id, caption, pos, size, style);
+      long wstyle = style;
+#ifdef __WXOSX__
+      wstyle |= wxSTAY_ON_TOP;
+#endif
+
+      Create(parent, id, caption, pos, size, wstyle);
       GetSizer()->SetSizeHints(this);
       Centre();
 }
@@ -564,7 +569,6 @@ RouteProp::~RouteProp( )
 
     delete m_wpList;
 }
-
 
 /*!
  * RouteProp creator
@@ -1579,6 +1583,9 @@ MarkProp::MarkProp(  wxWindow* parent, wxWindowID id,
       SetLayoutAdaptationLevel(2);
 
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
+#ifdef __WXOSX__
+      wstyle |= wxSTAY_ON_TOP;
+#endif
 
 #if wxCHECK_VERSION(2, 9, 0)
       wxDialog::Create( parent, id, caption, pos, size,wstyle );
@@ -1589,7 +1596,6 @@ MarkProp::MarkProp(  wxWindow* parent, wxWindowID id,
       CreateControls();
       GetSizer()->SetSizeHints(this);
       Centre();
-
 }
 
 MarkProp::~MarkProp( )

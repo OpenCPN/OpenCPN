@@ -131,8 +131,6 @@
 #include "cpl_string.h"
 #include <ctype.h>
 
-CPL_CVSID("$Id: gdal_misc.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                           __pure_virtual()                           */
 /*                                                                      */

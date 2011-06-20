@@ -57,8 +57,6 @@
 #include "iso8211.h"
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: ddfutils.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                             DDFScanInt()                             */
 /*                                                                      */
@@ -91,7 +89,7 @@ int DDFScanVariable( const char *pszRecord, int nMaxChars, int nDelimChar )
 
 {
     int         i;
-    
+
     for( i = 0; i < nMaxChars-1 && pszRecord[i] != nDelimChar; i++ ) {}
 
     return i;

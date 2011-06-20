@@ -151,8 +151,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: cpl_conv.cpp,v 1.2 2008/04/10 01:09:45 bdbcat Exp $");
-
 static char **papszConfigOptions = NULL;
 
 /************************************************************************/
@@ -183,7 +181,7 @@ void *CPLCalloc( size_t nCount, size_t nSize )
 
     if( nSize * nCount == 0 )
         return NULL;
-    
+
     pReturn = VSICalloc( nCount, nSize );
     if( pReturn == NULL )
     {
@@ -223,7 +221,7 @@ void *CPLMalloc( size_t nSize )
 
     if( nSize == 0 )
         return NULL;
-    
+
     pReturn = VSIMalloc( nSize );
     if( pReturn == NULL )
     {
@@ -274,7 +272,7 @@ void * CPLRealloc( void * pData, size_t nNewSize )
         pReturn = VSIMalloc( nNewSize );
     else
         pReturn = VSIRealloc( pData, nNewSize );
-    
+
     if( pReturn == NULL )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
@@ -316,15 +314,15 @@ char *CPLStrdup( const char * pszString )
         pszString = "";
 
     pszReturn = VSIStrdup( pszString );
-        
+
     if( pszReturn == NULL )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
                   "CPLStrdup(): Out of memory allocating %d bytes.\n",
                   strlen(pszString) );
-        
+
     }
-    
+
     return( pszReturn );
 }
 
@@ -370,7 +368,7 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
     nOriginalOffset = VSIFTell( fp );
     if( VSIFGets( pszBuffer, nBufferSize, fp ) == NULL )
         return NULL;
-    
+
     nActuallyRead = strlen(pszBuffer);
     if ( nActuallyRead == 0 )
 	return NULL;
@@ -379,13 +377,13 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 /*      Trim off \n, \r or \r\n if it appears at the end.  We don't     */
 /*      need to do any "seeking" since we want the newline eaten.       */
 /* -------------------------------------------------------------------- */
-    if( nActuallyRead > 1 
-        && pszBuffer[nActuallyRead-1] == 10 
+    if( nActuallyRead > 1
+        && pszBuffer[nActuallyRead-1] == 10
         && pszBuffer[nActuallyRead-2] == 13 )
     {
         pszBuffer[nActuallyRead-2] = '\0';
     }
-    else if( pszBuffer[nActuallyRead-1] == 10 
+    else if( pszBuffer[nActuallyRead-1] == 10
              || pszBuffer[nActuallyRead-1] == 13 )
     {
         pszBuffer[nActuallyRead-1] = '\0';
@@ -397,23 +395,23 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 /*      and seek back.                                                  */
 /* -------------------------------------------------------------------- */
     char *pszExtraNewline = strchr( pszBuffer, 13 );
-    
+
     if( pszExtraNewline != NULL )
     {
         int chCheck;
 
         nActuallyRead = pszExtraNewline - pszBuffer + 1;
-        
+
         *pszExtraNewline = '\0';
         VSIFSeek( fp, nOriginalOffset + nActuallyRead - 1, SEEK_SET );
 
-        /* 
+        /*
          * This hackery is necessary to try and find our correct
-         * spot on win32 systems with text mode line translation going 
+         * spot on win32 systems with text mode line translation going
          * on.  Sometimes the fseek back overshoots, but it doesn't
          * "realize it" till a character has been read. Try to read till
-         * we get to the right spot and get our CR. 
-         */ 
+         * we get to the right spot and get our CR.
+         */
         chCheck = fgetc( fp );
         while( (chCheck != 13 && chCheck != EOF)
                || VSIFTell(fp) < nOriginalOffset + nActuallyRead )
@@ -438,18 +436,18 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 
 /**
  * Simplified line reading from text file.
- * 
+ *
  * Read a line of text from the given file handle, taking care
  * to capture CR and/or LF and strip off ... equivelent of
  * DKReadLine().  Pointer to an internal buffer is returned.
  * The application shouldn't free it, or depend on it's value
  * past the next call to CPLReadLine().
- * 
+ *
  * Note that CPLReadLine() uses VSIFGets(), so any hooking of VSI file
  * services should apply to CPLReadLine() as well.
  *
- * CPLReadLine() maintains an internal buffer, which will appear as a 
- * single block memory leak in some circumstances.  CPLReadLine() may 
+ * CPLReadLine() maintains an internal buffer, which will appear as a
+ * single block memory leak in some circumstances.  CPLReadLine() may
  * be called with a NULL FILE * at any time to free this working buffer.
  *
  * @param fp file pointer opened with VSIFOpen().
@@ -538,7 +536,7 @@ const char *CPLReadLine( FILE * fp )
  *
  * @param bNormalize If TRUE, replace ':' symbol with the '_'. It is needed if
  * resulting string will be used in CPL dictionaries.
- * 
+ *
  * @return Pointer to the resulting string buffer. Caller responsible to free
  * this buffer with CPLFree().
  */
@@ -595,7 +593,7 @@ char *CPLScanString( char *pszString, int nMaxLength,
  * @param nMaxLength The maximum number of character to consider as part
  * of the number. Less characters will be considered if a null character
  * is encountered.
- * 
+ *
  * @return Long value, converted from its ASCII form.
  */
 
@@ -633,7 +631,7 @@ long CPLScanLong( char *pszString, int nMaxLength )
  * @param nMaxLength The maximum number of character to consider as part
  * of the number. Less characters will be considered if a null character
  * is encountered.
- * 
+ *
  * @param pszLocale Pointer to a character string containing locale name
  * ("C", "POSIX", "us_US", "ru_RU.KOI8-R" etc.). If NULL, we will not
  * manipulate with locale settings and current process locale will be used for
@@ -703,10 +701,10 @@ double CPLScanDouble( char *pszString, int nMaxLength, char *pszLocale )
  * large enough to hold the resulting string.
  *
  * @param pszDest Pointer to the source buffer.
- * 
+ *
  * @param nMaxLen Maximum length of the resulting string. If string length
  * is greater than nMaxLen, it will be truncated.
- * 
+ *
  * @return Pointer to the destination string pszDest.
  */
 
@@ -746,10 +744,10 @@ char *CPLPrintString( char *pszDest, const char *pszSrc, int nMaxLen )
  * large enough to hold the resulting string.
  *
  * @param pszDest Pointer to the source buffer.
- * 
+ *
  * @param nMaxLen Maximum length of the resulting string. If string length
  * is greater than nMaxLen, it will be truncated.
- * 
+ *
  * @return Pointer to the destination string pszDest.
  */
 
@@ -791,10 +789,10 @@ char *CPLPrintStringFill( char *pszDest, const char *pszSrc, int nMaxLen )
  * not be NULL-terminated, so user should do this himself, if needed.
  *
  * @param iValue Numerical value to print.
- * 
+ *
  * @param nMaxLen Maximum length of the resulting string. If string length
  * is greater than nMaxLen, it will be truncated.
- * 
+ *
  * @return Pointer to the destination string buffer.
  */
 
@@ -830,10 +828,10 @@ char *CPLPrintInt32( char *pszBuffer, GInt32 iValue, int nMaxLen )
  * not be NULL-terminated, so user should do this himself, if needed.
  *
  * @param iValue Numerical value to print.
- * 
+ *
  * @param nMaxLen Maximum length of the resulting string. If string length
  * is greater than nMaxLen, it will be truncated.
- * 
+ *
  * @return Pointer to the destination string buffer.
  */
 
@@ -874,7 +872,7 @@ char *CPLPrintUIntBig( char *pszBuffer, GUIntBig iValue, int nMaxLen )
  * @param Format specifier (for example, "%16.9E").
  *
  * @param dfValue Numerical value to print.
- * 
+ *
  * @param pszLocale Pointer to a character string containing locale name
  * ("C", "POSIX", "us_US", "ru_RU.KOI8-R" etc.). If NULL we will not
  * manipulate with locale settings and current process locale will be used for
@@ -941,19 +939,19 @@ char *CPLPrintDouble( char *pszBuffer, const char *pszFormat,
 /**
  * Print specified time value accordingly to the format options and
  * specified locale name. This function does following:
- * 
+ *
  *  - if locale parameter is not NULL, the current locale setting will be
  *  stored and replaced with the specified one;
  *  - format time value with the strftime(3) function;
  *  - restore back current locale, if was saved.
- * 
+ *
  * @param pszBuffer Pointer to the destination string buffer. Should be
  * large enough to hold the resulting string. Note, that the string will
  * not be NULL-terminated, so user should do this himself, if needed.
  *
  * @param nMaxLen Maximum length of the resulting string. If string length is
  * greater than nMaxLen, it will be truncated.
- * 
+ *
  * @param pszFormat Controls the output format. Options are the same as
  * for strftime(3) function.
  *
@@ -987,7 +985,7 @@ char *CPLPrintTime( char *pszBuffer, int nMaxLen, const char *pszFormat,
         setlocale(LC_ALL, pszLocale );
     }
 #endif
-    
+
     if ( !strftime( pszTemp, nMaxLen + 1, pszFormat, poBrokenTime ) )
         memset( pszTemp, 0, nMaxLen + 1);
 
@@ -1019,8 +1017,8 @@ void CPLVerifyConfiguration()
     CPLAssert( sizeof(GByte) == 1 );
 
     if( sizeof(GInt32) != 4 )
-        CPLError( CE_Fatal, CPLE_AppDefined, 
-                  "sizeof(GInt32) == %d ... yow!\n", 
+        CPLError( CE_Fatal, CPLE_AppDefined,
+                  "sizeof(GInt32) == %d ... yow!\n",
                   sizeof(GInt32) );
 
 /* -------------------------------------------------------------------- */
@@ -1035,8 +1033,8 @@ void CPLVerifyConfiguration()
 #endif
 #ifdef CPL_MSB
     if( ((GByte *) &nTest)[3] != 1 )
-#endif    
-        CPLError( CE_Fatal, CPLE_AppDefined, 
+#endif
+        CPLError( CE_Fatal, CPLE_AppDefined,
                   "CPLVerifyConfiguration(): byte order set wrong.\n" );
 }
 
@@ -1065,7 +1063,7 @@ const char *CPLGetConfigOption( const char *pszKey, const char *pszDefault )
 void CPLSetConfigOption( const char *pszKey, const char *pszValue )
 
 {
-    papszConfigOptions = 
+    papszConfigOptions =
         CSLSetNameValue( papszConfigOptions, pszKey, pszValue );
 }
 
@@ -1093,7 +1091,7 @@ int CPLStat( const char *pszPath, VSIStatBuf *psStatBuf )
     if( strlen(pszPath) == 2 && pszPath[1] == ':' )
     {
         char    szAltPath[11];
-        
+
         strncpy( szAltPath, pszPath, 10 );
         szAltPath[10] = '\0';
         strcat( szAltPath, "\\" );
@@ -1107,7 +1105,7 @@ int CPLStat( const char *pszPath, VSIStatBuf *psStatBuf )
 /*                            proj_strtod()                             */
 /************************************************************************/
 static double
-proj_strtod(char *nptr, char **endptr) 
+proj_strtod(char *nptr, char **endptr)
 
 {
     char c, *cp = nptr;
@@ -1217,7 +1215,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
     char        szFormat[30];
     static char szBuffer[50];
     const char  *pszHemisphere;
-    
+
     dfEpsilon = (0.5/3600.0) * pow(0.1,nPrecision);
 
     dfABSAngle = ABS(dfAngle) + dfEpsilon;
@@ -1250,7 +1248,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
 
 /**
  * Convert a packed DMS value (DDDMMMSSS.SS) into decimal degrees.
- * 
+ *
  * This function converts a packed DMS angle to seconds. The standard
  * packed DMS format is:
  *
@@ -1260,7 +1258,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
  *              deg = 120
  *              min = 25
  *              sec = 45.25
- * 
+ *
  * The algorithm used for the conversion is as follows:
  *
  * 1.  The absolute value of the angle is used.
@@ -1288,7 +1286,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
  * @param dfPacked Angle in packed DMS format.
  *
  * @return Angle in decimal degrees.
- * 
+ *
  */
 
 double CPLPackedDMSToDec( double dfPacked )
@@ -1296,7 +1294,7 @@ double CPLPackedDMSToDec( double dfPacked )
     double  dfDegrees, dfMinutes, dfSeconds, dfSign;
 
     dfSign = ( dfPacked < 0.0 )? -1 : 1;
-        
+
     dfSeconds = ABS( dfPacked );
     dfDegrees = floor(dfSeconds / 1000000.0);
     dfSeconds = dfSeconds - dfDegrees * 1000000.0;
@@ -1313,7 +1311,7 @@ double CPLPackedDMSToDec( double dfPacked )
 /************************************************************************/
 /**
  * Convert decimal degrees into packed DMS value (DDDMMMSSS.SS).
- * 
+ *
  * This function converts a value, specified in decimal degrees into
  * packed DMS angle. The standard packed DMS format is:
  *
@@ -1324,7 +1322,7 @@ double CPLPackedDMSToDec( double dfPacked )
  * @param dfDec Angle in decimal degrees.
  *
  * @return Angle in packed DMS format.
- * 
+ *
  */
 
 double CPLDecToPackedDMS( double dfDec )
@@ -1345,7 +1343,7 @@ double CPLDecToPackedDMS( double dfDec )
 /*                         CPLStringToComplex()                         */
 /************************************************************************/
 
-void CPL_DLL CPLStringToComplex( const char *pszString, 
+void CPL_DLL CPLStringToComplex( const char *pszString,
                                  double *pdfReal, double *pdfImag )
 
 {

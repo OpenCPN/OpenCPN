@@ -77,8 +77,6 @@
 #include "ogr_geometry.h"
 #include "ogr_p.h"
 
-CPL_CVSID("$Id: ogrmultipolygon.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                          OGRMultiPolygon()                           */
 /************************************************************************/
@@ -117,7 +115,7 @@ const char * OGRMultiPolygon::getGeometryName() const
 OGRErr OGRMultiPolygon::addGeometryDirectly( OGRGeometry * poNewGeom )
 
 {
-    if( poNewGeom->getGeometryType() != wkbPolygon 
+    if( poNewGeom->getGeometryType() != wkbPolygon
         && poNewGeom->getGeometryType() != wkbPolygon25D )
         return OGRERR_UNSUPPORTED_GEOMETRY_TYPE;
 
@@ -188,7 +186,7 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
     {
         pszInput = OGRWktReadToken( pszInput, szToken );
         pszInput = OGRWktReadToken( pszInput, szToken );
-        
+
         *ppszInput = (char *) pszInput;
 
         if( !EQUAL(szToken,")") )
@@ -205,7 +203,7 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
     OGRRawPoint *paoPoints = NULL;
     int         nMaxPoints = 0;
     double      *padfZ = NULL;
-    
+
     do
     {
         OGRPolygon      *poPolygon = new OGRPolygon();
@@ -239,7 +237,7 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
                 eErr = OGRERR_CORRUPT_DATA;
                 break;
             }
-        
+
 /* -------------------------------------------------------------------- */
 /*      Create the new line, and add to collection.                     */
 /* -------------------------------------------------------------------- */
@@ -248,12 +246,12 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
             poLine = new OGRLinearRing();
             poLine->setPoints( nPoints, paoPoints, padfZ );
 
-            poPolygon->addRingDirectly( poLine ); 
+            poPolygon->addRingDirectly( poLine );
 
 /* -------------------------------------------------------------------- */
 /*      Read the delimeter following the ring.                          */
 /* -------------------------------------------------------------------- */
-        
+
             pszInput = OGRWktReadToken( pszInput, szToken );
         } while( szToken[0] == ',' && eErr == OGRERR_NONE );
 
@@ -267,7 +265,7 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
             else
                 pszInput = OGRWktReadToken( pszInput, szToken );
         }
-        
+
 /* -------------------------------------------------------------------- */
 /*      Add the polygon to the MULTIPOLYGON.                            */
 /* -------------------------------------------------------------------- */
@@ -281,13 +279,13 @@ OGRErr OGRMultiPolygon::importFromWkt( char ** ppszInput )
 /* -------------------------------------------------------------------- */
     CPLFree( paoPoints );
     CPLFree( padfZ );
-   
+
     if( eErr != OGRERR_NONE )
         return eErr;
 
     if( szToken[0] != ')' )
         return OGRERR_CORRUPT_DATA;
-    
+
     *ppszInput = (char *) pszInput;
     return OGRERR_NONE;
 }
@@ -326,7 +324,7 @@ OGRErr OGRMultiPolygon::exportToWkt( char ** ppszDstText ) const
         CPLAssert( EQUALN(papszLines[iLine],"POLYGON (", 9) );
         nCumulativeLength += strlen(papszLines[iLine] + 8);
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Allocate exactly the right amount of space for the              */
 /*      aggregated string.                                              */
@@ -342,10 +340,10 @@ OGRErr OGRMultiPolygon::exportToWkt( char ** ppszDstText ) const
     strcpy( *ppszDstText, "MULTIPOLYGON (" );
 
     for( iLine = 0; iLine < getNumGeometries(); iLine++ )
-    {                                                           
+    {
         if( iLine > 0 )
             strcat( *ppszDstText, "," );
-        
+
         strcat( *ppszDstText, papszLines[iLine] + 8 );
         VSIFree( papszLines[iLine] );
     }

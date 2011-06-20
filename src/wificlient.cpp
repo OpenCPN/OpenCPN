@@ -134,7 +134,7 @@ WIFIWindow::WIFIWindow(wxFrame *frame, const wxString& WiFiServerName):
                     wxString msg(WIFI_data_ip);
                     msg.Prepend(_T("Could not resolve TCP/IP host '"));
                     msg.Append(_T("'\n Suggestion: Try 'xxx.xxx.xxx.xxx' notation"));
-                    wxMessageDialog md(this, msg, _T("OpenCPN Message"), wxICON_ERROR );
+                    OCPNMessageDialog md(this, msg, _T("OpenCPN Message"), wxICON_ERROR );
                     md.ShowModal();
 
                     m_sock->Notify(FALSE);

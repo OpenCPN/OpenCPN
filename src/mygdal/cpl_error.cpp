@@ -15,16 +15,16 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  **********************************************************************
  *
@@ -124,8 +124,6 @@
 
 #define TIMESTAMP_DEBUG
 
-CPL_CVSID("$Id: cpl_error.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /* static buffer to store the last error message.  We'll assume that error
  * messages cannot be longer than 2000 chars... which is quite reasonable
  * (that's 25 lines of 80 chars!!!)
@@ -161,7 +159,7 @@ static CPLErrorHandlerNode * psHandlerStack = NULL;
  * message is an informational warning, CE_Failure indicating that the
  * action failed, but that normal recover mechanisms will be used or
  * CE_Fatal meaning that a fatal error has occured, and that CPLError()
- * should not return.  
+ * should not return.
  *
  * The default behaviour of CPLError() is to report errors to stderr,
  * and to abort() after reporting a CE_Fatal error.  It is expected that
@@ -184,7 +182,7 @@ void    CPLError(CPLErr eErrClass, int err_no, const char *fmt, ...)
 {
     va_list args;
 
-    /* Expand the error message 
+    /* Expand the error message
      */
     va_start(args, fmt);
     CPLErrorV( eErrClass, err_no, fmt, args );
@@ -197,7 +195,7 @@ void    CPLError(CPLErr eErrClass, int err_no, const char *fmt, ...)
 
 void    CPLErrorV(CPLErr eErrClass, int err_no, const char *fmt, va_list args )
 {
-    /* Expand the error message 
+    /* Expand the error message
      */
 #if defined(HAVE_VSNPRINTF)
     vsnprintf( gszCPLLastErrMsg, sizeof(gszCPLLastErrMsg), fmt, args );
@@ -239,12 +237,12 @@ void    CPLErrorV(CPLErr eErrClass, int err_no, const char *fmt, va_list args )
  *
  * Categories are usually an identifier for the subsystem producing the
  * error.  For instance "GDAL" might be used for the GDAL core, and "TIFF"
- * for messages from the TIFF translator.  
+ * for messages from the TIFF translator.
  *
  * @param pszCategory name of the debugging message category.
  * @param pszFormat printf() style format string for message to display.
  *        Remaining arguments are assumed to be for format.
- */ 
+ */
 
 void CPLDebug( const char * pszCategory, const char * pszFormat, ... )
 
@@ -281,7 +279,7 @@ void CPLDebug( const char * pszCategory, const char * pszFormat, ... )
     pszMessage = (char *) VSIMalloc( ERROR_MAX );
     if( pszMessage == NULL )
         return;
-        
+
 /* -------------------------------------------------------------------- */
 /*      Dal -- always log a timestamp as the first part of the line     */
 /*      to ensure one is looking at what one should be looking at!      */
@@ -292,8 +290,8 @@ void CPLDebug( const char * pszCategory, const char * pszFormat, ... )
     if( CPLGetConfigOption( "CPL_TIMESTAMP", NULL ) != NULL )
     {
         strcpy( pszMessage, VSICTime( VSITime(NULL) ) );
-        
-        // On windows anyway, ctime puts a \n at the end, but I'm not 
+
+        // On windows anyway, ctime puts a \n at the end, but I'm not
         // convinced this is standard behaviour, so we'll get rid of it
         // carefully
 
@@ -310,13 +308,13 @@ void CPLDebug( const char * pszCategory, const char * pszFormat, ... )
 /* -------------------------------------------------------------------- */
     strcat( pszMessage, pszCategory );
     strcat( pszMessage, ": " );
-    
+
 /* -------------------------------------------------------------------- */
 /*      Format the application provided portion of the debug message.   */
 /* -------------------------------------------------------------------- */
     va_start(args, pszFormat);
 #if defined(HAVE_VSNPRINTF)
-    vsnprintf(pszMessage+strlen(pszMessage), ERROR_MAX - strlen(pszMessage), 
+    vsnprintf(pszMessage+strlen(pszMessage), ERROR_MAX - strlen(pszMessage),
               pszFormat, args);
 #else
     vsprintf(pszMessage+strlen(pszMessage), pszFormat, args);
@@ -412,7 +410,7 @@ const char* CPLGetLastErrorMsg()
 /*                       CPLDefaultErrorHandler()                       */
 /************************************************************************/
 
-void CPLDefaultErrorHandler( CPLErr eErrClass, int nError, 
+void CPLDefaultErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
 {
@@ -446,7 +444,7 @@ void CPLDefaultErrorHandler( CPLErr eErrClass, int nError,
 /*                        CPLQuietErrorHandler()                        */
 /************************************************************************/
 
-void CPLQuietErrorHandler( CPLErr eErrClass , int nError, 
+void CPLQuietErrorHandler( CPLErr eErrClass , int nError,
                            const char * pszErrorMsg )
 
 {
@@ -458,7 +456,7 @@ void CPLQuietErrorHandler( CPLErr eErrClass , int nError,
 /*                       CPLLoggingErrorHandler()                       */
 /************************************************************************/
 
-void CPLLoggingErrorHandler( CPLErr eErrClass, int nError, 
+void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
 {
@@ -487,7 +485,7 @@ void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
 
             strcpy( path, cpl_log );
 
-            while( (fpLog = fopen( path, "rt" )) != NULL ) 
+            while( (fpLog = fopen( path, "rt" )) != NULL )
             {
                 fclose( fpLog );
 
@@ -544,7 +542,7 @@ void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
  * </pre>
  *
  * Pass NULL to come back to the default behavior.  The default behaviour
- * (CPLDefaultErrorHandler()) is to write the message to stderr. 
+ * (CPLDefaultErrorHandler()) is to write the message to stderr.
  *
  * The msg will be a partially formatted error message not containing the
  * "ERROR %d:" portion emitted by the default handler.  Message formatting
@@ -560,12 +558,12 @@ void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
  *
  * @param pfnErrorHandler new error handler function.
  * @return returns the previously installed error handler.
- */ 
+ */
 
 CPLErrorHandler CPLSetErrorHandler( CPLErrorHandler pfnErrorHandler )
 {
     CPLErrorHandler     pfnOldHandler = gpfnCPLErrorHandler;
-    
+
     gpfnCPLErrorHandler = pfnErrorHandler;
 
     return pfnOldHandler;
@@ -611,7 +609,7 @@ void CPLPushErrorHandler( CPLErrorHandler pfnErrorHandler )
  *
  * Discards the current error handler, and restore the one in use before
  * the last CPLPushErrorHandler() call.
- */ 
+ */
 
 void CPLPopErrorHandler()
 

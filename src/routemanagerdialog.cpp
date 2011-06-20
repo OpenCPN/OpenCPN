@@ -382,8 +382,14 @@ int current_page = m_pNotebook->GetSelection();
 
 // implementation
 RouteManagerDialog::RouteManagerDialog(wxWindow *parent)
-      : wxDialog(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
+      long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER;
+#ifdef __WXOSX__
+      style |= wxSTAY_ON_TOP;
+#endif
+
+      wxDialog::Create(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, style);
+
       Create();
 }
 
@@ -997,7 +1003,7 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
             if ( g_pRouteMan->GetpActiveRoute() )
@@ -1098,7 +1104,7 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event)
       if (!route) return;
       if (route->m_bIsInLayer) return;
 
-      wxMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
+      OCPNMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
                           _("Rename Waypoints?"), wxYES_NO);
       bool rename = (ask.ShowModal() == wxID_YES);
 
@@ -1536,7 +1542,7 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> tracks?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> tracks?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
             g_pRouteMan->DeleteAllTracks();
@@ -1863,7 +1869,7 @@ void RouteManagerDialog::OnWptSendToGPSClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnWptDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> waypoints?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> waypoints?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
           pWayPointMan->DeleteAllWaypoints(false);          // only delete unused waypoints

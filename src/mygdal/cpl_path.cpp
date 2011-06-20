@@ -82,8 +82,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: cpl_path.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 
 /* should be size of larged possible filename */
 #define CPL_PATH_BUF_SIZE 2048

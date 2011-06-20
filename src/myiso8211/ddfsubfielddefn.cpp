@@ -78,8 +78,6 @@
 #include "iso8211.h"
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: ddfsubfielddefn.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                          DDFSubfieldDefn()                           */
 /************************************************************************/
@@ -88,13 +86,13 @@ DDFSubfieldDefn::DDFSubfieldDefn()
 
 {
     pszName = NULL;
-    
+
     bIsVariable = TRUE;
     nFormatWidth = 0;
     chFormatDelimeter = DDF_UNIT_TERMINATOR;
     eBinaryFormat = NotBinary;
     eType = DDFString;
-    
+
     pszFormatString = CPLStrdup("");
 
     nMaxBufChars = 0;
@@ -121,7 +119,7 @@ void DDFSubfieldDefn::SetName( const char * pszNewName )
 
 {
     int         i;
-    
+
     CPLFree( pszName );
 
     pszName = CPLStrdup( pszNewName );
@@ -157,7 +155,7 @@ int DDFSubfieldDefn::SetFormat( const char * pszFormat )
     }
     else
         bIsVariable = TRUE;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Interpret the format string.                                    */
 /* -------------------------------------------------------------------- */
@@ -171,7 +169,7 @@ int DDFSubfieldDefn::SetFormat( const char * pszFormat )
       case 'R':
         eType = DDFFloat;
         break;
-        
+
       case 'I':
       case 'S':
         eType = DDFInt;
@@ -184,7 +182,7 @@ int DDFSubfieldDefn::SetFormat( const char * pszFormat )
         if( pszFormatString[1] == '(' )
         {
             CPLAssert( atoi(pszFormatString+2) % 8 == 0 );
-            
+
             nFormatWidth = atoi(pszFormatString+2) / 8;
             eBinaryFormat = SInt; // good default, works for SDTS.
 
@@ -193,7 +191,7 @@ int DDFSubfieldDefn::SetFormat( const char * pszFormat )
             else
                 eType = DDFBinaryString;
         }
-        
+
         // or do we have a binary type indicator? (is it binary)
         else
         {
@@ -213,19 +211,19 @@ int DDFSubfieldDefn::SetFormat( const char * pszFormat )
         CPLError( CE_Failure, CPLE_AppDefined,
                   "Format type of `%c' not supported.\n",
                   pszFormatString[0] );
-        
+
         CPLAssert( FALSE );
         return FALSE;
-        
+
       default:
         CPLError( CE_Failure, CPLE_AppDefined,
                   "Format type of `%c' not recognised.\n",
                   pszFormatString[0] );
-        
+
         CPLAssert( FALSE );
         return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -277,7 +275,7 @@ void DDFSubfieldDefn::Dump( FILE * fp )
  * bytes consumed by this field should be written.  May be NULL to ignore.
  *
  * @return The number of bytes at pachSourceData which are actual data for
- * this record (not including unit, or field terminator).  
+ * this record (not including unit, or field terminator).
  */
 
 int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
@@ -288,7 +286,7 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
     {
         if( nFormatWidth > nMaxBytes )
         {
-            CPLError( CE_Warning, CPLE_AppDefined, 
+            CPLError( CE_Warning, CPLE_AppDefined,
                       "Only %d bytes available for subfield %s with\n"
                       "format string %s ... returning shortened data.",
                       nMaxBytes, pszName, pszFormatString );
@@ -311,22 +309,22 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
         int     nLength = 0;
         int     bCheckFieldTerminator = TRUE;
 
-        /* We only check for the field terminator because of some buggy 
+        /* We only check for the field terminator because of some buggy
          * datasets with missing format terminators.  However, we have found
          * the field terminator is a legal character within the fields of
          * some extended datasets (such as JP34NC94.000).  So we don't check
          * for the field terminator if the field appears to be multi-byte
-         * which we established by the first character being out of the 
-         * ASCII printable range (32-127). 
+         * which we established by the first character being out of the
+         * ASCII printable range (32-127).
          */
 
         if( pachSourceData[0] < 32 || pachSourceData[0] >= 127 )
             bCheckFieldTerminator = FALSE;
-        
+
         while( nLength < nMaxBytes
                && pachSourceData[nLength] != chFormatDelimeter )
         {
-            if( bCheckFieldTerminator 
+            if( bCheckFieldTerminator
                 && pachSourceData[nLength] == DDF_FIELD_TERMINATOR )
                 break;
 
@@ -340,7 +338,7 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
             else
                 *pnConsumedBytes = nLength+1;
         }
-        
+
         return nLength;
     }
 }
@@ -394,7 +392,7 @@ DDFSubfieldDefn::ExtractStringData( const char * pachSourceData,
     if( nMaxBufChars < nLength+1 )
     {
         CPLFree( pachBuffer );
-        
+
         nMaxBufChars = nLength+1;
         pachBuffer = (char *) CPLMalloc(nMaxBufChars);
     }
@@ -465,9 +463,9 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
           // word aligned.
 #ifdef CPL_LSB
           if( pszFormatString[0] == 'B' )
-#else            
+#else
               if( pszFormatString[0] == 'b' )
-#endif            
+#endif
               {
                   for( int i = 0; i < nFormatWidth; i++ )
                       abyData[nFormatWidth-i-1] = pachSourceData[i];
@@ -492,7 +490,7 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
                   CPLAssert( FALSE );
                   return 0.0;
               }
-            
+
             case SInt:
               if( nFormatWidth == 1 )
                   return( *((signed char *) abyData) );
@@ -505,7 +503,7 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
                   CPLAssert( FALSE );
                   return 0.0;
               }
-            
+
             case FloatReal:
               if( nFormatWidth == 4 )
                   return( *((float *) abyData) );
@@ -517,7 +515,7 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
                   return 0.0;
               }
 
-            case NotBinary:            
+            case NotBinary:
             case FPReal:
             case FloatComplex:
               CPLAssert( FALSE );
@@ -585,7 +583,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
 
           if( nFormatWidth > nMaxBytes )
           {
-              CPLError( CE_Warning, CPLE_AppDefined, 
+              CPLError( CE_Warning, CPLE_AppDefined,
                         "Attempt to extract int subfield %s with format %s\n"
                         "failed as only %d bytes available.  Using zero.",
                         pszName, pszFormatString, nMaxBytes );
@@ -600,9 +598,9 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
           // word aligned.
 #ifdef CPL_LSB
           if( pszFormatString[0] == 'B' )
-#else            
+#else
               if( pszFormatString[0] == 'b' )
-#endif            
+#endif
               {
                   for( int i = 0; i < nFormatWidth; i++ )
                       abyData[nFormatWidth-i-1] = pachSourceData[i];
@@ -627,7 +625,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
                   CPLAssert( FALSE );
                   return 0;
               }
-            
+
             case SInt:
               if( nFormatWidth == 4 )
                   return( *((GInt32 *) abyData) );
@@ -640,7 +638,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
                   CPLAssert( FALSE );
                   return 0;
               }
-            
+
             case FloatReal:
               if( nFormatWidth == 4 )
                   return( (int) *((float *) abyData) );
@@ -652,7 +650,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
                   return 0;
               }
 
-            case NotBinary:            
+            case NotBinary:
             case FPReal:
             case FloatComplex:
               CPLAssert( FALSE );
@@ -723,17 +721,17 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
 /************************************************************************/
 
 /**
- * Get default data. 
+ * Get default data.
  *
  * Returns the default subfield data contents for this subfield definition.
- * For variable length numbers this will normally be "0<unit-terminator>". 
+ * For variable length numbers this will normally be "0<unit-terminator>".
  * For variable length strings it will be "<unit-terminator>".  For fixed
  * length numbers it is zero filled.  For fixed length strings it is space
- * filled.  For binary numbers it is binary zero filled. 
+ * filled.  For binary numbers it is binary zero filled.
  *
  * @param pachData the buffer into which the returned default will be placed.
  * May be NULL if just querying default size.
- * @param nBytesAvailable the size of pachData in bytes. 
+ * @param nBytesAvailable the size of pachData in bytes.
  * @param pnBytesUsed will receive the size of the subfield default data in
  * bytes.
  *
@@ -741,7 +739,7 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
  * small to hold the default.
  */
 
-int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable, 
+int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
                                       int *pnBytesUsed )
 
 {
@@ -789,11 +787,11 @@ int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
  * Format string subfield value.
  *
  * Returns a buffer with the passed in string value reformatted in a way
- * suitable for storage in a DDFField for this subfield.  
+ * suitable for storage in a DDFField for this subfield.
  */
 
-int DDFSubfieldDefn::FormatStringValue( char *pachData, int nBytesAvailable, 
-                                        int *pnBytesUsed, 
+int DDFSubfieldDefn::FormatStringValue( char *pachData, int nBytesAvailable,
+                                        int *pnBytesUsed,
                                         const char *pszValue,
                                         int nValueLength )
 
@@ -808,7 +806,7 @@ int DDFSubfieldDefn::FormatStringValue( char *pachData, int nBytesAvailable,
         nSize = nValueLength + 1;
     }
     else
-    {                                                                  
+    {
         nSize = nFormatWidth;
     }
 
@@ -851,10 +849,10 @@ int DDFSubfieldDefn::FormatStringValue( char *pachData, int nBytesAvailable,
  * Format int subfield value.
  *
  * Returns a buffer with the passed in int value reformatted in a way
- * suitable for storage in a DDFField for this subfield.  
+ * suitable for storage in a DDFField for this subfield.
  */
 
-int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable, 
+int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
                                      int *pnBytesUsed, int nNewValue )
 
 {
@@ -868,7 +866,7 @@ int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
         nSize = strlen(szWork) + 1;
     }
     else
-    {                                                                  
+    {
         nSize = nFormatWidth;
 
         if( GetBinaryFormat() == NotBinary && (int) strlen(szWork) > nSize )
@@ -940,10 +938,10 @@ int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
  * Format float subfield value.
  *
  * Returns a buffer with the passed in float value reformatted in a way
- * suitable for storage in a DDFField for this subfield.  
+ * suitable for storage in a DDFField for this subfield.
  */
 
-int DDFSubfieldDefn::FormatFloatValue( char *pachData, int nBytesAvailable, 
+int DDFSubfieldDefn::FormatFloatValue( char *pachData, int nBytesAvailable,
                                        int *pnBytesUsed, double dfNewValue )
 
 {

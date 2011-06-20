@@ -384,6 +384,8 @@ private:
     wxMutex          *m_pShareGPSMutex;
     wxEvtHandler     *m_pMainEventHandler;
 
+    wxMutex           *m_pShareMutex;
+
     bool             m_bAIS_Audio_Alert_On;
     wxTimer          m_AIS_Audio_Alert_Timer;
     wxSound          m_AIS_Sound;

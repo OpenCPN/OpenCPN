@@ -146,8 +146,6 @@ bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
 extern s52plib  *ps52plib;
 
-CPL_CVSID("$Id: s52cnsy.cpp,v 1.25 2010/04/27 01:43:31 bdbcat Exp $");
-
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
