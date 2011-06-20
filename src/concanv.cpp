@@ -223,11 +223,17 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
 //    VMG
                   // VMG is always to next waypoint, not to end of route
                   // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
-                  double VMG;
-                  double BRG;
-                  BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
-                  VMG = gSog * cos((BRG-gCog) *PI/180.);
-                  str_buf.Printf(_T("%6.2f"), VMG);
+                  if(!wxIsNaN(gCog) && !wxIsNaN(gSog))
+                  {
+                        double VMG;
+                        double BRG;
+                        BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
+                        VMG = gSog * cos((BRG-gCog) *PI/180.);
+                        str_buf.Printf(_T("%6.2f"), VMG);
+                  }
+                  else
+                        str_buf = _T("---");
+
                   pVMG->SetAValue(str_buf);
 
 //    TTG
