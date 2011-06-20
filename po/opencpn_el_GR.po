@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -3216,6 +3216,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3225,6 +3226,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
 #
 #
 #
@@ -3250,6 +3252,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3259,6 +3262,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
 #
 #
 #
@@ -3284,6 +3288,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3293,6 +3298,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
 #
 #
 #
@@ -3317,6 +3323,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3325,6 +3332,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -3350,6 +3358,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3361,10 +3370,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Εισαγωγή Αρχείου GPX"
+#
 #
 #
 #
@@ -3387,9 +3398,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
 #
 #
 #
@@ -3412,6 +3425,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3419,6 +3433,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
 #
 #
 # 
@@ -3435,10 +3450,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

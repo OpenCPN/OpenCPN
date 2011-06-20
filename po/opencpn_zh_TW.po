@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.506\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2011-05-26 16:59+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -3146,8 +3146,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
 #
 #
 #
@@ -3166,6 +3168,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
 #
@@ -3175,8 +3178,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -3195,8 +3200,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Offset Off"
+#
 #
 #
 #
@@ -3215,8 +3222,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Offset Tool Off"
+#
 #
 #
 #
@@ -3235,6 +3244,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
@@ -3245,8 +3255,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -3266,9 +3278,11 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 #
@@ -3285,8 +3299,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC 檔案載入"
+#
 #
 #
 #
@@ -3303,6 +3319,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm \n"
 #~ "\n"
@@ -3316,8 +3333,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "切換航跡顯示"
+#
 #
 #
 #

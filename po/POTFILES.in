@@ -1,5 +1,4 @@
 include/routeprop.h
-include/macsercomm.h
 include/options.h
 include/wvschart.h
 include/ocpn_pixel.h
@@ -175,7 +174,6 @@ src/ocpnhelper.c
 src/about.cpp
 src/s57chart.cpp
 src/thumbwin.cpp
-src/macsercomm.cpp
 src/tri.c
 src/georef.c
 src/s52cnsy.cpp

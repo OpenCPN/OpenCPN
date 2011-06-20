@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -848,7 +848,7 @@ msgid "Course UP Mode"
 msgstr "Cap vers le haut : Activer"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr ""
+msgstr "Course vers le haut : Mise à jour de la période (Sec.)"
 #
 #
 #, c-format
@@ -1032,7 +1032,6 @@ msgstr "E&xporter tout ..."
 msgid "ENC/Vector"
 msgstr "ENC/Vectorielle"
 #
-#, fuzzy
 msgid "ETA"
 msgstr "Heure est. d'arrivée:"
 #
@@ -1048,7 +1047,7 @@ msgid "ETA:                  "
 msgstr "Heure est. d'arrivée:"
 #
 msgid "ETE"
-msgstr ""
+msgstr "ETE"
 #
 #
 msgid "ETE/Timestamp"
@@ -1114,9 +1113,8 @@ msgid "Extend Route"
 msgstr "Etendre la route"
 #
 # Menu contextuel : Trace
-#, fuzzy
 msgid "Extend Track"
-msgstr "Trace : Supprimer"
+msgstr "Trace : Etendre"
 #
 msgid "ExtendedTideIcon"
 msgstr "Hauteur de marée ( sous l'indicateur)"
@@ -1253,12 +1251,11 @@ msgid "I&mport GPX..."
 msgstr "I&mporter GPX ......"
 #
 msgid "IMO:\n"
-msgstr ""
+msgstr "IMO:\n"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "IMO:                 %8d\n"
-msgstr "Heure est. d'arrivée:"
+msgstr "IMO:                 %8d\n"
 #
 #
 msgid "Icon"
@@ -1300,7 +1297,7 @@ msgid "LE/V"
 msgstr "Pol. Mar."
 #
 msgid "LMT @ Location"
-msgstr ""
+msgstr "Heure du lieu"
 #
 msgid "LW"
 msgstr "BM"
@@ -1393,7 +1390,7 @@ msgid "List contents"
 msgstr "---> Routes/Traces/WP"
 #
 msgid "Local @ PC"
-msgstr ""
+msgstr "Heure du PC"
 #
 #
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
@@ -1441,10 +1438,9 @@ msgstr "Méta-objets"
 msgid "MMSI"
 msgstr "MMSI"
 #
-#
-#, fuzzy, c-format
+#, c-format
 msgid "MMSI:                 %09d\n"
-msgstr "Heure est. d'arrivée:"
+msgstr "MMSI:                 %09d\n"
 #
 msgid "M_COVR ID"
 msgstr "M_COVRD ID"
@@ -2440,9 +2436,8 @@ msgid "Split Route"
 msgstr "Dédoubler la route"
 #
 # Menu contextuel : Trace
-#, fuzzy
 msgid "Split Track"
-msgstr "Trace : Supprimer"
+msgstr "Trace : Recopier"
 #
 #
 msgid "Standard"
@@ -2580,8 +2575,6 @@ msgstr "Durée prévisible de navigation"
 msgid "Times shown as"
 msgstr "Date montrée comme"
 #
-#
-#, fuzzy
 msgid "Timestamp"
 msgstr "ETE/Horodatage"
 #
@@ -2924,12 +2917,3 @@ msgstr "WGS X"
 #
 msgid "wgsoy"
 msgstr "WGS Y"
-#
-#
-#
-#~ msgid ""
-#~ "Size:                 %dm x %dm \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Taille              : %dm x %dm \n"
-#~ "\n"

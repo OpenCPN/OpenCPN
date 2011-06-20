@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.611 beta\n"
+"Project-Id-Version: OpenCPN 2.4.612 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
-"PO-Revision-Date: 2011-06-12 12:15+0100\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"PO-Revision-Date: 2011-06-17 17:35+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"
@@ -1021,7 +1021,7 @@ msgid "Course UP Mode"
 msgstr "Koers-Boven presentatie"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr "Schermverversing bij Koers-Boven elke (seconden)"
+msgstr "    Schermverversing bij Koers-Boven presentatie elke (seconden)"
 #
 #
 #
@@ -1378,7 +1378,7 @@ msgid "Filter NMEA Course and Speed data"
 msgstr "Filter NMEA koers- en vaartgegevens"
 #
 msgid "Filter Period (Sec.)"
-msgstr "     Filterperiode (seconden)"
+msgstr "    Filterperiode (seconden)"
 #
 msgid "Fishing boat"
 msgstr "visservaartuig"
@@ -2689,7 +2689,7 @@ msgstr "Toon alleen belangrijke tekst"
 #
 #
 msgid "Show Lat/Long as"
-msgstr "   Toon positie in"
+msgstr "    Toon positie in"
 #
 #
 #
@@ -2867,7 +2867,7 @@ msgstr "markering bijzondere betekenis"
 #
 #
 msgid "Speed (Kts)"
-msgstr "Vaart (knopen)"
+msgstr "Vaart"
 #
 #
 #
@@ -3205,7 +3205,7 @@ msgid "Undefined"
 msgstr "niet gedefinieerd"
 #
 msgid "Under way sailing"
-msgstr "zeilend vaartuig"
+msgstr "onder zeil varend"
 #
 msgid "Underway"
 msgstr "varend"
@@ -3316,7 +3316,7 @@ msgstr "WAV bestanden (*.wav)|*.wav|Alle bestanden (*.*)|*.*"
 #
 #
 msgid "Warn if CPA less than (NMi):"
-msgstr "Waarschuw als CPA minder is dan (zeemijl):"
+msgstr "Waarschuw als kortste naderingsafstand minder is dan (zeemijl):"
 #
 #
 #
@@ -3370,7 +3370,7 @@ msgid "WiFi Options"
 msgstr "WiFi opties"
 #
 msgid "Wing In Ground Effect"
-msgstr "vaartuig grondeffect (WIG)"
+msgstr "grondeffectvaartuig (WIG)"
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "     X offset (in NM; positief verplaatst kaart naar oosten):"

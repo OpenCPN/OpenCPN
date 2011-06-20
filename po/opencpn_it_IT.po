@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -231,17 +231,16 @@ msgstr ""
 #
 #, c-format
 msgid " COG: %03d Deg."
-msgstr ""
+msgstr " COG: %03d °"
 #
 msgid " COG: 000 Deg."
-msgstr ""
+msgstr " COG: 000 °"
 #
 #
 #
 #
-#, fuzzy
 msgid " COG: Unavailable"
-msgstr "Nessuna Carta disponibile"
+msgstr " COG : Non disponibile"
 #
 #
 #
@@ -871,7 +870,7 @@ msgstr "Bordi delle Aree"
 #
 #
 msgid "Brg"
-msgstr "Prua"
+msgstr "Rlv"
 #
 #
 msgid "Bulk carrier maritime"
@@ -1190,7 +1189,7 @@ msgid "Course UP Mode"
 msgstr "Modalità 'Rotta in Alto' (Course Up)"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr ""
+msgstr "Periodo di aggiornamento in modalità 'Rotta in Alto' (Secondi)"
 #
 #
 #
@@ -1449,9 +1448,8 @@ msgstr ""
 #
 #
 #
-#, fuzzy
 msgid "ETA"
-msgstr "ETA          : "
+msgstr "ETA"
 #
 #
 #
@@ -1563,9 +1561,8 @@ msgstr "Estendi Rotta"
 #
 #
 #
-#, fuzzy
 msgid "Extend Track"
-msgstr "Elimina Traccia"
+msgstr "Estendi Traccia"
 #
 #
 msgid "ExtendedTideIcon"
@@ -1718,11 +1715,9 @@ msgstr ""
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "Heading:                %03d Deg.\n"
-msgstr ""
-"Rilevamento  : %03d °\n"
-"\n"
+msgstr "Prua         : %03d °\n"
 #
 #
 #
@@ -1759,14 +1754,14 @@ msgid "I&mport GPX..."
 msgstr "I&mporta GPX..."
 #
 msgid "IMO:\n"
-msgstr ""
+msgstr "IMO          :\n"
 #
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "IMO:                 %8d\n"
-msgstr "ETA          : "
+msgstr "IMO          : %7d\n"
 #
 #
 #
@@ -2029,9 +2024,9 @@ msgstr ""
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "MMSI:                 %09d\n"
-msgstr "ETA          : "
+msgstr "MMSI         : %09d\n"
 #
 #
 msgid "M_COVR ID"
@@ -3154,9 +3149,8 @@ msgstr "Mostra i bordi delle carte"
 #
 #
 #
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Informazioni Punto"
+msgstr "Mostra Info Corrente"
 #
 #
 #
@@ -3233,9 +3227,8 @@ msgstr "Mostra la barra di stato (in basso)"
 #
 #
 #
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Informazioni Punto"
+msgstr "Mostra Info Marea"
 #
 #
 #
@@ -3256,7 +3249,7 @@ msgid "Show WPT names"
 msgstr "Mostra nomi WPT"
 #
 msgid "Show layers initially"
-msgstr ""
+msgstr "Mostra inizialmente i Layer"
 #
 #
 #
@@ -3306,7 +3299,7 @@ msgstr "Semplificati"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
@@ -3427,9 +3420,8 @@ msgstr "Dividi Rotta"
 #
 #
 #
-#, fuzzy
 msgid "Split Track"
-msgstr "&Inizio Traccia"
+msgstr "Dividi Traccia"
 #
 #
 #
@@ -3532,9 +3524,8 @@ msgstr "Rotta Uomo a Mare"
 #
 #
 #
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Rotta Uomo a Mare"
+msgstr "Layer Temporaneo"
 #
 #
 #
@@ -4106,16 +4097,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
-#
-#
-#
-#
 #
 #
 #
@@ -4160,25 +4143,13 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
-#
-#
-#
-#
 #
 #
 #
@@ -4212,16 +4183,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
-#
-#
-#
-#
 #
 #
 #
@@ -4244,16 +4207,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
-#
-#
-#
-#
 #
 #
 #
@@ -4276,16 +4231,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
-#
-#
-#
-#
 #
 #
 #
@@ -4297,10 +4244,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
-#
-#
-#
-#
 #
 #
 #
@@ -4324,16 +4267,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
-#
-#
-#
-#
 #
 #
 #
@@ -4379,56 +4314,8 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Import new layer"
-#~ msgstr "&Importa nuovo Layer"
-#
-#
-#
-#
-#
-#~ msgid ""
-#~ "Size:                 %dm x %dm \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Dimensioni   : %dm x %dm x ---m\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Toggle Listing"
-#~ msgstr "Mostra Liste"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Toggle Names"
-#~ msgstr "Mostra/Nascondi &Nomi"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -4319,6 +4319,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4334,6 +4335,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -4369,6 +4371,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4388,6 +4391,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 #
 #
@@ -4423,6 +4427,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4448,6 +4453,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4459,6 +4465,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 #
 #
@@ -4498,6 +4505,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4518,6 +4526,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4557,6 +4566,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4572,6 +4582,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 #
 #
@@ -4607,6 +4618,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4632,6 +4644,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4639,6 +4652,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
 #
 #
 #
@@ -4674,6 +4688,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4701,6 +4716,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4714,6 +4730,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -4745,6 +4762,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4760,6 +4778,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
 #
 #
 #
@@ -4789,12 +4808,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar arquivo GPX"
+#
 #
 #
 #
@@ -4812,6 +4833,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
 #
 #
 #
@@ -4843,6 +4865,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4858,6 +4881,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 #
 #
@@ -4890,6 +4914,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4905,6 +4930,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
+#
 #
 #
 #
@@ -4935,6 +4961,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4945,6 +4972,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4980,6 +5008,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5003,6 +5032,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5018,6 +5048,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 #
 #
@@ -5053,6 +5084,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5062,6 +5094,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
 #
 #
 #
@@ -5097,6 +5130,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5116,6 +5150,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
 #
 #
 #
@@ -5145,6 +5180,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5160,6 +5196,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura Significativa das Ondas, m"
+#
 #
 #
 # 
@@ -5178,6 +5215,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5190,12 +5228,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nome da Derrota"
+#
 #
 #
 #
@@ -5217,6 +5257,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 #
 #
@@ -5248,6 +5289,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5263,6 +5305,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 #
 #

@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.606\n"
+"Project-Id-Version: OpenCPN 2.4.612\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:27-0400\n"
-"PO-Revision-Date: 2011-06-06 22:34+0100\n"
+"PO-Revision-Date: 2011-06-13 13:51+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,39 +17,51 @@ msgstr ""
 "Language: \n"
 "X-Poedit-Language: Norsk\n"
 "X-Poedit-Country: Norge\n"
+
 #
 msgid "Add"
 msgstr "Legg til"
+
 #
 msgid "Add instrument"
 msgstr "Legg til instrument"
+
 #
 msgid "Apparent wind"
 msgstr "Tilsynelatende vind"
+
 #
 msgid "Appearance"
 msgstr "Utseende"
+
 #
 msgid "COG"
 msgstr "COG"
+
 #
 msgid "Caption:"
 msgstr "Overskrift:"
+
 #
 msgid "Clock"
-msgstr ""
+msgstr "Klokke"
+
 #
 msgid "Compass"
 msgstr "Kompass"
+
 #
 msgid "Cursor"
-msgstr ""
+msgstr "Kursor"
+
 #
 msgid "Dashboard"
 msgstr "Instrumentbord"
+
 #
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Instrumentbord utvidelse for OpenCPN"
+
 #
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
@@ -57,126 +69,168 @@ msgid ""
 msgstr ""
 "Instrumentbord utvidelse for OpenCPN\n"
 "Tilføyer navigasjonsinstrumentvisning fra NMEA kilder."
+
 #
 msgid "Dashboard preferences"
 msgstr "Instrumentbord alternativer"
+
 #
 msgid "Data:"
 msgstr "Data:"
+
 #
 msgid "Delete"
 msgstr "Slett"
+
 #
 msgid "Depth"
 msgstr "Dybde"
+
 #
 msgid "Down"
 msgstr "Ned"
+
 #
 msgid "E"
 msgstr "Ø"
+
 #
 msgid "Edit"
 msgstr "Endre"
+
 #
 msgid "Fonts"
 msgstr "Skrift"
+
 #
 msgid "GPS in view"
 msgstr "GPS i sikte"
+
 #
 msgid "GPS status"
 msgstr "GPS status"
+
 #
 msgid "HDG"
 msgstr "HDG"
+
 #
 msgid "Horizontal"
 msgstr "Horisontal"
+
 #
 msgid "Instrument width:"
 msgstr "Instrumentbredde:"
+
 #
 msgid "Instruments"
 msgstr "Instrumenter"
+
 #
 msgid "Label:"
 msgstr "Etikett:"
+
 #
 msgid "Moon phase"
-msgstr ""
+msgstr "Månefase"
+
 #
 msgid "N"
 msgstr "N"
+
 #
 msgid "NE"
 msgstr "NØ"
+
 #
 msgid "NW"
 msgstr "NV"
+
 #
 msgid "Orientation:"
 msgstr "Retning:"
+
 #
 msgid "Position"
 msgstr "Posisjon"
+
 #
 msgid "Rudder angle"
 msgstr "Rorvinkel"
+
 #
 msgid "S"
 msgstr "S"
+
 #
 msgid "SE"
 msgstr "SØ"
+
 #
 msgid "SOG"
 msgstr "SOG"
+
 #
 msgid "STW"
 msgstr "STW"
+
 #
 msgid "SW"
 msgstr "SV"
+
 #
 msgid "Select instrument to add:"
 msgstr "Velg instrument:"
+
 #
 msgid "Small:"
 msgstr "Liten:"
+
 #
 msgid "Speedometer"
 msgstr "Fartsmåler"
+
 #
 msgid "Sunrise/Sunset"
-msgstr ""
+msgstr "Sol opp/ned"
+
 #
 msgid "Temp"
 msgstr "Temp"
+
 #
 msgid "Title:"
 msgstr "Tittel:"
+
 #
 msgid "True wind"
 msgstr "Riktig vind"
+
 #
 msgid "Up"
 msgstr "Opp"
+
 #
 msgid "VMG"
 msgstr "VMG"
+
 #
 msgid "Vertical"
 msgstr "Vertikal"
+
 #
 msgid "W"
 msgstr "V"
+
 #
 msgid "Wind angle"
 msgstr "Vindretning"
+
 #
 msgid "Wind speed"
 msgstr "Vindhastighet"
+
 #
 msgid "show this dashboard"
 msgstr "vis dette instrumentbord"
+

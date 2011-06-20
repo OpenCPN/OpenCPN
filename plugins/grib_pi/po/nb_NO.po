@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.606\n"
+"Project-Id-Version: OpenCPN 2.4.612\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:28-0400\n"
-"PO-Revision-Date: 2011-06-06 22:33+0100\n"
+"PO-Revision-Date: 2011-06-13 13:50+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,27 +17,35 @@ msgstr ""
 "Language: \n"
 "X-Poedit-Language: Norsk\n"
 "X-Poedit-Country: Norge\n"
+
 #
 msgid "&Close"
 msgstr "&Lukk"
+
 #
 msgid "Current Velocity, Kts."
 msgstr "Fart, Knop"
+
 #
 msgid "GRIB"
 msgstr "GRIB"
+
 #
 msgid "GRIB Data"
 msgstr "GRIB data"
+
 #
 msgid "GRIB Display Control"
 msgstr "GRIB visningskontroll"
+
 #
 msgid "GRIB File Directory"
 msgstr "GRIB fil katalog"
+
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB utvidelse for OpenCPN"
+
 #
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
@@ -57,49 +65,65 @@ msgstr ""
 "- Signifikant bølgehøyde\n"
 "- Sjøoverflate temperatur\n"
 "- Overflate strøm, retning og fart."
+
 #
 msgid "GRIB Preferences"
 msgstr "GRIB innstillinger"
+
 #
 msgid "Grib"
 msgstr "GRIB"
+
 #
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
+
 #
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte HTSGW GRIB"
+
 #
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+
 #
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+
 #
 msgid "Pressure, mBar"
 msgstr "Lufttrykk, mb"
+
 #
 msgid "Sea Surface Temp, C"
 msgstr "Sjøoverflate temp, C"
+
 #
 msgid "Select GRIB Directory"
 msgstr "Velg GRIB Katalog"
+
 #
 msgid "Show GRIB icon"
 msgstr "Vis GRIB ikon"
+
 #
 msgid "Significant Wave Height, m"
 msgstr "Signifikant bølgehøyde, m"
+
 #
 msgid "Use High Definition Graphics"
 msgstr "Benytt HD grafikk"
+
 #
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
+
 #
 msgid "Wind Direction"
 msgstr "Vindretning"
+
 #
 msgid "Wind Speed, Kts."
 msgstr "Vindhastighet, Knop"
+

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 13:06-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -4220,6 +4220,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4228,6 +4229,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
+#
 #
 #
 #
@@ -4252,6 +4254,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4260,6 +4263,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
+#
 #
 #
 #
@@ -4284,6 +4288,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4292,6 +4297,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
+#
 #
 #
 #
@@ -4316,6 +4322,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4324,6 +4331,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -4350,6 +4358,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4363,12 +4372,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Impordi GPX fail"
+#
 #
 #
 #
@@ -4393,9 +4404,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
 #
 #
 #
@@ -4420,6 +4433,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4429,6 +4443,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Laeva nimi:"
+#
 #
 #
 # 
@@ -4447,12 +4462,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 #
