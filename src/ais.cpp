@@ -2220,10 +2220,16 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             return;
       }
 
-      double cpa_calc_ownship_cog;
+      double cpa_calc_ownship_cog = gCog;
 
-      if(wxIsNaN(gCog))
+      if( wxIsNaN(gCog) || wxIsNaN(gSog) )
       {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
+
+//    This block removed for FS#543
+/*
             if(wxIsNaN(gSog))
             {
                   ptarget->bCPA_Valid = false;
@@ -2235,11 +2241,17 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             else
                   ptarget->bCPA_Valid = false;
             return;
+
       }
       else
             cpa_calc_ownship_cog = gCog;
+*/
 
-
+      if((gCog == 360.0) || (gSog >102.2))            // coming from AIS VDO injection
+      {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
 
       if((ptarget->COG == 360.0) || (ptarget->SOG >102.2))
       {
