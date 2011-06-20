@@ -260,6 +260,10 @@ class MyFrame: public wxFrame
     void UpdateControlBar(void);
     void RemoveChartFromQuilt(int dbIndex);
 
+    void SubmergeToolbar(void);
+    void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
+    void SurfaceToolbar(void);
+
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
     void HandlePianoRollover(int selected_index, int selected_dbIndex);
@@ -304,6 +308,7 @@ class MyFrame: public wxFrame
     void RequestNewToolbar();
 
     void ActivateMOB(void);
+    void UpdateGPSCompassStatusBox(bool b_force_new = false);
 
   private:
     void DoSetSize(void);
@@ -322,7 +327,6 @@ class MyFrame: public wxFrame
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
     void UpdateToolbarDynamics(void);
-    void UpdateGPSCompassStatusBox(bool b_force_new = false);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
@@ -370,6 +374,7 @@ class MyFrame: public wxFrame
 
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;
+    bool                m_last_bGPSValid;
 
     DECLARE_EVENT_TABLE()
 };
@@ -764,6 +769,19 @@ class ocpnToolBarSimple : public wxControl
 };
 
 
+extern int OCPNMessageBox(const wxString& message, const wxString& caption = _T("Message"), int style = wxOK,wxWindow *parent = NULL, int x = -1, int y = -1);
+
+class OCPNMessageDialog
+{
+      public:
+            OCPNMessageDialog(wxWindow* parent, const wxString& message, const wxString& caption = _T("Message box"), long style = wxOK | wxCANCEL, const wxPoint& pos = wxDefaultPosition);
+
+            ~OCPNMessageDialog();
+
+            int ShowModal();
+      private:
+            wxMessageDialog *m_pdialog;
+};
 
 
 #endif
