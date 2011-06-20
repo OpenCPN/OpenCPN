@@ -89,7 +89,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
-  ADD_DEFINITIONS( "-Wall -g -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
   ADD_DEFINITIONS( "-O3 -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
