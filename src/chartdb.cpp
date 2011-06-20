@@ -518,6 +518,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       if((dbindex < 0) || (dbindex > GetChartTableEntries()-1))
             return NULL;
 
+//      printf("Opening chart %d   lock: %d\n", dbindex, m_b_locked);
+
       const ChartTableEntry &cte = GetChartTableEntry(dbindex);
       wxString ChartFullPath(cte.GetpFullPath(), wxConvUTF8 );
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
@@ -610,7 +612,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               }
                               else
                               {
-                                    wxLogMessage(_T("Deleting/Removing oldest chart from cache"));
+                                    wxLogMessage(_T("Removing oldest chart from cache"));
       //                            wxLogMessage(_T("oMem_Free before chart removal is %d"), omem_free);
 
                                     //  If this chart should happen to be in the thumbnail window....
@@ -658,12 +660,27 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               }
                         }
 
+/*
+                        for(unsigned int i=0 ; i<nCache ; i++)
+                        {
+                              pce = (CacheEntry *)(pChartCache->Item(i));
+                              if((ChartBase *)(pce->pChart) != Current_Ch)
+                              {
+                                    printf("  Cache %d\n", pce->dbIndex);
+                              }
+                        }
+*/
                         pce = (CacheEntry *)(pChartCache->Item(iOldest));
                         ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
 
                         if(Current_Ch != pDeleteCandidate)
                         {
-                        wxLogMessage(_T("Deleting/Removing oldest chart from cache"));
+                              wxString msg(_T("Removing oldest chart from cache "));
+                              wxString ni;
+                              ni.Printf(_T("%d"), pce->dbIndex);
+                              msg += ni;
+                              wxLogMessage(msg);
+//                              printf(" removing %d\n", pce->dbIndex);
 
                         //  If this chart should happen to be in the thumbnail window....
                               if(pthumbwin)
@@ -847,6 +864,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               pce->FullPath = ChartFullPath;
                               pce->pChart = Ch;
                               pce->dbIndex = dbindex;
+//                              printf("    Adding chart %d\n", dbindex);
                               pce->RecentTime = now.GetTicks();
 
                               pChartCache->Add((void *)pce);
