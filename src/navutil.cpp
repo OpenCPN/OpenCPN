@@ -248,6 +248,7 @@ extern bool             g_bAISRolloverShowCPA;
 
 extern bool             g_blocale_changed;
 extern bool             g_bDebugGPSD;
+extern bool             g_bForceGPSDActive;
 
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
@@ -2674,6 +2675,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "DebugS57" ),  &g_bDebugS57, 0 );         // Show LUP and Feature info in object query
       Read ( _T ( "DebugBSBImg" ),  &g_BSBImgDebug, 0 );
       Read ( _T ( "DebugGPSD" ),  &g_bDebugGPSD, 0 );
+      Read ( _T ( "ForceGPSDActive" ),  &g_bForceGPSDActive, 0 );
 
       Read ( _T ( "UseGreenShipIcon" ),  &g_bUseGreenShip, 0 );
       Read ( _T ( "AllowExtremeOverzoom" ),  &g_b_overzoom_x, 1 );

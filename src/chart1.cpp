@@ -391,6 +391,7 @@ bool             g_bAISRolloverShowCOG;
 bool             g_bAISRolloverShowCPA;
 
 bool             g_bDebugGPSD;
+bool             g_bForceGPSDActive;
 
 bool             g_bFullScreenQuilt;
 bool             g_bQuiltEnable;
