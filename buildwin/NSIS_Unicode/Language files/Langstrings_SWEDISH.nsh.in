@@ -10,7 +10,7 @@ LangString Installer_Unsupported_Windows_Version ${LANG_SWEDISH} "Din Windowsver
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_SWEDISH} "Installationen körs redan."
 
-#LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
+#LangString Installer ${LANG_ENGLISH} "installer"
 LangString Uninstaller_Running ${LANG_SWEDISH} "Avinstallationen körs redan."
 
 #LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
@@ -336,3 +336,7 @@ LangString Banner_Installation_Found_Plural ${LANG_SWEDISH} "Hittade $counter_tm
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_SWEDISH} "Radera konfigurationskatalogen"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"

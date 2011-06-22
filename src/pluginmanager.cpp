@@ -78,6 +78,26 @@ PlugIn_ViewPort CreatePlugInViewport( ViewPort *vp)
       return pivp;
 }
 
+
+//------------------------------------------------------------------------------------------------
+//
+//          The PlugInToolbarToolContainer Implementation
+//
+//------------------------------------------------------------------------------------------------
+PlugInToolbarToolContainer::PlugInToolbarToolContainer()
+{
+      bitmap_dusk = NULL;
+      bitmap_night = NULL;
+}
+
+PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
+{
+      delete bitmap_dusk;
+      delete bitmap_night;
+}
+
+
+
 //-----------------------------------------------------------------------------------------------------
 //
 //          The PlugIn Manager Implementation
@@ -116,7 +136,11 @@ bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
 #ifdef __WXMSW__
       wxString pispec = _T("*_pi.dll");
 #else
+#ifdef __WXOSX__
+      wxString pispec = _T("*_pi.dylib");
+#else
       wxString pispec = _T("*_pi.so");
+#endif
 #endif
 
       if(pi_dir.IsOpened())
@@ -227,45 +251,60 @@ bool PlugInManager::UpdatePlugIns()
             }
             else if(!pic->m_bEnabled && pic->m_bInitState)
             {
-                  wxString msg(_("PlugInManager: Deactivating PlugIn: "));
-                  msg += pic->m_plugin_file;
-                  wxLogMessage(msg);
+                  bret = DeactivatePlugIn(pic);
 
-                  pic->m_pplugin->DeInit();
-
-                  //    Deactivate (Remove) any ToolbarTools added by this PlugIn
-                  for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
-                  {
-                        PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
-                        {
-                              if(pttc->m_pplugin == pic->m_pplugin)
-                              {
-                                    m_PlugInToolbarTools.Remove(pttc);
-                                    delete pttc;
-                              }
-                        }
-                  }
-
-                 //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
-                  for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
-                  {
-                        PlugInMenuItemContainer *pimis = m_PlugInMenuItems.Item(i);
-                        {
-                              if(pimis->m_pplugin == pic->m_pplugin)
-                              {
-                                    m_PlugInMenuItems.Remove(pimis);
-                                    delete pimis;
-                              }
-                        }
-                  }
-
-                  pic->m_bInitState = false;
-                  bret = true;
             }
       }
 
       return bret;
 }
+
+
+bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
+{
+      bool bret = false;
+
+      if(pic)
+      {
+            wxString msg(_("PlugInManager: Deactivating PlugIn: "));
+                  msg += pic->m_plugin_file;
+            wxLogMessage(msg);
+
+            pic->m_pplugin->DeInit();
+
+            //    Deactivate (Remove) any ToolbarTools added by this PlugIn
+            for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
+            {
+                  PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
+
+                  if(pttc->m_pplugin == pic->m_pplugin)
+                  {
+                        m_PlugInToolbarTools.Remove(pttc);
+                        delete pttc;
+                  }
+             }
+
+            //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
+            for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
+            {
+                  PlugInMenuItemContainer *pimis = m_PlugInMenuItems.Item(i);
+                  if(pimis->m_pplugin == pic->m_pplugin)
+                  {
+                        m_PlugInMenuItems.Remove(pimis);
+                        delete pimis;
+                  }
+            }
+
+            pic->m_bInitState = false;
+            bret = true;
+      }
+
+      return bret;
+}
+
+
+
+
 
 bool PlugInManager::UpdateConfig()
 {
@@ -312,16 +351,8 @@ bool PlugInManager::DeactivateAllPlugIns()
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            wxString msg(_("PlugInManager: Deactivating PlugIn: "));
-            msg += pic->m_plugin_file;
-            wxLogMessage(msg);
-
-            if(pic->m_bEnabled && pic->m_bInitState)
-            {
-                  pic->m_pplugin->DeInit();
-                  pic->m_bInitState = false;
-            }
-
+            if(pic && pic->m_bEnabled && pic->m_bInitState)
+                  DeactivatePlugIn(pic);
       }
       return true;
 }
@@ -1116,7 +1147,9 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
 //-------------------------------------------------------------------------------
 
 PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
-      :wxPanel( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL )
+//      :wxPanel( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL )
+      :wxScrolledWindow( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL|wxVSCROLL )
+
 {
       m_pPluginArray = pPluginArray;
       m_PluginSelected = NULL;

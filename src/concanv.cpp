@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: concanv.cpp,v 1.24 2010/05/27 19:00:01 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Console Canvas
@@ -24,25 +23,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
- *
- * $Log: concanv.cpp,v $
- * Revision 1.24  2010/05/27 19:00:01  bdbcat
- * 527a
- *
- * Revision 1.23  2010/04/27 01:40:44  bdbcat
- * Build 426
- *
- * Revision 1.22  2010/04/15 15:51:27  bdbcat
- * Build 415.
- *
- * Revision 1.21  2009/12/26 21:15:03  bdbcat
- * Messages
- *
- * Revision 1.20  2009/12/22 21:34:05  bdbcat
- * Cleanup Messages
- *
- * Revision 1.19  2009/12/10 21:03:54  bdbcat
- * Beta 1210
  *
  *
  *
@@ -73,8 +53,6 @@ extern FontMgr          *pFontMgr;
 extern                  double gCog;
 extern                  double gSog;
 
-
-CPL_CVSID("$Id: concanv.cpp,v 1.24 2010/05/27 19:00:01 bdbcat Exp $");
 
 
 //------------------------------------------------------------------------------
@@ -119,6 +97,10 @@ ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
       pBRG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pBRG->SetALabel(_T("BRG"));
       m_pitemStaticBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT|wxALL, 2);
+
+      pVMG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+      pVMG->SetALabel(_T("VMG"));
+      m_pitemStaticBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT|wxALL, 2);
 
       pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pRNG->SetALabel(_T("RNG"));
@@ -170,6 +152,7 @@ void ConsoleCanvas::SetColorScheme(ColorScheme cs)
     pBRG->SetColorScheme(cs);
     pRNG->SetColorScheme(cs);
     pTTG->SetColorScheme(cs);
+    pVMG->SetColorScheme(cs);
 
     pCDI->SetColorScheme(cs);
 }
@@ -223,7 +206,10 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                         pRNG->SetAValue(srng);
 
 //    Brg
-                  str_buf.Printf(_T("%6.0f"), g_pRouteMan->GetCurrentBrgToActivePoint());
+                  float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
+                  if(dcog >= 359.5)
+                        dcog = 0;
+                  str_buf.Printf(_T("%6.0f"), dcog);
                   pBRG->SetAValue(str_buf);
 
 //    XTE
@@ -233,6 +219,22 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                       pXTE->SetALabel(wxString(_("XTE         L")));
                   else
                       pXTE->SetALabel(wxString(_("XTE         R")));
+
+//    VMG
+                  // VMG is always to next waypoint, not to end of route
+                  // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
+                  if(!wxIsNaN(gCog) && !wxIsNaN(gSog))
+                  {
+                        double VMG;
+                        double BRG;
+                        BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
+                        VMG = gSog * cos((BRG-gCog) *PI/180.);
+                        str_buf.Printf(_T("%6.2f"), VMG);
+                  }
+                  else
+                        str_buf = _T("---");
+
+                  pVMG->SetAValue(str_buf);
 
 //    TTG
                   wxString ttg_s;
@@ -396,6 +398,7 @@ void ConsoleCanvas::UpdateFonts(void)
       pXTE->RefreshFonts();
       pTTG->RefreshFonts();
       pRNG->RefreshFonts();
+      pVMG->RefreshFonts();
 
       m_pitemStaticBoxSizerLeg->SetSizeHints(this);
       Layout();

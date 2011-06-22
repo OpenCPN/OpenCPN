@@ -39,12 +39,12 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
- ADD_DEFINITIONS( "-Wall -g -fexceptions -fvisibility=hidden" )
+ ADD_DEFINITIONS( "-Wall -O3 -fexceptions -fvisibility=hidden" )
 
  IF(NOT APPLE)
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
  ELSE(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl")
+  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
  ENDIF(NOT APPLE)
 
 ENDIF(NOT WIN32)
@@ -111,12 +111,13 @@ IF(APPLE)
  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${ZLIB_LIBRARIES} )
 ENDIF(APPLE)
 
+IF(APPLE)
+      INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins)
+ENDIF(APPLE)
 
-
-
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${PREFIX_PARENTDATA}/plugins)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
@@ -177,7 +178,11 @@ MACRO(GETTEXT_BUILD_MO)
          COMMENT "grib-i18n [${_poBasename}]: Created mo file."
       )
 
+IF(APPLE)
+      INSTALL(FILES ${_gmoFile} DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/Resources/${_poBasename}.lproj RENAME opencpn-${PACKAGE_NAME}.mo )
+ELSE(APPLE)
       INSTALL(FILES ${_gmoFile} DESTINATION ${PREFIX_DATA}/locale/${_poBasename}/LC_MESSAGES RENAME opencpn-${PACKAGE_NAME}.mo )
+ENDIF(APPLE)
       SET(_gmoFiles ${_gmoFiles} ${_gmoFile})
    ENDFOREACH (_poFile )
 ENDMACRO(GETTEXT_BUILD_MO)

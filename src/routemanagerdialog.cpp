@@ -95,6 +95,7 @@ extern Select           *pSelect;
 extern double           gLat, gLon;
 extern double           gCog, gSog;
 extern NMEAHandler      *g_pnmea;
+extern bool             g_bShowLayers;
 
 
 // sort callback. Sort by route name.
@@ -381,8 +382,14 @@ int current_page = m_pNotebook->GetSelection();
 
 // implementation
 RouteManagerDialog::RouteManagerDialog(wxWindow *parent)
-      : wxDialog(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
+      long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER;
+#ifdef __WXOSX__
+      style |= wxSTAY_ON_TOP;
+#endif
+
+      wxDialog::Create(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, style);
+
       Create();
 }
 
@@ -649,32 +656,32 @@ void RouteManagerDialog::Create()
       wxBoxSizer *bsLayButtons = new wxBoxSizer(wxVERTICAL);
       itemBoxSizer7->Add(bsLayButtons, 0, wxALIGN_RIGHT);
 
-      btnLayNew = new wxButton(m_pPanelLay, -1, _("Import new layer"));
+      btnLayNew = new wxButton(m_pPanelLay, -1, _("Temporary layer"));
       bsLayButtons->Add(btnLayNew, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnLayNew->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnLayNewClick), NULL, this);
 
-      btnLayProperties = new wxButton(m_pPanelLay, -1, _("&Properties"));
-      bsLayButtons->Add(btnLayProperties, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
-      btnLayProperties->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                           wxCommandEventHandler(RouteManagerDialog::OnLayPropertiesClick), NULL, this);
+      //btnLayProperties = new wxButton(m_pPanelLay, -1, _("&Properties"));
+      //bsLayButtons->Add(btnLayProperties, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
+      //btnLayProperties->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+      //                     wxCommandEventHandler(RouteManagerDialog::OnLayPropertiesClick), NULL, this);
 
       btnLayDelete = new wxButton(m_pPanelLay, -1, _("&Delete"));
       bsLayButtons->Add(btnLayDelete, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnLayDelete->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnLayDeleteClick), NULL, this);
 
-      btnLayToggleChart = new wxButton(m_pPanelLay, -1, _("&Toggle Chart"));
+      btnLayToggleChart = new wxButton(m_pPanelLay, -1, _("Show on chart"));
       bsLayButtons->Add(btnLayToggleChart, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnLayToggleChart->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(RouteManagerDialog::OnLayToggleChartClick), NULL, this);
 
-      btnLayToggleNames = new wxButton(m_pPanelLay, -1, _("Toggle Names"));
+      btnLayToggleNames = new wxButton(m_pPanelLay, -1, _("Show WPT names"));
       bsLayButtons->Add(btnLayToggleNames, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnLayToggleNames->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(RouteManagerDialog::OnLayToggleNamesClick), NULL, this);
 
-      btnLayToggleListing = new wxButton(m_pPanelLay, -1, _("Toggle Listing"));
+      btnLayToggleListing = new wxButton(m_pPanelLay, -1, _("List contents"));
       bsLayButtons->Add(btnLayToggleListing, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
       btnLayToggleListing->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this);
@@ -740,7 +747,7 @@ RouteManagerDialog::~RouteManagerDialog()
       delete btnWptSendToGPS;
       delete btnWptDeleteAll;
       delete btnLayNew;
-      delete btnLayProperties;
+      //delete btnLayProperties;
       delete btnLayToggleChart;
       delete btnLayToggleListing;
       delete btnLayToggleNames;
@@ -797,7 +804,7 @@ void RouteManagerDialog::SetColorScheme()
       btnWptSendToGPS->SetBackgroundColour( cl );
       btnWptDeleteAll->SetBackgroundColour( cl );
       btnLayNew->SetBackgroundColour( cl );;
-      btnLayProperties->SetBackgroundColour( cl );
+      //btnLayProperties->SetBackgroundColour( cl );
       btnLayToggleChart->SetBackgroundColour( cl );
       btnLayToggleListing->SetBackgroundColour( cl );
       btnLayToggleNames->SetBackgroundColour( cl );
@@ -996,7 +1003,7 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
             if ( g_pRouteMan->GetpActiveRoute() )
@@ -1097,7 +1104,7 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event)
       if (!route) return;
       if (route->m_bIsInLayer) return;
 
-      wxMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
+      OCPNMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
                           _("Rename Waypoints?"), wxYES_NO);
       bool rename = (ask.ShowModal() == wxID_YES);
 
@@ -1535,7 +1542,7 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> tracks?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> tracks?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
             g_pRouteMan->DeleteAllTracks();
@@ -1862,7 +1869,7 @@ void RouteManagerDialog::OnWptSendToGPSClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnWptDeleteAllClick(wxCommandEvent &event)
 {
-      wxMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> waypoints?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
+      OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> waypoints?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       if(mdlg.ShowModal() == wxID_YES)
       {
           pWayPointMan->DeleteAllWaypoints(false);          // only delete unused waypoints
@@ -1905,8 +1912,7 @@ void RouteManagerDialog::UpdateLayButtons()
       item = m_pLayListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
       bool enable = (item != -1);
 
-      btnLayProperties->Enable(false);
-      //btnLayProperties->Enable(enable);
+      //btnLayProperties->Enable(false);
       btnLayDelete->Enable(enable);
       btnLayToggleChart->Enable(enable);
       btnLayToggleListing->Enable(enable);
@@ -1930,6 +1936,7 @@ void RouteManagerDialog::UpdateLayButtons()
       }
       else {
             btnLayToggleChart->SetLabel(_("Show on chart"));
+            btnLayToggleNames->SetLabel(_("Show WPT names"));
             btnLayToggleListing->SetLabel(_("List contents"));
       }
 }
@@ -1958,7 +1965,10 @@ void RouteManagerDialog::OnLayToggleVisibility(wxMouseEvent &event)
 
 void RouteManagerDialog::OnLayNewClick(wxCommandEvent &event)
 {
+      bool show_flag = g_bShowLayers;
+      g_bShowLayers = true;
       pConfig->ImportGPX(this, true, _T(""), false);
+      g_bShowLayers = show_flag;
 
       UpdateRouteListCtrl();
       UpdateTrkListCtrl();

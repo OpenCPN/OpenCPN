@@ -307,11 +307,10 @@ covr_set::~covr_set()
                         int wkbsize = m_covr_array_outlines[i].GetWKBSize();
                         if(wkbsize)
                         {
-                              char *p = new char[wkbsize];
+                              char *p = (char*) malloc(wkbsize * sizeof(char));
                               m_covr_array_outlines[i].WriteWKB(p);
                               ofs.Write(p, wkbsize);
-                              delete p;
-
+                              free(p);
                         }
                   }
                   ofs.Close();
@@ -1710,7 +1709,6 @@ bool read_feature_record_table(FILE *stream, int n_features, Cell_Info_Block *pC
                         *w = prelated_object;                       // fwd link
 
                         prelated_object->p_related_object_pointer_array = pobj;              // back link, array of 1 element
-
                         w++;
                   }
             }
@@ -2416,23 +2414,30 @@ int cm93chart::CreateObjChain(int cell_index, int subcell)
                         // set rigid platform
                               if (!strncmp(obj->FeatureName, "BCN",    3))
                                      pRigidATONArray->Add(obj);
+
+
+                              //    Mark the object as an ATON
+                              if ((!strncmp(obj->FeatureName,   "LIT",    3)) ||
+                                    (!strncmp(obj->FeatureName, "LIGHTS", 6)) ||
+                                    (!strncmp(obj->FeatureName, "BCN",    3)) ||
+                                    (!strncmp(obj->FeatureName, "_slgto", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_boygn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_bcngn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "_extgn", 6)) ||
+                                    (!strncmp(obj->FeatureName, "TOWERS", 6)) ||
+                                    (!strncmp(obj->FeatureName, "BOY",    3)))
+                              {
+                                    obj->bIsAton = true;
+                              }
                         }
 
-                        //    Mark the object as an ATON
-                        if ((!strncmp(obj->FeatureName,   "LIT",    3)) ||
-                              (!strncmp(obj->FeatureName, "LIGHTS", 6)) ||
-                              (!strncmp(obj->FeatureName, "BCN",    3)) ||
-                              (!strncmp(obj->FeatureName, "_slgto", 6)) ||
-                              (!strncmp(obj->FeatureName, "_boygn", 6)) ||
-                              (!strncmp(obj->FeatureName, "_bcngn", 6)) ||
-                              (!strncmp(obj->FeatureName, "_extgn", 6)) ||
-                              (!strncmp(obj->FeatureName, "TOWERS", 6)) ||
-                              (!strncmp(obj->FeatureName, "BOY",    3)))
+                        //    Mark th object as an "associable depth area"
+                        //    Flag is used by conditional symbology
+                        if (GEO_AREA == obj->Primitive_type)
                         {
-                              obj->bIsAton = true;
+                              if(!strncmp(obj->FeatureName, "DEPARE", 6) || !strncmp(obj->FeatureName, "DRGARE", 6))
+                                    obj->bIsAssociable = true;
                         }
-
-
 
 
 //      This is where Simplified or Paper-Type point features are selected
@@ -4054,13 +4059,14 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
    //      Build/Maintain a list of found OBJL types for later use
    //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
-      bool bNeedNew = true;
-      OBJLElement *pOLE;
-
-
 
       if(pobj)
       {
+            pobj->iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
+/*
+            bool bNeedNew = true;
+            OBJLElement *pOLE;
+
             for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
             {
             pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
@@ -4081,6 +4087,7 @@ S57Obj *cm93chart::CreateS57Obj( int cell_index, int iobject, int subcell, Objec
                   ps52plib->pOBJLArray->Add((void *)pOLE);
                   pobj->iOBJL  = ps52plib->pOBJLArray->GetCount() - 1;
             }
+*/
       }
 
 
@@ -4714,6 +4721,7 @@ void SetVPPositive(ViewPort *pvp)
 {
       while(pvp->GetBBox().GetMinX() < 0)
       {
+//            if(pvp->clon < 0.)
             pvp->clon += 360.;
             wxPoint2DDouble t(360., 0.);
             pvp->GetBBox().Translate(t);
@@ -5152,7 +5160,7 @@ double cm93compchart::GetNormalScaleMin(double canvas_scale_factor, bool b_allow
             //Adjust overzoom factor based on  b_allow_overzoom option setting
       double oz_factor;
       if(b_allow_overzoom)
-            oz_factor = 256.;
+            oz_factor = 40.;
       else
             oz_factor = 4.;
 
@@ -5181,12 +5189,12 @@ double cm93compchart::GetNormalScaleMin(double canvas_scale_factor, bool b_allow
                   case  4: return 100000.   / oz_factor;            // D
                   case  5: return 50000.    / oz_factor;            // E
                   case  6: return 20000.    / oz_factor;            // F
-                  case  7: return 7500.     / oz_factor;            // G
-                  default: return 7500.     / oz_factor;
+                  case  7: return 500.;                             // G
+                  default: return 500.     / oz_factor;
             }
       }
       else
-            return 7500. / oz_factor;
+            return 500.;
 }
 
 double cm93compchart::GetNormalScaleMax(double canvas_scale_factor, int canvas_width)
@@ -5279,12 +5287,12 @@ void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pVali
 
                   wxRegion rgn_covr = vp_positive.GetVPRegion( pmcd->m_nvertices, (float *)pmcd->pvertices, chart_native_scale, DrawBuf );
 
+
                   if(!rgn_covr.Empty())
                   {
                   //    No sense in increasing the region beyond the current VPoint size,
                   //    Just makes subsequent region iterator loops HUGE....
-                        rgn_covr.Intersect(VPoint.rv_rect);
-
+                        rgn_covr.Intersect(0,0,VPoint.rv_rect.width, VPoint.rv_rect.height);
                         pValidRegion->Union(rgn_covr);
                   }
             }
@@ -5342,6 +5350,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
       ViewPort vp_positive = VPoint;
 
       SetVPPositive(&vp_positive);
+
       bool render_return = true;
       if(m_pcm93chart_current)
       {
@@ -5360,6 +5369,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                   wxRegion vpr_empty = Region;
 
                   wxRegion chart_region;
+
                   GetValidCanvasRegion(vp_positive, &chart_region);
                   m_pcm93chart_current->m_render_region = chart_region;
 
@@ -5438,7 +5448,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                                     while ( upd )
                                     {
                                           wxRect rect = upd.GetRect();
-                                          rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+//                                          rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                                           dumm_dc.Blit(rect.x, rect.y, rect.width, rect.height, &build_dc, rect.x, rect.y);
                                           upd ++ ;
                                     }
@@ -5456,7 +5466,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                         while ( updt )
                         {
                               wxRect rect = updt.GetRect();
-                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+//                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                               dumm_dc.Blit(rect.x, rect.y, rect.width, rect.height, &temp_dc, rect.x, rect.y);
                               updt ++ ;
                         }

@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dashboard_pi 2.2.1207\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2011-05-30 20:56+0100\n"
+"Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
+"Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+#
+msgid "Add"
+msgstr "Hozzáad"
+#
+msgid "Add instrument"
+msgstr "Műszer hozzáadása"
+#
+msgid "Apparent wind"
+msgstr "Látszólagos szél"
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "Iránytű"
+#
+msgid "Cursor"
+msgstr ""
+#
+msgid "Dashboard"
+msgstr "Műszerfal"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "OpenCPN műszerfal plugin"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"OpenCPN Műszerfal plugin\n"
+"Navigációs műszerfalon NMEA adatokat jelenít meg."
+#
+msgid "Dashboard preferences"
+msgstr "Műszerfal beállítások"
+#
+msgid "Data:"
+msgstr "Adat:"
+#
+msgid "Delete"
+msgstr "Töröl"
+#
+msgid "Depth"
+msgstr "Mélység"
+#
+msgid "Down"
+msgstr "Le"
+#
+msgid "E"
+msgstr "K"
+#
+msgid "Edit"
+msgstr "Szerkeszt"
+#
+msgid "Fonts"
+msgstr "Betűtípusok"
+#
+msgid "GPS in view"
+msgstr "GPS műholdak"
+#
+msgid "GPS status"
+msgstr "GPS állapot"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "Műszer szélesség:"
+#
+msgid "Instruments"
+msgstr "Műszerek"
+#
+msgid "Label:"
+msgstr "Címke:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "É"
+#
+msgid "NE"
+msgstr "ÉK"
+#
+msgid "NW"
+msgstr "ÉNy"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "Pozíció"
+#
+msgid "Rudder angle"
+msgstr "Kormánylapát szög"
+#
+msgid "S"
+msgstr "D"
+#
+msgid "SE"
+msgstr "DK"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "DNy"
+#
+msgid "Select instrument to add:"
+msgstr "Hozzáadandó műszer kiválasztása:"
+#
+msgid "Small:"
+msgstr "Kicsi:"
+#
+msgid "Speedometer"
+msgstr "Sebesség"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Hőmérséklet"
+#
+msgid "Title:"
+msgstr "Cím:"
+#
+msgid "True wind"
+msgstr "Valós szél"
+#
+msgid "Up"
+msgstr "Fel"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "Ny"
+#
+msgid "Wind angle"
+msgstr "Szélirány"
+#
+msgid "Wind speed"
+msgstr "Szélsebesség"
+#
+msgid "show this dashboard"
+msgstr ""

@@ -116,6 +116,7 @@ extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
+extern bool             g_bShowLayers;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
@@ -125,6 +126,7 @@ extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
 extern bool             g_bTrackTime;
 extern bool             g_bTrackDistance;
+extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;
@@ -137,6 +139,7 @@ extern int              g_NMEALogWindow_sx, g_NMEALogWindow_sy;
 extern bool             g_bUseRaster;
 extern bool             g_bUseVector;
 extern bool             g_bUseCM93;
+extern int              g_COGAvgSec;
 
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
@@ -242,6 +245,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
             wxWindow* page = itemNotebook4->GetPage(i);
+//            if(ID_PANELPIM == page->GetId())
+//                  continue;
 
             wxScrolledWindow* scrolledWindow = wxDynamicCast(page, wxScrolledWindow);
             if (scrolledWindow)
@@ -262,7 +267,9 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
       for (size_t i = 0; i < itemNotebook4->GetPageCount(); i++)
       {
             wxWindow* page = itemNotebook4->GetPage(i);
+
             wxSizer* pageSizer = page->GetSizer();
+            page->SetMinSize(largest_unscrolled_page_size);
             pageSizer->SetMinSize(largest_unscrolled_page_size);
             pageSizer->SetVirtualSizeHints(page);
       }
@@ -613,6 +620,7 @@ void options::CreateControls()
       m_itemNMEA_TCPIP_StaticBox->Enable(false);
       m_itemNMEA_TCPIP_Source->Enable(false);
 
+      m_itemNMEA_TCPIP_Source->Clear();
       m_itemNMEA_TCPIP_Source->WriteText(_T("localhost"));
 
 #endif
@@ -685,6 +693,7 @@ void options::CreateControls()
             else
                   ip = _T("localhost");
 
+            m_itemNMEA_TCPIP_Source->Clear();
             m_itemNMEA_TCPIP_Source->WriteText(ip);
             m_itemNMEA_TCPIP_StaticBox->Enable(true);
             m_itemNMEA_TCPIP_Source->Enable(true);
@@ -701,6 +710,7 @@ void options::CreateControls()
             else
                   ip = _T("localhost");
 
+            m_itemNMEA_TCPIP_Source->Clear();
             m_itemNMEA_TCPIP_Source->WriteText(ip);
             m_itemNMEA_TCPIP_StaticBox->Enable(true);
             m_itemNMEA_TCPIP_Source->Enable(true);
@@ -757,6 +767,17 @@ void options::CreateControls()
 
       pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) );
       pFilterGrid->Add(pFilterSecs, 0, wxALIGN_RIGHT, 2);
+
+      //    Course Up display update period
+      wxFlexGridSizer *pCOGUPFilterGrid = new wxFlexGridSizer(2);
+      pCOGUPFilterGrid->AddGrowableCol(1);
+      itemNMEAStaticBoxSizer->Add(pCOGUPFilterGrid, 0, wxALL|wxEXPAND, border_size);
+
+      wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC, _("Course-Up Mode Display Update Period (Sec.)"));
+      pCOGUPFilterGrid->Add(itemStaticTextCOGUPFilterSecs, 0, wxALIGN_LEFT|wxADJUST_MINSIZE, border_size);
+
+      pCOGUPUpdateSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) );
+      pCOGUPFilterGrid->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT, 2);
 
 //    Add Autopilot serial output port controls
       wxStaticBox* itemNMEAAutoStaticBox = new wxStaticBox(itemPanelGPS, wxID_ANY, _("Autopilot Output Port"));
@@ -1260,6 +1281,9 @@ void options::CreateControls()
     pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
     itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
 
+    pShowLayers = new wxCheckBox( itemPanelAdvanced, ID_SHOWLAYERSCHECKBOX, _("Show layers initially"));
+    itemStaticBoxSizerGUIOption->Add(pShowLayers, 1, wxALIGN_LEFT|wxALL, border_size);
+
     wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer(2);
     pFormatGrid->AddGrowableCol(1);
     itemStaticBoxSizerGUIOption->Add(pFormatGrid, 0, wxALL|wxEXPAND, border_size);
@@ -1280,6 +1304,8 @@ void options::CreateControls()
 
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemNotebook4, ID_PANELPIM, wxDefaultPosition, wxDefaultSize, g_pi_manager->GetPlugInArray() );
+    m_pPlugInCtrl->SetScrollRate(1, 1);
+
     itemNotebook4->AddPage( m_pPlugInCtrl, _("PlugIns") );
 
 
@@ -1355,6 +1381,9 @@ void options::SetInitialSettings()
       s.Printf(_T("%d"), g_COGFilterSec);
       pFilterSecs->SetValue(s);
 
+      s.Printf(_T("%d"), g_COGAvgSec);
+      pCOGUPUpdateSecs->SetValue(s);
+
       pPrintShowIcon->SetValue(g_bShowPrintIcon);
       pCDOOutlines->SetValue(g_bShowOutlines);
       pCDOQuilting->SetValue(g_bQuiltEnable);
@@ -1386,6 +1415,7 @@ void options::SetInitialSettings()
       pPlayShipsBells->SetValue(g_bPlayShipsBells);   // pjotrc 2010.02.09
       pFullScreenToolbar->SetValue(g_bFullscreenToolbar);
       pTransparentToolbar->SetValue(g_bTransparentToolbar);
+      pShowLayers->SetValue(g_bShowLayers);
       pSDMMFormat->Select(g_iSDMMFormat);
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
@@ -1639,6 +1669,8 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
       pListBox->Append(SelDir);
 
+      k_charts |= CHANGE_CHARTS;
+
       event.Skip();
 }
 
@@ -1753,6 +1785,10 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
+    long update_val = 1;
+    pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
+    g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
+
 //    g_bAutoAnchorMark = pAutoAnchorMark->GetValue();
 
     g_bCourseUp = pCBCourseUp->GetValue();
@@ -1773,6 +1809,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bPlayShipsBells = pPlayShipsBells->GetValue();   // pjotrc 2010.02.09
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
+    g_bShowLayers = pShowLayers->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
     g_bShowTrackIcon = pTrackShowIcon->GetValue();
@@ -2051,19 +2088,6 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
 
       UpdateWorkArrayFromTextCtl();
 
-/*      int n = pListBox->GetCount();
-      if(m_pWorkDirList)
-      {
-            m_pWorkDirList->Clear();
-
-
-            for(int i=0 ; i<n ; i++)
-            {
-                  dirname = pListBox->GetString(i);
-                  if(!dirname.IsEmpty())
-                        m_pWorkDirList->Add(dirname);
-            }
-*/
       if(m_pWorkDirList)
       {
             pListBox->Clear();
@@ -2078,6 +2102,8 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
                   }
             }
       }
+
+      k_charts |= CHANGE_CHARTS;
 
       event.Skip();
 }
@@ -2515,6 +2541,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
 	else if(lang_canonical == _T("nb_NO")) {dir_suffix = _T("nb_NO"); return_string = wxString("Norsk", wxConvUTF8);}
       else if(lang_canonical == _T("tr_TR")) {dir_suffix = _T("tr_TR"); return_string = wxString("Türkçe", wxConvUTF8);}
       else if(lang_canonical == _T("el_GR")) {dir_suffix = _T("el_GR"); return_string = wxString("Ελληνικά", wxConvUTF8);}
+      else if(lang_canonical == _T("hu_HU")) {dir_suffix = _T("hu_HU"); return_string = wxString("Magyar", wxConvUTF8);}
       else if(lang_canonical == _T("zh_TW")) {dir_suffix = _T("zh_TW"); return_string = wxString("正體字", wxConvUTF8);}
       else
       {

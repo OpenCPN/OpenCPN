@@ -25,65 +25,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
-<<<<<<< s57mgr.cpp
- * $Log: s57mgr.cpp,v $
- * Revision 1.5  2010/04/27 01:43:46  bdbcat
- * Build 426
- *
- * Revision 1.4  2008/03/30 22:20:39  bdbcat
- * Update for Mac OSX/Unicode
- *
-=======
- * $Log: s57mgr.cpp,v $
- * Revision 1.5  2010/04/27 01:43:46  bdbcat
- * Build 426
- *
- * Revision 1.4  2008/03/30 22:20:39  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.3  2008/01/12 06:21:28  bdbcat
- * Update for Mac OSX/Unicode
- *
->>>>>>> 1.3
- * Revision 1.2  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.6  2006/08/04 11:42:03  dsr
- * no message
- *
- * Revision 1.5  2006/07/28 20:46:47  dsr
- * Implement GDAL/OGR library interface
- *
- * Revision 1.4  2006/06/15 02:49:03  dsr
- * Support Multiple M_COVR objects
- *
- * Revision 1.3  2006/05/19 19:27:55  dsr
- * Cleanup
- *
- * Revision 1.2  2006/04/23 03:59:24  dsr
- * Add some accessors
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.8  2006/04/19 00:51:46  dsr
- * *** empty log message ***
- *
- * Revision 1.7  2006/03/16 03:08:24  dsr
- * Cleanup tabs
- *
- * Revision 1.6  2006/02/24 18:08:44  dsr
- * Cleanup, delete static s57ClassRegistrar on ctor
- *
- * Revision 1.5  2006/02/24 03:07:15  dsr
- * implement wxHashMap for mygetenv() string storage
- *
- * Revision 1.4  2006/02/23 01:50:25  dsr
- * Cleanup
- *
  *
  */
 
@@ -99,9 +40,6 @@
 
 #include "gdal.h"
 
-//#include "../mygdal/include/iso8211.h"
-
-CPL_CVSID("$Id: s57mgr.cpp,v 1.5 2010/04/27 01:43:46 bdbcat Exp $");
 
 static wxString *pval;
 

@@ -120,8 +120,6 @@
 #include "ogr_geometry.h"
 #include "ogr_p.h"
 
-CPL_CVSID("$Id: ogrgeometrycollection.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $");
-
 /************************************************************************/
 /*                       OGRGeometryCollection()                        */
 /************************************************************************/
@@ -296,7 +294,7 @@ int OGRGeometryCollection::getNumGeometries() const
  * @return pointer to requested geometry.
  */
 
-OGRGeometry * OGRGeometryCollection::getGeometryRef( int i ) 
+OGRGeometry * OGRGeometryCollection::getGeometryRef( int i )
 
 {
     if( i < 0 || i >= nGeomCount )
@@ -413,7 +411,7 @@ OGRErr OGRGeometryCollection::addGeometryDirectly( OGRGeometry * poNewGeom )
  *
  * @param bDelete if TRUE the geometry will be deallocated, otherwise it will
  * not.  The default is TRUE as the container is considered to own the
- * geometries in it. 
+ * geometries in it.
  *
  * @return OGRERR_NONE if successful, or OGRERR_FAILURE if the index is
  * out of range.
@@ -436,7 +434,7 @@ OGRErr OGRGeometryCollection::removeGeometry( int iGeom, int bDelete )
     if( bDelete )
         delete papoGeoms[iGeom];
 
-    memmove( papoGeoms + iGeom, papoGeoms + iGeom + 1, 
+    memmove( papoGeoms + iGeom, papoGeoms + iGeom + 1,
              sizeof(void*) * (nGeomCount-iGeom-1) );
 
     nGeomCount--;
@@ -477,7 +475,7 @@ OGRErr OGRGeometryCollection::importFromWkb( unsigned char * pabyData,
 {
     OGRwkbByteOrder     eByteOrder;
     int                 nDataOffset;
-    
+
     if( nSize < 9 && nSize != -1 )
         return OGRERR_NOT_ENOUGH_DATA;
 
@@ -505,10 +503,10 @@ OGRErr OGRGeometryCollection::importFromWkb( unsigned char * pabyData,
     }
 
     CPLAssert( eGeometryType == wkbGeometryCollection
-               || eGeometryType == wkbMultiPolygon 
-               || eGeometryType == wkbMultiLineString 
+               || eGeometryType == wkbMultiPolygon
+               || eGeometryType == wkbMultiLineString
                || eGeometryType == wkbMultiPoint );
-#endif    
+#endif
 
 /* -------------------------------------------------------------------- */
 /*      Do we already have some existing geometry objects?              */
@@ -521,12 +519,12 @@ OGRErr OGRGeometryCollection::importFromWkb( unsigned char * pabyData,
         OGRFree( papoGeoms );
         papoGeoms = NULL;
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Get the geometry count.                                         */
 /* -------------------------------------------------------------------- */
     memcpy( &nGeomCount, pabyData + 5, 4 );
-    
+
     if( OGR_SWAP( eByteOrder ) )
         nGeomCount = CPL_SWAP32(nGeomCount);
 
@@ -560,7 +558,7 @@ OGRErr OGRGeometryCollection::importFromWkb( unsigned char * pabyData,
 
         nDataOffset += papoGeoms[iGeom]->WkbSize();
     }
-    
+
     return OGRERR_NONE;
 }
 
@@ -575,7 +573,7 @@ OGRErr  OGRGeometryCollection::exportToWkb( OGRwkbByteOrder eByteOrder,
 
 {
     int         nOffset;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Set the byte order.                                             */
 /* -------------------------------------------------------------------- */
@@ -586,14 +584,14 @@ OGRErr  OGRGeometryCollection::exportToWkb( OGRwkbByteOrder eByteOrder,
 /*      preserved.                                                      */
 /* -------------------------------------------------------------------- */
     GUInt32 nGType = getGeometryType();
-    
+
     if( eByteOrder == wkbNDR )
         nGType = CPL_LSBWORD32( nGType );
     else
         nGType = CPL_MSBWORD32( nGType );
 
     memcpy( pabyData + 1, &nGType, 4 );
-    
+
 /* -------------------------------------------------------------------- */
 /*      Copy in the raw data.                                           */
 /* -------------------------------------------------------------------- */
@@ -608,9 +606,9 @@ OGRErr  OGRGeometryCollection::exportToWkb( OGRwkbByteOrder eByteOrder,
     {
         memcpy( pabyData+5, &nGeomCount, 4 );
     }
-    
+
     nOffset = 9;
-    
+
 /* ==================================================================== */
 /*      Serialize each of the Geoms.                                    */
 /* ==================================================================== */
@@ -620,7 +618,7 @@ OGRErr  OGRGeometryCollection::exportToWkb( OGRwkbByteOrder eByteOrder,
 
         nOffset += papoGeoms[iGeom]->WkbSize();
     }
-    
+
     return OGRERR_NONE;
 }
 
@@ -643,7 +641,7 @@ OGRErr OGRGeometryCollection::importFromWkt( char ** ppszInput )
     {
         for( iGeom = 0; iGeom < nGeomCount; iGeom++ )
             delete papoGeoms[iGeom];
-        
+
         nGeomCount = 0;
         CPLFree( papoGeoms );
     }
@@ -674,7 +672,7 @@ OGRErr OGRGeometryCollection::importFromWkt( char ** ppszInput )
     {
         pszInput = OGRWktReadToken( pszInput, szToken );
         pszInput = OGRWktReadToken( pszInput, szToken );
-        
+
         *ppszInput = (char *) pszInput;
 
         if( !EQUAL(szToken,")") )
@@ -701,9 +699,9 @@ OGRErr OGRGeometryCollection::importFromWkt( char ** ppszInput )
 /* -------------------------------------------------------------------- */
 /*      Read the delimeter following the ring.                          */
 /* -------------------------------------------------------------------- */
-        
+
         pszInput = OGRWktReadToken( pszInput, szToken );
-        
+
     } while( szToken[0] == ',' );
 
 /* -------------------------------------------------------------------- */
@@ -711,9 +709,9 @@ OGRErr OGRGeometryCollection::importFromWkt( char ** ppszInput )
 /* -------------------------------------------------------------------- */
     if( szToken[0] != ')' )
         return OGRERR_CORRUPT_DATA;
-    
+
     *ppszInput = (char *) pszInput;
-    
+
     return OGRERR_NONE;
 }
 
@@ -750,7 +748,7 @@ OGRErr OGRGeometryCollection::exportToWkt( char ** ppszDstText ) const
 
         nCumulativeLength += strlen(papszGeoms[iGeom]);
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Allocate the right amount of space for the aggregated string    */
 /* -------------------------------------------------------------------- */
@@ -766,10 +764,10 @@ OGRErr OGRGeometryCollection::exportToWkt( char ** ppszDstText ) const
     strcat( *ppszDstText, " (" );
 
     for( iGeom = 0; iGeom < nGeomCount; iGeom++ )
-    {                                                           
+    {
         if( iGeom > 0 )
             strcat( *ppszDstText, "," );
-        
+
         strcat( *ppszDstText, papszGeoms[iGeom] );
         VSIFree( papszGeoms[iGeom] );
     }
@@ -789,7 +787,7 @@ void OGRGeometryCollection::getEnvelope( OGREnvelope * psEnvelope ) const
 
 {
     OGREnvelope         oGeomEnv;
-    
+
     if( nGeomCount == 0 )
         return;
 
@@ -821,13 +819,13 @@ OGRBoolean OGRGeometryCollection::Equal( OGRGeometry * poOther ) const
 
     if( poOGC == this )
         return TRUE;
-    
+
     if( poOther->getGeometryType() != getGeometryType() )
         return FALSE;
 
     if( getNumGeometries() != poOGC->getNumGeometries() )
         return FALSE;
-    
+
     // we should eventually test the SRS.
 
     for( int iGeom = 0; iGeom < nGeomCount; iGeom++ )
@@ -858,7 +856,7 @@ OGRErr OGRGeometryCollection::transform( OGRCoordinateTransformation *poCT )
         {
             if( iGeom != 0 )
             {
-                CPLDebug("OGR", 
+                CPLDebug("OGR",
                          "OGRGeometryCollection::transform() failed for a geometry other\n"
                          "than the first, meaning some geometries are transformed\n"
                          "and some are not!\n" );

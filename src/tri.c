@@ -769,7 +769,10 @@ int read_segments(char *filename, int *genus)
 
   fscanf(infile, "%d", &ncontours);
   if (ncontours <= 0)
+  {
+    fclose(infile);
     return -1;
+  }
 
   /* For every contour, read in all the points for the contour. The */
   /* outer-most contour is read in first (points specified in */

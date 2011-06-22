@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 22:51-0500\n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
 "PO-Revision-Date: 2010-12-27 00:19+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -17,42 +17,46 @@ msgstr ""
 "Language: \n"
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
-
 #
 #
 msgid "Add"
 msgstr "Añadir"
-
 #
 #
 msgid "Add instrument"
 msgstr "Añadir instrumento"
-
 #
 #
 msgid "Apparent wind"
 msgstr "Viento aparente"
-
+#
+msgid "Appearance"
+msgstr ""
 #
 #
 msgid "COG"
 msgstr "COG"
-
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
 #
 #
 msgid "Compass"
 msgstr "Compás"
-
+#
+msgid "Cursor"
+msgstr ""
 #
 #
 msgid "Dashboard"
 msgstr "Tablero instrumentos"
-
 #
 #
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "PlugIn tablero instrumentos para OpenCPN"
-
 #
 #
 msgid ""
@@ -61,174 +65,156 @@ msgid ""
 msgstr ""
 "PlugIn tablero instrumentos para OpenCPN\n"
 "Muestra un panel de instrumentos de navegación desde una fuente NMEA."
-
 #
 #
 msgid "Dashboard preferences"
 msgstr "Preferencias tablero instrumentos"
-
 #
 msgid "Data:"
 msgstr "Datos:"
-
 #
 #
 msgid "Delete"
 msgstr "Borrar"
-
 #
 #
 msgid "Depth"
 msgstr "Profundidad"
-
 #
 #
 msgid "Down"
 msgstr "Abajo"
-
 #
 #
 msgid "E"
 msgstr "E"
-
 #
 #
 msgid "Edit"
 msgstr "Editar"
-
 #
 msgid "Fonts"
 msgstr "Fuentes"
-
 #
 #
 msgid "GPS in view"
 msgstr "GPS visible"
-
 #
 #
 msgid "GPS status"
 msgstr "Estado GPS"
-
 #
 #
 msgid "HDG"
 msgstr "HDG"
-
+#
+msgid "Horizontal"
+msgstr ""
 #
 #
 msgid "Instrument width:"
 msgstr "Anchura panel:"
-
 #
 #
 msgid "Instruments"
 msgstr "Instrumentos"
-
 #
 msgid "Label:"
 msgstr "Etiqueta:"
-
+#
+msgid "Moon phase"
+msgstr ""
 #
 #
 msgid "N"
 msgstr "N"
-
 #
 #
 msgid "NE"
 msgstr "NE"
-
 #
 #
 msgid "NW"
 msgstr "NW"
-
+#
+msgid "Orientation:"
+msgstr ""
 #
 #
 msgid "Position"
 msgstr "Posición"
-
 #
 #
 msgid "Rudder angle"
 msgstr "Angulo timón"
-
 #
 #
 msgid "S"
 msgstr "S"
-
 #
 #
 msgid "SE"
 msgstr "SE"
-
 #
 #
 msgid "SOG"
 msgstr "SOG"
-
 #
 #
 msgid "STW"
 msgstr "STW"
-
 #
 #
 msgid "SW"
 msgstr "SW"
-
 #
 #
 msgid "Select instrument to add:"
 msgstr "Seleccionar instrumento a añadir:"
-
 #
 msgid "Small:"
 msgstr "Pequeño:"
-
 #
 #
 msgid "Speedometer"
 msgstr "Velocímetro"
-
+#
+msgid "Sunrise/Sunset"
+msgstr ""
 #
 #
 msgid "Temp"
 msgstr "Temp"
-
 #
 msgid "Title:"
 msgstr "Título:"
-
 #
 #
 msgid "True wind"
 msgstr "Viento real"
-
 #
 #
 msgid "Up"
 msgstr "Arriba"
-
 #
 #
 msgid "VMG"
 msgstr "VMG"
-
+#
+msgid "Vertical"
+msgstr ""
 #
 #
 msgid "W"
 msgstr "W"
-
 #
 #
 msgid "Wind angle"
 msgstr "Angulo viento"
-
 #
 #
 msgid "Wind speed"
 msgstr "Velocidad viento"
-
+#
+msgid "show this dashboard"
+msgstr ""

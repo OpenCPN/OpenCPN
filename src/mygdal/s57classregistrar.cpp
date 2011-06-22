@@ -78,8 +78,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: s57classregistrar.cpp,v 1.5 2008/08/09 23:40:25 bdbcat Exp $");
-
 
 #ifdef S57_BUILTIN_CLASSES
 #include "s57tables.h"

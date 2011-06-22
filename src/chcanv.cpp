@@ -229,14 +229,13 @@ extern wxAuiManager      *g_pauimgr;
 extern bool             g_bskew_comp;
 
 extern bool             g_bFullScreenQuilt;
+extern wxProgressDialog *s_ProgDialog;
 
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
 static bool mouse_leftisdown;
 
-
-CPL_CVSID ( "$Id: chcanv.cpp,v 1.107 2010/06/25 02:03:34 bdbcat Exp $" );
 
 
 //  These are xpm images used to make cursors for this class.
@@ -256,6 +255,9 @@ CPL_CVSID ( "$Id: chcanv.cpp,v 1.107 2010/06/25 02:03:34 bdbcat Exp $" );
 #ifndef USE_PNG_TIDESML
  #include "bitmaps/tidesml.xpm"
 #endif
+
+#define MIN_BRIGHT 10
+#define MAX_BRIGHT 100
 
 //    Constants for right click menus
 enum
@@ -307,6 +309,9 @@ enum
         ID_DEF_MENU_QUILTREMOVE,
         ID_DEF_MENU_COGUP,
         ID_DEF_MENU_NORTHUP,
+        ID_DEF_MENU_TIDEINFO,
+        ID_DEF_MENU_CURRENTINFO,
+
         ID_DEF_MENU_LAST
 
 };
@@ -719,10 +724,11 @@ ChartBase *Quilt::GetFirstChart()
       if(m_bbusy)
             return NULL;
 
+//      printf("getfirst\n");
       m_bbusy = true;
       ChartBase *pret = NULL;
       cnode = m_PatchList.GetFirst();
-      if(cnode)
+      if(cnode && cnode->GetData()->b_Valid)
             pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
 
       m_bbusy = false;
@@ -740,10 +746,11 @@ ChartBase *Quilt::GetNextChart()
       if(m_bbusy)
             return NULL;
 
+//      printf("getnext\n");
       m_bbusy = true;
       ChartBase *pret = NULL;
       cnode = cnode->GetNext();
-      if(cnode)
+      if(cnode && cnode->GetData()->b_Valid)
             pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
 
       m_bbusy = false;
@@ -1092,16 +1099,18 @@ bool Quilt::IsChartSmallestScale(int dbIndex)
       int target_dbindex = -1;
 
       unsigned int target_stack_index = 0;
-      while((target_stack_index < (m_extended_stack_array.GetCount()-1)))
+      if(m_extended_stack_array.GetCount())
       {
-            int test_db_index = m_extended_stack_array.Item(target_stack_index);
+            while((target_stack_index < (m_extended_stack_array.GetCount()-1)))
+            {
+                  int test_db_index = m_extended_stack_array.Item(target_stack_index);
 
-            if(specified_type == ChartData->GetDBChartType(test_db_index))
-                  target_dbindex = test_db_index;
+                  if(specified_type == ChartData->GetDBChartType(test_db_index))
+                        target_dbindex = test_db_index;
 
-            target_stack_index++;
+                  target_stack_index++;
+            }
       }
-
       return (dbIndex == target_dbindex);
 }
 
@@ -1113,6 +1122,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
       if(m_bbusy)
             return false;
+
+      ChartData->UnLockCache();
 
       ViewPort vp_local = vp_in;                   // need a non-const copy
 
@@ -1139,32 +1150,34 @@ bool Quilt::Compose(const ViewPort &vp_in)
       EmptyCandidateArray();
       m_extended_stack_array.Clear();
 
-      int n_charts = 0;
-      if(pCurrentStack)
-            n_charts = pCurrentStack->nEntry;
-
       bool b_need_resort = false;
 
-      //    Walk the current ChartStack...
-      for(int ics=0 ; ics < n_charts ; ics++)
+      int n_charts = 0;
+      if(pCurrentStack)
       {
-            int i = pCurrentStack->GetDBIndex(ics);
-            m_extended_stack_array.Add(i);
+            n_charts = pCurrentStack->nEntry;
 
-            double chart_skew = ChartData->GetDBChartSkew(i);
-            if(chart_skew > 180.)
-                  chart_skew -= 360.;
-
-            // only unskewed charts of the proper projection and type may be quilted....
-            if((m_reference_type == ChartData->GetDBChartType(i)) &&
-               (fabs(chart_skew) < 1.0) &&
-                (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+            //    Walk the current ChartStack...
+            for(int ics=0 ; ics < n_charts ; ics++)
             {
-                  QuiltCandidate *qcnew = new QuiltCandidate;
-                  qcnew->dbIndex = i;
-                  qcnew->ChartScale = ChartData->GetDBChartScale(i);
-                  m_pcandidate_array->Add(qcnew);
-           }
+                  int i = pCurrentStack->GetDBIndex(ics);
+                  m_extended_stack_array.Add(i);
+
+                  double chart_skew = ChartData->GetDBChartSkew(i);
+                  if(chart_skew > 180.)
+                        chart_skew -= 360.;
+
+                  // only unskewed charts of the proper projection and type may be quilted....
+                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
+                     (fabs(chart_skew) < 1.0) &&
+                      (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+                  {
+                        QuiltCandidate *qcnew = new QuiltCandidate;
+                        qcnew->dbIndex = i;
+                        qcnew->ChartScale = ChartData->GetDBChartScale(i);
+                        m_pcandidate_array->Add(qcnew);
+                 }
+            }
       }
       if(vp_in.b_FullScreenQuilt)
       {
@@ -1245,7 +1258,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                               if(chart_fractional_area < .10)
                               {
-                                    b_add = false;
+//                                    b_add = false;
 //                                    printf("Skipping S57 less than 10 percent\n");
                               }
                         }
@@ -1422,7 +1435,15 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         continue;                           // already did this one
 
                   const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqc->dbIndex);
-                  if(cte.GetScale() >= m_reference_scale)
+
+                  bool b_S57larger_scale = false;
+                  if(CHART_TYPE_S57 == m_reference_type)
+                  {
+//                        if(cte.GetScale() > m_reference_scale/5)
+//                              b_S57larger_scale = true;
+                  }
+
+                  if((cte.GetScale() >= m_reference_scale) || b_S57larger_scale)
                   {
                         //  If this chart appears in the no-show array, then simply include it, but
                         //  don't subtract its region when determining the smaller scale charts to include.....
@@ -1685,6 +1706,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             }
       }
 
+/*
       //    If using chart database < 1.6
       //    Walk the list again, removing any skewed chart entries
       if(ChartData->GetVersion() < 16)
@@ -1710,7 +1732,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         il++;
             }
       }
-
+*/
       //    Generate the final render regions for the patches, one by one, smallest to largest scale
       wxRegion unrendered_region(vp_local.rv_rect);
 
@@ -1827,7 +1849,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   ChartData->OpenChartFromDB(pqc->dbIndex, FULL_INIT);
       }
 
-
       //    Build and maintain the array of indexes in this quilt
 
       m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -1911,8 +1932,34 @@ bool Quilt::Compose(const ViewPort &vp_in)
             }
       }
 
-     //    Walk the patch list again, checking the error factor
 
+
+      //    Make sure the reference chart is in the cache
+      if(!ChartData->IsChartInCache(m_refchart_dbIndex))
+            ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
+
+
+      //    And try to prove that all required charts are in the cache
+      //    If one is missing, remove its patch from the quilt
+      //    This will probably leave a "black hole" in the quilt...
+      for(unsigned int k = 0 ; k < m_PatchList.GetCount() ; k++)
+      {
+            wxPatchListNode *pnode = m_PatchList.Item(k);
+            QuiltPatch *pqp = pnode->GetData();
+//            printf("validating %d\n", pqp->dbIndex);
+
+            if(pqp->b_Valid)
+            {
+                  if(!ChartData->IsChartInCache(pqp->dbIndex))
+                  {
+                        pqp->b_Valid = false;
+                        wxLogMessage(_T("   Quilt Compose cache miss..."));
+//                       printf("  miss %d\n", pqp->dbIndex);
+                  }
+            }
+      }
+
+      //    Walk the patch list again, checking the error factor
       m_max_error_factor = 0.;
       for(unsigned int k = 0 ; k < m_PatchList.GetCount() ; k++)
       {
@@ -1950,6 +1997,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
       m_vp_quilt = vp_in;                 // save the corresponding ViewPort locally
 
+      ChartData->LockCache();
+
       return true;
 }
 
@@ -1984,6 +2033,8 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                         QuiltPatch *pqp = GetCurrentPatch();
                         if(pqp->b_Valid)
                         {
+//                              printf("Valid patch %d\n", pqp->dbIndex);
+
                               if(!chart_region.IsEmpty())
                               {
                                     wxRegion get_region = pqp->ActiveRegion;
@@ -2012,6 +2063,11 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     tmp_dc.SelectObject(wxNullBitmap);
                               }
                         }
+                        else
+                        {
+//                              printf("  invalid patch %d\n", pqp->dbIndex);
+                        }
+
 
                         pch = GetNextChart();
                         ip++;
@@ -2494,7 +2550,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             //    Case:  vpBBox is completely inside the chart box
             if(_IN == chart_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
             {
-                  return wxRegion(rv_rect);
+                  return wxRegion(0,0, rv_rect.width, rv_rect.height);
             }
 
             //    The ViewPort and the chart region overlap in some way....
@@ -2788,6 +2844,10 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_MENU ( ID_TK_MENU_DELETE,           ChartCanvas::PopupMenuHandler )
 
         EVT_MENU ( ID_DEF_MENU_QUILTREMOVE,     ChartCanvas::PopupMenuHandler )
+
+        EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
+
 
 END_EVENT_TABLE()
 
@@ -3496,18 +3556,18 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         if(!m_bbrightdir)
                         {
                               g_nbrightness -= 10;
-                              if(g_nbrightness <= 0)
+                              if(g_nbrightness <= MIN_BRIGHT)
                               {
-                                    g_nbrightness = 0;
+                                    g_nbrightness = MIN_BRIGHT;
                                     m_bbrightdir = true;
                               }
                         }
                         else
                         {
                               g_nbrightness += 10;
-                              if(g_nbrightness >= 100)
+                              if(g_nbrightness >= MAX_BRIGHT)
                               {
-                                    g_nbrightness = 100;
+                                    g_nbrightness = MAX_BRIGHT;
                                     m_bbrightdir = false;
                               }
                         }
@@ -3574,6 +3634,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               b_proc = true;
 
                         case '-':
+                        case '_':
                         case 24:                     // Ctrl X
                               if ( (event.GetModifiers() == wxMOD_CONTROL) )
                                     ZoomCanvasOut(1.1);
@@ -3634,12 +3695,14 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                               m_bMeasure_Active = false;
                               g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
                               m_pMeasureRoute = NULL;
+                              gFrame->SurfaceToolbar();
                               Refresh ( false );
                         }
 
                         if ( parent_frame->nRoute_State )         // creating route?
                         {
                               FinishRoute();
+                              gFrame->SurfaceToolbar();
                               Refresh(false);
                         }
 
@@ -3826,6 +3889,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
       //    If currently creating a route, do not show this rollover window
       if ( parent_frame->nRoute_State )
             showRollover = false;
+
+      //    Similar for AIS target rollover window
+      if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() )
+            showRollover = false;
+
 
       if(m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover)
       {
@@ -4399,6 +4467,10 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             VPoint.skew = 0.;                                     // Quilting supports 0 Skew
 
         }
+
+        if(!VPoint.GetBBox().GetValid())
+              VPoint.SetBoxes();
+
         if(VPoint.GetBBox().GetValid())
         {
 
@@ -5270,6 +5342,9 @@ void ChartCanvas::GridDraw( wxDC& dc)
            dc.DrawLine(0,r.y,w,r.y);                             // draw grid line
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),0,r.y); // draw text
            lat = lat + gridlatMajor;
+
+           if(fabs(lat - wxRound(lat)) < 1e-5)
+                 lat = wxRound(lat);
      }
 
      // calculate position of first minor latitude grid line
@@ -5305,6 +5380,10 @@ void ChartCanvas::GridDraw( wxDC& dc)
            {
                  lon = lon - 360.0;
            }
+
+           if(fabs(lon - wxRound(lon)) < 1e-5)
+                 lon = wxRound(lon);
+
      }
 
      // calculate position of first minor longitude grid line
@@ -5432,8 +5511,10 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
                  //      Target data speed must be valid
                  //      unless the target is moored, anchored, or "not under command"
-            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
-                  return;
+//  Removed for 2.4.523+
+//  So as to render targets with unavailable SOG/COG, but with position known.
+//            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
+//                  return;
 
                  // And we never draw ownship
             if(td->b_OwnShip)
@@ -6421,6 +6502,9 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         //  Set the position of the console
         PositionConsole();
 
+        //  Inform the parent Frame that I am being resized...
+        gFrame->ProcessCanvasResize();
+
 //    Set up the scroll margins
         xr_margin = m_canvas_width  * 95/100;
         xl_margin = m_canvas_width  * 5/100;
@@ -6465,7 +6549,7 @@ void ChartCanvas::PositionConsole(void)
       int ccx, ccy, consx, consy;
       GetSize(&ccx, &ccy);
       console->GetSize(&consx, &consy);
-      console->SetSize(ccx - consx, 0, -1, -1);
+      console->SetSize(ccx - consx, 40, -1, -1);
 }
 
 void ChartCanvas::ShowChartInfoWindow(int x, int y, int dbIndex)
@@ -6630,6 +6714,17 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         }
 #endif
 
+        if(s_ProgDialog)
+              return;
+
+
+        if (( m_bMeasure_Active && (m_nMeasureState >= 2 )) ||
+              (m_pRoutePointEditTarget) ||
+              (parent_frame->nRoute_State) > 1)
+        {
+              wxPoint p = ClientToScreen(wxPoint(x, y));
+              gFrame->SubmergeToolbarIfOverlap(p.x, p.y, 20);
+        }
 
         //  Kick off the Rotation control timer
         if(g_bCourseUp)
@@ -6910,6 +7005,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
               m_bRouteEditing = false;
               m_pRoutePointEditTarget = NULL;
+
+              gFrame->SurfaceToolbar();
+
         }
 
 
@@ -6923,7 +7021,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 if ( parent_frame->nRoute_State )                     // creating route?
                 {
                         double rlat, rlon;
-
 
                         SetMyCursor ( pCursorPencil );
                         rlat = m_cursor_lat;
@@ -6947,7 +7044,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
                         if(pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer)     // pjotrc 2010.02.13
                         {
-                              wxMessageDialog near_point_dlg(this, _("Use nearby waypoint?"), _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                              OCPNMessageDialog near_point_dlg(this, _("Use nearby waypoint?"), _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                               int dlg_return = near_point_dlg.ShowModal();
 
                               if(dlg_return == wxID_YES)
@@ -7053,6 +7150,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                                 pr->m_bIsBeingEdited = true;
                                           }
                                           m_bRouteEditing = true;
+
                                     }
                                     else                                      // editing Mark
                                     {
@@ -7068,6 +7166,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                               node=node->GetNext();
                       }       // while (node)
+
 
                 }                   // else
         }
@@ -7286,6 +7385,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       m_bRouteEditing = false;
                       m_pRoutePointEditTarget = NULL;
+                      gFrame->SurfaceToolbar();
+
                 }
 
                 else if ( m_bMarkEditing )
@@ -7298,6 +7399,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         }
                         m_pRoutePointEditTarget = NULL;
                         m_bMarkEditing = false;
+                        gFrame->SurfaceToolbar();
 
                 }
 
@@ -7346,6 +7448,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                               PanCanvas(x - GetVP().pix_width/2, y - GetVP().pix_height/2);
                                               break;
                                         }
+
+                                        gFrame->SurfaceToolbar();
+
                                   }                             // switch
 
                       }
@@ -7575,7 +7680,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
 
                       bool bseltc = false;
-                      if(0 == seltype)
+//                      if(0 == seltype)
                       {
                                   if (  pFindCurrent )
                                   {
@@ -7617,18 +7722,30 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                                               pIDX_best_candidate = ( IDX_entry * ) (pFind->m_pData1);
                                         }
 
+                                        m_pIDXCandidate = pIDX_best_candidate;
 
-
-                                        DrawTCWindow ( x, y, ( void * ) pIDX_best_candidate );
-                                        Refresh ( false );
-                                        bseltc = true;
+                                        if(0 == seltype)
+                                        {
+                                              DrawTCWindow ( x, y, ( void * ) pIDX_best_candidate );
+                                              Refresh ( false );
+                                              bseltc = true;
+                                        }
+                                        else
+                                              seltype |= SELTYPE_CURRENTPOINT;
                                   }
 
                                   else if ( pFindTide )
                                   {
-                                        DrawTCWindow ( x, y, ( void * ) pFindTide->m_pData1 );
-                                        Refresh ( false );
-                                        bseltc = true;
+                                        m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
+
+                                        if(0 == seltype)
+                                        {
+                                              DrawTCWindow ( x, y, ( void * ) pFindTide->m_pData1 );
+                                              Refresh ( false );
+                                              bseltc = true;
+                                        }
+                                        else
+                                              seltype |= SELTYPE_TIDEPOINT;
                                   }
 
                       }
@@ -7828,7 +7945,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
               if ((m_pFoundRoutePoint == pAnchorWatchPoint1) || (m_pFoundRoutePoint == pAnchorWatchPoint2))       //pjotrc 2010.02.15
                     pdef_menu->Append ( ID_WP_MENU_CLEAR_ANCHORWATCH,   _( "Clear Anchor Watch" ) );                //pjotrc 2010.02.15
               else                                                                                                //pjotrc 2010.02.15
-                    if ((NULL == pAnchorWatchPoint1) || (NULL == pAnchorWatchPoint2)) {                             //pjotrc 2010.02.15
+                    if (!(m_pFoundRoutePoint->m_bIsInLayer) && ((NULL == pAnchorWatchPoint1) || (NULL == pAnchorWatchPoint2))) {                             //pjotrc 2010.02.15
 
                     double dist;
                     double brg;                                                                                               //pjotrc 2010.02.15
@@ -7956,6 +8073,12 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         }
 
 
+        if(seltype & SELTYPE_TIDEPOINT)
+              pdef_menu->Append ( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
+
+        if(seltype & SELTYPE_CURRENTPOINT)
+              pdef_menu->Append ( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
+
 #ifdef __WXMSW__
         //  If we dismiss the context menu without action, we need to discard some mouse events....
         //  Eat the next 3 button events, which happen as down-down-up on MSW XP
@@ -8040,7 +8163,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         parent_frame->DoChartUpdate();
 
-                        parent_frame->SelectChartFromStack (0, false, CHART_TYPE_UNKNOWN, CHART_FAMILY_RASTER);
+                        parent_frame->SelectChartFromStack (0, false, CHART_TYPE_DONTCARE, CHART_FAMILY_RASTER);
                         break;
 
                 case ID_DEF_MENU_SCALE_IN:
@@ -8239,6 +8362,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_bMeasure_Active = false;
                         g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
                         m_pMeasureRoute = NULL;
+                        gFrame->SurfaceToolbar();
                         Refresh ( false );
                         break;
 
@@ -8332,11 +8456,13 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                                 pdialog->SetText ( *QueryResult );
 
                                 pdialog->Create ( this, -1, _( "Object Query" ) );
-//                                pdialog->SetSize ( 800, -1 );
+//                                pdialog->SetSize ( 200, -1 );
                                 pdialog->Centre();
 
+                                gFrame->SubmergeToolbar();
                                 SetCursor(wxCURSOR_ARROW);
                                 pdialog->ShowModal();
+                                gFrame->SurfaceToolbar();
 
                                 delete rule_list;
                                 delete pdialog;
@@ -8379,13 +8505,28 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                     break;
               }
 
-                case ID_RT_MENU_REVERSE:
+              case ID_DEF_MENU_CURRENTINFO:
+              {
+                    DrawTCWindow ( popx, popy, ( void * ) m_pIDXCandidate );
+                    Refresh ( false );
+
+                    break;
+              }
+
+              case ID_DEF_MENU_TIDEINFO:
+              {
+                    DrawTCWindow ( popx, popy, ( void * ) m_pIDXCandidate );
+                    Refresh ( false );
+
+                    break;
+              }
+              case ID_RT_MENU_REVERSE:
                 {
                         if (m_pSelectedRoute->m_bIsInLayer) break;
 
                         pSelect->DeleteAllSelectableRouteSegments ( m_pSelectedRoute );
 
-                        wxMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
+                        OCPNMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
                                             _("Rename Waypoints?"), wxYES_NO);
 
                         m_pSelectedRoute->Reverse(ask.ShowModal() == wxID_YES);
@@ -8394,7 +8535,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         pConfig->UpdateRoute ( m_pSelectedRoute );
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                               pRoutePropDialog->UpdateProperties();
@@ -8476,7 +8617,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_pSelectedRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
                         pConfig->UpdateRoute ( m_pSelectedRoute );
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                               pRoutePropDialog->UpdateProperties();
@@ -8515,7 +8656,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                               if(!g_pRouteMan->IsRouteValid(m_pSelectedRoute))
                                     m_pSelectedRoute = NULL;
 
-                              if ( pRoutePropDialog )
+                              if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                               {
                                   pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                                   pRoutePropDialog->UpdateProperties();
@@ -8559,7 +8700,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                           //  Add this point back into the selectables
                           pSelect->AddSelectableRoutePoint(m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, m_pFoundRoutePoint);
 
-                          if ( pRoutePropDialog )
+                          if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                           {
                                 pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedRoute );
                                 pRoutePropDialog->UpdateProperties();
@@ -8633,7 +8774,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_TK_MENU_DELETE:
               {
-                    wxMessageDialog track_delete_confirm_dlg(this, _("Are you sure you want to delete this track?"), _("OpenCPN Track Delete"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                    OCPNMessageDialog track_delete_confirm_dlg(this, _("Are you sure you want to delete this track?"), _("OpenCPN Track Delete"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                     int dlg_return = track_delete_confirm_dlg.ShowModal();
 
                     if(dlg_return == wxID_YES)
@@ -8650,7 +8791,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         m_pFoundRoutePoint = NULL;
                         m_pFoundRoutePointSecond = NULL;
 
-                        if ( pRoutePropDialog )
+                        if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
                         {
                               pRoutePropDialog->SetRouteAndUpdate ( m_pSelectedTrack );
                               pRoutePropDialog->UpdateProperties();
@@ -8690,6 +8831,8 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_RC_MENU_FINISH:
                         FinishRoute();
+                        gFrame->SurfaceToolbar();
+
 /*
                         parent_frame->nRoute_State = 0;
                         parent_frame->SetToolbarItemState ( ID_ROUTE, false );
@@ -8794,7 +8937,7 @@ void ChartCanvas::FinishRoute(void)
             if ( m_pMouseRoute )
                   m_pMouseRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
 
-            if ( pRoutePropDialog )
+            if ( pRoutePropDialog && ( pRoutePropDialog->IsShown()))
             {
                   pRoutePropDialog->SetRouteAndUpdate ( m_pMouseRoute );
                   pRoutePropDialog->UpdateProperties();
@@ -9231,6 +9374,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         svp.pix_width = svp.rv_rect.width;
         svp.pix_height = svp.rv_rect.height;
 
+//        printf("Onpaint pix %d %d\n", VPoint.pix_width, VPoint.pix_height);
+//        printf("OnPaint rv_rect %d %d\n", VPoint.rv_rect.width, VPoint.rv_rect.height);
+
         wxRegion chart_get_region(wxRect(0,0,svp.pix_width, svp.pix_height));
 
         //  If we are going to use the cached rotated image, there is no need to fetch any chart data
@@ -9243,6 +9389,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         {
               if(m_pQuilt && !m_pQuilt->IsComposed())
                     return;
+
+              if((m_working_bm.GetWidth() != svp.pix_width) || (m_working_bm.GetHeight() != svp.pix_height))
+                    m_working_bm.Create(svp.pix_width, svp.pix_height, -1); // make sure the target is big enoug
 
               if(!g_bCourseUp)
               {
@@ -9275,7 +9424,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                                     if(dx || dy)
                                     {
                                           //  Blit the reuseable portion of the cached wxBitmap to a working bitmap
-
                                           temp_dc.SelectObject ( m_working_bm );
 
                                           wxMemoryDC cache_dc;
@@ -9351,6 +9499,8 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
             //  Save the fully rendered quilt image as a wxBitmap member of this class
                   if(b_save)
                   {
+//                        if((m_cached_chart_bm.GetWidth() != svp.pix_width) || (m_cached_chart_bm.GetHeight() != svp.pix_height))
+//                              m_cached_chart_bm.Create(svp.pix_width, svp.pix_height, -1); // target wxBitmap is big enough
                         wxMemoryDC scratch_dc_0;
                         scratch_dc_0.SelectObject ( m_cached_chart_bm);
                         scratch_dc_0.Blit ( 0, 0, svp.pix_width, svp.pix_height, &temp_dc, 0, 0  );
@@ -9363,7 +9513,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
             else            // quilted, course-up
             {
-                  m_working_bm.Create(svp.pix_width, svp.pix_height, -1);         // make sure the target wxBitmap is big enough
                   temp_dc.SelectObject ( m_working_bm );
                   wxRegion chart_get_all_region(wxRect(0,0,svp.pix_width, svp.pix_height));
                   m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_all_region );
@@ -9667,9 +9816,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxCoord w, h;
         scratch_dc.GetSize(&w, &h);
         if(g_bDisplayGrid)
-              ScaleBarDraw( scratch_dc, 60, h - 20 );
+              ScaleBarDraw( scratch_dc, 60, h - 50 );
         else
-              ScaleBarDraw( scratch_dc, 20, h - 20 );
+              ScaleBarDraw( scratch_dc, 20, h - 50 );
 
 
         // Maybe draw a Grid
@@ -12763,10 +12912,11 @@ void S57QueryDialog::CreateControls()
 
 // A second box sizer to give more space around the controls
         wxBoxSizer* boxSizer = new wxBoxSizer ( wxHORIZONTAL );
-        topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
+//        topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
+        topSizer->Add ( boxSizer, 1, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
 
 //  The Tree control
-        m_pTree = new S57ObjectTree(this, ID_S57QUERYTREECTRL, wxDefaultPosition, wxSize ( -1, 500 ), wxTR_HAS_BUTTONS);
+        m_pTree = new S57ObjectTree(this, ID_S57QUERYTREECTRL, wxDefaultPosition, wxSize ( 400, 500 ), wxTR_HAS_BUTTONS);
         m_root_id = m_pTree->AddRoot(_("Chart"));
 
         m_id_array = new wxTreeItemId[m_n_items];
@@ -12786,7 +12936,8 @@ void S57QueryDialog::CreateControls()
         m_pTree->SetQuickBestSize(false);
         wxSize sz = m_pTree->GetBestSize();
         m_pTree->SetSize(sz.x, -1);
-        boxSizer->Add ( m_pTree, 0, wxALL, 5 );
+//        boxSizer->Add ( m_pTree, 0, wxALL, 5 );
+        boxSizer->Add ( m_pTree, wxSizerFlags().Proportion(0).Expand().Border(10));
 
 
 // Here is the query result as a Text Control
@@ -12801,12 +12952,13 @@ void S57QueryDialog::CreateControls()
         tcstyle |= wxTE_DONTWRAP;
 #endif
 
-        m_pQueryTextCtl = new wxTextCtrl ( this, -1, _T ( "" ), wxDefaultPosition, wxSize ( 500, 500 ), tcstyle );
+        m_pQueryTextCtl = new wxTextCtrl ( this, -1, _T ( "" ), wxDefaultPosition, wxSize ( 400, 500 ), tcstyle );
 
         m_pQueryTextCtl->SetBackgroundColour ( back_color );
         m_pQueryTextCtl->SetForegroundColour ( text_color );
 
-        boxSizer->Add ( m_pQueryTextCtl, 0, wxALL|wxEXPAND, 5 );
+//        boxSizer->Add ( m_pQueryTextCtl, 0, wxALL|wxEXPAND, 5 );
+        boxSizer->Add ( m_pQueryTextCtl, wxSizerFlags().Proportion(1).Expand().Border(10));
 
         m_pQueryTextCtl->SetFont ( *qFont );
 

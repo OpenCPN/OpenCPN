@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -228,6 +228,20 @@ msgstr " %H Horas  %M Minutos"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Nenhuma Carta Disponível"
+#
 # 
 # 
 # 
@@ -447,10 +461,6 @@ msgstr "Mostrar acompanhamentos dos alvos"
 # 
 msgid "&Style:"
 msgstr "E&stilo:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1230,6 +1240,9 @@ msgstr "Não foi possível resolver o servidor TCP/IP"
 msgid "Course UP Mode"
 msgstr "Modo Rumo Acima"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1493,6 +1506,27 @@ msgstr "&Exportar..."
 msgid "ENC/Vector"
 msgstr "ENC/Vetorial"
 #
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+msgid "ETA"
+msgstr "TEC"
+#
 # 
 # 
 # 
@@ -1511,6 +1545,28 @@ msgstr "TEC"
 # 
 msgid "ETA:                  "
 msgstr "ETA:                  "
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ETE"
+msgstr "TEC"
 #
 # 
 # 
@@ -1603,6 +1659,13 @@ msgstr "Exportar arquivo GPX"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Fim da Derrota"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Excluir Acompanhamento"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1768,6 +1831,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Marcação:              %5.0f Graus.\n"
+#
+# 
+# 
+# 
 msgid "Help"
 msgstr "Ajuda"
 #
@@ -1800,6 +1870,16 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "I&mportar..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:                  "
+#
 # 
 # 
 # 
@@ -1810,13 +1890,6 @@ msgstr "Símbolo"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Importar arquivo GPX"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Importar arquivo GPX"
 #
 # 
@@ -2080,6 +2153,13 @@ msgstr "META Objetos"
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:                  "
 #
 # 
 msgid "M_COVR ID"
@@ -3245,6 +3325,13 @@ msgstr "Mostrar Contorno das Cartas"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Informação da Marca"
+#
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Mostrar Correntes"
 #
@@ -3321,6 +3408,13 @@ msgstr "Mostrar Barra de Status"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Informação da Marca"
+#
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Mostrar Marés"
 #
@@ -3336,6 +3430,9 @@ msgstr "Mostrar ícone Acompanhamentos"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Mostrar Nome"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3389,7 +3486,7 @@ msgstr "Simplificado"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
 "Tamanho:                %5dm x %dm x ---m\n"
@@ -3516,6 +3613,13 @@ msgstr "Excluir Derrota"
 # 
 # 
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "Mostrar acompanhamentos dos alvos"
+#
+# 
+# 
+# 
 msgid "Standard"
 msgstr "Standard"
 #
@@ -3619,6 +3723,13 @@ msgstr "Derrota IR PARA Temporária"
 # 
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Derrota IR PARA Temporária"
+#
+# 
+# 
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Enviar"
 #
@@ -3709,6 +3820,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Timestamp"
+msgstr "TED/Marca Temporal"
+#
+# 
+# 
+# 
 msgid "To"
 msgstr "De Para"
 #
@@ -3723,20 +3841,6 @@ msgstr "Para o Ponto"
 # 
 msgid "Today"
 msgstr "Hoje"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Ligar Acompanhamento"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Nome da Derrota"
 #
 # 
 # 
@@ -4210,6 +4314,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4225,6 +4335,12 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4250,6 +4366,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4269,6 +4391,12 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4294,6 +4422,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4314,6 +4448,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4325,6 +4465,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4354,6 +4500,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4374,6 +4526,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4403,6 +4561,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4418,6 +4582,12 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4443,21 +4613,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "ETA"
-#~ msgstr "TEC"
+#
+#
+#
 #
 #
 #
@@ -4481,6 +4639,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4488,6 +4652,12 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4513,6 +4683,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4535,6 +4711,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4548,6 +4730,12 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4569,6 +4757,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4584,6 +4778,12 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4605,6 +4805,25 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Importar arquivo GPX"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4614,6 +4833,12 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4635,6 +4860,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4650,6 +4881,12 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4672,6 +4909,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4687,6 +4930,12 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4707,6 +4956,12 @@ msgstr ""
 #~ msgstr "Pressão, hPa"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4717,6 +4972,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4742,6 +5003,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4760,6 +5027,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4775,6 +5048,12 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4800,6 +5079,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4809,6 +5094,12 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4834,6 +5125,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4856,6 +5153,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4869,6 +5172,12 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar ícone GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4893,6 +5202,51 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Tamanho:                %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Ligar Acompanhamento"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Nome da Derrota"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
 # 
 # 
 # 
@@ -4903,6 +5257,12 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4924,6 +5284,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4939,6 +5305,12 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
+#
+#
+#
+#
+#
 #
 #
 #

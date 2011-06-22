@@ -134,8 +134,6 @@
 #endif
 
 
-CPL_CVSID("$Id: ocpn_pixel.cpp,v 1.10 2010/05/15 04:02:12 bdbcat Exp $");
-
 
 #ifdef  __WXX11__
 

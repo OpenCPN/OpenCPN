@@ -14,16 +14,16 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  **********************************************************************
  *
@@ -82,14 +82,12 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: cpl_path.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 
 /* should be size of larged possible filename */
 #define CPL_PATH_BUF_SIZE 2048
-static char     szStaticResult[CPL_PATH_BUF_SIZE]; 
+static char     szStaticResult[CPL_PATH_BUF_SIZE];
 
-#ifdef WIN32        
+#ifdef WIN32
 #define SEP_CHAR '\\'
 #define SEP_STRING "\\"
 #else
@@ -373,7 +371,7 @@ const char *CPLResetExtension( const char *pszPath, const char *pszExt )
             break;
         }
 
-        if( szStaticResult[i] == '/' || szStaticResult[i] == '\\' 
+        if( szStaticResult[i] == '/' || szStaticResult[i] == '\\'
             || szStaticResult[i] == ':' )
             break;
     }
@@ -382,7 +380,7 @@ const char *CPLResetExtension( const char *pszPath, const char *pszExt )
 /*      Append the new extension.                                       */
 /* -------------------------------------------------------------------- */
     CPLAssert( strlen(pszExt) + 2 < CPL_PATH_BUF_SIZE );
-    
+
     strcat( szStaticResult, "." );
     strcat( szStaticResult, pszExt );
 
@@ -411,7 +409,7 @@ const char *CPLResetExtension( const char *pszPath, const char *pszExt )
  * not.  May be NULL.
  *
  * @param pszBasename file basename.  May optionally have path and/or
- * extension.  May not be NULL. 
+ * extension.  May not be NULL.
  *
  * @param pszExtension file extension, optionally including the period.  May
  * be NULL.
@@ -446,10 +444,10 @@ const char *CPLFormFilename( const char * pszPath,
                strlen(pszExtension) + 1 < CPL_PATH_BUF_SIZE );
 
     strncpy( szStaticResult, pszPath, CPL_PATH_BUF_SIZE );
-    strncat( szStaticResult, pszAddedPathSep, CPL_PATH_BUF_SIZE);
-    strncat( szStaticResult, pszBasename, CPL_PATH_BUF_SIZE);
-    strncat( szStaticResult, pszAddedExtSep, CPL_PATH_BUF_SIZE);
-    strncat( szStaticResult, pszExtension, CPL_PATH_BUF_SIZE);
+    strncat( szStaticResult, pszAddedPathSep, sizeof(szStaticResult)-strlen(szStaticResult)-1);
+    strncat( szStaticResult, pszBasename,     sizeof(szStaticResult)-strlen(szStaticResult)-1);
+    strncat( szStaticResult, pszAddedExtSep,  sizeof(szStaticResult)-strlen(szStaticResult)-1);
+    strncat( szStaticResult, pszExtension,    sizeof(szStaticResult)-strlen(szStaticResult)-1);
     szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
 
     return szStaticResult;
@@ -464,8 +462,8 @@ const char *CPLFormFilename( const char * pszPath,
  *
  * This function tries to return the path to a file regardless of
  * whether the file exactly matches the basename, and extension case, or
- * is all upper case, or all lower case.  The path is treated as case 
- * sensitive.  This function is equivelent to CPLFormFilename() on 
+ * is all upper case, or all lower case.  The path is treated as case
+ * sensitive.  This function is equivelent to CPLFormFilename() on
  * case insensitive file systems (like Windows).
  *
  * @param pszPath directory path to the directory containing the file.  This
@@ -473,7 +471,7 @@ const char *CPLFormFilename( const char * pszPath,
  * not.  May be NULL.
  *
  * @param pszBasename file basename.  May optionally have path and/or
- * extension.  May not be NULL. 
+ * extension.  May not be NULL.
  *
  * @param pszExtension file extension, optionally including the period.  May
  * be NULL.
@@ -507,7 +505,7 @@ const char *CPLFormCIFilename( const char * pszPath,
     else if( pszExtension[0] != '.' && strlen(pszExtension) > 0 )
         pszAddedExtSep = ".";
 
-    sprintf( pszFilename, "%s%s%s", 
+    sprintf( pszFilename, "%s%s%s",
              pszBasename, pszAddedExtSep, pszExtension );
 
     pszFullPath = CPLFormFilename( pszPath, pszFilename, NULL );
@@ -552,13 +550,13 @@ const char *CPLFormCIFilename( const char * pszPath,
 /************************************************************************/
 
 /**
- * Find a file relative to a project file. 
+ * Find a file relative to a project file.
  *
  * Given the path to a "project" directory, and a path to a secondary file
  * referenced from that project, build a path to the secondary file
  * that the current application can use.  If the secondary path is already
- * absolute, rather than relative, then it will be returned unaltered. 
- * 
+ * absolute, rather than relative, then it will be returned unaltered.
+ *
  * Examples:
  * <pre>
  * CPLProjectRelativeFilename("abc/def","tmp/abc.gif") == "abc/def/tmp/abc.gif"
@@ -568,17 +566,17 @@ const char *CPLFormCIFilename( const char * pszPath,
  * CPLProjectRelativeFilename("C:\WIN","abc.gif") == "C:\WIN\abc.gif"
  * </pre>
  *
- * @param pszProjectDir the directory relative to which the secondary files 
+ * @param pszProjectDir the directory relative to which the secondary files
  * path should be interpreted.
  * @param pszSecondaryFilename the filename (potentially with path) that
  * is to be interpreted relative to the project directory.
  *
  * @return a composed path to the secondary file.  The returned string is
  * internal and should not be altered, freed, or depending on past the next
- * CPL call. 
+ * CPL call.
  */
 
-const char *CPLProjectRelativeFilename( const char *pszProjectDir, 
+const char *CPLProjectRelativeFilename( const char *pszProjectDir,
                                         const char *pszSecondaryFilename )
 
 {
@@ -591,7 +589,7 @@ const char *CPLProjectRelativeFilename( const char *pszProjectDir,
     strncpy( szStaticResult, pszProjectDir, CPL_PATH_BUF_SIZE );
     szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
 
-    if( pszProjectDir[strlen(pszProjectDir)-1] != '/' 
+    if( pszProjectDir[strlen(pszProjectDir)-1] != '/'
         && pszProjectDir[strlen(pszProjectDir)-1] != '\\' )
     {
         CPLAssert( strlen(SEP_STRING) + 1 < CPL_PATH_BUF_SIZE );
@@ -602,7 +600,7 @@ const char *CPLProjectRelativeFilename( const char *pszProjectDir,
     CPLAssert( strlen(pszSecondaryFilename) + 1 < CPL_PATH_BUF_SIZE );
 
     strcat( szStaticResult, pszSecondaryFilename );
-        
+
     return szStaticResult;
 }
 
@@ -615,11 +613,11 @@ const char *CPLProjectRelativeFilename( const char *pszProjectDir,
  *
  * The test is filesystem convention agnostic.  That is it will test for
  * Unix style and windows style path conventions regardless of the actual
- * system in use.  
+ * system in use.
  *
  * @param pszFilename the filename with path to test.
  *
- * @return TRUE if the filename is relative or FALSE if it is absolute. 
+ * @return TRUE if the filename is relative or FALSE if it is absolute.
  */
 
 int CPLIsFilenameRelative( const char *pszFilename )

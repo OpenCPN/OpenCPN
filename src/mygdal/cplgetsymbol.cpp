@@ -77,8 +77,6 @@
 
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: cplgetsymbol.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /* ==================================================================== */
 /*                  Unix Implementation                                 */
 /* ==================================================================== */
@@ -107,14 +105,14 @@ CPL_CVSID("$Id: cplgetsymbol.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
  * Currently CPLGetSymbol() doesn't try to:
  * <ul>
  *  <li> prevent the reference count on the library from going up
- *    for every request, or given any opportunity to unload      
- *    the library.                                            
- *  <li> Attempt to look for the library in non-standard         
- *    locations.                                              
- *  <li> Attempt to try variations on the symbol name, like      
+ *    for every request, or given any opportunity to unload
+ *    the library.
+ *  <li> Attempt to look for the library in non-standard
+ *    locations.
+ *  <li> Attempt to try variations on the symbol name, like
  *    pre-prending or post-pending an underscore.
  * </ul>
- * 
+ *
  * Some of these issues may be worked on in the future.
  *
  * @param pszLibrary the name of the shared library or DLL containing
@@ -147,7 +145,7 @@ void *CPLGetSymbol( const char * pszLibrary, const char * pszSymbolName )
                   "%s", dlerror() );
         return NULL;
     }
-    
+
     return( pSymbol );
 }
 
@@ -188,7 +186,7 @@ void *CPLGetSymbol( const char * pszLibrary, const char * pszSymbolName )
                   "Can't find requested entry point: %s\n", pszSymbolName );
         return NULL;
     }
-    
+
     return( pSymbol );
 }
 
@@ -209,7 +207,7 @@ void *CPLGetSymbol( const char * pszLibrary, const char * pszSymbolName )
 void *CPLGetSymbol(const char *pszLibrary, const char *pszEntryPoint)
 
 {
-    CPLDebug( "CPL", 
+    CPLDebug( "CPL",
               "CPLGetSymbol(%s,%s) called.  Failed as this is stub"
               " implementation.", pszLibrary, pszEntryPoint );
     return NULL;

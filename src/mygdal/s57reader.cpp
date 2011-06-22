@@ -196,8 +196,6 @@
 #include "cpl_string.h"
 #include "ogr_s57.h"
 
-CPL_CVSID("$Id: s57reader.cpp,v 1.8 2010/06/13 21:06:36 bdbcat Exp $");
-
 /************************************************************************/
 /*                             S57Reader()                              */
 /************************************************************************/
@@ -373,8 +371,7 @@ OGRFeature *S57Reader::NextPendingMultiPoint()
     poSrcPoint = (OGRPoint *) poMPGeom->getGeometryRef( iPointOffset++ );
     poPoint->SetGeometry( poSrcPoint );
 
-    if( poPoint != NULL )
-        poPoint->SetField( "DEPTH", poSrcPoint->getZ() );
+    poPoint->SetField( "DEPTH", poSrcPoint->getZ() );
 
     if( iPointOffset >= poMPGeom->getNumGeometries() )
         ClearPendingMultiPoint();

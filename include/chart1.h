@@ -32,6 +32,7 @@
 
 #include "wx/print.h"
 #include "wx/datetime.h"
+#include <wx/cmdline.h>
 
 #ifdef __WXMSW__
 #include "wx/msw/private.h"
@@ -185,6 +186,8 @@ class MyApp: public wxApp
   public:
     bool OnInit();
     int OnExit();
+    void OnInitCmdLine(wxCmdLineParser& parser);
+    bool OnCmdLineParsed(wxCmdLineParser& parser);
 
     void TrackOff(void);
 
@@ -196,6 +199,8 @@ class MyFrame: public wxFrame
     MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size, long style);
 
     ~MyFrame();
+
+    int GetApplicationMemoryUse(void);
 
     void OnEraseBackground(wxEraseEvent& event);
     void OnActivate(wxActivateEvent& event);
@@ -226,6 +231,8 @@ class MyFrame: public wxFrame
 
     void JumpToPosition(double lat, double lon, double scale);
 
+    void ProcessCanvasResize(void);
+
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
@@ -253,6 +260,10 @@ class MyFrame: public wxFrame
     void UpdateControlBar(void);
     void RemoveChartFromQuilt(int dbIndex);
 
+    void SubmergeToolbar(void);
+    void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
+    void SurfaceToolbar(void);
+
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
     void HandlePianoRollover(int selected_index, int selected_dbIndex);
@@ -270,13 +281,11 @@ class MyFrame: public wxFrame
     ColorScheme GetColorScheme();
     void SetAndApplyColorScheme(ColorScheme cs);
 
-    bool GetMemoryStatus(int& mem_total, int& mem_used);
-
     void OnFrameTCTimer(wxTimerEvent& event);
     void OnFrameCOGTimer(wxTimerEvent& event);
     void SetupQuiltMode(void);
 
-    void ChartsRefresh(void);
+    void ChartsRefresh(int dbi_hint);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
 
     ArrayOfRect GetCanvasReserveRects();
@@ -299,6 +308,7 @@ class MyFrame: public wxFrame
     void RequestNewToolbar();
 
     void ActivateMOB(void);
+    void UpdateGPSCompassStatusBox(bool b_force_new = false);
 
   private:
     void DoSetSize(void);
@@ -317,7 +327,6 @@ class MyFrame: public wxFrame
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
     void UpdateToolbarDynamics(void);
-    void UpdateGPSCompassStatusBox(bool b_force_new = false);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
@@ -365,6 +374,7 @@ class MyFrame: public wxFrame
 
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;
+    bool                m_last_bGPSValid;
 
     DECLARE_EVENT_TABLE()
 };
@@ -677,6 +687,8 @@ class ocpnToolBarSimple : public wxControl
     // the size of the toolbar bitmaps
             wxCoord m_defaultWidth, m_defaultHeight;
 
+            void        HideTooltip();
+            void        ShowTooltip(){ m_btooltip_show = true; }
 
       protected:
     // common part of all ctors
@@ -737,6 +749,7 @@ class ocpnToolBarSimple : public wxControl
 
             wxTimer                 m_tooltip_timer;
             int                     m_one_shot;
+            bool                    m_btooltip_show;
 
     // scrolling data
             int                   m_xScrollPixelsPerLine;
@@ -755,38 +768,20 @@ class ocpnToolBarSimple : public wxControl
                         DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnToolBarSimple)
 };
 
-//----------------------------------------------------------------------------
-// Toolbar Tooltip Popup Window
-//----------------------------------------------------------------------------
-class ToolTipWin: public wxWindow
+
+extern int OCPNMessageBox(const wxString& message, const wxString& caption = _T("Message"), int style = wxOK,wxWindow *parent = NULL, int x = -1, int y = -1);
+
+class OCPNMessageDialog
 {
       public:
-            ToolTipWin(wxWindow *parent);
-            ~ToolTipWin();
+            OCPNMessageDialog(wxWindow* parent, const wxString& message, const wxString& caption = _T("Message box"), long style = wxOK | wxCANCEL, const wxPoint& pos = wxDefaultPosition);
 
-            void OnPaint(wxPaintEvent& event);
+            ~OCPNMessageDialog();
 
-            void SetColorScheme(ColorScheme cs);
-            void SetString(wxString &s){ m_string = s; }
-            void SetPosition(wxPoint pt){ m_position = pt; }
-            void SetBitmap(void);
-
-
+            int ShowModal();
       private:
-
-            wxString          m_string;
-            wxSize            m_size;
-            wxPoint           m_position;
-            wxBitmap          *m_pbm;
-            wxColour          m_back_color;
-            wxColour          m_text_color;
-
-
-
-            DECLARE_EVENT_TABLE()
+            wxMessageDialog *m_pdialog;
 };
-
-
 
 
 #endif

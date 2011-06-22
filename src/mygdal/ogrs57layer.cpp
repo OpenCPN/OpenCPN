@@ -79,8 +79,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: ogrs57layer.cpp,v 1.2 2008/03/30 23:05:47 bdbcat Exp $");
-
 /************************************************************************/
 /*                            OGRS57Layer()                             */
 /*                                                                      */
@@ -115,7 +113,7 @@ OGRS57Layer::OGRS57Layer( OGRS57DataSource *poDSIn,
         nRCNM = RCNM_VE;
     else if( EQUAL(poDefnIn->GetName(),OGRN_VF) )
         nRCNM = RCNM_VF;
-    else 
+    else
         nRCNM = 100;  /* feature */
 }
 
@@ -171,7 +169,7 @@ OGRFeature *OGRS57Layer::GetNextUnfilteredFeature()
 
 {
     OGRFeature  *poFeature = NULL;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Are we out of modules to request features from?                 */
 /* -------------------------------------------------------------------- */
@@ -183,7 +181,7 @@ OGRFeature *OGRS57Layer::GetNextUnfilteredFeature()
 /*      feature.                                                        */
 /* -------------------------------------------------------------------- */
     S57Reader   *poReader = poDS->GetModule(nCurrentModule);
-    
+
     if( poReader != NULL )
     {
         poReader->SetNextFEIndex( nNextFEIndex, nRCNM );
@@ -213,7 +211,7 @@ OGRFeature *OGRS57Layer::GetNextUnfilteredFeature()
             poFeature->GetGeometryRef()->assignSpatialReference(
                 GetSpatialRef() );
     }
-    
+
     return poFeature;
 }
 
@@ -237,7 +235,7 @@ OGRFeature *OGRS57Layer::GetNextFeature()
             break;
 /*
         if( (poFilterGeom == NULL
-             || poFeature->GetGeometryRef() == NULL 
+             || poFeature->GetGeometryRef() == NULL
              || poFilterGeom->Intersect( poFeature->GetGeometryRef() ) )
             && (m_poAttrQuery == NULL
                 || m_poAttrQuery->Evaluate( poFeature )) )
@@ -277,7 +275,7 @@ int OGRS57Layer::TestCapability( const char * pszCap )
     else if( EQUAL(pszCap,OLCFastSpatialFilter) )
         return FALSE;
 
-    else 
+    else
         return FALSE;
 }
 
@@ -306,8 +304,8 @@ OGRErr OGRS57Layer::GetExtent( OGREnvelope *psExtent, int bForce )
 /************************************************************************/
 int OGRS57Layer::GetFeatureCount (int bForce)
 {
-    
-    if( poFilterGeom != NULL /*|| m_poAttrQuery != NULL*/ 
+
+    if( poFilterGeom != NULL /*|| m_poAttrQuery != NULL*/
         || nFeatureCount == -1 )
         return OGRLayer::GetFeatureCount( bForce );
     else

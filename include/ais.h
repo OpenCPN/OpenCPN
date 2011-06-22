@@ -384,6 +384,8 @@ private:
     wxMutex          *m_pShareGPSMutex;
     wxEvtHandler     *m_pMainEventHandler;
 
+    wxMutex           *m_pShareMutex;
+
     bool             m_bAIS_Audio_Alert_On;
     wxTimer          m_AIS_Audio_Alert_Timer;
     wxSound          m_AIS_Sound;
@@ -509,6 +511,9 @@ class AISTargetListDialog: public wxPanel
             AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder );
            ~AISTargetListDialog( );
 
+            void OnClose(wxCloseEvent &event);
+            void Disconnect_decoder();
+
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
 
@@ -537,6 +542,7 @@ class AISTargetListDialog: public wxPanel
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxSize            m_size_min;
 
+            DECLARE_EVENT_TABLE()
 
 };
 

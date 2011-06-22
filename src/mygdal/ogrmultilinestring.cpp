@@ -80,8 +80,6 @@
 #include "ogr_geometry.h"
 #include "ogr_p.h"
 
-CPL_CVSID("$Id: ogrmultilinestring.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                        OGRMultiLineString()                          */
 /************************************************************************/
@@ -128,8 +126,8 @@ const char * OGRMultiLineString::getGeometryName() const
 OGRErr OGRMultiLineString::addGeometryDirectly( OGRGeometry * poNewGeom )
 
 {
-    if( poNewGeom->getGeometryType() != wkbLineString 
-        && poNewGeom->getGeometryType() != wkbLineString25D ) 
+    if( poNewGeom->getGeometryType() != wkbLineString
+        && poNewGeom->getGeometryType() != wkbLineString25D )
         return OGRERR_UNSUPPORTED_GEOMETRY_TYPE;
 
     return OGRGeometryCollection::addGeometryDirectly( poNewGeom );
@@ -199,7 +197,7 @@ OGRErr OGRMultiLineString::importFromWkt( char ** ppszInput )
     {
         pszInput = OGRWktReadToken( pszInput, szToken );
         pszInput = OGRWktReadToken( pszInput, szToken );
-        
+
         *ppszInput = (char *) pszInput;
 
         if( !EQUAL(szToken,")") )
@@ -216,7 +214,7 @@ OGRErr OGRMultiLineString::importFromWkt( char ** ppszInput )
     OGRRawPoint *paoPoints = NULL;
     int         nMaxPoints = 0;
     double      *padfZ = NULL;
-    
+
     do
     {
         int     nPoints = 0;
@@ -232,7 +230,7 @@ OGRErr OGRMultiLineString::importFromWkt( char ** ppszInput )
             eErr = OGRERR_CORRUPT_DATA;
             break;
         }
-        
+
 /* -------------------------------------------------------------------- */
 /*      Create the new line, and add to collection.                     */
 /* -------------------------------------------------------------------- */
@@ -241,12 +239,12 @@ OGRErr OGRMultiLineString::importFromWkt( char ** ppszInput )
         poLine = new OGRLineString();
         poLine->setPoints( nPoints, paoPoints, padfZ );
 
-        eErr = addGeometryDirectly( poLine ); 
+        eErr = addGeometryDirectly( poLine );
 
 /* -------------------------------------------------------------------- */
 /*      Read the delimeter following the ring.                          */
 /* -------------------------------------------------------------------- */
-        
+
         pszInput = OGRWktReadToken( pszInput, szToken );
     } while( szToken[0] == ',' && eErr == OGRERR_NONE );
 
@@ -255,13 +253,13 @@ OGRErr OGRMultiLineString::importFromWkt( char ** ppszInput )
 /* -------------------------------------------------------------------- */
     CPLFree( paoPoints );
     CPLFree( padfZ );
-   
+
     if( eErr != OGRERR_NONE )
         return eErr;
 
     if( szToken[0] != ')' )
         return OGRERR_CORRUPT_DATA;
-    
+
     *ppszInput = (char *) pszInput;
     return OGRERR_NONE;
 }
@@ -300,7 +298,7 @@ OGRErr OGRMultiLineString::exportToWkt( char ** ppszDstText ) const
         CPLAssert( EQUALN(papszLines[iLine],"LINESTRING (", 12) );
         nCumulativeLength += strlen(papszLines[iLine] + 11);
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Allocate exactly the right amount of space for the              */
 /*      aggregated string.                                              */
@@ -316,10 +314,10 @@ OGRErr OGRMultiLineString::exportToWkt( char ** ppszDstText ) const
     strcpy( *ppszDstText, "MULTILINESTRING (" );
 
     for( iLine = 0; iLine < getNumGeometries(); iLine++ )
-    {                                                           
+    {
         if( iLine > 0 )
             strcat( *ppszDstText, "," );
-        
+
         strcat( *ppszDstText, papszLines[iLine] + 11 );
         VSIFree( papszLines[iLine] );
     }

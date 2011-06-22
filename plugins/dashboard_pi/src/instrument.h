@@ -45,10 +45,12 @@ extern wxFont *g_pFontLabel;
 extern wxFont *g_pFontSmall;
 
 wxString toSDMM ( int NEflag, double a );
+void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 
 class DashboardInstrument;
 class DashboardInstrument_Single;
 class DashboardInstrument_Position;
+class DashboardInstrument_Sun;
 
 enum
 {
@@ -72,7 +74,9 @@ enum
     OCPN_DBP_STC_SAT = 1 << 17,
     OCPN_DBP_STC_GPS = 1 << 18,
     OCPN_DBP_STC_PLA = 1 << 19, // Cursor latitude
-    OCPN_DBP_STC_PLO = 1 << 20 // Cursor longitude
+    OCPN_DBP_STC_PLO = 1 << 20, // Cursor longitude
+    OCPN_DBP_STC_CLK = 1 << 21,
+    OCPN_DBP_STC_MON = 1 << 22
 };
 
 class DashboardInstrument : public wxWindow
@@ -132,6 +136,19 @@ protected:
       int               m_DataHeight;
 
       void Draw(wxBufferedDC* dc);
+
+};
+
+class DashboardInstrument_Sun : public DashboardInstrument_Position
+{
+public:
+      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON) : DashboardInstrument_Position(pparent, id, title, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; }
+      ~DashboardInstrument_Sun(){}
+
+      void SetData(int st, double data, wxString unit);
+protected:
+      double m_lat;
+      double m_lon;
 
 };
 

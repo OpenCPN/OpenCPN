@@ -2,7 +2,7 @@
  * $Id: ogrcurve.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
- * Purpose:  The OGRCurve geometry class. 
+ * Purpose:  The OGRCurve geometry class.
  * Author:   Frank Warmerdam, warmerda@home.com
  *
  ******************************************************************************
@@ -72,8 +72,6 @@
 
 #include "ogr_geometry.h"
 #include "ogr_p.h"
-
-CPL_CVSID("$Id: ogrcurve.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $");
 
 OGRCurve::OGRCurve()
 {

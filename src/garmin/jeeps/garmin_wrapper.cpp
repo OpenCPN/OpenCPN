@@ -299,7 +299,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             //  Ask the user if it is all right to overwrite
             if(!bfound_empty)
             {
-                  int rv = ::wxMessageBox(_("Overwrite Garmin device route number 1?"),
+                  int rv = OCPNMessageBox(_("Overwrite Garmin device route number 1?"),
                                           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
                   if(rv != wxOK)
                         return 0;

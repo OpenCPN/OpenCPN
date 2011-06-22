@@ -80,8 +80,6 @@
 
 //#include "dychart.h"              // comment out because MSVC CRT Mem debug breaks compile???
 
-//CPL_CVSID("$Id: s52utils.cpp,v 1.9 2010/04/27 01:43:31 bdbcat Exp $");
-
 #include "s52utils.h"
 //#include <stdio.h>        // FILE
 //#include <string.h>       // strncmp()

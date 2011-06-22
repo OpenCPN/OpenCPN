@@ -53,6 +53,7 @@ extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
+extern double parseLatLon(wxString latlon);
 
 // ----------------------------------------------------------------------------
 // resources
@@ -391,6 +392,8 @@ public:
 
       bool ExportGPXRoute(wxWindow* parent, Route *pRoute);
       bool ExportGPXWaypoint(wxWindow* parent, RoutePoint *pRoutePoint);
+
+      void CreateRotatingNavObjBackup();
 
       int m_NextRouteNum;
       int m_NextWPNum;

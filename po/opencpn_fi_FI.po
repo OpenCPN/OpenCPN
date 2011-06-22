@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -166,6 +166,18 @@ msgstr " %H tuntia  %M minuuttia"
 msgid " - "
 msgstr " -"
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Ei karttaa saatavilla"
+#
 # 
 msgid " ChartFile:  "
 msgstr "Karttatiedosto:"
@@ -315,10 +327,6 @@ msgstr "Näytä maalijälki"
 # 
 msgid "&Style:"
 msgstr "&Tyyli:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 msgid "&Underline"
@@ -889,6 +897,9 @@ msgstr "TCP/IP-hostia ei löydy '"
 msgid "Course UP Mode"
 msgstr "Kurssi-ylhäällä moodi"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 #, fuzzy, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1085,6 +1096,11 @@ msgid "ENC/Vector"
 msgstr "ENC/Vektori"
 #
 # 
+#, fuzzy
+msgid "ETA"
+msgstr "ETA"
+#
+# 
 msgid "ETA          "
 msgstr "ETA"
 #
@@ -1096,6 +1112,9 @@ msgstr "ETA"
 # 
 msgid "ETA:                  "
 msgstr "ETA:      "
+#
+msgid "ETE"
+msgstr ""
 #
 # 
 msgid "ETE/Timestamp"
@@ -1164,6 +1183,11 @@ msgstr "Vie GPX-tiedosto"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Lopeta reitti"
+#
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Poista jälki"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1297,6 +1321,11 @@ msgid "HW"
 msgstr ""
 #
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Suuntima:              %5.0f Deg.\n"
+#
+# 
 msgid "Help"
 msgstr "Ohje"
 #
@@ -1325,17 +1354,20 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "&Tuo..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:      "
+#
 # 
 msgid "Icon"
 msgstr "Ikoni"
 #
 # 
 msgid "Import GPX file"
-msgstr "Tuo GPX-tiedosto"
-#
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Tuo GPX-tiedosto"
 #
 # 
@@ -1542,6 +1574,11 @@ msgstr "META Objects"
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:      "
 #
 # 
 msgid "M_COVR ID"
@@ -2432,6 +2469,11 @@ msgid "Show Chart Outlines"
 msgstr "Näytä karttarajat"
 #
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Merkitse tiedot"
+#
+# 
 msgid "Show Currents"
 msgstr "Näytä virrat"
 #
@@ -2484,6 +2526,11 @@ msgid "Show Status Bar"
 msgstr "Näytä tilapalkki"
 #
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Merkitse tiedot"
+#
+# 
 msgid "Show Tides"
 msgstr "Näytä vuorovedet"
 #
@@ -2495,6 +2542,9 @@ msgstr "Näytä jälki-ikoni"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Näytä nimi"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -2532,7 +2582,7 @@ msgstr "Yksinkertaistettu"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
 "Koko:                %5dm x %dm x ---m\n"
@@ -2631,6 +2681,11 @@ msgid "Split Route"
 msgstr "Poista reitti"
 #
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "Näytä maalijälki"
+#
+# 
 msgid "Standard"
 msgstr "Vakio"
 #
@@ -2714,6 +2769,11 @@ msgstr "Väliaikainen GOTO-reitti"
 #
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Väliaikainen GOTO-reitti"
+#
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Lähetä"
 #
@@ -2778,6 +2838,11 @@ msgid "Times shown as"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Aikaleima"
+#
+# 
 msgid "To"
 msgstr "mihin"
 #
@@ -2788,16 +2853,6 @@ msgstr "Kiintopisteelle"
 # 
 msgid "Today"
 msgstr "Tänään"
-#
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Kytke jälki"
-#
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Reitin nimi"
 #
 # 
 msgid "Toggle Tracking"
@@ -3173,6 +3228,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3183,6 +3244,12 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulje"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3199,6 +3266,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3209,6 +3282,12 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Poista kaikki jäljet"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3225,6 +3304,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3238,6 +3323,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3247,6 +3338,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3267,6 +3364,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3281,6 +3384,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3301,6 +3410,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3311,6 +3426,12 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Virran nopeus, solmua"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3327,11 +3448,23 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Poistu OpenCPN:stä"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3348,6 +3481,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3358,6 +3497,12 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3374,6 +3519,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3384,6 +3535,12 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-näytön hallinta"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3400,6 +3557,23 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Tuo GPX-tiedosto"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3407,6 +3581,12 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3423,6 +3603,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3433,6 +3619,12 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3449,6 +3641,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3459,6 +3657,12 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3474,6 +3678,12 @@ msgstr ""
 #~ msgstr "Ilmanpaine, mbar"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -3482,6 +3692,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Äskeinen raporttiväli:     %3d Sec.\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3498,6 +3714,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3508,6 +3730,12 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Pintalämpötila, C"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3524,6 +3752,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3537,6 +3771,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3544,6 +3784,12 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3560,6 +3806,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3573,6 +3825,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3583,6 +3841,12 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Näytä GRIB-ikoni"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3600,6 +3864,45 @@ msgstr ""
 #
 #
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Koko:                %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Kytke jälki"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Reitin nimi"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
 # 
 # 
 # 
@@ -3609,6 +3912,12 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Käytä tarkkuusgrafiikkaa"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3622,6 +3931,12 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
+#
+#
+#
+#
+#
 #
 #
 #

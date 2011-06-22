@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-12-26 23:00+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -266,6 +266,21 @@ msgstr " %H Horas  %M Minutos"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "No Hay Carta Disponible"
+#
 # 
 # 
 # 
@@ -510,10 +525,6 @@ msgstr "&Comenzar Track"
 # 
 msgid "&Style:"
 msgstr "E&stilo:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1346,6 +1357,9 @@ msgstr "No se pudo resolver anfitrión TCP/IP"
 msgid "Course UP Mode"
 msgstr "Modo rumbo hacia arriba"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1642,6 +1656,13 @@ msgstr "ENC/Vectorial"
 # 
 # 
 # 
+#, fuzzy
+msgid "ETA"
+msgstr "ETA:"
+#
+# 
+# 
+# 
 # 
 msgid "ETA          "
 msgstr "ETA          "
@@ -1658,6 +1679,9 @@ msgstr "ETA:"
 # 
 msgid "ETA:                  "
 msgstr "Tiempo estimado llegada:                  "
+#
+msgid "ETE"
+msgstr ""
 #
 # 
 # 
@@ -1758,6 +1782,14 @@ msgstr "Exportar Fichero GPX"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Finalizar Ruta"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Borrar Derrota"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1927,6 +1959,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Demora:                %03d Deg.\n"
+#
+# 
+# 
+# 
+# 
 msgid "Help"
 msgstr "Ayuda"
 #
@@ -1961,6 +2001,17 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "I&mportar..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "Tiempo estimado llegada:                  "
+#
 # 
 # 
 # 
@@ -1973,14 +2024,6 @@ msgstr "Icono"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Importar Fichero GPX"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Importar Fichero GPX"
 #
 # 
@@ -2263,6 +2306,14 @@ msgstr "META Objetos"
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "Tiempo estimado llegada:                  "
 #
 # 
 msgid "M_COVR ID"
@@ -3536,6 +3587,14 @@ msgstr "Mostrar Líneas Carta"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Información  Marca"
+#
+# 
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Mostrar Corrientes"
 #
@@ -3624,6 +3683,14 @@ msgstr "Mostrar Barra Estado"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Información  Marca"
+#
+# 
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Mostrar Mareas"
 #
@@ -3641,6 +3708,9 @@ msgstr "Mostrar Icono Derrotas"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Mostrar Nombre"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3701,7 +3771,7 @@ msgstr "Simplificado"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
 "Tamaño:                 %dm x %dm x ---m\n"
@@ -3838,6 +3908,14 @@ msgstr "Borrar Ruta"
 # 
 # 
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "&Comenzar Track"
+#
+# 
+# 
+# 
+# 
 msgid "Standard"
 msgstr "Estándar"
 #
@@ -3941,6 +4019,13 @@ msgstr "Ruta temporal IR A "
 # 
 # 
 msgid "Temporary MOB Route"
+msgstr "Ruta Temporal MOB"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Temporary layer"
 msgstr "Ruta Temporal MOB"
 #
 # 
@@ -4051,6 +4136,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "Timestamp"
+msgstr "Tiempo estimado"
+#
+# 
+# 
+# 
+# 
 msgid "To"
 msgstr "A"
 #
@@ -4067,22 +4160,6 @@ msgstr "Hacia Waypoint"
 # 
 msgid "Today"
 msgstr "Hoy"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Alternar seguimiento"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Nombre Ruta"
 #
 # 
 # 
@@ -4592,6 +4669,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4608,6 +4691,12 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4635,6 +4724,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4656,6 +4751,12 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4683,6 +4784,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4692,6 +4799,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Compensación CM93 Off"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4707,6 +4820,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4716,6 +4835,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Herramienta Compensación CM93 Off"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4731,6 +4856,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4740,6 +4871,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4764,6 +4901,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4775,6 +4918,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4783,6 +4932,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4798,6 +4953,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4829,6 +4990,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4853,6 +5020,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4861,6 +5034,26 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Salir de OpenCPN"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Importar Fichero GPX"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4876,9 +5069,21 @@ msgstr ""
 #~ msgstr "Estándar Marino"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
+#
+#
+#
+#
+#
+#
 #
 #
 # 
@@ -4894,6 +5099,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4904,3 +5115,45 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nombre Barco:"
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Tamaño:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Alternar seguimiento"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Nombre Ruta"

@@ -140,7 +140,7 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnWptSendToGPS;
             wxButton *btnWptDeleteAll;
             wxButton *btnLayNew;
-            wxButton *btnLayProperties;
+            //wxButton *btnLayProperties;
             wxButton *btnLayToggleChart;
             wxButton *btnLayToggleListing;
             wxButton *btnLayToggleNames;

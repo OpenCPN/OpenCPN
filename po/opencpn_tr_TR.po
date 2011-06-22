@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -165,6 +165,18 @@ msgstr " %H Saat  %M Dakika"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Hazırda Harita Yok"
+#
 # 
 msgid " ChartFile:  "
 msgstr " Harita Dosyası:  "
@@ -314,10 +326,6 @@ msgstr "Hedef izlerini göster"
 # 
 msgid "&Style:"
 msgstr "&Tarz: "
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 msgid "&Underline"
@@ -888,6 +896,9 @@ msgstr "TCP/IP hostu çözümlenemedi '"
 msgid "Course UP Mode"
 msgstr "Gidilen Yön YUKARI Modu"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 #, fuzzy, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1084,6 +1095,11 @@ msgid "ENC/Vector"
 msgstr "ENC/Vektörel"
 #
 # 
+#, fuzzy
+msgid "ETA"
+msgstr "ETA (Tahmini Varış Zamanı)"
+#
+# 
 msgid "ETA          "
 msgstr "ETA/Tahmini Varış Zamanı "
 #
@@ -1095,6 +1111,9 @@ msgstr "ETA (Tahmini Varış Zamanı)"
 # 
 msgid "ETA:                  "
 msgstr "ETA(Tahmini Varış Zamanı):"
+#
+msgid "ETE"
+msgstr ""
 #
 # 
 msgid "ETE/Timestamp"
@@ -1163,6 +1182,11 @@ msgstr "Dışarıya GPX dosyası gönder"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Rotayı Sonlandır"
+#
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Seyir İzini Sil"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1296,6 +1320,11 @@ msgid "HW"
 msgstr ""
 #
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Bearing:              %5.0f Deg.\n"
+#
+# 
 msgid "Help"
 msgstr "Yardım"
 #
@@ -1324,17 +1353,20 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "Dışarıdan &al..."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
 # 
 msgid "Icon"
 msgstr "İkon"
 #
 # 
 msgid "Import GPX file"
-msgstr "Dışarıdan GPX dosyası al"
-#
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Dışarıdan GPX dosyası al"
 #
 # 
@@ -1541,6 +1573,11 @@ msgstr "META Nesneleri"
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA(Tahmini Varış Zamanı):"
 #
 # 
 msgid "M_COVR ID"
@@ -2433,6 +2470,11 @@ msgid "Show Chart Outlines"
 msgstr "Harita Sınırlarını Göster"
 #
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "İşaret Bilgisi"
+#
+# 
 msgid "Show Currents"
 msgstr "Akıntıları Göster"
 #
@@ -2485,6 +2527,11 @@ msgid "Show Status Bar"
 msgstr "Durum Çubuğunu Göster"
 #
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "İşaret Bilgisi"
+#
+# 
 msgid "Show Tides"
 msgstr "Gelgitleri Göster"
 #
@@ -2496,6 +2543,9 @@ msgstr "Seyir İzi İkonunu Göster"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "İsim Göster"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -2533,7 +2583,7 @@ msgstr "Basitleştirilmiş"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
 "Büyüklük:            %5dm x %dm x ---m\n"
@@ -2632,6 +2682,11 @@ msgid "Split Route"
 msgstr "Rotayı Sil"
 #
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "Hedef izlerini göster"
+#
+# 
 msgid "Standard"
 msgstr "Standart"
 #
@@ -2715,6 +2770,11 @@ msgstr "Geçici GOTO Rotası"
 #
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Geçici GOTO Rotası"
+#
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Gönder"
 #
@@ -2779,6 +2839,11 @@ msgid "Times shown as"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Timestamp"
+#
+# 
 msgid "To"
 msgstr "ya"
 #
@@ -2789,16 +2854,6 @@ msgstr "Mevkiye"
 # 
 msgid "Today"
 msgstr "Bugün"
-#
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "İzleme şeklini değiştir"
-#
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Rota İsmi"
 #
 # 
 msgid "Toggle Tracking"
@@ -3174,6 +3229,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3183,6 +3244,12 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3198,6 +3265,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3207,6 +3280,12 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3222,6 +3301,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3234,6 +3319,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3243,6 +3334,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3262,6 +3359,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3275,6 +3378,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3294,6 +3403,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3303,6 +3418,12 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3318,11 +3439,23 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN'den Çıkış"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3338,6 +3471,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3347,6 +3486,12 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3362,6 +3507,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3371,6 +3522,12 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB Ekranı"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3386,6 +3543,23 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Dışarıdan GPX dosyası al"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3393,6 +3567,12 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Denizci Standartı"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3410,6 +3590,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3421,6 +3607,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3438,6 +3630,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3452,6 +3650,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3463,6 +3667,12 @@ msgstr ""
 #~ msgstr "Basınç, mBar"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -3471,6 +3681,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Güncel Rapor Peryodu:     %3d Sec.\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3486,6 +3702,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3495,6 +3717,12 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3510,6 +3738,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3522,6 +3756,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3529,6 +3769,12 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3544,6 +3790,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3556,6 +3808,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3565,6 +3823,12 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB ikonu göster"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3581,6 +3845,45 @@ msgstr ""
 #
 #
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük:            %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "İzleme şeklini değiştir"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Rota İsmi"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
 # 
 # 
 # 
@@ -3589,6 +3892,12 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Yüksek çözünürlüklü çizim kullan"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3601,6 +3910,12 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
+#
+#
+#
+#
+#
 #
 #
 #

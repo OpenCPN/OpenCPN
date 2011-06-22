@@ -340,3 +340,7 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_POLISH} "Delete Config folder"
 ;added on 2010-10-21
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 LangString Uninstall_Folder_Name ${LANG_POLISH} "Odinstaluj"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_POLISH} "@CPACK_PACKAGE_NAME@ Wersja @PACKAGE_VERSION@"

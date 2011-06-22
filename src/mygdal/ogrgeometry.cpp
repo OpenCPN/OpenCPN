@@ -113,8 +113,6 @@
 #include "ogr_p.h"
 #include <assert.h>
 
-CPL_CVSID("$Id: ogrgeometry.cpp,v 1.2 2008/03/30 22:59:17 bdbcat Exp $");
-
 int OGRGeometry::bGenerate_DB2_V72_BYTE_ORDER = FALSE;
 
 /************************************************************************/

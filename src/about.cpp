@@ -61,6 +61,7 @@ wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str
 //Gunther End
 
 extern wxString        *pHome_Locn;
+extern wxString         glog_file;
 
 char AboutText[] =
 {
@@ -216,6 +217,9 @@ about::about( wxWindow* parent,wxString *pData_Locn, wxWindowID id, const wxStri
                   const wxPoint& pos, const wxSize& size, long style)
 {
   m_pDataLocn = pData_Locn;
+#ifdef __WXOSX__
+  style |= wxSTAY_ON_TOP;
+#endif
   Create(parent, id, caption, pos, size, style);
   m_parent = parent;
 }
@@ -244,10 +248,10 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
 
 void about::Update()
 {
-      wxColour cb = GetGlobalColor( _T("DILG1") );
-      SetBackgroundColour(cb);
+      SetBackgroundColour(GetGlobalColor(_T("DILG0")));
 
-      wxColour cf = GetGlobalColor( _T( "UINFD" ) );          // or UINFF
+      wxColour cb = GetGlobalColor(_T("DILG2"));
+      wxColour cf = GetGlobalColor(_T("DILG3"));
       SetForegroundColour( cf );
 
       itemPanelAbout->SetBackgroundColour(cb);
@@ -280,8 +284,7 @@ void about::Update()
 
   // Show the user where the log file is going to be
       wxString log = _T("\n    Logfile location: ");
-      log.Append(*pHome_Locn);
-      log.Append(_T("opencpn.log"));
+      log.Append(glog_file);
 
       pAboutTextCtl->WriteText(log);
 

@@ -43,11 +43,11 @@
 
 //#include "/usr/include/valgrind/callgrind.h"
 
-//  Chart cacheing policy
-//  n.b. use only one of the following policy options....
-#define CACHE_N_LIMIT_DEFAULT 20                              // Cache no more than n charts
-//#define CACHE_MEM_LIMIT 60000                             // Free mem threshold for freeing a chart from cache
+//  Chart cacheing policy defaults
 
+#define CACHE_N_LIMIT_DEFAULT 20          // Cache no more than n charts
+
+#define CACHE_MEM_LIMIT_DEFAULT 0       // Application memory useage target, kBytes
 
 
 
@@ -178,30 +178,10 @@
 #include "cpl_port.h"
 #endif
 
-//      Fix up CPL_CVSID if not available
-//      This code block taken directly from <cpl_port.h>
-#ifndef CPL_CVSID
 #ifndef NULL
 #define NULL 0
 #endif
 
-/***********************************************************************
- * Define CPL_CVSID() macro.  It can be disabled during a build by
- * defining DISABLE_CPLID in the compiler options.
- *
- * The cvsid_aw() function is just there to prevent reports of cpl_cvsid()
- * being unused.
- */
-
-
-#ifndef DISABLE_CVSID
-#  define CPL_CVSID(string)     static char cpl_cvsid[] = string; \
-static char *cvsid_aw() { return( cvsid_aw() ? ((char *) NULL) : cpl_cvsid ); }
-#else
-#  define CPL_CVSID(string)
-#endif
-
-#endif
 
 
 /***********************************************************************

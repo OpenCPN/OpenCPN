@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-11 10:26-0500\n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
 "PO-Revision-Date: 2011-04-29 10:49+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -17,193 +17,166 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-Country: TAIWAN\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:125
-msgid "N"
-msgstr "N"
-
-#: src/compass.cpp:128
-msgid "NE"
-msgstr "NE"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:126
-msgid "E"
-msgstr "E"
-
-#: src/compass.cpp:128
-msgid "SE"
-msgstr "SE"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:127
-msgid "S"
-msgstr "S"
-
-#: src/compass.cpp:128
-msgid "SW"
-msgstr "SW"
-
-#: src/compass.cpp:128
-#: src/gps.cpp:128
-msgid "W"
-msgstr "W"
-
-#: src/compass.cpp:128
-msgid "NW"
-msgstr "NW"
-
-#: src/dashboard_pi.cpp:96
-msgid "Position"
-msgstr "位置"
-
-#: src/dashboard_pi.cpp:98
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:100
-msgid "Speedometer"
-msgstr "速度計"
-
-#: src/dashboard_pi.cpp:102
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:104
-msgid "Compass"
-msgstr "羅盤"
-
-#: src/dashboard_pi.cpp:106
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:108
-msgid "HDG"
-msgstr "HDG"
-
-#: src/dashboard_pi.cpp:110
+#
+msgid "Add"
+msgstr "新增"
+#
+msgid "Add instrument"
+msgstr "增加航儀"
+#
 msgid "Apparent wind"
 msgstr "視風向"
-
-#: src/dashboard_pi.cpp:112
-msgid "Wind angle"
-msgstr "迎風角"
-
-#: src/dashboard_pi.cpp:114
-#: src/dashboard_pi.cpp:116
-msgid "Wind speed"
-msgstr "風速"
-
-#: src/dashboard_pi.cpp:118
-msgid "True wind"
-msgstr "絕對風向"
-
-#: src/dashboard_pi.cpp:120
-#: src/dashboard_pi.cpp:122
-msgid "Depth"
-msgstr "水深"
-
-#: src/dashboard_pi.cpp:124
-msgid "Temp"
-msgstr "Temp"
-
-#: src/dashboard_pi.cpp:126
-#: src/dashboard_pi.cpp:128
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "Rudder angle"
-msgstr "舵角"
-
-#: src/dashboard_pi.cpp:134
-msgid "GPS in view"
-msgstr "可接收GPS"
-
-#: src/dashboard_pi.cpp:136
-msgid "GPS status"
-msgstr "GPS 狀態"
-
-#: src/dashboard_pi.cpp:219
-#: src/dashboard_pi.cpp:222
-#: src/dashboard_pi.cpp:281
-#: src/dashboard_pi.cpp:722
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "羅盤"
+#
+msgid "Cursor"
+msgstr ""
+#
 msgid "Dashboard"
 msgstr "儀表板"
-
-#: src/dashboard_pi.cpp:287
+#
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "OpenCPN 儀表板插件"
-
-#: src/dashboard_pi.cpp:292
+#
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "OpenCPN 儀表板插件\n"
 "提供來自NMEA來源的航儀資訊顯示."
-
-#: src/dashboard_pi.cpp:715
+#
 msgid "Dashboard preferences"
 msgstr "儀表板偏好設定"
-
-#: src/dashboard_pi.cpp:729
-msgid "Instrument width:"
-msgstr "航儀寬度:"
-
-#: src/dashboard_pi.cpp:736
-msgid "Fonts"
-msgstr "字型"
-
-#: src/dashboard_pi.cpp:742
-msgid "Title:"
-msgstr "標題:"
-
-#: src/dashboard_pi.cpp:746
+#
 msgid "Data:"
 msgstr "資料:"
-
-#: src/dashboard_pi.cpp:750
-msgid "Label:"
-msgstr "標籤:"
-
-#: src/dashboard_pi.cpp:754
-msgid "Small:"
-msgstr "Small:"
-
-#: src/dashboard_pi.cpp:766
-#: src/dashboard_pi.cpp:773
-#: src/dashboard_pi.cpp:1066
-msgid "Instruments"
-msgstr "航儀"
-
-#: src/dashboard_pi.cpp:781
-msgid "Add"
-msgstr "新增"
-
-#: src/dashboard_pi.cpp:785
-msgid "Edit"
-msgstr "編輯"
-
-#: src/dashboard_pi.cpp:789
+#
 msgid "Delete"
 msgstr "刪除"
-
-#: src/dashboard_pi.cpp:794
-msgid "Up"
-msgstr "上"
-
-#: src/dashboard_pi.cpp:798
+#
+msgid "Depth"
+msgstr "水深"
+#
 msgid "Down"
 msgstr "下"
-
-#: src/dashboard_pi.cpp:1052
-msgid "Add instrument"
-msgstr "增加航儀"
-
-#: src/dashboard_pi.cpp:1056
+#
+msgid "E"
+msgstr "E"
+#
+msgid "Edit"
+msgstr "編輯"
+#
+msgid "Fonts"
+msgstr "字型"
+#
+msgid "GPS in view"
+msgstr "可接收GPS"
+#
+msgid "GPS status"
+msgstr "GPS 狀態"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "航儀寬度:"
+#
+msgid "Instruments"
+msgstr "航儀"
+#
+msgid "Label:"
+msgstr "標籤:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NE"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "位置"
+#
+msgid "Rudder angle"
+msgstr "舵角"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SE"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
 msgid "Select instrument to add:"
 msgstr "選擇新增航儀:"
-
+#
+msgid "Small:"
+msgstr "Small:"
+#
+msgid "Speedometer"
+msgstr "速度計"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Temp"
+#
+msgid "Title:"
+msgstr "標題:"
+#
+msgid "True wind"
+msgstr "絕對風向"
+#
+msgid "Up"
+msgstr "上"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Wind angle"
+msgstr "迎風角"
+#
+msgid "Wind speed"
+msgstr "風速"
+#
+msgid "show this dashboard"
+msgstr ""

@@ -89,8 +89,6 @@
 #include "iso8211.h"
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: ddffield.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 // Note, we implement no constructor for this class to make instantiation
 // cheaper.  It is required that the Initialize() be called before anything
 // else.

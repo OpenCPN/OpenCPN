@@ -125,8 +125,6 @@
 #include "iso8211.h"
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: ddfrecord.cpp,v 1.2 2008/03/30 22:46:31 bdbcat Exp $");
-
 static const size_t nLeaderSize = 24;
 
 /************************************************************************/

@@ -41,7 +41,6 @@
 #include "georef.h"
 #include "chart1.h"
 
-CPL_CVSID("$Id: wvschart.cpp,v 1.13 2010/04/27 01:44:02 bdbcat Exp $");
 
 //      Local Prototypes
 extern "C" int wvsrtv (const wxString& sfile, int latd, int lond, float **latray, float **lonray, int **segray);

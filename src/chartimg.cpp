@@ -796,7 +796,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           msg.Printf(_("   Could not read first %d bytes of header for chart file: "), TestBlockSize);
           msg.Append(name);
           wxLogMessage(msg);
-            return INIT_FAIL_REMOVE;
+          free(pPlyTable);
+          return INIT_FAIL_REMOVE;
       }
 
       unsigned int i;
@@ -818,7 +819,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           wxString msg(_("   Chart file has no BSB header, cannot Init."));
           msg.Append(name);
           wxLogMessage(msg);
-            return INIT_FAIL_REMOVE;
+          free(pPlyTable);
+          return INIT_FAIL_REMOVE;
       }
 
 
@@ -841,7 +843,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                   if(0x1a == c)
                       done_header_parse = 1;
                   else
+                  {
+                      free(pPlyTable);
                       return INIT_FAIL_REMOVE;
+                  }
 
                   continue;
             }
@@ -1246,6 +1251,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 //    Validate some of the header data
       if((Size_X == 0) || (Size_Y == 0))
       {
+          free(pPlyTable);
           return INIT_FAIL_REMOVE;
       }
 
@@ -1254,7 +1260,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             wxString msg(_("   Chart File contains less than 3 PLY points: "));
             msg.Append(m_FullPath);
             wxLogMessage(msg);
-
+            free(pPlyTable);
             return INIT_FAIL_REMOVE;
       }
 
@@ -4244,6 +4250,9 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
       int platmax = 0;
       int nlonmin, nlonmax, nlatmax, nlatmin;
       nlonmin =0; nlonmax=0; nlatmax=0; nlatmin=0;
+
+      if(0 == nRefpoint)                  // bad chart georef...
+            return (1);
 
       for(n=0 ; n<nRefpoint ; n++)
       {

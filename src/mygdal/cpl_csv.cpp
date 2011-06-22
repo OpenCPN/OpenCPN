@@ -75,8 +75,6 @@
 #include "cpl_csv.h"
 #include "cpl_conv.h"
 
-CPL_CVSID("$Id: cpl_csv.cpp,v 1.4 2008/08/09 23:52:56 bdbcat Exp $");
-
 CPL_C_START
 const char * GDALDefaultCSVFilename( const char *pszBasename );
 CPL_C_END

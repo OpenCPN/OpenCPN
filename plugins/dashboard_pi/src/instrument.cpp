@@ -35,6 +35,8 @@
 
 
 #include "instrument.h"
+#include <math.h>
+#include <time.h>
 
 //----------------------------------------------------------------
 //
@@ -215,6 +217,29 @@ void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
       Refresh(false);
 }
 
+void DashboardInstrument_Sun::SetData(int st, double data, wxString unit)
+{
+      if (st == m_cap_flag1)
+      {
+            m_lat = data;
+      }
+      else if (st == m_cap_flag2)
+      {
+            m_lon = data;
+      }
+      else return;
+
+      if (m_lat == 999.9 || m_lon == 999.9)
+            return;
+      
+      wxDateTime sunset, sunrise;
+      calculateSun(m_lat, m_lon, sunrise, sunset);
+      m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
+      m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
+
+      Refresh(false);
+}
+
 /**************************************************************************/
 /*          Some assorted utilities                                       */
 /**************************************************************************/
@@ -269,3 +294,133 @@ wxString toSDMM ( int NEflag, double a )
       return s;
 }
 
+// Sunset/sunrise calculation
+// Modified from code at http://www.sci.fi/~benefon/rscalc_cpp.html
+// C++ program calculating the sunrise and sunset for
+// the current date and a fixed location(latitude,longitude)
+// Jarmo Lammi 1999 - 2000
+// Last update January 6th, 2000
+
+#ifndef PI
+      #define PI        3.1415926535897931160E0      /* pi */
+#endif
+#define DEGREE    (PI/180.0)
+#define RADIAN    (180.0/PI)
+#define TPI       (2*PI)
+#define SUNDIA    0.53
+#define AIREFR    34.0/60.0 // athmospheric refraction degrees //
+
+double L,g;
+//double SunDia = 0.53;     // Sunradius degrees
+
+//   Get the days to J2000
+//   h is UT in decimal hours
+//   FNday only works between 1901 to 2099 - see Meeus chapter 7
+double FNday (int y, int m, int d, float h) {
+      int luku = - 7 * (y + (m + 9)/12)/4 + 275*m/9 + d;
+      // type casting necessary on PC DOS and TClite to avoid overflow
+      luku+= (long int)y*367;
+      return (double)luku - 730531.5 + h/24.0;
+};
+
+//   the function below returns an angle in the range
+//   0 to 2*pi
+double FNrange (double x) {
+      double b = x / TPI;
+      double a = TPI * (b - (long)(b));
+      if (a < 0) a = TPI + a;
+      return a;
+};
+
+// Calculating the hourangle
+//
+double f0(double lat, double declin) {
+      double fo,dfo;
+      // Correction: different sign at S HS
+      dfo = DEGREE*(0.5*SUNDIA + AIREFR); if (lat < 0.0) dfo = -dfo;
+      fo = tan(declin + dfo) * tan(lat*DEGREE);
+      if (fo>0.99999) fo=1.0; // to avoid overflow //
+      fo = asin(fo) + PI/2.0;
+      return fo;
+};
+
+
+//   Find the ecliptic longitude of the Sun
+double FNsun (double d) {
+
+      //   mean longitude of the Sun
+      L = FNrange(280.461 * DEGREE + .9856474 * DEGREE * d);
+
+      //   mean anomaly of the Sun
+      g = FNrange(357.528 * DEGREE + .9856003 * DEGREE * d);
+      //   Ecliptic longitude of the Sun
+
+      return FNrange(L + 1.915 * DEGREE * sin(g) + .02 * DEGREE * sin(2 * g));
+};
+
+// Convert decimal hours in hours and minutes
+wxDateTime convHrmn(double dhr) {
+      int hr,mn;
+      hr = (int) dhr;
+      mn = (dhr - (double) hr)*60;
+      return wxDateTime(hr, mn);
+};
+
+void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){
+      double y,m,day,h;
+
+      time_t sekunnit;
+      struct tm *p;
+
+      //  get the date and time from the user
+      // read system date and extract the year
+      // FIXME: we should probably also get it from GPS...
+
+      /** First get time **/
+      time(&sekunnit);
+
+      /** Next get localtime **/
+
+      p=localtime(&sekunnit);
+
+      y = p->tm_year;
+      // this is Y2K compliant method
+      y+= 1900;
+      m = p->tm_mon + 1;
+
+      day = p->tm_mday;
+
+      h = 12;
+
+      //double tzone=2.0;
+
+      double d = FNday(y, m, day, h);
+
+      //   Use FNsun to find the ecliptic longitude of the
+      //   Sun
+
+      double lambda = FNsun(d);
+
+      //   Obliquity of the ecliptic
+
+      double obliq = 23.439 * DEGREE - .0000004 * DEGREE * d;
+
+      //   Find the RA and DEC of the Sun
+
+      double alpha = atan2(cos(obliq) * sin(lambda), cos(lambda));
+      double delta = asin(sin(obliq) * sin(lambda));
+
+      // Find the Equation of Time
+      // in minutes
+      // Correction suggested by David Smith
+      double LL = L - alpha;
+      if (L < PI) LL += TPI;
+      double equation = 1440.0 * (1.0 - LL / TPI);
+      double ha = f0(latit,delta);
+
+      double riset = 12.0 - 12.0 * ha/PI /*+ tzone*/ - longit/15.0 + equation/60.0;
+      double settm = 12.0 + 12.0 * ha/PI /*+ tzone*/ - longit/15.0 + equation/60.0;
+
+      sunrise = convHrmn(riset);
+      sunset = convHrmn(settm);
+}

@@ -134,6 +134,10 @@ public:
       void PurgeCache();
       bool DeleteCacheChart(ChartBase *pChart);
 
+      void LockCache(bool bl){m_b_locked = bl;}
+      void LockCache(){m_b_locked = true;}
+      void UnLockCache(){m_b_locked = false;}
+      bool IsCacheLocked(){ return m_b_locked; }
 
 
 protected:
@@ -150,6 +154,8 @@ private:
       wxArrayPtrVoid    *pChartCache;
 
       MyFrame           *pParent;
+      bool              m_b_locked;
+
 };
 
 

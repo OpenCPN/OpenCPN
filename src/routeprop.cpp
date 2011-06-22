@@ -222,7 +222,7 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
       //            msg.Printf(_T("getDaylightEvent lat=%f lon=%f\n riset=%d rsalt=%f\n y=%d m=%d d=%d\n sun=%f lt=%f\n ut=%f\n"),
 					 // lat, lon, +1, rsalt, y, m, d, sunrise, lt, ut);
 				  //msg.Append(utcDateTime.Format());
-      //            wxMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
+      //            OCPNMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
       //            md1.ShowModal();
 
 			if (fabs(lt-sunrise)<0.15) return(SUNRISE);
@@ -247,24 +247,26 @@ int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime)
 #define     UTCINPUT    0
 #define	LTINPUT     1	// i.e. this PC local time
 #define	LMTINPUT    2	// i.e. the remote location LMT time
-#define     INPUT_FORMAT      true
-#define     DISPLAY_FORMAT    false
+#define     INPUT_FORMAT      1
+#define     DISPLAY_FORMAT    2
+#define     TIMESTAMP_FORMAT  3
 
-wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, bool input_format)
+wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, int format)
 {
 	wxString s = _T("");
 	wxString f;
-		if (input_format) f = _T("%m/%d/%Y %H:%M");
+		if (format == INPUT_FORMAT) f = _T("%m/%d/%Y %H:%M");
+            else if (format == TIMESTAMP_FORMAT) f = _T("%m/%d/%Y %H:%M:%S");
 	      else f = _T(" %m/%d %H:%M");
 		switch (tz_selection) {
 			 case 0: s.Append(ts.Format(f));
-                         if (!input_format) s.Append(_T(" UT"));
+                         if (format != INPUT_FORMAT) s.Append(_T(" UT"));
                          break;
 			 case 1: s.Append(ts.FromUTC().Format(f)); break;
 			 case 2:
 				 wxTimeSpan lmt(0,0,(int)LMT_offset,0);
 				 s.Append(ts.Add(lmt).Format(f));
-                         if (!input_format) s.Append(_T(" LMT"));
+                         if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
 		 }
 	return(s);
 }
@@ -327,7 +329,12 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id,
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
       wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
 */
-      Create(parent, id, caption, pos, size, style);
+      long wstyle = style;
+#ifdef __WXOSX__
+      wstyle |= wxSTAY_ON_TOP;
+#endif
+
+      Create(parent, id, caption, pos, size, wstyle);
       GetSizer()->SetSizeHints(this);
       Centre();
 }
@@ -562,7 +569,6 @@ RouteProp::~RouteProp( )
 
     delete m_wpList;
 }
-
 
 /*!
  * RouteProp creator
@@ -823,6 +829,7 @@ void RouteProp::SetDialogTitle(wxString title)
 
 void RouteProp::SetRouteAndUpdate(Route *pR)
 {
+
       //  Fetch any config file values
 
 //      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
@@ -936,12 +943,12 @@ bool RouteProp::UpdateProperties()
       if(m_pRoute)
       {
             if (m_pRoute->m_bIsTrack) {
-                  m_ExtendButton->SetLabel(_T("Extend Track"));
-                  m_SplitButton->SetLabel(_T("Split Track"));
+                  m_ExtendButton->SetLabel(_("Extend Track"));
+                  m_SplitButton->SetLabel(_("Split Track"));
             }
             else {
-                  m_ExtendButton->SetLabel(_T("Extend Route"));
-                  m_SplitButton->SetLabel(_T("Split Route"));
+                  m_ExtendButton->SetLabel(_("Extend Route"));
+                  m_SplitButton->SetLabel(_("Split Route"));
             }
 
             m_pRoute->UpdateSegmentDistances();           // get segment and total distance
@@ -950,7 +957,7 @@ bool RouteProp::UpdateProperties()
 
             wxListItem column_info;
 		if(m_wpList->GetColumn(8, column_info)) {
-			wxString c = _T("Next tide event");
+			wxString c = _("Next tide event");
 			if (gpIDX && m_starttime.IsValid()) {
 				  if(!m_pRoute->m_bIsTrack) {
 						c = _T("@~~");
@@ -969,15 +976,15 @@ bool RouteProp::UpdateProperties()
 		{
 			  if(m_pRoute->m_bIsTrack)
 			  {
-					column_info.SetText(_T("Timestamp"));
+					column_info.SetText(_("Timestamp"));
 					m_wpList->SetColumn(6, column_info);
 			  }
 			  else
 			  {
 					if (m_starttime.IsValid())
-						column_info.SetText(_T("ETA"));
+						column_info.SetText(_("ETA"));
 					else
-						column_info.SetText(_T("ETE"));
+						column_info.SetText(_("ETE"));
 					m_wpList->SetColumn(6, column_info);
 			  }
 		}
@@ -1235,7 +1242,7 @@ bool RouteProp::UpdateProperties()
                   else
                   {          // it is a track point...
 		            wxDateTime timestamp = prp->m_CreateTime;
-		            time_form = ts2s(timestamp,tz_selection,LMT_Offset,DISPLAY_FORMAT);
+		            time_form = ts2s(timestamp,tz_selection,LMT_Offset,TIMESTAMP_FORMAT);
                   }
 
                   if (enroute && (arrival || m_starttime.IsValid())) m_wpList->SetItem(item_line_index, 6, time_form);
@@ -1308,20 +1315,22 @@ bool RouteProp::UpdateProperties()
       #endif
       }
 
-      if ( m_pRoute->m_Colour == wxEmptyString )
-            m_chColor->Select(0);
-      else
+      if(m_pRoute)
       {
-            for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+            if ( m_pRoute->m_Colour == wxEmptyString )
+                  m_chColor->Select(0);
+            else
             {
-                  if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
+                  for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
                   {
-                        m_chColor->Select( i + 1 );
-                        break;
+                        if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
+                        {
+                              m_chColor->Select( i + 1 );
+                              break;
+                        }
                   }
             }
       }
-
       ::wxEndBusyCursor();
 
       return true;
@@ -1574,6 +1583,9 @@ MarkProp::MarkProp(  wxWindow* parent, wxWindowID id,
       SetLayoutAdaptationLevel(2);
 
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
+#ifdef __WXOSX__
+      wstyle |= wxSTAY_ON_TOP;
+#endif
 
 #if wxCHECK_VERSION(2, 9, 0)
       wxDialog::Create( parent, id, caption, pos, size,wstyle );
@@ -1584,7 +1596,6 @@ MarkProp::MarkProp(  wxWindow* parent, wxWindowID id,
       CreateControls();
       GetSizer()->SetSizeHints(this);
       Centre();
-
 }
 
 MarkProp::~MarkProp( )

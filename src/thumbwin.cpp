@@ -99,8 +99,6 @@ extern ChartBase        *Current_Ch;
 extern ChartCanvas      *cc1;
 
 
-CPL_CVSID("$Id: thumbwin.cpp,v 1.7 2010/04/27 01:44:02 bdbcat Exp $");
-
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------

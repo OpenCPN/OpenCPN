@@ -74,8 +74,6 @@
 #include "ogr_p.h"
 #include <ctype.h>
 
-CPL_CVSID("$Id: ogrutils.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                        OGRMakeWktCoordinate()                        */
 /*                                                                      */
@@ -112,8 +110,8 @@ void OGRMakeWktCoordinate( char *pszTarget, double x, double y, double z )
 #ifdef DEBUG
     if( strlen(pszTarget) > 48 )
     {
-        CPLDebug( "OGR", 
-                  "Yow!  Got this big result in OGRMakeWktCoordinate()\n%s", 
+        CPLDebug( "OGR",
+                  "Yow!  Got this big result in OGRMakeWktCoordinate()\n%s",
                   pszTarget );
     }
 #endif
@@ -131,7 +129,7 @@ const char *OGRWktReadToken( const char * pszInput, char * pszToken )
 {
     if( pszInput == NULL )
         return NULL;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Swallow pre-white space.                                        */
 /* -------------------------------------------------------------------- */
@@ -145,7 +143,7 @@ const char *OGRWktReadToken( const char * pszInput, char * pszToken )
     {
         pszToken[0] = *pszInput;
         pszToken[1] = '\0';
-        
+
         pszInput++;
     }
 
@@ -156,13 +154,13 @@ const char *OGRWktReadToken( const char * pszInput, char * pszToken )
     else
     {
         int             iChar = 0;
-        
+
         while( iChar < OGR_WKT_TOKEN_MAX-1
                && ((*pszInput >= 'a' && *pszInput <= 'z')
                    || (*pszInput >= 'A' && *pszInput <= 'Z')
                    || (*pszInput >= '0' && *pszInput <= '9')
-                   || *pszInput == '.' 
-                   || *pszInput == '+' 
+                   || *pszInput == '.'
+                   || *pszInput == '+'
                    || *pszInput == '-') )
         {
             pszToken[iChar++] = *(pszInput++);
@@ -197,7 +195,7 @@ const char * OGRWktReadPoints( const char * pszInput,
 
     if( pszInput == NULL )
         return NULL;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Eat any leading white space.                                    */
 /* -------------------------------------------------------------------- */
@@ -212,7 +210,7 @@ const char * OGRWktReadPoints( const char * pszInput,
         CPLDebug( "OGR",
                   "Expected '(', but got %s in OGRWktReadPoints().\n",
                   pszInput );
-                  
+
         return pszInput;
     }
 
@@ -224,7 +222,7 @@ const char * OGRWktReadPoints( const char * pszInput,
 /*      encountered.                                                    */
 /* ==================================================================== */
     char        szDelim[OGR_WKT_TOKEN_MAX];
-    
+
     do {
 /* -------------------------------------------------------------------- */
 /*      Read the X and Y values, verify they are numeric.               */
@@ -274,10 +272,10 @@ const char * OGRWktReadPoints( const char * pszInput,
             }
 
             (*ppadfZ)[*pnPointsRead] = atof(szDelim);
-            
+
             pszInput = OGRWktReadToken( pszInput, szDelim );
         }
-        
+
         (*pnPointsRead)++;
 
 /* -------------------------------------------------------------------- */
@@ -292,7 +290,7 @@ const char * OGRWktReadPoints( const char * pszInput,
                       szDelim );
             return NULL;
         }
-        
+
     } while( szDelim[0] == ',' );
 
     return pszInput;

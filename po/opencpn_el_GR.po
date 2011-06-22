@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -187,6 +187,18 @@ msgstr " %H Ώρες   %M Λεπτά"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Μη διαθέσιμος Χάρτης"
+#
 # 
 msgid " ChartFile:  "
 msgstr "Αρχείο Χάρτη:  "
@@ -328,10 +340,6 @@ msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
 # 
 msgid "&Style:"
 msgstr "&Στυλ:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 msgid "&Underline"
@@ -895,6 +903,9 @@ msgstr "Δεν μπορώ να αποφανθώ για το TCP/IP host '"
 msgid "Course UP Mode"
 msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 #, c-format
 msgid "Course:                 %03d Deg.\n"
@@ -1087,6 +1098,11 @@ msgid "ENC/Vector"
 msgstr "ENC/Διάνυσμα"
 #
 # 
+#, fuzzy
+msgid "ETA"
+msgstr "ΕΤΑ:"
+#
+# 
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1097,6 +1113,9 @@ msgstr "ΕΤΑ:"
 # 
 msgid "ETA:                  "
 msgstr "ΕΤΑ:                  "
+#
+msgid "ETE"
+msgstr ""
 #
 # 
 msgid "ETE/Timestamp"
@@ -1167,6 +1186,11 @@ msgstr "Εξαγωγή Αρχείου GPX"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Τέλος Ταξιδιού"
+#
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Διαγραφή Ίχνους (πορείας)"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1290,6 +1314,11 @@ msgid "HW"
 msgstr ""
 #
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Διόπτευση:            %03d μοίρες.\n"
+#
+# 
 msgid "Help"
 msgstr "Βοήθεια"
 #
@@ -1318,17 +1347,20 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "Ε&ισαγωγή"
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ΕΤΑ:                  "
+#
 # 
 msgid "Icon"
 msgstr "Εικόνα"
 #
 # 
 msgid "Import GPX file"
-msgstr "Εισαγωγή Αρχείου GPX"
-#
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Εισαγωγή Αρχείου GPX"
 #
 # 
@@ -1533,6 +1565,11 @@ msgstr "META-Αντικείμενα "
 # 
 msgid "MMSI"
 msgstr "MMSI"
+#
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ΕΤΑ:                  "
 #
 # 
 msgid "M_COVR ID"
@@ -2425,6 +2462,11 @@ msgid "Show Chart Outlines"
 msgstr "Δείξε περιθώρεια χαρτών"
 #
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Πληροφορίες Σημαδιού"
+#
+# 
 msgid "Show Currents"
 msgstr "Δείξε παλίρροια"
 #
@@ -2477,6 +2519,11 @@ msgid "Show Status Bar"
 msgstr "Δείξε γραμμή κατάστασης"
 #
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Πληροφορίες Σημαδιού"
+#
+# 
 msgid "Show Tides"
 msgstr "Δείξε πλημμύριδα"
 #
@@ -2488,6 +2535,9 @@ msgstr "Δείξε εικόνα ίχνους"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Δείξε Όνομα"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -2525,7 +2575,7 @@ msgstr "Απλοποιημένο"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
 "Μέγεθος:          %dm x %dm x ---m\n"
@@ -2619,6 +2669,11 @@ msgid "Split Route"
 msgstr "Διαγραφή Ταξιδιού(Route)"
 #
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
+#
+# 
 msgid "Standard"
 msgstr "Βασικό"
 #
@@ -2701,6 +2756,11 @@ msgstr "Προσωρινό ΜΟΒ ταξίδι"
 #
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Προσωρινό ΜΟΒ ταξίδι"
+#
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Αποστολή"
 #
@@ -2765,6 +2825,11 @@ msgid "Times shown as"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/ σφραγίδα χρόνου"
+#
+# 
 msgid "To"
 msgstr "Προς "
 #
@@ -2775,16 +2840,6 @@ msgstr "προς Σημείο Πορείας (WP)"
 # 
 msgid "Today"
 msgstr "Σήμερα"
-#
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Αρχή/Παύση ιχνηλάτησης"
-#
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Όνομα Ταξιδίου"
 #
 # 
 msgid "Toggle Tracking"
@@ -3156,6 +3211,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3165,6 +3226,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3180,6 +3247,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3189,6 +3262,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3204,6 +3283,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3213,6 +3298,12 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3227,6 +3318,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3235,6 +3332,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3250,11 +3353,34 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Έξοδος OpenCPN"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Εισαγωγή Αρχείου GPX"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3267,9 +3393,21 @@ msgstr ""
 #~ msgstr "Βασικό ναυτικό"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
+#
+#
+#
+#
+#
 #
 #
 # 
@@ -3282,6 +3420,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -3289,3 +3433,36 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Όνομα Ταξιδίου"

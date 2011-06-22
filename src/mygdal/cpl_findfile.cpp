@@ -57,8 +57,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: cpl_findfile.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 static int bFinderInitialized = FALSE;
 static int nFileFinders = 0;
 static CPLFileFinder *papfnFinders = NULL;
@@ -98,7 +96,7 @@ void CPLFinderClean()
 /*                         CPLDefaultFileFind()                         */
 /************************************************************************/
 
-const char *CPLDefaultFindFile( const char *pszClass, 
+const char *CPLDefaultFindFile( const char *pszClass,
                                 const char *pszBasename )
 
 {
@@ -111,13 +109,13 @@ const char *CPLDefaultFindFile( const char *pszClass,
         const char  *pszResult;
         VSIStatBuf  sStat;
 
-        pszResult = CPLFormFilename( papszFinderLocations[i], pszBasename, 
+        pszResult = CPLFormFilename( papszFinderLocations[i], pszBasename,
                                      NULL );
 
         if( VSIStat( pszResult, &sStat ) == 0 )
             return pszResult;
     }
-    
+
     return NULL;
 }
 
@@ -153,7 +151,7 @@ void CPLPushFileFinder( CPLFileFinder pfnFinder )
 {
     CPLFinderInit();
 
-    papfnFinders = (CPLFileFinder *) 
+    papfnFinders = (CPLFileFinder *)
         CPLRealloc(papfnFinders,  sizeof(void*) * ++nFileFinders);
     papfnFinders[nFileFinders-1] = pfnFinder;
 }
@@ -192,7 +190,7 @@ void CPLPushFinderLocation( const char *pszLocation )
 {
     CPLFinderInit();
 
-    papszFinderLocations  = CSLAddString( papszFinderLocations, 
+    papszFinderLocations  = CSLAddString( papszFinderLocations,
                                           pszLocation );
 }
 

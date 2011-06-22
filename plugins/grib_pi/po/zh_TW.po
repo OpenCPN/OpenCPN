@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-11 10:26-0500\n"
+"POT-Creation-Date: 2011-06-11 10:28-0400\n"
 "PO-Revision-Date: 2011-04-29 10:48+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -17,28 +17,28 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-Country: TAIWAN\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
-#: src/grib.h:116
-#: src/grib_pi.cpp:270
-msgid "GRIB Display Control"
-msgstr "GRIB 顯示控制"
-
-#: src/grib_pi.cpp:112
-#: src/grib_pi.cpp:199
-#: src/grib_pi.cpp:248
-msgid "Grib"
-msgstr "Grib"
-
-#: src/grib_pi.cpp:168
-#: src/grib_pi.cpp:221
+#
+msgid "&Close"
+msgstr "關閉(&C)"
+#
+msgid "Current Velocity, Kts."
+msgstr "流速, Kts."
+#
 msgid "GRIB"
 msgstr "GRIB"
-
-#: src/grib_pi.cpp:174
+#
+msgid "GRIB Data"
+msgstr "GRIB 資料"
+#
+msgid "GRIB Display Control"
+msgstr "GRIB 顯示控制"
+#
+msgid "GRIB File Directory"
+msgstr "GRIB 檔案目錄"
+#
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB 插件"
-
-#: src/grib_pi.cpp:180
+#
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -57,77 +57,49 @@ msgstr ""
 "- significant波高\n"
 "- 海平面溫度\n"
 "- 海面流向與流速."
-
-#: src/grib_pi.cpp:212
+#
 msgid "GRIB Preferences"
 msgstr "GRIB 偏好設定"
-
-#: src/grib_pi.cpp:225
-msgid "Show GRIB icon"
-msgstr "顯示 GRIB 圖示"
-
-#: src/grib_pi.cpp:228
-msgid "Use High Definition Graphics"
-msgstr "使用高畫質圖形"
-
-#: src/grib.cpp:211
-msgid "GRIB File Directory"
-msgstr "GRIB 檔案目錄"
-
-#: src/grib.cpp:237
-msgid "GRIB Data"
-msgstr "GRIB 資料"
-
-#: src/grib.cpp:250
-msgid "Wind Speed, Kts."
-msgstr "風速,  Kts."
-
-#: src/grib.cpp:260
-msgid "Wind Direction"
-msgstr "風向"
-
-#: src/grib.cpp:270
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "請放大畫面以顯示 suppressed HTSGW GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+#
 msgid "Pressure, mBar"
 msgstr "氣壓, mBar"
-
-#: src/grib.cpp:280
-msgid "Significant Wave Height, m"
-msgstr "Significant波高, m"
-
-#: src/grib.cpp:291
+#
 msgid "Sea Surface Temp, C"
 msgstr "海面溫度, C"
-
-#: src/grib.cpp:301
-msgid "Current Velocity, Kts."
-msgstr "流速, Kts."
-
-#: src/grib.cpp:316
-msgid "&Close"
-msgstr "關閉(&C)"
-
-#: src/grib.cpp:518
+#
 msgid "Select GRIB Directory"
 msgstr "選擇 GRIB 目錄"
-
-#: src/grib.cpp:1110
+#
+msgid "Show GRIB icon"
+msgstr "顯示 GRIB 圖示"
+#
+msgid "Significant Wave Height, m"
+msgstr "Significant波高, m"
+#
+msgid "Use High Definition Graphics"
+msgstr "使用高畫質圖形"
+#
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "警告:  QuickScat GRIB 資料為 %d 小時前資料."
-
-#: src/grib.cpp:1230
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "請放大畫面以顯示 suppressed HTSGW GRIB"
-
-#: src/grib.cpp:1403
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
-
-#: src/grib.cpp:1520
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
-
-#: src/grib.cpp:1640
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
-
+#
+msgid "Wind Direction"
+msgstr "風向"
+#
+msgid "Wind Speed, Kts."
+msgstr "風速,  Kts."

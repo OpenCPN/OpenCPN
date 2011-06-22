@@ -96,8 +96,6 @@
 #include "ogr_p.h"
 #include <assert.h>
 
-CPL_CVSID("$Id: ogrmultipoint.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $");
-
 /************************************************************************/
 /*                           OGRMultiPoint()                            */
 /************************************************************************/
@@ -140,7 +138,7 @@ const char * OGRMultiPoint::getGeometryName() const
 OGRErr OGRMultiPoint::addGeometryDirectly( OGRGeometry * poNewGeom )
 
 {
-    if( poNewGeom->getGeometryType() != wkbPoint 
+    if( poNewGeom->getGeometryType() != wkbPoint
         && poNewGeom->getGeometryType() != wkbPoint25D )
         return OGRERR_UNSUPPORTED_GEOMETRY_TYPE;
 
@@ -206,15 +204,15 @@ OGRErr OGRMultiPoint::exportToWkt( char ** ppszDstText ) const
             nMaxString = nMaxString * 2;
             *ppszDstText = (char *) CPLRealloc(*ppszDstText,nMaxString);
         }
-        
+
         if( poPoint->getCoordinateDimension() == 3 )
             OGRMakeWktCoordinate( *ppszDstText + nRetLen,
-                                  poPoint->getX(), 
+                                  poPoint->getX(),
                                   poPoint->getY(),
                                   poPoint->getZ() );
         else
             OGRMakeWktCoordinate( *ppszDstText + nRetLen,
-                                  poPoint->getX(), 
+                                  poPoint->getX(),
                                   poPoint->getY(),
                                   0.0 );
     }
@@ -257,7 +255,7 @@ OGRErr OGRMultiPoint::importFromWkt( char ** ppszInput )
 /* -------------------------------------------------------------------- */
     const char *pszPreScan = pszInput;
 
-    // skip white space. 
+    // skip white space.
     while( *pszPreScan == ' ' || *pszPreScan == '\t' )
         pszPreScan++;
 
@@ -276,7 +274,7 @@ OGRErr OGRMultiPoint::importFromWkt( char ** ppszInput )
     {
         pszInput = OGRWktReadToken( pszPreScan, szToken );
         pszInput = OGRWktReadToken( pszInput, szToken );
-        
+
         *ppszInput = (char *) pszInput;
 
         if( !EQUAL(szToken,")") )
@@ -293,10 +291,10 @@ OGRErr OGRMultiPoint::importFromWkt( char ** ppszInput )
     while( *pszPreScan == ' ' || *pszPreScan == '\t' )
         pszPreScan++;
 
-    // Do we have an inner bracket? 
+    // Do we have an inner bracket?
     if( *pszPreScan == '(' )
         return importFromWkt_Bracketed( ppszInput );
-    
+
 /* -------------------------------------------------------------------- */
 /*      Read the point list which should consist of exactly one point.  */
 /* -------------------------------------------------------------------- */
@@ -317,11 +315,11 @@ OGRErr OGRMultiPoint::importFromWkt( char ** ppszInput )
     {
         OGRGeometry     *poGeom;
         if( padfZ )
-            poGeom = new OGRPoint( paoPoints[iGeom].x, 
-                                   paoPoints[iGeom].y, 
+            poGeom = new OGRPoint( paoPoints[iGeom].x,
+                                   paoPoints[iGeom].y,
                                    padfZ[iGeom] );
         else
-            poGeom =  new OGRPoint( paoPoints[iGeom].x, 
+            poGeom =  new OGRPoint( paoPoints[iGeom].x,
                                     paoPoints[iGeom].y );
 
         eErr = addGeometryDirectly( poGeom );
@@ -335,7 +333,7 @@ OGRErr OGRMultiPoint::importFromWkt( char ** ppszInput )
         return eErr;
 
     *ppszInput = (char *) pszInput;
-    
+
     return OGRERR_NONE;
 }
 
@@ -382,11 +380,11 @@ OGRErr OGRMultiPoint::importFromWkt_Bracketed( char ** ppszInput )
             return OGRERR_CORRUPT_DATA;
 
         if( padfZ )
-            poGeom = new OGRPoint( paoPoints[0].x, 
-                                   paoPoints[0].y, 
+            poGeom = new OGRPoint( paoPoints[0].x,
+                                   paoPoints[0].y,
                                    padfZ[0] );
         else
-            poGeom =  new OGRPoint( paoPoints[0].x, 
+            poGeom =  new OGRPoint( paoPoints[0].x,
                                     paoPoints[0].y );
 
         eErr = addGeometryDirectly( poGeom );
@@ -405,7 +403,7 @@ OGRErr OGRMultiPoint::importFromWkt_Bracketed( char ** ppszInput )
         return OGRERR_CORRUPT_DATA;
 
     *ppszInput = (char *) pszInput;
-    
+
     return OGRERR_NONE;
 }
 

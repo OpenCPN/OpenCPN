@@ -53,9 +53,6 @@
 #include "georef.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 
-#ifdef __WXOSX__
-#include "macsercomm.h"
-#endif
 
 #ifdef BUILD_WITH_LIBGPS
       #ifdef __WXOSX__ // begin rdm
@@ -71,8 +68,6 @@
 
 
 #define SERIAL_OVERLAPPED
-
-CPL_CVSID("$Id: nmea.cpp,v 1.63 2010/06/21 01:57:16 bdbcat Exp $");
 
 extern int              g_nNMEADebug;
 extern ComPortManager   *g_pCommMan;
@@ -156,7 +151,7 @@ typedef
                      unsigned char reserved6;
                      unsigned char reserved7;
                      unsigned char datasz[4];
-                     unsigned char databuf[1]; /* actually a variable length array... */
+                     unsigned char databuf[5]; /* actually a variable length array... */
                      } gusb_pkt;
                      unsigned char dbuf[1024];
               } garmin_usb_packet;
@@ -335,6 +330,10 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
       ThreadPositionData.kSog = 0.;
       ThreadPositionData.nSats = 0;
 
+#ifndef OCPN_NO_SOCKETS
+      m_sock = NULL;
+#endif
+
 //      Create and manage NMEA data stream source
 
 //    Decide upon NMEA source
@@ -372,7 +371,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   wxString msg(comx);
                   msg.Prepend(_("  Could not open serial port '"));
                   msg.Append(_("'\nSuggestion: Try closing other applications."));
-                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
 
                   return;
@@ -427,7 +426,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             {
                   wxLogMessage(_("Failed to load libgps.so"));
                   wxString msg(_("Unable to load libgps.so"));
-                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                  OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
                   return;
             }
@@ -461,7 +460,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   {
                         wxString msg(NMEA_data_ip);
                         msg.Prepend(_("Unable to initialize libgps.\n\ngpsd host is: "));
-                        wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                        OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                         md.ShowModal();
                         return;
                   }
@@ -489,7 +488,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             {
                 wxString msg(NMEA_data_ip);
                 msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
-                wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                 md.ShowModal();
                 return;
             }
@@ -528,7 +527,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             if(!b_version_set)
             {
                   wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\nWould you like to use this version of libgps anyway?"));
-                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
+                  OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
 
                   if(wxID_YES == md.ShowModal())
                         b_use_lib = true;
@@ -540,7 +539,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   msg.Printf(_("libgps API version mismatch.\nOpenCPN found version %d.%d, but requires at least version 3.0\n\n\
 Would you like to use this version of libgps anyway?"),
                              check_version.proto_major, check_version.proto_minor);
-                  wxMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
+                  OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
 
                   if(wxID_YES == md.ShowModal())
                         b_use_lib = true;
@@ -571,7 +570,6 @@ Would you like to use this version of libgps anyway?"),
 #ifndef OCPN_NO_SOCKETS
 
 //      NMEA Data Source is private TCP/IP Server
-        m_sock = NULL;
 
         if(m_data_source_string.Contains(_T("GPSD")))
         {
@@ -626,7 +624,7 @@ Would you like to use this version of libgps anyway?"),
                 wxString msg(NMEA_data_ip);
                 msg.Prepend(_T("Could not resolve TCP/IP host '"));
                 msg.Append(_T("'\n Suggestion: Try 'xxx.xxx.xxx.xxx' notation"));
-                wxMessageDialog md(m_parent_frame, msg, _T("OpenCPN Message"), wxICON_ERROR );
+                OCPNMessageDialog md(m_parent_frame, msg, _T("OpenCPN Message"), wxICON_ERROR );
                 md.ShowModal();
 
                 m_sock->Notify(FALSE);
@@ -1063,8 +1061,8 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
       {
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
-            float kSog = 4.;//8.5;
-            float kCog = 20.;//NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
+            float kSog = 8;//8.5;
+            float kCog = 170.;//NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)
@@ -1995,9 +1993,15 @@ void *OCP_NMEA_Thread::Entry()
                   if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
                         goto thread_exit;                               // smooth exit
 
-                  if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)
+                  if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) > 0)
+                  {
+                        hSerialComm = (HANDLE)m_gps_fd;
+                  }
+                  else
+                  {
                         m_gps_fd = NULL;
-                  wxThread::Sleep(2000);                        // stall for a bit
+                        wxThread::Sleep(2000);                        // stall for a bit
+                  }
 
             }
 
@@ -2012,14 +2016,17 @@ void *OCP_NMEA_Thread::Entry()
                   while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
 
               //  Re-initialize the port
-                  if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) < 0)
+                  if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) > 0)
+                  {
+                        hSerialComm = (HANDLE)m_gps_fd;
+                  }
+                  else
                   {
                         wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
                         msg.Append(m_PortName);
                         ThreadMessage(msg);
                         goto thread_exit;
                   }
-
             }
 
 
@@ -2028,15 +2035,16 @@ void *OCP_NMEA_Thread::Entry()
    // Issue read operation.
                 if (!ReadFile(hSerialComm, szBuf, READ_BUF_SIZE, &dwRead, &osReader))
                 {
-                    if (GetLastError() != ERROR_IO_PENDING)     // read not delayed?
+                    int errt = GetLastError();
+                    if (errt != ERROR_IO_PENDING)     // retry port on all unknown errors
                     {
-//                          m_pCommMan->CloseComPort(m_gps_fd);
-//                          m_gps_fd = NULL;
+                          m_pCommMan->CloseComPort(m_gps_fd);
+                          m_gps_fd = NULL;
                           dwRead = 0;
                           nl_found = false;
                           fWaitingOnRead = FALSE;
                     }
-                    else
+                    else                              // read delayed
                         fWaitingOnRead = TRUE;
                 }
                 else
@@ -2067,8 +2075,8 @@ void *OCP_NMEA_Thread::Entry()
                               case WAIT_OBJECT_0:
                                     if (!GetOverlappedResult(hSerialComm, &osReader, &dwRead, FALSE))
                                     {
-//                                          m_pCommMan->CloseComPort(m_gps_fd);
-//                                          m_gps_fd = NULL;
+                                          m_pCommMan->CloseComPort(m_gps_fd);
+                                          m_gps_fd = NULL;
                                           dwRead = 0;
                                           nl_found = false;
                                           fWaitingOnRead = FALSE;
@@ -2184,11 +2192,6 @@ HandleASuccessfulRead:
                               partial = true;
                         }
                 }                 // while !partial
-
-#ifdef __WXMSW__
-//                if(!_CrtCheckMemory())
-//                      _CrtDbgBreak( );
-#endif
 
             }           // nl found
 
@@ -3984,8 +3987,11 @@ int ComPortManager::WriteComPortPhysical(int port_descriptor, const wxString& st
    // Create this writes OVERLAPPED structure hEvent.
       osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
       if (osWrite.hEvent == NULL)
+      {
       // Error creating overlapped event handle.
+            free(pszBuf);
             return 0;
+      }
 
    // Issue write.
       if (!WriteFile((HANDLE)port_descriptor, pszBuf, dwSize, &dwWritten, &osWrite))

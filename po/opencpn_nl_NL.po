@@ -5,12 +5,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.423 beta\n"
+"Project-Id-Version: OpenCPN 2.4.612 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
-"PO-Revision-Date: 2011-04-27 19:06+0100\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"PO-Revision-Date: 2011-06-17 17:35+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
-"Language-Team:  <fj.bonig@kpnplanet.nl>\n"
+"Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -99,7 +99,7 @@ msgstr "     Vectorlengte (in tijdminuten): "
 #
 #
 msgid "      Max moored target speed (Kts.):"
-msgstr "     Max. vaart ten anker liggende objecten (knopen): "
+msgstr "     Max. vaart geankerde objecten (knopen): "
 #
 #
 #
@@ -216,6 +216,18 @@ msgstr " %H uur   %M minuten"
 msgid " - "
 msgstr " - "
 #
+#, c-format
+msgid " COG: %03d Deg."
+msgstr "COG: %03d°"
+#
+msgid " COG: 000 Deg."
+msgstr "COG: 000°"
+#
+#
+#
+msgid " COG: Unavailable"
+msgstr "COG: niet beschikbaar"
+#
 #
 #
 msgid " ChartFile:  "
@@ -260,7 +272,7 @@ msgstr " Schip: "
 #
 #
 msgid " Soundings:  "
-msgstr " Referentievlak: "
+msgstr " Reductievlak: "
 #
 #
 #
@@ -392,9 +404,6 @@ msgstr "&Start track"
 #
 msgid "&Style:"
 msgstr "&Stijl"
-#
-msgid "&Toggle Chart"
-msgstr "&Wissel kaart"
 #
 #
 #
@@ -679,7 +688,7 @@ msgid "B"
 msgstr "B"
 #
 msgid "Barge, tanker, chemical"
-msgstr ""
+msgstr "duwbak, chemisch"
 #
 #
 #
@@ -734,10 +743,10 @@ msgid "Bearing:                Unavailable\n"
 msgstr "Peiling:                  niet beschikbaar\n"
 #
 msgid "Black"
-msgstr ""
+msgstr "zwart"
 #
 msgid "Blue"
-msgstr ""
+msgstr "blauw"
 #
 #
 #
@@ -750,10 +759,10 @@ msgid "Brg"
 msgstr "Peiling"
 #
 msgid "Bulk carrier maritime"
-msgstr ""
+msgstr "bulkcarrier (zee)"
 #
 msgid "Bunkership"
-msgstr ""
+msgstr "bunkerschip"
 #
 #
 #
@@ -977,9 +986,8 @@ msgstr "COG"
 #
 #
 #
-#, fuzzy
 msgid "Color:"
-msgstr "&Kleur: "
+msgstr "Kleur: "
 #
 #
 #
@@ -999,9 +1007,8 @@ msgstr "Console waarde"
 msgid "Constrained by draught"
 msgstr "beperkt door diepgang"
 #
-#, fuzzy
 msgid "Container vessel"
-msgstr "zeilvaartuig"
+msgstr "containerschip"
 #
 #
 #
@@ -1013,6 +1020,9 @@ msgstr "Kan TCP/IP host niet vinden"
 msgid "Course UP Mode"
 msgstr "Koers-Boven presentatie"
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr "    Schermverversing bij Koers-Boven presentatie elke (seconden)"
+#
 #
 #
 #, c-format
@@ -1021,9 +1031,8 @@ msgstr "Koers:               %03d°\n"
 #
 #
 #
-#, fuzzy
 msgid "Course:                 000 Deg.\n"
-msgstr "Koers:               %03d°\n"
+msgstr "Koers:               000°\n"
 #
 #
 #
@@ -1036,7 +1045,7 @@ msgid "Create Route"
 msgstr "Maak route"
 #
 msgid "Cruise ship"
-msgstr ""
+msgstr "cruise schip"
 #
 #
 #
@@ -1050,33 +1059,32 @@ msgstr "Cursor: "
 #
 #
 #
-#, fuzzy
 msgid "Cyan"
-msgstr "Annuleer"
+msgstr "cyaan"
 #
 msgid "D/V"
 msgstr "dui/v"
 #
 msgid "Dark Blue"
-msgstr ""
+msgstr "donkerblauw"
 #
 msgid "Dark Cyan"
-msgstr ""
+msgstr "donkercyaan"
 #
 msgid "Dark Gray"
-msgstr ""
+msgstr "donkergrijs"
 #
 msgid "Dark Green"
-msgstr ""
+msgstr "donkergroen"
 #
 msgid "Dark Magenta"
-msgstr ""
+msgstr "donkermagenta"
 #
 msgid "Dark Red"
-msgstr ""
+msgstr "donkerrood"
 #
 msgid "Dark Yellow"
-msgstr ""
+msgstr "donkergeel"
 #
 #
 #
@@ -1094,7 +1102,7 @@ msgid "Deactivate Route"
 msgstr "Deactiveer route"
 #
 msgid "Decimal degrees"
-msgstr ""
+msgstr "decimale graden"
 #
 #
 #
@@ -1103,15 +1111,14 @@ msgstr "Grote diepte"
 #
 #
 #
-#, fuzzy
 msgid "Default color"
-msgstr "Kleur lettertype "
+msgstr "standaard kleur "
 #
 msgid "Degrees, Decimal minutes"
-msgstr ""
+msgstr "graden, decimale minuten"
 #
 msgid "Degrees, Minutes, Seconds"
-msgstr ""
+msgstr "graden, minuten, seconden"
 #
 #
 #
@@ -1159,7 +1166,7 @@ msgstr "Diepteinstellingen"
 #
 #
 msgid "Depth Settings(m)"
-msgstr "Diepteverloop (m) "
+msgstr "Dieptegrenzen (m) "
 #
 #
 #
@@ -1234,6 +1241,11 @@ msgstr "ENC/Vector"
 #
 #
 #
+msgid "ETA"
+msgstr "ETA"
+#
+#
+#
 msgid "ETA          "
 msgstr "ETA          "
 #
@@ -1246,6 +1258,9 @@ msgstr "ETA:"
 #
 msgid "ETA:                  "
 msgstr "ETA:                 "
+#
+msgid "ETE"
+msgstr "Vaartijd"
 #
 #
 #
@@ -1284,7 +1299,7 @@ msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Activeer Zoom-met-Muiswiel-naar-Cursorpositie"
 #
 msgid "Enable transparent toolbar"
-msgstr ""
+msgstr "Transparante werkbalk"
 #
 #
 #
@@ -1322,6 +1337,11 @@ msgstr "Exporteer GPX-bestand"
 msgid "Extend Route"
 msgstr "Route uitbreiden"
 #
+#
+#
+msgid "Extend Track"
+msgstr "Track uitbreiden"
+#
 msgid "ExtendedTideIcon"
 msgstr "Uitgebreid getij-icoon"
 #
@@ -1339,7 +1359,7 @@ msgid "Failed to load libgps.so.19"
 msgstr "Kon libgps.so.19 niet laden."
 #
 msgid "Fast ship"
-msgstr ""
+msgstr "snel schip"
 #
 #
 #
@@ -1352,16 +1372,16 @@ msgid "Feet"
 msgstr "voet"
 #
 msgid "Ferry"
-msgstr ""
+msgstr "veerboot"
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filter NMEA koers- en vaartgegevens"
 #
 msgid "Filter Period (Sec.)"
-msgstr "     Filterperiode (seconden)"
+msgstr "    Filterperiode (seconden)"
 #
 msgid "Fishing boat"
-msgstr ""
+msgstr "visservaartuig"
 #
 msgid "Fix.Struct."
 msgstr "platform"
@@ -1380,10 +1400,10 @@ msgid "Force Full Database Rebuild"
 msgstr "Forceer volledige herbouw van database"
 #
 msgid "Freightbarge"
-msgstr ""
+msgstr "vrachtduwbak (VDB)"
 #
 msgid "Freightbarge with containers"
-msgstr ""
+msgstr "vrachtduwbak met containers"
 #
 #
 #
@@ -1413,12 +1433,11 @@ msgstr "Opties Gebruikersinterface"
 #
 #
 #
-#, fuzzy
 msgid "Gas tanker"
-msgstr "Raster"
+msgstr "gas-tankschip"
 #
 msgid "General cargo Vessel maritime"
-msgstr ""
+msgstr "vrachtschip (zee) "
 #
 #
 #
@@ -1436,13 +1455,19 @@ msgid "Go to "
 msgstr "Ga naar"
 #
 msgid "Green"
-msgstr ""
+msgstr "groen"
 #
 msgid "HSC"
 msgstr "HSV"
 #
 msgid "HW"
 msgstr "HW"
+#
+#
+#
+#, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Peiling:                  %03d°\n"
 #
 #
 #
@@ -1464,12 +1489,21 @@ msgid "High Speed Craft"
 msgstr "hogesnelheidsvaartuig"
 #
 msgid "Hydrofoil"
-msgstr ""
+msgstr "draagvleugelboot"
 #
 #
 #
 msgid "I&mport GPX..."
 msgstr "I&mporteer GPX-bestand ..."
+#
+msgid "IMO:\n"
+msgstr ""
+#
+#
+#
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA:                 "
 #
 #
 #
@@ -1480,11 +1514,6 @@ msgstr "Icoon"
 #
 msgid "Import GPX file"
 msgstr "Importeer GPX-bestand"
-#
-#
-#
-msgid "Import new layer"
-msgstr "Importeer nieuwe kaartlaag"
 #
 #
 #
@@ -1543,7 +1572,6 @@ msgstr "Taal/Lettertype"
 #
 #
 #
-#, fuzzy
 msgid "Last Position Report Time:  "
 msgstr "Laatste rapportagetijdstip: "
 #
@@ -1607,9 +1635,8 @@ msgstr "licht"
 #
 #
 #
-#, fuzzy
 msgid "Light Gray"
-msgstr "licht"
+msgstr "lichtgrijs"
 #
 msgid "Light Vessel/Rig"
 msgstr "lichtschip/-platform"
@@ -1626,7 +1653,7 @@ msgid "Links"
 msgstr "Links"
 #
 msgid "Liquified gas tanker"
-msgstr ""
+msgstr "gastanker (zee)"
 #
 #
 #
@@ -1691,11 +1718,17 @@ msgstr "Toon metagegevens"
 msgid "MMSI"
 msgstr "MMSI"
 #
+#
+#
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA:                 "
+#
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
 msgid "Magenta"
-msgstr ""
+msgstr "magenta"
 #
 #
 #
@@ -1788,37 +1821,37 @@ msgid "Moored"
 msgstr "gemeerd"
 #
 msgid "Motor freighter"
-msgstr ""
+msgstr "motorvrachtschip"
 #
 msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
+msgstr "lang samenstel, min. 1 MTS"
 #
 msgid "Motor freighter pushing one or more freighters"
-msgstr ""
+msgstr "lang samenstel, MVS"
 #
 msgid "Motor freighter with one or more ships alongside"
-msgstr ""
+msgstr "breed samenstel, MVS"
 #
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "breed samenstel, min. 1 MTS"
 #
 msgid "Motor freighter, tug"
-msgstr ""
+msgstr "slepend MVS"
 #
 msgid "Motor tanker"
-msgstr ""
+msgstr "motortankschip"
 #
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr ""
+msgstr "motortankschip, \"vloeibare\" droge lading (bijv. cement)"
 #
 msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
+msgstr "motortankschip, vloeibare lading, type C"
 #
 msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
+msgstr "motortankschip, vloeibare lading, type N"
 #
 msgid "Motor tanker, tug"
-msgstr ""
+msgstr "slepend MTS"
 #
 #
 #
@@ -1910,10 +1943,10 @@ msgid "Object Query"
 msgstr "Objectgegevens"
 #
 msgid "Object, not otherwise specified"
-msgstr ""
+msgstr "object, geen specificatie"
 #
 msgid "Object, towed, not otherwise specified"
-msgstr ""
+msgstr "object, gesleept, geen specificatie"
 #
 #
 #
@@ -2036,10 +2069,10 @@ msgid "Passenger Ship"
 msgstr "passagierschip"
 #
 msgid "Passenger ship without accomodation"
-msgstr ""
+msgstr "passagierschip zonder accomodatie"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr ""
+msgstr "passagierschip binnenvaart"
 #
 msgid "Pilot Vessel"
 msgstr "loodsvaartuig"
@@ -2090,7 +2123,7 @@ msgid "Pleasure craft"
 msgstr "pleziervaartuig"
 #
 msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
+msgstr "grote recreatievaart > 20 m"
 #
 #
 msgid "PlugInManager searching for PlugIns in location "
@@ -2143,7 +2176,7 @@ msgstr "Polyconisch"
 #
 #
 msgid "Port"
-msgstr "haven"
+msgstr "bakboord"
 #
 msgid "Port Hand"
 msgstr "'bakboordszijde'"
@@ -2161,7 +2194,7 @@ msgstr "Positie"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
@@ -2174,7 +2207,6 @@ msgstr "Positie:"
 #
 #
 #
-#, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2182,9 +2214,9 @@ msgid ""
 "Would you like to use this version of libgps anyway?"
 msgstr ""
 "Mogelijke libgps API versie verschil.\n"
-"libgps reageerde niet op versie verzoek\n"
+"libgps reageerde niet op versie verzoek.\n"
 "\n"
-"                              Wilt u deze versie van Libgps toch gebriuken?"
+"Wilt u deze versie van Libgps toch gebruiken?"
 #
 msgid "Pref. Chnl"
 msgstr "aanb.vrwr"
@@ -2248,61 +2280,61 @@ msgid "Properties"
 msgstr "Eigenschappen"
 #
 msgid "Pushboat, single"
-msgstr ""
+msgstr "duwboot losvarend"
 #
 msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 8 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, eight cargo barges"
-msgstr ""
+msgstr "duwboot met 8 vrachtduwbakken"
 #
 msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 5 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, five cargo barges"
-msgstr ""
+msgstr "duwboot met 5 vrachtduwbakken"
 #
 msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 4 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, four cargo barges"
-msgstr ""
+msgstr "duwboot met 4 vrachtduwbakken"
 #
 msgid "Pushtow, nine or more barges"
-msgstr ""
+msgstr "duwboot met 9 of meer VRDB"
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 9 of meer DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, one cargo barge"
-msgstr ""
+msgstr "duwboot met 1 vrachtduwbak"
 #
 msgid "Pushtow, one tank/gas barge"
-msgstr ""
+msgstr "duwboot 1 (G) TDB"
 #
 msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 7 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, seven cargo barges"
-msgstr ""
+msgstr "duwboot met 7 vrachtduwbakken"
 #
 msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 6 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, six cargo barges"
-msgstr ""
+msgstr "duwboot met 6 vrachtduwbakken"
 #
 msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 3 DB - min. 1 (G) TDB"
 #
 msgid "Pushtow, three cargo barges"
-msgstr ""
+msgstr "duwboot met 3 vrachtduwbakken"
 #
 msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
+msgstr "duwboot 2 DB - 1 (G) TDB"
 #
 msgid "Pushtow, two cargo barges"
-msgstr ""
+msgstr "duwboot met 2 vrachtduwbakken"
 #
 msgid "RACON"
 msgstr "RACON"
@@ -2379,10 +2411,10 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Vernieuw de kaartendatabase vanuit configuratiebestand ..."
 #
 msgid "Red"
-msgstr ""
+msgstr "rood"
 #
 msgid "Red cross ship"
-msgstr ""
+msgstr "rode kruis schip"
 #
 msgid "Ref. Pt"
 msgstr "ref.pt"
@@ -2564,7 +2596,7 @@ msgid "Send To GPS..."
 msgstr "Zend naar GPS ..."
 #
 msgid "Service vessel, police patrol, port service"
-msgstr ""
+msgstr "dienstvaartuig"
 #
 #
 #
@@ -2573,12 +2605,11 @@ msgstr "Activeer ankerwacht"
 #
 #
 #
-#, fuzzy
 msgid "Set Course Up Mode"
 msgstr "Koers-Boven presentatie"
 #
 msgid "Set North Up Mode"
-msgstr ""
+msgstr "Noord-Boven presentatie"
 #
 #
 #
@@ -2622,6 +2653,11 @@ msgstr "Toon kaartgrenzen"
 #
 #
 #
+msgid "Show Current Information"
+msgstr "Toon getijstroominformatie"
+#
+#
+#
 msgid "Show Currents"
 msgstr "Toon getijstroom-iconen"
 #
@@ -2652,9 +2688,8 @@ msgstr "Toon alleen belangrijke tekst"
 #
 #
 #
-#, fuzzy
 msgid "Show Lat/Long as"
-msgstr "Toon op kaart"
+msgstr "    Toon positie in"
 #
 #
 #
@@ -2683,6 +2718,11 @@ msgstr "Toon statusbalk"
 #
 #
 #
+msgid "Show Tide Information"
+msgstr "Toon getijhoogteinformatie"
+#
+#
+#
 msgid "Show Tides"
 msgstr "Toon getijhoogte-iconen"
 #
@@ -2695,6 +2735,9 @@ msgstr "Toon track-icoon"
 #
 msgid "Show WPT names"
 msgstr "Toon namen"
+#
+msgid "Show layers initially"
+msgstr "Toon kaartlagen initieel"
 #
 #
 #
@@ -2736,12 +2779,12 @@ msgstr "vereenvoudigd"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
-"Grootte:                %dm x %dm x ---m\n"
+"Grootte:                %dm x %dm \n"
 "\n"
 #
 #
@@ -2824,7 +2867,7 @@ msgstr "markering bijzondere betekenis"
 #
 #
 msgid "Speed (Kts)"
-msgstr "Vaart (knopen)"
+msgstr "Vaart"
 #
 #
 #
@@ -2844,6 +2887,11 @@ msgstr "Route splitsen"
 #
 #
 #
+msgid "Split Track"
+msgstr "Track splitsen"
+#
+#
+#
 msgid "Standard"
 msgstr "standaard"
 #
@@ -2856,20 +2904,20 @@ msgid "Start"
 msgstr "Start"
 #
 msgid "Stbd"
-msgstr "stbd"
+msgstr "stuurboord"
 #
 msgid "Stbd Hand"
-msgstr "'stbd zijde'"
+msgstr "'stuurboordszijde'"
 #
 #
 #
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Onderdruk waarschuwingen voor ten anker liggende en gemeerde objecten"
+msgstr "Onderdruk waarschuwingen voor geankerde en gemeerde objecten"
 #
 #
 #
 msgid "Supress anchored/moored targets"
-msgstr "Onderdruk ten anker liggende en gemeerde objecten"
+msgstr "Onderdruk geankerde en gemeerde objecten"
 #
 #
 #
@@ -2892,24 +2940,23 @@ msgstr "TCPA:  \n"
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d uur:min\n"
 #
-#, fuzzy
 msgid "Tankbarge"
-msgstr "tanker"
+msgstr "tankduwbak (TDB)"
 #
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
+msgstr "tankduwbak (TDB), \"vloeibare\" droge lading (bijv. cement)"
 #
 msgid "Tankbarge, gas"
-msgstr ""
+msgstr "gas-tankduwbak (GTDB)"
 #
 msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
+msgstr "tankduwbak (TDB), vloeibare lading, type C"
 #
 msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
+msgstr "tankduwbak (TDB), vloeibare lading, type N"
 #
 msgid "Tanker"
-msgstr "tanker"
+msgstr "tanker (geen gas) (zee)"
 #
 msgid "Target info"
 msgstr "Objectinformatie"
@@ -2923,6 +2970,11 @@ msgstr "Tijdelijke GOTO route"
 #
 msgid "Temporary MOB Route"
 msgstr "Tijdelijke MOB route"
+#
+#
+#
+msgid "Temporary layer"
+msgstr "Tijdelijke kaartlaag"
 #
 #
 #
@@ -3001,6 +3053,11 @@ msgstr "Tijden in "
 #
 #
 #
+msgid "Timestamp"
+msgstr "Tijdstip"
+#
+#
+#
 msgid "To"
 msgstr "Naar"
 #
@@ -3013,16 +3070,6 @@ msgstr "Naar punt"
 #
 msgid "Today"
 msgstr "Vandaag"
-#
-#
-#
-msgid "Toggle Listing"
-msgstr "Lijst Aan/Uit"
-#
-#
-#
-msgid "Toggle Names"
-msgstr "Wissel namen"
 #
 #
 #
@@ -3096,26 +3143,25 @@ msgid "Tug"
 msgstr "sleepboot"
 #
 msgid "Tug freighter, coupled"
-msgstr ""
+msgstr "gekoppelde sleep-vrachtschepen"
 #
 msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
+msgstr "sleepboot assisterend"
 #
 msgid "Tug, freighter"
-msgstr ""
+msgstr "sleep-vrachtschip"
 #
 msgid "Tug, freighter/tanker, coupled"
-msgstr ""
+msgstr "gekoppelde sleep-sch. min. 1 SL-TS"
 #
 msgid "Tug, one or more tows"
-msgstr ""
+msgstr "sleepboot, 1 of meer aanhangen"
 #
 msgid "Tug, single"
-msgstr ""
+msgstr "sleepboot, losvarend"
 #
-#, fuzzy
 msgid "Tug, tanker"
-msgstr "tanker"
+msgstr "sleep-tankschip"
 #
 #
 #
@@ -3159,13 +3205,13 @@ msgid "Undefined"
 msgstr "niet gedefinieerd"
 #
 msgid "Under way sailing"
-msgstr "zeilend vaartuig"
+msgstr "onder zeil varend"
 #
 msgid "Underway"
 msgstr "varend"
 #
 msgid "Unit carrier maritime"
-msgstr ""
+msgstr "containerschip (zee)"
 #
 #
 #
@@ -3187,7 +3233,6 @@ msgstr "Haal inhoud weg"
 #
 #
 #
-#, fuzzy
 msgid "Unspecified"
 msgstr "niet gedefinieerd"
 #
@@ -3244,14 +3289,15 @@ msgstr "vaartuig slepend"
 msgid "Vessel Towing, Long"
 msgstr "vaartuig slepend, lang"
 #
-#, fuzzy
 msgid "Vessel, type unknown"
-msgstr "vaartuig slepend"
+msgstr "vaartuig, type onbekend"
 #
 msgid ""
 "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 "dredge"
 msgstr ""
+"vaartuig, onderhoudsvaartuig, kraanbak, kabellegger, boeienlegger, "
+"baggervaartuig"
 #
 msgid "Virtual"
 msgstr "virtueel"
@@ -3270,7 +3316,7 @@ msgstr "WAV bestanden (*.wav)|*.wav|Alle bestanden (*.*)|*.*"
 #
 #
 msgid "Warn if CPA less than (NMi):"
-msgstr "Waarschuw als CPA minder is dan (zeemijl):"
+msgstr "Waarschuw als kortste naderingsafstand minder is dan (zeemijl):"
 #
 #
 #
@@ -3316,7 +3362,7 @@ msgid "Whether the font is underlined."
 msgstr "Onderstreept lettertype?"
 #
 msgid "White"
-msgstr ""
+msgstr "wit"
 #
 #
 #
@@ -3324,7 +3370,7 @@ msgid "WiFi Options"
 msgstr "WiFi opties"
 #
 msgid "Wing In Ground Effect"
-msgstr "vaartuig grondeffect"
+msgstr "grondeffectvaartuig (WIG)"
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "     X offset (in NM; positief verplaatst kaart naar oosten):"
@@ -3347,9 +3393,8 @@ msgstr "ple/v"
 #
 #
 #
-#, fuzzy
 msgid "Yellow"
-msgstr "Cel"
+msgstr "geel"
 #
 #
 #
@@ -3407,20 +3452,9 @@ msgstr "WGS Y offset"
 #
 #
 #
-#
-#~ msgid "Exit OpenCPN"
-#~ msgstr "OpenCPN afsluiten"
-#
-#
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN S57 SENC Laad bestand"
-#
-#
-#
-#
 #~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
+#~ "Size:                 %dm x %dm \n"
 #~ "\n"
 #~ msgstr ""
-#~ "Recente rapportageperiode:  %3d sec\n"
+#~ "Grootte:                %dm x %dm \n"
 #~ "\n"

@@ -153,6 +153,7 @@ public:
       AnnunText         *pBRG;
       AnnunText         *pRNG;
       AnnunText         *pTTG;
+      AnnunText         *pVMG;
       CDI               *pCDI;
       wxButton          *m_pLegRouteButton;
 

@@ -157,12 +157,11 @@ public:
 
     void SetColorScheme(ColorScheme cs);
     void SetDialogTitle(wxString title);
-
     void OnRoutepropCancelClick( wxCommandEvent& event );
     void OnRoutepropOkClick( wxCommandEvent& event );
     void OnPlanSpeedCtlUpdated( wxCommandEvent& event );
     void OnStartTimeCtlUpdated( wxCommandEvent& event );
-	void OnTimeZoneSelected( wxCommandEvent& event );
+    void OnTimeZoneSelected( wxCommandEvent& event );
     void OnRoutepropListClick( wxListEvent& event );
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );

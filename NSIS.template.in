@@ -39,7 +39,7 @@ CMake variables
 	/*
 	!define CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe"
 	!define CPACK_NSIS_PACKAGE_NAME_LC "opencpn"
-	!define CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} Version ${PACKAGE_VERSION}"
+	!define CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}"
 	!define CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps/opencpn.ico"
 	!define CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin"
 	!define CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode"
@@ -54,8 +54,7 @@ CMake variables
 	!define CSIDL_LOCAL_APPDATA "0x1C"
 	!define Explode "!insertmacro Explode"
 	!define unExplode "!insertmacro unExplode"
-	
-
+    
 ;--------------------------------
 ;# Variables
 	Var INST_USER_SID
@@ -186,7 +185,7 @@ CMake variables
   ;# Default installation folder
   InstallDir "$PROGRAMFILES\OpenCPN"
 
-  BrandingText /TRIMLEFT "OpenCPN Installer v${OCPN_INSTALLER_VERSION}"
+  BrandingText /TRIMLEFT "OpenCPN $(Installer) v${OCPN_INSTALLER_VERSION}"
 ;--------------------------------
 ;# Interface Settings
   !define MUI_CUSTOMFUNCTION_GUIINIT myGuiInit
@@ -669,7 +668,8 @@ CMake variables
 	!include /NONFATAL "Langstrings_FINNISH.nsh"
 	!insertmacro MUI_LANGUAGE "Norwegian"
 	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
-
+	!insertmacro MUI_LANGUAGE "TradChinese"
+	!include /NONFATAL "Langstrings_CHINESETW.nsh"
 
 ;-------------------------------- 
 ;# Reserve Files
@@ -1115,13 +1115,17 @@ Function myGuiInit
 			StrCpy $REG_LANG "ru_RU"
 			${Break}
 		${Case} ${LANG_NORWEGIAN}
-			StrCpy $LANG_NAME "Norske"
+			StrCpy $LANG_NAME "Norsk"
 			StrCpy $REG_LANG "nb_NO"
 			${Break}
 		${Case} ${LANG_FINNISH}
 			StrCpy $LANG_NAME "Suomalainen"
 			StrCpy $REG_LANG "fi_FI"
 			${Break}
+        ${Case} ${LANG_TRADCHINESE}
+            StrCpy $LANG_NAME "正體中文"
+            StrCpy $REG_LANG "zh_TW"
+            ${Break}
 		${Default}
 			${Break}
 	${EndSwitch}
@@ -4221,7 +4225,7 @@ Var explArrCount
 	LicenseLangString license ${LANG_SWEDISH} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_FINNISH} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_NORWEGIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
-	
+	LicenseLangString license ${LANG_TRADCHINESE} "@CPACK_RESOURCE_FILE_LICENSE@"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecGrpResetConfig} $(SecGrpResetConfig_Desc)
@@ -4545,4 +4549,8 @@ Var explArrCount
   ;added on 2010-10-21
 	LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 	
+  ;added on 2011-06-13
+	LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+    LangString Installer ${LANG_ENGLISH} "Installer"
+		
 ;#EOF

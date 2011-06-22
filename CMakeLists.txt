@@ -28,7 +28,13 @@ PROJECT(OpenCPN)
 
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(PACKAGE_NAME opencpn)
+IF(APPLE)
+  SET(PACKAGE_NAME OpenCPN)
+ELSE(APPLE)
+  SET(PACKAGE_NAME opencpn)
+ENDIF(APPLE)
+
+
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
@@ -83,7 +89,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
-  ADD_DEFINITIONS( "-Wall -g -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
   ADD_DEFINITIONS( "-O3 -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
@@ -92,6 +98,7 @@ ADD_DEFINITIONS(-DUSE_GLU_TESS)
 IF(WIN32)
     ADD_DEFINITIONS(-D__MSVC__)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+    ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(WIN32)
 
 
@@ -444,6 +451,32 @@ ENDIF (USE_GARMINHOST)
 IF(WIN32)
   SET(SRCS ${SRCS} src/opencpn.rc)
 ENDIF(WIN32)
+
+# Various data files
+SET(wvsData
+        data/wvsdata/readmewvs.txt
+        data/wvsdata/wvs1.dat
+        data/wvsdata/wvs43.dat
+   )
+
+IF (USE_S57)
+      SET(s57data
+            data/s57data/attdecode.csv
+            data/s57data/S52RAZDS.RLE
+            data/s57data/s57attributes.csv
+            data/s57data/s57expectedinput.csv
+            data/s57data/s57objectclasses.csv
+             )
+ENDIF (USE_S57)
+
+SET(tcData
+        data/tcdata/HARMONIC
+        data/tcdata/HARMONIC.IDX
+        data/tcdata/README.harmonics
+   )
+
+
+
 IF(APPLE)
   INCLUDE_DIRECTORIES(/usr/X11/include /usr/X11/include/GL)
   SET(CMAKE_C_FLAGS_DEBUG "-O2 -arch ${ARCH}")
@@ -456,15 +489,11 @@ IF(APPLE)
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -arch ${ARCH}")
 
   SET(SRCS ${SRCS}
-    include/macsercomm.h
-    src/macsercomm.cpp
     include/macutils.h
     src/macutils.c
     )
 ENDIF(APPLE)
 
-
-ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 MACOSX_BUNDLE ${HDRS} ${SRCS})
 
 IF(WIN32)
     IF(MSVC)
@@ -479,19 +508,86 @@ IF(WIN32)
     ENDIF(MSVC)
 #    SET_TARGET_PROPERTIES(${PACKAGE_NAME} PROPERTIES COMPILE_FLAGS /Zp44)
 #    SET_TARGET_PROPERTIES(${PACKAGE_NAME} PROPERTIES LINK_FLAGS /MANIFEST:NO)
+ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
 ENDIF(WIN32)
+
+
+IF(APPLE)
+
+SET_SOURCE_FILES_PROPERTIES(
+           ${wvsData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/wvsdata  )
+SET_SOURCE_FILES_PROPERTIES(
+           ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data  )
+SET_SOURCE_FILES_PROPERTIES(
+           ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata  )
+SET_SOURCE_FILES_PROPERTIES(
+           data/license.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
+FILE(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/data/sounds/*)
+FOREACH (_currentSoundFile ${SOUND_FILES})
+  SET_SOURCE_FILES_PROPERTIES(
+           ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
+ENDFOREACH (_currentSoundFile )
+
+SET_SOURCE_FILES_PROPERTIES(
+           data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+
+SET_SOURCE_FILES_PROPERTIES(
+           buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+
+SET_SOURCE_FILES_PROPERTIES(
+           /opt/local/lib/libwx_macu-2.8.dylib PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks )
+
+ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+      ${HDRS}
+      ${SRCS}
+      ${wvsData}
+      ${s57data}
+      ${tcData}
+      data/license.txt
+      ${SOUND_FILES}
+      data/doc/help_web.html
+      buildosx/opencpn.icns
+#      /opt/local/lib/libwx_macu-2.8.dylib
+      )
+
+
+  INSTALL(TARGETS
+    ${PACKAGE_NAME}
+    BUNDLE DESTINATION ${PREFIX_BIN})
+
 
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${wxWidgets_LIBRARIES}
       NMEA0183
       ${EXTRA_LIBS}
-)
+      )
+
+ENDIF(APPLE)
+
+IF(UNIX AND NOT APPLE)
+ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
+ENDIF(UNIX AND NOT APPLE)
+
+
+
+
+
+
+If(NOT APPLE)
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+      ${wxWidgets_LIBRARIES}
+      NMEA0183
+      ${EXTRA_LIBS}
+      )
+ENDIF(NOT APPLE)
 
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	setupapi.lib
 	gdiplus.lib
 	glu32.lib
+        Psapi.lib
 )
 ENDIF(WIN32)
 
@@ -531,29 +627,12 @@ IF(WIN32)
 SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
-SET(wvsData
-        data/wvsdata/readmewvs.txt
-        data/wvsdata/wvs1.dat
-        data/wvsdata/wvs43.dat
-   )
 INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata )
 
 IF (USE_S57)
-	SET(s57data
-		data/s57data/attdecode.csv
-		data/s57data/S52RAZDS.RLE
-		data/s57data/s57attributes.csv
-		data/s57data/s57expectedinput.csv
-		data/s57data/s57objectclasses.csv
-	   )
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data )
 ENDIF (USE_S57)
 
-SET(tcData
-        data/tcdata/HARMONIC
-        data/tcdata/HARMONIC.IDX
-        data/tcdata/README.harmonics
-   )
 INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata )
 
 INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} )
@@ -636,8 +715,12 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
       DEPENDS ${_absFile}
       COMMENT "i18n [${_poBasename}]: Created mo file."
    )
-
+IF(APPLE)
+   INSTALL(FILES ${_gmoFile} DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/Resources/${_lang}.lproj RENAME ${PACKAGE_NAME}.mo )
+ELSE(APPLE)
    INSTALL(FILES ${_gmoFile} DESTINATION ${PREFIX_DATA}/locale/${_lang}/LC_MESSAGES RENAME ${PACKAGE_NAME}.mo )
+ENDIF(APPLE)
+
    SET(_gmoFiles ${_gmoFiles} ${_gmoFile})
 ENDMACRO(GETTEXT_BUILD_MO)
 
@@ -660,6 +743,7 @@ GETTEXT_BUILD_MO(po/opencpn_tr_TR.po tr_TR)
 GETTEXT_BUILD_MO(po/opencpn_fi_FI.po fi_FI)
 GETTEXT_BUILD_MO(po/opencpn_el_GR.po el_GR)
 GETTEXT_BUILD_MO(po/opencpn_zh_TW.po zh_TW)
+GETTEXT_BUILD_MO(po/opencpn_hu_HU.po hu_HU)
 ADD_CUSTOM_TARGET(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 #ADD_DEPENDENCIES(i18n ${PACKAGE_PO_FILES})
 ADD_DEPENDENCIES(${PACKAGE_NAME} i18n)
@@ -698,7 +782,7 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
 
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} Version ${PACKAGE_VERSION}")
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
 
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup" )
@@ -748,8 +832,22 @@ set(CPACK_SOURCE_IGNORE_FILES
 "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
 )
 
+IF(APPLE)
+  SET(CPACK_GENERATOR "PackageMaker")
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
+  SET(CPACK_BUNDLE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  SET(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
+  SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
 
-IF(UNIX)
+  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
+  SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
+
+#  SET(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}")
+ENDIF(APPLE)
+
+
+IF(UNIX AND NOT APPLE)
 #    INCLUDE(UseRPMTools)
 #    IF(RPMTools_FOUND)
 #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
@@ -770,7 +868,7 @@ IF(UNIX)
     SET(CPACK_SET_DESTDIR ON)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32 AND NOT UNIX)
  configure_file(${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc)
@@ -788,6 +886,7 @@ IF(WIN32 AND NOT UNIX)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SWEDISH.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_NORWEGIAN.nsh" @ONLY)
+ configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CHINESETW.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CHINESETW.nsh" @ONLY)
 ENDIF(WIN32 AND NOT UNIX)
 
 configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther

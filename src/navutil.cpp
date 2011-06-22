@@ -66,8 +66,6 @@
 #include "cm93.h"
 #endif
 
-CPL_CVSID ( "$Id: navutil.cpp,v 1.77 2010/06/25 02:04:23 bdbcat Exp $" );
-
 //    Statics
 
 extern ChartCanvas      *cc1;
@@ -114,6 +112,7 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
+extern bool             g_bShowLayers;
 extern bool             g_bTransparentToolbar;
 
 extern bool             g_bShowDepthUnits;
@@ -122,6 +121,8 @@ extern bool             g_bskew_comp;
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
+
+extern int              g_iSDMMFormat;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -182,6 +183,7 @@ extern bool             g_bTrackDistance;
 extern int              gps_watchdog_timeout_ticks;
 
 extern int              g_nCacheLimit;
+extern int              g_memCacheLimit;
 
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
@@ -250,6 +252,8 @@ extern bool             g_bDebugGPSD;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
+
+int                     g_navobjbackups;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
@@ -321,7 +325,10 @@ bool Select::AddSelectableRoutePoint ( float slat, float slon, RoutePoint *pRout
       pSelItem->m_bIsSelected = false;
       pSelItem->m_pData1 = pRoutePointAdd;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoutePointAdd->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
@@ -341,7 +348,10 @@ bool Select::AddSelectableRouteSegment ( float slat1, float slon1, float slat2, 
       pSelItem->m_pData2 = pRoutePointAdd2;
       pSelItem->m_pData3 = pRoute;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoute->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
@@ -672,7 +682,10 @@ bool Select::AddSelectableTrackSegment ( float slat1, float slon1, float slat2, 
       pSelItem->m_pData2 = pRoutePointAdd2;
       pSelItem->m_pData3 = pRoute;
 
-      pSelectList->Append ( pSelItem );
+      if (pRoute->m_bIsInLayer)
+            pSelectList->Append ( pSelItem );
+      else
+            pSelectList->Insert ( pSelItem );
 
       return true;
 }
@@ -1225,7 +1238,7 @@ bool RoutePoint::SendToGPS ( wxString& com_name, wxGauge *pProgress )
       else
             msg = _("Error on Waypoint Upload.  Please check logfiles...");
 
-      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
+      OCPNMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
       return result;
 }
@@ -2205,7 +2218,7 @@ bool Route::SendToGPS ( wxString& com_name, bool bsend_waypoints, wxGauge *pProg
       else
             msg = _("Error on Route Upload.  Please check logfiles...");
 
-      ::wxMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
+      OCPNMessageBox(msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
       return result;
 }
@@ -2550,7 +2563,7 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 
 Layer::Layer ( void )
 {
-      m_bIsVisibleOnChart = true;
+      m_bIsVisibleOnChart = g_bShowLayers;
       m_bIsVisibleOnListing = false;
       m_bHasVisibleNames = true;
       m_NoOfItems = 0;
@@ -2609,6 +2622,23 @@ MyConfig::MyConfig ( const wxString &appName, const wxString &vendorName, const 
 }
 
 
+void MyConfig::CreateRotatingNavObjBackup()
+{
+      //Rotate navobj backups
+      if (g_navobjbackups > 0)
+      {
+            for (int i = g_navobjbackups - 1; i >= 1; i--)
+                  if(wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
+                        wxCopyFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i), wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i + 1));
+            wxCopyFile(m_sNavObjSetFile, wxString::Format( _T("%s.1"), m_sNavObjSetFile.c_str()) );
+      }
+      //try to clean the backups the user doesn't want - breaks if he deleted some by hand as it tries to be effective...
+      for (int i = g_navobjbackups + 1; i <= 99; i++)
+            if (wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
+                  wxRemoveFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i));
+            else
+                  break;
+}
 
 int MyConfig::LoadMyConfig ( int iteration )
 {
@@ -2629,7 +2659,14 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
       }
 
-      Read ( _T ( "nCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+      Read ( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+
+      int mem_limit;
+      Read ( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+
+      if(mem_limit > 0)
+            g_memCacheLimit = mem_limit * 1024;       // convert to MBytes
+
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
       Read ( _T ( "GPSDogTimeout" ),  &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );
@@ -2709,11 +2746,14 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
       Read ( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
       Read ( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
+      Read ( _T ( "ShowLayers" ), &g_bShowLayers, 1);
       Read ( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
       Read ( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
       Read ( _T ( "AutoAnchorDrop" ),  &g_bAutoAnchorMark, 0 );
       Read ( _T ( "ShowChartOutlines" ),  &g_bShowOutlines, 0 );
       Read ( _T ( "GarminPersistance" ),  &g_bGarminPersistance, 0 );
+
+      Read ( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );
 
@@ -2733,6 +2773,13 @@ int MyConfig::LoadMyConfig ( int iteration )
             g_locale = _T("en_US");
             Read ( _T ( "Locale" ), &g_locale );
       }
+
+      //We allow 0-99 backups ov navobj.xml
+      Read ( _T ( "KeepNavobjBackups" ),  &g_navobjbackups, 5 );
+      if (g_navobjbackups > 99)
+            g_navobjbackups = 99;
+      if (g_navobjbackups < 0)
+            g_navobjbackups = 0;
 
       SetPath ( _T ( "/Settings/GlobalState" ) );
       Read ( _T ( "bFollow" ), &st_bFollow );
@@ -3444,6 +3491,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       if ( 0 == iteration )
       {
+            CreateRotatingNavObjBackup();
+
             if ( NULL == m_pNavObjectInputSet )
 		      m_pNavObjectInputSet = new NavObjectCollection (  );
 
@@ -3862,11 +3911,13 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
       Write ( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
       Write ( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
+      Write ( _T ( "ShowLayers" ), g_bShowLayers );
       Write ( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
       Write ( _T ( "AutoAnchorDrop" ),  g_bAutoAnchorMark );
       Write ( _T ( "ShowChartOutlines" ),  g_bShowOutlines );
       Write ( _T ( "GarminPersistance" ),  g_bGarminPersistance );
       Write ( _T ( "UseGarminHost" ),  g_bGarminHost );
+      Write ( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
       Write ( _T ( "FilterNMEA_Avg" ),  g_bfilter_cogsog );
       Write ( _T ( "FilterNMEA_Sec" ),  g_COGFilterSec );
@@ -3920,6 +3971,8 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "PlanSpeed" ), st0 );
 
       Write ( _T ( "Locale" ), g_locale );
+
+      Write ( _T ( "KeepNavobjBackups" ), g_navobjbackups );
 
 
 //    S57 Object Filter Settings
@@ -4190,7 +4243,7 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return false;
@@ -4237,7 +4290,7 @@ bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return false;
@@ -4278,7 +4331,7 @@ void MyConfig::ExportGPX ( wxWindow* parent )
 
             if(wxFileExists(fn.GetFullPath()))
             {
-                  int answer = wxMessageBox(_("Overwrite existing file?"), _T("Confirm"),
+                  int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
                   if (answer != wxYES)
                         return;
@@ -4560,13 +4613,15 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                                                       pWp->m_bIsolatedMark = true;      // This is an isolated mark
                                                       pWp->m_bIsInLayer = g_bIsNewLayer;
                                                       AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
-                                                      pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
-                                                      pWp->m_ConfigWPNum = m_NextWPNum;
-
-                                                      if (g_bIsNewLayer)
+                                                      if (g_bIsNewLayer) {
                                                             pWp->m_LayerID = g_LayerIdx;
+                                                            pWp->m_bIsVisible = g_bShowLayers;
+                                                      }
                                                       else
                                                             pWp->m_LayerID = 0;
+                                                      if (!g_bIsNewLayer || g_bShowLayers)
+                                                            pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                                                      pWp->m_ConfigWPNum = m_NextWPNum;
                                                       m_NextWPNum++;
                                                 }
                                                 if (islayer)
@@ -5553,6 +5608,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                   }
                   pRouteList->Append ( pTentTrack );
 
+                  if (g_bIsNewLayer)
+                        pTentTrack->SetVisible(g_bShowLayers);
+                  else
                   if(b_propviz)
                         pTentTrack->SetVisible(b_viz);
                   else if(b_fullviz)
@@ -5811,7 +5869,9 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                   }
             }
       }
-
+      if (g_bIsNewLayer)
+            pTentRoute->SetVisible(g_bShowLayers);
+      else
       if(b_propviz)
             pTentRoute->SetVisible(b_viz);
       else if(b_fullviz)
@@ -7238,7 +7298,6 @@ wxString toSDMM ( int NEflag, double a, bool hi_precision )
       {
       case 0:
             mpy = 600.0;
-
             if(hi_precision)
                   mpy = mpy * 1000;
 
@@ -7319,6 +7378,27 @@ double fromDMM(wxString sdms)
       char narrowbuf[64];
       int i, len, top=0;
       double stk[32], sign=1;
+
+      //First round of string modifications to accomodate some known strange formats
+      wxString replhelper;
+      replhelper = wxString::FromUTF8("´·"); //UKHO PDFs
+      sdms.Replace(replhelper , _T("."));
+      replhelper = wxString::FromUTF8("\"·"); //Don't know if used, but to make sure
+      sdms.Replace(replhelper , _T("."));
+      replhelper = wxString::FromUTF8("·");
+      sdms.Replace(replhelper, _T("."));
+
+      replhelper = wxString::FromUTF8("s. š."); //Another example: cs.wikipedia.org (someone was too active translating...)
+      sdms.Replace(replhelper, _T("N"));
+      replhelper = wxString::FromUTF8("j. š.");
+      sdms.Replace(replhelper, _T("S"));
+      sdms.Replace(_T("v. d."), _T("E"));
+      sdms.Replace(_T("z. d."), _T("W"));
+
+      //If the string contains hemisphere specified by a letter, then '-' is for sure a separator...
+      sdms.UpperCase();
+      if (sdms.Contains(_T("N")) || sdms.Contains(_T("S")) || sdms.Contains(_T("E")) || sdms.Contains(_T("W")))
+            sdms.Replace(_T("-"), _T(" "));
 
       wcsncpy(buf, sdms.wc_str(wxConvUTF8), 64);
       len = wcslen(buf);

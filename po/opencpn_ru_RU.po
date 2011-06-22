@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-23 18:34-0400\n"
+"POT-Creation-Date: 2011-06-19 23:48-0400\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -248,6 +248,21 @@ msgstr " %H Ч  %M М"
 # 
 msgid " - "
 msgstr ""
+#
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Карты недоступны"
 #
 # 
 # 
@@ -509,10 +524,6 @@ msgstr "Отображать треки целей"
 # 
 msgid "&Style:"
 msgstr "&Стиль:"
-#
-# 
-msgid "&Toggle Chart"
-msgstr ""
 #
 # 
 # 
@@ -1383,6 +1394,9 @@ msgstr "Не удаётся определить хост TCP/IP '"
 msgid "Course UP Mode"
 msgstr ""
 #
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -1678,6 +1692,35 @@ msgstr "Экспорт...."
 msgid "ENC/Vector"
 msgstr ""
 #
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ETA"
+msgstr "Время прибытия"
+#
 # 
 # 
 # 
@@ -1705,6 +1748,35 @@ msgstr "Время прибытия"
 # 
 msgid "ETA:                  "
 msgstr "Ожидаемое время прибытия:                  "
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ETE"
+msgstr "Время прибытия"
 #
 # 
 # 
@@ -1805,6 +1877,14 @@ msgstr "Экспортировать файл GPX"
 #, fuzzy
 msgid "Extend Route"
 msgstr "Конец маршрута"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Удалить трек"
 #
 # 
 msgid "ExtendedTideIcon"
@@ -1973,6 +2053,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Направление:              %5.0f Град.\n"
+#
+# 
+# 
+# 
+# 
 msgid "Help"
 msgstr "Помощь"
 #
@@ -2008,6 +2096,17 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "Экспорт...."
 #
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "Ожидаемое время прибытия:                  "
+#
 # 
 # 
 # 
@@ -2020,14 +2119,6 @@ msgstr "Иконка"
 # 
 # 
 msgid "Import GPX file"
-msgstr "Загрузить файл GPX"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Import new layer"
 msgstr "Загрузить файл GPX"
 #
 # 
@@ -2308,6 +2399,14 @@ msgstr "Мета-объекты"
 # 
 msgid "MMSI"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "Ожидаемое время прибытия:                  "
 #
 # 
 msgid "M_COVR ID"
@@ -3594,6 +3693,14 @@ msgstr "Показать контуры карты"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "Иконка маркера"
+#
+# 
+# 
+# 
+# 
 msgid "Show Currents"
 msgstr "Показать течения"
 #
@@ -3682,6 +3789,14 @@ msgstr "Показать строку состояния"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "Иконка маркера"
+#
+# 
+# 
+# 
+# 
 msgid "Show Tides"
 msgstr "Показать приливы"
 #
@@ -3699,6 +3814,9 @@ msgstr "Показать иконку треков"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Отображать название"
+#
+msgid "Show layers initially"
+msgstr ""
 #
 # 
 # 
@@ -3759,7 +3877,7 @@ msgstr "Упрощённый"
 # 
 #, fuzzy, c-format
 msgid ""
-"Size:                 %dm x %dm \n"
+"Size:                 %dm x %dm\n"
 "\n"
 msgstr "Ожидаемое время прибытия:                  "
 #
@@ -3883,6 +4001,14 @@ msgstr "Удалить маршрут"
 # 
 # 
 # 
+#, fuzzy
+msgid "Split Track"
+msgstr "Отображать треки целей"
+#
+# 
+# 
+# 
+# 
 msgid "Standard"
 msgstr "Стандартные"
 #
@@ -3991,6 +4117,14 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Temporary layer"
+msgstr "Загрузить файл GPX"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Tender"
 msgstr "Отправить"
 #
@@ -4091,6 +4225,9 @@ msgstr "Время на маршруте"
 msgid "Times shown as"
 msgstr ""
 #
+msgid "Timestamp"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4111,22 +4248,6 @@ msgstr "Путевая точка"
 # 
 msgid "Today"
 msgstr "Сегодня"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Listing"
-msgstr "Включить слежение"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Toggle Names"
-msgstr "Маршрут"
 #
 # 
 # 
@@ -4613,6 +4734,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4630,6 +4757,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4658,6 +4791,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4680,6 +4819,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4708,6 +4853,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4729,6 +4880,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4741,6 +4898,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4765,6 +4928,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4793,6 +4962,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4828,29 +5003,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "ETA"
-#~ msgstr "Время прибытия"
+#
+#
+#
 #
 #
 #
@@ -4875,6 +5030,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4883,6 +5044,12 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4918,6 +5085,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4942,6 +5115,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4956,6 +5135,12 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4978,6 +5163,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -4994,6 +5185,12 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5016,6 +5213,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5026,6 +5229,12 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Морской стандарт"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5048,6 +5257,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5064,6 +5279,12 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5087,6 +5308,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5104,6 +5331,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5125,6 +5358,12 @@ msgstr ""
 #~ msgstr "Давление, мБар"
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5136,6 +5375,12 @@ msgstr ""
 #~ msgstr ""
 #~ "Период последних отчётов:     %3d Сек.\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5156,6 +5401,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5184,6 +5435,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5194,6 +5451,12 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5221,6 +5484,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5245,6 +5514,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5259,6 +5534,12 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Показать иконку GRIB"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5285,6 +5566,52 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr "Ожидаемое время прибытия:                  "
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "Включить слежение"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Маршрут"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
 # 
 # 
 # 
@@ -5295,6 +5622,12 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5317,6 +5650,12 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -5333,6 +5672,12 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
+#
+#
+#
+#
+#
 #
 #
 #

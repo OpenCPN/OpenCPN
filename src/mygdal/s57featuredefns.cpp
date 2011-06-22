@@ -51,8 +51,6 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-CPL_CVSID("$Id: s57featuredefns.cpp,v 1.2 2008/03/30 23:08:42 bdbcat Exp $");
-
 
 /************************************************************************/
 /*                     S57GenerateGeomFeatureDefn()                     */
@@ -63,8 +61,8 @@ OGRFeatureDefn *S57GenerateGeomFeatureDefn( OGRwkbGeometryType eGType,
 
 {
     OGRFeatureDefn      *poFDefn = NULL;
-    
-    if( eGType == wkbPoint )                                            
+
+    if( eGType == wkbPoint )
     {
         poFDefn = new OGRFeatureDefn( "Point" );
         poFDefn->SetGeomType( eGType );
@@ -106,7 +104,7 @@ S57GenerateVectorPrimitiveFeatureDefn( int nRCNM, int nOptionFlags )
 
 {
     OGRFeatureDefn      *poFDefn = NULL;
- 
+
     if( nRCNM == RCNM_VI )
     {
         poFDefn = new OGRFeatureDefn( OGRN_VI );
@@ -206,7 +204,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn( S57ClassRegistrar *poCR,
 
     if( !poCR->SelectClass( nOBJL ) )
         return NULL;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Create the feature definition based on the object class         */
 /*      acronym.                                                        */
@@ -251,7 +249,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn( S57ClassRegistrar *poCR,
     {
         poFDefn->SetGeomType( wkbLineString );
     }
-    
+
 /* -------------------------------------------------------------------- */
 /*      Add the standard attributes.                                    */
 /* -------------------------------------------------------------------- */
@@ -278,7 +276,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn( S57ClassRegistrar *poCR,
         }
 
         OGRFieldDefn    oField( papszAttrList[iAttr], OFTInteger );
-        
+
         switch( poCR->GetAttrType( iAttrIndex ) )
         {
           case SAT_ENUM:
@@ -307,7 +305,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn( S57ClassRegistrar *poCR,
 /* -------------------------------------------------------------------- */
 /*      Do we need to add DEPTH attributes to soundings?                */
 /* -------------------------------------------------------------------- */
-    if( EQUAL(poCR->GetAcronym(),"SOUNDG") 
+    if( EQUAL(poCR->GetAcronym(),"SOUNDG")
         && (nOptionFlags & S57M_ADD_SOUNDG_DEPTH) )
     {
         OGRFieldDefn    oField( "DEPTH", OFTReal );
@@ -383,14 +381,14 @@ void S57GenerateStandardAttributes( OGRFeatureDefn *poFDefn, int nOptionFlags )
     {
         oField.Set( "LNAM", OFTString, 16, 0 );
         poFDefn->AddFieldDefn( &oField );
-        
+
         oField.Set( "LNAM_REFS", OFTStringList, 16, 0 );
         poFDefn->AddFieldDefn( &oField );
-        
+
         oField.Set( "FFPT_RIND", OFTIntegerList, 1, 0 );
         poFDefn->AddFieldDefn( &oField );
 
-        // We should likely include FFPT_COMT here. 
+        // We should likely include FFPT_COMT here.
     }
 
 /* -------------------------------------------------------------------- */
@@ -400,13 +398,13 @@ void S57GenerateStandardAttributes( OGRFeatureDefn *poFDefn, int nOptionFlags )
     {
         oField.Set( "NAME_RCNM", OFTIntegerList, 3, 0 );
         poFDefn->AddFieldDefn( &oField );
-        
+
         oField.Set( "NAME_RCID", OFTIntegerList, 10, 0 );
         poFDefn->AddFieldDefn( &oField );
-        
+
         oField.Set( "ORNT", OFTIntegerList, 1, 0 );
         poFDefn->AddFieldDefn( &oField );
-        
+
         oField.Set( "USAG", OFTIntegerList, 1, 0 );
         poFDefn->AddFieldDefn( &oField );
 
