@@ -924,6 +924,16 @@ void dashboard_pi::OnToolbarToolCallback(int id)
                   wxAuiPaneInfo &pane = m_pauimgr->GetPane( dashboard_window );
                   if (pane.IsOk())
                         pane.Show(cnt==0);
+
+            //  This patch fixes a bug in wxAUIManager
+            //  FS#548
+            // Dropping a DashBoard Window right on top on the (supposedly fixed) chart bar window
+            // causes a resize of the chart bar, and the Dashboard window assumes some of its properties
+            // The Dashboard window is no longer grabbable...
+            // Workaround:  detect this case, and force the pane to be on a different Row.
+            // so that the display is corrected by toggling the dashboard of and back on.
+            if((pane.dock_direction == wxAUI_DOCK_BOTTOM) && pane.IsDocked())
+                  pane.Row(2);
             }
       }
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
@@ -1085,7 +1095,7 @@ void dashboard_pi::ApplyConfig(void)
                   {
                         cont->m_pDashboardWindow = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr);
                         // Name contains Orientation for perspective
-                        wxAuiPaneInfo pane = wxAuiPaneInfo().Name(wxString::Format(_T("Dashboard%d"), i-1)+cont->m_sOrientation).Caption(cont->m_sCaption).CaptionVisible(true).Float().FloatingPosition(0,0).Show(cont->m_bIsVisible);
+                        wxAuiPaneInfo pane = wxAuiPaneInfo().Name(wxString::Format(_T("Dashboard%d"), i-1)+cont->m_sOrientation).Caption(cont->m_sCaption).CaptionVisible(true).Float().FloatingPosition(10,100).Show(cont->m_bIsVisible);
                         if (cont->m_sOrientation == _T("V"))
                         {
                               pane.TopDockable(false).BottomDockable(false).LeftDockable(true).RightDockable(true);
@@ -1096,6 +1106,7 @@ void dashboard_pi::ApplyConfig(void)
                               pane.TopDockable(true).BottomDockable(true).LeftDockable(false).RightDockable(false);
                               cont->m_pDashboardWindow->SetSizerOrientation( wxHORIZONTAL );
                         }
+                        pane.Row(1);
                         m_pauimgr->AddPane( cont->m_pDashboardWindow, pane );
                   }
                   else
@@ -1112,6 +1123,8 @@ void dashboard_pi::ApplyConfig(void)
                               pane.TopDockable(true).BottomDockable(true).LeftDockable(false).RightDockable(false);
                               cont->m_pDashboardWindow->SetSizerOrientation( wxHORIZONTAL );
                         }
+                        pane.Row(1);
+
                   }
 // TODO: orientation may have changed. then we've a problem with dock constraints (AUI bug?)
                   cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList);
