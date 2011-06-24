@@ -1380,7 +1380,11 @@ void ocpnFloatingToolbarDialog::ToggleOrientation()
 
       RePosition();
 
+      Show();   // this seems to be necessary on GTK to kick the sizer into gear...(FS#553)
+      Refresh();
       GetParent()->Refresh(false);
+
+
 
 }
 
@@ -1486,12 +1490,14 @@ void ocpnFloatingToolbarDialog::Realize()
       if(m_ptoolbar)
       {
             m_ptoolbar->Realize();
+
             m_topSizer->Clear();
             m_topSizer->Add(m_ptoolbar);
             m_topSizer->Add(m_pGrabberwin);
 
             m_topSizer->Layout();
             m_topSizer->Fit(this);
+
 
             //    Update "Dock" parameters
             if(m_position.x == 0)
@@ -1506,6 +1512,8 @@ void ocpnFloatingToolbarDialog::Realize()
 
 
             Refresh(false);
+
+
       }
 }
 
