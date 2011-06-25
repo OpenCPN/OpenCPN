@@ -44,8 +44,7 @@
 #include "about.h"
 #include "chart1.h"
 
-#include "bitmaps/paypal_donate.xpm"
-
+extern wxBitmap *_img_donate;
 
 
 
@@ -84,9 +83,12 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Kathleen Boswell\n\
+      bigdumboat@yahoo.com\n\
+      Icon design\n\n\
     Flavius Bindea\n\
       dev@wikisail.org\n\
-      CM93 Offset and minor AIS enhancements\n\n\
+      CM93 Offset and AIS enhancements\n\n\
     Gunther Pilz\n\
       gunther.pilz@gmail.com\n\
       Windows Installer enhancements\n\n\
@@ -343,10 +345,9 @@ void about::CreateControls()
   itemBoxSizer2->Add(pST1);
 
   //   "Donate" Button
-  wxImage pimg((char **)paypal_donate);
-  wxBitmap paypal_donate_bmp(pimg);
+  wxBitmap donate_bmp = *_img_donate;
 
-  wxButton* donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, paypal_donate_bmp, wxDefaultPosition, wxDefaultSize, 0 );
+  wxButton* donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, donate_bmp, wxDefaultPosition, wxDefaultSize, 0 );
   donateButton->SetDefault();
   itemBoxSizer2->Add(donateButton, 0, wxALIGN_RIGHT|wxRIGHT, 5);
 
