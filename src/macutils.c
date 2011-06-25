@@ -129,7 +129,7 @@ exit:
 static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, int iMaxNames, CFIndex maxPathSize)
 {
     io_object_t		modemService;
-    kern_return_t	kernResult = KERN_FAILURE;
+//    kern_return_t	kernResult = KERN_FAILURE;
     Boolean			modemFound = false;
     char bsdPath[maxPathSize] ;
 	int				iCurrentNameIndex = 0 ;
