@@ -8038,7 +8038,10 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
 
         //        Add invariant items
         pdef_menu->Append ( ID_DEF_MENU_DROP_WP,    _( "Drop Mark Here" ) );
-        pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+
+        if(!bGPSValid)
+              pdef_menu->Append ( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+
         if ( !(g_pRouteMan->GetpActiveRoute()  || (seltype & SELTYPE_MARKPOINT)) )
               pdef_menu->Append ( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
         pdef_menu->Append(ID_DEF_MENU_GOTOPOSITION, _("Jump To Position..."));
