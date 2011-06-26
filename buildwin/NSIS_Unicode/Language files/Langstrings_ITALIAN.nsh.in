@@ -342,5 +342,5 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_ITALIAN} "Cancella cartella delle
 LangString Uninstall_Folder_Name ${LANG_ITALIAN} "Disinstalla"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_ITALIAN} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_ITALIAN} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"

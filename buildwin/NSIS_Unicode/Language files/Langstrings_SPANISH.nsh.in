@@ -125,7 +125,7 @@ LangString Installation_Directory ${LANG_SPANISH} "Carpeta de destino"
 LangString Create_Shortcuts ${LANG_SPANISH} "Crear accesos directos"
 
 #LangString Type_Reinstall ${LANG_ENGLISH} "Reinstallation"
-LangString Type_Reinstall ${LANG_SPANISH} "Re-instalación"
+LangString Type_Reinstall ${LANG_SPANISH} "Reinstalación"
 
 #LangString Type_Upgrade ${LANG_ENGLISH} "Upgrade"
 LangString Type_Upgrade ${LANG_SPANISH} "Upgrade"
@@ -338,5 +338,5 @@ LangString Banner_Installation_Found_Plural ${LANG_SPANISH} "$counter_tmp instal
 LangString UnSecDeleteConfigFolder_Text ${LANG_SPANISH} "Eliminar carpeta Config"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_SPANISH} "@CPACK_PACKAGE_NAME@ Versión @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_SPANISH} "@CPACK_PACKAGE_NAME@ versión @CPACK_PACKAGE_VERSION@"

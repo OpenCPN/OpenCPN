@@ -342,5 +342,5 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_RUSSIAN} "Delete Config folder"
 LangString Uninstall_Folder_Name ${LANG_RUSSIAN} "Удалить"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_RUSSIAN} "@CPACK_PACKAGE_NAME@ Версия @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_RUSSIAN} "@CPACK_PACKAGE_NAME@ Версия @CPACK_PACKAGE_VERSION@"

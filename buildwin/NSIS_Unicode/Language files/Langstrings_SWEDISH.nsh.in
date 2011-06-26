@@ -164,7 +164,7 @@ LangString SecDeleteConfigFile_Text ${LANG_SWEDISH} "Radera konfigurationsfilen 
 LangString SecDeleteChartDB_Text ${LANG_SWEDISH} "Radera sjökortsdatabasen (CHRTLIST.DAT)"
 
 #LangString SecDeleteSENC_Text ${LANG_ENGLISH} "Delete SENC directory"
-LangString SecDeleteSENC_Text ${LANG_SWEDISH} "Radera SENC-mappen"
+LangString SecDeleteSENC_Text ${LANG_SWEDISH} "Radera SENC-katalogen"
 
 #LangString SecDeleteCM93_Text ${LANG_ENGLISH} "Delete CM93 Directory"
 LangString SecDeleteCM93_Text ${LANG_SWEDISH} "Radera CM93-katalogen"
@@ -212,7 +212,7 @@ LangString SecGrpShortcuts_Desc ${LANG_SWEDISH} "Skapar genvägar både på star
 LangString SecShortcutStartmenu_Desc ${LANG_SWEDISH} "Skapar genvägar för OpenCPN och avinstallationsprogrammet i startmenyn - Konfigurerbart i nästa flik."
 
 #LangString SecShortcutDesktop_Desc ${LANG_ENGLISH} "Creates a shortcut for OpenCPN on the Desktop."
-LangString SecShortcutDesktop_Desc ${LANG_SWEDISH} "Skapa en genväg för OpenCPN på skrivbordet."
+LangString SecShortcutDesktop_Desc ${LANG_SWEDISH} "Skapa en genväg till OpenCPN på skrivbordet."
 
 #LangString SecSetConfig_Desc ${LANG_ENGLISH} "Preconfigure the language setting and the chart dir(s) for OpenCPN. When selected a separate page is shown for configuration."
 LangString SecSetConfig_Desc ${LANG_SWEDISH} "Förkonfigurera språkinställning och sjökortskataloger för OpenCPN. När detta alternativ väljs visas en separat flik för dessa konfigurationer."
@@ -338,5 +338,5 @@ LangString Banner_Installation_Found_Plural ${LANG_SWEDISH} "Hittade $counter_tm
 LangString UnSecDeleteConfigFolder_Text ${LANG_SWEDISH} "Radera konfigurationskatalogen"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"

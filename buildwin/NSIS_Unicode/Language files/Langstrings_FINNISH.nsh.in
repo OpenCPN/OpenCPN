@@ -342,5 +342,5 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_FINNISH} "Delete Config folder"
 LangString Uninstall_Folder_Name ${LANG_FINNISH} "Poista"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_FINNISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_FINNISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"

@@ -338,5 +338,5 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_CHINESETW} "刪除組態資料夾
 LangString Uninstall_Folder_Name ${LANG_CHINESETW} "移除安裝"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_CHINESETW} "@CPACK_PACKAGE_NAME@ 版本 @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_CHINESETW} "@CPACK_PACKAGE_NAME@ 版本 @CPACK_PACKAGE_VERSION@"

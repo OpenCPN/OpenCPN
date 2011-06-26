@@ -342,5 +342,5 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESEBR} "Deletar Pasta Conf
 LangString Uninstall_Folder_Name ${LANG_PORTUGUESEBR} "Desinstalar"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_PORTUGUESEBR} "@CPACK_PACKAGE_NAME@ versão @PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_PORTUGUESEBR} "@CPACK_PACKAGE_NAME@ versão @CPACK_PACKAGE_VERSION@"
