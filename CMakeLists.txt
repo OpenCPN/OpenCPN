@@ -90,8 +90,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
   ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( "-O3 -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -O3 -fno-strict-aliasing")
 ENDIF(NOT WIN32)
+
 
 # Add some definitions to satisfy MS
 ADD_DEFINITIONS(-DUSE_GLU_TESS)
@@ -301,13 +302,13 @@ IF (USE_S57)
 		src/mygdal/cpl_error.h
 		src/mygdal/ogr_attrind.h
 		src/mygdal/cpl_list.h
-		src/mygdal/ogr_core.h
 		src/mygdal/cpl_minixml.h
 		src/mygdal/ogr_feature.h
 		src/mygdal/cpl_multiproc.h
 		src/mygdal/ogr_geometry.h
 		src/mygdal/cpl_odbc.h
 		src/mygdal/ogr_p.h
+		src/mygdal/ogr_core.h
 		src/mygdal/cpl_port.h
 		src/mygdal/ogr_s57.h
 		src/mygdal/cpl_string.h
@@ -320,7 +321,6 @@ IF (USE_S57)
 		src/mygdal/ddfrecordindex.cpp
 		src/mygdal/cpl_conv.cpp
 		src/mygdal/cpl_csv.cpp
-		src/mygdal/cpl_dir.cpp
 		src/mygdal/cpl_error.cpp
 		src/mygdal/cpl_findfile.cpp
 		src/mygdal/cpl_minixml.cpp
@@ -479,14 +479,22 @@ SET(tcData
 
 IF(APPLE)
   INCLUDE_DIRECTORIES(/usr/X11/include /usr/X11/include/GL)
-  SET(CMAKE_C_FLAGS_DEBUG "-O2 -arch ${ARCH}")
+
+  SET(CMAKE_C_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_DEBUG "-g -O2 -arch ${ARCH}")
   SET(CMAKE_C_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_RELEASE "-O2 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-O2 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_RELEASE "-O3 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
+
+  SET(CMAKE_CXX_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O2 -arch ${ARCH}")
   SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
+
+  SET(CMAKE_EXE_LINKER_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_MODULE_LINKER_FLAGS "-O2 -arch ${ARCH}")
 
   SET(SRCS ${SRCS}
     include/macutils.h
@@ -534,9 +542,7 @@ SET_SOURCE_FILES_PROPERTIES(
 
 SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-
-SET_SOURCE_FILES_PROPERTIES(
-           /opt/local/lib/libwx_macu-2.8.dylib PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks )
+SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
 
 ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${HDRS}
@@ -548,9 +554,12 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${SOUND_FILES}
       data/doc/help_web.html
       buildosx/opencpn.icns
-#      /opt/local/lib/libwx_macu-2.8.dylib
       )
 
+
+#  INSTALL(TARGETS
+#    ${PACKAGE_NAME}
+#    BUNDLE DESTINATION "Applications")
 
   INSTALL(TARGETS
     ${PACKAGE_NAME}
@@ -562,6 +571,7 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       NMEA0183
       ${EXTRA_LIBS}
       )
+
 
 ENDIF(APPLE)
 
@@ -602,12 +612,12 @@ ENDIF(UNIX)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       dl
       gobject-2.0
 )
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
 
 
@@ -615,9 +625,11 @@ IF(NOT APPLE)
 
 IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ".")
-ELSE(WIN32)
-INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN})
 ENDIF(WIN32)
+
+IF(UNIX AND NOT APPLE)
+INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN})
+ENDIF(UNIX AND NOT APPLE)
 
 #ADD_CUSTOM_TARGET(dummy ALL DEPENDS ${PACKAGE_NAME} i18n)
 
@@ -647,6 +659,7 @@ IF(UNIX)
   INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
 ENDIF(UNIX)
 
+ENDIF(NOT APPLE)
 #  Fix up time_t definition
 # Checks for 32-bit version. And always use 32-bit time_t for compatibility
 
@@ -716,7 +729,7 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
       COMMENT "i18n [${_poBasename}]: Created mo file."
    )
 IF(APPLE)
-   INSTALL(FILES ${_gmoFile} DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/Resources/${_lang}.lproj RENAME ${PACKAGE_NAME}.mo )
+   INSTALL(FILES ${_gmoFile} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_lang}.lproj RENAME ${PACKAGE_NAME}.mo )
 ELSE(APPLE)
    INSTALL(FILES ${_gmoFile} DESTINATION ${PREFIX_DATA}/locale/${_lang}/LC_MESSAGES RENAME ${PACKAGE_NAME}.mo )
 ENDIF(APPLE)
@@ -749,7 +762,7 @@ ADD_CUSTOM_TARGET(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 ADD_DEPENDENCIES(${PACKAGE_NAME} i18n)
 ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 
-ENDIF(NOT APPLE)
+
 
 
 # On Windows builds, copy the wxWidgets dlls and  to the executable directory
@@ -833,17 +846,18 @@ set(CPACK_SOURCE_IGNORE_FILES
 )
 
 IF(APPLE)
-  SET(CPACK_GENERATOR "PackageMaker")
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
-  SET(CPACK_BUNDLE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  SET(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
-  SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
+#  SET(CPACK_GENERATOR "Bundle")
+#  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+#  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
+#  SET(CPACK_BUNDLE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+#  SET(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
+#  SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
 
-  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
-  SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
+#  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
+#  SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
 
-#  SET(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}")
+#  SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
+
 ENDIF(APPLE)
 
 
@@ -898,6 +912,34 @@ ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
 SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/version.h)
 
 INCLUDE(CPack)
+
+IF(APPLE)
+# -- Run the BundleUtilities cmake code
+
+  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
+  SET(DIRS "")
+
+  SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/plugins/libdashboard_pi.dylib")
+  SET(LIBS 
+      ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/plugins/libgrib_pi.dylib")
+
+  INSTALL(CODE "
+   include(BundleUtilities)
+   fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
+   " COMPONENT Runtime)
+
+ ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg
+   COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+   DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
+   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+   COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
+)
+
+ ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg)
+
+
+ENDIF(APPLE)
 
 MESSAGE(STATUS "Writing spec file...")
 
