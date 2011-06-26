@@ -412,20 +412,38 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 #define DYNAMIC_LOAD_LIBGPS 1
 #ifdef DYNAMIC_LOAD_LIBGPS
 
-            m_lib_handle = dlopen("libgps.so.19", RTLD_LAZY);
+            wxString load1;
+            wxString load2;
+#ifndef __WXOSX__
+            load1 = _T("libgps.so.19");
+            load2 = _T("libgps.so");
+#else
+            load1 = _T("/opt/local/lib/libgps.19.dylib");
+            load2 = _T("/opt/local/lib/libgps.dylib");
+#endif
 
+            m_lib_handle = dlopen(load1.fn_str(), RTLD_LAZY);
             if(!m_lib_handle)
             {
-                  wxLogMessage(_("Failed to load libgps.so.19"));
-                  wxLogMessage(_("Attempting to load libgps.so"));
-                  m_lib_handle = dlopen("libgps.so", RTLD_LAZY);
+                  wxString msg = _T("Failed to load ");
+                  msg += load1;
+                  wxLogMessage(msg);
+
+                  msg = _T("Attempting to load ");
+                  msg += load2;
+                  wxLogMessage(msg);
+
+                  m_lib_handle = dlopen(load2.fn_str(), RTLD_LAZY);
             }
 
 
             if(!m_lib_handle)
             {
-                  wxLogMessage(_("Failed to load libgps.so"));
-                  wxString msg(_("Unable to load libgps.so"));
+                  wxString msg1 = _T("Failed to load ");
+                  msg1 += load2;
+                  wxLogMessage(msg1);
+
+                  wxString msg(_("Unable to load libgps"));
                   OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
                   return;
@@ -749,6 +767,8 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 
       if(g_bDebugGPSD) printf("%d\n", ic++);
 
+      m_bgps_present = false;
+
       while(m_fn_gps_waiting(m_gps_data))
       {
             m_gps_data->set = 0;
@@ -765,10 +785,23 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
             }
 
 
+            m_bgps_present = true;
+
+/*
+            //  Once again gpsd is proven to be crap....
+            //  If we get a DEVICE_SET or DEVICELIST_SET with (activated==0), we will never again
+            //  get an (activated > 0) message unless we wait 60 seconds before attaching again.
+            //  Further, all clients have to be detached for 60 seconds....
+            //
+            //  So what is the point???
+
             if (m_gps_data->set & (DEVICE_SET))
             {
+                  if(g_bDebugGPSD)  printf("DEVICE_SET\n");
+                  if(g_bDebugGPSD)  printf("Activated %g\n", m_gps_data->dev.activated);
+
                   if (m_gps_data->dev.activated < 1.0)
-                  m_bgps_present = false;
+                        m_bgps_present = false;
                   else
                         m_bgps_present = true;
             }
@@ -777,13 +810,23 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
             {
                   if (m_gps_data->devices.ndevices == 1)
                   {
-                        if (m_gps_data->devices.list[0].activated < 1.0)
+                        if(g_bDebugGPSD) printf("DEVICELIST_SET\n");
+                        if(g_bDebugGPSD) printf("Activated %g\n", m_gps_data->devices.list[0].activated);
+
+                        if (m_gps_data->devices.list[0].activated == 0)
+                        {
+                              if(g_bDebugGPSD)printf("---Being deactivated\n");
                               m_bgps_present = false;
+                              break;
+                        }
                         else
+                        {
+                              if(g_bDebugGPSD)printf("Active\n");
                               m_bgps_present = true;
+                        }
                   }
             }
-
+*/
 
             if(!m_bgps_present)
             {
@@ -2056,7 +2099,7 @@ void *OCP_NMEA_Thread::Entry()
 
             // Read command has been issued, and did not return immediately
 
-#define READ_TIMEOUT      200      // milliseconds
+#define READ_TIMEOUT      2000      // milliseconds
 
             DWORD dwRes;
 
@@ -2930,7 +2973,12 @@ DeviceMonitorWindow::DeviceMonitorWindow(NMEAHandler *parent, wxWindow *MessageT
 	  if(!ResetGarminUSBDriver())
 	  {
 			  wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
-     	  }
+
+                    // This might not work, but try it anyway....
+                    //    Initialize the polling timer
+                    TimerGarmin1.SetOwner(this, TIMER_GARMIN1);
+                    TimerGarmin1.Start(100);
+        }
         else
         {
      //    Initialize the polling timer
