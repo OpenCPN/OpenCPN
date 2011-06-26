@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ais.cpp,v 1.46 2010/06/24 02:02:47 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  AIS Decoder Object
@@ -1121,7 +1120,6 @@ AIS_Decoder::AIS_Decoder(int handler_id, wxFrame *pParent, const wxString& AISDa
       m_bAIS_Audio_Alert_On = false;
 
       m_n_targets = 0;
-      m_bno_erase = false;
 
       OpenDataSource(pParent, AISDataSource);
 
@@ -2221,43 +2219,44 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       }
 
       double cpa_calc_ownship_cog = gCog;
+      double cpa_calc_target_cog = ptarget->COG;
 
-      if( wxIsNaN(gCog) || wxIsNaN(gSog) )
+//    Ownship is maybe anchored and not reporting COG
+      if( wxIsNaN(gCog) || gCog == 360.0 )
       {
-            ptarget->bCPA_Valid = false;
-            return;
-      }
-
-//    This block removed for FS#543
-/*
-            if(wxIsNaN(gSog))
+            if(wxIsNaN(gSog) || (gSog > 102.2))
             {
                   ptarget->bCPA_Valid = false;
                   return;
             }
             else if(gSog < .01)
                   cpa_calc_ownship_cog = 0.;          // substitute value
-                                                      // for the case where SOG = 0, and COG is unknown.
+                                                      // for the case where SOG ~= 0, and COG is unknown.
             else
+            {
                   ptarget->bCPA_Valid = false;
-            return;
-
+                  return;
+            }
       }
-      else
-            cpa_calc_ownship_cog = gCog;
-*/
 
-      if((gCog == 360.0) || (gSog >102.2))            // coming from AIS VDO injection
+//    Target is maybe anchored and not reporting COG
+      if(ptarget->COG == 360.0)
       {
-            ptarget->bCPA_Valid = false;
-            return;
+            if(ptarget->SOG >102.2)
+            {
+                  ptarget->bCPA_Valid = false;
+                  return;
+            }
+            else if(ptarget->SOG < .01)
+                  cpa_calc_target_cog = 0.;           // substitute value
+                                                      // for the case where SOG ~= 0, and COG is unknown.
+            else
+            {
+                  ptarget->bCPA_Valid = false;
+                  return;
+            }
       }
 
-      if((ptarget->COG == 360.0) || (ptarget->SOG >102.2))
-      {
-            ptarget->bCPA_Valid = false;
-            return;
-      }
 
       //    Express the SOGs as meters per hour
       double v0 = gSog         * 1852.;
@@ -2286,8 +2285,8 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             //    Convert COGs trigonometry to standard unit circle
             double cosa = cos((90. - cpa_calc_ownship_cog) * PI / 180.);
             double sina = sin((90. - cpa_calc_ownship_cog) * PI / 180.);
-            double cosb = cos((90. - ptarget->COG) * PI / 180.);
-            double sinb = sin((90. - ptarget->COG) * PI / 180.);
+            double cosb = cos((90. - cpa_calc_target_cog) * PI / 180.);
+            double sinb = sin((90. - cpa_calc_target_cog) * PI / 180.);
 
 
             //    These will be useful
@@ -2313,7 +2312,7 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
             double OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA;
 
             ll_gc_ll(gLat,         gLon,         cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA, &OwnshipLonCPA);
-            ll_gc_ll(ptarget->Lat, ptarget->Lon, ptarget->COG, ptarget->SOG * tcpa, &TargetLatCPA,  &TargetLonCPA);
+            ll_gc_ll(ptarget->Lat, ptarget->Lon, cpa_calc_target_cog, ptarget->SOG * tcpa, &TargetLatCPA,  &TargetLonCPA);
 
             //   And compute the distance
             ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA);
@@ -2675,7 +2674,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 
           //      Remove lost targets if specified
           double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
-          if(g_bRemoveLost && !m_bno_erase)
+          if(g_bRemoveLost)
           {
                 if(target_age > removelost_Mins * 60)
                 {
@@ -3462,42 +3461,6 @@ void *OCP_AIS_Thread::Entry()
                       }           // while
                 }                 // if
 
-/*
-            if (fWaitingOnRead)
-            {
-                dwRes = WaitForSingleObject(osReader.hEvent, READ_TIMEOUT);
-                switch(dwRes)
-                {
-                  // Read completed.
-                    case WAIT_OBJECT_0:
-                        if (!GetOverlappedResult(m_hSerialComm, &osReader, &dwRead, FALSE))
-                              ClearCommError(m_hSerialComm, NULL, NULL); //goto fail_point;  // Error in communications
-                        else
-                        {
-                              if(dwRead)
-                                    HandleRead(buf, dwRead);                   // Read completed successfully.
-                        }
-
-          //  Reset flag so that another opertion can be issued.
-                        fWaitingOnRead = FALSE;
-                        break;
-
-                    case WAIT_TIMEOUT:
-          // Operation isn't complete yet. fWaitingOnRead flag isn't
-          // changed since I'll loop back around, and I don't want
-          // to issue another read until the first one finishes.
-
-                          break;
-
-                    default:
-          // Error in the WaitForSingleObject; abort.
-          // This indicates a problem with the OVERLAPPED structure's
-          // event handle.
-                          break;
-                }                   // switch
-            }                       // if
-
-*/
       }                 // big while
 
 
@@ -3812,7 +3775,7 @@ wxString  OCPNListCtrl::OnGetItemText(long item, long column) const
 
       if(m_parent->m_pListCtrlAISTargets)
       {
-            AIS_Target_Data *pAISTarget = m_parent->m_ptarget_array->Item(item);
+            AIS_Target_Data *pAISTarget = m_parent->GetpTarget(item);
             if(pAISTarget)
                   ret = GetTargetColumnData(pAISTarget, column);
       }
@@ -3944,7 +3907,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 //---------------------------------------------------------------------------------------
 //          AISTargetListDialog Implementation
 //---------------------------------------------------------------------------------------
-int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
+
+int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
 {
       wxString s1, s2;
       double n1 = 0.;
@@ -4109,6 +4073,25 @@ int ArrayItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2
       }
 }
 
+AIS_Decoder *g_p_sort_decoder;
+
+int ArrayItemCompareMMSI( int MMSI1, int MMSI2 )
+{
+
+      if(g_p_sort_decoder)
+      {
+            AIS_Target_Data *pAISTarget1 = g_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI1);
+            AIS_Target_Data *pAISTarget2 = g_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI2);
+
+            if(pAISTarget1 && pAISTarget2)
+                  return ItemCompare( pAISTarget1, pAISTarget2 );
+            else
+                  return 0;
+      }
+      else
+            return 0;
+}
+
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
@@ -4124,10 +4107,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pAuiManager = auimgr;
       m_pdecoder = pdecoder;
 
-      if(m_pdecoder)
-            m_pdecoder->SetNoErase(true);
-
-      m_ptarget_array = new ArrayOfAISTarget(ArrayItemCompare);
+      g_p_sort_decoder = pdecoder;
+      m_pMMSI_array = new ArrayOfMMSI(ArrayItemCompareMMSI); //ArrayOfAISTarget(ArrayItemCompare);
 
 // A top-level sizer
       wxBoxSizer* topSizer = new wxBoxSizer ( wxHORIZONTAL );
@@ -4220,14 +4201,24 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pButtonJumpTo = new wxButton( this, wxID_ANY, _("Jump To"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
       m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
       boxSizer02->Add( m_pButtonJumpTo, 0, wxALL, 0 );
-      boxSizer02->AddSpacer( 5 );
+      boxSizer02->AddSpacer( 10 );
+
       m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
+      boxSizer02->AddSpacer( 2 );
       m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 20000, g_AisTargetList_range );
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       m_pSpinCtrlRange->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
       boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND|wxALL, 0 );
       topSizer->Add( boxSizer02, 0, wxEXPAND|wxALL, 2 );
+
+      boxSizer02->AddSpacer( 10 );
+      m_pStaticTextCount = new wxStaticText( this, wxID_ANY, _("Target Count"), wxDefaultPosition, wxDefaultSize, 0 );
+      boxSizer02->Add( m_pStaticTextCount, 0, wxALL, 0 );
+
+      boxSizer02->AddSpacer( 2 );
+      m_pTextTargetCount = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+      boxSizer02->Add( m_pTextTargetCount, 0, wxALL, 0 );
 
       topSizer->Layout();
 
@@ -4263,8 +4254,6 @@ void AISTargetListDialog::OnClose(wxCloseEvent &event)
 }
 void AISTargetListDialog::Disconnect_decoder()
 {
-      if(m_pdecoder)
-            m_pdecoder->SetNoErase(false);
       m_pdecoder = NULL;
 }
 
@@ -4314,10 +4303,11 @@ void AISTargetListDialog::UpdateButtons()
 
       m_pButtonInfo->Enable(enable);
 
-      if(item != -1)
+      if(m_pdecoder && item != -1)
       {
-            AIS_Target_Data *pAISTargetSel = m_ptarget_array->Item(item);
-            if(!pAISTargetSel->b_positionValid)
+            AIS_Target_Data *pAISTargetSel =
+                        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
+            if(pAISTargetSel && (!pAISTargetSel->b_positionValid))
                   enable = false;
       }
       m_pButtonJumpTo->Enable(enable);
@@ -4360,9 +4350,13 @@ void AISTargetListDialog::OnTargetQuery( wxCommandEvent& event )
       if (selItemID == -1)
             return;
 
-      AIS_Target_Data *pAISTarget = m_ptarget_array->Item(selItemID);
-      if(pAISTarget)
-            DoTargetQuery( pAISTarget->MMSI );
+      if(m_pdecoder)
+      {
+            AIS_Target_Data *pAISTarget =
+                        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
+            if(pAISTarget)
+                  DoTargetQuery( pAISTarget->MMSI );
+      }
 }
 
 void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
@@ -4394,16 +4388,12 @@ void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
       if (selItemID == -1)
             return;
 
-      AIS_Target_Data *pAISTarget = m_ptarget_array->Item(selItemID);
+      AIS_Target_Data *pAISTarget = NULL;
+      if(m_pdecoder)
+            pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
 
       if(pAISTarget)
-      {
-//            cc1->ClearbFollow();
-//            cc1->SetViewPoint( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER );
-//            cc1->Refresh();
             gFrame->JumpToPosition(pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale());
-
-      }
 }
 
 void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
@@ -4412,30 +4402,32 @@ void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
       UpdateAISTargetList();
 }
 
+AIS_Target_Data *AISTargetListDialog::GetpTarget(unsigned int list_item)
+{
+      return m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(list_item));
+}
 
 void AISTargetListDialog::UpdateAISTargetList(void)
 {
       if(m_pdecoder)
       {
+
             int sb_position = m_pListCtrlAISTargets->GetScrollPos(wxVERTICAL);
 
+            //    Capture the MMSI of the curently selected list item
             long selItemID = -1;
             selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 
             int selMMSI = -1;
             if (selItemID != -1)
-            {
-                  AIS_Target_Data *pAISTargetSel = m_ptarget_array->Item(selItemID);
-                  if(pAISTargetSel)
-                        selMMSI = pAISTargetSel->MMSI;
-            }
+                  selMMSI = m_pMMSI_array->Item(selItemID);
 
             AIS_Target_Hash::iterator it;
             AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
             wxListItem item;
 
             int index = 0;
-            m_ptarget_array->Clear();
+            m_pMMSI_array->Clear();
 
             for( it = (*current_targets).begin(); it != (*current_targets).end(); ++it, ++index )
             {
@@ -4445,15 +4437,15 @@ void AISTargetListDialog::UpdateAISTargetList(void)
                   if ( NULL != pAISTarget)
                   {
                         if((pAISTarget->b_positionValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
-                              m_ptarget_array->Add(pAISTarget);
+                              m_pMMSI_array->Add(pAISTarget->MMSI);
                         else if(!pAISTarget->b_positionValid)
-                              m_ptarget_array->Add(pAISTarget);
+                              m_pMMSI_array->Add(pAISTarget->MMSI);
                   }
             }
 
-            m_pListCtrlAISTargets->SetItemCount(m_ptarget_array->GetCount());
+            m_pListCtrlAISTargets->SetItemCount(m_pMMSI_array->GetCount());
 
-            g_AisTargetList_count = m_ptarget_array->GetCount();
+            g_AisTargetList_count = m_pMMSI_array->GetCount();
 
             m_pListCtrlAISTargets->SetScrollPos(wxVERTICAL, sb_position, false);
 
@@ -4461,22 +4453,22 @@ void AISTargetListDialog::UpdateAISTargetList(void)
             long item_sel = 0;
             if ((selItemID != -1) && (selMMSI != -1))
             {
-                  for(unsigned int i=0 ; i < m_ptarget_array->GetCount() ; i++)
+                  for(unsigned int i=0 ; i < m_pMMSI_array->GetCount() ; i++)
                   {
-                        AIS_Target_Data *pAISTargetCheck = m_ptarget_array->Item(i);
-                        if(pAISTargetCheck)
+                        if(m_pMMSI_array->Item(i) == selMMSI)
                         {
-                              if(pAISTargetCheck->MMSI == selMMSI)
-                              {
-                                    item_sel = i;
-                                    break;
-                              }
+                              item_sel = i;
+                              break;
                         }
                   }
             }
 
-            if(m_ptarget_array->GetCount())
+            if(m_pMMSI_array->GetCount())
                   m_pListCtrlAISTargets->SetItemState(item_sel, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
+
+            wxString count;
+            count.Printf(_T("%d"), m_pMMSI_array->GetCount());
+            m_pTextTargetCount->ChangeValue(count);
 
 #ifdef __WXMSW__
             m_pListCtrlAISTargets->Refresh(false);
