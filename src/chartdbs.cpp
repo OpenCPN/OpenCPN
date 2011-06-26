@@ -1,5 +1,4 @@
 /******************************************************************************
-* $Id: chartdbs.cpp,v 1.17 2010/06/13 21:05:05 bdbcat Exp $
 *
 * Project:  ChartManager
 * Purpose:  Basic Chart Info Storage
@@ -694,9 +693,10 @@ bool ChartDatabase::Write(const wxString &filePath)
 }
 
 ///////////////////////////////////////////////////////////////////////
-wxString SplitPath(wxString s, wxString tkd, int nchar, int offset)
+wxString SplitPath(wxString s, wxString tkd, int nchar, int offset, int *pn_split)
 {
       wxString r;
+      int ncr = 0;
 
       int rlen = offset;
       wxStringTokenizer tkz(s, tkd);
@@ -712,12 +712,16 @@ wxString SplitPath(wxString s, wxString tkd, int nchar, int offset)
             else
             {
                   r += _T("\n");
+                  ncr ++;
                   for(int i=0 ; i< offset ; i++){ r += _T(" "); }
                   r += token;
                   r += tkd[0];
                   rlen = offset + token.Len() + 1;
             }
       }
+
+      if(pn_split)
+            *pn_split = ncr;
 
       return r.Mid(0, r.Len()-1);             // strip the last separator char
 
@@ -730,29 +734,54 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
       wxString r;
       int lc = 0;
       unsigned int max_width = 0;
+      int ncr;
+      unsigned int target_width = 60;
 
       const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
       if(1)       //TODO why can't this be cte.GetbValid()?
       {
             wxString line;
             line = _(" ChartFile:  ");
-//            line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), max_width, 15);
-//            line += _T("\r\n");
-            line += wxString(cte.GetpFullPath(), wxConvUTF8);
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
+            wxString longline(cte.GetpFullPath(), wxConvUTF8);
+            if(longline.Len() > target_width)
+            {
+                  line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), target_width, 15, &ncr);
+//                  line += _T("\r\n");
+                  max_width = wxMax(max_width, target_width+4);
+                  lc += ncr;
+            }
+            else
+            {
+                  line += longline;
+                  max_width = wxMax(max_width, line.Len()+4);
+            }
+
+
             r += line;
+            r += _T("\n");
             lc++;
 
             line.Empty();
             if(pc)
             {
                   line = _(" Name:  ");
-//                  line += SplitPath(pc->GetName(), _T(" "), max_width, 12);
-                  line += pc->GetName();
+                  wxString longline = pc->GetName();
+                  if(longline.Len() > target_width)
+                  {
+                        line += SplitPath(pc->GetName(), _T(" "), target_width, 12, &ncr);
+//                        line += _T("\r\n");
+                        max_width = wxMax(max_width, target_width+4);
+                        lc += ncr;
+                  }
+                  else
+                  {
+                        line += longline;
+                        max_width = wxMax(max_width, line.Len()+4);
+                  }
+
             }
+
             line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
             r += line;
             lc++;
 
