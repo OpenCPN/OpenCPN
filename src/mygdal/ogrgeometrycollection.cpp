@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrgeometrycollection.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRGeometryCollection class.
@@ -83,7 +82,6 @@
  * fixed array overrun error in exportToWkt()
  *
  * Revision 1.11  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.10  2001/05/24 18:06:30  warmerda
  * use addGeometryDirectly when parsing WKT

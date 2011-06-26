@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddffield.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Implements the DDFField class.
@@ -47,7 +46,6 @@
  * added GetInstanceData() method on DDFField
  *
  * Revision 1.12  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.11  2000/09/19 14:09:11  warmerda
  * fixed dump of binary info

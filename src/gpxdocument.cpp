@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: gpxdocument.cpp Exp $
  *
  * Project:  OpenCPN
  * Purpose:  GPX utility classes

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: wvschart.h,v 1.8 2010/05/15 03:55:58 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  World Vector Shoreline (WVS) Chart Object

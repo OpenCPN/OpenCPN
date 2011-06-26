@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddfmodule.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Implements the DDFModule class.
@@ -41,7 +40,6 @@
  * some write capabilities added
  *
  * Revision 1.13  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.12  2000/09/19 14:08:51  warmerda
  * keep and report _extendedCharSet

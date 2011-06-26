@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddffielddefn.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Implements the DDFFieldDefn class.
@@ -77,7 +76,6 @@
  * the data/sdts/gainsville/BEDRCATD.DDF dataset.
  *
  * Revision 1.8  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.7  2001/06/22 19:22:16  warmerda
  * Made some oddidies in field definitions non-fatal.

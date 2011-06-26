@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrs57datasource.cpp,v 1.6 2009/09/25 15:22:05 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements OGRS57DataSource class

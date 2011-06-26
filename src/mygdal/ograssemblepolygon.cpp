@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ograssemblepolygon.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  S-57 Reader
  * Purpose:  Implements polygon assembly from a bunch of arcs.

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrmultipolygon.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRMultiPolygon class.
@@ -58,7 +57,6 @@
  * expanded tabs
  *
  * Revision 1.5  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.4  2001/05/24 18:05:18  warmerda
  * substantial fixes to WKT support for MULTIPOINT/LINE/POLYGON

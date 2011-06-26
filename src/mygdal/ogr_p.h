@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_p.h,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Some private helper functions and stuff for OGR implementation.
@@ -68,7 +67,7 @@
 #include "cpl_string.h"
 #include "cpl_conv.h"
 
-#ifdef CPL_MSB 
+#ifdef CPL_MSB
 #  define OGR_SWAP(x)   (x == wkbNDR)
 #else
 #  define OGR_SWAP(x)   (x == wkbXDR)

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrfeature.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRFeature class implementation.
@@ -68,7 +67,6 @@
  * added DestroyFeature
  *
  * Revision 1.18  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.17  2001/06/01 14:32:27  warmerda
  * added CreateFeature factory method

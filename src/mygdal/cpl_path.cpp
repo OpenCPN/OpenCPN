@@ -1,5 +1,4 @@
 /**********************************************************************
- * $Id: cpl_path.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Portable filename/path parsing, and forming ala "Glob API".
@@ -54,7 +53,6 @@
  * expand tabs
  *
  * Revision 1.8  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.7  2001/05/12 19:20:55  warmerda
  * Fixed documentation of CPLGetExtension().

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_api.h,v 1.2 2008/03/30 22:56:29 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  C API for OGR Geometry, Feature, Layers, DataSource and drivers.

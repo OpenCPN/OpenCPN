@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: gdal_misc.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  GDAL Core
  * Purpose:  Free standing functions for GDAL.
@@ -121,7 +120,6 @@
  * return magnitude for complex samples in random sampler
  *
  * Revision 1.24  2001/07/18 04:04:30  warmerda
- * added CPL_CVSID
  *
  * Revision 1.23  2001/05/01 18:09:25  warmerda
  * added GDALReadWorldFile()

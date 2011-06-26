@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_s57.h,v 1.4 2009/09/25 15:22:05 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Declarations for classes binding S57 support onto OGRLayer,

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: gdal_frmts.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  GDAL
  * Purpose:  Prototypes for all format specific driver initializations.

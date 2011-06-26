@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: mygeom.h,v 1.13 2010/06/07 15:28:56 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Tesselation of Polygon Object

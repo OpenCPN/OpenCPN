@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: georef.c,v 1.26 2010/05/02 03:00:41 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Georef utility

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ocpn_pixel.h,v 1.9 2010/05/15 03:55:04 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Optimized wxBitmap Object

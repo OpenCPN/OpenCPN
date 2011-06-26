@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chartbase.h,v 1.24 2010/06/25 02:00:36 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  ChartBase Definition

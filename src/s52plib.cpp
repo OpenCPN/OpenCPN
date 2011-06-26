@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s52plib.cpp,v 1.52 2010/06/13 21:05:43 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  S52 Presentation Library

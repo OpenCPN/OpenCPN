@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s57reader.cpp,v 1.8 2010/06/13 21:06:36 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements S57Reader class.

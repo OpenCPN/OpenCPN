@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrsf_frmts.h,v 1.2 2008/03/30 23:06:07 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes related to format registration, and file opening.
@@ -232,7 +231,7 @@ class CPL_DLL OGRLayer
     int                 Reference();
     int                 Dereference();
     int                 GetRefCount() const;
-    
+
     /* consider these private */
     OGRErr               InitializeIndexSupport( const char * );
     OGRLayerAttrIndex   *GetIndex() { return m_poAttrIndex; }
@@ -258,7 +257,7 @@ class CPL_DLL OGRLayer
  *
  * When an OGRDataSource is destroyed, all it's associated OGRLayers objects
  * are also destroyed.
- */ 
+ */
 
 class CPL_DLL OGRDataSource
 {
@@ -276,12 +275,12 @@ class CPL_DLL OGRDataSource
 
     virtual int         TestCapability( const char * ) = 0;
 
-    virtual OGRLayer   *CreateLayer( const char *pszName, 
+    virtual OGRLayer   *CreateLayer( const char *pszName,
                                      OGRSpatialReference *poSpatialRef = NULL,
                                      OGRwkbGeometryType eGType = wkbUnknown,
                                      char ** papszOptions = NULL );
-    virtual OGRLayer   *CopyLayer( OGRLayer *poSrcLayer, 
-                                   const char *pszNewName, 
+    virtual OGRLayer   *CopyLayer( OGRLayer *poSrcLayer,
+                                   const char *pszNewName,
                                    char **papszOptions = NULL );
     OGRStyleTable       *GetStyleTable(){return m_poStyleTable;}
 
@@ -334,8 +333,8 @@ class CPL_DLL OGRSFDriver
                                              char ** = NULL );
     virtual OGRErr      DeleteDataSource( const char *pszName );
 
-    virtual OGRDataSource *CopyDataSource( OGRDataSource *poSrcDS, 
-                                           const char *pszNewName, 
+    virtual OGRDataSource *CopyDataSource( OGRDataSource *poSrcDS,
+                                           const char *pszNewName,
                                            char **papszOptions = NULL );
 };
 
@@ -379,7 +378,7 @@ class CPL_DLL OGRSFDriverRegistrar
     OGRSFDriver *GetDriver( int iDriver );
     OGRSFDriver *GetDriverByName( const char * );
 
-    int         GetOpenDSCount() { return nOpenDSCount; } 
+    int         GetOpenDSCount() { return nOpenDSCount; }
     OGRDataSource *GetOpenDS( int );
 };
 

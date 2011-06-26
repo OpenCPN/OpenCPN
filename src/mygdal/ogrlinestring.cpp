@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrlinestring.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRLineString geometry class.
@@ -111,7 +110,6 @@
  * expanded tabs
  *
  * Revision 1.19  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.18  2001/05/24 18:06:06  warmerda
  * fixed comment

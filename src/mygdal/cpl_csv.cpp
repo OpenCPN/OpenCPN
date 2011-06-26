@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cpl_csv.cpp,v 1.4 2008/08/09 23:52:56 bdbcat Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  CSV (comma separated value) file access.
@@ -56,7 +55,6 @@
  * added CPLReadLine(NULL) to cleanup
  *
  * Revision 1.3  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.2  2001/01/19 21:16:41  warmerda
  * expanded tabs

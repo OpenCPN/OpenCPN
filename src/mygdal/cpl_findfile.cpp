@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cpl_findfile.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Generic data file location finder, with application hooking.
@@ -44,7 +43,6 @@
  * improved finder cleanup support
  *
  * Revision 1.3  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.2  2001/01/19 21:16:41  warmerda
  * expanded tabs

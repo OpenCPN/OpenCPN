@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s52cnsy.cpp,v 1.25 2010/04/27 01:43:31 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  S52 Conditional Symbology Library

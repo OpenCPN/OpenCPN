@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s57classregistrar.cpp,v 1.5 2008/08/09 23:40:25 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements S57ClassRegistrar class for keeping track of

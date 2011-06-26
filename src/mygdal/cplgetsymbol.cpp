@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cplgetsymbol.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  Common Portability Library
  * Purpose:  Fetch a function pointer from a shared library / DLL.
@@ -41,7 +40,6 @@
  * Added debug report from dummy CPLGetSymbol().
  *
  * Revision 1.11  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.10  2001/01/19 21:16:41  warmerda
  * expanded tabs

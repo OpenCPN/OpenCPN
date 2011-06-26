@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrlinearring.cpp,v 1.1.1.1 2006/08/21 05:52:19 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRLinearRing geometry class.
@@ -64,7 +63,6 @@
  * fixed 3d support in clone
  *
  * Revision 1.7  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.6  1999/11/18 19:02:19  warmerda
  * expanded tabs

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: gpxdocument.h Exp $
  *
  * Project:  OpenCPN
  * Purpose:  GPX utility classes

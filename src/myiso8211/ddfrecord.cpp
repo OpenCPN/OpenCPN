@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddfrecord.cpp,v 1.2 2008/03/30 22:46:31 bdbcat Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Implements the DDFRecord class.
@@ -91,7 +90,6 @@
  * added DDFRecord update in place methods for S57 updating
  *
  * Revision 1.10  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.9  2000/02/15 17:55:53  warmerda
  * Improved error message for corrupt DDF files.

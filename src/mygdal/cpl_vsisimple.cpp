@@ -58,7 +58,6 @@
  * mods to enable 64bit file i/o
  *
  * Revision 1.10  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.9  2001/04/30 18:19:06  warmerda
  * avoid stat on macos_pre10

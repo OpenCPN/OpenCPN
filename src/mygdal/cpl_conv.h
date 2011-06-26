@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cpl_conv.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Convenience functions declarations.
@@ -180,7 +179,7 @@ const char CPL_DLL *CPLFormCIFilename( const char *pszPath,
                                        const char *pszBasename,
                                        const char *pszExtension );
 const char CPL_DLL *CPLResetExtension( const char *, const char * );
-const char CPL_DLL *CPLProjectRelativeFilename( const char *pszProjectDir, 
+const char CPL_DLL *CPLProjectRelativeFilename( const char *pszProjectDir,
                                             const char *pszSecondaryFilename );
 int CPL_DLL CPLIsFilenameRelative( const char *pszFilename );
 
@@ -189,9 +188,9 @@ int CPL_DLL CPLIsFilenameRelative( const char *pszFilename );
 /* -------------------------------------------------------------------- */
 typedef const char *(*CPLFileFinder)(const char *, const char *);
 
-const char    CPL_DLL *CPLFindFile(const char *pszClass, 
+const char    CPL_DLL *CPLFindFile(const char *pszClass,
                                    const char *pszBasename);
-const char    CPL_DLL *CPLDefaultFindFile(const char *pszClass, 
+const char    CPL_DLL *CPLDefaultFindFile(const char *pszClass,
                                           const char *pszBasename);
 void          CPL_DLL CPLPushFileFinder( CPLFileFinder pfnFinder );
 CPLFileFinder CPL_DLL CPLPopFileFinder();
@@ -213,7 +212,7 @@ const char CPL_DLL *CPLDecToDMS( double dfAngle, const char * pszAxis,
 double CPL_DLL CPLPackedDMSToDec( double );
 double CPL_DLL CPLDecToPackedDMS( double dfDec );
 
-void CPL_DLL CPLStringToComplex( const char *pszString, 
+void CPL_DLL CPLStringToComplex( const char *pszString,
                                  double *pdfReal, double *pdfImag );
 
 CPL_C_END

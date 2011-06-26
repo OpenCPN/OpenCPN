@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_core.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Define some core portability services for cross-platform OGR code.

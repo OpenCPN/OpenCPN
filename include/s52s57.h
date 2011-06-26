@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s52s57.h,v 1.23 2010/06/24 02:03:28 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  S52 PLIB and S57 Chart data types

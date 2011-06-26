@@ -1,9 +1,8 @@
 /******************************************************************************
- * $Id: cpl_port.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  CPL - Common Portability Library
  * Author:   Frank Warmerdam, warmerdam@pobox.com
- * Purpose:  
+ * Purpose:
  * Include file providing low level portability services for CPL.  This
  * should be the first include file for any CPL based code.  It provides the
  * following:
@@ -16,7 +15,7 @@
  *
  * o Defines some portability stuff like CPL_MSB, or CPL_LSB.
  *
- * o Ensures that core types such as GBool, GInt32, GInt16, GUInt32, 
+ * o Ensures that core types such as GBool, GInt32, GInt16, GUInt32,
  *   GUInt16, and GByte are defined.
  *
  ******************************************************************************
@@ -76,7 +75,6 @@
  * expand tabs
  *
  * Revision 1.27  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.26  2001/06/21 21:17:26  warmerda
  * added irix 64bit file api support
@@ -283,8 +281,8 @@ char * strdup (char *instr);
 
 /*---------------------------------------------------------------------
  *                         CPL_LSB and CPL_MSB
- * Only one of these 2 macros should be defined and specifies the byte 
- * ordering for the current platform.  
+ * Only one of these 2 macros should be defined and specifies the byte
+ * ordering for the current platform.
  * This should be defined in the Makefile, but if it is not then
  * the default is CPL_LSB (Intel ordering, LSB first).
  *--------------------------------------------------------------------*/
@@ -318,8 +316,8 @@ char * strdup (char *instr);
     byTemp = _pabyDataT[0];                                       \
     _pabyDataT[0] = _pabyDataT[1];                                \
     _pabyDataT[1] = byTemp;                                       \
-}                                                                    
-                                                            
+}
+
 #define CPL_SWAP32(x) \
         ((GUInt32)( \
             (((GUInt32)(x) & (GUInt32)0x000000ffUL) << 24) | \
@@ -337,8 +335,8 @@ char * strdup (char *instr);
     byTemp = _pabyDataT[1];                                       \
     _pabyDataT[1] = _pabyDataT[2];                                \
     _pabyDataT[2] = byTemp;                                       \
-}                                                                    
-                                                            
+}
+
 #define CPL_SWAP64PTR(x) \
 {                                                                 \
     GByte       byTemp, *_pabyDataT = (GByte *) (x);              \
@@ -355,8 +353,8 @@ char * strdup (char *instr);
     byTemp = _pabyDataT[3];                                       \
     _pabyDataT[3] = _pabyDataT[4];                                \
     _pabyDataT[4] = byTemp;                                       \
-}                                                                    
-                                                            
+}
+
 
 /* Until we have a safe 64 bits integer data type defined, we'll replace
 m * this version of the CPL_SWAP64() macro with a less efficient one.
@@ -381,22 +379,22 @@ m * this version of the CPL_SWAP64() macro with a less efficient one.
 #  define CPL_LSBWORD16(x)      CPL_SWAP16(x)
 #  define CPL_MSBWORD32(x)      (x)
 #  define CPL_LSBWORD32(x)      CPL_SWAP32(x)
-#  define CPL_MSBPTR16(x)       
+#  define CPL_MSBPTR16(x)
 #  define CPL_LSBPTR16(x)       CPL_SWAP16PTR(x)
-#  define CPL_MSBPTR32(x)       
+#  define CPL_MSBPTR32(x)
 #  define CPL_LSBPTR32(x)       CPL_SWAP32PTR(x)
-#  define CPL_MSBPTR64(x)       
+#  define CPL_MSBPTR64(x)
 #  define CPL_LSBPTR64(x)       CPL_SWAP64PTR(x)
 #else
 #  define CPL_LSBWORD16(x)      (x)
 #  define CPL_MSBWORD16(x)      CPL_SWAP16(x)
 #  define CPL_LSBWORD32(x)      (x)
 #  define CPL_MSBWORD32(x)      CPL_SWAP32(x)
-#  define CPL_LSBPTR16(x)       
+#  define CPL_LSBPTR16(x)
 #  define CPL_MSBPTR16(x)       CPL_SWAP16PTR(x)
-#  define CPL_LSBPTR32(x)       
+#  define CPL_LSBPTR32(x)
 #  define CPL_MSBPTR32(x)       CPL_SWAP32PTR(x)
-#  define CPL_LSBPTR64(x)       
+#  define CPL_LSBPTR64(x)
 #  define CPL_MSBPTR64(x)       CPL_SWAP64PTR(x)
 #endif
 

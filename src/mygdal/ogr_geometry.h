@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_geometry.h,v 1.2 2008/03/30 23:01:11 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating simple features that is not specific
@@ -312,7 +311,7 @@ class CPL_DLL OGRPoint : public OGRGeometry
                                     // Obtained from geometry record attributes
                                     // Field=ATTV
                                     //    Subfields ATTL = 402
-                                    //              ATVL = 1-11 
+                                    //              ATVL = 1-11
 
   public:
                 OGRPoint();

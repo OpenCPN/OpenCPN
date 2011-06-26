@@ -1,5 +1,4 @@
 /**********************************************************************
- * $Id: cpl_error.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Name:     cpl_error.h
  * Project:  CPL - Common Portability Library
@@ -15,16 +14,16 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  **********************************************************************
  *
@@ -99,7 +98,7 @@
  *
  * CPL error handling services.
  */
-  
+
 CPL_C_START
 
 typedef enum
@@ -109,7 +108,7 @@ typedef enum
     CE_Warning = 2,
     CE_Failure = 3,
     CE_Fatal = 4
-  
+
 } CPLErr;
 
 void CPL_DLL CPLError(CPLErr eErrClass, int err_no, const char *fmt, ...);

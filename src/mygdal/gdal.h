@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: gdal.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Name:     gdal.h
  * Project:  GDAL Core
@@ -230,7 +229,7 @@ typedef enum
 const char CPL_DLL *GDALGetColorInterpretationName( GDALColorInterp );
 
 /*! Types of color interpretations for a GDALColorTable. */
-typedef enum 
+typedef enum
 {
   /*! Grayscale (in GDALColorEntry.c1) */                      GPI_Gray=0,
   /*! Red, Green, Blue and Alpha in (in c1, c2, c3 and c4) */  GPI_RGB=1,
@@ -276,7 +275,7 @@ void CPL_DLL GDALDestroyScaledProgress( void * );
 
 typedef struct {
     char      *pszOptionName;
-    char      *pszValueType;   /* "boolean", "int", "float", "string", 
+    char      *pszValueType;   /* "boolean", "int", "float", "string",
                                   "string-select" */
     char      *pszDescription;
     char      **papszOptions;
@@ -286,8 +285,8 @@ typedef struct {
 #define GDAL_DMD_HELPTOPIC "DMD_HELPTOPIC"
 #define GDAL_DMD_MIMETYPE "DMD_MIMETYPE"
 #define GDAL_DMD_EXTENSION "DMD_EXTENSION"
-#define GDAL_DMD_CREATIONOPTIONLIST "DMD_CREATIONOPTIONLIST" 
-#define GDAL_DMD_CREATIONDATATYPES "DMD_CREATIONDATATYPES" 
+#define GDAL_DMD_CREATIONOPTIONLIST "DMD_CREATIONOPTIONLIST"
+#define GDAL_DMD_CREATIONDATATYPES "DMD_CREATIONDATATYPES"
 
 #define GDAL_DCAP_CREATE     "DCAP_CREATE"
 #define GDAL_DCAP_CREATECOPY "DCAP_CREATECOPY"
@@ -325,7 +324,7 @@ const char CPL_DLL *GDALGetDriverHelpTopic( GDALDriverH );
 typedef struct
 {
     /** Unique identifier, often numeric */
-    char        *pszId; 
+    char        *pszId;
 
     /** Informational message or "" */
     char        *pszInfo;
@@ -349,9 +348,9 @@ void CPL_DLL GDALInitGCPs( int, GDAL_GCP * );
 void CPL_DLL GDALDeinitGCPs( int, GDAL_GCP * );
 GDAL_GCP CPL_DLL *GDALDuplicateGCPs( int, const GDAL_GCP * );
 
-int CPL_DLL GDALGCPsToGeoTransform( int nGCPCount, const GDAL_GCP *pasGCPs, 
-                                    double *padfGeoTransform, int bApproxOK ); 
-int CPL_DLL GDALInvGeoTransform( double *padfGeoTransformIn, 
+int CPL_DLL GDALGCPsToGeoTransform( int nGCPCount, const GDAL_GCP *pasGCPs,
+                                    double *padfGeoTransform, int bApproxOK );
+int CPL_DLL GDALInvGeoTransform( double *padfGeoTransformIn,
                                  double *padfInvGeoTransformOut );
 
 /* ==================================================================== */
@@ -361,7 +360,7 @@ int CPL_DLL GDALInvGeoTransform( double *padfGeoTransformIn,
 char CPL_DLL  **GDALGetMetadata( GDALMajorObjectH, const char * );
 CPLErr CPL_DLL  GDALSetMetadata( GDALMajorObjectH, char **,
                                  const char * );
-const char CPL_DLL *GDALGetMetadataItem( GDALMajorObjectH, const char *, 
+const char CPL_DLL *GDALGetMetadataItem( GDALMajorObjectH, const char *,
                                          const char * );
 CPLErr CPL_DLL  GDALSetMetadataItem( GDALMajorObjectH,
                                      const char *, const char *,
@@ -380,14 +379,14 @@ int CPL_DLL     GDALGetRasterYSize( GDALDatasetH );
 int CPL_DLL     GDALGetRasterCount( GDALDatasetH );
 GDALRasterBandH CPL_DLL GDALGetRasterBand( GDALDatasetH, int );
 
-CPLErr CPL_DLL  GDALAddBand( GDALDatasetH hDS, GDALDataType eType, 
+CPLErr CPL_DLL  GDALAddBand( GDALDatasetH hDS, GDALDataType eType,
                              char **papszOptions );
 
-CPLErr CPL_DLL GDALDatasetRasterIO( 
+CPLErr CPL_DLL GDALDatasetRasterIO(
     GDALDatasetH hDS, GDALRWFlag eRWFlag,
     int nDSXOff, int nDSYOff, int nDSXSize, int nDSYSize,
     void * pBuffer, int nBXSize, int nBYSize, GDALDataType eBDataType,
-    int nBandCount, int *panBandCount, 
+    int nBandCount, int *panBandCount,
     int nPixelSpace, int nLineSpace, int nBandSpace);
 
 const char CPL_DLL *GDALGetProjectionRef( GDALDatasetH );
@@ -462,14 +461,14 @@ int CPL_DLL GDALGetRandomRasterSample( GDALRasterBandH, int, float * );
 GDALRasterBandH CPL_DLL GDALGetRasterSampleOverview( GDALRasterBandH, int );
 CPLErr CPL_DLL GDALFillRaster( GDALRasterBandH hBand, double dfRealValue,
 		       double dfImaginaryValue );
-CPLErr GDALComputeBandStats( GDALRasterBandH hBand, int nSampleStep, 
-                             double *pdfMean, double *pdfStdDev, 
+CPLErr GDALComputeBandStats( GDALRasterBandH hBand, int nSampleStep,
+                             double *pdfMean, double *pdfStdDev,
                              GDALProgressFunc pfnProgress,
                              void *pProgressData );
-CPLErr GDALOverviewMagnitudeCorrection( GDALRasterBandH hBaseBand, 
-                                        int nOverviewCount, 
-                                        GDALRasterBandH *pahOverviews, 
-                                        GDALProgressFunc pfnProgress, 
+CPLErr GDALOverviewMagnitudeCorrection( GDALRasterBandH hBaseBand,
+                                        int nOverviewCount,
+                                        GDALRasterBandH *pahOverviews,
+                                        GDALProgressFunc pfnProgress,
                                         void *pProgressData );
 
 /* -------------------------------------------------------------------- */
@@ -482,13 +481,13 @@ void CPL_DLL
                    void * pDstData, GDALDataType eDstType, int nDstPixelOffset,
                    int nWordCount );
 
-int CPL_DLL GDALReadWorldFile( const char *pszBaseFilename, 
-                       const char *pszExtension, 
+int CPL_DLL GDALReadWorldFile( const char *pszBaseFilename,
+                       const char *pszExtension,
                        double * padfGeoTransform );
-int CPL_DLL GDALWriteWorldFile( const char *pszBaseFilename, 
-                       const char *pszExtension, 
+int CPL_DLL GDALWriteWorldFile( const char *pszBaseFilename,
+                       const char *pszExtension,
                        double * padfGeoTransform );
-int CPL_DLL GDALReadTabFile( const char *pszBaseFilename, 
+int CPL_DLL GDALReadTabFile( const char *pszBaseFilename,
                              double *padfGeoTransform, char **ppszWKT,
                              int *pnGCPCount, GDAL_GCP **ppasGCPs );
 
@@ -498,7 +497,7 @@ double CPL_DLL GDALDecToPackedDMS( double );
 
 const char CPL_DLL *GDALVersionInfo( const char * );
 
-typedef struct { 
+typedef struct {
     double      dfLINE_OFF;
     double      dfSAMP_OFF;
     double      dfLAT_OFF;
@@ -515,7 +514,7 @@ typedef struct {
     double      adfLINE_DEN_COEFF[20];
     double      adfSAMP_NUM_COEFF[20];
     double      adfSAMP_DEN_COEFF[20];
-    
+
     double	dfMIN_LONG;
     double      dfMIN_LAT;
     double      dfMAX_LONG;
@@ -532,16 +531,16 @@ int CPL_DLL GDALExtractRPCInfo( char **, GDALRPCInfo * );
 typedef struct
 {
     /*! gray, red, cyan or hue */
-    short      c1;      
+    short      c1;
 
-    /*! green, magenta, or lightness */    
-    short      c2;      
+    /*! green, magenta, or lightness */
+    short      c2;
 
     /*! blue, yellow, or saturation */
-    short      c3;      
+    short      c3;
 
     /*! alpha or blackband */
-    short      c4;      
+    short      c4;
 } GDALColorEntry;
 
 GDALColorTableH CPL_DLL GDALCreateColorTable( GDALPaletteInterp );

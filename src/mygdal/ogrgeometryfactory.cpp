@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrgeometryfactory.cpp,v 1.2 2008/03/30 22:59:54 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Factory for converting geometry to and from well known binary
@@ -72,7 +71,6 @@
  * added createGeometry and destroyGeometry methods
  *
  * Revision 1.9  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.8  2001/06/01 14:34:02  warmerda
  * added debugging of corrupt geometry

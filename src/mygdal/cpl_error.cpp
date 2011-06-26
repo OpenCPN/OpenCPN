@@ -1,5 +1,4 @@
 /**********************************************************************
- * $Id: cpl_error.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Name:     cpl_error.cpp
  * Project:  CPL - Common Portability Library
@@ -66,7 +65,6 @@
  * added logging error handler
  *
  * Revision 1.17  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.16  2001/02/15 16:30:57  warmerda
  * fixed initialization of fpLog

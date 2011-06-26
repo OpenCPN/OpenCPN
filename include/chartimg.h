@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: chartimg.h,v 1.24 2010/05/19 01:05:19 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  ChartBaseBSB and Friends

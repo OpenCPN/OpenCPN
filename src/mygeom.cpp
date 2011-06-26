@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: mygeom.cpp,v 1.20 2010/06/11 16:10:08 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Tesselated Polygon Object

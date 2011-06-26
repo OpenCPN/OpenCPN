@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrfeaturedefn.cpp,v 1.2 2008/03/30 22:58:12 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRFeatureDefn class implementation.
@@ -59,7 +58,6 @@
  * added indirect OGRFeaturedefn constructor/destructor
  *
  * Revision 1.5  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.4  1999/10/01 14:46:38  warmerda
  * don't blow assertion trying to get non-existant fields
@@ -78,7 +76,6 @@
 #include "ogr_api.h"
 #include "ogr_p.h"
 
-CPL_CVSID("$Id: ogrfeaturedefn.cpp,v 1.2 2008/03/30 22:58:12 bdbcat Exp $");
 
 /************************************************************************/
 /*                           OGRFeatureDefn()                           */
@@ -94,7 +91,7 @@ CPL_CVSID("$Id: ogrfeaturedefn.cpp,v 1.2 2008/03/30 22:58:12 bdbcat Exp $");
  * This method is the same as the C function OGR_FD_Create().
  *
  * @param pszName the name to be assigned to this layer/class.  It does not
- * need to be unique. 
+ * need to be unique.
  */
 
 OGRFeatureDefn::OGRFeatureDefn( const char * pszName )
@@ -118,11 +115,11 @@ OGRFeatureDefn::OGRFeatureDefn( const char * pszName )
  * zero.  It is mainly intended to represent a count of OGRFeature's
  * based on this definition.
  *
- * This function is the same as the CPP method 
+ * This function is the same as the CPP method
  * OGRFeatureDefn::OGRFeatureDefn().
  *
  * @param pszName the name to be assigned to this layer/class.  It does not
- * need to be unique. 
+ * need to be unique.
  * @return handle to the newly created feature definition.
  */
 
@@ -146,7 +143,7 @@ OGRFeatureDefn::~OGRFeatureDefn()
                   "OGRFeatureDefn %s with a ref count of %d deleted!\n",
                   pszFeatureClassName, nRefCount );
     }
-    
+
     CPLFree( pszFeatureClassName );
 
     for( int i = 0; i < nFieldCount; i++ )
@@ -161,10 +158,10 @@ OGRFeatureDefn::~OGRFeatureDefn()
 /*                           OGR_FD_Destroy()                           */
 /************************************************************************/
 /**
- * Destroy a feature definition object and release all memory 
- * associated with it. 
+ * Destroy a feature definition object and release all memory
+ * associated with it.
  *
- * This function is the same as the CPP method 
+ * This function is the same as the CPP method
  * OGRFeatureDefn::~OGRFeatureDefn().
  *
  * @param hDefn handle to the feature definition to be destroyed.
@@ -185,9 +182,9 @@ void OGR_FD_Destroy( OGRFeatureDefnH hDefn )
  *
  * Create a copy of this feature definition.
  *
- * Creates a deep copy of the feature definition. 
- * 
- * @return the copy. 
+ * Creates a deep copy of the feature definition.
+ *
+ * @return the copy.
  */
 
 OGRFeatureDefn *OGRFeatureDefn::Clone()
@@ -304,7 +301,7 @@ OGRFieldDefn *OGRFeatureDefn::GetFieldDefn( int iField )
 /**
  * Fetch field definition of the passed feature definition.
  *
- * This function is the same as the CPP method 
+ * This function is the same as the CPP method
  * OGRFeatureDefn::GetFieldDefn().
  *
  * @param hDefn handle to the feature definition to get the field definition
@@ -385,7 +382,7 @@ void OGR_FD_AddFieldDefn( OGRFeatureDefnH hDefn, OGRFieldDefnH hNewField )
  * wkbNone indicates no geometry is available for the layer at all.
  * Many drivers do not properly mark the geometry
  * type as 25D even if some or all geometries are in fact 25D.  A few (broken)
- * drivers return wkbPolygon for layers that also include wkbMultiPolygon.  
+ * drivers return wkbPolygon for layers that also include wkbMultiPolygon.
  *
  * This method is the same as the C function OGR_FD_GetGeomType().
  *
@@ -420,7 +417,7 @@ OGRwkbGeometryType OGR_FD_GetGeomType( OGRFieldDefnH hDefn )
  * All geometry objects using this type must be of the defined type or
  * a derived type.  The default upon creation is wkbUnknown which allows for
  * any geometry type.  The geometry type should generally not be changed
- * after any OGRFeatures have been created against this definition. 
+ * after any OGRFeatures have been created against this definition.
  *
  * This method is the same as the C function OGR_FD_SetGeomType().
  *
@@ -444,7 +441,7 @@ void OGRFeatureDefn::SetGeomType( OGRwkbGeometryType eNewType )
  * All geometry objects using this type must be of the defined type or
  * a derived type.  The default upon creation is wkbUnknown which allows for
  * any geometry type.  The geometry type should generally not be changed
- * after any OGRFeatures have been created against this definition. 
+ * after any OGRFeatures have been created against this definition.
  *
  * This function is the same as the CPP method OGRFeatureDefn::SetGeomType().
  *
@@ -466,11 +463,11 @@ void OGR_FD_SetGeomType( OGRFeatureDefnH hDefn, OGRwkbGeometryType eType )
 
 /**
  * \fn int OGRFeatureDefn::Reference();
- * 
+ *
  * Increments the reference count by one.
  *
  * The reference count is used keep track of the number of OGRFeature
- * objects referencing this definition. 
+ * objects referencing this definition.
  *
  * This method is the same as the C function OGR_FD_Reference().
  *
@@ -484,7 +481,7 @@ void OGR_FD_SetGeomType( OGRFeatureDefnH hDefn, OGRwkbGeometryType eType )
  * Increments the reference count by one.
  *
  * The reference count is used keep track of the number of OGRFeature
- * objects referencing this definition. 
+ * objects referencing this definition.
  *
  * This function is the same as the CPP method OGRFeatureDefn::Reference().
  *
@@ -523,7 +520,7 @@ int OGR_FD_Reference( OGRFeatureDefnH hDefn )
  * This function is the same as the CPP method OGRFeatureDefn::Dereference().
  *
  * @param hDefn handle to the feature definition on witch OGRFeature are
- * based on. 
+ * based on.
  * @return the updated reference count.
  */
 
@@ -554,11 +551,11 @@ int OGR_FD_Dereference( OGRFeatureDefnH hDefn )
 /**
  * Fetch current reference count.
  *
- * This function is the same as the CPP method 
+ * This function is the same as the CPP method
  * OGRFeatureDefn::GetReferenceCount().
  *
  * @param hDefn hanlde to the feature definition on witch OGRFeature are
- * based on. 
+ * based on.
  * @return the current reference count.
  */
 
@@ -584,7 +581,7 @@ int OGR_FD_GetReferenceCount( OGRFeatureDefnH hDefn )
  *
  * @return the field index, or -1 if no match found.
  */
- 
+
 
 int OGRFeatureDefn::GetFieldIndex( const char * pszFieldName )
 
@@ -609,7 +606,7 @@ int OGRFeatureDefn::GetFieldIndex( const char * pszFieldName )
  *
  * This function is the same as the CPP method OGRFeatureDefn::GetFieldIndex.
  *
- * @param hDefn handle to the feature definition to get field index from. 
+ * @param hDefn handle to the feature definition to get field index from.
  * @param pszFieldName the field name to search for.
  *
  * @return the field index, or -1 if no match found.

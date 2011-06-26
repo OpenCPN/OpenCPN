@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cpl_conv.cpp,v 1.2 2008/04/10 01:09:45 bdbcat Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Convenience functions.
@@ -108,7 +107,6 @@
  * added CPLStat
  *
  * Revision 1.13  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.12  2001/03/09 03:19:24  danmo
  * Set pszRLBuffer=NULL after freeing it to avoid reallocating an invalid ptr

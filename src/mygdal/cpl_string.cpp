@@ -1,5 +1,4 @@
 /**********************************************************************
- * $Id: cpl_string.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Name:     cpl_string.cpp
  * Project:  CPL - Common Portability Library
@@ -118,7 +117,6 @@
  * doc fix
  *
  * Revision 1.16  2001/07/18 04:00:49  warmerda
- * added CPL_CVSID
  *
  * Revision 1.15  2001/01/19 21:16:41  warmerda
  * expanded tabs

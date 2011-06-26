@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddfutils.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Various utility functions.
@@ -35,7 +34,6 @@
  * Rename/Import to OpenCPN
  *
  * Revision 1.6  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.5  1999/11/18 19:03:04  warmerda
  * expanded tabs

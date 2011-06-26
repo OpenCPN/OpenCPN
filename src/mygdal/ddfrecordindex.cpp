@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddfrecordindex.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements DDFRecordIndex class.  This class is used to cache

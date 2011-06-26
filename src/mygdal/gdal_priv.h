@@ -1,9 +1,8 @@
 /******************************************************************************
- * $Id: gdal_priv.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Name:     gdal_priv.h
  * Project:  GDAL Core
- * Purpose:  GDAL Core C++/Private declarations. 
+ * Purpose:  GDAL Core C++/Private declarations.
  * Author:   Frank Warmerdam, warmerdam@pobox.com
  *
  ******************************************************************************
@@ -207,11 +206,11 @@ class CPL_DLL GDALMajorObject
   protected:
     char             *pszDescription;
     char            **papszMetadata;
-    
+
   public:
                         GDALMajorObject();
     virtual            ~GDALMajorObject();
-                        
+
     virtual const char *GetDescription() const;
     virtual void        SetDescription( const char * );
 
@@ -232,14 +231,14 @@ class CPL_DLL GDALDefaultOverviews
 {
     GDALDataset *poDS;
     GDALDataset *poODS;
-    
+
     char        *pszOvrFilename;
-    
+
   public:
                GDALDefaultOverviews();
                ~GDALDefaultOverviews();
 
-    void       Initialize( GDALDataset *poDS, const char *pszName = NULL, 
+    void       Initialize( GDALDataset *poDS, const char *pszName = NULL,
                            int bNameIsOVR = FALSE );
     int        IsInitialized() { return poDS != NULL; }
 
@@ -247,7 +246,7 @@ class CPL_DLL GDALDefaultOverviews
     GDALRasterBand *GetOverview(int,int);
 
     CPLErr     BuildOverviews( const char * pszBasename,
-                               const char * pszResampling, 
+                               const char * pszResampling,
                                int nOverviews, int * panOverviewList,
                                int nBands, int * panBandList,
                                GDALProgressFunc pfnProgress,
@@ -267,7 +266,7 @@ class CPL_DLL GDALDataset : public GDALMajorObject
   protected:
     GDALDriver  *poDriver;
     GDALAccess  eAccess;
-    
+
     // Stored raster information.
     int         nRasterXSize;
     int         nRasterYSize;
@@ -282,10 +281,10 @@ class CPL_DLL GDALDataset : public GDALMajorObject
     void        SetBand( int, GDALRasterBand * );
 
     GDALDefaultOverviews oOvManager;
-    
+
     virtual CPLErr IBuildOverviews( const char *, int, int *,
                                     int, int *, GDALProgressFunc, void * );
-    
+
     virtual CPLErr IRasterIO( GDALRWFlag, int, int, int, int,
                               void *, int, int, GDALDataType,
                               int, int *, int, int, int );
@@ -296,7 +295,7 @@ class CPL_DLL GDALDataset : public GDALMajorObject
     void   BlockBasedFlushCache();
 
     friend class GDALRasterBand;
-    
+
   public:
     virtual     ~GDALDataset();
 
@@ -313,7 +312,7 @@ class CPL_DLL GDALDataset : public GDALMajorObject
     virtual CPLErr GetGeoTransform( double * );
     virtual CPLErr SetGeoTransform( double * );
 
-    virtual CPLErr        AddBand( GDALDataType eType, 
+    virtual CPLErr        AddBand( GDALDataType eType,
                                    char **papszOptions=NULL );
 
     virtual void *GetInternalHandle( const char * );
@@ -324,7 +323,7 @@ class CPL_DLL GDALDataset : public GDALMajorObject
     virtual const GDAL_GCP *GetGCPs();
     virtual CPLErr SetGCPs( int nGCPCount, const GDAL_GCP *pasGCPList,
                             const char *pszGCPProjection );
- 
+
     CPLErr      RasterIO( GDALRWFlag, int, int, int, int,
                           void *, int, int, GDALDataType,
                           int, int *, int, int, int );
@@ -351,21 +350,21 @@ class CPL_DLL GDALDataset : public GDALMajorObject
 class CPL_DLL GDALRasterBlock
 {
     GDALDataType        eType;
-    
+
     int                 nAge;
     int                 bDirty;
     int                 nLockCount;
 
     int                 nXOff;
     int                 nYOff;
-       
+
     int                 nXSize;
     int                 nYSize;
-    
+
     void                *pData;
 
     GDALRasterBand      *poBand;
-    
+
     GDALRasterBlock     *poNext;
     GDALRasterBlock     *poPrevious;
 
@@ -440,7 +439,7 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
 
     int         nRasterXSize;
     int         nRasterYSize;
-    
+
     GDALDataType eDataType;
     GDALAccess  eAccess;
 
@@ -472,7 +471,7 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
 
   public:
                 GDALRasterBand();
-                
+
     virtual     ~GDALRasterBand();
 
     int         GetXSize();
@@ -483,7 +482,7 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
     GDALDataType GetRasterDataType( void );
     void        GetBlockSize( int *, int * );
     GDALAccess  GetAccess();
-    
+
     CPLErr      RasterIO( GDALRWFlag, int, int, int, int,
                           void *, int, int, GDALDataType,
                           int, int );
@@ -491,7 +490,7 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
 
     CPLErr      WriteBlock( int, int, void * );
 
-    GDALRasterBlock *GetBlockRef( int nXBlockOff, int nYBlockOff, 
+    GDALRasterBlock *GetBlockRef( int nXBlockOff, int nYBlockOff,
                                   int bJustInitialize = FALSE );
     CPLErr      FlushBlock( int = -1, int = -1 );
 
@@ -511,7 +510,7 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
 
     virtual CPLErr SetCategoryNames( char ** );
     virtual CPLErr SetNoDataValue( double );
-    virtual CPLErr SetColorTable( GDALColorTable * ); 
+    virtual CPLErr SetColorTable( GDALColorTable * );
     virtual CPLErr SetColorInterpretation( GDALColorInterp );
 
     virtual int HasArbitraryOverviews();
@@ -538,7 +537,7 @@ class CPL_DLL GDALOpenInfo
 
                 GDALOpenInfo( const char * pszFile, GDALAccess eAccessIn );
                 ~GDALOpenInfo( void );
-    
+
     char        *pszFilename;
 
     GDALAccess  eAccess;
@@ -560,10 +559,10 @@ class CPL_DLL GDALOpenInfo
 /**
  * An instance of this class is created for each supported format, and
  * manages information about the format.
- * 
- * This roughly corresponds to a file format, though some          
- * drivers may be gateways to many formats through a secondary     
- * multi-library.                                                  
+ *
+ * This roughly corresponds to a file format, though some
+ * drivers may be gateways to many formats through a secondary
+ * multi-library.
  */
 
 class CPL_DLL GDALDriver : public GDALMajorObject
@@ -581,11 +580,11 @@ class CPL_DLL GDALDriver : public GDALMajorObject
 
     CPLErr              Delete( const char * pszName );
 
-    GDALDataset         *CreateCopy( const char *, GDALDataset *, 
+    GDALDataset         *CreateCopy( const char *, GDALDataset *,
                                      int, char **,
-                                     GDALProgressFunc pfnProgress, 
+                                     GDALProgressFunc pfnProgress,
                                      void * pProgressData );
-    
+
 /* -------------------------------------------------------------------- */
 /*      The following are semiprivate, not intended to be accessed      */
 /*      by anyone but the formats instantiating and populating the      */
@@ -600,9 +599,9 @@ class CPL_DLL GDALDriver : public GDALMajorObject
 
     CPLErr              (*pfnDelete)( const char * pszName );
 
-    GDALDataset         *(*pfnCreateCopy)( const char *, GDALDataset *, 
+    GDALDataset         *(*pfnCreateCopy)( const char *, GDALDataset *,
                                            int, char **,
-                                           GDALProgressFunc pfnProgress, 
+                                           GDALProgressFunc pfnProgress,
                                            void * pProgressData );
 
     void                *pDriverData;
@@ -627,11 +626,11 @@ class CPL_DLL GDALDriverManager : public GDALMajorObject
     GDALDriver  **papoDrivers;
 
     char        *pszHome;
-    
+
  public:
                 GDALDriverManager();
                 ~GDALDriverManager();
-                
+
     int         GetDriverCount( void );
     GDALDriver  *GetDriver( int );
     GDALDriver  *GetDriverByName( const char * );
@@ -657,20 +656,20 @@ CPL_C_END
 
 CPL_C_START
 
-CPLErr 
+CPLErr
 GTIFFBuildOverviews( const char * pszFilename,
-                     int nBands, GDALRasterBand **papoBandList, 
+                     int nBands, GDALRasterBand **papoBandList,
                      int nOverviews, int * panOverviewList,
-                     const char * pszResampling, 
+                     const char * pszResampling,
                      GDALProgressFunc pfnProgress, void * pProgressData );
 
 CPLErr
 GDALDefaultBuildOverviews( GDALDataset *hSrcDS, const char * pszBasename,
-                           const char * pszResampling, 
+                           const char * pszResampling,
                            int nOverviews, int * panOverviewList,
                            int nBands, int * panBandList,
                            GDALProgressFunc pfnProgress, void * pProgressData);
-                           
+
 
 CPLErr
 GDALRegenerateOverviews( GDALRasterBand *, int, GDALRasterBand **,

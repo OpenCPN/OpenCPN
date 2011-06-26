@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrgeometry.cpp,v 1.2 2008/03/30 22:59:17 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Implements a few base methods on OGRGeometry.
@@ -80,7 +79,6 @@
  * added transform() and transformTo() methods
  *
  * Revision 1.9  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.8  2001/02/06 14:14:09  warmerda
  * fixed up documentation

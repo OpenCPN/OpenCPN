@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cpl_odbc.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OGR ODBC Driver
  * Purpose:  Declarations for ODBC Access Cover API.
@@ -81,7 +80,7 @@
 class CPLODBCStatement;
 
 /**
- * A class representing an ODBC database session. 
+ * A class representing an ODBC database session.
  *
  * Includes error collection services.
  */
@@ -95,12 +94,12 @@ class CPL_DLL CPLODBCSession {
     CPLODBCSession();
     ~CPLODBCSession();
 
-    int		EstablishSession( const char *pszDSN, 
-                                  const char *pszUserid, 
+    int		EstablishSession( const char *pszDSN,
+                                  const char *pszUserid,
                                   const char *pszPassword );
     const char  *GetLastError();
 
-    // Essentially internal. 
+    // Essentially internal.
 
     int         CloseSession();
 
@@ -131,7 +130,7 @@ class CPL_DLL CPLODBCStatement {
     short         *m_panColNullable;
 
     char         **m_papszColValues;
-    
+
     int            Failed( int );
 
     char          *m_pszStatement;
@@ -156,7 +155,7 @@ class CPL_DLL CPLODBCStatement {
     int            ExecuteSQL( const char * = NULL );
 
     // Results fetching
-    int            Fetch( int nOrientation = SQL_FETCH_NEXT, 
+    int            Fetch( int nOrientation = SQL_FETCH_NEXT,
                           int nOffset = 0 );
     void           ClearColumnData();
 
@@ -172,10 +171,10 @@ class CPL_DLL CPLODBCStatement {
     const char    *GetColData( const char *, const char * = NULL );
 
     // Fetch special metadata.
-    int            GetColumns( const char *pszTable, 
+    int            GetColumns( const char *pszTable,
                                const char *pszCatalog = NULL,
                                const char *pszSchema = NULL );
-    int            GetPrimaryKeys( const char *pszTable, 
+    int            GetPrimaryKeys( const char *pszTable,
                                    const char *pszCatalog = NULL,
                                    const char *pszSchema = NULL );
 

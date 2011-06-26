@@ -1,5 +1,4 @@
 /******************************************************************************
-* $Id: chartdbs.h,v 1.11 2010/05/27 19:00:26 bdbcat Exp $
 *
 * Project:  ChartManager
 * Purpose:  Basic Chart Info Storage

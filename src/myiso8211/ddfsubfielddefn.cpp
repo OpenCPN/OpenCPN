@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ddfsubfielddefn.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  ISO 8211 Access
  * Purpose:  Implements the DDFSubfieldDefn class.
@@ -50,7 +49,6 @@
  * added subfield writing support
  *
  * Revision 1.8  2001/07/18 04:51:57  warmerda
- * added CPL_CVSID
  *
  * Revision 1.7  2000/09/19 14:09:34  warmerda
  * avoid checking for field terminators in multi-byte strings

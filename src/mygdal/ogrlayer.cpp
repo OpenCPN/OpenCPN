@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrlayer.cpp,v 1.3 2009/08/03 03:31:37 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The generic portions of the OGRSFLayer class.

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: dychart.h,v 1.20 2010/04/27 01:44:56 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Global Build Options

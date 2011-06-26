@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ais.h,v 1.35 2010/06/16 03:50:51 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  AIS Decoder Object
@@ -236,6 +235,7 @@ public:
 };
 
 WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
+WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
 
 
 #define AIS_MAX_MESSAGE_LEN (10 * 82)           // AIS Spec allows up to 9 sentences per message, 82 bytes each
@@ -337,7 +337,6 @@ public:
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-    void SetNoErase(bool flag){m_bno_erase = flag;}
 
     int             m_Thread_run_flag;
 
@@ -392,7 +391,6 @@ private:
     int              m_n_targets;
     bool             m_bSuppressed;
     bool             m_bGeneralAlert;
-    bool             m_bno_erase;
 
 DECLARE_EVENT_TABLE()
 
@@ -516,12 +514,12 @@ class AISTargetListDialog: public wxPanel
 
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
+            AIS_Target_Data   *GetpTarget(unsigned int list_item);
 
             OCPNListCtrl      *m_pListCtrlAISTargets;
             AIS_Decoder       *m_pdecoder;
 
-            ArrayOfInts       mmsi_array;
-            ArrayOfAISTarget  *m_ptarget_array;
+            ArrayOfMMSI       *m_pMMSI_array;
 
       private:
             void OnPaneClose( wxAuiManagerEvent& event );
@@ -540,7 +538,8 @@ class AISTargetListDialog: public wxPanel
             wxButton          *m_pButtonJumpTo;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
-            wxSize            m_size_min;
+            wxStaticText      *m_pStaticTextCount;
+            wxTextCtrl        *m_pTextTargetCount;
 
             DECLARE_EVENT_TABLE()
 

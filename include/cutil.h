@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: cutil.h,v 1.7 2010/05/23 23:27:16 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  Extern C Linked Utilities

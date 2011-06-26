@@ -1,5 +1,4 @@
 /**********************************************************************
- * $Id: cpl_minixml.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Implementation of MiniXML Parser and handling.

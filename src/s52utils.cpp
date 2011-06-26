@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s52utils.cpp,v 1.9 2010/04/27 01:43:31 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  S52 Utility Library

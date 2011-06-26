@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_spatialref.h,v 1.2 2008/03/30 23:07:29 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating spatial reference systems in a

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ocpn_pixel.cpp,v 1.10 2010/05/15 04:02:12 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  Optimized wxBitmap Object

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_feature.h,v 1.2 2008/03/30 22:58:43 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Class for representing a whole feature, and layer schemas.
@@ -153,14 +152,14 @@ class CPL_DLL OGRFieldDefn
 {
   private:
     char                *pszName;
-    OGRFieldType        eType;                  
-    OGRJustification    eJustify;               
+    OGRFieldType        eType;
+    OGRJustification    eJustify;
     int                 nWidth;                 /* zero is variable */
     int                 nPrecision;
     OGRField            uDefault;
 
     void                Initialize( const char *, OGRFieldType );
-    
+
   public:
                         OGRFieldDefn( const char *, OGRFieldType );
                         OGRFieldDefn( OGRFieldDefn * );
@@ -208,14 +207,14 @@ class CPL_DLL OGRFieldDefn
  * base geometry type and potentially other metadata.
  *
  * It is reasonable for different translators to derive classes from
- * OGRFeatureDefn with additional translator specific information. 
+ * OGRFeatureDefn with additional translator specific information.
  */
 
 class CPL_DLL OGRFeatureDefn
 {
   private:
     int         nRefCount;
-    
+
     int         nFieldCount;
     OGRFieldDefn **papoFieldDefn;
 
@@ -223,7 +222,7 @@ class CPL_DLL OGRFeatureDefn
 
     char        *pszFeatureClassName;
     int         nOBJL;
-    
+
   public:
                 OGRFeatureDefn( const char * pszName = NULL );
     virtual    ~OGRFeatureDefn();
@@ -269,17 +268,17 @@ class CPL_DLL OGRFeature
     OGRGeometry         *poGeometry;
     OGRField            *pauFields;
 
-  protected: 
+  protected:
     char *              m_pszStyleString;
     OGRStyleTable       *m_poStyleTable;
-    
-    
+
+
   public:
                         OGRFeature( OGRFeatureDefn * );
-    virtual            ~OGRFeature();                        
+    virtual            ~OGRFeature();
 
     OGRFeatureDefn     *GetDefnRef() { return poDefn; }
-    
+
     OGRErr              SetGeometryDirectly( OGRGeometry * );
     OGRErr              SetGeometry( OGRGeometry * );
     OGRGeometry        *GetGeometryRef() { return poGeometry; }
@@ -299,9 +298,9 @@ class CPL_DLL OGRFeature
                               pauFields[iField].Set.nMarker1 != OGRUnsetMarker
                            || pauFields[iField].Set.nMarker2 != OGRUnsetMarker;
                               }
-    
+
     void                UnsetField( int iField );
-    
+
     OGRField           *GetRawFieldRef( int i ) { return pauFields + i; }
 
     int                 GetFieldAsInteger( int i );
@@ -360,7 +359,7 @@ class CPL_DLL OGRFeature
 
     OGRErr              SetFrom( OGRFeature *, int = TRUE);
 
-    OGRErr              RemapFields( OGRFeatureDefn *poNewDefn, 
+    OGRErr              RemapFields( OGRFeatureDefn *poNewDefn,
                                      int *panRemapSource );
 
     virtual const char *GetStyleString();
@@ -384,7 +383,7 @@ class CPL_DLL OGRFeatureQuery
     void           *pSWQExpr;
 
     char          **FieldCollector( void *, char ** );
-    
+
   public:
                 OGRFeatureQuery();
                 ~OGRFeatureQuery();

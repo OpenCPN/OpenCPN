@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: thumbwin.cpp,v 1.7 2010/04/27 01:44:02 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Chart Thumbnail Object

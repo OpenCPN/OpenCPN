@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrs57layer.cpp,v 1.2 2008/03/30 23:05:47 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements OGRS57Layer class.

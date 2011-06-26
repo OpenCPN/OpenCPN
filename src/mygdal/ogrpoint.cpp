@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrpoint.cpp,v 1.2 2008/03/30 23:03:27 bdbcat Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The Point geometry class.
@@ -80,7 +79,6 @@
  * added transform() and transformTo() methods
  *
  * Revision 1.14  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.13  1999/11/18 19:02:19  warmerda
  * expanded tabs

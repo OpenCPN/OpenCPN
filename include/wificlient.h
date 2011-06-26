@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: wificlient.h,v 1.7 2010/04/27 01:45:49 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  wifi Client Data Object

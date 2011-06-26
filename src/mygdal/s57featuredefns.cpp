@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: s57featuredefns.cpp,v 1.2 2008/03/30 23:08:42 bdbcat Exp $
  *
  * Project:  S-57 Translator
  * Purpose:  Implements methods to create OGRFeatureDefns for various

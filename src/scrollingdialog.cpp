@@ -4,7 +4,6 @@
 // Author:      Julian Smart
 // Modified by:
 // Created:     2007-12-11
-// RCS-ID:      $Id: scrollingdialog.cpp,v 1.2 2010/04/27 01:43:46 bdbcat Exp $
 // Copyright:   (c) Julian Smart
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////

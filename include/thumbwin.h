@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: thumbwin.h,v 1.5 2010/04/27 01:45:32 bdbcat Exp $
  *
  * Project:  OpenCP
  * Purpose:  Chart Thumbnail Object

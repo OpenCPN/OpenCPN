@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogr_attrind.h,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes related to generic implementation of attribute indexing.
@@ -69,7 +68,7 @@ public:
 
     virtual long   GetFirstMatch( OGRField *psKey ) = 0;
     virtual long  *GetAllMatches( OGRField *psKey ) = 0;
-    
+
     virtual OGRErr AddEntry( OGRField *psKey, long nFID ) = 0;
     virtual OGRErr RemoveEntry( OGRField *psKey, long nFID ) = 0;
 

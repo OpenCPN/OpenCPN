@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: routeprop.cpp,v 1.23 2010/06/11 16:27:15 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  RouteProerties Support

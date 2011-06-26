@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: routeman.cpp,v 1.38 2010/06/23 23:45:01 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager

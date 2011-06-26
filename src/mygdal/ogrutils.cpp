@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrutils.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Utility functions for OGR classes, including some related to
@@ -51,7 +50,6 @@
  * pass output buffer into OGRMakeWktCoordinate
  *
  * Revision 1.6  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.5  2001/05/29 02:24:00  warmerda
  * fixed negative support for Z coordinate

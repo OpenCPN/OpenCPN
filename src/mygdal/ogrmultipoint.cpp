@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: ogrmultipoint.cpp,v 1.1.1.1 2006/08/21 05:52:20 dsr Exp $
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  The OGRMultiPoint class.
@@ -73,7 +72,6 @@
  * expanded tabs
  *
  * Revision 1.6  2001/07/18 05:03:05  warmerda
- * added CPL_CVSID
  *
  * Revision 1.5  2001/05/29 02:24:33  warmerda
  * fixed bracket count on import
