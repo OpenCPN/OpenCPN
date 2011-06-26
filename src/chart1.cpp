@@ -2988,7 +2988,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
 //    Establish my children
 #ifdef __WXOSX__
-        if (false == ValidateSerialPortName(pNMEADataSource->mb_str(),MAX_SERIAL_PORTS))
+        if ((pNMEADataSource->Contains(_T("Serial"))) &&
+                 (false == ValidateSerialPortName(pNMEADataSource->mb_str(),MAX_SERIAL_PORTS)))
               *pNMEADataSource = _T("NONE") ;
         if (false == ValidateSerialPortName(pAIS_Port->mb_str(),MAX_SERIAL_PORTS))
               *pAIS_Port = _T("NONE") ;
@@ -4329,10 +4330,17 @@ void MyFrame::DoSetSize(void)
                 stats->Size_Y = stat_height;
                 stats->Pos_X = 0;
                 stats->Pos_Y = ccch;
-                if(g_pauimgr->GetPane(stats).IsOk())
+                if(g_pauimgr && g_pauimgr->GetPane(stats).IsOk())
+                {
+                      //      Correct stats y size if somehow corrupted
+                      if(stats->GetSize().y != stats->Size_Y)
+                            stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+
                       g_pauimgr->GetPane(stats).BestSize(stats->Size_X, stats->Size_Y);
-                else
-                      stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+                      g_pauimgr->Update();
+                }
+                 else
+                       stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
 
                 if(stats->IsShown())
                 {
@@ -4363,7 +4371,6 @@ void MyFrame::DoSetSize(void)
           else
                 DoChartUpdate();
     }
-
 
 }
 
