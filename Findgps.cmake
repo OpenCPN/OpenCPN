@@ -75,9 +75,9 @@ IF (GPS_INCLUDE_DIR AND GPS_LIBRARY)
     SET(GPS_FIND_QUIETLY TRUE)
 ENDIF (GPS_INCLUDE_DIR AND GPS_LIBRARY)
 
-FIND_PATH(GPS_INCLUDE_DIR gps.h /usr/include /usr/include/gps /usr/local/include/gps)
+FIND_PATH(GPS_INCLUDE_DIR gps.h /usr/include /usr/include/gps /usr/local/include/gps /opt/local/include)
 
-FIND_LIBRARY(GPS_LIBRARY NAMES gps PATH /usr/lib /usr/local/lib) 
+FIND_LIBRARY(GPS_LIBRARY NAMES gps PATH /usr/lib /usr/local/lib /opt/local/lib) 
 
 IF (GPS_INCLUDE_DIR AND GPS_LIBRARY)
    SET(GPS_FOUND TRUE)
