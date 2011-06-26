@@ -326,12 +326,12 @@ bool grib_pi::LoadConfig(void)
             m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
             m_grib_dialog_sy = pConf->Read ( _T ( "GRIBDialogSizeY" ), 540L );
             m_grib_dialog_x =  pConf->Read ( _T ( "GRIBDialogPosX" ), 20L );
-            m_grib_dialog_y =  pConf->Read ( _T ( "GRIBDialogPosY" ), 20L );
+            m_grib_dialog_y =  pConf->Read ( _T ( "GRIBDialogPosY" ), 170L );
 
-            if((m_grib_dialog_x < 0) || (m_grib_dialog_x > m_display_width))
-                  m_grib_dialog_x = 5;
-            if((m_grib_dialog_y < 0) || (m_grib_dialog_y > m_display_height))
-                  m_grib_dialog_y = 5;
+//            if((m_grib_dialog_x < 0) || (m_grib_dialog_x > m_display_width))
+//                  m_grib_dialog_x = 5;
+//            if((m_grib_dialog_y < 0) || (m_grib_dialog_y > m_display_height))
+//                  m_grib_dialog_y = 5;
 
             pConf->SetPath ( _T ( "/Directories" ) );
             pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir );
