@@ -545,6 +545,7 @@ class Quilt
             int               m_refchart_dbIndex;
             int               m_reference_scale;
             int               m_reference_type;
+            int               m_reference_family;
             bool              m_bneed_clear;
             wxRegion          m_back_region;
             wxString          m_quilt_depth_unit;
@@ -568,6 +569,7 @@ Quilt::Quilt()
       m_reference_scale = 1;
       m_refchart_dbIndex = -1;
       m_reference_type = CHART_TYPE_UNKNOWN;
+      m_reference_family = CHART_FAMILY_UNKNOWN;
 
       cnode = NULL;
 
@@ -969,7 +971,8 @@ int Quilt::GetNewRefChart(void)
             for(unsigned int is=0 ; is<im ; is++)
             {
                   const ChartTableEntry &m = ChartData->GetChartTableEntry(m_extended_stack_array.Item(is));
-                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
+//                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
+                  if((m.GetScale() >= m_reference_scale) && (m_reference_family == m.GetChartFamily()))
                   {
                         new_ref_dbIndex = m_extended_stack_array.Item(is);
                         break;
@@ -1002,7 +1005,8 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                   if(proposed_scale_onscreen > max_ref_scale)
                   {
                         int current_db_index = m_refchart_dbIndex;
-                        int current_type = m_reference_type;
+//                        int current_type = m_reference_type;
+                        int current_family = m_reference_family;
 
                         unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
 
@@ -1012,7 +1016,10 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                               target_stack_index++;
                               int test_db_index = m_extended_stack_array.Item(target_stack_index);
 
-                              if((current_type == ChartData->GetDBChartType(test_db_index)) && IsChartQuiltableRef(test_db_index))
+//                              if((current_type == ChartData->GetDBChartType(test_db_index)) &&
+//                                    IsChartQuiltableRef(test_db_index))
+                              if((current_family == ChartData->GetDBChartFamily(test_db_index)) &&
+                                  IsChartQuiltableRef(test_db_index))
                               {
                               //    open the target, and check the min_scale
                                     ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
@@ -1025,8 +1032,10 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                         if(target_stack_index < m_extended_stack_array.GetCount())
                         {
                               new_db_index = m_extended_stack_array.Item(target_stack_index);
-                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
-                                    SetReferenceChart(new_db_index);
+//                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
+                              if((current_family == ChartData->GetDBChartFamily(new_db_index)) &&
+                                  IsChartQuiltableRef(new_db_index))
+                                 SetReferenceChart(new_db_index);
                         }
                   }
             }
@@ -1057,7 +1066,8 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                   if(proposed_scale_onscreen < min_ref_scale)
                   {
                         int current_db_index = m_refchart_dbIndex;
-                        int current_type = m_reference_type;
+//                        int current_type = m_reference_type;
+                        int current_family = m_reference_family;
                         unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
 
                         while((proposed_scale_onscreen < min_ref_scale) && (target_stack_index > 0))
@@ -1067,7 +1077,9 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
 
                               if( pCurrentStack->DoesStackContaindbIndex(test_db_index))
                               {
-                                    if((current_type == ChartData->GetDBChartType(test_db_index)) && IsChartQuiltableRef(test_db_index))
+//                                    if((current_type == ChartData->GetDBChartType(test_db_index)) &&
+                                    if((current_family == ChartData->GetDBChartFamily(test_db_index)) &&
+                                              IsChartQuiltableRef(test_db_index))
                                     {
 
                                     //    open the target, and check the min_scale
@@ -1081,8 +1093,10 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                         if(target_stack_index >= 0)
                         {
                               new_db_index = m_extended_stack_array.Item(target_stack_index);
-                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
-                                    SetReferenceChart(new_db_index);
+//                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
+                              if((current_family == ChartData->GetDBChartFamily(new_db_index)) &&
+                                  IsChartQuiltableRef(new_db_index))
+                              SetReferenceChart(new_db_index);
                         }
                   }
             }
@@ -1135,6 +1149,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             m_reference_scale = cte_ref.GetScale();
             m_reference_type = cte_ref.GetChartType();
             m_quilt_proj = ChartData->GetDBChartProj(m_refchart_dbIndex);
+            m_reference_family = cte_ref.GetChartFamily();
 
 
       }
@@ -1168,9 +1183,12 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         chart_skew -= 360.;
 
                   // only unskewed charts of the proper projection and type may be quilted....
-                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
-                     (fabs(chart_skew) < 1.0) &&
-                      (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+//                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
+//                     (fabs(chart_skew) < 1.0) &&
+//                      (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+                  if((m_reference_family == ChartData->GetDBChartFamily(i)) &&
+                            (fabs(chart_skew) < 1.0) &&
+                            (ChartData->GetDBChartProj(i) == m_quilt_proj) )
                   {
                         QuiltCandidate *qcnew = new QuiltCandidate;
                         qcnew->dbIndex = i;
@@ -1193,7 +1211,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
             {
                   //    We can eliminate some charts immediately
                   //    Try to make these tests in some sensible order....
-                  if(m_reference_type != ChartData->GetDBChartType(i))
+//                  if(m_reference_type != ChartData->GetDBChartType(i))
+//                        continue;
+
+                  if(m_reference_family != ChartData->GetDBChartFamily(i))
                         continue;
 
                   wxBoundingBox chart_box;

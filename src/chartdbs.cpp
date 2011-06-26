@@ -284,6 +284,24 @@ int ChartTableEntry::GetChartType() const
        return ChartType;
 }
 
+int ChartTableEntry::GetChartFamily() const
+{
+      switch(ChartType)
+      {
+            case CHART_TYPE_KAP:
+            case CHART_TYPE_GEO:
+                  return CHART_FAMILY_RASTER;
+
+            case CHART_TYPE_S57:
+            case CHART_TYPE_CM93:
+            case CHART_TYPE_CM93COMP:
+                  return CHART_FAMILY_VECTOR;
+
+            default:
+                  return CHART_FAMILY_UNKNOWN;
+      }
+}
+
 
 
 
@@ -1522,6 +1540,17 @@ int ChartDatabase::GetDBChartProj(int dbIndex)
             return chartTable[dbIndex].GetChartProjectionType();
       else
             return PROJECTION_UNKNOWN;
+}
+
+//-------------------------------------------------------------------
+//    Get DBChart Family
+//-------------------------------------------------------------------
+int ChartDatabase::GetDBChartFamily(int dbIndex)
+{
+      if((bValid) && (dbIndex >= 0) && (dbIndex < (int)chartTable.size()))
+            return chartTable[dbIndex].GetChartFamily();
+      else
+            return CHART_FAMILY_UNKNOWN;
 }
 
 //-------------------------------------------------------------------

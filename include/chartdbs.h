@@ -156,6 +156,7 @@ struct ChartTableEntry
     float GetLatMin() const { return LatMin; }
     int GetScale() const { return Scale; }
     int GetChartType() const;
+    int GetChartFamily() const;
     int GetChartProjectionType() const { return ProjectionType; }
     float GetChartSkew() const { return Skew; }
 
@@ -230,6 +231,7 @@ public:
     int DisableChart(wxString& PathToDisable);
     bool GetCentroidOfLargestScaleChart(double *clat, double *clon, ChartFamilyEnum family);
     int GetDBChartType(int dbIndex);
+    int GetDBChartFamily(int dbIndex);
     float GetDBChartSkew(int dbIndex);
     int GetDBChartProj(int dbIndex);
     int GetDBChartScale(int dbIndex);
