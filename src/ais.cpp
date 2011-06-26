@@ -1465,6 +1465,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 
         //  Extract the MMSI
         int mmsi = strbit.GetInt(9, 30);
+        long mmsi_long = mmsi;
 
         //  Here is some debug code to capture/filter to on MMSI number
 //        if(mmsi != 244670456)
@@ -1505,7 +1506,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 
         // Delete the stale AIS Target selectable point
         if(pStaleTarget)
-            pSelectAIS->DeleteSelectablePoint((void *)mmsi, SELTYPE_AISTARGET);
+            pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
 
         bool bhad_name = false;
         if(pStaleTarget)
@@ -1538,7 +1539,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
               {
                     if(pTargetData->b_positionValid)
                     {
-                          SelectItem *pSel = pSelectAIS->AddSelectablePoint(pTargetData->Lat, pTargetData->Lon, (void *)mmsi, SELTYPE_AISTARGET);
+                          SelectItem *pSel = pSelectAIS->AddSelectablePoint(pTargetData->Lat, pTargetData->Lon, (void *)mmsi_long, SELTYPE_AISTARGET);
                           pSel->SetUserData(mmsi);
                     }
 
@@ -2678,7 +2679,8 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
           {
                 if(target_age > removelost_Mins * 60)
                 {
-                      pSelectAIS->DeleteSelectablePoint((void *)td->MMSI, SELTYPE_AISTARGET);
+                      long mmsi_long = td->MMSI;
+                      pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
                       current_targets->erase(it);
                       delete td;
                       break;        // kill only one per tick, since iterator becomes invalid...
