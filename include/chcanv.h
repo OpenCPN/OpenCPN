@@ -85,7 +85,7 @@ int SetScreenBrightness(int brightness);
 #define     ROT_TIMER         4
 #define     RTELEGPU_TIMER    5
 #define     TCWININF_TIMER    6
-
+#define     ROLLOVER_TIMER    7
 
 
 
@@ -736,7 +736,7 @@ public:
 class RolloverWin: public wxWindow
 {
       public:
-            RolloverWin(wxWindow *parent);
+            RolloverWin(wxWindow *parent, int timeout = -1);
             ~RolloverWin();
 
             void OnPaint(wxPaintEvent& event);
@@ -746,7 +746,7 @@ class RolloverWin: public wxWindow
             void SetPosition(wxPoint pt){ m_position = pt; }
             void SetBitmap(int rollover);
             void SetBestPosition(int x, int y, int off_x, int off_y, int rollover, wxSize parent_size);
-
+            void OnTimer(wxTimerEvent& event);
 
       private:
 
@@ -754,6 +754,8 @@ class RolloverWin: public wxWindow
             wxSize            m_size;
             wxPoint           m_position;
             wxBitmap          *m_pbm;
+            wxTimer           m_timer_timeout;
+            int               m_timeout_sec;
 
             DECLARE_EVENT_TABLE()
 };

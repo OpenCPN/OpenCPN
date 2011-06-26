@@ -6945,7 +6945,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                         if(NULL == m_pAISRolloverWin)
                         {
-                              m_pAISRolloverWin = new RolloverWin(this);
+                              m_pAISRolloverWin = new RolloverWin(this, 10);  // ten second expiration
                               m_pAISRolloverWin->Hide();
                         }
 
@@ -13207,14 +13207,17 @@ void S57ObjectTree::OnItemSelectChange( wxTreeEvent& event)
 //-----------------------------------------------------------------------
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
             EVT_PAINT(RolloverWin::OnPaint)
-
+            EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
             END_EVENT_TABLE()
 
 // Define a constructor
-RolloverWin::RolloverWin(wxWindow *parent):
+RolloverWin::RolloverWin(wxWindow *parent, int timeout):
             wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(1,1), wxNO_BORDER)
 {
       m_pbm = NULL;
+
+      m_timer_timeout.SetOwner(this, ROLLOVER_TIMER);
+      m_timeout_sec = timeout;
 
       Hide();
 }
@@ -13223,6 +13226,12 @@ RolloverWin::~RolloverWin()
 {
       delete m_pbm;
 }
+void RolloverWin::OnTimer(wxTimerEvent& event)
+{
+      if(IsShown())
+            Hide();
+}
+
 
 void RolloverWin::SetBitmap(int rollover)
 {
@@ -13270,7 +13279,9 @@ void RolloverWin::SetBitmap(int rollover)
       mdc.DrawLabel(m_string, wxRect(2, 2, m_size.x-4, m_size.y-4));
       SetSize(m_position.x, m_position.y, m_size.x, m_size.y);           // Assumes a nominal 32 x 32 cursor
 
-
+      // Retrigger the auto timeout
+      if(m_timeout_sec > 0)
+            m_timer_timeout.Start(m_timeout_sec * 1000, wxTIMER_ONE_SHOT);
 }
 
 void RolloverWin::OnPaint(wxPaintEvent& event)
