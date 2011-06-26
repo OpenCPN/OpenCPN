@@ -4688,33 +4688,36 @@ void MyFrame::ActivateMOB(void)
       pWP_MOB->m_bKeepXRoute = true;
       pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_MOB );
 
-      //    Create a point that is one mile along the present course
-      double zlat, zlon;
-      ll_gc_ll(gLat, gLon, gCog, 1.0, &zlat, &zlon);
+      if(bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog))
+      {
+            //    Create a point that is one mile along the present course
+            double zlat, zlon;
+            ll_gc_ll(gLat, gLon, gCog, 1.0, &zlat, &zlon);
 
-      RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _( "1.0 NM along COG" ) ), GPX_EMPTY_STRING );
-      pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_src );
+            RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _( "1.0 NM along COG" ) ), GPX_EMPTY_STRING );
+            pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_src );
 
-      Route *temp_route = new Route();
-      pRouteList->Append ( temp_route );
+            Route *temp_route = new Route();
+            pRouteList->Append ( temp_route );
 
-      temp_route->AddPoint(pWP_src);
-      temp_route->AddPoint(pWP_MOB);
+            temp_route->AddPoint(pWP_src);
+            temp_route->AddPoint(pWP_MOB);
 
-      pSelect->AddSelectableRouteSegment ( gLat, gLon, zlat, zlon, pWP_src, pWP_MOB, temp_route );
+            pSelect->AddSelectableRouteSegment ( gLat, gLon, zlat, zlon, pWP_src, pWP_MOB, temp_route );
 
-      temp_route->m_RouteNameString = _("Temporary MOB Route");
-      temp_route->m_RouteStartString = _("Assumed 1 Mile Point");;
-      temp_route->m_RouteEndString = mob_label;
+            temp_route->m_RouteNameString = _("Temporary MOB Route");
+            temp_route->m_RouteStartString = _("Assumed 1 Mile Point");;
+            temp_route->m_RouteEndString = mob_label;
 
-      temp_route->m_bDeleteOnArrival = false;
+            temp_route->m_bDeleteOnArrival = false;
 
-      temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
+            temp_route->SetRouteArrivalRadius(-1.0);                    // never arrives
 
-      temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
+            temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
 
-      g_pRouteMan->DeactivateRoute();
-      g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+            g_pRouteMan->DeactivateRoute();
+            g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
+      }
 
       if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
       {
