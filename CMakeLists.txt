@@ -93,7 +93,6 @@ IF(NOT WIN32)
   ADD_DEFINITIONS( " -O3 -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
-
 # Add some definitions to satisfy MS
 ADD_DEFINITIONS(-DUSE_GLU_TESS)
 IF(WIN32)
@@ -919,9 +918,9 @@ IF(APPLE)
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
 
-  SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/plugins/libdashboard_pi.dylib")
+  SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
   SET(LIBS 
-      ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/plugins/libgrib_pi.dylib")
+      ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
 
   INSTALL(CODE "
    include(BundleUtilities)
