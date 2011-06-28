@@ -1272,6 +1272,7 @@ Route::Route ( void )
       m_ArrivalRadius = .05;        // default, Miles
 
       RBBox.Reset();
+      m_bcrosses_idl = false;
 
       m_bIsInLayer = g_bIsNewLayer;
       if (m_bIsInLayer) {
@@ -1424,8 +1425,7 @@ void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 
       m_nPoints++;
 
-      RBBox.Expand(pNewPoint->m_lon, pNewPoint->m_lat);
-
+      CalculateBBox();
 
       if(m_pLastAddedPoint)
             pNewPoint->m_seg_len = DistGreatCircle(m_pLastAddedPoint->m_lat, m_pLastAddedPoint->m_lon, pNewPoint->m_lat, pNewPoint->m_lon);
@@ -1952,32 +1952,92 @@ void Route::CalculateBBox()
 
 
       RBBox.Reset();
+      m_bcrosses_idl = CalculateCrossesIDL();
+
 
       wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
       RoutePoint *data;
-      while ( node )
+
+      if(!m_bcrosses_idl)
       {
-            data = node->GetData();
+            while ( node )
+            {
+                  data = node->GetData();
 
-            if ( data->m_lon > bbox_xmax )
-                  bbox_xmax = data->m_lon;
-            if ( data->m_lon < bbox_xmin )
-                  bbox_xmin = data->m_lon;
-            if ( data->m_lat > bbox_ymax )
-                  bbox_ymax = data->m_lat;
-            if ( data->m_lat < bbox_ymin )
-                  bbox_ymin = data->m_lat;
+                  if ( data->m_lon > bbox_xmax )
+                        bbox_xmax = data->m_lon;
+                  if ( data->m_lon < bbox_xmin )
+                        bbox_xmin = data->m_lon;
+                  if ( data->m_lat > bbox_ymax )
+                        bbox_ymax = data->m_lat;
+                  if ( data->m_lat < bbox_ymin )
+                        bbox_ymin = data->m_lat;
 
-            node = node->GetNext();
+                  node = node->GetNext();
+            }
       }
+      else
+      {
+            //    For Routes that cross the IDL, we compute and store
+            //    the bbox as positive definite
+            while ( node )
+            {
+                  data = node->GetData();
+                  double lon = data->m_lon;
+                  if(lon < 0.)
+                        lon += 360.;
 
+                  if ( lon > bbox_xmax )
+                        bbox_xmax = lon;
+                  if ( lon < bbox_xmin )
+                        bbox_xmin = lon;
+                  if ( data->m_lat > bbox_ymax )
+                        bbox_ymax = data->m_lat;
+                  if ( data->m_lat < bbox_ymin )
+                        bbox_ymin = data->m_lat;
+
+                  node = node->GetNext();
+            }
+      }
 
       RBBox.Expand ( bbox_xmin, bbox_ymin );
       RBBox.Expand ( bbox_xmax, bbox_ymax );
 
 
 }
+
+bool Route::CalculateCrossesIDL(void)
+{
+      wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+      bool idl_cross = false;
+      RoutePoint *data = node->GetData();             // first node
+      double lon0 = data->m_lon;
+      node = node->GetNext();
+
+      while ( node )
+      {
+            data = node->GetData();
+            if((lon0 < -150.) && (data->m_lon > 150.))
+            {
+                  idl_cross = true;
+                  break;
+            }
+
+            if((lon0 > 150.) && (data->m_lon < -150.))
+            {
+                  idl_cross = true;
+                  break;
+            }
+
+            lon0 = data->m_lon;
+
+            node = node->GetNext();
+      }
+
+      return idl_cross;
+}
+
 
 void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
 {

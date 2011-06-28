@@ -9706,7 +9706,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         if(g_pi_manager)
         {
               g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
-              g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, &GetVP());
+              g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, GetVP());
         }
 
         //      If Depth Unit Display is selected, emboss it
@@ -9921,6 +9921,20 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                           &scratch_dc, rect.x, rect.y );
                 upd_final ++ ;
         }
+
+       //  Test code to validate the dc drawing rectangle....
+/*
+        wxRegionIterator upd_ru ( ru ); // get the update rect list
+        while ( upd_ru )
+        {
+              wxRect rect = upd_ru.GetRect();
+
+              dc.SetPen(wxPen(*wxRED));
+              dc.SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
+              dc.DrawRectangle(rect);
+              upd_ru ++ ;
+        }
+*/
 
 //    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
         temp_dc.SelectObject ( wxNullBitmap );
@@ -10430,28 +10444,68 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
         wxRouteListNode *node = pRouteList->GetFirst();
         while ( node )
         {
+                bool b_run = false;
+                bool b_drawn = false;
                 Route *pRouteDraw = node->GetData();
                 if ( pRouteDraw )
                 {
-                      if ( BltBBox.Intersect ( pRouteDraw->RBBox, 0 ) != _OUT ) // Route is not wholly outside window
-                      {
-                            if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
-                                  active_route = pRouteDraw;
-                            else
-                                  pRouteDraw->Draw ( dc, GetVP() );
-                      }
-                      else if(pRouteDraw->IsTrack())
+                      if(pRouteDraw->IsTrack())
                       {
                             Track *trk = (Track *)pRouteDraw;
                             if(trk->IsRunning())
-                            {
-                              wxBoundingBox xbox = pRouteDraw->RBBox;
-                              xbox.Expand(gLon, gLat);
-                              if ( BltBBox.Intersect ( xbox, 0 ) != _OUT )
-                                  active_route = pRouteDraw;
-                            }
+                                  b_run = true;
                       }
 
+                      wxBoundingBox test_box = pRouteDraw->RBBox;
+
+                      if(b_run)
+                            test_box.Expand(gLon, gLat);
+
+                      if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                      {
+                              b_drawn = true;
+
+                              if(pRouteDraw->IsActive() || pRouteDraw->IsSelected() || b_run)
+                                    active_route = pRouteDraw;
+                              else
+                                    pRouteDraw->Draw ( dc, GetVP() );
+                      }
+                      else if(pRouteDraw->CrossesIDL())
+                      {
+                              wxPoint2DDouble xlate(-360., 0.);
+                              test_box = pRouteDraw->RBBox;
+                              test_box.Translate( xlate );
+                              if(b_run)
+                                    test_box.Expand(gLon, gLat);
+
+                              if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                              {
+                                    b_drawn = true;
+                                    if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
+                                          active_route = pRouteDraw;
+                                    else
+                                          pRouteDraw->Draw ( dc, GetVP() );
+                              }
+                      }
+
+                      //      Need to quick check for the case where VP crosses IDL
+                      if(!b_drawn)
+                      {
+                            if((BltBBox.GetMinX() < -180.) && (BltBBox.GetMaxX() > -180.))
+                            {
+                                    wxPoint2DDouble xlate(-360., 0.);
+                                    test_box = pRouteDraw->RBBox;
+                                    test_box.Translate( xlate );
+                                    if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                                    {
+                                          b_drawn = true;
+                                          if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
+                                                active_route = pRouteDraw;
+                                          else
+                                                pRouteDraw->Draw ( dc, GetVP() );
+                                    }
+                             }
+                      }
                 }
 
                 node = node->GetNext();
@@ -10460,7 +10514,6 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
         //  Draw any active or selected route (or track) last, so that is is always on top
         if(active_route)
               active_route->Draw ( dc, GetVP() );
-
 }
 
 void ChartCanvas::DrawAllWaypointsInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly )

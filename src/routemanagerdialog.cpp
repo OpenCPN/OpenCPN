@@ -943,6 +943,11 @@ void RouteManagerDialog::ZoomtoRoute(Route *route)
       double clat = route->RBBox.GetMinY() + (route->RBBox.GetHeight()/2);
       double clon = route->RBBox.GetMinX() + (route->RBBox.GetWidth()/2);
 
+      if(clon > 180.)
+            clon -= 360.;
+      else if(clon < -180.)
+            clon += 360.;
+
       // Calculate ppm
       double rw, rh, ppm; // route width, height, final ppm scale to use
       int ww, wh; // chart window width, height
