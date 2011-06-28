@@ -4247,7 +4247,7 @@ void MyFrame::ProcessCanvasResize(void)
       if(g_FloatingCompassDialog)
       {
 
-            wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+            wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x -2, 0);
             wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
             wxPoint pos_in_frame = ScreenToClient(pos_abs);
             g_FloatingCompassDialog->Move(posn_in_canvas/*pos_in_frame*/);
@@ -6064,7 +6064,7 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
             // check to see if it would overlap if it was in its home position (upper right)
             wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
             wxPoint tentative_pt_in_screen = g_FloatingCompassDialog->
-                        GetParent()->ClientToScreen(wxPoint(parent_size.x - g_FloatingCompassDialog->GetSize().x, 0));
+                        GetParent()->ClientToScreen(wxPoint(parent_size.x - g_FloatingCompassDialog->GetSize().x - 6, 0));
             wxRect tentative_rect(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
                                   g_FloatingCompassDialog->GetSize().x, g_FloatingCompassDialog->GetSize().y);
 
@@ -6073,7 +6073,7 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
             //    if they would not intersect, go ahead and move it to the upper right
             if(!tb_rect.Intersects(tentative_rect))
             {
-                  wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+                  wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x - 6, 0);
                   wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
                   wxPoint pos_in_frame = ScreenToClient(pos_abs);
 
@@ -6086,7 +6086,7 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
             {
                   if(cd_rect.y > 200)           // assuming now at the bottom left
                   {
-                        wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+                        wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x - 6, 0);
                         wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
                         wxPoint pos_in_frame = ScreenToClient(pos_abs);
 
