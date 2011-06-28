@@ -138,7 +138,7 @@ public:
       PlugInManager(MyFrame *parent);
       virtual ~PlugInManager();
 
-      bool LoadAllPlugIns(wxString &shared_data_prefix);
+      bool LoadAllPlugIns(wxString &plugin_dir);
       bool UnLoadAllPlugIns();
       bool DeactivateAllPlugIns();
       bool UpdatePlugIns();
@@ -148,7 +148,7 @@ public:
       PlugInContainer *LoadPlugIn(wxString plugin_file);
       ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
-      bool RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp);
+      bool RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, const ViewPort &vp);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
       void SendViewPortToRequestingPlugIns( ViewPort &vp );
 
@@ -156,9 +156,11 @@ public:
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
-      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
-                                        wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
-                                        int tool_sel, opencpn_plugin *pplugin );
+      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled,
+                         wxItemKind kind, wxString shortHelp, wxString longHelp,
+                         wxObject *clientData, int position,
+                         int tool_sel, opencpn_plugin *pplugin );
+
       void RemoveToolbarTool(int tool_id);
       void SetToolbarToolViz(int tool_id, bool viz);
       void SetToolbarItemState(int tool_id, bool toggle);

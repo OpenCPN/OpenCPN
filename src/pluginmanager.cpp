@@ -52,28 +52,30 @@ extern ChartDB         *ChartData;
 //    Some static helper funtions
 //    Scope is local to this module
 
-PlugIn_ViewPort CreatePlugInViewport( ViewPort *vp)
+PlugIn_ViewPort CreatePlugInViewport( const ViewPort &vp)
 {
       //    Create a PlugIn Viewport
+      ViewPort tvp = vp;
       PlugIn_ViewPort pivp;
-      pivp.clat =                   vp->clat;                   // center point
-      pivp.clon =                   vp->clon;
-      pivp.view_scale_ppm =         vp->view_scale_ppm;
-      pivp.skew =                   vp->skew;
-      pivp.rotation =               vp->rotation;
-      pivp.chart_scale =            vp->chart_scale;
-      pivp.pix_width =              vp->pix_width;
-      pivp.pix_height =             vp->pix_height;
-      pivp.rv_rect =                vp->rv_rect;
-      pivp.b_quilt =                vp->b_quilt;
-      pivp.m_projection_type =      vp->m_projection_type;
 
-      pivp.lat_min =                vp->GetBBox().GetMinY();
-      pivp.lat_max =                vp->GetBBox().GetMaxY();
-      pivp.lon_min =                vp->GetBBox().GetMinX();
-      pivp.lon_max =                vp->GetBBox().GetMaxX();
+      pivp.clat =                   tvp.clat;                   // center point
+      pivp.clon =                   tvp.clon;
+      pivp.view_scale_ppm =         tvp.view_scale_ppm;
+      pivp.skew =                   tvp.skew;
+      pivp.rotation =               tvp.rotation;
+      pivp.chart_scale =            tvp.chart_scale;
+      pivp.pix_width =              tvp.pix_width;
+      pivp.pix_height =             tvp.pix_height;
+      pivp.rv_rect =                tvp.rv_rect;
+      pivp.b_quilt =                tvp.b_quilt;
+      pivp.m_projection_type =      tvp.m_projection_type;
 
-      pivp.bValid =                 vp->IsValid();                 // This VP is valid
+      pivp.lat_min =                tvp.GetBBox().GetMinY();
+      pivp.lat_max =                tvp.GetBBox().GetMaxY();
+      pivp.lon_min =                tvp.GetBBox().GetMinX();
+      pivp.lon_max =                tvp.GetBBox().GetMaxX();
+
+      pivp.bValid =                 tvp.IsValid();                 // This VP is valid
 
       return pivp;
 }
@@ -124,9 +126,9 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(wxString &shared_data_prefix)
+bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
 {
-      m_plugin_location = shared_data_prefix + _T("plugins");
+      m_plugin_location = plugin_dir;
       wxDir pi_dir(m_plugin_location);
 
       wxString msg(_("PlugInManager searching for PlugIns in location "));
@@ -414,7 +416,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
 }
 
-bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, ViewPort *vp)
+bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, const ViewPort &vp)
 {
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
@@ -441,7 +443,7 @@ void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
             {
                   if(pic->m_cap_flag & WANTS_ONPAINT_VIEWPORT)
                   {
-                        PlugIn_ViewPort pivp = CreatePlugInViewport( &vp );
+                        PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
                         pic->m_pplugin->SetCurrentViewPort(pivp);
                   }
             }
@@ -1570,10 +1572,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
 {
       if(m_ppicb)
       {
-            PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&VPoint);
+            PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
             dc.SelectObject(m_ppicb->RenderRegionView( pivp, Region));
             return true;
-//            return m_ppicb->RenderRegionViewOnDC(dc, pivp, Region);
       }
       else
             return false;
@@ -1583,8 +1584,8 @@ bool ChartPlugInWrapper::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
       if(m_ppicb)
       {
-            PlugIn_ViewPort pivp_last = CreatePlugInViewport( &vp_last);
-            PlugIn_ViewPort pivp_proposed = CreatePlugInViewport( &vp_proposed);
+            PlugIn_ViewPort pivp_last = CreatePlugInViewport( vp_last);
+            PlugIn_ViewPort pivp_proposed = CreatePlugInViewport( vp_proposed);
             return m_ppicb->AdjustVP(pivp_last, pivp_proposed);
       }
       else
@@ -1595,7 +1596,7 @@ void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *
 {
       if(m_ppicb)
       {
-            PlugIn_ViewPort pivp = CreatePlugInViewport( (ViewPort *)&VPoint);
+            PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
             m_ppicb->GetValidCanvasRegion(pivp, pValidRegion);
       }
 

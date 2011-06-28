@@ -198,6 +198,7 @@ wxString        *pInit_Chart_Dir;
 wxString        *g_pcsv_locn;
 wxString        g_SENCPrefix;
 wxString        g_PresLibData;
+wxString        g_Plugin_Dir;
 
 extern wxString        str_version_major; //Gunther
 extern wxString        str_version_minor; //Gunther
@@ -1880,6 +1881,13 @@ bool MyApp::OnInit()
 #endif
 
 
+        //  Get the PlugIns directory location
+        g_Plugin_Dir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
+                                                   // Mac:     appname.app/Contents/PlugIns
+#ifdef __WXMSW__
+        g_Plugin_Dir += _T("\\plugins");             // Windows: {exe dir}/plugins
+#endif
+
 //      Create an array string to hold repeating messages, so they don't
 //      overwhelm the log
         pMessageOnceArray = new wxArrayString;
@@ -2512,7 +2520,7 @@ bool MyApp::OnInit()
 
 //      Load and initialize any PlugIns
         g_pi_manager = new PlugInManager(gFrame);
-        g_pi_manager->LoadAllPlugIns(g_SData_Locn);
+        g_pi_manager->LoadAllPlugIns(g_Plugin_Dir);
 
 
 
@@ -6053,8 +6061,27 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
       bool b_update = false;
       if(g_FloatingCompassDialog && g_FloatingToolbarDialog)
       {
-            wxRect cd_rect = g_FloatingCompassDialog->GetScreenRect();
+            // check to see if it would overlap if it was in its home position (upper right)
+            wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
+            wxPoint tentative_pt_in_screen = g_FloatingCompassDialog->
+                        GetParent()->ClientToScreen(wxPoint(parent_size.x - g_FloatingCompassDialog->GetSize().x, 0));
+            wxRect tentative_rect(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
+                                  g_FloatingCompassDialog->GetSize().x, g_FloatingCompassDialog->GetSize().y);
+
             wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+
+            //    if they would not intersect, go ahead and move it to the upper right
+            if(!tb_rect.Intersects(tentative_rect))
+            {
+                  wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x, 0);
+                  wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
+                  wxPoint pos_in_frame = ScreenToClient(pos_abs);
+
+                  g_FloatingCompassDialog->Move(pos_in_frame);
+            }
+
+
+            wxRect cd_rect = g_FloatingCompassDialog->GetScreenRect();
             if(tb_rect.Intersects(cd_rect))
             {
                   if(cd_rect.y > 200)           // assuming now at the bottom left
