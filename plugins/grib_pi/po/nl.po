@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 2.4.611 beta\n"
+"Project-Id-Version: grib_pi 2.4.620 beta\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:28-0400\n"
-"PO-Revision-Date: 2011-06-12 11:26+0100\n"
+"PO-Revision-Date: 2011-06-20 21:11+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"

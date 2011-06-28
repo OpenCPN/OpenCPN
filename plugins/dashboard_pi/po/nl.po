@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 2.4.611 beta\n"
+"Project-Id-Version: dashboard_pi 2.4.620 beta\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:27-0400\n"
-"PO-Revision-Date: 2011-06-12 12:17+0100\n"
+"PO-Revision-Date: 2011-06-20 21:11+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team:  <rider2@kpnmail.nl>\n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Dashboard PlugIn voor OpenCPN\n"
-"Geeft navigatie instrumenten weer op basis van NMEA gegevens."
+"Geeft navigatie-instrumenten weer op basis van NMEA gegevens."
 
 #
 msgid "Dashboard preferences"
