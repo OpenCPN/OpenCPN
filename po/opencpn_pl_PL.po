@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"POT-Creation-Date: 2011-06-28 10:04-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -538,10 +538,6 @@ msgstr "Na kotwicy"
 #
 msgid "AtoN"
 msgstr "AtoN"
-#
-#
-msgid "Attempting to load libgps.so"
-msgstr "Próba załadowania libgps.so"
 #
 #
 msgid "Authors"
@@ -1176,14 +1172,6 @@ msgstr ""
 #
 msgid "F/V"
 msgstr ""
-#
-#
-msgid "Failed to load libgps.so"
-msgstr "Błąd ładowania libgps.so"
-#
-#
-msgid "Failed to load libgps.so.19"
-msgstr "Błąd ładowania libgps.so.19"
 #
 #
 msgid "Fast ship"
@@ -2684,6 +2672,11 @@ msgid "Tanker"
 msgstr ""
 #
 #
+#, fuzzy
+msgid "Target Count"
+msgstr "Info dot. obiektu"
+#
+#
 msgid "Target info"
 msgstr "Info dot. obiektu"
 #
@@ -2895,7 +2888,8 @@ msgstr ""
 "węzeł gpsd:"
 #
 #
-msgid "Unable to load libgps.so"
+#, fuzzy
+msgid "Unable to load libgps"
 msgstr "Nie można załadować libgps.so"
 #
 #
@@ -3146,8 +3140,18 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Wł./Wył. na mapie"
+#
+#
+#
+#
+#~ msgid "Attempting to load libgps.so"
+#~ msgstr "Próba załadowania libgps.so"
+#
+#
 #
 #
 #
@@ -3182,8 +3186,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
+#
 #
 #
 #
@@ -3218,8 +3226,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
+#
 #
 #
 #
@@ -3252,9 +3264,13 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
+#
 #
 #
 #
@@ -3276,12 +3292,28 @@ msgstr ""
 #
 #
 #
+#~ msgid "Failed to load libgps.so"
+#~ msgstr "Błąd ładowania libgps.so"
+#
+#
+#
+#
+#~ msgid "Failed to load libgps.so.19"
+#~ msgstr "Błąd ładowania libgps.so.19"
+#
+#
+#
+#
+#
+#
 #
 #
 #
 #
 #~ msgid "Import new layer"
 #~ msgstr "Importuj nową warstwę"
+#
+#
 #
 #
 #
@@ -3300,8 +3332,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
+#
 #
 #
 #

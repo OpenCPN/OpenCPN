@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"POT-Creation-Date: 2011-06-28 10:04-0400\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -415,9 +415,6 @@ msgid "At Anchor"
 msgstr "Horgonyon"
 #
 msgid "AtoN"
-msgstr ""
-#
-msgid "Attempting to load libgps.so"
 msgstr ""
 #
 msgid "Authors"
@@ -908,12 +905,6 @@ msgid "ExtendedTideIcon"
 msgstr ""
 #
 msgid "F/V"
-msgstr ""
-#
-msgid "Failed to load libgps.so"
-msgstr ""
-#
-msgid "Failed to load libgps.so.19"
 msgstr ""
 #
 msgid "Fast ship"
@@ -2059,6 +2050,10 @@ msgstr ""
 msgid "Tanker"
 msgstr "Tankhajó"
 #
+#, fuzzy
+msgid "Target Count"
+msgstr "Célpont információ"
+#
 msgid "Target info"
 msgstr "Célpont információ"
 #
@@ -2218,7 +2213,7 @@ msgid ""
 "gpsd host is: "
 msgstr ""
 #
-msgid "Unable to load libgps.so"
+msgid "Unable to load libgps"
 msgstr ""
 #
 msgid "Undefined"
@@ -2414,8 +2409,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
+#
+#
 #
 #
 #
@@ -2430,8 +2429,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
+#
+#
 #
 #
 #
@@ -2444,6 +2447,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Utolsó jelentési periódus:   %3d mp.\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -2460,8 +2465,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
+#
 #
 #
 #

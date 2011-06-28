@@ -16,245 +16,166 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 "X-Poedit-Basepath: F:\\GIT\\opencpn\\plugins\\dashboard_pi\n"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:125
-#: src/dashboard_pi.cpp:550
-msgid "N"
-msgstr "N"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "NE"
-msgstr "NO"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:126
-msgid "E"
-msgstr "O"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "SE"
-msgstr "SO"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:127
-msgid "S"
-msgstr "S"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "SW"
-msgstr "SW"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-#: src/gps.cpp:128
-msgid "W"
-msgstr "W"
-
-#: src/compass.cpp:128
-#: src/wind.cpp:85
-msgid "NW"
-msgstr "NW"
-
-#: src/dashboard_pi.cpp:100
-msgid "Position"
-msgstr "Position"
-
-#: src/dashboard_pi.cpp:102
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:104
-msgid "Speedometer"
-msgstr "Log"
-
-#: src/dashboard_pi.cpp:106
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:108
-msgid "Compass"
-msgstr "Kompass"
-
-#: src/dashboard_pi.cpp:110
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:112
-msgid "HDG"
-msgstr "HDG"
-
-#: src/dashboard_pi.cpp:114
+#
+msgid "Add"
+msgstr "Hinzufügen"
+#
+msgid "Add instrument"
+msgstr "Instrument hinzufügen"
+#
 msgid "Apparent wind"
 msgstr "Wind - scheinbarer"
-
-#: src/dashboard_pi.cpp:116
-msgid "Wind angle"
-msgstr "Wind"
-
-#: src/dashboard_pi.cpp:118
-#: src/dashboard_pi.cpp:120
-msgid "Wind speed"
-msgstr "Windgeschwindigkeit"
-
-#: src/dashboard_pi.cpp:122
-msgid "True wind"
-msgstr "Wind - wahrer"
-
-#: src/dashboard_pi.cpp:124
-#: src/dashboard_pi.cpp:126
-msgid "Depth"
-msgstr "Echolot"
-
-#: src/dashboard_pi.cpp:128
-msgid "Temp"
-msgstr "Thermometer"
-
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:134
-#: src/dashboard_pi.cpp:136
-msgid "Rudder angle"
-msgstr "Ruderlage"
-
-#: src/dashboard_pi.cpp:138
-msgid "GPS in view"
-msgstr "GPS Sat. Anzahl"
-
-#: src/dashboard_pi.cpp:140
-msgid "GPS status"
-msgstr "GPS Status"
-
-#: src/dashboard_pi.cpp:142
-msgid "Cursor"
-msgstr "Cursor Pos."
-
-#: src/dashboard_pi.cpp:144
+#
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr "Fenstertitel:"
+#
 msgid "Clock"
 msgstr "Uhr"
-
-#: src/dashboard_pi.cpp:146
-msgid "Sunrise/Sunset"
-msgstr "Sonnenauf-/ -untergang"
-
-#: src/dashboard_pi.cpp:148
-msgid "Moon phase"
-msgstr "Mondphase"
-
-#: src/dashboard_pi.cpp:239
-#: src/dashboard_pi.cpp:304
-#: src/dashboard_pi.cpp:999
-#: src/dashboard_pi.cpp:1007
-#: src/dashboard_pi.cpp:1148
-#: src/dashboard_pi.cpp:1183
-#: src/dashboard_pi.cpp:1375
+#
+msgid "Compass"
+msgstr "Kompass"
+#
+msgid "Cursor"
+msgstr "Cursor Pos."
+#
 msgid "Dashboard"
 msgstr "Dashboard"
-
-#: src/dashboard_pi.cpp:310
+#
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Dashboard Plugin für OpenCPN"
-
-#: src/dashboard_pi.cpp:315
+#
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Dashboard Plugin für OpenCPN\n"
 "ermöglicht Instrumentenanzeigen aus NMEA Quellen."
-
-#: src/dashboard_pi.cpp:1129
+#
 msgid "Dashboard preferences"
 msgstr "Dashboard Einstellungen"
-
-#: src/dashboard_pi.cpp:1190
-msgid "show this dashboard"
-msgstr "ausgewähltes Dashboard anzeigen"
-
-#: src/dashboard_pi.cpp:1195
-msgid "Caption:"
-msgstr "Fenstertitel:"
-
-#: src/dashboard_pi.cpp:1200
-msgid "Orientation:"
-msgstr "Ausrichtung:"
-
-#: src/dashboard_pi.cpp:1203
-msgid "Vertical"
-msgstr "vertikal"
-
-#: src/dashboard_pi.cpp:1204
-msgid "Horizontal"
-msgstr "horizontal"
-
-#: src/dashboard_pi.cpp:1207
-msgid "Instrument width:"
-msgstr "Instrumenten Breite:"
-
-#: src/dashboard_pi.cpp:1216
-#: src/dashboard_pi.cpp:1223
-#: src/dashboard_pi.cpp:1488
-msgid "Instruments"
-msgstr "Instrumente"
-
-#: src/dashboard_pi.cpp:1231
-msgid "Add"
-msgstr "Hinzufügen"
-
-#: src/dashboard_pi.cpp:1235
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: src/dashboard_pi.cpp:1239
-msgid "Delete"
-msgstr "Löschen"
-
-#: src/dashboard_pi.cpp:1244
-msgid "Up"
-msgstr "hoch"
-
-#: src/dashboard_pi.cpp:1248
-msgid "Down"
-msgstr "runter"
-
-#: src/dashboard_pi.cpp:1256
-msgid "Appearance"
-msgstr "Erscheinungsbild"
-
-#: src/dashboard_pi.cpp:1258
-msgid "Fonts"
-msgstr "Schrift"
-
-#: src/dashboard_pi.cpp:1264
-msgid "Title:"
-msgstr "Titel:"
-
-#: src/dashboard_pi.cpp:1268
+#
 msgid "Data:"
 msgstr "Daten:"
-
-#: src/dashboard_pi.cpp:1272
+#
+msgid "Delete"
+msgstr "Löschen"
+#
+msgid "Depth"
+msgstr "Echolot"
+#
+msgid "Down"
+msgstr "runter"
+#
+msgid "E"
+msgstr "O"
+#
+msgid "Edit"
+msgstr "Bearbeiten"
+#
+msgid "Fonts"
+msgstr "Schrift"
+#
+msgid "GPS in view"
+msgstr "GPS Sat. Anzahl"
+#
+msgid "GPS status"
+msgstr "GPS Status"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr "horizontal"
+#
+msgid "Instrument width:"
+msgstr "Instrumenten Breite:"
+#
+msgid "Instruments"
+msgstr "Instrumente"
+#
 msgid "Label:"
 msgstr "Label:"
-
-#: src/dashboard_pi.cpp:1276
-msgid "Small:"
-msgstr "Klein:"
-
-#: src/dashboard_pi.cpp:1474
-msgid "Add instrument"
-msgstr "Instrument hinzufügen"
-
-#: src/dashboard_pi.cpp:1478
+#
+msgid "Moon phase"
+msgstr "Mondphase"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NO"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr "Ausrichtung:"
+#
+msgid "Position"
+msgstr "Position"
+#
+msgid "Rudder angle"
+msgstr "Ruderlage"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SO"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
 msgid "Select instrument to add:"
 msgstr "Instrument auswählen zum Hinzufügen:"
-
+#
+msgid "Small:"
+msgstr "Klein:"
+#
+msgid "Speedometer"
+msgstr "Log"
+#
+msgid "Sunrise/Sunset"
+msgstr "Sonnenauf-/ -untergang"
+#
+msgid "Temp"
+msgstr "Thermometer"
+#
+msgid "Title:"
+msgstr "Titel:"
+#
+msgid "True wind"
+msgstr "Wind - wahrer"
+#
+msgid "Up"
+msgstr "hoch"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "vertikal"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Wind angle"
+msgstr "Wind"
+#
+msgid "Wind speed"
+msgstr "Windgeschwindigkeit"
+#
+msgid "show this dashboard"
+msgstr "ausgewähltes Dashboard anzeigen"

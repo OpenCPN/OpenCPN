@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 2.4.611\n"
+"Project-Id-Version: dashboard_pi 2.4.628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 12:56-0400\n"
+"POT-Creation-Date: 2011-06-28 10:00-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,9 +132,9 @@ msgstr ""
 msgid "Moon phase"
 msgstr ""
 
-#: src/dashboard_pi.cpp:239 src/dashboard_pi.cpp:304 src/dashboard_pi.cpp:999
-#: src/dashboard_pi.cpp:1007 src/dashboard_pi.cpp:1148
-#: src/dashboard_pi.cpp:1183 src/dashboard_pi.cpp:1375
+#: src/dashboard_pi.cpp:239 src/dashboard_pi.cpp:304 src/dashboard_pi.cpp:1009
+#: src/dashboard_pi.cpp:1017 src/dashboard_pi.cpp:1161
+#: src/dashboard_pi.cpp:1196 src/dashboard_pi.cpp:1388
 msgid "Dashboard"
 msgstr ""
 
@@ -148,87 +148,87 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 
-#: src/dashboard_pi.cpp:1129
+#: src/dashboard_pi.cpp:1142
 msgid "Dashboard preferences"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1190
+#: src/dashboard_pi.cpp:1203
 msgid "show this dashboard"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1195
+#: src/dashboard_pi.cpp:1208
 msgid "Caption:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1200
+#: src/dashboard_pi.cpp:1213
 msgid "Orientation:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1203
+#: src/dashboard_pi.cpp:1216
 msgid "Vertical"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1204
+#: src/dashboard_pi.cpp:1217
 msgid "Horizontal"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1207
+#: src/dashboard_pi.cpp:1220
 msgid "Instrument width:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1216 src/dashboard_pi.cpp:1223
-#: src/dashboard_pi.cpp:1488
+#: src/dashboard_pi.cpp:1229 src/dashboard_pi.cpp:1236
+#: src/dashboard_pi.cpp:1501
 msgid "Instruments"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1231
+#: src/dashboard_pi.cpp:1244
 msgid "Add"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1235
+#: src/dashboard_pi.cpp:1248
 msgid "Edit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1239
+#: src/dashboard_pi.cpp:1252
 msgid "Delete"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1244
+#: src/dashboard_pi.cpp:1257
 msgid "Up"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1248
+#: src/dashboard_pi.cpp:1261
 msgid "Down"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1256
+#: src/dashboard_pi.cpp:1269
 msgid "Appearance"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1258
+#: src/dashboard_pi.cpp:1271
 msgid "Fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1264
+#: src/dashboard_pi.cpp:1277
 msgid "Title:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1268
+#: src/dashboard_pi.cpp:1281
 msgid "Data:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1272
+#: src/dashboard_pi.cpp:1285
 msgid "Label:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1276
+#: src/dashboard_pi.cpp:1289
 msgid "Small:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1474
+#: src/dashboard_pi.cpp:1487
 msgid "Add instrument"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1478
+#: src/dashboard_pi.cpp:1491
 msgid "Select instrument to add:"
 msgstr ""

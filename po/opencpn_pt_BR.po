@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"POT-Creation-Date: 2011-06-28 10:04-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -763,16 +763,6 @@ msgstr "Ligar Guarda de Fundeio"
 # 
 msgid "AtoN"
 msgstr "AuxNav"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Attempting to load libgps.so"
-msgstr ""
-"Não foi possível carregar libgps.\n"
-"\n"
-"O host gpsd é: "
 #
 # 
 # 
@@ -1674,26 +1664,6 @@ msgstr ""
 # 
 msgid "F/V"
 msgstr ""
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Failed to load libgps.so"
-msgstr ""
-"Não foi possível carregar libgps.\n"
-"\n"
-"O host gpsd é: "
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Failed to load libgps.so.19"
-msgstr ""
-"Não foi possível carregar libgps.\n"
-"\n"
-"O host gpsd é: "
 #
 # 
 msgid "Fast ship"
@@ -3702,6 +3672,9 @@ msgstr ""
 msgid "Tanker"
 msgstr ""
 #
+msgid "Target Count"
+msgstr ""
+#
 # 
 msgid "Target info"
 msgstr ""
@@ -3999,7 +3972,7 @@ msgstr ""
 # 
 # 
 #, fuzzy
-msgid "Unable to load libgps.so"
+msgid "Unable to load libgps"
 msgstr ""
 "Não foi possível carregar libgps.\n"
 "\n"
@@ -4320,6 +4293,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4335,6 +4310,8 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
+#
 #
 #
 #
@@ -4372,6 +4349,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4400,6 +4379,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4419,6 +4400,20 @@ msgstr ""
 # 
 #~ msgid "(Active Track)"
 #~ msgstr "(Acompanhamento Ativo)"
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Attempting to load libgps.so"
+#~ msgstr ""
+#~ "Não foi possível carregar libgps.\n"
+#~ "\n"
+#~ "O host gpsd é: "
+#
+#
 #
 #
 #
@@ -4454,6 +4449,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4465,6 +4462,8 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
+#
 #
 #
 #
@@ -4506,6 +4505,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4526,6 +4527,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -4567,6 +4570,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4582,6 +4587,8 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
+#
 #
 #
 #
@@ -4619,6 +4626,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4645,6 +4654,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4652,6 +4663,8 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
+#
 #
 #
 #
@@ -4680,6 +4693,32 @@ msgstr ""
 # 
 #~ msgid "Export...."
 #~ msgstr "Exportar..."
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Failed to load libgps.so"
+#~ msgstr ""
+#~ "Não foi possível carregar libgps.\n"
+#~ "\n"
+#~ "O host gpsd é: "
+#
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Failed to load libgps.so.19"
+#~ msgstr ""
+#~ "Não foi possível carregar libgps.\n"
+#~ "\n"
+#~ "O host gpsd é: "
+#
+#
 #
 #
 #
@@ -4717,6 +4756,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4730,6 +4771,8 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
+#
 #
 #
 #
@@ -4763,6 +4806,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4778,6 +4823,8 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
+#
 #
 #
 #
@@ -4809,12 +4856,16 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar arquivo GPX"
+#
+#
 #
 #
 #
@@ -4833,6 +4884,8 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
+#
 #
 #
 #
@@ -4866,6 +4919,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4881,6 +4936,8 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
+#
 #
 #
 #
@@ -4915,6 +4972,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4930,6 +4989,8 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
+#
+#
 #
 #
 #
@@ -4962,6 +5023,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -4972,6 +5035,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
+#
 #
 #
 #
@@ -5009,6 +5074,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5033,6 +5100,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5048,6 +5117,8 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
+#
 #
 #
 #
@@ -5085,6 +5156,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5094,6 +5167,8 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
+#
 #
 #
 #
@@ -5131,6 +5206,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5150,6 +5227,8 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
+#
 #
 #
 #
@@ -5181,6 +5260,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5196,6 +5277,8 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura Significativa das Ondas, m"
+#
+#
 #
 #
 #
@@ -5216,12 +5299,16 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Ligar Acompanhamento"
+#
+#
 #
 #
 #
@@ -5244,6 +5331,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5257,6 +5346,8 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
+#
 #
 #
 #
@@ -5290,6 +5381,8 @@ msgstr ""
 #
 #
 #
+#
+#
 # 
 # 
 # 
@@ -5305,6 +5398,8 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
+#
 #
 #
 #

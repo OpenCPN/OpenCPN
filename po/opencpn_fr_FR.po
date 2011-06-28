@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"POT-Creation-Date: 2011-06-28 10:04-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -537,9 +537,6 @@ msgstr "Au mouillage"
 #
 msgid "AtoN"
 msgstr "AtoN"
-#
-msgid "Attempting to load libgps.so"
-msgstr "Tentative de chargement du module libgps.so\""
 #
 #
 msgid "Authors"
@@ -1121,12 +1118,6 @@ msgstr "Hauteur de marée ( sous l'indicateur)"
 #
 msgid "F/V"
 msgstr "Nav. pêc."
-#
-msgid "Failed to load libgps.so"
-msgstr "Echec du chargement du module libgps.so"
-#
-msgid "Failed to load libgps.so.19"
-msgstr "Module \"libgpsd.so.19\" non installé »"
 #
 msgid "Fast ship"
 msgstr "Navire à Grande Vitesse (NGV)"
@@ -2500,6 +2491,10 @@ msgstr "Chaland-citerne, vrac liquide, de type N"
 msgid "Tanker"
 msgstr "Pétrolier"
 #
+#, fuzzy
+msgid "Target Count"
+msgstr "Informations"
+#
 msgid "Target info"
 msgstr "Informations"
 #
@@ -2692,7 +2687,8 @@ msgstr ""
 "\n"
 "L'hôte gpsd est : "
 #
-msgid "Unable to load libgps.so"
+#, fuzzy
+msgid "Unable to load libgps"
 msgstr "Impossible de charger le module libgps.so"
 #
 # AIS
@@ -2917,3 +2913,18 @@ msgstr "WGS X"
 #
 msgid "wgsoy"
 msgstr "WGS Y"
+#
+#
+#
+#~ msgid "Attempting to load libgps.so"
+#~ msgstr "Tentative de chargement du module libgps.so\""
+#
+#
+#
+#~ msgid "Failed to load libgps.so"
+#~ msgstr "Echec du chargement du module libgps.so"
+#
+#
+#
+#~ msgid "Failed to load libgps.so.19"
+#~ msgstr "Module \"libgpsd.so.19\" non installé »"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-19 23:48-0400\n"
+"POT-Creation-Date: 2011-06-28 10:04-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -739,11 +739,6 @@ msgstr "Ancorata"
 #
 msgid "AtoN"
 msgstr ""
-#
-#
-#
-msgid "Attempting to load libgps.so"
-msgstr "Tentativo di caricamento libgps.so"
 #
 #
 #
@@ -1571,16 +1566,6 @@ msgstr ""
 #
 msgid "F/V"
 msgstr ""
-#
-#
-#
-msgid "Failed to load libgps.so"
-msgstr "Caricamento libgps.so fallito"
-#
-#
-#
-msgid "Failed to load libgps.so.19"
-msgstr "Caricamento libgps.so.19 fallito"
 #
 #
 msgid "Fast ship"
@@ -3509,6 +3494,11 @@ msgid "Tanker"
 msgstr "Petroliera"
 #
 #
+#, fuzzy
+msgid "Target Count"
+msgstr "Target info"
+#
+#
 msgid "Target info"
 msgstr "Target info"
 #
@@ -3786,7 +3776,8 @@ msgstr ""
 #
 #
 #
-msgid "Unable to load libgps.so"
+#, fuzzy
+msgid "Unable to load libgps"
 msgstr "Impossibile caricare libgps.so"
 #
 #
@@ -4097,8 +4088,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
+#
 #
 #
 #
@@ -4143,13 +4138,19 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
 #
 #
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
+#
 #
 #
 #
@@ -4178,6 +4179,15 @@ msgstr ""
 #
 #
 #
+#~ msgid "Attempting to load libgps.so"
+#~ msgstr "Tentativo di caricamento libgps.so"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4185,6 +4195,8 @@ msgstr ""
 #
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
+#
+#
 #
 #
 #
@@ -4207,8 +4219,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
+#
+#
 #
 #
 #
@@ -4231,8 +4247,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
+#
+#
 #
 #
 #
@@ -4244,6 +4264,8 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
+#
 #
 #
 #
@@ -4267,8 +4289,12 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
+#
 #
 #
 #
@@ -4314,8 +4340,24 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#~ msgid "Failed to load libgps.so"
+#~ msgstr "Caricamento libgps.so fallito"
+#
+#
+#
+#
+#
+#~ msgid "Failed to load libgps.so.19"
+#~ msgstr "Caricamento libgps.so.19 fallito"
