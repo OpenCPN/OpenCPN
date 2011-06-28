@@ -551,6 +551,10 @@ CMake variables
 	;# License page
 	!define MUI_PAGE_CUSTOMFUNCTION_LEAVE Page_License_Leave
 	;!insertmacro MUI_PAGE_LICENSE "@CPACK_RESOURCE_FILE_LICENSE@"
+
+        !define MUI_LICENSEPAGE_BUTTON "$(^NextBtn)"
+        !define MUI_LICENSEPAGE_TEXT_BOTTOM $(License_Message)
+ 
 	!insertmacro MUI_PAGE_LICENSE $(license)
 
 	;# Clean up page - only shown if previous installation(s) <= 2.2.823 were found - checked in .onInit function
@@ -4276,6 +4280,10 @@ Var explArrCount
 
 	LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 
+   ;License dialog
+	LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally \
+        entitled to copy, reinstall, modify, and redistribute this program \
+        for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 
   ;Clean up page
 	LangString text_please_wait_1 ${LANG_ENGLISH} "... please wait!"
@@ -4550,7 +4558,7 @@ Var explArrCount
 	LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 	
   ;added on 2011-06-13
-	LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @PACKAGE_VERSION@"
+	LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
     LangString Installer ${LANG_ENGLISH} "Installer"
 		
 ;#EOF
