@@ -209,6 +209,7 @@ public:
       void ClearHighlights(void);
       void RenderSegment(wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
 
+      bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true);
       void SetListed(bool visible = true);
       bool IsVisible() { return m_bVisible; }
@@ -248,11 +249,13 @@ public:
       wxString    m_Colour;
 
 private:
+      bool        CalculateCrossesIDL();
       int         m_nPoints;
       int         m_nm_sequence;
       bool        m_bVisible; // should this route be drawn?
       bool        m_bListed;
       double      m_ArrivalRadius;
+      bool        m_bcrosses_idl;
 
 };
 
