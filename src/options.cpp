@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id: options.cpp,v 1.52 2010/06/16 03:55:02 bdbcat Exp $
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
@@ -2297,7 +2296,7 @@ void options::OnPageChange(wxNotebookEvent& event)
                   m_itemLangListBox = new wxComboBox(itemPanelFont, ID_CHOICE_LANG);
 
                   int current_language = locale_def_lang.GetLanguage();
-                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
+//                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
                   wxString current_sel = wxLocale::GetLanguageName(current_language);
 
                   current_sel = GetOCPNKnownLanguage(g_locale, NULL);
@@ -2345,7 +2344,7 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   for( int it = 0 ; it < nLang ; it++)
                   {
-                        if(wxLocale::IsAvailable(lang_list[it]))
+//                        if(wxLocale::IsAvailable(lang_list[it]))
                         {
                               wxLocale ltest(lang_list[it], 0);
                               ltest.AddCatalog(_T("opencpn"));
@@ -2371,8 +2370,10 @@ void options::OnPageChange(wxNotebookEvent& event)
 
 
                   //    Reset current language
-                  wxSetlocale(LC_ALL, oldLocale);
-                  wxSetlocale(LC_NUMERIC,wxString(_T("C")));
+                  setlocale(LC_NUMERIC,"C");
+
+//                  wxSetlocale(LC_ALL, oldLocale);
+//                  wxSetlocale(LC_NUMERIC,wxString(_T("C")));
 
                   m_itemLangListBox->SetStringSelection(current_sel); //SetSelection(0);
 
