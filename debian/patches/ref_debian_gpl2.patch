@@ -2,9 +2,9 @@ Description: Use system's copy of GPL2.txt
 Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/about.cpp
 ===================================================================
---- opencpn.orig/src/about.cpp	2011-06-20 20:42:50.939910017 +1200
-+++ opencpn/src/about.cpp	2011-06-20 20:53:28.910938614 +1200
-@@ -298,8 +298,9 @@
+--- opencpn.orig/src/about.cpp	2011-06-29 21:34:10.223946190 +1200
++++ opencpn/src/about.cpp	2011-06-29 21:52:23.823174370 +1200
+@@ -299,8 +299,9 @@
  
        pLicenseTextCtl->SetDefaultStyle(ta);
        pLicenseTextCtl->Clear();

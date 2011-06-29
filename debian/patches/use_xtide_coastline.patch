@@ -4,9 +4,9 @@ Description: Depend on WVS coastline from Debian's xtide package instead
 Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/src/chart1.cpp
 ===================================================================
---- opencpn.orig/src/chart1.cpp	2011-06-20 20:42:50.955910181 +1200
-+++ opencpn/src/chart1.cpp	2011-06-20 20:53:11.075910208 +1200
-@@ -2312,8 +2312,9 @@
+--- opencpn.orig/src/chart1.cpp	2011-06-29 21:34:10.275910232 +1200
++++ opencpn/src/chart1.cpp	2011-06-29 21:51:42.763171105 +1200
+@@ -2328,8 +2328,9 @@
  
  
  //      Establish the WorldVectorShoreline Dataset location
@@ -20,9 +20,9 @@ Index: opencpn/src/chart1.cpp
  //      Reload the config data, to pick up any missing data class configuration info
 Index: opencpn/src/wvschart.cpp
 ===================================================================
---- opencpn.orig/src/wvschart.cpp	2011-06-20 20:42:50.987910788 +1200
-+++ opencpn/src/wvschart.cpp	2011-06-20 20:53:11.111949910 +1200
-@@ -51,7 +51,8 @@
+--- opencpn.orig/src/wvschart.cpp	2011-06-29 21:34:10.323339524 +1200
++++ opencpn/src/wvschart.cpp	2011-06-29 21:51:42.795910230 +1200
+@@ -50,7 +50,8 @@
  {
          pwvs_home_dir = new wxString(wvs_chart_home);
          pwvs_file_name = new wxString(*pwvs_home_dir);
