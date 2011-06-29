@@ -13,12 +13,18 @@ CXXFLAGS=-Wall -O3
 %:
 	dh  $@
 
+override_dh_auto_configure:
+	# Remove embedded stuff which will go unused
+	rm -rf $(CURDIR)/plugins/grib_pi/src/zlib-1.2.3/
+	rm -rf $(CURDIR)/plugins/grib_pi/src/bzip2/
+	# TODO:
+	#rm -f $(CURDIR)/include/tinyxml.h
+	#rm -f $(CURDIR)/include/tinystr.h
+	#rm -f $(CURDIR)/src/tinyxml*.cpp
+	#rm -f $(CURDIR)/src/tinystr.cpp
+	dh_auto_configure
+
 override_dh_install:
-	mkdir -p $(CURDIR)/debian/opencpn/usr/lib
-	mv -f $(CURDIR)/debian/tmp/usr/share/opencpn/plugins/* \
-		$(CURDIR)/debian/opencpn/usr/lib/opencpn-plugins/
-	rmdir $(CURDIR)/debian/tmp/usr/share/opencpn/plugins
-	
 	# WVS supplied by the xtide-coastline package
 	rm -rf $(CURDIR)/debian/tmp/usr/share/opencpn/wvsdata/
 	
@@ -37,4 +43,3 @@ override_dh_installdocs:
 	dh_installdocs
 	rm -rf $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/css/
 	rm -rf $(CURDIR)/debian/opencpn-doc/usr/share/doc/opencpn-doc/doc/js/
-

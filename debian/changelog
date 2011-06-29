@@ -1,10 +1,20 @@
-opencpn (2.4.620-1) unstable; urgency=low
+opencpn (2.4.628-1) unstable; urgency=low
+
+  * Packaged for upstream git beta version 2.4.628
+  * Drop plugin path patch (merged upstream)
+  * Reset unreleased package versions to x.y.z-0 in Debian changelog
+  * Remove some embedded files in the source package which are unused
+  * Closing ITP. (Closes: #538067)
+
+ -- Hamish B <hamish_b@yahoo.com>  Wed, 29 Jun 2011 20:56:53 +1200
+
+opencpn (2.4.620-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.620
 
  -- Hamish B <hamish_b@yahoo.com>  Mon, 20 Jun 2011 20:54:17 +1200
 
-opencpn (2.4.612-1) unstable; urgency=low
+opencpn (2.4.612-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.612
   * Add README.Debian
@@ -12,27 +22,27 @@ opencpn (2.4.612-1) unstable; urgency=low
 
  -- Hamish B <hamish_b@yahoo.com>  Mon, 20 Jun 2011 18:00:15 +1200
 
-opencpn (2.4.606-1) unstable; urgency=low
+opencpn (2.4.606-0) unstable; urgency=low
 
   * New upstream release.
 
  -- Francesco Paolo Lovergine <frankie@debian.org>  Tue, 07 Jun 2011 17:48:49 +0200
 
-opencpn (2.4.523-1) unstable; urgency=low
+opencpn (2.4.523-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.523
   * Zlib patch merged upstream
 
  -- Hamish B <hamish_b@yahoo.com>  Tue, 24 May 2011 20:09:18 +1200
 
-opencpn (2.4.506-1) unstable; urgency=low
+opencpn (2.4.506-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.506
   * A number of packaging cleanups based on pabs's mentor review
 
  -- Hamish B <hamish_b@yahoo.com>  Sun, 08 May 2011 16:42:40 +1200
 
-opencpn (2.4.423-1) unstable; urgency=low
+opencpn (2.4.423-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.423
   * Add some copyright notes
@@ -40,7 +50,7 @@ opencpn (2.4.423-1) unstable; urgency=low
 
  -- Hamish B <hamish_b@yahoo.com>  Mon, 25 Apr 2011 12:18:38 +1200
 
-opencpn (2.4.412-1) unstable; urgency=low
+opencpn (2.4.412-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.412
   * Move to new DebianGIS email address
@@ -54,20 +64,20 @@ opencpn (2.4.412-1) unstable; urgency=low
 
  -- Hamish B <hamish_b@yahoo.com>  Wed, 20 Apr 2011 17:56:57 +1200
 
-opencpn (2.2.918-1) unstable; urgency=low
+opencpn (2.2.918-0) unstable; urgency=low
 
   * Packaged for upstream git patch version 2.2.918
   * desktop-entry-spec.patch has been applied upstream
 
  -- Anton Martchukov <anton@martchukov.com>  Tue, 28 Sep 2010 15:58:27 +0400
 
-opencpn (2.1.624a-1) unstable; urgency=low
+opencpn (2.1.624a-0) unstable; urgency=low
 
   * Packaged for new upstream release 2.1.624a 
 
  -- Anton Martchukov <anton@martchukov.com>  Sat, 26 Jun 2010 22:03:15 +0400
 
-opencpn (2.1.624-1) unstable; urgency=low
+opencpn (2.1.624-0) unstable; urgency=low
 
   * Packaged for new upstream release 2.1.624
   * fix-gsocket.patch has been applied upstream 
@@ -75,7 +85,7 @@ opencpn (2.1.624-1) unstable; urgency=low
 
  -- Anton Martchukov <anton@martchukov.com>  Sat, 26 Jun 2010 02:17:46 +0400
 
-opencpn (1.3.6-1) unstable; urgency=low
+opencpn (1.3.6-0) unstable; urgency=low
 
   * Initial release
 
