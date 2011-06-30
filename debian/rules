@@ -18,11 +18,8 @@ override_dh_auto_configure:
 	# Remove embedded stuff which will go unused
 	rm -rf $(CURDIR)/plugins/grib_pi/src/zlib-1.2.3/
 	rm -rf $(CURDIR)/plugins/grib_pi/src/bzip2/
-	# TODO:
-	#rm -f $(CURDIR)/include/tinyxml.h
-	#rm -f $(CURDIR)/include/tinystr.h
-	#rm -f $(CURDIR)/src/tinyxml*.cpp
-	#rm -f $(CURDIR)/src/tinystr.cpp
+	rm -f $(CURDIR)/include/tinyxml.h
+	rm -f $(CURDIR)/src/tinyxml*.cpp
 	dh_auto_configure
 
 override_dh_install:

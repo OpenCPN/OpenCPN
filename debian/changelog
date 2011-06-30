@@ -4,6 +4,7 @@ opencpn (2.4.628-1) unstable; urgency=low
   * Drop plugin path patch (merged upstream)
   * Reset unreleased package versions to x.y.z-0 in Debian changelog
   * Remove some embedded files in the source package which are unused
+  * Use system's TinyXML instead of embedded copy
   * Closing ITP. (Closes: #538067)
 
  -- Hamish B <hamish_b@yahoo.com>  Wed, 29 Jun 2011 20:56:53 +1200

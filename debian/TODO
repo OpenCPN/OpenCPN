@@ -1,4 +1,0 @@
--Build-Depend on libtinyxml-dev and add any patches needed to build against the system version.
-  -at the start of the debian/rules file, rm unused embedded source files, rendering them unusable.
-
-

@@ -1,0 +1,41 @@
+Description: Use system's copy of the TinyXML library
+Author: Hamish B <hamish_b yahoo com>
+Index: opencpn/CMakeLists.txt
+===================================================================
+--- opencpn.orig/CMakeLists.txt	2011-06-30 14:40:47.014926145 +1200
++++ opencpn/CMakeLists.txt	2011-06-30 14:42:57.935949014 +1200
+@@ -126,6 +126,8 @@
+     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
+     FIND_PACKAGE(ZLIB REQUIRED)
+     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
++    FIND_PACKAGE(TinyXML REQUIRED)
++    INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
+ ENDIF(UNIX)
+ 
+ # For convenience we define the sources as a variable. You can add 
+@@ -224,7 +226,6 @@
+                 include/pluginmanager.h
+                 include/ocpn_plugin.h
+ 		include/tinystr.h
+-		include/tinyxml.h
+ 		include/gpxdocument.h
+ )
+ 
+@@ -251,9 +252,6 @@
+ 		src/about.cpp
+ 		src/ais.cpp
+                 src/pluginmanager.cpp
+-		src/tinyxml.cpp
+-		src/tinyxmlerror.cpp
+-		src/tinyxmlparser.cpp
+ 		src/tinystr.cpp
+ 		src/gpxdocument.cpp
+     )
+@@ -606,6 +604,7 @@
+       ${GETTEXT_LIBRARY}
+       ${BZIP2_LIBRARIES}
+       ${ZLIB_LIBRARY}
++      ${TINYXML_LIBRARIES}
+ )
+ ENDIF(UNIX)
+ 
