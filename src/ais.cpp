@@ -3544,8 +3544,15 @@ bool AISTargetAlertDialog::Create ( int target_mmsi,
       m_pdecoder = pdecoder;
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetAlert"), 12);
-      SetFont ( *dFont );
-      m_pFont = dFont;
+      int font_size = wxMax(8, dFont->GetPointSize());
+      wxString face;
+#ifdef __WXGTK__
+      face = _T("Monospace");
+#endif
+      wxFont *fp_font = wxTheFontList->FindOrCreateFont(font_size,
+                  wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face);
+
+      SetFont ( *fp_font );
 
       wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
       SetBackgroundColour ( back_color );
