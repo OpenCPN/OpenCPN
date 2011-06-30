@@ -168,6 +168,9 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_I_RSA:
       case ID_DBP_I_SAT:
       case ID_DBP_I_PTR:
+      case ID_DBP_I_CLK:
+      case ID_DBP_I_SUN:
+      case ID_DBP_I_MON:
             item.SetImage(0);
             break;
       case ID_DBP_D_SOG:
@@ -181,12 +184,6 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_D_RSA:
       case ID_DBP_D_GPS:
             item.SetImage(1);
-            break;
-      case ID_DBP_I_CLK:
-            break;
-      case ID_DBP_I_SUN:
-            break;
-      case ID_DBP_I_MON:
             break;
       }
 }

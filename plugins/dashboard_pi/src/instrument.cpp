@@ -363,6 +363,8 @@ wxDateTime convHrmn(double dhr) {
       int hr,mn;
       hr = (int) dhr;
       mn = (dhr - (double) hr)*60;
+      if(hr >= 24)
+         hr -= 24;
       return wxDateTime(hr, mn);
 };
 
