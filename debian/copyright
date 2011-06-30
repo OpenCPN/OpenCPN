@@ -41,3 +41,6 @@ The Debian packaging is:
     Copyright (C) 2010-2011 Anton Martchukov <anton@martchukov.com>,
     and the DebianGIS team.
 
+The FindTinyXML.cmake file in the Debian packaging is (c) 2006-2008 The EVEmu
+Team, GPL>=2.   http://trac.evemu.org
+

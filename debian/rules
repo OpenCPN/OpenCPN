@@ -11,9 +11,10 @@ CFLAGS=-Wall
 CXXFLAGS=-Wall -O3
 
 %:
-	dh  $@
+	dh $@ --parallel
 
 override_dh_auto_configure:
+	cp -f $(CURDIR)/debian/cmake_Modules/FindTinyXML.cmake $(CURDIR)/
 	# Remove embedded stuff which will go unused
 	rm -rf $(CURDIR)/plugins/grib_pi/src/zlib-1.2.3/
 	rm -rf $(CURDIR)/plugins/grib_pi/src/bzip2/
