@@ -38,6 +38,57 @@ ENDIF(APPLE)
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
+#Red Hat:   /etc/redhat-release
+#Slackware: /etc/slackware-version
+#Slamd64:   /etc/slamd64-version
+#Gentoo: /etc/gentoo-release
+#Ubuntu: /etc/debian_version
+
+# TODO: Should PREFIX be set as well?
+# Based on code from nohal
+IF (NOT WIN32)
+  # default
+  SET (ARCH "i386")
+  SET (LIB_INSTALL_DIR "lib")
+  IF (EXISTS /etc/debian_version)
+    SET (PACKAGE_FORMAT "DEB")
+    SET (PACKAGE_DEPS "libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2")
+    SET (LIB_INSTALL_DIR "lib")
+    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "amd64")
+#      SET (LIB_INSTALL_DIR "lib64")
+    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "i386")
+    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+  ENDIF (EXISTS /etc/debian_version)
+  IF (EXISTS /etc/redhat-release)
+    SET (PACKAGE_FORMAT "RPM")
+    SET (PACKAGE_DEPS  "wxGTK mesa-libGLU mesa-libGL gettext zlib bzip2")
+    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "x86_64")
+      SET (LIB_INSTALL_DIR "lib64")
+    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "i386")
+      SET (LIB_INSTALL_DIR "lib")
+    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+  ENDIF (EXISTS /etc/redhat-release)
+  IF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+    SET (PACKAGE_FORMAT "RPM")
+    SET (PACKAGE_DEPS  "wxWidgets-wxcontainer MesaGLw libbz2")
+    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "x86_64")
+      SET (LIB_INSTALL_DIR "lib64")
+    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET (ARCH "i386")
+      SET (LIB_INSTALL_DIR "lib")
+    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+  ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+ELSE (NOT WIN32)
+  # On WIN32 probably CMAKE_SIZEOF_VOID_P EQUAL 8, but we don't use it at all now...
+  SET (ARCH "i386")
+ENDIF (NOT WIN32)
+
+SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
@@ -58,13 +109,6 @@ INCLUDE(${wxWidgets_USE_FILE})
 #  Search for wxWidgets 2.9
 STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
 
-MESSAGE (STATUS "")
-
-
-
-IF(NOT SKIP_PLUGINS)
- add_subdirectory (plugins)
-ENDIF(NOT SKIP_PLUGINS)
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME}  ***")
@@ -78,9 +122,7 @@ SET(PREFIX_BIN bin)
 SET(PREFIX_INCLUDE include)
 SET(PREFIX_DATA share)
 SET(PREFIX_PKGDATA ${PREFIX_DATA}/${PACKAGE_NAME})
-IF (NOT ARCH)
-	SET(ARCH "i386")
-ENDIF (NOT ARCH)
+SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 
@@ -110,13 +152,23 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
+    MESSAGE (STATUS "Found GTK2")
     INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+ELSE(GTK2_FOUND)
+    MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
 
 FIND_PACKAGE(OpenGL REQUIRED)
-# OPENGL_GLU_FOUND
+IF(OPENGL_GLU_FOUND)
+    MESSAGE (STATUS "Found OpenGL..." )
+    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+ELSE(OPENGL_GLU_FOUND)
+    MESSAGE (STATUS "OpenGL not found..." )
+ENDIF(OPENGL_GLU_FOUND)
+
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
 FIND_PACKAGE(Gettext REQUIRED)
@@ -126,6 +178,7 @@ IF(UNIX)
     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
     FIND_PACKAGE(ZLIB REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+    FIND_PACKAGE(TinyXML)
 ENDIF(UNIX)
 
 # For convenience we define the sources as a variable. You can add 
@@ -224,7 +277,6 @@ SET(HDRS
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 		include/tinystr.h
-		include/tinyxml.h
 		include/gpxdocument.h
 )
 
@@ -251,9 +303,6 @@ SET(SRCS
 		src/about.cpp
 		src/ais.cpp
                 src/pluginmanager.cpp
-		src/tinyxml.cpp
-		src/tinyxmlerror.cpp
-		src/tinyxmlparser.cpp
 		src/tinystr.cpp
 		src/gpxdocument.cpp
     )
@@ -267,6 +316,21 @@ ENDIF(wx_Version MATCHES "2.9")
 SET(PACKAGE_HEADERS ""
 #	include/ais.h
 )
+
+SET(SRC_TINYXML
+            src/tinyxml.cpp
+            src/tinyxmlerror.cpp
+            src/tinyxmlparser.cpp
+            include/tinyxml.h
+      )
+
+IF(TINYXML_FOUND)
+    INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
+ELSE(TINYXML_FOUND)
+  SET(SRCS ${SRCS} ${SRC_TINYXML})
+ENDIF(TINYXML_FOUND)
+
+
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
@@ -606,7 +670,12 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${GETTEXT_LIBRARY}
       ${BZIP2_LIBRARIES}
       ${ZLIB_LIBRARY}
-)
+      )
+
+IF(TINYXML_FOUND)
+   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES} )
+ENDIF(TINYXML_FOUND)
+
 ENDIF(UNIX)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
@@ -772,6 +841,12 @@ INSTALL(DIRECTORY buildwin/vc9/ DESTINATION ".\\\\vc9" )
 ENDIF(WIN32 AND NOT UNIX)
 
 
+MESSAGE (STATUS "")
+
+IF(NOT SKIP_PLUGINS)
+ add_subdirectory (plugins)
+ENDIF(NOT SKIP_PLUGINS)
+
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
 SET(CPACK_PACKAGE_NAME "OpenCPN")
@@ -818,7 +893,7 @@ ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
   SET(CPACK_STRIP_FILES "bin/opencpn.exe")
   SET(CPACK_SOURCE_STRIP_FILES "")
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-1_${ARCH}" )
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
 
 ENDIF(WIN32 AND NOT UNIX)
 
@@ -867,18 +942,18 @@ IF(UNIX AND NOT APPLE)
 #    ENDIF(RPMTools_FOUND)
 
  
-    SET(CPACK_GENERATOR "DEB;RPM")
+    SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "Dave Register <bdbcat@yahoo.com>")
-    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
     SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
     SET(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
     SET(CPACK_DEBIAN_PACKAGE_SECTION "Miscellaneous")
     SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
     SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
-    SET(CPACK_RPM_PACKAGE_REQUIRES  "wxGTK mesa-libGLU mesa-libGL gettext zlib bzip2")
+    SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An OpenSource Chart Plotter/Navigator")
     SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
-    SET(CPACK_SET_DESTDIR ON)
+    #SET(CPACK_SET_DESTDIR ON)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
 ENDIF(UNIX AND NOT APPLE)
