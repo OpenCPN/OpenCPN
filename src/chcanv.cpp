@@ -6643,38 +6643,44 @@ void ChartCanvas::PanTimerEvent ( wxTimerEvent& event )
 bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
 {
       bool bft = false;
-      int pan_margin = 20;
-      int pan_timer_set = 100;
+      int pan_margin = m_canvas_width  * 5/100;
+      int pan_timer_set = 200;
       double pan_delta = GetVP().pix_width / 50;
+      int pan_x = 0;
+      int pan_y = 0;
 
-      wxPoint np(GetVP().pix_width  / 2, GetVP().pix_height / 2 );
+//      wxPoint np(GetVP().pix_width  / 2, GetVP().pix_height / 2 );
 
       if ( x > m_canvas_width - pan_margin )
       {
-            np.x += (int)pan_delta;
+//            np.x += (int)pan_delta;
             bft = true;
+            pan_x = pan_delta;
       }
 
       else if ( x < pan_margin )
       {
-            np.x -= (int)pan_delta;
+//            np.x -= (int)pan_delta;
             bft = true;
+            pan_x = -pan_delta;
       }
 
       if ( y < pan_margin )
       {
-            np.y -= (int)pan_delta;
+//            np.y -= (int)pan_delta;
             bft = true;
+            pan_y = -pan_delta;
       }
 
       else if ( y > m_canvas_height - pan_margin )
       {
-            np.y += (int)pan_delta;
+//            np.y += (int)pan_delta;
             bft = true;
+            pan_y = pan_delta;
       }
 
-      double new_lat, new_lon;
-      GetCanvasPixPoint ( np.x, np.y, new_lat, new_lon );
+//      double new_lat, new_lon;
+//      GetCanvasPixPoint ( np.x, np.y, new_lat, new_lon );
 
       //    Of course, if dragging, and the mouse left button is not down, we must stop the event injection
       if(bdragging)
@@ -6686,6 +6692,7 @@ bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
 
         if ( ( bft ) && !pPanTimer->IsRunning() )
         {
+/*
               if(new_lon > 360.) new_lon -= 360.;
               if(new_lon < -360.) new_lon += 360.;
 
@@ -6696,6 +6703,8 @@ bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
                 vLon = new_lon;
 
                 ClearbFollow();      // update the follow flag
+*/
+                PanCanvas(pan_x, pan_y);
 
                 pPanTimer->Start ( pan_timer_set, wxTIMER_ONE_SHOT );
                 return true;
@@ -6973,6 +6982,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         if(m_pAISRolloverWin && m_pAISRolloverWin->IsShown() && !showRollover)
               m_pAISRolloverWin->Hide();
 
+/*    This logic removed for 2.5 Release
+      Not needed since Toolbar is TopLevelWindow instead of child of canvas.
 
         // This is a special, platform dependent situation.
         // If the user (accidentally) drags a route point out of the chart canvas,
@@ -7027,10 +7038,12 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
               m_bRouteEditing = false;
               m_pRoutePointEditTarget = NULL;
 
+
               gFrame->SurfaceToolbar();
 
         }
 
+*/
 
 //          Mouse Clicks
 
