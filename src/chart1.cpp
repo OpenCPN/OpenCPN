@@ -3410,6 +3410,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if (g_bShowTrackIcon)
           tb->ToggleTool(ID_TRACK, g_bTrackActive);
 
+    m_AIS_bmp_hash_index_last = _T("");
+
      SetStatusBarPane(-1);                   // don't show help on status bar
 
     return tb;
@@ -6074,10 +6076,7 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
             if(!tb_rect.Intersects(tentative_rect))
             {
                   wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x - 6, 0);
-                  wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
-                  wxPoint pos_in_frame = ScreenToClient(pos_abs);
-
-                  g_FloatingCompassDialog->Move(pos_in_frame);
+                  g_FloatingCompassDialog->Move(posn_in_canvas);
             }
 
 
@@ -6087,18 +6086,12 @@ void MyFrame::UpdateGPSCompassStatusBox(bool b_force_new)
                   if(cd_rect.y > 200)           // assuming now at the bottom left
                   {
                         wxPoint posn_in_canvas = wxPoint(cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x - 6, 0);
-                        wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
-                        wxPoint pos_in_frame = ScreenToClient(pos_abs);
-
-                        g_FloatingCompassDialog->Move(pos_in_frame);
+                        g_FloatingCompassDialog->Move(posn_in_canvas);
                   }
                   else
                   {
                         wxPoint posn_in_canvas = wxPoint(5, cc1->GetSize().y - (g_FloatingCompassDialog->GetSize().y + 4));
-                        wxPoint pos_abs = cc1->ClientToScreen(posn_in_canvas);
-                        wxPoint pos_in_frame = ScreenToClient(pos_abs);
-
-                        g_FloatingCompassDialog->Move(pos_in_frame);
+                        g_FloatingCompassDialog->Move(posn_in_canvas);
                   }
                   b_update = true;
             }
