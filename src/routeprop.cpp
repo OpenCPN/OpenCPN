@@ -402,7 +402,7 @@ void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
             if ( IsThisRouteExtendable() ) {
                   int fm = m_pExtendRoute->GetIndexOf(m_pExtendPoint)+1;
                   int to = m_pExtendRoute->GetnPoints();
-                  if (fm < to) {
+                  if (fm <= to) {
                         pSelect->DeleteAllSelectableRouteSegments ( m_pRoute );
                         m_pRoute->CloneRoute(m_pExtendRoute, fm, to, _("_plus"));
                         pSelect->AddAllSelectableRouteSegments ( m_pRoute );
@@ -481,7 +481,7 @@ bool RouteProp::IsThisRouteExtendable()
                   Route *p = (Route *)pEditRouteArray->Item(0);
                   int fm = p->GetIndexOf(m_pExtendPoint)+1;
                   int to = p->GetnPoints();
-                  if (fm < to) {
+                  if (fm <= to) {
                         m_pExtendRoute = p;
                         delete pEditRouteArray;
                         return true;
