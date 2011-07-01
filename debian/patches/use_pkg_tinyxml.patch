@@ -2,8 +2,8 @@ Description: Use system's copy of the TinyXML library
 Author: Hamish B <hamish_b yahoo com>
 Index: opencpn/CMakeLists.txt
 ===================================================================
---- opencpn.orig/CMakeLists.txt	2011-06-30 14:40:47.014926145 +1200
-+++ opencpn/CMakeLists.txt	2011-06-30 14:42:57.935949014 +1200
+--- opencpn.orig/CMakeLists.txt	2011-07-01 11:55:11.290937381 +1200
++++ opencpn/CMakeLists.txt	2011-07-01 15:23:02.090948646 +1200
 @@ -126,6 +126,8 @@
      INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
      FIND_PACKAGE(ZLIB REQUIRED)
@@ -13,25 +13,27 @@ Index: opencpn/CMakeLists.txt
  ENDIF(UNIX)
  
  # For convenience we define the sources as a variable. You can add 
-@@ -224,7 +226,6 @@
+@@ -223,8 +225,6 @@
+ 		include/ais.h
                  include/pluginmanager.h
                  include/ocpn_plugin.h
- 		include/tinystr.h
+-		include/tinystr.h
 -		include/tinyxml.h
  		include/gpxdocument.h
  )
  
-@@ -251,9 +252,6 @@
+@@ -251,10 +251,6 @@
  		src/about.cpp
  		src/ais.cpp
                  src/pluginmanager.cpp
 -		src/tinyxml.cpp
 -		src/tinyxmlerror.cpp
 -		src/tinyxmlparser.cpp
- 		src/tinystr.cpp
+-		src/tinystr.cpp
  		src/gpxdocument.cpp
      )
-@@ -606,6 +604,7 @@
+ 
+@@ -606,6 +602,7 @@
        ${GETTEXT_LIBRARY}
        ${BZIP2_LIBRARIES}
        ${ZLIB_LIBRARY}
@@ -39,3 +41,15 @@ Index: opencpn/CMakeLists.txt
  )
  ENDIF(UNIX)
  
+Index: opencpn/include/gpxdocument.h
+===================================================================
+--- opencpn.orig/include/gpxdocument.h	2011-07-01 15:25:22.290911324 +1200
++++ opencpn/include/gpxdocument.h	2011-07-01 15:25:34.522922563 +1200
+@@ -29,7 +29,6 @@
+ 
+ #include <wx/wx.h>
+ #include <tinyxml.h>
+-#include <tinystr.h>
+ #include <stdio.h>
+ 
+ const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it
