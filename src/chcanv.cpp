@@ -730,6 +730,8 @@ ChartBase *Quilt::GetFirstChart()
       m_bbusy = true;
       ChartBase *pret = NULL;
       cnode = m_PatchList.GetFirst();
+      while(cnode && !cnode->GetData()->b_Valid)
+            cnode = cnode->GetNext();
       if(cnode && cnode->GetData()->b_Valid)
             pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
 
@@ -752,6 +754,8 @@ ChartBase *Quilt::GetNextChart()
       m_bbusy = true;
       ChartBase *pret = NULL;
       cnode = cnode->GetNext();
+      while(cnode && !cnode->GetData()->b_Valid)
+            cnode = cnode->GetNext();
       if(cnode && cnode->GetData()->b_Valid)
             pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
 
@@ -1420,7 +1424,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             while ( upd )
             {
                   wxRect rect = upd.GetRect();
-                  printf("  chart_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                  printf("  Ref chart_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
                   upd ++ ;
             }
 */
@@ -1441,7 +1445,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       while ( updd )
       {
             wxRect rect = updd.GetRect();
-            printf("  vp_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+            printf("  Region left to fill: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
             updd ++ ;
       }
 */
@@ -1486,7 +1490,15 @@ bool Quilt::Compose(const ViewPort &vp_in)
                               wxRegion chart_region = GetChartQuiltRegion(cte, vp_local);
                               if(!chart_region.Empty())
                                     vpu_region.Intersect(chart_region);
-
+/*
+                              wxRegionIterator updd ( vpu_region );
+                              while ( updd )
+                              {
+                                    wxRect rect = updd.GetRect();
+                                    printf("      Candidate region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                                    updd ++ ;
+                              }
+*/
                               if(vpu_region.IsEmpty())
                                     pqc->b_include = false;                     // skip this chart, no true overlap
                               else
@@ -1510,7 +1522,15 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   //    Adding needs to be deferred........
                   if(cte.GetChartType() == CHART_TYPE_CM93COMP)
                         pqc->b_include = false;                         // skip for now
-
+/*
+                  wxRegionIterator updd ( vp_region );
+                  while ( updd )
+                  {
+                        wxRect rect = updd.GetRect();
+                        printf("  Further Region left to fill: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+                        updd ++ ;
+                  }
+*/
       /// Don't break early if the quilt is S57 ENC
       /// This will allow the overlay cells found in Euro(Austrian) IENC to be included
                   if(1/*CHART_TYPE_S57 != m_reference_type*/)
@@ -1545,17 +1565,38 @@ bool Quilt::Compose(const ViewPort &vp_in)
       //    Potentially add cm93 to the candidate array if the region is not yet fully covered
       if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty())
       {
-            //    Walk the current ChartStack to find cm93
-            for(int ics=0 ; ics < n_charts ; ics++)
+            //    Check the remaining unpainted region.
+            //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
+            //    with the quilt.  If this is the case, do not waste time loading cm93....
+
+            bool b_must = false;
+            wxRegionIterator updd ( vp_region );
+            while ( updd )
             {
-                  int i = pCurrentStack->GetDBIndex(ics);
-                  if(CHART_TYPE_CM93COMP == ChartData->GetDBChartType(i))
+                  wxRect rect = updd.GetRect();
+                  if((rect.width > 2) && (rect.height > 2))
                   {
-                        QuiltCandidate *qcnew = new QuiltCandidate;
-                        qcnew->dbIndex = i;
-                        qcnew->ChartScale = ChartData->GetDBChartScale(i);
-                        m_pcandidate_array->Add(qcnew);
+                        b_must = true;
                         break;
+                  }
+                  updd ++ ;
+            }
+
+            if(b_must)
+            {
+
+
+                  for(int ics=0 ; ics < n_charts ; ics++)
+                  {
+                        int i = pCurrentStack->GetDBIndex(ics);
+                        if(CHART_TYPE_CM93COMP == ChartData->GetDBChartType(i))
+                        {
+                              QuiltCandidate *qcnew = new QuiltCandidate;
+                              qcnew->dbIndex = i;
+                              qcnew->ChartScale = ChartData->GetDBChartScale(i);
+                              m_pcandidate_array->Add(qcnew);
+                              break;
+                        }
                   }
             }
       }
@@ -3547,10 +3588,11 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         break;
 
                   case WXK_F3:
+                  {
                         parent_frame->ToggleENCText();
                         b_proc = true;
-
                         break;
+                  }
                   case WXK_F4:
                         m_bMeasure_Active = true;
                         m_nMeasureState = 1;
@@ -4274,7 +4316,7 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       return true;
 }
 
-void ChartCanvas::ReloadVP ( void )
+void ChartCanvas::ReloadVP ( bool b_adjust )
 {
       m_cache_vp.Invalidate();
       m_bm_cache_vp.Invalidate();
@@ -4284,7 +4326,7 @@ void ChartCanvas::ReloadVP ( void )
       if(m_pQuilt)
             m_pQuilt->Invalidate();
 
-      SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
+      SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, b_adjust );
 
 }
 
@@ -4308,7 +4350,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon)
 }
 
 
-bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, double skew, double rotation )
+bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust )
 {
         //  Any sensible change?
       if((fabs(VPoint.view_scale_ppm - scale_ppm) < 1e-9)
@@ -4352,7 +4394,8 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
               //  Allow the chart to adjust the new ViewPort for performance optimization
               //  This will normally be only a fractional (i.e.sub-pixel) adjustment...
-            Current_Ch->AdjustVP(last_vp, VPoint);
+            if(b_adjust)
+                  Current_Ch->AdjustVP(last_vp, VPoint);
 
             // If there is a sensible change in the chart render, refresh the whole screen
             if (( !m_cache_vp.IsValid()) || (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm))
@@ -4476,7 +4519,8 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 //                        printf("---Quilt:Compose and Refresh\n");
               //  Allow the quilt to adjust the new ViewPort for performance optimization
               //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
-                        m_pQuilt->AdjustQuiltVP(last_vp/*m_pQuilt->GetQuiltVP()*/, VPoint);
+                        if(b_adjust)
+                              m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
                         m_pQuilt->Compose(VPoint);
                         Refresh(false);
                   }
@@ -6649,38 +6693,31 @@ bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
       int pan_x = 0;
       int pan_y = 0;
 
-//      wxPoint np(GetVP().pix_width  / 2, GetVP().pix_height / 2 );
 
       if ( x > m_canvas_width - pan_margin )
       {
-//            np.x += (int)pan_delta;
             bft = true;
             pan_x = pan_delta;
       }
 
       else if ( x < pan_margin )
       {
-//            np.x -= (int)pan_delta;
             bft = true;
             pan_x = -pan_delta;
       }
 
       if ( y < pan_margin )
       {
-//            np.y -= (int)pan_delta;
             bft = true;
             pan_y = -pan_delta;
       }
 
       else if ( y > m_canvas_height - pan_margin )
       {
-//            np.y += (int)pan_delta;
             bft = true;
             pan_y = pan_delta;
       }
 
-//      double new_lat, new_lon;
-//      GetCanvasPixPoint ( np.x, np.y, new_lat, new_lon );
 
       //    Of course, if dragging, and the mouse left button is not down, we must stop the event injection
       if(bdragging)
@@ -6692,18 +6729,6 @@ bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
 
         if ( ( bft ) && !pPanTimer->IsRunning() )
         {
-/*
-              if(new_lon > 360.) new_lon -= 360.;
-              if(new_lon < -360.) new_lon += 360.;
-
-                SetViewPoint ( new_lat, new_lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
-                Refresh ( false );
-
-                vLat = new_lat;
-                vLon = new_lon;
-
-                ClearbFollow();      // update the follow flag
-*/
                 PanCanvas(pan_x, pan_y);
 
                 pPanTimer->Start ( pan_timer_set, wxTIMER_ONE_SHOT );
@@ -10446,12 +10471,12 @@ wxBitmap *ChartCanvas::DrawTCCBitmap ( wxDC *pbackground_dc, bool bAddNewSelpoin
 
 
 
-
+extern bool g_bTrackActive;
 
 void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion )
 {
         Route *active_route = NULL;
-
+        Route *active_track = NULL;
         dc.DestroyClippingRegion();
         wxDCClipper(dc, clipregion);
         wxRouteListNode *node = pRouteList->GetFirst();
@@ -10466,7 +10491,15 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
                       {
                             Track *trk = (Track *)pRouteDraw;
                             if(trk->IsRunning())
+                            {
                                   b_run = true;
+                                  active_track = pRouteDraw;
+                            }
+
+                            if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
+                                  active_route = pRouteDraw;
+
+
                       }
 
                       wxBoundingBox test_box = pRouteDraw->RBBox;
@@ -10478,9 +10511,7 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
                       {
                               b_drawn = true;
 
-                              if(pRouteDraw->IsActive() || pRouteDraw->IsSelected() || b_run)
-                                    active_route = pRouteDraw;
-                              else
+                              if((pRouteDraw != active_route) && (pRouteDraw != active_track))
                                     pRouteDraw->Draw ( dc, GetVP() );
                       }
                       else if(pRouteDraw->CrossesIDL())
@@ -10494,9 +10525,7 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
                               if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
                               {
                                     b_drawn = true;
-                                    if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
-                                          active_route = pRouteDraw;
-                                    else
+                                    if((pRouteDraw != active_route) && (pRouteDraw != active_track))
                                           pRouteDraw->Draw ( dc, GetVP() );
                               }
                       }
@@ -10512,9 +10541,7 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
                                     if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
                                     {
                                           b_drawn = true;
-                                          if(pRouteDraw->IsActive() || pRouteDraw->IsSelected())
-                                                active_route = pRouteDraw;
-                                          else
+                                          if((pRouteDraw != active_route) && (pRouteDraw != active_track))
                                                 pRouteDraw->Draw ( dc, GetVP() );
                                     }
                              }
@@ -10527,6 +10554,8 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
         //  Draw any active or selected route (or track) last, so that is is always on top
         if(active_route)
               active_route->Draw ( dc, GetVP() );
+        if(active_track)
+              active_track->Draw ( dc, GetVP() );
 }
 
 void ChartCanvas::DrawAllWaypointsInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly )

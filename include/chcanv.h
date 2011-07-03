@@ -156,10 +156,10 @@ public:
 
       bool Do_Hotkeys(wxKeyEvent &event);
 
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation);
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       void SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
-      void ReloadVP ( void );
+      void ReloadVP ( bool b_adjust = true );
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
