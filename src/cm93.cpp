@@ -5332,6 +5332,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 {
 
 //      CALLGRIND_START_INSTRUMENTATION
+      ::wxBeginBusyCursor();
 
       if(g_bDebugCM93)
       {
@@ -5613,6 +5614,8 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
                   }
             }
       }
+
+      ::wxEndBusyCursor();
 
       return render_return;
 }
