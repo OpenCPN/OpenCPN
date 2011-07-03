@@ -1865,7 +1865,7 @@ void *OCP_NMEA_Thread::Entry()
 
             if(newdata > 0)
             {
-      //              printf("%c", next_byte);
+//                    printf("%c", next_byte);
 
                   nl_found = false;
 
@@ -2018,6 +2018,7 @@ void *OCP_NMEA_Thread::Entry()
 
       DWORD dwRead;
 
+      m_n_timeout = 0;                // reset the timeout counter
 
 //    The main loop
 
@@ -2038,6 +2039,8 @@ void *OCP_NMEA_Thread::Entry()
                   if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) > 0)
                   {
                         hSerialComm = (HANDLE)m_gps_fd;
+                        m_n_timeout = 0;                             // reset the timeout counter
+
                   }
                   else
                   {
@@ -2061,6 +2064,8 @@ void *OCP_NMEA_Thread::Entry()
                   if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) > 0)
                   {
                         hSerialComm = (HANDLE)m_gps_fd;
+                        m_n_timeout = 0;                           // reset the timeout counter
+
                   }
                   else
                   {
@@ -2123,11 +2128,11 @@ void *OCP_NMEA_Thread::Entry()
                                           nl_found = false;
                                           fWaitingOnRead = FALSE;
                                     }
-                                  else
-             // Read completed successfully.
-                                    goto HandleASuccessfulRead;
-
-                                  break;
+                                    else
+                                    {
+                                           goto HandleASuccessfulRead;             // Read completed successfully.
+                                    }
+                                    break;
 
                               case WAIT_TIMEOUT:
                                     if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
@@ -2137,10 +2142,23 @@ void *OCP_NMEA_Thread::Entry()
                                           msg.Printf(_T("NMEA timeout"));
                                           ThreadMessage(msg);
                                     }
+
+                                    m_n_timeout++;
+                                    if(m_n_timeout > 5)             //5 x 2000 msec
+                                    {
+                                          dwRead = 0;
+                                          nl_found = false;
+                                          fWaitingOnRead = FALSE;
+                                    }
                                     break;
 
-                              default:
-                                  break;
+                              default:                // Reset the port on all unhandled return values....
+                                    m_pCommMan->CloseComPort(m_gps_fd);
+                                    m_gps_fd = NULL;
+                                    dwRead = 0;
+                                    nl_found = false;
+                                    fWaitingOnRead = FALSE;
+                                    break;
                         }     // switch
                   }           // while
             }                 // if
@@ -2152,7 +2170,8 @@ HandleASuccessfulRead:
 
             if(dwRead > 0)
             {
-                  if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
+                 m_n_timeout = 0;                // reset the timeout counter
+                 if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
                   {
                         g_total_NMEAerror_messages++;
                         wxString msg;

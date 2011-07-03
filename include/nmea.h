@@ -314,6 +314,7 @@ private:
 
       int                     m_gps_fd;
       int                     m_baud;
+      int                     m_n_timeout;
 
 
 };
