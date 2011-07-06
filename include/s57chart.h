@@ -206,6 +206,9 @@ public:
       virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
       virtual void BuildDepthContourArray(void);
+      int ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
+                                   wxString &LastUpdateDate, bool b_copyfiles);
+      wxString GetISDT(void);
 
 private:
 
@@ -241,7 +244,6 @@ private:
       void FreeObjectsAndRules();
       const char *getName(OGRFeature *feature);
       int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles);
-      int ValidateAndCountUpdates( const wxFileName file000, const wxString SENCDir, wxString &LastUpdateDate);
 
 
 

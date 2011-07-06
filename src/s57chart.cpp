@@ -2204,6 +2204,9 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     {
           if(fn.GetExt() == _T("000"))
           {
+                if(!GetBaseFileAttr(fn))
+                      ret_value = INIT_FAIL_REMOVE;
+
                 if(!CreateHeaderDataFromENC())
                       ret_value = INIT_FAIL_REMOVE;
                 else
@@ -3399,7 +3402,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFile
                         {
 //          We must check the update file for validity
 //          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
-//          2.  Is update file DSID.ISDT greter than or equal to base .000 file DSID:ISDT
+//          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
 
                               wxDateTime umdate;
                               wxString sumdate;
@@ -3499,7 +3502,8 @@ int s57chart::GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFile
 }
 
 
-int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString SENCDir, wxString &LastUpdateDate)
+int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
+                                        wxString &LastUpdateDate, bool b_copyfiles)
 {
 
         int retval = 0;
@@ -3522,81 +3526,89 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
             //      ogr file open/ingest.  Delete after SENC file create finishes.
             //      Set starts with .000, which has the effect of copying the base file to the working dir
 
-
-            m_tmpup_array = new wxArrayString;                // save a list of created files for later erase
-
-            for(int iff=0 ; iff < retval+1 ; iff++)
+            if(b_copyfiles)
             {
-                wxFileName ufile(m_FullPath);
-                wxString sext;
-                sext.Printf(_T("%03d"), iff);
-                ufile.SetExt(sext);
+                  m_tmpup_array = new wxArrayString;                // save a list of created files for later erase
 
-                //      Create the target update file name
-                wxString cp_ufile = SENCDir;
-                if(cp_ufile.Last() != ufile.GetPathSeparator())
-                     cp_ufile.Append(ufile.GetPathSeparator());
+                  for(int iff=0 ; iff < retval+1 ; iff++)
+                  {
+                  wxFileName ufile(m_FullPath);
+                  wxString sext;
+                  sext.Printf(_T("%03d"), iff);
+                  ufile.SetExt(sext);
 
-                cp_ufile.Append(ufile.GetFullName());
+                  //      Create the target update file name
+                  wxString cp_ufile = CopyDir;
+                  if(cp_ufile.Last() != ufile.GetPathSeparator())
+                        cp_ufile.Append(ufile.GetPathSeparator());
 
-
-                //      Explicit check for a short update file, possibly left over from a crash...
-                int flen = 0;
-                if(ufile.FileExists())
-                {
-                    wxFile uf(ufile.GetFullPath());
-                    if(uf.IsOpened())
-                    {
-                        flen = uf.Length();
-                        uf.Close();
-                    }
-                }
-
-                if(ufile.FileExists() && (flen > 25))           // a valid update file or base file
-                {
-                      //      Copy the valid file to the SENC directory
-                      bool cpok = wxCopyFile(ufile.GetFullPath(), cp_ufile);
-                      if(!cpok)
-                      {
-                        wxString msg(_T("   Cannot copy temporary working ENC file "));
-                        msg.Append(ufile.GetFullPath());
-                        msg.Append(_T(" to "));
-                        msg.Append(cp_ufile);
-                        wxLogMessage(msg);
-                      }
-                }
+                  cp_ufile.Append(ufile.GetFullName());
 
 
-                else
-                {
-                      // Create a dummy ISO8211 file with no real content
-
-                        bool bstat;
-                        DDFModule *dupdate = new DDFModule;
-                        dupdate->Initialize( '3','L','E','1','0',"!!!",3,4,4 );
-                        bstat = !(dupdate->Create(cp_ufile.mb_str()) == 0);
-                        dupdate->Close();
-
-                        if(!bstat)
+                  //      Explicit check for a short update file, possibly left over from a crash...
+                  int flen = 0;
+                  if(ufile.FileExists())
+                  {
+                        wxFile uf(ufile.GetFullPath());
+                        if(uf.IsOpened())
                         {
-                              wxString msg(_T("   Error creating dummy update file: "));
+                              flen = uf.Length();
+                              uf.Close();
+                        }
+                  }
+
+                  if(ufile.FileExists() && (flen > 25))           // a valid update file or base file
+                  {
+                        //      Copy the valid file to the SENC directory
+                        bool cpok = wxCopyFile(ufile.GetFullPath(), cp_ufile);
+                        if(!cpok)
+                        {
+                              wxString msg(_T("   Cannot copy temporary working ENC file "));
+                              msg.Append(ufile.GetFullPath());
+                              msg.Append(_T(" to "));
                               msg.Append(cp_ufile);
                               wxLogMessage(msg);
                         }
+                  }
 
-                }
 
-                m_tmpup_array->Add(cp_ufile);
+                  else
+                  {
+                        // Create a dummy ISO8211 file with no real content
+
+                              bool bstat;
+                              DDFModule *dupdate = new DDFModule;
+                              dupdate->Initialize( '3','L','E','1','0',"!!!",3,4,4 );
+                              bstat = !(dupdate->Create(cp_ufile.mb_str()) == 0);
+                              dupdate->Close();
+
+                              if(!bstat)
+                              {
+                                    wxString msg(_T("   Error creating dummy update file: "));
+                                    msg.Append(cp_ufile);
+                                    wxLogMessage(msg);
+                              }
+
+                  }
+
+                  m_tmpup_array->Add(cp_ufile);
+                  }
             }
-
 
 
             //      Extract the date field from the last of the update files
             //      which is by definition a valid, present update file....
+
+            wxFileName lastfile(m_FullPath);
+            wxString last_sext;
+            last_sext.Printf(_T("%03d"), retval);
+            lastfile.SetExt(last_sext);
+
             bool bSuccess;
             DDFModule oUpdateModule;
 
-            bSuccess = !(oUpdateModule.Open( m_tmpup_array->Last().mb_str(), TRUE ) == 0);
+//            bSuccess = !(oUpdateModule.Open( m_tmpup_array->Last().mb_str(), TRUE ) == 0);
+            bSuccess = !(oUpdateModule.Open( lastfile.GetFullPath().mb_str(), TRUE ) == 0);
 
             if( bSuccess )
             {
@@ -3629,6 +3641,13 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
         return retval;
 }
 
+wxString s57chart::GetISDT(void)
+{
+      if(m_date000.IsValid())
+            return m_date000.Format(_T("%Y%m%d"));
+      else
+            return _T("Unknown");
+}
 
 bool s57chart::GetBaseFileAttr(wxFileName fn)
 {
@@ -3694,6 +3713,8 @@ bool s57chart::GetBaseFileAttr(wxFileName fn)
 
             m_edtn000 = _T("1");                // backstop
       }
+
+      m_SE = m_edtn000;
 
 //      Fetch the Native Scale by reading more records until DSPM is found
       m_native_scale = 0;
@@ -3827,7 +3848,7 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
     int last_applied_update = 0;
     wxString LastUpdateDate = date000;
     last_applied_update = ValidateAndCountUpdates( file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME)),
-                                                   SENCfile.GetPath(), LastUpdateDate);
+                                                   SENCfile.GetPath(), LastUpdateDate, true);
 
     fprintf(fps57, "UPDT=%d\n", last_applied_update);
 
