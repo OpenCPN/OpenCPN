@@ -5332,7 +5332,12 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
 {
 
 //      CALLGRIND_START_INSTRUMENTATION
-      ::wxBeginBusyCursor();
+      if(m_last_scale_for_busy != VPoint.view_scale_ppm)
+      {
+            ::wxBeginBusyCursor();
+            m_b_busy_shown = true;
+            m_last_scale_for_busy = VPoint.view_scale_ppm;
+      }
 
       if(g_bDebugCM93)
       {
@@ -5615,7 +5620,11 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoin
             }
       }
 
-      ::wxEndBusyCursor();
+      if(m_b_busy_shown)
+      {
+            ::wxEndBusyCursor();
+            m_b_busy_shown = false;
+      }
 
       return render_return;
 }
@@ -5907,9 +5916,21 @@ bool cm93compchart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       //    If it does not, the partial render will not quilt correctly with the previous data
       //    Detect this case, and indicate that the entire screen must be rendered.
 
+      if(m_last_scale_for_busy != vp_proposed.view_scale_ppm)
+      {
+            ::wxBeginBusyCursor();
+            m_b_busy_shown = true;
+      }
+
       int cmscale = GetCMScaleFromVP(vp_proposed);                      // This is the scale that should be used, based on the vp
 
       int cmscale_actual = PrepareChartScale(vp_proposed, cmscale);     // this is the scale that will be used, based on cell coverage
+
+      if(m_b_busy_shown)
+      {
+            ::wxEndBusyCursor();
+            m_b_busy_shown = false;
+      }
 
       if(g_bDebugCM93)
             printf("  In AdjustVP,  adjustment subchart scale is %c\n", (char)('A' + cmscale_actual -1));
