@@ -167,6 +167,8 @@ extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
 
+extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+
 extern bool             g_bShowPrintIcon;
 extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
 extern int              g_iNavAidRadarRingsNumberVisible;   // toh, 2009.02.24
@@ -201,6 +203,8 @@ extern wxString         g_CM93DictDir;
 extern int              g_cm93_zoom_factor;
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
+
+extern int              S57_dialog_sx, S57_dialog_sy;
 
 extern bool             g_bUseGreenShip;
 
@@ -2947,6 +2951,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_NMEALogWindow_y < 0) || (g_NMEALogWindow_y > display_height))
             g_NMEALogWindow_y = 5;
 
+      g_S57_dialog_sx = Read ( _T ( "S57QueryDialogSizeX" ), 200L );
+      g_S57_dialog_sy = Read ( _T ( "S57QueryDialogSizeY" ), 200L );
 
 #ifdef USE_S57
       if ( NULL != ps52plib )
@@ -4124,6 +4130,9 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "bAISTargetListSortReverse" ),  g_bAisTargetList_sortReverse );
       Write ( _T ( "AISTargetListColumnSpec" ),  g_AisTargetList_column_spec );
 
+      Write ( _T ( "S57QueryDialogSizeX" ),  g_S57_dialog_sx );
+      Write ( _T ( "S57QueryDialogSizeY" ),  g_S57_dialog_sy );
+
       Write ( _T ( "bAISRolloverShowClass" ),  g_bAISRolloverShowClass );
       Write ( _T ( "bAISRolloverShowCOG" ),  g_bAISRolloverShowCOG );
       Write ( _T ( "bAISRolloverShowCPA" ),  g_bAISRolloverShowCPA );
@@ -4305,7 +4314,7 @@ bool MyConfig::ExportGPXRoute ( wxWindow* parent, Route *pRoute )
             {
                   int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
-                  if (answer != wxYES)
+                  if (answer != wxID_YES)
                         return false;
             }
 
@@ -4352,7 +4361,7 @@ bool MyConfig::ExportGPXWaypoint ( wxWindow* parent, RoutePoint *pRoutePoint )
             {
                   int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
-                  if (answer != wxYES)
+                  if (answer != wxID_YES)
                         return false;
             }
 
@@ -4393,7 +4402,7 @@ void MyConfig::ExportGPX ( wxWindow* parent )
             {
                   int answer = OCPNMessageBox(_("Overwrite existing file?"), _T("Confirm"),
                                             wxICON_QUESTION | wxYES_NO | wxCANCEL);
-                  if (answer != wxYES)
+                  if (answer != wxID_YES)
                         return;
             }
 
