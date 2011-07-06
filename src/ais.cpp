@@ -4474,6 +4474,8 @@ void AISTargetListDialog::UpdateAISTargetList(void)
 
             if(m_pMMSI_array->GetCount())
                   m_pListCtrlAISTargets->SetItemState(item_sel, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
+            else
+                  m_pListCtrlAISTargets->DeleteAllItems();
 
             wxString count;
             count.Printf(_T("%d"), m_pMMSI_array->GetCount());
