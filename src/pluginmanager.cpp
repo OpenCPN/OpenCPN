@@ -37,7 +37,7 @@
 #include "ais.h"
 #include "chartbase.h"        // for ChartPlugInWrapper
 #include "chartdb.h"
-
+#include "chartdbs.h"
 #include "bitmaps/default_pi.xpm"
 
 extern MyConfig        *pConfig;
@@ -1002,6 +1002,15 @@ void PushNMEABuffer( wxString buf )
             pParent->GetEventHandler()->AddPendingEvent( event );
       }
 }
+
+wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom)
+{
+
+      wxXmlDocument doc = ChartData->GetXMLDescription(dbIndex, b_getGeom);
+
+      return doc;
+}
+
 
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation

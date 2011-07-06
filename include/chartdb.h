@@ -38,6 +38,8 @@
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
 #include "wx/filename.h"
+#include <wx/xml/xml.h>
+
 #include "chartbase.h"
 #include "chartdbs.h"
 
@@ -138,6 +140,7 @@ public:
       void LockCache(){m_b_locked = true;}
       void UnLockCache(){m_b_locked = false;}
       bool IsCacheLocked(){ return m_b_locked; }
+      wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
 
 protected:

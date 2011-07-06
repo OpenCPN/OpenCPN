@@ -43,7 +43,7 @@
 #define DECL_EXP       __attribute__((visibility("default")))
 #endif
 
-
+#include <wx/xml/xml.h>
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
@@ -436,6 +436,8 @@ extern "C"  DECL_EXP wxAuiManager *GetFrameAuiManager(void);
 extern "C"  DECL_EXP bool AddLocaleCatalog( wxString catalog );
 
 extern "C"  DECL_EXP void PushNMEABuffer( wxString str );
+
+extern  DECL_EXP wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom);
 
 #endif            // _PLUGIN_H_
 

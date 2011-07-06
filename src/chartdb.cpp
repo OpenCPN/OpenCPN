@@ -1038,6 +1038,261 @@ ChartBase *ChartDB::OpenStackChartConditional(ChartStack *ps, int index_start, b
       return ptc;
 }
 
+wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
+{
+      wxXmlDocument doc;
+      if(!IsValid() || (dbIndex >= GetChartTableEntries()))
+            return doc;
+
+      bool b_remove = !IsChartInCache(dbIndex);
+
+      wxXmlNode *pcell_node = NULL;
+      wxXmlNode *node;
+      wxXmlNode *tnode;
+
+      //   Open the chart, without cacheing it
+      ChartBase *pc = OpenChartUsingCache(dbIndex, HEADER_ONLY);
+      b_remove = !IsChartInCache(dbIndex);
+      const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
+
+
+      if( CHART_FAMILY_RASTER ==  (ChartFamilyEnum)cte.GetChartFamily())
+      {
+            pcell_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "chart" ) );
+
+            wxString path = GetDBChartFileName(dbIndex);
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "path" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), path );
+            node->AddChild ( tnode );
+
+            wxFileName name(path);
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "name" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), name.GetName() );
+            node->AddChild ( tnode );
+
+            if(pc)
+            {
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "lname" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pc->GetName() );
+                  node->AddChild ( tnode );
+            }
+
+            wxString scale;
+            scale.Printf(_T("%d"),cte.GetScale());
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "cscale" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), scale );
+            node->AddChild ( tnode );
+
+            wxDateTime file_date(cte.GetFileTime());
+            file_date.MakeUTC();
+            wxString sfile_date = file_date.FormatISODate();
+            sfile_date += _T("T");
+            sfile_date += file_date.FormatISOTime();
+            sfile_date += _T("Z");
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "local_file_datetime_iso8601" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sfile_date );
+            node->AddChild ( tnode );
+
+
+            if(pc)
+            {
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "source_edition" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pc->GetSE() );
+                  node->AddChild ( tnode );
+
+                  wxDateTime sdt = pc->GetEditionDate();
+                  wxString ssdt = _T("Unknown");
+                  if(sdt.IsValid())
+                        ssdt = sdt.Format(_T("%Y%m%d"));
+
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "source_date" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), ssdt );
+                  node->AddChild ( tnode );
+
+            }
+
+/*
+            if (s == _T("number"))
+///            if (s == _T("source_edition"))
+            if (s == _T("raster_edition"))
+            if (s == _T("ntm_edition"))
+///            if (s == _T("source_date"))
+            if (s == _T("ntm_date"))
+            if (s == _T("source_edition_last_correction"))
+            if (s == _T("raster_edition_last_correction"))
+            if (s == _T("ntm_edition_last_correction"))
+*/
+      }
+
+      else if( CHART_FAMILY_VECTOR ==  (ChartFamilyEnum)cte.GetChartFamily() )
+      {
+            pcell_node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "cell" ) );
+
+            wxString path = GetDBChartFileName(dbIndex);
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "path" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), path );
+            node->AddChild ( tnode );
+
+            wxFileName name(path);
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "name" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), name.GetName() );
+            node->AddChild ( tnode );
+
+            wxString scale;
+            scale.Printf(_T("%d"),cte.GetScale());
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "cscale" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), scale );
+            node->AddChild ( tnode );
+
+            wxDateTime file_date(cte.GetFileTime());
+            file_date.MakeUTC();
+            wxString sfile_date = file_date.FormatISODate();
+            sfile_date += _T("T");
+            sfile_date += file_date.FormatISOTime();
+            sfile_date += _T("Z");
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "local_file_datetime_iso8601" ) );
+            pcell_node->AddChild ( node );
+            tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sfile_date );
+            node->AddChild ( tnode );
+
+
+            if(pc)
+            {
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "edtn" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pc->GetSE() );
+                  node->AddChild ( tnode );
+            }
+
+            s57chart *pcs57 = dynamic_cast<s57chart*>(pc);
+            if(pcs57)
+            {
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "isdt" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), pcs57->GetISDT() );
+                  node->AddChild ( tnode );
+
+                  wxString LastUpdateDate;
+                  int updn = pcs57->ValidateAndCountUpdates( path, _T(""), LastUpdateDate, false);
+
+                  wxString supdn;
+                  supdn.Printf(_T("%d"), updn);
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "updn" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), supdn );
+                  node->AddChild ( tnode );
+
+                  node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "uadt" ) );
+                  pcell_node->AddChild ( node );
+                  tnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), LastUpdateDate );
+                  node->AddChild ( tnode );
+
+            }
+      }
+
+
+
+      if(pcell_node && b_getGeom)
+      {
+            node = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "cov" ) );
+            pcell_node->AddChild ( node );
+
+
+            //    Primary table
+            if(cte.GetnPlyEntries())
+            {
+                  wxXmlNode *panelnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "panel" ) );
+                  node->AddChild ( panelnode );
+
+                  wxString panel_no;
+                  panel_no.Printf(_T("%d"), 0);
+                  wxXmlNode *anode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), panel_no );
+                  panelnode->AddChild ( anode );
+
+                  float *pf = cte.GetpPlyTable();
+                  for(int j=0 ; j < cte.GetnPlyEntries() ; j++)
+                  {
+                        wxXmlNode *vnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "vertex" ));
+                        panelnode->AddChild ( vnode );
+
+                        wxXmlNode *latnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "lat" ));
+                        vnode->AddChild ( latnode );
+
+                        float l = *pf++;
+                        wxString sl;
+                        sl.Printf(_T("%.5f"), l);
+                        wxXmlNode *vtnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sl);
+                        latnode->AddChild ( vtnode );
+
+                        wxXmlNode *lonnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "lon" ));
+                        vnode->AddChild ( lonnode );
+
+                        float ll = *pf++;
+                        wxString sll;
+                        sll.Printf(_T("%.5f"), ll);
+                        wxXmlNode *vtlnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sll);
+                        lonnode->AddChild ( vtlnode );
+                  }
+            }
+
+
+            for(int i=0 ; i < cte.GetnAuxPlyEntries() ; i++)
+            {
+                  wxXmlNode *panelnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "panel" ) );
+                  node->AddChild ( panelnode );
+
+                  wxString panel_no;
+                  panel_no.Printf(_T("%d"), i+1);
+                  wxXmlNode *anode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), panel_no );
+                  panelnode->AddChild ( anode );
+
+                  float *pf = cte.GetpAuxPlyTableEntry(i);
+                  for(int j=0 ; j < cte.GetAuxCntTableEntry(i) ; j++)
+                  {
+                        wxXmlNode *vnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "vertex" ));
+                        panelnode->AddChild ( vnode );
+
+                        wxXmlNode *latnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "lat" ));
+                        vnode->AddChild ( latnode );
+
+                        float l = *pf++;
+                        wxString sl;
+                        sl.Printf(_T("%.5f"), l);
+                        wxXmlNode *vtnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sl);
+                        latnode->AddChild ( vtnode );
+
+                        wxXmlNode *lonnode = new wxXmlNode ( wxXML_ELEMENT_NODE, _T ( "lon" ));
+                        vnode->AddChild ( lonnode );
+
+                        float ll = *pf++;
+                        wxString sll;
+                        sll.Printf(_T("%.5f"), ll);
+                        wxXmlNode *vtlnode = new wxXmlNode ( wxXML_TEXT_NODE, _T ( "" ), sll);
+                        lonnode->AddChild ( vtlnode );
+                  }
+            }
+
+      }
+
+      doc.SetRoot(pcell_node);
+
+      if(b_remove)
+            DeleteCacheChart(pc);
+
+      return doc;
+}
+
+
 
 
 
