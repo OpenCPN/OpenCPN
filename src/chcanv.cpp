@@ -189,6 +189,8 @@ extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
 
+extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+
 extern CM93DSlide       *pCM93DetailSlider;
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
@@ -753,11 +755,14 @@ ChartBase *Quilt::GetNextChart()
 //      printf("getnext\n");
       m_bbusy = true;
       ChartBase *pret = NULL;
-      cnode = cnode->GetNext();
-      while(cnode && !cnode->GetData()->b_Valid)
+      if(cnode)
+      {
             cnode = cnode->GetNext();
-      if(cnode && cnode->GetData()->b_Valid)
-            pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
+            while(cnode && !cnode->GetData()->b_Valid)
+                  cnode = cnode->GetNext();
+            if(cnode && cnode->GetData()->b_Valid)
+                  pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
+      }
 
       m_bbusy = false;
       return pret;
@@ -1986,6 +1991,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
                             continue;
                         else if(dul.StartsWith(_T("fathoms")) && ml.StartsWith(_T("fathoms")))
                             continue;
+                        else if(dul.StartsWith(_T("met")) && ml.StartsWith(_T("met")))
+                              continue;
 
                         //    They really are different
                         m_quilt_depth_unit = _T("");
@@ -2140,7 +2147,13 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
             while ( clrit )
             {
                   wxRect rect = clrit.GetRect();
+#ifdef __WXOSX__
+                  dc.SetPen(*wxBLACK_PEN);
+                  dc.SetBrush(*wxBLACK_BRUSH);
+                  dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
+#else
                   dc.Blit(rect.x, rect.y, rect.width, rect.height, &dc, rect.x, rect.y, wxCLEAR);
+#endif
                   clrit ++ ;
             }
 
@@ -3591,6 +3604,9 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                   {
                         parent_frame->ToggleENCText();
                         b_proc = true;
+       wxXmlDocument doc = GetChartDatabaseEntryXML(2, true);
+       doc.Save(_T("/home/dsr/xmltest.xml"));
+
                         break;
                   }
                   case WXK_F4:
@@ -4339,9 +4355,9 @@ void ChartCanvas::SetQuiltRefChart(int dbIndex)
 
 
 
-void ChartCanvas::SetVPScale ( double scale )
+bool ChartCanvas::SetVPScale ( double scale )
 {
-      SetViewPoint ( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation );
+      return SetViewPoint ( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation );
 }
 
 bool ChartCanvas::SetViewPoint ( double lat, double lon)
@@ -4352,6 +4368,8 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon)
 
 bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust )
 {
+      bool b_ret = false;
+
         //  Any sensible change?
       if((fabs(VPoint.view_scale_ppm - scale_ppm) < 1e-9)
           && (fabs(VPoint.skew - skew) < 1e-9)
@@ -4377,7 +4395,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         VPoint.rotation = rotation;
 
         if((VPoint.pix_width < 0) || (VPoint.pix_height < 0))           // Canvas parameters not yet set
-              return true;
+              return false;
 
         //  Has the Viewport scale changed?  If so, invalidate the vp describing the cached bitmap
         if ( last_vp.view_scale_ppm != scale_ppm )
@@ -4401,6 +4419,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             if (( !m_cache_vp.IsValid()) || (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm))
             {
                   Refresh(false);
+                  b_ret = true;
             }
             else
             {
@@ -4409,7 +4428,10 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
                   GetCanvasPointPix ( VPoint.clat, VPoint.clon, &cp_this );
 
                   if(cp_last != cp_this)
+                  {
                         Refresh(false);
+                        b_ret = true;
+                  }
             }
         }
 
@@ -4523,6 +4545,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
                               m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
                         m_pQuilt->Compose(VPoint);
                         Refresh(false);
+                        b_ret = true;
                   }
 
                   parent_frame->UpdateControlBar();
@@ -4603,7 +4626,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         vLat = VPoint.clat;
         vLon = VPoint.clon;
 
-        return true;
+        return b_ret;
 
 }
 
@@ -6492,29 +6515,45 @@ void ChartCanvas::UpdateAIS()
         int sx, sy;
         dc.GetSize ( &sx, &sy );
 
-        //  Need a bitmap
-        wxBitmap test_bitmap ( sx, sy,  -1 );
+        wxRect ais_rect;
 
-        // Create a memory DC
-        wxMemoryDC temp_dc;
-        temp_dc.SelectObject ( test_bitmap );
+        //  How many targets are there?
 
-        temp_dc.ResetBoundingBox();
-        temp_dc.DestroyClippingRegion();
-        temp_dc.SetClippingRegion ( wxRect ( 0,0,sx,sy ) );
+        //  If more than "some number", it will be cheaper to refresh the entire screen
+        //  than to build update rectangles for each target.
+        AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+        if(current_targets->size() > 10)
+        {
+            ais_rect = wxRect(0, 0, sx, sy);            // full screen
+        }
+        else
+        {
+            //  Need a bitmap
+            wxBitmap test_bitmap ( sx, sy,  -1 );
 
-        // Draw the AIS Targets on the temp_dc
-        AISDraw ( temp_dc );
+            // Create a memory DC
+            wxMemoryDC temp_dc;
+            temp_dc.SelectObject ( test_bitmap );
 
-        //  Retrieve the drawing extents
-        wxRect ais_rect ( temp_dc.MinX(),
-                          temp_dc.MinY(),
-                          temp_dc.MaxX() - temp_dc.MinX(),
-                          temp_dc.MaxY() - temp_dc.MinY() );
+            temp_dc.ResetBoundingBox();
+            temp_dc.DestroyClippingRegion();
+            temp_dc.SetClippingRegion ( wxRect ( 0,0,sx,sy ) );
 
-        if ( !ais_rect.IsEmpty() )
-                ais_rect.Inflate ( 2 );                // clear all drawing artifacts
+            // Draw the AIS Targets on the temp_dc
+            AISDraw ( temp_dc );
 
+            //  Retrieve the drawing extents
+            ais_rect  = wxRect( temp_dc.MinX(),
+                              temp_dc.MinY(),
+                              temp_dc.MaxX() - temp_dc.MinX(),
+                              temp_dc.MaxY() - temp_dc.MinY() );
+
+            if ( !ais_rect.IsEmpty() )
+                  ais_rect.Inflate ( 2 );                // clear all drawing artifacts
+
+            temp_dc.SelectObject ( wxNullBitmap );      // clean up
+
+        }
 
         if ( !ais_rect.IsEmpty() || !ais_draw_rect.IsEmpty() )
         {
@@ -6530,7 +6569,6 @@ void ChartCanvas::UpdateAIS()
         //  Save this rectangle for next time
         ais_draw_rect = ais_rect;
 
-        temp_dc.SelectObject ( wxNullBitmap );      // clean up
 
 }
 
@@ -7074,6 +7112,12 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         if ( event.LeftDown() )
         {
+              //  This really should not be needed, but....
+              //  on Windows, when using wxAUIManager, sometimes the focus is lost
+              //  when clicking into another pane, e.g.the AIS target list, and then back to this pane.
+              //  Oddly, some mouse events are not lost, however.  Like this one....
+                SetFocus();
+
                 last_drag.x = mx;
                 last_drag.y = my;
 
@@ -8518,8 +8562,8 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                                 pdialog->SetText ( *QueryResult );
 
                                 pdialog->Create ( this, -1, _( "Object Query" ) );
-//                                pdialog->SetSize ( 200, -1 );
-                                pdialog->Centre();
+                                pdialog->SetSize ( g_S57_dialog_sx, g_S57_dialog_sy );
+//                                pdialog->Centre();
 
                                 gFrame->SubmergeToolbar();
                                 SetCursor(wxCURSOR_ARROW);
@@ -9347,7 +9391,7 @@ void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, d
       dc->DrawRotatedText(s, xp, yp, angle);
 }
 
-
+int spaint;
 void ChartCanvas::OnPaint ( wxPaintEvent& event )
 {
 
@@ -9359,7 +9403,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
         int rx, ry, rwidth, rheight;
         ru.GetBox ( rx, ry, rwidth, rheight );
-//        printf("Onpaint update region box: %d %d %d %d\n", rx, ry, rwidth, rheight);
+//        printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry, rwidth, rheight);
 
         wxBoundingBox BltBBox;
 
@@ -9763,6 +9807,8 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                     else if(s.StartsWith(_T("METERS")))
                           depth_unit_type = DEPTH_UNIT_METERS;
                     else if(s.StartsWith(_T("METRES")))
+                          depth_unit_type = DEPTH_UNIT_METERS;
+                    else if(s.StartsWith(_T("METRIC")))
                           depth_unit_type = DEPTH_UNIT_METERS;
 
               }
@@ -10222,7 +10268,7 @@ void ChartCanvas::EmbossCanvas ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, e
 
 void ChartCanvas::EmbossOverzoomIndicator ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc)
 {
-      EmbossCanvas ( psource_dc, pdest_dc, m_pEM_OverZoom, 0,0);
+      EmbossCanvas ( psource_dc, pdest_dc, m_pEM_OverZoom, 0,40);
 }
 
 
@@ -10260,7 +10306,7 @@ void ChartCanvas::CreateDepthUnitEmbossMaps ( ColorScheme cs )
 {
         wxFont font ( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
-        int emboss_width = 400;
+        int emboss_width = 500;
         int emboss_height = 100;
 
 // Free any existing emboss maps
@@ -12920,6 +12966,8 @@ IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )  // was wxDialog
 // S57QueryDialog event table definition
 
 BEGIN_EVENT_TABLE ( S57QueryDialog, wxDialog )  //ws wxDialog
+            EVT_SIZE ( S57QueryDialog::OnSize )
+            EVT_CLOSE( S57QueryDialog::OnClose)
 END_EVENT_TABLE()
 
 
@@ -12939,6 +12987,9 @@ S57QueryDialog::S57QueryDialog ( wxWindow* parent,
 
 S57QueryDialog::~S57QueryDialog( )
 {
+      g_S57_dialog_sx = GetSize().x;
+      g_S57_dialog_sy = GetSize().y;
+
       m_pTree->DeleteAllItems();
       delete m_pTree;
       delete[] m_id_array;
@@ -12953,7 +13004,7 @@ void S57QueryDialog::Init( )
         m_n_items = 0;
         m_ppOD = NULL;
         m_id_array = NULL;
-
+        m_current_item_id = NULL;
 }
 
 void S57QueryDialog::SetText ( wxString &text_string )
@@ -13122,29 +13173,50 @@ void S57QueryDialog::CreateControls()
 
 void S57QueryDialog::SetSelectedItem(wxTreeItemId item_id)
 {
-      MyTreeItemData *pmtid = (MyTreeItemData *)m_pTree->GetItemData(item_id);
+      m_current_item_id = item_id;
 
-      m_pQueryTextCtl->Clear();
-
-      if(pmtid)
-      {
-            //    Calculate the column constants based on the text control size....
-            int width, height;
-            m_pQueryTextCtl->GetSize(&width, &height);
-
-            //    Format the string
-            int rcol = width / m_char_width;
-            wxString fs = format_attributes(pmtid->m_pOD->Attributes, 15, rcol-1);
-            SetText ( fs );
-
-            m_pQueryTextCtl->AppendText ( QueryResult );
-      }
-
-      m_pQueryTextCtl->SetInsertionPoint(0);
-
-      m_pQueryTextCtl->Refresh();
-
+      UpdateStringFormats();
 }
+
+void S57QueryDialog::UpdateStringFormats(void)
+{
+      if(m_pTree && (m_current_item_id))
+      {
+            MyTreeItemData *pmtid = (MyTreeItemData *)m_pTree->GetItemData(m_current_item_id);
+
+            if(pmtid)
+            {
+                  //    Calculate the column constants based on the text control size....
+                  int width, height;
+                  m_pQueryTextCtl->GetSize(&width, &height);
+
+                  //    Format the string
+                  int rcol = width / m_char_width;
+                  wxString fs = format_attributes(pmtid->m_pOD->Attributes, 15, rcol-1);
+                  SetText ( fs );
+
+                  m_pQueryTextCtl->Clear();
+                  m_pQueryTextCtl->AppendText ( QueryResult );
+            }
+
+            m_pQueryTextCtl->SetInsertionPoint(0);
+
+            m_pQueryTextCtl->Refresh();
+      }
+}
+
+void S57QueryDialog::OnSize(wxSizeEvent& event)
+{
+      UpdateStringFormats();
+      wxDialog::OnSize(event);
+}
+
+void S57QueryDialog::OnClose(wxCloseEvent& event)
+{
+      g_S57_dialog_sx = GetSize().x;
+      g_S57_dialog_sy = GetSize().y;
+}
+
 
 void S57QueryDialog::OnPaint ( wxPaintEvent& event )
 {

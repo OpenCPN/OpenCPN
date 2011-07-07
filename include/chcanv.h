@@ -157,7 +157,7 @@ public:
       bool Do_Hotkeys(wxKeyEvent &event);
 
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
-      void SetVPScale(double sc);
+      bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( bool b_adjust = true );
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
@@ -613,12 +613,15 @@ public:
       void SetObjectTree(void **pOD, int n_items);
 
       void SetSelectedItem(wxTreeItemId item_id);                  // a "notification" from Tree control
-
+      void OnSize(wxSizeEvent& event);
+      void OnClose(wxCloseEvent& event);
 
       wxString format_attributes(wxString &attr, int lcol, int rcol);
 
       //    Overrides
       void OnPaint ( wxPaintEvent& event );
+
+      void UpdateStringFormats(void);
 
 
       //    Data
@@ -632,7 +635,7 @@ public:
 
       wxTreeItemId      *m_id_array;                              // an array of wxTreeItemIDs
       int               m_char_width;
-
+      wxTreeItemId      m_current_item_id;
 };
 
 //----------------------------------------------------------------------------------------------------------
