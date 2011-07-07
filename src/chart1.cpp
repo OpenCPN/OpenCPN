@@ -347,6 +347,8 @@ int               g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 int               g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 int               g_ais_query_dialog_x, g_ais_query_dialog_y;
 
+int               g_S57_dialog_sx, g_S57_dialog_sy;
+
 int              g_nframewin_x;
 int              g_nframewin_y;
 bool             g_bframemax;
@@ -1578,6 +1580,10 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
 
 IMPLEMENT_APP(MyApp)
 
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+            EVT_ACTIVATE_APP(MyApp::OnActivateApp)
+END_EVENT_TABLE()
+
 #include "wx/dynlib.h"
 
 void MyApp::OnInitCmdLine(wxCmdLineParser& parser)
@@ -1593,6 +1599,30 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser& parser)
       return true;
 }
 
+void MyApp::OnActivateApp(wxActivateEvent& event)
+{
+//    Code carefully in this method.
+//    It is called in some unexpected places,
+//    such as on closure of dialogs, etc.
+
+//      Activating?
+
+
+#ifdef __WXOSX__
+      if(!event.GetActive())
+      {
+            if(g_FloatingToolbarDialog)
+                  g_FloatingToolbarDialog->Submerge();
+      }
+      else
+      {
+            if(g_FloatingToolbarDialog)
+                  g_FloatingToolbarDialog->Surface();
+      }
+#endif
+
+      event.Skip();
+}
 
 bool MyApp::OnInit()
 {
@@ -3117,6 +3147,15 @@ void MyFrame::OnActivate(wxActivateEvent& event)
       if(cc1)
         cc1->SetFocus();            // This seems to be needed for MSW, to get key and wheel events
                                     // after minimize/maximize.
+
+#ifdef __WXOSX__
+      if(event.GetActive())
+      {
+           if(g_FloatingToolbarDialog)
+                  g_FloatingToolbarDialog->Surface();
+      }
+#endif
+
       event.Skip();
 }
 
@@ -5720,6 +5759,18 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       }
       g_tick++;
 
+#ifdef __WXOSX__
+      //    Hide the toolbar if the application is minimized....
+      if(g_FloatingToolbarDialog)
+      {
+            if(IsIconized())
+            {
+                  if(g_FloatingToolbarDialog->IsShown())
+                        g_FloatingToolbarDialog->Submerge();
+            }
+      }
+#endif
+
 //      Listen for quitflag to be set, requesting application close
       if(quitflag)
       {
@@ -5890,13 +5941,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
 
 //      Update the chart database and displayed chart
-      bool bnew_chart = false;
+      bool bnew_view = false;
 
 //    Do the chart update based on the global update period currently set
 //    If in COG UP mode, the chart update is handled by COG Update timer
       if(!g_bCourseUp && (0 == m_ChartUpdatePeriod--))
       {
-            bnew_chart = DoChartUpdate();
+            bnew_view = DoChartUpdate();
             m_ChartUpdatePeriod = g_ChartUpdatePeriod;
       }
 
@@ -5944,7 +5995,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       if(bGPSValid != m_last_bGPSValid)
       {
              cc1->UpdateShips();
-             bnew_chart = true;
+             bnew_view = true;                  // force a full Refresh()
              m_last_bGPSValid = bGPSValid;
       }
 
@@ -5952,11 +6003,22 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
 //  Invalidate the ChartCanvas window appropriately
+//    In non-follow mode, invalidate the rectangles containing the AIS targets and the ownship, etc...
+//    In follow mode, if there has already been a full screen refresh, there is no need to check ownship or AIS,
+//       since they will be always drawn on the full screen paint.
         if((!cc1->m_bFollow) || g_bCourseUp)
         {
               cc1->UpdateShips();
               cc1->UpdateAIS();
               cc1->UpdateAlerts();
+        }
+        else
+        {
+              if(!bnew_view)                    // There has not been a Refres() yet.....
+              {
+                  cc1->UpdateAIS();
+                  cc1->UpdateAlerts();
+              }
         }
 
         if(g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown())
@@ -5971,9 +6033,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         UpdateGPSCompassStatusBox();
         UpdateToolbarDynamics();
 
-
-        if(bnew_chart)
-            cc1->Refresh(false);
 
         if(NULL != console)
             if(console->IsShown())
@@ -6201,7 +6260,7 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
                   cc1->ShowChartInfoWindow(key_location.x, sy + key_location.y-250, selected_dbIndex);
                   cc1->SetQuiltChartHiLiteIndex(selected_dbIndex);
 
-                  cc1->ReloadVP();
+                  cc1->ReloadVP(false);         // no VP adjustment allowed
             }
             else if(pCurrentStack->nEntry == 1)
             {
@@ -6209,7 +6268,7 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
                   if(CHART_TYPE_CM93COMP != cte.GetChartType())
                   {
                         cc1->ShowChartInfoWindow(key_location.x, sy + key_location.y-250, selected_dbIndex);
-                        cc1->ReloadVP();
+                        cc1->ReloadVP(false);
                   }
                   else if((-1 == selected_index) && (-1 == selected_dbIndex))
                   {
@@ -6588,7 +6647,7 @@ void MyFrame::UpdateControlBar(void)
 //      Create a chartstack based on current lat/lon.
 //      Update Current_Ch, using either current chart, if still in stack, or
 //      smallest scale new chart in stack if not.
-//      Return true if need a full canvas redraw
+//      Return true if a Refresh(false) was called within.
 //----------------------------------------------------------------------------------
 bool MyFrame::DoChartUpdate(void)
 {
@@ -6597,6 +6656,8 @@ bool MyFrame::DoChartUpdate(void)
       double vpLat, vpLon;         // ViewPort location
 
       bool bNewChart = false;
+      bool bNewView = false;
+
       bool bNewPiano = false;
       bool bOpenSpecified;
       ChartStack LastStack;
@@ -6755,12 +6816,12 @@ bool MyFrame::DoChartUpdate(void)
 
                   }
 
-                  cc1->SetViewPoint(vpLat, vpLon, cc1->GetCanvasScaleFactor() / proposed_scale_onscreen, 0, cc1->GetVPRotation());
+                  bNewView |= cc1->SetViewPoint(vpLat, vpLon, cc1->GetCanvasScaleFactor() / proposed_scale_onscreen, 0, cc1->GetVPRotation());
 
             }
 
 
-            cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation());
+            bNewView |= cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation());
 
             goto update_finish;
 
@@ -6810,7 +6871,7 @@ bool MyFrame::DoChartUpdate(void)
                 if(!cc1->GetVP().IsValid())
                     set_scale = 1./200000.;
 
-                cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
+                bNewView |= cc1->SetViewPoint(tLat, tLon, set_scale, 0, cc1->GetVPRotation());
 
         //      If the chart stack has just changed, there is new status
                 if(!ChartData->EqualStacks(&WorkStack, pCurrentStack))
@@ -6961,7 +7022,7 @@ bool MyFrame::DoChartUpdate(void)
                         set_scale = cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
                     }
 
-                    cc1->SetViewPoint(vpLat, vpLon, set_scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
+                    bNewView |= cc1->SetViewPoint(vpLat, vpLon, set_scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
 
                 }
         }         // new stack
@@ -6969,7 +7030,7 @@ bool MyFrame::DoChartUpdate(void)
         else                                                                    // No change in Chart Stack
         {
               if((cc1->m_bFollow) && Current_Ch)
-                      cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
+                    bNewView |= cc1->SetViewPoint(vpLat, vpLon, cc1->GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation());
         }
 
 
@@ -6994,7 +7055,12 @@ update_finish:
 
         bFirstAuto = false;                           // Auto open on program start
 
-        return bNewChart;
+        //  If we need a Refresh(), do it here...
+        //  But don't duplicate a Refresh() done by SetViewPoint()
+        if(bNewChart && ! bNewView)
+              cc1->Refresh(false);
+
+        return bNewChart | bNewView;
 }
 
 

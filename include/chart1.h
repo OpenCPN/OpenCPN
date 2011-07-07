@@ -188,8 +188,11 @@ class MyApp: public wxApp
     int OnExit();
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser& parser);
+    void OnActivateApp(wxActivateEvent& event);
 
     void TrackOff(void);
+
+    DECLARE_EVENT_TABLE()
 
 };
 
