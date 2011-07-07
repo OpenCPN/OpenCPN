@@ -3772,6 +3772,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         if(m_bMeasure_Active)
                         {
                               m_bMeasure_Active = false;
+                              m_nMeasureState = 0;
                               g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
                               m_pMeasureRoute = NULL;
                               gFrame->SurfaceToolbar();
@@ -6995,6 +6996,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         {
               r_rband.x = x;
               r_rband.y = y;
+              m_bDrawingRoute = true;
 
               CheckEdgePan ( x, y, event.Dragging() );
               Refresh ( false );
@@ -7184,6 +7186,39 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         Refresh ( false );
                 }
 
+                if ( m_bMeasure_Active && m_nMeasureState )    // measure tool?
+                {
+                      double rlat, rlon;
+
+                      SetMyCursor ( pCursorPencil );
+                      rlat = m_cursor_lat;
+                      rlon = m_cursor_lon;
+
+                      if ( m_nMeasureState == 1 )
+                      {
+                            m_pMeasureRoute = new Route();
+                            pRouteList->Append ( m_pMeasureRoute );
+                            r_rband.x = x;
+                            r_rband.y = y;
+                      }
+
+
+                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                      pMousePoint->m_bShowName = false;
+
+                      m_pMeasureRoute->AddPoint ( pMousePoint );
+
+                      m_prev_rlat = m_cursor_lat;
+                      m_prev_rlon = m_cursor_lon;
+                      m_prev_pMousePoint = pMousePoint;
+
+                      m_nMeasureState++;
+
+
+                      Refresh ( false );
+                }
+
+/*
                 else if ( m_bMeasure_Active )                     // measure tool on
                 {
                       SetMyCursor ( pCursorPencil );
@@ -7207,6 +7242,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       Refresh ( false );
                 }
+*/
                 else                                // Not creating Route
                 {
                         // So look for selectable and visible route point
@@ -8466,6 +8502,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_DEF_MENU_DEACTIVATE_MEASURE:
                         m_bMeasure_Active = false;
+                        m_nMeasureState = 0;
                         g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
                         m_pMeasureRoute = NULL;
                         gFrame->SurfaceToolbar();
@@ -9322,74 +9359,57 @@ void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, d
 {
 
       double brg, dist;
-      DistanceBearingMercator(latb, lonb, lata, lona, &brg, &dist);   // for brg only
+      DistanceBearingMercator(latb, lonb, lata, lona, &brg, &dist);
 
       if((lata == latb) && (lona ==  lonb))               // special optimization
             brg = 90.;
 
       wxString s;
-      if ( dist > 0.1 )                                                                 //pjotrc 2010.02.16
+      if ( dist > 0.1 )
             s.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
-      else                                                                                    //pjotrc 2010.02.16
+      else
             s.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.); //pjotrc 2010.02.16
 
       s.Prepend(prefix);
 
+      wxFont *dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
+      dc->SetFont(*dFont);
+
       int w, h;
-      double angle;
-      int xp, yp, xp1, yp1;
+      int xp, yp;
       int hilite_offset = 3;
       dc->GetTextExtent(s, &w, &h);
 
-      if(true/*(brg >= 0.) && (brg < 180.)*/)
-      {
-            angle = 0; //90. - brg;
+      xp = ref_point.x  - w;
+      yp = ref_point.y  ;
+      yp += hilite_offset;
 
-            xp = ref_point.x  - (int)(w * cos((angle) * PI / 180.));
-            yp = ref_point.y  + (int)(w * sin((angle) * PI / 180.));
-
-            xp += (int)(hilite_offset * sin((angle) * PI / 180.));
-            yp += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-            xp1 = ref_point.x;
-            yp1 = ref_point.y;
-            xp1 += (int)(hilite_offset * sin((angle) * PI / 180.));
-            yp1 += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-      }
-      else
-      {
-            angle = 0; //270. - brg;
-
-            xp = ref_point.x;
-            yp = ref_point.y;
-            xp += (int)(hilite_offset * sin((angle) * PI / 180.));
-            yp += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-            xp1 = ref_point.x  + (int)(w * cos((angle) * PI / 180.));
-            yp1 = ref_point.y  - (int)(w * sin((angle) * PI / 180.));
-            xp1 += (int)(hilite_offset * sin((angle) * PI / 180.));
-            yp1 += (int)(hilite_offset * cos((angle) * PI / 180.));
-
-      }
-
-      wxPoint hilite_array[4];
-      hilite_array[0].x = xp;
-      hilite_array[0].y = yp;
-
-      hilite_array[1].x = xp + (int)((h) * sin((angle) * PI / 180.));
-      hilite_array[1].y = yp + (int)((h) * cos((angle) * PI / 180.));
-
-      hilite_array[2].x = xp1 + (int)((h) * sin((angle) * PI / 180.));
-      hilite_array[2].y = yp1 + (int)((h) * cos((angle) * PI / 180.));
-
-      hilite_array[3].x = xp1;
-      hilite_array[3].y = yp1;
       AlphaBlending ( *dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
 
       dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-      dc->DrawRotatedText(s, xp, yp, angle);
+      dc->DrawText(s, xp, yp);
 }
+
+void RenderExtraRouteLegInfo(wxMemoryDC *dc, wxPoint ref_point, wxString s)
+{
+      wxFont *dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
+      dc->SetFont(*dFont);
+
+      int w, h;
+      int xp, yp;
+      int hilite_offset = 3;
+      dc->GetTextExtent(s, &w, &h);
+
+      xp = ref_point.x - w;
+      yp = ref_point.y + h ;
+      yp += hilite_offset;
+
+      AlphaBlending ( *dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+
+      dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
+      dc->DrawText(s, xp, yp);
+}
+
 
 int spaint;
 void ChartCanvas::OnPaint ( wxPaintEvent& event )
@@ -9910,14 +9930,23 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         }
 
 
-        if ( m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState > 1) )
+        if ( m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2) )
         {
               wxPoint rpt;
-              m_pMeasureRoute->DrawPointWhich ( scratch_dc, 1,  &rpt );
+              m_pMeasureRoute->DrawPointWhich ( scratch_dc, m_nMeasureState - 1,  &rpt );
               m_pMeasureRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, GetVP(), false );
 
               RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
                                   m_cursor_lat, m_cursor_lon, r_rband, _T(""));
+
+              double brg, dist;
+              DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
+                       m_cursor_lat, m_cursor_lon, &brg, &dist);
+
+              wxString s;
+              s.Printf(_T("Route Distance: %6.2f NMi"), m_pMeasureRoute->m_route_length + dist);
+              RenderExtraRouteLegInfo(&scratch_dc, r_rband, s);
+
         }
 
         //  Draw S52 compatible Scale Bar
