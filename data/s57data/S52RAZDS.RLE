@@ -1,3 +1,25 @@
+; ***************************************************************************
+; *                                                                         *
+; *   Copyright (C) 2000-2001  Sylvain Duclos <sylvain_duclos@yahoo.com>    *
+; *                                                                         *
+; *   Portions Copyright (C) 2010 by David S. Register <bdbcat@yahoo.com>   *
+; *   Portions Copyright (C) 2010 by Pavel Kalian" <pavel@kalian.cz>        *
+; *                                                                         *
+; *   This program is free software; you can redistribute it and/or modify  *
+; *   it under the terms of the GNU General Public License as published by  *
+; *   the Free Software Foundation; either version 2 of the License, or     *
+; *   (at your option) any later version.                                   *
+; *                                                                         *
+; *   This program is distributed in the hope that it will be useful,       *
+; *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+; *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+; *   GNU General Public License for more details.                          *
+; *                                                                         *
+; *   You should have received a copy of the GNU General Public License     *
+; *   along with this program; if not, write to the                         *
+; *   Free Software Foundation, Inc.,                                       *
+; *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+; ***************************************************************************
 0001
 COLS   21CS00002NILDAY_BRIGHT
 CCIE   30NODTA0.28000.310045.00grey
@@ -12943,6 +12965,13 @@ DISC    9STANDARD
 LUCM    617020
 ****
 0001
+LUPT   35LU94017NILBCNSPPP00008OPAPER_CHART
+ATTC   16BCNSHP5COLOUR6
+INST   60SY(BCNSTK08);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)
+DISC    9STANDARD
+LUCM    617020
+****
+0001
 LUPT   35LU30085NILBCNSPPP00008OPAPER_CHART
 ATTC   16BCNSHP6CONVIS1
 INST   60SY(CAIRNS11);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)
@@ -17668,14 +17697,14 @@ DISC    9STANDARD
 LUCM    622220
 ****
 0001
-LUPT   35LU30552NILTOWERSP00006OPAPER_CHART
+LUPT   35LU30551NILTOWERSP00006OPAPER_CHART
 ATTC   10COLOUR3,1
 INST   52SY(TOWERS85);TX(OBJNAM,3,2,2,'15110',1,-1,CHBLK,26)
 DISC    9STANDARD
 LUCM    622220
 ****
 0001
-LUPT   35LU30551NILTOWERSP00006OPAPER_CHART
+LUPT   35LU30552NILTOWERSP00006OPAPER_CHART
 ATTC   10COLOUR3,1
 INST   52SY(TOWERS85);TX(OBJNAM,3,2,2,'15110',1,-1,CHBLK,26)
 DISC    9STANDARD
@@ -18326,6 +18355,13 @@ DISC   12DISPLAYBASE
 LUCM    617010
 ****
 0001
+LUPT   35LU94013NILboywtwP00000OPAPER_CHART
+ATTC   27catwwm11COLOUR1,3COLPAT1
+INST   53SY(BOYSPR65);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
+DISC   12DISPLAYBASE
+LUCM    617010
+****
+0001
 LUPT   35LU30640NILboywtwP00000OPAPER_CHART
 ATTC   21catwwm10COLOUR4,3,4
 INST   53SY(BOYLAT53);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
@@ -18578,9 +18614,9 @@ DISC   12DISPLAYBASE
 LUCM    617010
 ****
 0001
-LUPT   35LU30676NILboywtwP00000OPAPER_CHART
+LUPT   35LU30679NILboywtwP00000OPAPER_CHART
 ATTC   17catwwm19COLOUR6
-INST   53SY(boyspp50);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
+INST   53SY(BOYCAN63);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
 DISC   12DISPLAYBASE
 LUCM    617010
 ****
@@ -18595,13 +18631,6 @@ LUCM    617010
 LUPT   35LU30678NILboywtwP00000OPAPER_CHART
 ATTC   16catwwm5COLOUR4
 INST   53SY(BOYLAT51);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
-DISC   12DISPLAYBASE
-LUCM    617010
-****
-0001
-LUPT   35LU30679NILboywtwP00000OPAPER_CHART
-ATTC    8COLOUR6
-INST   53SY(boyspp50);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)
 DISC   12DISPLAYBASE
 LUCM    617010
 ****
@@ -20174,16 +20203,16 @@ DISC    9STANDARD
 LUCM    622220
 ****
 0001
-LUPT   35LU93818NILtopmarP00006OPAPER_CHART
+LUPT   35LU94014NILtopmarP00006OPAPER_CHART
 ATTC   16TOPSHP1COLOUR4
-INST   13CS(TOPMAR01)
+INST   51SY(TOPMA102);TX(OBJNAM,3,2,2,'1508',1,-1,CHBLK,26)
 DISC    9STANDARD
 LUCM    622220
 ****
 0001
-LUPT   35LU93889NILtopmarP00006OPAPER_CHART
+LUPT   35LU94015NILtopmarP00006OPAPER_CHART
 ATTC   16TOPSHP2COLOUR3
-INST   13CS(TOPMAR01)
+INST   51SY(TOPMA100);TX(OBJNAM,3,2,2,'1508',1,-1,CHBLK,26)
 DISC    9STANDARD
 LUCM    622220
 ****
@@ -20195,9 +20224,9 @@ DISC    9STANDARD
 LUCM    622220
 ****
 0001
-LUPT   35LU93822NILtopmarP00006OPAPER_CHART
+LUPT   35LU94016NILtopmarP00006OPAPER_CHART
 ATTC   16TOPSHP5COLOUR3
-INST   13CS(TOPMAR01)
+INST   51SY(TOPMA114);TX(OBJNAM,3,2,2,'1508',1,-1,CHBLK,26)
 DISC    9STANDARD
 LUCM    622220
 ****
