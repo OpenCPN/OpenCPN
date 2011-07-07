@@ -234,8 +234,14 @@ void DashboardInstrument_Sun::SetData(int st, double data, wxString unit)
       
       wxDateTime sunset, sunrise;
       calculateSun(m_lat, m_lon, sunrise, sunset);
-      m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
-      m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
+      if (sunrise.GetYear() != 999) 
+            m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
+      else 
+            m_data1 = _T("---");
+      if (sunset.GetYear() != 999)
+            m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
+      else
+            m_data2 = _T("---");
 
       Refresh(false);
 }
@@ -294,135 +300,213 @@ wxString toSDMM ( int NEflag, double a )
       return s;
 }
 
-// Sunset/sunrise calculation
-// Modified from code at http://www.sci.fi/~benefon/rscalc_cpp.html
-// C++ program calculating the sunrise and sunset for
-// the current date and a fixed location(latitude,longitude)
-// Jarmo Lammi 1999 - 2000
-// Last update January 6th, 2000
-
 #ifndef PI
       #define PI        3.1415926535897931160E0      /* pi */
 #endif
 #define DEGREE    (PI/180.0)
 #define RADIAN    (180.0/PI)
 #define TPI       (2*PI)
-#define SUNDIA    0.53
-#define AIREFR    34.0/60.0 // athmospheric refraction degrees //
-
-double L,g;
-//double SunDia = 0.53;     // Sunradius degrees
-
-//   Get the days to J2000
-//   h is UT in decimal hours
-//   FNday only works between 1901 to 2099 - see Meeus chapter 7
-double FNday (int y, int m, int d, float h) {
-      int luku = - 7 * (y + (m + 9)/12)/4 + 275*m/9 + d;
-      // type casting necessary on PC DOS and TClite to avoid overflow
-      luku+= (long int)y*367;
-      return (double)luku - 730531.5 + h/24.0;
-};
-
-//   the function below returns an angle in the range
-//   0 to 2*pi
-double FNrange (double x) {
-      double b = x / TPI;
-      double a = TPI * (b - (long)(b));
-      if (a < 0) a = TPI + a;
-      return a;
-};
-
-// Calculating the hourangle
-//
-double f0(double lat, double declin) {
-      double fo,dfo;
-      // Correction: different sign at S HS
-      dfo = DEGREE*(0.5*SUNDIA + AIREFR); if (lat < 0.0) dfo = -dfo;
-      fo = tan(declin + dfo) * tan(lat*DEGREE);
-      if (fo>0.99999) fo=1.0; // to avoid overflow //
-      fo = asin(fo) + PI/2.0;
-      return fo;
-};
-
-
-//   Find the ecliptic longitude of the Sun
-double FNsun (double d) {
-
-      //   mean longitude of the Sun
-      L = FNrange(280.461 * DEGREE + .9856474 * DEGREE * d);
-
-      //   mean anomaly of the Sun
-      g = FNrange(357.528 * DEGREE + .9856003 * DEGREE * d);
-      //   Ecliptic longitude of the Sun
-
-      return FNrange(L + 1.915 * DEGREE * sin(g) + .02 * DEGREE * sin(2 * g));
-};
 
 // Convert decimal hours in hours and minutes
 wxDateTime convHrmn(double dhr) {
       int hr,mn;
       hr = (int) dhr;
       mn = (dhr - (double) hr)*60;
-      if(hr >= 24)
-         hr -= 24;
       return wxDateTime(hr, mn);
 };
 
-void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){
-      double y,m,day,h;
+void DashboardInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){
+/*
+Source:
+	Almanac for Computers, 1990
+	published by Nautical Almanac Office
+	United States Naval Observatory
+	Washington, DC 20392
 
-      time_t sekunnit;
-      struct tm *p;
+Inputs:
+	day, month, year:      date of sunrise/sunset
+	latitude, longitude:   location for sunrise/sunset
+	zenith:                Sun's zenith for sunrise/sunset
+	  offical      = 90 degrees 50'
+	  civil        = 96 degrees
+	  nautical     = 102 degrees
+	  astronomical = 108 degrees
+	
+	NOTE: longitude is positive for East and negative for West
+        NOTE: the algorithm assumes the use of a calculator with the
+        trig functions in "degree" (rather than "radian") mode. Most
+        programming languages assume radian arguments, requiring back
+        and forth convertions. The factor is 180/pi. So, for instance,
+        the equation RA = atan(0.91764 * tan(L)) would be coded as RA
+        = (180/pi)*atan(0.91764 * tan((pi/180)*L)) to give a degree
+        answer with a degree input for L.
 
-      //  get the date and time from the user
-      // read system date and extract the year
-      // FIXME: we should probably also get it from GPS...
+1. first calculate the day of the year
 
-      /** First get time **/
-      time(&sekunnit);
+	N1 = floor(275 * month / 9)
+	N2 = floor((month + 9) / 12)
+	N3 = (1 + floor((year - 4 * floor(year / 4) + 2) / 3))
+	N = N1 - (N2 * N3) + day - 30
+*/
+      int n = m_dt.GetDayOfYear();
+/*
+2. convert the longitude to hour value and calculate an approximate time
 
-      /** Next get localtime **/
+	lngHour = longitude / 15
+	
+	if rising time is desired:
+	  t = N + ((6 - lngHour) / 24)
+	if setting time is desired:
+	  t = N + ((18 - lngHour) / 24)
+*/
+      double lngHour = longit / 15;
+      double tris = n + ((6 - lngHour) / 24);
+      double tset = n + ((18 - lngHour) / 24);
+/*
 
-      p=localtime(&sekunnit);
+3. calculate the Sun's mean anomaly
+	
+	M = (0.9856 * t) - 3.289
+*/
+      double mris = (0.9856 * tris) - 3.289;
+      double mset = (0.9856 * tset) - 3.289;
+/*
+4. calculate the Sun's true longitude
+	
+	L = M + (1.916 * sin(M)) + (0.020 * sin(2 * M)) + 282.634
+	NOTE: L potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
+*/
+      double lris = mris + (1.916 * sin(DEGREE * mris)) + (0.020 * sin(2 * DEGREE * mris)) + 282.634;
+      if (lris > 360) lris -= 360;
+      if (lris < 0) lris += 360;
+      double lset = mset + (1.916 * sin(DEGREE * mset)) + (0.020 * sin(2 * DEGREE * mset)) + 282.634;
+      if (lset > 360) lset -= 360;
+      if (lset < 0) lset += 360;
+/*
+5a. calculate the Sun's right ascension
+	
+	RA = atan(0.91764 * tan(L))
+	NOTE: RA potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
+*/
+      double raris = RADIAN * atan(0.91764 * tan(DEGREE * lris));
+      if (raris > 360) raris -= 360;
+      if (raris < 0) raris += 360;
+      double raset = RADIAN * atan(0.91764 * tan(DEGREE * lset));
+      if (raset > 360) raset -= 360;
+      if (raset < 0) raset += 360;
+/*
+5b. right ascension value needs to be in the same quadrant as L
 
-      y = p->tm_year;
-      // this is Y2K compliant method
-      y+= 1900;
-      m = p->tm_mon + 1;
+	Lquadrant  = (floor( L/90)) * 90
+	RAquadrant = (floor(RA/90)) * 90
+	RA = RA + (Lquadrant - RAquadrant)
+*/
+      double lqris = (floor( lris/90)) * 90;
+      double raqris = (floor(raris/90)) * 90;
+      raris = raris + (lqris - raqris);
+      double lqset = (floor( lset/90)) * 90;
+      double raqset = (floor(raset/90)) * 90;
+      raset = raset + (lqset - raqset);
+/*
+5c. right ascension value needs to be converted into hours
 
-      day = p->tm_mday;
+	RA = RA / 15
+*/
+      raris = raris/15;
+      raset = raset/15;
+/*
+6. calculate the Sun's declination
 
-      h = 12;
+	sinDec = 0.39782 * sin(L)
+	cosDec = cos(asin(sinDec))
+*/
+      double sinDecris = 0.39782 * sin(DEGREE * lris);
+      double cosDecris = cos(asin(sinDecris));
+      double sinDecset = 0.39782 * sin(DEGREE * lset);
+      double cosDecset = cos(asin(sinDecset));
+/*
+7a. calculate the Sun's local hour angle
+	
+	cosH = (cos(zenith) - (sinDec * sin(latitude))) / (cosDec * cos(latitude))
+	
+	if (cosH >  1) 
+	  the sun never rises on this location (on the specified date)
+	if (cosH < -1)
+	  the sun never sets on this location (on the specified date)
+*/
+      double cosZenith = cos(DEGREE * ZENITH_OFFICIAL);
+      double coshris = (cosZenith - (sinDecris * sin(DEGREE * latit))) / (cosDecris * cos(DEGREE * latit));
+      double coshset = (cosZenith - (sinDecset * sin(DEGREE * latit))) / (cosDecset * cos(DEGREE * latit));
+      bool neverrises = false;
+      if (coshris > 1) neverrises = true;
+      if (coshris < -1) neverrises = true; //nohal - it's cosine - even value lower than -1 is ilegal... correct me if i'm wrong
+      bool neversets = false;
+      if (coshset < -1) neversets = true;
+      if (coshset > 1) neversets = true; //nohal - it's cosine - even value greater than 1 is ilegal... correct me if i'm wrong
+/*
+7b. finish calculating H and convert into hours
+	
+	if if rising time is desired:
+	  H = 360 - acos(cosH)
+	if setting time is desired:
+	  H = acos(cosH)
+	
+	H = H / 15
+*/
+      double hris = 360 - RADIAN * acos(coshris);
+      hris = hris/15;
+      double hset = RADIAN * acos(coshset);
+      hset = hset/15;
+/*
+8. calculate local mean time of rising/setting
+	
+	T = H + RA - (0.06571 * t) - 6.622
+*/
+      tris = hris + raris - (0.06571 * tris) - 6.622;
+      tset = hset + raset - (0.06571 * tset) - 6.622;
+/*
+9. adjust back to UTC
+	
+	UT = T - lngHour
+	NOTE: UT potentially needs to be adjusted into the range [0,24) by adding/subtracting 24
+*/
+      double utris = tris - lngHour;
+      if (utris > 24) utris -= 24;
+      if (utris <0) utris += 24;
+      double utset = tset - lngHour;
+      if (utset > 24) utset -= 24;
+      if (utset <0) utset += 24;
 
-      //double tzone=2.0;
+      sunrise = convHrmn(utris);
+      if (neverrises) sunrise.SetYear(999);
+      sunset = convHrmn(utset);
+      if (neversets) sunset.SetYear(999);
+/*
+Optional:
+10. convert UT value to local time zone of latitude/longitude
+	
+	localT = UT + localOffset
+*/
+}
 
-      double d = FNday(y, m, day, h);
-
-      //   Use FNsun to find the ecliptic longitude of the
-      //   Sun
-
-      double lambda = FNsun(d);
-
-      //   Obliquity of the ecliptic
-
-      double obliq = 23.439 * DEGREE - .0000004 * DEGREE * d;
-
-      //   Find the RA and DEC of the Sun
-
-      double alpha = atan2(cos(obliq) * sin(lambda), cos(lambda));
-      double delta = asin(sin(obliq) * sin(lambda));
-
-      // Find the Equation of Time
-      // in minutes
-      // Correction suggested by David Smith
-      double LL = L - alpha;
-      if (L < PI) LL += TPI;
-      double equation = 1440.0 * (1.0 - LL / TPI);
-      double ha = f0(latit,delta);
-
-      double riset = 12.0 - 12.0 * ha/PI /*+ tzone*/ - longit/15.0 + equation/60.0;
-      double settm = 12.0 + 12.0 * ha/PI /*+ tzone*/ - longit/15.0 + equation/60.0;
-
-      sunrise = convHrmn(riset);
-      sunset = convHrmn(settm);
+void DashboardInstrument_Sun::SetUtcTime(int st, wxDateTime data)
+{
+      if (m_cap_flag & st)
+      {
+            if (data.IsValid())
+            {
+                  m_dt = data;
+                  wxDateTime sunrise, sunset;
+                  calculateSun(m_lat, m_lon, sunrise, sunset);
+                  if (sunrise.GetYear() != 999) 
+                        m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
+                  else 
+                        m_data1 = _T("---");
+                  if (sunset.GetYear() != 999)
+                        m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
+                  else
+                        m_data2 = _T("---");
+            }
+            Refresh(false);
+      }
 }

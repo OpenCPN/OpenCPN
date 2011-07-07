@@ -1741,7 +1741,7 @@ void DashboardWindow::SendUtcTimeToAllInstruments(int st, wxDateTime value)
                         m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Moon)))
                   ((DashboardInstrument_Moon*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
             if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_CLK) &&
-                        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)))
+                        (m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)) || m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Sun))))
                   ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
       }
 }

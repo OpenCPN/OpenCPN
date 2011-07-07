@@ -65,7 +65,7 @@ void DashboardInstrument_Clock::SetUtcTime(int st, wxDateTime data)
       {
             if (data.IsValid())
             {
-                  m_data = wxString::Format(m_format, data.ToUTC().GetHour(), data.ToUTC().GetMinute(), data.ToUTC().GetSecond());
+                  m_data = data.ToUTC().FormatISOTime().Append(_T(" UTC"));
             }
 
             Refresh(false);
