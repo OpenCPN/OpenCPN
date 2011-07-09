@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
 "PO-Revision-Date: 2011-06-24 09:03+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -3135,8 +3135,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
 #
 #
 #
@@ -3161,8 +3163,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
+#
 #
 #
 #
@@ -3186,14 +3190,17 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(使用中航跡)"
 #
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "嘗試載入 libgps.so"
+#
 #
 #
 #
@@ -3218,8 +3225,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -3244,8 +3253,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -3270,8 +3281,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -3297,6 +3310,7 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
@@ -3304,8 +3318,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "無法載入 libgps.so"
+#
 #
 #
 #

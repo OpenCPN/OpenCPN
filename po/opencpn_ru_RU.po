@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -4732,6 +4732,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4749,6 +4750,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -4793,6 +4795,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4815,6 +4818,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
 #
 #
 #
@@ -4859,6 +4863,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4888,6 +4893,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4900,6 +4906,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
 #
 #
 #
@@ -4943,6 +4950,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4968,6 +4976,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5019,6 +5028,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5048,6 +5058,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5056,6 +5067,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 #
@@ -5107,6 +5119,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5139,6 +5152,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5153,6 +5167,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -5191,6 +5206,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5207,6 +5223,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 #
@@ -5245,6 +5262,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5255,6 +5273,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Морской стандарт"
+#
 #
 #
 #
@@ -5293,6 +5312,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5309,6 +5329,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -5348,6 +5369,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5365,6 +5387,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -5402,6 +5425,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5413,6 +5437,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Период последних отчётов:     %3d Сек.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5441,6 +5466,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -5485,6 +5511,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5495,6 +5522,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
 #
 #
 #
@@ -5538,6 +5566,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5559,6 +5588,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Показать диалог GRIB"
+#
 #
 #
 #
@@ -5595,6 +5625,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5611,6 +5642,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Характерная высота волны, м"
+#
 #
 #
 #
@@ -5634,6 +5666,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5641,6 +5674,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Включить слежение"
+#
 #
 #
 #
@@ -5668,6 +5702,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5682,6 +5717,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 #
@@ -5720,6 +5756,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5736,6 +5773,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 #

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
-"PO-Revision-Date: 2011-06-07 08:44+0100\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"PO-Revision-Date: 2011-07-08 14:42+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
 "MIME-Version: 1.0\n"
@@ -1185,7 +1185,7 @@ msgid "Course UP Mode"
 msgstr "Mód kurs nahoru"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr ""
+msgstr "Perioda aktualizace módu kurs nahoru (sek)"
 #
 #
 #
@@ -1444,9 +1444,8 @@ msgstr "ENC/Vector"
 #
 #
 #
-#, fuzzy
 msgid "ETA"
-msgstr "ETA:"
+msgstr "ETA"
 #
 #
 #
@@ -1558,9 +1557,8 @@ msgstr "Rozšiř trasu"
 #
 #
 #
-#, fuzzy
 msgid "Extend Track"
-msgstr "Smazat trasu"
+msgstr "Prodloužit stopu"
 #
 #
 msgid "ExtendedTideIcon"
@@ -1747,9 +1745,9 @@ msgstr ""
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "IMO:                 %8d\n"
-msgstr "ETA:                  "
+msgstr "IMO:                 %8d\n"
 #
 #
 #
@@ -2015,9 +2013,9 @@ msgstr "MMSI"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "MMSI:                 %09d\n"
-msgstr "ETA:                  "
+msgstr "MMSI:                 %09d\n"
 #
 #
 msgid "M_COVR ID"
@@ -2385,7 +2383,7 @@ msgstr "Smazat OpenCPN stopu"
 #
 #
 msgid "Options"
-msgstr "Nasatvení"
+msgstr "Nastavení"
 #
 #
 #
@@ -3410,9 +3408,8 @@ msgstr "Rozdělit trasu"
 #
 #
 #
-#, fuzzy
 msgid "Split Track"
-msgstr "Smazat trasu"
+msgstr "Rozdělit stopu"
 #
 #
 #
@@ -3500,9 +3497,8 @@ msgid "Tanker"
 msgstr ""
 #
 #
-#, fuzzy
 msgid "Target Count"
-msgstr "Info o cíli"
+msgstr "Počet cílů"
 #
 #
 msgid "Target info"
@@ -3616,9 +3612,8 @@ msgstr "Časy zobrazeny jako"
 #
 #
 #
-#, fuzzy
 msgid "Timestamp"
-msgstr "ETE/časová značka"
+msgstr "Časová značka"
 #
 #
 #
@@ -3786,9 +3781,8 @@ msgstr ""
 #
 #
 #
-#, fuzzy
 msgid "Unable to load libgps"
-msgstr "Nemohu nahrát libgps.so"
+msgstr "Nemohu nahrát libgps"
 #
 #
 #
@@ -4092,6 +4086,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
 #
@@ -4099,8 +4094,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
+#
 #
 #
 #
@@ -4131,8 +4128,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -4163,8 +4162,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -4193,6 +4194,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
@@ -4208,91 +4210,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
-#
-#
-#
-#
-#
-#~ msgid "Failed to load libgps.so"
-#~ msgstr "Nemohu nahrát libgps.so"
-#
-#
-#
-#
-#
-#~ msgid "Failed to load libgps.so.19"
-#~ msgstr "Nemohu nahrát libgps.so.19"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Import new layer"
-#~ msgstr "Importuj novou vrstvu"
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN nahrání souboru S57 SENC"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Perioda nedávného reportu:   %3d sek.\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid ""
-#~ "Size:                 %dm x %dm \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Velikost:           %dm x %dm\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Toggle Listing"
-#~ msgstr "Přepni výpis"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Toggle Names"
-#~ msgstr "Přepni jména"

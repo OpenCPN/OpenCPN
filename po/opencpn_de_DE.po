@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
 "PO-Revision-Date: 2011-06-15 00:01+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -2437,8 +2437,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
 #
 #
 #
@@ -2447,8 +2449,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Versuche libgps.so zu laden"
+#
 #
 #
 #
@@ -2457,8 +2461,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 #
@@ -2470,8 +2476,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Laden von libgps.so fehlgeschlagen"
+#
 #
 #
 #
@@ -2480,8 +2488,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Neuen Layer importieren"
+#
 #
 #
 #
@@ -2494,6 +2504,7 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm \n"
 #~ "\n"
@@ -2503,8 +2514,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Auflistung umsch."
+#
 #
 #
 #

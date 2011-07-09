@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -217,7 +217,6 @@ msgstr " Zone couverte  : "
 msgid " Projection:  "
 msgstr " Projection                  : "
 #
-#
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Echelle              : 1:%d"
@@ -225,7 +224,6 @@ msgstr " Echelle              : 1:%d"
 #
 msgid " Ship: "
 msgstr " Bateau :"
-#
 #
 msgid " Soundings:  "
 msgstr " Datum des sondes     : "
@@ -596,18 +594,15 @@ msgstr "Balise, marque spéciale"
 msgid "Beacon, Starboard Hand"
 msgstr "Balise tribord"
 #
-#
 msgid "Bearing"
 msgstr "Relèvement"
 #
-#
 #, c-format
 msgid "Bearing:                %03d Deg.\n"
-msgstr "Relèvement          : %03d   Deg.\n"
-#
+msgstr "Cible relevée au    : %03d   Deg.\n"
 #
 msgid "Bearing:                Unavailable\n"
-msgstr "Relèvement          : Indisponible\n"
+msgstr "Cible relevée au   : Indisponible\n"
 #
 msgid "Black"
 msgstr "Noir"
@@ -618,7 +613,6 @@ msgstr "Bleu"
 #
 msgid "Boundaries"
 msgstr "Limites de zones de cartes"
-#
 #
 msgid "Brg"
 msgstr "Relèvement"
@@ -847,18 +841,15 @@ msgstr "Cap vers le haut : Activer"
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "Course vers le haut : Mise à jour de la période (Sec.)"
 #
-#
 #, c-format
 msgid "Course:                 %03d Deg.\n"
-msgstr "Cap                 : %03d   Deg.\n"
-#
+msgstr "COG                 : %03d   Deg.\n"
 #
 msgid "Course:                 000 Deg.\n"
-msgstr "Cap                 : 000   Deg.\n"
-#
+msgstr "COG                 : 000   Deg.\n"
 #
 msgid "Course:                 Unavailable\n"
-msgstr "Cap                 : Indisponible\n"
+msgstr "COG                 : Indisponible\n"
 #
 #
 msgid "Create Route"
@@ -961,7 +952,7 @@ msgid "Depart From"
 msgstr "Départ de"
 #
 msgid "Departure Time (m/d/y h:m)"
-msgstr "Heur de départ (m/j/a h:m)"
+msgstr "Heure de départ (m/j/a h:m)"
 #
 #
 msgid "Depth Settings"
@@ -1030,18 +1021,17 @@ msgid "ENC/Vector"
 msgstr "ENC/Vectorielle"
 #
 msgid "ETA"
-msgstr "Heure est. d'arrivée:"
+msgstr "Date est. d'arrivée :"
 #
 #
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
 #
 msgid "ETA:"
-msgstr "Heure est. d'arrivée:"
-#
+msgstr "Date est. d'arrivée :"
 #
 msgid "ETA:                  "
-msgstr "Heure est. d'arrivée:"
+msgstr "Date est. d'arrivée :"
 #
 msgid "ETE"
 msgstr "ETE"
@@ -1212,7 +1202,7 @@ msgstr "PM"
 #
 #, c-format
 msgid "Heading:                %03d Deg.\n"
-msgstr "Relèvement          : %03d   Deg.\n"
+msgstr "Cap compas suivi    : %03d   Deg.\n"
 #
 #
 msgid "Help"
@@ -1838,7 +1828,7 @@ msgstr "Position"
 msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
-msgstr "Age du dernier rapport            : %3d Sec.\n"
+msgstr "Age du dernier rapport      : %3d Sec.\n"
 #
 #
 msgid "Position:               "
@@ -2194,7 +2184,6 @@ msgstr "Bateau de service, police fluviale, service du port"
 msgid "Set Anchor Watch"
 msgstr "Alarme de mouillage : Activer"
 #
-#
 msgid "Set Course Up Mode"
 msgstr "Cap vers le haut : Activer"
 #
@@ -2261,9 +2250,8 @@ msgstr "Afficher la grille"
 msgid "Show Important Text Only"
 msgstr "Afficher : Textes importants seulement"
 #
-#
 msgid "Show Lat/Long as"
-msgstr "Montrer lat/Long en :"
+msgstr "Afficher les latitudes/Longitudes en :"
 #
 #
 msgid "Show Light Descriptions"
@@ -2302,7 +2290,7 @@ msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
 #
 msgid "Show layers initially"
-msgstr "Montrer les couches initiales"
+msgstr "Charger les couches initiales"
 #
 # Couches
 msgid "Show on chart"
@@ -2491,9 +2479,8 @@ msgstr "Chaland-citerne, vrac liquide, de type N"
 msgid "Tanker"
 msgstr "Pétrolier"
 #
-#, fuzzy
 msgid "Target Count"
-msgstr "Informations"
+msgstr "Target count"
 #
 msgid "Target info"
 msgstr "Informations"
@@ -2563,9 +2550,8 @@ msgstr "Marée"
 msgid "TideCurrentGraphRollover"
 msgstr "Info affichées par survol pour marées et courants"
 #
-#
 msgid "Time Enroute"
-msgstr "Durée prévisible de navigation"
+msgstr "Durée de navigation"
 #
 msgid "Times shown as"
 msgstr "Date montrée comme"
@@ -2687,9 +2673,8 @@ msgstr ""
 "\n"
 "L'hôte gpsd est : "
 #
-#, fuzzy
 msgid "Unable to load libgps"
-msgstr "Impossible de charger le module libgps.so"
+msgstr "Impossible de charger le module libgps"
 #
 # AIS
 msgid "Undefined"
@@ -2913,18 +2898,3 @@ msgstr "WGS X"
 #
 msgid "wgsoy"
 msgstr "WGS Y"
-#
-#
-#
-#~ msgid "Attempting to load libgps.so"
-#~ msgstr "Tentative de chargement du module libgps.so\""
-#
-#
-#
-#~ msgid "Failed to load libgps.so"
-#~ msgstr "Echec du chargement du module libgps.so"
-#
-#
-#
-#~ msgid "Failed to load libgps.so.19"
-#~ msgstr "Module \"libgpsd.so.19\" non installé »"

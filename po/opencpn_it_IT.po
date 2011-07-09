@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -4090,8 +4090,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -4140,8 +4142,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
 #
 #
 #
@@ -4172,6 +4176,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
 #
@@ -4179,8 +4184,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -4207,8 +4214,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -4235,8 +4244,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 #
@@ -4261,9 +4272,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -4291,8 +4304,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -4342,6 +4357,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
@@ -4352,8 +4368,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Caricamento libgps.so fallito"
+#
 #
 #
 #

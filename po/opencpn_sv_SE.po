@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Version 2.4 build 611\n"
+"Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:04-0400\n"
-"PO-Revision-Date: 2011-06-12 11:03+0100\n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "MIME-Version: 1.0\n"
@@ -1017,11 +1017,11 @@ msgid "I&mport GPX..."
 msgstr "&Importera GPX..."
 #
 msgid "IMO:\n"
-msgstr ""
+msgstr "IMO:\n"
 #
-#, fuzzy, c-format
+#, c-format
 msgid "IMO:                 %8d\n"
-msgstr "Typ:                  "
+msgstr "IMO:                 %8d\n"
 #
 msgid "Icon"
 msgstr "Symbol"
@@ -1176,9 +1176,9 @@ msgstr "META-objekt"
 msgid "MMSI"
 msgstr "MMSI"
 #
-#, fuzzy, c-format
+#, c-format
 msgid "MMSI:                 %09d\n"
-msgstr "Typ:                  "
+msgstr "MMSI:                 %09d\n"
 #
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
@@ -2054,9 +2054,8 @@ msgstr "Tankpråm, flytande last, typ N"
 msgid "Tanker"
 msgstr "Tanker"
 #
-#, fuzzy
 msgid "Target Count"
-msgstr "Målinformation"
+msgstr "Antal mål"
 #
 msgid "Target info"
 msgstr "Målinformation"
@@ -2218,7 +2217,6 @@ msgstr ""
 "\n"
 "gpsd host är: "
 #
-#, fuzzy
 msgid "Unable to load libgps"
 msgstr "libgps kan inte laddas"
 #
@@ -2411,363 +2409,11 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
-#
-#
-#
-#~ msgid "&Close"
-#~ msgstr "Avsluta"
-#
-#
-#
-#
-#~ msgid "&Delete All Routes..."
-#~ msgstr "Ra&dera alla Rutter"
-#
-#
-#
-#
-#~ msgid "&Delete All Tracks..."
-#~ msgstr "Ra&dera alla Spår"
-#
-#
-#
-#
-#~ msgid "&Toggle Chart"
-#~ msgstr "Växla sjökort"
-#
-#
-#
-#
-#~ msgid "(Active Track)"
-#~ msgstr "(Aktivt Spår)"
-#
-#
-#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
-#
-#
-#
-#
-#~ msgid "CM93 Offset Off"
-#~ msgstr "CM93-korrektion av"
-#
-#
-#
-#
-#~ msgid "CM93 Offset On"
-#~ msgstr "CM93-korrektion på"
-#
-#
-#
-#
-#~ msgid "CM93 Offset Tool Off"
-#~ msgstr "CM93 korrektionsinställning"
-#
-#
-#
-#
-#~ msgid "CM93 Offset Tool....."
-#~ msgstr "Ställ in CM93-korrektion....."
-#
-#
-#
-#
-#~ msgid "CM93 Offsets On"
-#~ msgstr "CM93-korrektion på"
-#
-#
-#
-#
-#~ msgid "CallSign:  "
-#~ msgstr "Anropssignal:  "
-#
-#
-#
-#
-#~ msgid "Cell X Offset"
-#~ msgstr "Cell X-korrektion"
-#
-#
-#
-#
-#~ msgid "Cell Y Offset"
-#~ msgstr "Cell Y-korrektion"
-#
-#
-#
-#
-#~ msgid "Chart file corrupt.. disabling this chart \n"
-#~ msgstr "Sjökortet går ej att läsa, kortet inaktiveras \n"
-#
-#
-#
-#
-#~ msgid ""
-#~ "Class unknown\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Okänd klass\n"
-#~ "\n"
-#
-#
-#
-#
-#~ msgid "Class:     "
-#~ msgstr "Klass:     "
-#
-#
-#
-#
-#~ msgid ""
-#~ "Class:     B\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Klass:     B\n"
-#~ "\n"
-#
-#
-#
-#
-#~ msgid "Current Velocity, Kts."
-#~ msgstr "Strömhastighet, Knop."
-#
-#
-#
-#
-#~ msgid "Delete All Routes..."
-#~ msgstr "Radera alla Rutter"
-#
-#
-#
-#
-#~ msgid "ETA:                  Unknown"
-#~ msgstr "ETA:                  Okänd"
-#
-#
-#
-#
-#~ msgid "Exit OpenCPN"
-#~ msgstr "Avsluta OpenCPN"
-#
-#
-#
-#
-#~ msgid "Export...."
-#~ msgstr "Exportera...."
-#
-#
-#
-#
-#~ msgid "Failed to create ocpCursor."
-#~ msgstr "Misslyckades att skapa ocpCursor"
-#
-#
 #
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
 #
-#
-#
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "libgps kan inte laddas"
-#
-#
-#
-#
-#~ msgid "GPX"
-#~ msgstr "GPX"
-#
-#
-#
-#
-#~ msgid "GRIB"
-#~ msgstr "GRIB"
-#
-#
-#
-#
-#~ msgid "GRIB Data"
-#~ msgstr "Väderdata"
-#
-#
-#
-#
-#~ msgid "GRIB Display Control"
-#~ msgstr "Inställning för väder"
-#
-#
-#
-#
-#~ msgid "GRIB File Directory"
-#~ msgstr "Mapp för väderfiler"
-#
-#
-#
-#
-#~ msgid "Import new layer"
-#~ msgstr "Importera nytt lager"
-#
-#
-#
-#
-#~ msgid "MarinersStandard"
-#~ msgstr "Marinstandard"
-#
-#
-#
-#
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN S57 SENC läser fil"
-#
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-#~ msgstr "Öka skalan eller zooma ut för att visa regndata"
-#
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-#~ msgstr "Öka skalan eller zooma ut för att visa signifikant våghöjd"
-#
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-#~ msgstr "Öka skalan eller zooma ut för att visa GRIB strömmar"
-#
-#
-#
-#
-#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-#~ msgstr "Öka skalan eller zooma ut för att visa GRIB vattentemperatur"
-#
-#
-#
-#
-#~ msgid "PlugIn Name"
-#~ msgstr "PlugIn Namn"
-#
-#
-#
-#
-#~ msgid "Pressure, mBar"
-#~ msgstr "Barometertryck, mBar"
-#
-#
-#
-#
-#~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Senaste rapportperiod:   %3d Sek.\n"
-#~ "\n"
-#
-#
-#
-#
-#~ msgid "Route Manager..."
-#~ msgstr "Rutthantering..."
-#
-#
-#
-#
-#~ msgid "Sea Surface Temp, C"
-#~ msgstr "Vattentemperatur, C"
-#
-#
-#
-#
-#~ msgid "Select GRIB Directory"
-#~ msgstr "Välj mapp för väderfiler"
-#
-#
-#
-#
-#~ msgid "Send Route To GPS..."
-#~ msgstr "Skicka Rutt till GPS"
-#
-#
-#
-#
-#~ msgid "ShipName:  "
-#~ msgstr "Båtnamn:   "
-#
-#
-#
-#
-#~ msgid "Show GPX icons"
-#~ msgstr "Aktivera GPX menyer"
-#
-#
-#
-#
-#~ msgid "Show GRIB dialog"
-#~ msgstr "Aktivera vädermeny"
-#
-#
-#
-#
-#~ msgid "Show GRIB icon"
-#~ msgstr "Aktivera vädermeny"
-#
-#
-#
-#
-#~ msgid "Significant Wave Height, m"
-#~ msgstr "Signifikant våghöjd, m"
-#
-#
-#
-#
-#~ msgid ""
-#~ "Size:                 %dm x %dm \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Storlek:              %dm x %dm \n"
-#~ "\n"
-#
-#
-#
-#
-#~ msgid "Toggle Listing"
-#~ msgstr "Växla visning"
-#
-#
-#
-#
-#~ msgid "Toggle Names"
-#~ msgstr "Växla namn"
-#
-#
-#
-#
-#~ msgid "Use High Definition Graphics"
-#~ msgstr "Använd högupplöst grafik"
-#
-#
-#
-#
-#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
-#~ msgstr "Varning:  QuickScat väderdata är %d timmar gammal."
-#
-#
-#
-#
-#~ msgid "Wind Direction"
-#~ msgstr "Vindriktning"
-#
-#
-#
-#
-#~ msgid "Wind Speed, Kts."
-#~ msgstr "Vindhastighet, knop"
-#
-#
-#
-#
-#~ msgid "Övrigt"
-#~ msgstr "Etc."
