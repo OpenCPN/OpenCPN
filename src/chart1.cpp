@@ -5102,7 +5102,7 @@ int MyFrame::DoOptionsDialog()
                         chart_file_name = Current_Ch->GetFullPath();
 
 
-                  UpdateChartDatabaseInplace(*pWorkDirArray, (rr & FORCE_UPDATE), true, *pChartListFileName);
+                  UpdateChartDatabaseInplace(*pWorkDirArray, ((rr & FORCE_UPDATE) == 1), true, *pChartListFileName);
 
                   //    Re-open the last open chart
                   int dbii = ChartData->FinddbIndex(chart_file_name);
