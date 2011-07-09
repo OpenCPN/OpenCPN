@@ -3604,9 +3604,6 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                   {
                         parent_frame->ToggleENCText();
                         b_proc = true;
-       wxXmlDocument doc = GetChartDatabaseEntryXML(2, true);
-       doc.Save(_T("/home/dsr/xmltest.xml"));
-
                         break;
                   }
                   case WXK_F4:
