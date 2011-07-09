@@ -147,6 +147,14 @@ ChartDB::~ChartDB()
       delete pChartCache;
 }
 
+bool ChartDB::LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check)
+{
+      m_dir_array = dir_array_check;
+      return ChartDatabase::Read(*filename);
+
+      // Check chartDirs against dir_array_check
+}
+
 void ChartDB::PurgeCache()
 {
 //    Empty the cache

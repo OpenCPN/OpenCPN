@@ -109,7 +109,7 @@ public:
       virtual ~ChartDB();
 
 
-      bool LoadBinary(wxString *filename) { return ChartDatabase::Read(*filename); }
+      bool LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check);
       bool SaveBinary(wxString *filename) { return ChartDatabase::Write(*filename); }
 
       int  BuildChartStack(ChartStack * cstk, float lat, float lon);

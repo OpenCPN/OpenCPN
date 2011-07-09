@@ -223,6 +223,10 @@ public:
     bool Read(const wxString &filePath);
     bool Write(const wxString &filePath);
 
+    wxString &GetDBFileName(){ return m_DBFileName; }
+    ArrayOfCDI& GetChartDirArray(){ return m_dir_array; }
+    wxArrayString &GetChartDirArrayString(){ return m_chartDirs; }
+
     int GetChartTableEntries() const { return chartTable.size(); }
     const ChartTableEntry &GetChartTableEntry(int index) const;
 
@@ -251,6 +255,7 @@ protected:
     ChartTableEntry *CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc);
 
     ArrayOfChartClassDescriptor    m_ChartClassDescriptorArray;
+    ArrayOfCDI    m_dir_array;
 
 private:
     bool IsChartDirUsed(const wxString &theDir);
@@ -262,11 +267,12 @@ private:
     wxString Check_CM93_Structure(wxString dir_name);
 
     bool          bValid;
-    wxArrayString chartDirs;
+    wxArrayString m_chartDirs;
     int           m_dbversion;
     ChartTable    chartTable;
 
     ChartTableEntry           m_ChartTableEntryDummy;   // used for return value if database is not valid
+    wxString      m_DBFileName;
 
 };
 

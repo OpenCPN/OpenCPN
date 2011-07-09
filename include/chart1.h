@@ -312,6 +312,9 @@ class MyFrame: public wxFrame
 
     void ActivateMOB(void);
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
+    bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
+                                    bool b_force, bool b_prog,
+                                    wxString &ChartListFileName);
 
   private:
     void DoSetSize(void);

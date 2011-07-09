@@ -293,7 +293,6 @@ options::~options( )
 void options::Init()
 {
     pDirCtl = NULL;
-    m_pCurrentDirList = NULL;
     m_pWorkDirList = NULL;
 
     pDebugShowStat = NULL;
@@ -1347,13 +1346,13 @@ void options::SetInitialSettings()
       wxString s;
       wxString dirname;
 
-      if(m_pCurrentDirList)
+//      if(m_pCurrentDirList)
       {
-            int nDir = m_pCurrentDirList->GetCount();
+            int nDir = m_CurrentDirList.GetCount();
 
             for(int i=0 ; i<nDir ; i++)
             {
-                  dirname = m_pCurrentDirList->Item(i).fullpath;
+                  dirname = m_CurrentDirList.Item(i).fullpath;
                   if(!dirname.IsEmpty())
                   {
                       if (pListBox)
@@ -1695,15 +1694,15 @@ void options::UpdateWorkArrayFromTextCtl()
                               //    if found, add the info to the work list, preserving the magic number
                               //    If not found, make a new ChartDirInfo, and add it
                         bool b_added = false;
-                        if(m_pCurrentDirList)
+//                        if(m_pCurrentDirList)
                         {
-                              int nDir = m_pCurrentDirList->GetCount();
+                              int nDir = m_CurrentDirList.GetCount();
 
                               for(int i=0 ; i<nDir ; i++)
                               {
-                                    if(m_pCurrentDirList->Item(i).fullpath == dirname)
+                                    if(m_CurrentDirList.Item(i).fullpath == dirname)
                                     {
-                                          ChartDirInfo cdi = m_pCurrentDirList->Item(i);
+                                          ChartDirInfo cdi = m_CurrentDirList.Item(i);
                                           m_pWorkDirList->Add(cdi);
                                           b_added = true;
                                           break;
@@ -1735,14 +1734,14 @@ void options::OnXidOkClick( wxCommandEvent& event )
       }
       else
       {
-          if(m_pCurrentDirList)
+//          if(m_pCurrentDirList)
           {
               m_pWorkDirList->Clear();
-              int nDir = m_pCurrentDirList->GetCount();
+              int nDir = m_CurrentDirList.GetCount();
 
               for(int i=0 ; i<nDir ; i++)
               {
-                    ChartDirInfo cdi = m_pCurrentDirList->Item(i);
+                    ChartDirInfo cdi = m_CurrentDirList.Item(i);
                     m_pWorkDirList->Add(cdi);
               }
           }
@@ -2240,13 +2239,13 @@ void options::PopulateChartsPage()
 
           //        Currently selected chart dirs
       wxString dirname;
-      if(m_pCurrentDirList && pListBox)
+      if(/*m_pCurrentDirList && */pListBox)
       {
             pListBox->Clear();
-            int nDir = m_pCurrentDirList->GetCount();
+            int nDir = m_CurrentDirList.GetCount();
             for(int i=0 ; i<nDir ; i++)
             {
-                  dirname = m_pCurrentDirList->Item(i).fullpath;
+                  dirname = m_CurrentDirList.Item(i).fullpath;
                   if(!dirname.IsEmpty())
                         pListBox->Append(dirname);
             }

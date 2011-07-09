@@ -385,7 +385,8 @@ public:
       virtual bool UpdateWayPoint(RoutePoint *pWP);
       virtual bool DeleteWayPoint(RoutePoint *pWP);
 
-      virtual bool UpdateChartDirs(ArrayOfCDI& dirarray);
+      virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
+      virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
       virtual void UpdateNavObj();
       virtual void StoreNavObjChanges();

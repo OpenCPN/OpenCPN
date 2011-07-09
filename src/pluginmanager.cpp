@@ -47,7 +47,7 @@ extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
 extern wxLocale         locale_def_lang;
 extern ChartDB         *ChartData;
-
+extern MyFrame         *gFrame;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -1011,7 +1011,34 @@ wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom)
       return doc;
 }
 
+bool UpdateChartDBInplace(wxArrayString dir_array,
+                           bool b_force_update,
+                           bool b_ProgressDialog)
+{
+      //    Make an array of CDI
+      ArrayOfCDI ChartDirArray;
+      for(unsigned int i=0 ; i < dir_array.GetCount(); i++)
+      {
+            wxString dirname = dir_array.Item(i);
+            ChartDirInfo cdi;
+            cdi.fullpath = dirname;
+            cdi.magic_number = _T("");
+            ChartDirArray.Add ( cdi );
+      }
 
+      bool b_ret =gFrame->UpdateChartDatabaseInplace(ChartDirArray,
+                  b_force_update, b_ProgressDialog,
+                  ChartData->GetDBFileName());
+
+      gFrame->ChartsRefresh(-1);
+
+      return b_ret;
+}
+
+wxArrayString GetChartDBDirArrayString()
+{
+      return ChartData->GetChartDirArrayString();
+}
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------

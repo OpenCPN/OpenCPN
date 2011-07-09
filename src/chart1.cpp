@@ -179,8 +179,6 @@ double          initial_scale_ppm;
 
 int             g_nbrightness;
 
-ArrayOfCDI      g_ChartDirArray;
-
 bool            bDBUpdateInProgress;
 
 ThumbWin        *pthumbwin;
@@ -2577,6 +2575,11 @@ bool MyApp::OnInit()
 
        bool b_SetInitialPoint = false;
 
+       //   Build the initial chart dir array
+       ArrayOfCDI      ChartDirArray;
+       pConfig->LoadChartDirArray(ChartDirArray);
+
+
         //  Windows installer may have left hints regarding the initial chart dir selection
 #ifdef __WXMSW__
         if(g_bFirstRun)
@@ -2599,14 +2602,14 @@ bool MyApp::OnInit()
                   cdi.fullpath = token.Trim();
                   cdi.magic_number = _T("");
 
-                  g_ChartDirArray.Add ( cdi );
+                  ChartDirArray.Add ( cdi );
                   ndirs++;
               }
 
             }
 
             if(ndirs)
-                  pConfig->UpdateChartDirs(g_ChartDirArray);
+                  pConfig->UpdateChartDirs(ChartDirArray);
 
             //    As a favor to new users, poll the database and
             //    move the initial viewport so that a chart will come up.
@@ -2620,16 +2623,16 @@ bool MyApp::OnInit()
 //    So it is best to simply delete it if present.
 //    TODO  There is a possibility of recreating the dir list from the database itself......
 
-        if(!g_ChartDirArray.GetCount())
+        if(!ChartDirArray.GetCount())
             ::wxRemoveFile(*pChartListFileName);
 
 //      Try to load the current chart list Data file
         ChartData = new ChartDB(gFrame);
-        if(!ChartData->LoadBinary(pChartListFileName))
+        if(!ChartData->LoadBinary(pChartListFileName, ChartDirArray))
         {
                 bDBUpdateInProgress = true;
 
-                if(g_ChartDirArray.GetCount())
+                if(ChartDirArray.GetCount())
                 {
 //              Create and Save a new Chart Database based on the hints given in the config file
 
@@ -2652,7 +2655,7 @@ bool MyApp::OnInit()
                         wxProgressDialog *pprog = new wxProgressDialog (  _("OpenCPN Chart Update"), line, 100, NULL,
                                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-                        ChartData->Create(g_ChartDirArray, pprog);
+                        ChartData->Create(ChartDirArray, pprog);
                         ChartData->SaveBinary(pChartListFileName);
 
                         delete pprog;
@@ -5030,7 +5033,7 @@ int MyFrame::DoOptionsDialog()
       pSetDlg->SetInitChartDir(*pInit_Chart_Dir);
 
 //      Pass two working pointers for Chart Dir Dialog
-      pSetDlg->SetCurrentDirListPtr(&g_ChartDirArray);
+      pSetDlg->SetCurrentDirList(ChartData->GetChartDirArray());
       ArrayOfCDI *pWorkDirArray = new ArrayOfCDI;
       pSetDlg->SetWorkDirListPtr(pWorkDirArray);
 
@@ -5087,8 +5090,6 @@ int MyFrame::DoOptionsDialog()
       {
             if((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE)))
             {
-                  FrameTimer1.Stop();                  // stop other asynchronous activity
-
 
                   //    Capture the currently open chart
                   wxString chart_file_name;
@@ -5101,55 +5102,11 @@ int MyFrame::DoOptionsDialog()
                         chart_file_name = Current_Ch->GetFullPath();
 
 
-                  cc1->InvalidateQuilt();
-                  cc1->SetQuiltRefChart(-1);
+                  UpdateChartDatabaseInplace(*pWorkDirArray, (rr & FORCE_UPDATE), true, *pChartListFileName);
 
-                  Current_Ch = NULL;
-
-                  delete pCurrentStack;
-                  pCurrentStack = NULL;
-
-
-                  g_ChartDirArray = *pWorkDirArray;
-
-                  bool b_force = false;
-                  if(rr & FORCE_UPDATE)
-                        b_force = true;
-
-                  ::wxBeginBusyCursor();
-
-                  pSetDlg->Hide();
-
-                  wxProgressDialog *pprog = new wxProgressDialog (  _("OpenCPN Chart Update"),
-                              _T(""), 100, this,
-                              wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
-
-
-                  //    Make sure the dialog is big enough to be readable
-                  pprog->Hide();
-                  wxSize sz = pprog->GetSize();
-                  wxSize csz = GetClientSize();
-                  sz.x = csz.x * 7 / 10;
-                  pprog->SetSize(sz);
-                  pprog->Centre();
-                  pprog->Update(1, _T(""));
-                  pprog->Show();
-
-
-                  ChartData->Update(g_ChartDirArray, b_force, pprog );           // with progress dialog
-                  ChartData->SaveBinary(pChartListFileName);
-
-                  delete pprog;
-
-                  ::wxEndBusyCursor();
-
-
-                  pConfig->UpdateChartDirs(g_ChartDirArray);
-
-                  //    Re-open the correct file
+                  //    Re-open the last open chart
                   int dbii = ChartData->FinddbIndex(chart_file_name);
                   ChartsRefresh(dbii);
-
             }
 
             if((*pNMEADataSource != previous_NMEA_source) || ( previous_bGarminHost != g_bGarminHost))
@@ -5291,6 +5248,8 @@ void MyFrame::ChartsRefresh(int dbi_hint)
 {
       ::wxBeginBusyCursor();
 
+      bool b_run = FrameTimer1.IsRunning();
+
       FrameTimer1.Stop();                  // stop other asynchronous activity
 
       cc1->InvalidateQuilt();
@@ -5365,11 +5324,68 @@ void MyFrame::ChartsRefresh(int dbi_hint)
       UpdateGPSCompassStatusBox(true);
 
       cc1->SetCursor(wxCURSOR_ARROW);
-      FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
+
+      if(b_run)
+            FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
 
       ::wxEndBusyCursor();
 
 }
+
+bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force, bool b_prog, wxString &ChartListFileName)
+{
+      bool b_run = FrameTimer1.IsRunning();
+      FrameTimer1.Stop();                  // stop other asynchronous activity
+
+      cc1->InvalidateQuilt();
+      cc1->SetQuiltRefChart(-1);
+
+      Current_Ch = NULL;
+
+      delete pCurrentStack;
+      pCurrentStack = NULL;
+
+      ::wxBeginBusyCursor();
+
+      wxProgressDialog *pprog = NULL;
+      if(b_prog)
+      {
+            pprog = new wxProgressDialog (  _("OpenCPN Chart Update"),
+                  _T(""), 100, this,
+                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+
+
+                  //    Make sure the dialog is big enough to be readable
+            pprog->Hide();
+            wxSize sz = pprog->GetSize();
+            wxSize csz = GetClientSize();
+            sz.x = csz.x * 7 / 10;
+            pprog->SetSize(sz);
+            pprog->Centre();
+            pprog->Update(1, _T(""));
+            pprog->Show();
+            pprog->Raise();
+      }
+
+
+      ChartData->Update(DirArray, b_force, pprog );
+      ChartData->SaveBinary(&ChartListFileName);
+
+      delete pprog;
+
+      ::wxEndBusyCursor();
+
+
+      pConfig->UpdateChartDirs(DirArray);
+
+      if(b_run)
+            FrameTimer1.Start(TIMER_GFRAME_1,wxTIMER_CONTINUOUS);
+
+      return true;
+}
+
+
+
 
 void MyFrame::ToggleQuiltMode(void)
 {
@@ -10099,12 +10115,12 @@ void ocpnToolBarSimple::DrawTool(wxDC& dc, wxToolBarToolBase *toolBase)
 
                   if(tool->b_hilite)
                   {
-                        bg_pen.SetColour(m_toolOutlineColour);
+                        bg_pen.SetColour(GetGlobalColor(_T("CHBLK")));
                         bg_brush.SetColour(GetBackgroundColour());
                   }
                   else
                   {
-                        bg_pen.SetColour(m_toolOutlineColour);
+                        bg_pen.SetColour(GetGlobalColor(_T("CHBLK")));
                         bg_brush.SetColour(m_toggle_bg_color);
 
                         //    If the tool has a disabled state bitmap, then assum the enabled and disabled bitmaps

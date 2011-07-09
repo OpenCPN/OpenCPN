@@ -604,6 +604,8 @@ bool ChartDatabase::Read(const wxString &filePath)
     wxFileName file(filePath);
     if (!file.FileExists()) return false;
 
+    m_DBFileName = filePath;
+
     wxFileInputStream ifs(filePath);
     if(!ifs.Ok()) return false;
 
@@ -640,7 +642,7 @@ bool ChartDatabase::Read(const wxString &filePath)
         msg.Printf(wxT("  Chart directory #%d: "), iDir);
         msg.Append(dir);
         wxLogMessage(msg);
-        chartDirs.Add(dir);
+        m_chartDirs.Add(dir);
     }
 
     entries = cth.GetTableEntries();
@@ -669,11 +671,11 @@ bool ChartDatabase::Write(const wxString &filePath)
     wxFileOutputStream ofs(filePath);
     if(!ofs.Ok()) return false;
 
-    ChartTableHeader cth(chartDirs.GetCount(), chartTable.GetCount());
+    ChartTableHeader cth(m_chartDirs.GetCount(), chartTable.GetCount());
     cth.Write(ofs);
 
     for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
-        wxString &dir = chartDirs[iDir];
+        wxString &dir = m_chartDirs[iDir];
         int dirlen = dir.length();
         char s[200];
         strncpy(s, dir.mb_str(wxConvUTF8), 199);
@@ -899,9 +901,11 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
 // ----------------------------------------------------------------------------
 bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxProgressDialog *pprog)
 {
+      m_dir_array = dir_array;
+
       bValid = false;
 
-      chartDirs.Clear();
+      m_chartDirs.Clear();
       chartTable.Clear();
       Update(dir_array, true, pprog);                   // force the update the reload everything
 
@@ -923,13 +927,15 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxProgressDialog *pprog)
 // ----------------------------------------------------------------------------
 bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog *pprog)
 {
+      m_dir_array = dir_array;
+
       bValid = false;               // database is not useable right now...
 
       //  Mark all charts provisionally invalid
       for(unsigned int i=0 ; i<chartTable.GetCount() ; i++)
             chartTable[i].SetValid(false);
 
-      chartDirs.Clear();
+      m_chartDirs.Clear();
 
       if(bForce)
             chartTable.Clear();
@@ -963,7 +969,7 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog 
             dir_array.RemoveAt(j);
             dir_array.Insert(dir_info, j);
 
-            chartDirs.Add(dir_info.fullpath);
+            m_chartDirs.Add(dir_info.fullpath);
       }           //for
 
 

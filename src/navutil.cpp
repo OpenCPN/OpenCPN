@@ -3203,65 +3203,6 @@ int MyConfig::LoadMyConfig ( int iteration )
       }
 #endif
 
-//    Chart Directories
-      SetPath ( _T ( "/ChartDirectories" ) );
-      int iDirMax = GetNumberOfEntries();
-      if ( iDirMax )
-      {
-            g_ChartDirArray.Empty();
-            wxString str, val;
-            long dummy;
-            int nAdjustChartDirs = 0;
-            int iDir = 0;
-            bool bCont = pConfig->GetFirstEntry ( str, dummy );
-            while ( bCont )
-            {
-                  pConfig->Read ( str, &val );              // Get a Directory name
-
-                  wxString dirname ( val );
-                  if ( !dirname.IsEmpty() )
-                  {
-
-                        /*     Special case for first time run after Windows install with sample chart data...
-                               We desire that the sample configuration file opencpn.ini should not contain any
-                               installation dependencies, so...
-                               Detect and update the sample [ChartDirectories] entries to point to the Shared Data directory
-                               For instance, if the (sample) opencpn.ini file should contain shortcut coded entries like:
-
-                               [ChartDirectories]
-                               ChartDir1=SampleCharts\\MaptechRegion7
-
-                               then this entry will be updated to be something like:
-                               ChartDir1=c:\Program Files\opencpn\SampleCharts\\MaptechRegion7
-
-                        */
-                        if ( dirname.Find ( _T ( "SampleCharts" ) ) == 0 )    // only update entries starting with "SampleCharts"
-                        {
-                              nAdjustChartDirs++;
-
-                              pConfig->DeleteEntry ( str );
-                              wxString new_dir = dirname.Mid ( dirname.Find ( _T ( "SampleCharts" ) ) );
-                              new_dir.Prepend ( g_SData_Locn );
-                              dirname=new_dir;
-                        }
-
-
-                        ChartDirInfo cdi;
-                        cdi.fullpath = dirname.BeforeFirst('^');
-                        cdi.magic_number = dirname.AfterFirst('^');
-
-                        g_ChartDirArray.Add ( cdi );
-                        iDir++;
-                  }
-
-                  bCont = pConfig->GetNextEntry ( str, dummy );
-            }
-
-            if ( nAdjustChartDirs )
-                  pConfig->UpdateChartDirs ( g_ChartDirArray );
-      }
-
-
 
 //    Fonts
 
@@ -3739,6 +3680,72 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       return ( 0 );
 }
+
+bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray)
+{
+      //    Chart Directories
+      SetPath ( _T ( "/ChartDirectories" ) );
+      int iDirMax = GetNumberOfEntries();
+      if ( iDirMax )
+      {
+            ChartDirArray.Empty();
+            wxString str, val;
+            long dummy;
+            int nAdjustChartDirs = 0;
+            int iDir = 0;
+            bool bCont = pConfig->GetFirstEntry ( str, dummy );
+            while ( bCont )
+            {
+                  pConfig->Read ( str, &val );              // Get a Directory name
+
+                  wxString dirname ( val );
+                  if ( !dirname.IsEmpty() )
+                  {
+
+                        /*     Special case for first time run after Windows install with sample chart data...
+                        We desire that the sample configuration file opencpn.ini should not contain any
+                        installation dependencies, so...
+                        Detect and update the sample [ChartDirectories] entries to point to the Shared Data directory
+                               For instance, if the (sample) opencpn.ini file should contain shortcut coded entries like:
+
+                        [ChartDirectories]
+                        ChartDir1=SampleCharts\\MaptechRegion7
+
+                               then this entry will be updated to be something like:
+                        ChartDir1=c:\Program Files\opencpn\SampleCharts\\MaptechRegion7
+
+                        */
+                        if ( dirname.Find ( _T ( "SampleCharts" ) ) == 0 )    // only update entries starting with "SampleCharts"
+                        {
+                              nAdjustChartDirs++;
+
+                              pConfig->DeleteEntry ( str );
+                              wxString new_dir = dirname.Mid ( dirname.Find ( _T ( "SampleCharts" ) ) );
+                              new_dir.Prepend ( g_SData_Locn );
+                              dirname=new_dir;
+                        }
+
+
+                        ChartDirInfo cdi;
+                        cdi.fullpath = dirname.BeforeFirst('^');
+                        cdi.magic_number = dirname.AfterFirst('^');
+
+                        ChartDirArray.Add ( cdi );
+                        iDir++;
+                  }
+
+                  bCont = pConfig->GetNextEntry ( str, dummy );
+            }
+
+            if ( nAdjustChartDirs )
+                  pConfig->UpdateChartDirs ( ChartDirArray );
+      }
+
+      return true;
+}
+
+
+
 
 
 bool MyConfig::AddNewRoute ( Route *pr, int crm )

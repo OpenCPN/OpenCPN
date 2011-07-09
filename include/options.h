@@ -179,7 +179,7 @@ public:
     void SetInitChartDir(wxString &dir){ m_init_chart_dir = dir;}
     void SetInitialSettings();
 
-    void SetCurrentDirListPtr(ArrayOfCDI *p)  {m_pCurrentDirList = p;}
+    void SetCurrentDirList(ArrayOfCDI p)  {m_CurrentDirList = p;}
     void SetWorkDirListPtr(ArrayOfCDI *p)  {m_pWorkDirList = p;}
 
     void SetConfigPtr(MyConfig *p)  {m_pConfig = p;}
@@ -353,7 +353,7 @@ public:
 
     wxCheckBox*             pSettingsCB1;
 
-    ArrayOfCDI              *m_pCurrentDirList;
+    ArrayOfCDI              m_CurrentDirList;
     ArrayOfCDI              *m_pWorkDirList;
 
     MyConfig                *m_pConfig;

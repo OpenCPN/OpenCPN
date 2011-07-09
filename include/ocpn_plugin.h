@@ -439,5 +439,11 @@ extern "C"  DECL_EXP void PushNMEABuffer( wxString str );
 
 extern  DECL_EXP wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom);
 
+extern  DECL_EXP bool UpdateChartDBInplace(wxArrayString dir_array,
+                          bool b_force_update,
+                          bool b_ProgressDialog);
+extern  DECL_EXP wxArrayString GetChartDBDirArrayString();
+
+
 #endif            // _PLUGIN_H_
 
