@@ -1,11 +1,20 @@
-opencpn (2.4.628-1) unstable; urgency=low
+opencpn (2.4.708+dfsg-1) unstable; urgency=low
+
+  * Packaged for upstream git beta version 2.4.708
+  * Fixed use_pkg_tinyxml.patch to apply cleanly with upstream changes
+  * Added "dfsg" to version number
+  * Added DEP-5 machine-readable copyright file
+  * Closing ITP. (Closes: #538067)
+
+ -- Anton Martchukov <anton@martchukov.com>  Sat, 09 Jul 2011 17:13:00 +0400
+
+opencpn (2.4.628-0) unstable; urgency=low
 
   * Packaged for upstream git beta version 2.4.628
   * Drop plugin path patch (merged upstream)
   * Reset unreleased package versions to x.y.z-0 in Debian changelog
   * Remove some embedded files in the source package which are unused
   * Use system's TinyXML instead of embedded copy
-  * Closing ITP. (Closes: #538067)
 
  -- Hamish B <hamish_b@yahoo.com>  Wed, 29 Jun 2011 20:56:53 +1200
 
