@@ -73,6 +73,7 @@ extern  bool            g_bGPSAISMux;
 extern FontMgr          *pFontMgr;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
+extern MyConfig         *pConfig;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -4243,10 +4244,22 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       {
             wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose(true).Float().FloatingPosition( 50, 200 ).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true);
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
+
+            //    If the list got accidentally dropped on top of the chart bar, move it away....
+            if(pane.IsDocked() && (pane.dock_row == 0))
+            {
+                  pane.Float();
+                  pane.Row(1);
+                  pane.Position(0);
+
+                  g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane);
+                  pConfig->UpdateSettings();
+            }
+
             m_pAuiManager->AddPane( this, pane );
+            m_pAuiManager->Update();
 
             m_pAuiManager->Connect( wxEVT_AUI_PANE_CLOSE, wxAuiManagerEventHandler( AISTargetListDialog::OnPaneClose ), NULL, this );
-            m_pAuiManager->Update();
       }
 }
 
@@ -4261,6 +4274,7 @@ void AISTargetListDialog::OnClose(wxCloseEvent &event)
 {
       Disconnect_decoder();
 }
+
 void AISTargetListDialog::Disconnect_decoder()
 {
       m_pdecoder = NULL;
