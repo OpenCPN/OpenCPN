@@ -213,8 +213,6 @@ public:
 
       void FormatStat(void);
 
-      int         Size_X, Size_Y, Pos_X, Pos_Y;
-
       PianoWin    *pPiano;
       TStatWin    *pTStat1;
       TStatWin    *pTStat2;
