@@ -2565,6 +2565,28 @@ bool MyApp::OnInit()
         pConfig->Read ( _T ( "AUIPerspective" ), &perspective );
 
        g_pauimgr->LoadPerspective(perspective, false);
+
+       //   Correct any faulty chart bar position
+       g_pauimgr->GetPane(stats).Row(0);
+       g_pauimgr->GetPane(stats).Position(1);
+
+       wxAuiPaneInfoArray pane_array = g_pauimgr->GetAllPanes();
+       for(unsigned int i=0 ; i < pane_array.GetCount() ; i++)
+       {
+             wxAuiPaneInfo pane = pane_array.Item(i);
+             if((pane.name != _T("PianoStats")) && (pane.name != _T("ChartCanvas")))
+             {
+                   if(pane.IsDocked() && (pane.dock_row == 0))
+                   {
+                         pane.Float();
+                         pane.Row(1);
+                         pane.Position(0);
+
+                   }
+             }
+       }
+
+
        g_pauimgr->Update();
 
        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
@@ -4368,7 +4390,6 @@ void MyFrame::DoSetSize(void)
 
         if(g_FloatingCompassDialog)
         {
-//             g_FloatingCompassDialog->Move(x - g_FloatingCompassDialog->GetSize().x, 0);
              UpdateGPSCompassStatusBox(true);
         }
 
@@ -4378,21 +4399,18 @@ void MyFrame::DoSetSize(void)
 
         if(stats)
         {
-                stats->Size_X = cccw;
-                stats->Size_Y = stat_height;
-                stats->Pos_X = 0;
-                stats->Pos_Y = ccch;
+
                 if(g_pauimgr && g_pauimgr->GetPane(stats).IsOk())
                 {
                       //      Correct stats y size if somehow corrupted
-                      if(stats->GetSize().y != stats->Size_Y)
-                            stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+//                      if(stats->GetSize().y != stat_height)
+//                            stats->SetSize(0, ccch ,cccw, stat_height);
 
-                      g_pauimgr->GetPane(stats).BestSize(stats->Size_X, stats->Size_Y);
+                      g_pauimgr->GetPane(stats).BestSize(cccw, stat_height);
                       g_pauimgr->Update();
                 }
                  else
-                       stats->SetSize(stats->Pos_X,stats->Pos_Y,stats->Size_X, stats->Size_Y);
+                       stats->SetSize(0, ccch, cccw, stat_height);
 
                 if(stats->IsShown())
                 {
@@ -6271,7 +6289,9 @@ void MyFrame::HandlePianoRollover(int selected_index, int selected_dbIndex)
             stats->GetPosition(&sx, &sy);
             wxPoint key_location = stats->pPiano->GetKeyOrigin(selected_index);
 
-            if(pCurrentStack->nEntry > 1)
+            ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
+
+            if((pCurrentStack->nEntry > 1) || (piano_chart_index_array.GetCount() > 1))
             {
                   cc1->ShowChartInfoWindow(key_location.x, sy + key_location.y-250, selected_dbIndex);
                   cc1->SetQuiltChartHiLiteIndex(selected_dbIndex);
