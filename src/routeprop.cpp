@@ -707,52 +707,26 @@ void RouteProp::CreateControls()
 
     // note that under MSW for SetColumnWidth() to work we need to create the
     // items with images initially even if we specify dummy image id
-    wxListItem itemCol;
-    itemCol.SetImage(-1);
+//    wxListItem itemCol;
+//    itemCol.SetImage(-1);
 
-    itemCol.SetText(_("Leg"));
-    m_wpList->InsertColumn(0, itemCol);
-    m_wpList->SetColumnWidth( 0,  45 );
+    m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
 
-    itemCol.SetText(_("To Waypoint"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(1, itemCol);
-    m_wpList->SetColumnWidth( 1,   120 );
+    m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, 120 );
 
-    itemCol.SetText(_("Distance"));
-    itemCol.SetAlign(wxLIST_FORMAT_RIGHT);
-    m_wpList->InsertColumn(2, itemCol);
-    m_wpList->SetColumnWidth( 2,   70 );
+    m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
 
-    itemCol.SetText(_("Bearing"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(3, itemCol);
-    m_wpList->SetColumnWidth( 3,   70 );
+    m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 70 );
 
-    itemCol.SetText(_("Latitude"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(4, itemCol);
-    m_wpList->SetColumnWidth( 4,  80 );
+    m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
 
-    itemCol.SetText(_("Longitude"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(5, itemCol);
-    m_wpList->SetColumnWidth( 5,   80 );
+    m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
 
-    itemCol.SetText(_("ETE/Timestamp"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(6, itemCol);
-    m_wpList->SetColumnWidth( 6,  155 );
+    m_wpList->InsertColumn( 6, _("ETE/Timestamp"), wxLIST_FORMAT_LEFT, 135 );
 
-    itemCol.SetText(_("Speed (Kts)"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(7, itemCol);
-    m_wpList->SetColumnWidth( 7,  70 );
+    m_wpList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 72 );
 
-    itemCol.SetText(_("Next tide event"));
-    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
-    m_wpList->InsertColumn(8, itemCol);
-    m_wpList->SetColumnWidth( 8,  100 );
+    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
 
 //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
