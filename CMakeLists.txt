@@ -276,7 +276,6 @@ SET(HDRS
 		include/ais.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
-		include/tinystr.h
 		include/gpxdocument.h
 )
 
@@ -303,7 +302,6 @@ SET(SRCS
 		src/about.cpp
 		src/ais.cpp
                 src/pluginmanager.cpp
-		src/tinystr.cpp
 		src/gpxdocument.cpp
     )
 
@@ -322,6 +320,8 @@ SET(SRC_TINYXML
             src/tinyxmlerror.cpp
             src/tinyxmlparser.cpp
             include/tinyxml.h
+            include/tinystr.h
+            src/tinystr.cpp
       )
 
 IF(TINYXML_FOUND)
