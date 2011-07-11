@@ -851,8 +851,8 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
             m_ArrayOfDashboardWindow.Clear();
             m_ArrayOfDashboardWindow = dialog->m_Config;
 
-            SaveConfig();
             ApplyConfig();
+            SaveConfig();
             SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()!=0 );
       }
       dialog->Destroy();
@@ -928,14 +928,14 @@ void dashboard_pi::OnToolbarToolCallback(int id)
             // causes a resize of the chart bar, and the Dashboard window assumes some of its properties
             // The Dashboard window is no longer grabbable...
             // Workaround:  detect this case, and force the pane to be on a different Row.
-            // so that the display is corrected by toggling the dashboard of and back on.
+            // so that the display is corrected by toggling the dashboard off and back on.
             if((pane.dock_direction == wxAUI_DOCK_BOTTOM) && pane.IsDocked())
                   pane.Row(2);
             }
       }
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure right status upon toolbar rebuild
-      SetToolbarItemState( m_toolbar_item_id, cnt==0 );
+      SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount()!= 0/*cnt==0*/ );
       m_pauimgr->Update();
 }
 
