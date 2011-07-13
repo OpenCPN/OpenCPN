@@ -654,7 +654,18 @@ bool Quilt::IsChartQuiltableRef(int db_index)
 
       bool skew_match = fabs(skew_norm) <  1.;  // Only un-skewed charts are acceptable for quilt
 
-      return (bproj_match & skew_match);
+      //    In noshow array?
+      bool b_noshow = false;
+      for(unsigned int i=0 ; i < g_quilt_noshow_index_array.GetCount() ; i++)
+      {
+            if(g_quilt_noshow_index_array.Item(i) == db_index)        // chart is in the noshow list
+            {
+                  b_noshow = true;
+                  break;
+            }
+      }
+
+      return (bproj_match & skew_match & !b_noshow);
 }
 
 ArrayOfInts Quilt::GetCandidatedbIndexArray(bool from_ref_chart, bool exclude_user_hidden)
@@ -1268,7 +1279,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         bool b_add = true;
 
                         //    Special case for S57 ENC
-                        //    Add the chart only if the chart's fractional area exceeds 10%
+                        //    Add the chart only if the chart's fractional area exceeds n%
                         if(CHART_TYPE_S57 == m_reference_type)
                         {
                               //Get the fractional area of this chart
@@ -1286,10 +1297,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
                                                                   // probably because it has a concave outline
                                                                   // i.e the bboxes overlap, but the actual coverage intersect is null.
 
-                              if(chart_fractional_area < .10)
+                              if(chart_fractional_area < .01)
                               {
-//                                    b_add = false;
-//                                    printf("Skipping S57 less than 10 percent\n");
+                                    b_add = false;
+//                                    printf("Skipping S57 less than x percent\n");
                               }
                         }
 
@@ -8168,10 +8179,16 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
             pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
 
 
+        wxMenuItem *pitem;
         if(!m_bMeasure_Active )
-              pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_MEASURE,    _( "Measure....." ) );
+              pitem = pdef_menu->Append ( ID_DEF_MENU_ACTIVATE_MEASURE,    _( "Measure....." ) );
         else if(m_bMeasure_Active)
-              pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
+              pitem = pdef_menu->Append ( ID_DEF_MENU_DEACTIVATE_MEASURE,    _( "Measure Off" ) );
+
+        //  Not possible to use Measure tool while creating a Route.
+        if(m_pMouseRoute)
+              pitem->Enable(false);
+
         pdef_menu->AppendSeparator();
 
         if ( g_pAIS )
@@ -9922,8 +9939,15 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 m_pMouseRoute->DrawPointWhich ( scratch_dc, parent_frame->nRoute_State - 1,  &rpt );
                 m_pMouseRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, GetVP(), false );
 
-              RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
+                RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
                                   m_cursor_lat, m_cursor_lon, r_rband, _T(""));
+                double brg, dist;
+                DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
+                                      m_cursor_lat, m_cursor_lon, &brg, &dist);
+
+                wxString s;
+                s.Printf(_T("Route Distance: %6.2f NMi"), m_pMouseRoute->m_route_length + dist);
+                RenderExtraRouteLegInfo(&scratch_dc, r_rband, s);
         }
 
 
@@ -9943,7 +9967,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               wxString s;
               s.Printf(_T("Route Distance: %6.2f NMi"), m_pMeasureRoute->m_route_length + dist);
               RenderExtraRouteLegInfo(&scratch_dc, r_rband, s);
-
         }
 
         //  Draw S52 compatible Scale Bar
