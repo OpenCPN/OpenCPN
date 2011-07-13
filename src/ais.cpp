@@ -4245,6 +4245,11 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose(true).Float().FloatingPosition( 50, 200 ).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true);
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
+            //    Make sure it is on screen...
+            if((pane.floating_pos.x > wxGetDisplaySize().x) ||
+                (pane.floating_pos.y > wxGetDisplaySize().y) )
+                  pane.FloatingPosition(50,200);
+
             //    If the list got accidentally dropped on top of the chart bar, move it away....
             if(pane.IsDocked() && (pane.dock_row == 0))
             {
