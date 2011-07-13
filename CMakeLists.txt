@@ -953,7 +953,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An OpenSource Chart Plotter/Navigator")
     SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
-    #SET(CPACK_SET_DESTDIR ON)
+    SET(CPACK_SET_DESTDIR ON)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
 ENDIF(UNIX AND NOT APPLE)
