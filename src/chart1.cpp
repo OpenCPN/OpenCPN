@@ -5120,7 +5120,7 @@ int MyFrame::DoOptionsDialog()
                         chart_file_name = Current_Ch->GetFullPath();
 
 
-                  UpdateChartDatabaseInplace(*pWorkDirArray, ((rr & FORCE_UPDATE) == 1), true, *pChartListFileName);
+                  UpdateChartDatabaseInplace(*pWorkDirArray, ((rr & FORCE_UPDATE) == FORCE_UPDATE), true, *pChartListFileName);
 
                   //    Re-open the last open chart
                   int dbii = ChartData->FinddbIndex(chart_file_name);
@@ -8283,7 +8283,7 @@ bool MyPrintout::OnBeginDocument(int startPage, int endPage)
 
 void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
 {
-    *minPage = 0;
+    *minPage = 1;
     *maxPage = 1;
     *selPageFrom = 1;
     *selPageTo = 1;
@@ -8305,7 +8305,7 @@ void MyPrintout::DrawPageOne(wxDC *dc)
     float maxX = sx;
     float maxY = sy;
 
-    // Let's have at least 50 device units margin
+    // Let's have at least some device units margin
     float marginX = 50;
     float marginY = 50;
 
@@ -8328,6 +8328,9 @@ void MyPrintout::DrawPageOne(wxDC *dc)
     float posX = (float)((w - (maxX*actualScale))/2.0);
     float posY = (float)((h - (maxY*actualScale))/2.0);
 
+    posX = wxMax(posX, marginX);
+    posY = wxMax(posY, marginY);
+
     // Set the scale and origin
     dc->SetUserScale(actualScale, actualScale);
     dc->SetDeviceOrigin( (long)posX, (long)posY );
@@ -8338,6 +8341,7 @@ void MyPrintout::DrawPageOne(wxDC *dc)
     mdc.SelectObject(*(cc1->pscratch_bm));
 
     dc->Blit(0,0,cc1->pscratch_bm->GetWidth(),cc1->pscratch_bm->GetHeight(),&mdc, 0, 0);
+
     mdc.SelectObject(wxNullBitmap);
 
 }
