@@ -2013,9 +2013,12 @@ void Route::CalculateBBox()
 bool Route::CalculateCrossesIDL(void)
 {
       wxRoutePointListNode *node = pRoutePointList->GetFirst();
+      if(NULL == node)
+            return false;
 
       bool idl_cross = false;
       RoutePoint *data = node->GetData();             // first node
+
       double lon0 = data->m_lon;
       node = node->GetNext();
 
