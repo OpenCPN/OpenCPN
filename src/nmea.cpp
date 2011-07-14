@@ -2011,7 +2011,7 @@ void *OCP_NMEA_Thread::Entry()
       }
 
       not_done = true;
-      bool nl_found;
+      bool nl_found = false;
 
 #define READ_BUF_SIZE 20
       char szBuf[READ_BUF_SIZE];
@@ -2019,6 +2019,7 @@ void *OCP_NMEA_Thread::Entry()
       DWORD dwRead;
 
       m_n_timeout = 0;                // reset the timeout counter
+      int n_reopen_wait = 0;
 
 //    The main loop
 
@@ -2035,6 +2036,13 @@ void *OCP_NMEA_Thread::Entry()
             {
                   if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
                         goto thread_exit;                               // smooth exit
+
+                  if(n_reopen_wait)
+                  {
+                        wxThread::Sleep(n_reopen_wait);                        // stall for a bit
+                        n_reopen_wait = 0;
+                  }
+
 
                   if ((m_gps_fd = m_pCommMan->OpenComPort(m_PortName, m_baud)) > 0)
                   {
@@ -2083,16 +2091,34 @@ void *OCP_NMEA_Thread::Entry()
                 if (!ReadFile(hSerialComm, szBuf, READ_BUF_SIZE, &dwRead, &osReader))
                 {
                     int errt = GetLastError();
-                    if (errt != ERROR_IO_PENDING)     // retry port on all unknown errors
+
+                    // read delayed ?
+                    if (errt == ERROR_IO_PENDING)
+                    {
+                          fWaitingOnRead = TRUE;
+                    }
+
+                    //  We sometimes see this return if using virtual ports, with no data flow....
+                    //  Especially on Xport 149 and above....
+                    //  What does it mean?  Who knows...
+                    //  Workaround:  Try the IO again after a slight pause
+                    else if(errt == ERROR_NO_SYSTEM_RESOURCES)
+                    {
+                          dwRead = 0;
+                          nl_found = false;
+                          fWaitingOnRead = FALSE;
+                          wxThread::Sleep(1000);                        // stall for a bit
+
+                    }
+                    else                              // reset the port and retry on any other error
                     {
                           m_pCommMan->CloseComPort(m_gps_fd);
                           m_gps_fd = NULL;
                           dwRead = 0;
                           nl_found = false;
                           fWaitingOnRead = FALSE;
+                          n_reopen_wait = 2000;
                     }
-                    else                              // read delayed
-                        fWaitingOnRead = TRUE;
                 }
                 else
                 {      // read completed immediately
@@ -2127,6 +2153,8 @@ void *OCP_NMEA_Thread::Entry()
                                           dwRead = 0;
                                           nl_found = false;
                                           fWaitingOnRead = FALSE;
+                                          n_reopen_wait = 2000;
+
                                     }
                                     else
                                     {
@@ -2158,6 +2186,8 @@ void *OCP_NMEA_Thread::Entry()
                                     dwRead = 0;
                                     nl_found = false;
                                     fWaitingOnRead = FALSE;
+                                    n_reopen_wait = 2000;
+
                                     break;
                         }     // switch
                   }           // while
