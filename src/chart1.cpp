@@ -8291,8 +8291,7 @@ void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *
 
 bool MyPrintout::HasPage(int pageNum)
 {
-//    return (pageNum == 1);
-    return true;
+    return (pageNum == 1);
 }
 
 void MyPrintout::DrawPageOne(wxDC *dc)
