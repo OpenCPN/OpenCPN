@@ -131,7 +131,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
       m_plugin_location = plugin_dir;
       wxDir pi_dir(m_plugin_location);
 
-      wxString msg(_("PlugInManager searching for PlugIns in location "));
+      wxString msg(_T("PlugInManager searching for PlugIns in location "));
       msg += m_plugin_location;
       wxLogMessage(msg);
 
@@ -208,7 +208,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                         else
                         {
                               wxString msg;
-                              msg.Printf(_("PlugInManager: Unloading PlugIn with invalid API version %d.%d: "), api_major, api_minor );
+                              msg.Printf(_T("PlugInManager: Unloading PlugIn with invalid API version %d.%d: "), api_major, api_minor );
                               msg += pic->m_plugin_file;
                               wxLogMessage(msg);
 
@@ -237,7 +237,7 @@ bool PlugInManager::UpdatePlugIns()
 
             if(pic->m_bEnabled && !pic->m_bInitState)
             {
-                  wxString msg(_("PlugInManager: Initializing PlugIn: "));
+                  wxString msg(_T("PlugInManager: Initializing PlugIn: "));
                   msg += pic->m_plugin_file;
                   wxLogMessage(msg);
 
@@ -268,7 +268,7 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
 
       if(pic)
       {
-            wxString msg(_("PlugInManager: Deactivating PlugIn: "));
+            wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
                   msg += pic->m_plugin_file;
             wxLogMessage(msg);
 
@@ -333,7 +333,7 @@ bool PlugInManager::UnLoadAllPlugIns()
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
             PlugInContainer *pic = plugin_array.Item(i);
-            wxString msg(_("PlugInManager: UnLoading PlugIn: "));
+            wxString msg(_T("PlugInManager: UnLoading PlugIn: "));
             msg += pic->m_plugin_file;
             wxLogMessage(msg);
 
@@ -361,7 +361,7 @@ bool PlugInManager::DeactivateAllPlugIns()
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
-      wxString msg(_("PlugInManager: Loading PlugIn: "));
+      wxString msg(_T("PlugInManager: Loading PlugIn: "));
       msg += plugin_file;
       wxLogMessage(msg);
 
@@ -374,7 +374,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
       if(!plugin->IsLoaded())
       {
-            wxString msg(_("   PlugInManager: Cannot load library: "));
+            wxString msg(_T("   PlugInManager: Cannot load library: "));
             msg += plugin_file;
             wxLogMessage(msg);
             delete plugin;
@@ -387,7 +387,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
       create_t* create_plugin = (create_t*)plugin->GetSymbol(_T("create_pi"));
       if (NULL == create_plugin)
       {
-            wxString msg(_("   PlugInManager: Cannot load symbol create_pi: "));
+            wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
             msg += plugin_file;
             wxLogMessage(msg);
             delete plugin;
@@ -398,7 +398,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
       destroy_t* destroy_plugin = (destroy_t*) plugin->GetSymbol(_T("destroy_pi"));
       pic->m_destroy_fn = destroy_plugin;
       if (NULL == destroy_plugin) {
-            wxString msg(_("   PlugInManager: Cannot load symbol destroy_pi: "));
+            wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
             msg += plugin_file;
             wxLogMessage(msg);
             delete plugin;
@@ -1067,17 +1067,17 @@ wxBitmap *opencpn_plugin::GetPlugInBitmap()
 
 wxString opencpn_plugin::GetCommonName()
 {
-      return _("BaseClassCommonName");
+      return _T("BaseClassCommonName");
 }
 
 wxString opencpn_plugin::GetShortDescription()
 {
-      return _("OpenCPN PlugIn Base Class");
+      return _T("OpenCPN PlugIn Base Class");
 }
 
 wxString opencpn_plugin::GetLongDescription()
 {
-      return _("OpenCPN PlugIn Base Class\n\
+      return _T("OpenCPN PlugIn Base Class\n\
 PlugInManager created this base class");
 }
 
