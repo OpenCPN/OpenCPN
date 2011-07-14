@@ -2094,7 +2094,6 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget)
 
 void AIS_Decoder::UpdateAllAlarms(void)
 {
-      bool bshould_alert = false;
       m_bGeneralAlert    = false;                // no alerts yet
 
 
@@ -2124,7 +2123,7 @@ void AIS_Decoder::UpdateAllAlarms(void)
                               m_bGeneralAlert = false;
 
                   //    Skip if TCPA is too long
-                        if(g_bTCPA_Max) && (td->TCPA > g_TCPA_Max))
+                        if((g_bTCPA_Max) && (td->TCPA > g_TCPA_Max))
                               m_bGeneralAlert = false;
                   }
 
