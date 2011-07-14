@@ -799,6 +799,8 @@ class ocpnFloatingToolbarDialog: public wxDialog
             void SetGeometry();
             long GetOrient(){ return m_orient; }
             void RefreshFadeTimer();
+            int GetDockX(){ return m_dock_x; }
+            int GetDockY(){ return m_dock_y; }
 
       private:
 
@@ -9908,6 +9910,11 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent& event)
 
                         wxPoint pos_in_toolbar(m_last_ro_tool->m_x, m_last_ro_tool->m_y);
                         pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
+
+                        //    Quick hack for right docked toolbar, to avoid tooltip interference
+                        if((g_FloatingToolbarDialog->GetDockX() == 1) && (g_FloatingToolbarDialog->GetOrient() == wxTB_VERTICAL))
+                              pos_in_toolbar.y = m_last_ro_tool->m_y - 30;
+
 
                         m_pToolTipWin->SetPosition(GetParent()->ClientToScreen(pos_in_toolbar));
                         m_pToolTipWin->SetBitmap();
