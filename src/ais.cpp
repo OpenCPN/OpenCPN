@@ -2108,15 +2108,30 @@ void AIS_Decoder::UpdateAllAlarms(void)
 
             if(NULL != td)
             {
+                  //  Maintain General Alert
+                  if(!m_bGeneralAlert)
+                  {
                   //    Quick check on basic condition
-                  if((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0))
-                        bshould_alert = true;
+                        if((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0))
+                              m_bGeneralAlert = true;
+
+                  //    Some options can suppress general alerts
+                        if(g_bAIS_CPA_Alert_Suppress_Moored && (td->SOG <= g_ShowMoored_Kts))
+                              m_bGeneralAlert = false;
+
+                  //    Skip distant targets if requested
+                        if((g_bCPAMax) && ( td->Range_NM > g_CPAMax_NM))
+                              m_bGeneralAlert = false;
+
+                  //    Skip if TCPA is too long
+                        if(g_bTCPA_Max) && (td->TCPA > g_TCPA_Max))
+                              m_bGeneralAlert = false;
+                  }
 
                   ais_alarm_type this_alarm = AIS_NO_ALARM;
                   if(g_bCPAWarn && td->b_active && td->b_positionValid)
                   {
                         //      Skip anchored/moored(interpreted as low speed) targets if requested
-//                        if((!g_bShowMoored) && ((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) && (td->SOG <= g_ShowMoored_Kts))        // pjotrc 2010.01.31
                         if((!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts))        // dsr
                         {
                               td->n_alarm_state = AIS_NO_ALARM;
@@ -2124,8 +2139,6 @@ void AIS_Decoder::UpdateAllAlarms(void)
                         }
 
                         //    No Alert on moored(interpreted as low speed) targets if so requested
-//                        if(g_bAIS_CPA_Alert_Suppress_Moored &&
-//                           ((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) && (td->SOG <= g_ShowMoored_Kts))                 // pjotrc 2010.01.31
                         if(g_bAIS_CPA_Alert_Suppress_Moored && (td->SOG <= g_ShowMoored_Kts))                 // dsr
                         {
 
@@ -2169,25 +2182,10 @@ void AIS_Decoder::UpdateAllAlarms(void)
                   else
                         td->b_in_ack_timeout = false;
 
-
-/*
-                  //          If the target is in_ack state, we can only turn it off
-                  if(td->b_in_ack_timeout)
-                  {
-                        if(AIS_NO_ALARM == this_alarm)
-                              td->n_alarm_state = AIS_NO_ALARM;
-                  }
-                  else
-                        td->n_alarm_state = this_alarm;
-*/
-
                   td->n_alarm_state = this_alarm;
 
             }
       }
-
-      if(bshould_alert)
-            m_bGeneralAlert = true;                // an alert
 }
 
 
