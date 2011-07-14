@@ -13237,11 +13237,15 @@ void S57QueryDialog::UpdateStringFormats(void)
             {
                   //    Calculate the column constants based on the text control size....
                   int width, height;
-                  m_pQueryTextCtl->GetSize(&width, &height);
+                  m_pQueryTextCtl->GetClientSize(&width, &height);
 
                   //    Format the string
                   int rcol = width / m_char_width;
-                  wxString fs = format_attributes(pmtid->m_pOD->Attributes, 15, rcol-1);
+                  int col_adjust = 1;
+#ifdef __WXOSX__
+                  col_adjust = 4;
+#endif
+                  wxString fs = format_attributes(pmtid->m_pOD->Attributes, 15, rcol - col_adjust);
                   SetText ( fs );
 
                   m_pQueryTextCtl->Clear();
