@@ -1614,8 +1614,8 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       }
       else
       {
-            if(g_FloatingToolbarDialog)
-                  g_FloatingToolbarDialog->Surface();
+            if(gFrame)
+                  gFrame->SurfaceToolbar();
       }
 #endif
 
@@ -3176,8 +3176,7 @@ void MyFrame::OnActivate(wxActivateEvent& event)
 #ifdef __WXOSX__
       if(event.GetActive())
       {
-           if(g_FloatingToolbarDialog)
-                  g_FloatingToolbarDialog->Surface();
+            SurfaceToolbar();
       }
 #endif
 
@@ -3577,11 +3576,12 @@ void MyFrame::RequestNewToolbar()
 {
       if(g_FloatingToolbarDialog)
       {
+            bool b_reshow = g_FloatingToolbarDialog->IsShown();
             if(g_FloatingToolbarDialog->IsToolbarShown())
                   DestroyMyToolbar();
 
             m_toolBar = CreateAToolbar();
-            g_FloatingToolbarDialog->Show();
+            g_FloatingToolbarDialog->Show(b_reshow);
       }
 }
 
@@ -5088,21 +5088,22 @@ int MyFrame::DoOptionsDialog()
             g_pnmea->Pause();
 
       bool b_sub = false;
-      wxRect bx_rect = pSetDlg->GetScreenRect();
-      wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
-      if(tb_rect.Intersects(bx_rect))
-            b_sub = true;
+      if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown())
+      {
+            wxRect bx_rect = pSetDlg->GetScreenRect();
+            wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+            if(tb_rect.Intersects(bx_rect))
+                  b_sub = true;
 
-      if(b_sub && g_FloatingToolbarDialog)
-            g_FloatingToolbarDialog->Submerge();
+            if(b_sub)
+                  g_FloatingToolbarDialog->Submerge();
+      }
 
 // And here goes the (modal) dialog
       int rr = pSetDlg->ShowModal();
 
-      if(b_sub && g_FloatingToolbarDialog)
-      {
-            g_FloatingToolbarDialog->Surface();
-      }
+      if(b_sub)
+            SurfaceToolbar();
 
       if(rr)
       {
@@ -5251,6 +5252,13 @@ int MyFrame::DoOptionsDialog()
       bDBUpdateInProgress = false;
 
       delete pSetDlg;
+
+      if(g_FloatingToolbarDialog)
+      {
+            if(IsFullScreen() && !g_bFullscreenToolbar)
+                  g_FloatingToolbarDialog->Submerge();
+      }
+
 
       if((bPrevPrintIcon       != g_bShowPrintIcon)     ||
          (bPrevTrackIcon       != g_bShowTrackIcon)     ||
@@ -11017,7 +11025,7 @@ int OCPNMessageDialog::ShowModal()
       if(g_FloatingToolbarDialog)
       {
             if(g_FloatingToolbarDialog->IsToolbarShown())
-                  g_FloatingToolbarDialog->Surface();
+                  gFrame->SurfaceToolbar();
       }
 //      gFrame->RequestNewToolbar();
 #endif
