@@ -349,6 +349,8 @@ int               g_S57_dialog_sx, g_S57_dialog_sy;
 
 int              g_nframewin_x;
 int              g_nframewin_y;
+int              g_nframewin_posx;
+int              g_nframewin_posy;
 bool             g_bframemax;
 
 bool             g_bAutoAnchorMark;
@@ -2426,7 +2428,6 @@ bool MyApp::OnInit()
 
         //      Here is a specific size set for my (dsr) specific imbedded X11 environment
         new_frame_size.Set(cw, 735);
-///        new_frame_size.Set(cw, ch);
 #else
         if((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) && (g_nframewin_y <=ch ))
             new_frame_size.Set(g_nframewin_x, g_nframewin_y);
@@ -2436,10 +2437,15 @@ bool MyApp::OnInit()
 
         app_style |= wxWANTS_CHARS;
 
+        wxPoint position(0,0);
+        wxSize dsize = wxGetDisplaySize();
+
+        if((g_nframewin_posx < dsize.x) && (g_nframewin_posy < dsize.y))
+              position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 // Create the main frame window
         wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
-          gFrame = new MyFrame(NULL, myframe_window_title, wxPoint(cx,cy), new_frame_size, app_style ); //Gunther
+        gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
         g_pauimgr = new wxAuiManager;
 //        g_pauidockart= new wxAuiDefaultDockArt;
@@ -4296,6 +4302,10 @@ void MyFrame::OnMove(wxMoveEvent& event)
             g_FloatingToolbarDialog->RePosition();
 
       UpdateGPSCompassStatusBox(true);
+
+      g_nframewin_posx = event.GetPosition().x;
+      g_nframewin_posy = event.GetPosition().y;
+
 }
 
 

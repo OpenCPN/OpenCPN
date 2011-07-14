@@ -126,6 +126,8 @@ extern int              g_iSDMMFormat;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
+extern int              g_nframewin_posx;
+extern int              g_nframewin_posy;
 extern bool             g_bframemax;
 
 extern double           g_PlanSpeed;
@@ -2853,6 +2855,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "FrameWinX" ), &g_nframewin_x );
       Read ( _T ( "FrameWinY" ), &g_nframewin_y );
+      Read ( _T ( "FrameWinPosX" ), &g_nframewin_posx, 0 );
+      Read ( _T ( "FrameWinPosY" ), &g_nframewin_posy, 0 );
       Read ( _T ( "FrameMax" ),  &g_bframemax );
 
 
@@ -4102,6 +4106,8 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "FrameWinX" ), g_nframewin_x );
       Write ( _T ( "FrameWinY" ), g_nframewin_y );
+      Write ( _T ( "FrameWinPosX" ), g_nframewin_posx );
+      Write ( _T ( "FrameWinPosY" ), g_nframewin_posy );
       Write ( _T ( "FrameMax" ),  g_bframemax );
 
       //    AIS
