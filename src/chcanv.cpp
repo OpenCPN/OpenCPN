@@ -13053,7 +13053,7 @@ void S57QueryDialog::Init( )
         m_n_items = 0;
         m_ppOD = NULL;
         m_id_array = NULL;
-        m_current_item_id = NULL;
+        m_current_item_id = (wxTreeItemId)0;
 }
 
 void S57QueryDialog::SetText ( wxString &text_string )
