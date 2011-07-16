@@ -5521,22 +5521,22 @@ int s52plib::dda_tri ( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec, 
 #define memset3(dest, value, count) \
 __asm__ __volatile__ ( \
 "cmp $0,%2\n\t" \
-"jg l0\n\t" \
-"je l1\n\t" \
-"jmp l2\n\t" \
-"l0:\n\t" \
+"jg 2f\n\t" \
+"je 3f\n\t" \
+"jmp 4f\n\t" \
+"2:\n\t" \
 "movl  %0,(%1)\n\t" \
 "add $3,%1\n\t" \
 "dec %2\n\t" \
-"jnz l0\n\t" \
-"l1:\n\t" \
+"jnz 2b\n\t" \
+"3:\n\t" \
 "movb %b0,(%1)\n\t" \
 "inc %1\n\t" \
 "movb %h0,(%1)\n\t" \
 "inc %1\n\t" \
 "shr $16,%0\n\t" \
 "movb %b0,(%1)\n\t" \
-"l2:\n\t" \
+"4:\n\t" \
 : : "a"(value), "D"(dest), "r"(count) :  );
 
                                     int count = ixm-ix;
