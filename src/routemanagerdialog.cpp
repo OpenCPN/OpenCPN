@@ -385,7 +385,7 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent)
 {
       long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER;
 #ifdef __WXOSX__
-      style |= wxSTAY_ON_TOP;
+//      style |= wxSTAY_ON_TOP;
 #endif
 
       wxDialog::Create(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, style);
@@ -1008,12 +1008,8 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event)
 {
-#ifndef __WXOSX__
       OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> routes?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       int dialog_ret = mdlg.ShowModal();
-#else
-      int dialog_ret = wxID_YES;
-#endif
 
       if(dialog_ret == wxID_YES)
       {
@@ -1115,13 +1111,9 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event)
       if (!route) return;
       if (route->m_bIsInLayer) return;
 
-#ifndef __WXOSX__
       OCPNMessageDialog ask(this, g_pRouteMan->GetRouteReverseMessage(),
                           _("Rename Waypoints?"), wxYES_NO);
       bool rename = (ask.ShowModal() == wxID_YES);
-#else
-      bool rename = true;
-#endif
 
       pSelect->DeleteAllSelectableRouteSegments ( route );
       route->Reverse(rename);
@@ -1557,12 +1549,8 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick(wxCommandEvent &event)
 
 void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
 {
-#ifndef __WXOSX__
       OCPNMessageDialog mdlg(this, _("Are you sure you want to delete <ALL> tracks?"), wxString(_("OpenCPN Alert")),wxYES_NO  );
       int dialog_ret = mdlg.ShowModal();
-#else
-      int dialog_ret = wxID_YES;
-#endif
 
       if(dialog_ret == wxID_YES)
       {
