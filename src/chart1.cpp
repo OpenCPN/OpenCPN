@@ -4683,6 +4683,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateLayListCtrl();
             pRouteManagerDialog->Show();
+
+            //    Required if RMDialog is not STAY_ON_TOP
+#ifdef __WXOSX__
+            pRouteManagerDialog->Centre();
+            pRouteManagerDialog->Raise();
+#endif
             break;
       }
 
@@ -5021,7 +5027,7 @@ void MyFrame::SubmergeToolbar(void)
 
 void MyFrame::SurfaceToolbar(void)
 {
-      if(g_FloatingToolbarDialog)
+      if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsToolbarShown())
       {
             if(IsFullScreen())
             {
@@ -11031,20 +11037,12 @@ int OCPNMessageDialog::ShowModal()
 {
 #ifdef __WXOSX__
       if(g_FloatingToolbarDialog)
-      {
-            if(g_FloatingToolbarDialog->IsToolbarShown())
-                 g_FloatingToolbarDialog->Submerge();
-      }
+            g_FloatingToolbarDialog->Submerge();
 #endif
       int ret_val = m_pdialog->ShowModal();
 
 #ifdef __WXOSX__
-      if(g_FloatingToolbarDialog)
-      {
-            if(g_FloatingToolbarDialog->IsToolbarShown())
-                  gFrame->SurfaceToolbar();
-      }
-//      gFrame->RequestNewToolbar();
+      gFrame->SurfaceToolbar();
 #endif
 
       return ret_val;
