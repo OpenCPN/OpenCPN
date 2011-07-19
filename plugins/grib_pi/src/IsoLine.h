@@ -30,6 +30,7 @@ Dessin des données GRIB (avec QT)
 #include <set>
 
 #include "GribReader.h"
+#include "grib_pi.h"
 
 class ViewPort;
 class wxMemoryDC;
@@ -39,6 +40,37 @@ WX_DECLARE_LIST(Segment, MySegList);
 WX_DECLARE_LIST(MySegList, MySegListList);
 
 
+//-------------------------------------------------------------------------------------------------------
+//  Cohen & Sutherland Line clipping algorithms
+//-------------------------------------------------------------------------------------------------------
+/*
+ * 
+ * Copyright (C) 1999,2000,2001,2002,2003 Percy Zahl
+ *
+ * Authors: Percy Zahl <zahl@users.sf.net>
+ * additional features: Andreas Klust <klust@users.sf.net>
+ * WWW Home: http://gxsm.sf.net
+ *
+ */
+
+typedef enum { Visible, Invisible } ClipResult;
+typedef enum {
+      LEFT, RIGHT, BOTTOM, TOP
+} edge;
+typedef long outcode;
+
+
+void CompOutCode (double x, double y, outcode *code, struct LOC_cohen_sutherland_line_clip *LINK);
+#ifdef __cplusplus
+ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, double *y1,
+                                                     double xmin_, double xmax_, double ymin_, double ymax_);
+
+extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, int *y1,
+                                                     int xmin_, int xmax_, int ymin_, int ymax_);
+
+#endif
+
+
 // TODO: join segments and draw a spline
 
 //===============================================================
@@ -46,6 +78,8 @@ WX_DECLARE_LIST(MySegList, MySegListList);
 // a  b
 // c  d
 // Rejoint l'arête (i,j)-(k,l) à l'arête (m,n)-(o,p) (indices ds la grille GRIB)
+
+
 class Segment
 {
     public:
@@ -75,9 +109,9 @@ class IsoLine
         ~IsoLine();
 
 
-        void drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
 
-        void drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur, ViewPort *vp,
+        void drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur, PlugIn_ViewPort *vp,
                                 int density, int first, double coef);
 
         int getNbSegments()     {return trace.size();}

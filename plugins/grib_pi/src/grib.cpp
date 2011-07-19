@@ -52,9 +52,9 @@ extern int              g_grib_dialog_sx, g_grib_dialog_sy;
 extern wxString         g_grib_dir;
 
 extern ChartCanvas     *cc1;
-
-extern bool             g_bGRIBUseHiDef;
 */
+//extern bool             g_bGRIBUseHiDef;
+
 
 
 
@@ -422,13 +422,14 @@ void GRIBUIDialog::UpdateTrackingControls(void)
             }
 
             //    Update the SEATEMP
-            if(m_RS_Idx_SEATEMP != -1)
+             if(m_RS_Idx_SEATEMP != -1)
             {
                   double temp = m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item ( m_RS_Idx_SEATEMP )->getInterpolatedValue(m_cursor_lon, m_cursor_lat, true);
 
                   if(temp != GRIB_NOTDEF)
                   {
                         temp -= 273.15;
+                        std::cout << "temp";
                         wxString t;
                         t.Printf(_T("%6.2f"), temp);
                         if(m_pSeaTmpTextCtrl)
@@ -718,7 +719,7 @@ void GRIBUIDialog::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
 
                   // GFS SEATMP
 //                  if (pGR->getDataType()==GRB_TEMP )
-//                        m_RS_Idx_SEATEMP = i;
+//                        m_RS_Idx_SEATEMP = i;       
 
                   // RTOFS SEATMP
                   if (pGR->getDataType()==GRB_WTMP )
@@ -1788,7 +1789,7 @@ wxColour GRIBOverlayFactory::GetSeaCurrentGraphicColor(double val_in)
 
 bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
 {
-#if 0
+//#if 0
       //    Initialize the array of Isobars if necessary
       if(!m_IsobarArray.GetCount())
       {
@@ -1804,20 +1805,20 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, P
       for(unsigned int i = 0 ; i < m_IsobarArray.GetCount() ; i++)
       {
             IsoLine *piso = (IsoLine *)m_IsobarArray.Item(i);
-            piso->drawIsoLine(pmdc, vp, true, g_bGRIBUseHiDef);
+            piso->drawIsoLine(pmdc, vp, true, true); //g_bGRIBUseHiDef
 
-            /*
+            // Draw Isobar labels
             int gr = 80;
             wxColour color = wxColour(gr,gr,gr);
-            int density = 40;
+            int density = 40;//40;
             int first = 0;
 
             double coef = .01;
             piso->drawIsoLineLabels(pmdc, color, vp, density, first, coef);
-            */
+            //
 
       }
-#endif
+//#endif
       return true;
 }
 

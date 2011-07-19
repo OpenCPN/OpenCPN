@@ -41,6 +41,127 @@ WX_DEFINE_LIST(MySegListList);
 #ifndef PI
 #define PI 3.14159
 #endif
+#define CTRUE -1
+#define CFALSE 0
+
+
+/* Local variables for cohen_sutherland_line_clip: */
+struct LOC_cohen_sutherland_line_clip {
+      double xmin, xmax, ymin, ymax;
+} ;
+void CompOutCode (double x, double y, outcode *code, struct LOC_cohen_sutherland_line_clip *LINK)
+{
+      /*Compute outcode for the point (x,y) */
+      *code = 0;
+      if (y > LINK->ymax)
+            *code = 1L << ((long)TOP);
+      else if (y < LINK->ymin)
+            *code = 1L << ((long)BOTTOM);
+      if (x > LINK->xmax)
+            *code |= 1L << ((long)RIGHT);
+      else if (x < LINK->xmin)
+            *code |= 1L << ((long)LEFT);
+}
+
+
+ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, double *y1,
+                                         double xmin_, double xmax_, double ymin_, double ymax_)
+{
+      /* Cohen-Sutherland clipping algorithm for line P0=(x1,y0) to P1=(x1,y1)
+       *    and clip rectangle with diagonal from (xmin,ymin) to (xmax,ymax).*/
+      struct LOC_cohen_sutherland_line_clip V;
+      int accept = CFALSE, done = CFALSE;
+      ClipResult clip = Visible;
+      outcode outcode0, outcode1, outcodeOut;
+      /*Outcodes for P0,P1, and whichever point lies outside the clip rectangle*/
+      double x=0., y=0.;
+      
+      V.xmin = xmin_;
+      V.xmax = xmax_;
+      V.ymin = ymin_;
+      V.ymax = ymax_;
+      CompOutCode(*x0, *y0, &outcode0, &V);
+      CompOutCode(*x1, *y1, &outcode1, &V);
+      do {
+            if (outcode0 == 0 && outcode1 == 0) {   /*Trivial accept and exit*/
+                  accept = CTRUE;
+                  done = CTRUE;
+      } else if ((outcode0 & outcode1) != 0) {
+            clip = Invisible;
+            done = CTRUE;
+      }
+      /*Logical intersection is true, so trivial reject and exit.*/
+      else {
+            clip = Visible;
+            /*Failed both tests, so calculate the line segment to clip;
+             *            from an outside point to an intersection with clip edge.*/
+            /*At least one endpoint is outside the clip rectangle; pick it.*/
+            if (outcode0 != 0)
+                  outcodeOut = outcode0;
+            else
+                  outcodeOut = outcode1;
+            /*Now find intersection point;
+             *            use formulas y=y0+slope*(x-x0),x=x0+(1/slope)*(y-y0).*/
+            
+            if (((1L << ((long)TOP)) & outcodeOut) != 0) {
+                  /*Divide line at top of clip rectangle*/
+                  x = *x0 + (*x1 - *x0) * (V.ymax - *y0) / (*y1 - *y0);
+                  y = V.ymax;
+            } else if (((1L << ((long)BOTTOM)) & outcodeOut) != 0) {
+                  /*Divide line at bottom of clip rectangle*/
+                  x = *x0 + (*x1 - *x0) * (V.ymin - *y0) / (*y1 - *y0);
+                  y = V.ymin;
+            } else if (((1L << ((long)RIGHT)) & outcodeOut) != 0) {
+                  /*Divide line at right edge of clip rectangle*/
+                  y = *y0 + (*y1 - *y0) * (V.xmax - *x0) / (*x1 - *x0);
+                  x = V.xmax;
+            } else if (((1L << ((long)LEFT)) & outcodeOut) != 0) {
+                  /*Divide line at left edge of clip rectangle*/
+                  y = *y0 + (*y1 - *y0) * (V.xmin - *x0) / (*x1 - *x0);
+                  x = V.xmin;
+            }
+            /*Now we move outside point to intersection point to clip,
+             *            and get ready for next pass.*/
+            if (outcodeOut == outcode0) {
+                  *x0 = x;
+                  *y0 = y;
+                  CompOutCode(*x0, *y0, &outcode0, &V);
+            } else {
+                  *x1 = x;
+                  *y1 = y;
+                  CompOutCode(*x1, *y1, &outcode1, &V);
+            }
+      }
+} while (!done);
+return clip;
+}
+
+ClipResult cohen_sutherland_line_clip_i (int *x0_, int *y0_, int *x1_, int *y1_,
+                                         int xmin_, int xmax_, int ymin_, int ymax_)
+{
+      ClipResult ret;
+      double x0,y0,x1,y1;
+      x0 = *x0_;
+      y0 = *y0_;
+      x1 = *x1_;
+      y1 = *y1_;
+      ret = cohen_sutherland_line_clip_d (&x0, &y0, &x1, &y1,
+                                          (double)xmin_, (double)xmax_,
+                                          (double)ymin_, (double)ymax_);
+      *x0_ = (int)x0;
+      *y0_ = (int)y0;
+      *x1_ = (int)x1;
+      *y1_ = (int)y1;
+      return ret;
+}
+
+
+double      round_msvc (double x)
+{
+      return(floor(x + 0.5));
+      
+}
+
 
 //---------------------------------------------------------------
 IsoLine::IsoLine(double val, const GribRecord *rec_)
@@ -256,7 +377,7 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
@@ -273,8 +394,6 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
 
 
 
-#if 0
-
       std::list<Segment *>::iterator it;
 
     //---------------------------------------------------------
@@ -285,37 +404,41 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
         Segment *seg = *it;
 
         {
-              wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
-              wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
+ //             wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
+ //             wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
+            wxPoint ab;
+            GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+            wxPoint cd;
+            GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
 
 
-              ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
-                          0, vp->pix_width, 0, vp->pix_height );
-              if ( res != Invisible )
-              {
+///            ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
+///                         0, vp->pix_width, 0, vp->pix_height );
+///            if ( res != Invisible )
+             {
 #if wxUSE_GRAPHICS_CONTEXT
-                    if(bHiDef)
-                          pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
-                    else
-                          pmdc->DrawLine(ab.x, ab.y, cd.x, cd.y);
+                  if(bHiDef)
+                        pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
+                  else 
+                        pmdc->DrawLine(ab.x, ab.y, cd.x, cd.y);
 #else
                   pmdc->DrawLine(ab.x, ab.y, cd.x, cd.y);
 #endif
-              }
+             }
 
         }
     }
-#if wxUSE_GRAPHICS_CONTEXT
-    delete pgc;
-#endif
-#endif
+//#if wxUSE_GRAPHICS_CONTEXT
+//    delete pgc;
+//#endif
+//#endif
 
       int text_sx, text_sy;
       pmdc->GetTextExtent(_T("10000"), &text_sx, &text_sy);
-      double m = text_sy / 2;
+//      double m = text_sy / 2;
       int label_size = text_sx;
       int label_space = 400;
-      double coef = .01;
+//      double coef = .01;
       int len = label_space/4;
 
       //    Allocate an array big enough
@@ -335,8 +458,10 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
             if(node)
             {
                   seg = node->GetData();
-///                  wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
-                  wxPoint ab(0,0);
+//                  wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
+//                  wxPoint ab(0,0);
+				  wxPoint ab;
+				  GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
                   pPoints[0] = ab;
             }
             int ip=1;
@@ -344,8 +469,10 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
             while (node)
             {
                   seg = node->GetData();
-///                  wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
-                  wxPoint cd(0,0);
+//                  wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
+//                  wxPoint cd(0,0);
+				  wxPoint cd;
+				  GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
                   pPoints[ip++] = cd;
 
                   node=node->GetNext();
@@ -376,9 +503,9 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
                   {
                         wxPoint *point = (wxPoint *)snode->GetData();
 
-///                        ClipResult res = cohen_sutherland_line_clip_i ( &point0->x, &point0->y, &point->x, &point->y,
-///                                    0, vp->pix_width, 0, vp->pix_height );
-///                        if ( res != Invisible )
+                        ClipResult res = cohen_sutherland_line_clip_i ( &point0->x, &point0->y, &point->x, &point->y,
+                                    0, vp->pix_width, 0, vp->pix_height );
+                        if ( res != Invisible )
                         {
                               int dl = (int)sqrt(
                                             (double)((point0->x - point->x) * (point0->x - point->x))
@@ -400,7 +527,7 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
                                     {
                                           bDrawing = true;
                                           len = 0;
-
+#if 0
                                           if(bShowLabels)
                                           {
                                                 double label_angle = atan2((double)(lstart.y - point->y),
@@ -412,11 +539,12 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
                                                 double ys = lstart.y - (m * cos(label_angle * PI / 180.));
                                                 pmdc->DrawRotatedText(label, (int)xs, (int)ys, label_angle);
                                           }
+#endif
                                     }
                               }
 
-
-                              if(bDrawing || !bShowLabels)
+#if 0
+//                              if(bDrawing || !bShowLabels)
                               {
       #if wxUSE_GRAPHICS_CONTEXT
                                     if(bHiDef)
@@ -427,6 +555,7 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
                                     pmdc->DrawLine(point0->x, point0->y, point->x, point->y);
       #endif
                               }
+#endif
                         }
 
                         *point0 = *point;
@@ -451,11 +580,11 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, ViewPort *vp, bool bShowLabels, bool
 //---------------------------------------------------------------
 
 void IsoLine::drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur,
-                                ViewPort *vp,
+                                PlugIn_ViewPort *vp,
                             int density, int first, double coef)
 {
 ///
-#if 0
+//#if 0
     std::list<Segment *>::iterator it;
     int nb = first;
     wxString label;
@@ -475,25 +604,31 @@ void IsoLine::drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur,
     //---------------------------------------------------------
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
-        if (nb % density == 0) {
+        if (nb % density == 0)
+		{
             Segment *seg = *it;
 
-            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
+//            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
             {
-                  wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
-                  wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
+ //                 wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
+ //                 wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
+			wxPoint ab;
+			GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+			wxPoint cd;
+			GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+                  
+			int label_offset = 6;
+                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
+                  int yd = (ab.y + cd.y - h)/2;
 
-                  int xd = (ab.x + cd.x)/2;
-                  int yd = (ab.y + cd.y)/2;
-
-                  int label_offset = 4;
+                 
                   pmdc->DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-                  pmdc->DrawText(label, label_offset + xd, yd);
+                  pmdc->DrawText(label, label_offset/2 + xd, yd-1);
             }
 
         }
     }
-#endif
+//#endif
 ///
 }
 

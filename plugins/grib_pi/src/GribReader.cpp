@@ -225,8 +225,8 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
                               storeRecordInMap(rec);
 
-//                        else if ((rec->getDataType()==GRB_TEMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
-//                              storeRecordInMap(rec);                             // gfs SEATMP
+                        else if ((rec->getDataType()==GRB_TEMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0)) //
+                              storeRecordInMap(rec);                             // gfs SEATMP                                      //
 
                         else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
                               storeRecordInMap(rec);                             // rtofs Water Temp
