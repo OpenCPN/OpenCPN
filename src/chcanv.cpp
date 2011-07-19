@@ -1043,7 +1043,8 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                               {
                               //    open the target, and check the min_scale
                                     ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
-                                    max_ref_scale = ptest_chart->GetNormalScaleMax(m_canvas_scale_factor, m_canvas_width);
+                                    if(ptest_chart)
+                                          max_ref_scale = ptest_chart->GetNormalScaleMax(m_canvas_scale_factor, m_canvas_width);
                               }
 
                         }
@@ -1104,7 +1105,8 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
 
                                     //    open the target, and check the min_scale
                                           ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
-                                          min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, false);
+                                          if(ptest_chart)
+                                                min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, false);
                                     }
                               }
                         }
