@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.628\n"
+"Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-28 10:04-0400\n"
-"PO-Revision-Date: 2011-06-28 21:22+0100\n"
+"PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
@@ -468,11 +468,11 @@ msgstr "Aktiver CM93 korrigering"
 
 #
 msgid "Activate Next in Route"
-msgstr "Aktiver neste i rute"
+msgstr "Aktiver neste i ruten"
 
 #
 msgid "Activate Route"
-msgstr "Aktiver rute"
+msgstr "Aktiver ruten"
 
 #
 msgid "Activate Waypoint"
@@ -1207,7 +1207,7 @@ msgstr "Filtrer NMEA Kurs og Fartsdata"
 
 #
 msgid "Filter Period (Sec.)"
-msgstr "Filterperiode (Sek.)"
+msgstr "Filterperiode (sek.)"
 
 #
 msgid "Fishing boat"
@@ -1883,7 +1883,7 @@ msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
 
 #
 msgid "Place Trackpoints at time interval (Seconds):"
-msgstr "Plasser slepestrekpunkter ved tidsintervall (Sek.):"
+msgstr "Plasser slepestrekpunkter ved tidsintervall (sek.):"
 
 #
 msgid "Plain"
@@ -1984,7 +1984,7 @@ msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
 msgstr ""
-"Alder for posisjonsrapport:       %3d Sek.\n"
+"Alder for posisjonsrapport:       %3d sek.\n"
 "\n"
 
 #
