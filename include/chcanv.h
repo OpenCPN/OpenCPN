@@ -226,6 +226,7 @@ public:
 
       void ShowChartInfoWindow(int x, int y, int dbIndex);
       void HideChartInfoWindow(void);
+      void CancelMeasureRoute();
 
       //Todo build more accessors
       bool        m_bFollow;

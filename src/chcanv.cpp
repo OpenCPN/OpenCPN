@@ -3524,6 +3524,15 @@ bool ChartCanvas::IsChartQuiltableRef(int db_index)
       return m_pQuilt->IsChartQuiltableRef(db_index);
 }
 
+void ChartCanvas::CancelMeasureRoute()
+{
+      m_bMeasure_Active = false;
+      m_nMeasureState = 0;
+      g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
+      m_pMeasureRoute = NULL;
+}
+
+
 ViewPort &ChartCanvas::GetVP()
 {
 /*
@@ -3620,12 +3629,20 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                         break;
                   }
                   case WXK_F4:
-                        m_bMeasure_Active = true;
-                        m_nMeasureState = 1;
-                        SetMyCursor ( pCursorPencil );
-                        Refresh();
-                        b_proc = true;
+                        if(!parent_frame->nRoute_State)   // no measure tool if currently creating route
+                        {
+                              if(m_bMeasure_Active)
+                              {
+                                    g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
+                                    m_pMeasureRoute = NULL;
+                              }
 
+                              m_bMeasure_Active = true;
+                              m_nMeasureState = 1;
+                              SetMyCursor ( pCursorPencil );
+                              Refresh();
+                              b_proc = true;
+                        }
                         break;
 
                   case WXK_F5:
