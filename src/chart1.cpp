@@ -790,6 +790,8 @@ class ocpnFloatingToolbarDialog: public wxDialog
             ocpnToolBarSimple *GetToolbar();
             void Submerge();
             void Surface();
+            void HideTooltip();
+            void ShowTooltips();
 
             void DestroyToolBar();
             void ToggleOrientation();
@@ -1344,7 +1346,7 @@ void ocpnFloatingToolbarDialog::Submerge()
 {
       Hide();
       if(m_ptoolbar)
-            m_ptoolbar->HideTooltip();
+            m_ptoolbar->KillTooltip();
 }
 
 void ocpnFloatingToolbarDialog::Surface()
@@ -1352,6 +1354,18 @@ void ocpnFloatingToolbarDialog::Surface()
       Show();
       RePosition();
       Show();
+      if(m_ptoolbar)
+            m_ptoolbar->ShowTooltip();
+}
+
+void ocpnFloatingToolbarDialog::HideTooltip()
+{
+      if(m_ptoolbar)
+            m_ptoolbar->HideTooltip();
+}
+
+void ocpnFloatingToolbarDialog::ShowTooltips()
+{
       if(m_ptoolbar)
             m_ptoolbar->ShowTooltip();
 }
@@ -1622,6 +1636,16 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
                   gFrame->SurfaceToolbar();
       }
 #endif
+
+      if(!event.GetActive())
+      {
+//            printf("AppDeactivate\n");
+            if(g_FloatingToolbarDialog)
+            {
+                  g_FloatingToolbarDialog->HideTooltip();   // Hide any existing tip
+            }
+      }
+
 
       event.Skip();
 }
@@ -3170,12 +3194,6 @@ void MyFrame::OnActivate(wxActivateEvent& event)
 //    It is called in some unexpected places,
 //    such as on closure of dialogs, etc.
 
-//      Activating?
-
-      if(!event.GetActive())
-      {
-//            g_click_stop = 2;
-      }
 
       if(cc1)
         cc1->SetFocus();            // This seems to be needed for MSW, to get key and wheel events
@@ -4054,6 +4072,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
       b_inCloseWindow = true;
 
       ::wxSetCursor(wxCURSOR_WAIT);
+
+      // If we happen to have the measure tool open on Ctrl-Q quit
+      cc1->CancelMeasureRoute();
 
       // We save perspective before closing to restore position next time
       // Pane is not closed so the child is not notified (OnPaneClose)
@@ -9694,7 +9715,7 @@ ocpnToolBarSimple::~ocpnToolBarSimple()
 
 }
 
-void ocpnToolBarSimple::HideTooltip()
+void ocpnToolBarSimple::KillTooltip()
 {
       m_btooltip_show = false;
 
@@ -9707,6 +9728,13 @@ void ocpnToolBarSimple::HideTooltip()
       m_tooltip_timer.Stop();
 }
 
+void ocpnToolBarSimple::HideTooltip()
+{
+      if(m_pToolTipWin)
+      {
+            m_pToolTipWin->Hide();
+      }
+}
 
 void ocpnToolBarSimple::SetColorScheme(ColorScheme cs)
 {

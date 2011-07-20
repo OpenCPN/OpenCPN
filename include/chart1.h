@@ -694,6 +694,7 @@ class ocpnToolBarSimple : public wxControl
             wxCoord m_defaultWidth, m_defaultHeight;
 
             void        HideTooltip();
+            void        KillTooltip();
             void        ShowTooltip(){ m_btooltip_show = true; }
 
       protected:
