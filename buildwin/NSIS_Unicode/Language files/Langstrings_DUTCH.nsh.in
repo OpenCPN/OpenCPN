@@ -8,10 +8,10 @@ LangString Uninstaller ${LANG_DUTCH} "Verwijderen"
 LangString Installer_Unsupported_Windows_Version ${LANG_DUTCH} "Uw Windowsversie wordt niet ondersteund!$\r$\nWindows NT of nieuwer is vereist."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
-LangString Installer_Running ${LANG_DUTCH} "Bezig met installeren."
+LangString Installer_Running ${LANG_DUTCH} "Bezig met installeren"
 
 #LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
-LangString Uninstaller_Running ${LANG_DUTCH} "Bezig met verwijderen."
+LangString Uninstaller_Running ${LANG_DUTCH} "Bezig met verwijderen"
 
 #LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
 LangString LangDialog_Title ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ installatie"
@@ -32,10 +32,10 @@ LangString OCPN_Scanning_HDD ${LANG_DUTCH} "OpenCPN: Scannen van harde schijf ..
 LangString Search_old_installations ${LANG_DUTCH} "Zoeken naar vorige installaties"
 
 #LangString Install_Location_Default ${LANG_ENGLISH} "Install Locations by default paths (may not find all)"
-LangString Install_Location_Default ${LANG_DUTCH} "Zoek op standaard installatielocaties (misschien worden niet alle geïnstalleerde versies gevonden)"
+LangString Install_Location_Default ${LANG_DUTCH} "Zoeken op standaard installatielocaties (mogelijk worden niet alle geïnstalleerde versies gevonden)"
 
 #LangString Install_Location_HDD_Scan ${LANG_ENGLISH} "Install Location by full HDD scan (most reliable)"
-LangString Install_Location_HDD_Scan ${LANG_DUTCH} "Zoek geïnstaleerde versies door een volledige scan van de harde schijf (meest betrouwbaar)"
+LangString Install_Location_HDD_Scan ${LANG_DUTCH} "Zoeken naar geïnstalleerde versies door een volledige scan van de harde schijf (meest betrouwbaar)"
 
 #LangString Label_CleanUp_Text ${LANG_ENGLISH} "Click on a list-item to select/ unselect it or Select ALL (recommended) and then Uninstall selected."
 LangString Label_CleanUp_Text ${LANG_DUTCH} "Selecteer/ de-selecteer items of klik op Selecteer Alles (aanbevolen), en verwijder selectie."
@@ -53,7 +53,7 @@ LangString BT_UnselectAll_CleanUp ${LANG_DUTCH} "De-selecteer Alles"
 LangString LB_CleanUp ${LANG_DUTCH} "Keuzelijsttekst"
 
 #LangString BT_FullScan_CleanUp ${LANG_ENGLISH} "Scan HDD ..."
-LangString BT_FullScan_CleanUp ${LANG_DUTCH} "Scan harde schijf ..."
+LangString BT_FullScan_CleanUp ${LANG_DUTCH} "Scannen van harde schijf ..."
 
 #LangString LAB_FullScan_CleanUp ${LANG_ENGLISH} "Scan the HDD for the most reliable detection.$\r$\nATTENTION: may last several minutes!"
 LangString LAB_FullScan_CleanUp ${LANG_DUTCH} "Scan de harde schijf voor de meest betrouwbare detectie.$\r$\nLET OP: dit kan enkele minuten duren!"
@@ -77,7 +77,7 @@ LangString CP_TOP ${LANG_DUTCH} "Selecteer of de-selecteer de installatieopties.
 LangString CP_INSTTYPE ${LANG_DUTCH} "Installatietype:"
 
 #LangString CP_COMPLIST ${LANG_ENGLISH} "Adjust the settings individually:"
-LangString CP_COMPLIST ${LANG_DUTCH} "Pas instellingen individueel aan:"
+LangString CP_COMPLIST ${LANG_DUTCH} "Individuele aanpassing van de instellingen:"
 
 #LangString Page_SetConfig_Title ${LANG_ENGLISH} "Default configuration settings"
 LangString Page_SetConfig_Title ${LANG_DUTCH} "Standaard configuratieinstellingen"
@@ -104,7 +104,7 @@ LangString GB_ChartDir_SetConfig_Text ${LANG_DUTCH} "Kaartmap toevoegen"
 LangString CB_Language_SetConfig_Text ${LANG_DUTCH} "Stel programmataal voor OpenCPN in als $LANG_NAME"
 
 #LangString GB_Language_SetConfig_Text ${LANG_ENGLISH} "Set OpenCPN program language"
-LangString GB_Language_SetConfig_Text ${LANG_DUTCH} "Stel programmataal voor OpenCPn in"
+LangString GB_Language_SetConfig_Text ${LANG_DUTCH} "Stel programmataal voor OpenCPN in"
 
 #LangString Label_SetConfig_Text ${LANG_ENGLISH} "Configure preconfig settings for the OpenCPN program.$\r$\nThese settings are saved in the file opencpn.ini."
 LangString Label_SetConfig_Text ${LANG_DUTCH} "Configureer instellingen voor het OpenCPN programma.$\r$\nDeze instellingen worden opgeslagen in bestand opencpn.ini."
@@ -116,7 +116,7 @@ LangString Page_Confirm_Title ${LANG_DUTCH} "Klaar voor installatie"
 LangString Page_Confirm_Subtitle ${LANG_DUTCH} "Controleer de installatieopties"
 
 #LangString Installation_Type ${LANG_ENGLISH} "Setup type"
-LangString Installation_Type ${LANG_DUTCH} "Setup-type"
+LangString Installation_Type ${LANG_DUTCH} "Installatietype"
 
 #LangString Installation_Directory ${LANG_ENGLISH} "Destination location"
 LangString Installation_Directory ${LANG_DUTCH} "Bestemmingslocatie"
@@ -185,40 +185,40 @@ LangString SecSetConfigLang_Text ${LANG_DUTCH} "Taal instellen op $LANG_NAME"
 LangString SecSetConfigChartDir_Text ${LANG_DUTCH} "Selecteer kaartmappen"
 
 #LangString SecGrpResetConfig_Desc ${LANG_ENGLISH} "Deletes ALL files and subdirectories in the configuration folder."
-LangString SecGrpResetConfig_Desc ${LANG_DUTCH} "Verwijderen van Alle bestanden en mappen uit de configuratiemap."
+LangString SecGrpResetConfig_Desc ${LANG_DUTCH} "Verwijderen van Alle bestanden en mappen uit de configuratiemap"
 
 #LangString SecDeleteConfigFile_Desc ${LANG_ENGLISH} "Deletes the configuration file. This file helds also Routes and Waypoints."
-LangString SecDeleteConfigFile_Desc ${LANG_DUTCH} "Verwijderen van het configuratiebestand (inclusief routes and markeringspunten)."
+LangString SecDeleteConfigFile_Desc ${LANG_DUTCH} "Verwijderen van het configuratiebestand (inclusief routes en route- en markeringspunten)"
 
 #LangString SecDeleteChartDB_Desc ${LANG_ENGLISH} "Deletes the Chart DB file."
-LangString SecDeleteChartDB_Desc ${LANG_DUTCH} "Verwijderen van het kaartgegevensbestand."
+LangString SecDeleteChartDB_Desc ${LANG_DUTCH} "Verwijderen van het kaartgegevensbestand"
 
 #LangString SecDeleteSENC_Desc ${LANG_ENGLISH} "Deletes the SENC subfolder which helds the Bitmaps and S57 chart cache files."
-LangString SecDeleteSENC_Desc ${LANG_DUTCH} "Verwijderen van de SENC-map (met daarin de bitmaps en de cache-bestanden van S57 kaarten)."
+LangString SecDeleteSENC_Desc ${LANG_DUTCH} "Verwijderen van de SENC-map (met daarin de bitmaps en de cache-bestanden van S57 kaarten)"
 
 #LangString SecDeleteCM93_Desc ${LANG_ENGLISH} "Deletes the cm93 subfolder which helds the cached cm93 chart outlines."
-LangString SecDeleteCM93_Desc ${LANG_DUTCH} "Verwijderen van de CM93-map (met daarin de CM93 kaartgrenzen)."
+LangString SecDeleteCM93_Desc ${LANG_DUTCH} "Verwijderen van de CM93-map (met daarin de CM93 kaartgrenzen)"
 
 #LangString SecDeleteNavobjFile_Desc ${LANG_ENGLISH} "Deletes the file 'navobj.xml' in the config folder. This file contains the Tracks."
-LangString SecDeleteNavobjFile_Desc ${LANG_DUTCH} "Verwijderen van het bestand 'navobj.xml' uit de configuratiemap (met daarin de tracks)."
+LangString SecDeleteNavobjFile_Desc ${LANG_DUTCH} "Verwijderen van het bestand 'navobj.xml' uit de configuratiemap (met daarin de tracks)"
 
 #LangString SecDeleteLogFile_Desc ${LANG_ENGLISH} "Deletes the OpenCPN log file 'opencpn.log'."
-LangString SecDeleteLogFile_Desc ${LANG_DUTCH} "Verwijderen van het OpenCPN logbestand 'opencpn.log'."
+LangString SecDeleteLogFile_Desc ${LANG_DUTCH} "Verwijderen van het OpenCPN logbestand 'opencpn.log'"
 
 #LangString SecGrpShortcuts_Desc ${LANG_ENGLISH} "Creates shortcuts in both, the Start Menu and on the Desktop."
-LangString SecGrpShortcuts_Desc ${LANG_DUTCH} "Maken van snelkoppelingen in het Start Menu en op het Bureaublad."
+LangString SecGrpShortcuts_Desc ${LANG_DUTCH} "Maken van snelkoppelingen in het Start Menu én op het Bureaublad"
 
 #LangString SecShortcutStartmenu_Desc ${LANG_ENGLISH} "Creates shortcuts for OpenCPN and the Uninstaller in the Start Menu - configurable on the next page."
-LangString SecShortcutStartmenu_Desc ${LANG_DUTCH} "Maken van snelkoppelingen voor OpenCPN en voor het de-installatieprogramma in het Start Menu - configureerbaar op de volgende bladzijde."
+LangString SecShortcutStartmenu_Desc ${LANG_DUTCH} "Maken van snelkoppelingen voor OpenCPN en voor het verwijderprogramma in het Start Menu - configureerbaar op de volgende bladzijde"
 
 #LangString SecShortcutDesktop_Desc ${LANG_ENGLISH} "Creates a shortcut for OpenCPN on the Desktop."
-LangString SecShortcutDesktop_Desc ${LANG_DUTCH} "Maken van een snelkoppeling voor OpenCPN op het Bureaublad."
+LangString SecShortcutDesktop_Desc ${LANG_DUTCH} "Maken van een snelkoppeling voor OpenCPN op het Bureaublad"
 
 #LangString SecSetConfig_Desc ${LANG_ENGLISH} "Preconfigure the language setting and the chart dir(s) for OpenCPN. When selected a separate page is shown for configuration."
 LangString SecSetConfig_Desc ${LANG_DUTCH} "Instellen van taal en kaartmappen voor OpenCPN. Indien geselecteerd, wordt een aparte configuratiepagina getoond."
 
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
-LangString UnSecDeleteConfigFolder_Desc ${LANG_DUTCH} "Verwijderen van de configuratiemap en van alle hierin aanwezige bestanden en mappen."
+LangString UnSecDeleteConfigFolder_Desc ${LANG_DUTCH} "Verwijderen van de configuratiemap en van alle hierin aanwezige bestanden en mappen"
 
 #LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 LangString Uninstall_Link ${LANG_DUTCH} "Verwijder @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
@@ -230,10 +230,10 @@ LangString Page_TypeInst_Title ${LANG_DUTCH} "Vorige installaties"
 LangString Page_TypeInst_Subtitle ${LANG_DUTCH} "$MULTIPLE_INSTALLS OpenCPN installaties gevonden.$\r$\nKies hoe u OpenCPN wilt installeren."
 
 #LangString Page_TypeInst_Title_1 ${LANG_ENGLISH} "Already Installed"
-LangString Page_TypeInst_Title_1 ${LANG_DUTCH} "Al geïnstalleerd"
+LangString Page_TypeInst_Title_1 ${LANG_DUTCH} "Reeds geïnstalleerd"
 
 #LangString Page_TypeInst_Subtitle_1 ${LANG_ENGLISH} "Found installed version of OpenCPN.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_1 ${LANG_DUTCH} "Al geïnstalleerde versie van OpenCPN gevonden.$\r$\nKies hoe u OpenCPN wilt installeren."
+LangString Page_TypeInst_Subtitle_1 ${LANG_DUTCH} "Reeds geïnstalleerde versie van OpenCPN gevonden.$\r$\nKies hoe u OpenCPN wilt installeren."
 
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_DUTCH} "Versie is al geïnstalleerd"
@@ -248,7 +248,7 @@ LangString Label_TypeInst_Reinstall_Text ${LANG_DUTCH} "OpenCPN @CPACK_PACKAGE_V
 LangString RB_Reinstall_TypeInst_Text ${LANG_DUTCH} "Herinstalleren met gebruik van vorige instellingen"
 
 #LangString Label_TypeInst_Upgrade_Text ${LANG_ENGLISH} "An older version of OpenCPN is installed on your system. Select the installation type you want to perform and click Next to continue."
-LangString Label_TypeInst_Upgrade_Text ${LANG_DUTCH} "Er is een oudere versie van OpenCPN op uw systeem geïnstalleerd. Selecteer het type installatie dat u wilt uitvoeren en klik op 'Volgende' om door te gaan."
+LangString Label_TypeInst_Upgrade_Text ${LANG_DUTCH} "Er is al een oudere versie van OpenCPN op uw systeem geïnstalleerd. Selecteer het type installatie dat u wilt uitvoeren en klik op 'Volgende' om door te gaan."
 
 #LangString RB_Upgrade_TypeInst_Text ${LANG_ENGLISH} "Upgrade OpenCPN using previous settings (recommended)"
 LangString RB_Upgrade_TypeInst_Text ${LANG_DUTCH} "Upgrade OpenCPN met gebruik van vorige instellingen (aanbevolen)"
@@ -290,7 +290,7 @@ LangString Msg_UAC_Logon_Abort ${LANG_DUTCH} "Login service werkt niet, actie wo
 LangString Msg_UAC_No_Elevation ${LANG_DUTCH} "Kan niet doorgaan, error $0"
 
 #LangString Msg_Error_Remove_InstDir ${LANG_ENGLISH} "The installation directory$\r$\n'$INSTDIR'$\r$\ncould not be removed because it is not empty."
-LangString Msg_Error_Remove_InstDir ${LANG_DUTCH} "De installatiemap$\r$\n'$INSTDIR'$\r$\nkon niet verwijderd worden omdat deze niet leeg is."
+LangString Msg_Error_Remove_InstDir ${LANG_DUTCH} "De installatiemap$\r$\n'$INSTDIR'$\r$\nkon niet verwijderd worden omdat deze niet leeg was."
 
 #LangString Msg_Path_Invalid ${LANG_ENGLISH} "The entered path is invalid!$\r$\n$\r$\nPlease check your input."
 LangString Msg_Path_Invalid ${LANG_DUTCH} "Het opgegeven pad is ongeldig!$\r$\n$\r$\nControleer uw invoer."
@@ -312,7 +312,7 @@ LangString Msg_Unknown_Type_Param ${LANG_DUTCH} "De ingevoerde waarde '$9' voor 
 
 ;added on 2010-10-16
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
-LangString SecGrpShortcuts_Text ${LANG_DUTCH} "Maken snelkoppelingen"
+LangString SecGrpShortcuts_Text ${LANG_DUTCH} "Maken van snelkoppelingen"
 
 #LangString SecShortcutStartmenu_Text ${LANG_ENGLISH} "Add Shortcuts to the Start Menu"
 LangString SecShortcutStartmenu_Text ${LANG_DUTCH} "Maken van snelkoppelingen in het Start Menu"
@@ -321,7 +321,7 @@ LangString SecShortcutStartmenu_Text ${LANG_DUTCH} "Maken van snelkoppelingen in
 LangString SecShortcutDesktop_Text ${LANG_DUTCH} "Maken van snelkoppeling op het Bureaublad"
 
 #LangString Installation_Delete_Config ${LANG_ENGLISH} "Delete (existing) Config Subdirectories/ Files"
-LangString Installation_Delete_Config ${LANG_DUTCH} "Verwijder (bestaande) configuratiemappen en -bestanden"
+LangString Installation_Delete_Config ${LANG_DUTCH} "Verwijderen van  (bestaande) configuratiemappen en -bestanden"
 
 ;added on 2010-10-17
 #LangString Banner_Scan_Drive ${LANG_ENGLISH} "Scanning Drive $9"
@@ -335,8 +335,16 @@ LangString Banner_Installation_Found_Plural ${LANG_DUTCH} "$counter_tmp installa
 
 ;added on 2010-10-18
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
-LangString UnSecDeleteConfigFolder_Text ${LANG_DUTCH} "Verwijder configuratiemap"
+LangString UnSecDeleteConfigFolder_Text ${LANG_DUTCH} "Verwijderen van configuratiemap"
+
+;added on 2010-10-21
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_DUTCH} "Uninstall"
 
 ;added on 2011-06-13
 #LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ Versie @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ versie @CPACK_PACKAGE_VERSION@"
+
+;added on 2011-07-24
+#LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
+LangString License_Message ${LANG_DUTCH} "OpenCPN is vrije software. U mag deze software legaal kopiëren, (her)installeren, aanpassen en (her)distribueren voor uzelf en voor uw vrienden, onder de voorwaarden van de GPL (GNU General Public License). Goede vaart!"

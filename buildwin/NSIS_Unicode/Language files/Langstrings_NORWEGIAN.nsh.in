@@ -337,6 +337,14 @@ LangString Banner_Installation_Found_Plural ${LANG_NORWEGIAN} "Fant $counter_tmp
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_NORWEGIAN} "Slett konfigurasjonsmappe"
 
+;added on 2010-10-21
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_NORWEGIAN} "Avinstaller"
+
 ;added on 2011-06-13
 #LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
 LangString ^NameDA ${LANG_NORWEGIAN} "@CPACK_PACKAGE_NAME@ Versjon @CPACK_PACKAGE_VERSION@"
+
+;added on 2011-07-24
+#LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
+LangString License_Message ${LANG_NORWEGIAN} "OpenCPN er en gratis programvare. Du er oppfordret og lovlig berettiget til å kopiere, reinstallere, modifisere og redistribuere dette programmet for deg selv og dine venner i henhold til reglene gitt i GPL. Seil trygt!"

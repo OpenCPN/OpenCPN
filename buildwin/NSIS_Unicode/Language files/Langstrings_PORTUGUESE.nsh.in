@@ -340,3 +340,11 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_PORTUGUESE} "Delete Config folder
 ;added on 2010-10-21
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 LangString Uninstall_Folder_Name ${LANG_PORTUGUESE} "Uninstall"
+
+;added on 2011-06-13
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_PORTUGUESE} "@CPACK_PACKAGE_NAME@ versão @CPACK_PACKAGE_VERSION@"
+
+;added on 2011-07-24
+#LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
+LangString License_Message ${LANG_PORTUGUESE} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"

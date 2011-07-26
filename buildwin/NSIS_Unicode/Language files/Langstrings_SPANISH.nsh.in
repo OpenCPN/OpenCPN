@@ -337,6 +337,14 @@ LangString Banner_Installation_Found_Plural ${LANG_SPANISH} "$counter_tmp instal
 #LangString UnSecDeleteConfigFolder_Text ${LANG_ENGLISH} "Delete Config folder"
 LangString UnSecDeleteConfigFolder_Text ${LANG_SPANISH} "Eliminar carpeta Config"
 
+;added on 2010-10-21
+#LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
+LangString Uninstall_Folder_Name ${LANG_SPANISH} "Desinstalación"
+
 ;added on 2011-06-13
 #LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
 LangString ^NameDA ${LANG_SPANISH} "@CPACK_PACKAGE_NAME@ versión @CPACK_PACKAGE_VERSION@"
+
+;added on 2011-07-24
+#LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
+LangString License_Message ${LANG_SPANISH} "OpenCPN es software libre. Tienes todo el derecho - y te animamos de hacerlo - para copiar, reinstalar, modificar y redistribuir este programa tanto para tí como para tus amigos bajo los términos de la GPL. $\r$\nBuen viento y buena mar!"
