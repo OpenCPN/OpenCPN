@@ -325,9 +325,12 @@ SET(SRC_TINYXML
       )
 
 IF(TINYXML_FOUND)
+    message (STATUS "Building with tinyxml includes")
     INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
+    ADD_DEFINITIONS(-DTIXML_USE_STL)
 ELSE(TINYXML_FOUND)
-  SET(SRCS ${SRCS} ${SRC_TINYXML})
+    message (STATUS "tinyxml library not found")
+    SET(SRCS ${SRCS} ${SRC_TINYXML})
 ENDIF(TINYXML_FOUND)
 
 
