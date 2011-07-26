@@ -3467,6 +3467,8 @@ Function un.onInit
 
 ##########  from here we can be sure to run with admin privileges  ##########
 	
+    SectionSetText ${UnSecDeleteConfigFolder} $(UnSecDeleteConfigFolder_Text)
+    
 	ClearErrors
 	Var /GLOBAL UN_INST_PARAMS
 	Var /GLOBAL UN_INST_HELP
