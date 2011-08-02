@@ -1,52 +1,16 @@
 Description: Use system's copy of the TinyXML library
 Author: Hamish B <hamish_b yahoo com>
-Index: opencpn/CMakeLists.txt
+Index: opencpn/include/gpxdocument.h
 ===================================================================
---- opencpn.orig/CMakeLists.txt	2011-07-09 18:33:01.292126460 +0400
-+++ opencpn/CMakeLists.txt	2011-07-09 18:52:35.488126851 +0400
-@@ -178,7 +178,8 @@
-     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
-     FIND_PACKAGE(ZLIB REQUIRED)
-     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
--    FIND_PACKAGE(TinyXML)
-+    FIND_PACKAGE(TinyXML REQUIRED)
-+    INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
- ENDIF(UNIX)
- 
- # For convenience we define the sources as a variable. You can add 
-@@ -276,7 +277,6 @@
- 		include/ais.h
-                 include/pluginmanager.h
-                 include/ocpn_plugin.h
--		include/tinystr.h
- 		include/gpxdocument.h
- )
- 
-@@ -303,7 +303,6 @@
- 		src/about.cpp
- 		src/ais.cpp
-                 src/pluginmanager.cpp
--		src/tinystr.cpp
- 		src/gpxdocument.cpp
-     )
- 
-@@ -670,6 +669,7 @@
-       ${GETTEXT_LIBRARY}
-       ${BZIP2_LIBRARIES}
-       ${ZLIB_LIBRARY}
-+      ${TINYXML_LIBRARIES}
-       )
- 
- IF(TINYXML_FOUND)
-Index: opencpn-2.4.708/include/gpxdocument.h
-===================================================================
---- opencpn-2.4.708.orig/include/gpxdocument.h	2011-07-09 18:53:08.484126861 +0400
-+++ opencpn-2.4.708/include/gpxdocument.h	2011-07-09 18:53:19.240126866 +0400
-@@ -29,7 +29,6 @@
+--- opencpn.orig/include/gpxdocument.h	2011-08-02 23:09:19.967165256 +1200
++++ opencpn/include/gpxdocument.h	2011-08-02 23:09:48.359953077 +1200
+@@ -29,7 +29,9 @@
  
  #include <wx/wx.h>
  #include <tinyxml.h>
--#include <tinystr.h>
++#ifndef TIXML_USE_STL
+ #include <tinystr.h>
++#endif
  #include <stdio.h>
  
  const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it

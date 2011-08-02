@@ -1,11 +1,17 @@
-opencpn (2.4.708+dfsg-1) unstable; urgency=low
+opencpn (2.5.0-1) unstable; urgency=low
+
+  * Packaged for upstream version 2.5.0
+  * Drop most of TinyXML patch (superseded by upstream)
+  * Closing ITP. (Closes: #538067)
+
+ -- Hamish B <hamish_b@yahoo.com>  Tue, 02 Aug 2011 22:36:56 +1200
+
+opencpn (2.4.708-0) unstable; urgency=low
 
   [ Anton Martchukov ]
   * Packaged for upstream git beta version 2.4.708
   * Fixed use_pkg_tinyxml.patch to apply cleanly with upstream changes
-  * Added "dfsg" to version number
   * Added DEP-5 machine-readable copyright file
-  * Closing ITP. (Closes: #538067)
 
   [ Hamish B ]
   * FindTinyXML.cmake now included by upstream
