@@ -70,7 +70,7 @@ public:
       wxString GetLongDescription();
 
 //    The required override PlugIn Methods
-      bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+      bool RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
 
 

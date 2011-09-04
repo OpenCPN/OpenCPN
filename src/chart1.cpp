@@ -382,6 +382,7 @@ int              g_COGAvgSec;                   // COG average period (sec.) for
 double           g_COGAvg;
 bool             g_bLookAhead;
 bool             g_bskew_comp;
+bool             g_bopengl;
 
 int              g_nCOMPortCheck;
 
@@ -4545,7 +4546,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_ROUTE:
         {
             nRoute_State = 1;
-            cc1->SetMyCursor(cc1->pCursorPencil);
+            cc1->SetCursor(*cc1->pCursorPencil);
 //            SubmergeToolbar();
 
             break;

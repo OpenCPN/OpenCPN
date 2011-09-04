@@ -416,7 +416,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
 }
 
-bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, const ViewPort &vp)
+bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp)
 {
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
       {
@@ -426,7 +426,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( wxMemoryDC *pmdc, const ViewP
                   if(pic->m_cap_flag & WANTS_OVERLAY_CALLBACK)
                   {
                         PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
-                        pic->m_pplugin->RenderOverlay(pmdc, &pivp);
+                        pic->m_pplugin->RenderOverlay(dc, &pivp);
                   }
             }
       }
@@ -1113,7 +1113,7 @@ void opencpn_plugin::OnToolbarToolCallback(int id)
 void opencpn_plugin::OnContextMenuItemCallback(int id)
 {}
 
-bool opencpn_plugin::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool opencpn_plugin::RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)

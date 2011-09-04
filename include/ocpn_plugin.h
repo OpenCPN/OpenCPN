@@ -58,6 +58,8 @@ class       wxNotebook;
 class       wxFont;
 class       wxAuiManager;
 
+class       ocpnDC;
+
 //---------------------------------------------------------------------------------------------------------
 //
 //    Bitfield PlugIn Capabilites flag definition
@@ -366,8 +368,8 @@ public:
       virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
 
       virtual void ShowPreferencesDialog( wxWindow* parent );
-
-      virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+      
+      virtual bool RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 

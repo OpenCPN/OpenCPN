@@ -60,6 +60,7 @@
 #include "chartbase.h"
 #include "tinyxml.h"
 #include "gpxdocument.h"
+#include "ocpndc.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -118,6 +119,7 @@ extern bool             g_bTransparentToolbar;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
+extern bool             g_bopengl;
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
@@ -1087,7 +1089,7 @@ void RoutePoint::ReLoadIcon ( void )
 }
 
 
-void RoutePoint::Draw ( wxDC& dc, wxPoint *rpn )
+void RoutePoint::Draw ( ocpnDC& dc, wxPoint *rpn )
 {
       wxPoint r;
       wxRect            hilitebox;
@@ -1209,7 +1211,8 @@ void RoutePoint::CalculateDCRect ( wxDC& dc, wxRect *prect )
       dc.DestroyClippingRegion();
 
       // Draw the mark on the dc
-      Draw ( dc, NULL );
+      ocpnDC odc(dc);
+      Draw ( odc, NULL );
 
       //  Retrieve the drawing extents
       prect->x = dc.MinX() - 1;
@@ -1497,14 +1500,14 @@ RoutePoint *Route::GetPoint ( const wxString &guid )
       return ( NULL );
 }
 
-void Route::DrawPointWhich ( wxDC& dc, int iPoint, wxPoint *rpn )
+void Route::DrawPointWhich ( ocpnDC& dc, int iPoint, wxPoint *rpn )
 {
       GetPoint ( iPoint )->Draw ( dc, rpn );
 }
 
 
 
-void Route::DrawSegment ( wxDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow )
+void Route::DrawSegment ( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow )
 {
       if ( m_bRtIsSelected )
             dc.SetPen ( *g_pRouteMan->GetSelectedRoutePen() );
@@ -1519,7 +1522,7 @@ void Route::DrawSegment ( wxDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bo
 
 
 
-void Route::Draw ( wxDC& dc, ViewPort &VP )
+void Route::Draw ( ocpnDC& dc, ViewPort &VP )
 {
       if ( !m_bVisible || m_nPoints == 0 )
             return;
@@ -1659,7 +1662,7 @@ static int s_arrow_icon[] =
 };
 
 
-void Route::RenderSegment ( wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width )
+void Route::RenderSegment ( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width )
 {
       //    Get the dc boundary
       int sx, sy;
@@ -1675,48 +1678,25 @@ void Route::RenderSegment ( wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &
       //    If hilite is desired, use a Native Graphics context to render alpha colours
       //    That is, if wxGraphicsContext is available.....
 
-#if dwxUSE_GRAPHICS_CONTEXT
       if ( hilite_width )
       {
-            wxGraphicsContext *pgc;
+           if ( Visible == cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) )
+           {
+                wxPen psave = dc.GetPen();
 
-            wxMemoryDC *pmdc = wxDynamicCast ( &dc, wxMemoryDC );
-            if ( pmdc )
-            {
-                  pgc = wxGraphicsContext::Create ( *pmdc );
-            }
-            else
-            {
-                  wxClientDC *pcdc = wxDynamicCast ( &dc, wxClientDC );
-                  if ( pcdc )
-                        pgc = wxGraphicsContext::Create ( *pcdc );
-            }
+                wxColour y = GetGlobalColor ( _T ( "YELO1" ) );
+                wxColour hilt ( y.Red(), y.Green(), y.Blue(), 128 );
 
+                wxPen HiPen ( hilt, hilite_width, wxSOLID );
 
-            if ( pgc )
-            {
-                  if ( Visible == cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) )
-                  {
-                        wxPen psave = dc.GetPen();
+                dc.SetPen ( HiPen );
+                dc.StrokeLine ( x0, y0, x1, y1 );
 
-                        wxColour y = GetGlobalColor ( _T ( "YELO1" ) );
-                        wxColour hilt ( y.Red(), y.Green(), y.Blue(), 128 );
-
-                        wxPen HiPen ( hilt, hilite_width, wxSOLID );
-
-                        pgc->SetPen ( HiPen );
-                        pgc->StrokeLine ( x0, y0, x1, y1 );
-
-                        pgc->SetPen ( psave );
-                        pgc->StrokeLine ( x0, y0, x1, y1 );
-                  }
-
-                  delete pgc;
-            }
+                dc.SetPen ( psave );
+                dc.StrokeLine ( x0, y0, x1, y1 );
+           }
       }
-
       else
-#endif
       {
             if ( Visible == cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) )
                   dc.DrawLine ( x0, y0, x1, y1 );
@@ -2066,7 +2046,8 @@ void Route::CalculateDCRect ( wxDC& dc_route, wxRect *prect, ViewPort &VP )
                   RoutePoint *prp2 = node->GetData();
                   bool blink_save = prp2->m_bBlink;
                   prp2->m_bBlink = false;
-                  prp2->Draw ( dc_route, NULL );
+                  ocpnDC odc_route(dc_route);
+                  prp2->Draw ( odc_route, NULL );
                   prp2->m_bBlink = blink_save;
 
                   node = node->GetNext();
@@ -2499,7 +2480,7 @@ void Track::AddPointNow(bool do_add_point)
 }
 
 
-void Track::Draw ( wxDC& dc, ViewPort &VP )
+void Track::Draw ( ocpnDC& dc, ViewPort &VP )
 {
       if ( !IsVisible() || GetnPoints() == 0 )
             return;
@@ -2780,6 +2761,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
+      Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
 
       Read ( _T ( "ToolbarX"),  &g_toolbar_x, 0);
       Read ( _T ( "ToolbarY" ),  &g_toolbar_y, 0);
@@ -4009,7 +3991,7 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "AllowExtremeOverzoom" ), g_b_overzoom_x );
 
       Write ( _T ( "SkewToNorthUp" ), g_bskew_comp );
-
+      Write ( _T ( "OpenGL" ), g_bopengl );
 
       Write ( _T ( "UseRasterCharts" ), g_bUseRaster );
       Write ( _T ( "UseVectorCharts" ), g_bUseVector );
@@ -7519,51 +7501,70 @@ double fromDMM(wxString sdms)
 
 }
 
-void AlphaBlending ( wxDC &dc, int x, int y, int size_x, int size_y,
+/* render a rectangle at a given color and transparency */
+void AlphaBlending ( ocpnDC &dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency )
 {
+     wxDC *pdc = dc.GetDC();
+     if(pdc) {
+          //    Get wxImage of area of interest
+          wxBitmap obm ( size_x, size_y );
+          wxMemoryDC mdc1;
+          mdc1.SelectObject ( obm );
+          mdc1.Blit ( 0, 0, size_x, size_y, pdc, x, y );
+          mdc1.SelectObject ( wxNullBitmap );
+          wxImage oim = obm.ConvertToImage();
 
-      //    Get wxImage of area of interest
-      wxBitmap obm ( size_x, size_y );
-      wxMemoryDC mdc1;
-      mdc1.SelectObject ( obm );
-      mdc1.Blit ( 0, 0, size_x, size_y, &dc, x, y );
-      mdc1.SelectObject ( wxNullBitmap );
-      wxImage oim = obm.ConvertToImage();
+          //    Create an image with selected transparency/color
+          int olay_red   = color.Red() * transparency;
+          int olay_green = color.Green() * transparency;
+          int olay_blue  = color.Blue() * transparency;
 
-      //    Create an image with selected transparency/color
-      int olay_red   = color.Red() * transparency;
-      int olay_green = color.Green() * transparency;
-      int olay_blue  = color.Blue() * transparency;
+          //    Create destination image
+          wxImage dest ( size_x, size_y, false );
+          unsigned char *dest_data = ( unsigned char * )
+               malloc ( size_x * size_y * 3 * sizeof ( unsigned char ) );
+          unsigned char *po = oim.GetData();
+          unsigned char *d = dest_data;
 
-      //    Create destination image
-      wxImage dest ( size_x, size_y, false );
-      unsigned char *dest_data = ( unsigned char * ) malloc ( size_x * size_y * 3 * sizeof ( unsigned char ) );
-      unsigned char *po = oim.GetData();
-      unsigned char *d = dest_data;
+          int sb = size_x * size_y;
+          transparency = 255-transparency;
+          for ( int i=0 ; i<sb ; i++ )
+          {
+               int r = ( ( *po++ ) * transparency ) + olay_red;
+               *d++ = ( unsigned char ) ( r / 255 );
+               int g = ( ( *po++ ) * transparency ) + olay_green;
+               *d++ = ( unsigned char ) ( g / 255 );
+               int b = ( ( *po++ ) * transparency ) + olay_blue;
+               *d++ = ( unsigned char ) ( b / 255 );
+          }
 
-      int sb = size_x * size_y;
-      transparency = 255-transparency;
-      for ( int i=0 ; i<sb ; i++ )
-      {
-            int r = ( ( *po++ ) * transparency ) + olay_red;
-            *d++ = ( unsigned char ) ( r / 255 );
-            int g = ( ( *po++ ) * transparency ) + olay_green;
-            *d++ = ( unsigned char ) ( g / 255 );
-            int b = ( ( *po++ ) * transparency ) + olay_blue;
-            *d++ = ( unsigned char ) ( b / 255 );
-      }
+          dest.SetData ( dest_data );
 
-      dest.SetData ( dest_data );
+          //    Convert destination to bitmap and draw it
+          wxBitmap dbm ( dest );
+          dc.DrawBitmap ( dbm, x, y, false );
 
-      //    Convert destination to bitmap and draw it
-      wxBitmap dbm ( dest );
-      dc.DrawBitmap ( dbm, x, y, false );
+          // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
+          // Do it explicitely here for all platforms.
+          dc.CalcBoundingBox ( x, y );
+          dc.CalcBoundingBox ( x + size_x, y + size_y );
+     } else {
+          /* opengl version */
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-      // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
-      // Do it explicitely here for all platforms.
-      dc.CalcBoundingBox ( x, y );
-      dc.CalcBoundingBox ( x + size_x, y + size_y );
+          glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
+
+          glBegin(GL_QUADS);
+          glVertex2i(x, y);
+          glVertex2i(x+size_x, y);
+          glVertex2i(x+size_x, y+size_y);
+          glVertex2i(x, y+size_y);
+          glEnd();
+
+          glDisable(GL_BLEND);
+     }
 }
 
 //    TTYScroll and TTYWindow Implemetation

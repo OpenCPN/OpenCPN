@@ -49,7 +49,7 @@
 
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
-extern void AlphaBlending ( wxDC& dc, int x, int y, int size_x, int size_y,
+extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
@@ -67,6 +67,7 @@ extern double parseLatLon(wxString latlon);
 class Route;
 class NavObjectCollection;
 class wxProgressDialog;
+class ocpnDC;
 
 //    class declarations
 
@@ -89,7 +90,7 @@ class RoutePoint
 public:
       RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = GPX_EMPTY_STRING, bool bAddToList = true);
       ~RoutePoint(void);
-      void Draw(wxDC& dc, wxPoint *rpn = NULL);
+      void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
 
       wxString CreatePropString(void);
@@ -184,9 +185,9 @@ public:
       RoutePoint *GetPoint ( const wxString &guid );
       int GetIndexOf(RoutePoint *prp);
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
-      void DrawPointWhich(wxDC& dc, int iPoint, wxPoint *rpn);
-      void DrawSegment(wxDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
-      virtual void Draw(wxDC& dc, ViewPort &pVP);
+      void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
+      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
+      virtual void Draw(ocpnDC& dc, ViewPort &pVP);
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -207,7 +208,7 @@ public:
       void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
-      void RenderSegment(wxDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
+      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
 
       bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true);
@@ -283,7 +284,7 @@ class Track : public wxEvtHandler, public Route
             void FixMidnight(Track *pPreviousTrack);
             bool DoExtendDaily(void);
             bool IsRunning(){ return m_bRunning; }
-            void Draw(wxDC& dc, ViewPort &VP);
+            void Draw(ocpnDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
 

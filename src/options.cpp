@@ -62,6 +62,7 @@ extern bool             g_bShowPrintIcon;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
+extern bool             g_bopengl;
 
 extern wxString         *pNMEADataSource;
 extern wxString         g_NMEABaudRate;
@@ -483,6 +484,9 @@ void options::CreateControls()
     pSkewComp = new wxCheckBox( itemPanel5, ID_SKEWCOMPBOX, _("Show skewed raster charts as North-Up"));
     itemStaticBoxSizerCDO->Add(pSkewComp, 1, wxALIGN_LEFT|wxALL, 2);
 
+    //  OpenGL Render checkbox
+    pOpenGL = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Use OpenGL"));
+    itemStaticBoxSizerCDO->Add(pOpenGL, 1, wxALIGN_LEFT|wxALL, 2);
 
 
 
@@ -1388,6 +1392,7 @@ void options::SetInitialSettings()
       pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
+      pOpenGL->SetValue(g_bopengl);
       pSDisplayGrid->SetValue(g_bDisplayGrid);
 
       pCBCourseUp->SetValue(g_bCourseUp);
@@ -1774,6 +1779,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bShowDepthUnits = pSDepthUnits->GetValue();
     g_bskew_comp = pSkewComp->GetValue();
+    g_bopengl = pOpenGL->GetValue();
 
     g_bfilter_cogsog = pFilterNMEA->GetValue();
 

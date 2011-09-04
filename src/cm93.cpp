@@ -49,6 +49,7 @@
 #include "cutil.h"
 #include "navutil.h"                            // for LogMessageOnce
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
+#include "ocpndc.h"
 
 #include <stdio.h>
 
@@ -5638,7 +5639,7 @@ void cm93compchart::SetSpecialCellIndexOffset(int cell_index, int object_id, int
             m_pcm93chart_current->SetUserOffsets( cell_index, object_id, subcell, xoff, yoff);
 }
 
-bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool bdraw_mono)
+bool cm93compchart::RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp)
 {
       ViewPort vp_positive = vp;
       SetVPPositive(&vp_positive);
@@ -5782,7 +5783,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool
 
                                           if(btest)
                                           {
-                                                pdc->DrawLines(mcd->m_nvertices, pwp);
+                                                dc.DrawLines(mcd->m_nvertices, pwp);
                                                 bdrawn = true;
                                           }
                                     }

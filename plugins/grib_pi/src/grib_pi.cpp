@@ -37,6 +37,7 @@
 #include <wx/treectrl.h>
 #include <wx/fileconf.h>
 
+#include <ocpndc.h>
 
 #include "grib_pi.h"
 #include "grib.h"
@@ -287,13 +288,13 @@ void grib_pi::OnGribDialogClose()
       SaveConfig();
 }
 
-bool grib_pi::RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool grib_pi::RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp)
 {
       if(m_pGribDialog && m_pGRIBOverlayFactory)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
             {
-                  m_pGRIBOverlayFactory->RenderGribOverlay ( pmdc, vp );
+                  m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
                   return true;
             }
             else

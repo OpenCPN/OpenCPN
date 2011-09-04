@@ -39,6 +39,7 @@
 #include "cutil.h"
 #include "georef.h"
 #include "chart1.h"
+#include "ocpndc.h"
 
 
 //      Local Prototypes
@@ -100,7 +101,7 @@ WVSChart::~WVSChart()
         }
         free(ptp);
 }
-void WVSChart::RenderViewOnDC(wxMemoryDC& dc, ViewPort& VPoint)
+void WVSChart::RenderViewOnDC(ocpnDC& dc, ViewPort& VPoint)
 {
         float *platray = NULL;
         float *plonray = NULL;

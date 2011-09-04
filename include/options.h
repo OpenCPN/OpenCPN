@@ -118,6 +118,7 @@ enum {
         ID_CHOICE_NMEA_BAUD,
         ID_CHECK_LOOKAHEAD,
         ID_SKEWCOMPBOX,
+        ID_OPENGLBOX,
         ID_GARMINHOST,
         ID_FILTERNMEA,
         ID_FULLSCREENQUILT,
@@ -229,6 +230,7 @@ public:
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxCheckBox              *pSkewComp;
+    wxCheckBox              *pOpenGL;
     wxCheckBox              *pFullScreenQuilt;
 
 //    For GPS Page

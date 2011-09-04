@@ -1,0 +1,107 @@
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Layer to use wxDC or opengl
+ * Author:   Sean D'Epagnier
+ *
+ ***************************************************************************
+ *   Copyright (C) 2011 by Sean D'Epagnier                                 *
+ *   sean at depagnier dot com                                             *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************
+ *
+ *f
+ */
+
+
+#ifndef __OCPNDC_H__
+#define __OCPNDC_H__
+
+class wxGLCanvas;
+
+//----------------------------------------------------------------------------
+// ocpnDC
+//----------------------------------------------------------------------------
+class ocpnDC
+{
+public:
+     ocpnDC(wxGLCanvas &canvas);
+     ocpnDC(wxDC &pdc);
+
+     ~ocpnDC();
+
+     void SetPen( const wxPen &pen);
+     void SetBrush( const wxBrush &brush);
+     void SetTextForeground(const wxColour &colour);
+     void SetFont(const wxFont& font);
+
+     const wxPen& GetPen() const;
+     const wxBrush& GetBrush() const;
+     const wxFont& GetFont() const;
+
+     void GetSize(wxCoord *width, wxCoord *height) const;
+
+     void DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
+     void DrawLines( int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
+
+     void StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
+     void StrokeLine( wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
+
+     void DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h );
+     void DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, wxCoord rr );
+     void DrawCircle(wxCoord x, wxCoord y, wxCoord radius);
+     void DrawCircle(const wxPoint &pt, wxCoord radius) { DrawCircle(pt.x, pt.y, radius); }
+     void StrokeCircle(wxCoord x, wxCoord y, wxCoord radius);
+
+     void DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height);
+     void DrawPolygon(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
+     void StrokePolygon(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
+
+     void DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask);
+
+     void DrawText(const wxString &text, wxCoord x, wxCoord y);
+     void GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h, wxCoord *descent = NULL,
+                        wxCoord *externalLeading = NULL, wxFont *font = NULL) const;
+
+     void ResetBoundingBox();
+     void CalcBoundingBox(wxCoord x, wxCoord y);
+
+     void DestroyClippingRegion() {}
+
+     wxDC *GetDC() const { return dc; }
+
+protected:
+     bool ConfigurePen();
+     bool ConfigureBrush();
+
+     void GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
+                          int format, const unsigned char *data);
+
+     wxGLCanvas *glcanvas;
+     wxDC *dc;
+     wxPen m_pen;
+     wxBrush m_brush;
+     wxColour m_textforegroundcolour;
+     wxFont m_font;
+
+#if  wxUSE_GRAPHICS_CONTEXT
+     wxGraphicsContext *pgc;
+#endif
+     unsigned int tex;
+};
+
+#endif

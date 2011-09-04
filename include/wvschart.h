@@ -43,6 +43,8 @@
 
 
 #include "chartbase.h"
+
+class ocpnDC;
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
@@ -60,8 +62,7 @@ public:
       WVSChart(wxWindow *parent, const wxString& wvs_home_dir);
       ~WVSChart();
 
-      void RenderViewOnDC(wxMemoryDC& dc, ViewPort& VPoint);
-      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
+      void RenderViewOnDC(ocpnDC& dc, ViewPort& VPoint);
 
 private:
       wxString    *pwvs_home_dir;

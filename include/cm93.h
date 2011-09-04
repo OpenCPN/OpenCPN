@@ -441,7 +441,7 @@ class cm93compchart : public s57chart
 
             bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
-            bool RenderNextSmallerCellOutlines( wxDC *pdc, ViewPort& vp, bool bdraw_mono);
+            bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
 
             void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
             void GetPixPoint(int pixx, int pixy, double *plat, double *plon, ViewPort *vpt);

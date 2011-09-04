@@ -42,6 +42,8 @@
 
 #include <wx/listimpl.cpp>
 
+//#include <GL/glew.h>
+
 #include "chcanv.h"
 
 #include "routeman.h"
@@ -58,6 +60,7 @@
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 #include "ocpn_pixel.h"
+#include "ocpndc.h"
 
 
 #ifdef USE_S57
@@ -91,6 +94,13 @@ extern struct sigaction sa_all_old;
 
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+/* need lists of rectangles, wxRegion would try
+   to merge some of these inappropriately */
+WX_DEFINE_LIST(wxRectList);
 
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
@@ -229,6 +239,7 @@ extern PlugInManager    *g_pi_manager;
 extern wxAuiManager      *g_pauimgr;
 
 extern bool             g_bskew_comp;
+extern bool             g_bopengl;
 
 extern bool             g_bFullScreenQuilt;
 extern wxProgressDialog *s_ProgDialog;
@@ -518,9 +529,11 @@ class Quilt
             ArrayOfInts GetExtendedStackIndexArray() { return m_extended_stack_array; }
             ArrayOfInts GetEclipsedStackIndexArray() { return m_eclipsed_stack_array; }
 
+            bool IsBusy(){ return m_bbusy; }
+            QuiltPatch *GetCurrentPatch();
+
       private:
             wxRegion GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp);
-            QuiltPatch *GetCurrentPatch();
             void EmptyCandidateArray(void);
             void SubstituteClearDC ( wxMemoryDC &dc, ViewPort &vp );
             int GetNewRefChart(void);
@@ -2880,6 +2893,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_TIMER ( RTELEGPU_TIMER, ChartCanvas::OnRouteLegPopupTimerEvent )
         EVT_CHAR(ChartCanvas::OnChar )
         EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
+        EVT_TIMER ( ZOOM_TIMER, ChartCanvas::OnZoomTimerEvent )
 
 
         EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
@@ -2994,7 +3008,13 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pos_image_user_grey_dusk  = NULL;
         m_pos_image_user_grey_night = NULL;
 
+        m_zoom_timer.SetOwner(this, ZOOM_TIMER);
+        m_bzooming_in = false;;
+        m_bzooming_out = false;;
+
         VPoint.Invalidate();
+
+        m_glcc = new glChartCanvas(this);
 
 //    Build the cursors
 
@@ -3165,7 +3185,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         pCursorArrow = new wxCursor ( wxCURSOR_ARROW );
 
-        SetMyCursor ( pCursorArrow );
+        SetCursor ( *pCursorArrow );
 
         pPanTimer = new wxTimer ( this, PAN_TIMER );
         pPanTimer->Stop();
@@ -3384,7 +3404,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         }
 
         m_pQuilt = new Quilt();
-
 }
 
 ChartCanvas::~ChartCanvas()
@@ -3435,7 +3454,7 @@ ChartCanvas::~ChartCanvas()
         delete m_pos_image_user_grey_dusk;
         delete m_pos_image_user_grey_night;
 
-
+        delete m_glcc;
 }
 
 bool ChartCanvas::IsQuiltDelta()
@@ -3639,7 +3658,7 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
 
                               m_bMeasure_Active = true;
                               m_nMeasureState = 1;
-                              SetMyCursor ( pCursorPencil );
+                              SetCursor ( *pCursorPencil );
                               Refresh();
                               b_proc = true;
                         }
@@ -4158,7 +4177,42 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 }
 }
 
-bool ChartCanvas::ZoomCanvasIn(double factor, double lat, double lon)
+bool ChartCanvas::ZoomCanvasIn(double factor)
+{
+      if(!m_bzooming_in)
+      {
+            // Hack some parameters
+            m_zoomt = 5;
+            m_zoom_target_factor = factor;
+            m_zoom_current_factor = 1.0;
+            m_zoom_timer.Start(m_zoomt, true);
+            m_bzooming_in = true;
+      }
+
+      return true;
+}
+
+bool ChartCanvas::ZoomCanvasOut(double factor)
+{
+      return DoZoomCanvasOut(factor);
+}
+
+void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
+{
+      if(m_zoom_current_factor < m_zoom_target_factor)
+      {
+            DoZoomCanvasIn(1.05);
+            m_zoom_current_factor *= 1.05;
+            m_zoom_timer.Start(m_zoomt, true);
+      }
+      else
+            m_bzooming_in = false;
+
+}
+
+
+
+bool ChartCanvas::DoZoomCanvasIn(double factor)
 {
       //    Cannot allow Yield() re-entrancy here
       if(m_bzooming)
@@ -4191,7 +4245,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor, double lat, double lon)
             min_allowed_scale = pc->GetNormalScaleMin(GetCanvasScaleFactor(), g_b_overzoom_x);
 
             double target_scale_ppm = GetVPScale() * zoom_factor;
-            double new_scale_ppm = pc->GetNearestPreferredScalePPM(target_scale_ppm);
+            double new_scale_ppm = target_scale_ppm;//pc->GetNearestPreferredScalePPM(target_scale_ppm);
 
             proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
@@ -4207,10 +4261,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor, double lat, double lon)
 
 
 
-      if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
-            SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
-      else
-            SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
+      SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
 
       Refresh(false);
 
@@ -4222,7 +4273,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor, double lat, double lon)
 
 
 
-bool ChartCanvas::ZoomCanvasOut(double factor, double lat, double lon)
+bool ChartCanvas::DoZoomCanvasOut(double factor)
 {
       if(m_bzooming)
             return false;
@@ -4284,10 +4335,7 @@ bool ChartCanvas::ZoomCanvasOut(double factor, double lat, double lon)
 
       if(b_do_zoom)
       {
-            if((lat == 0.) && (lon == 0.))            // this is a special secret code, means to change scale only
-                  SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
-            else
-                  SetViewPoint ( lat, lon, GetCanvasScaleFactor() / proposed_scale_onscreen, VPoint.skew, VPoint.rotation );
+            SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
 
             Refresh(false);
       }
@@ -4362,8 +4410,12 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
 
 void ChartCanvas::ReloadVP ( bool b_adjust )
 {
-      m_cache_vp.Invalidate();
-      m_bm_cache_vp.Invalidate();
+      if(g_bopengl)
+            m_glcc->Invalidate();
+      else {
+            m_cache_vp.Invalidate();
+            m_bm_cache_vp.Invalidate();
+      }
 
       VPoint.Invalidate();
 
@@ -4716,7 +4768,7 @@ wxPoint transrot(wxPoint pt, double theta, wxPoint offset)
       return ret;
 }
 
-void ChartCanvas::ShipDraw ( wxDC& dc )
+void ChartCanvas::ShipDraw ( ocpnDC& dc )
 {
         if(!GetVP().IsValid())
               return;
@@ -4825,6 +4877,8 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
         {
 
 #ifdef USE_PNG_OWNSHIP
+             /* could optimize in opengl by doing scaling and rotation as a texture */
+
                 wxImage *pos_image;
                 wxColour pred_colour;
 
@@ -4882,19 +4936,18 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
                 //      Draw the ownship icon
                 if(GetVP().chart_scale < 300000)             // According to S52, this should be 50,000
                 {
+                     wxPoint rot_ctr(1 + img_width/2, 1 + img_height/2);
 
-                        wxPoint rot_ctr(1 + img_width/2, 1 + img_height/2);
+                     wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
+                     wxBitmap os_bm(rot_image);
 
-                        wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
-                        wxBitmap os_bm(rot_image);
-                        wxMemoryDC mdc(os_bm);
+                     int w =  os_bm.GetWidth();
+                     int h = os_bm.GetHeight();
 
-                        int w =  os_bm.GetWidth();
-                        int h = os_bm.GetHeight();
-                        dc.Blit(lShipPoint.x - w/2, (lShipPoint.y - h/2) , w, h, &mdc, 0, 0, wxCOPY, true);
+                     dc.DrawBitmap(os_bm, lShipPoint.x - w/2, lShipPoint.y - h/2, true);
 
-                        dc.CalcBoundingBox( lShipPoint.x - w/2, lShipPoint.y - h/2 );
-                        dc.CalcBoundingBox( lShipPoint.x - w/2 + w, lShipPoint.y - h/2 + h );        // Maintain dirty box,, missing in __WXMSW__ library
+                     dc.CalcBoundingBox( lShipPoint.x - w/2, lShipPoint.y - h/2 );
+                     dc.CalcBoundingBox( lShipPoint.x - w/2 + w, lShipPoint.y - h/2 + h );        // Maintain dirty box,, missing in __WXMSW__ library
                 }
                 else
                 {
@@ -4913,187 +4966,74 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
 
                 }
 
-
-
-                bool b_render_cog = true;
-                if(lpp < img_height/2)                  // don't draw predictors if they are shorter than the ship
-                      b_render_cog = false;
-
-#if wxUSE_GRAPHICS_CONTEXT
-                wxGraphicsContext *pgc = NULL;
-
-                wxMemoryDC *pmdc = wxDynamicCast(&dc, wxMemoryDC);
-                if(pmdc)
+                // draw course over ground if they are longer than the ship
+                if(lpp >= img_height/2)
                 {
-                      pgc = wxGraphicsContext::Create(*pmdc);
-                }
-                else
-                {
-                      wxClientDC *pcdc = wxDynamicCast(&dc, wxClientDC);
-                      if(pcdc)
-                            pgc = wxGraphicsContext::Create(*pcdc);
-                }
+                     const double png_pred_icon_scale_factor = .4;
+                     wxPoint icon[4];
+
+                     for ( int i=0; i<4; i++ )
+                     {
+                          int j = i * 2;
+                          double pxa = ( double ) (s_png_pred_icon[j]  );
+                          double pya = ( double ) (s_png_pred_icon[j+1]);
+
+                          pya *=  png_pred_icon_scale_factor;
+                          pxa *=  png_pred_icon_scale_factor;
+
+                          double px = ( pxa * sin ( cog_rad ) ) + ( pya * cos ( cog_rad ) );
+                          double py = ( pya * sin ( cog_rad ) ) - ( pxa * cos ( cog_rad ) );
 
 
-                if(pgc)
-                {
-                      if(b_render_cog)
-                      {
-                              //      COG Predictor
-                              wxDash dash_long[2];
-                              dash_long[0] = ( int ) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
-                              dash_long[1] = ( int ) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
+                          icon[i].x = ( int ) wxRound( px ) + lPredPoint.x;
+                          icon[i].y = ( int ) wxRound( py ) + lPredPoint.y;
+                     }
 
-                              wxPen ppPen2 ( pred_colour, 3, wxUSER_DASH );
-                              ppPen2.SetDashes( 2, dash_long );
-                              pgc->SetPen(ppPen2);
-                              pgc->StrokeLine(lShipPoint.x, lShipPoint.y, lPredPoint.x, lPredPoint.y);
+                     //      COG Predictor
+                     wxDash dash_long[2];
+                     dash_long[0] = ( int ) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
+                     dash_long[1] = ( int ) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
 
+                     wxPen ppPen2 ( pred_colour, 3, wxUSER_DASH );
+                     ppPen2.SetDashes( 2, dash_long );
+                     dc.SetPen(ppPen2);
+                     dc.StrokeLine(lShipPoint.x, lShipPoint.y, lPredPoint.x, lPredPoint.y);
 
-                              wxDash dash_long3[2];
-                              dash_long3[0] = 3 * dash_long[0];
-                              dash_long3[1] = 3 * dash_long[1];
+                     wxDash dash_long3[2];
+                     dash_long3[0] = 3 * dash_long[0];
+                     dash_long3[1] = 3 * dash_long[1];
 
-                              wxPen ppPen3 ( GetGlobalColor ( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
-                              ppPen3.SetDashes( 2, dash_long3 );
-                              pgc->SetPen(ppPen3);
-                              pgc->StrokeLine(lShipPoint.x, lShipPoint.y, lPredPoint.x, lPredPoint.y);
+                     wxPen ppPen3 ( GetGlobalColor ( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
+                     ppPen3.SetDashes( 2, dash_long3 );
+                     dc.SetPen(ppPen3);
+                     dc.StrokeLine(lShipPoint.x, lShipPoint.y, lPredPoint.x, lPredPoint.y);
 
+                     wxPen ppPen1 ( GetGlobalColor ( _T ( "UBLCK" ) ), 1, wxSOLID );
+                     dc.SetPen(ppPen1);
+                     dc.SetBrush(wxBrush(pred_colour)); //*wxWHITE_BRUSH);
 
-                              dc.CalcBoundingBox(lShipPoint.x, lShipPoint.y);               // keep dc dirty box up-to-date
-                              dc.CalcBoundingBox(lPredPoint.x, lPredPoint.y);
-
-
-
-                              double png_pred_icon_scale_factor = .40;
-
-                              wxPoint icon[10];
-
-                              for ( int i=0; i<4; i++ )
-                              {
-                                    int j = i * 2;
-                                    double pxa = ( double ) (s_png_pred_icon[j]  );
-                                    double pya = ( double ) (s_png_pred_icon[j+1]);
-
-                                    pya *=  png_pred_icon_scale_factor;
-                                    pxa *=  png_pred_icon_scale_factor;
-
-                                    double px = ( pxa * sin ( cog_rad ) ) + ( pya * cos ( cog_rad ) );
-                                    double py = ( pya * sin ( cog_rad ) ) - ( pxa * cos ( cog_rad ) );
-
-
-                                    icon[i].x = ( int )wxRound( px ) + lPredPoint.x;
-                                    icon[i].y = ( int )wxRound( py ) + lPredPoint.y;
-                              }
-
-
-                              wxGraphicsPath gpath = pgc->CreatePath();
-
-                              gpath.MoveToPoint(icon[0].x,icon[0].y);
-                              gpath.AddLineToPoint(icon[1].x,icon[1].y);
-                              gpath.AddLineToPoint(icon[2].x,icon[2].y);
-                              gpath.AddLineToPoint(icon[3].x,icon[3].y);
-                              gpath.AddLineToPoint(icon[0].x,icon[0].y);
-
-                              wxPen ppPen1 ( GetGlobalColor ( _T ( "UBLCK" ) ), 1, wxSOLID );
-                              pgc->SetPen(ppPen1);
-
-                              pgc->SetBrush(wxBrush(pred_colour)); //*wxWHITE_BRUSH);
-
-                              pgc->FillPath(gpath);
-                              pgc->StrokePath(gpath);
-
-                              dc.CalcBoundingBox(icon[0].x,icon[0].y);              // keep dc dirty box up-to-date
-                              dc.CalcBoundingBox(icon[1].x,icon[1].y);
-                              dc.CalcBoundingBox(icon[2].x,icon[2].y);
-                              dc.CalcBoundingBox(icon[3].x,icon[3].y);
-                              dc.CalcBoundingBox(icon[0].x,icon[0].y);
-
-                      }
-
-                      //      HDT Predictor
-                      if(b_render_hdt)
-                      {
-                            wxDash dash_short[2];
-                            dash_short[0] = ( int ) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
-                            dash_short[1] = ( int ) ( 1.8 * m_pix_per_mm );  // Short gap            |
-
-                            wxPen ppPen2 ( pred_colour, 1, wxUSER_DASH );
-                            ppPen2.SetDashes( 2, dash_short );
-
-                            pgc->SetPen(ppPen2);
-
-                            pgc->StrokeLine(lShipPoint.x, lShipPoint.y, lHeadPoint.x, lHeadPoint.y);
-                            dc.CalcBoundingBox(lHeadPoint.x, lHeadPoint.y);               // keep dc dirty box up-to-date
-
-                            wxGraphicsPath gpath = pgc->CreatePath();
-
-                            wxPen ppPen1 ( pred_colour, 2, wxSOLID );
-                            pgc->SetPen(ppPen1);
-                            pgc->SetBrush(wxBrush(GetGlobalColor ( _T ( "GREY2" ) )));
-
-                            gpath.AddCircle(lHeadPoint.x, lHeadPoint.y, 4);
-                            pgc->FillPath(gpath);
-                            pgc->StrokePath(gpath);
-
-                            dc.CalcBoundingBox(lHeadPoint.x+6, lHeadPoint.y+6);               // keep dc dirty box up-to-date
-                            dc.CalcBoundingBox(lHeadPoint.x-6, lHeadPoint.y-6);               // keep dc dirty box up-to-date
-
-                      }
-
-
-                      delete pgc;
-                }
-#else       //wxGraphicsContext
-
-                if(b_render_cog)
-                {
-                        wxPen ppPen2 ( pred_colour, 2, wxSOLID );
-                        dc.SetPen ( ppPen2 );
-                        dc.DrawLine ( lShipPoint.x, lShipPoint.y, lPredPoint.x, lPredPoint.y );
-
-                        double png_pred_icon_scale_factor = 0.5;
-
-                        wxPoint icon[10];
-
-                        for ( int i=0; i<4; i++ )
-                        {
-                              int j = i * 2;
-                              double pxa = ( double ) (s_png_pred_icon[j]  );
-                              double pya = ( double ) (s_png_pred_icon[j+1]);
-
-                              pya *=  png_pred_icon_scale_factor;
-                              pxa *=  png_pred_icon_scale_factor;
-
-                              double px = ( pxa * sin ( cog_rad ) ) + ( pya * cos ( cog_rad ) );
-                              double py = ( pya * sin ( cog_rad ) ) - ( pxa * cos ( cog_rad ) );
-
-
-                              icon[i].x = ( int ) wxRound( px ) + lPredPoint.x;
-                              icon[i].y = ( int ) wxRound( py ) + lPredPoint.y;
-                        }
-
-                        wxPen ppPen1 ( pred_colour, 2, wxSOLID );
-                        dc.SetPen ( ppPen1 );
-
-                        dc.DrawLine ( icon[0].x,icon[0].y, icon[1].x ,icon[1].y );
-                        dc.DrawLine ( icon[1].x,icon[1].y, icon[2].x ,icon[2].y  );
-                        dc.DrawLine ( icon[2].x,icon[2].y, icon[3].x ,icon[3].y );
-                        dc.DrawLine ( icon[3].x,icon[3].y, icon[0].x ,icon[0].y  );
-
+                     dc.StrokePolygon(4, icon);
                 }
 
                 //      HDT Predictor
                 if(b_render_hdt)
                 {
-                      wxPen ppPen2 ( pred_colour, 1, wxSOLID );
-                      dc.SetPen ( ppPen2 );
-                      dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "GREY2" ) )));
+                     wxDash dash_short[2];
+                     dash_short[0] = ( int ) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
+                     dash_short[1] = ( int ) ( 1.8 * m_pix_per_mm );  // Short gap            |
 
-                      dc.DrawLine ( lShipPoint.x, lShipPoint.y, lHeadPoint.x, lHeadPoint.y );
-                      dc.DrawCircle(lHeadPoint.x, lHeadPoint.y, 4);
+                     wxPen ppPen2 ( pred_colour, 1, wxUSER_DASH );
+                     ppPen2.SetDashes( 2, dash_short );
+
+                     dc.SetPen(ppPen2);
+                     dc.StrokeLine(lShipPoint.x, lShipPoint.y, lHeadPoint.x, lHeadPoint.y);
+
+                     wxPen ppPen1 ( pred_colour, 2, wxSOLID );
+                     dc.SetPen(ppPen1);
+                     dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "GREY2" ) )));
+
+                     dc.StrokeCircle(lHeadPoint.x, lHeadPoint.y, 4);
                 }
-#endif
 
 #else  //USE_PNG_OWNSHIP
                 //      Establish ship color
@@ -5227,59 +5167,11 @@ void ChartCanvas::ShipDraw ( wxDC& dc )
                       double lpp = sqrt(pow((double)(lShipPoint.x - r.x), 2) + pow((double)(lShipPoint.y - r.y), 2));
                       int pix_radius = (int)lpp;
 
-#if wxUSE_GRAPHICS_CONTEXT
+                      wxPen ppPen1 ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
+                      dc.SetPen(ppPen1);
 
-                      wxGraphicsContext *pgc = NULL;
-
-                      wxMemoryDC *pmdc = wxDynamicCast(&dc, wxMemoryDC);
-                      if(pmdc)
-                      {
-                            pgc = wxGraphicsContext::Create(*pmdc);
-                      }
-                      else
-                      {
-                            wxClientDC *pcdc = wxDynamicCast(&dc, wxClientDC);
-                            if(pcdc)
-                                  pgc = wxGraphicsContext::Create(*pcdc);
-                      }
-
-
-                      if(pgc)
-                      {
-                            wxPen ppPen1 ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
-                            pgc->SetPen(ppPen1);
-
-                            for (int i=1; i<=g_iNavAidRadarRingsNumberVisible;i++)
-                            {
-                                  int RadiusRing;
-                                  RadiusRing = i * pix_radius;
-
-                                  wxGraphicsPath gpath = pgc->CreatePath();
-
-                                  gpath.AddCircle(lShipPoint.x, lShipPoint.y, RadiusRing);
-                                  pgc->StrokePath(gpath);
-
-                                  dc.CalcBoundingBox(lShipPoint.x + RadiusRing , lShipPoint.y + RadiusRing);               // keep dc dirty box up-to-date
-                                  dc.CalcBoundingBox(lShipPoint.x - RadiusRing , lShipPoint.y - RadiusRing);
-                            }
-                      }
-
-                      delete pgc;
-
-#else
-                      dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "URED" ) ) , 2 ) );
-
-                      wxBrush CurrentBrush = dc.GetBrush();
-                      wxBrush RingBrush(CurrentBrush.GetColour(),wxTRANSPARENT);
-                      dc.SetBrush(RingBrush);
                       for (int i=1; i<=g_iNavAidRadarRingsNumberVisible;i++)
-                      {
-                            int RadiusRing;
-                            RadiusRing = i * pix_radius;
-                            dc.DrawCircle(lShipPoint.x, lShipPoint.y, RadiusRing);
-                      }
-                      dc.SetBrush(CurrentBrush);
-#endif
+                           dc.StrokeCircle(lShipPoint.x, lShipPoint.y, i * pix_radius);
                 }
         }         // if drawit
 
@@ -5418,8 +5310,12 @@ void CalcGridText( double latlon, double spacing, bool bPostfix, char *text)
 **
 ** @return [void]
 ************************************************************************/
-void ChartCanvas::GridDraw( wxDC& dc)
+void ChartCanvas::GridDraw( ocpnDC& dc)
 {
+     if(!(g_bDisplayGrid && (fabs(GetVP().rotation) < 1e-5)
+          && ((fabs(GetVP().skew) < 1e-9) || g_bskew_comp)))
+          return;
+
      double nlat, elon, slat, wlon;
      double lat,lon;
      double dlat,dlon;
@@ -5432,7 +5328,8 @@ void ChartCanvas::GridDraw( wxDC& dc)
      dc.SetFont(*font);
      dc.SetTextForeground( GetGlobalColor ( _T ( "SNDG1" ) ));
 
-     dc.GetSize(&w, &h);     // get windows width and height
+     w = m_canvas_width;
+     h = m_canvas_height;
 
      GetCanvasPixPoint ( 0, 0, nlat, wlon ); // get lat/lon of upper left point of the window
      GetCanvasPixPoint ( w, h, slat, elon ); // get lat/lon of lower right point of the window
@@ -5517,15 +5414,17 @@ void ChartCanvas::GridDraw( wxDC& dc)
                  lon = lon - 360.0;
            }
      }
-     return;
 }
 
 
 
-void ChartCanvas::ScaleBarDraw( wxDC& dc, int x_origin, int y_origin )
+void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 {
       double blat, blon, tlat, tlon;
       wxPoint r;
+
+      int x_origin = g_bDisplayGrid ? 60 : 20;
+      int y_origin = m_canvas_height - 50;
 
       if(GetVP().chart_scale > 80000)        // Draw 10 mile scale as SCALEB11
       {
@@ -5542,9 +5441,9 @@ void ChartCanvas::ScaleBarDraw( wxDC& dc, int x_origin, int y_origin )
             {
                   int y = l1 * i;
                   if( i & 1)
-                        dc.SetPen(pen1);
+                       dc.SetPen(pen1);
                   else
-                        dc.SetPen(pen2);
+                       dc.SetPen(pen2);
 
                   dc.DrawLine(x_origin, y_origin - y, x_origin, y_origin - (y + l1));
             }
@@ -5564,9 +5463,9 @@ void ChartCanvas::ScaleBarDraw( wxDC& dc, int x_origin, int y_origin )
             {
                   int y = l1 * i;
                   if( i & 1)
-                        dc.SetPen(pen1);
+                       dc.SetPen(pen1);
                   else
-                        dc.SetPen(pen2);
+                       dc.SetPen(pen2);
 
                   dc.DrawLine(x_origin, y_origin - y, x_origin, y_origin - (y + l1));
             }
@@ -5574,7 +5473,7 @@ void ChartCanvas::ScaleBarDraw( wxDC& dc, int x_origin, int y_origin )
 
 }
 
-void ChartCanvas::AISDraw ( wxDC& dc )
+void ChartCanvas::AISDraw ( ocpnDC& dc )
 {
       if ( !g_pAIS )
             return;
@@ -5609,7 +5508,7 @@ void ChartCanvas::AISDraw ( wxDC& dc )
 
 
 
-void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
+void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 {
                  //      Target data must be valid
             if(NULL == td)
@@ -5757,25 +5656,6 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                   if(!td->b_nameValid)
                         target_brush =  wxBrush ( GetGlobalColor ( _T ( "CHYLW" ) ) ) ;
 
-#if wxUSE_GRAPHICS_CONTEXT
-                  wxGraphicsContext *pgc = NULL;
-
-                  wxMemoryDC *pmdc = wxDynamicCast(&dc, wxMemoryDC);
-                  if(pmdc)
-                  {
-                        pgc = wxGraphicsContext::Create(*pmdc);
-                  }
-                  else
-                  {
-                        wxClientDC *pcdc = wxDynamicCast(&dc, wxClientDC);
-                        if(pcdc)
-                              pgc = wxGraphicsContext::Create(*pcdc);
-                  }
-
-
-#endif
-
-
 //    Check for alarms here, maintained by AIS class timer tick
                   if((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid))
                   {
@@ -5791,7 +5671,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         //  Draw the intercept line from target
                         ClipResult res = cohen_sutherland_line_clip_i ( &TPoint.x, &TPoint.y, &tCPAPoint.x, &tCPAPoint.y,
                                     0, GetVP().pix_width, 0, GetVP().pix_height );
-#if wxUSE_GRAPHICS_CONTEXT
+
                         if ( res != Invisible )
                         {
                               wxDash dash_long[2];
@@ -5800,22 +5680,10 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
                               wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
                               ppPen2.SetDashes( 2, dash_long );
-                              pgc->SetPen(ppPen2);
+                              dc.SetPen(ppPen2);
 
-                              pgc->StrokeLine ( TPoint.x, TPoint.y, tCPAPoint.x, tCPAPoint.y );
-                              dc.CalcBoundingBox( TPoint.x, TPoint.y);
-                              dc.CalcBoundingBox( tCPAPoint.x, tCPAPoint.y);
-
+                              dc.StrokeLine ( TPoint.x, TPoint.y, tCPAPoint.x, tCPAPoint.y );
                         }
-
-#else
-                        if ( res != Invisible )
-                        {
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "URED" )), 2, wxSHORT_DASH) );
-                              dc.DrawLine (  TPoint.x, TPoint.y, tCPAPoint.x, tCPAPoint.y );
-                        }
-#endif
-
 
                         //  Calculate the point of CPA for ownship
 
@@ -5839,14 +5707,12 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         //  Draw a line from target CPA point to ownship CPA point
                         ClipResult ores = cohen_sutherland_line_clip_i ( &tCPAPoint.x, &tCPAPoint.y, &oCPAPoint.x, &oCPAPoint.y,
                                     0, GetVP().pix_width, 0, GetVP().pix_height );
-#if wxUSE_GRAPHICS_CONTEXT
+
                         if ( ores != Invisible )
                         {
                               wxColour yellow = GetGlobalColor ( _T ( "YELO1" ));
-//                              wxColour yh(yellow.Red(), yellow.Green(), yellow.Blue(), 32);
-//                              pgc->SetPen ( wxPen ( yh, 4) );
-                              pgc->SetPen ( wxPen ( yellow, 4) );
-                              pgc->StrokeLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
+                              dc.SetPen ( wxPen ( yellow, 4) );
+                              dc.StrokeLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
                               wxDash dash_long[2];
                               dash_long[0] = ( int ) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
@@ -5854,51 +5720,18 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
                               wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
                               ppPen2.SetDashes( 2, dash_long );
-                              pgc->SetPen(ppPen2);
-                              pgc->StrokeLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
-
-                              dc.CalcBoundingBox( tCPAPoint.x, tCPAPoint.y);
-                              dc.CalcBoundingBox( oCPAPoint.x, oCPAPoint.y);
+                              dc.SetPen(ppPen2);
+                              dc.StrokeLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
                               //        Draw little circles at the ends of the CPA alert line
-                              wxGraphicsPath gpath = pgc->CreatePath();
-
                               wxBrush br( GetGlobalColor ( _T ( "BLUE3" ) ));
-                              pgc->SetBrush (br); //( wxBrush ( GetGlobalColor ( _T ( "BLUE3" ) ) ) );
-                              pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLK" ))) );
-
-                              //  Using the true ends, not the clipped ends
-                              gpath.AddCircle( tCPAPoint_sav.x, tCPAPoint_sav.y, 5);
-                              gpath.AddCircle( oCPAPoint_sav.x, oCPAPoint_sav.y, 5);
-
-                              dc.CalcBoundingBox( tCPAPoint_sav.x-6, tCPAPoint_sav.y-6);
-                              dc.CalcBoundingBox( tCPAPoint_sav.x+6, tCPAPoint_sav.y+6);
-                              dc.CalcBoundingBox( oCPAPoint_sav.x-6, oCPAPoint_sav.y-6);
-                              dc.CalcBoundingBox( oCPAPoint_sav.x+6, oCPAPoint_sav.y+6);
-
-                              pgc->DrawPath(gpath);
-                        }
-#else
-                        if ( ores != Invisible )
-                        {
-                              wxColour yellow = GetGlobalColor ( _T ( "YELO1" ));
-                              wxColour yh(yellow.Red(), yellow.Green(), yellow.Blue(), 32);
-                              dc.SetPen ( wxPen ( yh, 4) );
-
-                              dc.DrawLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
-
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "URED" )), 2, wxSHORT_DASH) );
-                              dc.DrawLine (  tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
-
-                              //        Draw little circles at the ends of the CPA alert line
-                              dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "BLUE3" ) ) ) );
+                              dc.SetBrush (br); //( wxBrush ( GetGlobalColor ( _T ( "BLUE3" ) ) ) );
                               dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLK" ))) );
 
                               //  Using the true ends, not the clipped ends
-                              dc.DrawCircle( tCPAPoint_sav, 5);
-                              dc.DrawCircle( oCPAPoint_sav, 5);
+                              dc.StrokeCircle( tCPAPoint_sav.x, tCPAPoint_sav.y, 5);
+                              dc.StrokeCircle( oCPAPoint_sav.x, oCPAPoint_sav.y, 5);
                         }
-#endif
 
                         dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
                         dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) );
@@ -5936,28 +5769,21 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         {
                               ClipResult res = cohen_sutherland_line_clip_i ( &pixx, &pixy, &pixx1, &pixy1,
                                           0, GetVP().pix_width, 0, GetVP().pix_height );
-#if wxUSE_GRAPHICS_CONTEXT
+
                               if (( res != Invisible ) && (td->b_active))
                               {
                                     //    Draw a 3 pixel wide line
                                     wxPen wide_pen(target_brush.GetColour(), 3);
-                                    pgc->SetPen(wide_pen);
-                                    pgc->StrokeLine ( pixx, pixy, pixx1, pixy1 );
+                                    dc.SetPen(wide_pen);
+                                    dc.StrokeLine ( pixx, pixy, pixx1, pixy1 );
 
                                     //    Draw a 1 pixel wide black line
                                     wxPen narrow_pen(GetGlobalColor ( _T ( "UBLCK" )), 1);
-                                    pgc->SetPen(narrow_pen);
-                                    pgc->StrokeLine ( pixx, pixy, pixx1, pixy1 );
-                                    dc.CalcBoundingBox( pixx, pixy);
-                                    dc.CalcBoundingBox( pixx1, pixy1);
+                                    dc.SetPen(narrow_pen);
+                                    dc.StrokeLine ( pixx, pixy, pixx1, pixy1 );
 
-                                    wxGraphicsPath gpath = pgc->CreatePath();
-
-                                    pgc->SetBrush(target_brush);
-                                    gpath.AddCircle(PredPoint.x, PredPoint.y, 5);
-                                    dc.CalcBoundingBox( PredPoint.x + 6, PredPoint.y + 6);
-                                    dc.CalcBoundingBox( PredPoint.x - 6, PredPoint.y - 6);
-                                    pgc->DrawPath(gpath);
+                                    dc.SetBrush(target_brush);
+                                    dc.StrokeCircle(PredPoint.x, PredPoint.y, 5);
                               }
 
 
@@ -5973,50 +5799,16 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
 
                                     int xrot = ( int ) round ( pixx1 + ( nv * cos ( theta2 ) ) );
                                     int yrot = ( int ) round ( pixy1 + ( nv * sin ( theta2 ) ) );
-                                    pgc->StrokeLine ( pixx1, pixy1, xrot, yrot );
+                                    dc.StrokeLine ( pixx1, pixy1, xrot, yrot );
                                     dc.CalcBoundingBox( xrot, yrot);
 
                               }
-
-#else
-                              if (( res != Invisible ) && (td->b_active))
-                              {
-                                    //    Draw a 3 pixel wide line
-                                    wxColour cb = target_brush.GetColour();
-                                    dc.SetPen ( wxPen ( cb, 3 ));
-                                    dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
-
-                                    //    Draw a 1 pixel wide black line
-                                    dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ),1 ) );
-                                    dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
-                              }
-
-                              dc.SetBrush ( target_brush );
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 1) );
-                              if (( res != Invisible ) && (td->b_active)) dc.DrawCircle ( PredPoint.x, PredPoint.y, 5 );  // pjotrc 2010.02.01
-
-                                //      Draw RateOfTurn Vector
-                              if ( (td->ROTAIS != 0) && (td->ROTAIS != -128) && td->b_active)   // pjotrc 2010.02.01
-                              {
-                                    double nv = 10;
-                                    double theta2 = theta;
-                                    if ( td->ROTAIS > 0 )
-                                          theta2 += PI/2.;
-                                    else
-                                          theta2 -= PI/2.;
-
-                                    int xrot = ( int ) round ( pixx1 + ( nv * cos ( theta2 ) ) );
-                                    int yrot = ( int ) round ( pixy1 + ( nv * sin ( theta2 ) ) );
-                                    dc.DrawLine ( pixx1, pixy1, xrot, yrot );
-                              }
-#endif
                         }
                   }
 
 
                            //        Actually Draw the target
 
-#if wxUSE_GRAPHICS_CONTEXT
                   if (td->Class == AIS_ATON) {                       // Aid to Navigation    // pjotrc 2010.02.01
                         AtoN_Diamond(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
                   }
@@ -6024,251 +5816,97 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, wxDC& dc )
                         Base_Square(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
                   }
                   else {         // ship class A or B
-                        if(pgc)
-                        {
-                              wxPen target_pen ( GetGlobalColor ( _T ( "UBLCK" ) ) , 1 );
+                       wxPen target_pen ( GetGlobalColor ( _T ( "UBLCK" ) ) , 1 );
 
-                              pgc->SetPen(target_pen);
-                              pgc->SetBrush(target_brush);
+                       dc.SetPen(target_pen);
+                       dc.SetBrush(target_brush);
 
-                              wxGraphicsPath gpath = pgc->CreatePath();
+                       dc.StrokePolygon(4, ais_quad_icon, TargetPoint.x, TargetPoint.y);
 
-                              gpath.MoveToPoint(ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y + TargetPoint.y);
-                              dc.CalcBoundingBox(ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y + TargetPoint.y);               // keep dc dirty box up-to-date
-                              for(int i=1 ; i < 4 ; i++)
-                              {
-                                    gpath.AddLineToPoint(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y + TargetPoint.y);
-                                    dc.CalcBoundingBox(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y + TargetPoint.y);
+                   //        If this is a moored/anchored target, so symbolize it
+                       if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
+                       {
+                            dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
+                            dc.StrokeCircle ( TargetPoint.x, TargetPoint.y, 5 );
+                       }
 
-                              }
+                       //        Draw the inactive cross-out line
+                       if(!td->b_active)
+                       {
+                            dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 2) );
 
-                              gpath.CloseSubpath();
+                            wxPoint p1 = transrot(wxPoint(-14, 0), theta, TargetPoint);
+                            wxPoint p2 = transrot(wxPoint(14, 0), theta, TargetPoint);
+                            dc.StrokeLine ( p1.x, p1.y, p2.x, p2.y );
+                            dc.CalcBoundingBox(p1.x, p1.y);
+                            dc.CalcBoundingBox(p2.x, p2.y);
 
-                              pgc->StrokePath(gpath);
-                              pgc->FillPath(gpath);
+                            dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 1) );
+                       }
 
-                                                         //        If this is a moored/anchored target, so symbolize it
-                              if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
-                              {
-                                    pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-                                    wxGraphicsPath gpath = pgc->CreatePath();
-                                    gpath.AddCircle ( TargetPoint.x, TargetPoint.y, 5 );
-                                    pgc->FillPath(gpath);
-
-                              }
-
-                              //        Draw the inactive cross-out line
-                              if(!td->b_active)
-                              {
-                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 2) );
-
-                                    wxPoint p1 = transrot(wxPoint(-14, 0), theta, TargetPoint);
-                                    wxPoint p2 = transrot(wxPoint(14, 0), theta, TargetPoint);
-                                    pgc->StrokeLine ( p1.x, p1.y, p2.x, p2.y );
-                                    dc.CalcBoundingBox(p1.x, p1.y);
-                                    dc.CalcBoundingBox(p2.x, p2.y);
-
-                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 1) );
-                              }
-
-                        //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
-                        //    Symbolize it if set by most recent message
-                              if(td->b_blue_paddle)
-                              {
-                                    wxPoint ais_flag_icon[4];
-                                    ais_flag_icon[0].x = -8;
-                                    ais_flag_icon[0].y = -6;
-                                    ais_flag_icon[1].x = -2;
-                                    ais_flag_icon[1].y =  18;
-                                    ais_flag_icon[2].x = -2;
-                                    ais_flag_icon[2].y =  0;
-                                    ais_flag_icon[3].x = -2;
-                                    ais_flag_icon[3].y = -6;
+                       //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
+                       //    Symbolize it if set by most recent message
+                       if(td->b_blue_paddle)
+                       {
+                            wxPoint ais_flag_icon[4];
+                            ais_flag_icon[0].x = -8;
+                            ais_flag_icon[0].y = -6;
+                            ais_flag_icon[1].x = -2;
+                            ais_flag_icon[1].y =  18;
+                            ais_flag_icon[2].x = -2;
+                            ais_flag_icon[2].y =  0;
+                            ais_flag_icon[3].x = -2;
+                            ais_flag_icon[3].y = -6;
 
 
-                                    for ( int i=0; i<4 ; i++ )
-                                    {
-                                          double px = ( ( double ) ais_flag_icon[i].x ) * sin ( theta ) + ( ( double ) ais_flag_icon[i].y ) * cos ( theta );
-                                          double py = ( ( double ) ais_flag_icon[i].y ) * sin ( theta ) - ( ( double ) ais_flag_icon[i].x ) * cos ( theta );
-                                          ais_flag_icon[i].x = (int) round( px );
-                                          ais_flag_icon[i].y = (int) round( py );
-                                    }
+                            for ( int i=0; i<4 ; i++ )
+                            {
+                                 double px = ( ( double ) ais_flag_icon[i].x ) * sin ( theta ) + ( ( double ) ais_flag_icon[i].y ) * cos ( theta );
+                                 double py = ( ( double ) ais_flag_icon[i].y ) * sin ( theta ) - ( ( double ) ais_flag_icon[i].x ) * cos ( theta );
+                                 ais_flag_icon[i].x = (int) round( px );
+                                 ais_flag_icon[i].y = (int) round( py );
+                            }
 
-
-                                    pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UINFB" ) ) ) );
-                                    pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "CHWHT" )), 2) );
-
-                                    wxGraphicsPath gpathb = pgc->CreatePath();
-
-                                    gpathb.MoveToPoint(ais_flag_icon[0].x + TargetPoint.x, ais_flag_icon[0].y + TargetPoint.y);
-                                    dc.CalcBoundingBox(ais_flag_icon[0].x + TargetPoint.x, ais_flag_icon[0].y + TargetPoint.y);               // keep dc dirty box up-to-date
-                                    for(int i=1 ; i < 4 ; i++)
-                                    {
-                                          gpathb.AddLineToPoint(ais_flag_icon[i].x + TargetPoint.x, ais_flag_icon[i].y + TargetPoint.y);
-                                          dc.CalcBoundingBox(ais_flag_icon[i].x + TargetPoint.x, ais_flag_icon[i].y + TargetPoint.y);
-
-                                    }
-
-                                    gpathb.CloseSubpath();
-
-                                    pgc->StrokePath(gpathb);
-                                    pgc->FillPath(gpathb);
-                              }
-
-
-                        }
-
+                            dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UINFB" ) ) ) );
+                            dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "CHWHT" )), 2) );
+                            dc.StrokePolygon(4, ais_flag_icon, TargetPoint.x, TargetPoint.y);
+                       }
                   }
 
-#else
-                  if (td->Class == AIS_ATON) {                       // Aid to Navigation    // pjotrc 2010.02.01
-                        AtoN_Diamond(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
-                  }
-                  else if (td->Class == AIS_BASE) {                       // Base Station
-                        Base_Square(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
-                  }
-                  else {         // ship class A or B
-                        dc.SetBrush ( target_brush );
-                        dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 1) );
-
-                        dc.DrawPolygon ( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );         // pjotrc 2010.01.31
-
-                           //        If this is a moored/anchored target, so symbolize it
-                        if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
-                        {
-                              dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-                              dc.DrawCircle ( TargetPoint.x, TargetPoint.y, 5 );
-                        }
-
-                                //        Draw the inactive cross-out line                                                   // pjotrc 2010.01.31
-                        if(!td->b_active)
-                        {
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 2) );
-
-                              wxPoint p1 = transrot(wxPoint(-14, 0), theta, TargetPoint);
-                              wxPoint p2 = transrot(wxPoint(14, 0), theta, TargetPoint);
-                              dc.DrawLine ( p1.x, p1.y, p2.x, p2.y );
-
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" )), 1) );
-                        }
-
-                        //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
-                        //    Symbolize it if set by most recent message
-                        if(td->b_blue_paddle)
-                        {
-                              wxPoint ais_flag_icon[4];
-
-                              ais_flag_icon[0].x = -8;
-                              ais_flag_icon[0].y = -6;
-                              ais_flag_icon[1].x = -2;
-                              ais_flag_icon[1].y =  18;
-                              ais_flag_icon[2].x = -2;
-                              ais_flag_icon[2].y =  0;
-                              ais_flag_icon[3].x = -2;
-                              ais_flag_icon[3].y = -6;
-
-                             for ( int i=0; i<4 ; i++ )
-                              {
-                                    double px = ( ( double ) ais_flag_icon[i].x ) * sin ( theta ) + ( ( double ) ais_flag_icon[i].y ) * cos ( theta );
-                                    double py = ( ( double ) ais_flag_icon[i].y ) * sin ( theta ) - ( ( double ) ais_flag_icon[i].x ) * cos ( theta );
-                                    ais_flag_icon[i].x = (int) round( px );
-                                    ais_flag_icon[i].y = (int) round( py );
-                              }
-
-                              dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UINFB" ) ) ) );
-                              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "CHWHT" )), 2) );
-
-                              dc.DrawPolygon ( 4, ais_flag_icon, TargetPoint.x, TargetPoint.y );         // pjotrc 2010.01.31
-
-                        }
-                  }  // ship class A or B
-#endif
-
-            //  Draw tracks if enabled
+                  //  Draw tracks if enabled
                   if(g_bAISShowTracks)
                   {
-                        wxPoint TrackPointA;
-                        wxPoint TrackPointB;
+                       wxPoint TrackPointA;
+                       wxPoint TrackPointB;
 
-#if wxUSE_GRAPHICS_CONTEXT
-                        if(pgc)
-                        {
-//                              pgc->SetBrush ( wxBrush ( GetGlobalColor ( _T ( "CHMGD" ) ) ) );
-                              pgc->SetPen ( wxPen ( GetGlobalColor ( _T ( "CHMGD" )), 2) );
+                       dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "CHMGD" )), 2) );
 
-                              wxGraphicsPath gpathc = pgc->CreatePath();
-
-                        //    First point
-                              wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-                              if(node)
-                              {
-                                    AISTargetTrackPoint *ptrack_point = node->GetData();
-                                    GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
-
-                                    gpathc.MoveToPoint(TrackPointA.x, TrackPointA.y);
-                                    dc.CalcBoundingBox(TrackPointA.x, TrackPointA.y); // keep dc dirty box up-to-date
-
-                                    node = node->GetNext();
-                              }
-                              while(node)
-                              {
-                                    AISTargetTrackPoint *ptrack_point = node->GetData();
-
-                                    GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
-
-                                    gpathc.AddLineToPoint(TrackPointB.x, TrackPointB.y);
-                                    dc.CalcBoundingBox(TrackPointB.x, TrackPointB.y); // keep dc dirty box up-to-date
-
-                                    node = node->GetNext();
-                              }
-
-                              pgc->StrokePath(gpathc);
+                       //    First point
+                       wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                       if(node)
+                       {
+                            AISTargetTrackPoint *ptrack_point = node->GetData();
+                            GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
+                            node = node->GetNext();
                        }
-#else
-                        wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), 2 ) ;
+                       while(node)
+                       {
+                            AISTargetTrackPoint *ptrack_point = node->GetData();
+                            GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
 
+                            dc.StrokeLine(TrackPointA, TrackPointB);
 
-                        //    First point
-                        wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-                        if(node)
-                        {
-                              AISTargetTrackPoint *ptrack_point = node->GetData();
-                              GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
-                              node = node->GetNext();
-                        }
-                        while(node)
-                        {
-                              AISTargetTrackPoint *ptrack_point = node->GetData();
+                            node = node->GetNext();
+                            TrackPointA = TrackPointB;
+                       }
 
-                              GetCanvasPointPix ( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
-
-                              wxPoint TrackPointClipA = TrackPointA;
-                              wxPoint TrackPointClipB = TrackPointB;
-
-                              ClipResult ores = cohen_sutherland_line_clip_i ( &TrackPointClipA.x, &TrackPointClipA.y,
-                                          &TrackPointClipB.x, &TrackPointClipB.y,
-                                          0, GetVP().pix_width, 0, GetVP().pix_height );
-
-                              if ( ores != Invisible )
-                                    dc.DrawLine (  TrackPointClipA.x, TrackPointClipA.y, TrackPointClipB.x, TrackPointClipB.y );
-
-                              TrackPointA = TrackPointB;
-                              node = node->GetNext();
-                        }
-#endif
                   }           // Draw tracks
-
-
-
-#if wxUSE_GRAPHICS_CONTEXT
-                  delete pgc;
-#endif
 
             }       // drawit
 }
 
 
-void ChartCanvas::JaggyCircle(wxDC &dc, wxPen pen, int x, int y, int radius)
+void ChartCanvas::JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius)
 {
       //    Constants?
       double da_min = 2.;
@@ -6325,7 +5963,7 @@ void ChartCanvas::JaggyCircle(wxDC &dc, wxPen pen, int x, int y, int radius)
       dc.SetPen(pen_save);
 }
 
-void ChartCanvas::TargetFrame(wxDC &dc, wxPen pen, int x, int y, int radius)   // pjotrc 2010.02.01
+void ChartCanvas::TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius)   // pjotrc 2010.02.01
 {
       //    Constants?
       int gap2 = 2*radius/6;
@@ -6346,7 +5984,7 @@ void ChartCanvas::TargetFrame(wxDC &dc, wxPen pen, int x, int y, int radius)   /
       dc.SetPen(pen_save);
 }
 
-void ChartCanvas::AtoN_Diamond(wxDC &dc, wxPen pen, int x, int y, int radius)  // pjotrc 2010.02.01
+void ChartCanvas::AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius)  // pjotrc 2010.02.01
 {
       //    Constants?
       int gap2 = 2*radius/6;
@@ -6370,7 +6008,7 @@ void ChartCanvas::AtoN_Diamond(wxDC &dc, wxPen pen, int x, int y, int radius)  /
       dc.SetPen(pen_save);
 }
 
-void ChartCanvas::Base_Square(wxDC &dc, wxPen pen, int x, int y, int radius)
+void ChartCanvas::Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius)
 {
       //    Constants?
       int gap2 = 2*radius/6;
@@ -6394,7 +6032,7 @@ void ChartCanvas::Base_Square(wxDC &dc, wxPen pen, int x, int y, int radius)
       dc.SetPen(pen_save);
 }
 
-void ChartCanvas::AlertDraw ( wxDC& dc )                     // pjotrc  2010.02.22
+void ChartCanvas::AlertDraw ( ocpnDC& dc )                     // pjotrc  2010.02.22
 {
 // Just for prototyping, visual alert for anchorwatch goes here          2010.02.17 pjotrc
       if (pAnchorWatchPoint1 && AnchorAlertOn1) {
@@ -6449,7 +6087,8 @@ void ChartCanvas::UpdateShips()
         temp_dc.SetClippingRegion ( wxRect ( 0,0,sx,sy ) );
 
         // Draw the ownship on the temp_dc
-        ShipDraw ( temp_dc );
+        ocpnDC ocpndc = ocpnDC(temp_dc);
+        ShipDraw ( ocpndc );
 
         //  Retrieve the drawing extents
         wxRect ship_rect ( temp_dc.MinX(),
@@ -6501,7 +6140,8 @@ void ChartCanvas::UpdateAlerts()    // pjotrc 2010.02.22
       temp_dc.SetClippingRegion ( wxRect ( 0,0,sx,sy ) );
 
         // Draw the Alert Targets on the temp_dc
-      AlertDraw ( temp_dc );
+      ocpnDC ocpndc = ocpnDC(temp_dc);
+      AlertDraw ( ocpndc );
 
         //  Retrieve the drawing extents
       wxRect alert_rect ( temp_dc.MinX(),
@@ -6568,7 +6208,8 @@ void ChartCanvas::UpdateAIS()
             temp_dc.SetClippingRegion ( wxRect ( 0,0,sx,sy ) );
 
             // Draw the AIS Targets on the temp_dc
-            AISDraw ( temp_dc );
+            ocpnDC ocpndc = ocpnDC(temp_dc);
+            AISDraw ( ocpndc );
 
             //  Retrieve the drawing extents
             ais_rect  = wxRect( temp_dc.MinX(),
@@ -7154,7 +6795,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 {
                         double rlat, rlon;
 
-                        SetMyCursor ( pCursorPencil );
+                        SetCursor ( *pCursorPencil );
                         rlat = m_cursor_lat;
                         rlon = m_cursor_lon;
 
@@ -7217,7 +6858,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 {
                       double rlat, rlon;
 
-                      SetMyCursor ( pCursorPencil );
+                      SetCursor ( *pCursorPencil );
                       rlat = m_cursor_lat;
                       rlon = m_cursor_lon;
 
@@ -7248,7 +6889,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 /*
                 else if ( m_bMeasure_Active )                     // measure tool on
                 {
-                      SetMyCursor ( pCursorPencil );
+                      SetCursor ( *pCursorPencil );
 
                       if(NULL != m_pMeasureRoute)
                             g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
@@ -7640,7 +7281,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       slat = m_cursor_lat;
                       slon = m_cursor_lon;
 //                      SelectItem *pFind;
-                      wxClientDC dc ( this );
+                      wxClientDC cdc ( this );
+                      ocpnDC dc(cdc);
 
                       SelectItem *pFindAIS;
                       SelectItem *pFindRP;
@@ -7967,14 +7609,14 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         else if (m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
               ptarget_cursor = pCursorPencil;
 
-        SetMyCursor ( ptarget_cursor );
+        SetCursor ( *ptarget_cursor );
 
 
 }
 
 void ChartCanvas::LostMouseCapture(wxMouseCaptureLostEvent& event)
 {
-      SetMyCursor ( pCursorArrow );
+      SetCursor ( *pCursorArrow );
 }
 
 
@@ -8816,7 +8458,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                         m_bAppendingRoute = true;
 
-                        SetMyCursor ( pCursorPencil );
+                        SetCursor ( *pCursorPencil );
 
                         break;
 
@@ -9012,7 +8654,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 /*
                         parent_frame->nRoute_State = 0;
                         parent_frame->SetToolbarItemState ( ID_ROUTE, false );
-                        SetMyCursor ( pCursorArrow );
+                        SetCursor ( pCursorArrow );
                         m_bDrawingRoute = false;
 
                         if ( m_pMouseRoute )
@@ -9088,7 +8730,7 @@ void ChartCanvas::FinishRoute(void)
 {
       parent_frame->nRoute_State = 0;
       parent_frame->SetToolbarItemState ( ID_ROUTE, false );
-      SetMyCursor ( pCursorArrow );
+      SetCursor ( *pCursorArrow );
       m_bDrawingRoute = false;
 
       if ( m_pMouseRoute )
@@ -9142,13 +8784,16 @@ void ChartCanvas::ShowAISTargetList(void)
 }
 
 
-void ChartCanvas::RenderAllChartOutlines ( wxDC *pdc, ViewPort& vp, bool bdraw_mono )
+void ChartCanvas::RenderAllChartOutlines ( ocpnDC &dc, ViewPort& vp )
 {
+        if ( !g_bShowOutlines )
+             return;
+
         int nEntry = ChartData->GetChartTableEntries();
 
         for ( int i=0 ; i < nEntry ; i++ )
         {
-                RenderChartOutline ( pdc, i, vp, bdraw_mono );
+             RenderChartOutline ( dc, i, vp );
         }
 
 //      Could render in different color/width if thumbnail is selected
@@ -9162,9 +8807,9 @@ void ChartCanvas::RenderAllChartOutlines ( wxDC *pdc, ViewPort& vp, bool bdraw_m
               cm93compchart *pch = (cm93compchart *)Current_Ch;
               if(pch)
               {
-                    wxPen mPen(GetGlobalColor(_T("UINFM")), 1, wxSOLID);
-                    pdc->SetPen(mPen);
-                    pch->RenderNextSmallerCellOutlines(pdc,vp, bdraw_mono);
+                   wxPen mPen(GetGlobalColor(_T("UINFM")), 1, wxSOLID);
+                   dc.SetPen(mPen);
+                   pch->RenderNextSmallerCellOutlines(dc,vp);
               }
         }
 #endif
@@ -9172,7 +8817,7 @@ void ChartCanvas::RenderAllChartOutlines ( wxDC *pdc, ViewPort& vp, bool bdraw_m
 
 
 
-void ChartCanvas::RenderChartOutline ( wxDC *pdc, int dbIndex, ViewPort& vp, bool bdraw_mono_for_mask )
+void ChartCanvas::RenderChartOutline ( ocpnDC &dc, int dbIndex, ViewPort& vp )
 {
         float plylat, plylon;
         float plylat1, plylon1;
@@ -9235,20 +8880,13 @@ void ChartCanvas::RenderChartOutline ( wxDC *pdc, int dbIndex, ViewPort& vp, boo
         int nPly = ChartData->GetDBPlyPoint ( dbIndex, 0, &plylat, &plylon );
 
         if ( ChartData->GetDBChartType ( dbIndex ) == CHART_TYPE_S57 )
-              pdc->SetPen ( wxPen( GetGlobalColor ( _T ( "UINFG" ) ), 1, wxSOLID ) );
+             dc.SetPen ( wxPen( GetGlobalColor ( _T ( "UINFG" ) ), 1, wxSOLID ) );
 
         else if ( ChartData->GetDBChartType ( dbIndex ) == CHART_TYPE_CM93 )
-              pdc->SetPen (  wxPen(GetGlobalColor ( _T ( "YELO1" ) ), 1, wxSOLID  ) );
+             dc.SetPen (  wxPen(GetGlobalColor ( _T ( "YELO1" ) ), 1, wxSOLID  ) );
 
         else
-              pdc->SetPen ( wxPen( GetGlobalColor ( _T ( "UINFR" ) ), 1, wxSOLID ) );
-
-        if ( bdraw_mono_for_mask )
-        {
-                wxPen pp ( *wxWHITE, 2, wxSOLID );
-                pdc->SetPen ( pp );
-        }
-
+             dc.SetPen ( wxPen( GetGlobalColor ( _T ( "UINFR" ) ), 1, wxSOLID ) );
 
         //        Are there any aux ply entries?
         int nAuxPlyEntries = ChartData->GetnAuxPlyEntries(dbIndex);
@@ -9294,7 +8932,7 @@ void ChartCanvas::RenderChartOutline ( wxDC *pdc, int dbIndex, ViewPort& vp, boo
                   ClipResult res = cohen_sutherland_line_clip_i ( &pixx, &pixy, &pixx1, &pixy1,
                                     0, vp.pix_width, 0, vp.pix_height );
                   if ( res != Invisible  && !b_skip)
-                              pdc->DrawLine ( pixx, pixy, pixx1, pixy1 );
+                       dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
 
                   plylat = plylat1;
                   plylon = plylon1;
@@ -9312,83 +8950,76 @@ void ChartCanvas::RenderChartOutline ( wxDC *pdc, int dbIndex, ViewPort& vp, boo
             ClipResult res = cohen_sutherland_line_clip_i ( &pixx, &pixy, &pixx1, &pixy1,
                               0, vp.pix_width, 0, vp.pix_height );
             if ( res != Invisible )
-                  pdc->DrawLine ( pixx, pixy, pixx1, pixy1 );
+                 dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
         }
 
         else                              // Use Aux PlyPoints
         {
-                      wxPoint r, r1;
+             wxPoint r, r1;
 
-                      int nAuxPlyEntries = ChartData->GetnAuxPlyEntries(dbIndex);
-                      for(int j=0 ; j<nAuxPlyEntries ; j++)
-                      {
+             int nAuxPlyEntries = ChartData->GetnAuxPlyEntries(dbIndex);
+             for(int j=0 ; j<nAuxPlyEntries ; j++)
+             {
 
-                          int nAuxPly =  ChartData->GetDBAuxPlyPoint(dbIndex, 0, j, &plylat, &plylon);
-                          GetCanvasPointPix(plylat, plylon, &r);
-                          pixx = r.x;
-                          pixy = r.y;
+                  int nAuxPly =  ChartData->GetDBAuxPlyPoint(dbIndex, 0, j, &plylat, &plylon);
+                  GetCanvasPointPix(plylat, plylon, &r);
+                  pixx = r.x;
+                  pixy = r.y;
 
-                          for( int i=0 ; i<nAuxPly-1 ; i++)
-                          {
-                            ChartData->GetDBAuxPlyPoint(dbIndex, i+1, j, &plylat1, &plylon1);
+                  for( int i=0 ; i<nAuxPly-1 ; i++)
+                  {
+                       ChartData->GetDBAuxPlyPoint(dbIndex, i+1, j, &plylat1, &plylon1);
 
-                            GetCanvasPointPix(plylat1, plylon1, &r1);
-                            pixx1 = r1.x;
-                            pixy1 = r1.y;
+                       GetCanvasPointPix(plylat1, plylon1, &r1);
+                       pixx1 = r1.x;
+                       pixy1 = r1.y;
 
-                            int pixxs1 = pixx1;
-                            int pixys1 = pixy1;
+                       int pixxs1 = pixx1;
+                       int pixys1 = pixy1;
 
-                            bool b_skip = false;
+                       bool b_skip = false;
 
-                            if(vp.chart_scale > 5e7)
-                            {
-                              //    calculate projected distance between these two points in meters
-                                    double dist = sqrt((double)((pixx1-pixx) * (pixx1 - pixx)) + ((pixy1-pixy) * (pixy1 - pixy))) / vp.view_scale_ppm;
-                              //    calculate GC distance between these two points in meters
-                                    double distgc = DistGreatCircle(plylat, plylon, plylat1, plylon1) * 1852.;
+                       if(vp.chart_scale > 5e7)
+                       {
+                            //    calculate projected distance between these two points in meters
+                            double dist = sqrt((double)((pixx1-pixx) * (pixx1 - pixx)) + ((pixy1-pixy) * (pixy1 - pixy))) / vp.view_scale_ppm;
+                            //    calculate GC distance between these two points in meters
+                            double distgc = DistGreatCircle(plylat, plylon, plylat1, plylon1) * 1852.;
 
-                              //    If the distances are nonsense, it means that the scale is very small and the segment wrapped the world
-                              //    So skip it....
-                              //    TODO improve this to draw two segments
-                                    if(fabs(dist - distgc) > 10000. * 1852.)          //lotsa miles
-                                          b_skip = true;
-                            }
+                            //    If the distances are nonsense, it means that the scale is very small and the segment wrapped the world
+                            //    So skip it....
+                            //    TODO improve this to draw two segments
+                            if(fabs(dist - distgc) > 10000. * 1852.)          //lotsa miles
+                                 b_skip = true;
+                       }
 
-                            ClipResult res = cohen_sutherland_line_clip_i (&pixx, &pixy, &pixx1, &pixy1,
-                                        0, vp.pix_width, 0, vp.pix_height);
-                            if(res != Invisible && !b_skip)
-                                  pdc->DrawLine(pixx, pixy, pixx1, pixy1);
+                       ClipResult res = cohen_sutherland_line_clip_i (&pixx, &pixy, &pixx1, &pixy1,
+                                                                      0, vp.pix_width, 0, vp.pix_height);
+                       if(res != Invisible && !b_skip)
+                            dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
 
-                            plylat = plylat1;
-                            plylon = plylon1;
-                            pixx = pixxs1;
-                            pixy = pixys1;
-                          }
+                       plylat = plylat1;
+                       plylon = plylon1;
+                       pixx = pixxs1;
+                       pixy = pixys1;
+                  }
 
-                          ChartData->GetDBAuxPlyPoint(dbIndex, 0, j, &plylat1, &plylon1);
-                          GetCanvasPointPix(plylat1, plylon1, &r1);
-                          pixx1 = r1.x;
-                          pixy1 = r1.y;
+                  ChartData->GetDBAuxPlyPoint(dbIndex, 0, j, &plylat1, &plylon1);
+                  GetCanvasPointPix(plylat1, plylon1, &r1);
+                  pixx1 = r1.x;
+                  pixy1 = r1.y;
 
-                          ClipResult res = cohen_sutherland_line_clip_i (&pixx, &pixy, &pixx1, &pixy1,
-                                  0, vp.pix_width, 0, vp.pix_height);
-                          if(res != Invisible)
-                            pdc->DrawLine(pixx, pixy, pixx1, pixy1);
-                      }
+                  ClipResult res = cohen_sutherland_line_clip_i (&pixx, &pixy, &pixx1, &pixy1,
+                                                                 0, vp.pix_width, 0, vp.pix_height);
+                  if(res != Invisible)
+                       dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
+             }
         }
 
 }
 
-void ChartCanvas::WarpPointerDeferred ( int x, int y )
-{
-        warp_x = x;
-        warp_y = y;
-        warp_flag = true;
-}
-
-
-void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, double lonb, wxPoint ref_point, wxString prefix)
+void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
+                        double lonb, wxPoint ref_point, wxString prefix)
 {
 
       double brg, dist;
@@ -9406,49 +9037,92 @@ void RenderRouteLegInfo(wxMemoryDC *dc, double lata, double lona, double latb, d
       s.Prepend(prefix);
 
       wxFont *dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
-      dc->SetFont(*dFont);
+      dc.SetFont(*dFont);
 
       int w, h;
       int xp, yp;
       int hilite_offset = 3;
-      dc->GetTextExtent(s, &w, &h);
+      dc.GetTextExtent(s, &w, &h);
 
       xp = ref_point.x  - w;
       yp = ref_point.y  ;
       yp += hilite_offset;
 
-      AlphaBlending ( *dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+      AlphaBlending ( dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
 
-      dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-      dc->DrawText(s, xp, yp);
+      dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
+      dc.DrawText(s, xp, yp);
 }
 
-void RenderExtraRouteLegInfo(wxMemoryDC *dc, wxPoint ref_point, wxString s)
+void RenderExtraRouteLegInfo(ocpnDC &dc, wxPoint ref_point, wxString s)
 {
       wxFont *dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
-      dc->SetFont(*dFont);
+      dc.SetFont(*dFont);
 
       int w, h;
       int xp, yp;
       int hilite_offset = 3;
-      dc->GetTextExtent(s, &w, &h);
+      dc.GetTextExtent(s, &w, &h);
 
       xp = ref_point.x - w;
       yp = ref_point.y + h ;
       yp += hilite_offset;
 
-      AlphaBlending ( *dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+      AlphaBlending ( dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
 
-      dc->SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-      dc->DrawText(s, xp, yp);
+      dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
+      dc.DrawText(s, xp, yp);
+}
+
+
+void ChartCanvas::RenderRouteLegs ( ocpnDC &dc )
+{
+        if ( parent_frame->nRoute_State >= 2 )
+        {
+                wxPoint rpt;
+                m_pMouseRoute->DrawPointWhich ( dc, parent_frame->nRoute_State - 1,  &rpt );
+                m_pMouseRoute->DrawSegment ( dc, &rpt, &r_rband, GetVP(), false );
+
+                RenderRouteLegInfo(dc, m_prev_rlat, m_prev_rlon,
+                                   m_cursor_lat, m_cursor_lon, r_rband, _T(""));
+        }
+
+        if ( m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2) )
+        {
+              wxPoint rpt;
+              m_pMeasureRoute->DrawPointWhich ( dc, m_nMeasureState - 1,  &rpt );
+              m_pMeasureRoute->DrawSegment ( dc, &rpt, &r_rband, GetVP(), false );
+
+              RenderRouteLegInfo(dc, m_prev_rlat, m_prev_rlon,
+                                  m_cursor_lat, m_cursor_lon, r_rband, _T(""));
+
+              double brg, dist;
+              DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
+                       m_cursor_lat, m_cursor_lon, &brg, &dist);
+
+              wxString s;
+              s.Printf(_T("Route Distance: %6.2f NMi"), m_pMeasureRoute->m_route_length + dist);
+              RenderExtraRouteLegInfo(dc, r_rband, s);
+        }
+}
+
+void ChartCanvas::WarpPointerDeferred ( int x, int y )
+{
+        warp_x = x;
+        warp_y = y;
+        warp_flag = true;
 }
 
 
 int spaint;
 void ChartCanvas::OnPaint ( wxPaintEvent& event )
 {
-
 //      CALLGRIND_START_INSTRUMENTATION
+
+        m_glcc->Show(g_bopengl);
+
+        if(g_bopengl)
+              return;
 
         wxPaintDC dc ( this );
 
@@ -9719,9 +9393,10 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
       //    Draw the WVSChart only in the areas NOT covered by the current chart view
       //    And, only if the region is ..not.. empty
       //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
-        if ( !WVSRegion.IsEmpty() && ( fabs (GetVP().skew) < .01 ) && (GetVP().view_scale_ppm > 5e-05) )
-                  pwvs_chart->RenderViewOnDC ( temp_dc, GetVP() );
-
+        if ( !WVSRegion.IsEmpty() && ( fabs (GetVP().skew) < .01 ) && (GetVP().view_scale_ppm > 5e-05) ) {
+             ocpnDC otdc(temp_dc);
+             pwvs_chart->RenderViewOnDC ( otdc, GetVP() );
+        }
 
         wxMemoryDC *pChartDC = &temp_dc;
         wxMemoryDC rotd_dc;
@@ -9818,13 +9493,12 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
 //    Set up a scratch DC for overlay objects
         wxRegion rgn_blit;
-        wxMemoryDC scratch_dc;
-        scratch_dc.SelectObject ( *pscratch_bm );
+        wxMemoryDC mscratch_dc;
+        mscratch_dc.SelectObject ( *pscratch_bm );
 
-        scratch_dc.ResetBoundingBox();
-        scratch_dc.DestroyClippingRegion();
-        scratch_dc.SetClippingRegion ( rgn_chart );
-
+        mscratch_dc.ResetBoundingBox();
+        mscratch_dc.DestroyClippingRegion();
+        mscratch_dc.SetClippingRegion ( rgn_chart );
 
         //    Blit the externally invalidated areas of the chart onto the scratch dc
         rgn_blit = ru;
@@ -9833,173 +9507,15 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         {
                 wxRect rect = upd.GetRect();
 
-                scratch_dc.Blit ( rect.x, rect.y, rect.width, rect.height,
+                mscratch_dc.Blit ( rect.x, rect.y, rect.width, rect.height,
                                   pChartDC, rect.x - offset.x, rect.y - offset.y  );
                 upd ++ ;
         }
 
-        if(g_pi_manager)
-        {
-              g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
-              g_pi_manager->RenderAllCanvasOverlayPlugIns( &scratch_dc, GetVP());
-        }
-
-        //      If Depth Unit Display is selected, emboss it
-        if ( g_bShowDepthUnits )
-        {
-              int depth_unit_type = DEPTH_UNIT_UNKNOWN;
-
-              if(GetQuiltMode())
-              {
-                    wxString s =m_pQuilt->GetQuiltDepthUnit();
-                    s.MakeUpper();
-                    if(s == _T("FEET"))
-                       depth_unit_type = DEPTH_UNIT_FEET;
-                    else if(s.StartsWith(_T("FATHOMS")))
-                       depth_unit_type = DEPTH_UNIT_FATHOMS;
-                    else if(s.StartsWith(_T("METERS")))
-                          depth_unit_type = DEPTH_UNIT_METERS;
-                    else if(s.StartsWith(_T("METRES")))
-                          depth_unit_type = DEPTH_UNIT_METERS;
-                    else if(s.StartsWith(_T("METRIC")))
-                          depth_unit_type = DEPTH_UNIT_METERS;
-
-              }
-              else
-              {
-                    if(Current_Ch)
-                    {
-                          depth_unit_type = Current_Ch->GetDepthUnitType();
-#ifdef USE_S57
-                          if(Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR)
-                                depth_unit_type =  ps52plib->m_nDepthUnitDisplay + 1;
-#endif
-                    }
-              }
-
-              EmbossDepthScale ( &scratch_dc, &scratch_dc, depth_unit_type );
-        }
-
-
-
-            //        If extremely overzoomed, show the embossed informational symbol
-            if(g_bshow_overzoom_emboss)
-            {
-
-                  if(GetQuiltMode())
-                  {
-                        double chart_native_ppm;
-                        chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();
-
-                        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
-
-                        if (zoom_factor > 4.0)
-                              EmbossOverzoomIndicator ( &scratch_dc, &scratch_dc);
-                  }
-                  else
-                  {
-                        double chart_native_ppm;
-                        if(Current_Ch)
-                              chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-                        else
-                              chart_native_ppm = m_true_scale_ppm;
-
-                        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
-                        if(Current_Ch)
-                        {
-#ifdef USE_S57
-                  //    Special case for cm93
-                              if(Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
-                              {
-                                    if(zoom_factor > 8.0)
-                                    {
-
-                                          cm93compchart *pch = (cm93compchart *)Current_Ch;
-                                          if(pch)
-                                          {
-                                                wxPen mPen(GetGlobalColor(_T("UINFM")), 2, wxSHORT_DASH);
-                                                scratch_dc.SetPen(mPen);
-                                                pch->RenderNextSmallerCellOutlines(&scratch_dc, GetVP(), false);
-                                          }
-
-                                          EmbossOverzoomIndicator ( &scratch_dc, &scratch_dc);
-                                    }
-                              }
-                              else
-#endif
-                                    if(zoom_factor > 4.0)
-                                    {
-                                          EmbossOverzoomIndicator ( &scratch_dc, &scratch_dc);
-                                    }
-                        }
-                  }
-            }
-
-
+        ocpnDC scratch_dc(mscratch_dc);
 
 //    Draw the rest of the overlay objects directly on the scratch dc
-
-        scratch_dc.SetClippingRegion ( rgn_chart );
-
-        DrawAllRoutesInBBox ( scratch_dc, GetVP().GetBBox(), ru );
-        DrawAllWaypointsInBBox ( scratch_dc, GetVP().GetBBox(), ru, true ); // true draws only isolated marks
-
-        AISDraw ( scratch_dc );
-        ShipDraw ( scratch_dc );
-
-        AlertDraw( scratch_dc );               // pjotrc 2010.02.22
-
-        if ( g_bShowOutlines )
-                RenderAllChartOutlines ( &scratch_dc, GetVP() ) ;
-
-        if ( parent_frame->nRoute_State >= 2 )
-        {
-                wxPoint rpt;
-                m_pMouseRoute->DrawPointWhich ( scratch_dc, parent_frame->nRoute_State - 1,  &rpt );
-                m_pMouseRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, GetVP(), false );
-
-                RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
-                                  m_cursor_lat, m_cursor_lon, r_rband, _T(""));
-                double brg, dist;
-                DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
-                                      m_cursor_lat, m_cursor_lon, &brg, &dist);
-
-                wxString s;
-                s.Printf(_T("Route Distance: %6.2f NMi"), m_pMouseRoute->m_route_length + dist);
-                RenderExtraRouteLegInfo(&scratch_dc, r_rband, s);
-        }
-
-
-        if ( m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2) )
-        {
-              wxPoint rpt;
-              m_pMeasureRoute->DrawPointWhich ( scratch_dc, m_nMeasureState - 1,  &rpt );
-              m_pMeasureRoute->DrawSegment ( scratch_dc, &rpt, &r_rband, GetVP(), false );
-
-              RenderRouteLegInfo(&scratch_dc, m_prev_rlat, m_prev_rlon,
-                                  m_cursor_lat, m_cursor_lon, r_rband, _T(""));
-
-              double brg, dist;
-              DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
-                       m_cursor_lat, m_cursor_lon, &brg, &dist);
-
-              wxString s;
-              s.Printf(_T("Route Distance: %6.2f NMi"), m_pMeasureRoute->m_route_length + dist);
-              RenderExtraRouteLegInfo(&scratch_dc, r_rband, s);
-        }
-
-        //  Draw S52 compatible Scale Bar
-        wxCoord w, h;
-        scratch_dc.GetSize(&w, &h);
-        if(g_bDisplayGrid)
-              ScaleBarDraw( scratch_dc, 60, h - 50 );
-        else
-              ScaleBarDraw( scratch_dc, 20, h - 50 );
-
-
-        // Maybe draw a Grid
-        if(g_bDisplayGrid && (fabs(GetVP().rotation) < 1e-5) && ((fabs(GetVP().skew) < 1e-9) || g_bskew_comp))
-              GridDraw(scratch_dc);
+        DrawOverlayObjects ( scratch_dc, ru );
 
 
 //  Using yet another bitmap and DC, draw semi-static overlay objects if necessary
@@ -10014,7 +9530,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 if ( 1/*b_newview*/ || m_bTCupdate )         // need to update the overlay
                 {
                         delete pss_overlay_bmp;
-                        pss_overlay_bmp = DrawTCCBitmap(&scratch_dc);
+                        pss_overlay_bmp = DrawTCCBitmap(&mscratch_dc);
                 }
 
                 //    blit the semi-static overlay onto the scratch DC if it is needed
@@ -10027,15 +9543,14 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                         while ( upd_final )
                         {
                                 wxRect rect = upd_final.GetRect();
-                                scratch_dc.Blit ( rect.x, rect.y, rect.width, rect.height,
-                                                  &ssdc_r, rect.x, rect.y, wxCOPY, true );      // Blit with mask
+                                mscratch_dc.Blit ( rect.x, rect.y, rect.width, rect.height,
+                                                   &ssdc_r, rect.x, rect.y, wxCOPY, true );      // Blit with mask
                                 upd_final ++ ;
                         }
 
                         ssdc_r.SelectObject ( wxNullBitmap );
                 }
         }
-
 
         //quiting?
         if(g_bquiting)
@@ -10049,7 +9564,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               q_dc.SelectObject(qbm);
 
               // Get a copy of the screen
-              q_dc.Blit(0, 0, GetVP().pix_width, GetVP().pix_height, &scratch_dc, 0, 0);
+              q_dc.Blit(0, 0, GetVP().pix_width, GetVP().pix_height, &mscratch_dc, 0, 0);
 
               //  Draw a rectangle over the screen with a stipple brush
               wxBrush qbr(*wxBLACK, wxFDIAGONAL_HATCH);
@@ -10057,12 +9572,11 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               q_dc.DrawRectangle(0, 0, GetVP().pix_width, GetVP().pix_height);
 
               // Blit back into source
-              scratch_dc.Blit(0, 0, GetVP().pix_width, GetVP().pix_height, &q_dc, 0, 0, wxCOPY  );
+              mscratch_dc.Blit(0, 0, GetVP().pix_width, GetVP().pix_height, &q_dc, 0, 0, wxCOPY  );
 
               q_dc.SelectObject ( wxNullBitmap );
 
         }
-
 
 //    And finally, blit the scratch dc onto the physical dc
         wxRegionIterator upd_final ( rgn_blit );
@@ -10070,7 +9584,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         {
                 wxRect rect = upd_final.GetRect();
                 dc.Blit ( rect.x, rect.y, rect.width, rect.height,
-                          &scratch_dc, rect.x, rect.y );
+                          &mscratch_dc, rect.x, rect.y );
                 upd_final ++ ;
         }
 
@@ -10091,14 +9605,18 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 //    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
         temp_dc.SelectObject ( wxNullBitmap );
 //    And for the scratch bitmap
-        scratch_dc.SelectObject ( wxNullBitmap );
+        mscratch_dc.SelectObject ( wxNullBitmap );
 
 
-//    Draw a crosshair at the viewport center for debugging
-//        dc.DrawLine((GetVP().pix_width/2)-10, GetVP().pix_height/2,(GetVP().pix_width/2)+10, GetVP().pix_height/2);
-//        dc.DrawLine((GetVP().pix_width/2), (GetVP().pix_height/2)-10,(GetVP().pix_width/2), (GetVP().pix_height/2) +10);
+        dc.DestroyClippingRegion();
 
+       PaintCleanup();
+//      CALLGRIND_STOP_INSTRUMENTATION
 
+}
+
+void ChartCanvas::PaintCleanup()
+{
 //    Handle the current graphic window, if present
 
         if ( pCwin )
@@ -10114,8 +9632,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 //    And set flags for next time
         m_bTCupdate = false;
 
-        dc.DestroyClippingRegion();
-
 
 //    Handle deferred WarpPointer
         if ( warp_flag )
@@ -10123,9 +9639,6 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 WarpPointer ( warp_x, warp_y );
                 warp_flag = false;
         }
-
-//      CALLGRIND_STOP_INSTRUMENTATION
-
 }
 
 
@@ -10262,91 +9775,249 @@ int ChartCanvas::GetNextContextMenuId()
       return ID_DEF_MENU_LAST;
 }
 
-
-
-void ChartCanvas::SetMyCursor ( wxCursor *c )
+bool ChartCanvas::SetCursor ( const wxCursor &c )
 {
-        pPriorCursor = c;
-        SetCursor ( *c );
+     if(g_bopengl)
+          return m_glcc->SetCursor (c);
+     else
+          return wxWindow::SetCursor ( c );
 }
 
 
-
-void ChartCanvas::EmbossCanvas ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, emboss_data *pemboss, int x, int y)
+void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect)
 {
-      if(!pemboss)
-            return;
+     if(g_bopengl)
+          m_glcc->Refresh(eraseBackground, rect);
+     else
+          wxWindow::Refresh(eraseBackground, rect);
+}
 
-        //Grab a snipped image out of the chart
-      wxMemoryDC snip_dc;
-      wxBitmap snip_bmp ( pemboss->width, pemboss->height, -1 );
-      snip_dc.SelectObject ( snip_bmp );
-
-      snip_dc.Blit ( 0,0, pemboss->width, pemboss->height, psource_dc, x, y );
-
-      wxImage snip_img = snip_bmp.ConvertToImage();
-
-      double factor = 200;
-
-
-        //  Apply emboss map to the snip image
-      {
-            unsigned char* pdata = snip_img.GetData();
-
-            for ( int y=0 ; y < pemboss->height ; y++ )
-            {
-                  int map_index = ( y * pemboss->width );
-                  for ( int x=0 ; x < pemboss->width ; x++ )
-                  {
-                        double val = ( pemboss->pmap[map_index] * factor ) / 256.;
-
-                        int nred = ( int ) ( ( *pdata ) +  val );
-                        nred = nred > 255 ? 255 : ( nred < 0 ? 0 : nred );
-                        *pdata++ = ( unsigned char ) nred;
-
-                        int ngreen = ( int ) ( ( *pdata ) +  val );
-                        ngreen = ngreen > 255 ? 255 : ( ngreen < 0 ? 0 : ngreen );
-                        *pdata++ = ( unsigned char ) ngreen;
-
-                        int nblue = ( int ) ( ( *pdata ) +  val );
-                        nblue = nblue > 255 ? 255 : ( nblue < 0 ? 0 : nblue );
-                        *pdata++ = ( unsigned char ) nblue;
-
-                        map_index++;
-                  }
-            }
-      }
-
-
-        //  Convert embossed snip to a bitmap
-      wxBitmap emb_bmp ( snip_img );
-
-        //  Map to another memoryDC
-      wxMemoryDC result_dc;
-      result_dc.SelectObject ( emb_bmp );
-
-        //  Blit to target
-      pdest_dc->Blit ( x, y, pemboss->width, pemboss->height, &result_dc, 0, 0 );
-
-      result_dc.SelectObject ( wxNullBitmap );
-      snip_dc.SelectObject ( wxNullBitmap );
-
+void ChartCanvas::Update()
+{
+     if(g_bopengl) {
+          m_glcc->Update();
+//          m_glcc->render(); /* for some reason repaint not triggered */
+     } else
+          wxWindow::Update();
 }
 
 
-void ChartCanvas::EmbossOverzoomIndicator ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc)
+void ChartCanvas::EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y)
 {
-      EmbossCanvas ( psource_dc, pdest_dc, m_pEM_OverZoom, 0,40);
+      const double factor = 200;
+
+      if(dc.GetDC()) {
+          wxMemoryDC *pmdc = dynamic_cast<wxMemoryDC*>(dc.GetDC());
+          wxASSERT_MSG ( pmdc, wxT ( "dc to EmbossCanvas not a memory dc" ) );
+
+
+          //Grab a snipped image out of the chart
+          wxMemoryDC snip_dc;
+          wxBitmap snip_bmp ( pemboss->width, pemboss->height, -1 );
+          snip_dc.SelectObject ( snip_bmp );
+
+          snip_dc.Blit ( 0,0, pemboss->width, pemboss->height, pmdc, x, y );
+
+          wxImage snip_img = snip_bmp.ConvertToImage();
+
+        //  Apply Emboss map to the snip image
+          unsigned char* pdata = snip_img.GetData();
+          {
+               for ( int y=0 ; y < pemboss->height ; y++ )
+               {
+                    int map_index = ( y * pemboss->width );
+                    for ( int x=0 ; x < pemboss->width ; x++ )
+                    {
+                         double val = ( pemboss->pmap[map_index] * factor ) / 256.;
+
+                         int nred = ( int ) ( ( *pdata ) +  val );
+                         nred = nred > 255 ? 255 : ( nred < 0 ? 0 : nred );
+                         *pdata++ = ( unsigned char ) nred;
+
+                         int ngreen = ( int ) ( ( *pdata ) +  val );
+                         ngreen = ngreen > 255 ? 255 : ( ngreen < 0 ? 0 : ngreen );
+                         *pdata++ = ( unsigned char ) ngreen;
+
+                         int nblue = ( int ) ( ( *pdata ) +  val );
+                         nblue = nblue > 255 ? 255 : ( nblue < 0 ? 0 : nblue );
+                         *pdata++ = ( unsigned char ) nblue;
+
+                         map_index++;
+                    }
+               }
+          }
+
+          //  Convert embossed snip to a bitmap
+          wxBitmap emb_bmp ( snip_img );
+
+          //  Map to another memoryDC
+          wxMemoryDC result_dc;
+          result_dc.SelectObject ( emb_bmp );
+
+          //  Blit to target
+          pmdc->Blit ( x, y, pemboss->width, pemboss->height, &result_dc, 0, 0 );
+
+          result_dc.SelectObject ( wxNullBitmap );
+          snip_dc.SelectObject ( wxNullBitmap );
+     } else {
+           int w = pemboss->width, h = pemboss->height;
+          glEnable(GL_TEXTURE_RECTANGLE_ARB);
+
+          // render using opengl and alpha blending
+          if(!pemboss->gltexind) { /* upload to texture */
+               /* convert to luminance alpha map */
+               int size = pemboss->width*pemboss->height;
+               char *data = new char[2*size];
+               for(int i=0; i<size; i++) {
+                    data[2*i] = pemboss->pmap[i] > 0 ? 0 : 255;
+                    data[2*i+1] = abs(pemboss->pmap[i]);
+               }
+
+               glGenTextures(1, &pemboss->gltexind);
+               glBindTexture(GL_TEXTURE_RECTANGLE_ARB, pemboss->gltexind);
+               glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_LUMINANCE_ALPHA, w, h,
+                            0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
+
+               delete [] data;
+          }
+
+          glBindTexture(GL_TEXTURE_RECTANGLE_ARB, pemboss->gltexind);
+
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
+          glColor4f(1, 1, 1, factor / 256);
+
+          glBegin(GL_QUADS);
+          glTexCoord2i(0, 0), glVertex2i(x, y);
+          glTexCoord2i(w, 0), glVertex2i(x+w, y);
+          glTexCoord2i(w, h), glVertex2i(x+w, y+h);
+          glTexCoord2i(0, h), glVertex2i(x, y+h);
+          glEnd();
+
+          glDisable(GL_BLEND);
+          glDisable(GL_TEXTURE_RECTANGLE_ARB);
+     }
 }
 
 
-void ChartCanvas::EmbossDepthScale ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, int emboss_ident )
+void ChartCanvas::EmbossOverzoomIndicator ( ocpnDC &dc)
 {
-        if ( emboss_ident == DEPTH_UNIT_UNKNOWN )
-                return;
+     if(!g_bshow_overzoom_emboss)
+          return;
+
+     if(GetQuiltMode())
+     {
+          double chart_native_ppm;
+          chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();
+
+          double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
+
+          if (zoom_factor <= 4.0)
+               return;
+     }
+     else
+     {
+          double chart_native_ppm;
+          if(Current_Ch)
+               chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
+          else
+               chart_native_ppm = m_true_scale_ppm;
+
+          double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
+          if(Current_Ch)
+          {
+#ifdef USE_S57
+               //    Special case for cm93
+               if(Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
+               {
+                    if(zoom_factor > 8.0)
+                    {
+
+                         cm93compchart *pch = (cm93compchart *)Current_Ch;
+                         if(pch)
+                         {
+                              wxPen mPen(GetGlobalColor(_T("UINFM")), 2, wxSHORT_DASH);
+                              dc.SetPen(mPen);
+                              pch->RenderNextSmallerCellOutlines(dc, GetVP() );
+                         }
+                    } else
+                         return;
+               }
+               else
+#endif
+                    if(zoom_factor <= 4.0)
+                         return;
+          }
+     }
+
+      EmbossCanvas ( dc, m_pEM_OverZoom, 0, 40);
+}
+
+
+void ChartCanvas::DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru )
+{
+        if(g_pi_manager)
+        {
+              g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
+              g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP());
+        }
+
+        EmbossDepthScale ( dc );
+        EmbossOverzoomIndicator ( dc );
+
+        DrawAllRoutesInBBox ( dc, GetVP().GetBBox(), ru );
+        DrawAllWaypointsInBBox ( dc, GetVP().GetBBox(), ru, true ); // true draws only isolated marks
+
+        AISDraw ( dc );
+        ShipDraw ( dc );
+
+        AlertDraw( dc );
+
+        RenderAllChartOutlines ( dc, GetVP() ) ;
+        RenderRouteLegs ( dc );
+        ScaleBarDraw( dc );
+        GridDraw( dc );
+}
+
+void ChartCanvas::EmbossDepthScale ( ocpnDC &dc )
+{
+        if ( !g_bShowDepthUnits )
+             return;
+
+        int depth_unit_type = DEPTH_UNIT_UNKNOWN;
+
+        if(GetQuiltMode())
+        {
+             wxString s =m_pQuilt->GetQuiltDepthUnit();
+             s.MakeUpper();
+             if(s == _T("FEET"))
+                  depth_unit_type = DEPTH_UNIT_FEET;
+             else if(s.StartsWith(_T("FATHOMS")))
+                  depth_unit_type = DEPTH_UNIT_FATHOMS;
+             else if(s.StartsWith(_T("METERS")))
+                  depth_unit_type = DEPTH_UNIT_METERS;
+             else if(s.StartsWith(_T("METRES")))
+                  depth_unit_type = DEPTH_UNIT_METERS;
+             else if(s.StartsWith(_T("METRIC")))
+                  depth_unit_type = DEPTH_UNIT_METERS;
+
+        }
+        else
+        {
+             if(Current_Ch)
+             {
+                  depth_unit_type = Current_Ch->GetDepthUnitType();
+#ifdef USE_S57
+                  if(Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                       depth_unit_type =  ps52plib->m_nDepthUnitDisplay + 1;
+#endif
+             }
+        }
 
         emboss_data *ped = NULL;
-        switch ( emboss_ident )
+        switch ( depth_unit_type )
         {
               case DEPTH_UNIT_FEET:
                     ped = m_pEM_Feet;
@@ -10362,10 +10033,8 @@ void ChartCanvas::EmbossDepthScale ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_d
                     break;
         }
 
-        if(!ped)
-              return;
-
-        EmbossCanvas ( psource_dc, pdest_dc, ped, (GetVP().pix_width - ped->width), 0);
+        if(ped)
+             EmbossCanvas ( dc, ped, (GetVP().pix_width - ped->width), 0);
 }
 
 
@@ -10402,7 +10071,8 @@ void ChartCanvas::CreateOZEmbossMapData(ColorScheme cs)
 }
 
 
-emboss_data *ChartCanvas::CreateEmbossMapData ( wxFont &font, int width, int height, const wxChar *str, ColorScheme cs )
+emboss_data *ChartCanvas::CreateEmbossMapData ( wxFont &font, int width, int height,
+                                                const wxChar *str, ColorScheme cs )
 {
         int *pmap;
 
@@ -10514,49 +10184,31 @@ wxBitmap *ChartCanvas::DrawTCCBitmap ( wxDC *pbackground_dc, bool bAddNewSelpoin
         ssdc_mask.Clear();
 
 //    Maybe draw the Tide Points
+        ocpnDC ossdc(ssdc), ossdc_mask(ssdc_mask);
 
         if ( m_bShowTide )
         {
-                  if ( bShowingTide )
-                  {
-                // Rebuild Selpoints list on new map
-                        DrawAllTidesInBBox ( ssdc,      GetVP().GetBBox(), bAddNewSelpoints, true );
-                        DrawAllTidesInBBox ( ssdc_mask, GetVP().GetBBox(), false, true, true );    // onto the mask
-                  }
-                  else
-                  {
-                        DrawAllTidesInBBox ( ssdc,      GetVP().GetBBox(), true,true );
-                DrawAllTidesInBBox ( ssdc_mask, GetVP().GetBBox(), false, true ,true);    // onto the mask
-                  }
-                  bShowingTide = true;
+             // Rebuild Selpoints list on new map
+             DrawAllTidesInBBox ( ossdc,      GetVP().GetBBox(), bAddNewSelpoints || !bShowingTide, true );
+             DrawAllTidesInBBox ( ossdc_mask, GetVP().GetBBox(), false, true, true );    // onto the mask
+             bShowingTide = true;
         }
         else
-                bShowingTide = false;
+             bShowingTide = false;
 
 //    Maybe draw the current arrows
         if ( m_bShowCurrent )
         {
-              double angle = GetVPRotation();
-
-              if(!g_bCourseUp && !g_bskew_comp)
-                    angle = GetVPRotation() + GetVPSkew();
-
-                if ( bShowingCurrent )
-                {
-                        // Rebuild Selpoints list on new map
-                        // and force redraw
-                      DrawAllCurrentsInBBox ( ssdc,      GetVP().GetBBox(), angle, bAddNewSelpoints, true );
-                      DrawAllCurrentsInBBox ( ssdc_mask, GetVP().GetBBox(), angle, false,            true, true );  // onto the mask
-                }
-                else
-                {
-                      DrawAllCurrentsInBBox ( ssdc,      GetVP().GetBBox(), angle, true, true ); // Force Selpoints add first time after
-                      DrawAllCurrentsInBBox ( ssdc_mask, GetVP().GetBBox(), angle, false, true, true );    // onto the mask
-                }
-                bShowingCurrent = true;
+              // Rebuild Selpoints list on new map
+              // and force redraw
+              DrawAllCurrentsInBBox ( ossdc, GetVP().GetBBox(),
+                                      bAddNewSelpoints || !bShowingCurrent, true );
+              DrawAllCurrentsInBBox ( ossdc_mask, GetVP().GetBBox(), false,
+                                      true, true );  // onto the mask
+              bShowingCurrent = true;
         }
         else
-                bShowingCurrent = false;
+             bShowingCurrent = false;
 
         ssdc.SelectObject ( wxNullBitmap );
 
@@ -10587,12 +10239,17 @@ wxBitmap *ChartCanvas::DrawTCCBitmap ( wxDC *pbackground_dc, bool bAddNewSelpoin
 
 extern bool g_bTrackActive;
 
-void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion )
+void ChartCanvas::DrawAllRoutesInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion )
 {
         Route *active_route = NULL;
         Route *active_track = NULL;
-        dc.DestroyClippingRegion();
-        wxDCClipper(dc, clipregion);
+
+        wxDC *pdc = dc.GetDC();
+        if(pdc) {
+             pdc->DestroyClippingRegion();
+             wxDCClipper(*pdc, clipregion);
+        }
+
         wxRouteListNode *node = pRouteList->GetFirst();
         while ( node )
         {
@@ -10672,10 +10329,14 @@ void ChartCanvas::DrawAllRoutesInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegio
               active_track->Draw ( dc, GetVP() );
 }
 
-void ChartCanvas::DrawAllWaypointsInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly )
+void ChartCanvas::DrawAllWaypointsInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly )
 {
 //        wxBoundingBox bbx;
-        wxDCClipper(dc, clipregion);
+        wxDC *pdc = dc.GetDC();
+        if(pdc) {
+             wxDCClipper(*pdc, clipregion);
+        }
+
         wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
         while ( node )
@@ -10720,94 +10381,33 @@ void ChartCanvas::DrawAllWaypointsInBBox ( wxDC& dc, LLBBox& BltBBox, const wxRe
 
               }
 
-#if wxUSE_GRAPHICS_CONTEXT
+              wxPen ppPeng ( GetGlobalColor ( _T ( "UGREN" ) ) , 2 );
+              wxPen ppPenr ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
 
-              wxGraphicsContext *pgc = NULL;
-
-              wxMemoryDC *pmdc = wxDynamicCast(&dc, wxMemoryDC);
-              if(pmdc)
+              if(lpp1 > 0)
               {
-                    pgc = wxGraphicsContext::Create(*pmdc);
-              }
-              else
-              {
-                    wxClientDC *pcdc = wxDynamicCast(&dc, wxClientDC);
-                    if(pcdc)
-                          pgc = wxGraphicsContext::Create(*pcdc);
+                   dc.SetPen(ppPeng);
+                   dc.StrokeCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
               }
 
-
-              if(pgc)
+              if(lpp2 > 0)
               {
-                    wxPen ppPeng ( GetGlobalColor ( _T ( "UGREN" ) ) , 2 );
-                    wxPen ppPenr ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
-
-                    if(lpp1 > 0)
-                    {
-                        pgc->SetPen(ppPeng);
-                        wxGraphicsPath gpath = pgc->CreatePath();
-                        gpath.AddCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
-                        pgc->StrokePath(gpath);
-                    }
-
-                    if(lpp2 > 0)
-                    {
-                          pgc->SetPen(ppPeng);
-                          wxGraphicsPath gpath = pgc->CreatePath();
-                          gpath.AddCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
-                          pgc->StrokePath(gpath);
-                    }
-
-                    if(lpp1 < 0)
-                    {
-                          pgc->SetPen(ppPenr);
-                          wxGraphicsPath gpath = pgc->CreatePath();
-                          gpath.AddCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
-                          pgc->StrokePath(gpath);
-                    }
-
-                    if(lpp2 < 0)
-                    {
-                          pgc->SetPen(ppPenr);
-                          wxGraphicsPath gpath = pgc->CreatePath();
-                          gpath.AddCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
-                          pgc->StrokePath(gpath);
-                    }
-
-
-                    dc.CalcBoundingBox((int)wxRound(lAnchorPoint1.x + fabs(lpp1)) , (int)wxRound(lAnchorPoint1.y + fabs(lpp1)));  // keep dc dirty box up-to-date
-                    dc.CalcBoundingBox((int)wxRound(lAnchorPoint1.x - fabs(lpp1)) , (int)wxRound(lAnchorPoint1.y - fabs(lpp1)));
-                    dc.CalcBoundingBox((int)wxRound(lAnchorPoint2.x + fabs(lpp2)) , (int)wxRound(lAnchorPoint2.y + fabs(lpp2)));  // keep dc dirty box up-to-date
-                    dc.CalcBoundingBox((int)wxRound(lAnchorPoint2.x - fabs(lpp2)) , (int)wxRound(lAnchorPoint2.y - fabs(lpp2)));
-
+                   dc.SetPen(ppPeng);
+                   dc.StrokeCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
               }
 
+              if(lpp1 < 0)
+              {
+                   dc.SetPen(ppPenr);
+                   dc.StrokeCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
+              }
 
-#else
-              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UGREN" ) ) , 2 ) );
-
-              wxBrush CurrentBrush1 = dc.GetBrush();
-              wxBrush RingBrush1(CurrentBrush1.GetColour(),wxTRANSPARENT);
-              dc.SetBrush(RingBrush1);
-
-              if (lpp1 > 0) dc.DrawCircle(lAnchorPoint1.x, lAnchorPoint1.y, (wxCoord)lpp1);
-              if (lpp2 > 0) dc.DrawCircle(lAnchorPoint2.x, lAnchorPoint2.y, (wxCoord)lpp2);
-
-              dc.SetBrush(CurrentBrush1);
-              dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "URED" ) ) , 2 ) );
-
-              wxBrush CurrentBrush2 = dc.GetBrush();
-              wxBrush RingBrush2(CurrentBrush2.GetColour(),wxTRANSPARENT);
-              dc.SetBrush(RingBrush2);
-
-              if (lpp1 < 0) dc.DrawCircle(lAnchorPoint1.x, lAnchorPoint1.y, (wxCoord)fabs(lpp1));
-              if (lpp2 < 0) dc.DrawCircle(lAnchorPoint2.x, lAnchorPoint2.y, (wxCoord)fabs(lpp2));
-
-              dc.SetBrush(CurrentBrush1);
-
-#endif
+              if(lpp2 < 0)
+              {
+                   dc.SetPen(ppPenr);
+                   dc.StrokeCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
+              }
         }
-
 }
 
 
@@ -10852,8 +10452,8 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint)
 
 
 
-void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
-                                       bool bRebuildSelList, bool bforce_redraw_tides, bool bdraw_mono_for_mask )
+void ChartCanvas::DrawAllTidesInBBox ( ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList,
+                                       bool bforce_redraw_tides, bool bdraw_mono_for_mask )
 {
       wxPen *pblack_pen = wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "UINFD" ) ), 1, wxSOLID );
       wxPen *pyelo_pen =  wxThePenList->FindOrCreatePen ( GetGlobalColor ( _T ( "YELO1" ) ), 1, wxSOLID );
@@ -11111,8 +10711,8 @@ void ChartCanvas::DrawAllTidesInBBox ( wxDC& dc, LLBBox& BBox,
 //------------------------------------------------------------------------------------------
 
 
-void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, LLBBox& BBox, double skew_angle,
-        bool bRebuildSelList,   bool bforce_redraw_currents, bool bdraw_mono_for_mask )
+void ChartCanvas::DrawAllCurrentsInBBox ( ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList,
+                                          bool bforce_redraw_currents, bool bdraw_mono_for_mask )
 {
         float tcvalue, dir;
         bool bnew_val;
@@ -11126,6 +10726,11 @@ void ChartCanvas::DrawAllCurrentsInBBox ( wxDC& dc, LLBBox& BBox, double skew_an
         wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFO" ) ), wxSOLID );
         wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UIBDR" ) ), wxSOLID );
         wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
+
+        double skew_angle = GetVPRotation();
+
+        if(!g_bCourseUp && !g_bskew_comp)
+             skew_angle = GetVPRotation() + GetVPSkew();
 
         if ( bdraw_mono_for_mask )
         {
@@ -11279,7 +10884,7 @@ static wxPoint CurrentArrowArray[NUM_CURRENT_ARROW_POINTS] =
      wxPoint ( 0,0 )
     };
 
-void ChartCanvas::DrawArrow ( wxDC& dc, int x, int y, double rot_angle, double scale )
+void ChartCanvas::DrawArrow ( ocpnDC& dc, int x, int y, double rot_angle, double scale )
 {
         if(scale > 1e-2)
         {
@@ -11316,9 +10921,788 @@ void ChartCanvas::DrawArrow ( wxDC& dc, int x, int y, double rot_angle, double s
         }
 }
 
+//------------------------------------------------------------------------------
+//    glChartCanvas Implementation
+//------------------------------------------------------------------------------
+#include <wx/arrimpl.cpp>
+
+WX_DEFINE_OBJARRAY(ArrayOfTexDescriptors);
+
+         int attribs[]={WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, 0};
+
+BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas )
+        EVT_PAINT ( glChartCanvas::OnPaint )
+        EVT_ACTIVATE ( glChartCanvas::OnActivate )
+        EVT_SIZE ( glChartCanvas::OnSize )
+        EVT_MOUSE_EVENTS ( glChartCanvas::MouseEvent )
+        EVT_ERASE_BACKGROUND(glChartCanvas::OnEraseBG)
+END_EVENT_TABLE()
 
 
 
+glChartCanvas::glChartCanvas(wxWindow *parent) :
+            wxGLCanvas(parent, wxID_ANY, wxDefaultPosition, wxSize(256, 256), wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs),
+     m_cacheinvalid(1), m_lastR(wxSize()), m_lastchart(NULL), m_data(NULL),
+     m_datasize(0), m_bsetup(false)
+{
+}
+
+glChartCanvas::~glChartCanvas()
+{
+     free(m_data);
+}
+
+void glChartCanvas::OnEraseBG(wxEraseEvent& evt)
+{
+}
+
+void glChartCanvas::OnPaint(wxPaintEvent &event)
+{
+     Show(g_bopengl);
+     if(!g_bopengl) {
+          event.Skip();
+          return;
+     }
+
+     if(!m_bsetup) {
+          SetCurrent();
+
+/*
+          if(glewInit() != GLEW_OK) {
+               printf("glewInit did not return GLEW_OK\n");
+               exit(0);
+          }
+
+          if(!glewIsSupported("GL_ARB_texture_rectangle")) {
+               printf("GL_ARB_texture_rectangle not supported, exiting\n");
+               exit(0);
+          }
+*/
+          /* determine max texture size */
+          glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_dimension);
+
+          while (max_texture_dimension) {
+               glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGB,
+                            max_texture_dimension, max_texture_dimension,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+               GLint width;
+               glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+               if(width != 0)
+                    break;
+               max_texture_dimension /= 2;
+          }
+
+
+          /* we upload non-aligned memory */
+          glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+
+          m_bsetup = true;
+     }
+
+     render();
+}
+
+#if  0
+void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
+{
+      if(!chart)
+            return;
+
+      /* setup texture parameters */
+      glEnable(GL_TEXTURE_RECTANGLE_ARB);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, bias);
+//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.5);
+
+      wxRect R;
+      chart->ComputeSourceRectangle(vp, &R);
+      double scalefactor = chart->GetRasterScaleFactor();
+      int spx = R.x + R.width/2;
+      int spy = R.y + R.height/2;
+//                        printf("   Modelview Translate (pixels) %d %d %g\n", spx, spy, scalefactor);
+
+
+      if(0)
+      {
+            //    Create a stencil buffer for clipping to the region
+            glEnable (GL_STENCIL_TEST);
+            glClear(GL_STENCIL_BUFFER_BIT);
+
+            //    We are going to write "1" into the stencil buffer wherever the region is
+            glStencilFunc (GL_ALWAYS, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            //    Decompose the region into rectangles, and draw as quads
+            wxRegionIterator clipit ( region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+
+                  glBegin(GL_QUADS);
+
+                  glVertex2f(rect.x, rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                  glVertex2f(rect.x, rect.y + rect.height);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+            //    Now set the stencil ops to draw only where the stencil bit is "1"
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+      }
+
+      glPushMatrix();
+
+      glTranslatef(-spx/scalefactor, -spy/scalefactor, 0);
+      glScalef(1./scalefactor, 1./scalefactor, 1);
+
+
+      //    Look for the chart texture hash in the member hashmap
+      ChartPointerHashType::iterator it = m_chart_hash.find(chart);
+
+      ChartTextureHashType *pTextureHash;
+
+      //    Not Found ?
+      if(it == m_chart_hash.end())
+      {
+            ChartTextureHashType *p = new ChartTextureHashType;
+            m_chart_hash[chart] = p;
+      }
+
+      pTextureHash = m_chart_hash[chart];
+
+      //    Using a 2D loop, iterate thru the texture tiles of the chart
+      //    For each tile, is it (1) needed and (2) present?
+
+
+      int tex_dim = 256; //max_texture_dimension
+      //  Calculate the number of textures needed
+      int nx_tex = (chart->GetSize_X() / tex_dim) + 1;
+      int ny_tex = (chart->GetSize_Y() / tex_dim) + 1;
+
+      //   Get a unique texture name array
+      GLuint *chart_texture_name_array = (GLuint *)malloc(nx_tex * ny_tex * sizeof(GLuint));
+      glGenTextures(nx_tex * ny_tex, chart_texture_name_array);
+
+      glTextureDescriptor *ptd;
+
+      wxRect rect(0,0,1,1);
+      unsigned int itex = 0;
+      for(int i=0 ; i < ny_tex ; i++)
+      {
+            rect.height = wxMin(tex_dim, chart->GetSize_Y() - rect.y);
+            rect.x = 0;
+            for(int j=0 ; j < nx_tex ; j++)
+            {
+                  rect.width = wxMin(tex_dim, chart->GetSize_X() - rect.x);
+
+                  //    Is this rectangle needed (i.e. does it intersect the chart source rectangle?)
+                  wxRect ri = rect;
+                  ri.Intersect(R);
+                  if(ri.width && ri.height)
+                  {
+                        //    Is this texture already available to the GPU?
+
+                        //    Create the hash key
+                        int key = (rect.x<<16) + rect.y;
+                        ChartTextureHashType::iterator it = pTextureHash->find(key);
+
+                        // if not found, get the bits and give to the GPU
+                        if(it ==  pTextureHash->end())
+                        {
+                              GrowData(3 * rect.width * rect.height);
+                              chart->GetChartBits(rect, m_data, 1);
+
+                              glBindTexture(GL_TEXTURE_RECTANGLE_ARB, chart_texture_name_array[itex]);
+//                              glBindTexture(GL_TEXTURE_2D, chart_texture_name_array[itex]);
+
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+                              glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                              glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//_MIPMAP_NEAREST);
+//                              glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+                              glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB,
+                                  rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+
+
+                              glTextureDescriptor *ptd_new = new glTextureDescriptor;
+                              ptd_new->tex_rect = rect;
+                              ptd_new->tex_name = chart_texture_name_array[itex];
+
+                              itex++;
+                              (*pTextureHash)[key] = ptd_new;
+                        }
+
+                        ptd = (*pTextureHash)[key];
+
+                        //    The texture is known to be available to the GPU
+                        //    So map it in
+
+
+                        int w = ri.width, h = ri.height;
+                        int x1 = ri.x - rect.x;
+                        int y1 = ri.y - rect.y;
+                        int x2 = (ri.x - R.x) + spx;
+                        int y2 = (ri.y - R.y) + spy;
+
+//                                printf("  texture to quad..sf: %g   %d %d %d %d %d %d\n", scalefactor, x1, x2, y1, y2, w, h);
+
+                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB,  ptd->tex_name);
+
+//   For rectangle_arb
+                        double sx = 1.;
+                        double sy = 1.;
+                        glBegin(GL_QUADS);
+                        glTexCoord2f(x1/sx, y1/sy);     glVertex2f((x2), (y2));
+                        glTexCoord2f((x1+w)/sx, y1/sy);   glVertex2f((w+ x2) , (y2));
+                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
+                        glTexCoord2f(x1/sx, (y1+h)/sy);   glVertex2f((x2) , (h + y2));
+
+/*
+                        double sx = cc1->GetVP().pix_width;
+                        double sy = cc1->GetVP().pix_height;
+                        glBegin(GL_QUADS);
+//                        glTexCoord2f(x1/sx, y1/sy);     glVertex2f((x2), (y2));
+//                        glTexCoord2f((x1+w)/sx, y1/sy);   glVertex2f((w+ x2) , (y2));
+//                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
+//                        glTexCoord2f(x1/sx, (y1+h)/sy);   glVertex2f((x2) , (h + y2));
+
+                        double sf = 1;//scalefactor;
+                        x2 = rect.x;//((rect.x - R.x) + spx)/sf;
+                        y2 = rect.y;//((rect.y - R.y) + spy)/sf;
+                        int w1 = rect.width/sf;
+                        int h1 = rect.height/sf;
+                        glTexCoord2f(0, 0);     glVertex2f((x2), (y2));
+                        glTexCoord2f((0+w)/sx, 0);   glVertex2f((w1+ x2) , (y2));
+                        glTexCoord2f((0+w)/sx, (0+h)/sy); glVertex2f((w1+ x2) , (h1 + y2));
+                        glTexCoord2f(0, (0+h)/sy);   glVertex2f((x2) , (h1 + y2));
+*/
+                        glEnd();
+
+                  }
+                  rect.x += rect.width;
+            }
+
+            rect.y += rect.height;
+      }
+
+      free(chart_texture_name_array);
+
+      glPopMatrix();
+
+      glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+}
+
+#endif
+
+
+void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
+{
+      if(!chart)
+            return;
+
+      /* setup texture parameters */
+      glEnable(GL_TEXTURE_2D);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, bias);
+//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.5);
+
+      wxRect R;
+      chart->ComputeSourceRectangle(vp, &R);
+      double scalefactor = chart->GetRasterScaleFactor();
+      int spx = R.x + R.width/2;
+      int spy = R.y + R.height/2;
+
+      if(1)
+      {
+            //    Create a stencil buffer for clipping to the region
+            glEnable (GL_STENCIL_TEST);
+            glClear(GL_STENCIL_BUFFER_BIT);
+
+            //    We are going to write "1" into the stencil buffer wherever the region is valid
+            glStencilFunc (GL_ALWAYS, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            //    Decompose the region into rectangles, and draw as quads
+            wxRegionIterator clipit ( region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+
+                  glBegin(GL_QUADS);
+
+                  glVertex2f(rect.x, rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                  glVertex2f(rect.x, rect.y + rect.height);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+      }
+
+      glPushMatrix();
+
+      glTranslatef(-spx/scalefactor, -spy/scalefactor, 0);
+      glScalef(1./scalefactor, 1./scalefactor, 1);
+
+
+      //    Look for the chart texture hashmap in the member chart hashmap
+      ChartPointerHashType::iterator it = m_chart_hash.find(chart);
+
+      ChartTextureHashType *pTextureHash;
+
+      //    Not Found ?
+      if(it == m_chart_hash.end())
+      {
+            ChartTextureHashType *p = new ChartTextureHashType;
+            m_chart_hash[chart] = p;
+      }
+
+      pTextureHash = m_chart_hash[chart];
+
+      //    Using a 2D loop, iterate thru the texture tiles of the chart
+      //    For each tile, is it (1) needed and (2) present?
+
+      int tex_dim = 1024; //max_texture_dimension
+      //  Calculate the number of textures needed
+      int nx_tex = (chart->GetSize_X() / tex_dim) + 1;
+      int ny_tex = (chart->GetSize_Y() / tex_dim) + 1;
+
+      GrowData(3 * tex_dim * tex_dim);
+
+      glTextureDescriptor *ptd;
+
+      wxRect rect(0,0,1,1);
+      for(int i=0 ; i < ny_tex ; i++)
+      {
+            rect.height = tex_dim;
+            rect.x = 0;
+            for(int j=0 ; j < nx_tex ; j++)
+            {
+                  rect.width = tex_dim;
+
+                  //    Is this rectangle needed (i.e. does it intersect the chart source rectangle?)
+                  wxRect ri = rect;
+                  ri.Intersect(R);
+                  if(ri.width && ri.height)
+                  {
+                        //    Is this texture tile already available to the GPU?
+
+                        //    Create the hash key
+                        int key = (rect.x<<16) + rect.y;
+                        ChartTextureHashType::iterator it = pTextureHash->find(key);
+
+                        // if not found, get the bits and give to the GPU
+                        if(it ==  pTextureHash->end())
+                        {
+                              chart->GetChartBits(rect, m_data, 1);
+
+                              GLuint tex_name;
+                              glGenTextures(1, &tex_name);
+
+                              glBindTexture(GL_TEXTURE_2D, tex_name);
+
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+                              glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+                              glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                                           rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+
+
+                              glTextureDescriptor *ptd_new = new glTextureDescriptor;
+                              ptd_new->tex_rect = rect;
+                              ptd_new->tex_name = tex_name;
+
+                              (*pTextureHash)[key] = ptd_new;
+                        }
+
+                        ptd = (*pTextureHash)[key];
+
+                        //    The texture is known to be available to the GPU
+                        //    So map it in
+
+                        int w = ri.width, h = ri.height;
+                        int x1 = ri.x - rect.x;
+                        int y1 = ri.y - rect.y;
+                        int x2 = (ri.x - R.x) + spx;
+                        int y2 = (ri.y - R.y) + spy;
+
+                        glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
+
+                        double sx = rect.width;
+                        double sy = rect.height;
+
+                        glBegin(GL_QUADS);
+
+                        glTexCoord2f(x1/sx, y1/sy);         glVertex2f((x2), (y2));
+                        glTexCoord2f((x1+w)/sx, y1/sy);     glVertex2f((w+ x2) , (y2));
+                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
+                        glTexCoord2f(x1/sx, (y1+h)/sy);     glVertex2f((x2) , (h + y2));
+
+                        glEnd();
+
+                  }
+                  rect.x += rect.width;
+            }
+
+            rect.y += rect.height;
+      }
+
+      glPopMatrix();
+
+      glDisable(GL_TEXTURE_2D);
+
+}
+
+
+
+
+void glChartCanvas::render()
+{
+     if(!m_bsetup)
+          return;
+
+     if((!cc1->VPoint.b_quilt) && (!Current_Ch))
+          return;
+
+     SetCurrent();
+     wxPaintDC(this);
+
+     wxRegion ru = GetUpdateRegion();
+
+        //    In case Console is shown, set up dc clipper and blt iterator regions
+        wxRegion rgn_chart ( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+        int conx, cony, consx, consy;
+        console->GetPosition ( &conx, &cony );
+        console->GetSize ( &consx, &consy );
+        wxRegion rgn_console ( conx, cony, consx - 1, consy - 1 );
+
+        if ( console->IsShown() )
+        {
+                rgn_chart.Subtract ( rgn_console );               // For dc Drawing clipping
+                ru.Subtract ( rgn_console );                      // for Blit updating
+        }
+
+        //    Same for Thumbnail window
+        if ( pthumbwin )
+        {
+                int thumbx, thumby, thumbsx, thumbsy;
+                pthumbwin->GetPosition ( &thumbx, &thumby );
+                pthumbwin->GetSize ( &thumbsx, &thumbsy );
+                wxRegion rgn_thumbwin ( thumbx, thumby, thumbsx - 1, thumbsy - 1 );
+
+                if ( pthumbwin->IsShown() )
+                {
+                        rgn_chart.Subtract ( rgn_thumbwin );
+                        ru.Subtract ( rgn_thumbwin );
+                }
+        }
+
+        ArrayOfRect rect_array = gFrame->GetCanvasReserveRects();
+        for(unsigned int ir=0 ; ir < rect_array.GetCount() ; ir++)
+        {
+              wxRect r = rect_array.Item(ir);
+              rgn_chart.Subtract ( r );
+              ru.Subtract ( r );
+        }
+
+        //  Make a special VP
+        ViewPort svp = cc1->VPoint;
+
+        svp.pix_width = svp.rv_rect.width;
+        svp.pix_height = svp.rv_rect.height;
+
+        wxRegion chart_get_region(wxRect(0,0,svp.pix_width, svp.pix_height));
+        ocpnDC gldc(*this);
+
+//    Render the WVSChart vector first
+        wxRegion CValidRegion;
+        if(!cc1->VPoint.b_quilt)
+              // Make a region covering the current chart on the canvas
+              Current_Ch->GetValidCanvasRegion ( cc1->VPoint, &CValidRegion );
+        else
+              CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
+
+      //    Copy current chart region
+        wxRegion WVSRegion ( rgn_chart );
+
+      //    Remove the valid chart area
+        if(CValidRegion.IsOk())
+              WVSRegion.Subtract ( CValidRegion );
+
+      //    Draw the WVSChart only in the areas NOT covered by the current chart view
+      //    And, only if the region is ..not.. empty
+      //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
+#if 0
+        if ( !WVSRegion.IsEmpty() && ( fabs (cc1->GetVP().skew) < .01 )
+             && (cc1->GetVP().view_scale_ppm > 5e-05) ) {
+             /* clear out region for wvs data */
+             wxRegionIterator wvsr ( WVSRegion);
+             while ( wvsr )
+             {
+                  wxRect rect = wvsr.GetRect();
+                  glColor3f(0, 0, 0);
+                  glBegin(GL_QUADS);
+                  glVertex2f(rect.x, rect.y);  glVertex2f(rect.x+rect.width, rect.y);
+                  glVertex2f(rect.x+rect.width, rect.y+rect.height);  glVertex2f(rect.x, rect.y+rect.height);
+                  glEnd();
+                  wvsr++;
+             }
+             cc1->pwvs_chart->RenderViewOnDC ( gldc, cc1->GetVP() );
+        }
+#endif
+
+
+        glViewport(0, 0, GetSize().x, GetSize().y);
+        glLoadIdentity();
+        gluOrtho2D(0, GetSize().x, GetSize().y, 0);
+
+
+        if(cc1->VPoint.b_quilt)          // quilted
+        {
+              if(cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed())
+                    return;
+
+
+              if(!g_bCourseUp)
+              {
+                          if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
+                          {
+                                wxRegion screen_region = rgn_chart;
+
+                                ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+                                while(pch)
+                                {
+                                      QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                                      if(pqp->b_Valid)
+                                      {
+                                            if(!rgn_chart.IsEmpty())
+                                            {
+                                                  wxRegion get_region = pqp->ActiveRegion;
+                                                  get_region.Intersect(rgn_chart);
+
+                                                  if(!get_region.IsEmpty())
+                                                  {
+
+                                                        ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
+                                                        if(Patch_Ch_BSB)
+                                                              RenderChartRegion(Patch_Ch_BSB, svp, get_region);
+
+                                                        screen_region.Subtract(get_region);
+                                                  }
+                                            }
+                                      }
+
+                                      pch = cc1->m_pQuilt->GetNextChart();
+                                }
+
+/*
+            //    Any part of the chart region that was not rendered in the loop needs to be cleared
+                                wxRegionIterator clrit ( screen_region );
+                                while ( clrit )
+                                {
+                                      wxRect rect = clrit.GetRect();
+#ifdef __WXOSX__
+                                      dc.SetPen(*wxBLACK_PEN);
+                                      dc.SetBrush(*wxBLACK_BRUSH);
+                                      dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
+#else
+                                      dc.Blit(rect.x, rect.y, rect.width, rect.height, &dc, rect.x, rect.y, wxCLEAR);
+#endif
+                                      clrit ++ ;
+                                }
+*/
+                          }
+              }
+
+/*
+              else            // quilted, course-up
+              {
+                  temp_dc.SelectObject ( m_working_bm );
+                  wxRegion chart_get_all_region(wxRect(0,0,svp.pix_width, svp.pix_height));
+                  m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_all_region );
+              }
+*/
+        }
+        else                  // not quilted
+        {
+             ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>(Current_Ch);
+             if(Current_Ch_BSB)
+             {
+                  wxRegion rgn(wxRect(0, 0, svp.pix_width, svp.pix_height));
+
+                  RenderChartRegion(Current_Ch_BSB, svp, rgn);
+             }
+              else if (!dynamic_cast<ChartDummy*>(Current_Ch))
+              {
+                   /* not bsb slow for now */
+                   //  Create a temporary bitmap
+                   int w = svp.pix_width, h = svp.pix_height;
+
+                   wxMemoryDC mdc1, mdc2;
+                   wxRegion rgn(wxRect(0, 0, w, h));
+                   Current_Ch->RenderRegionViewOnDC(mdc1, svp, rgn);
+
+                   wxBitmap bmp ( w, h, -1 );
+                   mdc2.SelectObject ( bmp );
+
+                   mdc2.Blit(0, 0, w, h, &mdc1, 0, 0);
+                   wxImage img = bmp.ConvertToImage();
+
+/*
+                   glEnable(GL_TEXTURE_2D);
+                   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+                   GLuint tex_name;
+                   glGenTextures(1, &tex_name);
+                   glBindTexture(GL_TEXTURE_2D, tex_name);
+
+                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+                   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                                w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img.GetData());
+
+
+                   glBegin(GL_QUADS);
+                   glTexCoord2f(0, 0); glVertex2f(0, 0);
+                   glTexCoord2f(1, 0); glVertex2f(w, 0);
+                   glTexCoord2f(1, 1); glVertex2f(w, h);
+                   glTexCoord2f(0, 1); glVertex2f(0, h);
+                   glEnd();
+
+                   glDisable(GL_TEXTURE_2D);
+*/
+
+                   glDisable(GL_TEXTURE_2D);
+
+                   glRasterPos2i(0, 0);
+                   glPixelZoom( 1., -1.0 );
+
+                   glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, img.GetData());
+              }
+        }
+
+#if 0
+        // TODO: implement rotation
+        if(((fabs(cc1->GetVP().rotation) > 0.01)) || (g_bskew_comp && (fabs(cc1->GetVP().skew) > 0.01)))
+        {
+        }
+#endif
+
+//    Now render overlay objects
+        cc1->DrawOverlayObjects ( gldc, ru );
+
+        if ( cc1->m_bShowTide )
+             cc1->DrawAllTidesInBBox ( gldc, cc1->GetVP().GetBBox(), true, true );
+
+        if ( cc1->m_bShowCurrent )
+             cc1->DrawAllCurrentsInBBox ( gldc, cc1->GetVP().GetBBox(), true, true );
+
+        //quiting?
+        if(g_bquiting)
+        {
+             GLubyte pattern[4*32];
+             for(int y=0; y<32; y++) {
+                  GLubyte mask = 1<<y%8;
+                  for(int x=0; x<4; x++)
+                       pattern[y*4+x] = mask;
+             }
+
+             glEnable(GL_POLYGON_STIPPLE);
+             glPolygonStipple(pattern);
+             glBegin(GL_QUADS);
+             glColor3f(0, 0, 0);
+             glVertex2i(0, 0);
+             glVertex2i(0, GetSize().y);
+             glVertex2i(GetSize().x, GetSize().y);
+             glVertex2i(GetSize().x, 0);
+             glEnd();
+             glDisable(GL_POLYGON_STIPPLE);
+        }
+
+     SwapBuffers();
+
+     cc1->PaintCleanup();
+}
+
+void glChartCanvas::OnActivate ( wxActivateEvent& event )
+{
+     cc1->OnActivate(event);
+}
+
+void glChartCanvas::OnSize ( wxSizeEvent& event )
+{
+     if(!g_bopengl) {
+          event.Skip();
+          return;
+     }
+
+     cc1->OnSize(event);
+
+     /* expand opengl widget to fill viewport */
+     ViewPort &VP = cc1->GetVP();
+     if(GetSize().x != VP.pix_width || GetSize().y != VP.pix_height)
+          SetSize(VP.pix_width, VP.pix_height);
+}
+
+void glChartCanvas::MouseEvent ( wxMouseEvent& event )
+{
+     cc1->MouseEvent(event);
+}
+
+void glChartCanvas::GrowData(int size)
+{
+     /* grow the temporary ram buffer used to load charts into textures */
+     if(size > m_datasize) {
+          m_datasize = size;
+          m_data = (unsigned char*)realloc(m_data, m_datasize);
+     }
+}
+
+wxRectList glChartCanvas::RegionToMaxTexRects(wxRegion &region)
+{
+     wxRectList splitw, splith;
+     wxRegionIterator upd ( region);
+     while (upd) {
+          wxRect r = upd.GetRect();
+          while(r.width > max_texture_dimension) {
+               splitw.Append(new wxRect(r.x, r.y, max_texture_dimension, r.height));
+               r.x += max_texture_dimension;
+               r.width -= max_texture_dimension;
+          }
+          splitw.Append(new wxRect(r));
+          upd++;
+     }
+
+     for ( wxRectList::iterator rli = splitw.begin(); rli != splitw.end(); rli++ )
+     {
+          wxRect r = **rli;
+          while(r.height > max_texture_dimension) {
+               splith.Append(new wxRect(r.x, r.y, r.width, max_texture_dimension));
+               r.y += max_texture_dimension;
+               r.height -= max_texture_dimension;
+          }
+          splith.Append(new wxRect(r));
+     }
+     return splith;
+}
 
 //------------------------------------------------------------------------------
 //    TCwin Implementation
@@ -11334,7 +11718,6 @@ BEGIN_EVENT_TABLE ( TCWin, wxWindow )
             EVT_TIMER ( TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent )
 END_EVENT_TABLE()
 
-#include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( SplineList );
 
 
@@ -13484,22 +13867,24 @@ void RolloverWin::SetBitmap(int rollover)
       mdc.Blit(0, 0, m_size.x, m_size.y, &cdc, m_position.x, m_position.y);
 
        wxFont *dFont;
+       ocpnDC dc(mdc);
+
          switch ( rollover )
          {
                   case AIS_ROLLOVER:
-                        AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+                        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
                         dFont = pFontMgr->GetFont(_("AISRollover"), 12);
                         mdc.SetTextForeground(pFontMgr->GetFontColor(_T("AISRollover")));
                         break;
 
                   case TC_ROLLOVER:
-                        AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 255 );
+                        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 255 );
                         dFont = pFontMgr->GetFont(_("TideCurrentGraphRollover"), 12);
                         mdc.SetTextForeground(pFontMgr->GetFontColor(_T("TideCurrentGraphRollover")));
                         break;
                   default:
                   case LEG_ROLLOVER:
-                     AlphaBlending( mdc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
+                     AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
                      dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
                      mdc.SetTextForeground(pFontMgr->GetFontColor(_T("RouteLegInfoRollover")));
                      break;

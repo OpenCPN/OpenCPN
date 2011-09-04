@@ -38,6 +38,8 @@
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
 
+#include <wx/glcanvas.h>
+
 #include "chart1.h"                 // for enum types
 
 
@@ -75,6 +77,8 @@ int SetScreenBrightness(int brightness);
       class Quilt;
       class PixelCache;
       class ChInfoWin;
+      class glChartCanvas;
+      class ocpnDC;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -86,6 +90,7 @@ int SetScreenBrightness(int brightness);
 #define     RTELEGPU_TIMER    5
 #define     TCWININF_TIMER    6
 #define     ROLLOVER_TIMER    7
+#define     ZOOM_TIMER        8
 
 
 
@@ -123,12 +128,14 @@ enum {
 class emboss_data
 {
       public:
-            emboss_data(){ pmap = NULL; }
+            emboss_data(){ pmap = NULL; gltexind = 0; }
             ~emboss_data(){ free(pmap); }
 
             int         *pmap;
             int         width;
             int         height;
+
+            GLuint      gltexind;
       private:
 };
 
@@ -137,6 +144,7 @@ class emboss_data
 //----------------------------------------------------------------------------
 class ChartCanvas: public wxWindow
 {
+     friend class glChartCanvas;
 public:
       ChartCanvas(wxFrame *frame);
       ~ChartCanvas();
@@ -144,12 +152,18 @@ public:
       //    Methods
       void OnChar(wxKeyEvent &event);
       void OnPaint(wxPaintEvent& event);
+      void PaintCleanup();
       void Scroll(int dx, int dy);
       void CanvasPopupMenu(int x, int y, int seltype);
       void DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu );
 
       void PopupMenuHandler(wxCommandEvent& event);
-      void SetMyCursor(wxCursor *c);
+
+      virtual bool SetCursor(const wxCursor &c);
+      virtual void Refresh( bool eraseBackground = true,
+                            const wxRect *rect = (const wxRect *) NULL );
+      virtual void Update();
+
       void LostMouseCapture(wxMouseCaptureLostEvent& event);
 
       void CancelMouseRoute();
@@ -202,8 +216,11 @@ public:
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void GetCursorLatLon(double *lat, double *lon);
 
-      bool ZoomCanvasIn(double factor, double lat = 0., double lon = 0.);
-      bool ZoomCanvasOut(double factor, double lat = 0., double lon = 0.);
+      bool ZoomCanvasIn(double factor);
+      bool ZoomCanvasOut(double factor);
+      bool DoZoomCanvasIn(double factor);
+      bool DoZoomCanvasOut(double factor);
+
       bool PanCanvas(int dx, int dy);
 
       void ShowAISTargetList(void);
@@ -285,8 +302,6 @@ private:
       wxCursor    *pCursorDownLeft;
       wxCursor    *pCursorDownRight;
 
-      wxCursor    *pPriorCursor;
-
       int         popx, popy;
       bool        m_bAppendingRoute;
 
@@ -305,54 +320,59 @@ private:
       void OnActivate(wxActivateEvent& event);
       void OnSize(wxSizeEvent& event);
       void MouseEvent(wxMouseEvent& event);
-      void ShipDraw(wxDC& dc);
-      void DrawArrow(wxDC& dc, int x, int y, double rot_angle, double scale);
+      void ShipDraw(ocpnDC& dc);
+      void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
       void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
 
       void RotateTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
       bool CheckEdgePan(int x, int y, bool bdragging);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
+      void OnZoomTimerEvent(wxTimerEvent& event);
 
-      void DrawAllRoutesInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
-      void DrawAllWaypointsInBBox(wxDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
+      void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
+      void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
-      void DrawAllTidesInBBox(wxDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
+      void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
                         bool bdraw_mono = false);
-      void DrawAllCurrentsInBBox(wxDC& dc, LLBBox& BBox, double skew_angle,
+      void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox,
                            bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
       void DrawTCWindow(int x, int y, void *pIDX);
-      void RenderChartOutline(wxDC *pdc, int dbIndex, ViewPort& vp, bool bdraw_mono = false);
-      void RenderAllChartOutlines(wxDC *pdc, ViewPort& vp, bool bdraw_mono = false);
+      void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
+      void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
+      void RenderRouteLegs ( ocpnDC &dc );
+
       wxBitmap *DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints = true);
 
-      void AISDraw(wxDC& dc);
-      void AISDrawTarget (AIS_Target_Data *td, wxDC& dc );
+      void AISDraw(ocpnDC& dc);
+      void AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc );
 
-      void AlertDraw(wxDC& dc);                // pjotrc 2010.02.22
+      void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
-      void TargetFrame(wxDC &dc, wxPen pen, int x, int y, int radius);   // pjotrc 2010.02.01
-      void AtoN_Diamond(wxDC &dc, wxPen pen, int x, int y, int radius);  // pjotrc 2010.02.01
-      void Base_Square(wxDC &dc, wxPen pen, int x, int y, int radius);
+      void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius);   // pjotrc 2010.02.01
+      void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius);  // pjotrc 2010.02.01
+      void Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius);
 
-      void GridDraw(wxDC& dc); // Display lat/lon Grid in chart display
-      void ScaleBarDraw( wxDC& dc, int x_origin, int y_origin );
+      void GridDraw(ocpnDC& dc); // Display lat/lon Grid in chart display
+      void ScaleBarDraw( ocpnDC& dc );
 
-      void EmbossDepthScale(wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, int emboss_ident);
+      void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
+
+      void EmbossDepthScale(ocpnDC &dc );
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxChar *str, ColorScheme cs);
       void CreateDepthUnitEmbossMaps(ColorScheme cs);
       wxBitmap CreateDimBitmap(wxBitmap &Bitmap, double factor);
 
       void CreateOZEmbossMapData(ColorScheme cs);
-      void EmbossOverzoomIndicator ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
+      void EmbossOverzoomIndicator ( ocpnDC &dc);
 
-      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
-      void EmbossCM93Offset ( wxMemoryDC *temp_dc, wxMemoryDC *scratch_dc);
+//      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
+//      void EmbossCM93Offset ( wxMemoryDC *pdc);
 
-      void EmbossCanvas ( wxMemoryDC *psource_dc, wxMemoryDC *pdest_dc, emboss_data *pemboss, int x, int y);
+      void EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y);
 
-      void JaggyCircle(wxDC &dc, wxPen pen, int x, int y, int radius);
+      void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
 
 
       //    Data
@@ -479,11 +499,87 @@ private:
       bool        m_bzooming;
       IDX_entry   *m_pIDXCandidate;
 
+      glChartCanvas *m_glcc;
 
+      //Smooth zoom member variables
+      wxTimer     m_zoom_timer;
+      bool        m_bzooming_in;
+      bool        m_bzooming_out;
+      int         m_zoomt;                // zoom timer constant, msec
+      double      m_zoom_target_factor;
+      double      m_zoom_current_factor;
 
 
 DECLARE_EVENT_TABLE()
 };
+
+//----------------------------------------------------------------------------
+//    Texture descriptor
+//----------------------------------------------------------------------------
+
+class glTextureDescriptor
+{
+public:
+      glTextureDescriptor(){};
+      ~glTextureDescriptor(){};
+
+      GLuint            tex_name;
+      wxRect            tex_rect;
+};
+
+WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
+
+WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
+WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
+
+//----------------------------------------------------------------------------
+// glChartCanvas
+//----------------------------------------------------------------------------
+WX_DECLARE_LIST(wxRect, wxRectList);
+
+class glChartCanvas : public wxGLCanvas
+{
+public:
+
+      glChartCanvas(wxWindow *parent);
+      ~glChartCanvas();
+
+      void OnPaint(wxPaintEvent& event);
+      void OnEraseBG(wxEraseEvent& evt);
+      void render();
+      void OnActivate ( wxActivateEvent& event );
+      void OnSize ( wxSizeEvent& event );
+      void MouseEvent(wxMouseEvent& event);
+
+      void Invalidate() {m_cacheinvalid++; }
+
+      void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
+
+protected:
+      int m_cacheinvalid;
+      int max_texture_dimension;
+
+      wxRect m_lastR;
+      ChartBase *m_lastchart;
+
+      unsigned char *m_data;
+      int m_datasize;
+
+      bool m_bsetup;
+
+      void GrowData(int size);
+      wxRectList RegionToMaxTexRects(wxRegion &r);
+
+      ArrayOfTexDescriptors         m_tex_array;
+
+      //    This is a hash table
+      //    key is ChartBaseBSB pointer
+      //    Value is ChartTextureHashType*
+      ChartPointerHashType          m_chart_hash;
+
+DECLARE_EVENT_TABLE()
+};
+
 
 //----------------------------------------------------------------------------
 //    Constants

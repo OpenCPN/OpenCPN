@@ -180,14 +180,22 @@ class  ChartBaseBSB     :public ChartBase
 
       void SetVPRasterParms(const ViewPort &vpt);
 
+      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+      double GetRasterScaleFactor() { return m_raster_scale_factor; }
+      virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
+      int GetSize_X(){ return Size_X;}
+      int GetSize_Y(){ return Size_Y;}
+
 protected:
 //    Methods
 
-      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
       wxRect GetSourceRect(){ return Rsrc; }
       void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
       void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
 
+      virtual bool GetAndScaleData(unsigned char *ppn,
+                                   wxRect& source, int source_stride, wxRect& dest, int dest_stride,
+                                   double scale_factor, ScaleTypeEnum scale_type);
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
       bool IsCacheValid(){ return cached_image_ok; }
@@ -201,20 +209,13 @@ protected:
       double GetClosestValidNaturalScalePPM(double target_scale, double scale_factor_min, double scale_factor_max);
 
       double GetPPM(){ return m_ppm_avg;}
-      int GetSize_X(){ return Size_X;}
-      int GetSize_Y(){ return Size_Y;}
 
       virtual void InvalidateLineCache();
       virtual bool CreateLineIndex(void);
 
 
       virtual wxBitmap *CreateThumbnail(int tnx, int tny, ColorScheme cs);
-      virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
       virtual int BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int xl, int sub_samp);
-
-      virtual bool GetAndScaleData(unsigned char *ppn,
-                                   wxRect& source, int source_stride, wxRect& dest, int dest_stride,
-                                   double scale_factor, ScaleTypeEnum scale_type);
 
 
       bool GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegion& Region, ScaleTypeEnum scale_type );

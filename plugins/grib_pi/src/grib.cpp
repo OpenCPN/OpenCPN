@@ -36,6 +36,8 @@
 #include <wx/debug.h>
 #include <wx/graphics.h>
 
+#include <ocpndc.h>
+
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -67,9 +69,9 @@ WX_DEFINE_OBJARRAY ( ArrayOfGribRecordPtrs );
 
 //static GRIBOverlayFactory   *s_pGRIBOverlayFactory;
 /*
-static bool GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ( wxMemoryDC *pmdc, PlugIn_ViewPort *vp )
+static bool GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ( wxMemoryDC *dc, PlugIn_ViewPort *vp )
 {
-      return s_pGRIBOverlayFactory->RenderGribOverlay ( pmdc, vp );
+      return s_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
 
 }
 */
@@ -853,7 +855,7 @@ void GRIBOverlayFactory::ClearCachedData(void)
       m_pbm_current = NULL;
 }
 
-bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *vp )
+bool GRIBOverlayFactory::RenderGribOverlay ( ocpnDC &dc, PlugIn_ViewPort *vp )
 {
 //      printf("GRIBOverlayFactory::Render\n");
 
@@ -872,9 +874,6 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
       GribRecord *pGRCurrentVX = NULL;
       GribRecord *pGRCurrentVY = NULL;
 
-#if wxUSE_GRAPHICS_CONTEXT
-      m_pgc = wxGraphicsContext::Create(*pmdc);
-#endif
 
 
 
@@ -889,7 +888,7 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             if ( m_ben_Wind && (pGR->getDataType()==GRB_WIND_VX ))
             {
                   if(pGRWindVY)
-                        RenderGribWind(pGR, pGRWindVY,  pmdc, vp);
+                        RenderGribWind(pGR, pGRWindVY,  dc, vp);
                    else
                         pGRWindVX = pGR;
             }
@@ -898,7 +897,7 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             else if ( m_ben_Wind && (pGR->getDataType()==GRB_WIND_VY))
             {
                   if(pGRWindVX)
-                        RenderGribWind(pGRWindVX, pGR,  pmdc, vp);
+                        RenderGribWind(pGRWindVX, pGR,  dc, vp);
                   else
                         pGRWindVY = pGR;
             }
@@ -906,16 +905,16 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             //Pressure
             if ( m_ben_Pressure && (pGR->getDataType()==GRB_PRESSURE ))
             {
-                  RenderGribPressure(pGR,  pmdc, vp);
+                  RenderGribPressure(pGR,  dc, vp);
             }
 
             // Significant Wave Height
             if ( m_ben_SigHw && (pGR->getDataType()==GRB_HTSGW ))
-                  RenderGribSigWh(pGR, pmdc, vp);
+                  RenderGribSigWh(pGR, dc, vp);
 
             // Wind wave direction
             if ( m_ben_SigHw && (pGR->getDataType()==GRB_WVDIR ))
-                  RenderGribWvDir(pGR, pmdc, vp);
+                  RenderGribWvDir(pGR, dc, vp);
 
 
             // QuickScat Wind
@@ -924,7 +923,7 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             if (m_ben_Quickscat && (pGR->getDataType()==GRB_USCT ))
             {
                   if(pGRWindVY)
-                        RenderGribScatWind(pGR, pGRWindVY,  pmdc, vp);
+                        RenderGribScatWind(pGR, pGRWindVY,  dc, vp);
                   else
                         pGRWindVX = pGR;
             }
@@ -933,18 +932,18 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             else if (m_ben_Quickscat && (pGR->getDataType()==GRB_VSCT))
             {
                   if(pGRWindVX)
-                        RenderGribScatWind(pGRWindVX, pGR,  pmdc, vp);
+                        RenderGribScatWind(pGRWindVX, pGR,  dc, vp);
                   else
                         pGRWindVY = pGR;
             }
 
             // GFS SEATEMP
 //            if ( m_ben_Seatmp && (pGR->getDataType()==GRB_TEMP ))
-//                  RenderGribSeaTemp(pGR, pmdc, vp);
+//                  RenderGribSeaTemp(pGR, dc, vp);
 
             // RTOFS SEATEMP
             if ( m_ben_Seatmp && (pGR->getDataType()==GRB_WTMP ))
-                  RenderGribSeaTemp(pGR, pmdc, vp);
+                  RenderGribSeaTemp(pGR, dc, vp);
 
 
             // RTOFS Current
@@ -953,7 +952,7 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             if (m_ben_SeaCurrent && (pGR->getDataType()==GRB_UOGRD ))
             {
                   if(pGRCurrentVY)
-                        RenderGribCurrent(pGR, pGRCurrentVY,  pmdc, vp);
+                        RenderGribCurrent(pGR, pGRCurrentVY,  dc, vp);
                   else
                         pGRCurrentVX = pGR;
             }
@@ -962,7 +961,7 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
             else if (m_ben_SeaCurrent && (pGR->getDataType()==GRB_VOGRD))
             {
                   if(pGRCurrentVX)
-                        RenderGribCurrent(pGRCurrentVX, pGR,  pmdc, vp);
+                        RenderGribCurrent(pGRCurrentVX, pGR,  dc, vp);
                   else
                         pGRCurrentVY = pGR;
             }
@@ -970,14 +969,10 @@ bool GRIBOverlayFactory::RenderGribOverlay ( wxMemoryDC *pmdc, PlugIn_ViewPort *
 
      }
 
-#if wxUSE_GRAPHICS_CONTEXT
-     delete m_pgc;
-#endif
-
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBWind\n");
 
@@ -1029,7 +1024,7 @@ bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMe
                                     double vy = pGRY->getValue(i, j);
 
                                     if (vx != GRIB_NOTDEF && vy != GRIB_NOTDEF)
-                                          drawWindArrowWithBarbs(pmdc, p.x, p.y, vx, vy, (lat < 0.), colour);
+                                          drawWindArrowWithBarbs(dc, p.x, p.y, vx, vy, (lat < 0.), colour);
                               }
                         }
                   }
@@ -1038,7 +1033,7 @@ bool GRIBOverlayFactory::RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxMe
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 
       wxDateTime t ( m_pGribRecordSet->m_Reference_Time );
@@ -1093,7 +1088,7 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
 
 
                                     if (vx != GRIB_NOTDEF && vy != GRIB_NOTDEF)
-                                          drawWindArrowWithBarbs(pmdc, p.x, p.y, vx, vy, (lat < 0.), c);
+                                          drawWindArrowWithBarbs(dc, p.x, p.y, vx, vy, (lat < 0.), c);
                               }
                         }
                   }
@@ -1103,22 +1098,22 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
       int age_hours = dt.GetHours();
       if(age_hours > 12)
       {
-            wxFont sfont = pmdc->GetFont();
+            wxFont sfont = dc.GetFont();
             wxFont mfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL);
-            pmdc->SetFont(mfont);
+            dc.SetFont(mfont);
 
             wxString msg;
             msg.Printf(_("WARNING:  QuickScat GRIB data is %d hours old."), age_hours);
-            pmdc->DrawText(msg, 10, 10);
+            dc.DrawText(msg, 10, 10);
 
-            pmdc->SetFont(sfont);
+            dc.SetFont(sfont);
       }
 
       return true;
 }
 
 
-bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBSigWh\n");
 
@@ -1219,21 +1214,21 @@ bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, Plug
 //                  wxMemoryDC mdc(*m_pbm_sigwh);
 
                   //    Blit it onto the dc
- //                 pmdc->Blit(porg.x, porg.y, m_pbm_sigwh->GetWidth(), m_pbm_sigwh->GetHeight(), &mdc, 0, 0, wxCOPY, true);          // with mask
-                  pmdc->DrawBitmap(*m_pbm_sigwh, porg.x, porg.y, true);
+ //                 dc.Blit(porg.x, porg.y, m_pbm_sigwh->GetWidth(), m_pbm_sigwh->GetHeight(), &mdc, 0, 0, wxCOPY, true);          // with mask
+                  dc.DrawBitmap(*m_pbm_sigwh, porg.x, porg.y, true);
             }
             else
             {
-                  wxFont sfont = pmdc->GetFont();
+                  wxFont sfont = dc.GetFont();
                   wxFont mfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL);
-                  pmdc->SetFont(mfont);
+                  dc.SetFont(mfont);
 
                   wxString msg = _("Please Zoom or Scale Out to view suppressed HTSGW GRIB");
                   int w;
-                  pmdc->GetTextExtent(msg, &w, NULL);
-                  pmdc->DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
+                  dc.GetTextExtent(msg, &w, NULL);
+                  dc.DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
 
-                  pmdc->SetFont(sfont);
+                  dc.SetFont(sfont);
             }
 
       }
@@ -1241,7 +1236,7 @@ bool GRIBOverlayFactory::RenderGribSigWh(GribRecord *pGR, wxMemoryDC *pmdc, Plug
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBWvDir\n");
 
@@ -1285,7 +1280,7 @@ bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, Plug
                                     double dir = pGR->getValue(i, j);
 
                                     if (dir != GRIB_NOTDEF)
-                                          drawWaveArrow(pmdc, p.x, p.y, dir-90., colour);
+                                          drawWaveArrow(dc, p.x, p.y, dir-90., colour);
                               }
                         }
                   }
@@ -1296,7 +1291,7 @@ bool GRIBOverlayFactory::RenderGribWvDir(GribRecord *pGR, wxMemoryDC *pmdc, Plug
 }
 
 
-bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBCRAIN\n");
 
@@ -1392,21 +1387,21 @@ bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, Plug
 //                  wxMemoryDC mdc(*m_pbm_sigwh);
 
                   //    Blit it onto the dc
- //                 pmdc->Blit(porg.x, porg.y, m_pbm_sigwh->GetWidth(), m_pbm_sigwh->GetHeight(), &mdc, 0, 0, wxCOPY, true);          // with mask
-                  pmdc->DrawBitmap(*m_pbm_crain, porg.x, porg.y, true);
+ //                 dc.Blit(porg.x, porg.y, m_pbm_sigwh->GetWidth(), m_pbm_sigwh->GetHeight(), &mdc, 0, 0, wxCOPY, true);          // with mask
+                  dc.DrawBitmap(*m_pbm_crain, porg.x, porg.y, true);
             }
             else
             {
-                  wxFont sfont = pmdc->GetFont();
+                  wxFont sfont = dc.GetFont();
                   wxFont mfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL);
-                  pmdc->SetFont(mfont);
+                  dc.SetFont(mfont);
 
                   wxString msg = _("Please Zoom or Scale Out to view suppressed CRAIN GRIB");
                   int w;
-                  pmdc->GetTextExtent(msg, &w, NULL);
-                  pmdc->DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
+                  dc.GetTextExtent(msg, &w, NULL);
+                  dc.DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
 
-                  pmdc->SetFont(sfont);
+                  dc.SetFont(sfont);
             }
 
       }
@@ -1414,7 +1409,7 @@ bool GRIBOverlayFactory::RenderGribCRAIN(GribRecord *pGR, wxMemoryDC *pmdc, Plug
       return true;
 }
 
-bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBSeaTemp\n");
 
@@ -1510,20 +1505,20 @@ bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, Pl
 
             if(m_pbm_seatemp)
             {
-                  pmdc->DrawBitmap(*m_pbm_seatemp, porg.x, porg.y, true);
+                  dc.DrawBitmap(*m_pbm_seatemp, porg.x, porg.y, true);
             }
             else
             {
-                  wxFont sfont = pmdc->GetFont();
+                  wxFont sfont = dc.GetFont();
                   wxFont mfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL);
-                  pmdc->SetFont(mfont);
+                  dc.SetFont(mfont);
 
                   wxString msg = _("Please Zoom or Scale Out to view suppressed SEATEMP GRIB");
                   int w;
-                  pmdc->GetTextExtent(msg, &w, NULL);
-                  pmdc->DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
+                  dc.GetTextExtent(msg, &w, NULL);
+                  dc.DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
 
-                  pmdc->SetFont(sfont);
+                  dc.SetFont(sfont);
             }
 
       }
@@ -1533,7 +1528,7 @@ bool GRIBOverlayFactory::RenderGribSeaTemp(GribRecord *pGR, wxMemoryDC *pmdc, Pl
 }
 
 
-bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //      printf("renderGRIBCurrent\n");
 
@@ -1630,20 +1625,20 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, w
 
             if(m_pbm_current)
             {
-                  pmdc->DrawBitmap(*m_pbm_current, porg.x, porg.y, true);
+                  dc.DrawBitmap(*m_pbm_current, porg.x, porg.y, true);
             }
             else
             {
-                  wxFont sfont = pmdc->GetFont();
+                  wxFont sfont = dc.GetFont();
                   wxFont mfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL);
-                  pmdc->SetFont(mfont);
+                  dc.SetFont(mfont);
 
                   wxString msg = _("Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB");
                   int w;
-                  pmdc->GetTextExtent(msg, &w, NULL);
-                  pmdc->DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
+                  dc.GetTextExtent(msg, &w, NULL);
+                  dc.DrawText(msg, vp->pix_width/2 - w/2, vp->pix_height/2);
 
-                  pmdc->SetFont(sfont);
+                  dc.SetFont(sfont);
             }
 
       }
@@ -1787,7 +1782,7 @@ wxColour GRIBOverlayFactory::GetSeaCurrentGraphicColor(double val_in)
       return c;
 }
 
-bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, PlugIn_ViewPort *vp)
+bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp)
 {
 //#if 0
       //    Initialize the array of Isobars if necessary
@@ -1805,7 +1800,7 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, P
       for(unsigned int i = 0 ; i < m_IsobarArray.GetCount() ; i++)
       {
             IsoLine *piso = (IsoLine *)m_IsobarArray.Item(i);
-            piso->drawIsoLine(pmdc, vp, true, true); //g_bGRIBUseHiDef
+            piso->drawIsoLine(dc, vp, true, true); //g_bGRIBUseHiDef
 
             // Draw Isobar labels
             int gr = 80;
@@ -1814,7 +1809,7 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, P
             int first = 0;
 
             double coef = .01;
-            piso->drawIsoLineLabels(pmdc, color, vp, density, first, coef);
+            piso->drawIsoLineLabels(dc, color, vp, density, first, coef);
             //
 
       }
@@ -1824,30 +1819,30 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, wxMemoryDC *pmdc, P
 
 
 
-void GRIBOverlayFactory::drawWaveArrow(wxMemoryDC *pmdc, int i, int j, double ang, wxColour arrowColor)
+void GRIBOverlayFactory::drawWaveArrow(ocpnDC &dc, int i, int j, double ang, wxColour arrowColor)
 {
       double si=sin(ang * PI / 180.),  co=cos(ang * PI/ 180.);
 
       wxPen pen( arrowColor, 1);
-      pmdc->SetPen(pen);
-      pmdc->SetBrush(*wxTRANSPARENT_BRUSH);
+      dc.SetPen(pen);
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
       int arrowSize = 26;
       int dec = -arrowSize/2;
 
 
-      drawTransformedLine(pmdc, pen, si,co, i,j,  dec,-2,  dec + arrowSize, -2);
-      drawTransformedLine(pmdc, pen, si,co, i,j,  dec, 2,  dec + arrowSize, +2);
+      drawTransformedLine(dc, pen, si,co, i,j,  dec,-2,  dec + arrowSize, -2);
+      drawTransformedLine(dc, pen, si,co, i,j,  dec, 2,  dec + arrowSize, +2);
 
-      drawTransformedLine(pmdc, pen, si,co, i,j,  dec-2,  0,  dec+5,  6);    // flèche
-      drawTransformedLine(pmdc, pen, si,co, i,j,  dec-2,  0,  dec+5, -6);   // flèche
+      drawTransformedLine(dc, pen, si,co, i,j,  dec-2,  0,  dec+5,  6);    // flèche
+      drawTransformedLine(dc, pen, si,co, i,j,  dec-2,  0,  dec+5, -6);   // flèche
 
 }
 
 
 
 
-void GRIBOverlayFactory::drawWindArrowWithBarbs(wxMemoryDC *pmdc,
+void GRIBOverlayFactory::drawWindArrowWithBarbs(ocpnDC &dc,
                                       int i, int j, double vx, double vy,
                                       bool south,
                                       wxColour arrowColor
@@ -1858,21 +1853,21 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(wxMemoryDC *pmdc,
       double si=sin(ang),  co=cos(ang);
 
       wxPen pen( arrowColor, 2);
-      pmdc->SetPen(pen);
-      pmdc->SetBrush(*wxTRANSPARENT_BRUSH);
+      dc.SetPen(pen);
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
       if (vkn < 1)
       {
             int r = 5;     // wind is very light, draw a circle
-            pmdc->DrawCircle(i,j,r);
+            dc.DrawCircle(i,j,r);
       }
       else {
         // Arrange for arrows to be centered on origin
             int windBarbuleSize = 26;
             int dec = -windBarbuleSize/2;
-            drawTransformedLine(pmdc, pen, si,co, i,j,  dec,0,  dec+windBarbuleSize, 0);   // hampe
-            drawTransformedLine(pmdc, pen, si,co, i,j,  dec,0,  dec+5, 2);    // flèche
-            drawTransformedLine(pmdc, pen, si,co, i,j,  dec,0,  dec+5, -2);   // flèche
+            drawTransformedLine(dc, pen, si,co, i,j,  dec,0,  dec+windBarbuleSize, 0);   // hampe
+            drawTransformedLine(dc, pen, si,co, i,j,  dec,0,  dec+5, 2);    // flèche
+            drawTransformedLine(dc, pen, si,co, i,j,  dec,0,  dec+5, -2);   // flèche
 
             int b1 = dec+windBarbuleSize -4;  // position de la 1ère barbule
             if (vkn >= 7.5  &&  vkn < 45 ) {
@@ -1880,68 +1875,68 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(wxMemoryDC *pmdc,
             }
 
             if (vkn < 7.5) {  // 5 ktn
-                  drawPetiteBarbule(pmdc, pen, south, si,co, i,j, b1);
+                  drawPetiteBarbule(dc, pen, south, si,co, i,j, b1);
             }
             else if (vkn < 12.5) { // 10 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
             }
             else if (vkn < 17.5) { // 15 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawPetiteBarbule(pmdc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawPetiteBarbule(dc, pen, south, si,co, i,j, b1-4);
             }
             else if (vkn < 22.5) { // 20 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-4);
             }
             else if (vkn < 27.5) { // 25 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawPetiteBarbule(pmdc, pen, south, si,co, i,j, b1-8);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-4);
+                  drawPetiteBarbule(dc, pen, south, si,co, i,j, b1-8);
             }
             else if (vkn < 32.5) { // 30 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
             }
             else if (vkn < 37.5) { // 35 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
-                  drawPetiteBarbule(pmdc, pen, south, si,co, i,j, b1-12);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
+                  drawPetiteBarbule(dc, pen, south, si,co, i,j, b1-12);
             }
             else if (vkn < 45) { // 40 ktn
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-12);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-12);
             }
             else if (vkn < 55) { // 50 ktn
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-4);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-4);
             }
             else if (vkn < 65) { // 60 ktn
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
             }
             else if (vkn < 75) { // 70 ktn
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-12);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-12);
             }
             else if (vkn < 85) { // 80 ktn
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-8);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-12);
-                  drawGrandeBarbule(pmdc, pen, south, si,co, i,j, b1-16);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-4);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-8);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-12);
+                  drawGrandeBarbule(dc, pen, south, si,co, i,j, b1-16);
             }
             else { // > 90 ktn
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-4);
-                  drawTriangle(pmdc, pen, south, si,co, i,j, b1-12);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-4);
+                  drawTriangle(dc, pen, south, si,co, i,j, b1-12);
             }
 
       }
 }
 
-void GRIBOverlayFactory::drawTransformedLine( wxMemoryDC *pmdc, wxPen pen,
+void GRIBOverlayFactory::drawTransformedLine( ocpnDC &dc, wxPen pen,
                                     double si, double co,int di, int dj, int i,int j, int k,int l)
 {
       int ii, jj, kk, ll;
@@ -1950,60 +1945,42 @@ void GRIBOverlayFactory::drawTransformedLine( wxMemoryDC *pmdc, wxPen pen,
       kk = (int) (k*co-l*si +0.5) + di;
       ll = (int) (k*si+l*co +0.5) + dj;
 
-#if wxUSE_GRAPHICS_CONTEXT
-      if(0/*g_bGRIBUseHiDef*/)
-      {
-            if(m_pgc)
-            {
-                  m_pgc->SetPen(pen);
-                  m_pgc->StrokeLine(ii, jj, kk, ll);
-            }
-      }
-      else
-      {
-            pmdc->SetPen(pen);
-            pmdc->SetBrush(*wxTRANSPARENT_BRUSH);
-            pmdc->DrawLine(ii, jj, kk, ll);
-      }
-
-#else
-      pmdc->SetPen(pen);
-      pmdc->SetBrush(*wxTRANSPARENT_BRUSH);
-      pmdc->DrawLine(ii, jj, kk, ll);
-#endif
+      dc.SetPen(pen);
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);
+      dc.DrawLine(ii, jj, kk, ll);
 
 }
 
 
-void GRIBOverlayFactory::drawPetiteBarbule(wxMemoryDC *pmdc, wxPen pen, bool south,
+void GRIBOverlayFactory::drawPetiteBarbule(ocpnDC &dc, wxPen pen, bool south,
                                  double si, double co, int di, int dj, int b)
 {
       if (south)
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+2, -5);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+2, -5);
       else
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+2, 5);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+2, 5);
 }
 
-void GRIBOverlayFactory::drawGrandeBarbule(wxMemoryDC *pmdc, wxPen pen, bool south,
+void GRIBOverlayFactory::drawGrandeBarbule(ocpnDC &dc, wxPen pen, bool south,
                                  double si, double co, int di, int dj, int b)
 {
       if (south)
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+4,-10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+4,-10);
       else
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+4,10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+4,10);
 }
 
 
-void GRIBOverlayFactory::drawTriangle(wxMemoryDC *pmdc, wxPen pen, bool south,
+void GRIBOverlayFactory::drawTriangle(ocpnDC &dc, wxPen pen, bool south,
                             double si, double co, int di, int dj, int b)
 {
       if (south) {
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+4,-10);
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b+8,0,  b+4,-10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+4,-10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b+8,0,  b+4,-10);
       }
       else {
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b,0,  b+4,10);
-            drawTransformedLine(pmdc, pen, si,co, di,dj,  b+8,0,  b+4,10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b,0,  b+4,10);
+            drawTransformedLine(dc, pen, si,co, di,dj,  b+8,0,  b+4,10);
       }
 }
 

@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "georef.h"
 #include <wx/graphics.h>
 
+#include <ocpndc.h>
+
 #include "IsoLine.h"
 
 static void GenerateSpline(int n, wxPoint points[]);
@@ -377,7 +379,7 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
@@ -385,12 +387,7 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
 
       wxPen ppISO ( isoLineColor, 2 );
 
-#if wxUSE_GRAPHICS_CONTEXT
-      wxGraphicsContext *pgc = wxGraphicsContext::Create(*pmdc);
-      pgc->SetPen(ppISO);
-#endif
-
-      pmdc->SetPen(ppISO);
+      dc.SetPen(ppISO);
 
 
 
@@ -416,25 +413,18 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
 ///                         0, vp->pix_width, 0, vp->pix_height );
 ///            if ( res != Invisible )
              {
-#if wxUSE_GRAPHICS_CONTEXT
                   if(bHiDef)
-                        pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
+                        dc.StrokeLine(ab.x, ab.y, cd.x, cd.y);
                   else 
-                        pmdc->DrawLine(ab.x, ab.y, cd.x, cd.y);
-#else
-                  pmdc->DrawLine(ab.x, ab.y, cd.x, cd.y);
-#endif
+                        dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
              }
 
         }
     }
-//#if wxUSE_GRAPHICS_CONTEXT
-//    delete pgc;
-//#endif
 //#endif
 
       int text_sx, text_sy;
-      pmdc->GetTextExtent(_T("10000"), &text_sx, &text_sy);
+      dc.GetTextExtent(_T("10000"), &text_sx, &text_sy);
 //      double m = text_sy / 2;
       int label_size = text_sx;
       int label_space = 400;
@@ -485,12 +475,12 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
             {
 
       // Test code
-      //          pmdc->DrawLines(np, pPoints);
+      //          dc.DrawLines(np, pPoints);
 
                   GenerateSpline(np, pPoints);
 
       //    Test Code
-      //            pmdc->DrawLines(&ocpn_wx_spline_point_list, 0, 0 );
+      //            dc.DrawLines(&ocpn_wx_spline_point_list, 0, 0 );
 
                   bool bDrawing = true;
                   wxPoint lstart;
@@ -537,7 +527,7 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
 
                                                 double xs = lstart.x - (m * sin(label_angle * PI / 180.));
                                                 double ys = lstart.y - (m * cos(label_angle * PI / 180.));
-                                                pmdc->DrawRotatedText(label, (int)xs, (int)ys, label_angle);
+                                                dc.DrawRotatedText(label, (int)xs, (int)ys, label_angle);
                                           }
 #endif
                                     }
@@ -546,14 +536,10 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
 #if 0
 //                              if(bDrawing || !bShowLabels)
                               {
-      #if wxUSE_GRAPHICS_CONTEXT
                                     if(bHiDef)
-                                          pgc->StrokeLine(point0->x, point0->y, point->x, point->y);
+                                          dc.StrokeLine(point0->x, point0->y, point->x, point->y);
                                     else
-                                          pmdc->DrawLine(point0->x, point0->y, point->x, point->y);
-      #else
-                                    pmdc->DrawLine(point0->x, point0->y, point->x, point->y);
-      #endif
+                                          dc.DrawLine(point0->x, point0->y, point->x, point->y);
                               }
 #endif
                         }
@@ -571,15 +557,11 @@ void IsoLine::drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabel
 
       delete[] pPoints;
 
-#if wxUSE_GRAPHICS_CONTEXT
-      delete pgc;
-#endif
-
 }
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur,
+void IsoLine::drawIsoLineLabels(ocpnDC &dc, wxColour couleur,
                                 PlugIn_ViewPort *vp,
                             int density, int first, double coef)
 {
@@ -594,10 +576,10 @@ void IsoLine::drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur,
     wxPen penText(couleur);
 
     int w, h;
-    pmdc->GetTextExtent(label, &w, &h);
+    dc.GetTextExtent(label, &w, &h);
 
-    pmdc->SetPen(penText);
-    pmdc->SetBrush(*wxWHITE_BRUSH);
+    dc.SetPen(penText);
+    dc.SetBrush(*wxWHITE_BRUSH);
 
     //---------------------------------------------------------
     // Ecrit les labels
@@ -622,8 +604,8 @@ void IsoLine::drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur,
                   int yd = (ab.y + cd.y - h)/2;
 
                  
-                  pmdc->DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-                  pmdc->DrawText(label, label_offset/2 + xd, yd-1);
+                  dc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
+                  dc.DrawText(label, label_offset/2 + xd, yd-1);
             }
 
         }

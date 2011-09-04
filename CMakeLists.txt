@@ -94,6 +94,21 @@ MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
+FIND_PACKAGE(OpenGL REQUIRED)
+IF(OPENGL_GLU_FOUND)
+
+#    SET(OPENGL_LIBRARIES ${OPENGL_LIBRARIES} -lGLEW)
+    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl)
+    INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
+
+    MESSAGE (STATUS "Found OpenGL..." )
+    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+
+ELSE(OPENGL_GLU_FOUND)
+    MESSAGE (STATUS "OpenGL not found..." )
+ENDIF(OPENGL_GLU_FOUND)
+
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
 SET( wxWidgets_USE_DEBUG OFF)
@@ -132,7 +147,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
   ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -O3 -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
 # Add some definitions to satisfy MS
@@ -159,17 +174,6 @@ IF (GTK2_FOUND)
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
-
-FIND_PACKAGE(OpenGL REQUIRED)
-IF(OPENGL_GLU_FOUND)
-    MESSAGE (STATUS "Found OpenGL..." )
-    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
-ELSE(OPENGL_GLU_FOUND)
-    MESSAGE (STATUS "OpenGL not found..." )
-ENDIF(OPENGL_GLU_FOUND)
-
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -253,6 +257,7 @@ ENDIF (NOT WIN32)
 #FILE(GLOB_RECURSE SRCS *.cpp *.c)
 SET(HDRS
                 include/ocpn_types.h
+                include/ocpndc.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -283,6 +288,7 @@ SET(SRCS
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
+                src/ocpndc.cpp
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp

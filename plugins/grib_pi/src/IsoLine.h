@@ -109,9 +109,9 @@ class IsoLine
         ~IsoLine();
 
 
-        void drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
 
-        void drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur, PlugIn_ViewPort *vp,
+        void drawIsoLineLabels(ocpnDC &dc, wxColour couleur, PlugIn_ViewPort *vp,
                                 int density, int first, double coef);
 
         int getNbSegments()     {return trace.size();}
