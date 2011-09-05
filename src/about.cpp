@@ -339,7 +339,7 @@ void about::CreateControls()
     pLicenseTextCtl->InheritAttributes();
     itemBoxSizer8->Add( pLicenseTextCtl, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
 
-    //     Tips Panel
+    //     Help Panel
     itemPanelTips = new wxPanel( itemNotebook4, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelTips->InheritAttributes();
@@ -377,16 +377,43 @@ void about::OnCopyClick( wxCommandEvent& event )
     if( event.GetId() == ID_COPYLOG ) filename = glog_file;
 
     wxFFile file( filename );
+
+    if( ! file.IsOpened() ) {
+        wxLogMessage( _T("Failed to open file for Copy to Clipboard.") );
+        return;
+    }
+
     wxString fileContent;
-    file.ReadAll( &fileContent, wxConvUTF8 );
+    char buf[1024];
+    while( ! file.Eof() ) {
+        int c = file.Read( &buf, 1024 );
+        if( c ) fileContent += wxString( buf, wxConvUTF8, c );
+    }
+
     file.Close();
+    int length = fileContent.Length();
+
+    if( event.GetId() == ID_COPYLOG ) {
+        wxString lastLogs = fileContent;
+        int pos = lastLogs.Find( _T("________") );
+        while( pos != wxNOT_FOUND && lastLogs.Length() > 65000 ) {
+            lastLogs = lastLogs.Right(lastLogs.Length() - pos - 8);
+            pos = lastLogs.Find( _T("________") );
+        }
+        fileContent = lastLogs;
+    }
 
     ::wxBeginBusyCursor();
-
+      
     if( wxTheClipboard->Open() ) {
         wxTextDataObject* data = new wxTextDataObject;
         data->SetText( fileContent );
-        wxTheClipboard->SetData( data );
+        if( ! wxTheClipboard->SetData( data ) ) {
+            wxLogMessage( _T("wxTheClipboard->Open() failed.") );
+        }
+        wxTheClipboard->Close();
+    } else {
+        wxLogMessage( _T("wxTheClipboard->Open() failed.") );
     }
     ::wxEndBusyCursor();
 }

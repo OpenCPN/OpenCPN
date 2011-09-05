@@ -980,18 +980,17 @@ bool MyApp::OnInit()
 #endif
 
 //      Send init message
-    wxLogMessage( _T("\n\n") );
+    wxLogMessage( _T("\n\n________\n") );
 
     wxDateTime date_now = wxDateTime::Now();
-//        date_now.MakeGMT(true);                    // no DST
 
     wxString imsg = date_now.FormatISODate();
     wxLogMessage( imsg );
 
-    imsg = _T(" -------Starting opencpn-------");
+    imsg = _T(" ------- Starting OpenCPN -------");
     wxLogMessage( imsg );
 
-    wxString version = OpenCPNVersion; //Gunther
+    wxString version = OpenCPNVersion;
     wxString vs = version.Trim( true );
     vs = vs.Trim( false );
     wxLogMessage( vs );
