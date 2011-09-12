@@ -29,7 +29,7 @@
   #include <windows.h>
 #endif
 
-#include <GL/glew.h>          // for some extra definitions
+//#include <GL/glew.h>          // for some extra definitions
 #include <GL/gl.h>
 #include <wx/dc.h>
 #include <wx/dcmemory.h>
@@ -133,27 +133,63 @@ void ocpnDC::GetSize(wxCoord *width, wxCoord *height) const
           glcanvas->GetSize(width, height);
 }
 
+// Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
+void DrawThickLine(double x1, double y1, double x2, double y2, double t1)
+{
+      double angle = atan2(y2 - y1, x2 - x1);
+      double t2sina1 = t1 / 2 * sin(angle);
+      double t2cosa1 = t1 / 2 * cos(angle);
+
+      glBegin(GL_TRIANGLES);
+      glVertex2f(x1 + t2sina1, y1 - t2cosa1);
+      glVertex2f(x2 + t2sina1, y2 - t2cosa1);
+      glVertex2f(x2 - t2sina1, y2 + t2cosa1);
+      glVertex2f(x2 - t2sina1, y2 + t2cosa1);
+      glVertex2f(x1 - t2sina1, y1 + t2cosa1);
+      glVertex2f(x1 + t2sina1, y1 - t2cosa1);
+      glEnd();
+}
+
 void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
 {
      if(dc)
           dc->DrawLine ( x1, y1, x2, y2 );
      else if(ConfigurePen()) {
-          glBegin(GL_LINES);
-          glVertex2i(x1, y1);
-          glVertex2i(x2, y2);
-          glEnd();
+           if(m_pen.GetWidth() > 1)
+                  DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
+           else
+           {
+                  glBegin(GL_LINES);
+                  glVertex2i(x1, y1);
+                  glVertex2i(x2, y2);
+                  glEnd();
+           }
      }
 }
+
 
 void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
 {
      if(dc)
           dc->DrawLines(n, points, xoffset, yoffset);
      else if(ConfigurePen()) {
-          glBegin(GL_LINE_STRIP);
-          for(int i=0; i<n; i++)
-               glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
-          glEnd();
+
+           if(m_pen.GetWidth() > 1)
+           {
+              wxPoint p0 = points[0];
+              for(int i=1; i<n; i++)
+              {
+                DrawThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset, points[i].y + yoffset, m_pen.GetWidth());
+                p0 = points[i];
+              }
+           }
+           else
+           {
+                 glBegin(GL_LINE_STRIP);
+                 for(int i=0; i<n; i++)
+                       glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
+                 glEnd();
+           }
      }
 }
 
@@ -310,14 +346,14 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffs
      if(ConfigureBrush()) {
           glBegin(GL_POLYGON);
           for(int i=0; i<n; i++)
-               glVertex2i(points[i].x, points[i].y);
+               glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
           glEnd();
      }
 
      if(ConfigurePen()) {
           glBegin(GL_LINE_LOOP);
           for(int i=0; i<n; i++)
-               glVertex2i(points[i].x, points[i].y);
+                glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
           glEnd();
      }
 }
@@ -340,7 +376,7 @@ void ocpnDC::StrokePolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yof
                dc->CalcBoundingBox(points[i].x+xoffset,points[i].y+yoffset);
      } else
 #endif
-          DrawPolygon(n, points);
+          DrawPolygon(n, points, xoffset, yoffset);
 }
 
 void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask)
@@ -399,35 +435,38 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y)
           wxCoord w, h;
           GetTextExtent(text, &w, &h);
 
-          /* create bitmap of appropriate size and select it */
-          wxBitmap bmp(w, h);
-          wxMemoryDC temp_dc;
-          temp_dc.SelectObject(bmp);
+          if(w && h)
+          {
+            /* create bitmap of appropriate size and select it */
+            wxBitmap bmp(w, h);
+            wxMemoryDC temp_dc;
+            temp_dc.SelectObject(bmp);
 
-          /* fill bitmap with black */
-          temp_dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
-          temp_dc.Clear();
+            /* fill bitmap with black */
+            temp_dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
+            temp_dc.Clear();
 
-          /* draw the text white */
-          temp_dc.SetFont(m_font);
-          temp_dc.SetTextForeground(wxColour(255, 255, 255));
-          temp_dc.DrawText( text, 0, 0);
-          temp_dc.SelectObject ( wxNullBitmap );
+            /* draw the text white */
+            temp_dc.SetFont(m_font);
+            temp_dc.SetTextForeground(wxColour(255, 255, 255));
+            temp_dc.DrawText( text, 0, 0);
+            temp_dc.SelectObject ( wxNullBitmap );
 
-          /* use the data in the bitmap for alpha channel,
-             and set the color to text foreground */
-          wxImage image = bmp.ConvertToImage();
-          unsigned char *data = new unsigned char[image.GetWidth()*image.GetHeight()];
-          unsigned char *im = image.GetData();
-          for(int i=0; i<w*h; i++)
-               data[i] = im[3*i];
+            /* use the data in the bitmap for alpha channel,
+                  and set the color to text foreground */
+            wxImage image = bmp.ConvertToImage();
+            unsigned char *data = new unsigned char[image.GetWidth()*image.GetHeight()];
+            unsigned char *im = image.GetData();
+            for(int i=0; i<w*h; i++)
+                  data[i] = im[3*i];
 
-          glColor4ub(m_textforegroundcolour.Red(),
-                     m_textforegroundcolour.Green(),
-                     m_textforegroundcolour.Blue(),
-                     255);
-          GLDrawBlendData(x, y, w, h, GL_ALPHA, data);
-          delete data;
+            glColor4ub(m_textforegroundcolour.Red(),
+                        m_textforegroundcolour.Green(),
+                        m_textforegroundcolour.Blue(),
+                        255);
+            GLDrawBlendData(x, y, w, h, GL_ALPHA, data);
+            delete data;
+          }
      }
 }
 
@@ -466,6 +505,7 @@ bool ocpnDC::ConfigurePen()
      wxColour c = m_pen.GetColour();
      int width = m_pen.GetWidth();
      glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
+
      glLineWidth(width);
      return true;
 }
@@ -483,9 +523,24 @@ bool ocpnDC::ConfigureBrush()
 void  ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
                               int format, const unsigned char *data)
 {
+      /*  Hmmmm.... I find that the texture version below does not work on my dodgy OpenChrome gl drivers
+          but the glDrawPixels works fine.*/
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glRasterPos2i(x, y);
+      glPixelZoom(1, -1);
+      glDrawPixels(w, h, format, GL_UNSIGNED_BYTE, data);
+      glPixelZoom(1, 1);
+      glDisable(GL_BLEND);
+
+      return;
+
+
      /* I would prefer to just use glDrawPixels than need a texture,
-        but sometimes it did not perform alpha blending correctly,
-        this way always works */
+      but sometimes it did not perform alpha blending correctly,
+      this way always works */
+
 
      glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tex);
      glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, format, w, h, 0, format,
