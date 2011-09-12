@@ -120,6 +120,8 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bsmoothzoom;
+
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
@@ -2762,6 +2764,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
       Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
+      Read ( _T ( "SmoothZoom" ),  &g_bsmoothzoom, 0 );
 
       Read ( _T ( "ToolbarX"),  &g_toolbar_x, 0);
       Read ( _T ( "ToolbarY" ),  &g_toolbar_y, 0);
@@ -3992,6 +3995,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "SkewToNorthUp" ), g_bskew_comp );
       Write ( _T ( "OpenGL" ), g_bopengl );
+      Write ( _T ( "SmoothZoom" ),  g_bsmoothzoom );
 
       Write ( _T ( "UseRasterCharts" ), g_bUseRaster );
       Write ( _T ( "UseVectorCharts" ), g_bUseVector );

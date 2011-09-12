@@ -383,6 +383,7 @@ double           g_COGAvg;
 bool             g_bLookAhead;
 bool             g_bskew_comp;
 bool             g_bopengl;
+bool             g_bsmoothzoom;
 
 int              g_nCOMPortCheck;
 

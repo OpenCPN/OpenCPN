@@ -63,6 +63,7 @@ extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bsmoothzoom;
 
 extern wxString         *pNMEADataSource;
 extern wxString         g_NMEABaudRate;
@@ -487,6 +488,10 @@ void options::CreateControls()
     //  OpenGL Render checkbox
     pOpenGL = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Use OpenGL"));
     itemStaticBoxSizerCDO->Add(pOpenGL, 1, wxALIGN_LEFT|wxALL, 2);
+
+    //  Smooth Zoom checkbox
+    pSmoothZoom = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Enable Smooth Zooming"));
+    itemStaticBoxSizerCDO->Add(pSmoothZoom, 1, wxALIGN_LEFT|wxALL, 2);
 
 
 
@@ -1393,6 +1398,7 @@ void options::SetInitialSettings()
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
       pOpenGL->SetValue(g_bopengl);
+      pSmoothZoom->SetValue(g_bsmoothzoom);
       pSDisplayGrid->SetValue(g_bDisplayGrid);
 
       pCBCourseUp->SetValue(g_bCourseUp);
@@ -1780,6 +1786,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowDepthUnits = pSDepthUnits->GetValue();
     g_bskew_comp = pSkewComp->GetValue();
     g_bopengl = pOpenGL->GetValue();
+    g_bsmoothzoom = pSmoothZoom->GetValue();
 
     g_bfilter_cogsog = pFilterNMEA->GetValue();
 
