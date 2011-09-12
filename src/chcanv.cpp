@@ -138,7 +138,7 @@ extern MarkInfo         *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 
 extern IDX_entry        *gpIDX;
-extern int                    gpIDXn;
+extern int               gpIDXn;
 
 extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
 extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
@@ -243,6 +243,8 @@ extern bool             g_bopengl;
 
 extern bool             g_bFullScreenQuilt;
 extern wxProgressDialog *s_ProgDialog;
+
+extern bool             g_bsmoothzoom;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1032,14 +1034,17 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
             ChartBase *pc = ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
             if(pc)
             {
+                  int current_db_index = m_refchart_dbIndex;
+                  int current_family = m_reference_family;
+
                   double max_ref_scale = pc->GetNormalScaleMax(m_canvas_scale_factor, m_canvas_width);
-                  max_ref_scale *= 1.1;         // Fudge factor, to err on the side of more detail on zoomout
+//                  max_ref_scale *= 1.1;         // Fudge factor, to err on the side of more detail on zoomout
+
+                  printf("ARZO checking.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
                   if(proposed_scale_onscreen > max_ref_scale)
                   {
-                        int current_db_index = m_refchart_dbIndex;
-//                        int current_type = m_reference_type;
-                        int current_family = m_reference_family;
+                        printf("ARZO changing ref to smaller scale. \n" );
 
                         unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
 
@@ -1062,6 +1067,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
 
                         }
 
+                        printf("ARZO selected smaller scale.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
                         if(target_stack_index < m_extended_stack_array.GetCount())
                         {
@@ -1072,8 +1078,43 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                                  SetReferenceChart(new_db_index);
                         }
                   }
+                  else if (0)
+                  {
+                        printf("ARZO checking smaller scale.\n" );
+
+                        // Check to see if a smaller scale chart's zoom range is ueable
+                        unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
+                        double min_ref_scale = 1e8;
+
+                        while((proposed_scale_onscreen < min_ref_scale) && (target_stack_index < (m_extended_stack_array.GetCount()-1)))
+                        {
+                              target_stack_index++;
+                              int test_db_index = m_extended_stack_array.Item(target_stack_index);
+
+                              if((current_family == ChartData->GetDBChartFamily(test_db_index)) &&
+                                  IsChartQuiltableRef(test_db_index))
+                              {
+                              //    open the target, and check the min_scale
+                                    ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
+                                    if(ptest_chart)
+                                          min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, m_canvas_width);
+                              }
+
+                        }
+
+                        printf("ARZO selected smaller scale in min range.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
+
+                        if(target_stack_index < m_extended_stack_array.GetCount())
+                        {
+                              new_db_index = m_extended_stack_array.Item(target_stack_index);
+                              if((current_family == ChartData->GetDBChartFamily(new_db_index)) &&
+                                  IsChartQuiltableRef(new_db_index))
+                                    SetReferenceChart(new_db_index);
+                        }
+                  }
             }
       }
+      printf("\n");
 
       return m_refchart_dbIndex;
 }
@@ -1096,9 +1137,11 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
             {
                   double min_ref_scale = pc->GetNormalScaleMin(m_canvas_scale_factor, false);
 
+                  printf("ARZI checking.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
 
                   if(proposed_scale_onscreen < min_ref_scale)
                   {
+                        printf("ARZI changing ref to larger scale.\n" );
                         int current_db_index = m_refchart_dbIndex;
 //                        int current_type = m_reference_type;
                         int current_family = m_reference_family;
@@ -1124,6 +1167,7 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                               }
                         }
 
+                        printf("ARZI selected larger scale.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
 
                         if(target_stack_index >= 0)
                         {
@@ -1136,7 +1180,7 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                   }
             }
       }
-
+      printf("\n");
       return m_refchart_dbIndex;
 }
 
@@ -1594,7 +1638,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Potentially add cm93 to the candidate array if the region is not yet fully covered
-      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty())
+      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty() && !g_bopengl)
       {
             //    Check the remaining unpainted region.
             //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
@@ -4179,34 +4223,98 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
 
 bool ChartCanvas::ZoomCanvasIn(double factor)
 {
-      if(!m_bzooming_in)
+      bool b_smooth = g_bsmoothzoom & g_bopengl;
+
+      if(!VPoint.b_quilt)
       {
-            // Hack some parameters
-            m_zoomt = 5;
-            m_zoom_target_factor = factor;
-            m_zoom_current_factor = 1.0;
-            m_zoom_timer.Start(m_zoomt, true);
-            m_bzooming_in = true;
+            ChartBase *pc = Current_Ch;
+            if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
+                  b_smooth= false;
       }
+
+      if(b_smooth)
+      {
+            if(!m_bzooming_in)
+            {
+                  // Set up some parameters
+                  m_zoomt = 5;
+                  m_zoom_target_factor = factor;
+                  m_zoom_current_factor = 1.0;
+                  m_zoom_timer.Start(m_zoomt);//, true);
+                  m_bzooming_in = true;
+            }
+      }
+      else
+            DoZoomCanvasIn(factor);
 
       return true;
 }
 
 bool ChartCanvas::ZoomCanvasOut(double factor)
 {
-      return DoZoomCanvasOut(factor);
+      bool b_smooth = g_bsmoothzoom & g_bopengl;
+
+      if(!VPoint.b_quilt)
+      {
+            ChartBase *pc = Current_Ch;
+            if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
+                  b_smooth= false;
+      }
+
+      if(b_smooth)
+      {
+            if(!m_bzooming_out)
+            {
+                  // Set up some parameters
+                  m_zoomt = 5;
+                  m_zoom_target_factor = factor;
+                  m_zoom_current_factor = 1.0;
+                  m_zoom_timer.Start(m_zoomt);//, true);
+                  m_bzooming_out = true;
+            }
+      }
+      else
+            DoZoomCanvasOut(factor);
+
+      return true;
 }
 
 void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
 {
-      if(m_zoom_current_factor < m_zoom_target_factor)
+      if(m_bzooming_in)
       {
-            DoZoomCanvasIn(1.05);
-            m_zoom_current_factor *= 1.05;
-            m_zoom_timer.Start(m_zoomt, true);
+            if(m_zoom_current_factor < m_zoom_target_factor)
+            {
+                  DoZoomCanvasIn(1.05);
+                  m_zoom_current_factor *= 1.05;
+                  m_zoom_timer.Start(m_zoomt);//, true);
+            }
+            else
+                  m_bzooming_in = false;
+      }
+      else if(m_bzooming_out)
+      {
+            if(m_zoom_current_factor < m_zoom_target_factor)
+            {
+                  DoZoomCanvasOut(1.05);
+                  m_zoom_current_factor *= 1.05;
+                  m_zoom_timer.Start(m_zoomt);//, true);
+            }
+            else
+                  m_bzooming_out = false;
+
+            if(m_zoom_current_factor >= m_zoom_target_factor)
+                  m_bzooming_out = false;
+
       }
       else
+      {
+            m_zoom_timer.Stop();
+            m_bzooming_out = false;
             m_bzooming_in = false;
+      }
+
+
 
 }
 
@@ -4312,7 +4420,7 @@ bool ChartCanvas::DoZoomCanvasOut(double factor)
                   max_allowed_scale *= 2;
 
             double target_scale_ppm = GetVPScale() / zoom_factor;
-            double new_scale_ppm = pc->GetNearestPreferredScalePPM(target_scale_ppm);
+            double new_scale_ppm = target_scale_ppm;//pc->GetNearestPreferredScalePPM(target_scale_ppm);
 
             proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
@@ -4623,7 +4731,14 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
               //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
                         if(b_adjust)
                               m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
+
+                        ChartData->ClearCacheInUseFlags();
                         m_pQuilt->Compose(VPoint);
+
+                        ChartData->UnLockCache();
+                        ChartData->PurgeCacheUnusedCharts(true);
+                        ChartData->LockCache();
+
                         Refresh(false);
                         b_ret = true;
                   }
@@ -9018,6 +9133,13 @@ void ChartCanvas::RenderChartOutline ( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
 }
 
+bool ChartCanvas::PurgeGLCanvasChartCache(ChartBase *pc)
+{
+      if(g_bopengl && m_glcc)
+            m_glcc->PurgeChartTextures(pc);
+      return true;
+}
+
 void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
                         double lonb, wxPoint ref_point, wxString prefix)
 {
@@ -10950,6 +11072,30 @@ glChartCanvas::glChartCanvas(wxWindow *parent) :
 glChartCanvas::~glChartCanvas()
 {
      free(m_data);
+
+     //     Clear and delete all the GPU textures presently loaded
+     ChartPointerHashType::iterator it;
+     for( it = m_chart_hash.begin(); it != m_chart_hash.end(); ++it )
+     {
+           ChartBase *pc = (ChartBase *)it->first;
+
+           ChartTextureHashType *pTextureHash = m_chart_hash[pc];
+
+            // iterate over all the textures presently loaded
+            // and delete the OpenGL texture and the private descriptor
+
+           ChartTextureHashType::iterator it;
+           for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it )
+           {
+                glTextureDescriptor *ptd = it->second;
+                glDeleteTextures( 1, &ptd->tex_name );
+                delete ptd;
+           }
+
+           pTextureHash->clear();
+           delete pTextureHash;
+     }
+     m_chart_hash.clear();
 }
 
 void glChartCanvas::OnEraseBG(wxEraseEvent& evt)
@@ -11003,204 +11149,47 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
      render();
 }
 
-#if  0
-void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
+int s_ntex;
+
+bool glChartCanvas::PurgeChartTextures(ChartBase *pc)
 {
-      if(!chart)
-            return;
-
-      /* setup texture parameters */
-      glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, bias);
-//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.5);
-
-      wxRect R;
-      chart->ComputeSourceRectangle(vp, &R);
-      double scalefactor = chart->GetRasterScaleFactor();
-      int spx = R.x + R.width/2;
-      int spy = R.y + R.height/2;
-//                        printf("   Modelview Translate (pixels) %d %d %g\n", spx, spy, scalefactor);
-
-
-      if(0)
-      {
-            //    Create a stencil buffer for clipping to the region
-            glEnable (GL_STENCIL_TEST);
-            glClear(GL_STENCIL_BUFFER_BIT);
-
-            //    We are going to write "1" into the stencil buffer wherever the region is
-            glStencilFunc (GL_ALWAYS, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
-            //    Decompose the region into rectangles, and draw as quads
-            wxRegionIterator clipit ( region );
-            while ( clipit )
-            {
-                  wxRect rect = clipit.GetRect();
-
-
-                  glBegin(GL_QUADS);
-
-                  glVertex2f(rect.x, rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
-                  glVertex2f(rect.x, rect.y + rect.height);
-                  glEnd();
-
-                  clipit ++ ;
-            }
-
-            //    Now set the stencil ops to draw only where the stencil bit is "1"
-            glStencilFunc (GL_EQUAL, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-      }
-
-      glPushMatrix();
-
-      glTranslatef(-spx/scalefactor, -spy/scalefactor, 0);
-      glScalef(1./scalefactor, 1./scalefactor, 1);
-
-
-      //    Look for the chart texture hash in the member hashmap
-      ChartPointerHashType::iterator it = m_chart_hash.find(chart);
+      //    Look for the chart texture hashmap in the member chart hashmap
+      ChartPointerHashType::iterator it0 = m_chart_hash.find(pc);
 
       ChartTextureHashType *pTextureHash;
 
-      //    Not Found ?
-      if(it == m_chart_hash.end())
+      //    Found ?
+      if(it0 != m_chart_hash.end())
       {
-            ChartTextureHashType *p = new ChartTextureHashType;
-            m_chart_hash[chart] = p;
-      }
+            pTextureHash = m_chart_hash[pc];
 
-      pTextureHash = m_chart_hash[chart];
+            // iterate over all the textures presently loaded
+            // and delete the OpenGL texture and the private descriptor
 
-      //    Using a 2D loop, iterate thru the texture tiles of the chart
-      //    For each tile, is it (1) needed and (2) present?
-
-
-      int tex_dim = 256; //max_texture_dimension
-      //  Calculate the number of textures needed
-      int nx_tex = (chart->GetSize_X() / tex_dim) + 1;
-      int ny_tex = (chart->GetSize_Y() / tex_dim) + 1;
-
-      //   Get a unique texture name array
-      GLuint *chart_texture_name_array = (GLuint *)malloc(nx_tex * ny_tex * sizeof(GLuint));
-      glGenTextures(nx_tex * ny_tex, chart_texture_name_array);
-
-      glTextureDescriptor *ptd;
-
-      wxRect rect(0,0,1,1);
-      unsigned int itex = 0;
-      for(int i=0 ; i < ny_tex ; i++)
-      {
-            rect.height = wxMin(tex_dim, chart->GetSize_Y() - rect.y);
-            rect.x = 0;
-            for(int j=0 ; j < nx_tex ; j++)
+            ChartTextureHashType::iterator it;
+            for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it )
             {
-                  rect.width = wxMin(tex_dim, chart->GetSize_X() - rect.x);
+                  glTextureDescriptor *ptd = it->second;
 
-                  //    Is this rectangle needed (i.e. does it intersect the chart source rectangle?)
-                  wxRect ri = rect;
-                  ri.Intersect(R);
-                  if(ri.width && ri.height)
-                  {
-                        //    Is this texture already available to the GPU?
+                  glDeleteTextures( 1, &ptd->tex_name );
 
-                        //    Create the hash key
-                        int key = (rect.x<<16) + rect.y;
-                        ChartTextureHashType::iterator it = pTextureHash->find(key);
+                  s_ntex--;
 
-                        // if not found, get the bits and give to the GPU
-                        if(it ==  pTextureHash->end())
-                        {
-                              GrowData(3 * rect.width * rect.height);
-                              chart->GetChartBits(rect, m_data, 1);
-
-                              glBindTexture(GL_TEXTURE_RECTANGLE_ARB, chart_texture_name_array[itex]);
-//                              glBindTexture(GL_TEXTURE_2D, chart_texture_name_array[itex]);
-
-                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                              glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                              glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//_MIPMAP_NEAREST);
-//                              glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-
-                              glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB,
-                                  rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
-
-
-                              glTextureDescriptor *ptd_new = new glTextureDescriptor;
-                              ptd_new->tex_rect = rect;
-                              ptd_new->tex_name = chart_texture_name_array[itex];
-
-                              itex++;
-                              (*pTextureHash)[key] = ptd_new;
-                        }
-
-                        ptd = (*pTextureHash)[key];
-
-                        //    The texture is known to be available to the GPU
-                        //    So map it in
-
-
-                        int w = ri.width, h = ri.height;
-                        int x1 = ri.x - rect.x;
-                        int y1 = ri.y - rect.y;
-                        int x2 = (ri.x - R.x) + spx;
-                        int y2 = (ri.y - R.y) + spy;
-
-//                                printf("  texture to quad..sf: %g   %d %d %d %d %d %d\n", scalefactor, x1, x2, y1, y2, w, h);
-
-                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB,  ptd->tex_name);
-
-//   For rectangle_arb
-                        double sx = 1.;
-                        double sy = 1.;
-                        glBegin(GL_QUADS);
-                        glTexCoord2f(x1/sx, y1/sy);     glVertex2f((x2), (y2));
-                        glTexCoord2f((x1+w)/sx, y1/sy);   glVertex2f((w+ x2) , (y2));
-                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
-                        glTexCoord2f(x1/sx, (y1+h)/sy);   glVertex2f((x2) , (h + y2));
-
-/*
-                        double sx = cc1->GetVP().pix_width;
-                        double sy = cc1->GetVP().pix_height;
-                        glBegin(GL_QUADS);
-//                        glTexCoord2f(x1/sx, y1/sy);     glVertex2f((x2), (y2));
-//                        glTexCoord2f((x1+w)/sx, y1/sy);   glVertex2f((w+ x2) , (y2));
-//                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
-//                        glTexCoord2f(x1/sx, (y1+h)/sy);   glVertex2f((x2) , (h + y2));
-
-                        double sf = 1;//scalefactor;
-                        x2 = rect.x;//((rect.x - R.x) + spx)/sf;
-                        y2 = rect.y;//((rect.y - R.y) + spy)/sf;
-                        int w1 = rect.width/sf;
-                        int h1 = rect.height/sf;
-                        glTexCoord2f(0, 0);     glVertex2f((x2), (y2));
-                        glTexCoord2f((0+w)/sx, 0);   glVertex2f((w1+ x2) , (y2));
-                        glTexCoord2f((0+w)/sx, (0+h)/sy); glVertex2f((w1+ x2) , (h1 + y2));
-                        glTexCoord2f(0, (0+h)/sy);   glVertex2f((x2) , (h1 + y2));
-*/
-                        glEnd();
-
-                  }
-                  rect.x += rect.width;
+                  delete ptd;
             }
 
-            rect.y += rect.height;
+            pTextureHash->clear();
+
+            m_chart_hash.erase(it0);            // erase the texture hash map for this chart
+
+            delete pTextureHash;
+
+            return true;
       }
-
-      free(chart_texture_name_array);
-
-      glPopMatrix();
-
-      glDisable(GL_TEXTURE_RECTANGLE_ARB);
-
+      else
+            return false;
 }
 
-#endif
 
 
 void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
@@ -11276,7 +11265,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       //    Using a 2D loop, iterate thru the texture tiles of the chart
       //    For each tile, is it (1) needed and (2) present?
 
-      int tex_dim = 1024; //max_texture_dimension
+      int tex_dim = 256;//max_texture_dimension;
       //  Calculate the number of textures needed
       int nx_tex = (chart->GetSize_X() / tex_dim) + 1;
       int ny_tex = (chart->GetSize_Y() / tex_dim) + 1;
@@ -11319,11 +11308,22 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-                              glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-                              glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                                           rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+                              //    TODO
+                              //    This first clause works on one of my machines, but not another, both GL 1.4
+                              //    Second clause works on both, although gluBuild2DMipmaps is deprecated
+                              //    Why?
+                              if(0)
+                              {
+                                    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+                                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+                              }
+                              else
+                              {
+                                    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_COMPRESSED_RGB, rect.width, rect.height, GL_RGB, GL_UNSIGNED_BYTE, m_data );
+                              }
 
+                              s_ntex++;
 
                               glTextureDescriptor *ptd_new = new glTextureDescriptor;
                               ptd_new->tex_rect = rect;
@@ -11367,6 +11367,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       glPopMatrix();
 
       glDisable(GL_TEXTURE_2D);
+      glDisable(GL_STENCIL_TEST);
 
 }
 
@@ -11512,22 +11513,24 @@ void glChartCanvas::render()
                                       pch = cc1->m_pQuilt->GetNextChart();
                                 }
 
-/*
+
             //    Any part of the chart region that was not rendered in the loop needs to be cleared
                                 wxRegionIterator clrit ( screen_region );
-                                while ( clrit )
+                                while ( 0/*clrit*/ )
                                 {
                                       wxRect rect = clrit.GetRect();
-#ifdef __WXOSX__
-                                      dc.SetPen(*wxBLACK_PEN);
-                                      dc.SetBrush(*wxBLACK_BRUSH);
-                                      dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
-#else
-                                      dc.Blit(rect.x, rect.y, rect.width, rect.height, &dc, rect.x, rect.y, wxCLEAR);
-#endif
+
+                                      glColor3f(0, 0, 0);
+                                      glBegin(GL_QUADS);
+                                      glVertex2f(rect.x, rect.y);
+                                      glVertex2f(rect.x + rect.width , rect.y);
+                                      glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                                      glVertex2f(rect.x, rect.y + rect.height);
+                                      glEnd();
+
                                       clrit ++ ;
                                 }
-*/
+
                           }
               }
 
@@ -11640,6 +11643,8 @@ void glChartCanvas::render()
      SwapBuffers();
 
      cc1->PaintCleanup();
+
+     printf("s_ntex: %d\n", s_ntex);
 }
 
 void glChartCanvas::OnActivate ( wxActivateEvent& event )

@@ -254,6 +254,7 @@ public:
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
 
+      bool PurgeGLCanvasChartCache(ChartBase *pc);
 
 private:
       ViewPort    VPoint;
@@ -552,8 +553,8 @@ public:
       void MouseEvent(wxMouseEvent& event);
 
       void Invalidate() {m_cacheinvalid++; }
-
       void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
+      bool PurgeChartTextures(ChartBase *pc);
 
 protected:
       int m_cacheinvalid;
