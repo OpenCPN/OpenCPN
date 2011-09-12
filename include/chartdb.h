@@ -93,6 +93,7 @@ public:
       void        *pChart;
       int         RecentTime;
       int         dbIndex;
+      bool        b_in_use;
 };
 
 
@@ -142,6 +143,8 @@ public:
       bool IsCacheLocked(){ return m_b_locked; }
       wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
+      void ClearCacheInUseFlags(void);
+      void PurgeCacheUnusedCharts(bool b_force = false);
 
 protected:
       virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;

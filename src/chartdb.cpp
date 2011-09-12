@@ -57,6 +57,8 @@ extern ChartBase    *Current_Ch;
 extern ThumbWin     *pthumbwin;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
+extern bool         g_bopengl;
+extern ChartCanvas  *cc1;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -168,6 +170,58 @@ void ChartDB::PurgeCache()
       }
       pChartCache->Clear();
 }
+
+void ChartDB::ClearCacheInUseFlags(void)
+{
+      unsigned int nCache = pChartCache->GetCount();
+      for(unsigned int i=0 ; i<nCache ; i++)
+      {
+            CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
+            pce->b_in_use = false;
+      }
+}
+
+void ChartDB::PurgeCacheUnusedCharts(bool b_force)
+{
+      //    Use memory limited cache policy, if defined....
+      if(g_memCacheLimit)
+      {
+          //    Check memory status to see if above limit
+            int mem_total, mem_used;
+            GetMemoryStatus(&mem_total, &mem_used);
+            if(((mem_used > g_memCacheLimit) || b_force) && !m_b_locked)
+            {
+//                  printf(" ChartdB::PurgeCacheUnusedCharts Before--- Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
+                  unsigned int i = 0;
+                  while( i<pChartCache->GetCount())
+                  {
+                        CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
+                        if(!pce->b_in_use)
+                        {
+                              ChartBase *Ch = (ChartBase *)pce->pChart;
+
+                              //    The glCanvas may be cacheing some information (i.e. texture tiles) for this chart
+                              if(g_bopengl && cc1)
+                                    cc1->PurgeGLCanvasChartCache(Ch);
+
+                              //    And delete the chart
+                              delete Ch;
+
+                              //remove the cache entry
+                              pChartCache->Remove(pce);
+
+                              i=0;
+
+                        }
+                        else
+                              i++;
+                  }
+//                  GetMemoryStatus(&mem_total, &mem_used);
+//                  printf(" ChartdB::PurgeCacheUnusedCharts After--- Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
+            }
+      }
+}
+
 
 
 
@@ -560,6 +614,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
               if(Ch->IsReadyToRender())
               {
                     pce->RecentTime = now.GetTicks();           // chart is OK
+                    pce->b_in_use = true;
                     return Ch;
               }
               else
@@ -573,9 +628,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
           else                                                  // assume if in cache, the chart can do thumbnails
           {
                pce->RecentTime = now.GetTicks();
+               pce->b_in_use = true;
                return Ch;
           }
-
       }
 
       if(!bInCache)                    // not in cache
@@ -587,6 +642,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
           //    Check memory status to see if enough room to open another chart
                   int mem_total, mem_used;
                   GetMemoryStatus(&mem_total, &mem_used);
+//                  printf(" ChartdB Mem_total: %d  mem_used: %d  lock: %d\n", mem_total, mem_used, m_b_locked);
                   if((mem_used > g_memCacheLimit) && !m_b_locked)
                   {
                         // Search the cache for oldest entry that is not Current_Ch
@@ -633,8 +689,15 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                     //    Delete the chart
                                     delete pDeleteCandidate;
 
+                                    //    The glCanvas may be cacheing some information for this chart
+                                    if(g_bopengl && cc1)
+                                          cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
+
                                     //remove the cache entry
                                     pChartCache->Remove(pce);
+
+//                                    GetMemoryStatus(&mem_total, &mem_used);
+//                                    printf("    After delete/purge Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
 
       //                              pParent->GetMemoryStatus(omem_total, omem_used);
       //                            int omem_free = omem_total - omem_used;
