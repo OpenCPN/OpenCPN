@@ -42,7 +42,7 @@
 
 #include <wx/listimpl.cpp>
 
-//#include <GL/glew.h>
+#include <GL/glew.h>
 
 #include "chcanv.h"
 
@@ -6426,6 +6426,10 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         //  Rescale again, to capture all the changes for new canvas size
         SetVPScale ( GetVPScale() );
 
+        if(g_bopengl && m_glcc)
+        {
+              m_glcc->OnSize(event);
+        }
         //  Invalidate the whole window
         ReloadVP();
 }
@@ -11113,17 +11117,41 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
      if(!m_bsetup) {
           SetCurrent();
 
-/*
+
           if(glewInit() != GLEW_OK) {
                printf("glewInit did not return GLEW_OK\n");
                exit(0);
           }
 
+/*
           if(!glewIsSupported("GL_ARB_texture_rectangle")) {
                printf("GL_ARB_texture_rectangle not supported, exiting\n");
                exit(0);
           }
 */
+
+          //      Determine what type of MIPMAP generation is supported
+          m_bGenMM = false;
+          m_bGL_GEN_MM = false;
+
+          //      Is glGenerateMipmap() supported?
+          if(glewIsSupported("GL_EXT_framebuffer_object")) {
+                printf("GL_EXT_framebuffer_object is supported, using glGenerateMipmap\n");
+                m_bGenMM = true;
+          }
+
+          //      Is GL_GENERATE_MIPMAP supported?
+          else if(glewIsSupported("GL_SGIS_generate_mipmap")) {
+                printf("GL_SGIS_generate_mipmap is supported, using GL_GENERATE_MIPMAP_SGIS\n");
+                m_bGL_GEN_MM = true;
+          }
+
+          else
+                printf("Using gluBuild2DMipmaps\n");
+
+
+
+
           /* determine max texture size */
           glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_dimension);
 
@@ -11200,8 +11228,6 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       /* setup texture parameters */
       glEnable(GL_TEXTURE_2D);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, bias);
-//             glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.5);
 
       wxRect R;
       chart->ComputeSourceRectangle(vp, &R);
@@ -11225,7 +11251,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             {
                   wxRect rect = clipit.GetRect();
 
-
+//                  printf(" RegionRect: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
                   glBegin(GL_QUADS);
 
                   glVertex2f(rect.x, rect.y);
@@ -11247,6 +11273,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       glTranslatef(-spx/scalefactor, -spy/scalefactor, 0);
       glScalef(1./scalefactor, 1./scalefactor, 1);
 
+//      printf("  Chart, scalefactor: %g\n",scalefactor);
 
       //    Look for the chart texture hashmap in the member chart hashmap
       ChartPointerHashType::iterator it = m_chart_hash.find(chart);
@@ -11265,7 +11292,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       //    Using a 2D loop, iterate thru the texture tiles of the chart
       //    For each tile, is it (1) needed and (2) present?
 
-      int tex_dim = 256;//max_texture_dimension;
+      int tex_dim = 512;//max_texture_dimension;
       //  Calculate the number of textures needed
       int nx_tex = (chart->GetSize_X() / tex_dim) + 1;
       int ny_tex = (chart->GetSize_Y() / tex_dim) + 1;
@@ -11297,6 +11324,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         // if not found, get the bits and give to the GPU
                         if(it ==  pTextureHash->end())
                         {
+ //                             printf("GetChartBits\n");
                               chart->GetChartBits(rect, m_data, 1);
 
                               GLuint tex_name;
@@ -11309,19 +11337,24 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-                              //    TODO
-                              //    This first clause works on one of my machines, but not another, both GL 1.4
-                              //    Second clause works on both, although gluBuild2DMipmaps is deprecated
-                              //    Why?
-                              if(0)
+
+                              if(m_bGenMM)
                               {
-                                    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+                                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+                                    glGenerateMipmapEXT(GL_TEXTURE_2D);  //Generate mipmaps now!!!
+
+                              }
+                              else if(m_bGL_GEN_MM)
+                              {
+                                    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
                                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
                               }
+
                               else
                               {
-                                    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_COMPRESSED_RGB, rect.width, rect.height, GL_RGB, GL_UNSIGNED_BYTE, m_data );
+                                    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, rect.width, rect.height, GL_RGB, GL_UNSIGNED_BYTE, m_data );
                               }
+
 
                               s_ntex++;
 
@@ -11337,26 +11370,42 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         //    The texture is known to be available to the GPU
                         //    So map it in
 
+
                         int w = ri.width, h = ri.height;
                         int x1 = ri.x - rect.x;
                         int y1 = ri.y - rect.y;
                         int x2 = (ri.x - R.x) + spx;
                         int y2 = (ri.y - R.y) + spy;
 
-                        glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
+                        wxRect rt((x2 - spx)/scalefactor, (y2 - spy)/scalefactor, w/scalefactor, h/scalefactor);
+                        if(region.Contains(rt) != wxOutRegion)
+                        {
+                              wxStopWatch sw;
 
-                        double sx = rect.width;
-                        double sy = rect.height;
+                              glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
-                        glBegin(GL_QUADS);
+                              GLint b_resident;
+                              glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_RESIDENT, &b_resident);
 
-                        glTexCoord2f(x1/sx, y1/sy);         glVertex2f((x2), (y2));
-                        glTexCoord2f((x1+w)/sx, y1/sy);     glVertex2f((w+ x2) , (y2));
-                        glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
-                        glTexCoord2f(x1/sx, (y1+h)/sy);     glVertex2f((x2) , (h + y2));
+                              sw.Pause();
+                              long tt = sw.Time();
+                              if(tt > 4)
+                              {
+                                    printf("    Long bind time: %3ld %5d %5d %5d %5d %d\n", tt,  x2, y2, rt.x, rt.y, b_resident);
+                              }
 
-                        glEnd();
+                              double sx = rect.width;
+                              double sy = rect.height;
 
+                              glBegin(GL_QUADS);
+
+                              glTexCoord2f(x1/sx, y1/sy);         glVertex2f((x2), (y2));
+                              glTexCoord2f((x1+w)/sx, y1/sy);     glVertex2f((w+ x2) , (y2));
+                              glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
+                              glTexCoord2f(x1/sx, (y1+h)/sy);     glVertex2f((x2) , (h + y2));
+
+                              glEnd();
+                        }
                   }
                   rect.x += rect.width;
             }
@@ -11483,9 +11532,11 @@ void glChartCanvas::render()
 
               if(!g_bCourseUp)
               {
+                    wxStopWatch sw;
+
                           if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
                           {
-                                wxRegion screen_region = rgn_chart;
+                                wxRegion screen_region = ru;//gn_chart;
 
                                 ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
                                 while(pch)
@@ -11496,7 +11547,7 @@ void glChartCanvas::render()
                                             if(!rgn_chart.IsEmpty())
                                             {
                                                   wxRegion get_region = pqp->ActiveRegion;
-                                                  get_region.Intersect(rgn_chart);
+                                                  get_region.Intersect(ru);
 
                                                   if(!get_region.IsEmpty())
                                                   {
@@ -11513,10 +11564,13 @@ void glChartCanvas::render()
                                       pch = cc1->m_pQuilt->GetNextChart();
                                 }
 
+                     sw.Pause();
+//                     long tt = sw.Time();
+//                     printf("Total quilt render time: %ld\n", tt);
 
             //    Any part of the chart region that was not rendered in the loop needs to be cleared
                                 wxRegionIterator clrit ( screen_region );
-                                while ( 0/*clrit*/ )
+                                while ( clrit )
                                 {
                                       wxRect rect = clrit.GetRect();
 
@@ -11548,9 +11602,7 @@ void glChartCanvas::render()
              ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>(Current_Ch);
              if(Current_Ch_BSB)
              {
-                  wxRegion rgn(wxRect(0, 0, svp.pix_width, svp.pix_height));
-
-                  RenderChartRegion(Current_Ch_BSB, svp, rgn);
+                  RenderChartRegion(Current_Ch_BSB, svp, ru);
              }
               else if (!dynamic_cast<ChartDummy*>(Current_Ch))
               {
@@ -11659,7 +11711,7 @@ void glChartCanvas::OnSize ( wxSizeEvent& event )
           return;
      }
 
-     cc1->OnSize(event);
+//     cc1->OnSize(event);
 
      /* expand opengl widget to fill viewport */
      ViewPort &VP = cc1->GetVP();

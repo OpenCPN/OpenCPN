@@ -578,6 +578,9 @@ protected:
       //    Value is ChartTextureHashType*
       ChartPointerHashType          m_chart_hash;
 
+      bool m_bGenMM;
+      bool m_bGL_GEN_MM;
+
 DECLARE_EVENT_TABLE()
 };
 
