@@ -11071,6 +11071,9 @@ glChartCanvas::glChartCanvas(wxWindow *parent) :
      m_cacheinvalid(1), m_lastR(wxSize()), m_lastchart(NULL), m_data(NULL),
      m_datasize(0), m_bsetup(false)
 {
+      m_tex_max_res = 1000;         // absurdly large
+      m_ntex = 0;
+
 }
 
 glChartCanvas::~glChartCanvas()
@@ -11177,7 +11180,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
      render();
 }
 
-int s_ntex;
 
 bool glChartCanvas::PurgeChartTextures(ChartBase *pc)
 {
@@ -11201,7 +11203,7 @@ bool glChartCanvas::PurgeChartTextures(ChartBase *pc)
 
                   glDeleteTextures( 1, &ptd->tex_name );
 
-                  s_ntex--;
+                  m_ntex--;
 
                   delete ptd;
             }
@@ -11218,6 +11220,80 @@ bool glChartCanvas::PurgeChartTextures(ChartBase *pc)
             return false;
 }
 
+
+bool OCPNBuildMipmaps( int width, int height, int level_min, int level_max, unsigned char *m_data )
+{
+      // alloc 2 working buffers
+      int max_buf_size = width * height * 4;
+      unsigned char *source_buf = (unsigned char *)malloc(max_buf_size);
+      unsigned char *dest_buf = (unsigned char *)malloc(max_buf_size);
+      unsigned char *up_buf;
+
+      unsigned char *s = dest_buf;
+      unsigned char *t = m_data;
+
+      int newwidth, newheight;
+      int last_width = width;
+      int last_height = height;
+
+      int level = 0;
+      while( level < level_max)
+      {
+            if(level > 0)
+            {
+                  newwidth = last_width / 2;
+                  newheight = last_height / 2;
+                  int stride  = last_width*3;
+
+                  if(newheight == 1)
+                        break;                  // all done;
+
+                  // Average 4 pixels
+                  for (int i = 0; i < newheight; i++) {
+                        for (int j = 0; j < newwidth; j++) {
+
+                                    for (int k = 0; k < 3; k++) {
+                                    s[0] = (*t +
+                                                *(t+3) +
+                                                *(t+stride) +
+                                                *(t+stride + 3)) / 4;
+                                    s++; t += 1;
+                              }
+                              t += 3;
+                        }
+                        t += stride;
+                  }
+                  up_buf = dest_buf;
+            }
+            else
+            {
+                  up_buf = m_data;
+                  newheight = height;
+                  newwidth = width;
+            }
+
+            //    Upload to GPU?
+            if(level >= level_min)
+                  glTexImage2D(GL_TEXTURE_2D, level, GL_RGB, newwidth, newheight, 0, GL_RGB, GL_UNSIGNED_BYTE, up_buf);
+
+            //  swap the buffers
+            memcpy(source_buf, up_buf, newwidth * newheight * 3);
+            s = dest_buf;
+            t = source_buf;
+
+            last_width = newwidth;
+            last_height = newheight;
+
+            level++;
+      }
+
+      free(source_buf);
+      free(dest_buf);
+
+      return true;
+
+
+}
 
 
 void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
@@ -11300,8 +11376,49 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       GrowData(3 * tex_dim * tex_dim);
 
       glTextureDescriptor *ptd;
-
       wxRect rect(0,0,1,1);
+
+      //    For low memory systems, aggressively manage the textures in the GPU memory.
+      //    Strategy:  Before loading any new textures,
+      //               delete all textures from  the GPU that are not to be used
+      //               in this particular VP render, on a per-chart basis.
+      if(0/*m_ntex > m_tex_max_res*/)
+      {
+            rect.y = 0;
+            for(int i=0 ; i < ny_tex ; i++)
+            {
+                  rect.height = tex_dim;
+                  rect.x = 0;
+                  for(int j=0 ; j < nx_tex ; j++)
+                  {
+                        rect.width = tex_dim;
+                        int key = (rect.x<<16) + rect.y;
+
+                        if(pTextureHash->find(key) !=  pTextureHash->end())  // found?
+                        {
+                              //    Is this texture needed now?
+                              wxRect ri = rect;
+                              ri.Intersect(R);
+                              if(!ri.width || !ri.height)
+                              {
+                                    printf("   glDeleteTexture\n");
+                                    ptd = (*pTextureHash)[key];
+
+                                    glDeleteTextures( 1, &ptd->tex_name );
+                                    m_ntex--;
+
+                                    pTextureHash->erase(key);
+                                    delete ptd;
+                              }
+                        }
+                        rect.x += rect.width;
+                  }
+                  rect.y += rect.height;
+            }
+      }
+
+
+      rect.y = 0;
       for(int i=0 ; i < ny_tex ; i++)
       {
             rect.height = tex_dim;
@@ -11321,6 +11438,8 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         int key = (rect.x<<16) + rect.y;
                         ChartTextureHashType::iterator it = pTextureHash->find(key);
 
+                        int level_mips = 0;
+
                         // if not found, get the bits and give to the GPU
                         if(it ==  pTextureHash->end())
                         {
@@ -11338,6 +11457,8 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
 
+/*
+
                               if(m_bGenMM)
                               {
                                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, rect.width, rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
@@ -11351,16 +11472,22 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               }
 
                               else
+*/
                               {
-                                    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, rect.width, rect.height, GL_RGB, GL_UNSIGNED_BYTE, m_data );
+//                                    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, rect.width, rect.height, GL_RGB, GL_UNSIGNED_BYTE, m_data );
+//                                   if(scalefactor > 4.0)
+//                                          level_mips = 1;
+                                   OCPNBuildMipmaps( rect.width, rect.height, level_mips, 10, m_data );
+
                               }
 
 
-                              s_ntex++;
+                              m_ntex++;
 
                               glTextureDescriptor *ptd_new = new glTextureDescriptor;
                               ptd_new->tex_rect = rect;
                               ptd_new->tex_name = tex_name;
+                              ptd_new->mip_base_level = level_mips;
 
                               (*pTextureHash)[key] = ptd_new;
                         }
@@ -11384,15 +11511,24 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
                               glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
+                              glTexParameterf( GL_TEXTURE_2D,  GL_TEXTURE_MIN_LOD, ptd->mip_base_level );
+                              glTexParameterf( GL_TEXTURE_2D,  GL_TEXTURE_MAX_LOD, 8.0 );
+                              glTexParameteri( GL_TEXTURE_2D,  GL_TEXTURE_BASE_LEVEL, ptd->mip_base_level );
+                              glTexParameteri( GL_TEXTURE_2D,  GL_TEXTURE_MAX_LEVEL, 8 );
+
                               GLint b_resident;
                               glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_RESIDENT, &b_resident);
+
+                              if(!b_resident)
+                              {
+                                    m_tex_max_res = wxMin(m_tex_max_res,m_ntex);
+//                                    printf("   Setting m_tex_max_res: %d\n",m_tex_max_res);
+                              }
 
                               sw.Pause();
                               long tt = sw.Time();
                               if(tt > 4)
-                              {
                                     printf("    Long bind time: %3ld %5d %5d %5d %5d %d\n", tt,  x2, y2, rt.x, rt.y, b_resident);
-                              }
 
                               double sx = rect.width;
                               double sy = rect.height;
@@ -11696,7 +11832,7 @@ void glChartCanvas::render()
 
      cc1->PaintCleanup();
 
-     printf("s_ntex: %d\n", s_ntex);
+     printf("m_ntex: %d %d\n", m_ntex, m_tex_max_res);
 }
 
 void glChartCanvas::OnActivate ( wxActivateEvent& event )

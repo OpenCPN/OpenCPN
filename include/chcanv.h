@@ -526,6 +526,7 @@ public:
 
       GLuint            tex_name;
       wxRect            tex_rect;
+      int               mip_base_level;
 };
 
 WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
@@ -580,6 +581,8 @@ protected:
 
       bool m_bGenMM;
       bool m_bGL_GEN_MM;
+      int  m_tex_max_res;
+      int  m_ntex;
 
 DECLARE_EVENT_TABLE()
 };
