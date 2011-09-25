@@ -299,6 +299,11 @@ PolyTessGeo::PolyTessGeo()
 {
 }
 
+//      Build PolyTessGeo Object from Extended_Geometry
+PolyTessGeo::PolyTessGeo(Extended_Geometry *pxGeom)
+{
+}
+
 //      Build PolyTessGeo Object from OGR Polygon
 PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon, bool bUseInternalTess)
 {
@@ -1525,7 +1530,7 @@ void __CALL_CONVENTION endCallback(void)
             pTPG->nVert = s_nvcall;
 
         //  Calculate bounding box
-
+//todo add a parameter to disable this calculation for cm93
             pTPG->p_bbox = new wxBoundingBox;
 
             float sxmax = -179;                   // this poly BBox

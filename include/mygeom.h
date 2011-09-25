@@ -161,6 +161,7 @@ class PolyTriGroup
 {
 public:
         PolyTriGroup();
+        PolyTriGroup(Extended_Geometry *pxGeom);
         ~PolyTriGroup();
 
         int             nContours;
@@ -219,6 +220,8 @@ class PolyTessGeo
 
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
             double ref_lat, double ref_lon,  bool bUseInternalTess);  // Build this from OGRPolygon
+
+        PolyTessGeo(Extended_Geometry *pxGeom);
 
         int Write_PolyTriGroup( FILE *ofs);
         int Write_PolyTriGroup( wxOutputStream &ostream);
