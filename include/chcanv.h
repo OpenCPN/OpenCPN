@@ -514,20 +514,7 @@ private:
 DECLARE_EVENT_TABLE()
 };
 
-//----------------------------------------------------------------------------
-//    Texture descriptor
-//----------------------------------------------------------------------------
-
-class glTextureDescriptor
-{
-public:
-      glTextureDescriptor(){};
-      ~glTextureDescriptor(){};
-
-      GLuint            tex_name;
-      wxRect            tex_rect;
-      int               mip_base_level;
-};
+class glTextureDescriptor;          // Defined/implemented in chcanv.cpp
 
 WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 
