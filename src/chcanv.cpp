@@ -11524,8 +11524,13 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
 
 void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
 {
+      printf("RenderChartRegion\n");
+
       if(!chart)
+      {
+            printf("...returns\n");
             return;
+      }
 
       /* setup texture parameters */
       glEnable(GL_TEXTURE_2D);
@@ -11603,7 +11608,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
             if(( ptd->tex_name > 0) && (ptd->tex_mult != n_basemult))                 // the texture known to the GPU does not match the target
             {
-//                  printf("   glDeleteTexture on n_basemult mismatch\n");
+                  printf("   glDeleteTexture on n_basemult mismatch\n");
                   glDeleteTextures( 1, &ptd->tex_name );
                   m_ntex--;
 
@@ -11663,7 +11668,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     ptd = (*pTextureHash)[key];
                                     if( ptd->tex_name > 0)
                                     {
-//                                          printf("   glDeleteTexture on m_ntex limit\n");
+                                          printf("   glDeleteTexture on m_ntex limit\n");
 
                                           glDeleteTextures( 1, &ptd->tex_name );
                                           m_ntex--;
@@ -11740,7 +11745,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     ptd = new glTextureDescriptor;
                                     ptd->tex_mult = n_basemult;
 
-//                                    printf("  -->PopulateTD\n");
+                                    printf("  -->PopulateTD\n");
                                     OCPNPopulateTD( ptd, n_basemult, rect, chart );
                                     (*pTextureHash)[key] = ptd;
                               }
@@ -11751,7 +11756,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)
                               {
-//                                    printf("  -->Upload tex\n");
+                                    printf("  -->Upload tex\n");
                                     GLuint tex_name;
                                     glGenTextures(1, &tex_name);
                                     ptd->tex_name = tex_name;
@@ -12092,9 +12097,11 @@ void glChartCanvas::render()
              {
                   RenderChartRegion(Current_Ch_BSB, svp, ru);
              }
-              else if (!dynamic_cast<ChartDummy*>(Current_Ch))
-              {
-                   /* not bsb slow for now */
+             else if (!dynamic_cast<ChartDummy*>(Current_Ch))
+             {
+//                  Current_Ch->RenderRegionViewOnDC(gldc, svp, chart_get_region);
+
+                    /* not bsb slow for now */
                    //  Create a temporary bitmap
                    int w = svp.pix_width, h = svp.pix_height;
 
