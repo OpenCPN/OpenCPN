@@ -474,7 +474,7 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h, wxCoo
                            wxCoord *externalLeading, wxFont *font) const
 {
      if(dc)
-          GetTextExtent(string, w, h, descent, externalLeading, font);
+          dc->GetTextExtent(string, w, h, descent, externalLeading, font);
      else {
           wxFont f = m_font;
           if(font)
