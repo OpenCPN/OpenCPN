@@ -131,6 +131,9 @@ public:
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const wxRegion &Region);
+
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
 
@@ -213,6 +216,7 @@ public:
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
+      bool DoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);

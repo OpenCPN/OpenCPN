@@ -1613,6 +1613,206 @@ void s57chart::SetLinePriorities(void)
 }
 
 
+bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+//     CALLGRIND_START_INSTRUMENTATION
+
+      SetVPParms(VPoint);
+
+      bool force_new_view = false;
+
+      if(Region != m_last_Region)
+            force_new_view = true;
+
+      ps52plib->PrepareForRender();
+
+      if(m_plib_state_hash != ps52plib->GetStateHash())
+      {
+            m_bLinePrioritySet = false;                     // need to reset line priorities
+            UpdateLUPs(this);                               // and update the LUPs
+            ClearRenderedTextCache();                       // and reset the text renderer,
+                                                            //for the case where depth(height) units change
+            ResetPointBBoxes(m_last_vp, VPoint);
+      }
+
+      if(VPoint.view_scale_ppm != m_last_vp.view_scale_ppm)
+      {
+            ResetPointBBoxes(m_last_vp, VPoint);
+      }
+
+      SetLinePriorities();
+
+      //        Clear the text declutter list
+      ps52plib->ClearTextList();
+
+      if(1)
+      {
+            //    Create a stencil buffer for clipping to the region
+            glEnable (GL_STENCIL_TEST);
+            glClear(GL_STENCIL_BUFFER_BIT);
+
+            //    We are going to write "1" into the stencil buffer wherever the region is valid
+            glStencilFunc (GL_ALWAYS, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            //    Decompose the region into rectangles, and draw as quads
+            wxRegionIterator clipit ( Region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+                  glBegin(GL_QUADS);
+
+                  glVertex2f(rect.x, rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                  glVertex2f(rect.x, rect.y + rect.height);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+      }
+
+#if 0
+      wxRegionIterator upd(Region); // get the Region rect list
+      while (upd)
+      {
+            wxRect rect = upd.GetRect();
+
+            //  Build synthetic ViewPort on this rectangle
+            //  Especially, we want the BBox to be accurate in order to
+            //  render only those objects actually visible in this region
+
+            ViewPort temp_vp = VPoint;
+            double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
+
+            GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
+            GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
+
+            if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
+                  temp_lon_right += 360.;
+
+            temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
+            temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
+
+            //      Allow some slop in the viewport
+//            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
+//            temp_vp.GetBBox().EnLarge(margin);
+
+            DoRenderViewOnGL(glc, temp_vp, rect, force_new_view);
+
+            upd ++ ;
+      }
+#endif
+
+      wxRect rect = Region.GetBox();
+
+            //  Build synthetic ViewPort on this rectangle
+            //  Especially, we want the BBox to be accurate in order to
+            //  render only those objects actually visible in this region
+
+      ViewPort temp_vp = VPoint;
+      double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
+
+      GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
+      GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
+
+      if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
+            temp_lon_right += 360.;
+
+      temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
+      temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
+
+            //      Allow some slop in the viewport
+//            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
+//            temp_vp.GetBBox().EnLarge(margin);
+
+      DoRenderViewOnGL(glc, temp_vp, rect, force_new_view);
+
+      glDisable (GL_STENCIL_TEST);
+
+
+//      Update last_vp to reflect current state
+      m_last_vp = VPoint;
+      m_last_Region = Region;
+
+//      CALLGRIND_STOP_INSTRUMENTATION
+
+      return true;
+}
+
+bool s57chart::DoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view)
+{
+      int i;
+      ObjRazRules *top;
+      ObjRazRules *crnt;
+
+      ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
+
+
+      //      Render the areas quickly
+      for (i=0; i<PRIO_NUM; ++i)
+      {
+            if(ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES)
+                  top = razRules[i][4];           // Area Symbolized Boundaries
+            else
+                  top = razRules[i][3];           // Area Plain Boundaries
+
+            while ( top != NULL)
+            {
+                  crnt = top;
+                  top  = top->next;               // next object
+                  ps52plib->RenderAreaToGL(glc, crnt, &tvp, rect);
+            }
+      }
+
+
+      //    Render the lines and points
+      for (i=0; i<PRIO_NUM; ++i)
+      {
+            if(ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES)
+                  top = razRules[i][4];           // Area Symbolized Boundaries
+            else
+                  top = razRules[i][3];           // Area Plain Boundaries
+            while ( top != NULL)
+            {
+                  crnt = top;
+                  top  = top->next;               // next object
+                  ps52plib->RenderObjectToGL(glc, crnt, &tvp, rect);
+            }
+
+            top = razRules[i][2];           //LINES
+            while ( top != NULL)
+            {
+                  ObjRazRules *crnt = top;
+                  top  = top->next;
+                  ps52plib->RenderObjectToGL(glc, crnt, &tvp, rect);
+            }
+
+
+            if(ps52plib->m_nSymbolStyle == SIMPLIFIED)
+                  top = razRules[i][0];           //SIMPLIFIED Points
+            else
+                  top = razRules[i][1];           //Paper Chart Points Points
+
+            while ( top != NULL)
+            {
+                  crnt = top;
+                  top  = top->next;
+                  ps52plib->RenderObjectToGL(glc, crnt, &tvp, rect);
+            }
+
+
+      }
+
+      return true;
+}
+
+
 bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
       SetVPParms(VPoint);
@@ -2034,7 +2234,7 @@ int s57chart::DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect
           {
                 crnt = top;
                 top  = top->next;               // next object
-                ps52plib->RenderArea(&dcinput, crnt, &tvp, &pb_spec);
+                ps52plib->RenderAreaToDC(&dcinput, crnt, &tvp, &pb_spec);
           }
     }
 
@@ -2104,7 +2304,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect
         {
               crnt = top;
               top  = top->next;               // next object
-              ps52plib->_draw(&dcinput, crnt, &tvp);
+              ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
         }
 
         top = razRules[i][2];           //LINES
@@ -2112,7 +2312,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect
         {
             ObjRazRules *crnt = top;
             top  = top->next;
-            ps52plib->_draw(&dcinput, crnt, &tvp);
+            ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
         }
 
 
@@ -2125,7 +2325,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect
         {
               crnt = top;
               top  = top->next;
-              ps52plib->_draw(&dcinput, crnt, &tvp);
+              ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
         }
 
 
@@ -6172,6 +6372,9 @@ bool s57chart::IsPointInObjArea(float lat, float lon, float select_radius, S57Ob
 
     if(obj->pPolyTessGeo)
     {
+        if(!obj->pPolyTessGeo->IsOk())
+              obj->pPolyTessGeo->BuildTessGL();
+
         PolyTriGroup *ppg = obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
         TriPrim *pTP = ppg->tri_prim_head;

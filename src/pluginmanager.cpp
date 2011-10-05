@@ -39,6 +39,7 @@
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "bitmaps/default_pi.xpm"
+#include "ocpndc.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -426,7 +427,9 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                   if(pic->m_cap_flag & WANTS_OVERLAY_CALLBACK)
                   {
                         PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
-                        pic->m_pplugin->RenderOverlay(dc, &pivp);
+                        wxMemoryDC *pmdc = wxDynamicCast(dc.GetDC(), wxMemoryDC);
+                        if(pmdc)
+                              pic->m_pplugin->RenderOverlay(pmdc, &pivp);
                   }
             }
       }
@@ -1113,7 +1116,7 @@ void opencpn_plugin::OnToolbarToolCallback(int id)
 void opencpn_plugin::OnContextMenuItemCallback(int id)
 {}
 
-bool opencpn_plugin::RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp)
+bool opencpn_plugin::RenderOverlay(wxMemoryDC *pdc, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
@@ -1602,6 +1605,12 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
       else
             return 2.0e7;
 }
+
+bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return true;
+}
+
 
 bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                               const wxRegion &Region)

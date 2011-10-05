@@ -121,6 +121,8 @@
 class Extended_Geometry
 {
 public:
+      Extended_Geometry();
+      ~Extended_Geometry();
 
       OGRGeometry       *pogrGeom;
       int               n_vector_indices;
@@ -133,6 +135,14 @@ public:
       wxPoint2DDouble   *vertex_array;
       int               xmin, xmax, ymin, ymax;
       int               n_max_edge_points;
+
+      //    Conversion parameters
+      //    for (assummed linear) convertions from vertex_array points to easting/northing, metres from 0,0
+      //    To convert to lat/lon, use simple merctor equations
+      double            x_rate;
+      double            x_offset;
+      double            y_rate;
+      double            y_offset;
 };
 
 
@@ -223,6 +233,10 @@ class PolyTessGeo
 
         PolyTessGeo(Extended_Geometry *pxGeom);
 
+        bool IsOk(){ return m_bOK;}
+
+        int BuildTessGL(void);
+
         int Write_PolyTriGroup( FILE *ofs);
         int Write_PolyTriGroup( wxOutputStream &ostream);
 
@@ -243,6 +257,10 @@ class PolyTessGeo
 
 
     //  Data
+
+        bool            m_bOK;
+
+        Extended_Geometry     *m_pxgeom;
 
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain

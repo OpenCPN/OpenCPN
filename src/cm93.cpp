@@ -2395,6 +2395,9 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
 //                  if(pobjectDef->n_related_objects)
 //                        int yyp = 5;
 
+//                  if(iObj == 1310)
+//                        int yyp = 4;
+
                   Extended_Geometry *xgeom = BuildGeom ( pobjectDef, NULL, iObj );
 
                   obj = NULL;
@@ -3846,22 +3849,28 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   pobj->m_lon = lon;
                   pobj->m_lat = lat;
 
+
+                  if(1)
+                  {
                   //    This will be a deferred tesselation.....
-//                  PolyTessGeoTrap *ppg = new PolyTessGeoTrap(xgeom);
-//                  pobj->pPolyTrapGeo = ppg;
 
+                        // Set up the conversion factors for use in the tesselator
+                        xgeom->x_rate   = m_CIB.transform_x_rate;
+                        xgeom->x_offset = m_CIB.transform_x_origin - trans_WGS84_offset_x;
+                        xgeom->y_rate   = m_CIB.transform_y_rate;
+                        xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
 
+                        //    Set up a deferred tesselation
+                        pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
+                  }
+#if 0
+                  else
+                  {
                   //    Build an OGRPolygon from xgeom
                   //    Coordinates will be cm93 points
 
-                  OGRPolygon *pPoly = new OGRPolygon;
-
-
-                  //      Get number of exterior ring points(vertices)
-                  int npta  = xgeom->contour_array[0];
-
-//                  if ( npta == 12 )
-                  {
+                        int npta  = xgeom->contour_array[0];   // Get number of exterior ring points(vertices)
+                        OGRPolygon *pPoly = new OGRPolygon;
 
                         //    Build an OGRLinearRing
                         OGRLinearRing *plr0 = new OGRLinearRing;
@@ -3879,41 +3888,73 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         //    Add the LinearRing to the Poly
                         pPoly->addRing ( plr0 );
 
-                        pobj->pPolyTessGeo = new PolyTessGeo ( pPoly, false, 0, 0, false );
-
-                        //  Walk the tesselated triangle chain(s) to compute lat/lon bounding boxes
-                        //  Longitudes range from 0->360.
-
-                        PolyTriGroup *ppg = pobj->pPolyTessGeo->Get_PolyTriGroup_head();
-                        TriPrim *p_tp = ppg->tri_prim_head;
-                        while ( p_tp )
+                        //    Now loop on the interior rings
+                        wxPoint2DDouble *pd = &xgeom->vertex_array[npta +1];        // points to the first interior ring
+                        for(int ir=1; ir < xgeom->n_contours; ir++)
                         {
-                        //      Get and convert the points
-                              double *pvert_list = p_tp->p_vertex;
-                              double sxmax = -1000;                   // this poly BBox
-                              double sxmin = 1000;
-                              double symax = -90;
-                              double symin = 90;
+                              int nptir = xgeom->contour_array[ir];
 
-                              for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
+                        //    Build an OGRLinearRing
+                              OGRLinearRing *plr = new OGRLinearRing;
+
+                        //  and add the cm93 points to LinearRing
+                              for ( int ip = 0 ; ip < nptir ; ip++ )
                               {
-                                    double lat, lon;
-                                    p.x = *pvert_list++;
-                                    p.y = *pvert_list++;
-                                    Transform(&p, 0, 0, &lat, &lon);
+                                    cm93_point p;
+                                    p.x = ( int ) pd->m_x;
+                                    p.y = ( int ) pd->m_y;
 
-                                    sxmax = wxMax(lon, sxmax);
-                                    sxmin = wxMin(lon, sxmin);
-                                    symax = wxMax(lat, symax);
-                                    symin = wxMin(lat, symin);
+                                    plr->setPoint ( ip, p.x, p.y );
+
+                                    pd++;
                               }
 
-                              p_tp->p_bbox->SetMin(sxmin, symin);
-                              p_tp->p_bbox->SetMax(sxmax, symax);
-
-                              p_tp = p_tp->p_next;                // pick up the next in chain
+                        //    Add the LinearRing to the Poly
+                              pPoly->addRing ( plr );
                         }
+
+//                        PolyTessGeo *pttt = new PolyTessGeo ( pPoly, false, 0, 0, false );
+//                        pobj->pPolyTessGeo->BuildTessGL();
+//                        int yyp = 5;
+
                   }
+#endif
+
+#if 0
+                  //  Walk the tesselated triangle chain(s) to compute lat/lon bounding boxes
+                  //  Longitudes range from 0->360.
+
+                  PolyTriGroup *ppg = pobj->pPolyTessGeo->Get_PolyTriGroup_head();
+                  TriPrim *p_tp = ppg->tri_prim_head;
+                  while ( p_tp )
+                  {
+                  //      Get and convert the points
+                        double *pvert_list = p_tp->p_vertex;
+                        double sxmax = -1000;                   // this poly BBox
+                        double sxmin = 1000;
+                        double symax = -90;
+                        double symin = 90;
+
+                        for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
+                        {
+                              double lat, lon;
+                              p.x = *pvert_list++;
+                              p.y = *pvert_list++;
+                              Transform(&p, 0, 0, &lat, &lon);
+
+                              sxmax = wxMax(lon, sxmax);
+                              sxmin = wxMin(lon, sxmin);
+                              symax = wxMax(lat, symax);
+                              symin = wxMin(lat, symin);
+                        }
+
+                        p_tp->p_bbox->SetMin(sxmin, symin);
+                        p_tp->p_bbox->SetMax(sxmax, symax);
+
+                        p_tp = p_tp->p_next;                // pick up the next in chain
+                  }
+#endif
+
                   break;
             }
 
@@ -4061,7 +4102,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
                   pobj->npt = xgeom->n_max_vertex;
                   pobj->geoPt = ( pt * ) xgeom->vertex_array;
-
+                  xgeom->vertex_array = NULL;               // object now owns the array
 
                   //  Declare x/y of the object to be average of all cm93points
                   pobj->x = ( xgeom->xmin + xgeom->xmax ) / 2.;
@@ -4466,8 +4507,8 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
                                     //    Clean up the xgeom
                                     free ( xgeom->pvector_index );
-                                    free ( xgeom->contour_array );
-                                    free ( xgeom->vertex_array );
+//                                    free ( xgeom->contour_array );
+//                                    free ( xgeom->vertex_array );
 
                                     delete xgeom;
                               }
@@ -5377,6 +5418,313 @@ void cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, wxRegion *pVa
 
 }
 
+bool cm93compchart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      SetVPParms ( VPoint );
+
+      if ( m_pOffsetDialog && m_pOffsetDialog->IsShown() )
+            m_pOffsetDialog->UpdateMCOVRList ( VPoint );
+
+      return DoRenderRegionViewOnGL ( glc, VPoint, Region );
+
+}
+
+bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region )
+{
+//      g_bDebugCM93 = true;
+
+//      CALLGRIND_START_INSTRUMENTATION
+      if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
+      {
+                  ::wxBeginBusyCursor();
+                  m_b_busy_shown = true;
+                  m_last_scale_for_busy = VPoint.view_scale_ppm;
+      }
+
+      if ( g_bDebugCM93 )
+      {
+            printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
+            wxRegionIterator upd ( Region );
+            while ( upd )
+            {
+                  wxRect rect = upd.GetRect();
+                  rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
+                  printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                  upd ++ ;
+            }
+      }
+
+
+      ViewPort vp_positive = VPoint;
+
+      SetVPPositive ( &vp_positive );
+
+      bool render_return = true;
+      if ( m_pcm93chart_current )
+      {
+            m_pcm93chart_current->SetVPParms ( vp_positive );
+
+            //    Check the current chart scale to see if it covers the requested region totally
+            if ( VPoint.b_quilt )
+            {
+
+                  //    Clear all the subchart regions
+                  for ( int i = 0 ; i < 8 ; i++ )
+                  {
+                        if ( m_pcm93chart_array[i] )
+                              m_pcm93chart_array[i]->m_render_region.Clear();
+                  }
+
+                  wxRegion vpr_empty = Region;
+
+                  wxRegion chart_region;
+
+                  GetValidCanvasRegion ( vp_positive, &chart_region );
+                  m_pcm93chart_current->m_render_region = chart_region;
+
+                  chart_region.Intersect(Region);
+
+                  if ( g_bDebugCM93 )
+                  {
+                        printf ( "On DoRenderRegionViewOnGL : Intersecting Ref region rectangles\n" );
+                        wxRegionIterator upd ( chart_region );
+                        while ( upd )
+                        {
+                              wxRect rect = upd.GetRect();
+                              rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
+                              printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                              upd ++ ;
+                        }
+                  }
+
+                  if ( !chart_region.IsEmpty() )
+                        vpr_empty.Subtract ( chart_region );
+
+                  if ( g_bDebugCM93 )
+                  {
+                        printf ( "On DoRenderRegionViewOnGL : Region rectangles to fill with smaller scale\n" );
+                        wxRegionIterator upd ( vpr_empty );
+                        while ( upd )
+                        {
+                              wxRect rect = upd.GetRect();
+                              rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
+                              printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                              upd ++ ;
+                        }
+                  }
+
+ //if(0)
+                 if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
+                  {
+                        //    Save the current cm93 chart pointer for restoration later
+                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+
+                        int cmscale_next = m_cmscale;
+
+                        //    Render smaller scale cells the entire requested region is full
+                        while ( !vpr_empty.Empty() && cmscale_next )
+                        {
+                              //    get the next smaller scale chart
+                              cmscale_next--;
+                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next );
+
+                              if ( m_pcm93chart_current )
+                              {
+                                    if ( g_bDebugCM93 )
+                                          printf ( "  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
+
+
+                                    wxRegion sscale_region;
+                                    GetValidCanvasRegion ( vp_positive, &sscale_region );
+
+                                    //    Only need to render that part of the vp that is not yet full
+                                    sscale_region.Intersect ( vpr_empty );
+
+                                    if ( g_bDebugCM93 )
+                                    {
+                                          printf ( "On DoRenderRegionViewOnGL : sscale_region rectangles\n" );
+                                          wxRegionIterator upd ( sscale_region );
+                                          while ( upd )
+                                          {
+                                                wxRect rect = upd.GetRect();
+                                                rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
+                                                printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                                                upd ++ ;
+                                          }
+                                    }
+
+                                    m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
+                                    m_pcm93chart_current->m_render_region = sscale_region;
+
+                                    //    Update the remaining empty region
+                                    if ( !sscale_region.IsEmpty() )
+                                          vpr_empty.Subtract ( sscale_region );
+                              }
+
+                        }     // while
+
+                        // restore the base chart pointer
+                        m_pcm93chart_current = m_pcm93chart_save;
+
+                        if ( g_bDebugCM93 )
+                        {
+                              printf ( "On DoRenderRegionViewOnGL : Final (chart_region) rectangles\n" );
+                              wxRegionIterator upd ( chart_region );
+                              while ( upd )
+                              {
+                                    wxRect rect = upd.GetRect();
+                                    rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
+                                    printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                                    upd ++ ;
+                              }
+                        }
+
+                        //    Finally, render the target scale chart
+                        if ( !chart_region.IsEmpty() )
+                              m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+
+                  }
+                  else
+                        render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+            }
+            else  // Single chart mode
+                  render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, Region );
+      }
+      else
+      {
+#if 0
+            //    one must always return a valid bitmap selected into the specified DC
+            //    Since the CM93 cell is not available at this location, select a dummy placeholder
+            if ( m_pDummyBM )
+            {
+                  if ( ( m_pDummyBM->GetWidth() != VPoint.pix_width ) || ( m_pDummyBM->GetHeight() != VPoint.pix_height ) )
+                  {
+                        delete m_pDummyBM;
+                        m_pDummyBM = NULL;
+                  }
+            }
+
+            if ( NULL == m_pDummyBM )
+                  m_pDummyBM = new wxBitmap ( VPoint.pix_width, VPoint.pix_height,-1 );
+
+
+            // Clear the bitmap
+            wxMemoryDC mdc;
+            mdc.SelectObject ( *m_pDummyBM );
+            mdc.SetBackground ( *wxBLACK_BRUSH );
+            mdc.Clear();
+            mdc.SelectObject ( wxNullBitmap );
+
+
+            dc.SelectObject ( *m_pDummyBM );
+#endif
+      }
+
+//      CALLGRIND_STOP_INSTRUMENTATION
+
+#if 0
+      //    Render the cm93 cell's M_COVR outlines if called for
+      if ( m_cell_index_special_outline )
+      {
+            covr_set *pcover = m_pcm93chart_current->GetCoverSet();
+
+            for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
+            {
+                  M_COVR_Desc *pmcd = pcover->GetCover ( im );
+                  if ( ( pmcd->m_cell_index == m_cell_index_special_outline ) &&
+                         ( pmcd->m_object_id == m_object_id_special_outline ) &&
+                         ( pmcd->m_subcell == m_subcell_special_outline ) )
+
+                  {
+                        //    Draw this MCD's represented outline
+
+                        //    Case:  vpBBox is completely inside the mcd box
+//                        if(!(_OUT == vp_positive.vpBBox.Intersect(pmcd->m_covr_bbox)) || !(_OUT == vp.vpBBox.Intersect(pmcd->m_covr_bbox)))
+                        {
+
+                              float_2Dpt *p = pmcd->pvertices;
+                              wxPoint *pwp = m_pcm93chart_current->GetDrawBuffer ( pmcd->m_nvertices );
+
+                              for ( int ip = 0 ; ip < pmcd->m_nvertices ; ip++ )
+                              {
+
+                                    double plon = p->x;
+                                    if ( fabs ( plon - VPoint.clon ) > 180. )
+                                    {
+                                          if ( plon > VPoint.clon )
+                                                plon -= 360.;
+                                          else
+                                                plon += 360.;
+                                    }
+
+
+                                    double easting, northing, epix, npix;
+                                    toSM ( p->y, plon + 360., VPoint.clat, VPoint.clon + 360, &easting, &northing );
+
+                                    //    Outlines stored in MCDs are not adjusted for offsets
+//                                    easting -= pmcd->transform_WGS84_offset_x;
+                                    easting -= pmcd->user_xoff;
+//                                    northing -= pmcd->transform_WGS84_offset_y;
+                                    northing -= pmcd->user_yoff;
+
+                                    epix = easting  * VPoint.view_scale_ppm;
+                                    npix = northing * VPoint.view_scale_ppm;
+
+                                    pwp[ip].x = ( int ) round ( ( VPoint.pix_width  / 2 ) + epix );
+                                    pwp[ip].y = ( int ) round ( ( VPoint.pix_height / 2 ) - npix );
+
+                                    p++;
+                              }
+
+                              //    Scrub the points
+                              //   looking for segments for which the wrong longitude decision was made
+                              //    TODO all this mole needs to be rethought, again
+                              bool btest = true;
+                              /*
+                              wxPoint p0 = pwp[0];
+                              for(int ip = 1 ; ip < pmcd->m_nvertices ; ip++)
+                              {
+                               //                                   if(((p0.x > VPoint.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > VPoint.pix_width)))
+                               //                                         btest = false;
+
+                              p0 = pwp[ip];
+                        }
+                              */
+                              if ( btest )
+                              {
+                                    dc.SetPen ( wxPen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 4, wxLONG_DASH ) );
+
+                                    for ( int iseg=0 ; iseg < pmcd->m_nvertices-1 ; iseg++ )
+                                    {
+
+                                          int x0 = pwp[iseg].x;
+                                          int y0 = pwp[iseg].y;
+                                          int x1 = pwp[iseg+1].x;
+                                          int y1 = pwp[iseg+1].y;
+
+                                          ClipResult res = cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1,
+                                                      0, VPoint.pix_width, 0, VPoint.pix_height );
+
+                                          if ( res == Invisible )                                                 // Do not bother with segments that are invisible
+                                                continue;
+
+                                          dc.DrawLine ( x0, y0, x1, y1 );
+                                    }
+                              }
+                        }
+
+                  }
+            }
+      }
+#endif
+      if ( m_b_busy_shown )
+      {
+                  ::wxEndBusyCursor();
+                  m_b_busy_shown = false;
+      }
+
+      return render_return;
+}
 
 
 

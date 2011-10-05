@@ -441,6 +441,9 @@ class cm93compchart : public s57chart
 
             bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
+            virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                              const wxRegion &Region);
+
             bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
 
             void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
@@ -478,6 +481,8 @@ class cm93compchart : public s57chart
             int PrepareChartScale(const ViewPort &vpt, int cmscale);
             int GetCMScaleFromVP(const ViewPort &vpt);
             bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
+
+            bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region );
 
 
             //    Data members

@@ -95,7 +95,11 @@ typedef enum _RadPrio{
    RAD_NUM  = 2
 }RadPrio;
 
-
+//    PixelPtr type flags
+enum{
+      ID_wxBitmap       = 1,
+      ID_RGBA
+};
 
 // display category type
 typedef enum _DisCat{
@@ -149,6 +153,7 @@ typedef struct _Rule{
    union          {char       *LVCT,      *PVCT,      *SVCT;      } vector;
 
    // Private data
+   int     parm0;                      // always indicates form of pixelPtr
    int     parm1;                      // integer parameters
    int     parm2;
    int     parm3;

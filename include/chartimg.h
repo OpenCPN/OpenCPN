@@ -167,6 +167,9 @@ class  ChartBaseBSB     :public ChartBase
 
       bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
 
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const wxRegion &Region);
+
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 

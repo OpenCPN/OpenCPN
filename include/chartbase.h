@@ -34,7 +34,7 @@
 #include "bbox.h"
 #include "ocpn_types.h"
 
-
+#include <wx/glcanvas.h>
 
 //----------------------------------------------------------------------------
 //  Forward Declarations
@@ -175,6 +175,9 @@ public:
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                         const wxRegion &Region) = 0;
 
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const wxRegion &Region) = 0;
+
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion) = 0;
@@ -267,6 +270,9 @@ public:
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                         const wxRegion &Region);
 
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const wxRegion &Region);
+
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
@@ -311,6 +317,9 @@ class ChartPlugInWrapper : public ChartBase
             virtual bool GetChartExtent(Extent *pext);
 
             virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
+                                              const wxRegion &Region);
+
+            virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                               const wxRegion &Region);
 
             virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);

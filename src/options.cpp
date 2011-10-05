@@ -490,7 +490,7 @@ void options::CreateControls()
     itemStaticBoxSizerCDO->Add(pOpenGL, 1, wxALIGN_LEFT|wxALL, 2);
 
     //  Smooth Zoom checkbox
-    pSmoothZoom = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Enable Smooth Zooming"));
+    pSmoothZoom = new wxCheckBox( itemPanel5, ID_SMOOTHZOOMBOX, _("Enable Smooth Zooming"));
     itemStaticBoxSizerCDO->Add(pSmoothZoom, 1, wxALIGN_LEFT|wxALL, 2);
 
 
@@ -1287,6 +1287,8 @@ void options::CreateControls()
 
     pTransparentToolbar = new wxCheckBox( itemPanelAdvanced, ID_TRANSTOOLBARCHECKBOX, _("Enable transparent toolbar"));
     itemStaticBoxSizerGUIOption->Add(pTransparentToolbar, 1, wxALIGN_LEFT|wxALL, border_size);
+    if(g_bopengl)
+          pTransparentToolbar->Disable();
 
     pShowLayers = new wxCheckBox( itemPanelAdvanced, ID_SHOWLAYERSCHECKBOX, _("Show layers initially"));
     itemStaticBoxSizerGUIOption->Add(pShowLayers, 1, wxALIGN_LEFT|wxALL, border_size);

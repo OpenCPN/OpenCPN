@@ -253,6 +253,14 @@ bool ChartDummy::GetChartExtent(Extent *pext)
     return true;
 }
 
+bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return true;
+}
+
+
+
+
 bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
       return RenderViewOnDC(dc, VPoint);
@@ -3273,7 +3281,10 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 
 
 
-
+bool ChartBaseBSB::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return true;
+}
 
 
 bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)

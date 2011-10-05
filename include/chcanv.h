@@ -205,6 +205,8 @@ public:
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
       ViewPort &GetVP(); const
 
+      glChartCanvas *GetglCanvas(){ return m_glcc; }
+
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
       bool  GetbTCUpdate(){ return m_bTCupdate;}
       void  SetbShowCurrent(bool f){ m_bShowCurrent = f;}
@@ -540,6 +542,8 @@ public:
       void OnSize ( wxSizeEvent& event );
       void MouseEvent(wxMouseEvent& event);
 
+      wxString GetRendererString(){ return m_renderer; }
+
       void Invalidate() {m_cacheinvalid++; }
       void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
@@ -555,6 +559,8 @@ protected:
       int m_datasize;
 
       bool m_bsetup;
+
+      wxString m_renderer;
 
       void GrowData(int size);
       wxRectList RegionToMaxTexRects(wxRegion &r);

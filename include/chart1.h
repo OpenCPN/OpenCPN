@@ -316,6 +316,9 @@ class MyFrame: public wxFrame
                                     bool b_force, bool b_prog,
                                     wxString &ChartListFileName);
 
+    bool                m_bdefer_resize;
+    wxSize              m_defer_size;
+
   private:
     void DoSetSize(void);
     void DoCOGSet(void);

@@ -1677,6 +1677,29 @@ void s52plib::DestroyRuleNode ( Rule *pR )
 
             free ( pR->colRef.SCRF );
 
+            if ( pR->parm0 && pR->pixelPtr )
+            {
+                  switch(pR->parm0)
+                  {
+                        case ID_wxBitmap:
+                        {
+                              wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
+                              delete pbm;
+                              pR->pixelPtr = NULL;
+                              pR->parm0 = 0;
+                              break;
+                        }
+                        case ID_RGBA:
+                        {
+                              unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
+                              free ( p );
+                              pR->pixelPtr = NULL;
+                              pR->parm0 = 0;
+                              break;
+                        }
+                  }
+            }
+
             if ( pR->pixelPtr )
             {
                   if ( pR->definition.PADF == 'R' )
@@ -1713,12 +1736,26 @@ void s52plib::DestroyRules ( RuleHash *rh )
 
                   free ( pR->colRef.SCRF );
 
-                  if ( pR->pixelPtr )
+                  if ( pR->parm0 && pR->pixelPtr )
                   {
-//                if(pR->definition.PADF == 'R')
+                        switch(pR->parm0)
                         {
-                              wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                              delete pbm;
+                              case ID_wxBitmap:
+                              {
+                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
+                                    delete pbm;
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                              case ID_RGBA:
+                              {
+                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
+                                    free ( p );
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
                         }
                   }
             }
@@ -1728,6 +1765,48 @@ void s52plib::DestroyRules ( RuleHash *rh )
       delete rh;
 }
 
+
+void s52plib::FlushSymbolCaches ( void )
+{
+      RuleHash *rh = _symb_sym;
+
+      if(!rh)
+            return;
+
+      RuleHash::iterator it;
+      wxString key;
+      Rule *pR;
+
+      for ( it = ( *rh ).begin(); it != ( *rh ).end(); ++it )
+      {
+            pR = it->second;
+            if ( pR )
+            {
+                  if ( pR->parm0 && pR->pixelPtr )
+                  {
+                        switch(pR->parm0)
+                        {
+                              case ID_wxBitmap:
+                              {
+                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
+                                    delete pbm;
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                              case ID_RGBA:
+                              {
+                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
+                                    free ( p );
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                        }
+                  }
+            }
+      }
+}
 
 
 
@@ -1801,13 +1880,30 @@ void s52plib::DestroyLUP ( LUPrec *pLUP )
 
                   free ( pR->colRef.SCRF );
 
-                  if ( pR->pixelPtr )
+                  if ( pR->parm0 && pR->pixelPtr )
                   {
-                        wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                        delete pbm;
-                   }
-                   free ( pR );
+                        switch(pR->parm0)
+                        {
+                              case ID_wxBitmap:
+                              {
+                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
+                                    delete pbm;
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                              case ID_RGBA:
+                              {
+                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
+                                    free ( p );
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                        }
+                  }
 
+                  free ( pR );
             }
 
             free ( top );
@@ -2658,6 +2754,10 @@ bool s52plib::TextRenderCheck ( ObjRazRules *rzRules )
 
 int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool bTX )
 {
+      //    OpenGL Unimplemented
+      if(!m_pdc)
+            return 0;
+
       if ( !TextRenderCheck ( rzRules ) )
             return 0;
 
@@ -2730,7 +2830,7 @@ int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, boo
 
             wxRect rect;
 
-            bool bwas_drawn = RenderText ( pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText );
+            bool bwas_drawn = RenderText ( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText );
 
             //    If this is an un-cached text object render, then do not update the S57Obj in any way
             if(b_free_text)
@@ -3137,6 +3237,10 @@ return true;
 bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoint &r, ViewPort *vp, float rot_angle )
 {
 
+      //    OpenGL Unimplemented
+      if(!pdc)
+            return 0;
+
       float fsf = 100 / canvas_pix_per_mm;
 
       int width  = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
@@ -3195,11 +3299,32 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
             sbm->SetMask ( pmask );
 
             // delete any old private data
-            wxBitmap *pbmo = ( wxBitmap * ) ( prule->pixelPtr );
-            delete pbmo;
+            if ( prule->parm0 && prule->pixelPtr )
+            {
+                  switch(prule->parm0)
+                  {
+                        case ID_wxBitmap:
+                        {
+                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
+                              delete pbm;
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                        case ID_RGBA:
+                        {
+                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
+                              free ( p );
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                  }
+            }
 
             //      Save the bitmap ptr and aux parms in the rule
             prule->pixelPtr = sbm;
+            prule->parm0 = ID_wxBitmap;
             prule->parm1 = m_colortable_index;
             prule->parm2 = bm_orgx- ( int ) ( pivot_x/fsf );
             prule->parm3 = bm_orgy- ( int ) ( pivot_y/fsf );
@@ -3420,22 +3545,114 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
                   pbm->SetMask ( pmask );
 
             }
+
             // delete any old private data
-            wxBitmap *pbmo = ( wxBitmap * ) ( prule->pixelPtr );
-            delete pbmo;
+            if ( prule->parm0 && prule->pixelPtr )
+            {
+                  switch(prule->parm0)
+                  {
+                        case ID_wxBitmap:
+                        {
+                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
+                              delete pbm;
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                        case ID_RGBA:
+                        {
+                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
+                              free ( p );
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                  }
+            }
+
+            if(!pdc)          // opengl
+            {
+            //    Get the glRGBA format data from the wxImage
+                  unsigned char *d = Image.GetData();
+                  unsigned char *a = Image.GetAlpha();
+
+                  Image.SetMaskColour(m_unused_wxColor.Red(), m_unused_wxColor.Green(), m_unused_wxColor.Blue());
+                  unsigned char mr, mg, mb;
+                  if(!Image.GetOrFindMaskColour(&mr, &mg, &mb) && !a)
+                        printf("trying to use mask to draw a bitmap without alpha or mask\n");
+
+                  int w = Image.GetWidth();
+                  int h = Image.GetHeight();
+
+                  unsigned char *e = (unsigned char *)malloc(w * h * 4);
+                  for(int y=0; y<h; y++)
+                  {
+                        for(int x=0; x<w; x++)
+                        {
+                              unsigned char r, g, b;
+                              int off = (y*Image.GetWidth()+x);
+                              r = d[off*3 + 0];
+                              g = d[off*3 + 1];
+                              b = d[off*3 + 2];
+
+                              e[off*4 + 0] = r;
+                              e[off*4 + 1] = g;
+                              e[off*4 + 2] = b;
+
+                              e[off*4 + 3] = a ? a[off] :
+                                    ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
+                        }
+                  }
 
             //      Save the bitmap ptr and aux parms in the rule
-            prule->pixelPtr = pbm;
-            prule->parm1 = m_colortable_index;
+                  prule->pixelPtr = e;
+                  prule->parm0 = ID_RGBA;
+                  prule->parm1 = m_colortable_index;
+                  prule->parm2 = w;
+                  prule->parm3 = h;
+            }
+            else
+            {
+            //      Make the wxBitmap
 
+            //TODO Study this problem, use conditional build?
+#ifdef __WXMSWF__
+//      On some versions of wxMSW, on Windows XP, conversion from wxImage to wxBitmap fails at the ::CreateDIBitmap() call
+//      unless a "compatible" dc is provided.  Why??
+//      As a workaround, just make a simple wxDC for temporary use
+
+                  wxMemoryDC dwxdc;
+                  wxBitmap *pbm = new wxBitmap ( Image, dwxdc );
+#else
+                  wxBitmap *pbm = new wxBitmap ( Image );
+#endif
+                  //      Make the mask
+                  wxMask *pmask = new wxMask ( *pbm, m_unused_wxColor);
+                  //      Associate the mask with the bitmap
+                  pbm->SetMask ( pmask );
+
+
+            //      Save the bitmap ptr and aux parms in the rule
+                  prule->pixelPtr = pbm;
+                  prule->parm0 = ID_wxBitmap;
+                  prule->parm1 = m_colortable_index;
+            }
       }               // instantiation
 
-//        if(!( ( wxBitmap * ) ( prule->pixelPtr ) )->IsOk())
-//              return false;
 
       //        Get the bounding box for the to-be-drawn symbol
-      int b_width  = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetWidth();
-      int b_height = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetHeight();
+      int b_width, b_height;
+
+      if(!pdc)          // opengl
+      {
+            b_width  = prule->parm2;
+            b_height = prule->parm3;
+      }
+      else
+      {
+            b_width  = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetWidth();
+            b_height = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetHeight();
+      }
 
       wxBoundingBox symbox;
       double plat, plon;
@@ -3458,20 +3675,36 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
 
       //      Now render the symbol
 
-      //      Get the bitmap into a memory dc
-      wxMemoryDC mdc;
+      if(!pdc)          // opengl
+      {
+            glColor4f(1, 1, 1, 1);
 
-      mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glRasterPos2i(r.x - pivot_x, r.y - pivot_y);
+            glPixelZoom(1, -1);
+            glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr);
+            glPixelZoom(1, 1);
+            glDisable(GL_BLEND);
 
-      //      Blit it into the target dc
-      pdc->Blit ( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+      }
+      else
+      {
+            //      Get the bitmap into a memory dc
+            wxMemoryDC mdc;
+
+            mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
+
+            //      Blit it into the target dc
+            pdc->Blit ( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
 // Debug
 //    pdc->SetPen(wxPen(*wxGREEN, 1));
 //    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
 //    pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
 
 
-      mdc.SelectObject ( wxNullBitmap );
+            mdc.SelectObject ( wxNullBitmap );
+      }
 
       //  Update the object Bounding box
       //  so that subsequent drawing operations will redraw the item fully
@@ -3498,6 +3731,7 @@ int s52plib::RenderSY ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
       float angle = 0;
       double orient;
+
 
       //      Debug
 //    if(!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6))
@@ -3537,10 +3771,10 @@ int s52plib::RenderSY ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //  Render a raster or vector symbol, as specified by LUP rules
             if ( rules->razRule->definition.SYDF == 'V' )
-                  RenderHPGL ( rzRules, rules->razRule, pdc, r, vp, angle );
+                  RenderHPGL ( rzRules, rules->razRule, m_pdc, r, vp, angle );
 
             else if ( rules->razRule->definition.SYDF == 'R' )
-                  RenderRasterSymbol ( rzRules, rules->razRule, pdc, r, vp, angle );
+                  RenderRasterSymbol ( rzRules, rules->razRule, m_pdc, r, vp, angle );
 
       }
 
@@ -3561,29 +3795,32 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       int     w;
 
       char *str = ( char* ) rules->INSTstr;
-
       c = S52_getColor ( str+7 );             // Colour
-      wxColour color ( c->R, c->G, c->B );
-//        wxColour color ( 255, 0, 255 );
-
       w = atoi ( str+5 );                     // Width
-//w = 2;
-      int style = wxSOLID;                    // Style default
 
-      if ( !strncmp ( str, "DASH", 4 ) )
-            style = wxSHORT_DASH;
+      if(m_pdc)
+      {
+            wxColour color ( c->R, c->G, c->B );
+            int style = wxSOLID;                    // Style default
+            if ( !strncmp ( str, "DASH", 4 ) )
+                  style = wxSHORT_DASH;
 
-// Windows98 cannot reliably draw dashed lines
-#ifdef __WXMSW__
-      int verMaj, verMin;
-      wxGetOsVersion ( &verMaj, &verMin );
-      if ( verMaj == 5 && verMin == 0 )             // windows 98
-            style = wxSOLID;
-#endif
+      // Windows98 cannot reliably draw dashed lines
+            #ifdef __WXMSW__
+            int verMaj, verMin;
+            wxGetOsVersion ( &verMaj, &verMin );
+            if ( verMaj == 5 && verMin == 0 )             // windows 98
+                  style = wxSOLID;
+            #endif
 
-
-      wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, w, style );
-      pdc->SetPen ( *pthispen );
+            wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, w, style );
+            m_pdc->SetPen ( *pthispen );
+      }
+      else              // OpenGL mode
+      {
+            glColor3ub( c->R, c->G, c->B );
+            glLineWidth(w);
+      }
 
       //  Get the current display priority from the LUP
       int priority_current = rzRules->LUP->DPRI - '0';          //TODO fix this hack by putting priority into object during _insertRules
@@ -3717,8 +3954,16 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                         if ( res != Invisible )
                         {
-                              pdc->DrawLine ( x0,y0,x1,y1 );
-//                              printf("***    X0:%d ptp[]%d\n", x0, ptp[ipc].x);
+                              if(m_pdc)
+                                    m_pdc->DrawLine ( x0,y0,x1,y1 );
+                              else
+                              {
+                                    glBegin(GL_LINES);
+                                    glVertex2i(x0, y0);
+                                    glVertex2i(x1, y1);
+                                    glEnd();
+
+                              }
                         }
                   }
             }
@@ -3728,6 +3973,9 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
       else if ( rzRules->obj->pPolyTessGeo )
       {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
             int xmin_ = 0;
             int xmax_ = vp->pix_width;
             int ymin_ = 0;
@@ -3775,8 +4023,17 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                          xmin_, xmax_, ymin_, ymax_ );
 
                         if ( res != Invisible )
-                              pdc->DrawLine ( x0,y0,x1,y1 );
-
+                        {
+                              if(m_pdc)
+                                    m_pdc->DrawLine ( x0,y0,x1,y1 );
+                              else
+                              {
+                                    glBegin(GL_LINES);
+                                    glVertex2i(x0, y0);
+                                    glVertex2i(x1, y1);
+                                    glEnd();
+                              }
+                        }
                   }
 
 //                    pdc->DrawLines(npt + 1, ptp);
@@ -3843,7 +4100,7 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                          xmin_, xmax_, ymin_, ymax_ );
 
                         if ( ( res != Invisible ) )
-                              pdc->DrawLine ( x0,y0,x1,y1 );
+                              m_pdc->DrawLine ( x0,y0,x1,y1 );
 
                   }
 
@@ -3872,7 +4129,17 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   ppt++;
             }
 
-            pdc->DrawLines ( npt, ptp );
+            if(m_pdc)
+                  m_pdc->DrawLines ( npt, ptp );
+
+            else
+            {
+                  glBegin(GL_LINE_STRIP);       // or GL_LINE_LOOP?????
+                  for ( int ip=0 ; ip<npt ; ip++ )
+                        glVertex2i(ptp[ip].x, ptp[ip].y);
+                  glEnd();
+            }
+
             free ( ptp );
       }
 
@@ -3889,6 +4156,10 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       S52color     *c;
       int       w;
       wxPoint   r;
+
+      //    OpenGL Unimplemented
+      if(!m_pdc)
+            return 0;
 
 //    Debug
 //        if(rzRules->obj->Index == 649)
@@ -3908,7 +4179,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       w = 1;
       wxColour color ( c->R, c->G, c->B );
       wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, 1, wxSOLID );
-      pdc->SetPen ( *pthispen );
+      m_pdc->SetPen ( *pthispen );
 
       //  Get the current display priority from the LUP
       int priority_current = rzRules->LUP->DPRI - '0';          //TODO fix this hack by putting priority into object during _insertRules
@@ -4007,9 +4278,9 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   }
 
                   if ( ( inode >= 0 ) && ( jnode >= 0 ) )
-                        draw_lc_poly ( pdc, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly ( m_pdc, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
                   else
-                        draw_lc_poly ( pdc, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly ( m_pdc, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
 
 
             }
@@ -4019,6 +4290,9 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
       else if ( rzRules->obj->pPolyTessGeo )
       {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
             PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             float *ppolygeo = pptg->pgroup_geom;
 
@@ -4042,7 +4316,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
 
 
-                  draw_lc_poly ( pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
+                  draw_lc_poly ( m_pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
 
                   free ( ptp );
 
@@ -4088,7 +4362,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 
 
-                  draw_lc_poly ( pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
+                  draw_lc_poly ( m_pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
 
                   free ( ptp );
                   ctr_offset += ( npt + 1 ) *2;
@@ -4118,7 +4392,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
 
-            draw_lc_poly ( pdc, ptp, npt, sym_len, sym_factor, rules->razRule, vp );
+            draw_lc_poly ( m_pdc, ptp, npt, sym_len, sym_factor, rules->razRule, vp );
 
             free ( ptp );
       }
@@ -4216,6 +4490,10 @@ void s52plib::draw_lc_poly ( wxDC *pdc, wxPoint *ptp, int npt,
 // Multipoint Sounding
 int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+      //    OpenGL Unimplemented
+      if(!m_pdc)
+            return 0;
+
       if ( !m_bShowSoundg )
             return 0;
 
@@ -4329,7 +4607,7 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       ObjRazRules *current = rzRules->child;
       while ( current )
       {
-            _draw ( pdc, current, vp );
+            RenderObjectToDC ( m_pdc, current, vp );
 
             current = current->next;
       }
@@ -4343,8 +4621,9 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-//      if(rzRules->obj->Index != 405)
-//            return 1;
+      //    OpenGL Unimplemented
+      if(!m_pdc)
+            return 0;
 
       char *str = ( char* ) rules->INSTstr;
 
@@ -4538,11 +4817,32 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             sbm->SetMask ( pmask );
 
             // delete any old private data
-            wxBitmap *pbmo = ( wxBitmap * ) ( rules->razRule->pixelPtr );
-            delete pbmo;
+            if ( rules->razRule->parm0 && rules->razRule->pixelPtr )
+            {
+                  switch(rules->razRule->parm0)
+                  {
+                        case ID_wxBitmap:
+                        {
+                              wxBitmap *pbm = ( wxBitmap * ) ( rules->razRule->pixelPtr );
+                              delete pbm;
+                              rules->razRule->pixelPtr = NULL;
+                              rules->razRule->parm0 = 0;
+                              break;
+                        }
+                        case ID_RGBA:
+                        {
+                              unsigned char *p = ( unsigned char * ) ( rules->razRule->pixelPtr );
+                              free ( p );
+                              rules->razRule->pixelPtr = NULL;
+                              rules->razRule->parm0 = 0;
+                              break;
+                        }
+                  }
+            }
 
             //      Save the bitmap ptr and aux parms in the rule
             rules->razRule->pixelPtr = sbm;
+            rules->razRule->parm0 = ID_wxBitmap;
             rules->razRule->parm1 = m_colortable_index;
             rules->razRule->parm2 = bm_orgx - width/2;
             rules->razRule->parm3 = bm_orgy - height/2;
@@ -4565,7 +4865,7 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( rules->razRule->pixelPtr ) ) ) );
 
       //      Blit it into the target dc
-      pdc->Blit ( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+      m_pdc->Blit ( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
 // Debug
 //        pdc->SetPen(wxPen(*wxGREEN, 1));
 //        pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
@@ -4594,12 +4894,12 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             double a = ( sectr1-90 ) * PI / 180;
             int x = r.x + ( int ) ( leg_len * cos ( a ) );
             int y = r.y + ( int ) ( leg_len * sin ( a ) );
-            DrawWuLine ( pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+            DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
 
             a = ( sectr2-90 ) * PI / 180;
             x = r.x + ( int ) ( leg_len * cos ( a ) );
             y = r.y + ( int ) ( leg_len * sin ( a ) );
-            DrawWuLine ( pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+            DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
       }
 
 
@@ -4672,8 +4972,17 @@ char *s52plib::RenderCS ( ObjRazRules *rzRules, Rules *rules )
       return ( char * ) ret;
 }
 
+int s52plib::RenderObjectToDC ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+{
+      return DoRenderObject ( pdcin, rzRules, vp );
+}
 
-int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+int s52plib::RenderObjectToGL ( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect )
+{
+      return DoRenderObject ( NULL, rzRules, vp );
+}
+
+int s52plib::DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
       //  Debug Hook
 //   if(!strncmp(rzRules->LUP->OBCL, "SOUNDG", 6))
@@ -4703,7 +5012,7 @@ int s52plib::_draw ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
       }
 
 
-      pdc = pdcin;                    // use this DC
+      m_pdc = pdcin;                    // use this DC
       Rules *rules = rzRules->LUP->ruleList;
 
 
@@ -6095,6 +6404,9 @@ void s52plib::RenderToBufferFilledPolygon ( ObjRazRules *rzRules, S57Obj *obj, S
 
       if ( obj->pPolyTessGeo )
       {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
             wxPoint *pp3 = ( wxPoint * ) malloc ( 3 * sizeof ( wxPoint ) );
             wxPoint *ptp = ( wxPoint * ) malloc ( ( obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof ( wxPoint ) );
 
@@ -6107,7 +6419,15 @@ void s52plib::RenderToBufferFilledPolygon ( ObjRazRules *rzRules, S57Obj *obj, S
             TriPrim *p_tp = ppg->tri_prim_head;
             while ( p_tp )
             {
-                  if ( BBView.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT )
+                  bool b_greenwich = false;
+                  if ( BBView.GetMaxX() > 360. )
+                  {
+                        wxBoundingBox bbRight ( 0., BBView.GetMinY(), BBView.GetMaxX() - 360., BBView.GetMaxY() );
+                        if ( bbRight.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT )
+                              b_greenwich = true;
+                  }
+
+                  if ( b_greenwich || (BBView.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT ))
                   {
                         //      Get and convert the points
                         wxPoint *pr = ptp;
@@ -6265,6 +6585,226 @@ void s52plib::RenderToBufferFilledPolygon ( ObjRazRules *rzRules, S57Obj *obj, S
 
 
 }
+
+int s52plib::RenderToGLAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
+{
+      S52color *c;
+      char *str = ( char* ) rules->INSTstr;
+
+      c = ps52plib->S52_getColor ( str );
+
+      glColor3ub( c->R, c->G, c->B );
+
+
+      wxBoundingBox BBView = vp->GetBBox();
+      if ( rzRules->obj->pPolyTessGeo )
+      {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
+            wxPoint *ptp = ( wxPoint * ) malloc ( ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof ( wxPoint ) );
+
+            //  Allow a little slop in calculating whether a triangle
+            //  is within the requested Viewport
+            double margin = BBView.GetWidth() * .05;
+
+            PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+
+            TriPrim *p_tp = ppg->tri_prim_head;
+            while ( p_tp )
+            {
+                  bool b_greenwich = false;
+                  if ( BBView.GetMaxX() > 360. )
+                  {
+                        wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
+                        if ( bbRight.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT )
+                              b_greenwich = true;
+                  }
+
+                  if ( b_greenwich || (BBView.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT ))
+                  {
+                        //      Get and convert the points
+/*
+                        wxPoint *pr = ptp;
+                        double *pvert_list = p_tp->p_vertex;
+
+                        for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
+                        {
+                              double lon = *pvert_list++;
+                              double lat = *pvert_list++;
+                              rzRules->chart->GetPointPix ( rzRules, lat, lon, pr );
+
+                              pr++;
+                        }
+*/
+                        rzRules->chart->GetPointPix (  rzRules, (wxPoint2DDouble*)p_tp->p_vertex, ptp, p_tp->nVert );
+
+
+                        switch ( p_tp->type )
+                        {
+                              case PTG_TRIANGLE_FAN:
+                              {
+                                    glBegin(GL_TRIANGLE_FAN);
+                                    for ( int it = 0 ; it < p_tp->nVert ; it++ )
+                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                    glEnd();
+                                    break;
+                              }
+
+                              case PTG_TRIANGLE_STRIP:
+                              {
+                                    glBegin(GL_TRIANGLE_STRIP);
+                                    for ( int it = 0 ; it < p_tp->nVert ; it++ )
+                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                    glEnd();
+                                    break;
+                              }
+                              case PTG_TRIANGLES:
+                              {
+                                    for ( int it = 0 ; it < p_tp->nVert ; it+=3 )
+                                    {
+                                          int xmin = wxMin(ptp[it].x, wxMin(ptp[it+1].x, ptp[it+2].x));
+                                          int xmax = wxMax(ptp[it].x, wxMax(ptp[it+1].x, ptp[it+2].x));
+                                          int ymin = wxMin(ptp[it].y, wxMin(ptp[it+1].y, ptp[it+2].y));
+                                          int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
+
+                                          wxRect rect(xmin, ymin, xmax-xmin, ymax-ymin);
+                                          if(rect.Intersects(m_render_rect))
+                                          {
+                                                glBegin(GL_TRIANGLES);
+                                                glVertex2f(ptp[it].x, ptp[it].y);
+                                                glVertex2f(ptp[it+1].x, ptp[it+1].y);
+                                                glVertex2f(ptp[it+2].x, ptp[it+2].y);
+                                                glEnd();
+                                          }
+                                    }
+                                    break;
+                              }
+                        }
+                  }   // if bbox
+                  p_tp = p_tp->p_next;                // pick up the next in chain
+            }       // while
+            free ( ptp );
+      }       // if pPolyTessGeo
+
+
+
+#if 0
+      //    At very small scales, the object could be visible on both the left and right sides of the screen.
+      //    Identify this case......
+      if(vp->chart_scale > 5e7)
+      {
+            //    Does the object hang out over the left side of the VP?
+            if((rzRules->obj->BBObj.GetMaxX() > vp->GetBBox().GetMinX()) && (rzRules->obj->BBObj.GetMinX() < vp->GetBBox().GetMinX()))
+            {
+                  //    If we add 360 to the objects lons, does it intersect the the right side of the VP?
+                  if(((rzRules->obj->BBObj.GetMaxX() + 360.) > vp->GetBBox().GetMaxX()) && ((rzRules->obj->BBObj.GetMinX() + 360.) < vp->GetBBox().GetMaxX()))
+                  {
+                        //  If so, this area oject should be drawn again, this time for the left side
+                        //    Do this by temporarily adjusting the objects rendering offset
+                        rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                        RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL );
+                        rzRules->obj->x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+
+                  }
+            }
+      }
+#endif
+
+      return 1;
+}
+
+
+int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
+{
+      return 0;
+}
+
+
+int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect)
+{
+//Debug Hooks
+//      if(!strncmp(rzRules->LUP->OBCL, "$AREAS", 6))
+//            int yyrjt = 4;
+
+      if ( !ObjectRenderCheckPos ( rzRules, vp ) )
+            return 0;
+
+      if ( !ObjectRenderCheckCat ( rzRules, vp ) )
+      {
+            if(!ObjectRenderCheckCS( rzRules, vp ))
+                  return 0;
+      }
+
+      m_render_rect = render_rect;        // We only render into this (screen coordinate) rectangle
+
+      Rules *rules = rzRules->LUP->ruleList;
+
+//Debug Hooks
+// if(!strncmp(rzRules->LUP->OBCL, "FSHFAC", 6))
+//              int yyrjt = 4;
+
+ //     if ( rzRules->obj->Index == 2524 )
+ //           int ggld = 4;
+
+      while ( rules != NULL )
+      {
+            switch ( rules->ruleType )
+            {
+                  case RUL_ARE_CO:       RenderToGLAC ( rzRules,rules, vp );break;      // AC
+                  case RUL_ARE_PA:       RenderToGLAP ( rzRules,rules, vp );break;      // AP
+
+                  case RUL_CND_SY:
+                  {
+                        if ( !rzRules->obj->bCS_Added )
+                        {
+                              rzRules->obj->CSrules = NULL;
+                              GetAndAddCSRules ( rzRules, rules );
+                              rzRules->obj->bCS_Added = 1;                // mark the object
+                        }
+                        Rules *rules_last = rules;
+                        rules = rzRules->obj->CSrules;
+
+                        //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
+                        if(ObjectRenderCheckCat ( rzRules, vp ))
+                        {
+                              while ( NULL != rules )
+                              {
+      //Hve seen drgare fault here, need to code area query to debug
+      //possible that RENDERtoBUFFERAP/AC is blowing obj->CSRules
+      //    When it faults here, look at new debug field obj->CSLUP
+                                    switch ( rules->ruleType )
+                                    {
+                                          case RUL_ARE_CO:       RenderToGLAC ( rzRules,rules, vp );break;
+                                          case RUL_ARE_PA:       RenderToGLAP ( rzRules,rules, vp );break;
+                                          case RUL_NONE:
+                                          default:
+                                                break; // no rule type (init)
+                                    }
+                                    rules_last = rules;
+                                    rules = rules->next;
+                              }
+                        }
+
+                        rules = rules_last;
+                        break;
+                  }
+
+
+
+                  case RUL_NONE:
+                  default:
+                        break; // no rule type (init)
+            }                                     // switch
+
+            rules = rules->next;
+      }
+
+      return 1;
+
+}
+
+
 
 
 int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
@@ -6481,8 +7021,7 @@ int s52plib::RenderToBufferAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
       return 1;
 }
 
-
-int s52plib::RenderArea ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
+int s52plib::RenderAreaToDC ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
                           render_canvas_parms *pb_spec )
 {
 //Debug Hooks
@@ -6498,7 +7037,7 @@ int s52plib::RenderArea ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
                   return 0;
       }
 
-      pdc = pdcin;                    // use this DC
+      m_pdc = pdcin;                    // use this DC
       Rules *rules = rzRules->LUP->ruleList;
 
 //Debug Hooks
@@ -6757,7 +7296,7 @@ bool s52plib::ObjectRenderCheckPos ( ObjRazRules *rzRules, ViewPort *vp )
       if ( BBView.Intersect ( rzRules->obj->BBObj, 0 ) == _OUT ) // Object is wholly outside window
       {
 
-            //  Dp a secondary test if the viewport crosses Greenwich
+            //  Do a secondary test if the viewport crosses Greenwich
             //  This will pick up objects east of Greenwich
             if ( vp->GetBBox().GetMaxX() > 360. )
             {

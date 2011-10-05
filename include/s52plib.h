@@ -41,6 +41,7 @@ WX_DEFINE_ARRAY(S57attVal *, wxArrayOfS57attVal);
 #endif
 
 
+#include <wx/glcanvas.h>
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
@@ -98,9 +99,17 @@ public:
       void PrepareForRender(void);
       void AdjustTextList(int dx, int dy,  int screenw, int screenh);
       void ClearTextList(void);
-      int _draw(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
-      int RenderArea(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp, render_canvas_parms *pb_spec);
       int SetLineFeaturePriority( ObjRazRules *rzRules, int npriority );
+      void FlushSymbolCaches();
+
+      //    For DC's
+      int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
+      int RenderAreaToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp, render_canvas_parms *pb_spec);
+
+      //    For OpenGL
+      int RenderObjectToGL(const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect);
+      int RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect);
+
 
  // Accessors
       bool GetShowS57Text(){return m_bShowS57Text;}
@@ -141,6 +150,15 @@ public:
       int   S52_load_Plib(const wxString& PLib);
       bool  S52_flush_Plib();
 
+      int DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
+
+      //    Area Renderers
+      int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
+      int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
+      int RenderToGLAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+      int RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+
+      //    Object Renderers
       int RenderTX(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
       int RenderTE(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
       int RenderSY(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
@@ -151,8 +169,7 @@ public:
       char *RenderCS(ObjRazRules *rzRules, Rules *rules);
 
       void UpdateOBJLArray(S57Obj *obj);
-      int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
-      int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, render_canvas_parms *pb_spec);
+
 
       void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj, S52color *c, wxBoundingBox &BBView,
                render_canvas_parms *pb_spec, render_canvas_parms *patt_spec);
@@ -165,9 +182,6 @@ public:
       bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
       wxImage RuleXBMToImage(Rule *prule);
 
-//      bool RenderText ( wxDC *pdc, wxFont *pFont, const wxString& str,
-//            int x, int y, int xoff_unit, int yoff_unit, color *pcol, wxRect *pRectDrawn,
-//            S57Obj *pobj, bool bCheckOverlap );
       bool RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap );
 
       bool CheckTextRectList( const wxRect &test_rect,  S57Obj *pobj);
@@ -248,7 +262,7 @@ public:
 
       bool        bUseRasterSym;
 
-      wxDC       *pdc;                       // The current DC
+      wxDC       *m_pdc;                       // The current DC
 
       int         *ledge;
       int         *redge;
@@ -266,6 +280,8 @@ public:
       wxString    m_ColorScheme;
 
       long        m_state_hash;
+
+      wxRect      m_render_rect;
 };
 
 #endif //_S52PLIB_H_

@@ -1112,8 +1112,8 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                               {
                               //    open the target, and check the min_scale
                                     ChartBase *ptest_chart = ChartData->OpenChartFromDB(test_db_index, FULL_INIT);
-                                    if(ptest_chart)
-                                          min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, m_canvas_width);
+                                    if(ptest_chart != NULL)
+                                          min_ref_scale = ptest_chart->GetNormalScaleMin(m_canvas_scale_factor, false);
                               }
 
                         }
@@ -1654,7 +1654,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Potentially add cm93 to the candidate array if the region is not yet fully covered
-      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty() && !g_bopengl)
+      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty() /*&& !g_bopengl*/)
       {
             //    Check the remaining unpainted region.
             //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
@@ -3723,6 +3723,9 @@ bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
                   {
                         parent_frame->ToggleENCText();
                         b_proc = true;
+                        wxSize s = GetSize();
+                        SetSize(s.x-4, s.y);
+
                         break;
                   }
                   case WXK_F4:
@@ -4553,7 +4556,11 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
 void ChartCanvas::ReloadVP ( bool b_adjust )
 {
       if(g_bopengl)
+      {
             m_glcc->Invalidate();
+            if(m_glcc->GetSize().x != VPoint.pix_width || m_glcc->GetSize().y != VPoint.pix_height)
+                  m_glcc->SetSize(VPoint.pix_width, VPoint.pix_height);
+      }
       else {
             m_cache_vp.Invalidate();
             m_bm_cache_vp.Invalidate();
@@ -9279,12 +9286,16 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 {
 //      CALLGRIND_START_INSTRUMENTATION
 
+        wxPaintDC dc ( this );
+
         m_glcc->Show(g_bopengl);
 
         if(g_bopengl)
+        {
+              m_glcc->Update();
               return;
+        }
 
-        wxPaintDC dc ( this );
 
         wxRegion ru = GetUpdateRegion();
 
@@ -10019,7 +10030,9 @@ void ChartCanvas::EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y)
 
           result_dc.SelectObject ( wxNullBitmap );
           snip_dc.SelectObject ( wxNullBitmap );
-     } else {
+     }
+     else if(0)
+     {
            int w = pemboss->width, h = pemboss->height;
           glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
@@ -10058,6 +10071,79 @@ void ChartCanvas::EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y)
 
           glDisable(GL_BLEND);
           glDisable(GL_TEXTURE_RECTANGLE_ARB);
+     }
+     else
+     {
+           int a = pemboss->width;
+           int p = 0;
+           while(a)
+           {
+                 a=a >> 1;
+                 p++;
+           }
+           int width_p2 = 1 << p;
+
+           a = pemboss->height;
+           p = 0;
+           while(a)
+           {
+                 a=a >> 1;
+                 p++;
+           }
+           int height_p2 = 1 << p;
+
+           int w = pemboss->width, h = pemboss->height;
+
+           glEnable(GL_TEXTURE_2D);
+
+          // render using opengl and alpha blending
+           if(!pemboss->gltexind)
+           { /* upload to texture */
+                 /* convert to luminance alpha map */
+                 int size = width_p2 * height_p2;
+                 char *data = new char[2*size];
+                 for(int i=0; i<h; i++)
+                 {
+                       for(int j=0; j<width_p2; j++)
+                       {
+                              if(j < w)
+                              {
+                                    data[2*((i * width_p2) + j)] = pemboss->pmap[(i * w) + j] > 0 ? 0 : 255;
+                                    data[2*((i * width_p2) + j) + 1] = abs(pemboss->pmap[(i * w) + j]);
+                              }
+                       }
+                 }
+
+                 glGenTextures(1, &pemboss->gltexind);
+                 glBindTexture(GL_TEXTURE_2D, pemboss->gltexind);
+                 glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width_p2, height_p2,
+                              0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+                 delete [] data;
+           }
+
+           glBindTexture(GL_TEXTURE_2D, pemboss->gltexind);
+
+           glEnable(GL_BLEND);
+           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
+           glColor4f(1, 1, 1, factor / 256);
+
+           double wp = (double)w / width_p2;
+           double hp = (double)h / height_p2;
+
+           glBegin(GL_QUADS);
+           glTexCoord2f(0, 0), glVertex2i(x, y);
+           glTexCoord2f(wp, 0), glVertex2i(x+w, y);
+           glTexCoord2f(wp, hp), glVertex2i(x+w, y+h);
+           glTexCoord2f(0, hp), glVertex2i(x, y+h);
+           glEnd();
+
+           glDisable(GL_BLEND);
+           glDisable(GL_TEXTURE_2D);
      }
 }
 
@@ -11121,6 +11207,13 @@ glTextureDescriptor::~glTextureDescriptor()
 
 }
 
+#ifdef __WXMSW__
+      #define FORMAT_INTERNAL       GL_RGB
+      #define FORMAT_BITS           GL_BGR
+#else
+      #define FORMAT_INTERNAL       GL_COMPRESSED_RGB
+      #define FORMAT_BITS           GL_RGB
+#endif
 
 
 //------------------------------------------------------------------------------
@@ -11149,7 +11242,6 @@ glChartCanvas::glChartCanvas(wxWindow *parent) :
 {
       m_tex_max_res = 1000;         // absurdly large
       m_ntex = 0;
-
 }
 
 glChartCanvas::~glChartCanvas()
@@ -11190,6 +11282,8 @@ void glChartCanvas::OnActivate ( wxActivateEvent& event )
       cc1->OnActivate(event);
 }
 
+
+
 void glChartCanvas::OnSize ( wxSizeEvent& event )
 {
       if(!g_bopengl) {
@@ -11205,7 +11299,6 @@ void glChartCanvas::OnSize ( wxSizeEvent& event )
      if(GetSize().x != VP.pix_width || GetSize().y != VP.pix_height)
           SetSize(VP.pix_width, VP.pix_height);
 
-
 }
 
 void glChartCanvas::MouseEvent ( wxMouseEvent& event )
@@ -11216,6 +11309,15 @@ void glChartCanvas::MouseEvent ( wxMouseEvent& event )
 
 void glChartCanvas::OnPaint(wxPaintEvent &event)
 {
+
+    wxPaintDC dc(this);
+
+#ifndef __WXMOTIF__
+    if (!GetContext()) return;
+#endif
+
+    SetCurrent();
+
      Show(g_bopengl);
      if(!g_bopengl) {
           event.Skip();
@@ -11225,16 +11327,22 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
      if(!m_bsetup) {
           SetCurrent();
 
+          char render_string[80];
+          strncpy(render_string, (char *)glGetString(GL_RENDERER), 79);
+          m_renderer = wxString( render_string, wxConvUTF8 );
+          printf("%s\n", render_string);
 
+
+/*
           if(glewInit() != GLEW_OK) {
                printf("glewInit did not return GLEW_OK\n");
                exit(0);
           }
-
+*/
 
           //      Stencil buffer test
           glEnable(GL_STENCIL_TEST);
-          bool stencil = glIsEnabled(GL_STENCIL_TEST);
+          GLboolean stencil = glIsEnabled(GL_STENCIL_TEST);
           int sb;
           glGetIntegerv(GL_STENCIL_BITS, &sb);
           printf("Stencil Enabled: %d\nStencil bits: %d\n", stencil, sb);
@@ -11343,70 +11451,6 @@ void HalfScaleChartBits(int width, int height, unsigned char *source, unsigned c
 }
 
 
-bool OCPNBuildMipmaps( int width, int height, int level_min, int level_max, unsigned char *m_data )
-{
-      // alloc 2 working buffers
-      int max_buf_size = width * height * 4;
-      unsigned char *source_buf = (unsigned char *)malloc(max_buf_size);
-      unsigned char *dest_buf = (unsigned char *)malloc(max_buf_size);
-      unsigned char *up_buf;
-
-      unsigned char *s = dest_buf;
-      unsigned char *t = m_data;
-
-      int newwidth, newheight;
-      int last_width = width;
-      int last_height = height;
-
-      int level = 0;
-      while( level < level_max)
-      {
-            if(level > 0)
-            {
-                  if(last_height == 2)
-                        break;                  // all done;
-
-                  HalfScaleChartBits(last_width, last_height, t, s);
-
-                  newwidth = last_width / 2;
-                  newheight = last_height / 2;
-
-                  up_buf = dest_buf;
-            }
-            else
-            {
-                  up_buf = m_data;
-                  newheight = height;
-                  newwidth = width;
-            }
-
-            //    Upload to GPU?
-            if(level >= level_min)
-                  glTexImage2D(GL_TEXTURE_2D, level, GL_COMPRESSED_RGB/*GL_RGB*/, newwidth, newheight, 0, GL_RGB, GL_UNSIGNED_BYTE, up_buf);
-
-            //  swap the buffers
-            memcpy(source_buf, up_buf, newwidth * newheight * 3);
-            s = dest_buf;
-            t = source_buf;
-
-            last_width = newwidth;
-            last_height = newheight;
-
-            level++;
-      }
-
-      free(source_buf);
-      free(dest_buf);
-
-      glTexParameterf( GL_TEXTURE_2D,  GL_TEXTURE_MIN_LOD, 0 );
-      glTexParameterf( GL_TEXTURE_2D,  GL_TEXTURE_MAX_LOD, level - 1 );
-      glTexParameteri( GL_TEXTURE_2D,  GL_TEXTURE_BASE_LEVEL, 0 );
-      glTexParameteri( GL_TEXTURE_2D,  GL_TEXTURE_MAX_LEVEL, level-1 );
-
-      return true;
-
-
-}
 
 bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
 {
@@ -11434,7 +11478,7 @@ bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
 
             //    Upload to GPU?
             if(level >= base_level)
-                  glTexImage2D(GL_TEXTURE_2D, level - base_level, GL_COMPRESSED_RGB/*GL_RGB*/, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ptd->map_array[level]);
+                  glTexImage2D(GL_TEXTURE_2D, level - base_level, FORMAT_INTERNAL, width, height, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level]);
 
             width /= 2;
             height /= 2;
@@ -11524,13 +11568,8 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
 
 void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
 {
-      printf("RenderChartRegion\n");
-
       if(!chart)
-      {
-            printf("...returns\n");
             return;
-      }
 
       /* setup texture parameters */
       glEnable(GL_TEXTURE_2D);
@@ -11822,16 +11861,6 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
                               glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
-/*
-                              GLint b_resident;
-                              glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_RESIDENT, &b_resident);
-
-                              if(!b_resident)
-                              {
-                                    m_tex_max_res = wxMin(m_tex_max_res,m_ntex);
-//                                    printf("   Setting m_tex_max_res: %d\n",m_tex_max_res);
-                              }
-*/
                               sw.Pause();
                               long tt = sw.Time();
                               if(tt > 10)
@@ -11882,6 +11911,13 @@ void glChartCanvas::render()
      wxPaintDC(this);
 
      wxRegion ru = GetUpdateRegion();
+
+     if(!ru.Ok())
+           ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+
+//#ifdef __WXMSW__
+     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+//#endif
 
         //    In case Console is shown, set up dc clipper and blt iterator regions
         wxRegion rgn_chart ( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
@@ -12022,6 +12058,8 @@ void glChartCanvas::render()
               if(cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed())
                     return;
 
+              //  TODO This may not be necessary, but nice for debugging
+//              glClear(GL_COLOR_BUFFER_BIT);
 
               if(!g_bCourseUp)
               {
@@ -12048,6 +12086,8 @@ void glChartCanvas::render()
                                                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
                                                         if(Patch_Ch_BSB)
                                                               RenderChartRegion(Patch_Ch_BSB, svp, get_region);
+                                                        else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                                              pch->RenderRegionViewOnGL(*GetContext(), svp, get_region);
 
                                                         screen_region.Subtract(get_region);
                                                   }
@@ -12061,7 +12101,7 @@ void glChartCanvas::render()
 //                     long tt = sw.Time();
 //                     printf("Total quilt render time: %ld\n", tt);
 
-            //    Any part of the chart region that was not rendered in the loop needs to be cleared
+                     //    Any part of the chart region that was not rendered in the loop needs to be cleared
                                 wxRegionIterator clrit ( screen_region );
                                 while ( clrit )
                                 {
@@ -12077,7 +12117,6 @@ void glChartCanvas::render()
 
                                       clrit ++ ;
                                 }
-
                           }
               }
 
@@ -12099,8 +12138,11 @@ void glChartCanvas::render()
              }
              else if (!dynamic_cast<ChartDummy*>(Current_Ch))
              {
-//                  Current_Ch->RenderRegionViewOnDC(gldc, svp, chart_get_region);
+                   glClear(GL_COLOR_BUFFER_BIT);
 
+                   Current_Ch->RenderRegionViewOnGL(*GetContext(), svp, chart_get_region);
+
+#if 0
                     /* not bsb slow for now */
                    //  Create a temporary bitmap
                    int w = svp.pix_width, h = svp.pix_height;
@@ -12146,6 +12188,7 @@ void glChartCanvas::render()
                    glPixelZoom( 1., -1.0 );
 
                    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, img.GetData());
+#endif
               }
         }
 
@@ -12186,6 +12229,23 @@ void glChartCanvas::render()
              glEnd();
              glDisable(GL_POLYGON_STIPPLE);
         }
+
+#if 0
+        wxRegionIterator upd ( ru );
+        while ( upd )
+        {
+              wxRect rect = upd.GetRect();
+              glBegin(GL_LINE_LOOP);
+              glColor3f(0, 0, 0);
+              glVertex2i(rect.x, rect.y);
+              glVertex2i(rect.x, rect.y + rect.height);
+              glVertex2i(rect.x + rect.width, rect.y + rect.height);
+              glVertex2i(rect.x + rect.width, rect.y);
+              glEnd();
+
+              upd ++ ;
+        }
+#endif
 
      SwapBuffers();
 

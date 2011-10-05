@@ -807,6 +807,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             int GetDockY(){ return m_dock_y; }
 
       private:
+            void DoFade(int value);
 
             wxWindow          *m_pparent;
             ocpnToolBarSimple *m_ptoolbar;
@@ -1243,8 +1244,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_fade_timer.SetOwner(this, FADE_TIMER);
       if(g_bTransparentToolbar)
       {
-            SetTransparent(128);
-            m_opacity = 128;
+//            DoFade(128);
             m_fade_timer.Start(5000);
       }
 
@@ -1428,15 +1428,17 @@ void ocpnFloatingToolbarDialog::MouseEvent ( wxMouseEvent& event )
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent& event)
 {
-      if(g_bTransparentToolbar)
-      {
-            if(128 != m_opacity)
-                  SetTransparent(128);
-            m_opacity = 128;
-      }
+      if(g_bTransparentToolbar && !g_bopengl)
+            DoFade(128);
 
       m_fade_timer.Start(5000);           // retrigger the continuous timer
+}
 
+void ocpnFloatingToolbarDialog::DoFade(int value)
+{
+      if(value != m_opacity)
+            SetTransparent(value);
+      m_opacity = value;
 }
 
 void ocpnFloatingToolbarDialog::RefreshFadeTimer()
@@ -2525,7 +2527,6 @@ bool MyApp::OnInit()
 
         pthumbwin = new ThumbWin(gFrame);
 
-
         gFrame->ApplyGlobalSettings(1, false);               // done once on init with resize
 
         g_toolbar_x = wxMax(g_toolbar_x, 0);
@@ -2874,6 +2875,18 @@ bool MyApp::OnInit()
         cc1->Enable();
         cc1->SetFocus();
 
+        //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
+        //  We need a deferred resize to get glDrawPixels() to work right.
+        //  So we set a trigger to generate a resize after 5 seconds....
+        //  See the "UniChrome" hack elsewhere
+        glChartCanvas *pgl = (glChartCanvas *)cc1->GetglCanvas();
+        if(pgl && (pgl->GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND))
+        {
+            gFrame->m_defer_size = gFrame->GetSize();
+            gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
+            g_pauimgr->Update();
+            gFrame->m_bdefer_resize = true;
+        }
         return TRUE;
 }
 
@@ -3067,6 +3080,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
         //      Set up some assorted member variables
         nRoute_State = 0;
         m_bTimeIsSet = false;
+        m_bdefer_resize = false;
 
         m_phash = NULL;
 
@@ -5114,6 +5128,7 @@ int MyFrame::DoOptionsDialog()
 
       bool bPrevTrackIcon = g_bShowTrackIcon;
       bool bPrevQuilt = g_bQuiltEnable;
+      bool bPrevOGL = g_bopengl;
 
       wxString prev_locale = g_locale;
 
@@ -5222,6 +5237,16 @@ int MyFrame::DoOptionsDialog()
 
             if(rr & TOOLBAR_CHANGED)
                   b_refresh_after_options = true;
+
+            if(bPrevOGL != g_bopengl)
+            {
+                  b_refresh_after_options = true;
+#ifdef USE_S57
+                  if(ps52plib)
+                        ps52plib->FlushSymbolCaches();
+#endif
+            }
+
 
             pConfig->UpdateSettings();
 
@@ -6120,6 +6145,21 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         if(NULL != console)
             if(console->IsShown())
                  console->Refresh(false);
+
+        //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
+        //  We need a deferred resize to get glDrawPixels() to work right.
+        //  So we set a trigger to generate a resize after 5 seconds....
+        //  See the "UniChrome" hack elsewhere
+        if(m_bdefer_resize)
+        {
+              if(0 == (g_tick % (5)))
+              {
+                    printf("___RESIZE\n");
+                  SetSize(m_defer_size);
+                  g_pauimgr->Update();
+                  m_bdefer_resize = false;
+              }
+        }
 
 }
 

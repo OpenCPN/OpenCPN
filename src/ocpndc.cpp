@@ -541,7 +541,7 @@ void  ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
       but sometimes it did not perform alpha blending correctly,
       this way always works */
 
-
+#if 0
      glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tex);
      glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, format, w, h, 0, format,
                   GL_UNSIGNED_BYTE, data);
@@ -558,4 +558,6 @@ void  ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
      glEnd();
      glDisable(GL_BLEND);
      glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+#endif
 }
