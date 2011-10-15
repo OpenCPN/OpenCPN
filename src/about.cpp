@@ -82,6 +82,9 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Sean D'Epagnier\n\
+      sean@depagnier.com\n\
+      OpenGL Architecture\n\n\
     Kathleen Boswell\n\
       bigdumboat@yahoo.com\n\
       Icon design\n\n\
