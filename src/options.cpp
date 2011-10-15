@@ -63,7 +63,7 @@ extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
-extern bool             g_bsmoothzoom;
+extern bool             g_bsmoothpanzoom;
 
 extern wxString         *pNMEADataSource;
 extern wxString         g_NMEABaudRate;
@@ -489,9 +489,9 @@ void options::CreateControls()
     pOpenGL = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Use OpenGL"));
     itemStaticBoxSizerCDO->Add(pOpenGL, 1, wxALIGN_LEFT|wxALL, 2);
 
-    //  Smooth Zoom checkbox
-    pSmoothZoom = new wxCheckBox( itemPanel5, ID_SMOOTHZOOMBOX, _("Enable Smooth Zooming"));
-    itemStaticBoxSizerCDO->Add(pSmoothZoom, 1, wxALIGN_LEFT|wxALL, 2);
+    //  Smooth Pan/Zoom checkbox
+    pSmoothPanZoom = new wxCheckBox( itemPanel5, ID_SMOOTHPANZOOMBOX, _("Enable Smooth Panning / Zooming"));
+    itemStaticBoxSizerCDO->Add(pSmoothPanZoom, 1, wxALIGN_LEFT|wxALL, 2);
 
 
 
@@ -1400,7 +1400,7 @@ void options::SetInitialSettings()
       pSDepthUnits->SetValue(g_bShowDepthUnits);
       pSkewComp->SetValue(g_bskew_comp);
       pOpenGL->SetValue(g_bopengl);
-      pSmoothZoom->SetValue(g_bsmoothzoom);
+      pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
       pSDisplayGrid->SetValue(g_bDisplayGrid);
 
       pCBCourseUp->SetValue(g_bCourseUp);
@@ -1787,8 +1787,8 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bShowDepthUnits = pSDepthUnits->GetValue();
     g_bskew_comp = pSkewComp->GetValue();
-    g_bopengl = pOpenGL->GetValue();
-    g_bsmoothzoom = pSmoothZoom->GetValue();
+    bool temp_bopengl = pOpenGL->GetValue();
+    g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
     g_bfilter_cogsog = pFilterNMEA->GetValue();
 
@@ -1960,6 +1960,14 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
       if(ps52plib)
       {
+            if(temp_bopengl != g_bopengl)
+            {
+                  //    We need to do this now to handle the screen refresh that
+                  //    is automatically generated on Windows at closure of the options dialog...
+                  ps52plib->FlushSymbolCaches();
+                  g_bopengl = temp_bopengl;
+            }
+
             enum _DisCat nset = OTHER;
             switch(pDispCat->GetSelection())
             {
@@ -2526,6 +2534,10 @@ void options::OnButtonSelectSound(wxCommandEvent& event)
 
 void options::OnButtonTestSound(wxCommandEvent& event)
 {
+#if wxUSE_LIBSDL
+ printf("sdl\n");
+#endif
+
       wxSound AIS_Sound(g_sAIS_Alert_Sound_File);
 
       if(AIS_Sound.IsOk())

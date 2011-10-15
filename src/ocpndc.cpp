@@ -29,8 +29,12 @@
   #include <windows.h>
 #endif
 
-//#include <GL/glew.h>          // for some extra definitions
+#ifdef __WXMSW__
+#include "GL/gl.h"            // local copy for Windows
+#else
 #include <GL/gl.h>
+#endif
+
 #include <wx/dc.h>
 #include <wx/dcmemory.h>
 #include <wx/image.h>

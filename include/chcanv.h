@@ -91,6 +91,7 @@ int SetScreenBrightness(int brightness);
 #define     TCWININF_TIMER    6
 #define     ROLLOVER_TIMER    7
 #define     ZOOM_TIMER        8
+#define     PANKEY_TIMER      9
 
 
 
@@ -150,7 +151,8 @@ public:
       ~ChartCanvas();
 
       //    Methods
-      void OnChar(wxKeyEvent &event);
+      void OnKeyDown(wxKeyEvent &event);
+      void OnKeyUp(wxKeyEvent &event);
       void OnPaint(wxPaintEvent& event);
       void PaintCleanup();
       void Scroll(int dx, int dy);
@@ -168,7 +170,7 @@ public:
 
       void CancelMouseRoute();
 
-      bool Do_Hotkeys(wxKeyEvent &event);
+      void Do_Pankeys(wxTimerEvent& event);
 
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
@@ -319,6 +321,9 @@ private:
                                              // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
 
+      int m_panx, m_pany, m_panspeed, m_modkeys;
+
+
       //    Methods
       void OnActivate(wxActivateEvent& event);
       void OnSize(wxSizeEvent& event);
@@ -402,6 +407,7 @@ private:
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
+      wxTimer     *pPanKeyTimer;    // This timer used to update pan key actions
 
       wxTimer     m_MouseWheelTimer;
       wxTimer     m_RouteLegPopupTimer;
@@ -526,7 +532,6 @@ WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual
 //----------------------------------------------------------------------------
 // glChartCanvas
 //----------------------------------------------------------------------------
-WX_DECLARE_LIST(wxRect, wxRectList);
 
 class glChartCanvas : public wxGLCanvas
 {
@@ -547,13 +552,11 @@ public:
       void Invalidate() {m_cacheinvalid++; }
       void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
+      void ClearAllRasterTextures(void);
 
 protected:
       int m_cacheinvalid;
       int max_texture_dimension;
-
-      wxRect m_lastR;
-      ChartBase *m_lastchart;
 
       unsigned char *m_data;
       int m_datasize;
@@ -563,7 +566,6 @@ protected:
       wxString m_renderer;
 
       void GrowData(int size);
-      wxRectList RegionToMaxTexRects(wxRegion &r);
 
       ArrayOfTexDescriptors         m_tex_array;
 

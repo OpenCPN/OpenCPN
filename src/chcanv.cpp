@@ -42,8 +42,6 @@
 
 #include <wx/listimpl.cpp>
 
-#include <GL/glew.h>
-
 #include "chcanv.h"
 
 #include "routeman.h"
@@ -95,13 +93,13 @@ extern struct sigaction sa_all_old;
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
 
+#ifdef __WXMSW__
+#include "GL/gl.h"            // local copy for Windows
+#include "GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
-
-/* need lists of rectangles, wxRegion would try
-   to merge some of these inappropriately */
-WX_DEFINE_LIST(wxRectList);
-
+#endif
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
 
@@ -244,7 +242,7 @@ extern bool             g_bopengl;
 extern bool             g_bFullScreenQuilt;
 extern wxProgressDialog *s_ProgDialog;
 
-extern bool             g_bsmoothzoom;
+extern bool             g_bsmoothpanzoom;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -2969,7 +2967,9 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
         EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
         EVT_TIMER ( RTELEGPU_TIMER, ChartCanvas::OnRouteLegPopupTimerEvent )
-        EVT_CHAR(ChartCanvas::OnChar )
+        EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
+        EVT_KEY_UP(ChartCanvas::OnKeyUp )
+        EVT_TIMER ( PANKEY_TIMER, ChartCanvas::Do_Pankeys )
         EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
         EVT_TIMER ( ZOOM_TIMER, ChartCanvas::OnZoomTimerEvent )
 
@@ -3093,6 +3093,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         VPoint.Invalidate();
 
         m_glcc = new glChartCanvas(this);
+
 
 //    Build the cursors
 
@@ -3270,6 +3271,11 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         pRotDefTimer = new wxTimer ( this, ROT_TIMER );
         pRotDefTimer->Stop();
+
+        pPanKeyTimer = new wxTimer ( this, PANKEY_TIMER );
+        pPanKeyTimer->Stop();
+        m_panx = m_pany = 0;
+        m_panspeed = 0;
 
         pCurTrackTimer = new wxTimer ( this, CURTRACK_TIMER );
         pCurTrackTimer->Stop();
@@ -3501,6 +3507,8 @@ ChartCanvas::~ChartCanvas()
         delete pPanTimer;
         delete pCurTrackTimer;
         delete pRotDefTimer;
+        delete pPanKeyTimer;
+
         delete m_pRolloverWin;
         delete m_pAISRolloverWin;
 
@@ -3651,281 +3659,277 @@ ViewPort &ChartCanvas::GetVP()
 }
 
 
-
-
-void ChartCanvas::OnChar(wxKeyEvent &event)
+void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 {
-      bool b_proc = Do_Hotkeys(event);
+     m_modkeys = event.GetModifiers();
 
-      if(!b_proc)
-            event.Skip();
-}
+     // HOTKEYS
+     switch(event.GetKeyCode())
+     {
+          case  WXK_LEFT:
+               if ( m_modkeys == wxMOD_CONTROL )
+                    parent_frame->DoStackDown();
+               else
+                    m_panx = -1;
+               break;
 
+          case  WXK_UP:
+               m_pany = -1;
+               break;
 
+          case  WXK_RIGHT:
+               if ( m_modkeys == wxMOD_CONTROL )
+                    parent_frame->DoStackUp();
+               else
+                    m_panx = 1;
+               break;
 
-bool ChartCanvas::Do_Hotkeys(wxKeyEvent &event)
-{
-      // HOTKEYS
-      bool b_proc = false;
-      {
-            int key_code = event.GetKeyCode();
+          case  WXK_DOWN:
+               m_pany = 1;
+               break;
 
-            switch(key_code)
-            {
-                  case  WXK_LEFT:
-                        if ( event.GetModifiers() == wxMOD_CONTROL )
-                              parent_frame->DoStackDown();
-                        else
-                        {
-                              if(event.GetModifiers() == wxMOD_ALT)
-                                    PanCanvas(-2,0);
-                              else
-                                    PanCanvas(-100, 0);///  gCog -= 1; if(gCog < 0) gCog += 360.; ReloadVP();
-                        }
-                        b_proc = true;
-                        break;
+          case WXK_F2:
+               parent_frame->TogglebFollow();
+               break;
 
-                  case  WXK_UP:
-                        if(event.GetModifiers() == wxMOD_ALT)
-                              PanCanvas(0, -1);
-                        else
-                              PanCanvas(0, -100);
-                        b_proc = true;
-                        break;
+          case WXK_F3:
+          {
+               parent_frame->ToggleENCText();
+               wxSize s = GetSize();
+               SetSize(s.x-4, s.y);
 
-                  case  WXK_RIGHT:
-                        if ( event.GetModifiers() == wxMOD_CONTROL )
-                              parent_frame->DoStackUp();
-                        else
-                        {
-                              if(event.GetModifiers() == wxMOD_ALT)
-                                    PanCanvas(1,0);
-                              else
-                                    PanCanvas(100, 0); ///  gCog += 1; if(gCog > 360.) gCog -= 360.; ReloadVP();
-                        }
-                        b_proc = true;
-                        break;
+               break;
+          }
+          case WXK_F4:
+               if(!parent_frame->nRoute_State)   // no measure tool if currently creating route
+               {
+                    if(m_bMeasure_Active)
+                    {
+                         g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
+                         m_pMeasureRoute = NULL;
+                    }
 
-                  case  WXK_DOWN:
-                        if(event.GetModifiers() == wxMOD_ALT)
-                              PanCanvas(0, 1);
-                        else
-                              PanCanvas(0, 100);
-                        b_proc = true;
-                        break;
+                    m_bMeasure_Active = true;
+                    m_nMeasureState = 1;
+                    SetCursor ( *pCursorPencil );
+                    Refresh();
+               }
+               break;
 
-                  case WXK_F2:
-                        parent_frame->TogglebFollow();
-                        b_proc = true;
-                        break;
+          case WXK_F5:
+               parent_frame->ToggleColorScheme();
+               break;
 
-                  case WXK_F3:
-                  {
-                        parent_frame->ToggleENCText();
-                        b_proc = true;
-                        wxSize s = GetSize();
-                        SetSize(s.x-4, s.y);
+          case WXK_F6:
+          {
+               int mod =  m_modkeys & wxMOD_SHIFT;
+               if(mod != m_brightmod)
+               {
+                    m_brightmod = mod;
+                    m_bbrightdir = !m_bbrightdir;
+               }
 
-                        break;
-                  }
-                  case WXK_F4:
-                        if(!parent_frame->nRoute_State)   // no measure tool if currently creating route
-                        {
-                              if(m_bMeasure_Active)
-                              {
-                                    g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
-                                    m_pMeasureRoute = NULL;
-                              }
-
-                              m_bMeasure_Active = true;
-                              m_nMeasureState = 1;
-                              SetCursor ( *pCursorPencil );
-                              Refresh();
-                              b_proc = true;
-                        }
-                        break;
-
-                  case WXK_F5:
-                        parent_frame->ToggleColorScheme();
-                        b_proc = true;
-                        break;
-
-                  case WXK_F6:
-                  {
-                        int mod =  event.GetModifiers() & wxMOD_SHIFT;
-                        if(mod != m_brightmod)
-                        {
-                              m_brightmod = mod;
-                              m_bbrightdir = !m_bbrightdir;
-                        }
-
-                        if(!m_bbrightdir)
-                        {
-                              g_nbrightness -= 10;
-                              if(g_nbrightness <= MIN_BRIGHT)
-                              {
-                                    g_nbrightness = MIN_BRIGHT;
-                                    m_bbrightdir = true;
-                              }
-                        }
-                        else
-                        {
-                              g_nbrightness += 10;
-                              if(g_nbrightness >= MAX_BRIGHT)
-                              {
-                                    g_nbrightness = MAX_BRIGHT;
-                                    m_bbrightdir = false;
-                              }
-                        }
+               if(!m_bbrightdir)
+               {
+                    g_nbrightness -= 10;
+                    if(g_nbrightness <= MIN_BRIGHT)
+                    {
+                         g_nbrightness = MIN_BRIGHT;
+                         m_bbrightdir = true;
+                    }
+               }
+               else
+               {
+                    g_nbrightness += 10;
+                    if(g_nbrightness >= MAX_BRIGHT)
+                    {
+                         g_nbrightness = MAX_BRIGHT;
+                         m_bbrightdir = false;
+                    }
+               }
 
 //                        printf("%d\n", g_nbrightness);
 
-                        SetScreenBrightness(g_nbrightness);
-                        b_proc = true;
-                        break;
-                  }
+               SetScreenBrightness(g_nbrightness);
+               break;
+          }
 
-                  case WXK_F7:
-                        parent_frame->DoStackDown();
-                        b_proc = true;
-                        break;
+          case WXK_F7:
+               parent_frame->DoStackDown();
+               break;
 
-                  case WXK_F8:
-                        parent_frame->DoStackUp();
-                        b_proc = true;
-                        break;
+          case WXK_F8:
+               parent_frame->DoStackUp();
+               break;
 
-                  case WXK_F9:
-                  {
-                        parent_frame->ToggleQuiltMode();
-                        b_proc = true;
-                        ReloadVP();
-                        break;
-                  }
+          case WXK_F9:
+          {
+               parent_frame->ToggleQuiltMode();
+               ReloadVP();
+               break;
+          }
 
-                  case WXK_F11:
-                        parent_frame->ToggleFullScreen();
-                        b_proc = true;
-                        break;
+          case WXK_F11:
+               parent_frame->ToggleFullScreen();
+               break;
 
 /*
                   case WXK_F11:
                         ShowGribDialog();
                         break;
 */
-                  case WXK_F12:
-                      {
-                        parent_frame->ToggleChartOutlines();
-                        b_proc = true;
-                        break;
-                      }
-                  default:
-                        break;
+          case WXK_F12:
+          {
+               parent_frame->ToggleChartOutlines();
+               break;
+          }
+          default:
+               break;
 
-            }
+     }
 
-            if(key_code < 128)            //ascii
-            {
-                  char key_char = (char)key_code;
-                  switch(key_char)
-                  {
-                        case '+':
-                        case '=':
-                        case 26:                     // Ctrl Z
-                              if ( (event.GetModifiers() == wxMOD_CONTROL) )
-                                    ZoomCanvasIn(1.1);
-                              else
-                                    ZoomCanvasIn(2.0);
-                              break;
-                              b_proc = true;
+     if(event.GetKeyCode() < 128)            //ascii
+     {
+          char key_char = (char)event.GetKeyCode();
+          if(m_modkeys == wxMOD_CONTROL)
+               key_char -= 64;
 
-                        case '-':
-                        case '_':
-                        case 24:                     // Ctrl X
-                              if ( (event.GetModifiers() == wxMOD_CONTROL) )
-                                    ZoomCanvasOut(1.1);
-                              else
-                                    ZoomCanvasOut(2.0);
-                              break;
-                              b_proc = true;
+          switch(key_char)
+          {
+               case '+':
+               case '=':
+               case 26:                     // Ctrl Z
+                    if ( (m_modkeys == wxMOD_CONTROL) )
+                         ZoomCanvasIn(1.1);
+                    else
+                         ZoomCanvasIn(2.0);
+               break;
 
-                        case 19:                     // Ctrl S
-                                    parent_frame->ToggleENCText();
-                                    break;
-                                    b_proc = true;
+               case '-':
+               case '_':
+               case 24:                     // Ctrl X
+                    if ( (m_modkeys == wxMOD_CONTROL) )
+                         ZoomCanvasOut(1.1);
+                    else
+                         ZoomCanvasOut(2.0);
+               break;
 
-                        case 1:                      // Ctrl A
-                                    parent_frame->TogglebFollow();
-                                    break;
-                                    b_proc = true;
+               case 19:                     // Ctrl S
+                    parent_frame->ToggleENCText();
+                    break;
 
-                  case 15:                     // Ctrl O
-                                    parent_frame->ToggleChartOutlines();
-                                    break;
-                                    b_proc = true;
+               case 1:                      // Ctrl A
+                    parent_frame->TogglebFollow();
+                    break;
 
-                  case 13:                     // Ctrl M                      //    Drop Marker;
-                              {
-                              RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "triangle" ) ), wxString ( _( "New Mark" ) ), GPX_EMPTY_STRING );
-                              pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
-                              pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
-                              Refresh ( false );
-                              break;
-                              b_proc = true;
-                              }
+               case 15:                     // Ctrl O
+                    parent_frame->ToggleChartOutlines();
+                    break;
 
-                  case 32:                     // Ctrl Space            //    Drop MOB
-                        {
-                              if ( event.GetModifiers() == wxMOD_CONTROL )
-                                    parent_frame->ActivateMOB();
+               case 13:                     // Ctrl M                      //    Drop Marker;
+               {
+                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "triangle" ) ), wxString ( _( "New Mark" ) ), GPX_EMPTY_STRING );
+                    pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
+                    pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
+                    Refresh ( false );
+                    break;
+               }
 
-                              b_proc = true;
-                              break;
-                        }
+               case 32:                     // Ctrl Space            //    Drop MOB
+               {
+                    if ( m_modkeys == wxMOD_CONTROL )
+                         parent_frame->ActivateMOB();
 
-                  case 17:                       // Ctrl Q
-                              parent_frame->Close();
-                              b_proc = true;
-                              break;
+                    break;
+               }
 
-                  case 20:                       // Ctrl T
-                              if ( NULL == pGoToPositionDialog )          // There is one global instance of the Go To Position Dialog
-                                  pGoToPositionDialog = new GoToPositionDialog ( this );
-                              pGoToPositionDialog->Show();
-                              break;
+               case 17:                       // Ctrl Q
+                    parent_frame->Close();
+                    return;
 
-                  case 27:
-                        // Generic break
-                        if(m_bMeasure_Active)
-                        {
-                              m_bMeasure_Active = false;
-                              m_nMeasureState = 0;
-                              g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
-                              m_pMeasureRoute = NULL;
-                              gFrame->SurfaceToolbar();
-                              Refresh ( false );
-                        }
+               case 20:                       // Ctrl T
+                    if ( NULL == pGoToPositionDialog )          // There is one global instance of the Go To Position Dialog
+                         pGoToPositionDialog = new GoToPositionDialog ( this );
+                    pGoToPositionDialog->Show();
+                    break;
 
-                        if ( parent_frame->nRoute_State )         // creating route?
-                        {
-                              FinishRoute();
-                              gFrame->SurfaceToolbar();
-                              Refresh(false);
-                        }
+               case 27:
+                    // Generic break
+                    if(m_bMeasure_Active)
+                    {
+                         m_bMeasure_Active = false;
+                         m_nMeasureState = 0;
+                         g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
+                         m_pMeasureRoute = NULL;
+                         gFrame->SurfaceToolbar();
+                         Refresh ( false );
+                    }
 
-                        b_proc = true;
-                        break;
+                    if ( parent_frame->nRoute_State )         // creating route?
+                    {
+                         FinishRoute();
+                         gFrame->SurfaceToolbar();
+                         Refresh(false);
+                    }
 
-                        default:
-                              break;
+                    break;
 
-                  }           // switch
-            }
-      }
+               default:
+                    return;
 
-      return b_proc;
+          }           // switch
+     }
+
+     if(!pPanKeyTimer->IsRunning() && (m_panx || m_pany))
+          pPanKeyTimer->Start ( 1, wxTIMER_ONE_SHOT );
+
+     event.Skip();
 }
 
+void ChartCanvas::OnKeyUp(wxKeyEvent &event)
+{
+     switch(event.GetKeyCode())
+     {
+          case WXK_LEFT:
+          case WXK_RIGHT:
+               m_panx = 0;
+               m_panspeed = 0;
+               break;
+
+          case  WXK_UP:
+          case  WXK_DOWN:
+               m_pany = 0;
+               m_panspeed = 0;
+               break;
+     }
+
+     event.Skip();
+}
+
+void ChartCanvas::Do_Pankeys(wxTimerEvent& event)
+{
+     if(!(m_panx || m_pany))
+          return;
+
+     const int slowpan = 2, maxpan = 100;
+     int repeat = 100;
+
+     if(m_modkeys == wxMOD_ALT)
+          m_panspeed = slowpan;
+     else
+          if(g_bsmoothpanzoom) {
+               /* accelerate panning */
+               m_panspeed += 2;
+               if(m_panspeed > maxpan)
+                    m_panspeed = maxpan;
+
+               repeat = 5;
+          } else
+               m_panspeed = maxpan;
+
+     PanCanvas(m_panspeed * m_panx, m_panspeed * m_pany);
+     pPanKeyTimer->Start ( repeat, wxTIMER_ONE_SHOT );
+}
 
 
 void ChartCanvas::SetColorScheme(ColorScheme cs)
@@ -3961,6 +3965,9 @@ void ChartCanvas::SetColorScheme(ColorScheme cs)
 
       CreateDepthUnitEmbossMaps( cs );
       CreateOZEmbossMapData( cs );
+
+      if(m_glcc)
+            m_glcc->ClearAllRasterTextures();
 
       SetbTCUpdate(true);                        // force re-render of tide/current locators
 
@@ -4260,7 +4267,7 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
 
 bool ChartCanvas::ZoomCanvasIn(double factor)
 {
-      bool b_smooth = g_bsmoothzoom & g_bopengl;
+      bool b_smooth = g_bsmoothpanzoom & g_bopengl;
 
       if(!VPoint.b_quilt)
       {
@@ -4289,7 +4296,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
 
 bool ChartCanvas::ZoomCanvasOut(double factor)
 {
-      bool b_smooth = g_bsmoothzoom & g_bopengl;
+      bool b_smooth = g_bsmoothpanzoom & g_bopengl;
 
       if(!VPoint.b_quilt)
       {
@@ -10031,7 +10038,8 @@ void ChartCanvas::EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y)
           result_dc.SelectObject ( wxNullBitmap );
           snip_dc.SelectObject ( wxNullBitmap );
      }
-     else if(0)
+#ifndef __WXMSW__
+     else if(0/*b_useTexRect*/)
      {
            int w = pemboss->width, h = pemboss->height;
           glEnable(GL_TEXTURE_RECTANGLE_ARB);
@@ -10072,6 +10080,7 @@ void ChartCanvas::EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y)
           glDisable(GL_BLEND);
           glDisable(GL_TEXTURE_RECTANGLE_ARB);
      }
+#endif
      else
      {
            int a = pemboss->width;
@@ -11223,7 +11232,10 @@ glTextureDescriptor::~glTextureDescriptor()
 
 WX_DEFINE_OBJARRAY(ArrayOfTexDescriptors);
 
-         int attribs[]={WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, WX_GL_STENCIL_SIZE, 8, 0};
+//         int attribs[]={WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, WX_GL_STENCIL_SIZE, 8, 0};
+
+         // This attribute set works OK with vesa software only OpenGL renderer
+         int attribs[]={WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, WX_GL_STENCIL_SIZE, 8, 0};
 
 BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas )
         EVT_PAINT ( glChartCanvas::OnPaint )
@@ -11237,44 +11249,51 @@ END_EVENT_TABLE()
 
 glChartCanvas::glChartCanvas(wxWindow *parent) :
             wxGLCanvas(parent, wxID_ANY, wxDefaultPosition, wxSize(256, 256), wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs),
-     m_cacheinvalid(1), m_lastR(wxSize()), m_lastchart(NULL), m_data(NULL),
+     m_cacheinvalid(1), m_data(NULL),
      m_datasize(0), m_bsetup(false)
 {
       m_tex_max_res = 1000;         // absurdly large
       m_ntex = 0;
+
 }
 
 glChartCanvas::~glChartCanvas()
 {
      free(m_data);
 
-     //     Clear and delete all the GPU textures presently loaded
-     ChartPointerHashType::iterator it;
-     for( it = m_chart_hash.begin(); it != m_chart_hash.end(); ++it )
-     {
-           ChartBase *pc = (ChartBase *)it->first;
-
-           ChartTextureHashType *pTextureHash = m_chart_hash[pc];
-
-            // iterate over all the textures presently loaded
-            // and delete the OpenGL texture and the private descriptor
-
-           ChartTextureHashType::iterator it;
-           for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it )
-           {
-                glTextureDescriptor *ptd = it->second;
-                glDeleteTextures( 1, &ptd->tex_name );
-                delete ptd;
-           }
-
-           pTextureHash->clear();
-           delete pTextureHash;
-     }
-     m_chart_hash.clear();
+     ClearAllRasterTextures();
 }
 
 void glChartCanvas::OnEraseBG(wxEraseEvent& evt)
 {
+}
+
+void glChartCanvas::ClearAllRasterTextures(void)
+{
+      //     Clear and delete all the GPU textures presently loaded
+      ChartPointerHashType::iterator it;
+      for( it = m_chart_hash.begin(); it != m_chart_hash.end(); ++it )
+      {
+            ChartBase *pc = (ChartBase *)it->first;
+
+            ChartTextureHashType *pTextureHash = m_chart_hash[pc];
+
+            // iterate over all the textures presently loaded
+            // and delete the OpenGL texture and the private descriptor
+
+            ChartTextureHashType::iterator it;
+            for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it )
+            {
+                  glTextureDescriptor *ptd = it->second;
+                  glDeleteTextures( 1, &ptd->tex_name );
+                  delete ptd;
+            }
+
+            pTextureHash->clear();
+            delete pTextureHash;
+      }
+      m_chart_hash.clear();
+
 }
 
 void glChartCanvas::OnActivate ( wxActivateEvent& event )
@@ -11332,13 +11351,26 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           m_renderer = wxString( render_string, wxConvUTF8 );
           printf("%s\n", render_string);
 
+          wxString msg;
+          msg.Printf(_T("OpenGL-> Renderer String: "));
+          msg += m_renderer;
+          wxLogMessage(msg);
+                      ;
+        //  This little hack fixes a problem seen with some Intel 945 graphics chips
+        //  We need to not do anything that requires (some) complicated stencil operations.
+        //  Note that this unfortunately eliminates S52 AreaPattern primitives.....
 
-/*
-          if(glewInit() != GLEW_OK) {
-               printf("glewInit did not return GLEW_OK\n");
-               exit(0);
+          if(GetRendererString().Find(_T("945G 20061017")) != wxNOT_FOUND)
+          {
+                wxLogMessage(_T("OpenGL-> Detected potential i945G renderer bug, disabling S52 A/P"));
+                ps52plib->m_b_stencilx = true;
           }
-*/
+
+          //      And for the lousy Unichrome drivers, too
+          if(GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)
+                ps52plib->m_b_stencilx = true;
+
+
 
           //      Stencil buffer test
           glEnable(GL_STENCIL_TEST);
@@ -11347,13 +11379,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           glGetIntegerv(GL_STENCIL_BITS, &sb);
           printf("Stencil Enabled: %d\nStencil bits: %d\n", stencil, sb);
           glDisable(GL_STENCIL_TEST);
-
-/*
-          if(!glewIsSupported("GL_ARB_texture_rectangle")) {
-               printf("GL_ARB_texture_rectangle not supported, exiting\n");
-               exit(0);
-          }
-*/
 
 
 /*
@@ -11375,6 +11400,89 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           /* we upload non-aligned memory */
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+#if 0
+          //  Estimate texture memory size
+          bool b_done = false;
+          int n_tex = 0;
+          int n_tex_size = 512;
+          GLuint tex_name1;
+          GLuint tex_name_last = 0;
+          unsigned char *dummy_bits = (unsigned char *)malloc(n_tex_size * n_tex_size * 4);
+          glEnable(GL_TEXTURE_2D);
+
+          int w, h;
+          GetClientSize(&w, &h);
+          glViewport(0, 0, (GLint) w, (GLint) h);
+
+          glLoadIdentity();
+          gluOrtho2D(0, (GLint) w, (GLint) h, 0);
+
+          while(!b_done)
+          {
+                n_tex++;
+
+                GLuint tex_name;
+                glGenTextures(1, &tex_name);
+
+                glBindTexture(GL_TEXTURE_2D, tex_name);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+                glTexImage2D(GL_TEXTURE_2D, 0, FORMAT_INTERNAL, n_tex_size, n_tex_size, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, dummy_bits);
+
+                glBegin(GL_QUADS);
+
+                glTexCoord2f(0, 0);       glVertex2f(0, 0);
+                glTexCoord2f(1, 0);       glVertex2f(512, 0);
+                glTexCoord2f(1, 1);       glVertex2f(512, 512);
+                glTexCoord2f(0, 1);       glVertex2f(0, 512);
+
+                glEnd();
+
+                SwapBuffers();
+
+                if(n_tex == 1)
+                      tex_name1 = tex_name;
+
+                wxStopWatch sw;
+                glBindTexture(GL_TEXTURE_2D,  tex_name_last);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);       glVertex2f(0, 0);
+                glTexCoord2f(1, 0);       glVertex2f(512, 0);
+                glTexCoord2f(1, 1);       glVertex2f(512, 512);
+                glTexCoord2f(0, 1);       glVertex2f(0, 512);
+                glEnd();
+                SwapBuffers();
+
+                sw.Pause();
+                long tt = sw.Time();
+                printf(" tt:%d\n", (int)tt);
+
+                GLboolean res;
+                if(!glAreTexturesResident( 1, &tex_name1, &res))
+                      int yp = 4; //break;
+                if(n_tex > 100)
+                      break;
+
+                tex_name_last = n_tex;
+          }
+
+          glDisable(GL_TEXTURE_2D);
+          free (dummy_bits);
+
+          m_tex_max_res = n_tex;
+#endif
+
+          int n_tex_size = 512;
+          double n_GPU_Mem = 64 * (1<<20);
+          m_tex_max_res = n_GPU_Mem / (n_tex_size * n_tex_size * 4 * 1.3);          // 1.3 allows for full mipmaps
+          m_tex_max_res /= 2;
+
+          wxString str;
+          str.Printf(_T("    OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
+          wxLogMessage(str);
+          printf("  m_tex_max_res: %d\n", m_tex_max_res);
 
           m_bsetup = true;
      }
@@ -11504,7 +11612,7 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
       //    We do not need all possible mipmaps, since we can only zoom out so far....
       //    So, save some memory by limiting GL_TEXTURE_MAX_LEVEL
 
-      int n_level_max = 5;
+      int n_level_max = 3;
       //    Calculate the effective base level
       int base_level = 0;
       switch(n_basemult)
@@ -11565,11 +11673,14 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
 }
 
 
+int s_nquickbind;
 
 void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
 {
       if(!chart)
             return;
+
+      int n_longbind = 0;
 
       /* setup texture parameters */
       glEnable(GL_TEXTURE_2D);
@@ -11586,6 +11697,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       {
             //    Create a stencil buffer for clipping to the region
             glEnable (GL_STENCIL_TEST);
+            glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
             glClear(GL_STENCIL_BUFFER_BIT);
 
             //    We are going to write "1" into the stencil buffer wherever the region is valid
@@ -11640,33 +11752,37 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
       //    Iterate on the texture hashmap....
       //    Remove any textures whose tex_mult value does not match the target for this render (i.e. n_basemult)
-      ChartTextureHashType::iterator itt = pTextureHash->begin();
-      while( itt != pTextureHash->end())
+      if(m_ntex > m_tex_max_res)
       {
-            glTextureDescriptor *ptd = itt->second;
-
-            if(( ptd->tex_name > 0) && (ptd->tex_mult != n_basemult))                 // the texture known to the GPU does not match the target
+            ChartTextureHashType::iterator itt = pTextureHash->begin();
+            while( itt != pTextureHash->end())
             {
-                  printf("   glDeleteTexture on n_basemult mismatch\n");
-                  glDeleteTextures( 1, &ptd->tex_name );
-                  m_ntex--;
+                  glTextureDescriptor *ptd = itt->second;
 
-                  ptd->tex_name = 0;            // mark the ptd as unknown/unavailable to GPU
-
-                  //    Delete the chart data?
-                  if(0)
+                  if(( ptd->tex_name > 0) && (ptd->tex_mult != n_basemult))                 // the texture known to the GPU does not match the target
                   {
-                        pTextureHash->erase(itt);
-                        delete ptd;
-                        itt = pTextureHash->begin();              // reset the iterator
+//                        printf("   glDeleteTexture on n_basemult mismatch\n");
+                        glDeleteTextures( 1, &ptd->tex_name );
+                        m_ntex--;
+
+                        ptd->tex_name = 0;            // mark the ptd as unknown/unavailable to GPU
+
+                        //    Delete the chart data?
+                        if(0)
+                        {
+                              pTextureHash->erase(itt);
+                              delete ptd;
+                              itt = pTextureHash->begin();              // reset the iterator
+                        }
+                        else
+                              ++itt;
+
                   }
                   else
                         ++itt;
-
             }
-            else
-                  ++itt;
       }
+
 
       //    Adjust the chart source rectangle by base multiplier
       R.x      /= n_basemult;
@@ -11707,7 +11823,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     ptd = (*pTextureHash)[key];
                                     if( ptd->tex_name > 0)
                                     {
-                                          printf("   glDeleteTexture on m_ntex limit\n");
+//                                          printf("   glDeleteTexture on m_ntex limit\n");
 
                                           glDeleteTextures( 1, &ptd->tex_name );
                                           m_ntex--;
@@ -11734,6 +11850,18 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
       int spx = R.x + R.width/2;
       int spy = R.y + R.height/2;
+
+      //    Calculate a sub-pixel bias for overzoom renders,
+      //    anticipating and correcting for scaled up texture rendering
+      double biasx = 0.;
+      double biasy = 0.;
+      if(scalefactor < 1.0)
+      {
+            double pixx, pixy;
+            chart->latlong_to_chartpix(vp.clat, vp.clon, pixx, pixy);
+            biasy = pixy - spy;
+            biasx = pixx - spx;
+      }
 
       glTranslatef(-spx/scalefactor*n_basemult , -spy/scalefactor*n_basemult, 0);
       glScalef(1./scalefactor*n_basemult, 1./scalefactor*n_basemult, 1);
@@ -11763,8 +11891,11 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         int w = ri.width, h = ri.height;
                         int x1 = ri.x - rect.x;
                         int y1 = ri.y - rect.y;
-                        int x2 = (ri.x - R.x) + spx;
-                        int y2 = (ri.y - R.y) + spy;
+                        double x2 = (ri.x - R.x) + spx;
+                        double y2 = (ri.y - R.y) + spy;
+
+                        y2 -= biasy;
+                        x2 -= biasx;
 
                         wxRect rt((x2 - spx)/scalefactor*n_basemult, (y2 - spy)/scalefactor*n_basemult, w/scalefactor*n_basemult, h/scalefactor*n_basemult);
 
@@ -11784,7 +11915,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     ptd = new glTextureDescriptor;
                                     ptd->tex_mult = n_basemult;
 
-                                    printf("  -->PopulateTD\n");
+//                                    printf("  -->PopulateTD\n");
                                     OCPNPopulateTD( ptd, n_basemult, rect, chart );
                                     (*pTextureHash)[key] = ptd;
                               }
@@ -11795,7 +11926,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)
                               {
-                                    printf("  -->Upload tex\n");
+//                                    printf("  -->Upload tex\n");
                                     GLuint tex_name;
                                     glGenTextures(1, &tex_name);
                                     ptd->tex_name = tex_name;
@@ -11864,10 +11995,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               sw.Pause();
                               long tt = sw.Time();
                               if(tt > 10)
-                              {
-                                    m_tex_max_res = m_ntex * 3/4;  //wxMin(m_tex_max_res,m_ntex);
-//                                    printf("   Long bind time: %3ld Setting m_tex_max_res: %d\n", tt, m_tex_max_res);
-                              }
+                                    n_longbind++;
 
                               double sx = rect.width;
                               double sy = rect.height;
@@ -11887,12 +12015,25 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
             rect.y += rect.height;
       }
-      printf("  basemult:%d  scalefactor:%g  chart_tex:%d\n", n_basemult, scalefactor, n_chart_tex);
+//      printf("  basemult:%d  scalefactor:%g  chart_tex:%d\n", n_basemult, scalefactor, n_chart_tex);
 
       glPopMatrix();
 
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_STENCIL_TEST);
+
+      if(n_longbind)
+            m_tex_max_res--;
+      else
+      {
+            if(s_nquickbind++ > 100)
+            {
+                  s_nquickbind = 0;
+                  m_tex_max_res++;
+            }
+      }
+      m_tex_max_res = wxMax(m_tex_max_res, 20);
+      m_tex_max_res = wxMin(m_tex_max_res, 100);
 
 }
 
@@ -12008,6 +12149,10 @@ void glChartCanvas::render()
         glLoadIdentity();
         gluOrtho2D(0, (GLint) w, (GLint) h, 0);
 
+        glEnable (GL_STENCIL_TEST);
+        glStencilMask(0xff);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glDisable (GL_STENCIL_TEST);
 
         //  Delete any textures known to the GPU that
         //  belong to charts which will not be used in this render
@@ -12067,6 +12212,30 @@ void glChartCanvas::render()
 
                           if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
                           {
+                                //  Walk the region list to determine whether we need a clear before starting
+                                wxRegion clear_test_region = ru;
+
+                                ChartBase *pcht = cc1->m_pQuilt->GetFirstChart();
+                                while(pcht)
+                                {
+                                      QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                                      if(pqp->b_Valid)
+                                      {
+                                            wxRegion get_region = pqp->ActiveRegion;
+                                            get_region.Intersect(ru);
+
+                                            if(!get_region.IsEmpty())
+                                                  clear_test_region.Subtract(get_region);
+                                      }
+                                      pcht = cc1->m_pQuilt->GetNextChart();
+                                }
+
+                                //  We only need a screen clear if the test region is non-empty
+                                if(!clear_test_region.IsEmpty())
+                                      glClear(GL_COLOR_BUFFER_BIT);
+
+
+                                //  Now render the quilt
                                 wxRegion screen_region = ru;//gn_chart;
 
                                 ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
@@ -12075,8 +12244,6 @@ void glChartCanvas::render()
                                       QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
                                       if(pqp->b_Valid)
                                       {
-                                            if(!rgn_chart.IsEmpty())
-                                            {
                                                   wxRegion get_region = pqp->ActiveRegion;
                                                   get_region.Intersect(ru);
 
@@ -12091,7 +12258,6 @@ void glChartCanvas::render()
 
                                                         screen_region.Subtract(get_region);
                                                   }
-                                            }
                                       }
 
                                       pch = cc1->m_pQuilt->GetNextChart();
@@ -12101,12 +12267,14 @@ void glChartCanvas::render()
 //                     long tt = sw.Time();
 //                     printf("Total quilt render time: %ld\n", tt);
 
+#if 0
                      //    Any part of the chart region that was not rendered in the loop needs to be cleared
+//  printf("\n");
                                 wxRegionIterator clrit ( screen_region );
-                                while ( clrit )
+                                while ( clrit)
                                 {
                                       wxRect rect = clrit.GetRect();
-
+//  printf(" %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
                                       glColor3f(0, 0, 0);
                                       glBegin(GL_QUADS);
                                       glVertex2f(rect.x, rect.y);
@@ -12117,6 +12285,7 @@ void glChartCanvas::render()
 
                                       clrit ++ ;
                                 }
+#endif
                           }
               }
 
@@ -12251,7 +12420,7 @@ void glChartCanvas::render()
 
      cc1->PaintCleanup();
 
-     printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+//     printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
 }
 
 void glChartCanvas::GrowData(int size)
@@ -12261,34 +12430,6 @@ void glChartCanvas::GrowData(int size)
           m_datasize = size;
           m_data = (unsigned char*)realloc(m_data, m_datasize);
      }
-}
-
-wxRectList glChartCanvas::RegionToMaxTexRects(wxRegion &region)
-{
-     wxRectList splitw, splith;
-     wxRegionIterator upd ( region);
-     while (upd) {
-          wxRect r = upd.GetRect();
-          while(r.width > max_texture_dimension) {
-               splitw.Append(new wxRect(r.x, r.y, max_texture_dimension, r.height));
-               r.x += max_texture_dimension;
-               r.width -= max_texture_dimension;
-          }
-          splitw.Append(new wxRect(r));
-          upd++;
-     }
-
-     for ( wxRectList::iterator rli = splitw.begin(); rli != splitw.end(); rli++ )
-     {
-          wxRect r = **rli;
-          while(r.height > max_texture_dimension) {
-               splith.Append(new wxRect(r.x, r.y, r.width, max_texture_dimension));
-               r.y += max_texture_dimension;
-               r.height -= max_texture_dimension;
-          }
-          splith.Append(new wxRect(r));
-     }
-     return splith;
 }
 
 //------------------------------------------------------------------------------

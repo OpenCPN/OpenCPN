@@ -145,6 +145,7 @@ public:
 //  Todo Make this type safe, it is always an array of (OBJLElement *)
       wxArrayPtrVoid    *pOBJLArray;    // Used for Display Filtering
       RuleHash          *_symb_sym;     // symbol symbolisation rules
+      bool        m_b_stencilx;
 
   private:
       int   S52_load_Plib(const wxString& PLib);
@@ -170,6 +171,7 @@ public:
 
       void UpdateOBJLArray(S57Obj *obj);
 
+      render_canvas_parms* CreatePatternBufferSpec(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, int bpp, bool b_pot = false);
 
       void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj, S52color *c, wxBoundingBox &BBView,
                render_canvas_parms *pb_spec, render_canvas_parms *patt_spec);

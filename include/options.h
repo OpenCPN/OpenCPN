@@ -119,7 +119,7 @@ enum {
         ID_CHECK_LOOKAHEAD,
         ID_SKEWCOMPBOX,
         ID_OPENGLBOX,
-        ID_SMOOTHZOOMBOX,
+        ID_SMOOTHPANZOOMBOX,
         ID_GARMINHOST,
         ID_FILTERNMEA,
         ID_FULLSCREENQUILT,
@@ -232,7 +232,7 @@ public:
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxCheckBox              *pSkewComp;
     wxCheckBox              *pOpenGL;
-    wxCheckBox              *pSmoothZoom;
+    wxCheckBox              *pSmoothPanZoom;
     wxCheckBox              *pFullScreenQuilt;
 
 //    For GPS Page

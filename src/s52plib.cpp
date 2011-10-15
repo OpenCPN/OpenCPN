@@ -139,6 +139,8 @@ s52plib::s52plib ( const wxString& PLib )
       //        Set up some default flags
       m_bDeClutterText = false;
       m_bShowAtonText = true;
+
+      m_b_stencilx = false;
 }
 
 
@@ -522,14 +524,14 @@ bool s52plib::FindUnusedColor ( void )
       //   ....could be better
 
       S52color ctent;
-      ctent.R = 0;
-      ctent.G = ctent.B = 1;
+      ctent.R = 255;
+      ctent.G = ctent.B = 0;
       S52color *c2;
       colTable *ct;
 
       bool bdone = false;
 
-      while ( ( ctent.R < 254 ) && !bdone )
+      while ( ( ctent.R ) && !bdone )
       {
             int match = 0;
             for ( unsigned int it=0 ; it < ColorTableArray->GetCount() ; it++ )
@@ -551,7 +553,7 @@ bool s52plib::FindUnusedColor ( void )
                   bdone = true;
             }
 
-            ctent.R ++;
+            ctent.R --;
       }
 
       m_unused_wxColor.Set(m_unused_color.R, m_unused_color.G, m_unused_color.B);
@@ -1646,12 +1648,13 @@ void s52plib::DestroyPatternRuleNode ( Rule *pR )
 
             if ( pR->pixelPtr )
             {
-                  if ( pR->definition.PADF == 'V' )
+                  if ( pR->parm0 == ID_GL_PATT_SPEC )
                   {
-                        wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                        delete pbm;
+                        render_canvas_parms *pp = ( render_canvas_parms * ) ( pR->pixelPtr );
+                        free ( pp->pix_buff );
+                        delete pp;
                   }
-                  else if ( pR->definition.PADF == 'R' )
+                  else if ( pR->parm0 == ID_RGB_PATT_SPEC )
                   {
                         render_canvas_parms *pp = ( render_canvas_parms * ) ( pR->pixelPtr );
                         free ( pp->pix_buff );
@@ -1798,6 +1801,45 @@ void s52plib::FlushSymbolCaches ( void )
                               {
                                     unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
                                     free ( p );
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                        }
+                  }
+            }
+      }
+
+      //    Flush any pattern definitions
+      rh = _patt_sym;
+
+      if(!rh)
+            return;
+
+      for ( it = ( *rh ).begin(); it != ( *rh ).end(); ++it )
+      {
+            pR = it->second;
+            if ( pR )
+            {
+                  if ( pR->parm0 && pR->pixelPtr )
+                  {
+                        switch(pR->parm0)
+                        {
+                              case ID_GL_PATT_SPEC:
+                              {
+                                    render_canvas_parms *pp = ( render_canvas_parms * ) ( pR->pixelPtr );
+                                    free ( pp->pix_buff );
+                                    glDeleteTextures( 1, (GLuint *)&pp->OGL_tex_name );
+                                    delete pp;
+                                    pR->pixelPtr = NULL;
+                                    pR->parm0 = 0;
+                                    break;
+                              }
+                              case ID_RGB_PATT_SPEC:
+                              {
+                                    render_canvas_parms *pp = ( render_canvas_parms * ) ( pR->pixelPtr );
+                                    free ( pp->pix_buff );
+                                    delete pp;
                                     pR->pixelPtr = NULL;
                                     pR->parm0 = 0;
                                     break;
@@ -3521,30 +3563,6 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
       if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) )
       {
             wxImage Image = RuleXBMToImage ( prule );
-
-            //      Make the bitmap
-
-            //TODO Study this problem, use conditional build?
-#ifdef __WXMSWF__
-//      On some versions of wxMSW, on Windows XP, conversion from wxImage to wxBitmap fails at the ::CreateDIBitmap() call
-//      unless a "compatible" dc is provided.  Why??
-//      As a workaround, just make a simple wxDC for temporary use
-
-            wxMemoryDC dwxdc;
-            wxBitmap *pbm = new wxBitmap ( Image, dwxdc );
-#else
-            wxBitmap *pbm = new wxBitmap ( Image );
-
-#endif
-//                if(pbm->IsOk())
-            {
-                  //      Make the mask
-                  wxMask *pmask = new wxMask ( *pbm, m_unused_wxColor);
-
-                  //      Associate the mask with the bitmap
-                  pbm->SetMask ( pmask );
-
-            }
 
             // delete any old private data
             if ( prule->parm0 && prule->pixelPtr )
@@ -6717,7 +6735,247 @@ int s52plib::RenderToGLAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-      return 0;
+      if(m_b_stencilx)
+            return 0;
+
+      int obj_xmin =  10000;
+      int obj_xmax = -10000;
+      int obj_ymin =  10000;
+      int obj_ymax = -10000;
+
+      //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
+
+      glStencilMask(0x2);                 // write only into bit 1 of the stencil buffer
+      glColorMask(false, false, false, false);  // Disable writing to the color buffer
+      glClear(GL_STENCIL_BUFFER_BIT);
+
+            //    We are going to write "2" into the stencil buffer wherever the object is valid
+      glStencilFunc (GL_ALWAYS, 2, 2);
+      glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
+      glColor3ub( 0, 254, 0 );            // any color will do
+
+      //  Render the geometry  into the stencil buffer
+      wxBoundingBox BBView = vp->GetBBox();
+      if ( rzRules->obj->pPolyTessGeo )
+      {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
+            wxPoint *ptp = ( wxPoint * ) malloc ( ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof ( wxPoint ) );
+
+            //  Allow a little slop in calculating whether a triangle
+            //  is within the requested Viewport
+            double margin = BBView.GetWidth() * .05;
+
+            PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+
+            TriPrim *p_tp = ppg->tri_prim_head;
+            while ( p_tp )
+            {
+                  bool b_greenwich = false;
+                  if ( BBView.GetMaxX() > 360. )
+                  {
+                        wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
+                        if ( bbRight.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT )
+                              b_greenwich = true;
+                  }
+
+                  if ( b_greenwich || (BBView.Intersect ( * ( p_tp->p_bbox ), margin ) != _OUT ))
+                  {
+
+                        //      Get and convert the points
+
+                        wxPoint *pr = ptp;
+                        double *pvert_list = p_tp->p_vertex;
+
+                        for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
+                        {
+                        double lon = *pvert_list++;
+                        double lat = *pvert_list++;
+                        rzRules->chart->GetPointPix ( rzRules, lat, lon, pr );
+
+                        obj_xmin = wxMin(obj_xmin, pr->x);
+                        obj_xmax = wxMax(obj_xmax, pr->x);
+                        obj_ymin = wxMin(obj_ymin, pr->y);
+                        obj_ymax = wxMax(obj_ymax, pr->y);
+
+                        pr++;
+                  }
+
+//                        rzRules->chart->GetPointPix (  rzRules, (wxPoint2DDouble*)p_tp->p_vertex, ptp, p_tp->nVert );
+
+
+                        switch ( p_tp->type )
+                        {
+                              case PTG_TRIANGLE_FAN:
+                              {
+                                    glBegin(GL_TRIANGLE_FAN);
+                                    for ( int it = 0 ; it < p_tp->nVert ; it++ )
+                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                    glEnd();
+                                    break;
+                              }
+
+                              case PTG_TRIANGLE_STRIP:
+                              {
+                                    glBegin(GL_TRIANGLE_STRIP);
+                                    for ( int it = 0 ; it < p_tp->nVert ; it++ )
+                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                    glEnd();
+                                    break;
+                              }
+                              case PTG_TRIANGLES:
+                              {
+                                    for ( int it = 0 ; it < p_tp->nVert ; it+=3 )
+                                    {
+                                          int xmin = wxMin(ptp[it].x, wxMin(ptp[it+1].x, ptp[it+2].x));
+                                          int xmax = wxMax(ptp[it].x, wxMax(ptp[it+1].x, ptp[it+2].x));
+                                          int ymin = wxMin(ptp[it].y, wxMin(ptp[it+1].y, ptp[it+2].y));
+                                          int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
+
+                                          wxRect rect(xmin, ymin, xmax-xmin, ymax-ymin);
+                                          if(rect.Intersects(m_render_rect))
+                                          {
+                                                glBegin(GL_TRIANGLES);
+                                                glVertex2f(ptp[it].x, ptp[it].y);
+                                                glVertex2f(ptp[it+1].x, ptp[it+1].y);
+                                                glVertex2f(ptp[it+2].x, ptp[it+2].y);
+                                                glEnd();
+                                          }
+                                    }
+                                    break;
+                              }
+                        }
+                  }   // if bbox
+                  p_tp = p_tp->p_next;                // pick up the next in chain
+            }       // while
+            free ( ptp );
+      }       // if pPolyTessGeo
+
+      if ( rzRules->obj->pPolyTessGeo )
+      {
+            //    Now set the stencil ops to subsequently render only where the stencil bit is "2"
+            glStencilFunc (GL_EQUAL, 2, 2);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+            glColorMask(true, true, true, true);            // Re-enable the color buffer
+
+            //    Get the pattern definition
+            if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
+            {
+                  render_canvas_parms *patt_spec = CreatePatternBufferSpec(rzRules, rules, vp, 32, true);
+                  rules->razRule->pixelPtr = patt_spec;
+                  rules->razRule->parm1 = m_colortable_index;
+                  rules->razRule->parm0 = ID_GL_PATT_SPEC;
+
+
+            }         // Instantiation done
+
+
+      //  Render the Area using the pattern spec stored in the rules
+            render_canvas_parms *ppatt_spec = ( render_canvas_parms * ) rules->razRule->pixelPtr;
+
+            //    Has the pattern been uploaded as a texture?
+            if(!ppatt_spec->OGL_tex_name)
+            {
+                  GLuint tex_name;
+                  glGenTextures(1, &tex_name);
+                  ppatt_spec->OGL_tex_name = tex_name;
+
+                  glBindTexture(GL_TEXTURE_2D, tex_name);
+
+//                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
+                  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ppatt_spec->w_pot, ppatt_spec->h_pot, 0, GL_RGBA, GL_UNSIGNED_BYTE, ppatt_spec->pix_buff);
+            }
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, ppatt_spec->OGL_tex_name);
+
+//            glDisable (GL_STENCIL_TEST);
+
+/*
+                        LIBGL_ALWAYS_INDIRECT: use the X server's GLX context. This used to
+                        mean you'd also get software rendering, but with AIGLX you'll probably
+                        get the hardware DRI driver.
+
+                                    LIBGL_ALWAYS_SOFTWARE: tell libGL to use the software renderer. This
+                                    only works with direct rendering because otherwise you're getting the
+                                    DRI driver that the X server opened, and it's not controlled by this
+                                    variable.
+*/
+
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+            int xr = 0;
+            int yr = 0;
+            int h = ppatt_spec->height;
+            int w = ppatt_spec->width;
+
+            float ww = (float)ppatt_spec->width/(float)ppatt_spec->w_pot;
+            float hh = (float)ppatt_spec->height/(float)ppatt_spec->h_pot;
+            while (yr < vp->pix_height)
+            {
+                  xr = 0;
+                  while(xr < vp->pix_width)
+                  {
+                        //    Render a quad.
+
+                        if(((xr >= obj_xmin) && (xr <= obj_xmax)) && ((yr >= obj_ymin) && (yr <= obj_ymax)))
+                        {
+                              glBegin(GL_QUADS);
+                              glTexCoord2f( 0,  0);            glVertex2i(xr,     yr);
+                              glTexCoord2f( ww, 0);            glVertex2i(xr + w, yr);
+                              glTexCoord2f( ww, hh);           glVertex2i(xr + w, yr + h);
+                              glTexCoord2f( 0,  hh);           glVertex2i(xr,     yr + h);
+                              glEnd();
+                        }
+                        xr += ppatt_spec->width;
+                  }
+                  yr += ppatt_spec->height;
+            }
+
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
+
+            //    Replace the old stencil function
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilMask(0xff);
+
+      }
+
+
+
+
+#if 0
+      //    At very small scales, the object could be visible on both the left and right sides of the screen.
+      //    Identify this case......
+      if(vp->chart_scale > 5e7)
+      {
+            //    Does the object hang out over the left side of the VP?
+      if((rzRules->obj->BBObj.GetMaxX() > vp->GetBBox().GetMinX()) && (rzRules->obj->BBObj.GetMinX() < vp->GetBBox().GetMinX()))
+      {
+                  //    If we add 360 to the objects lons, does it intersect the the right side of the VP?
+      if(((rzRules->obj->BBObj.GetMaxX() + 360.) > vp->GetBBox().GetMaxX()) && ((rzRules->obj->BBObj.GetMinX() + 360.) < vp->GetBBox().GetMaxX()))
+      {
+                        //  If so, this area oject should be drawn again, this time for the left side
+                        //    Do this by temporarily adjusting the objects rendering offset
+      rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+      RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL );
+      rzRules->obj->x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+
+}
+}
+}
+#endif
+
+      return 1;
 }
 
 
@@ -6805,6 +7063,200 @@ int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules, ViewP
 }
 
 
+render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, int bpp, bool b_pot)
+{
+      wxImage Image;
+
+      Rule *prule = rules->razRule;
+
+      bool bstagger_pattern = (prule->fillType.PATP == 'S');
+
+            //      Create a wxImage of the pattern drawn on an "unused_color" field
+      if ( prule->definition.SYDF == 'R' )
+            Image = RuleXBMToImage ( rules->razRule );
+
+
+      else          // Vector
+      {
+            float fsf = 100 / canvas_pix_per_mm;
+
+                  // Base bounding box
+            wxBoundingBox box ( prule->pos.patt.bnbox_x.PBXC,  prule->pos.patt.bnbox_y.PBXR,
+                                prule->pos.patt.bnbox_x.PBXC + prule->pos.patt.bnbox_w.PAHL,
+                                prule->pos.patt.bnbox_y.PBXR +prule->pos.patt.bnbox_h.PAVL );
+
+                  // Expand to include pivot
+            box.Expand ( prule->pos.patt.pivot_x.PACL,  prule->pos.patt.pivot_y.PARW );
+
+                  //    Pattern bounding boxes may be offset from origin, to preset the spacing
+                  //    So, the bitmap must be delta based.
+            double dwidth = box.GetMaxX() - box.GetMinX();
+            double dheight = box.GetMaxY() - box.GetMinY();
+
+                  //  Add in the pattern spacing parameters
+            dwidth  += prule->pos.patt.minDist.PAMI;
+            dheight += prule->pos.patt.minDist.PAMI;
+
+                  //  Prescale
+            dwidth  /= fsf;
+            dheight /= fsf;
+
+            int width = ( int ) dwidth + 1;
+            int height = ( int ) dheight + 1;
+
+
+                  //      Instantiate the vector pattern to a wxBitmap
+            wxMemoryDC mdc;
+            wxBitmap *pbm = NULL;
+
+            if ( ( 0 != width ) && ( 0 != height ) )
+            {
+                  pbm = new wxBitmap ( width, height );
+
+                  mdc.SelectObject ( *pbm );
+                  mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
+                  mdc.Clear();
+
+
+                        //    For pattern debugging
+//                              mdc.SetPen(*wxGREEN_PEN);
+//                              mdc.DrawRectangle(0, 0, width, height);
+//                              mdc.SetPen(wxNullPen);
+
+                  int pivot_x = prule->pos.patt.pivot_x.PACL;
+                  int pivot_y = prule->pos.patt.pivot_y.PARW ;
+
+                  char *str = prule->vector.LVCT;
+                  char *col = prule->colRef.LCRF;
+                  wxPoint pivot ( pivot_x, pivot_y );
+                  wxPoint r0 ( ( int ) ( (pivot_x  - box.GetMinX())/fsf ) + 1, ( int ) (( pivot_y - box.GetMinY())/fsf ) + 1 );
+                  RenderHPGLtoDC ( str, col, &mdc, r0, pivot, 0 );
+            }
+            else
+            {
+                  pbm = new wxBitmap ( 2, 2 );                // substitute small, blank pattern
+                  mdc.SelectObject ( *pbm );
+                  mdc.SetBackground ( wxBrush (m_unused_wxColor ) );
+                  mdc.Clear();
+            }
+
+                  //    Build a wxImage from the wxBitmap
+            Image = pbm->ConvertToImage();
+
+            delete pbm;
+            mdc.SelectObject ( wxNullBitmap );
+      }
+
+//  Convert the wxImage to a populated render_canvas_parms struct
+
+      int sizey = Image.GetHeight();
+      int sizex = Image.GetWidth();
+
+      render_canvas_parms *patt_spec = new render_canvas_parms;
+      patt_spec->OGL_tex_name = 0;
+
+      if(b_pot)
+      {
+            int xp = sizex;
+            int a = 0;
+            while(xp)
+            {
+                  xp = xp >> 1;
+                  a++;
+            }
+            patt_spec->w_pot = 1 << a;
+
+            xp = sizey;
+            a = 0;
+            while(xp)
+            {
+                  xp = xp >> 1;
+                  a++;
+            }
+            patt_spec->h_pot = 1 << a;
+
+      }
+      else
+      {
+            patt_spec->w_pot = sizex;
+            patt_spec->h_pot = sizey;
+      }
+
+      patt_spec->depth = bpp;                              // set the depth
+
+      patt_spec->pb_pitch = ( ( patt_spec->w_pot * patt_spec->depth / 8 ) );
+      patt_spec->lclip = 0;
+      patt_spec->rclip = patt_spec->w_pot - 1;
+      patt_spec->pix_buff = ( unsigned char * ) malloc ( patt_spec->h_pot * patt_spec->pb_pitch );
+
+            // Preset background
+      memset ( patt_spec->pix_buff, 0,sizey * patt_spec->pb_pitch );
+      patt_spec->width = sizex;
+      patt_spec->height = sizey;
+      patt_spec->x = 0;
+      patt_spec->y = 0;
+      patt_spec->b_stagger = bstagger_pattern;
+
+      unsigned char *pd0 = patt_spec->pix_buff;
+      unsigned char *pd;
+      unsigned char *ps0 = Image.GetData();
+      unsigned char *ps;
+
+      if ( bpp == 24 )
+      {
+            for ( int iy = 0 ; iy < sizey ; iy++ )
+            {
+                  pd = pd0 + ( iy * patt_spec->pb_pitch );
+                  ps = ps0 + ( iy * sizex * 3 );
+                  for ( int ix = 0 ; ix<sizex ; ix++ )
+                  {
+#ifdef ocpnUSE_ocpnBitmap
+                        unsigned char c1 = *ps++;
+                        unsigned char c2 = *ps++;
+                        unsigned char c3 = *ps++;
+
+                        *pd++ = c3;
+                        *pd++ = c2;
+                        *pd++ = c1;
+#else
+                        *pd++ = *ps++;
+                        *pd++ = *ps++;
+                        *pd++ = *ps++;
+#endif
+                  }
+            }
+      }
+
+      else if ( bpp == 32 )       // was pb_spec->depth
+      {
+            unsigned char mr =  m_unused_wxColor.Red();
+            unsigned char mg =  m_unused_wxColor.Green();
+            unsigned char mb =  m_unused_wxColor.Blue();
+
+            for ( int iy = 0 ; iy < sizey ; iy++ )
+            {
+                  pd = pd0 + ( iy * patt_spec->pb_pitch );
+                  ps = ps0 + ( iy * sizex * 3 );
+                  for ( int ix = 0 ; ix < sizex ; ix++ )
+                  {
+                        if(ix < sizex)
+                        {
+                              unsigned char r = *ps++;
+                              unsigned char g = *ps++;
+                              unsigned char b = *ps++;
+
+                              *pd++ = r;
+                              *pd++ = g;
+                              *pd++ = b;
+                              *pd++ = ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
+                        }
+                  }
+            }
+      }
+
+      return patt_spec;
+
+}
 
 
 int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
@@ -6814,6 +7266,8 @@ int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
 
       if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
       {
+            render_canvas_parms *patt_spec = CreatePatternBufferSpec(rzRules, rules, vp, BPP);
+#if 0
             Rule *prule = rules->razRule;
 
             bool bstagger_pattern = (prule->fillType.PATP == 'S');
@@ -6963,11 +7417,12 @@ int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
                         }
                   }
             }
-
+#endif
             rules->razRule->pixelPtr = patt_spec;
             rules->razRule->parm1 = m_colortable_index;
+            rules->razRule->parm0 = ID_RGB_PATT_SPEC;
 
-      }         // Instantiation
+      }         // Instantiation done
 
 
       //  Render the Area using the pattern spec stored in the rules

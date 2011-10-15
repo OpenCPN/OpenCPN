@@ -98,7 +98,10 @@ typedef enum _RadPrio{
 //    PixelPtr type flags
 enum{
       ID_wxBitmap       = 1,
-      ID_RGBA
+      ID_RGBA,
+      ID_GL_PATT_SPEC,
+      ID_RGB_PATT_SPEC
+
 };
 
 // display category type
@@ -397,8 +400,11 @@ public:
       int                     y;
       int                     width;
       int                     height;
+      int                     w_pot;
+      int                     h_pot;
       int                     depth;
       bool                    b_stagger;
+      int                     OGL_tex_name;
 };
 
 //----------------------------------------------------------------------------------

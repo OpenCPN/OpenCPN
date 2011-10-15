@@ -216,7 +216,8 @@ public:
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
-      bool DoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view);
+      bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
+      bool ADoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
@@ -301,6 +302,9 @@ private:
       wxRect      m_last_vprect;
 
       long        m_plib_state_hash;
+
+      int         m_tex_name;
+      bool        m_btex_mem;
 };
 
 //----------------------------------------------------------------------------

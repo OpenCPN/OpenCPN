@@ -383,7 +383,7 @@ double           g_COGAvg;
 bool             g_bLookAhead;
 bool             g_bskew_comp;
 bool             g_bopengl;
-bool             g_bsmoothzoom;
+bool             g_bsmoothpanzoom;
 
 int              g_nCOMPortCheck;
 
@@ -5239,14 +5239,7 @@ int MyFrame::DoOptionsDialog()
                   b_refresh_after_options = true;
 
             if(bPrevOGL != g_bopengl)
-            {
                   b_refresh_after_options = true;
-#ifdef USE_S57
-                  if(ps52plib)
-                        ps52plib->FlushSymbolCaches();
-#endif
-            }
-
 
             pConfig->UpdateSettings();
 

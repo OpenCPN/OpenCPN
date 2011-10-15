@@ -189,12 +189,13 @@ class  ChartBaseBSB     :public ChartBase
       int GetSize_X(){ return Size_X;}
       int GetSize_Y(){ return Size_Y;}
 
+      void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
+      void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+
 protected:
 //    Methods
 
       wxRect GetSourceRect(){ return Rsrc; }
-      void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-      void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
 
       virtual bool GetAndScaleData(unsigned char *ppn,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,

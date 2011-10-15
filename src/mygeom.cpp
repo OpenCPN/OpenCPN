@@ -45,8 +45,8 @@
 
 #ifdef USE_GLU_TESS
 #ifdef __WXOSX__
-#include <gl.h>
-#include <glu.h>
+#include "GL/gl.h"
+#include "GL/glu.h"
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
