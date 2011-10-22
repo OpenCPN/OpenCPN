@@ -1,0 +1,6 @@
+[submodule "plugins\\radar_pi"]
+	path = plugins\\radar_pi
+	url = git@github.com:nohal/radar_pi.git
+[submodule "plugins\\LogbookKonni_pi"]
+	path = plugins\\LogbookKonni_pi
+	url = git@github.com:nohal/LogbookKonni.git
