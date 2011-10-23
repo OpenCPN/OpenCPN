@@ -538,6 +538,7 @@ IF (USE_S57)
             data/s57data/s57attributes.csv
             data/s57data/s57expectedinput.csv
             data/s57data/s57objectclasses.csv
+            data/s57data/Helvetica.txf
              )
 ENDIF (USE_S57)
 
