@@ -2535,13 +2535,19 @@ void options::OnButtonSelectSound(wxCommandEvent& event)
 void options::OnButtonTestSound(wxCommandEvent& event)
 {
 #if wxUSE_LIBSDL
- printf("sdl\n");
+ printf("wxUSE_LIBSDL true\n");
 #endif
 
       wxSound AIS_Sound(g_sAIS_Alert_Sound_File);
 
       if(AIS_Sound.IsOk())
+      {
+            printf("playing sound\n");
             AIS_Sound.Play();
+      }
+      else
+            printf("sound is NOT ok\n");
+
 
 }
 

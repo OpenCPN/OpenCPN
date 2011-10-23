@@ -5406,7 +5406,22 @@ void cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, wxRegion *pVa
                   {
                         //    No sense in increasing the region beyond the current VPoint size,
                         //    Just makes subsequent region iterator loops HUGE....
-                        rgn_covr.Intersect ( 0,0,VPoint.rv_rect.width, VPoint.rv_rect.height );
+//                        rgn_covr.Intersect ( 0,0,VPoint.rv_rect.width, VPoint.rv_rect.height );
+
+                        //    TODO This is really right, but has pervasive effects elsewhere
+                        /*    remove offset in quilt building
+                        add offset back to charting.cpp raster build
+                        on BSB opengl renders, correct opengl stencil and render rects
+                        on S57 opengl renders, correct stencil bits and render offsets...
+                        Check everything again
+                        */
+//                        rgn_covr.Intersect ( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width, VPoint.rv_rect.height );
+
+                        //    This is suboptimal, since it makes the region larger than it needs to be...
+                        //    But works for both dc and opengl renders....
+                        rgn_covr.Intersect ( VPoint.rv_rect.x, VPoint.rv_rect.y,
+                                             VPoint.rv_rect.width + abs(VPoint.rv_rect.x),
+                                             VPoint.rv_rect.height + abs(VPoint.rv_rect.y ));
                         pValidRegion->Union ( rgn_covr );
                   }
             }
@@ -5434,6 +5449,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 //      g_bDebugCM93 = true;
 
 //      CALLGRIND_START_INSTRUMENTATION
+
       if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
       {
                   ::wxBeginBusyCursor();
@@ -5443,7 +5459,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
       if ( g_bDebugCM93 )
       {
-            printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
+            printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c %g\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ), VPoint.view_scale_ppm );
             wxRegionIterator upd ( Region );
             while ( upd )
             {
@@ -5513,11 +5529,12 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         }
                   }
 
- //if(0)
+
                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
                   {
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+                        int cmscale_save = m_cmscale;
 
                         int cmscale_next = m_cmscale;
 
@@ -5565,6 +5582,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                         // restore the base chart pointer
                         m_pcm93chart_current = m_pcm93chart_save;
+                        m_cmscale = cmscale_save;
 
                         if ( g_bDebugCM93 )
                         {
@@ -5589,35 +5607,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             }
             else  // Single chart mode
                   render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, Region );
-      }
-      else
-      {
-#if 0
-            //    one must always return a valid bitmap selected into the specified DC
-            //    Since the CM93 cell is not available at this location, select a dummy placeholder
-            if ( m_pDummyBM )
-            {
-                  if ( ( m_pDummyBM->GetWidth() != VPoint.pix_width ) || ( m_pDummyBM->GetHeight() != VPoint.pix_height ) )
-                  {
-                        delete m_pDummyBM;
-                        m_pDummyBM = NULL;
-                  }
-            }
-
-            if ( NULL == m_pDummyBM )
-                  m_pDummyBM = new wxBitmap ( VPoint.pix_width, VPoint.pix_height,-1 );
-
-
-            // Clear the bitmap
-            wxMemoryDC mdc;
-            mdc.SelectObject ( *m_pDummyBM );
-            mdc.SetBackground ( *wxBLACK_BRUSH );
-            mdc.Clear();
-            mdc.SelectObject ( wxNullBitmap );
-
-
-            dc.SelectObject ( *m_pDummyBM );
-#endif
       }
 
 //      CALLGRIND_STOP_INSTRUMENTATION

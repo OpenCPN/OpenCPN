@@ -576,8 +576,8 @@ protected:
 
       bool m_bGenMM;
       bool m_bGL_GEN_MM;
-      int  m_tex_max_res;
       int  m_ntex;
+      int  m_tex_max_res;
 
 DECLARE_EVENT_TABLE()
 };

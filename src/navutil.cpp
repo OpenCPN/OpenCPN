@@ -276,6 +276,8 @@ extern int              g_toolbar_y;
 extern long             g_toolbar_orient;
 extern int              g_iSDMMFormat;
 
+extern int              g_GPU_MemSize;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -2764,6 +2766,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
       Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
+      Read ( _T ( "GPUMemorySize" ),  &g_GPU_MemSize, 256 );
+
       Read ( _T ( "SmoothPanZoom" ),  &g_bsmoothpanzoom, 0 );
 
       Read ( _T ( "ToolbarX"),  &g_toolbar_x, 0);

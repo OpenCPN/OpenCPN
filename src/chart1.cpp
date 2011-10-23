@@ -553,6 +553,9 @@ int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
 
+//    OpenGL Globals
+int               g_GPU_MemSize;
+
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
 { "1bells.wav","2bells.wav","3bells.wav","4bells.wav","5bells.wav","6bells.wav","7bells.wav","8bells.wav"   // pjotrc 2010.02.09

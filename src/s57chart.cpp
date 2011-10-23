@@ -1649,6 +1649,25 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
 
       if(1)
       {
+            glPushMatrix();
+            if(fabs(VPoint.rotation) > 0.01)
+            {
+
+                  double w = VPoint.pix_width;
+                  double h = VPoint.pix_height;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+                  double angle = VPoint.rotation;
+                  angle -= VPoint.skew;
+
+                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+                  glRotatef(angle * 180. / PI, 0, 0, 1);
+
+                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
+            }
+
             //    Create a stencil buffer for clipping to the region
             glEnable (GL_STENCIL_TEST);
             glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
@@ -1678,6 +1697,8 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
             //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
             glStencilFunc (GL_EQUAL, 1, 1);
             glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+
+            glPopMatrix();
       }
 
 #if 0
@@ -1734,11 +1755,32 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
 //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
 //            temp_vp.GetBBox().EnLarge(margin);
 
+      glPushMatrix();
+
+      if(fabs(VPoint.rotation) > 0.01)
+      {
+
+            double w = VPoint.pix_width;
+            double h = VPoint.pix_height;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+            double angle = VPoint.rotation;
+            angle -= VPoint.skew;
+
+            double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+            double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+            glRotatef(angle * 180. / PI, 0, 0, 1);
+
+            glTranslatef(ddx, ddy, 0);                 // post rotate translation
+      }
+
       DoRenderRectOnGL(glc, temp_vp, rect);
 //      ADoRenderViewOnGL(glc, temp_vp, rect, false);
 
       glDisable (GL_STENCIL_TEST);
 
+      glPopMatrix();
 
 //      Update last_vp to reflect current state
       m_last_vp = VPoint;

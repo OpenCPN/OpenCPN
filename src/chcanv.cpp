@@ -244,6 +244,8 @@ extern wxProgressDialog *s_ProgDialog;
 
 extern bool             g_bsmoothpanzoom;
 
+extern int              g_GPU_MemSize;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -532,6 +534,7 @@ class Quilt
             bool IsBusy(){ return m_bbusy; }
             QuiltPatch *GetCurrentPatch();
             bool IsChartInQuilt(ChartBase *pc);
+            bool IsQuiltVector(void);
 
       private:
             wxRegion GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp);
@@ -885,6 +888,41 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
             return wxRegion(0,0,100,100);
 }
 
+bool Quilt::IsQuiltVector(void)
+{
+      if(m_bbusy)
+            return -1;
+
+      m_bbusy = true;
+
+      bool ret = false;
+
+      wxPatchListNode *cnode = m_PatchList.GetFirst();
+      while(cnode)
+      {
+            if(cnode->GetData())
+            {
+                  QuiltPatch *pqp = cnode->GetData();
+
+                  if((pqp->b_Valid) && (!pqp->b_eclipsed))
+                  {
+                        const ChartTableEntry &ctei = ChartData->GetChartTableEntry(pqp->dbIndex);
+
+                        if(ctei.GetChartFamily() == CHART_FAMILY_VECTOR)
+                        {
+                              ret = true;
+                              break;
+                        }
+
+                  }
+            }
+            cnode = cnode->GetNext();
+      }
+
+      m_bbusy = false;
+      return ret;
+}
+
 int Quilt::GetChartdbIndexAtPix(wxPoint p)
 {
       if(m_bbusy)
@@ -909,6 +947,7 @@ int Quilt::GetChartdbIndexAtPix(wxPoint p)
       m_bbusy = false;
       return ret;
 }
+
 ChartBase *Quilt::GetChartAtPix(wxPoint p)
 {
       if(m_bbusy)
@@ -3917,7 +3956,7 @@ void ChartCanvas::Do_Pankeys(wxTimerEvent& event)
      if(m_modkeys == wxMOD_ALT)
           m_panspeed = slowpan;
      else
-          if(g_bsmoothpanzoom) {
+          if(g_bsmoothpanzoom && !g_bopengl) {        // turn off for opengl until figure out how to syncronize with SwapBuffers()
                /* accelerate panning */
                m_panspeed += 2;
                if(m_panspeed > maxpan)
@@ -4275,6 +4314,8 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
             if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
                   b_smooth= false;
       }
+      else
+            b_smooth = !m_pQuilt->IsQuiltVector();
 
       if(b_smooth)
       {
@@ -4304,6 +4345,8 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
             if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
                   b_smooth= false;
       }
+      else
+            b_smooth = !m_pQuilt->IsQuiltVector();
 
       if(b_smooth)
       {
@@ -4628,6 +4671,7 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
         VPoint.clat = lat;
         VPoint.clon = lon;
         VPoint.view_scale_ppm = scale_ppm;
+//        VPoint.rotation = 20.0 * PI/180.; // hardcode test
         VPoint.rotation = rotation;
 
         if((VPoint.pix_width < 0) || (VPoint.pix_height < 0))           // Canvas parameters not yet set
@@ -11252,7 +11296,6 @@ glChartCanvas::glChartCanvas(wxWindow *parent) :
      m_cacheinvalid(1), m_data(NULL),
      m_datasize(0), m_bsetup(false)
 {
-      m_tex_max_res = 1000;         // absurdly large
       m_ntex = 0;
 
 }
@@ -11400,83 +11443,10 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           /* we upload non-aligned memory */
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-#if 0
-          //  Estimate texture memory size
-          bool b_done = false;
-          int n_tex = 0;
-          int n_tex_size = 512;
-          GLuint tex_name1;
-          GLuint tex_name_last = 0;
-          unsigned char *dummy_bits = (unsigned char *)malloc(n_tex_size * n_tex_size * 4);
-          glEnable(GL_TEXTURE_2D);
-
-          int w, h;
-          GetClientSize(&w, &h);
-          glViewport(0, 0, (GLint) w, (GLint) h);
-
-          glLoadIdentity();
-          gluOrtho2D(0, (GLint) w, (GLint) h, 0);
-
-          while(!b_done)
-          {
-                n_tex++;
-
-                GLuint tex_name;
-                glGenTextures(1, &tex_name);
-
-                glBindTexture(GL_TEXTURE_2D, tex_name);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-                glTexImage2D(GL_TEXTURE_2D, 0, FORMAT_INTERNAL, n_tex_size, n_tex_size, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, dummy_bits);
-
-                glBegin(GL_QUADS);
-
-                glTexCoord2f(0, 0);       glVertex2f(0, 0);
-                glTexCoord2f(1, 0);       glVertex2f(512, 0);
-                glTexCoord2f(1, 1);       glVertex2f(512, 512);
-                glTexCoord2f(0, 1);       glVertex2f(0, 512);
-
-                glEnd();
-
-                SwapBuffers();
-
-                if(n_tex == 1)
-                      tex_name1 = tex_name;
-
-                wxStopWatch sw;
-                glBindTexture(GL_TEXTURE_2D,  tex_name_last);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);       glVertex2f(0, 0);
-                glTexCoord2f(1, 0);       glVertex2f(512, 0);
-                glTexCoord2f(1, 1);       glVertex2f(512, 512);
-                glTexCoord2f(0, 1);       glVertex2f(0, 512);
-                glEnd();
-                SwapBuffers();
-
-                sw.Pause();
-                long tt = sw.Time();
-                printf(" tt:%d\n", (int)tt);
-
-                GLboolean res;
-                if(!glAreTexturesResident( 1, &tex_name1, &res))
-                      int yp = 4; //break;
-                if(n_tex > 100)
-                      break;
-
-                tex_name_last = n_tex;
-          }
-
-          glDisable(GL_TEXTURE_2D);
-          free (dummy_bits);
-
-          m_tex_max_res = n_tex;
-#endif
 
           int n_tex_size = 512;
-          double n_GPU_Mem = 64 * (1<<20);
-          m_tex_max_res = n_GPU_Mem / (n_tex_size * n_tex_size * 4 * 1.3);          // 1.3 allows for full mipmaps
+          double n_GPU_Mem = wxMax(64, g_GPU_MemSize) * (1<<20);
+          m_tex_max_res = n_GPU_Mem / (n_tex_size * n_tex_size * 4 * 1.3);          // 1.3 multiplier allows for full mipmaps
           m_tex_max_res /= 2;
 
           wxString str;
@@ -11686,8 +11656,13 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       glEnable(GL_TEXTURE_2D);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
+      //  Make a special VP to account for rotations
+      ViewPort svp = vp;
+      svp.pix_width = svp.rv_rect.width;
+      svp.pix_height = svp.rv_rect.height;
+
       wxRect R;
-      chart->ComputeSourceRectangle(vp, &R);
+      chart->ComputeSourceRectangle(svp, &R);
       double scalefactor = chart->GetRasterScaleFactor();
 
       int tex_dim = 512;//max_texture_dimension;
@@ -11695,6 +11670,28 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
       if(1/*bUse_Stencil*/)
       {
+            glPushMatrix();
+
+            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
+            {
+
+      //    Shift texture drawing positions to account for the larger chart rectangle
+      //    needed to cover the screen on rotated images
+                  double w = vp.pix_width;
+                  double h = vp.pix_height;
+
+                  double angle = vp.rotation;
+                  angle -= vp.skew;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+                  glRotatef(angle * 180. / PI, 0, 0, 1);
+
+                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
+            }
+
             //    Create a stencil buffer for clipping to the region
             glEnable (GL_STENCIL_TEST);
             glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
@@ -11710,6 +11707,8 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             {
                   wxRect rect = clipit.GetRect();
 
+                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+
                   glBegin(GL_QUADS);
 
                   glVertex2f(rect.x, rect.y);
@@ -11724,6 +11723,9 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
             glStencilFunc (GL_EQUAL, 1, 1);
             glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+
+            glPopMatrix();
+
       }
 
 
@@ -11863,8 +11865,41 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             biasx = pixx - spx;
       }
 
-      glTranslatef(-spx/scalefactor*n_basemult , -spy/scalefactor*n_basemult, 0);
       glScalef(1./scalefactor*n_basemult, 1./scalefactor*n_basemult, 1);
+
+      double xt = 0.;
+      double yt = 0.;
+
+
+      if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
+      {
+
+      //    Shift texture drawing positions to account for the larger chart rectangle
+      //    needed to cover the screen on rotated images
+            double w = vp.pix_width;
+            double h = vp.pix_height;
+            xt =  (R.width  - (w *  scalefactor/n_basemult))/2;
+            yt =  (R.height - (h *  scalefactor/n_basemult))/2;
+
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+            double angle = vp.rotation;
+            angle -= vp.skew;
+            double ddx = (scalefactor/n_basemult) * (w * cos(-angle) - h * sin(-angle) - w)/2;
+            double ddy = (scalefactor/n_basemult) * (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+            glRotatef(angle * 180. / PI, 0, 0, 1);
+
+            glTranslatef(ddx, ddy, 0);                 // post rotate translation
+      }
+
+#if 0
+      Sum and Difference Formulas
+                  sin(A+B)=sin A cos B + cos A sin B
+                  sin(A-B)=sin A cos B - cos A sin B
+                  cos(A+B)=cos A cos B - sin A sin B
+                  cos(A-B)=cos A cos B + sin A sin B
+#endif
 
       //    Using a 2D loop, iterate thru the texture tiles of the chart
       //    For each tile, is it (1) needed and (2) present?
@@ -11891,13 +11926,14 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         int w = ri.width, h = ri.height;
                         int x1 = ri.x - rect.x;
                         int y1 = ri.y - rect.y;
-                        double x2 = (ri.x - R.x) + spx;
-                        double y2 = (ri.y - R.y) + spy;
+                        double x2 = (ri.x - R.x) - xt;
+                        double y2 = (ri.y - R.y) - yt;
 
                         y2 -= biasy;
                         x2 -= biasx;
 
-                        wxRect rt((x2 - spx)/scalefactor*n_basemult, (y2 - spy)/scalefactor*n_basemult, w/scalefactor*n_basemult, h/scalefactor*n_basemult);
+                        wxRect rt((x2)/scalefactor*n_basemult, (y2)/scalefactor*n_basemult, w/scalefactor*n_basemult, h/scalefactor*n_basemult);
+                        rt.Offset(-vp.rv_rect.x, -vp.rv_rect.y);              // compensate for the adjustment made in quilt composition
 
                         //    And does this tile intersect the desired render region?
                         if(region.Contains(rt) != wxOutRegion)
@@ -11943,50 +11979,8 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     m_ntex++;
                               }
 
-
                         //    The texture is known to be available to the GPU
                         //    So map it in
-
-#if 0 //USE_GLSCISSOR
-                        //n.b.  This scissor code "should" work...
-                        //      but fails on some cards, like via Unichrome....
-                        //
-                        //      Anyway, it looks like the stencil buffer code will work on ..almost.. all cards....
-
-                        //    Decompose the target region into rects
-                        //    If a screen region rect intersects with a chart rect, then...
-                        //    Use the glScissor clipper to draw only that part necessary
-                        wxRegionIterator clipit ( region );
-                        while ( clipit )
-                        {
-                              wxRect reg_rect = clipit.GetRect();
-
-                              if(reg_rect.Intersects(rt))
-                              {
-                                    glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
-
-                                    glScissor(reg_rect.x, vp.pix_height - (reg_rect.y + reg_rect.height), reg_rect.width, reg_rect.height);
-                                    printf("  Scissor: %d %d %d %d\n",reg_rect.x, vp.pix_height - (reg_rect.y + reg_rect.height), reg_rect.width, reg_rect.height);
-                                    double sx = rect.width;
-                                    double sy = rect.height;
-
-                                    glEnable(GL_SCISSOR_TEST);
-                                    glBegin(GL_QUADS);
-
-                                    glTexCoord2f(x1/sx, y1/sy);         glVertex2f((x2), (y2));
-                                    glTexCoord2f((x1+w)/sx, y1/sy);     glVertex2f((w+ x2) , (y2));
-                                    glTexCoord2f((x1+w)/sx, (y1+h)/sy); glVertex2f((w+ x2) , (h + y2));
-                                    glTexCoord2f(x1/sx, (y1+h)/sy);     glVertex2f((x2) , (h + y2));
-
-                                    glEnd();
-                                    glDisable(GL_SCISSOR_TEST);
-
-                              }
-
-                              clipit ++ ;
-                        }
-#endif
-
 
                               wxStopWatch sw;
 
@@ -12037,9 +12031,6 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
 }
 
-
-
-
 void glChartCanvas::render()
 {
      if(!m_bsetup)
@@ -12057,7 +12048,7 @@ void glChartCanvas::render()
            ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
 
 //#ifdef __WXMSW__
-     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+//     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
 //#endif
 
         //    In case Console is shown, set up dc clipper and blt iterator regions
@@ -12206,167 +12197,81 @@ void glChartCanvas::render()
               //  TODO This may not be necessary, but nice for debugging
 //              glClear(GL_COLOR_BUFFER_BIT);
 
-              if(!g_bCourseUp)
-              {
+
                     wxStopWatch sw;
 
-                          if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
-                          {
-                                //  Walk the region list to determine whether we need a clear before starting
-                                wxRegion clear_test_region = ru;
+                  if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
+                  {
+                        //  Walk the region list to determine whether we need a clear before starting
+                        wxRegion clear_test_region = ru;
 
-                                ChartBase *pcht = cc1->m_pQuilt->GetFirstChart();
-                                while(pcht)
-                                {
-                                      QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-                                      if(pqp->b_Valid)
-                                      {
-                                            wxRegion get_region = pqp->ActiveRegion;
-                                            get_region.Intersect(ru);
+                        ChartBase *pcht = cc1->m_pQuilt->GetFirstChart();
+                        while(pcht)
+                        {
+                              QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                              if(pqp->b_Valid)
+                              {
+                                    wxRegion get_region = pqp->ActiveRegion;
 
-                                            if(!get_region.IsEmpty())
-                                                  clear_test_region.Subtract(get_region);
-                                      }
-                                      pcht = cc1->m_pQuilt->GetNextChart();
-                                }
+                                    if(!get_region.IsEmpty())
+                                          clear_test_region.Subtract(get_region);
+                              }
+                              pcht = cc1->m_pQuilt->GetNextChart();
+                        }
 
-                                //  We only need a screen clear if the test region is non-empty
-                                if(!clear_test_region.IsEmpty())
-                                      glClear(GL_COLOR_BUFFER_BIT);
+                        //  We only need a screen clear if the test region is non-empty
+                        if(!clear_test_region.IsEmpty())
+                              glClear(GL_COLOR_BUFFER_BIT);
 
+                        //  Now render the quilt
+                        ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+                        while(pch)
+                        {
+                              QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                              if(pqp->b_Valid)
+                              {
+                                    wxRegion get_region = pqp->ActiveRegion;
 
-                                //  Now render the quilt
-                                wxRegion screen_region = ru;//gn_chart;
+                                    if(!get_region.IsEmpty())
+                                    {
+                                          ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
+                                          if(Patch_Ch_BSB)
+                                                 RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
+                                          else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                          {
+                                                get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
+                                                pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                          }
+                                    }
+                              }
 
-                                ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
-                                while(pch)
-                                {
-                                      QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-                                      if(pqp->b_Valid)
-                                      {
-                                                  wxRegion get_region = pqp->ActiveRegion;
-                                                  get_region.Intersect(ru);
-
-                                                  if(!get_region.IsEmpty())
-                                                  {
-
-                                                        ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
-                                                        if(Patch_Ch_BSB)
-                                                              RenderChartRegion(Patch_Ch_BSB, svp, get_region);
-                                                        else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
-                                                              pch->RenderRegionViewOnGL(*GetContext(), svp, get_region);
-
-                                                        screen_region.Subtract(get_region);
-                                                  }
-                                      }
-
-                                      pch = cc1->m_pQuilt->GetNextChart();
-                                }
+                              pch = cc1->m_pQuilt->GetNextChart();
+                        }
 
                      sw.Pause();
 //                     long tt = sw.Time();
 //                     printf("Total quilt render time: %ld\n", tt);
 
-#if 0
-                     //    Any part of the chart region that was not rendered in the loop needs to be cleared
-//  printf("\n");
-                                wxRegionIterator clrit ( screen_region );
-                                while ( clrit)
-                                {
-                                      wxRect rect = clrit.GetRect();
-//  printf(" %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-                                      glColor3f(0, 0, 0);
-                                      glBegin(GL_QUADS);
-                                      glVertex2f(rect.x, rect.y);
-                                      glVertex2f(rect.x + rect.width , rect.y);
-                                      glVertex2f(rect.x + rect.width , rect.y + rect.height);
-                                      glVertex2f(rect.x, rect.y + rect.height);
-                                      glEnd();
-
-                                      clrit ++ ;
-                                }
-#endif
-                          }
               }
-
-/*
-              else            // quilted, course-up
-              {
-                  temp_dc.SelectObject ( m_working_bm );
-                  wxRegion chart_get_all_region(wxRect(0,0,svp.pix_width, svp.pix_height));
-                  m_pQuilt->RenderQuiltRegionViewOnDC ( temp_dc, svp, chart_get_all_region );
-              }
-*/
         }
         else                  // not quilted
         {
              ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>(Current_Ch);
              if(Current_Ch_BSB)
              {
-                  RenderChartRegion(Current_Ch_BSB, svp, ru);
+                   glClear(GL_COLOR_BUFFER_BIT);
+                   wxRegion rup = chart_get_region;
+//                    rup.Intersect(ru);
+                   RenderChartRegion(Current_Ch_BSB, cc1->VPoint, rup);
              }
              else if (!dynamic_cast<ChartDummy*>(Current_Ch))
              {
                    glClear(GL_COLOR_BUFFER_BIT);
+                   Current_Ch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, chart_get_region);
 
-                   Current_Ch->RenderRegionViewOnGL(*GetContext(), svp, chart_get_region);
-
-#if 0
-                    /* not bsb slow for now */
-                   //  Create a temporary bitmap
-                   int w = svp.pix_width, h = svp.pix_height;
-
-                   wxMemoryDC mdc1, mdc2;
-                   wxRegion rgn(wxRect(0, 0, w, h));
-                   Current_Ch->RenderRegionViewOnDC(mdc1, svp, rgn);
-
-                   wxBitmap bmp ( w, h, -1 );
-                   mdc2.SelectObject ( bmp );
-
-                   mdc2.Blit(0, 0, w, h, &mdc1, 0, 0);
-                   wxImage img = bmp.ConvertToImage();
-
-/*
-                   glEnable(GL_TEXTURE_2D);
-                   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-                   GLuint tex_name;
-                   glGenTextures(1, &tex_name);
-                   glBindTexture(GL_TEXTURE_2D, tex_name);
-
-                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-                   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                                w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img.GetData());
-
-
-                   glBegin(GL_QUADS);
-                   glTexCoord2f(0, 0); glVertex2f(0, 0);
-                   glTexCoord2f(1, 0); glVertex2f(w, 0);
-                   glTexCoord2f(1, 1); glVertex2f(w, h);
-                   glTexCoord2f(0, 1); glVertex2f(0, h);
-                   glEnd();
-
-                   glDisable(GL_TEXTURE_2D);
-*/
-
-                   glDisable(GL_TEXTURE_2D);
-
-                   glRasterPos2i(0, 0);
-                   glPixelZoom( 1., -1.0 );
-
-                   glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, img.GetData());
-#endif
               }
         }
 
-#if 0
-        // TODO: implement rotation
-        if(((fabs(cc1->GetVP().rotation) > 0.01)) || (g_bskew_comp && (fabs(cc1->GetVP().skew) > 0.01)))
-        {
-        }
-#endif
 
 //    Now render overlay objects
         cc1->DrawOverlayObjects ( gldc, ru );
@@ -12400,6 +12305,7 @@ void glChartCanvas::render()
         }
 
 #if 0
+        //  Debug
         wxRegionIterator upd ( ru );
         while ( upd )
         {
