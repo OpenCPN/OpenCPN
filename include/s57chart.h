@@ -217,10 +217,11 @@ private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
-      bool ADoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
+
+      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       InitReturn FindOrCreateSenc( const wxString& name );

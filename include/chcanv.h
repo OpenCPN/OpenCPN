@@ -549,12 +549,15 @@ public:
 
       wxString GetRendererString(){ return m_renderer; }
 
-      void Invalidate() {m_cacheinvalid++; }
+      void Invalidate() {m_cache_vp.Invalidate(); }
       void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
       void ClearAllRasterTextures(void);
 
 protected:
+      void RenderQuiltViewGL(ViewPort &vp, wxRegion Region);
+      void BuildFBO(void);
+
       int m_cacheinvalid;
       int max_texture_dimension;
 
@@ -574,10 +577,25 @@ protected:
       //    Value is ChartTextureHashType*
       ChartPointerHashType          m_chart_hash;
 
+      ViewPort    m_cache_vp;
+
+
       bool m_bGenMM;
       bool m_bGL_GEN_MM;
       int  m_ntex;
       int  m_tex_max_res;
+
+      //    For FBO(s)
+      bool         m_b_useFBO;
+      bool         m_b_useFBOStencil;
+      GLuint       m_fb0;
+      GLuint       m_depth_rb;
+
+      GLenum       m_TEX_TYPE;
+      GLuint       m_cache_tex;
+      GLuint       m_blit_tex;
+      int          m_cache_tex_x;
+      int          m_cache_tex_y;
 
 DECLARE_EVENT_TABLE()
 };

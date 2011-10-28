@@ -69,7 +69,7 @@ class PixelCache;
 #ifndef __TEXFONT_H__
 #define __TEXFONT_H__
 
-#include <GL/gl.h>
+//#include <GL/gl.h>
 
 #define TXF_FORMAT_BYTE       0
 #define TXF_FORMAT_BITMAP     1
@@ -238,7 +238,6 @@ public:
 //  Todo Make this type safe, it is always an array of (OBJLElement *)
       wxArrayPtrVoid    *pOBJLArray;    // Used for Display Filtering
       RuleHash          *_symb_sym;     // symbol symbolisation rules
-      bool        m_b_stencilx;
 
   private:
       int   S52_load_Plib(const wxString& PLib);

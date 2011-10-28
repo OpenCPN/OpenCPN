@@ -84,6 +84,7 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
+extern bool              g_b_useStencil;
 
 extern wxProgressDialog *s_ProgDialog;
 
@@ -1618,6 +1619,9 @@ void s57chart::SetLinePriorities(void)
 bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
 {
 //     CALLGRIND_START_INSTRUMENTATION
+//      g_bDebugS57 = true;
+
+      if(g_bDebugS57) printf ("\n");
 
       SetVPParms(VPoint);
 
@@ -1647,114 +1651,31 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
       //        Clear the text declutter list
       ps52plib->ClearTextList();
 
-      if(1)
+      //    How many rectangles in the Region?
+      int n_rect = 0;
+      wxRegionIterator clipit ( Region );
+      while ( clipit )
       {
-            glPushMatrix();
-            if(fabs(VPoint.rotation) > 0.01)
-            {
-
-                  double w = VPoint.pix_width;
-                  double h = VPoint.pix_height;
-
-      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-                  double angle = VPoint.rotation;
-                  angle -= VPoint.skew;
-
-                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
-                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
-
-                  glRotatef(angle * 180. / PI, 0, 0, 1);
-
-                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
-            }
-
-            //    Create a stencil buffer for clipping to the region
-            glEnable (GL_STENCIL_TEST);
-            glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
-            glClear(GL_STENCIL_BUFFER_BIT);
-
-            //    We are going to write "1" into the stencil buffer wherever the region is valid
-            glStencilFunc (GL_ALWAYS, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
-            //    Decompose the region into rectangles, and draw as quads
-            wxRegionIterator clipit ( Region );
-            while ( clipit )
-            {
-                  wxRect rect = clipit.GetRect();
-
-                  glBegin(GL_QUADS);
-
-                  glVertex2f(rect.x, rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
-                  glVertex2f(rect.x, rect.y + rect.height);
-                  glEnd();
-
-                  clipit ++ ;
-            }
-
-            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-            glStencilFunc (GL_EQUAL, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-
-            glPopMatrix();
+            wxRect rect = clipit.GetRect();
+            clipit ++ ;
+            n_rect++;
       }
-
-#if 0
-      wxRegionIterator upd(Region); // get the Region rect list
-      while (upd)
+/*
+      if(n_rect > 1)
       {
-            wxRect rect = upd.GetRect();
+            printf("S57 n_rect: %d\n", n_rect);
 
-            //  Build synthetic ViewPort on this rectangle
-            //  Especially, we want the BBox to be accurate in order to
-            //  render only those objects actually visible in this region
-
-            ViewPort temp_vp = VPoint;
-            double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-
-            GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
-            GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
-
-            if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
-                  temp_lon_right += 360.;
-
-            temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
-            temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
-
-            //      Allow some slop in the viewport
-//            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
-//            temp_vp.GetBBox().EnLarge(margin);
-
-            DoRenderViewOnGL(glc, temp_vp, rect, force_new_view);
-
-            upd ++ ;
+            wxRegionIterator upd ( Region );
+            while ( upd )
+            {
+                  wxRect rect = upd.GetRect();
+                  printf ( "   S57 Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                  upd ++ ;
+            }
       }
-#endif
+*/
 
-      wxRect rect = Region.GetBox();
-
-            //  Build synthetic ViewPort on this rectangle
-            //  Especially, we want the BBox to be accurate in order to
-            //  render only those objects actually visible in this region
-
-      ViewPort temp_vp = VPoint;
-      double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-
-      GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
-      GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
-
-      if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
-            temp_lon_right += 360.;
-
-      temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
-      temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
-
-            //      Allow some slop in the viewport
-//            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
-//            temp_vp.GetBBox().EnLarge(margin);
-
+      //    Adjust for rotation
       glPushMatrix();
 
       if(fabs(VPoint.rotation) > 0.01)
@@ -1775,301 +1696,164 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
             glTranslatef(ddx, ddy, 0);                 // post rotate translation
       }
 
-      DoRenderRectOnGL(glc, temp_vp, rect);
-//      ADoRenderViewOnGL(glc, temp_vp, rect, false);
 
-      glDisable (GL_STENCIL_TEST);
+      SetClipRegionGL(glc, VPoint, Region);
 
-      glPopMatrix();
+      //    Arbitrary optimization....
+      //    It is cheaper to draw the entire screen if the rectangle count is large,
+      //    as is the case for CM93 charts with non-rectilinear borders
+      //    However, most (all?) pan operations on "normal" charts will be small rect count
+      if(n_rect < 4)
+      {
+            wxRegionIterator upd(Region); // get the Region rect list
+            while (upd)
+            {
+                  wxRect rect = upd.GetRect();
 
+                  //  Build synthetic ViewPort on this rectangle
+                  //  Especially, we want the BBox to be accurate in order to
+                  //  render only those objects actually visible in this region
+
+                  ViewPort temp_vp = VPoint;
+                  double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
+
+                  GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
+                  GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
+
+                  if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
+                        temp_lon_right += 360.;
+
+                  temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
+                  temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
+
+                  //      Allow some slop in the viewport
+      //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
+      //            temp_vp.GetBBox().EnLarge(margin);
+
+
+                  if(g_bDebugS57) printf ( "   S57 Render Box:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+
+                  DoRenderRectOnGL(glc, temp_vp, rect);
+
+
+                  upd ++ ;
+            }
+      }
+      else
+      {
+            wxRect rect = Region.GetBox();
+            if(g_bDebugS57) printf ( "   S57 Render GetBox:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+
+                  //  Build synthetic ViewPort on this rectangle
+                  //  Especially, we want the BBox to be accurate in order to
+                  //  render only those objects actually visible in this region
+
+            ViewPort temp_vp = VPoint;
+            double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
+
+            GetPixPoint(rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *)&VPoint);
+            GetPixPoint(rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right, (ViewPort *)&VPoint);
+
+            if(temp_lon_right < temp_lon_left)        // presumably crossing Greenwich
+                  temp_lon_right += 360.;
+
+            temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
+            temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
+
+            //      Allow some slop in the viewport
+      //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
+      //            temp_vp.GetBBox().EnLarge(margin);
+
+            DoRenderRectOnGL(glc, temp_vp, rect);
+
+      }
 //      Update last_vp to reflect current state
       m_last_vp = VPoint;
       m_last_Region = Region;
+
+      glPopMatrix();
 
 //      CALLGRIND_STOP_INSTRUMENTATION
 
       return true;
 }
 
-bool s57chart::ADoRenderViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect, bool force_new_view)
-
-//bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view)
+void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
 {
-
-      bool bnewview = false;
-      wxPoint rul, rlr;
-      bool bNewVP = false;
-
-      bool bReallyNew = false;
-
-      double easting_ul, northing_ul;
-      double easting_lr, northing_lr;
-      double    prev_easting_ul = 0., prev_northing_ul = 0.;
-      double    prev_easting_lr, prev_northing_lr;
-
-      if(ps52plib->GetShowS57Text() != m_blastS57TextRender)
-            bReallyNew = true;
-      m_blastS57TextRender = ps52plib->GetShowS57Text();
-
-      if(ps52plib->GetPLIBColorScheme() != m_lastColorScheme)
-            bReallyNew = true;
-      m_lastColorScheme = ps52plib->GetPLIBColorScheme();
-
-
-      if(VPoint.view_scale_ppm != m_last_vp.view_scale_ppm)
-            bReallyNew = true;
-
-    //      If the scale is very small, do not use the cache to avoid harmonic difficulties...
-      if(VPoint.chart_scale  > 1e8)
-            bReallyNew = true;
-
-      wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
-      if(m_last_vprect != dest)
-            bReallyNew = true;
-      m_last_vprect = dest;
-
-      if(m_plib_state_hash != ps52plib->GetStateHash())
+      if(g_b_useStencil)
       {
-            bReallyNew = true;
-            m_plib_state_hash = ps52plib->GetStateHash();
+            //    Create a stencil buffer for clipping to the region
+            glEnable (GL_STENCIL_TEST);
+            glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
+            glClear(GL_STENCIL_BUFFER_BIT);
+
+            //    We are going to write "1" into the stencil buffer wherever the region is valid
+            glStencilFunc (GL_ALWAYS, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+      }
+      else              //  Use depth buffer for clipping
+      {
+            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
+            glDepthFunc(GL_ALWAYS);  // to ensure everything you draw passes
+            glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
+//            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+            glClear(GL_DEPTH_BUFFER_BIT); // for a fresh start
+
+            glColor3f(.5,.5,.5);
+
       }
 
-      if(bReallyNew)
+      wxRegionIterator upd(Region); // get the Region rect list
+      while (upd)
       {
-            bNewVP = true;
-            delete pDIB;
-            pDIB = NULL;
-            bnewview = true;
+            wxRect rect = upd.GetRect();
+
+            if(g_b_useStencil)
+            {
+                  glBegin(GL_QUADS);
+
+                  glVertex2f(rect.x, rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                  glVertex2f(rect.x, rect.y + rect.height);
+                  glEnd();
+
+            }
+            else              //  Use depth buffer for clipping
+            {
+                  if(g_bDebugS57) printf ( "   Depth buffer rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+
+                  glBegin(GL_QUADS);
+
+                  //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
+                  //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
+                  //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
+                  glVertex3f(rect.x, rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y + rect.height, 0.5);
+                  glVertex3f(rect.x, rect.y + rect.height, 0.5);
+                  glEnd();
+
+           }
+
+           upd ++ ;
+
       }
 
-//      Calculate the desired rectangle in the last cached image space
-      if(m_last_vp.IsValid())
+      if(g_b_useStencil)
       {
-            easting_ul =  m_easting_vp_center -  ((VPoint.pix_width  / 2) / m_view_scale_ppm);
-            northing_ul = m_northing_vp_center + ((VPoint.pix_height / 2) / m_view_scale_ppm);
-            easting_lr = easting_ul + (VPoint.pix_width / m_view_scale_ppm);
-            northing_lr = northing_ul - (VPoint.pix_height / m_view_scale_ppm);
-
-            double last_easting_vp_center, last_northing_vp_center;
-            toSM ( m_last_vp.clat, m_last_vp.clon, ref_lat, ref_lon, &last_easting_vp_center, &last_northing_vp_center );
-
-            prev_easting_ul =  last_easting_vp_center -  ((m_last_vp.pix_width  / 2) / m_view_scale_ppm);
-            prev_northing_ul = last_northing_vp_center + ((m_last_vp.pix_height / 2) / m_view_scale_ppm);
-            prev_easting_lr = easting_ul + (m_last_vp.pix_width / m_view_scale_ppm);
-            prev_northing_lr = northing_ul - (m_last_vp.pix_height / m_view_scale_ppm);
-
-
-            double dx = (easting_ul - prev_easting_ul) * m_view_scale_ppm;
-            double dy = (prev_northing_ul - northing_ul) * m_view_scale_ppm;
-
-            rul.x = (int)round((easting_ul - prev_easting_ul) * m_view_scale_ppm);
-            rul.y = (int)round((prev_northing_ul - northing_ul) * m_view_scale_ppm);
-
-            rlr.x = (int)round((easting_lr - prev_easting_ul) * m_view_scale_ppm);
-            rlr.y = (int)round((prev_northing_ul - northing_lr) * m_view_scale_ppm);
-
-            if((fabs(dx - wxRound(dx)) > 1e-5) || (fabs(dy - wxRound(dy)) > 1e-5))
-            {
-                  if(g_bDebugS57) printf("s57chart::DoRender  Cache miss on non-integer pixel delta %g %g\n", dx, dy);
-                  rul.x = 0;
-                  rul.y = 0;
-                  rlr.x = 0;
-                  rlr.y = 0;
-                  bNewVP = true;
-            }
-
-            else if((rul.x != 0) || (rul.y != 0))
-            {
-                  if(g_bDebugS57) printf("newvp due to rul\n");
-//                  bNewVP = true;
-            }
+            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
       }
       else
       {
-            rul.x = 0;
-            rul.y = 0;
-            rlr.x = 0;
-            rlr.y = 0;
-            bNewVP = true;
+            glDepthFunc(GL_GREATER);                          // Set the test value
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+            glDepthMask(GL_FALSE);                            // disable depth buffer
       }
-
-      if(force_new_view)
-            bNewVP = true;
-
-    //      Using regions, calculate re-usable area of texture
-
-      wxRegion rgn_last(0, 0, VPoint.pix_width, VPoint.pix_height);
-      wxRegion rgn_new(rul.x, rul.y, rlr.x - rul.x, rlr.y - rul.y);
-      rgn_last.Intersect(rgn_new);            // intersection is reusable portion
-
-//      bNewVP = true;
-
-      if(!bNewVP && /*(NULL != pDIB) &&*/ !rgn_last.IsEmpty())
-      {
-            int xu, yu, wu, hu;
-            rgn_last.GetBox(xu, yu, wu, hu);
-
-            int desx = 0;
-            int desy = 0;
-            int srcx = xu;
-            int srcy = yu;
-
-            if(rul.x < 0)
-            {
-                  srcx = 0;
-                  desx = -rul.x;
-            }
-
-            if(rul.y < 0)
-            {
-                  srcy = 0;
-                  desy = -rul.y;
-            }
-
-
-            printf("reuse blit %d %d %d %d %d %d\n",desx, desy, wu, hu,  srcx, srcy);
-
-            glEnable(GL_TEXTURE_RECTANGLE_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-            //    bind the chart texture
-            glBindTexture(GL_TEXTURE_RECTANGLE_ARB, m_tex_name);
-
-            //    do a texture quad call with coordinates calculated
-
-            glBegin(GL_QUADS);
-
-            glTexCoord2f(0,                VPoint.pix_height);            glVertex2f(-rul.x,                    -rul.y);
-            glTexCoord2f(VPoint.pix_width, VPoint.pix_height);            glVertex2f(-rul.x + VPoint.pix_width, -rul.y);
-            glTexCoord2f(VPoint.pix_width, 0);                            glVertex2f(-rul.x + VPoint.pix_width, VPoint.pix_height-rul.y);
-            glTexCoord2f(0,                0);                            glVertex2f(-rul.x,                    VPoint.pix_height-rul.y);
-
-            glEnd();
-
-            glDisable(GL_TEXTURE_RECTANGLE_ARB);
-
-
-
-
-        //        Ask the plib to adjust the persistent text rectangle list for this canvas shift
-        //        This ensures that, on pans, the list stays in registration with the new text renders to come
-            ps52plib->AdjustTextList(desx - srcx, desy - srcy, VPoint.pix_width, VPoint.pix_height);
-
-
-//              OK, now have the re-useable section in place
-//              Next, build the new sections
-
-
-            wxRegion rgn_delta(0, 0, VPoint.pix_width, VPoint.pix_height);
-            wxRegion rgn_reused(desx, desy, wu, hu);
-            rgn_delta.Subtract(rgn_reused);
-
-            wxRegionIterator upd(rgn_delta); // get the update rect list
-            while (upd)
-            {
-                  wxRect rect = upd.GetRect();
-
-//      Build temp ViewPort on this region
-
-                  ViewPort temp_vp = VPoint;
-                  double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-
-                  double temp_northing_ul = prev_northing_ul - (rul.y / m_view_scale_ppm) - (rect.y / m_view_scale_ppm);
-                  double temp_easting_ul = prev_easting_ul + (rul.x / m_view_scale_ppm) + (rect.x / m_view_scale_ppm);
-                  fromSM(temp_easting_ul, temp_northing_ul, ref_lat, ref_lon, &temp_lat_top, &temp_lon_left);
-
-                  double temp_northing_lr = temp_northing_ul - (rect.height / m_view_scale_ppm);
-                  double temp_easting_lr = temp_easting_ul + (rect.width / m_view_scale_ppm);
-                  fromSM(temp_easting_lr, temp_northing_lr, ref_lat, ref_lon, &temp_lat_bot, &temp_lon_right);
-
-                  temp_vp.GetBBox().SetMin(temp_lon_left, temp_lat_bot);
-                  temp_vp.GetBBox().SetMax(temp_lon_right, temp_lat_top);
-
-            //      Allow some slop in the viewport
-            //    TODO Investigate why this fails if greater than 5 percent
-//                  double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
-//                  temp_vp.GetBBox().EnLarge(margin);
-
-                  //    Create a stencil buffer for clipping to the rectangle
-                  glEnable (GL_STENCIL_TEST);
-                  glClear(GL_STENCIL_BUFFER_BIT);
-
-            //    We are going to write "1" into the stencil buffer wherever the region is valid
-                  glStencilFunc (GL_ALWAYS, 1, 1);
-                  glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
-            //    Decompose the region into rectangles, and draw as quads
-                  glBegin(GL_QUADS);
-
-                        glVertex2f(rect.x, rect.y);
-                        glVertex2f(rect.x + rect.width , rect.y);
-                        glVertex2f(rect.x + rect.width , rect.y + rect.height);
-                        glVertex2f(rect.x, rect.y + rect.height);
-                  glEnd();
-
-            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-                  glStencilFunc (GL_EQUAL, 1, 1);
-                  glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-
-//      And Render it new piece on the target dc
-                  printf("New Render, rendering %d %d %d %d \n", rect.x, rect.y, rect.width, rect.height);
-
-                  DoRenderRectOnGL(glc, temp_vp, rect);
-
-                  glDisable (GL_STENCIL_TEST);
-
-                  upd ++ ;
-            }
-
-            bnewview = true;
-
-//      Update last_vp to reflect the current cached bitmap
-            m_last_vp = VPoint;
-
-      }
-
-      else                    //if(bNewVP /*|| (NULL == pDIB)*/)
-      {
-            //        Clear the text declutter list
-            ps52plib->ClearTextList();
-
-            wxRect full_rect(0, 0,VPoint.pix_width, VPoint.pix_height);
-
-            DoRenderRectOnGL(glc, VPoint, full_rect);
-
-            bnewview = true;
-
-//      Update last_vp to reflect the current cached texture
-            m_last_vp = VPoint;
-
-      }
-
-
-      //    Save the entire screen as a texture
-      glBindTexture(GL_TEXTURE_RECTANGLE_ARB, m_tex_name);
-
-      if(!m_btex_mem)
-      {
-            glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA, VPoint.pix_width, VPoint.pix_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-
-            m_btex_mem = true;
-      }
-
-
-//      glCopyTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB, 0, 0, VPoint.pix_width, VPoint.pix_height, 0);
-      glCopyTexSubImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, VPoint.pix_width, VPoint.pix_height);
-
-
-      return bnewview;
-
-
 }
-
 
 bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect)
 {
@@ -2079,6 +1863,23 @@ bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, 
 
       ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
+
+      //    If the ViewPort is unrotated, we can use a simple (fast) scissor test instead
+      //    of a stencil or depth buffer clipping algorithm.....
+      if(fabs(VPoint.rotation) < 0.01)
+      {
+
+            glScissor(rect.x, VPoint.pix_height-rect.height-rect.y, rect.width, rect.height);
+//            glEnable(GL_SCISSOR_TEST);
+//            glDisable (GL_STENCIL_TEST);
+//            glDisable (GL_DEPTH_TEST);
+
+      }
+
+      if(g_b_useStencil)
+            glEnable (GL_STENCIL_TEST);
+      else
+            glEnable(GL_DEPTH_TEST);
 
       //      Render the areas quickly
       for (i=0; i<PRIO_NUM; ++i)
@@ -2134,6 +1935,10 @@ bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, 
 
 
       }
+
+      glDisable (GL_STENCIL_TEST);
+      glDisable (GL_DEPTH_TEST);
+      glDisable (GL_SCISSOR_TEST);
 
       return true;
 }
@@ -6711,6 +6516,21 @@ bool s57chart::IsPointInObjArea(float lat, float lon, float select_radius, S57Ob
         //  make the hit test thus.
         double easting, northing;
         toSM(lat, lon, ref_lat, ref_lon, &easting, &northing);
+
+        //  On some chart types (e.g. cm93), the tesseleated coordinates are stored differently.
+        //  Adjust the pick point (easting/northing) to correspond.
+        if(!ppg->m_bSMSENC)
+        {
+            double y_rate = obj->y_rate;
+            double y_origin = obj->y_origin;
+            double x_rate = obj->x_rate;
+            double x_origin = obj->x_origin;
+
+            double northing_scaled = (northing - y_origin) / y_rate;
+            double easting_scaled = (easting - x_origin) / x_rate;
+            northing = northing_scaled;
+            easting = easting_scaled;
+        }
 
         while(pTP)
         {

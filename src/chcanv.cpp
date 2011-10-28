@@ -93,13 +93,6 @@ extern struct sigaction sa_all_old;
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
 
-#ifdef __WXMSW__
-#include "GL/gl.h"            // local copy for Windows
-#include "GL/glu.h"
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
 
@@ -245,6 +238,9 @@ extern wxProgressDialog *s_ProgDialog;
 extern bool             g_bsmoothpanzoom;
 
 extern int              g_GPU_MemSize;
+extern bool             g_b_useStencil;
+
+bool                    g_bDebugOGL;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -350,6 +346,107 @@ enum
             TC_ROLLOVER  =3
 };
 
+
+PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffersEXT;
+PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffersEXT;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2DEXT;
+PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebufferEXT;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbufferEXT;
+PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorageEXT;
+PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbufferEXT;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatusEXT;
+PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffersEXT;
+PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
+
+#ifdef __WXMSW__
+HINSTANCE      s_hGL_DLL;                   // Handle to DLL
+#endif
+
+static bool GetglEntryPoints(void)
+{
+#ifdef __WXMSW__
+      s_hGL_DLL = LoadLibrary((LPCWSTR)"opengl32.dll");
+      if(NULL == s_hGL_DLL)
+            return false;
+
+      s_glGenFramebuffersEXT =            (PFNGLGENFRAMEBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glGenFramebuffersEXT");
+      s_glGenRenderbuffersEXT =           (PFNGLGENRENDERBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glGenRenderbuffersEXT")        ;
+      s_glFramebufferTexture2DEXT =       (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)GetProcAddress(s_hGL_DLL,"glFramebufferTexture2DEXT")    ;
+      s_glBindFramebufferEXT =            (PFNGLBINDFRAMEBUFFEREXTPROC)GetProcAddress(s_hGL_DLL,"glBindFramebufferEXT")         ;
+      s_glFramebufferRenderbufferEXT =    (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)GetProcAddress(s_hGL_DLL,"glFramebufferRenderbufferEXT") ;
+      s_glRenderbufferStorageEXT =        (PFNGLRENDERBUFFERSTORAGEEXTPROC)GetProcAddress(s_hGL_DLL,"glRenderbufferStorageEXT")     ;
+      s_glBindRenderbufferEXT =           (PFNGLBINDRENDERBUFFEREXTPROC)GetProcAddress(s_hGL_DLL,"glBindRenderbufferEXT")        ;
+      s_glCheckFramebufferStatusEXT =     (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)GetProcAddress(s_hGL_DLL,"glCheckFramebufferStatusEXT")  ;
+      s_glDeleteFramebuffersEXT =         (PFNGLDELETEFRAMEBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glDeleteFramebuffersEXT")  ;
+      s_glDeleteRenderbuffersEXT =        (PFNGLDELETERENDERBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glDeleteRenderbuffersEXT")  ;
+#else
+
+
+      s_glGenFramebuffersEXT =            (PFNGLGENFRAMEBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffersEXT");
+      s_glGenRenderbuffersEXT =           (PFNGLGENRENDERBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenRenderbuffersEXT")        ;
+      s_glFramebufferTexture2DEXT =       (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)glXGetProcAddress((const GLubyte *)"glFramebufferTexture2DEXT")    ;
+      s_glBindFramebufferEXT =            (PFNGLBINDFRAMEBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glBindFramebufferEXT")         ;
+      s_glFramebufferRenderbufferEXT =    (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbufferEXT") ;
+      s_glRenderbufferStorageEXT =        (PFNGLRENDERBUFFERSTORAGEEXTPROC)glXGetProcAddress((const GLubyte *)"glRenderbufferStorageEXT")     ;
+      s_glBindRenderbufferEXT =           (PFNGLBINDRENDERBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glBindRenderbufferEXT")        ;
+      s_glCheckFramebufferStatusEXT =     (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)glXGetProcAddress((const GLubyte *)"glCheckFramebufferStatusEXT")  ;
+      s_glDeleteFramebuffersEXT =         (PFNGLDELETEFRAMEBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffersEXT")  ;
+      s_glDeleteRenderbuffersEXT =        (PFNGLDELETERENDERBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffersEXT")  ;
+#endif
+
+      if(NULL == s_glGenFramebuffersEXT)
+            return false;
+      if(NULL == s_glGenRenderbuffersEXT)
+            return false;
+      if(NULL == s_glFramebufferTexture2DEXT)
+            return false;
+      if(NULL == s_glBindFramebufferEXT)
+            return false;
+      if(NULL == s_glFramebufferRenderbufferEXT)
+            return false;
+      if(NULL == s_glRenderbufferStorageEXT)
+            return false;
+      if(NULL == s_glBindRenderbufferEXT)
+            return false;
+      if(NULL == s_glCheckFramebufferStatusEXT)
+            return false;
+      if(NULL == s_glDeleteFramebuffersEXT)
+            return false;
+      if(NULL == s_glDeleteRenderbuffersEXT)
+            return false;
+
+      return true;
+}
+static GLboolean QueryExtension(const char *extName)
+{
+    /*
+      ** Search for extName in the extensions string. Use of strstr()
+      ** is not sufficient because extension names can be prefixes of
+      ** other extension names. Could use strtok() but the constant
+      ** string returned by glGetString might be in read-only memory.
+    */
+      char *p;
+      char *end;
+      int extNameLen;
+
+      extNameLen = strlen(extName);
+
+      p = (char *)glGetString(GL_EXTENSIONS);
+      if (NULL == p) {
+            return GL_FALSE;
+      }
+
+      end = p + strlen(p);
+
+      while (p < end) {
+            int n = strcspn(p, " ");
+            if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
+                  return GL_TRUE;
+            }
+            p += (n + 1);
+      }
+      return GL_FALSE;
+}
 
 //----------------------------------------------------------------------------
 // ChartInfo Rollover Window Definition
@@ -503,10 +600,11 @@ class Quilt
             bool IsChartQuiltableRef(int db_index);
             ViewPort &GetQuiltVP(){ return m_vp_quilt;}
             wxString GetQuiltDepthUnit(){ return m_quilt_depth_unit; }
+            void SetRenderedVP(ViewPort &vp){ m_vp_rendered = vp; }
 
             int GetnCharts(){ return m_PatchList.GetCount();}
             bool RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
-            bool IsVPBlittable(ViewPort &VPoint, int dx, int dy);
+            bool IsVPBlittable(ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false);
             ChartBase *GetChartAtPix(wxPoint p);
             int GetChartdbIndexAtPix(wxPoint p);
             void InvalidateAllQuiltPatchs(void);
@@ -614,7 +712,7 @@ Quilt::~Quilt()
       delete m_pBM;
 }
 
-bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy)
+bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy, bool b_allow_vector)
 {
       bool ret_val = true;
       if(m_vp_rendered.IsValid())
@@ -629,12 +727,12 @@ bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy)
                         wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL(VPoint.clat, VPoint.clon);
                         double deltax = p2.m_x - p1.m_x;
                         double deltay = p2.m_y - p1.m_y;
-//                        printf(" on IsBlitable: quilt delta = %g %g\n", deltax, deltay);
-//                        printf(" on IsBlitable: quilt rem = %g %g\n\n", deltax - dx, deltay- dy);
+ //                       printf(" on IsBlitable: quilt delta = %g %g\n", deltax, deltay);
+ //                       printf(" on IsBlitable: quilt rem = %g %g\n\n", deltax - dx, deltay- dy);
 
                         if((fabs(deltax - dx) > 1e-2) || (fabs(deltay- dy) > 1e-2))
                         {
-//                              printf("   NOT Blitable\n");
+ //                             printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
                               ret_val = false;
                               break;
                         }
@@ -642,9 +740,12 @@ bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy)
                   }
                   else
                   {
- //                       printf("   NOT Blitable (raster)\n");
-                        ret_val = false;
-                        break;
+                        if(!b_allow_vector)
+                        {
+//                            printf("   NOT Blitable (not raster)\n");
+                            ret_val = false;
+                            break;
+                        }
                   }
 
 
@@ -891,7 +992,7 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
 bool Quilt::IsQuiltVector(void)
 {
       if(m_bbusy)
-            return -1;
+            return false;
 
       m_bbusy = true;
 
@@ -4315,7 +4416,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
                   b_smooth= false;
       }
       else
-            b_smooth = !m_pQuilt->IsQuiltVector();
+            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector();
 
       if(b_smooth)
       {
@@ -4346,7 +4447,7 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
                   b_smooth= false;
       }
       else
-            b_smooth = !m_pQuilt->IsQuiltVector();
+            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector();
 
       if(b_smooth)
       {
@@ -4679,7 +4780,12 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
 
         //  Has the Viewport scale changed?  If so, invalidate the vp describing the cached bitmap
         if ( last_vp.view_scale_ppm != scale_ppm )
+        {
             m_cache_vp.Invalidate();
+
+            if(g_bopengl)
+               m_glcc->Invalidate();
+        }
 
         //  A preliminary value, may be tweaked below
         VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
@@ -11274,6 +11380,10 @@ glTextureDescriptor::~glTextureDescriptor()
 //------------------------------------------------------------------------------
 #include <wx/arrimpl.cpp>
 
+#ifndef GL_DEPTH_STENCIL_ATTACHMENT
+  #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
+#endif
+
 WX_DEFINE_OBJARRAY(ArrayOfTexDescriptors);
 
 //         int attribs[]={WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, WX_GL_STENCIL_SIZE, 8, 0};
@@ -11359,7 +11469,12 @@ void glChartCanvas::OnSize ( wxSizeEvent& event )
       /* expand opengl widget to fill viewport */
       ViewPort &VP = cc1->GetVP();
      if(GetSize().x != VP.pix_width || GetSize().y != VP.pix_height)
+     {
           SetSize(VP.pix_width, VP.pix_height);
+          if(m_bsetup && m_b_useFBO)
+                BuildFBO();
+     }
+
 
 }
 
@@ -11368,6 +11483,62 @@ void glChartCanvas::MouseEvent ( wxMouseEvent& event )
       cc1->MouseEvent(event);
 }
 
+void glChartCanvas::BuildFBO(void)
+{
+      if(m_bsetup && m_b_useFBO)
+      {
+            glDeleteTextures(1, &m_cache_tex);
+            (*s_glDeleteFramebuffersEXT)(1, &m_fb0);
+            (*s_glDeleteRenderbuffersEXT)(1, &m_depth_rb);
+      }
+
+      if(m_b_useFBO)
+      {
+            m_cache_tex_x = GetSize().x;
+            m_cache_tex_y = GetSize().y;
+
+            (*s_glGenFramebuffersEXT)(1, &m_fb0);
+            glGenTextures(1, &m_cache_tex);
+            (*s_glGenRenderbuffersEXT)(1, &m_depth_rb);
+
+            (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, m_fb0);
+
+// initialize color texture
+
+            glBindTexture(m_TEX_TYPE, m_cache_tex);
+            glTexParameterf(m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexImage2D(m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0,
+                         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+            (*s_glFramebufferTexture2DEXT)(GL_FRAMEBUFFER_EXT,
+              GL_COLOR_ATTACHMENT0_EXT,
+              m_TEX_TYPE, m_cache_tex, 0);
+
+
+            if(m_b_useFBOStencil)
+            {
+                      // initialize composite depth/stencil renderbuffer
+                  (*s_glBindRenderbufferEXT)(GL_RENDERBUFFER_EXT, m_depth_rb);
+                  (*s_glRenderbufferStorageEXT)(GL_RENDERBUFFER_EXT,
+                    GL_DEPTH24_STENCIL8_EXT, m_cache_tex_x, m_cache_tex_y);
+                  (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+                    GL_DEPTH_STENCIL_ATTACHMENT,
+                    GL_RENDERBUFFER_EXT, m_depth_rb);
+
+            }
+            else
+            {
+                        // initialize depth renderbuffer
+                  (*s_glBindRenderbufferEXT)(GL_RENDERBUFFER_EXT, m_depth_rb);
+                  (*s_glRenderbufferStorageEXT)(GL_RENDERBUFFER_EXT,
+                    GL_DEPTH_COMPONENT24, m_cache_tex_x, m_cache_tex_y);
+                  (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+                    GL_DEPTH_ATTACHMENT_EXT,
+                    GL_RENDERBUFFER_EXT, m_depth_rb);
+            }
+      }
+
+}
 
 void glChartCanvas::OnPaint(wxPaintEvent &event)
 {
@@ -11403,15 +11574,18 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
         //  We need to not do anything that requires (some) complicated stencil operations.
         //  Note that this unfortunately eliminates S52 AreaPattern primitives.....
 
+          bool bad_stencil_code = false;
           if(GetRendererString().Find(_T("945G 20061017")) != wxNOT_FOUND)
           {
-                wxLogMessage(_T("OpenGL-> Detected potential i945G renderer bug, disabling S52 A/P"));
-                ps52plib->m_b_stencilx = true;
+                wxLogMessage(_T("OpenGL-> Detected potential i945G renderer bug, disabling stencil buffer"));
+                bad_stencil_code = true;
           }
 
           //      And for the lousy Unichrome drivers, too
           if(GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)
-                ps52plib->m_b_stencilx = true;
+          {
+                bad_stencil_code = true;
+          }
 
 
 
@@ -11420,9 +11594,79 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           GLboolean stencil = glIsEnabled(GL_STENCIL_TEST);
           int sb;
           glGetIntegerv(GL_STENCIL_BITS, &sb);
-          printf("Stencil Enabled: %d\nStencil bits: %d\n", stencil, sb);
+          printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
           glDisable(GL_STENCIL_TEST);
 
+
+          g_b_useStencil = false;
+          if( !bad_stencil_code && stencil && (sb == 8))
+                g_b_useStencil = true;
+
+
+//          GLenum err = glewInit();
+//           if (GLEW_OK != err)
+
+
+
+          m_b_useFBO = false;              // default is false
+
+
+          //      We require certain extensions to support FBO rendering
+          if(QueryExtension("GL_ARB_texture_rectangle") &&
+             QueryExtension("GL_EXT_framebuffer_object"))
+          {
+                m_TEX_TYPE = GL_TEXTURE_RECTANGLE_ARB;
+                m_b_useFBO = true;
+          }
+
+
+          if(!GetglEntryPoints())
+                m_b_useFBO = false;              // default is false
+
+          //      Can we use the stencil buffer in a FBO?
+          if(QueryExtension("GL_EXT_packed_depth_stencil"))
+                m_b_useFBOStencil = true;
+          else
+                m_b_useFBOStencil = false;
+
+
+
+          //      Maybe build FBO(s)
+          if(m_b_useFBO)
+          {
+                BuildFBO();
+// Check framebuffer completeness at the end of initialization.
+                GLenum a = (*s_glCheckFramebufferStatusEXT)(GL_FRAMEBUFFER_EXT);
+                if(a != GL_FRAMEBUFFER_COMPLETE_EXT)
+                {
+                      wxString msg;
+                      msg.Printf(_T("    OpenGL-> Framebuffer Incomplete:  %08X"), a);
+                      wxLogMessage(msg);
+                      m_b_useFBO = false;
+                }
+
+                (s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
+
+          }
+
+          if(m_b_useFBO && !m_b_useFBOStencil)
+                g_b_useStencil = false;
+
+
+          if(m_b_useFBO)
+                wxLogMessage(_T("OpenGL-> Using Framebuffer Objects"));
+          else
+                wxLogMessage(_T("OpenGL-> Framebuffer Objects disabled"));
+
+          if(m_b_useFBOStencil)
+                wxLogMessage(_T("OpenGL-> Using FBO Stencil buffer"));
+          else
+                wxLogMessage(_T("OpenGL-> FBO Stencil buffer unavailable"));
+
+          if(g_b_useStencil)
+                wxLogMessage(_T("OpenGL-> Using Stencil buffer clipping"));
+          else
+                wxLogMessage(_T("OpenGL-> Using Depth buffer clipping"));
 
 /*
           // determine max texture size
@@ -11450,11 +11694,12 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           m_tex_max_res /= 2;
 
           wxString str;
-          str.Printf(_T("    OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
+          str.Printf(_T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
           wxLogMessage(str);
           printf("  m_tex_max_res: %d\n", m_tex_max_res);
 
           m_bsetup = true;
+//          g_bDebugOGL = true;
      }
 
      render();
@@ -11483,7 +11728,7 @@ bool glChartCanvas::PurgeChartTextures(ChartBase *pc)
 
                   if(ptd->tex_name > 0)
                   {
-//                        printf("glDeleteTextures in Purge...()\n");
+                        if(g_bDebugOGL) printf("glDeleteTextures in Purge...()\n");
                         glDeleteTextures( 1, &ptd->tex_name );
                         m_ntex--;
                   }
@@ -11668,7 +11913,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       int tex_dim = 512;//max_texture_dimension;
       GrowData(3 * tex_dim * tex_dim);
 
-      if(1/*bUse_Stencil*/)
+      if(g_b_useStencil)
       {
             glPushMatrix();
 
@@ -11727,6 +11972,76 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             glPopMatrix();
 
       }
+      else              //  Use depth buffer for clipping
+      {
+            glPushMatrix();
+
+            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
+            {
+
+      //    Shift texture drawing positions to account for the larger chart rectangle
+      //    needed to cover the screen on rotated images
+                  double w = vp.pix_width;
+                  double h = vp.pix_height;
+
+                  double angle = vp.rotation;
+                  angle -= vp.skew;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+                  glRotatef(angle * 180. / PI, 0, 0, 1);
+
+                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
+            }
+
+            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
+            glDepthFunc(GL_ALWAYS);  // to ensure everything you draw passes
+            glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+            glClear(GL_DEPTH_BUFFER_BIT); // for a fresh start
+
+            glColor3f(1,0,0);
+
+            //    Decompose the region into rectangles, and draw as quads
+            //    With z = 1
+            wxRegionIterator clipit ( region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+
+                  glBegin(GL_QUADS);
+
+                  // dep buffer clear = 1
+                  // 1 makes 0 in dep buffer, works
+                  // 0 make .5 in depth buffer
+                  // -1 makes 1 in dep buffer
+
+                  //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
+                  //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
+                  //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
+                  glVertex3f(rect.x, rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y + rect.height, 0.5);
+                  glVertex3f(rect.x, rect.y + rect.height, 0.5);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+
+            glDepthFunc(GL_GREATER);                          // Set the test value
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+            glDepthMask(GL_FALSE);                            // disable depth buffer
+
+            glPopMatrix();
+
+      }
+
 
 
       //    Look for the chart texture hashmap in the member chart hashmap
@@ -11763,7 +12078,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
                   if(( ptd->tex_name > 0) && (ptd->tex_mult != n_basemult))                 // the texture known to the GPU does not match the target
                   {
-//                        printf("   glDeleteTexture on n_basemult mismatch\n");
+                        if(g_bDebugOGL) printf("   glDeleteTexture on n_basemult mismatch\n");
                         glDeleteTextures( 1, &ptd->tex_name );
                         m_ntex--;
 
@@ -11825,7 +12140,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                     ptd = (*pTextureHash)[key];
                                     if( ptd->tex_name > 0)
                                     {
-//                                          printf("   glDeleteTexture on m_ntex limit\n");
+                                          if(g_bDebugOGL) printf("   glDeleteTexture on m_ntex limit\n");
 
                                           glDeleteTextures( 1, &ptd->tex_name );
                                           m_ntex--;
@@ -11962,7 +12277,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)
                               {
-//                                    printf("  -->Upload tex\n");
+                                    if(g_bDebugOGL) printf("  -->Upload tex\n");
                                     GLuint tex_name;
                                     glGenTextures(1, &tex_name);
                                     ptd->tex_name = tex_name;
@@ -12015,6 +12330,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_STENCIL_TEST);
+      glDisable(GL_DEPTH_TEST);
 
       if(n_longbind)
             m_tex_max_res--;
@@ -12031,6 +12347,62 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
 }
 
+
+void glChartCanvas::RenderQuiltViewGL(ViewPort &vp, wxRegion Region)
+{
+      if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
+      {
+            //  Walk the region list to determine whether we need a clear before starting
+            wxRegion clear_test_region = Region;
+
+            ChartBase *pcht = cc1->m_pQuilt->GetFirstChart();
+            while(pcht)
+            {
+                  QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                  if(pqp->b_Valid)
+                  {
+                        wxRegion get_region = pqp->ActiveRegion;
+
+                        if(!get_region.IsEmpty())
+                              clear_test_region.Subtract(get_region);
+                  }
+                  pcht = cc1->m_pQuilt->GetNextChart();
+            }
+
+                        //  We only need a screen clear if the test region is non-empty
+            if(!clear_test_region.IsEmpty())
+                  glClear(GL_COLOR_BUFFER_BIT);
+
+                        //  Now render the quilt
+            ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+            while(pch)
+            {
+                  QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                  if(pqp->b_Valid)
+                  {
+                        wxRegion get_region = pqp->ActiveRegion;
+
+                        get_region.Intersect(Region);
+                        if(!get_region.IsEmpty())
+                        {
+                              ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
+                              if(Patch_Ch_BSB)
+                                    RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
+                              else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                              {
+                                    get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
+                                    pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                              }
+                        }
+                  }
+
+                  pch = cc1->m_pQuilt->GetNextChart();
+            }
+
+            cc1->m_pQuilt->SetRenderedVP(vp);
+      }
+}
+
 void glChartCanvas::render()
 {
      if(!m_bsetup)
@@ -12042,17 +12414,19 @@ void glChartCanvas::render()
      SetCurrent();
      wxPaintDC(this);
 
+     ViewPort VPoint = cc1->VPoint;
+
      wxRegion ru = GetUpdateRegion();
 
      if(!ru.Ok())
-           ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+           ru.Union( 0,0,VPoint.pix_width, VPoint.pix_height );
 
 //#ifdef __WXMSW__
-//     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
 //#endif
 
         //    In case Console is shown, set up dc clipper and blt iterator regions
-        wxRegion rgn_chart ( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+     wxRegion rgn_chart ( 0,0,VPoint.pix_width, VPoint.pix_height );
         int conx, cony, consx, consy;
         console->GetPosition ( &conx, &cony );
         console->GetSize ( &consx, &consy );
@@ -12087,6 +12461,18 @@ void glChartCanvas::render()
               ru.Subtract ( r );
         }
 
+                //  Is this viewpoint the same as the previously painted one?
+        bool b_newview = true;;
+        if((m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm)
+            && (m_cache_vp.rotation == VPoint.rotation)
+            && (m_cache_vp.clat == VPoint.clat)
+            && (m_cache_vp.clon == VPoint.clon)
+            &&  m_cache_vp.IsValid()
+          )
+        {
+              b_newview = false;
+        }
+
         //  Make a special VP
         ViewPort svp = cc1->VPoint;
 
@@ -12098,9 +12484,9 @@ void glChartCanvas::render()
 
 //    Render the WVSChart vector first
         wxRegion CValidRegion;
-        if(!cc1->VPoint.b_quilt)
+        if(!VPoint.b_quilt)
               // Make a region covering the current chart on the canvas
-              Current_Ch->GetValidCanvasRegion ( cc1->VPoint, &CValidRegion );
+              Current_Ch->GetValidCanvasRegion ( VPoint, &CValidRegion );
         else
               CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
 
@@ -12140,10 +12526,13 @@ void glChartCanvas::render()
         glLoadIdentity();
         gluOrtho2D(0, (GLint) w, (GLint) h, 0);
 
-        glEnable (GL_STENCIL_TEST);
-        glStencilMask(0xff);
-        glClear(GL_STENCIL_BUFFER_BIT);
-        glDisable (GL_STENCIL_TEST);
+        if(g_b_useStencil)
+        {
+            glEnable (GL_STENCIL_TEST);
+            glStencilMask(0xff);
+            glClear(GL_STENCIL_BUFFER_BIT);
+            glDisable (GL_STENCIL_TEST);
+        }
 
         //  Delete any textures known to the GPU that
         //  belong to charts which will not be used in this render
@@ -12157,7 +12546,7 @@ void glChartCanvas::render()
             {
                   ChartBaseBSB *pc = (ChartBaseBSB *)it0->first;
 
-                  if(cc1->VPoint.b_quilt)          // quilted
+                  if(VPoint.b_quilt)          // quilted
                   {
                         if(cc1->m_pQuilt && cc1->m_pQuilt->IsComposed())
                         {
@@ -12176,7 +12565,7 @@ void glChartCanvas::render()
 
                                           if(ptd->tex_name > 0)
                                           {
-//                                                printf("glDeleteTextures in Unused chart...()\n");
+                                                if(g_bDebugOGL) printf("glDeleteTextures in Unused chart...()\n");
                                                 glDeleteTextures( 1, &ptd->tex_name );
                                                 m_ntex--;
 
@@ -12189,7 +12578,10 @@ void glChartCanvas::render()
             }
         }
 
-        if(cc1->VPoint.b_quilt)          // quilted
+        int sx = GetSize().x;
+        int sy = GetSize().y;
+
+        if(VPoint.b_quilt)          // quilted
         {
               if(cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed())
                     return;
@@ -12198,62 +12590,231 @@ void glChartCanvas::render()
 //              glClear(GL_COLOR_BUFFER_BIT);
 
 
-                    wxStopWatch sw;
 
-                  if(cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy())
+            // Try to do accelerated pans
+              if(m_b_useFBO)
+              {
+                  if(m_cache_vp.IsValid() && (m_cache_tex > 0))
                   {
-                        //  Walk the region list to determine whether we need a clear before starting
-                        wxRegion clear_test_region = ru;
-
-                        ChartBase *pcht = cc1->m_pQuilt->GetFirstChart();
-                        while(pcht)
+                        if(b_newview)
                         {
-                              QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-                              if(pqp->b_Valid)
+
+                              wxPoint c_old = VPoint.GetPixFromLL(VPoint.clat, VPoint.clon);
+                              wxPoint c_new = m_cache_vp.GetPixFromLL(VPoint.clat, VPoint.clon);
+
+                              int dy = c_new.y - c_old.y;
+                              int dx = c_new.x - c_old.x;
+
+//                              printf("In OnPaint Trying Blit dx: %d  dy:%d\n\n", dx, dy);
+
+                              if(cc1->m_pQuilt->IsVPBlittable(VPoint, dx, dy, true))      // allow vector charts
                               {
-                                    wxRegion get_region = pqp->ActiveRegion;
+//                                    printf("In OnPaint IsBlittable dx: %d  dy:%d\n\n", dx, dy);
 
-                                    if(!get_region.IsEmpty())
-                                          clear_test_region.Subtract(get_region);
-                              }
-                              pcht = cc1->m_pQuilt->GetNextChart();
-                        }
-
-                        //  We only need a screen clear if the test region is non-empty
-                        if(!clear_test_region.IsEmpty())
-                              glClear(GL_COLOR_BUFFER_BIT);
-
-                        //  Now render the quilt
-                        ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
-                        while(pch)
-                        {
-                              QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-                              if(pqp->b_Valid)
-                              {
-                                    wxRegion get_region = pqp->ActiveRegion;
-
-                                    if(!get_region.IsEmpty())
+                                    if(dx || dy)
                                     {
-                                          ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
-                                          if(Patch_Ch_BSB)
-                                                 RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
-                                          else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                          //    Render the reuseable portion of the cached texture
+                                          (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, m_fb0);
+
+                                          //      Make a new temporary texture, and bind to FBO
+                                          glGenTextures(1, &m_blit_tex);
+
+                                          glBindTexture(m_TEX_TYPE, m_blit_tex);
+                                          glTexParameterf(m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                                          glTexParameteri(m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                                          glTexImage2D(m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                                          (*s_glFramebufferTexture2DEXT)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_blit_tex, 0);
+
+                                          glBindTexture(m_TEX_TYPE,  m_cache_tex);
+                                          glEnable(m_TEX_TYPE);
+                                          glColor3f(0, .25, 0);
+                                          glDisable(GL_BLEND);
+                                          glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+                                          glDisable(GL_DEPTH_TEST);
+                                          glClear(GL_COLOR_BUFFER_BIT);
+
+                                          // Render the cached texture as quad to FBO(m_blit_tex) with offsets
+
+                                          if(dy > 0)
                                           {
-                                                get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
-                                                pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                                if(dx > 0)
+                                                {
+                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
+                                                      {
+                                                            glBegin(GL_QUADS);
+                                                            glTexCoord2f(dx,                    m_cache_tex_y);    glVertex2f(0,     -dy);
+                                                            glTexCoord2f(m_cache_tex_x,         m_cache_tex_y);    glVertex2f(sx-dx, -dy);
+                                                            glTexCoord2f(m_cache_tex_x,         0);                glVertex2f(sx-dx,  sy - dy);
+                                                            glTexCoord2f(dx,                    0);                glVertex2f(0,      sy - dy);
+                                                            glEnd();
+                                                      }
+                                                }
+                                                else
+                                                {
+                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
+                                                      {
+                                                            glBegin(GL_QUADS);
+                                                            glTexCoord2f(0,                m_cache_tex_y);    glVertex2f(-dx,      -dy);
+                                                            glTexCoord2f(m_cache_tex_x,    m_cache_tex_y);    glVertex2f(-dx + sx, -dy);
+                                                            glTexCoord2f(m_cache_tex_x,    0);                glVertex2f(-dx + sx,  sy - dy);
+                                                            glTexCoord2f(0,                0);                glVertex2f(-dx,       sy - dy);
+                                                            glEnd();
+                                                      }
+                                                }
+                                           }
+                                           else
+                                           {
+                                                if(dx > 0)
+                                                {
+                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
+                                                      {
+                                                            glBegin(GL_QUADS);
+                                                            glTexCoord2f(dx,            m_cache_tex_y);    glVertex2f(0,     -dy);
+                                                            glTexCoord2f(m_cache_tex_x, m_cache_tex_y);    glVertex2f(sx-dx, -dy);
+                                                            glTexCoord2f(m_cache_tex_x, 0);                glVertex2f(sx-dx, -dy + sy);
+                                                            glTexCoord2f(dx,            0);                glVertex2f(0,     -dy + sy);
+                                                            glEnd();
+                                                      }
+                                                }
+                                                else
+                                                {
+//                                                      glHint( GL_FOG_HINT, GL_DONT_CARE);       // using as a breakpoint
+
+                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
+                                                      {
+                                                            glBegin(GL_QUADS);
+                                                            glTexCoord2f(0,             m_cache_tex_y);    glVertex2f(-dx,      -dy);
+                                                            glTexCoord2f(m_cache_tex_x, m_cache_tex_y);    glVertex2f(-dx + sx, -dy);
+                                                            glTexCoord2f(m_cache_tex_x, 0);                glVertex2f(-dx + sx, -dy + sy);
+                                                            glTexCoord2f(0,             0);                glVertex2f(-dx,      -dy + sy);
+                                                            glEnd();
+                                                      }
+                                                }
+                                           }
+
+
+                                           //calculate the new regions to render
+                                          wxRegion update_region;
+                                          if(dy)
+                                          {
+                                                if(dy > 0)
+                                                      update_region.Union(wxRect(0, VPoint.pix_height - dy, VPoint.pix_width, dy));
+                                                else
+                                                      update_region.Union(wxRect(0, 0, VPoint.pix_width, -dy));
                                           }
+
+                                          if(dx)
+                                          {
+                                                if(dx > 0)
+                                                      update_region.Union(wxRect(VPoint.pix_width - dx, 0, dx, VPoint.pix_height));
+                                                else
+                                                      update_region.Union(wxRect(0, 0, -dx, VPoint.pix_height));
+                                          }
+
+
+                                           //   Done with cached texture "blit"
+                                           glDisable(m_TEX_TYPE);
+                                           //      Delete the stale cached texture
+                                           glDeleteTextures( 1, &m_cache_tex );
+                                           //    And make the blit texture "become" the cached texture
+                                           m_cache_tex = m_blit_tex;
+
+                                           //   Attach the renamed "blit" texture to the FBO
+                                           (*s_glFramebufferTexture2DEXT)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_cache_tex, 0);
+
+                                           //      Render the chart(s) in update region
+                                           RenderQuiltViewGL(VPoint, update_region);
+                                    }
+                                    else
+                                    {
+                                    //    No sensible (dx, dy) change in the view, so use the cached member bitmap
                                     }
                               }
 
-                              pch = cc1->m_pQuilt->GetNextChart();
+                              else              // not blitable
+                              {
+//                                    printf("In OnPaint NOT Blittable dx: %d  dy:%d\n\n", dx, dy);
+
+                                    (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, m_fb0);
+
+                //      Delete the current cached texture
+                                    glDeleteTextures( 1, &m_cache_tex );
+
+                //      Make a new texture, and bind to FBO
+                                    glGenTextures(1, &m_cache_tex);
+
+                                    glBindTexture(m_TEX_TYPE, m_cache_tex);
+                                    glTexParameterf(m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                                    glTexParameteri(m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                                    glTexImage2D(m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0,
+                                           GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                                    (*s_glFramebufferTexture2DEXT)(GL_FRAMEBUFFER_EXT,
+                                          GL_COLOR_ATTACHMENT0_EXT,
+                                          m_TEX_TYPE, m_cache_tex, 0);
+
+                //      Render the chart(s)
+                                    RenderQuiltViewGL(VPoint, chart_get_region);
+
+                              }
+                        }           // newview
+                        else
+                        {
+                              //    No change in the view, so use the cached member texture
                         }
+                  }
+                  else      //cached texture is not valid
+                  {
+                            (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, m_fb0);
 
-                     sw.Pause();
-//                     long tt = sw.Time();
-//                     printf("Total quilt render time: %ld\n", tt);
+                //      Delete the current cached texture
+                            glDeleteTextures( 1, &m_cache_tex );
 
+                //      Make a new texture, and bind to FBO
+                            glGenTextures(1, &m_cache_tex);
+
+                            glBindTexture(m_TEX_TYPE, m_cache_tex);
+                            glTexParameterf(m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                            glTexImage2D(m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                            (*s_glFramebufferTexture2DEXT)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_cache_tex, 0);
+
+                //      Render the chart(s)
+                            RenderQuiltViewGL(VPoint, chart_get_region);
+
+                  }
+
+                     // Disable Render to FBO
+                  (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
+                  glDisable(GL_DEPTH_TEST);
+
+                     // Render the cached texture as quad to screen
+                  glBindTexture(m_TEX_TYPE,  m_cache_tex);
+                  glEnable(m_TEX_TYPE);
+                  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+                  if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
+                  {
+                        glBegin(GL_QUADS);
+                        glTexCoord2f(0,                m_cache_tex_y);    glVertex2f(0,  0);
+                        glTexCoord2f(m_cache_tex_x,    m_cache_tex_y);    glVertex2f(sx, 0);
+                        glTexCoord2f(m_cache_tex_x,    0);                glVertex2f(sx, sy);
+                        glTexCoord2f(0,                0);                glVertex2f(0,  sy);
+                        glEnd();
+                  }
+                  glDisable(m_TEX_TYPE);
+
+                  m_cache_vp = VPoint;
+                  cc1->m_pQuilt->SetRenderedVP(VPoint);
+
+              }         // useFBO
+              else
+              {
+                     RenderQuiltViewGL(VPoint, chart_get_region);
               }
-        }
+
+
+        }         // quilted
         else                  // not quilted
         {
              ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>(Current_Ch);
@@ -12326,7 +12887,7 @@ void glChartCanvas::render()
 
      cc1->PaintCleanup();
 
-//     printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+     if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
 }
 
 void glChartCanvas::GrowData(int size)
@@ -15184,5 +15745,99 @@ int SetScreenBrightness(int brightness)
 
       return 0;
 }
+
+
+// in glext.h typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSPROC) (GLsizei n, GLuint *framebuffers);
+
+
+#if 0
+bool CheckExtension(char* extensionName)
+{
+// get the list of supported extensions
+      char* extensionList = (char*) glGetString(GL_EXTENSIONS);
+      if (!extensionName || !extensionList)
+            return false;
+      while (*extensionList)
+      {
+// find the length of the first extension substring
+            unsigned int firstExtensionLength = strcspn(extensionList, " ");
+            if (strlen(extensionName) == firstExtensionLength &&
+                strncmp(extensionName, extensionList, firstExtensionLength) == 0)
+            {
+                  return true;
+            }
+// move to the next substring
+            extensionList += firstExtensionLength + 1;
+      }
+      return false;
+}
+
+main(int argc, char* argv[]) {
+      ...
+                  if (!QueryExtension("GL_EXT_texture_object")) {
+            fprintf(stderr, "texture_object extension not supported.\n");
+            exit(1);
+                  }
+                  ...
+}
+
+static GLboolean QueryExtension(char *extName)
+{
+    /*
+      ** Search for extName in the extensions string. Use of strstr()
+      ** is not sufficient because extension names can be prefixes of
+      ** other extension names. Could use strtok() but the constant
+      ** string returned by glGetString might be in read-only memory.
+    */
+      char *p;
+      char *end;
+      int extNameLen;
+
+      extNameLen = strlen(extName);
+
+      p = (char *)glGetString(GL_EXTENSIONS);
+      if (NULL == p) {
+            return GL_FALSE;
+      }
+
+      end = p + strlen(p);
+
+      while (p < end) {
+            int n = strcspn(p, " ");
+            if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
+                  return GL_TRUE;
+            }
+            p += (n + 1);
+      }
+      return GL_FALSE;
+}
+
+
+/* Declare global variable containing the extension function pointer */
+PFNGLISOBJECTBUFFERATIPROC IsObjectBufferATI = NULL;
+
+/* Query the function pointer */
+IsObjectBufferATI = (PFNGLISOBJECTBUFFERATIPROC)
+            glXGetProcAddressARB(“glIsObjectBufferATI”);
+
+/* This should never happen if the extension is supported;
+ * but sanity check anyway, for robustness. */
+if (IsObjectBufferATI == NULL) {
+      error(“Cannot obtain extension function pointer.”);
+}
+
+...
+
+            /* Later in the program, call the extension function as needed */
+            GLuint buffer = bufferID; /* A buffer ID to be queried */
+
+/* Equivalent to calling
+ *  if (glIsObjectBufferATI(buffer) == GL_TRUE) { ...
+ */
+if ((*IsObjectBufferATI)(buffer) == GL_TRUE) {
+      /* buffer is indeed a vertex array buffer ID */
+}
+#endif
+
 
 

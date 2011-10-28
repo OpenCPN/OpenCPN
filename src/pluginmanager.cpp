@@ -32,6 +32,8 @@
 #include <wx/aui/aui.h>
 #include <wx/statline.h>
 
+#include "dychart.h"
+
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"

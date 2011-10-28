@@ -24,62 +24,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************
  *
- * $Log: mygeom.h,v $
- * Revision 1.13  2010/06/07 15:28:56  bdbcat
- * 607a
- *
- * Revision 1.12  2010/06/06 20:49:58  bdbcat
- * 606a
- *
- * Revision 1.11  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.10  2009/06/03 03:21:51  bdbcat
- * Cleanup.
- *
- * Revision 1.9  2009/03/26 22:35:35  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.8  2008/12/09 03:32:16  bdbcat
- * Add stream method
- *
- * Revision 1.7  2008/03/30 23:28:29  bdbcat
- * Cleanup/optimize
- *
- * Revision 1.6  2007/06/10 02:37:18  bdbcat
- * Cleanup
- *
- * Revision 1.5  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.4  2007/03/02 02:06:21  dsr
- * Convert to UTM Projection
- *
- * Revision 1.3  2006/10/01 03:24:40  dsr
- * no message
- *
- * Revision 1.2  2006/09/21 01:38:23  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.5  2006/07/28 20:47:50  dsr
- * Cleanup
- *
- * Revision 1.4  2006/06/02 02:06:57  dsr
- * Cleanup
- *
- * Revision 1.1.1.1  2006/04/19 03:23:27  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.3  2006/03/16 03:28:12  dsr
- * Cleanup tabs
- *
- * Revision 1.2  2006/02/23 01:22:42  dsr
- * Cleanup
- *
- *
  *
  */
 
@@ -179,6 +123,7 @@ public:
         float           *pgroup_geom;           // pointer to Raw geometry, used for contour line drawing
 
         TriPrim         *tri_prim_head;         // head of linked list of TriPrims
+        bool            m_bSMSENC;
 
     private:
         int my_bufgets( char *buf, int buf_len_max );

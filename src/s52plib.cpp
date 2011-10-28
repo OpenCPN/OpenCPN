@@ -55,6 +55,8 @@
 
 extern s52plib          *ps52plib;
 
+extern bool         g_b_useStencil;
+
 void DrawWuLine ( wxDC *pDC, int X0, int Y0, int X1, int Y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr ( S57Obj *obj, const char *AttrName, double &val );
 
@@ -139,8 +141,6 @@ s52plib::s52plib ( const wxString& PLib )
       //        Set up some default flags
       m_bDeClutterText = false;
       m_bShowAtonText = true;
-
-      m_b_stencilx = false;
 
 }
 
@@ -1632,14 +1632,17 @@ int s52plib::S52_load_Plib ( const wxString& PLib )
       wxFileName txf_file(PLib);
       txf_file.SetFullName(_T("Helvetica.txf"));
 
-//       wxFileName txf_file(_T("/home/dsr/Desktop/Downloads/a"));
-//       txf_file.SetFullName(_T("Arial.txf"));
 
       m_txf_ready = false;
-      m_txf = txfLoadFont((char *)(const char *)txf_file.GetFullPath().fn_str());
+      m_txf = txfLoadFont((char *)(const char *)txf_file.GetFullPath().mb_str());
       if (m_txf == NULL)
-            fprintf(stderr, "Problem loading %s, %s\n", (char *)(const char *)txf_file.GetFullPath().fn_str(), txfErrorString());
-
+      {
+            wxString msg(_T("    Problem loading OpenGL Font Texture File "));
+            msg.Append(txf_file.GetFullPath());
+            msg.Append(_T("..."));
+            msg.Append(wxString(txfErrorString(), wxConvUTF8));
+            wxLogMessage(msg);
+     }
       return 1;
 }
 
@@ -2686,52 +2689,57 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
 
       if(!pdc)                // OpenGL
       {
-            int w, h, descent;
-            txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd->fn_str(), ptext->frmtd->Len(), &w, &h, &descent);
-//             if((x > 0) && x < (1300))
+            if(m_txf_ready)
             {
-                  glEnable(GL_TEXTURE_2D);
-                  glColor3f(0, 0, 0);
+                  int w, h, descent;
+                  txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd->mb_str(), ptext->frmtd->Len(), &w, &h, &descent);
+  //              if((x > 0) && x < (1300))
+                  {
+                        glEnable(GL_TEXTURE_2D);
+                        glColor3f(0, 0, 0);
 
-                  txfBindFontTexture(m_txf);
-                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+                        txfBindFontTexture(m_txf);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-                  glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-                  glAlphaFunc(GL_GREATER, 0.0625);
-                  glEnable(GL_ALPHA_TEST);
-                  glEnable(GL_BLEND);
-                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//                  glEnable(GL_POLYGON_OFFSET_FILL);
-//                  glPolygonOffset(0.0, -3);
+                        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+                        glAlphaFunc(GL_GREATER, 0.0625);
+                        glEnable(GL_ALPHA_TEST);
+                        glEnable(GL_BLEND);
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      //                  glEnable(GL_POLYGON_OFFSET_FILL);
+      //                  glPolygonOffset(0.0, -3);
 
-                  glPushMatrix();
+                        glPushMatrix();
 
-                  int yp = y;
-                  int xp = x;
+                        int yp = y;
+                        int xp = x;
 
-            //  Add in the offsets, specified in units of nominal font height
-                  yp += ptext->yoffs * ( h - descent );
-                  xp += ptext->xoffs * ( h - descent );
+                  //  Add in the offsets, specified in units of nominal font height
+                        yp += ptext->yoffs * ( h - descent );
+                        xp += ptext->xoffs * ( h - descent );
 
-                  glTranslatef(xp, yp, 0);
+                        glTranslatef(xp, yp, 0);
 
-                  glScalef(1.0, -1.0, 1.0);
+                        glScalef(1.0, -1.0, 1.0);
 
-                  glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
-                  glScalef(1.5, 1.5, 1.0);
-                  txfRenderString(m_txf, (char *)(const char *)ptext->frmtd->fn_str(), ptext->frmtd->Len());
-                  glPopMatrix();
+                        glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
+                        glScalef(1.5, 1.5, 1.0);
+                        txfRenderString(m_txf, (char *)(const char *)ptext->frmtd->mb_str(), ptext->frmtd->Len());
+                        glPopMatrix();
 
-                  glDisable(GL_TEXTURE_2D);
-                  glDisable(GL_ALPHA_TEST);
-                  glDisable(GL_BLEND);
+                        glDisable(GL_TEXTURE_2D);
+                        glDisable(GL_ALPHA_TEST);
+                        glDisable(GL_BLEND);
 
-                  pRectDrawn->SetX ( xp );
-                  pRectDrawn->SetY ( yp );
-                  pRectDrawn->SetWidth ( w );
-                  pRectDrawn->SetHeight ( h );
+                        pRectDrawn->SetX ( xp );
+                        pRectDrawn->SetY ( yp );
+                        pRectDrawn->SetWidth ( w );
+                        pRectDrawn->SetHeight ( h );
+                  }
             }
+            else
+                  bdraw = false;
       }
       else
       {
@@ -3876,7 +3884,7 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       c = S52_getColor ( str+7 );             // Colour
       w = atoi ( str+5 );                     // Width
 
-      if(m_pdc)
+      if(m_pdc)         //DC mode
       {
             wxColour color ( c->R, c->G, c->B );
             int style = wxSOLID;                    // Style default
@@ -6797,27 +6805,55 @@ int s52plib::RenderToGLAC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-      if(m_b_stencilx)
-            return 0;
 
       int obj_xmin =  10000;
       int obj_xmax = -10000;
       int obj_ymin =  10000;
       int obj_ymax = -10000;
 
+      double z_clip_geom = 1.0;
+      double z_tex_geom = 0.;
+
+      if(g_b_useStencil)
+      {
+            glPushAttrib(GL_STENCIL_BUFFER_BIT);
+
       //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
 
-      glStencilMask(0x2);                 // write only into bit 1 of the stencil buffer
-      glColorMask(false, false, false, false);  // Disable writing to the color buffer
-      glClear(GL_STENCIL_BUFFER_BIT);
+            glEnable (GL_STENCIL_TEST);
+            glStencilMask(0x2);                 // write only into bit 1 of the stencil buffer
+            glColorMask(false, false, false, false);  // Disable writing to the color buffer
+            glClear(GL_STENCIL_BUFFER_BIT);
 
             //    We are going to write "2" into the stencil buffer wherever the object is valid
-      glStencilFunc (GL_ALWAYS, 2, 2);
-      glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+            glStencilFunc (GL_ALWAYS, 2, 2);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
 
-      glColor3ub( 0, 254, 0 );            // any color will do
+            glColor3ub( 0, 254, 0 );            // any color will do
 
-      //  Render the geometry  into the stencil buffer
+      }
+      else
+      {
+            glPushAttrib(GL_DEPTH_BUFFER_BIT);
+
+            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
+            glDepthFunc(GL_GREATER); // Respect global render mask in depth buffer
+            glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+            glColor3f(1,1,0);
+
+
+            //    Overall chart clip buffer was set at z=0.5
+            //    Draw this clip geometry at z = .25, so still respecting the previously established clip region
+            //    Subsequent drawing to this area at z=.25  will pass only this area if using glDepthFunc(GL_EQUAL);
+
+            //    TODO  If this fails, consider the uncertainty of GL_EQUAL on floating point comparison
+            z_clip_geom = .25;
+            z_tex_geom =  .25;
+      }
+
+      //  Render the geometry
       wxBoundingBox BBView = vp->GetBBox();
       if ( rzRules->obj->pPolyTessGeo )
       {
@@ -6874,7 +6910,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                               {
                                     glBegin(GL_TRIANGLE_FAN);
                                     for ( int it = 0 ; it < p_tp->nVert ; it++ )
-                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                          glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
                                     glEnd();
                                     break;
                               }
@@ -6883,7 +6919,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                               {
                                     glBegin(GL_TRIANGLE_STRIP);
                                     for ( int it = 0 ; it < p_tp->nVert ; it++ )
-                                          glVertex2f(ptp[it].x, ptp[it].y);
+                                          glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
                                     glEnd();
                                     break;
                               }
@@ -6900,9 +6936,9 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                           if(rect.Intersects(m_render_rect))
                                           {
                                                 glBegin(GL_TRIANGLES);
-                                                glVertex2f(ptp[it].x, ptp[it].y);
-                                                glVertex2f(ptp[it+1].x, ptp[it+1].y);
-                                                glVertex2f(ptp[it+2].x, ptp[it+2].y);
+                                                glVertex3f(ptp[it].x,   ptp[it].y,   z_clip_geom);
+                                                glVertex3f(ptp[it+1].x, ptp[it+1].y, z_clip_geom);
+                                                glVertex3f(ptp[it+2].x, ptp[it+2].y, z_clip_geom);
                                                 glEnd();
                                           }
                                     }
@@ -6913,14 +6949,20 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   p_tp = p_tp->p_next;                // pick up the next in chain
             }       // while
             free ( ptp );
-      }       // if pPolyTessGeo
 
-      if ( rzRules->obj->pPolyTessGeo )
-      {
+            if(g_b_useStencil)
+            {
             //    Now set the stencil ops to subsequently render only where the stencil bit is "2"
-            glStencilFunc (GL_EQUAL, 2, 2);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-            glColorMask(true, true, true, true);            // Re-enable the color buffer
+                  glStencilFunc (GL_EQUAL, 2, 2);
+                  glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+                  glColorMask(true, true, true, true);            // Re-enable the color buffer
+            }
+            else
+            {
+                  glDepthFunc(GL_EQUAL);                            // Set the test value
+                  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+                  glDepthMask(GL_FALSE);                            // disable depth buffer
+            }
 
             //    Get the pattern definition
             if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
@@ -6929,9 +6971,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   rules->razRule->pixelPtr = patt_spec;
                   rules->razRule->parm1 = m_colortable_index;
                   rules->razRule->parm0 = ID_GL_PATT_SPEC;
-
-
-            }         // Instantiation done
+            }
 
 
       //  Render the Area using the pattern spec stored in the rules
@@ -6946,11 +6986,8 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                   glBindTexture(GL_TEXTURE_2D, tex_name);
 
-//                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//                  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
 
                   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ppatt_spec->w_pot, ppatt_spec->h_pot, 0, GL_RGBA, GL_UNSIGNED_BYTE, ppatt_spec->pix_buff);
             }
@@ -6958,25 +6995,12 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, ppatt_spec->OGL_tex_name);
 
-//            glDisable (GL_STENCIL_TEST);
-
-/*
-                        LIBGL_ALWAYS_INDIRECT: use the X server's GLX context. This used to
-                        mean you'd also get software rendering, but with AIGLX you'll probably
-                        get the hardware DRI driver.
-
-                                    LIBGL_ALWAYS_SOFTWARE: tell libGL to use the software renderer. This
-                                    only works with direct rendering because otherwise you're getting the
-                                    DRI driver that the X server opened, and it's not controlled by this
-                                    variable.
-*/
-
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-            int xr = 0;
-            int yr = 0;
+            int xr = obj_xmin;//0;
+            int yr = obj_ymin;//0;
             int h = ppatt_spec->height;
             int w = ppatt_spec->width;
 
@@ -6984,7 +7008,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             float hh = (float)ppatt_spec->height/(float)ppatt_spec->h_pot;
             while (yr < vp->pix_height)
             {
-                  xr = 0;
+                  xr = obj_xmin;//0;
                   while(xr < vp->pix_width)
                   {
                         //    Render a quad.
@@ -6992,10 +7016,10 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                         if(((xr >= obj_xmin) && (xr <= obj_xmax)) && ((yr >= obj_ymin) && (yr <= obj_ymax)))
                         {
                               glBegin(GL_QUADS);
-                              glTexCoord2f( 0,  0);            glVertex2i(xr,     yr);
-                              glTexCoord2f( ww, 0);            glVertex2i(xr + w, yr);
-                              glTexCoord2f( ww, hh);           glVertex2i(xr + w, yr + h);
-                              glTexCoord2f( 0,  hh);           glVertex2i(xr,     yr + h);
+                              glTexCoord2f( 0,  0);            glVertex3f(xr,     yr, z_tex_geom);
+                              glTexCoord2f( ww, 0);            glVertex3f(xr + w, yr, z_tex_geom);
+                              glTexCoord2f( ww, hh);           glVertex3f(xr + w, yr + h, z_tex_geom);
+                              glTexCoord2f( 0,  hh);           glVertex3f(xr,     yr + h, z_tex_geom);
                               glEnd();
                         }
                         xr += ppatt_spec->width;
@@ -7006,9 +7030,8 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
 
-            //    Replace the old stencil function
-            glStencilFunc (GL_EQUAL, 1, 1);
-            glStencilMask(0xff);
+            //    Restore the previous state
+            glPopAttrib();
 
       }
 
@@ -7044,7 +7067,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect)
 {
 //Debug Hooks
-//      if(!strncmp(rzRules->LUP->OBCL, "$AREAS", 6))
+//      if(!strncmp(rzRules->LUP->OBCL, "PRCARE", 6))
 //            int yyrjt = 4;
 
       if ( !ObjectRenderCheckPos ( rzRules, vp ) )
@@ -7961,7 +7984,7 @@ bool s52plib::ObjectRenderCheckCat ( ObjRazRules *rzRules, ViewPort *vp )
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
-      if(!m_txf_ready)
+      if(!m_txf_ready && m_txf)
       {
             txfEstablishTexture(m_txf, 0, GL_TRUE);
             m_txf_ready = true;

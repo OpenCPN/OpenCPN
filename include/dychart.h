@@ -217,5 +217,19 @@
 #endif
 #endif
 
+#ifndef OCPN_GL_INCLUDES
+#define OCPN_GL_INCLUDES 1
+
+#ifdef __WXMSW__
+#include "GL/gl.h"            // local copy for Windows
+#include "GL/glu.h"
+#else
+//#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
+#endif
+
+#endif      //OCPN_GL_INCLUDES
 
 #endif      // __FILE__

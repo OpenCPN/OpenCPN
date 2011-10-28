@@ -330,6 +330,8 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
 
 
     PolyTriGroup *ppg = new PolyTriGroup;
+    ppg->m_bSMSENC = true;
+
     int nctr;
     my_bufgets( hdr_buf, POLY_LINE_HDR_MAX );
     sscanf(hdr_buf, "Contours/nWKB %d %d", &nctr, &twkb_len);
@@ -676,6 +678,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
     m_nvertex_max = 0;
 
     m_ppg_head = new PolyTriGroup;
+    m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
     m_ppg_head->nContours = ncnt;
 
@@ -1411,6 +1414,7 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     //  Create the data structures
 
     m_ppg_head = new PolyTriGroup;
+    m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
     m_ppg_head->nContours = ncnt;
 
@@ -1776,9 +1780,9 @@ int PolyTessGeo::BuildTessGL(void)
     //  Create the data structures
 
       m_ppg_head = new PolyTriGroup;
+      m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
       m_ppg_head->nContours = ncnt;
-
       m_ppg_head->pn_vertex = cntr;             // pointer to array of poly vertex counts
 
 
@@ -2183,6 +2187,7 @@ PolyTriGroup::PolyTriGroup()
     pn_vertex = NULL;             // pointer to array of poly vertex counts
     pgroup_geom = NULL;           // pointer to Raw geometry, used for contour line drawing
     tri_prim_head = NULL;         // head of linked list of TriPrims
+    m_bSMSENC = false;
 
 }
 

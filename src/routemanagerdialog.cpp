@@ -33,6 +33,7 @@
 
 #include <iostream>
 
+#include "dychart.h"
 #include "navutil.h"
 #include "routeprop.h"
 #include "routeman.h"

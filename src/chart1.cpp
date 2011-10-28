@@ -555,6 +555,7 @@ long              g_toolbar_orient;
 
 //    OpenGL Globals
 int               g_GPU_MemSize;
+bool              g_b_useStencil;
 
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
