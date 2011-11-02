@@ -3043,13 +3043,8 @@ bool s57chart::BuildThumbnail(const wxString &bmpname)
 //      Clone pDIB into pThumbData;
        wxBitmap *pBMP;
 
-//#ifdef ocpnUSE_ocpnBitmap
-//                pBMP = new ocpnBitmap((unsigned char *)NULL,
-//                                       vp.pix_width, vp.pix_height, BPP);
-//#else
-                pBMP = new wxBitmap(/*NULL,*/
-                        vp.pix_width, vp.pix_height, BPP);
-//#endif
+       pBMP = new wxBitmap(vp.pix_width, vp.pix_height/*,  BPP*/);
+
        wxMemoryDC dc_clone;
        dc_clone.SelectObject(*pBMP);
 

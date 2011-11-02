@@ -2707,8 +2707,6 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
                         glEnable(GL_ALPHA_TEST);
                         glEnable(GL_BLEND);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //                  glEnable(GL_POLYGON_OFFSET_FILL);
-      //                  glPolygonOffset(0.0, -3);
 
                         glPushMatrix();
 

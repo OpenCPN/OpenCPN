@@ -4057,7 +4057,7 @@ void ChartCanvas::Do_Pankeys(wxTimerEvent& event)
      if(m_modkeys == wxMOD_ALT)
           m_panspeed = slowpan;
      else
-          if(g_bsmoothpanzoom && !g_bopengl) {        // turn off for opengl until figure out how to syncronize with SwapBuffers()
+          if(g_bsmoothpanzoom) {
                /* accelerate panning */
                m_panspeed += 2;
                if(m_panspeed > maxpan)
@@ -4700,6 +4700,10 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       ClearbFollow();      // update the follow flag
 
       Refresh(false);
+
+      Update();               // Force an immediate screen update
+                              // to be sure screen stays in sync with (fast) smooth panning
+                              // on truly asynchronous opengl renderers.
 
       return true;
 }
@@ -5482,6 +5486,7 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
 
                       wxPen ppPen1 ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
                       dc.SetPen(ppPen1);
+                      dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "URED" ) ),wxTRANSPARENT  ) );
 
                       for (int i=1; i<=g_iNavAidRadarRingsNumberVisible;i++)
                            dc.StrokeCircle(lShipPoint.x, lShipPoint.y, i * pix_radius);
@@ -6134,7 +6139,31 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                        dc.SetPen(target_pen);
                        dc.SetBrush(target_brush);
 
-                       dc.StrokePolygon(4, ais_quad_icon, TargetPoint.x, TargetPoint.y);
+                       if(td->Class == AIS_CLASS_B)
+                       {
+                             // decompose to two "convex" polygons and one combined outline to satisfy OpenGL's requirements
+                             wxPen tri_pen ( target_brush.GetColour() , 1 );
+                             dc.SetPen(tri_pen);
+
+                             wxPoint ais_tri_icon[3];
+
+                             ais_tri_icon[0] = ais_quad_icon[0];
+                             ais_tri_icon[1] = ais_quad_icon[1];
+                             ais_tri_icon[2] = ais_quad_icon[3];
+                             dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+
+                             ais_tri_icon[0] = ais_quad_icon[1];
+                             ais_tri_icon[1] = ais_quad_icon[2];
+                             ais_tri_icon[2] = ais_quad_icon[3];
+                             dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+
+                             dc.SetPen(target_pen);
+                             dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+                             dc.StrokePolygon(4, ais_quad_icon, TargetPoint.x, TargetPoint.y);
+
+                       }
+                       else
+                             dc.StrokePolygon(4, ais_quad_icon, TargetPoint.x, TargetPoint.y);
 
                    //        If this is a moored/anchored target, so symbolize it
                        if (((td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR)) /*&&(target_sog < g_ShowMoored_Kts)*/)   // pjotrc 2010.01.31
@@ -12884,6 +12913,7 @@ void glChartCanvas::render()
 #endif
 
      SwapBuffers();
+     glFinish();
 
      cc1->PaintCleanup();
 

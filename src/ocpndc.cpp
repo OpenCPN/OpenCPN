@@ -159,6 +159,15 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
      if(dc)
           dc->DrawLine ( x1, y1, x2, y2 );
      else if(ConfigurePen()) {
+
+           glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+          //      Enable anti-aliased lines, at best quality
+           glEnable(GL_LINE_SMOOTH);
+           glEnable(GL_BLEND);
+           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
            if(m_pen.GetWidth() > 1)
                   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
            else
@@ -168,6 +177,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
                   glVertex2i(x2, y2);
                   glEnd();
            }
+           glPopAttrib();
      }
 }
 
@@ -328,6 +338,14 @@ void ocpnDC::DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height)
           double r1 = width/2, r2 = height/2;
           double cx = x + r1, cy = y + r2;
 
+          glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+          //      Enable anti-aliased lines, at best quality
+          glEnable(GL_LINE_SMOOTH);
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
           if(ConfigureBrush()) {
                glBegin(GL_TRIANGLE_FAN);
                glVertex2d(cx, cy);
@@ -338,15 +356,25 @@ void ocpnDC::DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height)
 
           if(ConfigurePen()) {
                glBegin(GL_LINE_STRIP);
-               for(double a = 0; a <= 2*M_PI; a+=2*M_PI/20)
+               for(double a = 0; a <= 2*M_PI; a+=2*M_PI/200)
                     glVertex2d(cx + r1*sin(a), cy + r2*cos(a));
                glEnd();
           }
+
+          glPopAttrib();            // restore state
      }
 }
 
 void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
 {
+      glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+          //      Enable anti-aliased lines, at best quality
+      glEnable(GL_LINE_SMOOTH);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
      if(ConfigureBrush()) {
           glBegin(GL_POLYGON);
           for(int i=0; i<n; i++)
@@ -360,6 +388,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffs
                 glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
           glEnd();
      }
+     glPopAttrib();
 }
 
 void ocpnDC::StrokePolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
