@@ -133,6 +133,7 @@ wxLog           *logger;
 wxLog           *Oldlogger;
 bool            g_bFirstRun;
 wxString        glog_file;
+wxString        gConfig_File;
 
 int             g_unit_test_1;
 
@@ -1992,18 +1993,18 @@ bool MyApp::OnInit()
 
 //      Establish the location of the config file
 #ifdef __WXMSW__
-        wxString Config_File(_T("opencpn.ini"));
-        Config_File.Prepend(*pHome_Locn);
+        gConfig_File = _T("opencpn.ini");
+        gConfig_File.Prepend(*pHome_Locn);
 
 
 #elif defined __WXOSX__
-        wxString Config_File = std_path.GetUserConfigDir(); // should be ~/Library/Preferences
-        appendOSDirSlash(&Config_File) ;
-        Config_File.Append(_T("opencpn.ini"));
+        gConfig_File = std_path.GetUserConfigDir(); // should be ~/Library/Preferences
+        appendOSDirSlash(&gConfig_File) ;
+        gConfig_File.Append(_T("opencpn.ini"));
 #else
-        wxString Config_File = std_path.GetUserDataDir(); // should be ~/.opencpn
-        appendOSDirSlash(&Config_File) ;
-        Config_File.Append(_T("opencpn.conf"));
+        gConfig_File = std_path.GetUserDataDir(); // should be ~/.opencpn
+        appendOSDirSlash(&gConfig_File) ;
+        gConfig_File.Append(_T("opencpn.conf"));
 #endif
 
 
@@ -2013,25 +2014,25 @@ bool MyApp::OnInit()
 
         bool b_novicemode = false;
 
-        wxFileName config_test_file_name(Config_File);
+        wxFileName config_test_file_name(gConfig_File);
         if(config_test_file_name.FileExists())
-            wxLogMessage(_T("Using existing Config_File: ") + Config_File);
+            wxLogMessage(_T("Using existing Config_File: ") + gConfig_File);
         else
         {
               {
-                  wxLogMessage(_T("Creating new Config_File: ") + Config_File);
+                  wxLogMessage(_T("Creating new Config_File: ") + gConfig_File);
 
                   //    Flag to preset some options for initial config file creation
                   b_novicemode = true;
 
                   if(true != config_test_file_name.DirExists(config_test_file_name.GetPath()))
                        if(!config_test_file_name.Mkdir(config_test_file_name.GetPath()))
-                               wxLogMessage(_T("Cannot create config file directory for ") + Config_File);
+                               wxLogMessage(_T("Cannot create config file directory for ") + gConfig_File);
               }
         }
 
 //      Open/Create the Config Object
-        MyConfig *pCF = new MyConfig(wxString(_T("")), wxString(_T("")), Config_File);
+        MyConfig *pCF = new MyConfig(wxString(_T("")), wxString(_T("")), gConfig_File);
         pConfig = (MyConfig *)pCF;
         pConfig->LoadMyConfig(0);
 
@@ -4052,6 +4053,7 @@ void MyFrame::DeleteToolbarBitmaps()
     delete _img_sort_asc;
     delete _img_sort_desc;
     delete _img_cross;
+    delete _img_donate;
 
 
 

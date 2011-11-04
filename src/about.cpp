@@ -60,6 +60,7 @@ wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str
 
 extern wxString        *pHome_Locn;
 extern wxString         glog_file;
+extern wxString         gConfig_File;
 
 char AboutText[] =
 {
@@ -186,20 +187,6 @@ char AuthorText[] =
 
 
 
-/*
-    For Developer Reference, the included source code
-    elements are licensed as follows:
-
-      wxWidgets                         LGPL
-      s52cnsy&s52plib                   GPL
-      seriallib                         GPL
-      tcmgr                             GPL
-      mygdal                            BSD, compatible with GPL
-      nmea0183                          Owner License, compatible with GPL
-      triangles                         Public Domain see tri.c, compatible with GPL
-      wvschart                          Public Domain see wvschart.cpp, compatible with GPL
-
-*/
 
 
 IMPLEMENT_DYNAMIC_CLASS( about, wxDialog )
@@ -287,11 +274,14 @@ void about::Update()
       delete pAboutString;
 
   // Show the user where the log file is going to be
-      wxString log = _T("\n    Logfile location: ");
+      wxString log = _T("    Logfile location: ");
       log.Append(glog_file);
-
       pAboutTextCtl->WriteText(log);
 
+ // Show the user where the config file is going to be
+      wxString conf = _T("\n    Config file location: ");
+      conf.Append(gConfig_File);
+      pAboutTextCtl->WriteText(conf);
 
       pAuthorTextCtl->SetDefaultStyle(ta);
       pAuthorTextCtl->Clear();
