@@ -2471,11 +2471,27 @@ bool MyApp::OnInit()
 
         app_style |= wxWANTS_CHARS;
 
+        //  Validate config file position
         wxPoint position(0,0);
         wxSize dsize = wxGetDisplaySize();
 
         if((g_nframewin_posx < dsize.x) && (g_nframewin_posy < dsize.y))
               position = wxPoint(g_nframewin_posx, g_nframewin_posy);
+
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        RECT frame_rect;
+        frame_rect.left = position.x;
+        frame_rect.top = position.y;
+        frame_rect.right = position.x + new_frame_size.x;
+        frame_rect.bottom = position.y + new_frame_size.y;
+
+        //  If the requested frame window does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+        if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
+              position = wxPoint(10, 10);
+#endif
+
 // Create the main frame window
         wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
@@ -4346,9 +4362,12 @@ void MyFrame::OnMove(wxMoveEvent& event)
 
       UpdateGPSCompassStatusBox(true);
 
-      g_nframewin_posx = event.GetPosition().x;
-      g_nframewin_posy = event.GetPosition().y;
+//    Somehow, this method does not work right on Windows....
+//      g_nframewin_posx = event.GetPosition().x;
+//      g_nframewin_posy = event.GetPosition().y;
 
+      g_nframewin_posx = GetPosition().x;
+      g_nframewin_posy = GetPosition().y;
 }
 
 
@@ -5132,6 +5151,7 @@ int MyFrame::DoOptionsDialog()
 
       bool bPrevTrackIcon = g_bShowTrackIcon;
       bool bPrevQuilt = g_bQuiltEnable;
+      bool bPrevFullScreenQuilt = g_bFullScreenQuilt;
       bool bPrevOGL = g_bopengl;
 
       wxString prev_locale = g_locale;
@@ -5255,7 +5275,7 @@ int MyFrame::DoOptionsDialog()
                   g_pActiveTrack->SetTPDist(g_bTrackDistance);
             }
 
-            if(bPrevQuilt != g_bQuiltEnable)
+            if((bPrevQuilt != g_bQuiltEnable) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt))
             {
                   cc1->SetQuiltMode(g_bQuiltEnable);
                   SetupQuiltMode();

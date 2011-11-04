@@ -4247,6 +4247,20 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
                 (pane.floating_pos.y > wxGetDisplaySize().y) )
                   pane.FloatingPosition(50,200);
 
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+            RECT frame_rect;
+            frame_rect.left = pane.floating_pos.x;
+            frame_rect.top = pane.floating_pos.y;
+            frame_rect.right = pane.floating_pos.x + pane.floating_size.x;
+            frame_rect.bottom = pane.floating_pos.y + pane.floating_size.y;
+
+        //  If the requested window does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+            if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
+                  pane.FloatingPosition(50,200);
+#endif
+
             //    If the list got accidentally dropped on top of the chart bar, move it away....
             if(pane.IsDocked() && (pane.dock_row == 0))
             {
