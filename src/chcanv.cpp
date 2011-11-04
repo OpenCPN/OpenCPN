@@ -8183,8 +8183,12 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         if(!g_bCourseUp)
             pdef_menu->Append(ID_DEF_MENU_COGUP, _("Set Course Up Mode"));
         else
-            pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
-
+        {
+              if(!VPoint.b_quilt && Current_Ch && (fabs(Current_Ch->GetChartSkew()) > .01))
+                    pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set Chart Up Mode"));
+              else
+                    pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
+        }
 
         wxMenuItem *pitem;
         if(!m_bMeasure_Active )
