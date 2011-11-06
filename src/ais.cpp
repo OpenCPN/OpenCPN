@@ -2650,8 +2650,10 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
       AIS_Target_Hash::iterator it;
       AIS_Target_Hash *current_targets = GetTargetList();
 
-      for( it = (*current_targets).begin(); it != (*current_targets).end(); ++it )
+      it = (*current_targets).begin();
+      while( it != (*current_targets).end())
       {
+          bool b_new_it = false;
 
           AIS_Target_Data *td = it->second;
 
@@ -2681,9 +2683,15 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
                       pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
                       current_targets->erase(it);
                       delete td;
-                      break;        // kill only one per tick, since iterator becomes invalid...
+
+                      //      Reset the iterator on item erase.
+                      it = (*current_targets).begin();
+                      b_new_it = true;
                 }
           }
+
+          if(!b_new_it)
+                ++it;
       }
 
 
