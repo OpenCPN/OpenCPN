@@ -187,6 +187,7 @@ public:
 private:
       bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
+      bool UpDateChartDataTypes(void);
 
       MyFrame                 *pParent;
 

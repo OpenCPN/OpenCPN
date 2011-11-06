@@ -224,6 +224,9 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
 
                   b_more =pi_dir.GetNext(&plugin_file);
             }
+
+            UpDateChartDataTypes();
+
             return true;
       }
       else
@@ -260,6 +263,29 @@ bool PlugInManager::UpdatePlugIns()
 
             }
       }
+
+      UpDateChartDataTypes();
+
+      return bret;
+}
+
+
+bool PlugInManager::UpDateChartDataTypes(void)
+{
+      bool bret = false;
+      if(NULL == ChartData)
+            return bret;
+
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+
+            if(/*pic->m_bEnabled &&*/ (pic->m_cap_flag & INSTALLS_PLUGIN_CHART))
+                  bret = true;
+      }
+
+      if(bret)
+            ChartData->UpdateChartClassDescriptorArray();
 
       return bret;
 }
@@ -788,11 +814,35 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void)
             if(pic->m_bEnabled && pic->m_bInitState && (pic->m_cap_flag & INSTALLS_PLUGIN_CHART))
             {
                   wxArrayString carray = pic->m_pplugin->GetDynamicChartClassNameArray();
+
                   for(unsigned int j = 0 ; j < carray.GetCount() ; j++)
                         array.Add(carray.Item(j));
 
             }
       }
+
+      //    Scrub the list for duplicates
+      //    Corrects a flaw in BSB4 and NVC PlugIns
+      unsigned int j=0;
+      while(j < array.GetCount())
+      {
+            wxString test = array.Item(j);
+            unsigned int k = j+1;
+            while(k < array.GetCount())
+            {
+                  if(test == array.Item(k))
+                  {
+                        array.RemoveAt(k);
+                        j = -1;
+                        break;
+                  }
+                  else
+                        k++;
+            }
+
+            j++;
+      }
+
 
       return array;
 }

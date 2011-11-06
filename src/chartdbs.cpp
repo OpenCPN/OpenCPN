@@ -546,8 +546,16 @@ ChartDatabase::ChartDatabase()
 {
       m_ChartTableEntryDummy.Clear();
 
-      //    Create and add the descriptors for the default chart types recognized
+      UpdateChartClassDescriptorArray();
+}
+
+void ChartDatabase::UpdateChartClassDescriptorArray(void)
+{
+      m_ChartClassDescriptorArray.Clear();
+
+            //    Create and add the descriptors for the default chart types recognized
       ChartClassDescriptor *pcd;
+
       pcd = new ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR);
       m_ChartClassDescriptorArray.Add(pcd);
       pcd = new ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR);
@@ -582,6 +590,7 @@ ChartDatabase::ChartDatabase()
                   }
             }
       }
+
 }
 
 

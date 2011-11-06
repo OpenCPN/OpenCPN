@@ -227,6 +227,8 @@ public:
     ArrayOfCDI& GetChartDirArray(){ return m_dir_array; }
     wxArrayString &GetChartDirArrayString(){ return m_chartDirs; }
 
+    void UpdateChartClassDescriptorArray(void);
+
     int GetChartTableEntries() const { return chartTable.size(); }
     const ChartTableEntry &GetChartTableEntry(int index) const;
 
