@@ -2684,7 +2684,9 @@ void MyConfig::CreateRotatingNavObjBackup()
             for (int i = g_navobjbackups - 1; i >= 1; i--)
                   if(wxFile::Exists(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
                         wxCopyFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i), wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i + 1));
-            wxCopyFile(m_sNavObjSetFile, wxString::Format( _T("%s.1"), m_sNavObjSetFile.c_str()) );
+
+            if(wxFile::Exists(m_sNavObjSetFile))
+                  wxCopyFile(m_sNavObjSetFile, wxString::Format( _T("%s.1"), m_sNavObjSetFile.c_str()) );
       }
       //try to clean the backups the user doesn't want - breaks if he deleted some by hand as it tries to be effective...
       for (int i = g_navobjbackups + 1; i <= 99; i++)
