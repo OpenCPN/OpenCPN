@@ -160,11 +160,7 @@ TCMgr::TCMgr(const wxString &data_dir, const wxString &home_dir)
       allocate_copy_string(&hfile_name, harm_file.mb_str());
 
       pmru_file_name = new wxString(home_dir);                    // in the current users home
-#ifdef __WXMSW__
       pmru_file_name->Append(_T("station_mru.dat"));
-#else
-      pmru_file_name->Append(_T(".opencpn/station_mru.dat"));
-#endif
 
 
 //    Initialize and load the Index file structure

@@ -171,6 +171,8 @@ extern s52plib          *ps52plib;
 #endif
 
 extern wxString         g_locale;
+extern bool             g_bportable;
+extern wxString         *pHome_Locn;
 
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
@@ -1678,7 +1680,14 @@ void options::OnButtonaddClick( wxCommandEvent& event )
       wxString SelDir;
       SelDir = pDirCtl->GetPath();
 
-      pListBox->Append(SelDir);
+      if(g_bportable)
+      {
+            wxFileName f(SelDir);
+            f.MakeRelativeTo(*pHome_Locn);
+            pListBox->Append(f.GetFullPath());
+      }
+      else
+            pListBox->Append(SelDir);
 
       k_charts |= CHANGE_CHARTS;
 

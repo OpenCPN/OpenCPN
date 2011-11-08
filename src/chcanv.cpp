@@ -2590,7 +2590,7 @@ ViewPort::ViewPort()
       view_scale_ppm = 1;
       rotation = 0.;
       b_quilt = false;
-
+      pix_height = pix_width = 0;
 }
 
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) const
@@ -9485,6 +9485,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
               m_glcc->Update();
               return;
         }
+
+        if((GetVP().pix_width == 0) || (GetVP().pix_height == 0))
+              return;
 
 
         wxRegion ru = GetUpdateRegion();

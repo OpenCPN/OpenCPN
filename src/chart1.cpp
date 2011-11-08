@@ -402,6 +402,8 @@ bool             g_bFullScreenQuilt;
 bool             g_bQuiltEnable;
 bool             g_bQuiltStart;
 
+bool             g_bportable;
+
 wxProgressDialog *s_ProgDialog;
 
 //-----------------------------------------------------------------------------------------------------
@@ -1615,11 +1617,14 @@ void MyApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
       //    Add some OpenCPN specific command line options
       parser.AddSwitch(_T("unit_test_1"));
+
+      parser.AddSwitch(_T("p"));
 }
 
 bool MyApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
       g_unit_test_1 = parser.Found(_T("unit_test_1"));
+      g_bportable = parser.Found(_T("p"));
 
       return true;
 }
@@ -1812,6 +1817,13 @@ bool MyApp::OnInit()
         pHome_Locn->Append(std_path.GetUserConfigDir());
 #endif
 
+        if(g_bportable)
+        {
+              pHome_Locn->Clear();
+              wxFileName f(std_path.GetExecutablePath());
+              pHome_Locn->Append(f.GetPath());
+        }
+
         appendOSDirSlash(pHome_Locn) ;
 
         //      Establish Log File location
@@ -1847,12 +1859,13 @@ bool MyApp::OnInit()
         // create the opencpn "log" directory if we need to
         wxFileName wxLogFiledir(glog_file) ;
         if(true != wxLogFiledir.DirExists(wxLogFiledir.GetPath()))
-              if(!wxLogFiledir.Mkdir(wxLogFiledir.GetPath()))
         {
-              wxASSERT_MSG(false,_T("Cannot create opencpn log directory"));
-              return false ;
+              if(!wxLogFiledir.Mkdir(wxLogFiledir.GetPath()))
+              {
+                  wxASSERT_MSG(false,_T("Cannot create opencpn log directory"));
+                  return false ;
+              }
         }
-
         glog_file.Append(_T("opencpn.log"));
 
         //  Constrain the size of the log file
@@ -1920,8 +1933,11 @@ bool MyApp::OnInit()
         * Windows: the directory where the executable file is located
         * Mac: appname.app/Contents/SharedSupport bundle subdirectory
 */
-        g_SData_Locn = std_path.GetDataDir();         // where the application is located
+        g_SData_Locn = std_path.GetDataDir();
         appendOSDirSlash(&g_SData_Locn) ;
+
+        if(g_bportable)
+              g_SData_Locn = *pHome_Locn;
 
         imsg = _T("SData_Locn is ");
         imsg += g_SData_Locn;
@@ -1945,6 +1961,9 @@ bool MyApp::OnInit()
         g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
 #endif
 
+        if(g_bportable)
+              g_PrivateDataDir = *pHome_Locn;
+
 
         //  Get the PlugIns directory location
         g_Plugin_Dir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
@@ -1952,6 +1971,12 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
         g_Plugin_Dir += _T("\\plugins");             // Windows: {exe dir}/plugins
 #endif
+
+        if(g_bportable)
+        {
+              g_Plugin_Dir = *pHome_Locn;
+              g_Plugin_Dir += _T("plugins");
+        }
 
 //      Create an array string to hold repeating messages, so they don't
 //      overwhelm the log
@@ -2009,6 +2034,18 @@ bool MyApp::OnInit()
 
 
 
+        if(g_bportable)
+        {
+              gConfig_File = *pHome_Locn;
+#ifdef __WXMSW__
+              gConfig_File += _T("opencpn.ini");
+#elif defined __WXOSX__
+              gConfig_File +=_T("opencpn.ini");
+#else
+              gConfig_File += _T("opencpn.conf");
+#endif
+
+        }
 
 
 
@@ -2372,6 +2409,17 @@ bool MyApp::OnInit()
         appendOSDirSlash(pChartListFileName) ;
         pChartListFileName->Append(_T("chartlist.dat"));
 #endif
+
+        if(g_bportable)
+        {
+              pChartListFileName->Clear();
+#ifdef __WXMSW__
+              pChartListFileName->Append(_T("CHRTLIST.DAT"));
+#else
+              pChartListFileName->Append(_T("chartlist.dat"));
+#endif
+              pChartListFileName->Prepend(*pHome_Locn);
+        }
 
 
 //      Establish location of Tide and Current data
@@ -4641,7 +4689,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_CURRENT:
         {
             if(!ptcmgr)                                                     // First time, init the manager
-                ptcmgr = new TCMgr(*pTC_Dir, *pHome_Locn);
+            {
+                  wxString cache_locn = *pHome_Locn;
+#ifndef __WXMSW__
+                  if(!g_bportable)
+                        cache_locn.Append(_T(".opencpn/"));
+#endif
+                  ptcmgr = new TCMgr(*pTC_Dir, cache_locn);
+            }
 
             if(ptcmgr->IsReady())
             {

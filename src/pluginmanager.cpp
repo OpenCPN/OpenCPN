@@ -132,7 +132,6 @@ PlugInManager::~PlugInManager()
 bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
 {
       m_plugin_location = plugin_dir;
-      wxDir pi_dir(m_plugin_location);
 
       wxString msg(_T("PlugInManager searching for PlugIns in location "));
       msg += m_plugin_location;
@@ -147,6 +146,19 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
       wxString pispec = _T("*_pi.so");
 #endif
 #endif
+
+      if(!::wxDirExists(m_plugin_location))
+      {
+            msg = m_plugin_location;
+            msg.Prepend(_T("   Directory "));
+            msg.Append(_T(" does not exist."));
+            wxLogMessage(msg);
+            return false;
+      }
+
+
+
+      wxDir pi_dir(m_plugin_location);
 
       if(pi_dir.IsOpened())
       {

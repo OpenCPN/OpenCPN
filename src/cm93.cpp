@@ -295,6 +295,9 @@ covr_set::covr_set ( cm93chart *parent )
 covr_set::~covr_set()
 {
       //    Create/Update the cache
+      if(m_cachefile.IsEmpty())
+            return;                             // presumably for Z scale charts
+                                                // for which we create no cache
 
       if ( m_covr_array_outlines.GetCount() )
       {
