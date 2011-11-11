@@ -13625,14 +13625,10 @@ void TCWin::OnSize ( wxSizeEvent& event )
 
 void TCWin::MouseEvent ( wxMouseEvent& event )
 {
-
         event.GetPosition ( &curs_x, &curs_y );
-        if(HasCapture())
-            ReleaseMouse();                                             //in case the mouse have been captured in "OnTCwinPoupTimerEvent"
 
         if ( !m_TCWinPopupTimer.IsRunning() )
             m_TCWinPopupTimer.Start(20, wxTIMER_ONE_SHOT) ;
-
 }
 
 void TCWin::OnTCWinPopupTimerEvent ( wxTimerEvent& event )
@@ -13646,12 +13642,12 @@ void TCWin::OnTCWinPopupTimerEvent ( wxTimerEvent& event )
 
             if ( cursorarea.Contains(curs_x,curs_y) )
             {
-                  CaptureMouse();                                             //the cursor can move into the rollover
                   ShowRollover = true ;
                   SetCursor(*pParent->pCursorCross);
                   if( NULL == m_pTCRolloverWin )
                   {
                         m_pTCRolloverWin = new RolloverWin(this);
+                        m_pTCRolloverWin->SetMousePropogation(1);
                         m_pTCRolloverWin->Hide();
                   }
                   float t,d ;
@@ -15063,6 +15059,8 @@ void S57ObjectTree::OnItemSelectChange( wxTreeEvent& event)
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
             EVT_PAINT(RolloverWin::OnPaint)
             EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
+            EVT_MOUSE_EVENTS ( RolloverWin::OnMouseEvent )
+
             END_EVENT_TABLE()
 
 // Define a constructor
@@ -15073,6 +15071,7 @@ RolloverWin::RolloverWin(wxWindow *parent, int timeout):
 
       m_timer_timeout.SetOwner(this, ROLLOVER_TIMER);
       m_timeout_sec = timeout;
+      m_mmouse_propogate = 0;
 
       Hide();
 }
@@ -15085,6 +15084,17 @@ void RolloverWin::OnTimer(wxTimerEvent& event)
 {
       if(IsShown())
             Hide();
+}
+
+void RolloverWin::OnMouseEvent ( wxMouseEvent& event )
+{
+      //    If directed, send mouse events up the window family tree,
+      //    until some parent window does NOT call event.Skip()
+      if(m_mmouse_propogate)
+      {
+            event.ResumePropagation(m_mmouse_propogate);
+            event.Skip();
+      }
 }
 
 

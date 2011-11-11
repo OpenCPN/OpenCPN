@@ -867,6 +867,8 @@ class RolloverWin: public wxWindow
             void SetBitmap(int rollover);
             void SetBestPosition(int x, int y, int off_x, int off_y, int rollover, wxSize parent_size);
             void OnTimer(wxTimerEvent& event);
+            void OnMouseEvent ( wxMouseEvent& event );
+            void SetMousePropogation(int level){ m_mmouse_propogate = level;}
 
       private:
 
@@ -876,6 +878,7 @@ class RolloverWin: public wxWindow
             wxBitmap          *m_pbm;
             wxTimer           m_timer_timeout;
             int               m_timeout_sec;
+            int               m_mmouse_propogate;
 
             DECLARE_EVENT_TABLE()
 };
