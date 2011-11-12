@@ -419,13 +419,26 @@ bool Routeman::UpdateProgress()
         if(pActiveRoute)
         {
 //      Update bearing, range, and crosstrack error
+
+//  Bearing is calculated as Mercator Sailing, i.e. a  cartographic "bearing"
                 double north, east;
                 toSM(pActivePoint->m_lat, pActivePoint->m_lon, gLat, gLon, &east, &north);
                 double a = atan(north / east);
-                if(pActivePoint->m_lon > gLon)
+                if(fabs(pActivePoint->m_lon - gLon) < 180.)
+                {
+                  if(pActivePoint->m_lon > gLon)
                     CurrentBrgToActivePoint = 90. - (a * 180/PI);
-                else
+                  else
                     CurrentBrgToActivePoint = 270. - (a * 180/PI);
+                }
+                else
+                {
+                  if(pActivePoint->m_lon > gLon)
+                    CurrentBrgToActivePoint = 270. - (a * 180/PI);
+                  else
+                    CurrentBrgToActivePoint = 90. - (a * 180/PI);
+                }
+
 
 
 //      Calculate range using Great Circle Formula
