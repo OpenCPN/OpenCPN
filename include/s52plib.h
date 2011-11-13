@@ -357,6 +357,7 @@ public:
       bool        bUseRasterSym;
 
       wxDC       *m_pdc;                       // The current DC
+      wxGLContext *m_glcc;
 
       int         *ledge;
       int         *redge;

@@ -4574,10 +4574,6 @@ void s52plib::draw_lc_poly ( wxDC *pdc, wxPoint *ptp, int npt,
 // Multipoint Sounding
 int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-      //    OpenGL Unimplemented
-      if(!m_pdc)
-            return 0;
-
       if ( !m_bShowSoundg )
             return 0;
 
@@ -4586,52 +4582,6 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       wxPoint p;
       double *pd = rzRules->obj->geoPtz;            // the SM points
       double *pdl = rzRules->obj->geoPtMulti;       // and corresponding lat/lon
-#if 0
-      for ( int ip=0 ; ip<npt ; ip++ )
-      {
-            double east = *pd++;
-            double nort = *pd++;;
-            double depth = *pd++;
-
-            ObjRazRules *point_rzRules = new ObjRazRules;
-            *point_rzRules = *rzRules;              // take a copy of attributes, etc
-
-            //  Need a new LUP
-            LUPrec *NewLUP = new LUPrec;
-            *NewLUP = * ( rzRules->LUP );
-            point_rzRules->LUP = NewLUP;
-
-            //  Need a new S57Obj
-            S57Obj *point_obj = new S57Obj;
-            *point_obj = * ( rzRules->obj );
-            point_rzRules->obj = point_obj;
-
-            //  Touchup the new items
-            point_rzRules->obj->bCS_Added = false;
-            point_rzRules->obj->bIsClone = true;
-
-            point_rzRules->next = NULL;
-            Rules *ru = StringToRules ( _T ( "CS(SOUNDG03;" ) );
-            point_rzRules->LUP->ruleList = ru;
-
-            point_obj->x = east;
-            point_obj->y = nort;
-            point_obj->z = depth;
-
-            double lon = *pdl++;
-            double lat = *pdl++;
-            point_obj->BBObj.SetMin ( lon, lat );
-            point_obj->BBObj.SetMax ( lon, lat );
-
-            _draw ( pdc, point_rzRules, vp );
-
-            free ( ru->INST0 );
-            delete ru;
-            delete point_obj;
-            delete point_rzRules;
-            delete NewLUP;
-      }
-#endif
       if ( NULL == rzRules->child )
       {
             ObjRazRules *previous_rzRules = NULL;
@@ -4691,13 +4641,16 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       ObjRazRules *current = rzRules->child;
       while ( current )
       {
-            RenderObjectToDC ( m_pdc, current, vp );
+            if(m_pdc)
+                  RenderObjectToDC ( m_pdc, current, vp );
+            else
+            {
+                  wxRect NullRect;
+                  RenderObjectToGL ( *m_glcc, current, vp, NullRect );
+            }
 
             current = current->next;
       }
-
-
-
 
       return 1;
 }
@@ -5063,6 +5016,7 @@ int s52plib::RenderObjectToDC ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp 
 
 int s52plib::RenderObjectToGL ( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp, wxRect &render_rect )
 {
+      m_glcc = (wxGLContext *)&glcc;
       return DoRenderObject ( NULL, rzRules, vp );
 }
 
