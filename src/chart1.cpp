@@ -301,6 +301,11 @@ int             g_SOGFilterSec;
 int             g_ChartUpdatePeriod;
 int             g_SkewCompUpdatePeriod;
 
+int             g_lastClientRectx;
+int             g_lastClientRecty;
+int             g_lastClientRectw;
+int             g_lastClientRecth;
+
 #ifdef USE_S57
 s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
@@ -2503,22 +2508,30 @@ bool MyApp::OnInit()
 //  Create the global instance of the CommPortManager
         g_pCommMan = new ComPortManager;
 
-//  For Windows and GTK, provide the expected application Minimize/Close bar
-       long app_style = wxDEFAULT_FRAME_STYLE;
 
-#ifdef __WXX11__
-        app_style = (wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER);
-
-        //      Here is a specific size set for my (dsr) specific imbedded X11 environment
-        new_frame_size.Set(cw, 735);
-#else
         if((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) && (g_nframewin_y <=ch ))
             new_frame_size.Set(g_nframewin_x, g_nframewin_y);
         else
             new_frame_size.Set(cw * 7/10, ch * 7/10);
-#endif
 
-        app_style |= wxWANTS_CHARS;
+        //  Try to detect any change in physical screen configuration
+        //  This can happen when drivers are changed, for instance....
+        //  and can confuse the WUI layout perspective stored in the config file.
+        //  If detected, force a nominal window size and position....
+        if((g_lastClientRectx != cx) ||
+            (g_lastClientRecty != cy) ||
+            (g_lastClientRectw != cw) ||
+            (g_lastClientRecth != ch) )
+        {
+              new_frame_size.Set(cw * 7/10, ch * 7/10);
+              g_bframemax = false;
+        }
+
+        g_lastClientRectx = cx;
+        g_lastClientRecty = cy;
+        g_lastClientRectw = cw;
+        g_lastClientRecth = ch;
+
 
         //  Validate config file position
         wxPoint position(0,0);
@@ -2540,6 +2553,10 @@ bool MyApp::OnInit()
         if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
               position = wxPoint(10, 10);
 #endif
+
+        //  For Windows and GTK, provide the expected application Minimize/Close bar
+        long app_style = wxDEFAULT_FRAME_STYLE;
+        app_style |= wxWANTS_CHARS;
 
 // Create the main frame window
         wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
@@ -4730,7 +4747,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
     case ID_TIDE:
         {
                 if(!ptcmgr)                                                     // First time, init the manager
-                      ptcmgr = new TCMgr(*pTC_Dir, *pHome_Locn);
+                {
+                      wxString cache_locn = *pHome_Locn;
+#ifndef __WXMSW__
+                      if(!g_bportable)
+                            cache_locn.Append(_T(".opencpn/"));
+#endif
+                      ptcmgr = new TCMgr(*pTC_Dir, cache_locn);
+                }
 
                 if(ptcmgr->IsReady())
                 {
@@ -4980,6 +5004,11 @@ void MyFrame::TrackOff(bool do_add_point)
 
       g_bTrackActive = false;
 
+      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+                  pRouteManagerDialog->UpdateTrkListCtrl();
+                  pRouteManagerDialog->UpdateRouteListCtrl();
+      }
+
       if(m_toolBar)
             m_toolBar->ToggleTool(ID_TRACK, g_bTrackActive);
 }
@@ -4993,8 +5022,10 @@ void MyFrame::TrackMidnightRestart(void)
       TrackOn();
       g_pActiveTrack->FixMidnight(pPreviousTrack);
 
-      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      if ( pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
                   pRouteManagerDialog->UpdateTrkListCtrl();
+                  pRouteManagerDialog->UpdateRouteListCtrl();
+      }
 }
 
 void MyFrame::ToggleCourseUp(void)
