@@ -757,7 +757,6 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             if(longline.Len() > target_width)
             {
                   line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), target_width, 15, &ncr);
-//                  line += _T("\r\n");
                   max_width = wxMax(max_width, target_width+4);
                   lc += ncr;
             }
@@ -777,10 +776,16 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             {
                   line = _(" Name:  ");
                   wxString longline = pc->GetName();
+
+                  wxString tkz;
+                  if(longline.Find(' ') != wxNOT_FOUND)     // assume a proper name
+                        tkz = _T(" ");
+                  else
+                        tkz = _T("/,\\");                   // else a file name
+
                   if(longline.Len() > target_width)
                   {
-                        line += SplitPath(pc->GetName(), _T(" "), target_width, 12, &ncr);
-//                        line += _T("\r\n");
+                        line += SplitPath(pc->GetName(), tkz, target_width, 12, &ncr);
                         max_width = wxMax(max_width, target_width+4);
                         lc += ncr;
                   }
@@ -796,7 +801,11 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             r += line;
             lc++;
 
-            line.Printf(_(" Scale:  1:%d"), cte.GetScale() );
+            if(pc)      // chart is loaded and available
+                  line.Printf(_(" Scale:  1:%d"), pc->GetNativeScale() );
+            else
+                  line.Printf(_(" Scale:  1:%d"), cte.GetScale() );
+
             line += _T("\n");
             max_width = wxMax(max_width, line.Len());
             r += line;

@@ -343,6 +343,8 @@ class cm93chart : public s57chart
             bool IsPointInLoadedM_COVR(double xc, double yc);
             covr_set *GetCoverSet(){ return m_pcovr_set; }
 
+            wxString &GetLastFileName(void){ return m_LastFileName; }
+
             ArrayOfInts GetVPCellArray(const ViewPort &vpt);
 
             Array_Of_M_COVR_Desc_Ptr    m_pcovr_array_loaded;
@@ -404,7 +406,7 @@ class cm93chart : public s57chart
             wxPoint     *m_pDrawBuffer;               // shared outline drawing buffer
             int         m_nDrawBufferSize;
 
-
+            wxString          m_LastFileName;
 };
 
 //----------------------------------------------------------------------------

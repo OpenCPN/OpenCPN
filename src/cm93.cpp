@@ -4686,6 +4686,9 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       msg += file;
       wxLogMessage ( msg );
 
+      //    Set the member variable to be the actual file name for use in single chart mode info display
+      m_LastFileName = file;
+
       if ( g_bDebugCM93 )
       {
             char str[256];
@@ -5154,14 +5157,9 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
 
             if ( m_pcm93chart_current )
             {
-
-                  m_Name = m_pcm93chart_current->GetName();
-
                   //    Pass the parameters to the proper scale chart
                   //    Which will also load the needed cell(s)
                   m_pcm93chart_current->SetVPParms ( vpt );
-
-
 
                   //    Check to see if the viewpoint center is actually on the selected chart
                   float yc = vpt.clat;
@@ -5607,9 +5605,15 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   }
                   else
                         render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+
+                  m_Name = m_pcm93chart_current->GetName();
+
             }
             else  // Single chart mode
+            {
                   render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, Region );
+                  m_Name = m_pcm93chart_current->GetLastFileName();
+            }
       }
 
 //      CALLGRIND_STOP_INSTRUMENTATION
@@ -5809,7 +5813,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
 
-
                         //    Prepare a blank quilt bitmap to build up the quilt upon
                         //    We need to do this in order to avoid polluting any of the sub-chart cached bitmaps
                         if ( m_pDummyBM )
@@ -5902,11 +5905,15 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                   }
                   else
                         render_return = m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
+
+                  m_Name = m_pcm93chart_current->GetName();
+
             }
             else  // Single chart mode
+            {
                   render_return = m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
-
-
+                  m_Name = m_pcm93chart_current->GetLastFileName();
+            }
 
       }
       else
