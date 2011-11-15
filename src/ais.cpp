@@ -1620,9 +1620,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
  //   wxDateTime::Month utc_month = now.GetMonth();
  //   int utc_year = now.GetYear();
 
-    //  Not all messages should reset report ticks....Handle case by case
-//    ptd->ReportTicks = now.GetTicks();       // Default is my idea of NOW
-
 
     int message_ID = bstr->GetInt(1, 6);        // Parse on message ID
 
