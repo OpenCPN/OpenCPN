@@ -389,6 +389,8 @@ AIS_Target_Data::AIS_Target_Data()
     COG = 666.;
     HDG = 511.;
     ROTAIS = -128;                     // pjotrc 2010.02.07
+    Lat = 0.;
+    Lon = 0.;
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
@@ -1637,8 +1639,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
         {
             n_msg1++;
 
-            ptd->b_positionValid = true;
-
             ptd->NavStatus = bstr->GetInt(39, 4);
             ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
 
@@ -1652,18 +1652,16 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 lat |= 0xf8000000;
             double lat_tentative = lat / 600000.;
 
-            if((lon_tentative > 180.) || (lat_tentative > 90.))         // Ship reports Lat or Lon "unavailable"
-                  ptd->b_positionValid = false;
-            else
+            if((lon_tentative <= 180.) && (lat_tentative <= 90.))   // Ship does not report Lat or Lon "unavailable"
             {
                   ptd->Lon = lon_tentative;
                   ptd->Lat = lat_tentative;
             }
-
-            if(!ptd->b_positionValid)
+            else
                   break;                              // early break if position is "unavailable"
-                                                      // thus retaining last known target status
+                                                      // thus retaining last known target status/position
                                                       // and allowing timeout death.
+            ptd->b_positionValid = true;
 
             //    Position is known valid, so proceed to decode balance of message....
             ptd->COG = 0.1 * (bstr->GetInt(117, 12));
@@ -1715,12 +1713,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             ptd->blue_paddle = bstr->GetInt(144, 2);
             ptd->b_blue_paddle = (ptd->blue_paddle == 2);             // paddle is set
 
-            parse_result = true;                // so far so good
-
             ptd->Class = AIS_CLASS_A;
 
             if(ptd->b_positionValid)
                   ptd->ReportTicks = now.GetTicks();
+
+            parse_result = true;                // so far so good
             break;
         }
 
@@ -1729,30 +1727,37 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
 
                 int lon = bstr->GetInt(58, 28);
-
                 if(lon & 0x08000000)                    // negative?
                       lon |= 0xf0000000;
-                ptd->Lon = lon / 600000.;
+                double lon_tentative = lon / 600000.;
 
                 int lat = bstr->GetInt(86, 27);
-
                 if(lat & 0x04000000)                    // negative?
                       lat |= 0xf8000000;
-                ptd->Lat = lat / 600000.;
+                double lat_tentative = lat / 600000.;
+
+                if((lon_tentative <= 180.) && (lat_tentative <= 90.))   // Ship does not report Lat or Lon "unavailable"
+                {
+                      ptd->Lon = lon_tentative;
+                      ptd->Lat = lat_tentative;
+                }
+                else
+                      break;                              // early break if position is "unavailable"
+
+                ptd->b_positionValid = true;
 
                 ptd->COG = 0.1 * (bstr->GetInt(113, 12));
                 ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
 
-                ptd->b_positionValid = true;
-
                 ptd->m_utc_sec = bstr->GetInt(134, 6);
-
-                parse_result = true;                // so far so good
 
                 ptd->Class = AIS_CLASS_B;
 
                 if(ptd->b_positionValid)
                       ptd->ReportTicks = now.GetTicks();
+
+                parse_result = true;                // so far so good
+
                 break;
           }
 
