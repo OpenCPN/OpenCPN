@@ -179,7 +179,10 @@ public:
       Route(void);
       ~Route(void);
 
-      void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true);
+      void AddPoint(RoutePoint *pNewPoint,
+                    bool b_rename_in_sequence = true,
+                    bool b_deferBoxCalc = false);
+
       void AddTentativePoint(const wxString& GUID);
       RoutePoint *GetPoint(int nPoint);
       RoutePoint *GetPoint ( const wxString &guid );

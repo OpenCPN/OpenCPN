@@ -278,6 +278,11 @@ extern int              g_iSDMMFormat;
 
 extern int              g_GPU_MemSize;
 
+extern int             g_lastClientRectx;
+extern int             g_lastClientRecty;
+extern int             g_lastClientRectw;
+extern int             g_lastClientRecth;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -1101,6 +1106,7 @@ void RoutePoint::Draw ( ocpnDC& dc, wxPoint *rpn )
 
       cc1->GetCanvasPointPix ( m_lat, m_lon, &r );
 
+
       //  return the home point in this dc to allow "connect the dots"
       if ( NULL != rpn )
             *rpn = r;
@@ -1425,7 +1431,7 @@ void Route::CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepo
             //}
 }
 
-void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
+void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc )
 {
       if(pNewPoint->m_bIsolatedMark)
       {
@@ -1438,7 +1444,8 @@ void Route::AddPoint ( RoutePoint *pNewPoint, bool b_rename_in_sequence )
 
       m_nPoints++;
 
-      CalculateBBox();
+      if(!b_deferBoxCalc)
+            CalculateBBox();
 
       if(m_pLastAddedPoint)
             pNewPoint->m_seg_len = DistGreatCircle(m_pLastAddedPoint->m_lat, m_pLastAddedPoint->m_lon, pNewPoint->m_lat, pNewPoint->m_lon);
@@ -1672,12 +1679,20 @@ void Route::RenderSegment ( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort
       int sx, sy;
       dc.GetSize ( &sx, &sy );
 
+      //    Try to exit early if the segment is nowhere near the screen
+      wxRect r(0,0,sx,sy);
+      wxRect s(xa, ya, 1, 1);
+      wxRect t(xb, yb, 1, 1);
+      s.Union(t);
+      if(!r.Intersects(s))
+            return;
+
+
       //    Clip the line segment to the dc boundary
       int x0 = xa;
       int y0 = ya;
       int x1 = xb;
       int y1 = yb;
-
 
       //    If hilite is desired, use a Native Graphics context to render alpha colours
       //    That is, if wxGraphicsContext is available.....
@@ -2850,6 +2865,10 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "FrameWinPosY" ), &g_nframewin_posy, 0 );
       Read ( _T ( "FrameMax" ),  &g_bframemax );
 
+      Read ( _T ( "ClientPosX" ), &g_lastClientRectx, 0 );
+      Read ( _T ( "ClientPosY" ), &g_lastClientRecty, 0 );
+      Read ( _T ( "ClientSzX" ),  &g_lastClientRectw, 0 );
+      Read ( _T ( "ClientSzY" ),  &g_lastClientRecth, 0 );
 
       //    AIS
       wxString s;
@@ -4101,6 +4120,11 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "FrameWinPosX" ), g_nframewin_posx );
       Write ( _T ( "FrameWinPosY" ), g_nframewin_posy );
       Write ( _T ( "FrameMax" ),  g_bframemax );
+
+      Write ( _T ( "ClientPosX" ), g_lastClientRectx );
+      Write ( _T ( "ClientPosY" ), g_lastClientRecty );
+      Write ( _T ( "ClientSzX" ),  g_lastClientRectw );
+      Write ( _T ( "ClientSzY" ),  g_lastClientRecth );
 
       //    AIS
       SetPath ( _T ( "/Settings/AIS" ) );
@@ -5543,6 +5567,8 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, b
 
 void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
 {
+//    CALLGRIND_START_INSTRUMENTATION
+
       //FIXME: This should be moved to GpxTrkElement
       wxString RouteName;
       unsigned short int GPXSeg;                   // pjotrc 2010.02.27
@@ -5575,7 +5601,7 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                               if(tpChildName == _T("trkpt"))
                               {
                                     pWp = ::LoadGPXWaypoint ( (GpxWptElement *)tpchild, _T("empty"), false/*b_fullviz*/ );
-						pTentTrack->AddPoint ( pWp, false );
+						pTentTrack->AddPoint ( pWp, false, true );            // defer BBox calculation
                                     pWp->m_bIsInRoute = false;                      // Hack
                                     pWp->m_bIsInTrack = true;
                                     pWp->m_GPXTrkSegNo = GPXSeg;
@@ -5693,6 +5719,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                   else if(b_fullviz)
                         pTentTrack->SetVisible();
 
+                  //    Do the (deferred) calculation of Track BBox
+                  pTentTrack->CalculateBBox();
+
                   //    Add the selectable points and segments
 
                   int ip = 0;
@@ -5745,6 +5774,9 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                   delete pTentTrack;
             }
       }
+
+ //   CALLGRIND_STOP_INSTRUMENTATION
+
 }
 
 Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz)
