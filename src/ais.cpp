@@ -2217,6 +2217,9 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       ptarget->Range_NM = dist;
       ptarget->Brg = brg;
 
+      if(dist == 0.0)
+            ptarget->Brg = -1.0;             // Brg is undefined if Range == 0.
+
 
       //    There can be no collision between ownship and itself....
       //    This can happen if AIVDO messages are received, and there is another source of ownship position, like NMEA GLL
