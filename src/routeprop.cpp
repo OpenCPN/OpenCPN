@@ -1063,6 +1063,9 @@ bool RouteProp::UpdateProperties()
 
             wxString nullify = _T("----");
 
+            int i_prev_point = -1;
+            RoutePoint *prev_route_point = NULL;
+
             while(node)
             {
                   RoutePoint *prp = node->GetData();
@@ -1228,11 +1231,28 @@ bool RouteProp::UpdateProperties()
                   {
                         if(i > 0)
                         {
+                              //    Try to use recorded previous point pointer if available
+                              RoutePoint *pprev_rp;
+                              if(i_prev_point == (i-1))
+                                    pprev_rp = prev_route_point;
+                              else
+                                    pprev_rp = m_pRoute->GetPoint(i);   // note GetPoint() is "one-based"
+                                                                        // so GetPoint(i) is actually
+                                                                        // the previous point for this iteration.
+
+
                               double speed;
+/*
                               if(!m_pRoute->GetPoint(i+1)->m_CreateTime.IsEqualTo(m_pRoute->GetPoint(i)->m_CreateTime))
                               {
                                     speed = leg_dist / m_pRoute->GetPoint(i+1)->m_CreateTime.Subtract(m_pRoute->GetPoint(i)->m_CreateTime).GetSeconds().ToDouble() * 3600;
                               }
+*/
+                              if(!prp->m_CreateTime.IsEqualTo(pprev_rp->m_CreateTime))
+                              {
+                                    speed = leg_dist / prp->m_CreateTime.Subtract(pprev_rp->m_CreateTime).GetSeconds().ToDouble() * 3600;
+                              }
+
                               else
                               {
                                     speed = 0;
@@ -1273,6 +1293,11 @@ bool RouteProp::UpdateProperties()
                         arrival = true;
                         i++;
                         node = node->GetNext();
+
+                        //    Record this point info for use as previous point in next iteration.
+                        i_prev_point = i-1;
+                        prev_route_point = prp;
+
                         }
 
             }
@@ -1841,11 +1866,26 @@ bool MarkProp::SaveChanges(void)
 
             if(m_pRoutePoint->m_bIsInRoute)
             {
-                  Route *pRoute = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePoint);
-                  pConfig->UpdateRoute(pRoute);
+                  //    Update the route segment selectables
+                  pSelect->UpdateSelectableRouteSegments ( m_pRoutePoint );
+
+                  //    Get an array of all routes using this point
+                  wxArrayPtrVoid *pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+
+                  if ( pEditRouteArray )
+                  {
+                        for(unsigned int ir=0 ; ir < pEditRouteArray->GetCount() ; ir++)
+                        {
+                              Route *pr = (Route *)pEditRouteArray->Item(ir);
+                              pr->CalculateBBox();
+                              pr->UpdateSegmentDistances();
+
+                              pConfig->UpdateRoute ( pr );
+                        }
+                        delete pEditRouteArray;
+                  }
             }
             else
-
                   pConfig->UpdateWayPoint(m_pRoutePoint);
 
 //  No general settings need be saved            pConfig->UpdateSettings();
