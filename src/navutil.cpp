@@ -1115,7 +1115,7 @@ void RoutePoint::Draw ( ocpnDC& dc, wxPoint *rpn )
             return;
 
       //    Optimization, especially apparent on tracks in normal cases
-      if (m_IconName == _T("empty"))
+      if (m_IconName == _T("empty") && !m_bShowName)
             return;
 
       wxPen *pen;
