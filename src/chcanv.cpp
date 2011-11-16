@@ -5942,7 +5942,10 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 
                         //    Of course, if the target reported a valid HDG, then use it for icon
                   if((int)(td->HDG) != 511)
-                        theta = ((td->HDG - 90 ) * PI / 180.) + GetVP().skew + GetVP().rotation;
+                        theta = ((td->HDG - 90 ) * PI / 180.) + GetVP().rotation;
+
+                  if(!g_bskew_comp && !g_bCourseUp)
+                        theta += GetVP().skew;
 
                                 //  Draw the icon rotated to the COG
                   wxPoint ais_quad_icon[4];   // pjotrc 2010.01.31
