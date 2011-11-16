@@ -223,9 +223,9 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
 //    VMG
                   // VMG is always to next waypoint, not to end of route
                   // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
+                  double VMG;
                   if(!wxIsNaN(gCog) && !wxIsNaN(gSog))
                   {
-                        double VMG;
                         double BRG;
                         BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
                         VMG = gSog * cos((BRG-gCog) *PI/180.);
@@ -237,10 +237,13 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                   pVMG->SetAValue(str_buf);
 
 //    TTG
+                  // In all cases, ttg/eta are declared invalid if VMG <= 0.
+
+                  // If showing only "this leg", use VMG for calculation of ttg
                   wxString ttg_s;
-                  if(gSog > 0.)
+                  if(VMG > 0.)
                   {
-                        float ttg_sec = (rng / gSog) * 3600.;
+                        float ttg_sec = (rng / VMG) * 3600.;
                         wxTimeSpan ttg_span(0, 0, long(ttg_sec), 0);
                         ttg_s = ttg_span.Format();
                   }
@@ -281,9 +284,11 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                         pRNG->SetAValue(strng);
 
 //                total ttg
+                  // If showing total route ttg/ETA, use gSog for calculation
+
                   wxString tttg_s;
                   wxTimeSpan tttg_span;
-                  if(gSog > 0.)
+                  if(VMG > 0.)
                   {
                         float tttg_sec = (trng / gSog) * 3600.;
                         tttg_span = wxTimeSpan::Seconds((long)tttg_sec);
@@ -306,7 +311,7 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                         eta = dtnow.Add(tttg_span);
                         wxString seta;
 
-                        if(gSog > 0.)
+                        if(VMG > 0.)
                               seta = eta.Format(_T("%H:%M"));
                         else
                               seta = _T("---");
