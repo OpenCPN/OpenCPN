@@ -41,7 +41,7 @@
 #include <wx/glcanvas.h>
 
 #include "chart1.h"                 // for enum types
-
+#include "ocpndc.h"
 
 //--------------------------------------------------------
 //    Screen Brightness Control Support Routines
@@ -78,7 +78,6 @@ int SetScreenBrightness(int brightness);
       class PixelCache;
       class ChInfoWin;
       class glChartCanvas;
-      class ocpnDC;
 
 //----------------------------------------------------------------------------
 //   constants

@@ -31,12 +31,28 @@
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
+
+#ifndef DECL_EXP
+#ifdef __WXMSW__
+#  define DECL_EXP     __declspec(dllexport)
+#else
+#  define DECL_EXP
+#endif
+#endif
+
+
+#ifdef __GNUC__
+#undef  DECL_EXP
+#define DECL_EXP       __attribute__((visibility("default")))
+#endif
+
+
 class wxGLCanvas;
 
 //----------------------------------------------------------------------------
 // ocpnDC
 //----------------------------------------------------------------------------
-class ocpnDC
+class DECL_EXP ocpnDC
 {
 public:
      ocpnDC(wxGLCanvas &canvas);
