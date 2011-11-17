@@ -8188,7 +8188,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
             pdef_menu->Append(ID_DEF_MENU_COGUP, _("Set Course Up Mode"));
         else
         {
-              if(!VPoint.b_quilt && Current_Ch && (fabs(Current_Ch->GetChartSkew()) > .01))
+              if(!VPoint.b_quilt && Current_Ch && (fabs(Current_Ch->GetChartSkew()) > .01) && !g_bskew_comp)
                     pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set Chart Up Mode"));
               else
                     pdef_menu->Append(ID_DEF_MENU_NORTHUP, _("Set North Up Mode"));
@@ -11982,6 +11982,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             //    Create a stencil buffer for clipping to the region
             glEnable (GL_STENCIL_TEST);
             glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
             glClear(GL_STENCIL_BUFFER_BIT);
 
             //    We are going to write "1" into the stencil buffer wherever the region is valid
@@ -12010,6 +12011,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
             glStencilFunc (GL_EQUAL, 1, 1);
             glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
 
             glPopMatrix();
 
