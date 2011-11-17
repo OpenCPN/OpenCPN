@@ -4265,24 +4265,37 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             wxAuiPaneInfo pane = wxAuiPaneInfo().Name(_T("AISTargetList")).Caption(_("AIS target list")).CaptionVisible(true).DestroyOnClose(true).Float().FloatingPosition( 50, 200 ).TopDockable(false).BottomDockable(true).LeftDockable(false).RightDockable(false).Show(true);
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
-            //    Make sure it is on screen...
-            if((pane.floating_pos.x > wxGetDisplaySize().x) ||
-                (pane.floating_pos.y > wxGetDisplaySize().y) )
-                  pane.FloatingPosition(50,200);
+            bool b_reset_pos = false;
+            //    Make sure drag bar (title bar) of window on Client Area of screen, with a little slop...
+            wxRect window_title_rect;                    // conservative estimate
+            window_title_rect.x = pane.floating_pos.x;
+            window_title_rect.y = pane.floating_pos.y;
+            window_title_rect.width = pane.floating_size.x;
+            window_title_rect.height = 30;
+
+            wxRect ClientRect = wxGetClientDisplayRect();
+            ClientRect.Deflate(60, 60);                     // Prevent the new window from being too close to the edge
+            if(!ClientRect.Intersects(window_title_rect))
+                  b_reset_pos = true;
+
 
 #ifdef __WXMSW__
         //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
             RECT frame_rect;
             frame_rect.left = pane.floating_pos.x;
             frame_rect.top = pane.floating_pos.y;
             frame_rect.right = pane.floating_pos.x + pane.floating_size.x;
-            frame_rect.bottom = pane.floating_pos.y + pane.floating_size.y;
+            frame_rect.bottom = pane.floating_pos.y + 30;
 
-        //  If the requested window does not intersect any installed monitor,
-        //  then default to simple primary monitor positioning.
+
             if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
-                  pane.FloatingPosition(50,200);
+                  b_reset_pos = true;
 #endif
+
+            if(b_reset_pos)
+                  pane.FloatingPosition(50,200);
 
             //    If the list got accidentally dropped on top of the chart bar, move it away....
             if(pane.IsDocked() && (pane.dock_row == 0))
