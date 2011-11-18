@@ -243,6 +243,8 @@ public:
       int   S52_load_Plib(const wxString& PLib);
       bool  S52_flush_Plib();
 
+      bool PreloadOBJLFromCSV(wxString &csv_file);
+
       int DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
 
       //    Area Renderers

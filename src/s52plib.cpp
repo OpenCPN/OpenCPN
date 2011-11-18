@@ -55,7 +55,8 @@
 
 extern s52plib          *ps52plib;
 
-extern bool         g_b_useStencil;
+extern bool             g_b_useStencil;
+extern wxString        *g_pcsv_locn;
 
 void DrawWuLine ( wxDC *pDC, int X0, int Y0, int X1, int Y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr ( S57Obj *obj, const char *AttrName, double &val );
@@ -1643,6 +1644,12 @@ int s52plib::S52_load_Plib ( const wxString& PLib )
             msg.Append(wxString(txfErrorString(), wxConvUTF8));
             wxLogMessage(msg);
      }
+
+     wxString oc_file(*g_pcsv_locn);
+     oc_file.Append(_T("/s57objectclasses.csv"));
+
+     PreloadOBJLFromCSV(oc_file);
+
       return 1;
 }
 
@@ -5139,6 +5146,44 @@ int s52plib::DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
       return 1;
 }
 
+bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
+{
+      wxTextFile file(csv_file);
+      if(!file.Exists())
+            return false;
+
+      file.Open();
+
+      wxString str;
+      str = file.GetFirstLine();
+
+      while(!file.Eof())
+      {
+            str = file.GetNextLine();
+
+            wxStringTokenizer tkz(str, _T(","));
+            wxString token = tkz.GetNextToken();    // code
+            token = tkz.GetNextToken();             // object class
+            if(!token.EndsWith("\""))
+                  token = tkz.GetNextToken();       // object class, post comma
+
+            token = tkz.GetNextToken();             // Acronym
+
+            if(token.Len())
+            {
+                  OBJLElement *pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
+                  strncpy(pOLE->OBJLName, token.c_str(), 6);
+                  pOLE->nViz = 1;
+
+                  pOBJLArray->Add((void *)pOLE);
+            }
+
+      }
+
+      return true;
+}
+
+
 void s52plib::UpdateOBJLArray(S57Obj *obj)
 {
       //    Search the array for this object class
@@ -5164,7 +5209,7 @@ void s52plib::UpdateOBJLArray(S57Obj *obj)
             strncpy(pOLE->OBJLName, obj->FeatureName, 6);
             pOLE->nViz = 1;
 
-            ps52plib->pOBJLArray->Add((void *)pOLE);
+            pOBJLArray->Add((void *)pOLE);
             obj->iOBJL  = pOBJLArray->GetCount() - 1;
       }
 
