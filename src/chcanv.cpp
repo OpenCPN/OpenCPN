@@ -7223,7 +7223,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         Refresh ( false );
                 }
 
-                if ( m_bMeasure_Active && m_nMeasureState )    // measure tool?
+                else if ( m_bMeasure_Active && m_nMeasureState )    // measure tool?
                 {
                       double rlat, rlon;
 
