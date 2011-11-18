@@ -5156,6 +5156,7 @@ bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
 
       wxString str;
       str = file.GetFirstLine();
+      wxChar quote[] = {'\"', 0};
 
       while(!file.Eof())
       {
@@ -5164,7 +5165,7 @@ bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
             wxStringTokenizer tkz(str, _T(","));
             wxString token = tkz.GetNextToken();    // code
             token = tkz.GetNextToken();             // object class
-            if(!token.EndsWith("\""))
+            if(!token.EndsWith(quote))
                   token = tkz.GetNextToken();       // object class, post comma
 
             token = tkz.GetNextToken();             // Acronym
@@ -5172,7 +5173,7 @@ bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
             if(token.Len())
             {
                   OBJLElement *pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
-                  strncpy(pOLE->OBJLName, token.c_str(), 6);
+                  strncpy(pOLE->OBJLName, token.mb_str(), 6);
                   pOLE->nViz = 1;
 
                   pOBJLArray->Add((void *)pOLE);
