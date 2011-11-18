@@ -37,6 +37,7 @@
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
+#include <wx/sound.h>
 
 #include <wx/glcanvas.h>
 
@@ -517,6 +518,7 @@ private:
       double      m_zoom_target_factor;
       double      m_zoom_current_factor;
 
+      wxSound     m_anchorwatch_sound;
 
 DECLARE_EVENT_TABLE()
 };

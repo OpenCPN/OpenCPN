@@ -35,7 +35,6 @@
 #endif //precompiled headers
 #include "wx/image.h"
 #include <wx/graphics.h>
-#include <wx/sound.h>
 #include <wx/aui/aui.h>
 
 #include "dychart.h"
@@ -6391,16 +6390,14 @@ void ChartCanvas::Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius)
 void ChartCanvas::AlertDraw ( ocpnDC& dc )                     // pjotrc  2010.02.22
 {
 // Just for prototyping, visual alert for anchorwatch goes here          2010.02.17 pjotrc
+      bool play_sound = false;
       if (pAnchorWatchPoint1 && AnchorAlertOn1) {
             if (AnchorAlertOn1) {
                   wxPoint TargetPoint;
                   GetCanvasPointPix ( pAnchorWatchPoint1->m_lat, pAnchorWatchPoint1->m_lon, &TargetPoint );
                   JaggyCircle(dc, wxPen(GetGlobalColor(_T("URED")),2), TargetPoint.x, TargetPoint.y, 100);
-                  wxSound AIS_Sound(g_sAIS_Alert_Sound_File);
-                  if(AIS_Sound.IsOk())
-                        AIS_Sound.Play();
-
-            }
+                  play_sound = true;
+             }
       } else AnchorAlertOn1 = false;
 
       if (pAnchorWatchPoint2 && AnchorAlertOn2) {
@@ -6408,11 +6405,23 @@ void ChartCanvas::AlertDraw ( ocpnDC& dc )                     // pjotrc  2010.0
                   wxPoint TargetPoint;
                   GetCanvasPointPix ( pAnchorWatchPoint2->m_lat, pAnchorWatchPoint2->m_lon, &TargetPoint );
                   JaggyCircle(dc, wxPen(GetGlobalColor(_T("URED")),2), TargetPoint.x, TargetPoint.y, 100);
-                  wxSound AIS_Sound(g_sAIS_Alert_Sound_File);
-                  if(AIS_Sound.IsOk())
-                        AIS_Sound.Play();
+                  play_sound = true;
             }
       } else AnchorAlertOn2 = false;
+
+      if(play_sound)
+      {
+            if(!m_anchorwatch_sound.IsOk())
+                  m_anchorwatch_sound.Create(g_sAIS_Alert_Sound_File);
+
+            if(m_anchorwatch_sound.IsOk() && !m_anchorwatch_sound.IsPlaying())
+                  m_anchorwatch_sound.Play();
+      }
+      else
+      {
+            if(m_anchorwatch_sound.IsOk())
+                  m_anchorwatch_sound.Stop();
+      }
 
 }
 // End of prototype anchor watch alerting-----------------------
