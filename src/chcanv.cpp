@@ -4320,12 +4320,17 @@ void ChartCanvas::GetCanvasPointPix ( double rlat, double rlon, wxPoint *r )
                 // and the VP is not rotated,
                 // then use the embedded BSB chart georeferencing algorithm
                 // for greater accuracy
+                // Additionally, use chart embedded georef if the projection is TMERC
+                //  i.e. NOT MERCATOR and NOT POLYCONIC
+
                 // If for some reason the chart rejects the request by returning an error,
                 // then fall back to Viewport Projection estimate from canvas parameters
                 bool bUseVP = true;
 
                 if ( Current_Ch && (Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER) &&
-                     ((( fabs(GetVP().rotation) < .01) && !g_bskew_comp) || (Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR)) )
+                     ((( fabs(GetVP().rotation) < .01) && !g_bskew_comp) ||
+                     ((Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR) &&
+                     (Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC) )) )
 
                 {
                         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *> ( Current_Ch );
@@ -4361,12 +4366,17 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
                 // and the VP is not rotated,
                 // then use the embedded BSB chart georeferencing algorithm
                 // for greater accuracy
-                // If for some reason the chart rejects the request by returning an error,
+                // Additionally, use chart embedded georef if the projection is TMERC
+                //  i.e. NOT MERCATOR and NOT POLYCONIC
+
+      // If for some reason the chart rejects the request by returning an error,
                 // then fall back to Viewport Projection  estimate from canvas parameters
-      bool bUseVP = true;
+                bool bUseVP = true;
 
                 if ( Current_Ch && (Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER) &&
-                     ((( fabs(GetVP().rotation) < .01) && !g_bskew_comp) || (Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR)) )
+                     ((( fabs(GetVP().rotation) < .01) && !g_bskew_comp) ||
+                      ((Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR) &&
+                       (Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC) )) )
 
                 {
                         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *> ( Current_Ch );
@@ -11514,7 +11524,11 @@ void glChartCanvas::OnSize ( wxSizeEvent& event )
      {
           SetSize(VP.pix_width, VP.pix_height);
           if(m_bsetup && m_b_useFBO)
+          {
                 BuildFBO();
+                (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
+          }
+
      }
 
 
@@ -11578,6 +11592,8 @@ void glChartCanvas::BuildFBO(void)
                     GL_DEPTH_ATTACHMENT_EXT,
                     GL_RENDERBUFFER_EXT, m_depth_rb);
             }
+
+            (*s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
       }
 
 }
@@ -11678,17 +11694,17 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           {
                 BuildFBO();
 // Check framebuffer completeness at the end of initialization.
-                GLenum a = (*s_glCheckFramebufferStatusEXT)(GL_FRAMEBUFFER_EXT);
-                if(a != GL_FRAMEBUFFER_COMPLETE_EXT)
+                (s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, m_fb0);
+                GLenum fb_status = (*s_glCheckFramebufferStatusEXT)(GL_FRAMEBUFFER_EXT);
+                (s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
+
+                if(fb_status != GL_FRAMEBUFFER_COMPLETE_EXT)
                 {
                       wxString msg;
-                      msg.Printf(_T("    OpenGL-> Framebuffer Incomplete:  %08X"), a);
+                      msg.Printf(_T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status);
                       wxLogMessage(msg);
                       m_b_useFBO = false;
                 }
-
-                (s_glBindFramebufferEXT)(GL_FRAMEBUFFER_EXT, 0);
-
           }
 
           if(m_b_useFBO && !m_b_useFBOStencil)
@@ -11696,14 +11712,16 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
 
 
           if(m_b_useFBO)
+          {
                 wxLogMessage(_T("OpenGL-> Using Framebuffer Objects"));
-          else
-                wxLogMessage(_T("OpenGL-> Framebuffer Objects disabled"));
 
-          if(m_b_useFBOStencil)
-                wxLogMessage(_T("OpenGL-> Using FBO Stencil buffer"));
+                if(m_b_useFBOStencil)
+                      wxLogMessage(_T("OpenGL-> Using FBO Stencil buffer"));
+                else
+                      wxLogMessage(_T("OpenGL-> FBO Stencil buffer unavailable"));
+          }
           else
-                wxLogMessage(_T("OpenGL-> FBO Stencil buffer unavailable"));
+                wxLogMessage(_T("OpenGL-> Framebuffer Objects unavailable"));
 
           if(g_b_useStencil)
                 wxLogMessage(_T("OpenGL-> Using Stencil buffer clipping"));
