@@ -3709,6 +3709,7 @@ void MyFrame::RequestNewToolbar()
                   DestroyMyToolbar();
 
             m_toolBar = CreateAToolbar();
+            g_FloatingToolbarDialog->RePosition();
             g_FloatingToolbarDialog->Show(b_reshow);
       }
 }
