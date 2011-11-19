@@ -2397,13 +2397,14 @@ bool Track::DoExtendDaily()
             wxRouteListNode *route_node = pRouteList->GetFirst();
             while(route_node) {
                   Route *proute = route_node->GetData();
-                  if (proute->m_bIsTrack) {
+
+                  if (!proute->m_bIsInLayer && proute->m_bIsTrack && proute->m_GUID!=this->m_GUID) {
                         RoutePoint *track_node = proute->GetLastPoint();
-                              if(track_node->m_CreateTime <= pLastPoint->m_CreateTime)
-                                    if (!pExtendPoint || track_node->m_CreateTime > pExtendPoint->m_CreateTime) {
-                                          pExtendPoint = track_node;
-                                          pExtendRoute = proute;
-                                    }
+                        if(track_node->m_CreateTime <= pLastPoint->m_CreateTime)
+                              if (!pExtendPoint || track_node->m_CreateTime > pExtendPoint->m_CreateTime) {
+                                    pExtendPoint = track_node;
+                                    pExtendRoute = proute;
+                              }
                   }
                   route_node = route_node->GetNext();                         // next route
             }
@@ -2412,14 +2413,22 @@ bool Track::DoExtendDaily()
                         int begin = 1;
                         if (pLastPoint->m_CreateTime == pExtendPoint->m_CreateTime) begin = 2;
                         pSelect->DeleteAllSelectableTrackSegments(pExtendRoute);
-                        pExtendRoute->CloneTrack(this, begin, this->GetnPoints(), _T(""));
+                        wxString suffix = _T("");
+                        if (this->m_RouteNameString.IsNull()) {
+                              suffix = pExtendRoute->m_RouteNameString;
+                              if (suffix.IsNull()) suffix = wxDateTime::Today().FormatISODate();
+                              }
+                        pExtendRoute->CloneTrack(this, begin, this->GetnPoints(), suffix);
                         pSelect->AddAllSelectableTrackSegments ( pExtendRoute );
                         pSelect->DeleteAllSelectableTrackSegments(this);
                         this->ClearHighlights();
                         return true;
             }
-            else
+            else {
+                  if (this->m_RouteNameString.IsNull())
+                        this->m_RouteNameString = wxDateTime::Today().FormatISODate();
                   return false;
+                  }
 }
 
 void Track::FixMidnight(Track *pPreviousTrack)
