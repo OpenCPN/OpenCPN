@@ -6418,8 +6418,13 @@ void ChartCanvas::AlertDraw ( ocpnDC& dc )                     // pjotrc  2010.0
             if(!m_anchorwatch_sound.IsOk())
                   m_anchorwatch_sound.Create(g_sAIS_Alert_Sound_File);
 
+#ifndef __WXMSW__
             if(m_anchorwatch_sound.IsOk() && !m_anchorwatch_sound.IsPlaying())
                   m_anchorwatch_sound.Play();
+#else
+            if(m_anchorwatch_sound.IsOk())
+                  m_anchorwatch_sound.Play();
+#endif
       }
       else
       {
