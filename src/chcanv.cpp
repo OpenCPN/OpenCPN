@@ -3971,6 +3971,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
                     pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
                     pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
+
+                    if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                        pRouteManagerDialog->UpdateWptListCtrl();
+
                     Refresh ( false );
                     break;
                }

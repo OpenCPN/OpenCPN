@@ -1788,6 +1788,7 @@ RoutePoint *Route::InsertPointBefore ( RoutePoint *pRP, double rlat, double rlon
       RoutePoint *newpoint = new RoutePoint ( rlat, rlon, wxString ( _T ( "diamond" ) ), GetNewMarkSequenced(), GPX_EMPTY_STRING );
       newpoint->m_bIsInRoute = true;
       newpoint->m_bDynamicName = true;
+      newpoint->SetNameShown(false);
 
       int nRP = pRoutePointList->IndexOf ( pRP );
       pRoutePointList->Insert ( nRP, newpoint );
@@ -4496,7 +4497,7 @@ GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props
       {
       //      if(!pr->m_bIsVisible)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
-            if(pr->m_bShowName)
+ //           if(pr->m_bShowName)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
             if(pr->m_bDynamicName)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
