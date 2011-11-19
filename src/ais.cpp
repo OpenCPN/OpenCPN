@@ -4013,8 +4013,18 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
 
             case tlBRG:
             {
-                  n1 = t1->Brg;
-                  n2 = t2->Brg;
+                  int brg1 = wxRound( t1->Brg);
+                  if(brg1 == 360)
+                        n1=0.;
+                  else
+                        n1=brg1;
+
+                  int brg2 = wxRound( t2->Brg);
+                  if(brg2 == 360)
+                        n2=0.;
+                  else
+                        n2=brg2;
+
                   b_cmptype_num = true;
                   break;
             }
@@ -4084,13 +4094,14 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
       }
       else
       {
+            //    If numeric sort values are equal, secondary sort is on Range_NM
             if (g_bAisTargetList_sortReverse)
             {
                   if(n2 > n1)
                         return 1;
                   else if(n2 < n1)
                         return -1;
-                  else return 0;
+                  else return (t1->Range_NM > t2->Range_NM); //0;
             }
             else
             {
@@ -4098,7 +4109,7 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
                         return -1;
                   else if(n2 < n1)
                         return 1;
-                  else return 0;
+                  else return (t1->Range_NM > t2->Range_NM); //0;
             }
       }
 }
