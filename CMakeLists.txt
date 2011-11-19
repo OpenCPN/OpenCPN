@@ -846,7 +846,7 @@ ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 # On Windows builds, copy the wxWidgets dlls and  to the executable directory
 IF(WIN32 AND NOT UNIX)
 INSTALL(DIRECTORY wxWidgets/ DESTINATION "." )
-INSTALL(DIRECTORY buildwin/vc9/ DESTINATION ".\\\\vc9" )
+INSTALL(DIRECTORY buildwin/vc10/ DESTINATION ".\\\\vc10" )
 #INSTALL(DIRECTORY buildwin/NSIS_Unicode/Bitmaps/ DESTINATION ".\\\\NSISBmps" ) #Gunther
 ENDIF(WIN32 AND NOT UNIX)
 
@@ -887,16 +887,16 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
   
-# Install the VC90 Redistributable
-  SET(vc9_redist "vcredist_x86.exe")
+# Install the VC100 Redistributable
+  SET(vc10_redist "vcredist_x86.exe")
 
-    STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
-    GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
+    STRING( REPLACE "/" "\\\\" Temp_vc10_redist ${vc10_redist} )
+    GET_FILENAME_COMPONENT( VC10_FILE_NAME ${vc10_redist} NAME )
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
 #      " ;Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME} /q:a /c:msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
 #      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q:a /c:\\\"VCREDI~1.EXE /q:a /c:\\\"\\\"msiexec /i vcredist.msi /qn\\\"\\\" \\\"' $0\\n"
-      "ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\" /q' $0\\n"
-      " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+      "ExecWait '\\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\" /passive /norestart' $0\\n"
+      " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc10\\\"\\n\\n" )
 
 
 ELSE(WIN32 AND NOT UNIX)
