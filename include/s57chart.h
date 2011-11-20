@@ -277,6 +277,7 @@ private:
       wxBitmap    *m_pDIBThumbOrphan;
       bool        m_bneed_new_thumbnail;
 
+      bool        m_bbase_file_attr_known;
       wxDateTime  m_date000;                    // extracted from DSID:ISDT
       wxString    m_edtn000;                    // extracted from DSID:EDTN
       int         m_nGeoRecords;                // extracted from DSSI:NOGR

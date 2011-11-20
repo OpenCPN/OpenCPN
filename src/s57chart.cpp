@@ -1097,7 +1097,7 @@ s57chart::s57chart()
     m_pDIBThumbDay = NULL;
     m_pDIBThumbDim = NULL;
     m_pDIBThumbOrphan = NULL;
-
+    m_bbase_file_attr_known = false;
 
     m_bLinePrioritySet = false;
     if(ps52plib)
@@ -2560,12 +2560,21 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     //      Full initialization from here
 
+    if(!m_bbase_file_attr_known)
+    {
+          if(!GetBaseFileAttr(fn))
+                ret_value = INIT_FAIL_REMOVE;
+          else
+                m_bbase_file_attr_known = true;
+    }
+
+
     if(fn.GetExt() == _T("000"))
     {
-         ::wxBeginBusyCursor();
+         if(m_bbase_file_attr_known)
+         {
+                ::wxBeginBusyCursor();
 
-          if(GetBaseFileAttr(fn))
-          {
                 int sret = FindOrCreateSenc(name);
                 if(sret != BUILD_SENC_OK)
                 {
@@ -2576,13 +2585,11 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
                 }
                 else
                       ret_value = PostInit(flags, m_global_color_scheme);
-          }
-          else
-                ret_value = INIT_FAIL_REMOVE;
 
-          ::wxEndBusyCursor();
+                ::wxEndBusyCursor();
+         }
 
-    }
+   }
 
     else if(fn.GetExt() == _T("S57"))
     {
