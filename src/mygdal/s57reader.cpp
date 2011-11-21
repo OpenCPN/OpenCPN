@@ -498,6 +498,7 @@ int S57Reader::Ingest(CallBackFunction pcallback)
             int         nRCNM = poRecord->GetIntSubfield( "VRID",0, "RCNM",0);
             int         nRCID = poRecord->GetIntSubfield( "VRID",0, "RCID",0);
 
+
             switch( nRCNM )
             {
               case RCNM_VI:
@@ -1290,19 +1291,50 @@ OGRFeature *S57Reader::ReadVector( int nFeatureId, int nRCNM )
 /* -------------------------------------------------------------------- */
     else if( nRCNM == RCNM_VE && poRecord->FindField( "SG2D" ) != NULL )
     {
-        int i, nVCount = poRecord->FindField("SG2D")->GetRepeatCount();
-        OGRLineString *poLine = new OGRLineString();
+          int i, nVCount = poRecord->FindField("SG2D")->GetRepeatCount();
 
-        poLine->setNumPoints( nVCount );
+          if(nVCount == 1)
+          {
+//              poRecord->Dump(stdout);
+                OGRLineString *poLine = new OGRLineString();
 
-        for( i = 0; i < nVCount; i++ )
-        {
-            poLine->setPoint(
-                i,
-                poRecord->GetIntSubfield("SG2D",0,"XCOO",i) / (double)nCOMF,
-                poRecord->GetIntSubfield("SG2D",0,"YCOO",i) / (double)nCOMF );
-        }
-        poFeature->SetGeometryDirectly( poLine );
+                int jpt = 0;
+                while(poRecord->FindField( "SG2D", jpt ) != NULL)
+                {
+                      poLine->setPoint(
+                                       jpt,
+                                       poRecord->GetIntSubfield("SG2D",jpt,"XCOO",0) / (double)nCOMF,
+                                       poRecord->GetIntSubfield("SG2D",jpt,"YCOO",0) / (double)nCOMF );
+                      jpt++;
+                }
+
+                poLine->setNumPoints( jpt );
+
+                poFeature->SetGeometryDirectly( poLine );
+
+          }
+          else
+          {
+
+                  OGRLineString *poLine = new OGRLineString();
+
+//        if(nVCount != 1)
+//        {
+//              poRecord->Dump(stdout);
+//              nVCount = poRecord->FindField("SG2D")->GetRepeatCount();
+//        }
+
+                  poLine->setNumPoints( nVCount );
+
+                  for( i = 0; i < nVCount; i++ )
+                  {
+                        poLine->setPoint(
+                        i,
+                        poRecord->GetIntSubfield("SG2D",0,"XCOO",i) / (double)nCOMF,
+                        poRecord->GetIntSubfield("SG2D",0,"YCOO",i) / (double)nCOMF );
+                  }
+                  poFeature->SetGeometryDirectly( poLine );
+          }
     }
 
 /* -------------------------------------------------------------------- */
@@ -1325,16 +1357,34 @@ OGRFeature *S57Reader::ReadVector( int nFeatureId, int nRCNM )
                              poRecord->GetIntSubfield("VRPT",0,"MASK",0) );
 
 
-        poFeature->SetField( "NAME_RCNM_1", RCNM_VC );
-        poFeature->SetField( "NAME_RCID_1", ParseName( poVRPT, 1 ) );
-        poFeature->SetField( "ORNT_1",
-                             poRecord->GetIntSubfield("VRPT",0,"ORNT",1) );
-        poFeature->SetField( "USAG_1",
-                             poRecord->GetIntSubfield("VRPT",0,"USAG",1) );
-        poFeature->SetField( "TOPI_1",
-                             poRecord->GetIntSubfield("VRPT",0,"TOPI",1) );
-        poFeature->SetField( "MASK_1",
-                             poRecord->GetIntSubfield("VRPT",0,"MASK",1) );
+        if(poVRPT->GetRepeatCount() > 1)
+        {
+            poFeature->SetField( "NAME_RCNM_1", RCNM_VC );
+            poFeature->SetField( "NAME_RCID_1", ParseName( poVRPT, 1 ) );
+            poFeature->SetField( "ORNT_1",
+                              poRecord->GetIntSubfield("VRPT",0,"ORNT",1) );
+            poFeature->SetField( "USAG_1",
+                              poRecord->GetIntSubfield("VRPT",0,"USAG",1) );
+            poFeature->SetField( "TOPI_1",
+                              poRecord->GetIntSubfield("VRPT",0,"TOPI",1) );
+            poFeature->SetField( "MASK_1",
+                              poRecord->GetIntSubfield("VRPT",0,"MASK",1) );
+        }
+        else
+        {
+              DDFField *poVRPTEnd = poRecord->FindField( "VRPT", 1 );
+
+              poFeature->SetField( "NAME_RCNM_1", RCNM_VC );
+              poFeature->SetField( "NAME_RCID_1", ParseName( poVRPTEnd, 0 ) );
+              poFeature->SetField( "ORNT_1",
+                                   poRecord->GetIntSubfield("VRPT",1,"ORNT",0) );
+              poFeature->SetField( "USAG_1",
+                                   poRecord->GetIntSubfield("VRPT",1,"USAG",0) );
+              poFeature->SetField( "TOPI_1",
+                                   poRecord->GetIntSubfield("VRPT",1,"TOPI",0) );
+              poFeature->SetField( "MASK_1",
+                                   poRecord->GetIntSubfield("VRPT",1,"MASK",0) );
+        }
     }
 
     return poFeature;
@@ -1601,20 +1651,42 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
         else
             nVCount = 0;
 
+        DDFField * poField = poSRecord->FindField( "VRPT" );
+        int nVC_RCID0 = 0;
+        int nVC_RCID1 = 0;
+        int nVC_RCIDStart, nVC_RCIDEnd;
+
+        if(poField->GetRepeatCount() > 1)
+        {
+              nVC_RCID0 = ParseName( poField, 0 );
+              nVC_RCID1 = ParseName( poField, 1 );
+        }
+        else
+        {
+              nVC_RCID0 = ParseName( poField, 0 );
+              DDFField * poFieldEnd = poSRecord->FindField( "VRPT", 1 );
+              if(poFieldEnd)
+                    nVC_RCID1 = ParseName( poFieldEnd, 0 );
+        }
+
+
         if( poFRecord->GetIntSubfield( "FSPT", 0, "ORNT", iEdge ) == 2 )
         {
             nStart = nVCount-1;
             nEnd = 0;
             nInc = -1;
+            nVC_RCIDStart = nVC_RCID1;          // reversed
+            nVC_RCIDEnd =   nVC_RCID0;
         }
         else
         {
             nStart = 0;
             nEnd = nVCount-1;
             nInc = 1;
+            nVC_RCIDStart = nVC_RCID0;
+            nVC_RCIDEnd =   nVC_RCID1;
         }
 
-        DDFField * poField = poSRecord->FindField( "VRPT" );
 /* -------------------------------------------------------------------- */
 /*      Add the start node, if this is the first edge.                  */
 /* -------------------------------------------------------------------- */
@@ -1622,7 +1694,7 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
         {
             int         nVC_RCID = 0;
             double      dfX, dfY;
-
+/*
             if(poField)
             {
                   if( nInc == 1 )
@@ -1630,8 +1702,9 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
                   else
                         nVC_RCID = ParseName( poField, 1 );
             }
+*/
 
-            if( FetchPoint( RCNM_VC, nVC_RCID, &dfX, &dfY ) )
+            if( FetchPoint( RCNM_VC, nVC_RCIDStart, &dfX, &dfY ) )
                 poLine->addPoint( dfX, dfY );
             else
                 CPLError( CE_Warning, CPLE_AppDefined,
@@ -1648,25 +1721,41 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
 /* -------------------------------------------------------------------- */
         int             nVBase = poLine->getNumPoints();
 
-        poLine->setNumPoints( nVCount+nVBase );
-
-        for( int i = nStart; i != nEnd+nInc; i += nInc )
+        if(nVCount == 1)
         {
-            double      dfX, dfY;
-            const char  *pachData;
-            int         nBytesRemaining;
+              int jpt = 0;
+              while(poSRecord->FindField( "SG2D", jpt ))
+              {
+                    poLine->addPoint(
+                                     poSRecord->GetIntSubfield("SG2D",jpt,"XCOO",0) / (double)nCOMF,
+                                poSRecord->GetIntSubfield("SG2D",jpt,"YCOO",0) / (double)nCOMF );
+                    jpt++;
 
-            pachData = poSG2D->GetSubfieldData(poXCOO,&nBytesRemaining,i);
+              }
+        }
+        else
+        {
 
-            dfX = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
-                / (double) nCOMF;
+            poLine->setNumPoints( nVCount+nVBase );
 
-            pachData = poSG2D->GetSubfieldData(poYCOO,&nBytesRemaining,i);
+            for( int i = nStart; i != nEnd+nInc; i += nInc )
+            {
+                  double      dfX, dfY;
+                  const char  *pachData;
+                  int         nBytesRemaining;
 
-            dfY = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
-                / (double) nCOMF;
+                  pachData = poSG2D->GetSubfieldData(poXCOO,&nBytesRemaining,i);
 
-            poLine->setPoint( nVBase++, dfX, dfY );
+                  dfX = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
+                  / (double) nCOMF;
+
+                  pachData = poSG2D->GetSubfieldData(poYCOO,&nBytesRemaining,i);
+
+                  dfY = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
+                  / (double) nCOMF;
+
+                  poLine->setPoint( nVBase++, dfX, dfY );
+            }
         }
 
 /* -------------------------------------------------------------------- */
@@ -1675,7 +1764,7 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
         {
             int         nVC_RCID = 0;
             double      dfX, dfY;
-
+/*
             if(poField)
             {
                   if( nInc == 1 )
@@ -1683,8 +1772,8 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
                   else
                         nVC_RCID = ParseName( poField, 0 );
             }
-
-            if( FetchPoint( RCNM_VC, nVC_RCID, &dfX, &dfY ) )
+*/
+            if( FetchPoint( RCNM_VC, nVC_RCIDEnd, &dfX, &dfY ) )
                 poLine->addPoint( dfX, dfY );
             else
                 CPLError( CE_Warning, CPLE_AppDefined,
@@ -1713,7 +1802,7 @@ void S57Reader::AssembleAreaGeometry( DDFRecord * poFRecord,
 {
     DDFField    *poFSPT;
     OGRGeometryCollection * poLines = new OGRGeometryCollection();
-
+//    poFRecord->Dump(stdout);
 /* -------------------------------------------------------------------- */
 /*      Find the FSPT fields.                                           */
 /* -------------------------------------------------------------------- */
@@ -1750,9 +1839,12 @@ void S57Reader::AssembleAreaGeometry( DDFRecord * poFRecord,
 /*      Establish the number of vertices, and whether we need to        */
 /*      reverse or not.                                                 */
 /* -------------------------------------------------------------------- */
+//            poSRecord->Dump(stdout);
+
             OGRLineString *poLine = new OGRLineString();
 
             int             nVCount;
+            int             nStart, nEnd, nInc;
             DDFField        *poSG2D = poSRecord->FindField( "SG2D" );
             DDFSubfieldDefn *poXCOO=NULL, *poYCOO=NULL;
 
@@ -1767,20 +1859,49 @@ void S57Reader::AssembleAreaGeometry( DDFRecord * poFRecord,
                 nVCount = 0;
 
             DDFField * poField = poSRecord->FindField( "VRPT" );
+            int nVC_RCID0 = 0;
+            int nVC_RCID1 = 0;
+            int nVC_RCIDStart, nVC_RCIDEnd;
+
+            if(poField->GetRepeatCount() > 1)
+            {
+                  nVC_RCID0 = ParseName( poField, 0 );
+                  nVC_RCID1 = ParseName( poField, 1 );
+            }
+            else
+            {
+                  nVC_RCID0 = ParseName( poField, 0 );
+                  DDFField * poFieldEnd = poSRecord->FindField( "VRPT", 1 );
+                  if(poFieldEnd)
+                        nVC_RCID1 = ParseName( poFieldEnd, 0 );
+            }
+
+
+            if( poFRecord->GetIntSubfield( "FSPT", 0, "ORNT", iEdge ) == 2 )
+            {
+                  nStart = nVCount-1;
+                  nEnd = 0;
+                  nInc = -1;
+                  nVC_RCIDStart = nVC_RCID1;          // reversed
+                  nVC_RCIDEnd =   nVC_RCID0;
+            }
+            else
+            {
+                  nStart = 0;
+                  nEnd = nVCount-1;
+                  nInc = 1;
+                  nVC_RCIDStart = nVC_RCID0;
+                  nVC_RCIDEnd =   nVC_RCID1;
+            }
+
 
 /* -------------------------------------------------------------------- */
 /*      Add the start node.                                             */
 /* -------------------------------------------------------------------- */
             {
-                int         nVC_RCID;
                 double      dfX, dfY;
 
-                if(poField)
-                  nVC_RCID = ParseName( poField, 0 );
-                else
-                      nVC_RCID = 0;
-
-                if( FetchPoint( RCNM_VC, nVC_RCID, &dfX, &dfY ) )
+                if( FetchPoint( RCNM_VC, nVC_RCIDStart, &dfX, &dfY ) )
                     poLine->addPoint( dfX, dfY );
             }
 
@@ -1789,42 +1910,48 @@ void S57Reader::AssembleAreaGeometry( DDFRecord * poFRecord,
 /* -------------------------------------------------------------------- */
             int             nVBase = poLine->getNumPoints();
 
-            poLine->setNumPoints( nVCount+nVBase );
-
-            for( int i = 0; i < nVCount; i++ )
+            if(nVCount == 1)
             {
-                double      dfX, dfY;
-                const char  *pachData;
-                int         nBytesRemaining;
+                  int jpt = 0;
+                  while(poSRecord->FindField( "SG2D", jpt ))
+                  {
+                        poLine->addPoint(
+                                          poSRecord->GetIntSubfield("SG2D",jpt,"XCOO",0) / (double)nCOMF,
+                                          poSRecord->GetIntSubfield("SG2D",jpt,"YCOO",0) / (double)nCOMF );
+                        jpt++;
 
-                pachData = poSG2D->GetSubfieldData(poXCOO,&nBytesRemaining,i);
-
-                dfX = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
-                    / (double) nCOMF;
-
-                pachData = poSG2D->GetSubfieldData(poYCOO,&nBytesRemaining,i);
-
-                dfY = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL)
-                    / (double) nCOMF;
-
-                poLine->setPoint( nVBase++, dfX, dfY );
+                  }
             }
+            else
+            {
+                  poLine->setNumPoints( nVCount+nVBase );
 
+                  for( int i = nStart; i != nEnd+nInc; i += nInc )
+                  {
+                        double      dfX, dfY;
+                        const char  *pachData;
+                        int         nBytesRemaining;
+
+                        pachData = poSG2D->GetSubfieldData(poXCOO,&nBytesRemaining,i);
+
+                        dfX = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL) / (double) nCOMF;
+
+                        pachData = poSG2D->GetSubfieldData(poYCOO,&nBytesRemaining,i);
+
+                        dfY = poXCOO->ExtractIntData(pachData,nBytesRemaining,NULL) / (double) nCOMF;
+
+                        poLine->setPoint( nVBase++, dfX, dfY );
+                  }
+
+            }
 /* -------------------------------------------------------------------- */
 /*      Add the end node.                                               */
 /* -------------------------------------------------------------------- */
             {
-                int         nVC_RCID;
                 double      dfX, dfY;
 
-                if(poField)
-                      nVC_RCID = ParseName( poField, 1 );
-                else
-                      nVC_RCID = 0;
 
-//                nVC_RCID = ParseName( poSRecord->FindField( "VRPT" ), 1 );
-
-                if( FetchPoint( RCNM_VC, nVC_RCID, &dfX, &dfY ) )
+                if( FetchPoint( RCNM_VC, nVC_RCIDEnd, &dfX, &dfY ) )
                     poLine->addPoint( dfX, dfY );
             }
 
