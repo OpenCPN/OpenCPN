@@ -1403,6 +1403,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
             ChartTableEntry *pnewChart = NULL;
             bool bAddFinal = true;
+            int b_add_msg = 0;
 
             pnewChart = CreateChartTableEntry(full_name, chart_desc);
             if(!pnewChart)
@@ -1423,11 +1424,13 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 //                        if(bthis_dir_in_dB && !strcmp(path_test_str, chartTable[isearch].GetpFullPath()))
                         if(bthis_dir_in_dB && full_name.IsSameAs(table_file_name))
                         {
+                              b_add_msg++;
+
                               //    Check the file modification time
                               time_t t_oldFile = chartTable[isearch].GetFileTime();
                               time_t t_newFile = file.GetModificationTime().GetTicks();
 
-                              if(t_oldFile <= t_newFile)
+                              if( t_newFile <= t_oldFile )
                               {
                                     bAddFinal = false;
                                     chartTable[isearch].SetValid(true);
@@ -1452,6 +1455,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
                         if( table_file.GetFullName() == file_name )
                         {
+                              b_add_msg++;
+
                               if(pnewChart->IsEqualToOrEarlierThan(chartTable[isearch]))
                               {
                                     //    Make sure the compare file actually exists
@@ -1489,14 +1494,20 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
             if(bAddFinal)
             {
+                  if(0 == b_add_msg)
+                  {
+                        wxString msg = _T("   Adding chart file: ");
+                        msg.Append(full_name);
+                        wxLogMessage(msg);
+                  }
                   chartTable.Add(pnewChart);
                   nDirEntry++;
             }
             else
             {
-                  wxString msg = _T("   Not adding chart file: ");
-                  msg.Append(full_name);
-                  wxLogMessage(msg);
+//                  wxString msg = _T("   Not adding chart file: ");
+//                  msg.Append(full_name);
+//                  wxLogMessage(msg);
             }
       }
 
