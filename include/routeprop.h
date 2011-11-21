@@ -352,6 +352,7 @@ class MarkInfo: public wxDialog
 
             void OnMarkinfoCancelClick( wxCommandEvent& event );
             void OnMarkinfoOkClick( wxCommandEvent& event );
+            void OnHyperLinkClick(wxHyperlinkEvent &event);
 
     /// Should we show tooltips?
             static bool ShowToolTips();

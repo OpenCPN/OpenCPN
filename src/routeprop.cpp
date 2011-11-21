@@ -2033,6 +2033,8 @@ void LatLonTextCtrl::OnKillFocus(wxFocusEvent& event)
  * MarkInfo type definition
  */
 
+#define HYPER_ID 3456
+
 IMPLEMENT_DYNAMIC_CLASS( MarkInfo, wxDialog )
 
 /*!
@@ -2045,7 +2047,7 @@ IMPLEMENT_DYNAMIC_CLASS( MarkInfo, wxDialog )
 
             EVT_BUTTON( ID_MARKINFO_CANCEL, MarkInfo::OnMarkinfoCancelClick )
             EVT_BUTTON( ID_MARKINFO_OK, MarkInfo::OnMarkinfoOkClick )
-
+            EVT_HYPERLINK(wxID_ANY, MarkInfo::OnHyperLinkClick)
 ////@end MarkInfo event table entries
 
             END_EVENT_TABLE()
@@ -2141,9 +2143,8 @@ void MarkInfo::CreateControls()
       {
             wxHyperlinkCtrl *HyperlinkCtrl;
             HyperlinkCtrl = new wxHyperlinkCtrl(this,
-                        wxID_ANY,
-                        _T(" "),
-                           _T(" "));
+                        wxID_ANY, _T(" "),  _T(" "));
+
             itemStaticBoxSizer8->Add(HyperlinkCtrl, 1, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxEXPAND|wxFULL_REPAINT_ON_RESIZE, 5);
             m_HyperlinkCtrlList->Append(HyperlinkCtrl);
       }
@@ -2309,6 +2310,39 @@ void MarkInfo::OnMarkinfoOkClick( wxCommandEvent& event )
       event.Skip();
 }
 
+void MarkInfo::OnHyperLinkClick(wxHyperlinkEvent &event)
+{
+      //    Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
+      //    The trouble is with the wxLaunchDefaultBrowser with verb "open"
+      //    Workaround is to probe the registry to get the default browser, and open directly
+#ifdef __WXMSW__
+
+      wxRegKey RegKey(wxString(_T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command")));
+      if( RegKey.Exists() )
+      {
+        wxString command_line;
+        RegKey.QueryValue(wxString(_T("")), command_line);
+
+        //  Remove "
+        command_line.Replace(wxString(_T("\"")), wxString(_T("")));
+
+        //  Strip arguments
+        int l = command_line.Find(_T(".exe"));
+        if( wxNOT_FOUND == l)
+              l = command_line.Find(_T(".EXE"));
+
+        if( wxNOT_FOUND != l)
+        {
+              wxString cl = command_line.Mid(0, l+4);
+              cl += _T(" ");
+              cl += event.GetURL();
+              wxExecute(cl);        // Async, so Fire and Forget...
+        }
+      }
+#else
+      event.Skip();
+#endif
+}
 
 
 
