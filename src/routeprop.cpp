@@ -934,8 +934,8 @@ bool RouteProp::UpdateProperties()
 			if (gpIDX && m_starttime.IsValid()) {
 				  if(!m_pRoute->m_bIsTrack) {
 						c = _T("@~~");
-						c.Append(wxString::From8BitData(gpIDX->IDX_station_name));
-						int i = c.Find(',');
+                                    c.Append(wxString(gpIDX->IDX_station_name, wxConvUTF8));
+                                    int i = c.Find(',');
 						if (i != wxNOT_FOUND) c.Remove(i);
 				 }
 			}
