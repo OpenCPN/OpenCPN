@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2011-07-08 14:42+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -155,21 +155,6 @@ msgstr "  Chyba při vytváření indexu řádků mapy"
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "  Index řádků je poškozen, znovuvytvářím index mapy."
-#
-#
-#
-msgid "   PlugInManager: Cannot load library: "
-msgstr "   PlugInManager: Nemohu načíst knihovnu: "
-#
-#
-#
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
-#
-#
-#
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
 #
 #
 #
@@ -797,11 +782,6 @@ msgstr "Základní"
 #
 msgid "Base Station"
 msgstr "Základnová stanice"
-#
-#
-#
-msgid "BaseClassCommonName"
-msgstr "BaseClassCommonName"
 #
 #
 msgid "Beacon, Isolated Danger"
@@ -1467,11 +1447,8 @@ msgstr "ETA:                  "
 msgid "ETE"
 msgstr ""
 #
-#
-#
-#
-msgid "ETE/Timestamp"
-msgstr "ETE/časová značka"
+msgid "ETE/ETD"
+msgstr ""
 #
 #
 msgid "Elapsed time : "
@@ -1497,6 +1474,9 @@ msgstr "Povolit skládání map"
 #
 msgid "Enable Manual CM93 Offsets"
 msgstr "Povolit manuální posuny  CM93"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 #
 #
@@ -2349,20 +2329,6 @@ msgstr "Zpráva OpenCPN"
 #
 #
 #
-msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN základní třída modulu"
-#
-#
-#
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"OpenCPN základní třída modulu\n"
-"PlugInManager vytvořil tuto základní třídu"
-#
-#
-#
 #
 msgid "OpenCPN Route Create"
 msgstr "Vytvořit OpenCPN Trasu"
@@ -2506,37 +2472,6 @@ msgstr "Rekreační plavidlo"
 #
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Rekreační plavidlo, delší než 20m"
-#
-#
-#
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "PlugInManager: hledá moduly v umístění  "
-#
-#
-#
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "PlugInManager: Deaktivuji modul: "
-#
-#
-#
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "PlugInManager: Inicializuji modul: "
-#
-#
-#
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "PlugInManager: Zavádím modul: "
-#
-#
-#
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "PlugInManager: Odstraňuji modul: "
-#
-#
-#
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "
 #
 #
 #
@@ -3019,6 +2954,9 @@ msgstr "Přiblížit"
 msgid "Scale Out"
 msgstr "Oddálit"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 #
 msgid "Search and Rescue Vessel"
 msgstr "SAR plavidlo"
@@ -3074,6 +3012,11 @@ msgstr ""
 #
 msgid "Set Anchor Watch"
 msgstr "Nastavit kotevní alarm"
+#
+#
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Nastav mód sever nahoru"
 #
 #
 #
@@ -3841,6 +3784,9 @@ msgstr "Aktualizovat ovládací prvek"
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Použít Garmin GRMN/GRMN (Host) mód pro nahrávání tras a trasových bodů."
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 #
 #
 #
@@ -4083,6 +4029,25 @@ msgstr ""
 #
 #
 #
+#~ msgid "   PlugInManager: Cannot load library: "
+#~ msgstr "   PlugInManager: Nemohu načíst knihovnu: "
+#
+#
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
+#~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
+#
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+#~ msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
+#
+#
+#
+#
+#
 #
 #
 #
@@ -4095,8 +4060,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
+#
+#
+#
+#
+#~ msgid "BaseClassCommonName"
+#~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4129,8 +4102,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -4163,8 +4138,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -4195,6 +4172,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
@@ -4211,6 +4189,66 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
+#
+#
+#
+#
+#~ msgid "ETE/Timestamp"
+#~ msgstr "ETE/časová značka"
+#
+#
+#
+#
+#~ msgid "OpenCPN PlugIn Base Class"
+#~ msgstr "OpenCPN základní třída modulu"
+#
+#
+#
+#
+#~ msgid ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "PlugInManager created this base class"
+#~ msgstr ""
+#~ "OpenCPN základní třída modulu\n"
+#~ "PlugInManager vytvořil tuto základní třídu"
+#
+#
+#
+#
+#~ msgid "PlugInManager searching for PlugIns in location "
+#~ msgstr "PlugInManager: hledá moduly v umístění  "
+#
+#
+#
+#
+#~ msgid "PlugInManager: Deactivating PlugIn: "
+#~ msgstr "PlugInManager: Deaktivuji modul: "
+#
+#
+#
+#
+#~ msgid "PlugInManager: Initializing PlugIn: "
+#~ msgstr "PlugInManager: Inicializuji modul: "
+#
+#
+#
+#
+#~ msgid "PlugInManager: Loading PlugIn: "
+#~ msgstr "PlugInManager: Zavádím modul: "
+#
+#
+#
+#
+#~ msgid "PlugInManager: UnLoading PlugIn: "
+#~ msgstr "PlugInManager: Odstraňuji modul: "
+#
+#
+#
+#
+#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+#~ msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "

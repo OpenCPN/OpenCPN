@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -108,15 +108,6 @@ msgstr "   Misslyckades att indexera sjökortet"
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Line Index är korrupt, skapar nytt index "
-#
-msgid "   PlugInManager: Cannot load library: "
-msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
-#
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   Modulhanterare: Kan inte aktivera symbol create_pi: "
-#
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Resultat: OK, Internt beräknat referenssystem används."
@@ -453,9 +444,6 @@ msgstr "Enkel"
 #
 msgid "Base Station"
 msgstr "Basstation"
-#
-msgid "BaseClassCommonName"
-msgstr "BaseClassCommonName"
 #
 msgid "Beacon, Isolated Danger"
 msgstr "Fyr, Isolerad fara"
@@ -852,8 +840,9 @@ msgstr "ETA:                  "
 msgid "ETE"
 msgstr "ETE"
 #
-msgid "ETE/Timestamp"
-msgstr "ETE/Tidmarkering"
+#, fuzzy
+msgid "ETE/ETD"
+msgstr "ETE"
 #
 msgid "Elapsed time : "
 msgstr "Förfluten tid : "
@@ -869,6 +858,9 @@ msgstr "Aktivera sömlös visning"
 #
 msgid "Enable Manual CM93 Offsets"
 msgstr "Aktivera manuell CM93-korrektion"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr "Aktivera max tid för kvittens av Målvarning(minuter)"
@@ -1372,16 +1364,6 @@ msgstr "OpenCPN Information"
 msgid "OpenCPN Message"
 msgstr "OpenCPN meddelande"
 #
-msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN PlugIn Base Class"
-#
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"OpenCPN PlugIn Base Class\n"
-"Modulhanterare skapade denna base class"
-#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Skapa rutt"
 #
@@ -1462,25 +1444,6 @@ msgstr "Nöjesfartyg"
 #
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Fritidsbåt, längd över 20 meter"
-#
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "Modulhanterare söker efter moduler i "
-#
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "Modulhanterare: Inaktiverar modul: "
-#
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "Modulhanterare: Initialiserar modul: "
-#
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "Modulhanterare: Aktiverar modul: "
-#
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "Modulhanterare: stänger modul: "
-#
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "
 #
 msgid "PlugIns"
 msgstr "Moduler"
@@ -1781,6 +1744,9 @@ msgstr "Minska skalan"
 msgid "Scale Out"
 msgstr "Öka skalan"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 msgid "Search and Rescue Vessel"
 msgstr "Sjöräddningsfartyg"
 #
@@ -1810,6 +1776,10 @@ msgstr "Servicefartyg, polis, hamntjänst"
 #
 msgid "Set Anchor Watch"
 msgstr "Aktivera ankarvakt"
+#
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Aktivera Nord Upp"
 #
 msgid "Set Course Up Mode"
 msgstr "Aktivera Kurs-Upp"
@@ -2254,6 +2224,9 @@ msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 "Använd Garmin GRMN/GRMN (Host) Mode för Waypoint- och ruttuppladdningar."
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 msgid "Use SCAMIN"
 msgstr "Använd SCAMIN"
 #
@@ -2409,11 +2382,70 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
+#
+#~ msgid "   PlugInManager: Cannot load library: "
+#~ msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
+#~ msgstr "   Modulhanterare: Kan inte aktivera symbol create_pi: "
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+#~ msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
+#
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
+#
+#
+#~ msgid "BaseClassCommonName"
+#~ msgstr "BaseClassCommonName"
+#
+#
+#~ msgid "ETE/Timestamp"
+#~ msgstr "ETE/Tidmarkering"
+#
 #
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
 #
+#
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "libgps kan inte laddas"
+#
+#
+#~ msgid "OpenCPN PlugIn Base Class"
+#~ msgstr "OpenCPN PlugIn Base Class"
+#
+#
+#~ msgid ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "PlugInManager created this base class"
+#~ msgstr ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "Modulhanterare skapade denna base class"
+#
+#
+#~ msgid "PlugInManager searching for PlugIns in location "
+#~ msgstr "Modulhanterare söker efter moduler i "
+#
+#
+#~ msgid "PlugInManager: Deactivating PlugIn: "
+#~ msgstr "Modulhanterare: Inaktiverar modul: "
+#
+#
+#~ msgid "PlugInManager: Initializing PlugIn: "
+#~ msgstr "Modulhanterare: Initialiserar modul: "
+#
+#
+#~ msgid "PlugInManager: Loading PlugIn: "
+#~ msgstr "Modulhanterare: Aktiverar modul: "
+#
+#
+#~ msgid "PlugInManager: UnLoading PlugIn: "
+#~ msgstr "Modulhanterare: stänger modul: "
+#
+#
+#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+#~ msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "

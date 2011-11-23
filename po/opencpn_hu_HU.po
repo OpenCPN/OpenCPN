@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -104,15 +104,6 @@ msgstr "Hiba történt a sor index készítése közben"
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "Sor index sérült, térkép újraindexelése"
-#
-msgid "   PlugInManager: Cannot load library: "
-msgstr ""
-#
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr ""
-#
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr ""
 #
 msgid "   Result: OK, Internal georef solution used."
 msgstr "Eredmény: rendben, belső georeferencia megoldás használata."
@@ -446,9 +437,6 @@ msgstr "Alap"
 #
 msgid "Base Station"
 msgstr "Alap állomás"
-#
-msgid "BaseClassCommonName"
-msgstr ""
 #
 msgid "Beacon, Isolated Danger"
 msgstr "Különálló veszélyes hely, fény"
@@ -846,7 +834,7 @@ msgstr ""
 msgid "ETE"
 msgstr ""
 #
-msgid "ETE/Timestamp"
+msgid "ETE/ETD"
 msgstr ""
 #
 msgid "Elapsed time : "
@@ -863,6 +851,9 @@ msgstr "Térkép összefűzés engedélyezése"
 #
 msgid "Enable Manual CM93 Offsets"
 msgstr "Engedélyezze a kézi CM93 eltolást"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr "Célpont riasztás visszaigazolás időzítés engedélyezése (perc)"
@@ -1370,14 +1361,6 @@ msgstr "OpenCPN információ"
 msgid "OpenCPN Message"
 msgstr "OpenCPN üzenet"
 #
-msgid "OpenCPN PlugIn Base Class"
-msgstr ""
-#
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN útvonal létrehozása"
 #
@@ -1457,25 +1440,6 @@ msgid "Pleasure craft"
 msgstr "Kedvtelési hajó"
 #
 msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
-#
-msgid "PlugInManager searching for PlugIns in location "
-msgstr ""
-#
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: Loading PlugIn: "
-msgstr ""
-#
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr ""
-#
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 msgstr ""
 #
 msgid "PlugIns"
@@ -1771,6 +1735,9 @@ msgstr "Kisebb méretarány"
 msgid "Scale Out"
 msgstr "Nagyobb méretarány"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 msgid "Search and Rescue Vessel"
 msgstr "Mentőjármű"
 #
@@ -1800,6 +1767,10 @@ msgstr ""
 #
 msgid "Set Anchor Watch"
 msgstr "Horgonyőr beállítása"
+#
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Irány fent mód"
 #
 #, fuzzy
 msgid "Set Course Up Mode"
@@ -2252,6 +2223,9 @@ msgstr ""
 "Használja a Garmin GRMN/GRMN (Host) módot az útpontok és útvonalak "
 "feltöltéséhez."
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 msgid "Use SCAMIN"
 msgstr "SCAMIN használata"
 #
@@ -2412,8 +2386,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
+#
 #
 #
 #
@@ -2434,8 +2410,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
+#
 #
 #
 #
@@ -2451,6 +2429,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Utolsó jelentési periódus:   %3d mp.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -2473,8 +2452,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
 #
 #
 #

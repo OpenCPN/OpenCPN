@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -124,18 +124,6 @@ msgstr "   Error creating Line Index for chart "
 #
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Line Index corrupt, recreating Index for chart "
-#
-#
-msgid "   PlugInManager: Cannot load library: "
-msgstr "  Wtyczki: nie można załadować biblioteki "
-#
-#
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "  Wtyczki: nie można załadować symbolu create_pi"
-#
-#
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
 #
 #
 msgid "   Result: OK, Internal georef solution used."
@@ -578,10 +566,6 @@ msgstr "Baza"
 #
 msgid "Base Station"
 msgstr "Baza"
-#
-#
-msgid "BaseClassCommonName"
-msgstr "BaseClassCommonName"
 #
 #
 msgid "Beacon, Isolated Danger"
@@ -1093,9 +1077,8 @@ msgstr "ETA:         "
 msgid "ETE"
 msgstr ""
 #
-#
-msgid "ETE/Timestamp"
-msgstr "ETE/Znacznik czasu"
+msgid "ETE/ETD"
+msgstr ""
 #
 #
 msgid "Elapsed time : "
@@ -1116,6 +1099,9 @@ msgstr "Sklejaj mapy"
 #
 msgid "Enable Manual CM93 Offsets"
 msgstr "Włącz ręczne ustawianie przesunięć CM93"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 #
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
@@ -1785,18 +1771,6 @@ msgid "OpenCPN Message"
 msgstr "Komunikat OpenCPN"
 #
 #
-msgid "OpenCPN PlugIn Base Class"
-msgstr "Bazowa klasa wtyczki OpenCPN"
-#
-#
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"Bazowa klasa wtyczki OpenCPN\n"
-"utworzona przez modul obsługi wtyczek"
-#
-#
 msgid "OpenCPN Route Create"
 msgstr "Tworzenie drogi OpenCPN"
 #
@@ -1903,31 +1877,6 @@ msgstr "Jacht"
 #
 msgid "Pleasure craft, longer than 20 metres"
 msgstr ""
-#
-#
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "Wtyczkii: szukanie wtyczek w "
-#
-#
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "Wtyczki: odłączanie "
-#
-#
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "Wtyczki: inicjalizacja "
-#
-#
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "Wtyczki: ładowanie"
-#
-#
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "Wtyczki: usuwanie "
-#
-#
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "Wtyczki: odstawiona wtyczka o błędnym numerze wersji API %d.%d:"
 #
 #
 msgid "PlugIns"
@@ -2317,6 +2266,9 @@ msgstr "Zwiększ skalę"
 msgid "Scale Out"
 msgstr "Zmniejsz skalę"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 #
 msgid "Search and Rescue Vessel"
 msgstr ""
@@ -2356,6 +2308,11 @@ msgstr ""
 #
 msgid "Set Anchor Watch"
 msgstr "Włącz alarm kotwiczny"
+#
+#
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "N do góry"
 #
 #
 msgid "Set Course Up Mode"
@@ -2936,6 +2893,9 @@ msgstr "Kontrola aktualizacji katalogu"
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Użyj protokołu GRMN/GRMN (Host) do przesyłania dróg i punktów do GPS"
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 #
 msgid "Use SCAMIN"
 msgstr "Użyj SCAMIN"
@@ -3135,6 +3095,22 @@ msgstr ""
 #
 #
 #
+#~ msgid "   PlugInManager: Cannot load library: "
+#~ msgstr "  Wtyczki: nie można załadować biblioteki "
+#
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
+#~ msgstr "  Wtyczki: nie można załadować symbolu create_pi"
+#
+#
+#
+#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+#~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
+#
+#
+#
 #
 #
 #
@@ -3150,8 +3126,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Próba załadowania libgps.so"
+#
+#
+#
+#~ msgid "BaseClassCommonName"
+#~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3192,8 +3175,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -3234,8 +3219,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -3274,9 +3261,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -3300,10 +3289,17 @@ msgstr ""
 #
 #
 #
+#~ msgid "ETE/Timestamp"
+#~ msgstr "ETE/Znacznik czasu"
+#
+#
+#
+#
 #
 #
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Błąd ładowania libgps.so"
+#
 #
 #
 #
@@ -3322,8 +3318,54 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Importuj nową warstwę"
+#
+#
+#
+#~ msgid "OpenCPN PlugIn Base Class"
+#~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
+#
+#
+#~ msgid ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "PlugInManager created this base class"
+#~ msgstr ""
+#~ "Bazowa klasa wtyczki OpenCPN\n"
+#~ "utworzona przez modul obsługi wtyczek"
+#
+#
+#
+#~ msgid "PlugInManager searching for PlugIns in location "
+#~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
+#
+#
+#~ msgid "PlugInManager: Deactivating PlugIn: "
+#~ msgstr "Wtyczki: odłączanie "
+#
+#
+#
+#~ msgid "PlugInManager: Initializing PlugIn: "
+#~ msgstr "Wtyczki: inicjalizacja "
+#
+#
+#
+#~ msgid "PlugInManager: Loading PlugIn: "
+#~ msgstr "Wtyczki: ładowanie"
+#
+#
+#
+#~ msgid "PlugInManager: UnLoading PlugIn: "
+#~ msgstr "Wtyczki: usuwanie "
+#
+#
+#
+#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+#~ msgstr "Wtyczki: odstawiona wtyczka o błędnym numerze wersji API %d.%d:"
+#
 #
 #
 #
@@ -3348,8 +3390,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -128,18 +128,6 @@ msgstr "   Λάθος στην κατασκευή δείκτη (Line Index) γι
 # 
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Κατεστραμμένος δείκτης αναφοράς, ανακατασκεύασε τον δείκτη του Χάρτη"
-#
-# 
-msgid "   PlugInManager: Cannot load library: "
-msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
-#
-# 
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
-#
-# 
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
 #
 # 
 msgid "   Result: OK, Internal georef solution used."
@@ -591,10 +579,6 @@ msgstr "Βασικό"
 # 
 msgid "Base Station"
 msgstr "Σταθμός αναφοράς"
-#
-# 
-msgid "BaseClassCommonName"
-msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
 #
 # 
 msgid "Beacon, Isolated Danger"
@@ -1113,9 +1097,8 @@ msgstr "ΕΤΑ:                  "
 msgid "ETE"
 msgstr ""
 #
-# 
-msgid "ETE/Timestamp"
-msgstr "ETE/ σφραγίδα χρόνου"
+msgid "ETE/ETD"
+msgstr ""
 #
 # 
 msgid "Elapsed time : "
@@ -1136,6 +1119,9 @@ msgstr "Εμφάνισε επικάλυψη χαρτών"
 # 
 msgid "Enable Manual CM93 Offsets"
 msgstr "Επέτρεψε χειροκίνητη Αντιμετάθεση CM93"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 # 
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
@@ -1818,18 +1804,6 @@ msgid "OpenCPN Message"
 msgstr "OpenCPN Μήνυμα "
 #
 # 
-msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN PlugIn βασική κατηγορία"
-#
-# 
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"OpenCPN PlugIn Βασική Κλάση\n"
-"Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
-#
-# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Κατασκευή Διαδρομής"
 #
@@ -1939,32 +1913,6 @@ msgstr "Τέλος μέτρησης"
 # 
 msgid "Pleasure craft, longer than 20 metres"
 msgstr ""
-#
-# 
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
-#
-# 
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
-#
-# 
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
-#
-# 
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
-#
-# 
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
-#
-# 
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr ""
-"Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
 #
 # 
 msgid "PlugIns"
@@ -2368,6 +2316,9 @@ msgstr "Αύξησε Κλίμακα"
 msgid "Scale Out"
 msgstr "Ελάτωσε Κλίμακα"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 # 
 msgid "Search and Rescue Vessel"
 msgstr ""
@@ -2407,6 +2358,11 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
+#
+# 
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
 #
 # 
 #, fuzzy
@@ -3002,6 +2958,9 @@ msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 "Χρησιμοποίησε GRMN/GRMN (Host) Mode για φόρτωση Σημίων(WP) και Ταξιδιών(Route)"
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 # 
 msgid "Use SCAMIN"
 msgstr "Χρησιμοποίησε το SCAMIN"
@@ -3204,11 +3163,33 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+# 
+#~ msgid "   PlugInManager: Cannot load library: "
+#~ msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
+#
+#
+# 
+#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
+#~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
+#
+# 
+#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+#~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
+#
+#
+#
 #
 #
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Προσπάθεια να φορτωθεί το libgps.so"
+#
+#
+# 
+#~ msgid "BaseClassCommonName"
+#~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -3242,6 +3223,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3251,6 +3233,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -3284,6 +3267,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3293,6 +3277,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -3326,6 +3311,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3334,6 +3320,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -3366,6 +3353,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3375,6 +3363,12 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
+#
+#
+# 
+#~ msgid "ETE/Timestamp"
+#~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -3396,6 +3390,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
@@ -3403,9 +3398,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -3432,6 +3429,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3439,6 +3437,21 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Βασικό ναυτικό"
+#
+#
+# 
+#~ msgid "OpenCPN PlugIn Base Class"
+#~ msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
+#
+# 
+#~ msgid ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "PlugInManager created this base class"
+#~ msgstr ""
+#~ "OpenCPN PlugIn Βασική Κλάση\n"
+#~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -3453,6 +3466,38 @@ msgstr ""
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
+#
+# 
+#~ msgid "PlugInManager searching for PlugIns in location "
+#~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
+#
+# 
+#~ msgid "PlugInManager: Deactivating PlugIn: "
+#~ msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
+#
+#
+# 
+#~ msgid "PlugInManager: Initializing PlugIn: "
+#~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
+#
+# 
+#~ msgid "PlugInManager: Loading PlugIn: "
+#~ msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
+#
+#
+# 
+#~ msgid "PlugInManager: UnLoading PlugIn: "
+#~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
+#
+# 
+#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+#~ msgstr ""
+#~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
+#
 #
 #
 #
@@ -3483,6 +3528,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3490,6 +3536,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
 #
 #
 #
@@ -3514,10 +3561,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

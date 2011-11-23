@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -157,24 +157,6 @@ msgstr "Ei suuda kaardi indexit teha"
 # 
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "Joone indeks katki, regenereerin kaaardi indexi"
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load library: "
-msgstr "   PlugInManager: Ei suuda laadida library: "
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
 #
 # 
 # 
@@ -812,12 +794,6 @@ msgstr "Base"
 # 
 msgid "Base Station"
 msgstr "Tugijaam"
-#
-# 
-# 
-# 
-msgid "BaseClassCommonName"
-msgstr "Baasi klassi põhiline nimi"
 #
 # 
 msgid "Beacon, Isolated Danger"
@@ -1498,11 +1474,8 @@ msgstr "ETA:                  "
 msgid "ETE"
 msgstr ""
 #
-# 
-# 
-# 
-msgid "ETE/Timestamp"
-msgstr "ETE/Timestamp"
+msgid "ETE/ETD"
+msgstr ""
 #
 # 
 msgid "Elapsed time : "
@@ -1529,6 +1502,9 @@ msgstr "Luba kaartide kihistamine"
 # 
 msgid "Enable Manual CM93 Offsets"
 msgstr "Aktiveeri manuaalne CM93 nihe"
+#
+msgid "Enable Smooth Panning / Zooming"
+msgstr ""
 #
 # 
 # 
@@ -2399,22 +2375,6 @@ msgstr "OpenCPN sõnum"
 # 
 # 
 # 
-msgid "OpenCPN PlugIn Base Class"
-msgstr "OpenCPN Lisade baasi klass"
-#
-# 
-# 
-# 
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-"OpenCPN lisade baasi klass\n"
-"Lisade haldur lõi selle baas klassi"
-#
-# 
-# 
-# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN teekonna looja"
 #
@@ -2559,42 +2519,6 @@ msgstr "Mõõtmine välja"
 # 
 msgid "Pleasure craft, longer than 20 metres"
 msgstr ""
-#
-# 
-# 
-msgid "PlugInManager searching for PlugIns in location "
-msgstr "Lisade haldur otsib lisasid asukohast"
-#
-# 
-# 
-# 
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr "Lisade haldur: deaktiveerin lisa:"
-#
-# 
-# 
-# 
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr "Lisade haldur: Seadistan lisa:"
-#
-# 
-# 
-# 
-msgid "PlugInManager: Loading PlugIn: "
-msgstr "Lisade haldur: laen lisa:"
-#
-# 
-# 
-# 
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr "Lisade haldur: eemaldan lisa:"
-#
-# 
-# 
-# 
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
 #
 # 
 # 
@@ -3096,6 +3020,9 @@ msgstr "Suurenda"
 msgid "Scale Out"
 msgstr "Vähenda"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 # 
 msgid "Search and Rescue Vessel"
 msgstr ""
@@ -3151,6 +3078,13 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Sea ankruvalve"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Kurss ülesse töörežiim"
 #
 # 
 # 
@@ -3951,6 +3885,9 @@ msgstr "Uuenda kontrolli"
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Kasuta Garmini GRMN (host) modes, et laadida teepunktid ja teekonnad."
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4202,6 +4139,28 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+# 
+# 
+# 
+#~ msgid "   PlugInManager: Cannot load library: "
+#~ msgstr "   PlugInManager: Ei suuda laadida library: "
+#
+#
+# 
+# 
+# 
+#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
+#~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
+#
+# 
+# 
+# 
+#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+#~ msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
+#
+#
+#
 #
 #
 # 
@@ -4209,6 +4168,14 @@ msgstr ""
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Ei suuda laadida libgps.so"
+#
+#
+# 
+# 
+# 
+#~ msgid "BaseClassCommonName"
+#~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 #
@@ -4241,6 +4208,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4249,6 +4217,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -4281,6 +4250,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4289,6 +4259,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 #
@@ -4321,6 +4292,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4329,6 +4301,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -4361,6 +4334,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4371,6 +4345,14 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
+#
+#
+# 
+# 
+# 
+#~ msgid "ETE/Timestamp"
+#~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -4394,6 +4376,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4403,11 +4386,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 #
 #
@@ -4436,6 +4421,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4445,6 +4431,25 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Mere standard"
+#
+#
+# 
+# 
+# 
+#~ msgid "OpenCPN PlugIn Base Class"
+#~ msgstr "OpenCPN Lisade baasi klass"
+#
+#
+# 
+# 
+# 
+#~ msgid ""
+#~ "OpenCPN PlugIn Base Class\n"
+#~ "PlugInManager created this base class"
+#~ msgstr ""
+#~ "OpenCPN lisade baasi klass\n"
+#~ "Lisade haldur lõi selle baas klassi"
+#
 #
 #
 #
@@ -4459,6 +4464,48 @@ msgstr ""
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
+#
+# 
+# 
+#~ msgid "PlugInManager searching for PlugIns in location "
+#~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
+#
+# 
+# 
+# 
+#~ msgid "PlugInManager: Deactivating PlugIn: "
+#~ msgstr "Lisade haldur: deaktiveerin lisa:"
+#
+#
+# 
+# 
+# 
+#~ msgid "PlugInManager: Initializing PlugIn: "
+#~ msgstr "Lisade haldur: Seadistan lisa:"
+#
+#
+# 
+# 
+# 
+#~ msgid "PlugInManager: Loading PlugIn: "
+#~ msgstr "Lisade haldur: laen lisa:"
+#
+#
+# 
+# 
+# 
+#~ msgid "PlugInManager: UnLoading PlugIn: "
+#~ msgstr "Lisade haldur: eemaldan lisa:"
+#
+#
+# 
+# 
+# 
+#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+#~ msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
+#
 #
 #
 #
@@ -4491,6 +4538,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4500,6 +4548,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Laeva nimi:"
+#
 #
 #
 #
@@ -4526,12 +4575,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 #

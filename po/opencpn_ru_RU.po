@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"POT-Creation-Date: 2011-11-23 12:46-0500\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -157,24 +157,6 @@ msgstr ""
 # 
 # 
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load library: "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 msgstr ""
 #
 # 
@@ -954,12 +936,6 @@ msgstr "Базовые"
 #, fuzzy
 msgid "Base Station"
 msgstr "Пункт назначения"
-#
-# 
-# 
-# 
-msgid "BaseClassCommonName"
-msgstr ""
 #
 # 
 msgid "Beacon, Isolated Danger"
@@ -1774,12 +1750,34 @@ msgstr "Ожидаемое время прибытия:                  "
 msgid "ETE"
 msgstr "Время прибытия"
 #
+#
+#
+#
+#
+#
 # 
 # 
 # 
 # 
-msgid "ETE/Timestamp"
-msgstr ""
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ETE/ETD"
+msgstr "Время прибытия"
 #
 # 
 msgid "Elapsed time : "
@@ -1807,6 +1805,9 @@ msgstr ""
 #
 # 
 msgid "Enable Manual CM93 Offsets"
+msgstr ""
+#
+msgid "Enable Smooth Panning / Zooming"
 msgstr ""
 #
 # 
@@ -2776,20 +2777,6 @@ msgstr "Сообщение OpenCPN"
 # 
 # 
 # 
-msgid "OpenCPN PlugIn Base Class"
-msgstr ""
-#
-# 
-# 
-# 
-msgid ""
-"OpenCPN PlugIn Base Class\n"
-"PlugInManager created this base class"
-msgstr ""
-#
-# 
-# 
-# 
 # 
 msgid "OpenCPN Route Create"
 msgstr "Создать маршрут OpenCPN"
@@ -2957,42 +2944,6 @@ msgstr "Измерения отключены"
 #
 # 
 msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
-#
-# 
-# 
-msgid "PlugInManager searching for PlugIns in location "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "PlugInManager: Deactivating PlugIn: "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "PlugInManager: Initializing PlugIn: "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "PlugInManager: Loading PlugIn: "
-msgstr ""
-#
-# 
-# 
-# 
-msgid "PlugInManager: UnLoading PlugIn: "
-msgstr ""
-#
-# 
-# 
-# 
-#, c-format
-msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 msgstr ""
 #
 # 
@@ -3546,6 +3497,9 @@ msgstr "Приблизить"
 msgid "Scale Out"
 msgstr "Отдалить"
 #
+msgid "Scan Charts and Update Database"
+msgstr ""
+#
 # 
 msgid "Search and Rescue Vessel"
 msgstr ""
@@ -3611,6 +3565,14 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Set Chart Up Mode"
+msgstr "Обновление карт OpenCPN"
 #
 # 
 msgid "Set Course Up Mode"
@@ -4469,6 +4431,9 @@ msgstr "Управление обновлениями"
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 #
+msgid "Use OpenGL"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4733,6 +4698,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4750,6 +4716,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -4796,6 +4763,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4818,6 +4786,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
 #
 #
 #
@@ -4864,6 +4833,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4894,6 +4864,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4906,6 +4877,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
 #
 #
 #
@@ -4951,6 +4923,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4976,6 +4949,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5029,6 +5003,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5059,6 +5034,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5067,6 +5043,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 #
@@ -5120,6 +5097,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5153,6 +5131,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5167,6 +5146,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -5207,6 +5187,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5223,6 +5204,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 #
@@ -5263,6 +5245,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5273,6 +5256,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Морской стандарт"
+#
 #
 #
 #
@@ -5313,6 +5297,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5329,6 +5314,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -5370,6 +5356,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5387,6 +5374,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -5426,6 +5414,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5437,6 +5426,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Период последних отчётов:     %3d Сек.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5466,6 +5456,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -5512,6 +5503,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5522,6 +5514,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
 #
 #
 #
@@ -5567,6 +5560,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5588,6 +5582,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Показать диалог GRIB"
+#
 #
 #
 #
@@ -5626,6 +5621,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5642,6 +5638,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Характерная высота волны, м"
+#
 #
 #
 #
@@ -5667,6 +5664,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5674,6 +5672,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Включить слежение"
+#
 #
 #
 #
@@ -5703,6 +5702,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5717,6 +5717,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 #
@@ -5757,6 +5758,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5773,6 +5775,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 #
