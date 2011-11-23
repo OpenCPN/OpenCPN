@@ -59,6 +59,7 @@ WX_DECLARE_LIST(wxHyperlinkCtrl, HyperlinkCtrlList);// establish class as list m
  */
 
 class   wxListCtrl;
+class   OCPNTrackListCtrl;
 class   Route;
 class   RoutePoint;
 /*!
@@ -87,6 +88,7 @@ class   RoutePoint;
 #define ID_TEXTCTRLDESC 7010
 #define ID_STARTTIMECTL 7011
 #define ID_TIMEZONESEL 7012
+#define ID_TRACKLISTCTRL 7013
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -167,6 +169,7 @@ public:
     bool IsThisRouteExtendable();
     bool IsThisTrackExtendable();
     void OnEvtColDragEnd(wxListEvent& event);
+    void InitializeList();
 
 
     /// Should we show tooltips?
@@ -191,7 +194,8 @@ public:
     wxTextCtrl  *m_RouteStartCtl;
     wxTextCtrl  *m_RouteDestCtl;
 
-    wxListCtrl  *m_wpList;
+    wxListCtrl        *m_wpList;
+    OCPNTrackListCtrl *m_wpTrackList;
 
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
@@ -210,11 +214,14 @@ public:
     double      m_avgspeed;
 
     int         m_nSelected; // index of point selected in Properties dialog row
+    int         m_tz_selection;
 
-    wxDateTime	m_starttime; // kept as UTC
+    wxDateTime	 m_starttime; // kept as UTC
     wxRadioBox	*pDispTz;
-    wxStaticText* m_staticText1;
-    wxChoice* m_chColor;
+    wxStaticText  *m_staticText1;
+    wxChoice      *m_chColor;
+
+    wxStaticBoxSizer* m_pListSizer;
 };
 
 

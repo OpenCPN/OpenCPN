@@ -2148,9 +2148,11 @@ void Route::UpdateSegmentDistances(double planspeed)
                         prp0->m_seg_etd = wxInvalidDateTime;
                         if (prp0->m_MarkDescription.Find(_T("ETD="))!= wxNOT_FOUND) {
                               wxString s_etd = (prp0->m_MarkDescription.Mid(prp0->m_MarkDescription.Find(_T("ETD="))+4)).BeforeFirst(';');
-                              wxString tz = etd.ParseDateTime(s_etd);
-                              if (tz) {
-                                    if (tz.Find(_T("UT")) != wxNOT_FOUND)
+                              const wxChar *parse_return = etd.ParseDateTime(s_etd);
+                              if(parse_return){
+                                    wxString tz(parse_return);
+
+                                   if (tz.Find(_T("UT")) != wxNOT_FOUND)
                                           prp0->m_seg_etd = etd;
                                     else
                                           if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
@@ -4488,30 +4490,37 @@ void MyConfig::ExportGPX ( wxWindow* parent )
       }
 }
 
-GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit)
+GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit, bool b_props_minimal)
 {
-      GpxExtensionsElement *exts = new GpxExtensionsElement();
- //     exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:prop")), wxString(pr->CreatePropString())));
-      exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pr->m_GUID));
+      GpxExtensionsElement *exts = NULL;
+      wxString type_prop;
+
+      if(!b_props_minimal)
+      {
+            type_prop = _T("WPT");
+
+            exts = new GpxExtensionsElement();
+            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pr->m_GUID));
 
       //    Create all opencpn extension properties explicitely
-      if(b_props_explicit)
-      {
-            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
-            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
-            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
-            exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
-       }
-      else
-      {
-      //      if(!pr->m_bIsVisible)
+            if(b_props_explicit)
+            {
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
- //           if(pr->m_bShowName)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
-            if(pr->m_bDynamicName)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
-            if(pr->m_bKeepXRoute)
                   exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
+            }
+            else
+            {
+            //      if(!pr->m_bIsVisible)
+                        exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pr->m_bIsVisible==true ? _T("1") : _T("0")));
+      //           if(pr->m_bShowName)
+                        exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz_name")), pr->m_bShowName==true ? _T("1") : _T("0")));
+                  if(pr->m_bDynamicName)
+                        exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:auto_name")), pr->m_bDynamicName==true ? _T("1") : _T("0")));
+                  if(pr->m_bKeepXRoute)
+                        exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:shared")), pr->m_bKeepXRoute==true ? _T("1") : _T("0")));
+            }
       }
 
       ListOfGpxLinks lnks;
@@ -4533,7 +4542,7 @@ GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props
       return new GpxWptElement(waypoint_type, pr->m_lat, pr->m_lon,
                                0, &pr->m_CreateTime, 0, -1, pr->GetName(), GPX_EMPTY_STRING,
             pr->m_MarkDescription, GPX_EMPTY_STRING, &lnks,
-            pr->m_IconName, wxString(_T("WPT")), fix_undefined,
+            pr->m_IconName, type_prop, fix_undefined,
             -1, -1, -1, -1, -1, -1, exts);
 
 }
@@ -4603,7 +4612,8 @@ GpxTrkElement *CreateGPXTrk ( Route *pRoute )
             while ( node2 && (GPXTrkSegNo2 == GPXTrkSegNo1))
             {
                   prp = node2->GetData();
-                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT, true));
+//                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT, true));
+                  trkseg->AppendTrkPoint(::CreateGPXWpt ( prp, GPX_WPT_TRACKPOINT, true, true));
                   node2=node2->GetNext();
                   if (node2) {
                         prp = node2->GetData();
@@ -5562,8 +5572,8 @@ RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, b
 
       if ( dt.IsValid() )
             pWP->m_CreateTime = dt;
-
-//      pWP->SetPropFromString ( PropString );
+      else
+            pWP->m_CreateTime = wxInvalidDateTime;
 
       if(linklist)
       {

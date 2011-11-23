@@ -271,6 +271,192 @@ wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, int format)
 }
 
 
+//--------------------------------------------------------------------------------------
+//          OCPNTrackListCtrl Definition
+//---------------------------------------------------------------------------------------
+wxRoutePointListNode    *g_this_point_node;
+wxRoutePointListNode    *g_prev_point_node;
+RoutePoint              *g_this_point;
+RoutePoint              *g_prev_point;
+int                     g_prev_point_index;
+int                     g_prev_item;
+double                  gt_brg, gt_leg_dist;
+
+class OCPNTrackListCtrl: public wxListCtrl
+{
+      public:
+            OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style);
+            ~OCPNTrackListCtrl();
+
+            wxString OnGetItemText(long item, long column) const;
+            int OnGetItemColumnImage(long item, long column) const;
+
+            Route                   *m_pRoute;
+            int                     m_tz_selection;
+            int                     m_LMT_Offset;
+
+
+};
+
+
+OCPNTrackListCtrl::OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style):
+            wxListCtrl(parent, id, pos, size, style)
+{
+      m_parent = parent;
+}
+
+OCPNTrackListCtrl::~OCPNTrackListCtrl()
+{
+}
+
+
+wxString  OCPNTrackListCtrl::OnGetItemText(long item, long column) const
+{
+      wxString ret;
+
+      if(item != g_prev_item)
+      {
+            if(g_prev_point_index == (item-1))
+            {
+                  wxASSERT(g_prev_point_node);
+                  g_prev_point = g_this_point;
+                  g_this_point_node = g_prev_point_node->GetNext();
+                  g_this_point = g_this_point_node->GetData();
+            }
+            else
+            {
+                  wxRoutePointListNode *node =  m_pRoute->pRoutePointList->GetFirst();
+                  if(node)
+                  {
+                        if(item > 0)
+                        {
+                              int i = 0;
+                              while ( node  && (i < (item - 1)))
+                              {
+                                    node = node->GetNext();
+                                    i++;
+                              }
+                              g_prev_point_node = node;
+                              g_prev_point = g_prev_point_node->GetData();
+
+                              g_this_point_node = g_prev_point_node->GetNext();
+                              g_this_point = g_this_point_node->GetData();
+                        }
+                        else
+                        {
+                              g_prev_point_node = NULL;
+                              g_prev_point = NULL;
+
+                              g_this_point_node = node;
+                              g_this_point = g_this_point_node->GetData();
+                        }
+                  }
+                  else
+                  {
+                        g_prev_point_node = NULL;
+                        g_prev_point = NULL;
+                        g_this_point_node = NULL;
+                        g_this_point = NULL;
+                  }
+            }
+
+
+
+            //    Update for next time
+            g_prev_point_node = g_this_point_node;
+            g_prev_point_index = item;
+
+            g_prev_item = item;
+      }
+
+      wxASSERT(g_this_point);
+      if(item > 0) wxASSERT(g_prev_point);
+
+      switch (column)
+      {
+            case 0:
+                  if(item == 0)
+                        ret = _T("---");
+                  else
+                        ret.Printf(_T("%ld"), item);
+                  break;
+
+            case 1:
+                  ret = g_this_point->GetName();
+                  break;
+
+            case 2:
+            {
+                  double slat, slon;
+                  if( item == 0 )
+                  {
+                        slat = gLat;
+                        slon = gLon;
+                  }
+                  else
+                  {
+                        slat =  g_prev_point->m_lat;
+                        slon =  g_prev_point->m_lon;
+                  }
+
+                  DistanceBearingMercator( g_this_point->m_lat, g_this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist);
+
+                  ret.Printf(_T("%6.2f nm"),gt_leg_dist);
+                  break;
+            }
+
+            case 3:
+                  ret.Printf(_T("%03.0f Deg. T"),gt_brg);
+                  break;
+
+            case 4:
+                  ret = toSDMM(1, g_this_point->m_lat, 1);
+                  break;
+
+            case 5:
+                  ret = toSDMM(2, g_this_point->m_lon, 1);
+                  break;
+
+            case 6:
+            {
+                  wxDateTime timestamp = g_this_point->m_CreateTime;
+                  if(timestamp.IsValid())
+                        ret = ts2s(timestamp,m_tz_selection,m_LMT_Offset,TIMESTAMP_FORMAT);
+                  else
+                        ret = _T("----");
+                  break;
+            }
+            case 7:
+            {
+                  if((item > 0) && g_this_point->m_CreateTime.IsValid() && g_prev_point->m_CreateTime.IsValid())
+                  {
+                        double speed = 0.;
+                        double seconds = g_this_point->m_CreateTime.Subtract(g_prev_point->m_CreateTime).GetSeconds().ToDouble();
+
+                        if(seconds > 0.)
+                           speed = gt_leg_dist / seconds * 3600;
+
+                        ret.Printf(_T("%5.2f"), speed );
+                  }
+                  else
+                        ret = _("--");
+            }
+            break;
+
+            default:
+                  break;
+      }
+
+      return ret;
+}
+
+
+int OCPNTrackListCtrl::OnGetItemColumnImage(long item, long column) const
+{
+      return -1;
+}
+
+
 
 /*!
  * RouteProp type definition
@@ -500,17 +686,22 @@ bool RouteProp::IsThisTrackExtendable()
             if(m_pRoute == g_pActiveTrack || m_pRoute->m_bIsInLayer) return false;
 
             RoutePoint *pLastPoint = m_pRoute->GetPoint(1);
+            if(!pLastPoint->m_CreateTime.IsValid())
+                  return false;
 
             wxRouteListNode *route_node = pRouteList->GetFirst();
             while(route_node) {
                   Route *proute = route_node->GetData();
                   if (proute->m_bIsTrack && proute->IsVisible() && (proute->m_GUID != m_pRoute->m_GUID)) {
                         RoutePoint *track_node = proute->GetLastPoint();
+                        if(track_node->m_CreateTime.IsValid())
+                        {
                               if(track_node->m_CreateTime <= pLastPoint->m_CreateTime)
                                     if (!m_pExtendPoint || track_node->m_CreateTime > m_pExtendPoint->m_CreateTime) {
                                           m_pExtendPoint = track_node;
                                           m_pExtendRoute = proute;
                                     }
+                        }
                   }
                   route_node = route_node->GetNext();                         // next route
             }
@@ -675,12 +866,12 @@ void RouteProp::CreateControls()
     itemStaticBoxSizer3->Add( bSizer2, 1, wxEXPAND, 0 );
 
     wxStaticBox* itemStaticBoxSizer14Static = new wxStaticBox(itemDialog1, wxID_ANY, _("Waypoints"));
-    wxStaticBoxSizer* itemStaticBoxSizer14 = new wxStaticBoxSizer(itemStaticBoxSizer14Static, wxVERTICAL);
-    itemBoxSizer2->Add(itemStaticBoxSizer14, 1, wxEXPAND|wxALL, 5);
+    m_pListSizer = new wxStaticBoxSizer(itemStaticBoxSizer14Static, wxVERTICAL);
+    itemBoxSizer2->Add(m_pListSizer, 1, wxEXPAND|wxALL, 5);
 
-    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize(800, 200),
-                               wxLC_REPORT|wxLC_HRULES|wxLC_VRULES|wxLC_EDIT_LABELS );
-    itemStaticBoxSizer14->Add(m_wpList, 2, wxEXPAND|wxALL, 5);
+//    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize(800, 200),
+//                               wxLC_REPORT|wxLC_HRULES|wxLC_VRULES|wxLC_EDIT_LABELS );
+//    itemStaticBoxSizer14->Add(m_wpList, 2, wxEXPAND|wxALL, 5);
 
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT|wxALL, 5);
@@ -710,23 +901,35 @@ void RouteProp::CreateControls()
 //    wxListItem itemCol;
 //    itemCol.SetImage(-1);
 
+    //      Create the two list controls
+    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL,
+                               wxDefaultPosition, wxSize(800, 200),
+                               wxLC_REPORT|wxLC_HRULES|wxLC_VRULES|wxLC_EDIT_LABELS );
+
     m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
-
     m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, 120 );
-
     m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
-
     m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 70 );
-
     m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
-
     m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
-
-    m_wpList->InsertColumn( 6, _("ETE/Timestamp"), wxLIST_FORMAT_LEFT, 135 );
-
+    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, 135 );
     m_wpList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 72 );
-
     m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
+    m_wpList->Hide();
+
+    m_wpTrackList = new OCPNTrackListCtrl( itemDialog1, ID_TRACKLISTCTRL,
+                                           wxDefaultPosition, wxSize(800, 200),
+                                           wxLC_REPORT|wxLC_HRULES|wxLC_VRULES|wxLC_EDIT_LABELS|wxLC_VIRTUAL );
+
+    m_wpTrackList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
+    m_wpTrackList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, 120 );
+    m_wpTrackList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
+    m_wpTrackList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 70 );
+    m_wpTrackList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
+    m_wpTrackList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
+    m_wpTrackList->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, 135 );
+    m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 );
+    m_wpTrackList->Hide();
 
 //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
@@ -802,11 +1005,10 @@ void RouteProp::SetDialogTitle(wxString title)
 
 void RouteProp::SetRouteAndUpdate(Route *pR)
 {
-
       //  Fetch any config file values
 
 //      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
-      int tz_selection = 1;
+      m_tz_selection = 1;
 
       if (pR == m_pRoute) {
 	  //m_starttime = g_StartTime;
@@ -817,43 +1019,104 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
         g_StartTime = wxInvalidDateTime;
         g_StartTimeTZ = 1;
 	  m_starttime = g_StartTime;
-	  tz_selection = g_StartTimeTZ;
+	  m_tz_selection = g_StartTimeTZ;
 	  gStart_LMT_Offset = 0;
         m_pEnroutePoint = NULL;
         m_bStartNow = false;
       }
 
-	pDispTz->SetSelection(tz_selection);
+      m_pRoute = pR;
+
+
+	pDispTz->SetSelection(m_tz_selection);
+
+      if(m_pRoute)
+      {
+            //    Calculate  LMT offset from the first point in the route
+            if (m_pEnroutePoint && m_bStartNow)
+                  gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
+            else
+                  gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
+      }
 
 // Reorganize dialog for route or track display
-      if(pR)
+      if(m_pRoute)
       {
-            if(pR->m_bIsTrack)
+            if(m_pRoute->m_bIsTrack)
             {
                   m_PlanSpeedLabel->SetLabel(_("Avg. speed (Kts)"));
-                        m_PlanSpeedCtl->SetEditable(false);
+                  m_PlanSpeedCtl->SetEditable(false);
+                  m_ExtendButton->SetLabel(_("Extend Track"));
+                  m_SplitButton->SetLabel(_("Split Track"));
+
             }
             else
             {
                   m_PlanSpeedLabel->SetLabel(_("Plan speed (Kts)"));
                   m_PlanSpeedCtl->SetEditable(true);
+                  m_ExtendButton->SetLabel(_("Extend Route"));
+                  m_SplitButton->SetLabel(_("Split Route"));
+            }
+
+            //    Fill in some top pane properties from the Route member elements
+            m_RouteNameCtl->SetValue(m_pRoute->m_RouteNameString);
+            m_RouteStartCtl->SetValue(m_pRoute->m_RouteStartString);
+            m_RouteDestCtl->SetValue(m_pRoute->m_RouteEndString);
+
+            m_RouteNameCtl->SetFocus();
+      }
+      else
+      {
+            m_RouteNameCtl->Clear();
+            m_RouteStartCtl->Clear();
+            m_RouteDestCtl->Clear();
+            m_PlanSpeedCtl->Clear();
+            m_StartTimeCtl->Clear();
+      }
+
+//      if(m_pRoute)
+//            m_pRoute->UpdateSegmentDistances(m_planspeed);           // to interpret ETD properties
+
+      m_wpList->DeleteAllItems();
+      m_wpTrackList->DeleteAllItems();
+
+      // Select the proper list control, and add it to List sizer
+      m_pListSizer->Clear();
+
+      if(m_pRoute)
+      {
+            if(m_pRoute->m_bIsTrack)
+            {
+                  m_wpTrackList->Show();
+                  m_wpList->Hide();
+                  m_pListSizer->Add(m_wpTrackList, 2, wxEXPAND|wxALL, 5);
+            }
+            else
+            {
+                  m_wpTrackList->Hide();
+                  m_wpList->Show();
+                  m_pListSizer->Add(m_wpList, 2, wxEXPAND|wxALL, 5);
             }
       }
-      m_pRoute = pR;
-      m_wpList->DeleteAllItems();
+      GetSizer()->Fit(this);
+      GetSizer()->Layout();
+
+      InitializeList();
+
+      UpdateProperties();
+}
+
+void RouteProp::InitializeList()
+{
+      if(NULL == m_pRoute)
+            return;
+
+      if(!m_pRoute->m_bIsTrack)
+      {
+            m_pRoute->UpdateSegmentDistances(m_planspeed);           // to fix ETD properties
 
 //  Iterate on Route Points, inserting blank fields starting with index 0
-      if(pR)
-      {
             wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
-            if (m_pEnroutePoint && m_bStartNow)
-                  gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
-            else
-                  gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
-
-            m_pRoute->UpdateSegmentDistances(m_planspeed);           // to interpret ETD properties
-
-
             int in=0;
             while(pnode)
             {
@@ -862,47 +1125,42 @@ void RouteProp::SetRouteAndUpdate(Route *pR)
                   if (pnode->GetData()->m_seg_etd.IsValid()) {
                         m_wpList->InsertItem(in, _T(""), 0);
                         in++;
-                        }
+                  }
                   pnode = pnode->GetNext();
             }
 
-            //  Set User input Text Fields
-            m_RouteNameCtl->SetValue(m_pRoute->m_RouteNameString);
-            m_RouteStartCtl->SetValue(m_pRoute->m_RouteStartString);
-            m_RouteDestCtl->SetValue(m_pRoute->m_RouteEndString);
+//      Update the plan speed and route start time controls
+            wxString s;
+            s.Printf(_T("%5.2f"), m_planspeed);
+            m_PlanSpeedCtl->SetValue(s);
 
-            m_RouteNameCtl->SetFocus();
-
-            //      Update the plan speed and route start time controls
-            if(!m_pRoute->m_bIsTrack)
-            {
-                  wxString s;
-                  s.Printf(_T("%5.2f"), m_planspeed);
-                  m_PlanSpeedCtl->SetValue(s);
-
-                  if (m_starttime.IsValid()) {
-	                    wxString s = ts2s(m_starttime, tz_selection, (int)gStart_LMT_Offset, INPUT_FORMAT);
-	                    m_StartTimeCtl->SetValue(s);
-                    }
-                  else
+            if (m_starttime.IsValid()) {
+                  wxString s = ts2s(m_starttime, m_tz_selection, (int)gStart_LMT_Offset, INPUT_FORMAT);
+                  m_StartTimeCtl->SetValue(s);
+            }
+            else
                   m_StartTimeCtl->Clear();
-		}
       }
+
       else
       {
-            m_RouteNameCtl->Clear();
-            m_RouteStartCtl->Clear();
-            m_RouteDestCtl->Clear();
-            m_PlanSpeedCtl->Clear();
-		m_StartTimeCtl->Clear();
-      }
-	  UpdateProperties();
-}
+            m_wpTrackList->m_pRoute = m_pRoute;
+            g_prev_point_index = -2;
+            g_prev_item = -2;
+            m_wpTrackList->m_tz_selection = m_tz_selection;
+            m_wpTrackList->m_LMT_Offset = gStart_LMT_Offset;
 
+            m_wpTrackList->SetItemCount(m_pRoute->GetnPoints());
+
+      }
+}
 
 
 bool RouteProp::UpdateProperties()
 {
+      if(NULL == m_pRoute)
+            return false;
+
       ::wxBeginBusyCursor();
 
       m_TotalDistCtl->SetValue(_T(""));
@@ -913,67 +1171,20 @@ bool RouteProp::UpdateProperties()
       m_SplitButton->Enable(false);
       m_ExtendButton->Enable(false);
 
-      if(m_pRoute)
+      if(m_pRoute->m_bIsTrack)
       {
-            if (m_pRoute->m_bIsTrack) {
-                  m_ExtendButton->SetLabel(_("Extend Track"));
-                  m_SplitButton->SetLabel(_("Split Track"));
-            }
-            else {
-                  m_ExtendButton->SetLabel(_("Extend Route"));
-                  m_SplitButton->SetLabel(_("Split Route"));
-            }
-
             m_pRoute->UpdateSegmentDistances();           // get segment and total distance
-
-            //    Update the "tides event" column header
-
-            wxListItem column_info;
-		if(m_wpList->GetColumn(8, column_info)) {
-			wxString c = _("Next tide event");
-			if (gpIDX && m_starttime.IsValid()) {
-				  if(!m_pRoute->m_bIsTrack) {
-						c = _T("@~~");
-                                    c.Append(wxString(gpIDX->IDX_station_name, wxConvUTF8));
-                                    int i = c.Find(',');
-						if (i != wxNOT_FOUND) c.Remove(i);
-				 }
-			}
-			column_info.SetText(c);
-			m_wpList->SetColumn(8, column_info);
-		}
-
-		//			Update the "ETE/Timestamp" column header
-
-		if(m_wpList->GetColumn(6, column_info))
-		{
-			  if(m_pRoute->m_bIsTrack)
-			  {
-					column_info.SetText(_("Timestamp"));
-					m_wpList->SetColumn(6, column_info);
-			  }
-			  else
-			  {
-					if (m_starttime.IsValid())
-						column_info.SetText(_("ETA"));
-					else
-						column_info.SetText(_("ETE"));
-					m_wpList->SetColumn(6, column_info);
-			  }
-		}
-
-            m_pRoute->UpdateSegmentDistances(m_planspeed);           // get segment and total distance
-            double leg_speed = m_planspeed;
-            wxTimeSpan stopover_time (0); // time spent waiting for ETD
-            wxTimeSpan joining_time (0);   // time spent before reaching first waypoint
-
-            double total_seconds = 0.;
+                                                          // but ignore leg speed calcs
 
             // Calculate AVG speed if we are showing a track and total time
-            if(m_pRoute->m_bIsTrack)
+            RoutePoint *last_point = m_pRoute->GetLastPoint();
+            RoutePoint *first_point = m_pRoute->GetPoint(1);
+            double total_seconds = 0.;
+
+            if(last_point->m_CreateTime.IsValid() && first_point->m_CreateTime.IsValid())
             {
-                  total_seconds = m_pRoute->GetLastPoint()->m_CreateTime.Subtract(m_pRoute->GetPoint(1)->m_CreateTime).GetSeconds().ToDouble();
-                  if(total_seconds != 0)
+                  total_seconds = last_point->m_CreateTime.Subtract(first_point->m_CreateTime).GetSeconds().ToDouble();
+                  if(total_seconds != 0.)
                   {
                         m_avgspeed = m_pRoute->m_route_length / total_seconds * 3600;
                   }
@@ -984,10 +1195,69 @@ bool RouteProp::UpdateProperties()
                   wxString s;
                   s.Printf(_T("%5.2f"), m_avgspeed);
                   m_PlanSpeedCtl->SetValue(s);
-
-                  if (IsThisTrackExtendable()) m_ExtendButton->Enable(true);
             }
             else
+            {
+                  wxString s(_T("--"));
+                  m_PlanSpeedCtl->SetValue(s);
+            }
+
+            //  Total length
+            wxString slen;
+            slen.Printf(wxT("%5.2f"), m_pRoute->m_route_length);
+
+            m_TotalDistCtl->SetValue(slen);
+
+
+      //  Time
+            wxString time_form;
+            wxTimeSpan time(0,0, (int)total_seconds, 0);
+            if(total_seconds > 3600. * 24.)
+                  time_form = time.Format(_(" %D Days  %H Hours  %M Minutes"));
+            else if(total_seconds > 0.)
+                  time_form = time.Format(_(" %H Hours  %M Minutes"));
+            else
+                  time_form = _T("--");
+            m_TimeEnrouteCtl->SetValue(time_form);
+
+            if (IsThisTrackExtendable()) m_ExtendButton->Enable(true);
+
+      }
+      else        // Route
+      {
+            //    Update the "tides event" column header
+            wxListItem column_info;
+		if(m_wpList->GetColumn(8, column_info)) {
+			wxString c = _("Next tide event");
+			if (gpIDX && m_starttime.IsValid())
+                  {
+                        c = _T("@~~");
+                        c.Append(wxString(gpIDX->IDX_station_name, wxConvUTF8));
+                        int i = c.Find(',');
+                        if (i != wxNOT_FOUND) c.Remove(i);
+
+                  }
+			column_info.SetText(c);
+			m_wpList->SetColumn(8, column_info);
+		}
+
+		//Update the "ETE/Timestamp" column header
+
+		if(m_wpList->GetColumn(6, column_info))
+		{
+                  if (m_starttime.IsValid())
+                        column_info.SetText(_("ETA"));
+                  else
+                        column_info.SetText(_("ETE"));
+                  m_wpList->SetColumn(6, column_info);
+            }
+
+            m_pRoute->UpdateSegmentDistances(m_planspeed);           // get segment and total distance
+            double leg_speed = m_planspeed;
+            wxTimeSpan stopover_time (0); // time spent waiting for ETD
+            wxTimeSpan joining_time (0);   // time spent before reaching first waypoint
+
+            double total_seconds = 0.;
             {
                   //if((0.1 < m_planspeed) && (m_planspeed < 1000.0))
                   //      total_seconds= 3600 * m_pRoute->m_route_length / m_planspeed;     // in seconds
@@ -1133,7 +1403,8 @@ bool RouteProp::UpdateProperties()
                   LMT_Offset = long ((prp->m_lon)*3600./15.);
 
       // Time to each waypoint or creation date for tracks
-                  if (!prp->m_bIsInTrack) {   //if it is a route point...    pjotrc 2010.02.11
+//                  if (!prp->m_bIsInTrack)    //if it is a route point...    pjotrc 2010.02.11
+                    {
                         if ( i == 0 && enroute)
                         {
                           time_form.Printf(_("Start"));
@@ -1215,60 +1486,15 @@ bool RouteProp::UpdateProperties()
                               } // end if legspeed
                         }  // end of repeatable route point
                   } // end of route point
-                  else
-                  {          // it is a track point...
-		            wxDateTime timestamp = prp->m_CreateTime;
-		            time_form = ts2s(timestamp,tz_selection,LMT_Offset,TIMESTAMP_FORMAT);
-                  }
 
                   if (enroute && (arrival || m_starttime.IsValid())) m_wpList->SetItem(item_line_index, 6, time_form);
                   else m_wpList->SetItem(item_line_index, 6, _T("----"));
 
 
                   //Leg speed
-                  wxString s;
-                  if(m_pRoute->m_bIsTrack)
-                  {
-                        if(i > 0)
-                        {
-                              //    Try to use recorded previous point pointer if available
-                              RoutePoint *pprev_rp;
-                              if(i_prev_point == (i-1))
-                                    pprev_rp = prev_route_point;
-                              else
-                                    pprev_rp = m_pRoute->GetPoint(i);   // note GetPoint() is "one-based"
-                                                                        // so GetPoint(i) is actually
-                                                                        // the previous point for this iteration.
-
-
-                              double speed;
-/*
-                              if(!m_pRoute->GetPoint(i+1)->m_CreateTime.IsEqualTo(m_pRoute->GetPoint(i)->m_CreateTime))
-                              {
-                                    speed = leg_dist / m_pRoute->GetPoint(i+1)->m_CreateTime.Subtract(m_pRoute->GetPoint(i)->m_CreateTime).GetSeconds().ToDouble() * 3600;
-                              }
-*/
-                              if(!prp->m_CreateTime.IsEqualTo(pprev_rp->m_CreateTime))
-                              {
-                                    speed = leg_dist / prp->m_CreateTime.Subtract(pprev_rp->m_CreateTime).GetSeconds().ToDouble() * 3600;
-                              }
-
-                              else
-                              {
-                                    speed = 0;
-                              }
-                              s.Printf(_T("%5.2f"), speed );
-                        }
-                        else
-                        {
-                              s = _("--");
-                        }
-                  }
-                  else
-                  {
-                        s.Printf(_T("%5.2f"), leg_speed);
-                  }
-                  if (arrival) m_wpList->SetItem(item_line_index, 7, s);
+                 wxString s;
+                 s.Printf(_T("%5.2f"), leg_speed);
+                 if (arrival) m_wpList->SetItem(item_line_index, 7, s);
 
                  if (enroute)
                        m_wpList->SetItem(item_line_index, 8, tide_form);
@@ -1301,34 +1527,22 @@ bool RouteProp::UpdateProperties()
                         }
 
             }
-
-      #if 0
-            m_wpList->SetColumnWidth( 0, wxLIST_AUTOSIZE/* 35 */);
-            m_wpList->SetColumnWidth( 1,  wxLIST_AUTOSIZE/* 150*/ );
-            m_wpList->SetColumnWidth( 2,  wxLIST_AUTOSIZE/* 80*/ );
-            m_wpList->SetColumnWidth( 3,  wxLIST_AUTOSIZE/* 80*/ );
-            m_wpList->SetColumnWidth( 4,  wxLIST_AUTOSIZE/* 95*/ );
-            m_wpList->SetColumnWidth( 5,  wxLIST_AUTOSIZE/* 95*/ );
-            m_wpList->SetColumnWidth( 6,  wxLIST_AUTOSIZE/* 120*/ );
-      #endif
       }
 
-      if(m_pRoute)
+      if ( m_pRoute->m_Colour == wxEmptyString )
+            m_chColor->Select(0);
+      else
       {
-            if ( m_pRoute->m_Colour == wxEmptyString )
-                  m_chColor->Select(0);
-            else
+            for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
             {
-                  for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
+                  if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
                   {
-                        if ( m_pRoute->m_Colour == ::GpxxColorNames[i] )
-                        {
-                              m_chColor->Select( i + 1 );
-                              break;
-                        }
+                        m_chColor->Select( i + 1 );
+                        break;
                   }
             }
       }
+
       ::wxEndBusyCursor();
 
       return true;

@@ -407,7 +407,7 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
                   link = link->GetNext();
             }
       }
-      if (sym && sym.Length() > 0)
+      if (sym && (sym.Length() > 0) && (sym != _T("empty")))
             SetProperty(wxString(_T("sym")), sym);
       if (type && type.Length() > 0)
             SetProperty(wxString(_T("type")), type);

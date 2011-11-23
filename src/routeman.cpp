@@ -870,7 +870,7 @@ void Routeman::DeleteTrack(Route *pRoute)
                   RoutePoint *prp = pnode->GetData();
 
                   // check all other routes to see if this point appears in any other route
-                  Route *pcontainer_route = FindRouteContainingWaypoint(prp);
+                  Route *pcontainer_route = NULL; //FindRouteContainingWaypoint(prp);
 
                   if(pcontainer_route == NULL)
                   {
@@ -882,6 +882,8 @@ void Routeman::DeleteTrack(Route *pRoute)
                               pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
                               pConfig->m_bIsImporting = false;
 
+                              pRoute->pRoutePointList->DeleteNode(pnode);
+/*
                               // Remove all instances of this point from the list.
                               wxRoutePointListNode *pdnode = pnode;
                               while(pdnode)
@@ -889,7 +891,7 @@ void Routeman::DeleteTrack(Route *pRoute)
                                     pRoute->pRoutePointList->DeleteNode(pdnode);
                                     pdnode = pRoute->pRoutePointList->Find(prp);
                               }
-
+*/
                               pnode = NULL;
                               delete prp;
                         }
