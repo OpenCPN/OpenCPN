@@ -108,6 +108,7 @@ enum {
         ID_PANELPIM,
         ID_GRIBCHECKBOX,
         ID_UPDCHECKBOX,
+        ID_SCANCHECKBOX,
         ID_SHOWGPSWINDOW,
         ID_CHOICE_LANG,
         ID_QUILTCHECKBOX1,
@@ -141,6 +142,7 @@ enum {
 #define     LOCALE_CHANGED    32
 #define     TOOLBAR_CHANGED   64
 #define     CHANGE_CHARTS    128
+#define     SCAN_UPDATE      256
 
 
 
@@ -275,6 +277,7 @@ public:
     wxListBox                 *pListBox;
     wxStaticBox               *itemActiveChartStaticBox;
     wxCheckBox                *pUpdateCheckBox;
+    wxCheckBox                *pScanCheckBox;
     int                       k_charts;
 
 //    For "NMEA Options" Box

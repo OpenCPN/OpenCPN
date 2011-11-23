@@ -1780,6 +1780,18 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
       iret |= k_force;
 
+      int k_scan = SCAN_UPDATE;
+      if(pScanCheckBox)
+      {
+            if(!pScanCheckBox->GetValue())
+                  k_scan = 0;
+      }
+      else
+            k_scan = 0;
+
+      iret |= k_scan;
+
+
 //    Handle Settings Tab
 
       if(m_pConfig)
@@ -2234,6 +2246,10 @@ void options::CreateChartsPage()
       wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox(itemPanel9, wxID_ANY, _("Update Control"));
       wxStaticBoxSizer* itemStaticBoxSizerUpdate = new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
       itemBoxSizer10->Add(itemStaticBoxSizerUpdate, 0, wxGROW|wxALL, 5);
+
+      pScanCheckBox = new wxCheckBox( itemPanel9, ID_SCANCHECKBOX, _("Scan Charts and Update Database") );
+      itemStaticBoxSizerUpdate->Add(pScanCheckBox, 1, wxALIGN_LEFT|wxALL, 5);
+
       pUpdateCheckBox = new wxCheckBox( itemPanel9, ID_UPDCHECKBOX, _("Force Full Database Rebuild") );
       itemStaticBoxSizerUpdate->Add(pUpdateCheckBox, 1, wxALIGN_LEFT|wxALL, 5);
 

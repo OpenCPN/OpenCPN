@@ -5276,7 +5276,7 @@ int MyFrame::DoOptionsDialog()
 
       if(rr)
       {
-            if((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE)))
+            if( (rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE)) )
             {
 
                   //    Capture the currently open chart
@@ -5565,9 +5565,12 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force, boo
             pprog->Raise();
       }
 
-
+      wxLogMessage(_T("   "));
+      wxLogMessage(_T("Starting chart database Update..."));
       ChartData->Update(DirArray, b_force, pprog );
       ChartData->SaveBinary(&ChartListFileName);
+      wxLogMessage(_T("Finished chart database Update"));
+      wxLogMessage(_T("   "));
 
       delete pprog;
 
