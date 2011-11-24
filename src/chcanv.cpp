@@ -132,11 +132,13 @@ extern int               gpIDXn;
 
 extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
 extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
-extern double           AnchorPointMaxDist, AnchorPointMinDist;  // pjotrc 2010.02.15
+extern double           AnchorPointMinDist;
 extern bool             AnchorAlertOn1;  // pjotrc 2010.02.17
 extern bool             AnchorAlertOn2;  // pjotrc 2010.02.17
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
+extern int              g_nAWDefault;
+extern int              g_nAWMax;
 
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
@@ -8136,7 +8138,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                     double dist;
                     double brg;                                                                                               //pjotrc 2010.02.15
                     DistanceBearingMercator(m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat, gLon, &brg, &dist);         //pjotrc 2010.02.15
-                    if (dist*1852. <= AnchorPointMaxDist /*&& dist*1852. >= AnchorPointMinDist*/)
+                    if (dist*1852. <= g_nAWMax)
                           pdef_menu->Append ( ID_WP_MENU_SET_ANCHORWATCH,   _( "Set Anchor Watch" ) );      //pjotrc 2010.02.15
                     }
 
@@ -8531,11 +8533,23 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                        {
                              pAnchorWatchPoint1 = m_pFoundRoutePoint;
                              g_AW1GUID = pAnchorWatchPoint1->m_GUID;
+                             wxString nn;
+                             nn = m_pFoundRoutePoint->GetName();
+                             if (nn.IsNull()) {
+                                    nn.Printf(_T("%d m"), g_nAWDefault);
+                                    m_pFoundRoutePoint->SetName(nn);
+                                   }
                        }
                        else if (pAnchorWatchPoint2 == NULL)
                        {
                              pAnchorWatchPoint2 = m_pFoundRoutePoint;
                              g_AW2GUID = pAnchorWatchPoint2->m_GUID;
+                             wxString nn;
+                             nn = m_pFoundRoutePoint->GetName();
+                             if (nn.IsNull()) {
+                                    nn.Printf(_T("%d m"), g_nAWDefault);
+                                    m_pFoundRoutePoint->SetName(nn);
+                                   }
                        }
                        break;
 
@@ -10899,7 +10913,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint)
    if (pAnchorWatchPoint)
    {
      (pAnchorWatchPoint->GetName()).ToDouble(&d1);
-      d1 = AnchorDistFix(d1, AnchorPointMinDist, AnchorPointMaxDist);
+      d1 = AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
       dabs = fabs(d1/1852.);
       ll_gc_ll ( pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs, &tlat1, &tlon1 );
       GetCanvasPointPix ( tlat1, tlon1, &r1 );

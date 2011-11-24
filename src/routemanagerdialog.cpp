@@ -122,9 +122,9 @@ int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
       lc->GetItem(it2);
 
       if(sort_route_name_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return it2.GetText().CmpNoCase(it1.GetText());
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return it1.GetText().CmpNoCase(it2.GetText());
 
 }
 
@@ -151,9 +151,9 @@ int wxCALLBACK SortRoutesOnTo(long item1, long item2, long list)
       lc->GetItem(it2);
 
       if(sort_route_to_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return it2.GetText().CmpNoCase(it1.GetText());
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return it1.GetText().CmpNoCase(it2.GetText());
 }
 
 // sort callback. Sort by track name.
@@ -179,9 +179,9 @@ int wxCALLBACK SortTracksOnName(long item1, long item2, long list)
       lc->GetItem(it2);
 
       if(sort_track_name_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return it2.GetText().CmpNoCase(it1.GetText());
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return it1.GetText().CmpNoCase(it2.GetText());
 
 }
 
@@ -247,9 +247,9 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
       lc->GetItem(it2);
 
       if(sort_wp_name_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return it2.GetText().CmpNoCase(it1.GetText());
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return it1.GetText().CmpNoCase(it2.GetText());
 }
 
 // sort callback. Sort by wpt distance.
@@ -313,9 +313,9 @@ int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
       lc->GetItem(it2);
 
       if(sort_layer_name_dir & 1)
-            return it2.GetText().Cmp(it1.GetText());
+            return it2.GetText().CmpNoCase(it1.GetText());
       else
-            return it1.GetText().Cmp(it2.GetText());
+            return it1.GetText().CmpNoCase(it2.GetText());
 
 }
 
@@ -412,14 +412,14 @@ void RouteManagerDialog::Create()
       m_pPanelRte->SetSizer(sbsRoutes);
       m_pNotebook->AddPage(m_pPanelRte, _("Routes"));
 
-      sort_wp_len_dir = 0;
+      sort_wp_len_dir = 1;
       sort_wp_name_dir = 0;
-      sort_track_len_dir = 0;
+      sort_track_len_dir = 1;
       sort_route_to_dir = 0;
       sort_track_name_dir = 0;
       sort_route_name_dir = 0;
       sort_layer_name_dir = 0;
-      sort_layer_len_dir = 0;
+      sort_layer_len_dir = 1;
 
       // Setup GUI
       m_pRouteListCtrl = new wxListCtrl(m_pPanelRte, -1, wxDefaultPosition, wxSize(400, -1),
@@ -1260,13 +1260,13 @@ void RouteManagerDialog::OnRteColumnClicked(wxListEvent &event)
 {
       if(event.m_col == 1)
       {
-            m_pRouteListCtrl->SortItems(SortRoutesOnName, (long)m_pRouteListCtrl);
             sort_route_name_dir++;
+            m_pRouteListCtrl->SortItems(SortRoutesOnName, (long)m_pRouteListCtrl);
       }
       else if(event.m_col == 2)
       {
-            m_pRouteListCtrl->SortItems(SortRoutesOnTo, (long)m_pRouteListCtrl);
             sort_route_to_dir++;
+            m_pRouteListCtrl->SortItems(SortRoutesOnTo, (long)m_pRouteListCtrl);
       }
 }
 
@@ -1345,7 +1345,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
             if (name.IsEmpty())
             {
                   RoutePoint *rp = trk->GetPoint(1);
-                  if (rp)
+                  if (rp && rp->m_CreateTime.IsValid())
                         name = rp->m_CreateTime.FormatISODate() + _T(" ") + rp->m_CreateTime.FormatISOTime();   //name = rp->m_CreateTime.Format();
                   else
                         name = _("(Unnamed Track)");
@@ -1380,13 +1380,13 @@ void RouteManagerDialog::OnTrkColumnClicked(wxListEvent &event)
 {
       if(event.m_col == 1)
       {
-            m_pTrkListCtrl->SortItems(SortTracksOnName, (long)m_pTrkListCtrl);
             sort_track_name_dir++;
+            m_pTrkListCtrl->SortItems(SortTracksOnName, (long)m_pTrkListCtrl);
       }
       else if(event.m_col == 2)
       {
-            m_pTrkListCtrl->SortItems(SortTracksOnDistance, (long)m_pTrkListCtrl);
             sort_track_len_dir++;
+            m_pTrkListCtrl->SortItems(SortTracksOnDistance, (long)m_pTrkListCtrl);
       }
 }
 
@@ -1651,13 +1651,13 @@ void RouteManagerDialog::OnWptColumnClicked(wxListEvent &event)
 {
       if(event.m_col == 1)
       {
-            m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
             sort_wp_name_dir++;
+            m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
       }
       else if(event.m_col == 2)
       {
-            m_pWptListCtrl->SortItems(SortWaypointsOnDistance, (long)m_pWptListCtrl);
             sort_wp_len_dir++;
+            m_pWptListCtrl->SortItems(SortWaypointsOnDistance, (long)m_pWptListCtrl);
       }
 }
 
@@ -1906,13 +1906,13 @@ void RouteManagerDialog::OnLayColumnClicked(wxListEvent &event)
 {
       if(event.m_col == 1)
       {
-            m_pLayListCtrl->SortItems(SortLayersOnName, (long)m_pLayListCtrl);
             sort_layer_name_dir++;
+            m_pLayListCtrl->SortItems(SortLayersOnName, (long)m_pLayListCtrl);
       }
       else if(event.m_col == 2)
       {
-            m_pLayListCtrl->SortItems(SortLayersOnSize, (long)m_pLayListCtrl);
             sort_layer_len_dir++;
+            m_pLayListCtrl->SortItems(SortLayersOnSize, (long)m_pLayListCtrl);
       }
 }
 

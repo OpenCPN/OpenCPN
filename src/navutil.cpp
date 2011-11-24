@@ -80,6 +80,7 @@ extern RouteList        *pRouteList;
 extern LayerList        *pLayerList;
 extern bool             g_bIsNewLayer;
 extern int              g_LayerIdx;
+extern bool             g_bLayerViz;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
 extern ArrayOfCDI       g_ChartDirArray;
@@ -125,6 +126,8 @@ extern bool             g_bsmoothpanzoom;
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
 extern int              g_nNMEADebug;
+extern int              g_nAWDefault;
+extern int              g_nAWMax;
 
 extern int              g_iSDMMFormat;
 
@@ -135,6 +138,8 @@ extern int              g_nframewin_posy;
 extern bool             g_bframemax;
 
 extern double           g_PlanSpeed;
+extern wxString        *g_pVisibleLayers;
+extern wxString        *g_pInvisibleLayers;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
@@ -2752,6 +2757,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
+      Read ( _T ( "AnchorWatchDefault" ), &g_nAWDefault, 50 );
+      Read ( _T ( "AnchorWatchMax" ), &g_nAWMax, 1852);
       Read ( _T ( "GPSDogTimeout" ),  &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );
       Read ( _T ( "DebugCM93" ),  &g_bDebugCM93, 0 );
       Read ( _T ( "DebugS57" ),  &g_bDebugS57, 0 );         // Show LUP and Feature info in object query
@@ -2852,6 +2859,9 @@ int MyConfig::LoadMyConfig ( int iteration )
       wxString stps;
       Read ( _T ( "PlanSpeed" ),  &stps );
       stps.ToDouble ( &g_PlanSpeed );
+
+      Read ( _T ( "VisibleLayers" ), g_pVisibleLayers);
+      Read ( _T ( "InvisibleLayers" ), g_pInvisibleLayers);
 
       Read ( _T ( "PreserveScaleOnX" ),  &g_bPreserveScaleOnX, 0 );
 
@@ -4073,6 +4083,18 @@ void MyConfig::UpdateSettings()
       st0.Printf ( _T ( "%g" ), g_PlanSpeed );
       Write ( _T ( "PlanSpeed" ), st0 );
 
+      wxString vis, invis;
+      LayerList::iterator it;
+      int index = 0;
+      for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it, ++index)
+      {
+            Layer *lay = (Layer *)(*it);
+            if (lay->IsVisibleOnChart()) vis += (lay->m_LayerName)+_T(";");
+            else invis += (lay->m_LayerName)+_T(";");
+      }
+      Write ( _T ( "VisibleLayers" ), vis);
+      Write ( _T ( "InvisibleLayers" ), invis);
+
       Write ( _T ( "Locale" ), g_locale );
 
       Write ( _T ( "KeepNavobjBackups" ), g_navobjbackups );
@@ -4648,6 +4670,13 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
             if ( response == wxID_OK )
             {
                   openDialog.GetPaths(file_array);
+
+                  //    Record the currently selected directory for later use
+                  if(file_array.GetCount())
+                  {
+                        wxFileName fn ( file_array[0] );
+                        m_gpx_path = fn.GetPath();
+                  }
             }
 
       } else {
@@ -4664,12 +4693,6 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
       if ( response == wxID_OK )
       {
 
-            //    Record the currently selected directory for later use
-            if(file_array.GetCount())
-            {
-                  wxFileName fn ( file_array[0] );
-                  m_gpx_path = fn.GetPath();
-            }
             if (islayer) {
                   l = new Layer();
                   l->m_LayerID = ++g_LayerIdx;
@@ -4682,6 +4705,10 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                         else
                         wxFileName::SplitPath(dirpath,NULL,NULL,&(l->m_LayerName),NULL,NULL);
                   }
+                  g_bLayerViz = g_bShowLayers;
+                  if (g_pVisibleLayers->Contains(l->m_LayerName)) g_bLayerViz = true;
+                  if (g_pInvisibleLayers->Contains(l->m_LayerName)) g_bLayerViz = false;
+                  l->m_bIsVisibleOnChart = g_bLayerViz;
 
                     wxString laymsg;
                     laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID, l->m_LayerName.c_str());
@@ -4736,11 +4763,11 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                                                       AddNewWayPoint ( pWp,m_NextWPNum );   // use auto next num
                                                       if (g_bIsNewLayer) {
                                                             pWp->m_LayerID = g_LayerIdx;
-                                                            pWp->m_bIsVisible = g_bShowLayers;
+                                                            pWp->m_bIsVisible = g_bLayerViz;
                                                       }
                                                       else
                                                             pWp->m_LayerID = 0;
-                                                      if (!g_bIsNewLayer || g_bShowLayers)
+                                                      if (!g_bIsNewLayer || g_bLayerViz)
                                                             pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
                                                       pWp->m_ConfigWPNum = m_NextWPNum;
                                                       m_NextWPNum++;
@@ -5732,7 +5759,7 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                   pRouteList->Append ( pTentTrack );
 
                   if (g_bIsNewLayer)
-                        pTentTrack->SetVisible(g_bShowLayers);
+                        pTentTrack->SetVisible(g_bLayerViz);
                   else
                   if(b_propviz)
                         pTentTrack->SetVisible(b_viz);
@@ -5999,7 +6026,7 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
             }
       }
       if (g_bIsNewLayer)
-            pTentRoute->SetVisible(g_bShowLayers);
+            pTentRoute->SetVisible(g_bLayerViz);
       else
       if(b_propviz)
             pTentRoute->SetVisible(b_viz);

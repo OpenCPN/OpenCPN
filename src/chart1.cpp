@@ -160,6 +160,7 @@ RouteList       *pRouteList;
 LayerList       *pLayerList;
 bool              g_bIsNewLayer;
 int               g_LayerIdx;
+bool              g_bLayerViz;
 
 Select          *pSelect;
 Select          *pSelectTC;
@@ -198,6 +199,8 @@ wxString        *g_pcsv_locn;
 wxString        g_SENCPrefix;
 wxString        g_PresLibData;
 wxString        g_Plugin_Dir;
+wxString          *g_pVisibleLayers;
+wxString          *g_pInvisibleLayers;
 
 extern wxString        str_version_major; //Gunther
 extern wxString        str_version_minor; //Gunther
@@ -229,7 +232,7 @@ wxSound         bells_sound[8];   // pjotrc 2010.02.09
 
 RoutePoint      *pAnchorWatchPoint1;       // pjotrc 2010.02.15
 RoutePoint      *pAnchorWatchPoint2;       // pjotrc 2010.02.15
-double          AnchorPointMaxDist, AnchorPointMinDist;  // pjotrc 2010.02.15
+double          AnchorPointMinDist;
 bool            AnchorAlertOn1, AnchorAlertOn2; // pjotrc 2010.02.17 flags for alerting
 
 bool            g_bCruising;
@@ -252,6 +255,8 @@ bool              g_bShowDepthUnits;
 bool              g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
 bool              g_bGarminPersistance;
 int               g_nNMEADebug;
+int               g_nAWDefault;
+int               g_nAWMax;
 bool              g_bPlayShipsBells;   // pjotrc 2010.02.09
 bool              g_bFullscreenToolbar;
 bool              g_bShowLayers;
@@ -1734,8 +1739,7 @@ bool MyApp::OnInit()
 	g_loglast_time.MakeGMT();        // pjotrc 2010.02.09
       g_loglast_time.Subtract(wxTimeSpan(0,29,0,0)); // give 1 minute for GPS to get a fix   // pjotrc 2010.02.09
 
-      AnchorPointMaxDist = 1852.0*.5;  // pjotrc 2010.02.15 really should be an .init param
-      AnchorPointMinDist = 10.0;       // pjotrc 2010.02.15 really should be an .init param
+      AnchorPointMinDist = 5.0;
 
 #ifdef __WXMSW__
 
@@ -1956,6 +1960,8 @@ bool MyApp::OnInit()
         pAIS_Port = new wxString();
         g_pcsv_locn = new wxString();
         pInit_Chart_Dir = new wxString();
+        g_pVisibleLayers = new wxString();
+        g_pInvisibleLayers = new wxString();
 
         //      Establish the prefix of the location of user specific data files
 #ifdef __WXMSW__
@@ -6036,9 +6042,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             double dist;
             double brg;
             DistanceBearingMercator(pAnchorWatchPoint1->m_lat, pAnchorWatchPoint1->m_lon, gLat, gLon, &brg, &dist);
-            double d = AnchorPointMaxDist;
+            double d = g_nAWMax;
             (pAnchorWatchPoint1->GetName()).ToDouble(&d);
-            d = AnchorDistFix(d, AnchorPointMinDist, AnchorPointMaxDist);
+            d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
             bool toofar = false; bool tooclose = false;
             if (d >= 0.0) toofar = (dist*1852. > d);
             if (d < 0.0) tooclose = (dist*1852 < -d);
@@ -6055,9 +6061,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
              double brg;
              DistanceBearingMercator(pAnchorWatchPoint2->m_lat, pAnchorWatchPoint2->m_lon, gLat, gLon, &brg, &dist);
 
-             double d = AnchorPointMaxDist;
+             double d = g_nAWMax;
              (pAnchorWatchPoint2->GetName()).ToDouble(&d);
-             d = AnchorDistFix(d, AnchorPointMinDist, AnchorPointMaxDist);
+             d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
              bool toofar = false; bool tooclose = false;
              if (d >= 0) toofar = (dist*1852. > d);
              if (d < 0) tooclose = (dist*1852 < -d);
