@@ -378,8 +378,11 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
             GpxFixType fixtype, int sat, double hdop, double vdop, double pdop,
             double ageofgpsdata, int dgpsid, GpxExtensionsElement *extensions) : TiXmlElement(waypoint_type)
 {
-      SetAttribute("lat", wxString::Format(_T("%.9f"), lat).ToUTF8());
-      SetAttribute("lon", wxString::Format(_T("%.9f"), lon).ToUTF8());
+      wxString attr;
+      attr.Printf(_T("%.9f"), lat);
+      SetAttribute("lat", attr.c_str());
+      attr.Printf(_T("%.9f"), lon);
+      SetAttribute("lon", attr.c_str());
 
       if (ele != 0)
             SetProperty(wxString(_T("ele")), wxString::Format(_T("%f"), ele));
