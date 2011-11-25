@@ -370,7 +370,7 @@ wxString  OCPNTrackListCtrl::OnGetItemText(long item, long column) const
       }
 
       wxASSERT(g_this_point);
-      if(item > 0) wxASSERT(g_prev_point);
+//      if(item > 0) wxASSERT(g_prev_point);
 
       switch (column)
       {
