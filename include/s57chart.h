@@ -134,6 +134,7 @@ public:
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                         const wxRegion &Region);
 
+      virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
 
@@ -213,10 +214,15 @@ public:
                                    wxString &LastUpdateDate, bool b_copyfiles);
       wxString GetISDT(void);
 
+      char GetUsageChar(void){ return m_usage_char; }
+      static bool IsCellOverlayType(char *pFullPath);
+
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
+
+      bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
@@ -307,6 +313,8 @@ private:
 
       int         m_tex_name;
       bool        m_btex_mem;
+
+      char        m_usage_char;
 };
 
 //----------------------------------------------------------------------------

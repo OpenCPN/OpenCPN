@@ -1946,6 +1946,17 @@ bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, 
 
 bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
 {
+      return DoRenderRegionViewOnDC(dc, VPoint, Region, false);
+}
+
+bool s57chart::RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return DoRenderRegionViewOnDC(dc, VPoint, Region, true);
+}
+
+
+bool s57chart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay)
+{
       SetVPParms(VPoint);
 
       bool force_new_view = false;
@@ -2012,8 +2023,12 @@ bool s57chart::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, cons
             dc_org.SelectObject(wxNullBitmap);
 
             //    Create a mask
-//            m_pMask = new wxMask(*m_pCloneBM, GetGlobalColor ( _T ( "NODTA" ) ));
-//            m_pCloneBM->SetMask( m_pMask );
+            if(b_overlay)
+            {
+                  m_pMask = new wxMask(*m_pCloneBM, GetGlobalColor ( _T ( "NODTA" ) ));
+                  m_pCloneBM->SetMask( m_pMask );
+            }
+
             dc.SelectObject(*m_pCloneBM);
       }
       else
@@ -2475,6 +2490,15 @@ bool s57chart::DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect
         return true;
 }
 
+bool s57chart::IsCellOverlayType(char *pFullPath)
+{
+      wxFileName fn(wxString(pFullPath, wxConvUTF8));
+    //      Get the "Usage" character
+      wxString cname = fn.GetName();
+      return (cname[2] == 'L');
+}
+
+
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 {
@@ -2496,6 +2520,9 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     wxFileName fn(name);
 
+    //      Get the "Usage" character
+    wxString cname = fn.GetName();
+    m_usage_char = cname[2];
 
         //  Establish a common reference point for the chart
     ref_lat = (m_FullExtent.NLAT + m_FullExtent.SLAT) /2.;

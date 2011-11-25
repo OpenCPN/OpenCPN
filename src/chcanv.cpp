@@ -566,12 +566,13 @@ int CompareScales(QuiltCandidate *qc1, QuiltCandidate *qc2)
 class QuiltPatch
 {
       public:
-            QuiltPatch(){ b_Valid = false; b_eclipsed = false;}
+            QuiltPatch(){ b_Valid = false; b_eclipsed = false; b_overlay = false;}
             int         dbIndex;
             wxRegion    ActiveRegion;
             int         ProjType;
             bool        b_Valid;
             bool        b_eclipsed;
+            bool        b_overlay;
 };
 
 
@@ -670,7 +671,7 @@ class Quilt
             double            m_max_error_factor;
             double            m_canvas_scale_factor;
             int               m_canvas_width;
-
+            bool              m_bquilt_has_overlays;
 };
 
 WX_DEFINE_LIST(PatchList);
@@ -1680,7 +1681,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 */
       //    Now the rest of the candidates
-      if( !vp_region.IsEmpty() )
+      //    We always walk the entire list for s57 quilts, to pick up eclipsed overlays
+      if( !vp_region.IsEmpty() || (CHART_TYPE_S57 == m_reference_type))
       {
             for( ir=0 ; ir<m_pcandidate_array->GetCount() ; ir++)
             {
@@ -1763,7 +1765,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
 */
       /// Don't break early if the quilt is S57 ENC
       /// This will allow the overlay cells found in Euro(Austrian) IENC to be included
-                  if(1/*CHART_TYPE_S57 != m_reference_type*/)
+                  if(CHART_TYPE_S57 != m_reference_type)
                   {
                         if(vp_region.IsEmpty())                         // normal stop condition, quilt is full
                               break;
@@ -2272,6 +2274,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Walk the patch list again, checking the error factor
+      //    Also, directly mark the patch to indicate if it should be treated as an overlay
+      //    as seen in Austrian Inland series
+
+      m_bquilt_has_overlays = false;
       m_max_error_factor = 0.;
       for(unsigned int k = 0 ; k < m_PatchList.GetCount() ; k++)
       {
@@ -2285,6 +2291,13 @@ bool Quilt::Compose(const ViewPort &vp_in)
             if(pc)
             {
                   m_max_error_factor = wxMax(m_max_error_factor, pc->GetChart_Error_Factor());
+
+                  if(pc->GetChartType() == CHART_TYPE_S57)
+                  {
+                        s57chart *ps57 =  dynamic_cast<s57chart *> ( pc );
+                        pqp->b_overlay = (ps57->GetUsageChar() == 'L');
+                        m_bquilt_has_overlays = true;
+                  }
             }
       }
 
@@ -2355,9 +2368,11 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                                     if(!get_region.IsEmpty())
                                     {
 
-                                          pch->RenderRegionViewOnDC(tmp_dc, vp, get_region);
-
-                                          screen_region.Subtract(get_region);
+                                          if(!pqp->b_overlay)
+                                          {
+                                                pch->RenderRegionViewOnDC(tmp_dc, vp, get_region);
+                                                screen_region.Subtract(get_region);
+                                          }
                                     }
 //                                    else
 //                                          printf("Skipping Render due to empty region\n");
@@ -2384,6 +2399,47 @@ bool Quilt::RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &
                         pch = GetNextChart();
                         ip++;
             }
+
+            //    Render any Overlay patches for s57 charts(cells)
+            if(m_bquilt_has_overlays)
+            {
+                  pch = GetFirstChart();
+                  while(pch)
+                  {
+                        QuiltPatch *pqp = GetCurrentPatch();
+                        if(pqp->b_Valid)
+                        {
+                              if(!chart_region.IsEmpty())
+                              {
+                                    wxRegion get_region = pqp->ActiveRegion;
+                                    get_region.Intersect(chart_region);
+
+                                    if(!get_region.IsEmpty())
+                                    {
+                                          if(pqp->b_overlay)
+                                          {
+                                                s57chart *Chs57 = dynamic_cast<s57chart*> ( pch );
+                                                Chs57->RenderOverlayRegionViewOnDC(tmp_dc, vp, get_region);
+                                          }
+                                    }
+
+                                    wxRegionIterator upd ( get_region );
+                                    while ( upd )
+                                    {
+                                          wxRect rect = upd.GetRect();
+                                          dc.Blit(rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x, rect.y, wxCOPY, true);
+                                          upd ++ ;
+                                    }
+
+                                    tmp_dc.SelectObject(wxNullBitmap);
+                              }
+                        }
+
+                        pch = GetNextChart();
+                  }
+            }
+
+
 
             //    Any part of the chart region that was not rendered in the loop needs to be cleared
             wxRegionIterator clrit ( screen_region );
