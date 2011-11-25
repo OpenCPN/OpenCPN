@@ -2482,6 +2482,7 @@ bool MyApp::OnInit()
               g_PlanSpeed = 6.;
               g_bFullScreenQuilt = true;
               g_bQuiltEnable = true;
+              g_bskew_comp = false;
 
 #ifdef USE_S57
               if(ps52plib->m_bOK)

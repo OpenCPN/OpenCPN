@@ -2800,7 +2800,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "COGUPAvgSeconds" ),  &g_COGAvgSec, 15 );
       g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
-      Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 1 );
+      Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 0 );
       Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
       Read ( _T ( "GPUMemorySize" ),  &g_GPU_MemSize, 256 );
 
