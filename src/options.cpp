@@ -1691,6 +1691,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
       k_charts |= CHANGE_CHARTS;
 
+      pScanCheckBox->Disable();
       event.Skip();
 }
 
@@ -2146,6 +2147,8 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
       }
 
       k_charts |= CHANGE_CHARTS;
+
+      pScanCheckBox->Disable();
 
       event.Skip();
 }
