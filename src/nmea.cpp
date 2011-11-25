@@ -4178,7 +4178,8 @@ int ComPortManager::OpenComPortPhysical(wxString &com_name, int baud_rate)
             dcbConfig.Parity = NOPARITY;
             dcbConfig.StopBits = ONESTOPBIT;
             dcbConfig.fBinary = TRUE;
-            dcbConfig.fParity = TRUE;
+            dcbConfig.fRtsControl = RTS_CONTROL_DISABLE;
+            dcbConfig.fDtrControl = DTR_CONTROL_DISABLE;
       }
 
       else
