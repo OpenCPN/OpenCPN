@@ -4,3 +4,12 @@
 [submodule "plugins\\LogbookKonni_pi"]
 	path = plugins\\LogbookKonni_pi
 	url = git@github.com:nohal/LogbookKonni.git
+[submodule "plugins/wmm_pi"]
+	path = plugins/wmm_pi
+	url = git@github.com:nohal/wmm_pi.git
+[submodule "plugins/gecomapi_pi"]
+	path = plugins/gecomapi_pi
+	url = git@github.com:nohal/gecomapi_pi.git
+[submodule "plugins/chartdldr_pi"]
+	path = plugins/chartdldr_pi
+	url = git@github.com:nohal/chartdldr_pi.git
