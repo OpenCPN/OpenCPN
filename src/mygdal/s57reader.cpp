@@ -1374,16 +1374,22 @@ OGRFeature *S57Reader::ReadVector( int nFeatureId, int nRCNM )
         {
               DDFField *poVRPTEnd = poRecord->FindField( "VRPT", 1 );
 
-              poFeature->SetField( "NAME_RCNM_1", RCNM_VC );
-              poFeature->SetField( "NAME_RCID_1", ParseName( poVRPTEnd, 0 ) );
-              poFeature->SetField( "ORNT_1",
-                                   poRecord->GetIntSubfield("VRPT",1,"ORNT",0) );
-              poFeature->SetField( "USAG_1",
-                                   poRecord->GetIntSubfield("VRPT",1,"USAG",0) );
-              poFeature->SetField( "TOPI_1",
-                                   poRecord->GetIntSubfield("VRPT",1,"TOPI",0) );
-              poFeature->SetField( "MASK_1",
-                                   poRecord->GetIntSubfield("VRPT",1,"MASK",0) );
+              if(poVRPTEnd)
+              {
+
+                  poFeature->SetField( "NAME_RCNM_1", RCNM_VC );
+                  poFeature->SetField( "NAME_RCID_1", ParseName( poVRPTEnd, 0 ) );
+                  poFeature->SetField( "ORNT_1",
+                                    poRecord->GetIntSubfield("VRPT",1,"ORNT",0) );
+                  poFeature->SetField( "USAG_1",
+                                    poRecord->GetIntSubfield("VRPT",1,"USAG",0) );
+                  poFeature->SetField( "TOPI_1",
+                                    poRecord->GetIntSubfield("VRPT",1,"TOPI",0) );
+                  poFeature->SetField( "MASK_1",
+                                    poRecord->GetIntSubfield("VRPT",1,"MASK",0) );
+              }
+              else
+                    CPLDebug( "S57","Vector End Point not found, edge omitted." );
         }
     }
 
