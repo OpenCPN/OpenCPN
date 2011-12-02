@@ -228,6 +228,7 @@ private:
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
 
       void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
+      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect);
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       InitReturn FindOrCreateSenc( const wxString& name );
