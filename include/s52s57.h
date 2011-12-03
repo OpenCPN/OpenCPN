@@ -161,6 +161,8 @@ typedef struct _Rule{
    int     parm2;
    int     parm3;
    int     parm4;
+   int     parm5;
+   int     parm6;
    void    *pixelPtr;                  // opaque pointer
 
    }Rule;

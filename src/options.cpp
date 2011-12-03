@@ -1987,6 +1987,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
                   //    We need to do this now to handle the screen refresh that
                   //    is automatically generated on Windows at closure of the options dialog...
                   ps52plib->FlushSymbolCaches();
+                  ps52plib->ClearCNSYLUPArray();      // some CNSY depends on renderer (e.g. CARC)
+                  ps52plib->GenerateStateHash();
+
                   g_bopengl = temp_bopengl;
             }
 

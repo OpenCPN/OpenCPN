@@ -3344,18 +3344,47 @@ return true;
 
 
 
+unsigned char *GetRGBA_Array(wxImage &Image)
+{
+      //    Get the glRGBA format data from the wxImage
+      unsigned char *d = Image.GetData();
+      unsigned char *a = Image.GetAlpha();
 
+      unsigned char mr, mg, mb;
+      if(!Image.GetOrFindMaskColour(&mr, &mg, &mb) && !a)
+            printf("trying to use mask to draw a bitmap without alpha or mask\n");
+
+      int w = Image.GetWidth();
+      int h = Image.GetHeight();
+
+      unsigned char *e = (unsigned char *)malloc(w * h * 4);
+      for(int y=0; y<h; y++)
+      {
+            for(int x=0; x<w; x++)
+            {
+                  unsigned char r, g, b;
+                  int off = (y*Image.GetWidth()+x);
+                  r = d[off*3 + 0];
+                  g = d[off*3 + 1];
+                  b = d[off*3 + 2];
+
+                  e[off*4 + 0] = r;
+                  e[off*4 + 1] = g;
+                  e[off*4 + 2] = b;
+
+                  e[off*4 + 3] = a ? a[off] :
+                             ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
+            }
+      }
+
+      return e;
+}
 
 
 
 
 bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoint &r, ViewPort *vp, float rot_angle )
 {
-
-      //    OpenGL Unimplemented
-      if(!pdc)
-            return 0;
-
       float fsf = 100 / canvas_pix_per_mm;
 
       int width  = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
@@ -3372,6 +3401,30 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
       //Instantiate the symbol if necessary
       if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) )
       {
+             // delete any old private data
+            if ( prule->parm0 && prule->pixelPtr )
+            {
+                  switch(prule->parm0)
+                  {
+                        case ID_wxBitmap:
+                        {
+                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
+                              delete pbm;
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                        case ID_RGBA:
+                        {
+                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
+                              free ( p );
+                              prule->pixelPtr = NULL;
+                              prule->parm0 = 0;
+                              break;
+                        }
+                  }
+            }
+
             wxBitmap *pbm = new wxBitmap ( width, height );
             wxMemoryDC mdc;
             mdc.SelectObject ( *pbm );
@@ -3409,41 +3462,40 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
 
             //      Make the mask
             wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor);
-
             //      Associate the mask with the bitmap
             sbm->SetMask ( pmask );
 
-            // delete any old private data
-            if ( prule->parm0 && prule->pixelPtr )
+            if(!pdc)          // opengl
             {
-                  switch(prule->parm0)
-                  {
-                        case ID_wxBitmap:
-                        {
-                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
-                              delete pbm;
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                        case ID_RGBA:
-                        {
-                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
-                              free ( p );
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                  }
-            }
+            //    Create a byte data accessible wxImage from the wxBitmap
+                  wxImage Image = sbm->ConvertToImage();
+                  delete sbm;                               // done with this
 
+            //    Get the glRGBA format data from the wxImage
+                  unsigned char *e = GetRGBA_Array(Image);
+
+            //      Save the byte array ptr and aux parms in the rule
+                  prule->pixelPtr = e;
+                  prule->parm0 = ID_RGBA;
+                  prule->parm1 = m_colortable_index;
+                  prule->parm2 = bm_orgx- ( int ) ( pivot_x/fsf );
+                  prule->parm3 = bm_orgy- ( int ) ( pivot_y/fsf );
+                  prule->parm4 = ( int ) rot_angle;
+                  prule->parm5 = Image.GetWidth();
+                  prule->parm6 = Image.GetHeight();
+            }
+            else        // wxDC render
+            {
             //      Save the bitmap ptr and aux parms in the rule
-            prule->pixelPtr = sbm;
-            prule->parm0 = ID_wxBitmap;
-            prule->parm1 = m_colortable_index;
-            prule->parm2 = bm_orgx- ( int ) ( pivot_x/fsf );
-            prule->parm3 = bm_orgy- ( int ) ( pivot_y/fsf );
-            prule->parm4 = ( int ) rot_angle;
+                  prule->pixelPtr = sbm;
+                  prule->parm0 = ID_wxBitmap;
+                  prule->parm1 = m_colortable_index;
+                  prule->parm2 = bm_orgx- ( int ) ( pivot_x/fsf );
+                  prule->parm3 = bm_orgy- ( int ) ( pivot_y/fsf );
+                  prule->parm4 = ( int ) rot_angle;
+                  prule->parm5 = bm_width;
+                  prule->parm6 = bm_height;
+            }
 
 
       }               // instantiation
@@ -3452,18 +3504,77 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
       //    then render the symbol directly in HPGL
       if ( ( int ) rot_angle != prule->parm4 )
       {
-            char *str = prule->vector.LVCT;
-            char *col = prule->colRef.LCRF;
-            wxPoint pivot ( prule->pos.line.pivot_x.LICL, prule->pos.line.pivot_y.LIRW );
-            RenderHPGLtoDC ( str, col, pdc, r, pivot, ( double ) rot_angle );
+            if(pdc)
+            {
+                  char *str = prule->vector.LVCT;
+                  char *col = prule->colRef.LCRF;
+                  wxPoint pivot ( prule->pos.line.pivot_x.LICL, prule->pos.line.pivot_y.LIRW );
+                  RenderHPGLtoDC ( str, col, pdc, r, pivot, ( double ) rot_angle );
+            }
+            else
+            {
+                  wxBitmap *pbm = new wxBitmap ( width, height );
+                  wxMemoryDC mdc;
+                  mdc.SelectObject ( *pbm );
+                  mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
+                  mdc.Clear();
+
+                  char *str = prule->vector.LVCT;
+                  char *col = prule->colRef.LCRF;
+                  wxPoint pivot ( pivot_x, pivot_y );
+                  wxPoint r0 ( ( int ) ( pivot_x/fsf ), ( int ) ( pivot_y/fsf ) );
+                  RenderHPGLtoDC ( str, col, &mdc, r0, pivot, ( double ) rot_angle );
+
+                  int bm_width  = ( mdc.MaxX() - mdc.MinX() ) + 1;
+                  int bm_height = ( mdc.MaxY() - mdc.MinY() ) + 1;
+                  int bm_orgx = wxMax ( 0, mdc.MinX() );
+                  int bm_orgy = wxMax ( 0, mdc.MinY() );
+
+            //      Pre-clip the sub-bitmap to avoid assert errors
+                  if ( ( bm_height + bm_orgy ) > height )
+                        bm_height = height - bm_orgy;
+                  if ( ( bm_width + bm_orgx ) > width )
+                        bm_width = width - bm_orgx;
+
+                  mdc.SelectObject ( wxNullBitmap );
+
+                  //          Get smallest containing bitmap
+                  wxBitmap *sbm = new wxBitmap ( pbm->GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+                  delete pbm;
+
+                  //      Make the mask
+                  wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor);
+                  //      Associate the mask with the bitmap
+                  sbm->SetMask ( pmask );
+
+                  //    Create a byte data accessible wxImage from the wxBitmap
+                  wxImage Image = sbm->ConvertToImage();
+                  delete sbm;                               // done with this
+
+                  unsigned char *e = GetRGBA_Array(Image);
+
+                  //   And Render
+                  glColor4f(1, 1, 1, 1);
+
+                  glEnable(GL_BLEND);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  glRasterPos2i(r.x + (bm_orgx- ( int ) ( pivot_x/fsf )), r.y + (bm_orgy- ( int ) ( pivot_y/fsf )));
+                  glPixelZoom(1, -1);
+                  glDrawPixels(Image.GetWidth(), Image.GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, e);
+                  glPixelZoom(1, 1);
+                  glDisable(GL_BLEND);
+
+                  free (e);
+
+            }
 
             return true;
       }
 
 
       //        Get the bounding box for the as-drawn symbol
-      int b_width  = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetWidth();
-      int b_height = ( ( wxBitmap * ) ( prule->pixelPtr ) )->GetHeight();
+      int b_width  =  prule->parm5;
+      int b_height =  prule->parm6;
 
       wxBoundingBox symbox;
       double plat, plon;
@@ -3485,23 +3596,35 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
 */
 
 
-      //      Now render the symbol from the cached bitmap
+     //      Now render the symbol
+      if(!m_pdc)          // opengl
+      {
+            glColor4f(1, 1, 1, 1);
 
-      //      Get the bitmap into a memory dc
-      wxMemoryDC mdc;
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glRasterPos2i(r.x + prule->parm2, r.y + prule->parm3);
+            glPixelZoom(1, -1);
+            glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr);
+            glPixelZoom(1, 1);
+            glDisable(GL_BLEND);
+      }
+      else
+      {
+            //      Get the bitmap into a memory dc
+            wxMemoryDC mdc;
+            mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
 
-      mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
+            //      Blit  it into the target dc
+            pdc->Blit ( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
 
-      //      Blit  it into the target dc
-      pdc->Blit ( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+      // Debug
+      //    pdc->SetPen(wxPen(*wxGREEN, 1));
+      //    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+      //    pdc->DrawRectangle(r.x + prule->parm2, r.y + prule->parm3, b_width, b_height);
 
-// Debug
-//    pdc->SetPen(wxPen(*wxGREEN, 1));
-//    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
-//    pdc->DrawRectangle(r.x + prule->parm2, r.y + prule->parm3, b_width, b_height);
-
-      mdc.SelectObject ( wxNullBitmap );
-
+            mdc.SelectObject ( wxNullBitmap );
+      }
 
       //  Update the object Bounding box
       //  so that subsequent drawing operations will redraw the item fully
@@ -4665,9 +4788,6 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-      //    OpenGL Unimplemented
-      if(!m_pdc)
-            return 0;
 
       char *str = ( char* ) rules->INSTstr;
 
@@ -4716,6 +4836,8 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       int width;
       int height;
       int rad;
+
+      Rule *prule = rules->razRule;
 
       //Instantiate the symbol if necessary
       if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
@@ -4884,68 +5006,170 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   }
             }
 
-            //      Save the bitmap ptr and aux parms in the rule
-            rules->razRule->pixelPtr = sbm;
-            rules->razRule->parm0 = ID_wxBitmap;
-            rules->razRule->parm1 = m_colortable_index;
-            rules->razRule->parm2 = bm_orgx - width/2;
-            rules->razRule->parm3 = bm_orgy - height/2;
+            if(m_pdc)         // DC Render?
+            {
+                  //      Save the bitmap ptr and aux parms in the rule
+                  prule->pixelPtr = sbm;
+                  prule->parm0 = ID_wxBitmap;
+                  prule->parm1 = m_colortable_index;
+                  prule->parm2 = bm_orgx - width/2;
+                  prule->parm3 = bm_orgy - height/2;
+                  prule->parm5 = bm_width;
+                  prule->parm6 = bm_height;
+            }
+            else        // opengl
+            {
+                  //Make an image from the bitmap
+                  wxImage Image = sbm->ConvertToImage();
+                  delete sbm;                         // done with this
+
+                  //  Create an opengl compatible memory image
+                  unsigned char *d = Image.GetData();
+                  unsigned char *a = Image.GetAlpha();
+
+                  unsigned char mr, mg, mb;
+                  if(!Image.GetOrFindMaskColour(&mr, &mg, &mb) && !a)
+                        printf("trying to use mask to draw a bitmap without alpha or mask\n");
+
+                  int w = Image.GetWidth();
+                  int h = Image.GetHeight();
+
+                  unsigned char *e = (unsigned char *)malloc(w * h * 4);
+                  for(int y=0; y<h; y++)
+                  {
+                        for(int x=0; x<w; x++)
+                        {
+                              unsigned char r, g, b;
+                              int off = (y*Image.GetWidth()+x);
+                              r = d[off*3 + 0];
+                              g = d[off*3 + 1];
+                              b = d[off*3 + 2];
+
+                              e[off*4 + 0] = r;
+                              e[off*4 + 1] = g;
+                              e[off*4 + 2] = b;
+
+                              e[off*4 + 3] = a ? a[off] :
+                                          ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
+                        }
+                  }
+
+            //      Save the RGBA byte ptr and aux parms in the rule
+                  prule->pixelPtr = e;
+                  prule->parm0 = ID_RGBA;
+                  prule->parm1 = m_colortable_index;
+                  prule->parm2 = bm_orgx - width/2;
+                  prule->parm3 = bm_orgy - height/2;
+                  prule->parm5 = w;
+                  prule->parm6 = h;
+            }
 
       }               // instantiation
 
-      //      Now render the symbol from the cached bitmap
+      int b_width  = prule->parm5;
+      int b_height = prule->parm6;
 
       //  Render arcs at object's x/y
       wxPoint r;
       rzRules->chart->GetPointPix ( rzRules, rzRules->obj->y, rzRules->obj->x, &r );
 
-      int b_width  = ( ( wxBitmap * ) ( rules->razRule->pixelPtr ) )->GetWidth();
-      int b_height = ( ( wxBitmap * ) ( rules->razRule->pixelPtr ) )->GetHeight();
-
-
-      //      Get the bitmap into a memory dc
-      wxMemoryDC mdc;
-
-      mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( rules->razRule->pixelPtr ) ) ) );
-
-      //      Blit it into the target dc
-      m_pdc->Blit ( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
-// Debug
-//        pdc->SetPen(wxPen(*wxGREEN, 1));
-//        pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
-//        pdc->DrawRectangle(r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height);
-
-      mdc.SelectObject ( wxNullBitmap );
-
-      //    Draw the sector legs directly on the target DC
-      //    so that anti-aliasing works against the drawn image (cannot be cached...)
-      if ( sector_radius > 0 )
+      //      Now render the symbol
+      if(!m_pdc)          // opengl
       {
-            int leg_len = ( int ) ( sector_radius * m_display_pix_per_mm );
+            glColor4f(1, 1, 1, 1);
 
-            wxDash dash1[2];
-            dash1[0] = ( int ) ( 3.6 * m_display_pix_per_mm );  //8// Long dash  <---------+
-            dash1[1] = ( int ) ( 1.8 * m_display_pix_per_mm );  //2// Short gap            |
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glRasterPos2i(r.x + rules->razRule->parm2, r.y + rules->razRule->parm3);
+            glPixelZoom(1, -1);
+            glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr);
+            glPixelZoom(1, 1);
+            glDisable(GL_BLEND);
 
-            /*
-                            wxPen *pthispen = new wxPen(*wxBLACK_PEN);
-                            pthispen->SetStyle(wxUSER_DASH);
-                            pthispen->SetDashes( 2, dash1 );
-                          //      Undocumented "feature":  Pen must be fully specified <<<BEFORE>>> setting into DC
-                            pdc->SetPen ( *pthispen );
-            */
-            wxColour c = GetGlobalColor ( _T ( "CHBLK" ) );
-            double a = ( sectr1-90 ) * PI / 180;
-            int x = r.x + ( int ) ( leg_len * cos ( a ) );
-            int y = r.y + ( int ) ( leg_len * sin ( a ) );
-            DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+            //    Draw the sector legs directly on the target canvas
+            //    so that anti-aliasing works against the drawn image (cannot be cached...)
+            if ( sector_radius > 0 )
+            {
+                  int leg_len = ( int ) ( sector_radius * m_display_pix_per_mm );
 
-            a = ( sectr2-90 ) * PI / 180;
-            x = r.x + ( int ) ( leg_len * cos ( a ) );
-            y = r.y + ( int ) ( leg_len * sin ( a ) );
-            DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+                  wxColour c = GetGlobalColor ( _T ( "CHBLK" ) );
+                  glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
+                  int width = 1;
+                  glLineWidth(width);
+
+                  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+          //      Enable anti-aliased lines, at best quality
+                  glEnable(GL_LINE_SMOOTH);
+                  glEnable(GL_BLEND);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                  double a = ( sectr1-90 ) * PI / 180;
+                  int x = r.x + ( int ) ( leg_len * cos ( a ) );
+                  int y = r.y + ( int ) ( leg_len * sin ( a ) );
+                  glBegin(GL_LINES);
+                  glVertex2i(r.x, r.y);
+                  glVertex2i(x, y);
+                  glEnd();
+
+                  a = ( sectr2-90 ) * PI / 180;
+                  x = r.x + ( int ) ( leg_len * cos ( a ) );
+                  y = r.y + ( int ) ( leg_len * sin ( a ) );
+                  glBegin(GL_LINES);
+                  glVertex2i(r.x, r.y);
+                  glVertex2i(x, y);
+                  glEnd();
+
+                  glPopAttrib();
+
+           }
+
       }
+      else
+      {
+            //      Get the bitmap into a memory dc
+            wxMemoryDC mdc;
+            mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( rules->razRule->pixelPtr ) ) ) );
 
+            //      Blit it into the target dc, using mask
+            m_pdc->Blit ( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+      // Debug
+      //        pdc->SetPen(wxPen(*wxGREEN, 1));
+      //        pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+      //        pdc->DrawRectangle(r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height);
+
+            mdc.SelectObject ( wxNullBitmap );
+
+            //    Draw the sector legs directly on the target DC
+            //    so that anti-aliasing works against the drawn image (cannot be cached...)
+            if ( sector_radius > 0 )
+            {
+                  int leg_len = ( int ) ( sector_radius * m_display_pix_per_mm );
+
+                  wxDash dash1[2];
+                  dash1[0] = ( int ) ( 3.6 * m_display_pix_per_mm );  //8// Long dash  <---------+
+                  dash1[1] = ( int ) ( 1.8 * m_display_pix_per_mm );  //2// Short gap            |
+
+                  /*
+                              wxPen *pthispen = new wxPen(*wxBLACK_PEN);
+                              pthispen->SetStyle(wxUSER_DASH);
+                              pthispen->SetDashes( 2, dash1 );
+                              //      Undocumented "feature":  Pen must be fully specified <<<BEFORE>>> setting into DC
+                              pdc->SetPen ( *pthispen );
+                  */
+                  wxColour c = GetGlobalColor ( _T ( "CHBLK" ) );
+                  double a = ( sectr1-90 ) * PI / 180;
+                  int x = r.x + ( int ) ( leg_len * cos ( a ) );
+                  int y = r.y + ( int ) ( leg_len * sin ( a ) );
+                  DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+
+                  a = ( sectr2-90 ) * PI / 180;
+                  x = r.x + ( int ) ( leg_len * cos ( a ) );
+                  y = r.y + ( int ) ( leg_len * sin ( a ) );
+                  DrawWuLine ( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
+            }
+      }
 
 
       //  Update the object Bounding box,
@@ -5067,7 +5291,7 @@ int s52plib::DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 //   if(rzRules->obj->Index == 1596315)
 //         int rrt = 5;
 
-//    if(!strncmp(rzRules->LUP->OBCL, "UWTROC", 6))
+//    if(!strncmp(rzRules->LUP->OBCL, "RDOCAL", 6))
 //            int yyrkt = 4;
 
       while ( rules != NULL )
@@ -5174,7 +5398,7 @@ bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
             {
                   OBJLElement *pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
                   strncpy(pOLE->OBJLName, token.mb_str(), 6);
-                  pOLE->nViz = 1;
+                  pOLE->nViz = 0;
 
                   pOBJLArray->Add((void *)pOLE);
             }
@@ -5208,7 +5432,7 @@ void s52plib::UpdateOBJLArray(S57Obj *obj)
       {
             pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
             strncpy(pOLE->OBJLName, obj->FeatureName, 6);
-            pOLE->nViz = 1;
+            pOLE->nViz = 0;
 
             pOBJLArray->Add((void *)pOLE);
             obj->iOBJL  = pOBJLArray->GetCount() - 1;
