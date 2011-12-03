@@ -1418,18 +1418,18 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         chart_skew -= 360.;
 
                   // only unskewed charts of the proper projection and type may be quilted....
-//                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
-//                     (fabs(chart_skew) < 1.0) &&
-//                      (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+                  // and we avoid adding CM93 Composite until later
                   if((m_reference_family == ChartData->GetDBChartFamily(i)) &&
                             (fabs(chart_skew) < 1.0) &&
-                            (ChartData->GetDBChartProj(i) == m_quilt_proj) )
+                            (ChartData->GetDBChartProj(i) == m_quilt_proj) &&
+                            (ChartData->GetDBChartType(i) != CHART_TYPE_CM93COMP)
+                     )
                   {
                         QuiltCandidate *qcnew = new QuiltCandidate;
                         qcnew->dbIndex = i;
                         qcnew->ChartScale = ChartData->GetDBChartScale(i);
                         m_pcandidate_array->Add(qcnew);
-                 }
+                  }
             }
       }
       if(vp_in.b_FullScreenQuilt)
@@ -1451,6 +1451,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                   if(m_reference_family != ChartData->GetDBChartFamily(i))
                         continue;
+
+                  if(ChartData->GetDBChartType(i) == CHART_TYPE_CM93COMP)
+                      continue;
 
                   wxBoundingBox chart_box;
                   ChartData->GetDBBoundingBox(i, &chart_box);
@@ -1752,8 +1755,8 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                   //    Here is a special case for CM93Composite, which covers the world....
                   //    Adding needs to be deferred........
-                  if(cte.GetChartType() == CHART_TYPE_CM93COMP)
-                        pqc->b_include = false;                         // skip for now
+// never could be seen                  if(cte.GetChartType() == CHART_TYPE_CM93COMP)
+//                                             pqc->b_include = false;                         // skip for now
 /*
                   wxRegionIterator updd ( vp_region );
                   while ( updd )
@@ -1795,7 +1798,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
       //    Potentially add cm93 to the candidate array if the region is not yet fully covered
-      if((m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty() /*&& !g_bopengl*/)
+      if( (m_quilt_proj == PROJECTION_MERCATOR) && !vp_region.IsEmpty() )
       {
             //    Check the remaining unpainted region.
             //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
@@ -12737,7 +12740,7 @@ void glChartCanvas::render()
                     return;
 
               //  TODO This may not be necessary, but nice for debugging
-//              glClear(GL_COLOR_BUFFER_BIT);
+              glClear(GL_COLOR_BUFFER_BIT);
 
 
 
