@@ -1196,11 +1196,11 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                   double max_ref_scale = pc->GetNormalScaleMax(m_canvas_scale_factor, m_canvas_width);
 //                  max_ref_scale *= 1.1;         // Fudge factor, to err on the side of more detail on zoomout
 
-                  printf("ARZO checking.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
+//                  printf("ARZO checking.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
                   if(proposed_scale_onscreen > max_ref_scale)
                   {
-                        printf("ARZO changing ref to smaller scale. \n" );
+//                        printf("ARZO changing ref to smaller scale. \n" );
 
                         unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
 
@@ -1223,7 +1223,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
 
                         }
 
-                        printf("ARZO selected smaller scale.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
+//                        printf("ARZO selected smaller scale.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
                         if(target_stack_index < m_extended_stack_array.GetCount())
                         {
@@ -1236,7 +1236,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                   }
                   else if (0)
                   {
-                        printf("ARZO checking smaller scale.\n" );
+//                        printf("ARZO checking smaller scale.\n" );
 
                         // Check to see if a smaller scale chart's zoom range is ueable
                         unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
@@ -1258,7 +1258,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
 
                         }
 
-                        printf("ARZO selected smaller scale in min range.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
+//                        printf("ARZO selected smaller scale in min range.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
 
                         if(target_stack_index < m_extended_stack_array.GetCount())
                         {
@@ -1293,11 +1293,11 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
             {
                   double min_ref_scale = pc->GetNormalScaleMin(m_canvas_scale_factor, false);
 
-                  printf("ARZI checking.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
+//                  printf("ARZI checking.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
 
                   if(proposed_scale_onscreen < min_ref_scale)
                   {
-                        printf("ARZI changing ref to larger scale.\n" );
+//                        printf("ARZI changing ref to larger scale.\n" );
                         int current_db_index = m_refchart_dbIndex;
 //                        int current_type = m_reference_type;
                         int current_family = m_reference_family;
@@ -1323,7 +1323,7 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                               }
                         }
 
-                        printf("ARZI selected larger scale.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
+//                        printf("ARZI selected larger scale.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
 
                         if(target_stack_index >= 0)
                         {
@@ -4510,6 +4510,11 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
                   m_zoom_timer.Start(m_zoomt);//, true);
                   m_bzooming_in = true;
             }
+            else        // Make sure timer is running, to recover from lost events
+            {
+                  if(!m_zoom_timer.IsRunning())
+                        m_zoom_timer.Start(m_zoomt);
+            }
       }
       else
             DoZoomCanvasIn(factor);
@@ -4541,6 +4546,12 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
                   m_zoom_timer.Start(m_zoomt);//, true);
                   m_bzooming_out = true;
             }
+            else        // Make sure timer is running, to recover from lost events
+            {
+                  if(!m_zoom_timer.IsRunning())
+                        m_zoom_timer.Start(m_zoomt);
+            }
+
       }
       else
             DoZoomCanvasOut(factor);
@@ -4560,6 +4571,8 @@ void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
             }
             else
                   m_bzooming_in = false;
+
+            m_bzooming_out = false;
       }
       else if(m_bzooming_out)
       {
@@ -4575,6 +4588,7 @@ void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
             if(m_zoom_current_factor >= m_zoom_target_factor)
                   m_bzooming_out = false;
 
+            m_bzooming_in = false;
       }
       else
       {
@@ -4582,9 +4596,6 @@ void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
             m_bzooming_out = false;
             m_bzooming_in = false;
       }
-
-
-
 }
 
 
