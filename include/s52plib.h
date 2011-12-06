@@ -270,10 +270,11 @@ public:
       void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj, S52color *c, wxBoundingBox &BBView,
                render_canvas_parms *pb_spec, render_canvas_parms *patt_spec);
 
-      void draw_lc_poly(wxDC *pdc, wxPoint *ptp, int npt,
-                        float sym_len, float sym_factor, Rule *draw_rule, ViewPort *vp);
+       void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int npt,
+                         float sym_len, float sym_factor, Rule *draw_rule, ViewPort *vp );
 
       bool RenderHPGLtoDC(char *str, char *col, wxDC *pdc, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
+      bool RenderHPGLtoGL ( char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle );
       bool RenderHPGL(ObjRazRules *rzRules, Rule * rule_in, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
       bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
       wxImage RuleXBMToImage(Rule *prule);

@@ -3343,6 +3343,325 @@ return true;
        }
 
 
+bool s52plib::RenderHPGLtoGL ( char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle )
+{
+      int width = 1;
+      double radius = 0.0;
+      int    tessObj       = FALSE;
+      int    polyMode      = FALSE;
+      int    inBegEnd      = FALSE;
+      S52color *newColor = NULL;
+      float trans = 1.0;
+
+      int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+      int x,y;
+
+      float sin_rot = 0., cos_rot = 1.;
+
+      if ( rot_angle )
+      {
+            sin_rot = sin ( rot_angle * PI / 180. );
+            cos_rot = cos ( rot_angle * PI / 180. );
+      }
+
+
+#define MAX_HPGL_GL_POINTS 100
+      wxPoint PointArray[MAX_HPGL_GL_POINTS];
+
+
+      float fsf = 100 / canvas_pix_per_mm;
+      int scaleFac = ( int ) floor ( fsf );
+
+
+
+
+#define INST(cmd)               if(0==strncmp(str,#cmd,2)) {str+=2;
+
+      while ( *str != '\0' )
+      {
+
+            // Select (Pen) color
+            INST ( SP )
+                  char *c=col;
+                  while ( *c != '\0' )
+                  {
+                        if ( *c == *str )
+                              break;
+                        else
+                              c+=6;
+                  }
+                  newColor =  S52_getColor ( c+1 );
+
+            }
+
+      // Select Transparency
+	        else INST ( ST )
+                trans = atof ( str );
+                trans = ( trans == 0 ) ? 1 : trans*0.25;
+      //test
+                trans = 1.0;
+	        }
+
+// Select pen Width
+            else INST ( SW )
+                width = atoi ( str++ );
+            }
+
+        // Pen Up
+            else INST ( PU )
+                wxColour color ( newColor->R, newColor->G, newColor->B );
+
+                glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+                glLineWidth(width);
+
+                sscanf ( str, "%u,%u", &x, &y );
+                x1 = x - pivot.x;
+                y1 = y - pivot.y;
+
+      //              Rotation
+                if ( rot_angle )
+                {
+                  float xp = ( x1 * cos_rot ) - ( y1 * sin_rot );
+                  float yp = ( x1 * sin_rot ) + ( y1 * cos_rot );
+
+                  x1 = ( int ) xp;
+                  y1 = ( int ) yp;
+                }
+
+
+                x1 /= scaleFac;
+                y1 /= scaleFac;
+
+                x1 += r.x;
+                y1 += r.y;
+
+                while ( *str != ';' ) str++;
+            }     //INST
+
+      // Pen Down
+            else INST ( PD )
+                if ( !inBegEnd )
+                    inBegEnd = TRUE;
+
+                if ( *str == ';' )
+                {
+                  x2 = x1+1;
+                  y2 = y1;
+                }
+
+                else
+                {
+                  sscanf ( str, "%u,%u", &x, &y );
+                  x2 = x - pivot.x;
+                  y2 = y - pivot.y;
+                  if ( rot_angle )
+                  {
+                        float xp = ( x2 * cos_rot ) - ( y2 * sin_rot );
+                        float yp = ( x2 * sin_rot ) + ( y2 * cos_rot );
+
+                        x2 = ( int ) xp;
+                        y2 = ( int ) yp;
+                  }
+
+                  x2 /= scaleFac;
+                  y2 /= scaleFac;
+
+                  x2 += r.x;
+                  y2 += r.y;
+                }
+
+                glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+          //      Enable anti-aliased lines, at best quality
+                glEnable(GL_LINE_SMOOTH);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                //if(m_pen.GetWidth() > 1)
+                //  DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
+                //else
+                {
+                  glBegin(GL_LINES);
+                  glVertex2i(x1, y1);
+                  glVertex2i(x2, y2);
+                  glEnd();
+                }
+                glPopAttrib();
+
+                x1=x2;                  // set for pu;pd;pd....
+                y1=y2;
+
+                while ( *str != ';' ) str++;
+
+            }     //INST
+
+            else INST ( CI )
+                radius = ( double ) atoi ( str );
+                wxColour color ( newColor->R, newColor->G, newColor->B );
+                glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+                glLineWidth(width);
+
+                int r1 = ( int ) radius / scaleFac;
+
+                glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+          //      Enable anti-aliased lines, at best quality
+                glEnable(GL_LINE_SMOOTH);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                glBegin(GL_LINE_STRIP);
+                for(double a = 0; a <= 2*M_PI; a+=2*M_PI/200)
+                    glVertex2d(x1 + r1*sin(a), y1 + r1*cos(a));
+                glEnd();
+
+                glPopAttrib();            // restore state
+
+                inBegEnd = FALSE;
+                while ( *str != ';' ) ++str;
+            }           //INST
+
+//-- poly mode ---
+
+                                                                           // trans. is 1 for CI, AA, EP, PD
+
+
+/*                                                                           // Polygon Mode
+      else INST ( PM )
+            tessObj = FALSE;
+            polyMode= TRUE;
+            do
+            {
+                  if ( *str == '0' )          // start a new poly
+                  {
+                        str+=2;
+
+                        // CIrcle
+                        INST ( CI )
+                        radius = ( double ) atoi ( str );
+                        wxColour color ( newColor->R, newColor->G, newColor->B );
+                        wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush ( color, wxSOLID );
+                        wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, width, wxSOLID );
+
+                        pdc->SetPen ( *pthispen );
+                        pdc->SetBrush ( *pthisbrush );
+
+                        int r1 = ( int ) radius / scaleFac;
+
+                        pdc->DrawCircle ( x1, y1, r1 );
+
+                        inBegEnd = FALSE;
+
+                        while ( *str != ';' ) ++str;
+
+                        // Arc Angle --never used!
+                  }
+
+                  else INST ( AA )
+                        wxLogMessage ( _T ( "SEQuencer:_renderHPGL(): fixme AA instruction not implemented" ) );
+                        inBegEnd = FALSE;
+                  }     // INST AA
+                  else
+                  {
+                        tessObj = TRUE;
+                        inBegEnd = FALSE;
+                  }
+            }     //do
+
+            if ( *str == '1' )
+            {
+      // sub poly --never used!
+            str++;
+            }
+
+            if ( tessObj )
+            {
+                  str+=2;    // skip PD
+      do
+      {
+            if ( !inBegEnd )
+            {
+                  PointArray[0].x =x1;
+                  PointArray[0].y =y1;
+                  vIdx = 1;
+                  inBegEnd = TRUE;
+            }                                               // no need to remember PU!
+
+            // read tess vertex
+            sscanf ( str, "%u,%u", &x, &y );
+            x2 = x - pivot.x;
+            y2 = y - pivot.y;
+            if ( rot_angle )
+            {
+                  float xp = ( x2 * cos_rot ) - ( y2 * sin_rot );
+                  float yp = ( x2 * sin_rot ) + ( y2 * cos_rot );
+
+                  x2 = ( int ) xp;
+                  y2 = ( int ) yp;
+            }
+            x2 /= scaleFac;
+            y2 /= scaleFac;
+
+            x2 += r.x;
+            y2 += r.y;
+
+            if ( vIdx < MAX_POINTS )
+            {
+                  PointArray[vIdx].x =x2;
+                  PointArray[vIdx].y =y2;
+            }
+
+            ++vIdx;
+
+            while ( *str++ != ',' );               // specs: could repeat x,y,x, ..
+            while ( *str   != ',' && *str != ';' ) str++;
+            if ( *str == ',' ) str++;
+            if ( 0 == strncmp ( str,";PD",3 ) ) str += 3;
+      }
+      while ( *str != ';' );
+}
+}
+while ( 0 != strncmp ( str,";PM2",4 ) );
+
+// exit polygon mode
+str++;
+while ( *str != ';' ) ++str;
+
+
+} // PM
+*/
+
+/*
+// Fill Polygon
+else INST ( FP )
+      if ( tessObj )
+      {
+            wxColour color ( newColor->R, newColor->G, newColor->B );
+            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush ( color, wxSOLID );
+
+            pdc->SetBrush ( *pthisbrush );
+            pdc->DrawPolygon ( vIdx, PointArray );
+            inBegEnd = FALSE;
+      }
+}
+
+// Symbol Call    --never used
+else INST ( SC )
+{
+      wxString msg = _T ( "SEQuencer:_renderHPGL(): fixme SC instruction not implemented " );
+      LogMessageOnce ( msg );
+}
+}
+*/
+
+    ++str;
+
+    } /* while */
+
+    return true;
+}
+
 
 unsigned char *GetRGBA_Array(wxImage &Image)
 {
@@ -4364,16 +4683,9 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-
       wxPoint   *ptp;
       int       npt;
-      S52color     *c;
-      int       w;
       wxPoint   r;
-
-      //    OpenGL Unimplemented
-      if(!m_pdc)
-            return 0;
 
 //    Debug
 //        if(rzRules->obj->Index == 649)
@@ -4384,16 +4696,11 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       float sym_factor = 1.0 ; ///1.50;                        // gives nicer effect
 
 
-//      Create a pen for drawing adjustments outside of HPGL renderer
+//      Create a color for drawing adjustments outside of HPGL renderer
       char *tcolptr = rules->razRule->colRef.LCRF;
-//        strncpy(tcolptr,rules->razRule->colRef.LCRF->mb_str(), 7);
-//        tcolptr[8]=0;
-//        char *tcolptr = (char *)(rules->razRule->colRef.LCRF->mb_str());
-      c = S52_getColor ( tcolptr + 1 );       // +1 skips "n" in HPGL SPn format
-      w = 1;
+      S52color *c = S52_getColor ( tcolptr + 1 );       // +1 skips "n" in HPGL SPn format
+      int w = 1;        // arbitrary width
       wxColour color ( c->R, c->G, c->B );
-      wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, 1, wxSOLID );
-      m_pdc->SetPen ( *pthispen );
 
       //  Get the current display priority from the LUP
       int priority_current = rzRules->LUP->DPRI - '0';          //TODO fix this hack by putting priority into object during _insertRules
@@ -4492,9 +4799,9 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   }
 
                   if ( ( inode >= 0 ) && ( jnode >= 0 ) )
-                        draw_lc_poly ( m_pdc, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly ( m_pdc, color, w, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
                   else
-                        draw_lc_poly ( m_pdc, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly ( m_pdc, color, w, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
 
 
             }
@@ -4530,7 +4837,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
 
 
-                  draw_lc_poly ( m_pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
+                  draw_lc_poly ( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
 
                   free ( ptp );
 
@@ -4554,29 +4861,13 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   npt = pptg->pn_vertex[ic];
                   wxPoint *ptp = ( wxPoint * ) malloc ( ( npt + 1 ) * sizeof ( wxPoint ) );
                   wxPoint *pr = ptp;
-                  /*
-                                      double *pf = &ppolygeo[ctr_offset];
-                                      for ( int ip=0 ; ip < npt ; ip++ )
-                                      {
-                                            double plon = *pf++;
-                                            double plat = *pf++;
-
-                                            rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                                            pr++;
-                                      }
-                                      double plon = ppolygeo[ ctr_offset];             // close the polyline
-                                      double plat = ppolygeo[ ctr_offset + 1];
-                                      rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                  */
                   for ( int ip=0 ; ip < npt ; ip++, pr++ )
                         rzRules->chart->GetPointPix ( rzRules,  ppolygeo[ctr_offset + ip].m_y, ppolygeo[ctr_offset + ip].m_x, pr );
 
                   //  Close polyline
                   rzRules->chart->GetPointPix ( rzRules,  ppolygeo[ctr_offset].m_y, ppolygeo[ctr_offset].m_x, pr );
 
-
-
-                  draw_lc_poly ( m_pdc, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
+                  draw_lc_poly ( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule, vp );
 
                   free ( ptp );
                   ctr_offset += ( npt + 1 ) *2;
@@ -4605,8 +4896,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   ppt++;
             }
 
-
-            draw_lc_poly ( m_pdc, ptp, npt, sym_len, sym_factor, rules->razRule, vp );
+            draw_lc_poly ( m_pdc, color, w, ptp, npt, sym_len, sym_factor, rules->razRule, vp );
 
             free ( ptp );
       }
@@ -4617,7 +4907,7 @@ int s52plib::RenderLC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 //      Render Line Complex Polyline
 
-void s52plib::draw_lc_poly ( wxDC *pdc, wxPoint *ptp, int npt,
+void s52plib::draw_lc_poly ( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int npt,
                              float sym_len, float sym_factor, Rule *draw_rule, ViewPort *vp )
 {
       wxPoint   r;
@@ -4626,6 +4916,11 @@ void s52plib::draw_lc_poly ( wxDC *pdc, wxPoint *ptp, int npt,
       int xmax_ = vp->pix_width;
       int ymin_ = 0;
       int ymax_ = vp->pix_height;
+
+      if(pdc)
+      {
+             wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, width, wxSOLID );
+             m_pdc->SetPen ( *pthispen );
 
       for ( int iseg = 0 ; iseg < npt - 1 ; iseg++ )
       {
@@ -4695,7 +4990,119 @@ void s52plib::draw_lc_poly ( wxDC *pdc, wxPoint *ptp, int npt,
                         pdc->DrawLine ( ( int ) xs, ( int ) ys, ptp[iseg+1].x, ptp[iseg+1].y );
                   }
             }
-      }
+      } // for
+      } // if pdc
+      else          // opengl
+      {
+          //    Set up the color
+          glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+          glLineWidth(width);
+
+          for ( int iseg = 0 ; iseg < npt - 1 ; iseg++ )
+          {
+            // Do not bother with segments that are invisible
+
+            x0 = ptp[iseg].x;
+            y0 = ptp[iseg].y;
+            x1 = ptp[iseg+1].x;
+            y1 = ptp[iseg+1].y;
+
+            ClipResult res = cohen_sutherland_line_clip_i ( &x0, &y0, &x1, &y1,
+                             xmin_, xmax_, ymin_, ymax_ );
+
+            if ( res == Invisible )
+                  continue;
+
+            float dx = ptp[iseg + 1].x - ptp[iseg].x;
+            float dy = ptp[iseg + 1].y - ptp[iseg].y;
+            float seg_len = sqrt ( dx*dx + dy*dy );
+            float theta = atan2 ( dy,dx );
+            float cth = cos ( theta );
+            float sth = sin ( theta );
+            float tdeg = theta * 180. / PI;
+
+            if ( seg_len >= 1.0 )
+            {
+                  if ( seg_len <= sym_len * sym_factor )
+                  {
+                        int xst1 = ptp[iseg].x;
+                        int yst1 = ptp[iseg].y;
+                        float xst2, yst2;
+                        if ( seg_len >= sym_len )
+                        {
+                             xst2 = xst1 + ( sym_len * cth );
+                             yst2 = yst1 + ( sym_len * sth );
+                        }
+                        else
+                        {
+                            xst2 = ptp[iseg+1].x;
+                            yst2 = ptp[iseg+1].y;
+                        }
+
+                        glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+                      //      Enable anti-aliased lines, at best quality
+                        glEnable(GL_LINE_SMOOTH);
+                        glEnable(GL_BLEND);
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                       // if(m_pen.GetWidth() > 1)
+                        //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
+                      //  else
+                            {
+                                glBegin(GL_LINES);
+                                glVertex2i(xst1, yst1);
+                                glVertex2i(( wxCoord ) floor ( xst2 ), ( wxCoord ) floor ( yst2 ));
+                                glEnd();
+                            }
+                        glPopAttrib();
+                  }
+                  else
+                  {
+                        float s=0;
+                        float xs = ptp[iseg].x;
+                        float ys = ptp[iseg].y;
+
+                        while ( s + ( sym_len * sym_factor ) < seg_len )
+                        {
+                              r.x = ( int ) xs;
+                              r.y = ( int ) ys;
+                              char *str = draw_rule->vector.LVCT;
+                              char *col = draw_rule->colRef.LCRF;
+                              wxPoint pivot ( draw_rule->pos.line.pivot_x.LICL, draw_rule->pos.line.pivot_y.LIRW );
+
+                              RenderHPGLtoGL ( str, col, r, pivot, (double) tdeg );
+
+                              xs += sym_len * cth * sym_factor;
+                              ys += sym_len * sth * sym_factor;
+                              s += sym_len * sym_factor;
+                        }
+
+                        // finish segment
+                        glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+                      //      Enable anti-aliased lines, at best quality
+                        glEnable(GL_LINE_SMOOTH);
+                        glEnable(GL_BLEND);
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                       // if(m_pen.GetWidth() > 1)
+                        //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
+                      //  else
+                            {
+                                glBegin(GL_LINES);
+                                glVertex2i(xs, ys);
+                                glVertex2i(ptp[iseg+1].x, ptp[iseg+1].y);
+                                glEnd();
+                            }
+                        glPopAttrib();
+                  }
+            }
+      } // for
+
+      } //opengl
 }
 
 
