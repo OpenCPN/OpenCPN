@@ -10275,7 +10275,9 @@ bool ChartCanvas::SetCursor ( const wxCursor &c )
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect)
 {
      if(g_bopengl)
-          m_glcc->Refresh(eraseBackground, rect);
+          m_glcc->Refresh(eraseBackground, NULL);   // We always are going to render the entire screen anyway, so make
+                                                    // sure that the window managers understand the invalid area
+                                                    // is actually the entire client area.
      else
           wxWindow::Refresh(eraseBackground, rect);
 }
