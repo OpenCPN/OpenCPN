@@ -554,6 +554,8 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
             pConfig->DeleteConfigRoute ( m_pRoute );
 
             if (!m_pTail->m_bIsTrack) {
+                  pSelect->DeleteAllSelectableRoutePoints ( m_pRoute );
+                  pSelect->DeleteAllSelectableRouteSegments ( m_pRoute );
                   g_pRouteMan->DeleteRoute(m_pRoute);
                   pSelect->AddAllSelectableRouteSegments ( m_pTail );
                   pSelect->AddAllSelectableRoutePoints ( m_pTail );
@@ -2529,30 +2531,42 @@ void MarkInfo::OnHyperLinkClick(wxHyperlinkEvent &event)
       //    Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
       //    The trouble is with the wxLaunchDefaultBrowser with verb "open"
       //    Workaround is to probe the registry to get the default browser, and open directly
+      //
+      //    But, we will do this only if the URL contains the anchor point charater '#'
+      //    What a hack......
+
 #ifdef __WXMSW__
 
-      wxRegKey RegKey(wxString(_T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command")));
-      if( RegKey.Exists() )
+      wxString cc = event.GetURL();
+      if(cc.Find(_T("#")) != wxNOT_FOUND)
       {
-        wxString command_line;
-        RegKey.QueryValue(wxString(_T("")), command_line);
+            wxRegKey RegKey(wxString(_T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command")));
+            if( RegKey.Exists() )
+            {
+                  wxString command_line;
+                  RegKey.QueryValue(wxString(_T("")), command_line);
 
-        //  Remove "
-        command_line.Replace(wxString(_T("\"")), wxString(_T("")));
+                  //  Remove "
+                  command_line.Replace(wxString(_T("\"")), wxString(_T("")));
 
-        //  Strip arguments
-        int l = command_line.Find(_T(".exe"));
-        if( wxNOT_FOUND == l)
-              l = command_line.Find(_T(".EXE"));
+                  //  Strip arguments
+                  int l = command_line.Find(_T(".exe"));
+                  if( wxNOT_FOUND == l)
+                        l = command_line.Find(_T(".EXE"));
 
-        if( wxNOT_FOUND != l)
-        {
-              wxString cl = command_line.Mid(0, l+4);
-              cl += _T(" ");
-              cl += event.GetURL();
-              wxExecute(cl);        // Async, so Fire and Forget...
-        }
+                  if( wxNOT_FOUND != l)
+                  {
+                        wxString cl = command_line.Mid(0, l+4);
+                        cl += _T(" ");
+                        cc.Prepend(_T("\""));
+                        cc.Append(_T("\""));
+                        cl += cc;
+                        wxExecute(cl);        // Async, so Fire and Forget...
+                  }
+            }
       }
+      else
+            event.Skip();
 #else
       event.Skip();
 #endif
