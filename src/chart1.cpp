@@ -199,8 +199,8 @@ wxString        *g_pcsv_locn;
 wxString        g_SENCPrefix;
 wxString        g_PresLibData;
 wxString        g_Plugin_Dir;
-wxString          *g_pVisibleLayers;
-wxString          *g_pInvisibleLayers;
+wxString        g_VisibleLayers;
+wxString        g_InvisibleLayers;
 
 extern wxString        str_version_major; //Gunther
 extern wxString        str_version_minor; //Gunther
@@ -1960,8 +1960,6 @@ bool MyApp::OnInit()
         pAIS_Port = new wxString();
         g_pcsv_locn = new wxString();
         pInit_Chart_Dir = new wxString();
-        g_pVisibleLayers = new wxString();
-        g_pInvisibleLayers = new wxString();
 
         //      Establish the prefix of the location of user specific data files
 #ifdef __WXMSW__

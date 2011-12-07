@@ -138,8 +138,8 @@ extern int              g_nframewin_posy;
 extern bool             g_bframemax;
 
 extern double           g_PlanSpeed;
-extern wxString        *g_pVisibleLayers;
-extern wxString        *g_pInvisibleLayers;
+extern wxString         g_VisibleLayers;
+extern wxString         g_InvisibleLayers;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
@@ -2860,8 +2860,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "PlanSpeed" ),  &stps );
       stps.ToDouble ( &g_PlanSpeed );
 
-      Read ( _T ( "VisibleLayers" ), g_pVisibleLayers);
-      Read ( _T ( "InvisibleLayers" ), g_pInvisibleLayers);
+      Read ( _T ( "VisibleLayers" ), &g_VisibleLayers);
+      Read ( _T ( "InvisibleLayers" ), &g_InvisibleLayers);
 
       Read ( _T ( "PreserveScaleOnX" ),  &g_bPreserveScaleOnX, 0 );
 
@@ -4706,8 +4706,8 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                         wxFileName::SplitPath(dirpath,NULL,NULL,&(l->m_LayerName),NULL,NULL);
                   }
                   g_bLayerViz = g_bShowLayers;
-                  if (g_pVisibleLayers->Contains(l->m_LayerName)) g_bLayerViz = true;
-                  if (g_pInvisibleLayers->Contains(l->m_LayerName)) g_bLayerViz = false;
+                  if (g_VisibleLayers.Contains(l->m_LayerName)) g_bLayerViz = true;
+                  if (g_InvisibleLayers.Contains(l->m_LayerName)) g_bLayerViz = false;
                   l->m_bIsVisibleOnChart = g_bLayerViz;
 
                     wxString laymsg;
