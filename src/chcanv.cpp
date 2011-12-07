@@ -5930,8 +5930,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                         && ((td->Class == AIS_CLASS_A)||(td->Class == AIS_CLASS_B)) )
                   return;
 
-                //      Target data position must be valid
-            if(!td->b_positionValid)
+                //      Target data position must have been valid once
+            if(!td->b_positionOnceValid)
                   return;
 
                  //      Target data speed must be valid

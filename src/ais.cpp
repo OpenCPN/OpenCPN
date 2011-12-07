@@ -430,6 +430,7 @@ AIS_Target_Data::AIS_Target_Data()
     n_alarm_state = AIS_NO_ALARM;
     b_suppress_audio = false;
     b_positionValid = false;
+    b_positionOnceValid = false;
     b_nameValid = false;
 
     Euro_Length = 0;            // Extensions for European Inland AIS
@@ -622,17 +623,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       if ((Class == AIS_CLASS_A) || (Class == AIS_CLASS_B))
       {
             int crs = wxRound(COG);
-            if(b_positionValid)
-            {
-                  if(crs < 360)
-                        line.Printf(_("Course:                 %03d Deg.\n"), crs);
-                  else if(COG == 360.0)
-                        line.Printf(_("Course:                 Unavailable\n"));
-                  else if(crs == 360)
-                        line.Printf(_("Course:                 000 Deg.\n"));
-            }
-            else
+            if(crs < 360)
+                  line.Printf(_("Course:                 %03d Deg.\n"), crs);
+            else if(COG == 360.0)
                   line.Printf(_("Course:                 Unavailable\n"));
+            else if(crs == 360)
+                  line.Printf(_("Course:                 000 Deg.\n"));
             result.Append(line);
 
             if(SOG <= 102.2)
@@ -708,7 +704,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line << pos_st;
       }
       else
-            line << _("\n\n\n");
+            line << _("Unavailable\n\n\n");
       result.Append(line);
 
 
@@ -1653,14 +1649,14 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             {
                   ptd->Lon = lon_tentative;
                   ptd->Lat = lat_tentative;
+                  ptd->b_positionValid = true;
+                  ptd->b_positionOnceValid = true;          // Got the position at least once
+
             }
             else
-                  break;                              // early break if position is "unavailable"
-                                                      // thus retaining last known target status/position
-                                                      // and allowing timeout death.
-            ptd->b_positionValid = true;
+                  ptd->b_positionValid = false;
 
-            //    Position is known valid, so proceed to decode balance of message....
+            //    decode balance of message....
             ptd->COG = 0.1 * (bstr->GetInt(117, 12));
             ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
 
@@ -1737,11 +1733,11 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 {
                       ptd->Lon = lon_tentative;
                       ptd->Lat = lat_tentative;
+                      ptd->b_positionValid = true;
+                      ptd->b_positionOnceValid = true;          // Got the position at least once
                 }
                 else
-                      break;                              // early break if position is "unavailable"
-
-                ptd->b_positionValid = true;
+                      ptd->b_positionValid = false;
 
                 ptd->COG = 0.1 * (bstr->GetInt(113, 12));
                 ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
@@ -1844,18 +1840,28 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 int lon = bstr->GetInt(80, 28);
                 if(lon & 0x08000000)                    // negative?
                       lon |= 0xf0000000;
-                ptd->Lon = lon / 600000.;
+                double lon_tentative = lon / 600000.;
 
                 int lat = bstr->GetInt(108, 27);
                 if(lat & 0x04000000)                    // negative?
                       lat |= 0xf8000000;
-                ptd->Lat = lat / 600000.;
+                double lat_tentative = lat / 600000.;
+
+                if((lon_tentative <= 180.) && (lat_tentative <= 90.))   // Ship does not report Lat or Lon "unavailable"
+                {
+                      ptd->Lon = lon_tentative;
+                      ptd->Lat = lat_tentative;
+                      ptd->b_positionValid = true;
+                      ptd->b_positionOnceValid = true;          // Got the position at least once
+
+                }
+                else
+                      ptd->b_positionValid = false;
 
                 ptd->COG = -1.;
                 ptd->HDG = 511;
                 ptd->SOG = -1.;
 
-                ptd->b_positionValid = true;
                 parse_result = true;
 
                 if(ptd->b_positionValid)
@@ -1868,19 +1874,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
           }
      case 21:                                    // Test Message (Aid to Navigation)   pjotrc 2010.02.01
           {
-                int lon = bstr->GetInt(165, 28);
-
-                if(lon & 0x08000000)                    // negative?
-                      lon |= 0xf0000000;
-                ptd->Lon = lon / 600000.;
-
-                int lat = bstr->GetInt(193, 27);
-
-                if(lat & 0x04000000)                    // negative?
-                      lat |= 0xf8000000;
-                ptd->Lat = lat / 600000.;
-
-                ptd->b_positionValid = true;
 //
 // The following is a patch to impersonate an AtoN as Ship      // pjotrc 2010.02.01
 //
@@ -1928,19 +1921,42 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                 ptd->Class = AIS_ATON;
 
-                if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
+                int lon = bstr->GetInt(165, 28);
+
+                if(lon & 0x08000000)                    // negative?
+                      lon |= 0xf0000000;
+                double lon_tentative = lon / 600000.;
+
+                int lat = bstr->GetInt(193, 27);
+
+                if(lat & 0x04000000)                    // negative?
+                      lat |= 0xf8000000;
+                double lat_tentative = lat / 600000.;
+
+                if((lon_tentative <= 180.) && (lat_tentative <= 90.))   // Ship does not report Lat or Lon "unavailable"
                 {
-                  g_total_NMEAerror_messages++;
-                  wxString msg(_T("   AIS type 21...(MMSI, lon, lat:"));
-			wxString item;
-      		item.Printf(_T("%09d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat);
-                  msg.Append(item);
-			msg.Append(_T(" ) "));
-                  ThreadMessage(msg);
+                      ptd->Lon = lon_tentative;
+                      ptd->Lat = lat_tentative;
+                      ptd->b_positionValid = true;
+                      ptd->b_positionOnceValid = true;          // Got the position at least once
+
                 }
+                else
+                      ptd->b_positionValid = false;
 
                 if(ptd->b_positionValid)
                       ptd->ReportTicks = now.GetTicks();
+
+                if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
+                {
+                      g_total_NMEAerror_messages++;
+                      wxString msg(_T("   AIS type 21...(MMSI, lon, lat:"));
+                      wxString item;
+                      item.Printf(_T("%09d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat);
+                      msg.Append(item);
+                      msg.Append(_T(" ) "));
+                      ThreadMessage(msg);
+                }
 
                 break;
           }
