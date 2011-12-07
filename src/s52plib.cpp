@@ -1636,6 +1636,7 @@ int s52plib::S52_load_Plib ( const wxString& PLib )
 
       m_txf_ready = false;
       m_txf = txfLoadFont((char *)(const char *)txf_file.GetFullPath().mb_str());
+	  m_txf->texobj = 0;
       if (m_txf == NULL)
       {
             wxString msg(_T("    Problem loading OpenGL Font Texture File "));
@@ -2696,6 +2697,22 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
 
       if(!pdc)                // OpenGL
       {
+            if(!m_txf_ready)
+            {
+                  if(m_txf)
+                  {
+                        txfEstablishTexture(m_txf, 0, GL_TRUE);
+                        m_txf_ready = true;
+
+            //    Get the width of one typical character, to build scale factors
+                        int w, h, descent;
+                        txfGetStringMetrics(m_txf, (char *)"W", 1, &w, &h, &descent);
+                        m_txf_avg_char_width = w;
+                        m_txf_avg_char_height = h;
+                  }
+            }
+
+
             if(m_txf_ready)
             {
                   int w, h, descent;
@@ -8613,18 +8630,6 @@ bool s52plib::ObjectRenderCheckCat ( ObjRazRules *rzRules, ViewPort *vp )
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
-      if(!m_txf_ready && m_txf)
-      {
-            txfEstablishTexture(m_txf, 0, GL_TRUE);
-            m_txf_ready = true;
-
-            //    Get the width of one typical character, to build scale factors
-            int w, h, descent;
-            txfGetStringMetrics(m_txf, (char *)"W", 1, &w, &h, &descent);
-            m_txf_avg_char_width = w;
-            m_txf_avg_char_height = h;
-
-      }
 
 }
 
@@ -9321,7 +9326,8 @@ error:
 
 GLuint txfEstablishTexture(TexFont * txf, GLuint texobj, GLboolean setupMipmaps)
 {
-      if (txf->texobj == 0) {
+      glEnable(GL_TEXTURE_2D);
+	  if (txf->texobj == 0) {
             if (texobj == 0) {
 #if !defined(USE_DISPLAY_LISTS)
                   glGenTextures(1, &txf->texobj);
