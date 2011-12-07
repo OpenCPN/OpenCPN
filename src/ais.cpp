@@ -672,7 +672,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       int brg = (int)wxRound(Brg);
       if(Brg > 359.5)
             brg = 0;
-      if(b_positionValid && bGPSValid && (Brg >= 0.))
+      if(b_positionValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.))
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
             line.Printf(_("Bearing:                Unavailable\n"));
@@ -4293,7 +4293,23 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
             bool b_reset_pos = false;
-            //    Make sure drag bar (title bar) of window on Client Area of screen, with a little slop...
+
+
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window title bar does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+            RECT frame_title_rect;
+            frame_title_rect.left = pane.floating_pos.x;
+            frame_title_rect.top = pane.floating_pos.y;
+            frame_title_rect.right = pane.floating_pos.x + pane.floating_size.x;
+            frame_title_rect.bottom = pane.floating_pos.y + 30;
+
+            if(NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+                  b_reset_pos = true;
+#else
+
+            //    Make sure drag bar (title bar) of window intersects wxClient Area of screen, with a little slop...
             wxRect window_title_rect;                    // conservative estimate
             window_title_rect.x = pane.floating_pos.x;
             window_title_rect.y = pane.floating_pos.y;
@@ -4305,20 +4321,6 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             if(!ClientRect.Intersects(window_title_rect))
                   b_reset_pos = true;
 
-
-#ifdef __WXMSW__
-        //  Support MultiMonitor setups which an allow negative window positions.
-        //  If the requested window does not intersect any installed monitor,
-        //  then default to simple primary monitor positioning.
-            RECT frame_rect;
-            frame_rect.left = pane.floating_pos.x;
-            frame_rect.top = pane.floating_pos.y;
-            frame_rect.right = pane.floating_pos.x + pane.floating_size.x;
-            frame_rect.bottom = pane.floating_pos.y + 30;
-
-
-            if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
-                  b_reset_pos = true;
 #endif
 
             if(b_reset_pos)
