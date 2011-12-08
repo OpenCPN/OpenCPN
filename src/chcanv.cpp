@@ -12476,8 +12476,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
 
                               GLint ltex;
                               glGetIntegerv(GL_TEXTURE_BINDING_2D, &ltex);
-                              if(ltex != ptd->tex_name)
-                                    int yyp = 5;
+                              wxASSERT(ltex == (GLint)ptd->tex_name);
 
                               sw.Pause();
                               long tt = sw.Time();
