@@ -12267,9 +12267,6 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               delete ptd;
                               itt = pTextureHash->begin();              // reset the iterator
                         }
-                        else
-                              ++itt;
-
                   }
                   else
                         ++itt;
@@ -12476,6 +12473,11 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                               wxStopWatch sw;
 
                               glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
+
+                              GLint ltex;
+                              glGetIntegerv(GL_TEXTURE_BINDING_2D, &ltex);
+                              if(ltex != ptd->tex_name)
+                                    int yyp = 5;
 
                               sw.Pause();
                               long tt = sw.Time();
@@ -12782,7 +12784,7 @@ void glChartCanvas::render()
                     return;
 
               //  TODO This may not be necessary, but nice for debugging
-              glClear(GL_COLOR_BUFFER_BIT);
+//              glClear(GL_COLOR_BUFFER_BIT);
 
 
 
