@@ -585,6 +585,8 @@ protected:
       bool m_bGL_GEN_MM;
       int  m_ntex;
       int  m_tex_max_res;
+      int  m_tex_max_res_initial;
+      bool m_b_mem_crunch;
 
       //    For FBO(s)
       bool         m_b_useFBO;

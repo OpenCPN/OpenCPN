@@ -100,6 +100,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 // ----------------------------------------------------------------------------
 extern bool G_FloatPtInPolygon ( MyFlPoint *rgpts, int wnumpts, float x, float y ) ;
 extern void catch_signals(int signo);
+extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern ChartBase        *Current_Vector_Ch;
 extern ChartBase        *Current_Ch;
@@ -242,6 +243,8 @@ extern int              g_GPU_MemSize;
 extern bool             g_b_useStencil;
 
 bool                    g_bDebugOGL;
+
+extern int              g_memCacheLimit;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -11862,6 +11865,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           double n_GPU_Mem = wxMax(64, g_GPU_MemSize) * (1<<20);
           m_tex_max_res = n_GPU_Mem / (n_tex_size * n_tex_size * 4 * 1.3);          // 1.3 multiplier allows for full mipmaps
           m_tex_max_res /= 2;
+          m_tex_max_res_initial = m_tex_max_res;
 
           wxString str;
           str.Printf(_T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
@@ -12257,7 +12261,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                         ptd->tex_name = 0;            // mark the ptd as unknown/unavailable to GPU
 
                         //    Delete the chart data?
-                        if(0)
+                        if(m_b_mem_crunch)
                         {
                               pTextureHash->erase(itt);
                               delete ptd;
@@ -12320,7 +12324,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
                                           ptd->tex_name = 0;            // mark the ptd as not available to GPU
 
                                           //    Delete the chart data?
-                                          if(0)
+                                          if(m_b_mem_crunch)
                                           {
                                                 pTextureHash->erase(key);
                                                 delete ptd;
@@ -12515,7 +12519,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
             }
       }
       m_tex_max_res = wxMax(m_tex_max_res, 20);
-      m_tex_max_res = wxMin(m_tex_max_res, 100);
+      m_tex_max_res = wxMin(m_tex_max_res, m_tex_max_res_initial);
 
 }
 
@@ -12582,6 +12586,14 @@ void glChartCanvas::render()
 
      if((!cc1->VPoint.b_quilt) && (!Current_Ch))
           return;
+
+     //    Take a look and see if memory is getting close to exceeding the user specified max
+     m_b_mem_crunch = false;
+     int mem_total, mem_used;
+     GetMemoryStatus(&mem_total, &mem_used);
+     if(mem_used > g_memCacheLimit * 9 / 10)
+           m_b_mem_crunch = true;
+
 
      SetCurrent();
      wxPaintDC(this);
@@ -12730,8 +12742,8 @@ void glChartCanvas::render()
             // and delete the OpenGL texture from the GPU
             // but keep the private texture descriptor for now
 
-                                    ChartTextureHashType::iterator it;
-                                    for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it )
+                                    ChartTextureHashType::iterator it = pTextureHash->begin();
+                                    while( it != pTextureHash->end())
                                     {
                                           glTextureDescriptor *ptd = it->second;
 
@@ -12742,7 +12754,18 @@ void glChartCanvas::render()
                                                 m_ntex--;
 
                                                 ptd->tex_name = 0;
+
+                                                //    Delete the chart data?
+                                                if(m_b_mem_crunch)
+                                                {
+                                                      pTextureHash->erase(it);
+                                                      delete ptd;
+                                                      it = pTextureHash->begin();              // reset the iterator
+                                                }
+
                                           }
+                                          else
+                                                ++it;
                                     }
                               }
                         }
