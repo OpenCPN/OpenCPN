@@ -53,6 +53,14 @@
 #include "wx/image.h"                   // Missing from wxprec.h
 #include "wx/tokenzr.h"
 
+#ifdef __MSVC__
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
+#define new DEBUG_NEW
+#endif
+
 extern s52plib          *ps52plib;
 
 extern bool             g_b_useStencil;
@@ -92,6 +100,8 @@ color_sub color_adjust[] =
 //-----------------------------------------------------------------------------
 s52plib::s52plib ( const wxString& PLib )
 {
+      m_plib_file = PLib;
+
 //      Set up some buffers, etc...
       pBuf = buffer;
 
@@ -106,6 +116,9 @@ s52plib::s52plib ( const wxString& PLib )
       pointSimplLUPArray = NULL;      // points: SIMPLIFIED
       pointPaperLUPArray = NULL;      // points: PAPER_CHART
       condSymbolLUPArray = NULL;      // Dynamic Conditional Symbology
+
+      m_txf_ready = false;
+      m_txf = NULL;
 
       m_bOK = !(S52_load_Plib ( PLib ) == 0);
 
@@ -143,6 +156,7 @@ s52plib::s52plib ( const wxString& PLib )
       m_bDeClutterText = false;
       m_bShowAtonText = true;
 
+
 }
 
 
@@ -163,8 +177,42 @@ s52plib::~s52plib()
       delete[] ledge;
       delete[] redge;
 
+      if(m_txf)
+            txfUnloadFont(m_txf);
+
 }
 
+
+void s52plib::PrepareTxfRenderer(void)
+{
+      wxFileName txf_file(m_plib_file);
+      txf_file.SetFullName(_T("Helvetica.txf"));
+
+      m_txf_ready = false;
+
+      m_txf = txfLoadFont((char *)(const char *)txf_file.GetFullPath().mb_str());
+      if (m_txf == NULL)
+      {
+            wxString msg(_T("    Problem loading OpenGL Font Texture File "));
+            msg.Append(txf_file.GetFullPath());
+            msg.Append(_T("..."));
+            msg.Append(wxString(txfErrorString(), wxConvUTF8));
+            wxLogMessage(msg);
+      }
+      else
+      {
+            m_txf->texobj = 0;
+            txfEstablishTexture(m_txf, 0, GL_TRUE);
+            m_txf_ready = true;
+
+            //    Get the width of one typical character, to build scale factors
+            int w, h, descent;
+            txfGetStringMetrics(m_txf, (char *)"W", 1, &w, &h, &descent);
+            m_txf_avg_char_width = w;
+            m_txf_avg_char_height = h;
+
+      }
+ }
 
 /*
     Update the S52 Conditional Symbology Parameter Set to reflect the
@@ -1630,22 +1678,6 @@ int s52plib::S52_load_Plib ( const wxString& PLib )
       FindUnusedColor();
       CreateColourHash();
 
-      wxFileName txf_file(PLib);
-      txf_file.SetFullName(_T("Helvetica.txf"));
-
-
-      m_txf_ready = false;
-      m_txf = txfLoadFont((char *)(const char *)txf_file.GetFullPath().mb_str());
-	  m_txf->texobj = 0;
-      if (m_txf == NULL)
-      {
-            wxString msg(_T("    Problem loading OpenGL Font Texture File "));
-            msg.Append(txf_file.GetFullPath());
-            msg.Append(_T("..."));
-            msg.Append(wxString(txfErrorString(), wxConvUTF8));
-            wxLogMessage(msg);
-     }
-
      wxString oc_file(*g_pcsv_locn);
      oc_file.Append(_T("/s57objectclasses.csv"));
 
@@ -2698,20 +2730,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
       if(!pdc)                // OpenGL
       {
             if(!m_txf_ready)
-            {
-                  if(m_txf)
-                  {
-                        txfEstablishTexture(m_txf, 0, GL_TRUE);
-                        m_txf_ready = true;
-
-            //    Get the width of one typical character, to build scale factors
-                        int w, h, descent;
-                        txfGetStringMetrics(m_txf, (char *)"W", 1, &w, &h, &descent);
-                        m_txf_avg_char_width = w;
-                        m_txf_avg_char_height = h;
-                  }
-            }
-
+                  PrepareTxfRenderer();
 
             if(m_txf_ready)
             {
@@ -2967,6 +2986,7 @@ int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, boo
             //    If this is an un-cached text object render, then do not update the S57Obj in any way
             if(b_free_text)
             {
+				  delete text->frmtd;
                   free (text);
                   return 1;
             }
@@ -3364,8 +3384,8 @@ bool s52plib::RenderHPGLtoGL ( char *str, char *col, wxPoint &r, wxPoint &pivot,
 {
       int width = 1;
       double radius = 0.0;
-      int    tessObj       = FALSE;
-      int    polyMode      = FALSE;
+//      int    tessObj       = FALSE;
+//      int    polyMode      = FALSE;
       int    inBegEnd      = FALSE;
       S52color *newColor = NULL;
       float trans = 1.0;
@@ -3383,7 +3403,7 @@ bool s52plib::RenderHPGLtoGL ( char *str, char *col, wxPoint &r, wxPoint &pivot,
 
 
 #define MAX_HPGL_GL_POINTS 100
-      wxPoint PointArray[MAX_HPGL_GL_POINTS];
+//      wxPoint PointArray[MAX_HPGL_GL_POINTS];
 
 
       float fsf = 100 / canvas_pix_per_mm;
@@ -4368,8 +4388,16 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       }
       else              // OpenGL mode
       {
+            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_ENABLE_BIT);      //Save state
             glColor3ub( c->R, c->G, c->B );
             glLineWidth(w);
+
+            if ( !strncmp ( str, "DASH", 4 ) )
+            {
+                  glLineStipple(1, 0x3F3F);
+                  glEnable(GL_LINE_STIPPLE);
+            }
+
       }
 
       //  Get the current display priority from the LUP
@@ -4692,6 +4720,9 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             free ( ptp );
       }
+
+      if(!m_pdc)
+            glPopAttrib();
 
       return 1;
 }
@@ -5820,11 +5851,27 @@ bool s52plib::PreloadOBJLFromCSV(wxString &csv_file)
 
             if(token.Len())
             {
-                  OBJLElement *pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
-                  strncpy(pOLE->OBJLName, token.mb_str(), 6);
-                  pOLE->nViz = 0;
+                  //    Filter out any duplicates, in a case insensitive way
+                  //    i.e. only the first of "DEPARE" and "depare" is added
+                  bool bdup = false;
+                  for(unsigned int iPtr = 0 ; iPtr < pOBJLArray->GetCount() ; iPtr++)
+                  {
+                        OBJLElement *pOLEt = (OBJLElement *)(pOBJLArray->Item(iPtr));
+                        if(!token.CmpNoCase(wxString(pOLEt->OBJLName, wxConvUTF8)))
+                        {
+                              bdup = true;
+                              break;
+                        }
+                  }
 
-                  pOBJLArray->Add((void *)pOLE);
+                  if(!bdup)
+                  {
+                        OBJLElement *pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
+                        strncpy(pOLE->OBJLName, token.mb_str(), 6);
+                        pOLE->nViz = 0;
+
+                        pOBJLArray->Add((void *)pOLE);
+                  }
             }
 
       }
@@ -9424,8 +9471,8 @@ void
 }
 
 void
-            txfUnloadFont(
-                          TexFont * txf)
+txfUnloadFont(
+              TexFont * txf)
 {
       if (txf->teximage) {
             free(txf->teximage);
@@ -9512,8 +9559,8 @@ enum {
 };
 
 void
-            txfRenderFancyString(
-                                 TexFont * txf,
+txfRenderFancyString(
+                                TexFont * txf,
                                  char *string,
                                  int len)
 {

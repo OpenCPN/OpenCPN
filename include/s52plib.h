@@ -244,6 +244,7 @@ public:
       bool  S52_flush_Plib();
 
       bool PreloadOBJLFromCSV(wxString &csv_file);
+      void PrepareTxfRenderer(void);
 
       int DoRenderObject ( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
 
@@ -329,6 +330,7 @@ public:
       char buffer[MAX_BUF];
       char *pBuf;
 
+      wxString    m_plib_file;
 
 // Look-Up --
 
