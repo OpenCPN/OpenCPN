@@ -3316,6 +3316,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       if ( sclass.IsSameAs ( _T ( "FSHHAV" ) ) )
             sclass_sub = _T ( "FSHFAC" );
 
+      if ( sclass.IsSameAs ( _T ( "OFSPRD" ) ) )
+            sclass_sub = _T ( "CTNARE" );
+
 
 
       // Debug hook
