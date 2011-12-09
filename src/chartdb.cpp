@@ -676,8 +676,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               }
                               else
                               {
-                                    wxLogMessage(_T("Removing oldest chart from cache"));
-      //                            wxLogMessage(_T("oMem_Free before chart removal is %d"), omem_free);
+                                    wxString msg(_T("Removing oldest chart from cache: "));
+                                    wxString fn(pDeleteCandidate->GetFullPath(), wxConvUTF8);
+                                    msg += fn;
+                                    wxLogMessage(msg);
 
                                     //  If this chart should happen to be in the thumbnail window....
                                     if(pthumbwin)

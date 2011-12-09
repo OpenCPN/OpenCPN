@@ -1273,7 +1273,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                   }
             }
       }
-      printf("\n");
+//      printf("\n");
 
       return m_refchart_dbIndex;
 }
@@ -2254,13 +2254,11 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
 
 
-      //    Make sure the reference chart is in the cache
-      if(!ChartData->IsChartInCache(m_refchart_dbIndex))
-            ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
 
 
       //    And try to prove that all required charts are in the cache
-      //    If one is missing, remove its patch from the quilt
+      //    If one is missing, try to load it
+      //    If still missing, remove its patch from the quilt
       //    This will probably leave a "black hole" in the quilt...
       for(unsigned int k = 0 ; k < m_PatchList.GetCount() ; k++)
       {
@@ -2272,12 +2270,20 @@ bool Quilt::Compose(const ViewPort &vp_in)
             {
                   if(!ChartData->IsChartInCache(pqp->dbIndex))
                   {
-                        pqp->b_Valid = false;
                         wxLogMessage(_T("   Quilt Compose cache miss..."));
-//                       printf("  miss %d\n", pqp->dbIndex);
+                        ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
+                        if(!ChartData->IsChartInCache(pqp->dbIndex))
+                        {
+                              wxLogMessage(_T("    Oops, removing from quilt..."));
+                              pqp->b_Valid = false;
+                        }
                   }
             }
       }
+
+      //    Make sure the reference chart is in the cache
+      if(!ChartData->IsChartInCache(m_refchart_dbIndex))
+            ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
 
       //    Walk the patch list again, checking the error factor
       //    Also, directly mark the patch to indicate if it should be treated as an overlay
