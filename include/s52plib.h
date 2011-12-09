@@ -280,7 +280,7 @@ public:
       bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
       wxImage RuleXBMToImage(Rule *prule);
 
-      bool RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap );
+      bool RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap );
 
       bool CheckTextRectList( const wxRect &test_rect,  S57Obj *pobj);
       int  RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool bTX );

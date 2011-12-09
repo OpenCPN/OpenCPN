@@ -187,11 +187,7 @@ S57Obj::~S57Obj()
 
         delete pPolyTrapGeo;
 
-        if(FText)
-        {
-            delete FText->frmtd;    // the formatted text string
-            free(FText);
-        }
+        delete FText;
 
         if(geoPt)
             free(geoPt);

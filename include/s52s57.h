@@ -218,8 +218,13 @@ typedef struct _S52color{
    unsigned char  B;
 }S52color;
 
-typedef struct _S52_Text {
-    wxString   *frmtd;       // formated text string
+class S52_TextC
+{
+public:
+    S52_TextC(){ pcol = NULL, pFont = NULL; }
+    ~S52_TextC(){};
+
+    wxString   frmtd;       // formated text string
     char       hjust;
     char       vjust;
     char       space;
@@ -233,7 +238,7 @@ typedef struct _S52_Text {
     int        dis;         // display
     wxFont     *pFont;
     int        rul_seq_creator;  // sequence number of the Rule creating this object
-} S52_Text;
+};
 
 
 
@@ -340,7 +345,7 @@ public:
       Rules                   *CSrules;               // per object conditional symbology
       int                     bCS_Added;
 
-      S52_Text                *FText;
+      S52_TextC                *FText;
       int                     bFText_Added;
       wxRect                  rText;
 

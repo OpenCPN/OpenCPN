@@ -2581,7 +2581,7 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
 
 
-char *_parseTEXT ( ObjRazRules *rzRules, S52_Text *text, char *str0 )
+char *_parseTEXT ( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
 {
       char buf[MAXL] = {'\0'};   // output string
 
@@ -2613,18 +2613,15 @@ char *_parseTEXT ( ObjRazRules *rzRules, S52_Text *text, char *str0 )
 }
 
 
-S52_Text   *S52_PL_parseTX ( ObjRazRules *rzRules, Rules *rules, char *cmd )
+S52_TextC   *S52_PL_parseTX ( ObjRazRules *rzRules, Rules *rules, char *cmd )
 {
-      S52_Text *text = NULL;
+      S52_TextC *text = NULL;
       char *str      = NULL;
       char buf[MAXL] = {'\0'};   // output string
-//    char arg[MAXL] = {'\0'};   // ATTRIB list
       char val[MAXL] = {'\0'};   // value of arg
-//    char *parg = arg;
       char *b    = buf;
 
 
-//    str  = _getParamVal(geoData, cmd->param, buf, MAXL);   // STRING
       str = ( char* ) rules->INSTstr;
 
       str = _getParamVal ( rzRules, str, val, MAXL );   // get ATTRIB list
@@ -2634,16 +2631,16 @@ S52_Text   *S52_PL_parseTX ( ObjRazRules *rzRules, Rules *rules, char *cmd )
       val[MAXL - 1] = '\0';                               // make sure the string terminates
       sprintf ( b, "%s", val );
 
-      text = ( struct _S52_Text * ) calloc ( sizeof ( S52_Text ),1 );
+      text = new S52_TextC;
       str = _parseTEXT ( rzRules, text, str );
       if ( NULL != text )
-            text->frmtd = new wxString ( buf, wxConvUTF8 );
+            text->frmtd = wxString ( val, wxConvUTF8 );
 
       return text;
 }
 
 
-S52_Text   *S52_PL_parseTE ( ObjRazRules *rzRules, Rules *rules, char *cmd )
+S52_TextC   *S52_PL_parseTE ( ObjRazRules *rzRules, Rules *rules, char *cmd )
 // same as S52_PL_parseTX put parse 'C' format first
 {
       char arg[MAXL] = {'\0'};   // ATTRIB list
@@ -2652,7 +2649,7 @@ S52_Text   *S52_PL_parseTE ( ObjRazRules *rzRules, Rules *rules, char *cmd )
       char *b    = buf;
       char *parg = arg;
       char *pf   = fmt;
-      S52_Text *text = NULL;
+      S52_TextC *text = NULL;
 
       char *str = ( char* ) rules->INSTstr;
 
@@ -2710,16 +2707,16 @@ S52_Text   *S52_PL_parseTE ( ObjRazRules *rzRules, Rules *rules, char *cmd )
                         *b++ = *pf++;
             }
 
-            text = ( struct _S52_Text * ) calloc ( sizeof ( S52_Text ),1 );
+            text = new S52_TextC;
             str = _parseTEXT ( rzRules, text, str );
             if ( NULL != text )
-                  text->frmtd = new wxString ( buf, wxConvUTF8 );
+                  text->frmtd = wxString ( buf, wxConvUTF8 );
       }
 
       return text;
 }
 
-bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap )
+bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap )
 {
 #ifdef DrawText
 #undef DrawText
@@ -2735,7 +2732,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
             if(m_txf_ready)
             {
                   int w, h, descent;
-                  txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd->mb_str(), ptext->frmtd->Len(), &w, &h, &descent);
+                  txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len(), &w, &h, &descent);
   //              if((x > 0) && x < (1300))
                   {
                         glEnable(GL_TEXTURE_2D);
@@ -2766,7 +2763,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
 
                         glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
                         glScalef(1.5, 1.5, 1.0);
-                        txfRenderString(m_txf, (char *)(const char *)ptext->frmtd->mb_str(), ptext->frmtd->Len());
+                        txfRenderString(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len());
                         glPopMatrix();
 
                         glDisable(GL_TEXTURE_2D);
@@ -2789,7 +2786,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
             pdc->SetFont ( * ( ptext->pFont ) );
 
             wxCoord w, h, descent, exlead;
-            pdc->GetTextExtent ( * ( ptext->frmtd ), &w, &h, &descent, &exlead ); // measure the text
+            pdc->GetTextExtent ( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
 
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
@@ -2820,16 +2817,16 @@ bool s52plib::RenderText ( wxDC *pdc, S52_Text *ptext, int x, int y, wxRect *pRe
                   pdc->SetTextForeground ( color );
                   pdc->SetBackgroundMode ( wxTRANSPARENT );
 
-                  pdc->DrawText ( * ( ptext->frmtd ), xp, yp+1 );
-                  pdc->DrawText ( * ( ptext->frmtd ), xp, yp-1 );
-                  pdc->DrawText ( * ( ptext->frmtd ), xp+1, yp );
-                  pdc->DrawText ( * ( ptext->frmtd ), xp-1, yp );
+                  pdc->DrawText (  ptext->frmtd, xp, yp+1 );
+                  pdc->DrawText (  ptext->frmtd, xp, yp-1 );
+                  pdc->DrawText (  ptext->frmtd, xp+1, yp );
+                  pdc->DrawText (  ptext->frmtd, xp-1, yp );
 
                   bcolor = ptext->pcol;
                   wxColour wcolor ( bcolor->R, bcolor->G, bcolor->B );
                   pdc->SetTextForeground ( wcolor );
 
-                  pdc->DrawText ( * ( ptext->frmtd ), xp, yp );
+                  pdc->DrawText (   ptext->frmtd, xp, yp );
 
       //   TODO Remove Debug
       //                pdc->SetBrush(*wxTRANSPARENT_BRUSH);
@@ -2905,14 +2902,10 @@ bool s52plib::TextRenderCheck ( ObjRazRules *rzRules )
 
 int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool bTX )
 {
-      //    OpenGL Unimplemented
-//       if(!m_pdc)
-//             return 0;
-
       if ( !TextRenderCheck ( rzRules ) )
             return 0;
 
-      S52_Text *text = NULL;
+      S52_TextC *text = NULL;
       bool b_free_text = false;
 
       //  The first Ftext object is cached in the S57Obj.
@@ -2956,7 +2949,11 @@ int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, boo
       if ( text )
       {
             if ( m_bShowS57ImportantTextOnly && ( text->dis >= 20 ) )
+            {
+                  if(b_free_text)
+                        delete text;
                   return 0;
+            }
 
             //    Establish a font
             if(!text->pFont)
@@ -2986,8 +2983,7 @@ int s52plib::RenderT_All ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, boo
             //    If this is an un-cached text object render, then do not update the S57Obj in any way
             if(b_free_text)
             {
-				  delete text->frmtd;
-                  free (text);
+                  delete text;
                   return 1;
             }
 
