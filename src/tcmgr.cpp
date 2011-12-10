@@ -324,8 +324,8 @@ void TCMgr::LoadMRU(void)
 //          Capture and store the data
 
 //          Allocate and store station name
-                  psd->station_name = (char *)malloc(str.Len() +1);
-                  strcpy(psd->station_name, str.mb_str());
+                  psd->station_name = (char *)malloc(strlen(str.mb_str(wxConvUTF8)) +1);
+                  strcpy(psd->station_name, str.mb_str(wxConvUTF8));
 
 //          Station Type
                   str = mru_file.GetNextLine();
