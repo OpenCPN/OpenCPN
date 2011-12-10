@@ -231,12 +231,17 @@ private:
       //    libgps dynamic load parameters
       void              *m_lib_handle;
 
-      struct gps_data_t *(*m_fn_gps_open)(char *, char *);
+      struct gps_data_t *(*m_fn_gps_open19)(char *, char *);
+      int                (*m_fn_gps_open)(char *, char *, struct gps_data_t *);
+
       int                (*m_fn_gps_close)(struct gps_data_t *);
       int                (*m_fn_gps_poll)(struct gps_data_t *);
       bool               (*m_fn_gps_waiting)(struct gps_data_t *);
-      void               (*m_fn_gps_set_raw_hook)(struct gps_data_t *, void (*)(struct gps_data_t *, char *, size_t));
       int                (*m_fn_gps_stream)(struct gps_data_t *, unsigned int, void *);
+      int                (*m_fn_gps_read)(struct gps_data_t *);
+
+      int                m_libgps_api;
+
       bool               m_bgps_present;
 
 

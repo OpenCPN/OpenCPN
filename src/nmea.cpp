@@ -82,6 +82,8 @@ static      GenericPosDat     ThreadPositionData;
 extern bool             g_bDebugGPSD;
 extern MyFrame          *gFrame;
 
+struct gps_data_t gpsd_data;
+
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
 //------------------------------------------------------------------------------
@@ -413,12 +415,15 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
             wxString load1;
             wxString load2;
+            wxString load3;
 #ifndef __WXOSX__
-            load1 = _T("libgps.so.19");
-            load2 = _T("libgps.so");
+            load1 = _T("libgps.so");
+            load2 = _T("libgps.so.20");
+            load3 = _T("libgps.so.19");
 #else
-            load1 = _T("/opt/local/lib/libgps.19.dylib");
-            load2 = _T("/opt/local/lib/libgps.dylib");
+            load1 = _T("/opt/local/lib/libgps.dylib");
+            load2 = _T("/opt/local/lib/libgps.20.dylib");
+            load3 = _T("/opt/local/lib/libgps.19.dylib");
 #endif
 
             m_lib_handle = dlopen(load1.fn_str(), RTLD_LAZY);
@@ -442,6 +447,11 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   msg1 += load2;
                   wxLogMessage(msg1);
 
+                  msg = _T("Attempting to load ");
+                  msg += load3;
+                  wxLogMessage(msg);
+
+                  m_lib_handle = dlopen(load3.fn_str(), RTLD_LAZY);
                   wxString msg(_("Unable to load libgps"));
                   OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
@@ -451,7 +461,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             else
             {
                   void *p = dlsym(m_lib_handle, "gps_open");
-                  m_fn_gps_open =                  (gps_data_t *(*)(char *, char *))p;
+                  m_fn_gps_open19 =                  (gps_data_t *(*)(char *, char *))p;
+                  m_fn_gps_open =                    (int(*)(char *, char *, struct gps_data_t *))p;
 
                   p = dlsym(m_lib_handle, "gps_close");
                   m_fn_gps_close =                 (int(*)(struct gps_data_t *))p;
@@ -462,17 +473,31 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   p = dlsym(m_lib_handle, "gps_waiting");
                   m_fn_gps_waiting =              (bool(*)(struct gps_data_t *))p;
 
-                  p = dlsym(m_lib_handle, "gps_set_raw_hook");
-                  m_fn_gps_set_raw_hook =          (void (*)(struct gps_data_t *, void (*)(struct gps_data_t *, char *, size_t)))p;
-
                   p = dlsym(m_lib_handle, "gps_stream");
                   m_fn_gps_stream =                (int  (*)(struct gps_data_t *, unsigned int, void *))p;
 
-                  if(!m_fn_gps_open          ||
+                  p = dlsym(m_lib_handle, "gps_read");
+                  m_fn_gps_read =                (int  (*)(struct gps_data_t *))p;
+
+
+                  //    We can make a simple determination of libgps API level
+                  m_libgps_api = 0;
+                  if(m_fn_gps_read)
+                  {
+                        wxLogMessage(_T("LIBGPS:  Using libgps API=20"));
+                        m_libgps_api = 20;
+                  }
+                  else if(m_fn_gps_poll)
+                  {
+                        wxLogMessage(_T("LIBGPS:  Using libgps API=19"));
+                        m_libgps_api = 19;
+                  }
+
+
+                  if((0 == m_libgps_api)     ||
+                      !m_fn_gps_open         ||
                       !m_fn_gps_close        ||
-                      !m_fn_gps_poll         ||
                       !m_fn_gps_waiting      ||
-                      !m_fn_gps_set_raw_hook ||
                       !m_fn_gps_stream       )
                   {
                         wxString msg(NMEA_data_ip);
@@ -492,22 +517,40 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             m_fn_gps_close =               (int(*)(struct gps_data_t *))gps_close;
             m_fn_gps_poll =                (int(*)(struct gps_data_t *))gps_poll;
             m_fn_gps_waiting =             (bool(*)(struct gps_data_t *))gps_waiting;
-            m_fn_gps_set_raw_hook =        (void (*)(struct gps_data_t *, void (*)(struct gps_data_t *, char *, size_t)))gps_set_raw_hook;
             m_fn_gps_stream =              (int  (*)(struct gps_data_t *, unsigned int, void *))gps_stream;
+            m_fun_gps_read =               (int  (*)(struct gps_data_t *)gps_read;
 
 
 #endif
 
             //    Try to open the library
-            m_gps_data = m_fn_gps_open(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT);
-
-            if(!m_gps_data)
+            if(19 == m_libgps_api)
             {
-                wxString msg(NMEA_data_ip);
-                msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
-                OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
-                md.ShowModal();
-                return;
+                  m_gps_data = m_fn_gps_open19(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT);
+
+                  if(!m_gps_data)
+                  {
+                      wxString msg(NMEA_data_ip);
+                      msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
+                      OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                      md.ShowModal();
+                      return;
+                  }
+            }
+
+            else if(20 == m_libgps_api)
+            {
+                  m_gps_data = &gpsd_data;
+                  int result_open = m_fn_gps_open(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT, (struct gps_data_t *)m_gps_data);
+
+                  if (result_open != 0)
+                  {
+                        wxString msg(NMEA_data_ip);
+                        msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
+                        OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
+                        md.ShowModal();
+                        return;
+                  }
             }
 
             int n_check_version = 5;            // check up to five times
@@ -521,13 +564,19 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             {
             //    Check library version
                   if(m_fn_gps_waiting(m_gps_data))
-                        m_fn_gps_poll(m_gps_data);
+                  {
+                        if(20 == m_libgps_api)
+                             m_fn_gps_read(m_gps_data);
+                        else if(19 == m_libgps_api)
+                              m_fn_gps_poll(m_gps_data);
+                  }
 
                   if(m_gps_data->set & VERSION_SET)
                   {
                         b_version_set = true;
                         check_version = m_gps_data->version;
 
+//                        2.96 (libgps.so.20) gives 3.4
                         if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
                         {
                               b_version_match = true;
@@ -563,13 +612,19 @@ Would you like to use this version of libgps anyway?"),
             }
 
             wxString msg;
-            msg.Printf(_T("Found libgps version %d.%d"), check_version.proto_major, check_version.proto_minor);
+            msg.Printf(_T("LIBGPS: Found libgps version %d.%d"), check_version.proto_major, check_version.proto_minor);
             wxLogMessage(msg);
 
             if(b_use_lib)
             {
                   m_fn_gps_stream(m_gps_data, WATCH_ENABLE, NULL);
-                  TimerLIBGPS.Start(TIMER_LIBGPS_MSEC,wxTIMER_CONTINUOUS);
+
+                  //    Start the poll timer with a large initial timeout value,
+                  //    to allow libgps to "stabilize" before the first OCPN read.
+                  //    Found this by experimentation with libgps.20.so
+                  //    Once more, GPSD disappoints....
+
+                  TimerLIBGPS.Start(2000/*TIMER_LIBGPS_MSEC*/,wxTIMER_CONTINUOUS);
                   m_bgps_present = true;              // assume this for now....
             }
             else
@@ -764,16 +819,21 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 #ifdef BUILD_WITH_LIBGPS
       TimerLIBGPS.Stop();
 
-      if(g_bDebugGPSD) printf("%d\n", ic++);
+//      g_bDebugGPSD = true;
 
+      if(g_bDebugGPSD) printf("%d\n", ic++);
       m_bgps_present = false;
 
       while(m_fn_gps_waiting(m_gps_data))
       {
             m_gps_data->set = 0;
 
-            m_fn_gps_poll(m_gps_data);
-            if(g_bDebugGPSD) printf("  Poll Set: %0X\n", m_gps_data->set);
+            if(20 == m_libgps_api)
+                  m_fn_gps_read(m_gps_data);
+            else if(19 == m_libgps_api)
+                  m_fn_gps_poll(m_gps_data);
+
+            if(g_bDebugGPSD) printf("  Poll/Read Set: %0X\n", (unsigned int)m_gps_data->set);
 
             if (!(m_gps_data->set & PACKET_SET))
             {
