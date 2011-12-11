@@ -82,7 +82,9 @@ static      GenericPosDat     ThreadPositionData;
 extern bool             g_bDebugGPSD;
 extern MyFrame          *gFrame;
 
+#ifdef BUILD_WITH_LIBGPS
 struct gps_data_t gpsd_data;
+#endif
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
