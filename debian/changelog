@@ -3,9 +3,10 @@ opencpn (2.5.0-1) unstable; urgency=low
   * Packaged for upstream version 2.5.0
   * Drop most of TinyXML patch (superseded by upstream)
   * CSS and JavaScript cruft now dropped upstream
+  * Move plugins into new opencpn-plugins package
   * Closing ITP. (Closes: #538067)
 
- -- Hamish B <hamish_b@yahoo.com>  Tue, 02 Aug 2011 22:36:56 +1200
+ -- Hamish Bowman <hamish_b@yahoo.com>  Sun, 11 Dec 2011 18:35:49 +1300
 
 opencpn (2.4.708-0) unstable; urgency=low
 
