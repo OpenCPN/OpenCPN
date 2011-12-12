@@ -3192,7 +3192,6 @@ int MyConfig::LoadMyConfig ( int iteration )
 #ifdef USE_S57
 //    S57 Object Class Visibility
 
-      bool bNeedNew = true;
       OBJLElement *pOLE;
 
       SetPath ( _T ( "/Settings/ObjectFilter" ) );
@@ -3213,6 +3212,8 @@ int MyConfig::LoadMyConfig ( int iteration )
                   while ( bCont )
                   {
                         pConfig->Read ( str, &val );              // Get an Object Viz
+
+                        bool bNeedNew = true;
 
                         if ( str.StartsWith ( _T ( "viz" ), &sObj ) )
                         {
