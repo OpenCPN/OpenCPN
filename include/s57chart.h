@@ -130,13 +130,11 @@ public:
       void SetNativeScale(int s){m_Chart_Scale = s;}
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
-
-      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const wxRegion &Region);
-
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
       virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+      virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
 
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
       virtual void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
       virtual void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
@@ -223,12 +221,13 @@ private:
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
 
       bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay);
+      bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
 
-      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
-      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect);
+      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_render_nodta = true);
+      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect, bool b_render_nodta = true);
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       InitReturn FindOrCreateSenc( const wxString& name );

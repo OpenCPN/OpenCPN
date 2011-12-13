@@ -1611,8 +1611,18 @@ void s57chart::SetLinePriorities(void)
     m_bLinePrioritySet = true;
 }
 
-
 bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return DoRenderRegionViewOnGL(glc, VPoint, Region, false);
+}
+
+bool s57chart::RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+{
+      return DoRenderRegionViewOnGL(glc, VPoint, Region, true);
+}
+
+
+bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay)
 {
 //     CALLGRIND_START_INSTRUMENTATION
 //      g_bDebugS57 = true;
@@ -1729,7 +1739,7 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
 
                   if(g_bDebugS57) printf ( "   S57 Render Box:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
 
-                  SetClipRegionGL(glc, temp_vp, rect);
+                  SetClipRegionGL(glc, temp_vp, rect, !b_overlay);
                   DoRenderRectOnGL(glc, temp_vp, rect);
 
 
@@ -1761,7 +1771,7 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
       //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
       //            temp_vp.GetBBox().EnLarge(margin);
 
-            SetClipRegionGL(glc, VPoint, Region);
+            SetClipRegionGL(glc, VPoint, Region, !b_overlay);
             DoRenderRectOnGL(glc, temp_vp, rect);
 
       }
@@ -1776,7 +1786,8 @@ bool s57chart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoi
       return true;
 }
 
-void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+
+void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_render_nodta)
 {
       if(g_b_useStencil)
       {
@@ -1788,38 +1799,41 @@ void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, c
             //    We are going to write "1" into the stencil buffer wherever the region is valid
             glStencilFunc (GL_ALWAYS, 1, 1);
             glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
-//            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
-
       }
       else              //  Use depth buffer for clipping
       {
             glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
             glDepthFunc(GL_ALWAYS);  // to ensure everything you draw passes
             glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
-//            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
 
             glClear(GL_DEPTH_BUFFER_BIT); // for a fresh start
-
-//            glColor3f(0,.5,.5);
-
       }
 
 
       //    As a convenience, while we are creating the stencil or depth mask,
-      //    also render the default "NODTA" background
-      wxColour color = GetGlobalColor ( _T ( "NODTA" ) );
-      float r, g, b;
-      if(color.IsOk())
+      //    also render the default "NODTA" background if selected
+      if(b_render_nodta)
       {
-            r = color.Red()  / 255.;
-            g = color.Green()/ 255.;
-            b = color.Blue() / 255. ;
+            wxColour color = GetGlobalColor ( _T ( "NODTA" ) );
+            float r, g, b;
+            if(color.IsOk())
+            {
+                  r = color.Red()  / 255.;
+                  g = color.Green()/ 255.;
+                  b = color.Blue() / 255. ;
+            }
+            else
+                  r=g=b=0;
+
+            glColor3f(r, g, b);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // enable color buffer
+
       }
       else
-            r=g=b=0;
+      {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+      }
 
-      glColor3f(r, g, b);
 
       wxRegionIterator upd(Region); // get the Region rect list
       while (upd)
@@ -1863,18 +1877,19 @@ void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, c
             //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
             glStencilFunc (GL_EQUAL, 1, 1);
             glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-//            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
 
       }
       else
       {
             glDepthFunc(GL_GREATER);                          // Set the test value
-//            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
             glDepthMask(GL_FALSE);                            // disable depth buffer
       }
+
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+
 }
 
-void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect)
+void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect, bool b_render_nodta)
 {
       if(g_b_useStencil)
       {
@@ -1898,19 +1913,29 @@ void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, c
 
 
       //    As a convenience, while we are creating the stencil or depth mask,
-      //    also render the default "NODTA" background
-      wxColour color = GetGlobalColor ( _T ( "NODTA" ) );
-      float r, g, b;
-      if(color.IsOk())
+      //    also render the default "NODTA" background if selected
+      if(b_render_nodta)
       {
-            r = color.Red()  / 255.;
-            g = color.Green()/ 255.;
-            b = color.Blue() / 255. ;
+            wxColour color = GetGlobalColor ( _T ( "NODTA" ) );
+            float r, g, b;
+            if(color.IsOk())
+            {
+                  r = color.Red()  / 255.;
+                  g = color.Green()/ 255.;
+                  b = color.Blue() / 255. ;
+            }
+            else
+                  r=g=b=0;
+            glColor3f(r, g, b);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // enable color buffer
+
       }
       else
-            r=g=b=0;
+      {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+      }
 
-      glColor3f(r, g, b);
+
 
       if(g_b_useStencil)
       {
@@ -1953,6 +1978,9 @@ void s57chart::SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, c
             glDepthFunc(GL_GREATER);                          // Set the test value
             glDepthMask(GL_FALSE);                            // disable depth buffer
       }
+
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+
 }
 
 bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect)
@@ -1966,16 +1994,17 @@ bool s57chart::DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, 
 
       //    If the ViewPort is unrotated, we can use a simple (fast) scissor test instead
       //    of a stencil or depth buffer clipping algorithm.....
+/*
       if(fabs(VPoint.rotation) < 0.01)
       {
 
             glScissor(rect.x, VPoint.pix_height-rect.height-rect.y, rect.width, rect.height);
-//            glEnable(GL_SCISSOR_TEST);
-//            glDisable (GL_STENCIL_TEST);
-//            glDisable (GL_DEPTH_TEST);
+            glEnable(GL_SCISSOR_TEST);
+            glDisable (GL_STENCIL_TEST);
+            glDisable (GL_DEPTH_TEST);
 
       }
-
+*/
       if(g_b_useStencil)
             glEnable (GL_STENCIL_TEST);
       else
@@ -2125,7 +2154,13 @@ bool s57chart::DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, co
             //    Create a mask
             if(b_overlay)
             {
-                  m_pMask = new wxMask(*m_pCloneBM, GetGlobalColor ( _T ( "NODTA" ) ));
+                  wxColour nodat = GetGlobalColor ( _T ( "NODTA" ) );
+                  wxColour nodat_sub = nodat;
+
+#ifdef ocpnUSE_ocpnBitmap
+                  nodat_sub = wxColour(nodat.Blue(), nodat.Green(), nodat.Red());
+#endif
+                  m_pMask = new wxMask(*m_pCloneBM, nodat_sub);
                   m_pCloneBM->SetMask( m_pMask );
             }
 
