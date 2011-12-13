@@ -484,15 +484,15 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
                   //    We can make a simple determination of libgps API level
                   m_libgps_api = 0;
-                  if(m_fn_gps_read)
-                  {
-                        wxLogMessage(_T("LIBGPS:  Using libgps API=20"));
-                        m_libgps_api = 20;
-                  }
-                  else if(m_fn_gps_poll)
+                  if(m_fn_gps_poll)
                   {
                         wxLogMessage(_T("LIBGPS:  Using libgps API=19"));
                         m_libgps_api = 19;
+                  }
+                  else if(m_fn_gps_read)
+                  {
+                        wxLogMessage(_T("LIBGPS:  Using libgps API=20"));
+                        m_libgps_api = 20;
                   }
 
 
