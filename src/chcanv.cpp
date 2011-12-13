@@ -606,6 +606,7 @@ class Quilt
             ViewPort &GetQuiltVP(){ return m_vp_quilt;}
             wxString GetQuiltDepthUnit(){ return m_quilt_depth_unit; }
             void SetRenderedVP(ViewPort &vp){ m_vp_rendered = vp; }
+            bool HasOverlays(void){ return m_bquilt_has_overlays; }
 
             int GetnCharts(){ return m_PatchList.GetCount();}
             bool RenderQuiltRegionViewOnDC ( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
@@ -1422,8 +1423,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                   // only unskewed charts of the proper projection and type may be quilted....
                   // and we avoid adding CM93 Composite until later
-                  if((m_reference_family == ChartData->GetDBChartFamily(i)) &&
-                            (fabs(chart_skew) < 1.0) &&
+//                  if((m_reference_family == ChartData->GetDBChartFamily(i)) &&
+                  if((m_reference_type == ChartData->GetDBChartType(i)) &&
+                      (fabs(chart_skew) < 1.0) &&
                             (ChartData->GetDBChartProj(i) == m_quilt_proj) &&
                             (ChartData->GetDBChartType(i) != CHART_TYPE_CM93COMP)
                      )
@@ -1449,11 +1451,12 @@ bool Quilt::Compose(const ViewPort &vp_in)
             {
                   //    We can eliminate some charts immediately
                   //    Try to make these tests in some sensible order....
-//                  if(m_reference_type != ChartData->GetDBChartType(i))
-//                        continue;
 
-                  if(m_reference_family != ChartData->GetDBChartFamily(i))
+                  if(m_reference_type != ChartData->GetDBChartType(i))
                         continue;
+
+//                  if(m_reference_family != ChartData->GetDBChartFamily(i))
+//                        continue;
 
                   if(ChartData->GetDBChartType(i) == CHART_TYPE_CM93COMP)
                       continue;
@@ -2080,7 +2083,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
 /// In S57ENC quilts, do not subtract larger scale regions from smaller,
 /// This allows exactly co-incident chart regions to both be included
 /// This covers the case found in layered Euro(Austrian) IENC cells
-                  if(CHART_TYPE_S57 != ctei.GetChartType() )
+                  if((CHART_TYPE_S57 != ctei.GetChartType()) && (CHART_TYPE_CM93COMP != ctei.GetChartType()))
                         if(!vpr_region.Empty())
                               vpr_region.Subtract(larger_scale_chart_region);
 /*
@@ -12568,18 +12571,54 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp, wxRegion Region)
                         get_region.Intersect(Region);
                         if(!get_region.IsEmpty())
                         {
-                              ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
-                              if(Patch_Ch_BSB)
-                                    RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
-                              else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                              if(!pqp->b_overlay)
                               {
-                                    get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
-                                    pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                    ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
+                                    if(Patch_Ch_BSB)
+                                          RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
+                                    else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                    {
+                                          get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
+                                          pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                    }
                               }
                         }
                   }
 
                   pch = cc1->m_pQuilt->GetNextChart();
+            }
+
+            //    Render any Overlay patches for s57 charts(cells)
+            if(cc1->m_pQuilt->HasOverlays())
+            {
+                  ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+                  while(pch)
+                  {
+                        QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                        if(pqp->b_Valid)
+                        {
+                              wxRegion get_region = pqp->ActiveRegion;
+
+                              get_region.Intersect(Region);
+                              if(!get_region.IsEmpty())
+                              {
+                                    if(pqp->b_overlay)
+                                    {
+                                          if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                          {
+                                                s57chart *Chs57 = dynamic_cast<s57chart*> ( pch );
+                                                if(pch)
+                                                {
+                                                      get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
+                                                      Chs57->RenderOverlayRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+
+                        pch = cc1->m_pQuilt->GetNextChart();
+                  }
             }
 
             cc1->m_pQuilt->SetRenderedVP(vp);
