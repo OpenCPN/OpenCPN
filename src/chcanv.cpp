@@ -723,22 +723,21 @@ bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy, bool b_allow_vector)
       bool ret_val = true;
       if(m_vp_rendered.IsValid())
       {
+            wxPoint2DDouble p1 = VPoint.GetDoublePixFromLL(m_vp_rendered.clat, m_vp_rendered.clon);
+            wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL(VPoint.clat, VPoint.clon);
+            double deltax = p2.m_x - p1.m_x;
+            double deltay = p2.m_y - p1.m_y;
+ //                       printf(" on IsBlitable: quilt delta = %g %g\n", deltax, deltay);
+ //                       printf(" on IsBlitable: quilt rem = %g %g\n\n", deltax - dx, deltay- dy);
+
             ChartBase *pch = GetFirstChart();
             while(pch)
             {
                   if(pch->GetChartFamily() == CHART_FAMILY_RASTER)
                   {
-
-                        wxPoint2DDouble p1 = VPoint.GetDoublePixFromLL(m_vp_rendered.clat, m_vp_rendered.clon);
-                        wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL(VPoint.clat, VPoint.clon);
-                        double deltax = p2.m_x - p1.m_x;
-                        double deltay = p2.m_y - p1.m_y;
- //                       printf(" on IsBlitable: quilt delta = %g %g\n", deltax, deltay);
- //                       printf(" on IsBlitable: quilt rem = %g %g\n\n", deltax - dx, deltay- dy);
-
                         if((fabs(deltax - dx) > 1e-2) || (fabs(deltay- dy) > 1e-2))
                         {
- //                             printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
+//                              printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
                               ret_val = false;
                               break;
                         }
@@ -752,6 +751,13 @@ bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy, bool b_allow_vector)
                             ret_val = false;
                             break;
                         }
+                        else if((fabs(deltax - dx) > 1e-2) || (fabs(deltay- dy) > 1e-2))
+                        {
+//                             printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
+                              ret_val = false;
+                              break;
+                        }
+
                   }
 
 
@@ -6074,12 +6080,15 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 
                   dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
 
-                                // Default color is green
+                         // Default color is green
                   wxBrush target_brush =  wxBrush ( GetGlobalColor ( _T ( "UINFG" ) ) ) ;
 
                          //and....
                   if(!td->b_nameValid)
                         target_brush =  wxBrush ( GetGlobalColor ( _T ( "CHYLW" ) ) ) ;
+
+                  if(td->b_positionDoubtful)
+                        target_brush =  wxBrush ( GetGlobalColor ( _T ( "UINFF" ) ) ) ;
 
 //    Check for alarms here, maintained by AIS class timer tick
                   if((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid))
@@ -9752,7 +9761,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
 //                              printf("In OnPaint Trying Blit dx: %d  dy:%d\n\n", dx, dy);
 
-                              if(m_pQuilt->IsVPBlittable(VPoint, dx, dy))
+                              if(m_pQuilt->IsVPBlittable(VPoint, dx, dy, true))
                               {
                                     if(dx || dy)
                                     {
@@ -10962,6 +10971,9 @@ void ChartCanvas::DrawAllWaypointsInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wx
 
               wxPen ppPeng ( GetGlobalColor ( _T ( "UGREN" ) ) , 2 );
               wxPen ppPenr ( GetGlobalColor ( _T ( "URED" ) ) , 2 );
+
+              wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush ( wxColour(0,0,0), wxTRANSPARENT );
+              dc.SetBrush(*ppBrush);
 
               if(lpp1 > 0)
               {
@@ -15103,6 +15115,7 @@ void S57QueryDialog::OnClose(wxCloseEvent& event)
 {
       g_S57_dialog_sx = GetSize().x;
       g_S57_dialog_sy = GetSize().y;
+      Destroy();
 }
 
 
