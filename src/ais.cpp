@@ -429,7 +429,7 @@ AIS_Target_Data::AIS_Target_Data()
     Class = AIS_CLASS_A;      // default
     n_alarm_state = AIS_NO_ALARM;
     b_suppress_audio = false;
-    b_positionValid = false;
+    b_positionDoubtful = false;
     b_positionOnceValid = false;
     b_nameValid = false;
 
@@ -663,7 +663,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             }
       }
 
-      if(b_positionValid && bGPSValid && (Range_NM >= 0.))
+      if(b_positionOnceValid && bGPSValid && (Range_NM >= 0.))
                   line.Printf(_("Range:                %5.1f NM\n"), Range_NM);
       else
             line.Printf(_("Range:                  Unavailable\n"));
@@ -672,7 +672,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       int brg = (int)wxRound(Brg);
       if(Brg > 359.5)
             brg = 0;
-      if(b_positionValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.))
+      if(b_positionOnceValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.))
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
             line.Printf(_("Bearing:                Unavailable\n"));
@@ -693,9 +693,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       }
 
 
-      line.Printf(_("Position:               "));
-      if(b_positionValid)
+      line.Printf(_("Position"));
+      if(b_positionOnceValid)
       {
+            if(b_positionDoubtful)
+                  line << _(" (Last Known):  ");
+            else
+                  line << _(":               ");
+
             wxString pos_st;
             pos_st += toSDMM(1, Lat);
             pos_st <<_T("\n                        ");
@@ -704,7 +709,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line << pos_st;
       }
       else
-            line << _("Unavailable\n\n\n");
+            line << _(":               Unavailable\n\n\n");
       result.Append(line);
 
 
@@ -855,7 +860,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T(" "));
 
             int crs = wxRound(COG);
-            if(b_positionValid)
+            if(b_positionOnceValid)
             {
                   if(crs < 360)
                         t.Printf(_(" COG: %03d Deg."), crs);
@@ -1284,7 +1289,7 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                               //    This is an ownship message, presumably from a transponder
                               //    Simulate an ownship GPS position report upstream for message IDs 1,2,3
 
-                              if(m_pLatestTargetData && (nr == AIS_NoError) && g_bGPSAISMux && m_pLatestTargetData->b_positionValid)
+                              if(m_pLatestTargetData && (nr == AIS_NoError) && g_bGPSAISMux && !m_pLatestTargetData->b_positionDoubtful && m_pLatestTargetData->b_positionOnceValid)
                               {
                                     switch(m_pLatestTargetData->MID)
                                     {
@@ -1536,7 +1541,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
               //  If this is not an ownship message, update the AIS Target in the Selectable list, and update the CPA info
               if(!pTargetData->b_OwnShip)
               {
-                    if(pTargetData->b_positionValid)
+                    if(pTargetData->b_positionOnceValid)
                     {
                           SelectItem *pSel = pSelectAIS->AddSelectablePoint(pTargetData->Lat, pTargetData->Lon, (void *)mmsi_long, SELTYPE_AISTARGET);
                           pSel->SetUserData(mmsi);
@@ -1649,12 +1654,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             {
                   ptd->Lon = lon_tentative;
                   ptd->Lat = lat_tentative;
-                  ptd->b_positionValid = true;
+                  ptd->b_positionDoubtful = false;
                   ptd->b_positionOnceValid = true;          // Got the position at least once
-
+                  ptd->ReportTicks = now.GetTicks();
             }
             else
-                  ptd->b_positionValid = false;
+                  ptd->b_positionDoubtful = true;
 
             //    decode balance of message....
             ptd->COG = 0.1 * (bstr->GetInt(117, 12));
@@ -1708,9 +1713,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
             ptd->Class = AIS_CLASS_A;
 
-            if(ptd->b_positionValid)
-                  ptd->ReportTicks = now.GetTicks();
-
             parse_result = true;                // so far so good
             break;
         }
@@ -1733,11 +1735,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 {
                       ptd->Lon = lon_tentative;
                       ptd->Lat = lat_tentative;
-                      ptd->b_positionValid = true;
+                      ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
+                      ptd->ReportTicks = now.GetTicks();
                 }
                 else
-                      ptd->b_positionValid = false;
+                      ptd->b_positionDoubtful = true;
 
                 ptd->COG = 0.1 * (bstr->GetInt(113, 12));
                 ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
@@ -1745,9 +1748,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 ptd->m_utc_sec = bstr->GetInt(134, 6);
 
                 ptd->Class = AIS_CLASS_B;
-
-                if(ptd->b_positionValid)
-                      ptd->ReportTicks = now.GetTicks();
 
                 parse_result = true;                // so far so good
 
@@ -1851,12 +1851,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 {
                       ptd->Lon = lon_tentative;
                       ptd->Lat = lat_tentative;
-                      ptd->b_positionValid = true;
+                      ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
-
+                      ptd->ReportTicks = now.GetTicks();
                 }
                 else
-                      ptd->b_positionValid = false;
+                      ptd->b_positionDoubtful = true;
 
                 ptd->COG = -1.;
                 ptd->HDG = 511;
@@ -1864,8 +1864,6 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                 parse_result = true;
 
-                if(ptd->b_positionValid)
-                      ptd->ReportTicks = now.GetTicks();
                 break;
           }
      case 9:                                    // Special Position Report (Standard SAR Aircraft Position Report)
@@ -1937,15 +1935,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 {
                       ptd->Lon = lon_tentative;
                       ptd->Lat = lat_tentative;
-                      ptd->b_positionValid = true;
+                      ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
-
+                      ptd->ReportTicks = now.GetTicks();
                 }
                 else
-                      ptd->b_positionValid = false;
-
-                if(ptd->b_positionValid)
-                      ptd->ReportTicks = now.GetTicks();
+                      ptd->b_positionDoubtful = true;
 
                 if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
                 {
@@ -2003,7 +1998,13 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
     }
 
     if(true == parse_result)
-        ptd->b_active = true;
+    {
+          if(!ptd->b_active)
+          {
+                if(!ptd->b_positionDoubtful)
+                      ptd->b_active = true;
+          }
+    }
 
     return parse_result;
 }
@@ -2083,7 +2084,7 @@ void AIS_Decoder::UpdateAllTracks(void)
 
 void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget)
 {
-      if(!ptarget->b_positionValid)
+      if(!ptarget->b_positionOnceValid)
             return;
 
       //    Add the newest point
@@ -2156,7 +2157,7 @@ void AIS_Decoder::UpdateAllAlarms(void)
                   }
 
                   ais_alarm_type this_alarm = AIS_NO_ALARM;
-                  if(g_bCPAWarn && td->b_active && td->b_positionValid)
+                  if(g_bCPAWarn && td->b_active && td->b_positionOnceValid)
                   {
                         //      Skip anchored/moored(interpreted as low speed) targets if requested
                         if((!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts))        // dsr
@@ -2221,7 +2222,7 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       ptarget->Range_NM = -1.;            // Defaults
       ptarget->Brg = -1.;
 
-      if(!ptarget->b_positionValid || !bGPSValid)
+      if(!ptarget->b_positionOnceValid || !bGPSValid)
       {
             ptarget->bCPA_Valid = false;
             return;
@@ -2233,7 +2234,7 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       ptarget->Range_NM = dist;
       ptarget->Brg = brg;
 
-      if(dist == 0.0)
+      if(dist <= 1e-5)
             ptarget->Brg = -1.0;             // Brg is undefined if Range == 0.
 
 
@@ -3891,7 +3892,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlBRG:
                   {
-                        if(pAISTarget->b_positionValid && bGPSValid && (pAISTarget->Brg >= 0.))
+                        if(pAISTarget->b_positionOnceValid && bGPSValid && (pAISTarget->Brg >= 0.))
                         {
                               int brg = (int)wxRound(pAISTarget->Brg);
                               if(pAISTarget->Brg > 359.5)
@@ -3930,7 +3931,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlRNG:
                   {
-                        if(pAISTarget->b_positionValid && bGPSValid && (pAISTarget->Range_NM >= 0.))
+                        if(pAISTarget->b_positionOnceValid && bGPSValid && (pAISTarget->Range_NM >= 0.))
                               ret.Printf(_T("%5.2f"), pAISTarget->Range_NM);
                         else
                               ret = _("-");
@@ -4411,7 +4412,7 @@ void AISTargetListDialog::UpdateButtons()
       {
             AIS_Target_Data *pAISTargetSel =
                         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
-            if(pAISTargetSel && (!pAISTargetSel->b_positionValid))
+            if(pAISTargetSel && (!pAISTargetSel->b_positionOnceValid))
                   enable = false;
       }
       m_pButtonJumpTo->Enable(enable);
@@ -4540,9 +4541,9 @@ void AISTargetListDialog::UpdateAISTargetList(void)
 
                   if ( NULL != pAISTarget)
                   {
-                        if((pAISTarget->b_positionValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
+                        if((pAISTarget->b_positionOnceValid) && (pAISTarget->Range_NM <= g_AisTargetList_range) )
                               m_pMMSI_array->Add(pAISTarget->MMSI);
-                        else if(!pAISTarget->b_positionValid)
+                        else if(!pAISTarget->b_positionOnceValid)
                               m_pMMSI_array->Add(pAISTarget->MMSI);
                   }
             }

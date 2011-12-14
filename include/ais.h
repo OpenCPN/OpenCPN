@@ -213,7 +213,8 @@ public:
     bool                      b_active;
     ais_alarm_type            n_alarm_state;
     bool                      b_suppress_audio;
-    bool                      b_positionValid;
+//    bool                      b_positionValid;
+    bool                      b_positionDoubtful;
     bool                      b_positionOnceValid;
     bool                      b_nameValid;
     bool                      b_OwnShip;
