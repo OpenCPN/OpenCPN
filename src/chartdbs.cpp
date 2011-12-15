@@ -688,6 +688,7 @@ bool ChartDatabase::Write(const wxString &filePath)
         int dirlen = dir.length();
         char s[200];
         strncpy(s, dir.mb_str(wxConvUTF8), 199);
+        s[199] = 0;
         dirlen = strlen(s);
         ofs.Write(&dirlen, sizeof(int));
 //        ofs.Write(dir.fn_str(), dirlen);

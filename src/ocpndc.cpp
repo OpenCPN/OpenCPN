@@ -450,7 +450,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usema
 
                glColor4f(1, 1, 1, 1);
                GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-               delete e;
+               free(e);
           } else {
                glRasterPos2i(x, y);
                glPixelZoom(1, -1); /* draw data from top to bottom */
@@ -498,7 +498,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y)
                         m_textforegroundcolour.Blue(),
                         255);
             GLDrawBlendData(x, y, w, h, GL_ALPHA, data);
-            delete data;
+            free(data);
           }
      }
 }

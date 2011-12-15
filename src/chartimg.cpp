@@ -773,7 +773,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       ifs_hdr = new wxFileInputStream(name);          // open the Header file as a read-only stream
 
       if(!ifs_hdr->Ok())
+	  {
+            free(pPlyTable);
             return INIT_FAIL_REMOVE;
+      }
 
       m_FullPath = name;
       m_Description = m_FullPath;

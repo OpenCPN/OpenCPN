@@ -937,6 +937,7 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
                   {
                         char error[sizeof(m_gps_data->error) + 1];
                         strncpy(error, m_gps_data->error, sizeof(m_gps_data->error));
+                        error[sizeof(m_gps_data->error)] = 0;
                         printf("  ERROR_SET  %s\n", error);
                   }
 

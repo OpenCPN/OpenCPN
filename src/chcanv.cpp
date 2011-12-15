@@ -13165,8 +13165,12 @@ void glChartCanvas::GrowData(int size)
 {
      /* grow the temporary ram buffer used to load charts into textures */
      if(size > m_datasize) {
-          m_datasize = size;
-          m_data = (unsigned char*)realloc(m_data, m_datasize);
+          unsigned char* tmp = (unsigned char*)realloc(m_data, m_datasize);
+          if (tmp != NULL) {
+              m_data = tmp;
+              m_datasize = size;
+              tmp = NULL;
+          }
      }
 }
 

@@ -4637,6 +4637,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       {
             char sfile[200];
             strncpy ( sfile, file.mb_str(), 199 );
+            sfile[199] = 0;
             printf ( "    filename: %s\n", sfile );
       }
 
@@ -4662,6 +4663,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             {
                   char sfile[200];
                   strncpy ( sfile, file1.mb_str(), 199 );
+                  sfile[199] = 0;
                   printf ( "    alternate filename: %s\n", sfile );
             }
 
@@ -4696,6 +4698,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       {
             char str[256];
             strncpy ( str, msg.mb_str(), 255 );
+            str[255] = 0;
             printf ( "   %s\n", str );
       }
 
