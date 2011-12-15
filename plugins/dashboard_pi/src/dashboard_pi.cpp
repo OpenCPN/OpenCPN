@@ -920,7 +920,43 @@ void dashboard_pi::OnToolbarToolCallback(int id)
             {
                   wxAuiPaneInfo &pane = m_pauimgr->GetPane( dashboard_window );
                   if (pane.IsOk())
+                  {
+                        bool b_reset_pos = false;
+
+
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window title bar does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+                        RECT frame_title_rect;
+                        frame_title_rect.left = pane.floating_pos.x;
+                        frame_title_rect.top = pane.floating_pos.y;
+                        frame_title_rect.right = pane.floating_pos.x + pane.floating_size.x;
+                        frame_title_rect.bottom = pane.floating_pos.y + 30;
+
+                        if(NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+                              b_reset_pos = true;
+#else
+
+            //    Make sure drag bar (title bar) of window intersects wxClient Area of screen, with a little slop...
+                        wxRect window_title_rect;                    // conservative estimate
+                        window_title_rect.x = pane.floating_pos.x;
+                        window_title_rect.y = pane.floating_pos.y;
+                        window_title_rect.width = pane.floating_size.x;
+                        window_title_rect.height = 30;
+
+                        wxRect ClientRect = wxGetClientDisplayRect();
+                        ClientRect.Deflate(60, 60);                     // Prevent the new window from being too close to the edge
+                        if(!ClientRect.Intersects(window_title_rect))
+                              b_reset_pos = true;
+
+#endif
+
+                        if(b_reset_pos)
+                              pane.FloatingPosition(50,200);
+
                         pane.Show(cnt==0);
+                  }
 
             //  This patch fixes a bug in wxAUIManager
             //  FS#548

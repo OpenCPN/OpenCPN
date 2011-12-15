@@ -266,7 +266,23 @@ void grib_pi::OnToolbarToolCallback(int id)
 
       // Qualify the GRIB dialog position
             bool b_reset_pos = false;
-            //    Make sure drag bar (title bar) of window on Client Area of screen, with a little slop...
+
+
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+            RECT frame_title_rect;
+            frame_title_rect.left =   m_grib_dialog_x;
+            frame_title_rect.top =    m_grib_dialog_y;
+            frame_title_rect.right =  m_grib_dialog_x + m_grib_dialog_sx;
+            frame_title_rect.bottom = m_grib_dialog_y + 30;
+
+
+            if(NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+                  b_reset_pos = true;
+#else
+       //    Make sure drag bar (title bar) of window on Client Area of screen, with a little slop...
             wxRect window_title_rect;                    // conservative estimate
             window_title_rect.x = m_grib_dialog_x;
             window_title_rect.y = m_grib_dialog_y;
@@ -278,20 +294,6 @@ void grib_pi::OnToolbarToolCallback(int id)
             if(!ClientRect.Intersects(window_title_rect))
                   b_reset_pos = true;
 
-
-#ifdef __WXMSW__
-        //  Support MultiMonitor setups which an allow negative window positions.
-        //  If the requested window does not intersect any installed monitor,
-        //  then default to simple primary monitor positioning.
-            RECT frame_rect;
-            frame_rect.left =   m_grib_dialog_x;
-            frame_rect.top =    m_grib_dialog_y;
-            frame_rect.right =  m_grib_dialog_x + m_grib_dialog_sx;
-            frame_rect.bottom = m_grib_dialog_y + 30;
-
-
-            if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
-                  b_reset_pos = true;
 #endif
 
             if(b_reset_pos)
