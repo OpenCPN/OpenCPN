@@ -493,6 +493,8 @@ bool             g_bShowTrackIcon;
 bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
 bool             g_bTrackDaily;
+bool             g_bHighliteTracks;
+
 Track            *g_pActiveTrack;
 double           g_TrackIntervalSeconds;
 double           g_TrackDeltaDistance;
@@ -5676,10 +5678,14 @@ void MyFrame::SetupQuiltMode(void)
 #endif
             }
 
-            cc1->SetQuiltRefChart(target_new_dbindex);
-            cc1->ReloadVP();
+            if(cc1->IsChartQuiltableRef(target_new_dbindex))
+                  SelectQuiltRefdbChart(target_new_dbindex);
+            else
+                  SelectQuiltRefdbChart(-1);
 
             Current_Ch = NULL;                  // Bye....
+            cc1->ReloadVP();
+
       }
       else                                                  // going to SC Mode
       {
@@ -6580,8 +6586,11 @@ void MyFrame::SelectQuiltRefdbChart(int db_index)
       cc1->SetQuiltRefChart(db_index);
 
       ChartBase *pc = ChartData->OpenChartFromDB(db_index, FULL_INIT);
-      double best_scale = GetBestVPScale(pc);
-      cc1->SetVPScale ( best_scale );
+      if(pc)
+      {
+            double best_scale = GetBestVPScale(pc);
+            cc1->SetVPScale ( best_scale );
+      }
 
 }
 
