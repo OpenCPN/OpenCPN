@@ -1897,7 +1897,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                         ptd->NavStatus = ATON_VIRTUAL;
                   else
                         ptd->NavStatus = ATON_REAL;
-                  if (ptd->m_utc_sec<=59 && !virt)
+                  if (ptd->m_utc_sec<=59 /*&& !virt*/)
                   {
                          ptd->NavStatus += 1;
                          if (offpos) ptd->NavStatus += 1;

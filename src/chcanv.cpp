@@ -4058,7 +4058,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     break;
                }
 
-               case 32:                     // Ctrl Space            //    Drop MOB
+               case -32:                     // Ctrl Space            //    Drop MOB
                {
                     if ( m_modkeys == wxMOD_CONTROL )
                          parent_frame->ActivateMOB();
@@ -6243,8 +6243,19 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 
                            //        Actually Draw the target
 
-                  if (td->Class == AIS_ATON) {                       // Aid to Navigation    // pjotrc 2010.02.01
-                        AtoN_Diamond(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
+                  if (td->Class == AIS_ATON)
+                  {                       // Aid to Navigation    // pjotrc 2010.02.01
+                        wxPen aton_pen;
+                        if((td->NavStatus == ATON_VIRTUAL_OFFPOSITION) || (td->NavStatus == ATON_REAL_OFFPOSITION))
+                              aton_pen = wxPen ( GetGlobalColor ( _T ( "URED" )) , 2 );
+                        else
+                              aton_pen = wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 );
+
+                        bool b_virt = (td->NavStatus == ATON_VIRTUAL) |
+                                      (td->NavStatus == ATON_VIRTUAL_ONPOSITION) |
+                                      (td->NavStatus == ATON_VIRTUAL_OFFPOSITION);
+
+                        AtoN_Diamond(dc,  aton_pen, TargetPoint.x, TargetPoint.y, 12, b_virt);
                   }
                   else if (td->Class == AIS_BASE) {                       // Base Station
                         Base_Square(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
@@ -6442,10 +6453,10 @@ void ChartCanvas::TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius)  
       dc.SetPen(pen_save);
 }
 
-void ChartCanvas::AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius)  // pjotrc 2010.02.01
+void ChartCanvas::AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual)  // pjotrc 2010.02.01
 {
       //    Constants?
-      int gap2 = 2*radius/6;
+      int gap2 = 2*radius/8;
       int pen_width = pen.GetWidth();
 
       wxPen pen_save = dc.GetPen();
@@ -6458,10 +6469,16 @@ void ChartCanvas::AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius) 
       dc.DrawLine(x, y-radius, x-radius, y);
 
       if (pen_width > 1)
-      { pen_width -= 1; pen.SetWidth(pen_width); }    // draw cross inside
+      { pen_width -= 1; pen.SetWidth(pen_width); dc.SetPen(pen); }    // draw cross inside
 
       dc.DrawLine(x-gap2, y, x+gap2, y);
       dc.DrawLine(x, y-gap2, x, y+gap2);
+
+      if(b_virtual)
+      {
+            dc.DrawLine(x-gap2-3, y-1, x, y+gap2+5);
+            dc.DrawLine(x, y+gap2+5, x+gap2+4, y-2);
+      }
 
       dc.SetPen(pen_save);
 }
@@ -12847,8 +12864,8 @@ void glChartCanvas::render()
             // Try to do accelerated pans
               if(m_b_useFBO)
               {
-                  if(m_cache_vp.IsValid() && (m_cache_tex > 0))
-                  {
+                    if(m_cache_vp.IsValid() && (m_cache_tex > 0) && !g_bCourseUp)
+                    {
                         if(b_newview)
                         {
 
