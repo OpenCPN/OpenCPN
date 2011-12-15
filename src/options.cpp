@@ -122,6 +122,7 @@ extern bool             g_bShowLayers;
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowTrackIcon;
 extern bool             g_bTrackDaily;
+extern bool             g_bHighliteTracks;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
@@ -1206,6 +1207,8 @@ void options::CreateControls()
     itemStaticBoxSizerTrack->Add(pTrackShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
     pTrackDaily = new wxCheckBox( itemPanelAdvanced, ID_DAILYCHECKBOX, _("Automatic Daily Tracks"));
     itemStaticBoxSizerTrack->Add(pTrackDaily, 1, wxALIGN_LEFT|wxALL, border_size);
+    pTrackHighlite = new wxCheckBox( itemPanelAdvanced, ID_TRACKHILITE, _("Highlight Tracks"));
+    itemStaticBoxSizerTrack->Add(pTrackHighlite, 1, wxALIGN_LEFT|wxALL, border_size);
 
     wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer(2);
     pTrackGrid->AddGrowableCol(1);
@@ -1433,6 +1436,7 @@ void options::SetInitialSettings()
 
       pTrackShowIcon->SetValue(g_bShowTrackIcon);
       pTrackDaily->SetValue(g_bTrackDaily);
+      pTrackHighlite->SetValue(g_bHighliteTracks);
 
       s.Printf(_T("%4.0f"),g_TrackIntervalSeconds);
       m_pText_TP_Secs->SetValue(s);
@@ -1854,6 +1858,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bTrackDistance = m_pCheck_Trackpoint_distance->GetValue();
 
     g_bTrackDaily = pTrackDaily->GetValue();
+    g_bHighliteTracks = pTrackHighlite->GetValue();
 
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
@@ -2607,6 +2612,8 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
       else if(lang_canonical == _T("el_GR")) {dir_suffix = _T("el_GR"); return_string = wxString("Ελληνικά", wxConvUTF8);}
       else if(lang_canonical == _T("hu_HU")) {dir_suffix = _T("hu_HU"); return_string = wxString("Magyar", wxConvUTF8);}
       else if(lang_canonical == _T("zh_TW")) {dir_suffix = _T("zh_TW"); return_string = wxString("正體字", wxConvUTF8);}
+      else if(lang_canonical == _T("ca_ES")) {dir_suffix = _T("ca_ES"); return_string = wxString("Catalan", wxConvUTF8);}
+      else if(lang_canonical == _T("gl_ES")) {dir_suffix = _T("gl_ES"); return_string = wxString("Galician", wxConvUTF8);}
       else
       {
             dir_suffix = lang_canonical;

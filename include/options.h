@@ -127,8 +127,8 @@ enum {
         ID_FSTOOLBARCHECKBOX,
         ID_TRANSTOOLBARCHECKBOX,
         ID_SHOWLAYERSCHECKBOX,
-        ID_SDMMFORMATCHOICE
-
+        ID_SDMMFORMATCHOICE,
+        ID_TRACKHILITE
 
 };
 
@@ -353,6 +353,7 @@ public:
 
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;
+    wxCheckBox              *pTrackHighlite;
     wxRadioButton           *m_pCheck_Trackpoint_time;
     wxRadioButton           *m_pCheck_Trackpoint_distance;
     wxTextCtrl              *m_pText_TP_Secs;

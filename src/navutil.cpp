@@ -288,6 +288,8 @@ extern int             g_lastClientRecty;
 extern int             g_lastClientRectw;
 extern int             g_lastClientRecth;
 
+extern bool             g_bHighliteTracks;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -2351,7 +2353,7 @@ Track::Track ( void )
       m_bIsTrack = true;
       m_TrackTimerSec = -1;
       m_DeltaDistance = 0.0;
-      m_minTrackpoint_delta = .01;
+      m_minTrackpoint_delta = .001;
       m_bTrackTime = false;
       m_bTrackDistance = false;
       //m_prev_time = wxDateTime::Now();
@@ -2533,6 +2535,9 @@ void Track::Draw ( ocpnDC& dc, ViewPort &VP )
 
       double radius_meters = 20;//Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
       double radius = radius_meters * VP.view_scale_ppm;
+
+      if(!g_bHighliteTracks)
+            radius = 0;                         // disable highlights
 
       unsigned short int FromSegNo = 1;
 
@@ -2855,6 +2860,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "StartWithTrackActive" ),  &g_bTrackCarryOver, 0 );
       Read (_T ( "AutomaticDailyTracks" ),  &g_bTrackDaily, 0 );
+      Read (_T ( "HighlightTracks" ),  &g_bHighliteTracks, 1 );
 
       wxString stps;
       Read ( _T ( "PlanSpeed" ),  &stps );
@@ -4069,6 +4075,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "StartWithTrackActive" ),   g_bTrackCarryOver );
       Write ( _T ( "AutomaticDailyTracks" ),   g_bTrackDaily );
+      Write ( _T ( "HighlightTracks" ),   g_bHighliteTracks );
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
       Write ( _T ( "InitialdBIndex" ),  g_restore_dbindex );
