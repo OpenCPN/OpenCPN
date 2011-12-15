@@ -15690,6 +15690,8 @@ bool GoToPositionDialog::ShowToolTips()
 void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
 {
       Hide();
+      cc1->ReloadVP();
+
       event.Skip();
 }
 
@@ -15701,9 +15703,8 @@ void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
       double lat = fromDMM(m_MarkLatCtl->GetValue());
       double lon = fromDMM(m_MarkLonCtl->GetValue());
 
-      gFrame->JumpToPosition(lat, lon, cc1->GetVPScale());
-
       Hide();
+      gFrame->JumpToPosition(lat, lon, cc1->GetVPScale());
       event.Skip();
 }
 
