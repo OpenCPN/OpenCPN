@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -19,16 +19,6 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
-#
-# 
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 # 
 msgid ""
@@ -170,6 +160,9 @@ msgstr " %D Ημέρες  %H Ώρες  %M Λεπτά"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Ώρες   %M Λεπτά"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 # 
 msgid " - "
@@ -375,6 +368,11 @@ msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο Σημείο)(WP)"
 #
 # 
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(ανώνυμο ταξίδι)"
+#
+# 
 msgid "-"
 msgstr "-"
 #
@@ -404,6 +402,19 @@ msgstr "2-χρωμο"
 # 
 msgid "4 Color"
 msgstr "4-τράχρωμο"
+#
+# 
+#, fuzzy
+msgid ":               "
+msgstr "Κατηγορία:"
+#
+# 
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Διόπτευση:            μη διαθέσιμη\n"
 #
 # 
 msgid "?"
@@ -1313,6 +1324,11 @@ msgid "High Speed Craft"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "&Έναρξη καταγραφήςΊχνους (πορείας)"
+#
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -1959,10 +1975,6 @@ msgid ""
 msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
 #
 # 
-msgid "Position:               "
-msgstr "Θέση:"
-#
-# 
 #, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -2275,6 +2287,11 @@ msgstr "Επιτυχής φόρτωση Ταξιδίου(Route)"
 # 
 msgid "Route from Track"
 msgstr "Ταξίδι(Route) από Ίχνος(Track)"
+#
+# 
+#, fuzzy
+msgid "Route: "
+msgstr "Ταξίδι"
 #
 # 
 msgid "RouteLegInfoRollover"
@@ -3164,13 +3181,27 @@ msgstr ""
 #
 #
 # 
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+# 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
+#
 #
 #
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 # 
@@ -3181,14 +3212,17 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Προσπάθεια να φορτωθεί το libgps.so"
 #
 #
+#
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -3224,6 +3258,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3233,6 +3268,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -3268,6 +3304,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3277,6 +3314,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -3312,6 +3350,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3320,6 +3359,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -3354,6 +3394,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3365,9 +3406,11 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+#
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -3391,6 +3434,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
@@ -3399,9 +3443,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -3430,6 +3476,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3439,9 +3486,11 @@ msgstr ""
 #~ msgstr "Βασικό ναυτικό"
 #
 #
+#
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
 #
 #
 # 
@@ -3463,9 +3512,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
 #
 #
 # 
@@ -3473,9 +3524,11 @@ msgstr ""
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
+#
 #
 #
 # 
@@ -3483,9 +3536,11 @@ msgstr ""
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
+#
 #
 #
 # 
@@ -3493,10 +3548,17 @@ msgstr ""
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
+#
+#
+# 
+#~ msgid "Position:               "
+#~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -3529,6 +3591,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3536,6 +3599,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
 #
 #
 #
@@ -3562,10 +3626,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

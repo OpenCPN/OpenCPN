@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -18,15 +18,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 msgid ""
 "\n"
@@ -139,6 +130,9 @@ msgstr " %D Dagar %H Timmar %M Minuter"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Timmar %M Minuter"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 msgid " - "
 msgstr " - "
@@ -295,6 +289,10 @@ msgstr "(Ej namngivet Spår)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint namn)"
 #
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Ej namngivet lager)"
+#
 msgid "-"
 msgstr "-"
 #
@@ -315,6 +313,17 @@ msgstr "2 Färger"
 #
 msgid "4 Color"
 msgstr "4 Färger"
+#
+#, fuzzy
+msgid ":               "
+msgstr "Klass:                "
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Bäring:               Saknas\n"
 #
 msgid "?"
 msgstr "?"
@@ -1002,6 +1011,10 @@ msgstr "Dölj på sjökort"
 msgid "High Speed Craft"
 msgstr "Höghastighetsfartyg"
 #
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Dela Spår"
+#
 msgid "Hydrofoil"
 msgstr "Bärplansbåt"
 #
@@ -1478,9 +1491,6 @@ msgid ""
 "\n"
 msgstr "Rapportålder:         %3d Sek.\n"
 #
-msgid "Position:               "
-msgstr "Position:             "
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -1713,6 +1723,10 @@ msgstr "Rutt uppladdad ok."
 #
 msgid "Route from Track"
 msgstr "Rutt från Spår"
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Rutt"
 #
 msgid "RouteLegInfoRollover"
 msgstr "Rutt/Beninformation \"Rulla över\""
@@ -2383,40 +2397,60 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
+#
 #
 #
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera symbol create_pi: "
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
+#
 #
 #
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Tidmarkering"
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
+#
 #
 #
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "libgps kan inte laddas"
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Base Class"
+#
 #
 #
 #~ msgid ""
@@ -2427,25 +2461,35 @@ msgstr "wgsoy"
 #~ "Modulhanterare skapade denna base class"
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Modulhanterare söker efter moduler i "
+#
 #
 #
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Modulhanterare: Inaktiverar modul: "
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Modulhanterare: Initialiserar modul: "
+#
 #
 #
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Modulhanterare: Aktiverar modul: "
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Modulhanterare: stänger modul: "
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Position:             "

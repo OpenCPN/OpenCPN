@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -18,16 +18,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 #
 msgid ""
@@ -164,6 +154,9 @@ msgstr " %D dni  %H godzin  %M minut"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H godzin  %M minut"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 #
 msgid " - "
@@ -368,6 +361,11 @@ msgid "(Unnamed Waypoint)"
 msgstr "(punkt bez nazwy)"
 #
 #
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(warstwa bez nazwy)"
+#
+#
 msgid "-"
 msgstr "-"
 #
@@ -394,6 +392,19 @@ msgstr "2 kolory"
 #
 msgid "4 Color"
 msgstr "4 kolory"
+#
+#
+#, fuzzy
+msgid ":               "
+msgstr "Klasa:                "
+#
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Namiar:                b.d.\n"
 #
 #
 msgid "?"
@@ -1289,6 +1300,11 @@ msgid "High Speed Craft"
 msgstr ""
 #
 #
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "&Zacznij ślad"
+#
+#
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -1922,10 +1938,6 @@ msgid ""
 msgstr "Wiek raportu:                  %3d sek.\n"
 #
 #
-msgid "Position:               "
-msgstr "Pozycja:              "
-#
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2225,6 +2237,11 @@ msgstr "Przesyłanie drogi zakończone pomyślnie."
 #
 msgid "Route from Track"
 msgstr "Droga ze śladu"
+#
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Droga"
 #
 #
 msgid "RouteLegInfoRollover"
@@ -3095,8 +3112,21 @@ msgstr ""
 #
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "  Wtyczki: nie można załadować biblioteki "
+#
 #
 #
 #
@@ -3105,8 +3135,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 #
@@ -3127,13 +3159,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Próba załadowania libgps.so"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3176,8 +3211,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -3220,8 +3257,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -3262,9 +3301,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -3289,6 +3330,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
 #
@@ -3297,8 +3339,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Błąd ładowania libgps.so"
+#
 #
 #
 #
@@ -3319,13 +3363,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Importuj nową warstwę"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -3338,8 +3385,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -3348,8 +3397,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -3358,13 +3409,21 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Wtyczki: odstawiona wtyczka o błędnym numerze wersji API %d.%d:"
+#
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Pozycja:              "
+#
 #
 #
 #
@@ -3391,8 +3450,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 #

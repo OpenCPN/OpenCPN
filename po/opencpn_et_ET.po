@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -20,18 +20,6 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
-#
-# 
-# 
-# 
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 # 
 # 
@@ -213,6 +201,9 @@ msgstr " %D Päeva  %H Tundi  %M Minutit"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Tundi  %M Minutit"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 # 
 # 
@@ -512,6 +503,13 @@ msgstr "(Nimetu Teepunkt)"
 # 
 # 
 # 
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Nimetu teekond)"
+#
+# 
+# 
+# 
 msgid "-"
 msgstr "-"
 #
@@ -548,6 +546,23 @@ msgstr "2 värvi"
 # 
 msgid "4 Color"
 msgstr "4 värvi"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid ":               "
+msgstr "Klass:                  "
+#
+# 
+# 
+# 
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Kurss:            Kättesaamatu\n"
 #
 # 
 msgid "?"
@@ -1744,6 +1759,13 @@ msgid "High Speed Craft"
 msgstr ""
 #
 # 
+# 
+# 
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "&Alusta jälje näitamist"
+#
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -2579,12 +2601,6 @@ msgstr "Raporti vanus:          %3d Sec.\n"
 # 
 # 
 # 
-msgid "Position:               "
-msgstr "Koht:"
-#
-# 
-# 
-# 
 #, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -2969,6 +2985,13 @@ msgstr "Teekond laetud edukalt"
 # 
 msgid "Route from Track"
 msgstr "Teekond jäljest"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Route: "
+msgstr "Teekond"
 #
 # 
 msgid "RouteLegInfoRollover"
@@ -4142,8 +4165,23 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+# 
+# 
+# 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Ei suuda laadida library: "
+#
 #
 #
 # 
@@ -4151,6 +4189,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
 #
 #
 # 
@@ -4163,6 +4202,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4170,11 +4210,13 @@ msgstr ""
 #~ msgstr "Ei suuda laadida libgps.so"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 #
@@ -4209,6 +4251,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4217,6 +4260,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -4251,6 +4295,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4259,6 +4304,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 #
@@ -4293,6 +4339,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4301,6 +4348,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -4335,6 +4383,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4347,11 +4396,13 @@ msgstr ""
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -4377,6 +4428,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4387,11 +4439,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 #
 #
@@ -4422,6 +4476,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4433,11 +4488,13 @@ msgstr ""
 #~ msgstr "Mere standard"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Lisade baasi klass"
+#
 #
 #
 # 
@@ -4461,15 +4518,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
+#
 #
 #
 # 
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 # 
@@ -4479,11 +4539,13 @@ msgstr ""
 #~ msgstr "Lisade haldur: deaktiveerin lisa:"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 # 
@@ -4493,6 +4555,7 @@ msgstr ""
 #~ msgstr "Lisade haldur: laen lisa:"
 #
 #
+#
 # 
 # 
 # 
@@ -4500,11 +4563,20 @@ msgstr ""
 #~ msgstr "Lisade haldur: eemaldan lisa:"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
+#
+#
+# 
+# 
+# 
+#~ msgid "Position:               "
+#~ msgstr "Koht:"
+#
 #
 #
 #
@@ -4539,6 +4611,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4548,6 +4621,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Laeva nimi:"
+#
 #
 #
 #
@@ -4576,12 +4650,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 #

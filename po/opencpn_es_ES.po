@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2010-12-26 23:00+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -23,18 +23,6 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
-#
-# 
-# 
-# 
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 # 
 # 
@@ -240,6 +228,9 @@ msgstr " %D Días  %H Horas  %M Minutos"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Horas  %M Minutos"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 # 
 # 
@@ -583,6 +574,14 @@ msgstr "(Waypoint sin nombre)"
 # 
 # 
 # 
+# 
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Ruta sin nombre)"
+#
+# 
+# 
+# 
 msgid "-"
 msgstr "-"
 #
@@ -620,6 +619,25 @@ msgstr "2 Colores"
 # 
 msgid "4 Color"
 msgstr "4 Colores"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid ":               "
+msgstr "Clase:                "
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Marcación:            No disponible\n"
 #
 # 
 msgid "?"
@@ -1947,6 +1965,14 @@ msgid "High Speed Craft"
 msgstr ""
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "&Comenzar Track"
+#
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -2872,13 +2898,6 @@ msgstr "Antiguedad Informe:               %3d Sec.\n"
 # 
 # 
 # 
-# 
-msgid "Position:               "
-msgstr "Posición:              "
-#
-# 
-# 
-# 
 #, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -3300,6 +3319,14 @@ msgstr "Ruta Cargada correctamente."
 # 
 msgid "Route from Track"
 msgstr "Ruta desde Track"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Route: "
+msgstr "Ruta"
 #
 # 
 msgid "RouteLegInfoRollover"
@@ -4595,8 +4622,23 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+# 
+# 
+# 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar librería: "
+#
 #
 #
 # 
@@ -4606,11 +4648,13 @@ msgstr ""
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo destroy_pi: "
+#
 #
 #
 #
@@ -4640,6 +4684,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -4687,6 +4732,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4708,6 +4754,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -4747,6 +4794,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4754,11 +4802,13 @@ msgstr ""
 #~ msgstr "Intentando cargar libgps.so"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4794,6 +4844,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4803,6 +4854,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -4838,6 +4890,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4860,6 +4913,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4869,6 +4923,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -4913,6 +4968,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4921,6 +4977,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -4955,6 +5012,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4967,6 +5025,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -5018,6 +5077,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5041,12 +5101,14 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -5073,6 +5135,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5083,11 +5146,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Incapaz de cargar libgps.so.19"
+#
 #
 #
 #
@@ -5119,6 +5184,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5131,11 +5197,13 @@ msgstr ""
 #~ msgstr "Estándar Marino"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 # 
@@ -5159,15 +5227,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
+#
 #
 #
 # 
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 # 
@@ -5177,11 +5248,13 @@ msgstr ""
 #~ msgstr "Gestor de PlugIns: Desactivando PlugIn: "
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 # 
@@ -5191,11 +5264,13 @@ msgstr ""
 #~ msgstr "Gestor de PlugIns: Cargando PlugIn: "
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 # 
@@ -5204,6 +5279,15 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Gestor de PlugIns: Descargando PlugIn con versión inválida de API %d.%d: "
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Position:               "
+#~ msgstr "Posición:              "
+#
 #
 #
 #
@@ -5239,6 +5323,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5249,6 +5334,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nombre Barco:"
+#
 #
 #
 #
@@ -5278,6 +5364,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5285,6 +5372,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
+#
 #
 #
 #

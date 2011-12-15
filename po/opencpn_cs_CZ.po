@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-07-08 14:42+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -22,17 +22,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-#
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 #
 #
@@ -213,6 +202,9 @@ msgstr " %D Dnů  %H Hodin %M Minut"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Hodin  %M Minut"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 #
 #
@@ -507,6 +499,13 @@ msgstr "(Nepojmenovaný trasový bod)"
 #
 #
 #
+#
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Nepojmenovaná vrstva)"
+#
+#
+#
 msgid "-"
 msgstr "-"
 #
@@ -542,6 +541,23 @@ msgstr "2 barvy"
 #
 msgid "4 Color"
 msgstr "4 barvy"
+#
+#
+#
+#
+#, fuzzy
+msgid ":               "
+msgstr "Třída:                  "
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Kurs:            Nedostupný\n"
 #
 #
 msgid "?"
@@ -1710,6 +1726,13 @@ msgid "High Speed Craft"
 msgstr "Vysokorychlostní plavidlo"
 #
 #
+#
+#
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Rozdělit stopu"
+#
+#
 msgid "Hydrofoil"
 msgstr "Křídlová loď"
 #
@@ -2528,12 +2551,6 @@ msgstr "Stáří reportu polohy:       %3d Sek.\n"
 #
 #
 #
-#
-msgid "Position:               "
-msgstr "Pozice:             "
-#
-#
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2904,6 +2921,13 @@ msgstr "Trasa nahrána úspěšně."
 #
 msgid "Route from Track"
 msgstr "Trasa ze stopy"
+#
+#
+#
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Trasa"
 #
 #
 msgid "RouteLegInfoRollover"
@@ -4029,8 +4053,22 @@ msgstr ""
 #
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Nemohu načíst knihovnu: "
+#
 #
 #
 #
@@ -4041,8 +4079,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
+#
 #
 #
 #
@@ -4061,14 +4101,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
 #
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4103,8 +4146,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -4139,8 +4184,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -4173,9 +4220,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -4198,14 +4247,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/časová značka"
 #
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN základní třída modulu"
+#
 #
 #
 #
@@ -4220,8 +4272,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager: hledá moduly v umístění  "
+#
 #
 #
 #
@@ -4232,8 +4286,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inicializuji modul: "
+#
 #
 #
 #
@@ -4244,11 +4300,20 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Odstraňuji modul: "
 #
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "
+#
+#
+#
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Pozice:             "

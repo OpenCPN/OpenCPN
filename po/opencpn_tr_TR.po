@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -19,13 +19,6 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
-#
-# 
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
 #
 # 
 msgid ""
@@ -148,6 +141,9 @@ msgstr " %D Gün  %H Saat  %M Dakika"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Saat  %M Dakika"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 # 
 msgid " - "
@@ -362,6 +358,11 @@ msgid "(Unnamed Waypoint)"
 msgstr "Mevkileri Yeniden İsimlendir?"
 #
 # 
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(İsimsiz Rota)"
+#
+# 
 msgid "-"
 msgstr "-"
 #
@@ -389,6 +390,19 @@ msgstr "2 Renk"
 # 
 msgid "4 Color"
 msgstr "4 Renk"
+#
+# 
+#, fuzzy
+msgid ":               "
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+# 
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Hız:              Bilinmiyor\n"
 #
 # 
 msgid "?"
@@ -1311,6 +1325,11 @@ msgid "High Speed Craft"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Hedef izlerini göster"
+#
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -1963,11 +1982,6 @@ msgstr "Rapor Yaşı:              %3d Sec.\n"
 #
 # 
 #, fuzzy
-msgid "Position:               "
-msgstr "Konum:                 "
-#
-# 
-#, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2277,6 +2291,11 @@ msgstr ""
 # 
 msgid "Route from Track"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Route: "
+msgstr "Rota"
 #
 # 
 msgid "RouteLegInfoRollover"
@@ -3184,6 +3203,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3193,6 +3213,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
 #
 #
 #
@@ -3228,6 +3249,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3237,6 +3259,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
 #
 #
 #
@@ -3272,6 +3295,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3294,6 +3318,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3303,6 +3328,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
 #
 #
 #
@@ -3342,6 +3368,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3355,6 +3382,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3394,6 +3422,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3403,6 +3432,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
 #
 #
 #
@@ -3427,9 +3457,11 @@ msgstr ""
 #~ msgstr "ETA(Tahmini Varış Zamanı): Bilinmiyor"
 #
 #
+#
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -3453,6 +3485,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so"
@@ -3465,6 +3498,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so.19"
@@ -3472,6 +3506,7 @@ msgstr ""
 #~ "libgps yüklenemedi.\n"
 #~ "\n"
 #~ "gpsd hostu: "
+#
 #
 #
 #
@@ -3507,6 +3542,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3516,6 +3552,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -3551,6 +3588,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3560,6 +3598,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB Ekranı"
+#
 #
 #
 #
@@ -3593,10 +3632,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Dışarıdan GPX dosyası al"
+#
 #
 #
 #
@@ -3617,6 +3658,7 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Denizci Standartı"
+#
 #
 #
 #
@@ -3654,6 +3696,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3665,6 +3708,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
 #
 #
 #
@@ -3702,6 +3746,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3713,6 +3758,13 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı SEATEMP GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Position:               "
+#~ msgstr "Konum:                 "
+#
 #
 #
 #
@@ -3747,6 +3799,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -3755,6 +3808,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Güncel Rapor Peryodu:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3790,6 +3844,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3799,6 +3854,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
 #
 #
 #
@@ -3834,6 +3890,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3856,6 +3913,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3863,6 +3921,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
 #
 #
 #
@@ -3898,6 +3957,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3907,6 +3967,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "GRIB kutusunu göster"
+#
 #
 #
 #
@@ -3942,6 +4003,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3951,6 +4013,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Anlamlı Dalga Yüksekliği, m."
+#
 #
 #
 #
@@ -3977,6 +4040,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
@@ -3992,10 +4056,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota İsmi"
+#
 #
 #
 #
@@ -4031,6 +4097,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4040,6 +4107,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
 #
 #
 #

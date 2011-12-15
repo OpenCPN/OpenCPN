@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -13,13 +13,6 @@ msgstr ""
 #
 # 
 msgid "\n"
-msgstr ""
-#
-# 
-msgid ""
-"\n"
-"\n"
-"\n"
 msgstr ""
 #
 # 
@@ -168,6 +161,9 @@ msgstr " %D Dage  %H Timer  %M Minutter"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Timer  %M Minutter"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 # 
 msgid " - "
@@ -411,6 +407,12 @@ msgid "(Unnamed Waypoint)"
 msgstr "(Unavngivet Waypoint)"
 #
 # 
+# 
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(unavngivet rute)"
+#
+# 
 msgid "-"
 msgstr "-"
 #
@@ -443,6 +445,19 @@ msgstr "2 farver"
 # 
 msgid "4 Color"
 msgstr "4 farver"
+#
+# 
+#, fuzzy
+msgid ":               "
+msgstr "Klasse:                "
+#
+# 
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Pejling:                Ikke tilgængelig\n"
 #
 # 
 msgid "?"
@@ -1446,6 +1461,11 @@ msgid "High Speed Craft"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "&Start spor"
+#
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
@@ -2180,10 +2200,6 @@ msgid ""
 msgstr "Alder på data:             %3d Sek.\n"
 #
 # 
-msgid "Position:               "
-msgstr "Position:             "
-#
-# 
 #, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -2512,6 +2528,12 @@ msgstr "Rute udlæst OK."
 # 
 msgid "Route from Track"
 msgstr "Rute fra spor"
+#
+# 
+# 
+#, fuzzy
+msgid "Route: "
+msgstr "Rute"
 #
 # 
 msgid "RouteLegInfoRollover"
@@ -3512,9 +3534,11 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Programfunktioner kan ikke indlæses: "
+#
 #
 #
 # 
@@ -3522,9 +3546,11 @@ msgstr ""
 #~ msgstr "   PlugInManager: 'create_pi' kan ikke indlæses: "
 #
 #
+#
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: 'destroy_pi' kan ikke indlæses: "
+#
 #
 #
 #
@@ -3550,6 +3576,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 #
@@ -3593,6 +3620,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3610,6 +3638,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 #
 #
@@ -3645,10 +3674,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Ikke muligt at indlæse 'libgps.so.19'"
+#
 #
 #
 #
@@ -3689,6 +3720,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3699,6 +3731,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 #
 #
@@ -3746,6 +3779,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3776,6 +3810,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3790,10 +3825,12 @@ msgstr ""
 #~ msgstr "Hastighed, knob"
 #
 #
+#
 # 
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Kl."
+#
 #
 #
 #
@@ -3818,6 +3855,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so"
@@ -3827,10 +3865,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ikke muligt at indlæse 'libgps.so.19'"
+#
 #
 #
 #
@@ -3869,6 +3909,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3881,6 +3922,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 #
@@ -3919,6 +3961,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3931,6 +3974,7 @@ msgstr ""
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
+#
 #
 #
 #
@@ -3960,6 +4004,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3970,9 +4015,11 @@ msgstr ""
 #~ msgstr "Maritim standard"
 #
 #
+#
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn base klasse"
+#
 #
 #
 # 
@@ -3982,6 +4029,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn base klasse\n"
 #~ "PlugInManager oprettede denne base klasse"
+#
 #
 #
 #
@@ -4020,6 +4068,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4032,6 +4081,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -4070,6 +4120,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4095,6 +4146,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4107,9 +4159,11 @@ msgstr ""
 #~ msgstr "Tilføjelse, navn"
 #
 #
+#
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager søger tilføjelser på lokation "
+#
 #
 #
 # 
@@ -4117,9 +4171,11 @@ msgstr ""
 #~ msgstr "PlugInManager: Deaktiverer tilføjelse: "
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiserer tilføjelse: "
+#
 #
 #
 # 
@@ -4127,14 +4183,22 @@ msgstr ""
 #~ msgstr "PlugInManager: Indlæser tilføjelse: "
 #
 #
+#
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Frakobler tilføjelse: "
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Frakobler tilføjelse med forkert API version %d.%d: "
+#
+#
+# 
+#~ msgid "Position:               "
+#~ msgstr "Position:             "
+#
 #
 #
 #
@@ -4172,6 +4236,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
@@ -4179,6 +4244,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Nyeste data interval:   %3d Sek.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4217,6 +4283,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4242,6 +4309,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4250,6 +4318,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Fartøjsnavn:"
+#
 #
 #
 #
@@ -4288,6 +4357,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4307,6 +4377,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -4315,6 +4386,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4342,11 +4414,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rute"
+#
 #
 #
 #
@@ -4385,6 +4459,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4397,6 +4472,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickScat GRIB data er %d timer gammel."
+#
 #
 #
 #

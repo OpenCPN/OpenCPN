@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -16,14 +16,6 @@ msgstr ""
 #
 #
 msgid "\n"
-msgstr ""
-#
-#
-#
-msgid ""
-"\n"
-"\n"
-"\n"
 msgstr ""
 #
 #
@@ -207,6 +199,9 @@ msgstr " %D Giorni  %H Ore  %M Minuti"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Ore  %M Minuti"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 #
 #
@@ -501,6 +496,13 @@ msgstr "(Waypoint senza nome)"
 #
 #
 #
+#
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Layer senza nome)"
+#
+#
+#
 msgid "-"
 msgstr ""
 #
@@ -536,6 +538,25 @@ msgstr "2 Colori"
 #
 msgid "4 Color"
 msgstr "4 Colori"
+#
+#
+#
+#
+#, fuzzy
+msgid ":               "
+msgstr "Classe       : "
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr ""
+"Rilevamento  : Non disponibile\n"
+"\n"
 #
 #
 msgid "?"
@@ -1709,6 +1730,13 @@ msgid "High Speed Craft"
 msgstr "Imbarcazione alta velocità"
 #
 #
+#
+#
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Dividi Traccia"
+#
+#
 msgid "Hydrofoil"
 msgstr "Aliscafo"
 #
@@ -2526,12 +2554,6 @@ msgstr "Tempo dal Report      : %d s\n"
 #
 #
 #
-#
-msgid "Position:               "
-msgstr "Posizione Target AIS  : "
-#
-#
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2903,6 +2925,13 @@ msgstr "Rotta caricata correttamente."
 #
 msgid "Route from Track"
 msgstr "&Rotta da Traccia"
+#
+#
+#
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Rotta"
 #
 #
 msgid "RouteLegInfoRollover"
@@ -4021,14 +4050,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Non posso caricare la libreria: "
 #
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
 #
 #
 #
@@ -4051,8 +4083,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -4097,13 +4131,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
 #
 #
 #
@@ -4131,8 +4168,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -4155,8 +4194,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -4179,8 +4220,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 #
@@ -4201,9 +4244,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -4227,8 +4272,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -4274,11 +4321,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4292,8 +4341,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager ricerca le cartelle dei PlugIns "
+#
 #
 #
 #
@@ -4304,8 +4355,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inizializzazione PlugIn: "
+#
 #
 #
 #
@@ -4316,11 +4369,20 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Disabilitazione PlugIn: "
 #
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Disabilito PlugIn con versione API errata %d.%d: "
+#
+#
+#
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Posizione Target AIS  : "

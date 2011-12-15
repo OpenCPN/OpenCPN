@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -22,16 +22,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 #
 msgid ""
@@ -163,6 +153,9 @@ msgstr " %D 天  %H 小時  %M 分鐘"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H 小時  %M 分鐘"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 #
 msgid " - "
@@ -366,6 +359,11 @@ msgid "(Unnamed Waypoint)"
 msgstr "(未命名轉向點)"
 #
 #
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(未命名航路)"
+#
+#
 msgid "-"
 msgstr "-"
 #
@@ -392,6 +390,19 @@ msgstr "2 色"
 #
 msgid "4 Color"
 msgstr "4 色"
+#
+#
+#, fuzzy
+msgid ":               "
+msgstr "船級:                  "
+#
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "方位:                無法取得\n"
 #
 #
 msgid "?"
@@ -1286,6 +1297,11 @@ msgid "High Speed Craft"
 msgstr "高速船"
 #
 #
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "分離航跡"
+#
+#
 msgid "Hydrofoil"
 msgstr "水翼船"
 #
@@ -1919,10 +1935,6 @@ msgstr ""
 "\n"
 #
 #
-msgid "Position:               "
-msgstr "位置:               "
-#
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2223,6 +2235,11 @@ msgstr "航路上傳成功."
 #
 msgid "Route from Track"
 msgstr "從航跡設定航路"
+#
+#
+#, fuzzy
+msgid "Route: "
+msgstr "航路"
 #
 #
 msgid "RouteLegInfoRollover"
@@ -3086,8 +3103,21 @@ msgstr "wgsoy"
 #
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   插件管理員: 無法載入程式庫: "
+#
 #
 #
 #
@@ -3096,8 +3126,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -3126,8 +3158,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -3155,8 +3189,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -3178,13 +3214,16 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "嘗試載入 libgps.so"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3213,8 +3252,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -3243,8 +3284,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -3273,8 +3316,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -3304,9 +3349,11 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 #
@@ -3315,8 +3362,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -3329,8 +3378,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -3339,8 +3390,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -3349,10 +3402,17 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "位置:               "

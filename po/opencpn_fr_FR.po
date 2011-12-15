@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -15,15 +15,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 #
 msgid ""
@@ -167,6 +158,9 @@ msgstr " %D Jours  %H heures  %M minutes"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H heures  %M minutes"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 #
 msgid " - "
@@ -369,6 +363,11 @@ msgstr "(Trace sans nom)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sans nom)"
 #
+# Couche
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Couche sans nom)"
+#
 msgid "-"
 msgstr "-"
 #
@@ -397,6 +396,18 @@ msgstr "2 Couleurs"
 #
 msgid "4 Color"
 msgstr "4 Couleurs"
+#
+#
+#, fuzzy
+msgid ":               "
+msgstr "Classe              : "
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Cible relevée au   : Indisponible\n"
 #
 msgid "?"
 msgstr "?"
@@ -1212,6 +1223,11 @@ msgstr "Cacher sur la carte"
 msgid "High Speed Craft"
 msgstr "Bateau grande vitesse"
 #
+# Menu contextuel : Trace
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Trace : Recopier"
+#
 msgid "Hydrofoil"
 msgstr "Hydroglisseur"
 #
@@ -1787,10 +1803,6 @@ msgid ""
 "\n"
 msgstr "Age du dernier rapport      : %3d Sec.\n"
 #
-#
-msgid "Position:               "
-msgstr "Position            :   "
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -2064,6 +2076,11 @@ msgstr "Route : Chargement réussi"
 #
 msgid "Route from Track"
 msgstr "Trace -> Route"
+#
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Route"
 #
 # Toolbox/Langue
 msgid "RouteLegInfoRollover"
@@ -2865,9 +2882,21 @@ msgstr "WGS X"
 msgid "wgsoy"
 msgstr "WGS Y"
 #
+#
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger la bibliothèque"
+#
 #
 #
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
@@ -2875,21 +2904,26 @@ msgstr "WGS Y"
 #~ "  Gestionnaire de compléments : Impossible de créer le symbole create_pi :"
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger le symbole "
 #~ "destroy_pi :"
+#
 #
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Horodatage"
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN plugin classe de base"
+#
 #
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
@@ -2899,27 +2933,38 @@ msgstr "WGS Y"
 #~ "Le gestionnaire de compléments a créé cette classe de base"
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestionnaire de compléments : Recherche du plug-in"
+#
 #
 #
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Désactivation du plug-in :"
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Initialisation du plug-in :"
+#
 #
 #
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Chargement du plug-in :"
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Déchargement du plug-in :"
+#
 #
 #
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Gestionnaire de compléments : Déchargement du plug-in avec version API non "
 #~ "valide %d.%d :"
+#
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Position            :   "

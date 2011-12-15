@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 12:46-0500\n"
+"POT-Creation-Date: 2011-12-15 10:16-0500\n"
 "PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -19,15 +19,6 @@ msgstr ""
 #
 msgid "\n"
 msgstr "\n"
-#
-msgid ""
-"\n"
-"\n"
-"\n"
-msgstr ""
-"\n"
-"\n"
-"\n"
 #
 msgid ""
 "\n"
@@ -140,6 +131,9 @@ msgstr " %D Dager  %H Timer  %M Minutter"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Timer  %M Minutter"
+#
+msgid " (Last Known):  "
+msgstr ""
 #
 msgid " - "
 msgstr " - "
@@ -296,6 +290,10 @@ msgstr "(Slepestrek uten navn)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Veipunkt uten navn)"
 #
+#, fuzzy
+msgid "(unnamed)"
+msgstr "(Lag uten navn)"
+#
 msgid "-"
 msgstr "-"
 #
@@ -316,6 +314,17 @@ msgstr "2 Farger"
 #
 msgid "4 Color"
 msgstr "4 Farger"
+#
+#, fuzzy
+msgid ":               "
+msgstr "Klasse:                "
+#
+#, fuzzy
+msgid ""
+":               Unavailable\n"
+"\n"
+"\n"
+msgstr "Kurs:                Utilgjengelig\n"
 #
 msgid "?"
 msgstr "?"
@@ -1003,6 +1012,10 @@ msgstr "Skjul for kart"
 msgid "High Speed Craft"
 msgstr "Høyhastighets fartøy"
 #
+#, fuzzy
+msgid "Highlight Tracks"
+msgstr "Del opp slepestrek"
+#
 msgid "Hydrofoil"
 msgstr "Hydrofoil"
 #
@@ -1481,9 +1494,6 @@ msgstr ""
 "Alder for posisjonsrapport:       %3d sek.\n"
 "\n"
 #
-msgid "Position:               "
-msgstr "Posisjon:"
-#
 msgid ""
 "Possible libgps API version mismatch.\n"
 "libgps did not reasonably respond to version request\n"
@@ -1713,6 +1723,10 @@ msgstr "Rute ble opplastet."
 #
 msgid "Route from Track"
 msgstr "Rute fra Slepestrek"
+#
+#, fuzzy
+msgid "Route: "
+msgstr "Rute"
 #
 msgid "RouteLegInfoRollover"
 msgstr "RuteleggInfoMusOver"
@@ -2383,28 +2397,45 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
+#
 #
 #
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol create_pi: "
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
+#
 #
 #
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseKlasseFellesNavn"
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Tids stempel"
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Utvidelses Baseklasse"
+#
 #
 #
 #~ msgid ""
@@ -2415,26 +2446,36 @@ msgstr "wgsoy"
 #~ "Utvidelses behandling opprettet denne base klassen"
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Utvidelses behandling søker etter mappen for utvidelser"
+#
 #
 #
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Utvidelses behandling: Deaktiverer utvidelse: "
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Utvidelses behandling: Starter utvidelse: "
+#
 #
 #
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster utvidelse: "
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster ut utvidelse: "
+#
 #
 #
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
+#
+#
+#~ msgid "Position:               "
+#~ msgstr "Posisjon:"
