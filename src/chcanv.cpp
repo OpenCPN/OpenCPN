@@ -467,6 +467,8 @@ class ChInfoWin: public wxWindow
             void SetBitmap(void);
             void FitToChars(int char_width, int char_height);
             wxSize GetWinSize(void){ return m_size; }
+            void OnPaint(wxPaintEvent& event);
+            void OnEraseBackground(wxEraseEvent& event);
 
       private:
 
@@ -487,13 +489,16 @@ class ChInfoWin: public wxWindow
 //
 //-----------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
+            EVT_PAINT ( ChInfoWin::OnPaint )
+            EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
+
             END_EVENT_TABLE()
 
 // Define a constructor
 ChInfoWin::ChInfoWin(wxWindow *parent):
-            wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER)
+            wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxNO_BORDER)
 {
-      int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
+      int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE ;
       m_pInfoTextCtl = new wxStaticText ( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize, ststyle );
 
       Hide();
@@ -503,6 +508,26 @@ ChInfoWin::~ChInfoWin()
 {
       delete m_pInfoTextCtl;
 }
+
+void ChInfoWin::OnEraseBackground(wxEraseEvent& event)
+{
+}
+
+void ChInfoWin::OnPaint(wxPaintEvent& event)
+{
+      int width, height;
+      GetClientSize(&width, &height );
+      wxPaintDC dc(this);
+
+//      SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
+//      dc.Clear();
+
+      dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "UIBCK" ) ), wxTRANSPARENT));
+      dc.SetPen(wxPen(GetGlobalColor ( _T ( "UITX1" ) )));
+      dc.DrawRectangle(0, 0, width,  height);
+
+}
+
 void ChInfoWin::SetBitmap()
 {
 
@@ -512,7 +537,8 @@ void ChInfoWin::SetBitmap()
       m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
       m_pInfoTextCtl->SetForegroundColour(GetGlobalColor ( _T ( "UITX1" ) ));
 
-      m_pInfoTextCtl->SetSize(4, 4, m_size.x-8, m_size.y - 8);
+      m_pInfoTextCtl->SetSize(1, 1, m_size.x-2, m_size.y - 2);
+//      m_pInfoTextCtl->SetSize(0, 0, m_size.x, m_size.y );
       m_pInfoTextCtl->SetLabel(m_string);
 
       SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
@@ -4519,6 +4545,13 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
 
       if(b_smooth)
       {
+            if(m_bzooming_out)             // Interrupt?
+            {
+                  m_zoom_timer.Stop();
+                  m_bzooming_in = false;
+                  m_bzooming_out = false;
+            }
+
             if(!m_bzooming_in)
             {
                   // Set up some parameters
@@ -4555,6 +4588,13 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
 
       if(b_smooth)
       {
+            if(m_bzooming_in)             // Interrupt?
+            {
+                  m_zoom_timer.Stop();
+                  m_bzooming_in = false;
+                  m_bzooming_out = false;
+            }
+
             if(!m_bzooming_out)
             {
                   // Set up some parameters
@@ -4579,7 +4619,7 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
 
 void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
 {
-      if(m_bzooming_in)
+      if(m_bzooming_in && !m_bzooming_out)
       {
             if(m_zoom_current_factor < m_zoom_target_factor)
             {
@@ -4589,10 +4629,8 @@ void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
             }
             else
                   m_bzooming_in = false;
-
-            m_bzooming_out = false;
       }
-      else if(m_bzooming_out)
+      else if(m_bzooming_out && !m_bzooming_in)
       {
             if(m_zoom_current_factor < m_zoom_target_factor)
             {
@@ -4605,10 +4643,8 @@ void ChartCanvas::OnZoomTimerEvent(wxTimerEvent &event)
 
             if(m_zoom_current_factor >= m_zoom_target_factor)
                   m_bzooming_out = false;
-
-            m_bzooming_in = false;
       }
-      else
+      else if(m_bzooming_out && m_bzooming_in)       // incoherent, should never happen
       {
             m_zoom_timer.Stop();
             m_bzooming_out = false;
@@ -4624,6 +4660,8 @@ bool ChartCanvas::DoZoomCanvasIn(double factor)
       if(m_bzooming)
             return false;
       m_bzooming = true;
+
+      bool b_do_zoom = true;
 
       double zoom_factor = factor;
 
@@ -4659,17 +4697,18 @@ bool ChartCanvas::DoZoomCanvasIn(double factor)
             if(proposed_scale_onscreen < min_allowed_scale)
             {
                   if(min_allowed_scale == GetCanvasScaleFactor() / (GetVPScale()))
-                        return false;
+                        b_do_zoom = false;
                   else
                         proposed_scale_onscreen = min_allowed_scale;
             }
       }
 
 
-
-      SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
-
-      Refresh(false);
+      if(b_do_zoom)
+      {
+            SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
+            Refresh(false);
+      }
 
       m_bzooming = false;
 
@@ -4726,7 +4765,7 @@ bool ChartCanvas::DoZoomCanvasOut(double factor)
             if(proposed_scale_onscreen > max_allowed_scale)
             {
                   if(max_allowed_scale == GetCanvasScaleFactor() / (GetVPScale()))
-                        return false;
+                        b_do_zoom = false;
                   else
                         proposed_scale_onscreen = max_allowed_scale;
             }
@@ -4742,7 +4781,6 @@ bool ChartCanvas::DoZoomCanvasOut(double factor)
       if(b_do_zoom)
       {
             SetVPScale(GetCanvasScaleFactor() / proposed_scale_onscreen);
-
             Refresh(false);
       }
 
@@ -6598,7 +6636,9 @@ void ChartCanvas::UpdateShips()
                 own_ship_update_rect.Union ( ship_rect );
         }
 
-        RefreshRect ( own_ship_update_rect, false );
+
+        if ( !own_ship_update_rect.IsEmpty() )
+              RefreshRect ( own_ship_update_rect, false );
 
         //  Save this rectangle for next time
         ship_draw_rect = ship_rect;
@@ -10312,12 +10352,40 @@ bool ChartCanvas::SetCursor ( const wxCursor &c )
 
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect)
 {
+
      if(g_bopengl)
+     {
+
           m_glcc->Refresh(eraseBackground, NULL);   // We always are going to render the entire screen anyway, so make
                                                     // sure that the window managers understand the invalid area
                                                     // is actually the entire client area.
+
+          //  We need to selectively Refresh some child windows, if they are visible.
+          //  Note that some children are refreshed elsewhere on timer ticks, so don't need attention here.
+
+          //      ChartInfo window
+          if(m_pCIWin && m_pCIWin->IsShown())
+          {
+                m_pCIWin->Raise();
+                m_pCIWin->Refresh(false);
+          }
+
+          if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() )
+          {
+                m_pAISRolloverWin->Raise();
+                m_pAISRolloverWin->Refresh(false);
+          }
+
+          if(m_pRolloverWin && m_pRolloverWin->IsShown() )
+          {
+                m_pRolloverWin->Raise();
+                m_pRolloverWin->Refresh(false);
+          }
+
+     }
      else
           wxWindow::Refresh(eraseBackground, rect);
+
 }
 
 void ChartCanvas::Update()
@@ -12676,7 +12744,7 @@ void glChartCanvas::render()
      ViewPort VPoint = cc1->VPoint;
 
      wxRegion ru = GetUpdateRegion();
-
+/*
      if(!ru.Ok())
            ru.Union( 0,0,VPoint.pix_width, VPoint.pix_height );
 
@@ -12719,8 +12787,8 @@ void glChartCanvas::render()
               rgn_chart.Subtract ( r );
               ru.Subtract ( r );
         }
-
-                //  Is this viewpoint the same as the previously painted one?
+*/
+        //  Is this viewpoint the same as the previously painted one?
         bool b_newview = true;;
         if((m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm)
             && (m_cache_vp.rotation == VPoint.rotation)
@@ -12742,6 +12810,7 @@ void glChartCanvas::render()
         ocpnDC gldc(*this);
 
 //    Render the WVSChart vector first
+/*
         wxRegion CValidRegion;
         if(!VPoint.b_quilt)
               // Make a region covering the current chart on the canvas
@@ -12755,7 +12824,7 @@ void glChartCanvas::render()
       //    Remove the valid chart area
         if(CValidRegion.IsOk())
               WVSRegion.Subtract ( CValidRegion );
-
+*/
       //    Draw the WVSChart only in the areas NOT covered by the current chart view
       //    And, only if the region is ..not.. empty
       //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
