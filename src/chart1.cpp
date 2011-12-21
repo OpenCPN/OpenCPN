@@ -1051,7 +1051,7 @@ ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent)
 {
       m_pparent = parent;
       long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
-      wxWindow::Create( parent, -1, /*_T("ocpnToolbarDialog"),*/ wxPoint(0, 0), wxSize(-1, -1), wstyle );
+      wxWindow::Create( parent, -1, wxPoint(0, 0), wxSize(-1, -1), wstyle );
 
 
       m_StatBmp.Create((_img_compass->GetWidth() + _img_gpsRed->GetWidth()) + 8, _img_compass->GetHeight() + 8);
@@ -6262,9 +6262,11 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         UpdateToolbarDynamics();
 
 
-        if(NULL != console)
-            if(console->IsShown())
-                 console->Refresh(false);
+        if(console && console->IsShown())
+        {
+            console->Raise();
+            console->Refresh(false);
+        }
 
         //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
         //  We need a deferred resize to get glDrawPixels() to work right.
