@@ -454,12 +454,15 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   wxLogMessage(msg);
 
                   m_lib_handle = dlopen(load3.fn_str(), RTLD_LAZY);
+            }
+
+            if(!m_lib_handle)
+            {
                   wxString msg(_("Unable to load libgps"));
                   OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_ERROR );
                   md.ShowModal();
                   return;
             }
-
             else
             {
                   void *p = dlsym(m_lib_handle, "gps_open");
