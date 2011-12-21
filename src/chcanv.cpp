@@ -6142,14 +6142,15 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                   if(!td->b_nameValid)
                         target_brush =  wxBrush ( GetGlobalColor ( _T ( "CHYLW" ) ) ) ;
 
+                  if((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid))
+                        target_brush = wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) ;
+
                   if(td->b_positionDoubtful)
                         target_brush =  wxBrush ( GetGlobalColor ( _T ( "UINFF" ) ) ) ;
 
 //    Check for alarms here, maintained by AIS class timer tick
                   if((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid))
                   {
-                        target_brush = wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) ;
-
                         //  Calculate the point of CPA for target
                         double tcpa_lat,tcpa_lon;
                         ll_gc_ll ( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
