@@ -1005,20 +1005,37 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
       }
 
       //    This super bad hack needs to be fixed by changing the the plypoints on cm93 composite,
-      //    or opening the chart and asking for the current coverage region....
       //    If we don't do this, cm93 reports empty (invalid) region due to +/- 360 degree coverage declared in chart table...
       if(cte.GetChartType() == CHART_TYPE_CM93COMP)
-            chart_region = wxRegion(vp.rv_rect/*0, 0, vp.pix_width, vp.pix_height*/);
+      {
+            LLBBox viewbox = vp.GetBBox();
+
+            if(viewbox.GetValid() && ((viewbox.GetMaxY() > 80.0) || (viewbox.GetMinY() < -80.0)))
+            {
+                  int cm93_index = ChartData->FinddbIndex(wxString(cte.GetpFullPath(), wxConvUTF8));
+                  if(cm93_index >= 0)
+                  {
+                        ChartBase *pch = ChartData->OpenChartFromDB(cm93_index,  FULL_INIT);
+                        wxRegion r;
+                        if(pch)
+                              pch->GetValidCanvasRegion(vp, &r);
+                        chart_region = r;
+                  }
+                  else
+                        chart_region = wxRegion(vp.rv_rect);
+            }
+            else
+                  chart_region = wxRegion(vp.rv_rect);
+      }
 
       //    Another superbad hack....
-      //    Super small scale charts like bluemarble.kap usually cross the prime meridian
+      //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
       //    and Plypoints georef is problematic......
       //    So, force full screen coverage in the quilt
-      if(cte.GetScale() > 90000000)
+      else if(cte.GetScale() > 90000000)
             chart_region = wxRegion(vp.rv_rect/*0, 0, vp.pix_width, vp.pix_height*/);
 
       //    Clip the region to the current viewport
-//      chart_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
       chart_region.Intersect(vp.rv_rect);
 
       if(chart_region.IsOk())
