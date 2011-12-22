@@ -161,7 +161,7 @@ extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
 extern int              g_iSDMMFormat;
 
-extern wxLocale         locale_def_lang;
+extern wxLocale         *plocale_def_lang;
 
 #ifdef USE_WIFI_CLIENT
 extern wxString         *pWIFIServerName;
@@ -2353,7 +2353,7 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   m_itemLangListBox = new wxComboBox(itemPanelFont, ID_CHOICE_LANG);
 
-                  int current_language = locale_def_lang.GetLanguage();
+                  int current_language = plocale_def_lang->GetLanguage();
 //                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
                   wxString current_sel = wxLocale::GetLanguageName(current_language);
 
@@ -2426,14 +2426,20 @@ void options::OnPageChange(wxNotebookEvent& event)
                   }
 #endif
 
+                  // BUGBUG
+                  //  Remember that wxLocale ctor has the effect of changing the system locale, including the "C" libraries.
+                  //  It should then also happen that the locale should be switched back to ocpn initial load setting
+                  //  upon the dtor of the above wxLocale instantiations....
+                  //  wxWidgets may do so internally, but there seems to be no effect upon the system libraries, so that
+                  //  functions like strftime() do not revert to the correct locale setting.
+                  //  So as workaround, we reset the locale explicitely.
 
-                  //    Reset current language
+                  delete plocale_def_lang;
+                  plocale_def_lang = new wxLocale(current_language);
+
                   setlocale(LC_NUMERIC,"C");
 
-//                  wxSetlocale(LC_ALL, oldLocale);
-//                  wxSetlocale(LC_NUMERIC,wxString(_T("C")));
-
-                  m_itemLangListBox->SetStringSelection(current_sel); //SetSelection(0);
+                  m_itemLangListBox->SetStringSelection(current_sel);
 
                   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxALL, border_size);
 

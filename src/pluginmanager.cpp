@@ -48,7 +48,7 @@ extern FontMgr         *pFontMgr;
 extern wxString        g_SData_Locn;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
-extern wxLocale         locale_def_lang;
+extern wxLocale        *plocale_def_lang;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 
@@ -1047,7 +1047,10 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
-      return locale_def_lang.AddCatalog( catalog );
+      if(plocale_def_lang)
+            return plocale_def_lang->AddCatalog( catalog );
+      else
+            return false;
 }
 
 void PushNMEABuffer( wxString buf )

@@ -525,7 +525,7 @@ bool             g_bPreserveScaleOnX;
 about             *g_pAboutDlg;
 
 wxPlatformInfo    *g_pPlatform;
-wxLocale         locale_def_lang;
+wxLocale          *plocale_def_lang;
 wxString          g_locale;
 
 TTYWindow        *g_NMEALogWindow;
@@ -2129,16 +2129,19 @@ bool MyApp::OnInit()
         const wxLanguageInfo *pli = wxLocale::FindLanguageInfo(g_locale);
         wxString loc_lang_canonical;
         bool b_initok;
+        plocale_def_lang = new wxLocale;
 
         if(pli)
         {
-              b_initok = locale_def_lang.Init( pli->Language, 0 );
+              b_initok = plocale_def_lang->Init( pli->Language, 0 );
               loc_lang_canonical = pli->CanonicalName;
         }
 
         if(!pli || !b_initok)
         {
-              locale_def_lang.Init( wxLANGUAGE_ENGLISH_US, 0 );
+              delete plocale_def_lang;
+              plocale_def_lang = new wxLocale;
+              plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
               loc_lang_canonical = wxLocale::GetLanguageInfo(wxLANGUAGE_ENGLISH_US)->CanonicalName;
         }
 
@@ -2154,7 +2157,8 @@ bool MyApp::OnInit()
       // Get translation file (example : opencpn_fr_FR.mo)
       // No problem if the file doesn't exist
       // as this case is handled by wxWidgets
-        locale_def_lang.AddCatalog(loc_lang_filename);
+        if(plocale_def_lang)
+              plocale_def_lang->AddCatalog(loc_lang_filename);
 
       //    Always use dot as decimal
         setlocale(LC_NUMERIC,"C");
@@ -3095,6 +3099,8 @@ int MyApp::OnExit()
 
     delete g_pPlatform;
     delete g_pauimgr;
+
+    delete plocale_def_lang;
     return TRUE;
 }
 
