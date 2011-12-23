@@ -97,8 +97,7 @@ SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 FIND_PACKAGE(OpenGL REQUIRED)
 IF(OPENGL_GLU_FOUND)
 
-#    SET(OPENGL_LIBRARIES ${OPENGL_LIBRARIES} -lGLEW)
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl)
+    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL..." )
@@ -615,6 +614,10 @@ SET_SOURCE_FILES_PROPERTIES(
 
 SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+
+SET_SOURCE_FILES_PROPERTIES(
+           buildosx/MainMenu.xib PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj )
+
 SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
 
 ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
@@ -627,6 +630,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${SOUND_FILES}
       data/doc/help_web.html
       buildosx/opencpn.icns
+      buildosx/MainMenu.xib
       )
 
 
@@ -999,6 +1003,7 @@ INCLUDE(CPack)
 
 IF(APPLE)
 # -- Run the BundleUtilities cmake code
+  SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
 
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
