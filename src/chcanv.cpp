@@ -85,7 +85,6 @@
 #include <setjmp.h>
 
 
-
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
@@ -245,6 +244,7 @@ extern bool             g_b_useStencil;
 bool                    g_bDebugOGL;
 
 extern int              g_memCacheLimit;
+extern bool             g_b_assume_azerty;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -366,9 +366,10 @@ PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
 HINSTANCE      s_hGL_DLL;                   // Handle to DLL
 #endif
 
+
 static bool GetglEntryPoints(void)
 {
-#ifdef __WXMSW__
+#if defined(__WXMSW__)
       s_hGL_DLL = LoadLibrary((LPCWSTR)"opengl32.dll");
       if(NULL == s_hGL_DLL)
             return false;
@@ -383,8 +384,11 @@ static bool GetglEntryPoints(void)
       s_glCheckFramebufferStatusEXT =     (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)GetProcAddress(s_hGL_DLL,"glCheckFramebufferStatusEXT")  ;
       s_glDeleteFramebuffersEXT =         (PFNGLDELETEFRAMEBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glDeleteFramebuffersEXT")  ;
       s_glDeleteRenderbuffersEXT =        (PFNGLDELETERENDERBUFFERSEXTPROC)GetProcAddress(s_hGL_DLL,"glDeleteRenderbuffersEXT")  ;
-#else
 
+#elif defined(__WXMAC__)
+      return false;
+
+#else
 
       s_glGenFramebuffersEXT =            (PFNGLGENFRAMEBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffersEXT");
       s_glGenRenderbuffersEXT =           (PFNGLGENRENDERBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenRenderbuffersEXT")        ;
@@ -3956,9 +3960,6 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
           case WXK_F3:
           {
                parent_frame->ToggleENCText();
-               wxSize s = GetSize();
-               SetSize(s.x-4, s.y);
-
                break;
           }
           case WXK_F4:
@@ -4044,6 +4045,24 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                parent_frame->ToggleChartOutlines();
                break;
           }
+
+
+             //NUMERIC PAD
+          case WXK_NUMPAD_ADD:              // '+' on NUM PAD
+               if(m_modkeys == wxMOD_CONTROL)
+                     ZoomCanvasIn(1.1);
+               else
+                     ZoomCanvasIn(2.0);
+           break;
+
+           case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
+                  if(m_modkeys == wxMOD_CONTROL)
+                         ZoomCanvasOut(1.1);
+                   else
+                         ZoomCanvasOut(2.0);
+           break;
+
+
           default:
                break;
 
@@ -4055,26 +4074,59 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
           if(m_modkeys == wxMOD_CONTROL)
                key_char -= 64;
 
+          //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
+          if(!g_b_assume_azerty)
+          {
+            switch(key_char)
+            {
+                  case '+':
+                  case '=':
+                  case 26:                     // Ctrl Z
+                        if ( (m_modkeys == wxMOD_CONTROL) )
+                              ZoomCanvasIn(1.1);
+                        else
+                              ZoomCanvasIn(2.0);
+                  break;
+
+                  case '-':
+                  case '_':
+                  case 24:                     // Ctrl X
+                        if ( (m_modkeys == wxMOD_CONTROL) )
+                              ZoomCanvasOut(1.1);
+                        else
+                              ZoomCanvasOut(2.0);
+                  break;
+            }
+          }
+          else
+          {
+                switch(key_char)
+               {
+                      case 43:
+                      case -21:
+                      case 26:                     // Ctrl Z
+                            if ( (m_modkeys == wxMOD_CONTROL) )
+                                  ZoomCanvasIn(1.1);
+                            else
+                                  ZoomCanvasIn(2.0);
+                            break;
+
+                      case 54:                                  // '-'  alpha/num pad
+                      case 56:                               // '_'  alpha/num pad
+                      case -10:                              // Ctrl '-'  alpha/num pad
+                      case -8:                               // Ctrl '_' alpha/num pad
+                      case 24:                     // Ctrl X
+                            if ( (m_modkeys == wxMOD_CONTROL) )
+                                  ZoomCanvasOut(1.1);
+                            else
+                                  ZoomCanvasOut(2.0);
+                            break;
+                }
+          }
+
+
           switch(key_char)
           {
-               case '+':
-               case '=':
-               case 26:                     // Ctrl Z
-                    if ( (m_modkeys == wxMOD_CONTROL) )
-                         ZoomCanvasIn(1.1);
-                    else
-                         ZoomCanvasIn(2.0);
-               break;
-
-               case '-':
-               case '_':
-               case 24:                     // Ctrl X
-                    if ( (m_modkeys == wxMOD_CONTROL) )
-                         ZoomCanvasOut(1.1);
-                    else
-                         ZoomCanvasOut(2.0);
-               break;
-
                case 19:                     // Ctrl S
                     parent_frame->ToggleENCText();
                     break;
@@ -4167,6 +4219,11 @@ void ChartCanvas::OnKeyUp(wxKeyEvent &event)
                m_pany = 0;
                m_panspeed = 0;
                break;
+
+          case WXK_CONTROL:
+               m_modkeys = wxMOD_NONE;          //Clear Ctrl key
+               break;
+
      }
 
      event.Skip();
@@ -7153,6 +7210,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         {
             if(!m_MouseWheelTimer.IsRunning())
             {
+                  double factor = (m_modkeys == wxMOD_CONTROL)? 1.1 : 2.0 ;
+
                   if(g_bEnableZoomToCursor)
                   {
                         bool b_zoom_moved = false;
@@ -7160,9 +7219,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 //                        if((m_wheel_x == x) && (m_wheel_y == y))
                         {
                               if(wheel_dir > 0)
-                                    b_zoom_moved = ZoomCanvasIn(2.0);//, m_wheel_lat, m_wheel_lon);
+                                    b_zoom_moved = ZoomCanvasIn(factor);
                               else if(wheel_dir < 0)
-                                    b_zoom_moved = ZoomCanvasOut(2.0);//, m_wheel_lat, m_wheel_lon);
+                                    b_zoom_moved = ZoomCanvasOut(factor);
 
                               wxPoint r;
                               GetCanvasPointPix ( m_cursor_lat, m_cursor_lon, &r );
@@ -7189,9 +7248,9 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                   else
                   {
                         if(wheel_dir > 0)
-                              ZoomCanvasIn(2.0);
+                              ZoomCanvasIn(factor);
                         else if(wheel_dir < 0)
-                              ZoomCanvasOut(2.0);
+                              ZoomCanvasOut(factor);
                   }
 
                   m_MouseWheelTimer.Start(m_mouse_wheel_oneshot, true);           // start timer

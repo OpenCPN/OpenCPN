@@ -527,6 +527,7 @@ about             *g_pAboutDlg;
 wxPlatformInfo    *g_pPlatform;
 wxLocale          *plocale_def_lang;
 wxString          g_locale;
+bool              g_b_assume_azerty;
 
 TTYWindow        *g_NMEALogWindow;
 int              g_NMEALogWindow_x, g_NMEALogWindow_y;
@@ -1660,6 +1661,9 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       {
             if(gFrame)
                   gFrame->SurfaceToolbar();
+
+            if(g_FloatingToolbarDialog)
+                  g_FloatingToolbarDialog->Raise();
       }
 #endif
 
@@ -1671,7 +1675,6 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
                   g_FloatingToolbarDialog->HideTooltip();   // Hide any existing tip
             }
       }
-
 
       event.Skip();
 }
@@ -2101,7 +2104,7 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
         wxString locale_location = g_SData_Locn;
         locale_location += _T("share/locale");
-           wxLocale::AddCatalogLookupPathPrefix(locale_location);
+        wxLocale::AddCatalogLookupPathPrefix(locale_location);
 #endif
 
         //  Get the default for info
@@ -2165,6 +2168,9 @@ bool MyApp::OnInit()
 
         wxLog::SetVerbose(false);           // log no verbose messages
 
+        //  French language locale is assumed to include the AZERTY keyboard
+        if(loc_lang_canonical == _T("fr_FR"))
+              g_b_assume_azerty = true;
 
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
@@ -4496,6 +4502,11 @@ void MyFrame::DoSetSize(void)
               wxRect stat_box;
               m_pStatusBar->GetFieldRect(0, stat_box);
               int font_size = stat_box.width / 28;                // 30 for linux
+
+#ifdef __WXMAC__
+              font_size = wxMax(10, font_size);             // beats me...
+#endif
+
               wxFont *pstat_font = wxTheFontList->FindOrCreateFont(font_size,
                                     wxFONTFAMILY_DEFAULT,
                                     wxFONTSTYLE_NORMAL,
