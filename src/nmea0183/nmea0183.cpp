@@ -208,6 +208,10 @@ bool NMEA0183::IsGood( void ) const
    ** Next to last character must be a CR
    */
 
+   /*  This seems too harsh for cross platform work
+
+   Relax requirement to line ending of either CR or LF
+
    if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != wxString(_T("\r")) )
    {
       return( FALSE );
@@ -217,6 +221,10 @@ bool NMEA0183::IsGood( void ) const
    {
       return( FALSE );
    }
+   */
+
+   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
+      return false;
 
    return( TRUE );
 }
