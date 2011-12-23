@@ -4141,7 +4141,8 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 
                case 13:                     // Ctrl M                      //    Drop Marker;
                {
-                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "triangle" ) ), wxString ( _( "New Mark" ) ), GPX_EMPTY_STRING );
+                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon,
+                                wxString ( _T ( "triangle" ) ), wxString ( _( "" ) ), GPX_EMPTY_STRING );
                     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
                     pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
                     pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
