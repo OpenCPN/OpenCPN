@@ -2807,6 +2807,11 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "LookAheadMode" ),  &g_bLookAhead, 0 );
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 0 );
       Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
+
+#ifdef __WXMAC__
+      g_bopengl = 0;
+#endif
+
       Read ( _T ( "GPUMemorySize" ),  &g_GPU_MemSize, 256 );
 
       Read ( _T ( "SmoothPanZoom" ),  &g_bsmoothpanzoom, 0 );

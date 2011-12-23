@@ -492,6 +492,11 @@ void options::CreateControls()
     pOpenGL = new wxCheckBox( itemPanel5, ID_OPENGLBOX, _("Use OpenGL"));
     itemStaticBoxSizerCDO->Add(pOpenGL, 1, wxALIGN_LEFT|wxALL, 2);
 
+#ifdef __WXMAC__
+//    pOpenGL->Disable();
+#endif
+
+
     //  Smooth Pan/Zoom checkbox
     pSmoothPanZoom = new wxCheckBox( itemPanel5, ID_SMOOTHPANZOOMBOX, _("Enable Smooth Panning / Zooming"));
     itemStaticBoxSizerCDO->Add(pSmoothPanZoom, 1, wxALIGN_LEFT|wxALL, 2);
