@@ -1274,6 +1274,34 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
             wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
             itemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
       }
+
+      if(pPluginArray->GetCount())
+      {
+      //    When a child Panel is selected, its size grows to include "Preferences" and Enable" buttons.
+      //    As a consequence, the vertical size of the ListPanel grows as well.
+      //    Calculate and add a spacer to bottom of ListPanel so that initial ListPanel
+      //    minimum size calculations account for selected Panel size growth.
+
+            wxBoxSizer* tsizer = new wxBoxSizer( wxVERTICAL );
+            PluginPanel *ppip = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item(0));
+            tsizer->Add( ppip, 0, wxEXPAND|wxALL, 0 );
+
+            ppip->SetSelected( false );
+            tsizer->Layout();
+            wxSize nsel_size = ppip->GetSize();
+
+            ppip->SetSelected( true );
+            tsizer->Layout();
+            wxSize sel_size = ppip->GetSize();
+
+            delete ppip;
+            delete tsizer;
+
+            int dy = sel_size.y - nsel_size.y;
+            dy += 2;          // fluff
+
+            itemBoxSizer01->AddSpacer(dy);
+      }
 }
 
 PluginListPanel::~PluginListPanel()
