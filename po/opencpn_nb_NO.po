@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -1312,9 +1312,6 @@ msgstr "Navigasjonsdata"
 msgid "Navigational Status:  "
 msgstr "Navigasjons status:  "
 #
-msgid "New Mark"
-msgstr "Nytt merke"
-#
 msgid "Next"
 msgstr "Neste"
 #
@@ -2397,6 +2394,7 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2408,8 +2406,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
+#
 #
 #
 #
@@ -2418,8 +2418,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
+#
 #
 #
 #
@@ -2428,13 +2430,20 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Tids stempel"
+#
+#
+#~ msgid "New Mark"
+#~ msgstr "Nytt merke"
+#
 #
 #
 #
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Utvidelses Baseklasse"
+#
 #
 #
 #
@@ -2447,8 +2456,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Utvidelses behandling søker etter mappen for utvidelser"
+#
 #
 #
 #
@@ -2457,8 +2468,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Utvidelses behandling: Starter utvidelse: "
+#
 #
 #
 #
@@ -2467,14 +2480,17 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster ut utvidelse: "
+#
 #
 #
 #
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
+#
 #
 #
 #~ msgid "Position:               "

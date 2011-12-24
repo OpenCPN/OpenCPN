@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2010-12-26 23:00+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -2542,13 +2542,6 @@ msgstr "Estado Navegación:  "
 # 
 # 
 # 
-msgid "New Mark"
-msgstr "Nueva Marca"
-#
-# 
-# 
-# 
-# 
 msgid "Next"
 msgstr "Siguiente"
 #
@@ -4619,6 +4612,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4633,11 +4627,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar librería: "
+#
 #
 #
 #
@@ -4649,11 +4645,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo destroy_pi: "
+#
 #
 #
 #
@@ -4684,6 +4682,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -4733,6 +4732,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4754,6 +4754,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -4795,6 +4796,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4803,11 +4805,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4845,6 +4849,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4854,6 +4859,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -4891,6 +4897,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4914,6 +4921,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4923,6 +4931,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -4969,6 +4978,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4977,6 +4987,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -5013,6 +5024,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5025,6 +5037,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -5078,6 +5091,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5102,12 +5116,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -5136,6 +5152,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5147,11 +5164,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Incapaz de cargar libgps.so.19"
+#
 #
 #
 #
@@ -5185,6 +5204,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5197,12 +5217,22 @@ msgstr ""
 #~ msgstr "Estándar Marino"
 #
 #
+# 
+# 
+# 
+# 
+#~ msgid "New Mark"
+#~ msgstr "Nueva Marca"
+#
+#
+#
 #
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -5228,9 +5258,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
+#
 #
 #
 #
@@ -5238,6 +5270,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -5249,11 +5282,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -5265,11 +5300,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -5281,12 +5318,14 @@ msgstr ""
 #~ "Gestor de PlugIns: Descargando PlugIn con versión inválida de API %d.%d: "
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
 #
 #
 #
@@ -5324,6 +5363,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5334,6 +5374,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nombre Barco:"
+#
 #
 #
 #
@@ -5365,6 +5406,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5372,6 +5414,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
+#
 #
 #
 #

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -1329,9 +1329,6 @@ msgstr "Navigationsdaten"
 msgid "Navigational Status:  "
 msgstr "Navigationsstatus:      "
 #
-msgid "New Mark"
-msgstr "Neue Markierung"
-#
 msgid "Next"
 msgstr "vor"
 #
@@ -2421,6 +2418,7 @@ msgid "wgsoy"
 msgstr "WGS Y Offset"
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2432,8 +2430,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "Plugin-Manager: Kann Bibliothek nicht laden:"
+#
 #
 #
 #
@@ -2442,8 +2442,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 #
 #
@@ -2458,8 +2460,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Toggle Chart"
+#
 #
 #
 #
@@ -2471,8 +2475,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -2487,8 +2493,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 #
@@ -2503,13 +2511,20 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ Zeitstempel"
+#
+#
+#~ msgid "New Mark"
+#~ msgstr "Neue Markierung"
+#
 #
 #
 #
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 #
 #
@@ -2522,8 +2537,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 #
 #
@@ -2532,8 +2549,10 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 #
 #
@@ -2542,13 +2561,16 @@ msgstr "WGS Y Offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Plugin-Manager: Entlade Plugin mit ungültiger API version %d.%d: "
+#
 #
 #
 #~ msgid "Position:               "

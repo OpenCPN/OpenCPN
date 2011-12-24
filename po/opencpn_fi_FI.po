@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -1736,10 +1736,6 @@ msgid "Navigational Status:  "
 msgstr "Status: "
 #
 # 
-msgid "New Mark"
-msgstr "Uusi merkintä"
-#
-# 
 msgid "Next"
 msgstr "Seuraava"
 #
@@ -3203,6 +3199,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3213,6 +3210,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Sulje"
+#
 #
 #
 #
@@ -3251,6 +3249,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3261,6 +3260,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Poista kaikki jäljet"
+#
 #
 #
 #
@@ -3299,6 +3299,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3323,6 +3324,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3332,6 +3334,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
 #
 #
 #
@@ -3374,6 +3377,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3388,6 +3392,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3430,6 +3435,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3440,6 +3446,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Virran nopeus, solmua"
+#
 #
 #
 #
@@ -3467,9 +3474,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Aikaleima"
+#
 #
 #
 #
@@ -3495,6 +3504,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so"
@@ -3508,6 +3518,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Failed to load libgps.so.19"
@@ -3515,6 +3526,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -3553,6 +3565,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3563,6 +3576,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -3601,6 +3615,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3611,6 +3626,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB-näytön hallinta"
+#
 #
 #
 #
@@ -3647,10 +3663,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Tuo GPX-tiedosto"
+#
 #
 #
 #
@@ -3672,6 +3690,12 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
+#
+#
+# 
+#~ msgid "New Mark"
+#~ msgstr "Uusi merkintä"
+#
 #
 #
 #
@@ -3710,6 +3734,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3720,6 +3745,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 #
@@ -3758,6 +3784,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3770,10 +3797,12 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Sijainti:"
+#
 #
 #
 #
@@ -3811,6 +3840,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -3819,6 +3849,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Äskeinen raporttiväli:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3857,6 +3888,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3867,6 +3899,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Pintalämpötila, C"
+#
 #
 #
 #
@@ -3905,6 +3938,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3929,6 +3963,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3936,6 +3971,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
 #
 #
 #
@@ -3974,6 +4010,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3984,6 +4021,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 #
@@ -4022,6 +4060,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4032,6 +4071,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Merkitsevä aallonkorkeus, m"
+#
 #
 #
 #
@@ -4060,6 +4100,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
@@ -4076,10 +4117,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Reitin nimi"
+#
 #
 #
 #
@@ -4118,6 +4161,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4128,6 +4172,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
 #
 #
 #

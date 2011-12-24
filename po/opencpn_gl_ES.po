@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -1334,9 +1334,6 @@ msgstr "Datos da Navegación"
 msgid "Navigational Status:  "
 msgstr "Estado Marítimo:"
 #
-msgid "New Mark"
-msgstr "Nova Marca"
-#
 msgid "Next"
 msgstr "Seguinte"
 #
@@ -2436,6 +2433,7 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2445,38 +2443,54 @@ msgstr "wgsoy"
 #~ "\n"
 #~ "\n"
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar a libería:"
+#
 #
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo create_pi:"
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo destroy_pi:"
+#
 #
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Alternar Cartas"
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentando cargar libgps.so"
+#
 #
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClaseComúnNome"
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Saí­r de OpenCPN"
+#
 #
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
 #
+#
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Houbo un error cargando libgps.so.19"
+#
 #
 #~ msgid "Import new layer"
 #~ msgstr "Importar unha nova capa"
 #
+#
+#~ msgid "New Mark"
+#~ msgstr "Nova Marca"
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
@@ -2485,31 +2499,40 @@ msgstr "wgsoy"
 #~ "Engadido OpenCPN Clase de Base\n"
 #~ "RexistrodeEngadidos creou esta clase de base"
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "O XestordeEngadidos está buscando a localización dos Engadidos"
 #
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "XestordeEngadidos: Iniciando Engadido:"
 #
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "XestordeEngadidos: Cargando Engadido:"
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
 #
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "XestordeEngadidos: Descargando Engadido con unha versión API inválida  %d.%"
 #~ "d: "
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
 #
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
@@ -2518,8 +2541,10 @@ msgstr "wgsoy"
 #~ "Período de Reporte Recente:   %3d Sec.\n"
 #~ "\n"
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar Listados"
+#
 #
 #~ msgid "Toggle Names"
 #~ msgstr "Alternar Nomes"

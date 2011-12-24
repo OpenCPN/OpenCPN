@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1311,9 +1311,6 @@ msgstr "Navigationsdata"
 msgid "Navigational Status:  "
 msgstr "Navigationsstatus:    "
 #
-msgid "New Mark"
-msgstr "Ny Waypoint"
-#
 msgid "Next"
 msgstr "Nästa"
 #
@@ -2397,6 +2394,7 @@ msgid "wgsoy"
 msgstr "wgsoy"
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2408,8 +2406,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
+#
 #
 #
 #
@@ -2418,8 +2418,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
+#
 #
 #
 #
@@ -2428,8 +2430,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -2438,8 +2442,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
+#
 #
 #
 #
@@ -2447,9 +2453,15 @@ msgstr "wgsoy"
 #~ msgstr "libgps kan inte laddas"
 #
 #
+#~ msgid "New Mark"
+#~ msgstr "Ny Waypoint"
+#
+#
+#
 #
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Base Class"
+#
 #
 #
 #
@@ -2462,8 +2474,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Modulhanterare söker efter moduler i "
+#
 #
 #
 #
@@ -2472,8 +2486,10 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Modulhanterare: Initialiserar modul: "
+#
 #
 #
 #
@@ -2482,13 +2498,16 @@ msgstr "wgsoy"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Modulhanterare: stänger modul: "
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "
+#
 #
 #
 #~ msgid "Position:               "

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -1582,10 +1582,6 @@ msgid "Navigational Status:  "
 msgstr "Statut de navigation: "
 #
 #
-msgid "New Mark"
-msgstr "Nouvelle marque"
-#
-#
 msgid "Next"
 msgstr "Suiv."
 #
@@ -2883,6 +2879,7 @@ msgid "wgsoy"
 msgstr "WGS Y"
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2893,9 +2890,11 @@ msgstr "WGS Y"
 #~ "\n"
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger la bibliothèque"
+#
 #
 #
 #
@@ -2905,10 +2904,12 @@ msgstr "WGS Y"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger le symbole "
 #~ "destroy_pi :"
+#
 #
 #
 #~ msgid "BaseClassCommonName"
@@ -2917,12 +2918,20 @@ msgstr "WGS Y"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Horodatage"
 #
 #
+#
+#~ msgid "New Mark"
+#~ msgstr "Nouvelle marque"
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN plugin classe de base"
+#
 #
 #
 #~ msgid ""
@@ -2934,8 +2943,10 @@ msgstr "WGS Y"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestionnaire de compléments : Recherche du plug-in"
+#
 #
 #
 #
@@ -2944,8 +2955,10 @@ msgstr "WGS Y"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Initialisation du plug-in :"
+#
 #
 #
 #
@@ -2954,8 +2967,10 @@ msgstr "WGS Y"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Déchargement du plug-in :"
+#
 #
 #
 #
@@ -2963,6 +2978,7 @@ msgstr "WGS Y"
 #~ msgstr ""
 #~ "Gestionnaire de compléments : Déchargement du plug-in avec version API non "
 #~ "valide %d.%d :"
+#
 #
 #
 #

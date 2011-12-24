@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -1330,9 +1330,6 @@ msgstr "Dades de Navegació"
 msgid "Navigational Status:  "
 msgstr "Estat de Navegació:   "
 #
-msgid "New Mark"
-msgstr "Marca Nova"
-#
 msgid "Next"
 msgstr "Proper"
 #
@@ -2429,6 +2426,7 @@ msgstr "wgsox"
 msgid "wgsoy"
 msgstr "wgsoy"
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2438,38 +2436,54 @@ msgstr "wgsoy"
 #~ "\n"
 #~ "\n"
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar la biblioteca: "
+#
 #
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol destruir_pi:"
+#
 #
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentant carregar libgps.so"
+#
 #
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Tanca l'OpenCPN"
+#
 #
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
 #
+#
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Fracàs en carregar libgps.so.19"
+#
 #
 #~ msgid "Import new layer"
 #~ msgstr "Importar noves capes"
 #
+#
+#~ msgid "New Mark"
+#~ msgstr "Marca Nova"
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
@@ -2478,30 +2492,39 @@ msgstr "wgsoy"
 #~ "Mòdul de Clase Bàsica de l'OpenCPN\n"
 #~ "El Gestor de Mòduls ha creat aquesta classe bàsica"
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "El Gestor de Mòduls de Programari cerca mòduls en el lloc "
 #
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de Mòduls: S'inicialitza el Mòdul:"
 #
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Gestor de Mòduls: Es descarrega Mòdul amb una versió d'API invàlida %d.%d: "
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
@@ -2510,8 +2533,10 @@ msgstr "wgsoy"
 #~ "Període d'Informe Recent:   %3d Seg.\n"
 #~ "\n"
 #
+#
 #~ msgid "Toggle Listing"
 #~ msgstr "Commu&tar la Llista"
+#
 #
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"

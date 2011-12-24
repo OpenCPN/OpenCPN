@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.708 beta for 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2011-07-10 12:27+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -1886,11 +1886,6 @@ msgstr "Navigatiestatus: "
 #
 #
 #
-msgid "New Mark"
-msgstr "markering, nieuw gevaar"
-#
-#
-#
 msgid "Next"
 msgstr ">>"
 #
@@ -3408,6 +3403,7 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -3421,8 +3417,10 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Kan library niet laden: "
+#
 #
 #
 #
@@ -3435,8 +3433,10 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Kan symbool destroy_pi niet laden: "
+#
 #
 #
 #
@@ -3449,8 +3449,16 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
+#
+#
+#
+#~ msgid "New Mark"
+#~ msgstr "markering, nieuw gevaar"
+#
 #
 #
 #
@@ -3458,6 +3466,7 @@ msgstr "WGS Y offset"
 #
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -3473,8 +3482,10 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -3487,8 +3498,10 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -3501,6 +3514,7 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
 #
@@ -3508,8 +3522,10 @@ msgstr "WGS Y offset"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
+#
 #
 #
 #

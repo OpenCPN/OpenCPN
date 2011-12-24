@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -1731,10 +1731,6 @@ msgid "Navigational Status:  "
 msgstr "Κατάσταση Πλοήγησης:  "
 #
 # 
-msgid "New Mark"
-msgstr "Νέο Σημάδι"
-#
-# 
 msgid "Next"
 msgstr "Επόμενο"
 #
@@ -3180,6 +3176,7 @@ msgid "wgsoy"
 msgstr ""
 #
 #
+#
 # 
 #~ msgid ""
 #~ "\n"
@@ -3192,15 +3189,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
 #
 #
 #
+#
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -3213,15 +3213,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Προσπάθεια να φορτωθεί το libgps.so"
 #
 #
 #
+#
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -3259,6 +3262,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3268,6 +3272,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -3305,6 +3310,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3314,6 +3320,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -3351,6 +3358,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3359,6 +3367,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -3395,6 +3404,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3407,9 +3417,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -3435,6 +3447,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
@@ -3444,9 +3457,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -3477,6 +3492,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3486,10 +3502,17 @@ msgstr ""
 #~ msgstr "Βασικό ναυτικό"
 #
 #
+# 
+#~ msgid "New Mark"
+#~ msgstr "Νέο Σημάδι"
+#
+#
+#
 #
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
 #
 #
 #
@@ -3513,9 +3536,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
+#
 #
 #
 #
@@ -3525,9 +3550,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
+#
 #
 #
 #
@@ -3537,9 +3564,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
+#
 #
 #
 #
@@ -3549,15 +3578,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
 #
 #
+#
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -3592,6 +3624,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3599,6 +3632,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
 #
 #
 #
@@ -3627,10 +3661,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

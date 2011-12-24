@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6 (Pt01)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 10:16-0500\n"
+"POT-Creation-Date: 2011-12-23 21:15-0500\n"
 "PO-Revision-Date: 2010-02-05 16:06+0100\n"
 "Last-Translator: as <as400big@gmail.com>\n"
 "Language-Team: Minhota <zemaria@zemaria.biz>\n"
@@ -2690,13 +2690,6 @@ msgstr "Condição de Navegação:  "
 # 
 # 
 # 
-msgid "New Mark"
-msgstr "Nova Marca"
-#
-# 
-# 
-# 
-# 
 msgid "Next"
 msgstr "Seguinte"
 #
@@ -4765,6 +4758,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4782,6 +4776,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -4832,6 +4827,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4854,6 +4850,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Apagar todas as Rotas..."
+#
 #
 #
 #
@@ -4904,6 +4901,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4936,6 +4934,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4948,6 +4947,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Ficheiro de carta corrompido.. a desactivar carta \n"
+#
 #
 #
 #
@@ -4997,6 +4997,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5022,6 +5023,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5079,6 +5081,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5111,6 +5114,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5119,6 +5123,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair do OpenCPN"
+#
 #
 #
 #
@@ -5176,6 +5181,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5211,6 +5217,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5225,6 +5232,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -5269,6 +5277,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5285,6 +5294,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 #
 #
@@ -5329,6 +5339,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5339,6 +5350,15 @@ msgstr ""
 # 
 #~ msgid "MarinersStandard"
 #~ msgstr "Standard Marítimo"
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "New Mark"
+#~ msgstr "Nova Marca"
+#
 #
 #
 #
@@ -5383,6 +5403,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5399,6 +5420,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -5444,6 +5466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5463,6 +5486,7 @@ msgstr ""
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
 #
 #
+#
 # 
 # 
 # 
@@ -5470,6 +5494,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:              "
+#
 #
 #
 #
@@ -5513,6 +5538,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5524,6 +5550,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período das aquisições mais recentes:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5555,6 +5582,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 #
@@ -5605,6 +5633,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5615,6 +5644,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 #
 #
@@ -5664,6 +5694,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5685,6 +5716,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
 #
 #
 #
@@ -5727,6 +5759,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5743,6 +5776,7 @@ msgstr ""
 # 
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura de Vaga Significativa, m"
+#
 #
 #
 #
@@ -5774,6 +5808,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5781,6 +5816,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Comutar Rastro"
+#
 #
 #
 #
@@ -5814,6 +5850,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5828,6 +5865,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos Alta Definição"
+#
 #
 #
 #
@@ -5872,6 +5910,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5888,6 +5927,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 #
 #
