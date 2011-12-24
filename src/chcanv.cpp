@@ -12893,7 +12893,7 @@ void glChartCanvas::render()
         ocpnDC gldc(*this);
 
 //    Render the WVSChart vector first
-/*
+
         wxRegion CValidRegion;
         if(!VPoint.b_quilt)
               // Make a region covering the current chart on the canvas
@@ -12901,20 +12901,20 @@ void glChartCanvas::render()
         else
               CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
 
-      //    Copy current chart region
-        wxRegion WVSRegion ( rgn_chart );
+      //    Copy current canvas region
+        wxRegion WVSRegion ( chart_get_region );
 
       //    Remove the valid chart area
         if(CValidRegion.IsOk())
               WVSRegion.Subtract ( CValidRegion );
-*/
+
       //    Draw the WVSChart only in the areas NOT covered by the current chart view
       //    And, only if the region is ..not.. empty
       //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
-#if 0
         if ( !WVSRegion.IsEmpty() && ( fabs (cc1->GetVP().skew) < .01 )
-             && (cc1->GetVP().view_scale_ppm > 5e-05) ) {
-             /* clear out region for wvs data */
+             && (cc1->GetVP().view_scale_ppm > 5e-05) )
+        {
+             // clear out region for wvs data
              wxRegionIterator wvsr ( WVSRegion);
              while ( wvsr )
              {
@@ -12926,9 +12926,10 @@ void glChartCanvas::render()
                   glEnd();
                   wvsr++;
              }
+             //   And then render WVS
              cc1->pwvs_chart->RenderViewOnDC ( gldc, cc1->GetVP() );
+//             cc1->pwvs_chart->RenderRegionViewOnGL();//RenderViewOnDC ( gldc, cc1->GetVP() );
         }
-#endif
 
         int w, h;
         GetClientSize(&w, &h);
