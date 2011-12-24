@@ -6055,6 +6055,11 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
             if(NULL == td)
                   return;
 
+                 //    Target is lost due to position report time-out, but still in Target List
+            if(td->b_lost)
+                  return;
+
+
                 //      Skip anchored/moored (interpreted as low speed) targets if requested
                 //      unless the target is NUC or AtoN, in which case it is always displayed.
             if ( (!g_bShowMoored) && (td->SOG <= g_ShowMoored_Kts) && (td->NavStatus != NOT_UNDER_COMMAND)
@@ -6072,11 +6077,11 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 //            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
 //                  return;
 
-                 // And we never draw ownship
+            // And we never draw ownship
             if(td->b_OwnShip)
                   return;
 
-            //    If target's speed is unavailable, use zero for further calculations
+           //    If target's speed is unavailable, use zero for further calculations
             double target_sog = td->SOG;
             if(td->SOG > 102.2)
                   target_sog = 0.;

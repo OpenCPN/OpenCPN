@@ -208,12 +208,14 @@ public:
 
     char                      Destination[21];
 
-    time_t                    ReportTicks;
+    time_t                    PositionReportTicks;
+    time_t                    StaticReportTicks;
+
     int                       RecentPeriod;
     bool                      b_active;
+    bool                      b_lost;
     ais_alarm_type            n_alarm_state;
     bool                      b_suppress_audio;
-//    bool                      b_positionValid;
     bool                      b_positionDoubtful;
     bool                      b_positionOnceValid;
     bool                      b_nameValid;

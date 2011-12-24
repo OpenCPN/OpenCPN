@@ -394,7 +394,9 @@ AIS_Target_Data::AIS_Target_Data()
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
-    ReportTicks = now.GetTicks();       // Default is my idea of NOW
+    PositionReportTicks = now.GetTicks();       // Default is my idea of NOW
+    StaticReportTicks = now.GetTicks();
+    b_lost = false;
 
     IMO = 0;                       // pjotrc 2010.02.07
     MID = 555;
@@ -713,7 +715,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       result.Append(line);
 
 
-      wxDateTime rt(ReportTicks);
+      wxDateTime rt(PositionReportTicks);
       line.Printf(_("Last Position Report Time:  "));
       line << rt.FormatISOTime();
       line << _T(" ");
@@ -723,7 +725,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
 
       now.MakeGMT();
-      int target_age = now.GetTicks() - ReportTicks;
+      int target_age = now.GetTicks() - PositionReportTicks;
 
 
       line.Printf(_("Position Report Age:       %3d Sec.\n\n"), target_age);
@@ -1498,7 +1500,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
         //  Grab the stale targets's last report time
         int last_report_ticks;
         if(pStaleTarget)
-              last_report_ticks = pStaleTarget->ReportTicks;
+              last_report_ticks = pStaleTarget->PositionReportTicks;
         else
         {
               wxDateTime now = wxDateTime::Now();
@@ -1536,7 +1538,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
               (*AISTargetList)[mmsi] = pTargetData;            // update the hash table entry
 
               //     Update the most recent report period
-              pTargetData->RecentPeriod = pTargetData->ReportTicks - last_report_ticks;
+              pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
 
               //  If this is not an ownship message, update the AIS Target in the Selectable list, and update the CPA info
               if(!pTargetData->b_OwnShip)
@@ -1609,6 +1611,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 {
     bool parse_result = false;
+    bool b_posn_report = false;
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT(true);                    // no DST
@@ -1656,7 +1659,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->Lat = lat_tentative;
                   ptd->b_positionDoubtful = false;
                   ptd->b_positionOnceValid = true;          // Got the position at least once
-                  ptd->ReportTicks = now.GetTicks();
+                  ptd->PositionReportTicks = now.GetTicks();
             }
             else
                   ptd->b_positionDoubtful = true;
@@ -1714,6 +1717,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             ptd->Class = AIS_CLASS_A;
 
             parse_result = true;                // so far so good
+            b_posn_report = true;
+
             break;
         }
 
@@ -1737,7 +1742,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                       ptd->Lat = lat_tentative;
                       ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
-                      ptd->ReportTicks = now.GetTicks();
+                      ptd->PositionReportTicks = now.GetTicks();
                 }
                 else
                       ptd->b_positionDoubtful = true;
@@ -1791,6 +1796,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                   ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
 
                   bstr->GetStr(303,120, &ptd->Destination[0], 20);
+
+                  ptd->StaticReportTicks = now.GetTicks();
 
                   parse_result = true;
             }
@@ -1853,7 +1860,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                       ptd->Lat = lat_tentative;
                       ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
-                      ptd->ReportTicks = now.GetTicks();
+                      ptd->PositionReportTicks = now.GetTicks();
                 }
                 else
                       ptd->b_positionDoubtful = true;
@@ -1863,6 +1870,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 ptd->SOG = -1.;
 
                 parse_result = true;
+                b_posn_report = true;
 
                 break;
           }
@@ -1937,7 +1945,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                       ptd->Lat = lat_tentative;
                       ptd->b_positionDoubtful = false;
                       ptd->b_positionOnceValid = true;          // Got the position at least once
-                      ptd->ReportTicks = now.GetTicks();
+                      ptd->PositionReportTicks = now.GetTicks();
                 }
                 else
                       ptd->b_positionDoubtful = true;
@@ -1953,6 +1961,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                       ThreadMessage(msg);
                 }
 
+                b_posn_report = true;
                 break;
           }
      case 8:                                    // Binary Broadcast
@@ -1997,13 +2006,14 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
     }
 
+    if(b_posn_report)
+          ptd->b_lost = false;
+
     if(true == parse_result)
     {
-          if(!ptd->b_active)
-          {
-                if(!ptd->b_positionDoubtful)
+          //      Revalidate the target under some conditions
+          if(!ptd->b_active && !ptd->b_positionDoubtful && b_posn_report)
                       ptd->b_active = true;
-          }
     }
 
     return parse_result;
@@ -2695,13 +2705,13 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
                 break;                          // leave the loop
           }
 
-          int target_age = now.GetTicks() - td->ReportTicks;
-//          printf("Current Target: MMSI: %d    target_age:%d\n", td->MMSI, target_age);
+          int target_posn_age = now.GetTicks() - td->PositionReportTicks;
+          int target_static_age = now.GetTicks() - td->StaticReportTicks;
 
           //      Mark lost targets if specified
           if(g_bMarkLost)
           {
-                  if(target_age > g_MarkLost_Mins * 60)
+                if(target_posn_age > g_MarkLost_Mins * 60)
                         td->b_active = false;
           }
 
@@ -2709,16 +2719,28 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
           double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
           if(g_bRemoveLost)
           {
-                if(target_age > removelost_Mins * 60)
+                if(target_posn_age > removelost_Mins * 60)
                 {
-                      long mmsi_long = td->MMSI;
-                      pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
-                      current_targets->erase(it);
-                      delete td;
+                      //      So mark the target as lost, with unknown position
+                      td->b_lost = true;
+                      td->b_positionOnceValid = false;
+                      td->COG = 360.0;
+                      td->SOG = 103.0;
+                      td->HDG = 511.0;
+                      td->ROTAIS = -128;
+
+
+                      if(target_static_age > removelost_Mins * 60 * 3)
+                      {
+                        long mmsi_long = td->MMSI;
+                        pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
+                        current_targets->erase(it);
+                        delete td;
 
                       //      Reset the iterator on item erase.
-                      it = (*current_targets).begin();
-                      b_new_it = true;
+                        it = (*current_targets).begin();
+                        b_new_it = true;
+                      }
                 }
           }
 
