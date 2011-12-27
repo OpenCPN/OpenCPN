@@ -3319,6 +3319,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCwin = NULL;
         warp_flag = false;
         m_bzooming = false;
+        m_bmouse_key_mod = false;
 
         pss_overlay_bmp = NULL;
         pss_overlay_mask = NULL;
@@ -3928,6 +3929,9 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 {
      m_modkeys = event.GetModifiers();
 
+     if(event.GetKeyCode() == WXK_CONTROL)
+           m_bmouse_key_mod = true;
+
      // HOTKEYS
      switch(event.GetKeyCode())
      {
@@ -4080,8 +4084,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
             switch(key_char)
             {
                   case '+':
+                  case '+' - 64:
                   case '=':
-                  case 26:                     // Ctrl Z
+                  case '=' - 64:          // Ctrl =
+                  case 26:                // Ctrl Z
                         if ( (m_modkeys == wxMOD_CONTROL) )
                               ZoomCanvasIn(1.1);
                         else
@@ -4089,8 +4095,9 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                   break;
 
                   case '-':
+                  case '-' - 64:          // Ctrl -
                   case '_':
-                  case 24:                     // Ctrl X
+                  case 24:                // Ctrl X
                         if ( (m_modkeys == wxMOD_CONTROL) )
                               ZoomCanvasOut(1.1);
                         else
@@ -4223,10 +4230,11 @@ void ChartCanvas::OnKeyUp(wxKeyEvent &event)
 
           case WXK_CONTROL:
                m_modkeys = wxMOD_NONE;          //Clear Ctrl key
+               m_bmouse_key_mod = false;
+
                break;
 
      }
-
      event.Skip();
 }
 
@@ -7216,7 +7224,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         {
             if(!m_MouseWheelTimer.IsRunning())
             {
-                  double factor = (m_modkeys == wxMOD_CONTROL)? 1.1 : 2.0 ;
+                  double factor = m_bmouse_key_mod ? 1.1 : 2.0 ;
 
                   if(g_bEnableZoomToCursor)
                   {

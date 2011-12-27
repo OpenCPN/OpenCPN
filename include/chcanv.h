@@ -322,7 +322,7 @@ private:
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
 
       int m_panx, m_pany, m_panspeed, m_modkeys;
-
+      bool m_bmouse_key_mod;
 
       //    Methods
       void OnActivate(wxActivateEvent& event);
