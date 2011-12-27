@@ -1313,6 +1313,8 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
       wxBoxSizer* itemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
       SetSizer( itemBoxSizer01 );
 
+      int max_dy = 0;
+
       for( unsigned int i=0 ; i < pPluginArray->GetCount() ; i++ )
       {
             PluginPanel *pPluginPanel = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item(i) );
@@ -1321,35 +1323,29 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
 
             wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
             itemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
-      }
 
-      if(pPluginArray->GetCount())
-      {
       //    When a child Panel is selected, its size grows to include "Preferences" and Enable" buttons.
       //    As a consequence, the vertical size of the ListPanel grows as well.
       //    Calculate and add a spacer to bottom of ListPanel so that initial ListPanel
       //    minimum size calculations account for selected Panel size growth.
 
-            wxBoxSizer* tsizer = new wxBoxSizer( wxVERTICAL );
-            PluginPanel *ppip = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item(0));
-            tsizer->Add( ppip, 0, wxEXPAND|wxALL, 0 );
+            pPluginPanel->SetSelected( false );       // start unselected
+            itemBoxSizer01->Layout();
+            wxSize nsel_size = pPluginPanel->GetSize();
 
-            ppip->SetSelected( false );
-            tsizer->Layout();
-            wxSize nsel_size = ppip->GetSize();
+            pPluginPanel->SetSelected( true );        // switch to selected, a bit bigger
+            itemBoxSizer01->Layout();
+            wxSize sel_size = pPluginPanel->GetSize();
 
-            ppip->SetSelected( true );
-            tsizer->Layout();
-            wxSize sel_size = ppip->GetSize();
-
-            delete ppip;
-            delete tsizer;
+            pPluginPanel->SetSelected( false );       // reset to unselected
+            itemBoxSizer01->Layout();
 
             int dy = sel_size.y - nsel_size.y;
-            dy += 2;          // fluff
-
-            itemBoxSizer01->AddSpacer(dy);
+            dy += 10;                                 // fluff
+            max_dy = wxMax(dy, max_dy);
       }
+
+      itemBoxSizer01->AddSpacer(max_dy);
 }
 
 PluginListPanel::~PluginListPanel()
