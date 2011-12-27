@@ -865,6 +865,26 @@ void RouteProp::CreateControls()
     m_chColor->SetSelection( 0 );
     bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+    m_staticText2 = new wxStaticText( this, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_staticText2->Wrap( -1 );
+    bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString m_chStyleChoices[] = { _("Default"), _("Solid"), _("Dot"), _("Long dash"), _("Short dash"), _("Dot dash") };
+    int m_chStyleNChoices = sizeof( m_chStyleChoices ) / sizeof( wxString );
+    m_chStyle = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chStyleNChoices, m_chStyleChoices, 0 );
+    m_chStyle->SetSelection( 0 );
+    bSizer2->Add( m_chStyle, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    m_staticText2 = new wxStaticText( this, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_staticText2->Wrap( -1 );
+    bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString m_chWidthChoices[] = { _("Default"), _("1 pixel"), _("2 pixels"), _("3 pixels"), _("4 pixels"), _("5 pixels"), _("6 pixels"), _("7 pixels"), _("8 pixels"), _("9 pixels"), _("10 pixels") };
+    int m_chWidthNChoices = sizeof( m_chWidthChoices ) / sizeof( wxString );
+    m_chWidth = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chWidthNChoices, m_chWidthChoices, 0 );
+    m_chWidth->SetSelection( 0 );
+    bSizer2->Add( m_chWidth, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     itemStaticBoxSizer3->Add( bSizer2, 1, wxEXPAND, 0 );
 
     wxStaticBox* itemStaticBoxSizer14Static = new wxStaticBox(itemDialog1, wxID_ANY, _("Waypoints"));
@@ -1543,6 +1563,24 @@ bool RouteProp::UpdateProperties()
         }
     }
 
+    for (unsigned int i = 0; i < sizeof( ::StyleValues ) / sizeof( int ); i++)
+    {
+        if ( m_pRoute->m_style == ::StyleValues[i] )
+        {
+            m_chStyle->Select( i );
+            break;
+        }
+    }
+
+    for (unsigned int i = 0; i < sizeof( ::WidthValues ) / sizeof( int ); i++)
+    {
+        if ( m_pRoute->m_width == ::WidthValues[i] )
+        {
+            m_chWidth->Select( i );
+            break;
+        }
+    }
+
     ::wxEndBusyCursor();
 
     return true;
@@ -1594,6 +1632,8 @@ bool RouteProp::SaveChanges(void)
             m_pRoute->m_Colour = wxEmptyString;
         else
             m_pRoute->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
+        m_pRoute->m_style = ::StyleValues[m_chStyle->GetSelection()];
+        m_pRoute->m_width = ::WidthValues[m_chWidth->GetSelection()];
 
         pConfig->UpdateRoute(m_pRoute);
         pConfig->UpdateSettings();

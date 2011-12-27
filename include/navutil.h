@@ -47,6 +47,9 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 
+
+#define STYLE_UNDEFINED -1
+
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y,
@@ -244,6 +247,8 @@ public:
       wxString    m_GUID;
       bool        m_bIsInLayer;
       int         m_LayerID;
+      int         m_width;
+      int         m_style;
 
       wxArrayString      RoutePointGUIDList;
       RoutePointList     *pRoutePointList;

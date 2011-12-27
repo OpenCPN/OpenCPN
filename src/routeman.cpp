@@ -128,14 +128,12 @@ extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
-
-
+extern int              g_route_line_width;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
 WX_DECLARE_LIST(wxString, markicon_key_list_type);
 WX_DECLARE_LIST(wxString, markicon_description_list_type);
-
 
 //    List implementation for Waypoint Manager Icons
 #include <wx/listimpl.cpp>
@@ -928,15 +926,15 @@ void Routeman::SetColorScheme(ColorScheme cs)
 //      m_pRoutePen =             wxThePenList->FindOrCreatePen(wxColour(0,0,255), 2, wxSOLID);
 //      m_pSelectedRoutePen =     wxThePenList->FindOrCreatePen(wxColour(255,0,0), 2, wxSOLID);
 //      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(wxColour(255,0,255), 2, wxSOLID);
-      m_pActiveRoutePointPen =  wxThePenList->FindOrCreatePen(wxColour(0,0,255), 2, wxSOLID);
-      m_pRoutePointPen =        wxThePenList->FindOrCreatePen(wxColour(0,0,255), 2, wxSOLID);
+      m_pActiveRoutePointPen =  wxThePenList->FindOrCreatePen(wxColour(0,0,255), g_route_line_width, wxSOLID);
+      m_pRoutePointPen =        wxThePenList->FindOrCreatePen(wxColour(0,0,255), g_route_line_width, wxSOLID);
 
 
 //    Or in something like S-52 compliance
 
-      m_pRoutePen =             wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFB")), 2, wxSOLID);
-      m_pSelectedRoutePen =     wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFO")), 2, wxSOLID);
-      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), 2, wxSOLID);
+      m_pRoutePen =             wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFB")), g_route_line_width, wxSOLID);
+      m_pSelectedRoutePen =     wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFO")), g_route_line_width, wxSOLID);
+      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
 //      m_pActiveRoutePointPen =  wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), 2, wxSOLID);
 //      m_pRoutePointPen =        wxThePenList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), 2, wxSOLID);
 

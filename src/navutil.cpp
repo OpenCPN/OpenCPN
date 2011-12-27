@@ -290,6 +290,9 @@ extern int             g_lastClientRecth;
 
 extern bool             g_bHighliteTracks;
 
+extern int              g_route_line_width;
+extern int              g_track_line_width;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -1290,6 +1293,8 @@ Route::Route ( void )
       m_bVisible = true;
       m_bListed = true;
       m_bDeleteOnArrival = false;
+      m_width = STYLE_UNDEFINED;
+      m_style = STYLE_UNDEFINED;
 
       pRoutePointList = new RoutePointList;
       m_pLastAddedPoint = NULL;
@@ -1552,14 +1557,19 @@ void Route::Draw ( ocpnDC& dc, ViewPort &VP )
       }
       else
       {
+            int style = wxSOLID;
+            int width = g_route_line_width;
+            wxColour col;
+            if (m_style != STYLE_UNDEFINED)
+                  style = m_style;
+            if (m_width != STYLE_UNDEFINED)
+                  width = m_width;
             if ( m_Colour == wxEmptyString )
             {
-                  dc.SetPen ( *g_pRouteMan->GetRoutePen() );
-                  dc.SetBrush ( *g_pRouteMan->GetRouteBrush() );
+                  col = g_pRouteMan->GetRoutePen()->GetColour();
             }
             else
             {
-                  wxColour col;
                   for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
                   {
                         if ( m_Colour == ::GpxxColorNames[i] )
@@ -1568,11 +1578,10 @@ void Route::Draw ( ocpnDC& dc, ViewPort &VP )
                               break;
                         }
                   }
-                  dc.SetPen ( *wxThePenList->FindOrCreatePen(col, 2, wxSOLID) );
-                  dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
             }
+            dc.SetPen ( *wxThePenList->FindOrCreatePen(col, width, style) );
+            dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
       }
-
 
       if ( m_bRtIsActive )
       {
@@ -2525,11 +2534,11 @@ void Track::Draw ( ocpnDC& dc, ViewPort &VP )
 
       if (m_bRunning) {                                       // pjotrc 2010.02.26
             dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) );
-            wxPen dPen ( GetGlobalColor ( _T ( "URED" ) ), 3 ) ;
+            wxPen dPen ( GetGlobalColor ( _T ( "URED" ) ), g_track_line_width ) ;
             dc.SetPen ( dPen );
       } else {
             dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "CHMGD" ) ) ) );
-            wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), 3 ) ;
+            wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), g_track_line_width ) ;
             dc.SetPen ( dPen );
       }
 
@@ -2554,26 +2563,36 @@ void Track::Draw ( ocpnDC& dc, ViewPort &VP )
 
             if (m_bRunning || prp->m_IconName.StartsWith(_T("xmred"))){              // pjotrc 2010.02.26
                   dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) );
-                  wxPen dPen ( GetGlobalColor ( _T ( "URED" ) ), 3 ) ;
+                  wxPen dPen ( GetGlobalColor ( _T ( "URED" ) ), g_track_line_width ) ;
                   dc.SetPen ( dPen );
             } else
                   if (prp->m_IconName.StartsWith(_T("xmblue"))){                     // pjotrc 2010.02.26
                         dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "BLUE3" ) ) ) );
-                        wxPen dPen ( GetGlobalColor ( _T ( "BLUE3" ) ), 3 ) ;
+                        wxPen dPen ( GetGlobalColor ( _T ( "BLUE3" ) ), g_track_line_width ) ;
                         dc.SetPen ( dPen );
                   } else
                         if (prp->m_IconName.StartsWith(_T("xmgreen"))){               // pjotrc 2010.02.26
                               dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "UGREN" ) ) ) );
-                              wxPen dPen ( GetGlobalColor ( _T ( "UGREN" ) ), 3 ) ;
+                              wxPen dPen ( GetGlobalColor ( _T ( "UGREN" ) ), g_track_line_width ) ;
                               dc.SetPen ( dPen );
                         } else {                                                      // pjotrc 2010.03.02
                               dc.SetBrush ( wxBrush ( GetGlobalColor ( _T ( "CHMGD" ) ) ) );
-                              wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), 3 ) ;
+                              wxPen dPen ( GetGlobalColor ( _T ( "CHMGD" ) ), g_track_line_width ) ;
                               dc.SetPen ( dPen );
                         }
-            if ( m_Colour != wxEmptyString ) //if we are using GPXX, change the previously selected...
+            int style = wxSOLID;
+            int width = g_route_line_width;
+            wxColour col;
+            if (m_style != STYLE_UNDEFINED)
+                  style = m_style;
+            if (m_width != STYLE_UNDEFINED)
+                  width = m_width;
+            if ( m_Colour == wxEmptyString )
             {
-                  wxColour col;
+                  col = dc.GetPen().GetColour();
+            }
+            else
+            {
                   for (unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof( wxString ); i++)
                   {
                         if ( m_Colour == ::GpxxColorNames[i] )
@@ -2582,9 +2601,9 @@ void Track::Draw ( ocpnDC& dc, ViewPort &VP )
                               break;
                         }
                   }
-                  dc.SetPen ( *wxThePenList->FindOrCreatePen(col, 2, wxSOLID) );
-                  dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
             }
+            dc.SetPen ( *wxThePenList->FindOrCreatePen(col, width, style) );
+            dc.SetBrush ( *wxTheBrushList->FindOrCreateBrush(col, wxSOLID) );
 
             prp->Draw ( dc, &rptn );
 
@@ -3729,6 +3748,9 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
+      Read ( _T ( "RouteLineWidth" ),  &g_route_line_width, 2 );
+      Read ( _T ( "TrackLineWidth" ),  &g_track_line_width, 3 );
+
       return ( 0 );
 }
 
@@ -4342,6 +4364,9 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "EnableTrackByTime" ), g_bTrackTime );
       Write ( _T ( "EnableTrackByDistance" ), g_bTrackDistance );
 
+      Write ( _T ( "RouteLineWidth" ), g_route_line_width );
+      Write ( _T ( "TrackLineWidth" ), g_track_line_width );
+
       Flush();
 }
 
@@ -4589,6 +4614,15 @@ GpxRteElement *CreateGPXRte ( Route *pRoute )
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+      if (pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED)
+      {
+            TiXmlElement* e = new TiXmlElement("opencpn:style");
+            if (pRoute->m_width != STYLE_UNDEFINED)
+                  e->SetAttribute("width", pRoute->m_width);
+            if (pRoute->m_style != STYLE_UNDEFINED)
+                  e->SetAttribute("style", pRoute->m_style);
+            exts->LinkEndChild(e);
+      }
       if ( pRoute->m_Colour != wxEmptyString )
       {
             GpxxExtensionsElement *gpxx = new GpxxExtensionsElement(_T("gpxx:RouteExtension"));
@@ -4623,6 +4657,15 @@ GpxTrkElement *CreateGPXTrk ( Route *pRoute )
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:end")), pRoute->m_RouteEndString));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:viz")), pRoute->IsVisible() ? wxString(_T("1")) : wxString(_T("0"))));
       exts->LinkEndChild(new GpxSimpleElement(wxString(_T("opencpn:guid")), pRoute->m_GUID));
+      if (pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED)
+      {
+            TiXmlElement* e = new TiXmlElement("opencpn:style");
+            if (pRoute->m_width != STYLE_UNDEFINED)
+                  e->SetAttribute("width", pRoute->m_width);
+            if (pRoute->m_style != STYLE_UNDEFINED)
+                  e->SetAttribute("style", pRoute->m_style);
+            exts->LinkEndChild(e);
+      }
       if ( pRoute->m_Colour != wxEmptyString )
       {
             GpxxExtensionsElement *gpxx = new GpxxExtensionsElement(_T("gpxx:TrackExtension"));
@@ -5705,6 +5748,22 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                                           b_viz = (viz == _T("1"));
                                     }
                               }
+                              else if ( ext_name == _T ( "opencpn:style" ) )
+                              {
+                                    TiXmlAttribute * attr;
+                                    for ( attr = ((TiXmlElement*)ext_child)->FirstAttribute(); attr != 0; attr = attr->Next())
+                                    {
+                                          if (attr) 
+                                          {
+                                                if (strcmp(attr->Name(), "style") == 0)
+                                                      pTentTrack->m_style = atoi(attr->Value());
+                                                else if (strcmp(attr->Name(), "width") == 0)
+                                                      pTentTrack->m_width = atoi(attr->Value());
+                                          }
+                                    }
+
+
+                              }
                               else if ( ext_name == _T ( "opencpn:guid" ) )
                               {
 						TiXmlNode *g_child = ext_child->FirstChild();
@@ -6020,6 +6079,22 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                               {
                                     pTentRoute->m_GUID = wxString::FromUTF8 ( g_child->ToText()->Value() );
                               }
+                        }
+                        else if ( ext_name == _T ( "opencpn:style" ) )
+                        {
+                              TiXmlAttribute * attr;
+                              for ( attr = ((TiXmlElement*)ext_child)->FirstAttribute(); attr != 0; attr = attr->Next())
+                              {
+                                    if (attr) 
+                                    {
+                                          if (strcmp(attr->Name(), "style") == 0)
+                                                pTentRoute->m_style = atoi(attr->Value());
+                                          else if (strcmp(attr->Name(), "width") == 0)
+                                                pTentRoute->m_width = atoi(attr->Value());
+                                    }
+                              }
+
+
                         }
                         else if ( ext_name.EndsWith ( _T ( "RouteExtension" ) ) ) //Parse GPXX color
                         {

@@ -219,7 +219,11 @@ public:
     wxDateTime	 m_starttime; // kept as UTC
     wxRadioBox	*pDispTz;
     wxStaticText  *m_staticText1;
+    wxStaticText  *m_staticText2;
+    wxStaticText  *m_staticText3;
     wxChoice      *m_chColor;
+    wxChoice      *m_chStyle;
+    wxChoice      *m_chWidth;
 
     wxStaticBoxSizer* m_pListSizer;
 };
