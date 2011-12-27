@@ -494,6 +494,8 @@ bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
 bool             g_bTrackDaily;
 bool             g_bHighliteTracks;
+int              g_route_line_width;
+int              g_track_line_width;
 
 Track            *g_pActiveTrack;
 double           g_TrackIntervalSeconds;
@@ -2113,7 +2115,6 @@ bool MyApp::OnInit()
         imsg += def_lang_canonical;
         wxLogMessage(imsg);
 
-
         //  For windows, installer may have left information in the registry defining the
         //  user's selected install language.
         //  If so, override the config file value and use this selection for opencpn...
@@ -2169,7 +2170,10 @@ bool MyApp::OnInit()
         wxLog::SetVerbose(false);           // log no verbose messages
 
         //  French language locale is assumed to include the AZERTY keyboard
+        //  This applies to either the system language, or to OpenCPN language selection
         if(loc_lang_canonical == _T("fr_FR"))
+              g_b_assume_azerty = true;
+        if(def_lang_canonical == _T("fr_FR"))
               g_b_assume_azerty = true;
 
 //  Send the Welcome/warning message if it has never been sent before,
@@ -5297,6 +5301,10 @@ int MyFrame::DoOptionsDialog()
 
       if(b_sub)
             SurfaceToolbar();
+
+#ifdef __WXGTK__
+      Raise();                      // I dunno why...
+#endif
 
       if(rr)
       {
