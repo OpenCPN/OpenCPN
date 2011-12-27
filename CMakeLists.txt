@@ -157,6 +157,13 @@ IF(WIN32)
     ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(WIN32)
 
+# Add a definition to fix some 64 bit linux system builds
+IF (NOT WIN32)
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+            ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+ENDIF (NOT WIN32)
+
 
 # Location where cmake first looks for cmake modules.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
