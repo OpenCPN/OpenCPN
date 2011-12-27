@@ -5068,7 +5068,13 @@ bool ChartCanvas::SetViewPoint ( double lat, double lon, double scale_ppm, doubl
             //  Create the quilt
             if(ChartData && ChartData->IsValid())
             {
+                  int current_db_index = -1;
+                  if(pCurrentStack)
+                        current_db_index = pCurrentStack->GetCurrentEntrydbIndex();         // capture the current
+
                   ChartData->BuildChartStack(pCurrentStack, lat, lon);
+                  pCurrentStack->SetCurrentEntryFromdbIndex(current_db_index);
+
 
                   //   Check to see if the current quilt reference chart is in the new stack
                   int current_ref_stack_index = -1;
