@@ -6139,36 +6139,26 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                   GetCanvasPointPix ( td->Lat, td->Lon, &TargetPoint );
                   GetCanvasPointPix ( pred_lat, pred_lon, &PredPoint );
 
-                        //  Calculate the relative angle for this chart orientation
-                        //  Exception:  if speed is very low, force the target symbol to be rendered at COG 000 (North)
-                        //  Another exception:  if g_ShowCOG_Mins is zero, we'll need to use a dummy value to get the
-                        //  angle for symbolization.  Say 5 minutes.
+                  //  Calculate the relative angle for this chart orientation
+                  //    Use a 100 pixel vector to calculate angle
+                  double angle_distance_nm = (100. / GetVP().view_scale_ppm) / 1852.;
+                  double angle_lat, angle_lon;
+                  wxPoint AnglePoint;
+                  ll_gc_ll ( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
+                  GetCanvasPointPix ( angle_lat, angle_lon, &AnglePoint );
 
                   double theta;
-                  wxPoint PredPointAngleCalc;
 
-                  if(g_ShowCOG_Mins > 0)
-                  {
-                        PredPointAngleCalc = PredPoint;
-                  }
-                  else
-                  {
-                        double pred_lat_dummy, pred_lon_dummy;
-                        ll_gc_ll ( td->Lat, td->Lon, td->COG, target_sog * 5.0 / 60., &pred_lat_dummy, &pred_lon_dummy );
-                        GetCanvasPointPix ( pred_lat_dummy, pred_lon_dummy, &PredPointAngleCalc );
-                  }
-
-
-                  if( abs( PredPointAngleCalc.x - TargetPoint.x ) > 0 )
+                  if( abs( AnglePoint.x - TargetPoint.x ) > 0 )
                   {
                         if(target_sog > g_ShowMoored_Kts)
-                              theta = atan2 ( (double)( PredPointAngleCalc.y - TargetPoint.y ), (double)( PredPointAngleCalc.x - TargetPoint.x ) );
+                              theta = atan2 ( (double)( AnglePoint.y - TargetPoint.y ), (double)( AnglePoint.x - TargetPoint.x ) );
                         else
                               theta = -PI / 2;
                   }
                   else
                   {
-                        if( PredPointAngleCalc.y > TargetPoint.y)
+                        if( AnglePoint.y > TargetPoint.y)
                               theta =  PI / 2.;             // valid COG 180
                         else
                               theta = -PI / 2.;            //  valid COG 000 or speed is too low to resolve course
@@ -11931,7 +11921,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           char render_string[80];
           strncpy(render_string, (char *)glGetString(GL_RENDERER), 79);
           m_renderer = wxString( render_string, wxConvUTF8 );
-          printf("%s\n", render_string);
+//          printf("%s\n", render_string);
 
           wxString msg;
           msg.Printf(_T("OpenGL-> Renderer String: "));
@@ -11940,12 +11930,11 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
                       ;
         //  This little hack fixes a problem seen with some Intel 945 graphics chips
         //  We need to not do anything that requires (some) complicated stencil operations.
-        //  Note that this unfortunately eliminates S52 AreaPattern primitives.....
 
           bool bad_stencil_code = false;
-          if(GetRendererString().Find(_T("945G 20061017")) != wxNOT_FOUND)
+          if(GetRendererString().Find(_T("Intel")) != wxNOT_FOUND)
           {
-                wxLogMessage(_T("OpenGL-> Detected potential i945G renderer bug, disabling stencil buffer"));
+                wxLogMessage(_T("OpenGL-> Detected Intel renderer, disabling stencil buffer"));
                 bad_stencil_code = true;
           }
 
@@ -11962,7 +11951,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           GLboolean stencil = glIsEnabled(GL_STENCIL_TEST);
           int sb;
           glGetIntegerv(GL_STENCIL_BITS, &sb);
-          printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
+  //        printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
           glDisable(GL_STENCIL_TEST);
 
 
@@ -12038,21 +12027,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           else
                 wxLogMessage(_T("OpenGL-> Using Depth buffer clipping"));
 
-/*
-          // determine max texture size
-          glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_dimension);
-
-          while (max_texture_dimension) {
-               glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGB,
-                            max_texture_dimension, max_texture_dimension,
-                            0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-               GLint width;
-               glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-               if(width != 0)
-                    break;
-               max_texture_dimension /= 2;
-          }
-*/
 
           /* we upload non-aligned memory */
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -12067,7 +12041,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           wxString str;
           str.Printf(_T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
           wxLogMessage(str);
-          printf("  m_tex_max_res: %d\n", m_tex_max_res);
+//          printf("  m_tex_max_res: %d\n", m_tex_max_res);
 
           m_bsetup = true;
 //          g_bDebugOGL = true;
