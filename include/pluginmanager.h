@@ -174,6 +174,7 @@ public:
       void SendNMEASentenceToAllPlugIns(wxString &sentence);
       void SendPositionFixToAllPlugIns(GenericPosDat *ppos);
       void SendAISSentenceToAllPlugIns(wxString &sentence);
+      void SendMessageToAllPlugins(wxString &message_id, wxString &message_body);
 
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
@@ -201,6 +202,7 @@ private:
 
       int               m_plugin_tool_id_next;
       int               m_plugin_menu_item_id_next;
+      wxBitmap          m_cached_overlay_bm;
 
  //     opencpn_plugin    *m_plugin_base;
 

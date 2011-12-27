@@ -39,7 +39,7 @@
 #define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    5
+#define     MY_API_VERSION_MINOR    6
 
 #include "../../../include/ocpn_plugin.h"
 
@@ -70,7 +70,7 @@ public:
       wxString GetLongDescription();
 
 //    The required override PlugIn Methods
-      bool RenderOverlay(ocpnDC &dc, PlugIn_ViewPort *vp);
+      bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
 
 

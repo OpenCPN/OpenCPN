@@ -200,7 +200,7 @@ class GRIBOverlayFactory
             ~GRIBOverlayFactory();
 
             void SetGribRecordSet(GribRecordSet *pGribRecordSet);
-            bool RenderGribOverlay( ocpnDC &dc, PlugIn_ViewPort *vp );
+            bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
             bool IsReadyToRender(){ return m_bReadyToRender; }
             void Reset();
 
@@ -214,23 +214,23 @@ class GRIBOverlayFactory
             void EnableRenderSeaCurrent(bool b_rend){ m_ben_SeaCurrent = b_rend; }
 
       private:
-            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribPressure(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribSigWh(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribWvDir(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribCRAIN(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribSeaTemp(GribRecord *pGR, ocpnDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, ocpnDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribPressure(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribSigWh(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribWvDir(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribCRAIN(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribSeaTemp(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
+            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
 
-            void drawWindArrowWithBarbs(ocpnDC &dc, int x, int y, double vx, double vy, bool south, wxColour arrowColor);
-            void drawWaveArrow(ocpnDC &dc, int i, int j, double dir, wxColour arrowColor);
+            void drawWindArrowWithBarbs(wxDC &dc, int x, int y, double vx, double vy, bool south, wxColour arrowColor);
+            void drawWaveArrow(wxDC &dc, int i, int j, double dir, wxColour arrowColor);
 
-            void drawTransformedLine( ocpnDC &dc, wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
+            void drawTransformedLine( wxDC &dc, wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
 
-            void drawPetiteBarbule(ocpnDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
-            void drawGrandeBarbule(ocpnDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
-            void drawTriangle(ocpnDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawPetiteBarbule(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawGrandeBarbule(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawTriangle(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
 
             wxColour GetGraphicColor(double val, double val_max);
             wxColour GetQuickscatColor(double val);

@@ -183,9 +183,10 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                               case 102:
                               case 103:
                               case 104:
-                                    break;      // incompatible
-
                               case 105:   // New PlugIn class definition in Version 2.4 Beta,
+                                          break;      // incompatible
+
+                              case 106:   // New PlugIn class definition in Version 2.4 Beta,
                                     bver_ok = true;
                                     break;
                               default:
@@ -467,9 +468,33 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                   if(pic->m_cap_flag & WANTS_OVERLAY_CALLBACK)
                   {
                         PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
-                        wxMemoryDC *pmdc = wxDynamicCast(dc.GetDC(), wxMemoryDC);
-                        if(pmdc)
-                              pic->m_pplugin->RenderOverlay(pmdc, &pivp);
+
+                        wxDC *pdc = dc.GetDC();
+                        if(pdc)                       // not in OpenGL mode
+                        {
+                             pic->m_pplugin->RenderOverlay(*pdc, &pivp);
+                        }
+                        else
+                        {
+                              if((m_cached_overlay_bm.GetWidth() != vp.pix_width) || (m_cached_overlay_bm.GetHeight() != vp.pix_height))
+                                    m_cached_overlay_bm.Create(vp.pix_width, vp.pix_height, -1);
+
+                              wxMemoryDC mdc;
+                              mdc.SelectObject ( m_cached_overlay_bm );
+                              mdc.SetBackground ( *wxBLACK_BRUSH );
+                              mdc.Clear();
+
+                              bool b_rendered = pic->m_pplugin->RenderOverlay(mdc, &pivp);
+                              mdc.SelectObject(wxNullBitmap);
+
+                              if(b_rendered)
+                              {
+                                    wxMask *p_msk = new wxMask(m_cached_overlay_bm, wxColour(0,0,0));
+                                    m_cached_overlay_bm.SetMask(p_msk);
+
+                                    dc.DrawBitmap(m_cached_overlay_bm, 0, 0, true);
+                              }
+                        }
                   }
             }
       }
@@ -617,6 +642,20 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
             }
       }
 }
+
+void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_PLUGIN_MESSAGING)
+                        pic->m_pplugin->SetPluginMessage(message_id, message_body);
+            }
+      }
+}
+
 
 void PlugInManager::SendAISSentenceToAllPlugIns(wxString &sentence)
 {
@@ -1109,6 +1148,12 @@ wxArrayString GetChartDBDirArrayString()
 {
       return ChartData->GetChartDirArrayString();
 }
+
+void SendPluginMessage( wxString message_id, wxString message_body )
+{
+      s_ppim->SendMessageToAllPlugins(message_id, message_body);
+}
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
@@ -1183,7 +1228,7 @@ void opencpn_plugin::OnToolbarToolCallback(int id)
 void opencpn_plugin::OnContextMenuItemCallback(int id)
 {}
 
-bool opencpn_plugin::RenderOverlay(wxMemoryDC *pdc, PlugIn_ViewPort *vp)
+bool opencpn_plugin::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
@@ -1210,6 +1255,9 @@ wxArrayString opencpn_plugin::GetDynamicChartClassNameArray()
       wxArrayString array;
       return array;
 }
+
+void opencpn_plugin::SetPluginMessage(wxString &message_id, wxString &message_body)
+{}
 
 
 //          Helper and interface classes

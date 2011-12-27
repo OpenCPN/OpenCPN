@@ -33,7 +33,7 @@ Dessin des données GRIB (avec QT)
 #include "grib_pi.h"
 
 class ViewPort;
-class wxMemoryDC;
+class wxDC;
 
 class Segment;
 WX_DECLARE_LIST(Segment, MySegList);
@@ -109,9 +109,9 @@ class IsoLine
         ~IsoLine();
 
 
-        void drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
 
-        void drawIsoLineLabels(ocpnDC &dc, wxColour couleur, PlugIn_ViewPort *vp,
+        void drawIsoLineLabels(wxDC &dc, wxColour couleur, PlugIn_ViewPort *vp,
                                 int density, int first, double coef);
 
         int getNbSegments()     {return trace.size();}

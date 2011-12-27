@@ -50,15 +50,13 @@
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           5
+#define API_VERSION_MINOR           6
 
 //    Fwd Definitions
 class       wxFileConfig;
 class       wxNotebook;
 class       wxFont;
 class       wxAuiManager;
-
-class       ocpnDC;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -79,6 +77,7 @@ class       ocpnDC;
 #define     WANTS_PREFERENCES                   0x00000800
 #define     INSTALLS_PLUGIN_CHART               0x00001000
 #define     WANTS_ONPAINT_VIEWPORT              0x00002000
+#define     WANTS_PLUGIN_MESSAGING              0x00004000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -369,7 +368,7 @@ public:
 
       virtual void ShowPreferencesDialog( wxWindow* parent );
 
-      virtual bool RenderOverlay(wxMemoryDC *pdc, PlugIn_ViewPort *vp);
+      virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
@@ -386,6 +385,7 @@ public:
       virtual void UpdateAuiStatus(void);
 
       virtual wxArrayString GetDynamicChartClassNameArray(void);
+      virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 
  };
 

@@ -28,8 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "georef.h"
 #include <wx/graphics.h>
 
-#include <ocpndc.h>
-
 #include "IsoLine.h"
 
 static void GenerateSpline(int n, wxPoint points[]);
@@ -379,13 +377,21 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
             return;
 
       wxPen ppISO ( isoLineColor, 2 );
+
+#if wxUSE_GRAPHICS_CONTEXT
+      wxMemoryDC *pmdc;
+//      pmdc = dynamic_cast<wxMemoryDC*>(&dc);
+      pmdc= wxDynamicCast(&dc, wxMemoryDC);
+      wxGraphicsContext *pgc = wxGraphicsContext::Create(*pmdc);
+      pgc->SetPen(ppISO);
+#endif
 
       dc.SetPen(ppISO);
 
@@ -413,10 +419,14 @@ void IsoLine::drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, boo
 ///                         0, vp->pix_width, 0, vp->pix_height );
 ///            if ( res != Invisible )
              {
-                  if(bHiDef)
-                        dc.StrokeLine(ab.x, ab.y, cd.x, cd.y);
+#if wxUSE_GRAPHICS_CONTEXT
+                  if(bHiDef && pgc)
+                        pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
                   else 
                         dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
+#else
+                  dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
+#endif
              }
 
         }
@@ -557,11 +567,15 @@ void IsoLine::drawIsoLine(ocpnDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, boo
 
       delete[] pPoints;
 
+#if wxUSE_GRAPHICS_CONTEXT
+      delete pgc;
+#endif
+
 }
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(ocpnDC &dc, wxColour couleur,
+void IsoLine::drawIsoLineLabels(wxDC &dc, wxColour couleur,
                                 PlugIn_ViewPort *vp,
                             int density, int first, double coef)
 {
