@@ -2754,26 +2754,36 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                         int xp = x;
 
                   //  Add in the offsets, specified in units of nominal font height
-                        yp += ptext->yoffs * ( h - descent );
-                        xp += ptext->xoffs * ( h - descent );
-
-                        glTranslatef(xp, yp, 0);
-
-                        glScalef(1.0, -1.0, 1.0);
-
-                        glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
-                        glScalef(1.5, 1.5, 1.0);
-                        txfRenderString(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len());
-                        glPopMatrix();
-
-                        glDisable(GL_TEXTURE_2D);
-                        glDisable(GL_ALPHA_TEST);
-                        glDisable(GL_BLEND);
+                        yp += ptext->yoffs * ptext->bsize; //( h - descent );
+                        xp += ptext->xoffs * ptext->bsize; //( h - descent );
 
                         pRectDrawn->SetX ( xp );
                         pRectDrawn->SetY ( yp );
                         pRectDrawn->SetWidth ( w );
                         pRectDrawn->SetHeight ( h );
+
+                        if ( bCheckOverlap )
+                        {
+                              if ( CheckTextRectList ( *pRectDrawn, pobj ) )
+                                    bdraw = false;
+                        }
+
+                        if(bdraw)
+                        {
+                              glTranslatef(xp, yp, 0);
+
+                              glScalef(1.0, -1.0, 1.0);
+
+                              glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
+                              glScalef(1.5, 1.5, 1.0);
+                              txfRenderString(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len());
+                        }
+
+                        glPopMatrix();
+
+                        glDisable(GL_TEXTURE_2D);
+                        glDisable(GL_ALPHA_TEST);
+                        glDisable(GL_BLEND);
                   }
             }
             else
