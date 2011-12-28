@@ -558,6 +558,7 @@ public:
 protected:
       void RenderQuiltViewGL(ViewPort &vp, wxRegion Region);
       void BuildFBO(void);
+      void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
 
       int m_cacheinvalid;
       int max_texture_dimension;

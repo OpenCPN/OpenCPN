@@ -12264,138 +12264,7 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       int tex_dim = 512;//max_texture_dimension;
       GrowData(3 * tex_dim * tex_dim);
 
-      if(g_b_useStencil)
-      {
-            glPushMatrix();
-
-            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
-            {
-
-      //    Shift texture drawing positions to account for the larger chart rectangle
-      //    needed to cover the screen on rotated images
-                  double w = vp.pix_width;
-                  double h = vp.pix_height;
-
-                  double angle = vp.rotation;
-                  angle -= vp.skew;
-
-      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
-                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
-
-                  glRotatef(angle * 180. / PI, 0, 0, 1);
-
-                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
-            }
-
-            //    Create a stencil buffer for clipping to the region
-            glEnable (GL_STENCIL_TEST);
-            glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
-            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
-            glClear(GL_STENCIL_BUFFER_BIT);
-
-            //    We are going to write "1" into the stencil buffer wherever the region is valid
-            glStencilFunc (GL_ALWAYS, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
-            //    Decompose the region into rectangles, and draw as quads
-            wxRegionIterator clipit ( region );
-            while ( clipit )
-            {
-                  wxRect rect = clipit.GetRect();
-
-                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
-
-                  glBegin(GL_QUADS);
-
-                  glVertex2f(rect.x, rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y);
-                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
-                  glVertex2f(rect.x, rect.y + rect.height);
-                  glEnd();
-
-                  clipit ++ ;
-            }
-
-            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-            glStencilFunc (GL_EQUAL, 1, 1);
-            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
-
-            glPopMatrix();
-
-      }
-      else              //  Use depth buffer for clipping
-      {
-            glPushMatrix();
-
-            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
-            {
-
-      //    Shift texture drawing positions to account for the larger chart rectangle
-      //    needed to cover the screen on rotated images
-                  double w = vp.pix_width;
-                  double h = vp.pix_height;
-
-                  double angle = vp.rotation;
-                  angle -= vp.skew;
-
-      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
-                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
-
-                  glRotatef(angle * 180. / PI, 0, 0, 1);
-
-                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
-            }
-
-            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
-            glDepthFunc(GL_ALWAYS);  // to ensure everything you draw passes
-            glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
-            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
-
-            glClear(GL_DEPTH_BUFFER_BIT); // for a fresh start
-
-            glColor3f(1,0,0);
-
-            //    Decompose the region into rectangles, and draw as quads
-            //    With z = 1
-            wxRegionIterator clipit ( region );
-            while ( clipit )
-            {
-                  wxRect rect = clipit.GetRect();
-
-                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
-
-                  glBegin(GL_QUADS);
-
-                  // dep buffer clear = 1
-                  // 1 makes 0 in dep buffer, works
-                  // 0 make .5 in depth buffer
-                  // -1 makes 1 in dep buffer
-
-                  //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-                  //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-                  //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-                  glVertex3f(rect.x, rect.y, 0.5);
-                  glVertex3f(rect.x + rect.width , rect.y, 0.5);
-                  glVertex3f(rect.x + rect.width , rect.y + rect.height, 0.5);
-                  glVertex3f(rect.x, rect.y + rect.height, 0.5);
-                  glEnd();
-
-                  clipit ++ ;
-            }
-
-
-            glDepthFunc(GL_GREATER);                          // Set the test value
-            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
-            glDepthMask(GL_FALSE);                            // disable depth buffer
-
-            glPopMatrix();
-
-      }
-
-
+      SetClipRegion(vp, region, false);         // no need to clear
 
       //    Look for the chart texture hashmap in the member chart hashmap
       ChartPointerHashType::iterator it = m_chart_hash.find(chart);
@@ -12815,50 +12684,7 @@ void glChartCanvas::render()
      ViewPort VPoint = cc1->VPoint;
 
      wxRegion ru = GetUpdateRegion();
-/*
-     if(!ru.Ok())
-           ru.Union( 0,0,VPoint.pix_width, VPoint.pix_height );
 
-//#ifdef __WXMSW__
-     ru.Union( 0,0,cc1->GetVP().pix_width, cc1->GetVP().pix_height );
-//#endif
-
-        //    In case Console is shown, set up dc clipper and blt iterator regions
-     wxRegion rgn_chart ( 0,0,VPoint.pix_width, VPoint.pix_height );
-        int conx, cony, consx, consy;
-        console->GetPosition ( &conx, &cony );
-        console->GetSize ( &consx, &consy );
-        wxRegion rgn_console ( conx, cony, consx - 1, consy - 1 );
-
-        if ( console->IsShown() )
-        {
-                rgn_chart.Subtract ( rgn_console );               // For dc Drawing clipping
-                ru.Subtract ( rgn_console );                      // for Blit updating
-        }
-
-        //    Same for Thumbnail window
-        if ( pthumbwin )
-        {
-                int thumbx, thumby, thumbsx, thumbsy;
-                pthumbwin->GetPosition ( &thumbx, &thumby );
-                pthumbwin->GetSize ( &thumbsx, &thumbsy );
-                wxRegion rgn_thumbwin ( thumbx, thumby, thumbsx - 1, thumbsy - 1 );
-
-                if ( pthumbwin->IsShown() )
-                {
-                        rgn_chart.Subtract ( rgn_thumbwin );
-                        ru.Subtract ( rgn_thumbwin );
-                }
-        }
-
-        ArrayOfRect rect_array = gFrame->GetCanvasReserveRects();
-        for(unsigned int ir=0 ; ir < rect_array.GetCount() ; ir++)
-        {
-              wxRect r = rect_array.Item(ir);
-              rgn_chart.Subtract ( r );
-              ru.Subtract ( r );
-        }
-*/
         //  Is this viewpoint the same as the previously painted one?
         bool b_newview = true;;
         if((m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm)
@@ -12880,44 +12706,6 @@ void glChartCanvas::render()
         wxRegion chart_get_region(wxRect(0,0,svp.pix_width, svp.pix_height));
         ocpnDC gldc(*this);
 
-//    Render the WVSChart vector first
-
-        wxRegion CValidRegion;
-        if(!VPoint.b_quilt)
-              // Make a region covering the current chart on the canvas
-              Current_Ch->GetValidCanvasRegion ( VPoint, &CValidRegion );
-        else
-              CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
-
-      //    Copy current canvas region
-        wxRegion WVSRegion ( chart_get_region );
-
-      //    Remove the valid chart area
-        if(CValidRegion.IsOk())
-              WVSRegion.Subtract ( CValidRegion );
-
-      //    Draw the WVSChart only in the areas NOT covered by the current chart view
-      //    And, only if the region is ..not.. empty
-      //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
-        if ( !WVSRegion.IsEmpty() && ( fabs (cc1->GetVP().skew) < .01 )
-             && (cc1->GetVP().view_scale_ppm > 5e-05) )
-        {
-             // clear out region for wvs data
-             wxRegionIterator wvsr ( WVSRegion);
-             while ( wvsr )
-             {
-                  wxRect rect = wvsr.GetRect();
-                  glColor3f(0, 0, 0);
-                  glBegin(GL_QUADS);
-                  glVertex2f(rect.x, rect.y);  glVertex2f(rect.x+rect.width, rect.y);
-                  glVertex2f(rect.x+rect.width, rect.y+rect.height);  glVertex2f(rect.x, rect.y+rect.height);
-                  glEnd();
-                  wvsr++;
-             }
-             //   And then render WVS
-             cc1->pwvs_chart->RenderViewOnDC ( gldc, cc1->GetVP() );
-//             cc1->pwvs_chart->RenderRegionViewOnGL();//RenderViewOnDC ( gldc, cc1->GetVP() );
-        }
 
         int w, h;
         GetClientSize(&w, &h);
@@ -13244,6 +13032,36 @@ void glChartCanvas::render()
               }
         }
 
+//    Render the WVSChart
+
+        wxRegion CValidRegion;
+        if(!VPoint.b_quilt)
+              // Make a region covering the current chart on the canvas
+              Current_Ch->GetValidCanvasRegion ( VPoint, &CValidRegion );
+        else
+              CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
+
+      //    Copy current canvas region
+        wxRegion WVSRegion ( chart_get_region );
+
+      //    Remove the valid chart area
+        if(CValidRegion.IsOk())
+              WVSRegion.Subtract ( CValidRegion );
+
+      //    Draw the WVSChart only in the areas NOT covered by the current chart view
+      //    And, only if the region is ..not.. empty
+      //    (exp.) only draw WVS if scale is sufficiently large, since it is so slow for large windows
+        if ( !WVSRegion.IsEmpty() && ( fabs (cc1->GetVP().skew) < .01 )
+              && (cc1->GetVP().view_scale_ppm > 5e-05) )
+        {
+              SetClipRegion(VPoint, WVSRegion, true);       // clear background
+
+              cc1->pwvs_chart->RenderViewOnDC ( gldc, cc1->GetVP() );
+
+              glDisable(GL_STENCIL_TEST);
+              glDisable(GL_DEPTH_TEST);
+
+        }
 
 //    Now render overlay objects
         cc1->DrawOverlayObjects ( gldc, ru );
@@ -13313,6 +13131,157 @@ void glChartCanvas::GrowData(int size)
               tmp = NULL;
           }
      }
+}
+
+void glChartCanvas::SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear)
+{
+      if(g_b_useStencil)
+      {
+            glPushMatrix();
+
+            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
+            {
+
+      //    Shift texture drawing positions to account for the larger chart rectangle
+      //    needed to cover the screen on rotated images
+                  double w = vp.pix_width;
+                  double h = vp.pix_height;
+
+                  double angle = vp.rotation;
+                  angle -= vp.skew;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+                  glRotatef(angle * 180. / PI, 0, 0, 1);
+
+                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
+            }
+
+            //    Create a stencil buffer for clipping to the region
+            glEnable (GL_STENCIL_TEST);
+            glStencilMask(0x1);                 // write only into bit 0 of the stencil buffer
+            glClear(GL_STENCIL_BUFFER_BIT);
+
+      //    As a convenience, while we are creating the stencil or depth mask,
+      //    also clear the background if selected
+            if(b_clear)
+            {
+                  glColor3f(0,0,0);
+                  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // enable color buffer
+            }
+            else
+                  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+
+            //    We are going to write "1" into the stencil buffer wherever the region is valid
+            glStencilFunc (GL_ALWAYS, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            //    Decompose the region into rectangles, and draw as quads
+            wxRegionIterator clipit ( region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+
+                  glBegin(GL_QUADS);
+
+                  glVertex2f(rect.x, rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y);
+                  glVertex2f(rect.x + rect.width , rect.y + rect.height);
+                  glVertex2f(rect.x, rect.y + rect.height);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+            //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+            glStencilFunc (GL_EQUAL, 1, 1);
+            glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+
+            glPopMatrix();
+
+      }
+      else              //  Use depth buffer for clipping
+      {
+            glPushMatrix();
+
+            if(((fabs(vp.rotation) > 0.01)) || (g_bskew_comp && (fabs(vp.skew) > 0.01)))
+            {
+
+      //    Shift texture drawing positions to account for the larger chart rectangle
+      //    needed to cover the screen on rotated images
+                  double w = vp.pix_width;
+                  double h = vp.pix_height;
+
+                  double angle = vp.rotation;
+                  angle -= vp.skew;
+
+      //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+                  double ddx = (w * cos(-angle) - h * sin(-angle) - w)/2;
+                  double ddy = (h * cos(-angle) + w * sin(-angle) - h)/2;
+
+                  glRotatef(angle * 180. / PI, 0, 0, 1);
+
+                  glTranslatef(ddx, ddy, 0);                 // post rotate translation
+            }
+
+            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
+            glDepthFunc(GL_ALWAYS);  // to ensure everything you draw passes
+            glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
+
+            glClear(GL_DEPTH_BUFFER_BIT); // for a fresh start
+
+      //    As a convenience, while we are creating the stencil or depth mask,
+      //    also clear the background if selected
+            if(b_clear)
+            {
+                  glColor3f(0,0,0);
+                  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // enable color buffer
+            }
+            else
+                  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+            //    Decompose the region into rectangles, and draw as quads
+            //    With z = 1
+            wxRegionIterator clipit ( region );
+            while ( clipit )
+            {
+                  wxRect rect = clipit.GetRect();
+
+                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+
+                  glBegin(GL_QUADS);
+
+                  // dep buffer clear = 1
+                  // 1 makes 0 in dep buffer, works
+                  // 0 make .5 in depth buffer
+                  // -1 makes 1 in dep buffer
+
+                  //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
+                  //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
+                  //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
+                  glVertex3f(rect.x, rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y, 0.5);
+                  glVertex3f(rect.x + rect.width , rect.y + rect.height, 0.5);
+                  glVertex3f(rect.x, rect.y + rect.height, 0.5);
+                  glEnd();
+
+                  clipit ++ ;
+            }
+
+
+            glDepthFunc(GL_GREATER);                          // Set the test value
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+            glDepthMask(GL_FALSE);                            // disable depth buffer
+
+            glPopMatrix();
+
+      }
 }
 
 //------------------------------------------------------------------------------
