@@ -133,6 +133,9 @@ bool grib_pi::DeInit(void)
       if(m_pGribDialog)
             m_pGribDialog->Close();
 
+      delete _img_grib_pi;
+      delete _img_grib;
+
       delete m_pGRIBOverlayFactory;
       return true;
 }
