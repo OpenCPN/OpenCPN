@@ -158,6 +158,7 @@ static double         s_transform_x_rate;
 static double         s_transform_x_origin;
 static double         s_transform_y_rate;
 static double         s_transform_y_origin;
+wxArrayPtrVoid        *s_pCombineVertexArray;
 
 static const double   CM93_semimajor_axis_meters = 6378388.0;            // CM93 semimajor axis
 
@@ -1162,6 +1163,9 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     s_buf_len = NINIT_BUFFER_LEN * 2;
     s_buf_idx = 0;
 
+      //    Create an array to hold pointers to allocated vertices created by "combine" callback,
+      //    so that they may be deleted after tesselation.
+    s_pCombineVertexArray = new wxArrayPtrVoid;
 
     //  Create tesselator
     GLUtessobj = gluNewTess();
@@ -1471,6 +1475,11 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 
     free (geoPt);
 
+    //      Free up any "Combine" vertices created
+    for(unsigned int i = 0; i < s_pCombineVertexArray->GetCount() ; i++)
+          free (s_pCombineVertexArray->Item(i));
+    delete s_pCombineVertexArray;
+
     m_bOK = true;
 
     return 0;
@@ -1529,6 +1538,9 @@ int PolyTessGeo::BuildTessGL(void)
       s_buf_len = NINIT_BUFFER_LEN * 2;
       s_buf_idx = 0;
 
+      //    Create an array to hold pointers to allocated vertices created by "combine" callback,
+      //    so that they may be deleted after tesselation.
+      s_pCombineVertexArray = new wxArrayPtrVoid;
 
     //  Create tesselator
       GLUtessobj = gluNewTess();
@@ -1840,6 +1852,12 @@ int PolyTessGeo::BuildTessGL(void)
       //    And will be freed on dtor of this object
       delete m_pxgeom;
 
+      //      Free up any "Combine" vertices created
+      for(unsigned int i = 0; i < s_pCombineVertexArray->GetCount() ; i++)
+            free (s_pCombineVertexArray->Item(i));
+      delete s_pCombineVertexArray;
+
+
       m_pxgeom = NULL;
 
       m_bOK = true;
@@ -2017,7 +2035,7 @@ void __CALL_CONVENTION combineCallback(GLdouble coords[3],
                      GLdouble *vertex_data[4],
                      GLfloat weight[4], GLdouble **dataOut )
 {
-    GLdouble *vertex = new GLdouble[6] ;
+    GLdouble *vertex = (GLdouble *)malloc(6 * sizeof(GLdouble));
 
     vertex[0] = coords[0];
     vertex[1] = coords[1];
@@ -2025,6 +2043,8 @@ void __CALL_CONVENTION combineCallback(GLdouble coords[3],
     vertex[3] = vertex[4] = vertex[5] = 0. ; //01/13/05 bugfix
 
     *dataOut = vertex;
+
+    s_pCombineVertexArray->Add(vertex);
 }
 
 
