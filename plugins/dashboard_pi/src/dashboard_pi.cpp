@@ -263,11 +263,24 @@ bool dashboard_pi::DeInit(void)
             }
       }
 
+      for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++)
+      {
+            DashboardWindowContainer *pdwc = m_ArrayOfDashboardWindow.Item(i);
+            delete pdwc;
+      }
+
       delete g_pFontTitle;
       delete g_pFontData;
       delete g_pFontLabel;
       delete g_pFontSmall;
-      
+
+	delete _img_dashboard_pi;
+      delete _img_dashboard;
+	delete _img_dial;
+	delete _img_instrument;
+	delete _img_minus;
+	delete _img_plus;
+
       return true;
 }
 
@@ -1575,6 +1588,15 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
 //wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
       itemBoxSizer = new wxBoxSizer(wxVERTICAL);
       SetSizer(itemBoxSizer);
+}
+
+DashboardWindow::~DashboardWindow()
+{
+      for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++)
+      {
+            DashboardInstrumentContainer *pdic = m_ArrayOfInstrument.Item(i);
+            delete pdic;
+      }      
 }
 
 void DashboardWindow::SetColorScheme(PI_ColorScheme cs)

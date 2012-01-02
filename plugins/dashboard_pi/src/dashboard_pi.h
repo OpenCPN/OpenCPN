@@ -73,6 +73,7 @@ class DashboardWindowContainer
             DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, int width, wxArrayInt inst) {
                   m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_iInstrumentWidth = width; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
 
+            ~DashboardWindowContainer(){}
             DashboardWindow              *m_pDashboardWindow;
             bool                          m_bIsVisible; // Only used for config
             bool                          m_bIsDeleted; // Only used for config
@@ -87,6 +88,7 @@ class DashboardInstrumentContainer
       public:
             DashboardInstrumentContainer(int id, DashboardInstrument *instrument, int capa){
                   m_ID = id; m_pInstrument = instrument; m_cap_flag = capa; }
+            ~DashboardInstrumentContainer(){ delete m_pInstrument; }
 
             DashboardInstrument    *m_pInstrument;
             int                     m_ID;
@@ -230,7 +232,7 @@ class DashboardWindow : public wxWindow
 {
 public:
       DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
-      ~DashboardWindow(){}
+      ~DashboardWindow();
 
       void SetColorScheme(PI_ColorScheme cs);
       void SetSizerOrientation( int orient );
