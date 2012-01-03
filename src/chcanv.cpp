@@ -8918,6 +8918,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                                 SetCursor(wxCURSOR_ARROW);
                                 pdialog->ShowModal();
                                 gFrame->SurfaceToolbar();
+                                gFrame->Raise();
 
                                 delete rule_list;
                                 delete pdialog;
