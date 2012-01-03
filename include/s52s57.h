@@ -100,7 +100,8 @@ enum{
       ID_wxBitmap       = 1,
       ID_RGBA,
       ID_GL_PATT_SPEC,
-      ID_RGB_PATT_SPEC
+      ID_RGB_PATT_SPEC,
+      ID_GLIST
 
 };
 
@@ -163,6 +164,7 @@ typedef struct _Rule{
    int     parm4;
    int     parm5;
    int     parm6;
+   int     parm7;
    void    *pixelPtr;                  // opaque pointer
 
    }Rule;

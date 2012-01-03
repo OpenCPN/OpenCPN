@@ -2070,6 +2070,15 @@ bool s52plib::S52_flush_Plib()
       delete ColourHashTableArray;
 
 
+      //    OpenGL Hashmaps
+      CARC_Hash::iterator ita;
+      for( ita = m_CARC_hashmap.begin(); ita != m_CARC_hashmap.end(); ++ita )
+      {
+            GLuint list = ita->second;
+            glDeleteLists(list, 1);
+      }
+      m_CARC_hashmap.clear();
+
 
       // destroy look-up tables
       DestroyLUPArray ( lineLUPArray );
@@ -5249,54 +5258,77 @@ int s52plib::RenderMPS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-
       char *str = ( char* ) rules->INSTstr;
 
       //    extract the parameters from the string
+      //    And creating a unique string hash as we go
       wxString inst ( str, wxConvUTF8 );
+      wxString carc_hash;
 
-      wxStringTokenizer tkz ( inst, _T ( "," ) );
+      wxStringTokenizer tkz ( inst, _T ( ",;" ) );
 
       //    outline color
       wxString outline_color = tkz.GetNextToken();
+      carc_hash += outline_color;
+      carc_hash += _T(".");
 
       //    outline width
       wxString slong = tkz.GetNextToken();
       long outline_width;
       slong.ToLong ( &outline_width );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
       //    arc color
       wxString arc_color = tkz.GetNextToken();
+      carc_hash += arc_color;
+      carc_hash += _T(".");
 
       //    arc width
       slong = tkz.GetNextToken();
       long arc_width;
       slong.ToLong ( &arc_width );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
       //    sectr1
       slong = tkz.GetNextToken();
       double sectr1;
       slong.ToDouble ( &sectr1 );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
       //    sectr2
       slong = tkz.GetNextToken();
       double sectr2;
       slong.ToDouble ( &sectr2 );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
       //    arc radius
       slong = tkz.GetNextToken();
       long radius;
       slong.ToLong ( &radius );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
       //    sector radius
       slong = tkz.GetNextToken();
       long sector_radius;
       slong.ToLong ( &sector_radius );
+      carc_hash += slong;
+      carc_hash += _T(".");
 
+      slong.Printf(_T("%d"),m_colortable_index);
+      carc_hash += slong;
 
       int width;
       int height;
       int rad;
+      int bm_width;
+      int bm_height;
+      int bm_orgx;
+      int bm_orgy;
 
       Rule *prule = rules->razRule;
 
@@ -5350,10 +5382,6 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //      Here is a goofy way of computing the dc drawing extents exactly
             //      Draw a series of fat line segments approximating the arc using dc.DrawLine()
             //      This will properly establish the drawing box in the dc
-            int bm_width;
-            int bm_height;
-            int bm_orgx;
-            int bm_orgy;
 
             int border_fluff = 4;                      // by how much should the blit bitmap be "fluffed"
             if ( fabs ( sectr2 - sectr1 ) != 360 )   // not necessary for all-round lights
@@ -5403,127 +5431,166 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             }
 
-            //    Draw the outer border
-            wxColour color = S52_getwxColour ( outline_color );
+            wxBitmap *sbm = NULL;
 
-            wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, outline_width, wxSOLID );
-            mdc.SetPen ( *pthispen );
-            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush ( color, wxTRANSPARENT );
-            mdc.SetBrush ( *pthisbrush );
-
-            mdc.DrawEllipticArc ( width/2 - rad, height/2 - rad, rad * 2, rad * 2, sb, se );
-
-            if ( arc_width )
+            //    Do not need to actually render the symbol for OpenGL mode
+            //    We just need the extents calculated above...
+            if(m_pdc)
             {
-                  wxColour colorb = S52_getwxColour ( arc_color );
+                  //    Draw the outer border
+                  wxColour color = S52_getwxColour ( outline_color );
 
-                  if(!colorb.IsOk())
-                        colorb = S52_getwxColour ( _T("CHMGD") );
-
-                  pthispen = wxThePenList->FindOrCreatePen ( colorb, arc_width, wxSOLID );
+                  wxPen *pthispen = wxThePenList->FindOrCreatePen ( color, outline_width, wxSOLID );
                   mdc.SetPen ( *pthispen );
+                  wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush ( color, wxTRANSPARENT );
+                  mdc.SetBrush ( *pthisbrush );
 
                   mdc.DrawEllipticArc ( width/2 - rad, height/2 - rad, rad * 2, rad * 2, sb, se );
 
-            }
-
-
-            mdc.SelectObject ( wxNullBitmap );
-
-
-            //          Get smallest containing bitmap
-            wxBitmap *sbm = new wxBitmap ( pbm->GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
-
-            delete pbm;
-
-
-            //      Make the mask
-            wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor );
-
-            //      Associate the mask with the bitmap
-            sbm->SetMask ( pmask );
-
-            // delete any old private data
-            if ( rules->razRule->parm0 && rules->razRule->pixelPtr )
-            {
-                  switch(rules->razRule->parm0)
+                  if ( arc_width )
                   {
-                        case ID_wxBitmap:
+                        wxColour colorb = S52_getwxColour ( arc_color );
+
+                        if(!colorb.IsOk())
+                              colorb = S52_getwxColour ( _T("CHMGD") );
+
+                        pthispen = wxThePenList->FindOrCreatePen ( colorb, arc_width, wxSOLID );
+                        mdc.SetPen ( *pthispen );
+
+                        mdc.DrawEllipticArc ( width/2 - rad, height/2 - rad, rad * 2, rad * 2, sb, se );
+
+                  }
+
+
+                  mdc.SelectObject ( wxNullBitmap );
+
+                  //          Get smallest containing bitmap
+                  sbm = new wxBitmap ( pbm->GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+
+                  delete pbm;
+
+                  //      Make the mask
+                  wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor );
+
+                  //      Associate the mask with the bitmap
+                  sbm->SetMask ( pmask );
+
+                  // delete any old private data
+                  if ( rules->razRule->parm0 && rules->razRule->pixelPtr )
+                  {
+                        switch(rules->razRule->parm0)
                         {
-                              wxBitmap *pbm = ( wxBitmap * ) ( rules->razRule->pixelPtr );
-                              delete pbm;
-                              rules->razRule->pixelPtr = NULL;
-                              rules->razRule->parm0 = 0;
-                              break;
-                        }
-                        case ID_RGBA:
-                        {
-                              unsigned char *p = ( unsigned char * ) ( rules->razRule->pixelPtr );
-                              free ( p );
-                              rules->razRule->pixelPtr = NULL;
-                              rules->razRule->parm0 = 0;
-                              break;
+                              case ID_wxBitmap:
+                              {
+                                    wxBitmap *pbm = ( wxBitmap * ) ( rules->razRule->pixelPtr );
+                                    delete pbm;
+                                    rules->razRule->pixelPtr = NULL;
+                                    rules->razRule->parm0 = 0;
+                                    break;
+                              }
+                              case ID_RGBA:
+                              {
+                                    unsigned char *p = ( unsigned char * ) ( rules->razRule->pixelPtr );
+                                    free ( p );
+                                    rules->razRule->pixelPtr = NULL;
+                                    rules->razRule->parm0 = 0;
+                                    break;
+                              }
                         }
                   }
             }
 
-            if(m_pdc)         // DC Render?
+            //      Save the bitmap ptr and aux parms in the rule
+            prule->pixelPtr = sbm;
+            prule->parm0 = ID_wxBitmap;
+            prule->parm1 = m_colortable_index;
+            prule->parm2 = bm_orgx - width/2;
+            prule->parm3 = bm_orgy - height/2;
+            prule->parm5 = bm_width;
+            prule->parm6 = bm_height;
+      }
+
+
+      if(!m_pdc)        // opengl
+      {
+            //    Is there not already an generated display list in the CARC_hashmap for this object?
+            if(m_CARC_hashmap.find(carc_hash) == m_CARC_hashmap.end())
             {
-                  //      Save the bitmap ptr and aux parms in the rule
-                  prule->pixelPtr = sbm;
-                  prule->parm0 = ID_wxBitmap;
-                  prule->parm1 = m_colortable_index;
-                  prule->parm2 = bm_orgx - width/2;
-                  prule->parm3 = bm_orgy - height/2;
-                  prule->parm5 = bm_width;
-                  prule->parm6 = bm_height;
-            }
-            else        // opengl
-            {
-                  //Make an image from the bitmap
-                  wxImage Image = sbm->ConvertToImage();
-                  delete sbm;                         // done with this
+                  // Generate a Display list
+                  GLuint carc_list = glGenLists (1);
+                  glNewList(carc_list, GL_COMPILE);
 
-                  //  Create an opengl compatible memory image
-                  unsigned char *d = Image.GetData();
-                  unsigned char *a = Image.GetAlpha();
+                  glEnable(GL_LINE_SMOOTH);
+                  glEnable(GL_BLEND);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-                  unsigned char mr, mg, mb;
-                  if(!Image.GetOrFindMaskColour(&mr, &mg, &mb) && !a)
-                        printf("trying to use mask to draw a bitmap without alpha or mask\n");
+                  rad = ( int ) ( radius * m_display_pix_per_mm );
 
-                  int w = Image.GetWidth();
-                  int h = Image.GetHeight();
+      //    Render the symbology as a zero based Display List
 
-                  unsigned char *e = (unsigned char *)malloc(w * h * 4);
-                  for(int y=0; y<h; y++)
+      //    Draw wide outline arc
+                  wxColour colorb = S52_getwxColour ( outline_color );
+                  glColor4ub(colorb.Red(), colorb.Green(), colorb.Blue(), 255);
+                  glLineWidth(outline_width);
+
+                  glBegin(GL_LINE_STRIP);
+                  for(double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a+=2*M_PI/200)
+                        glVertex2d(rad*sin(a), -rad*cos(a));
+                  glEnd();
+
+      //    Draw narrower color arc, overlaying the drawn outline.
+                  colorb = S52_getwxColour ( arc_color );
+                  glColor4ub(colorb.Red(), colorb.Green(), colorb.Blue(), 255);
+                  glLineWidth(arc_width);
+
+                  glBegin(GL_LINE_STRIP);
+                  for(double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a+=2*M_PI/200)
+                        glVertex2d(rad*sin(a), -rad*cos(a));
+                  glEnd();
+
+      //    Draw the sector legs
+                  if ( sector_radius > 0 )
                   {
-                        for(int x=0; x<w; x++)
-                        {
-                              unsigned char r, g, b;
-                              int off = (y*Image.GetWidth()+x);
-                              r = d[off*3 + 0];
-                              g = d[off*3 + 1];
-                              b = d[off*3 + 2];
+                        int leg_len = ( int ) ( sector_radius * m_display_pix_per_mm );
 
-                              e[off*4 + 0] = r;
-                              e[off*4 + 1] = g;
-                              e[off*4 + 2] = b;
+                        wxColour c = GetGlobalColor ( _T ( "CHBLK" ) );
+                        glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
+                        glLineWidth(1);
 
-                              e[off*4 + 3] = a ? a[off] :
-                                          ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
-                        }
+                        glLineStipple(1, 0x3F3F);
+                        glEnable(GL_LINE_STIPPLE);
+
+                        double a = ( sectr1-90 ) * PI / 180;
+                        int x =  ( int ) ( leg_len * cos ( a ) );
+                        int y =  ( int ) ( leg_len * sin ( a ) );
+                        glBegin(GL_LINES);
+                        glVertex2i(0,0);
+                        glVertex2i(x, y);
+                        glEnd();
+
+                        a = ( sectr2-90 ) * PI / 180;
+                        x =  ( int ) ( leg_len * cos ( a ) );
+                        y =  ( int ) ( leg_len * sin ( a ) );
+                        glBegin(GL_LINES);
+                        glVertex2i(0,0);
+                        glVertex2i(x, y);
+                        glEnd();
+
+                        glDisable(GL_LINE_STIPPLE);
+
                   }
 
-            //      Save the RGBA byte ptr and aux parms in the rule
-                  prule->pixelPtr = e;
-                  prule->parm0 = ID_RGBA;
-                  prule->parm1 = m_colortable_index;
-                  prule->parm2 = bm_orgx - width/2;
-                  prule->parm3 = bm_orgy - height/2;
-                  prule->parm5 = w;
-                  prule->parm6 = h;
+                  glEndList();
+
+                  //    Record the existence of this display list in the searchable hashmap
+                  m_CARC_hashmap[carc_hash] = carc_list;
             }
+
+            //      Save the list and OpenGL specific parameters in the rule
+            prule->pixelPtr = (void *)1;
+            prule->parm0 = ID_GLIST;
+            prule->parm7 = m_CARC_hashmap[carc_hash];
 
       }               // instantiation
 
@@ -5537,54 +5604,13 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       //      Now render the symbol
       if(!m_pdc)          // opengl
       {
-            glColor4f(1, 1, 1, 1);
+            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
 
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glRasterPos2i(r.x + rules->razRule->parm2, r.y + rules->razRule->parm3);
-            glPixelZoom(1, -1);
-            glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr);
-            glPixelZoom(1, 1);
-            glDisable(GL_BLEND);
+            glTranslatef(r.x, r.y, 0);
+            glCallList( rules->razRule->parm7 );
+            glTranslatef(-r.x, -r.y, 0);
 
-            //    Draw the sector legs directly on the target canvas
-            //    so that anti-aliasing works against the drawn image (cannot be cached...)
-            if ( sector_radius > 0 )
-            {
-                  int leg_len = ( int ) ( sector_radius * m_display_pix_per_mm );
-
-                  wxColour c = GetGlobalColor ( _T ( "CHBLK" ) );
-                  glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
-                  int width = 1;
-                  glLineWidth(width);
-
-                  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
-
-          //      Enable anti-aliased lines, at best quality
-                  glEnable(GL_LINE_SMOOTH);
-                  glEnable(GL_BLEND);
-                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-                  double a = ( sectr1-90 ) * PI / 180;
-                  int x = r.x + ( int ) ( leg_len * cos ( a ) );
-                  int y = r.y + ( int ) ( leg_len * sin ( a ) );
-                  glBegin(GL_LINES);
-                  glVertex2i(r.x, r.y);
-                  glVertex2i(x, y);
-                  glEnd();
-
-                  a = ( sectr2-90 ) * PI / 180;
-                  x = r.x + ( int ) ( leg_len * cos ( a ) );
-                  y = r.y + ( int ) ( leg_len * sin ( a ) );
-                  glBegin(GL_LINES);
-                  glVertex2i(r.x, r.y);
-                  glVertex2i(x, y);
-                  glEnd();
-
-                  glPopAttrib();
-
-           }
+            glPopAttrib();
 
       }
       else

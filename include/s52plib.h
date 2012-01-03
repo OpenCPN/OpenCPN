@@ -53,7 +53,7 @@ WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
 
 WX_DECLARE_LIST(S57Obj, ObjList);
 
-
+ WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
 
 class ViewPort;
 class PixelCache;
@@ -387,6 +387,7 @@ public:
       TexFont     *m_txf;
       int         m_txf_avg_char_width;
       int         m_txf_avg_char_height;
+      CARC_Hash   m_CARC_hashmap;
 };
 
 
