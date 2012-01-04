@@ -2721,19 +2721,19 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
           {
                 if(target_posn_age > removelost_Mins * 60)
                 {
-                      //      So mark the target as lost, with unknown position
+                      //      So mark the target as lost, with unknown position, and make it not selectable
                       td->b_lost = true;
                       td->b_positionOnceValid = false;
                       td->COG = 360.0;
                       td->SOG = 103.0;
                       td->HDG = 511.0;
                       td->ROTAIS = -128;
+                      pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
 
 
                       if(target_static_age > removelost_Mins * 60 * 3)
                       {
                         long mmsi_long = td->MMSI;
-                        pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
                         current_targets->erase(it);
                         delete td;
 
