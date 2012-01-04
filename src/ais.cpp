@@ -1755,6 +1755,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 ptd->Class = AIS_CLASS_B;
 
                 parse_result = true;                // so far so good
+                b_posn_report = true;
 
                 break;
           }
