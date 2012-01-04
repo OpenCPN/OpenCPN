@@ -2742,7 +2742,6 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
             {
                   int w, h, descent;
                   txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len(), &w, &h, &descent);
-  //              if((x > 0) && x < (1300))
                   {
                         glEnable(GL_TEXTURE_2D);
                         glColor3f(0, 0, 0);
@@ -2752,7 +2751,8 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-                        glAlphaFunc(GL_GREATER, 0.0625);
+//                        glAlphaFunc(GL_GREATER, 0.0625);
+                        glAlphaFunc(GL_GREATER, 0.15);
                         glEnable(GL_ALPHA_TEST);
                         glEnable(GL_BLEND);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2762,14 +2762,22 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                         int yp = y;
                         int xp = x;
 
-                  //  Add in the offsets, specified in units of nominal font height
-                        yp += ptext->yoffs * ptext->bsize; //( h - descent );
-                        xp += ptext->xoffs * ptext->bsize; //( h - descent );
+                        //    Calculate pixel size from pica point size
+                        double pixel_per_mm = (double)::wxGetDisplaySize().x / ::wxGetDisplaySizeMM().x;
+                        double pix_size = ptext->bsize * .351 * pixel_per_mm;
+
+                        //    Font will be scaled, so scale width and height too
+                        double scale_factor = pix_size/(m_txf_avg_char_height - 4);
+
+                        //  Add in the offsets, specified in units of nominal font height
+                        xp += ptext->xoffs * pix_size;
+                        yp += ptext->yoffs * pix_size;
+
 
                         pRectDrawn->SetX ( xp );
                         pRectDrawn->SetY ( yp );
-                        pRectDrawn->SetWidth ( w );
-                        pRectDrawn->SetHeight ( h );
+                        pRectDrawn->SetWidth ( w * scale_factor );
+                        pRectDrawn->SetHeight ( h * scale_factor );
 
                         if ( bCheckOverlap )
                         {
@@ -2779,12 +2787,10 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
 
                         if(bdraw)
                         {
-                              glTranslatef(xp, yp, 0);
-
+                              glTranslatef(xp-4, yp+4, 0);
                               glScalef(1.0, -1.0, 1.0);
+                              glScalef(scale_factor, scale_factor, 1.0);
 
-                              glScalef((double)ptext->bsize/m_txf_avg_char_height, (double)ptext->bsize/m_txf_avg_char_height, 1.0);
-                              glScalef(1.5, 1.5, 1.0);
                               txfRenderString(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len());
                         }
 
@@ -2793,6 +2799,14 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                         glDisable(GL_TEXTURE_2D);
                         glDisable(GL_ALPHA_TEST);
                         glDisable(GL_BLEND);
+/*
+                        glBegin(GL_LINE_LOOP);
+                        glVertex2i(xp, yp);
+                        glVertex2i(xp+w* scale_factor, yp);
+                        glVertex2i(xp+w* scale_factor, yp-h* scale_factor);
+                        glVertex2i(xp, yp-h* scale_factor);
+                        glEnd();
+*/
                   }
             }
             else
@@ -2848,10 +2862,11 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                   pdc->DrawText (   ptext->frmtd, xp, yp );
 
       //   TODO Remove Debug
-      //                pdc->SetBrush(*wxTRANSPARENT_BRUSH);
-      //                pdc->SetPen(*wxBLACK_PEN);
-      //                pdc->DrawRectangle(xp, yp, w, h);
-
+/*
+                      pdc->SetBrush(*wxTRANSPARENT_BRUSH);
+                      pdc->SetPen(*wxBLACK_PEN);
+                      pdc->DrawRectangle(xp, yp, w, h);
+*/
             }
 
             pdc->SetFont ( oldfont );              // restore last font
