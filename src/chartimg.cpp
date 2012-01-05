@@ -3000,6 +3000,8 @@ bool ChartBaseBSB::IsRenderCacheable( wxRect& source, wxRect& dest )
 
 void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
+      SetVPRasterParms(VPoint);
+
       double raster_scale =  VPoint.view_scale_ppm / GetPPM();
 
       int rxl, rxr;
