@@ -4823,8 +4823,7 @@ void MyConfig::ImportGPX ( wxWindow* parent, bool islayer, wxString dirpath, boo
                                                       }
                                                       else
                                                             pWp->m_LayerID = 0;
-                                                      if (!g_bIsNewLayer || g_bLayerViz)
-                                                            pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
+                                                      pSelect->AddSelectableRoutePoint ( pWp->m_lat, pWp->m_lon, pWp );
                                                       pWp->m_ConfigWPNum = m_NextWPNum;
                                                       m_NextWPNum++;
                                                 }
@@ -5753,7 +5752,7 @@ void GPXLoadTrack ( GpxTrkElement* trknode, bool b_fullviz )
                                     TiXmlAttribute * attr;
                                     for ( attr = ((TiXmlElement*)ext_child)->FirstAttribute(); attr != 0; attr = attr->Next())
                                     {
-                                          if (attr) 
+                                          if (attr)
                                           {
                                                 if (strcmp(attr->Name(), "style") == 0)
                                                       pTentTrack->m_style = atoi(attr->Value());
@@ -6085,7 +6084,7 @@ Route *LoadGPXRoute(GpxRteElement *rtenode, int routenum, bool b_fullviz)
                               TiXmlAttribute * attr;
                               for ( attr = ((TiXmlElement*)ext_child)->FirstAttribute(); attr != 0; attr = attr->Next())
                               {
-                                    if (attr) 
+                                    if (attr)
                                     {
                                           if (strcmp(attr->Name(), "style") == 0)
                                                 pTentRoute->m_style = atoi(attr->Value());
