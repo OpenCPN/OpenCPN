@@ -44,6 +44,9 @@
 #include "chart1.h"                 // for enum types
 #include "ocpndc.h"
 
+//    Useful static routines
+void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
+
 //--------------------------------------------------------
 //    Screen Brightness Control Support Routines
 //

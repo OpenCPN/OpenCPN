@@ -8933,19 +8933,12 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         break;
                 }
 #endif
-                case ID_DEF_MENU_AIS_QUERY:
-
-                      if(NULL == g_pais_query_dialog_active)
-                      {
-                            g_pais_query_dialog_active = new AISTargetQueryDialog();
-                            g_pais_query_dialog_active->Create ( this, -1, _( "AIS Target Query" ), wxPoint(g_ais_query_dialog_x, g_ais_query_dialog_y));
-                      }
-
-                      g_pais_query_dialog_active->SetMMSI(m_FoundAIS_MMSI);
-                      g_pais_query_dialog_active->UpdateText();
-                      g_pais_query_dialog_active->Show();
-
-                      break;
+              case ID_DEF_MENU_AIS_QUERY:
+              {
+                    wxWindow *pwin = wxDynamicCast(this, wxWindow);
+                    ShowAISTargetQueryDialog(pwin, m_FoundAIS_MMSI);
+                    break;
+              }
 
               case ID_DEF_MENU_QUILTREMOVE:
               {
@@ -14983,6 +14976,67 @@ void AISTargetQueryDialog::OnMove( wxMoveEvent& event )
       g_ais_query_dialog_y = p.y;
       event.Skip();
 }
+
+void ShowAISTargetQueryDialog(wxWindow *win, int mmsi)
+{
+      if(!win)
+            return;
+
+      if(NULL == g_pais_query_dialog_active)
+      {
+            int pos_x = g_ais_query_dialog_x;
+            int pos_y = g_ais_query_dialog_y;
+
+            g_pais_query_dialog_active = new AISTargetQueryDialog();
+            g_pais_query_dialog_active->Create ( win, -1, _( "AIS Target Query" ), wxPoint(pos_x, pos_y));
+
+            g_pais_query_dialog_active->SetMMSI(mmsi);
+            g_pais_query_dialog_active->UpdateText();
+            wxSize sz = g_pais_query_dialog_active->GetSize();
+
+            bool b_reset_pos = false;
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window title bar does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+            RECT frame_title_rect;
+            frame_title_rect.left   = pos_x;
+            frame_title_rect.top    = pos_y;
+            frame_title_rect.right  = pos_x + sz.x;
+            frame_title_rect.bottom = pos_y + 30;
+
+            if(NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+                  b_reset_pos = true;
+#else
+
+            //    Make sure drag bar (title bar) of window intersects wxClient Area of screen, with a little slop...
+            wxRect window_title_rect;                    // conservative estimate
+            window_title_rect.x = pos_x;
+            window_title_rect.y = pos_y;
+            window_title_rect.width = sz.x;
+            window_title_rect.height = 30;
+
+            wxRect ClientRect = wxGetClientDisplayRect();
+            ClientRect.Deflate(60, 60);                     // Prevent the new window from being too close to the edge
+            if(!ClientRect.Intersects(window_title_rect))
+                  b_reset_pos = true;
+
+#endif
+
+            if(b_reset_pos)
+                  g_pais_query_dialog_active->Move(50, 200);
+
+      }
+      else
+      {
+            g_pais_query_dialog_active->SetMMSI(mmsi);
+            g_pais_query_dialog_active->UpdateText();
+      }
+
+      g_pais_query_dialog_active->Show();
+}
+
+
 
 #ifdef USE_S57
 //---------------------------------------------------------------------------------------
