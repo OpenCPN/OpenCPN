@@ -5624,6 +5624,10 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                      dash_long[0] = ( int ) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
                      dash_long[1] = ( int ) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
 
+                     //       If COG is unknown, render the predictor in grey
+                     if(wxIsNaN(gCog))
+                           pred_colour = GetGlobalColor ( _T ( "GREY1" ) );
+
                      wxPen ppPen2 ( pred_colour, 3, wxUSER_DASH );
                      ppPen2.SetDashes( 2, dash_long );
                      dc.SetPen(ppPen2);
