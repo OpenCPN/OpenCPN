@@ -518,7 +518,11 @@ wxString         g_AW2GUID;
 bool             g_b_overzoom_x;                      // Allow high overzoom
 bool             g_bshow_overzoom_emboss;
 
-int              g_n_ownship_meters;
+int              g_n_ownship_length_meters;
+int              g_n_ownship_beam_meters;
+int              g_n_gps_antenna_offset_y;
+int              g_n_gps_antenna_offset_x;
+int              g_n_ownship_min_mm;
 
 int              g_nautosave_interval_seconds;
 
@@ -4121,9 +4125,7 @@ void MyFrame::DeleteToolbarBitmaps()
 
     delete _img_opencpn;
 
-    delete _img_ship_green;
     delete _img_ship_red;
-    delete _img_ship_grey;
 
     delete _img_redX;
     delete _img_viz;

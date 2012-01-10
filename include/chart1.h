@@ -71,7 +71,6 @@ class ocpnFloatingToolbarDialog;
 //----------------------------------------------------------------------------
 #define OCPN_USE_PNGICONS
 #define USE_PNG_TIDESML
-#define USE_PNG_OWNSHIP
 #define USE_PNG_CURSOR
 
 
