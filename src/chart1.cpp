@@ -3616,7 +3616,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     }
 
     if(pConfig)
-        tb->ToggleTool(ID_FOLLOW, pConfig->st_bFollow);
+          tb->ToggleTool(ID_FOLLOW, cc1->m_bFollow);
 
 #ifdef USE_S57
     if((pConfig) && (ps52plib))
