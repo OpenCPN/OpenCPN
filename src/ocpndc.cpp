@@ -367,28 +367,33 @@ void ocpnDC::DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height)
 
 void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
 {
-      glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+      if(dc)
+            dc->DrawPolygon(n, points, xoffset, yoffset);
+      else
+      {
+            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
 
-          //      Enable anti-aliased lines, at best quality
-      glEnable(GL_LINE_SMOOTH);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+            //      Enable anti-aliased lines, at best quality
+            glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-     if(ConfigureBrush()) {
-          glBegin(GL_POLYGON);
-          for(int i=0; i<n; i++)
-               glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
-          glEnd();
-     }
+            if(ConfigureBrush()) {
+                  glBegin(GL_POLYGON);
+                  for(int i=0; i<n; i++)
+                        glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
+                  glEnd();
+            }
 
-     if(ConfigurePen()) {
-          glBegin(GL_LINE_LOOP);
-          for(int i=0; i<n; i++)
-                glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
-          glEnd();
-     }
-     glPopAttrib();
+            if(ConfigurePen()) {
+                  glBegin(GL_LINE_LOOP);
+                  for(int i=0; i<n; i++)
+                        glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
+                  glEnd();
+            }
+            glPopAttrib();
+      }
 }
 
 void ocpnDC::StrokePolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
