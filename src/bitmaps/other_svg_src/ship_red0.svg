@@ -17,7 +17,7 @@
    inkscape:version="0.46"
    version="1.0"
    sodipodi:docbase="/home/david"
-   sodipodi:docname="ship_blu.svg"
+   sodipodi:docname="ship_red.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="ship.png"
    inkscape:export-xdpi="48.689999"
@@ -94,11 +94,11 @@
     <linearGradient
        id="linearGradient4150">
       <stop
-         style="stop-color:#c2bfff;stop-opacity:1;"
+         style="stop-color:#ffbfbf;stop-opacity:1;"
          offset="0"
          id="stop4152" />
       <stop
-         style="stop-color:#bfc1ff;stop-opacity:0;"
+         style="stop-color:#ffbfbf;stop-opacity:0;"
          offset="1"
          id="stop4154" />
     </linearGradient>
@@ -145,7 +145,7 @@
       <stop
          id="stop3351"
          offset="0"
-         style="stop-color:#0000ff;stop-opacity:1;" />
+         style="stop-color:#ff0000;stop-opacity:1;" />
       <stop
          id="stop3353"
          offset="1"
@@ -462,6 +462,18 @@
          style="stop-color:#FFFFFF"
          offset="1" />
     </radialGradient>
+    <filter
+       inkscape:collect="always"
+       x="-0.45196506"
+       width="1.9039301"
+       y="-0.29913294"
+       height="1.5982659"
+       id="filter3722">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.3476562"
+         id="feGaussianBlur3724" />
+    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3342"
@@ -1362,7 +1374,7 @@
        x2="-26.434509"
        y2="46.141598"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-2.653302,-6.4268867)" />
+       gradientTransform="translate(-2.6533018,-6.4268867)" />
     <linearGradient
        y2="24.08363"
        x2="56.179153"
@@ -2675,15 +2687,15 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.9962655"
-     inkscape:cx="4.3178301"
-     inkscape:cy="23.568498"
+     inkscape:zoom="1.06"
+     inkscape:cx="-14.211027"
+     inkscape:cy="-1.376205"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      width="128px"
      height="128px"
      showgrid="false"
-     inkscape:window-width="1430"
+     inkscape:window-width="1440"
      inkscape:window-height="825"
      inkscape:window-x="0"
      inkscape:window-y="25"
@@ -2734,11 +2746,11 @@
      transform="translate(24.171777,-16.385256)">
     <path
        style="fill:url(#linearGradient3410);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.9433468;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M -14.598194,17.850384 C -15.709617,18.636064 -27.255175,27.628278 -21.148758,58.949723 C -20.79907,60.049168 -19.642129,59.749333 -19.642129,59.749333 L -14.685534,59.786213 L -9.510584,59.773906 C -9.510584,59.773906 -8.353642,60.073771 -8.003955,58.974327 C -1.917552,27.755546 -13.378807,18.687407 -14.554523,17.850384 L -14.598194,17.850384 z"
+       d="M -14.598194,17.850384 C -15.709617,18.636064 -27.255175,27.628278 -21.148758,58.949723 C -20.79907,60.049168 -19.642129,59.749333 -19.642129,59.749333 L -14.685534,59.786213 L -9.5105835,59.773906 C -9.5105835,59.773906 -8.3536415,60.073771 -8.0039545,58.974327 C -1.9175515,27.755546 -13.378807,18.687407 -14.554523,17.850384 L -14.598194,17.850384 z"
        id="path3391"
        sodipodi:nodetypes="cccccccc" />
     <path
-       style="fill:url(#linearGradient3203);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.18545413px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:url(#linearGradient3203);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.18545413000000011px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M -14.732995,18.062797 C -16.04338,18.891897 -28.054835,27.874202 -21.271261,58.797481 C -20.881522,59.886521 -19.592054,59.58951 -19.592054,59.58951 L -14.717678,59.501067 L -14.732995,18.062797 z"
        id="path3385"
        sodipodi:nodetypes="ccccc" />
