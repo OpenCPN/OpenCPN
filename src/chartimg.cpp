@@ -2919,6 +2919,8 @@ void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
             MolodenskyTransform (vpt.clat, vpt.clon, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
             m_lon_datum_adjust = -(to_lon - vpt.clon);
             m_lat_datum_adjust = -(to_lat - vpt.clat);
+            m_lon_datum_adjust -= m_dtm_lon / 3600.;
+            m_lat_datum_adjust -= m_dtm_lat / 3600.;
 
       }
 
