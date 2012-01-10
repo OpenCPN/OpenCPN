@@ -2562,6 +2562,10 @@ bool MyApp::OnInit()
         wxPoint position(0,0);
         wxSize dsize = wxGetDisplaySize();
 
+#ifdef __WXMAC__
+        g_nframewin_posy = wxMax(g_nframewin_posy, 22);
+#endif
+
         if((g_nframewin_posx < dsize.x) && (g_nframewin_posy < dsize.y))
               position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 
@@ -2578,6 +2582,7 @@ bool MyApp::OnInit()
         if(NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
               position = wxPoint(10, 10);
 #endif
+
 
         //  For Windows and GTK, provide the expected application Minimize/Close bar
         long app_style = wxDEFAULT_FRAME_STYLE;

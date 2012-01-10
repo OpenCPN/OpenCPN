@@ -1615,6 +1615,11 @@ void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
             g_NMEALogWindow = new TTYWindow(pParent, 35);
             wxString com_string(m_itemNMEAListBox->GetValue());
             g_NMEALogWindow->SetTitle(com_string);
+
+            //    Make sure the window is well on the screen
+            g_NMEALogWindow_x = wxMax(g_NMEALogWindow_x, 40);
+            g_NMEALogWindow_y = wxMax(g_NMEALogWindow_y, 40);
+
             g_NMEALogWindow->SetSize(g_NMEALogWindow_x,  g_NMEALogWindow_y,
                                      g_NMEALogWindow_sx, g_NMEALogWindow_sy);
             g_NMEALogWindow->Show();
