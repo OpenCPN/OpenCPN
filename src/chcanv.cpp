@@ -11867,14 +11867,14 @@ void glChartCanvas::BuildFBO(void)
 
 }
 
+int s_in_glpaint;
+
 void glChartCanvas::OnPaint(wxPaintEvent &event)
 {
 
     wxPaintDC dc(this);
 
-#ifndef __WXMOTIF__
     if (!GetContext()) return;
-#endif
 
     SetCurrent();
 
@@ -12016,7 +12016,17 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
 //          g_bDebugOGL = true;
      }
 
+     //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
+     if(s_in_glpaint)
+     {
+           return;
+     }
+     s_in_glpaint++;
+
      render();
+
+     s_in_glpaint--;
+
 }
 
 
@@ -12575,7 +12585,9 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp, wxRegion Region)
                               {
                                     ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
                                     if(Patch_Ch_BSB)
+                                    {
                                           RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
+                                    }
                                     else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
                                     {
                                           get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
