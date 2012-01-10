@@ -2752,7 +2752,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
 
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //                        glAlphaFunc(GL_GREATER, 0.0625);
-                        glAlphaFunc(GL_GREATER, 0.15);
+                        glAlphaFunc(GL_GREATER, (float)0.15);
                         glEnable(GL_ALPHA_TEST);
                         glEnable(GL_BLEND);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
