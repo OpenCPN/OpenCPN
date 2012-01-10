@@ -153,7 +153,10 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
       if (m_cap_flag & st)
       {
-            m_data = wxString::Format(m_format, data);
+            if(!wxIsNaN(data))
+                m_data = wxString::Format(m_format, data);
+            else
+                m_data = _T("---");
 
             Refresh(false);
       }

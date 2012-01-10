@@ -300,7 +300,14 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
       dc->SetTextForeground(cl);
 
       wxRect rect = GetClientRect();
-      wxString text = wxString::Format(format, value);
+
+      wxString text;
+      if(!wxIsNaN(value))
+           text = wxString::Format(format, value);
+      else
+           text = _T("---");
+//      wxString text = wxString::Format(format, value);
+
       int width, height;
       dc->GetTextExtent(text, &width, &height, 0, 0, g_pFontLabel);
       wxPoint TextPoint;
