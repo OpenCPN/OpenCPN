@@ -1165,7 +1165,7 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
 #endif
 
       //--------------Simulator
-#if(1)
+#if(0)
       {
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
