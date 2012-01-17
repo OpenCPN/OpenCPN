@@ -5745,7 +5745,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
             while ( upd )
             {
                   wxRect rect = upd.GetRect();
-//                  rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
                   printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
                   upd ++ ;
             }
@@ -5879,7 +5878,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         while ( updt )
                         {
                               wxRect rect = updt.GetRect();
-//                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                               dumm_dc.Blit ( rect.x, rect.y, rect.width, rect.height, &temp_dc, rect.x, rect.y );
                               updt ++ ;
                         }
