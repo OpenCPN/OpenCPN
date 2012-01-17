@@ -4430,6 +4430,15 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
       }
 
+      //    Get a true pixel clipping/bounding box from the vp
+      wxPoint pbb = vp->GetPixFromLL(vp->clat, vp->clon);
+      int xmin_ = pbb.x - vp->rv_rect.width/2;
+      int xmax_ = xmin_ + vp->rv_rect.width;
+      int ymin_ = pbb.y - vp->rv_rect.height/2;
+      int ymax_ = ymin_ + vp->rv_rect.height;
+
+      int x0, y0, x1, y1;
+
       //  Get the current display priority from the LUP
       int priority_current = rzRules->LUP->DPRI - '0';          //TODO fix this hack by putting priority into object during _insertRules
 
@@ -4463,16 +4472,10 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //  Allocate some storage for converted points
             wxPoint *ptp = ( wxPoint * ) malloc ( ( nls_max + 2 ) * sizeof ( wxPoint ) );   // + 2 allows for end nodes
 
-
-            int xmin_ = 0;
-            int xmax_ = vp->pix_width;
-            int ymin_ = 0;
-            int ymax_ = vp->pix_height;
-            int x0, y0, x1, y1;
-
             int *index_run;
             double *ppt;
             double easting, northing;
+
             wxPoint pra(0,0);
             VC_Element *pnode;
 
@@ -4584,12 +4587,6 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
                   rzRules->obj->pPolyTessGeo->BuildTessGL();
 
-            int xmin_ = 0;
-            int xmax_ = vp->pix_width;
-            int ymin_ = 0;
-            int ymax_ = vp->pix_height;
-            int x0, y0, x1, y1;
-
             PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
             float *ppolygeo = pptg->pgroup_geom;
@@ -4654,12 +4651,6 @@ int s52plib::RenderLS ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       {
             if(!rzRules->obj->pPolyTrapGeo->IsOk())
                   rzRules->obj->pPolyTrapGeo->BuildTess();
-
-            int xmin_ = 0;
-            int xmax_ = vp->pix_width;
-            int ymin_ = 0;
-            int ymax_ = vp->pix_height;
-            int x0, y0, x1, y1;
 
             PolyTrapGroup *pptg = rzRules->obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
 
@@ -4989,11 +4980,15 @@ void s52plib::draw_lc_poly ( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                              float sym_len, float sym_factor, Rule *draw_rule, ViewPort *vp )
 {
       wxPoint   r;
+
+      //    Get a true pixel clipping/bounding box from the vp
+      wxPoint pbb = vp->GetPixFromLL(vp->clat, vp->clon);
+      int xmin_ = pbb.x - vp->rv_rect.width/2;
+      int xmax_ = xmin_ + vp->rv_rect.width;
+      int ymin_ = pbb.y - vp->rv_rect.height/2;
+      int ymax_ = ymin_ + vp->rv_rect.height;
+
       int x0, y0, x1, y1;
-      int xmin_ = 0;
-      int xmax_ = vp->pix_width;
-      int ymin_ = 0;
-      int ymax_ = vp->pix_height;
 
       if(pdc)
       {

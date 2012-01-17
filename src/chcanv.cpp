@@ -981,6 +981,7 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
 {
       //    If the chart has exactly one aux ply table, use it for finer region precision
       wxRegion chart_region;
+      wxRegion screen_region(vp.rv_rect);
 
       int nAuxPlyEntries = cte.GetnAuxPlyEntries();
       if(nAuxPlyEntries >= 1)
@@ -990,7 +991,7 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
                   float *pfp = cte.GetpAuxPlyTableEntry(ip);
                   int nAuxPly = cte.GetAuxCntTableEntry(ip);
 
-                  wxRegion t_region = vp.GetVPRegion(nAuxPly, pfp, cte.GetScale());
+                  wxRegion t_region = vp.GetVPRegionIntersect(screen_region, nAuxPly, pfp, cte.GetScale());
                   if(!t_region.Empty())
                       chart_region.Union(t_region);
             }
@@ -1003,13 +1004,13 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
 
             if(n_ply_entries >= 3)                          // could happen with old database and some charts, e.g. SHOM 2381.kap
             {
-                  wxRegion t_region = vp.GetVPRegion(n_ply_entries, pfp, cte.GetScale());
+                  wxRegion t_region = vp.GetVPRegionIntersect(screen_region, n_ply_entries, pfp, cte.GetScale());
                   if(!t_region.Empty())
                       chart_region.Union(t_region);
 
             }
             else
-                  chart_region = wxRegion(0, 0, vp.pix_width, vp.pix_height);
+                  chart_region = screen_region; //wxRegion(0, 0, vp.pix_width, vp.pix_height);
       }
 
       //    This super bad hack needs to be fixed by changing the the plypoints on cm93 composite,
@@ -1030,10 +1031,10 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
                         chart_region = r;
                   }
                   else
-                        chart_region = wxRegion(vp.rv_rect);
+                        chart_region = screen_region; //wxRegion(vp.rv_rect);
             }
             else
-                  chart_region = wxRegion(vp.rv_rect);
+                  chart_region = screen_region; //wxRegion(vp.rv_rect);
       }
 
       //    Another superbad hack....
@@ -1041,7 +1042,7 @@ wxRegion Quilt::GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp)
       //    and Plypoints georef is problematic......
       //    So, force full screen coverage in the quilt
       else if(cte.GetScale() > 90000000)
-            chart_region = wxRegion(vp.rv_rect/*0, 0, vp.pix_width, vp.pix_height*/);
+            chart_region = screen_region; //wxRegion(vp.rv_rect/*0, 0, vp.pix_width, vp.pix_height*/);
 
       //    Clip the region to the current viewport
       chart_region.Intersect(vp.rv_rect);
@@ -2934,11 +2935,13 @@ void ViewPort::GetLLFromPix(const wxPoint &p, double *lat, double *lon)
 }
 
 
-wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints )
+wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints )
 {
-      //    If the viewpoint is highly overzoomed wrt to chart native scale, the resulting region may be huge.
+      //  Calculate the intersection between a given wxRegion (Region) and a polygon specified by lat/lon points.
+
+      //    If the viewpoint is highly overzoomed wrt to chart native scale, the polygon region may be huge.
       //    This can be very expensive, and lead to crashes on some platforms (gtk in particular)
-      //    So, look for this case and handle appropriately
+      //    So, look for this case and handle appropriately with respect to the given Region
 
 
       if(chart_scale < chart_native_scale / 10)
@@ -2996,7 +2999,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             //    Case:  vpBBox is completely inside the chart box
             if(_IN == chart_box.Intersect((wxBoundingBox&)vp_positive.vpBBox))
             {
-                  return wxRegion(0,0, rv_rect.width, rv_rect.height);
+                  return Region;
             }
 
             //    The ViewPort and the chart region overlap in some way....
@@ -3012,7 +3015,9 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
             wxPoint p1 = GetPixFromLL(cb_maxlat, cb_minlon);  // upper left
             wxPoint p2 = GetPixFromLL(cb_minlat, cb_maxlon);   // lower right
 
-            return wxRegion(p1, p2);
+            wxRegion r(p1, p2);
+            r.Intersect(Region);
+            return r;
       }
 
       //    More "normal" case
@@ -3053,7 +3058,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
       {
             sigaction(SIGSEGV, &sa_all_old, NULL);        // reset signal handler
 
-            return wxRegion(0,0,pix_width, pix_height);
+            return Region;
 
       }
 
@@ -3064,6 +3069,7 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
                   delete[] pp;
 
             sigaction(SIGSEGV, &sa_all_old, NULL);        // reset signal handler
+            r.Intersect(Region);
             return r;
       }
 
@@ -3072,6 +3078,8 @@ wxRegion ViewPort::GetVPRegion( size_t n, float *llpoints, int chart_native_scal
 
       if(NULL == ppoints)
             delete[] pp;
+
+      r.Intersect(Region);
       return r;
 
 
@@ -3149,7 +3157,6 @@ void ViewPort::SetBoxes(void)
               //  Grow the source rectangle appropriately
             if(fabs(rotator) > .001)
                   rv_rect.Inflate((dx - pix_width)/2, (dy - pix_height)/2);
-
 
       }
 
@@ -5568,6 +5575,7 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
 
                           //  And choose the correct one
                         scale_factor = wxMax(scale_factor, scale_factor_min);
+                        scale_factor = wxMin(scale_factor, 10);
 
                         //      Make a new member image under some conditions
                         if((m_cur_ship_pix != ship_scale_pix) || ((SHIP_NORMAL == m_ownship_state) && m_cur_ship_pix_isgrey) || !m_ship_pix_image.IsOk() || (m_ship_cs != m_cs))
@@ -12030,9 +12038,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
 
      //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
      if(s_in_glpaint)
-     {
            return;
-     }
      s_in_glpaint++;
 
      render();
@@ -12581,7 +12587,7 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp, wxRegion Region)
             if(!clear_test_region.IsEmpty())
                   glClear(GL_COLOR_BUFFER_BIT);
 
-                        //  Now render the quilt
+            //  Now render the quilt
             ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
             while(pch)
             {
@@ -12684,13 +12690,9 @@ void glChartCanvas::render()
               b_newview = false;
         }
 
-        //  Make a special VP
-        ViewPort svp = cc1->VPoint;
 
-        svp.pix_width = svp.rv_rect.width;
-        svp.pix_height = svp.rv_rect.height;
+        wxRegion chart_get_region(0,0,cc1->VPoint.rv_rect.width, cc1->VPoint.rv_rect.height);
 
-        wxRegion chart_get_region(wxRect(0,0,svp.pix_width, svp.pix_height));
         ocpnDC gldc(*this);
 
 
@@ -13007,15 +13009,13 @@ void glChartCanvas::render()
              if(Current_Ch_BSB)
              {
                    glClear(GL_COLOR_BUFFER_BIT);
-                   wxRegion rup = chart_get_region;
-//                    rup.Intersect(ru);
-                   RenderChartRegion(Current_Ch_BSB, cc1->VPoint, rup);
+                   RenderChartRegion(Current_Ch_BSB, cc1->VPoint, chart_get_region);
              }
              else if (!dynamic_cast<ChartDummy*>(Current_Ch))
              {
                    glClear(GL_COLOR_BUFFER_BIT);
-                   Current_Ch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, chart_get_region);
-
+                   wxRegion full_region(cc1->VPoint.rv_rect);
+                   Current_Ch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, full_region);
               }
         }
 

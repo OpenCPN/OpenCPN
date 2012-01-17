@@ -83,7 +83,7 @@ class ViewPort
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
+            wxRegion GetVPRegionIntersect( const wxRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
 
             void SetBoxes(void);
 

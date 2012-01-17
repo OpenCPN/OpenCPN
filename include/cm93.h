@@ -433,7 +433,7 @@ class cm93compchart : public s57chart
             wxString GetPubDate();
 
             void SetVPParms(const ViewPort &vpt);
-            void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+            wxRegion GetValidCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
 
 
             ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
