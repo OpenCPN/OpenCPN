@@ -5722,7 +5722,7 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                 //      Reference point, where the GPS antenna is
                 dc.SetPen( wxPen( GetGlobalColor ( _T ( "UBLCK" ) ), 1 ));
                 dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "UIBCK" ) )));
-                dc.StrokeCircle(lShipPoint.x, lShipPoint.y, 4);
+                dc.StrokeCircle(lShipPoint.x, lShipPoint.y, 3);
               }         // ownship draw
 
 
