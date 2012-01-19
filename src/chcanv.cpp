@@ -255,6 +255,10 @@ static int mouse_x;
 static int mouse_y;
 static bool mouse_leftisdown;
 
+int r_gamma_mult;
+int g_gamma_mult;
+int b_gamma_mult;
+int gamma_state;
 
 
 //  These are xpm images used to make cursors for this class.
@@ -3355,6 +3359,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pRolloverRouteSeg           = NULL;
 
         m_bbrightdir = false;
+        r_gamma_mult = 1;
+        g_gamma_mult = 1;
+        b_gamma_mult = 1;
+
 
         m_pos_image_user_day        = NULL;
         m_pos_image_user_dusk       = NULL;
@@ -4127,10 +4135,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                                   ZoomCanvasIn(2.0);
                             break;
 
-                      case 54:                                  // '-'  alpha/num pad
-                      case 56:                               // '_'  alpha/num pad
-                      case -10:                              // Ctrl '-'  alpha/num pad
-                      case -8:                               // Ctrl '_' alpha/num pad
+                      case 54:                     // '-'  alpha/num pad
+                      case 56:                     // '_'  alpha/num pad
+                      case -10:                     // Ctrl '-'  alpha/num pad
+                      case -8:                     // Ctrl '_' alpha/num pad
                       case 24:                     // Ctrl X
                             if ( (m_modkeys == wxMOD_CONTROL) )
                                   ZoomCanvasOut(1.1);
@@ -4209,7 +4217,33 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 
                     break;
 
-               default:
+                    case 7:                       // Ctrl G
+                          switch(gamma_state)
+                          {
+                                case(0):
+                                      r_gamma_mult = 0;
+                                      g_gamma_mult = 1;
+                                      b_gamma_mult = 0;
+                                      gamma_state = 1;
+                                      break;
+                                case(1):
+                                      r_gamma_mult = 1;
+                                      g_gamma_mult = 0;
+                                      b_gamma_mult = 0;
+                                      gamma_state = 2;
+                                      break;
+                                case(2):
+                                      r_gamma_mult = 1;
+                                      g_gamma_mult = 1;
+                                      b_gamma_mult = 1;
+                                      gamma_state = 0;
+                                      break;
+                          }
+                          SetScreenBrightness ( g_nbrightness );
+
+                          break;
+
+                default:
                     return;
 
           }           // switch
@@ -15881,12 +15915,19 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
 
 #ifdef __WXGTK__
 #define BRIGHT_XCALIB
+#define __OPCPN_USEICC__
 #endif
 
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines
 //
 //--------------------------------------------------------------------------------------------------------
+
+#ifdef __OPCPN_USEICC__
+int CreateSimpleICCProfileFile(char *file_name, double co_red, double co_green, double co_blue);
+
+wxString temp_file_name;
+#endif
 
 class ocpnCurtain: public wxDialog
 {
@@ -16052,6 +16093,7 @@ int RestoreScreenBrightness(void)
         wxString cmd;
         cmd = _T("xcalib -clear");
         wxExecute(cmd, wxEXEC_ASYNC);
+
 #endif
 
       return 1;
@@ -16081,12 +16123,34 @@ int SetScreenBrightness(int brightness)
 #endif
 
 #ifdef BRIGHT_XCALIB
+
       if(!b_init)
       {
             last_brightness = 100;
             b_init = true;
+            temp_file_name = wxFileName::CreateTempFileName(_T(""));
+
       }
 
+#ifdef __OPCPN_USEICC__
+      //  Create a dead simple temporary ICC profile file, with gamma ramps set as desired,
+      //  and then activate this temporary profile using xcalib <filename>
+      if(!CreateSimpleICCProfileFile ( ( char * ) temp_file_name.fn_str(),
+          brightness * r_gamma_mult,
+          brightness * g_gamma_mult,
+          brightness * b_gamma_mult ))
+      {
+            wxString cmd ( _T ( "xcalib " ) );
+            cmd += temp_file_name;
+
+            wxExecute ( cmd, wxEXEC_ASYNC );
+      }
+
+#else
+      //    Or, use "xcalib -co" to set overall contrast value
+      //    This is not as nice, since the -co parameter wants to be a fraction of the current contrast,
+      //    and values greater than 100 are not allowed.  As a result, increases of contrast must do a "-clear" step
+      //    first, which produces objectionable flashing.
       if(brightness > last_brightness)
       {
             wxString cmd;
@@ -16108,6 +16172,8 @@ int SetScreenBrightness(int brightness)
             cmd.Printf(_T("xcalib -co %2d -a"), factor);
             wxExecute(cmd, wxEXEC_ASYNC);
       }
+
+#endif
 
       last_brightness = brightness;
 
@@ -16190,6 +16256,135 @@ int SetScreenBrightness(int brightness)
 
       return 0;
 }
+
+#ifdef __OPCPN_USEICC__
+
+#define MLUT_TAG     0x6d4c5554L
+#define VCGT_TAG     0x76636774L
+
+
+int GetIntEndian(unsigned char *s)
+{
+      int ret;
+      unsigned char *p;
+      int i;
+
+      p = (unsigned char *)&ret;
+
+
+      if(1)
+            for(i=sizeof(int)-1;i>-1;--i)
+                  *p++ = s[i];
+      else
+            for(i=0;i<(int)sizeof(int);++i)
+                  *p++ = s[i];
+
+      return ret;
+}
+
+unsigned short GetShortEndian(unsigned char *s)
+{
+      unsigned short ret;
+      unsigned char *p;
+      int i;
+
+      p = (unsigned char *)&ret;
+
+
+      if(1)
+            for(i=sizeof(unsigned short)-1;i>-1;--i)
+                  *p++ = s[i];
+      else
+            for(i=0;i<(int)sizeof(unsigned short);++i)
+                  *p++ = s[i];
+
+      return ret;
+}
+
+//    Create a very simple Gamma correction file readable by xcalib
+int CreateSimpleICCProfileFile(char *file_name, double co_red, double co_green, double co_blue)
+{
+      FILE *fp;
+
+      if(file_name)
+      {
+            fp = fopen(file_name, "wb");
+            if(!fp)
+                  return -1; /* file can not be created */
+      }
+      else
+            return -1; /* filename char pointer not valid */
+
+      //    Write header
+      char header[128];
+      for(int i=0; i< 128; i++)
+            header[i] = 0;
+
+      fwrite(header, 128, 1, fp);
+
+      //    Num tags
+      int numTags0 = 1;
+      int numTags = GetIntEndian((unsigned char *)&numTags0);
+      fwrite(&numTags, 1, 4, fp);
+
+      int tagName0 = VCGT_TAG;
+      int tagName = GetIntEndian((unsigned char *)&tagName0);
+      fwrite(&tagName, 1, 4, fp);
+
+      int tagOffset0 = 128 + 4 * sizeof(int);
+      int tagOffset = GetIntEndian((unsigned char *)&tagOffset0);
+      fwrite(&tagOffset, 1, 4, fp);
+
+      int tagSize0 = 1;
+      int tagSize = GetIntEndian((unsigned char *)&tagSize0);
+      fwrite(&tagSize, 1, 4, fp);
+
+      fwrite(&tagName, 1, 4, fp);               // another copy of tag
+
+      fwrite(&tagName, 1, 4, fp);               // dummy
+
+      //  Table type
+
+      /* VideoCardGammaTable (The simplest type) */
+      int gammatype0 = 0;
+      int gammatype = GetIntEndian((unsigned char *)&gammatype0);
+      fwrite(&gammatype, 1, 4, fp);
+
+      int numChannels0 = 3;
+      unsigned short numChannels = GetShortEndian((unsigned char *)&numChannels0);
+      fwrite(&numChannels, 1, 2, fp);
+
+      int numEntries0 = 256;
+      unsigned short numEntries = GetShortEndian((unsigned char *)&numEntries0);
+      fwrite(&numEntries, 1, 2, fp);
+
+      int entrySize0 = 1;
+      unsigned short entrySize = GetShortEndian((unsigned char *)&entrySize0);
+      fwrite(&entrySize, 1, 2, fp);
+
+      unsigned char ramp[256];
+
+      //    Red ramp
+      for(int i=0; i< 256; i++)
+            ramp[i] = i * co_red/100.;
+      fwrite(ramp, 256, 1, fp);
+
+      //    Green ramp
+      for(int i=0; i< 256; i++)
+            ramp[i] = i * co_green/100.;
+      fwrite(ramp, 256, 1, fp);
+
+      //    Blue ramp
+      for(int i=0; i< 256; i++)
+            ramp[i] = i * co_blue/100.;
+      fwrite(ramp, 256, 1, fp);
+
+
+      fclose(fp);
+
+      return 0;
+}
+#endif // __OPCPN_USEICC__
 
 
 // in glext.h typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSPROC) (GLsizei n, GLuint *framebuffers);
