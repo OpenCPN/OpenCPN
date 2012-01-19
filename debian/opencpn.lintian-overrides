@@ -1,4 +1,0 @@
-# We create the plugin(.so) dir in case the opencpn-plugins
-# package is not installed, so that users who wish to install
-# 3rd party plugins will still know where to put them.
-opencpn binary: package-contains-empty-directory usr/lib/opencpn/
