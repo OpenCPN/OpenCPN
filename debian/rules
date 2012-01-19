@@ -34,7 +34,7 @@ override_dh_install:
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/doc
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/sounds
 	rm -rf $(CURDIR)/debian/opencpn/usr/share/opencpn/tcdata
-	rm -f $(CURDIR)/debian/opencpn/usr/lib/opencpn/*.so
+	rm -rf $(CURDIR)/debian/opencpn/usr/lib/opencpn
 
 	#READMEs already installed to the opencpn-data/docs dir
 	rm $(CURDIR)/debian/opencpn-data/usr/share/opencpn/sounds/README.bells
