@@ -6,6 +6,7 @@ opencpn (2.5.0-1) unstable; urgency=low
   * Move plugins into new opencpn-plugins package
   * Register docs with doc-base
   * Note what plugins dir should be if -plugins pkg is not installed
+  * Suggests zygrib
   * Closing ITP. (Closes: #538067)
 
  -- M. Hamish Bowman <hamish_b@yahoo.com>  Wed, 18 Jan 2012 22:22:04 +1300
