@@ -1679,15 +1679,23 @@ bool Quilt::Compose(const ViewPort &vp_in)
       //    We detect this case, and set a NOP default value for m_refchart_dbIndex.
       //    This will cause the quilt parameters such as scale, type, and projection
       //    to retain their current settings until the reference chart is later directly set.
+      //
+      //    A special case occurs with cm93 composite chart set as the reference chart:
+      //    It is not at this point a candidate, so won't be found by the search
+      //    This case is indicated if the candidate count is zero.
+      //    If so, do not invalidate the ref chart
       bool bf = false;
       for(unsigned int i=0 ; i<m_pcandidate_array->GetCount() ; i++)
       {
             QuiltCandidate *qc = m_pcandidate_array->Item(i);
             if(qc->dbIndex == m_refchart_dbIndex)
+            {
                   bf = true;
+                  break;
+            }
       }
 
-      if(!bf)
+      if(!bf && m_pcandidate_array->GetCount())
             m_refchart_dbIndex = -1;
 
 
