@@ -144,6 +144,16 @@ void DrawThickLine(double x1, double y1, double x2, double y2, double t1)
       double t2sina1 = t1 / 2 * sin(angle);
       double t2cosa1 = t1 / 2 * cos(angle);
 
+      glPushAttrib(GL_COLOR_BUFFER_BIT |
+                  GL_HINT_BIT |
+                  GL_POLYGON_BIT);      //Save state
+
+      //      Enable anti-aliased polys, at best quality
+      glEnable(GL_POLYGON_SMOOTH);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
       glBegin(GL_TRIANGLES);
       glVertex2f(x1 + t2sina1, y1 - t2cosa1);
       glVertex2f(x2 + t2sina1, y2 - t2cosa1);
@@ -152,6 +162,8 @@ void DrawThickLine(double x1, double y1, double x2, double y2, double t1)
       glVertex2f(x1 - t2sina1, y1 + t2cosa1);
       glVertex2f(x1 + t2sina1, y1 - t2cosa1);
       glEnd();
+
+      glPopAttrib();
 }
 
 void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
@@ -161,6 +173,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
      else if(ConfigurePen()) {
 
            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+           glDisable(GL_MULTISAMPLE);
 
           //      Enable anti-aliased lines, at best quality
            glEnable(GL_LINE_SMOOTH);
@@ -371,13 +384,17 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffs
             dc->DrawPolygon(n, points, xoffset, yoffset);
       else
       {
-            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+            glPushAttrib(GL_COLOR_BUFFER_BIT |
+                        GL_LINE_BIT | GL_HINT_BIT |
+                        GL_POLYGON_BIT);      //Save state
 
             //      Enable anti-aliased lines, at best quality
             glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_POLYGON_SMOOTH);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+            glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
             if(ConfigureBrush()) {
                   glBegin(GL_POLYGON);
