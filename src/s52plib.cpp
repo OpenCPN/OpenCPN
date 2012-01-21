@@ -7549,6 +7549,24 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       double z_clip_geom = 1.0;
       double z_tex_geom = 0.;
 
+      GLuint clip_list;
+
+      wxBoundingBox BBView = vp->GetBBox();
+            //  Allow a little slop in calculating whether a triangle
+            //  is within the requested Viewport
+      double margin = BBView.GetWidth() * .05;
+
+      wxPoint *ptp;
+      if ( rzRules->obj->pPolyTessGeo )
+      {
+            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
+                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+
+            ptp = ( wxPoint * ) malloc ( ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof ( wxPoint ) );
+      }
+      else
+            return 0;
+
       if(g_b_useStencil)
       {
             glPushAttrib(GL_STENCIL_BUFFER_BIT);
@@ -7571,7 +7589,7 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       {
             glPushAttrib(GL_DEPTH_BUFFER_BIT);
 
-            glEnable(GL_DEPTH_TEST); // to enable writing to the depth buffer
+            glEnable(GL_DEPTH_TEST); // to use the depth test
             glDepthFunc(GL_GREATER); // Respect global render mask in depth buffer
             glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
             glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
@@ -7589,17 +7607,14 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
       }
 
       //  Render the geometry
-      wxBoundingBox BBView = vp->GetBBox();
-      if ( rzRules->obj->pPolyTessGeo )
       {
-            if(!rzRules->obj->pPolyTessGeo->IsOk())               // perform deferred tesselation
-                  rzRules->obj->pPolyTessGeo->BuildTessGL();
+            // Generate a Display list if using Depth Buffer clipping, for use later
+            if(!g_b_useStencil)
+            {
+                  clip_list = glGenLists (1);
+                  glNewList(clip_list, GL_COMPILE);
+            }
 
-            wxPoint *ptp = ( wxPoint * ) malloc ( ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof ( wxPoint ) );
-
-            //  Allow a little slop in calculating whether a triangle
-            //  is within the requested Viewport
-            double margin = BBView.GetWidth() * .05;
 
             PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
@@ -7683,7 +7698,12 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   }   // if bbox
                   p_tp = p_tp->p_next;                // pick up the next in chain
             }       // while
-            free ( ptp );
+
+            if(!g_b_useStencil)
+            {
+                  glEndList();
+                  glCallList(clip_list);
+            }
 
             if(g_b_useStencil)
             {
@@ -7765,12 +7785,46 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
 
+
+            //    If using DepthBuffer clipping, we need to
+            //    undo the sub-clip area for this feature render.
+            //    Otherwise, subsequent AP renders with also honor this sub-clip region.
+
+            //    We do this by rendering the geometry again with the depth(Z) value
+            //    set to the global clipping value.
+            //    For efficiency, we use the display list created above,
+            //    translated appropriately in z direction
+
+            //    Note that this is not required for stencil buffer clipping,
+            //    since the relevent bit (2) is cleared on any subsequent AP renders.
+
+            if(!g_b_useStencil)
+            {
+
+                  glEnable(GL_DEPTH_TEST); // to use the depth test
+                  glDepthFunc(GL_LEQUAL); // Respect global render mask in depth buffer
+                  glDepthMask(GL_TRUE);    // to allow writes to the depth buffer
+                  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);   // disable color buffer
+
+                  glColor3f(1,1,0);
+
+                  glTranslatef(0, 0, .25);      // Cause depth buffer rending at z = 0.5
+                  glCallList(clip_list);        // Re-Render the clip geometry
+                  glTranslatef(0, 0, -.25);     // undo translation (may not be required....)
+
+
+                  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
+                  glDepthMask(GL_FALSE);                            // disable depth buffer
+
+                  glDeleteLists(clip_list, 1);
+            }
+
             //    Restore the previous state
             glPopAttrib();
 
       }
 
-
+      free ( ptp );
 
 
 #if 0
