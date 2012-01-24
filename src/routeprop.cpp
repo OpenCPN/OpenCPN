@@ -1283,11 +1283,12 @@ bool RouteProp::UpdateProperties()
 
         if (m_pRoute) {
             total_seconds = m_pRoute->m_route_time;
-            if (m_bStartNow)
+            if (m_bStartNow){
                 if (m_pEnroutePoint)
                     gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
                 else
                     gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
+            }
         }
 
         if (m_starttime.IsValid()) {
@@ -1305,7 +1306,7 @@ bool RouteProp::UpdateProperties()
         else
             m_StartTimeCtl->Clear();
 
-        if (IsThisRouteExtendable()) 
+        if (IsThisRouteExtendable())
             m_ExtendButton->Enable(true);
 
 
@@ -1461,11 +1462,11 @@ bool RouteProp::UpdateProperties()
             } // end of route point 0
             else
             {
-                if (arrival && enroute) 
+                if (arrival && enroute)
                     tdis += leg_dist;
                 if (leg_speed)
                 {
-                    if (arrival && enroute) 
+                    if (arrival && enroute)
                         tsec += 3600 * leg_dist / leg_speed;         // time in seconds to arrive here
                     wxTimeSpan time(0,0, (int)tsec, 0);
 
@@ -1507,15 +1508,15 @@ bool RouteProp::UpdateProperties()
                 } // end if legspeed
             }  // end of repeatable route point
 
-            if (enroute && (arrival || m_starttime.IsValid())) 
+            if (enroute && (arrival || m_starttime.IsValid()))
                 m_wpList->SetItem(item_line_index, 6, time_form);
-            else 
+            else
                 m_wpList->SetItem(item_line_index, 6, _T("----"));
 
             //Leg speed
             wxString s;
             s.Printf(_T("%5.2f"), leg_speed);
-            if (arrival) 
+            if (arrival)
                 m_wpList->SetItem(item_line_index, 7, s);
 
             if (enroute)
