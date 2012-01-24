@@ -138,9 +138,10 @@ void ocpnDC::GetSize(wxCoord *width, wxCoord *height) const
 }
 
 // Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
-void DrawThickLine(double x1, double y1, double x2, double y2, double t1)
+void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen)
 {
       double angle = atan2(y2 - y1, x2 - x1);
+      double t1 = pen.GetWidth();
       double t2sina1 = t1 / 2 * sin(angle);
       double t2cosa1 = t1 / 2 * cos(angle);
 
@@ -154,15 +155,65 @@ void DrawThickLine(double x1, double y1, double x2, double y2, double t1)
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-      glBegin(GL_TRIANGLES);
-      glVertex2f(x1 + t2sina1, y1 - t2cosa1);
-      glVertex2f(x2 + t2sina1, y2 - t2cosa1);
-      glVertex2f(x2 - t2sina1, y2 + t2cosa1);
-      glVertex2f(x2 - t2sina1, y2 + t2cosa1);
-      glVertex2f(x1 - t2sina1, y1 + t2cosa1);
-      glVertex2f(x1 + t2sina1, y1 - t2cosa1);
-      glEnd();
+      //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in the dash table.
+      //    The first is assumed drawn, second is assumed space
+      wxDash *dashes;
+      int n_dashes = pen.GetDashes(&dashes);
+      if(n_dashes)
+      {
+            double lpix = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+            double lrun = 0.;
+            double xa = x1;
+            double ya = y1;
+            double ldraw = t1 * dashes[0];
+            double lspace = t1 * dashes[1];
 
+            while(lrun < lpix)
+            {
+                  //    Dash
+                  double xb = xa + ldraw * cos(angle);
+                  double yb = ya + ldraw * sin(angle);
+
+                  if((lrun + ldraw) >= lpix)         // last segment is partial draw
+                  {
+                        xb = x2;
+                        yb = y2;
+                  }
+
+                  glBegin(GL_TRIANGLES);
+                  glVertex2f(xa + t2sina1, ya - t2cosa1);
+                  glVertex2f(xb + t2sina1, yb - t2cosa1);
+                  glVertex2f(xb - t2sina1, yb + t2cosa1);
+
+                  glVertex2f(xb - t2sina1, yb + t2cosa1);
+                  glVertex2f(xa - t2sina1, ya + t2cosa1);
+                  glVertex2f(xa + t2sina1, ya - t2cosa1);
+                  glEnd();
+
+                  xa = xb;
+                  ya = yb;
+                  lrun += ldraw;
+
+                  //    Space
+                  xb = xa + lspace * cos(angle);
+                  yb = ya + lspace * sin(angle);
+
+                  xa = xb;
+                  ya = yb;
+                  lrun += lspace;
+            }
+      }
+      else
+      {
+            glBegin(GL_TRIANGLES);
+            glVertex2f(x1 + t2sina1, y1 - t2cosa1);
+            glVertex2f(x2 + t2sina1, y2 - t2cosa1);
+            glVertex2f(x2 - t2sina1, y2 + t2cosa1);
+            glVertex2f(x2 - t2sina1, y2 + t2cosa1);
+            glVertex2f(x1 - t2sina1, y1 + t2cosa1);
+            glVertex2f(x1 + t2sina1, y1 - t2cosa1);
+            glEnd();
+      }
       glPopAttrib();
 }
 
@@ -170,26 +221,77 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
 {
      if(dc)
           dc->DrawLine ( x1, y1, x2, y2 );
-     else if(ConfigurePen()) {
+     else
+     {
+           glPushAttrib(GL_COLOR_BUFFER_BIT |
+                       GL_LINE_BIT |
+                       GL_ENABLE_BIT |
+                       GL_HINT_BIT);      //Save state
 
-           glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
-           glDisable(GL_MULTISAMPLE);
-
-          //      Enable anti-aliased lines, at best quality
-           glEnable(GL_LINE_SMOOTH);
-           glEnable(GL_BLEND);
-           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-           glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-           if(m_pen.GetWidth() > 1)
-                  DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
-           else
+           if(ConfigurePen())
            {
-                  glBegin(GL_LINES);
-                  glVertex2i(x1, y1);
-                  glVertex2i(x2, y2);
-                  glEnd();
+
+                  glDisable(GL_MULTISAMPLE);
+
+                  //      Enable anti-aliased lines, at best quality
+                  glEnable(GL_LINE_SMOOTH);
+                  glEnable(GL_BLEND);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                  if(m_pen.GetWidth() > 1)
+                        DrawThickLine(x1, y1, x2, y2, m_pen);
+                  else
+                  {
+                        wxDash *dashes;
+                        int n_dashes = m_pen.GetDashes(&dashes);
+                        if(n_dashes)
+                        {
+                              double angle = atan2(y2 - y1, x2 - x1);
+                              double cosa = cos(angle);
+                              double sina = sin(angle);
+                              double t1 = m_pen.GetWidth();
+
+                              double lpix = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+                              double lrun = 0.;
+                              double xa = x1;
+                              double ya = y1;
+                              double ldraw = t1 * dashes[0];
+                              double lspace = t1 * dashes[1];
+
+                              while(lrun < lpix)
+                              {
+                                    //    Dash
+                                    double xb = xa + ldraw * cosa;
+                                    double yb = ya + ldraw * sina;
+
+                                    if((lrun + ldraw) >= lpix)         // last segment is partial draw
+                                    {
+                                          xb = x2;
+                                          yb = y2;
+                                    }
+
+                                    glBegin(GL_LINES);
+                                    glVertex2f(xa, ya);
+                                    glVertex2f(xb, yb);
+                                    glEnd();
+
+                                    xa = xa + (lspace + ldraw) * cosa;
+                                    ya = ya + (lspace + ldraw) * sina;
+                                    lrun += lspace + ldraw;
+
+                              }
+                        }
+                        else                    // not dashed
+                        {
+                              glBegin(GL_LINES);
+                              glVertex2i(x1, y1);
+                              glVertex2i(x2, y2);
+                              glEnd();
+                        }
+                  }
            }
+
            glPopAttrib();
      }
 }
@@ -206,7 +308,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
               wxPoint p0 = points[0];
               for(int i=1; i<n; i++)
               {
-                DrawThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset, points[i].y + yoffset, m_pen.GetWidth());
+                DrawThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset, points[i].y + yoffset, m_pen);
                 p0 = points[i];
               }
            }
@@ -562,6 +664,38 @@ bool ocpnDC::ConfigurePen()
      glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 
      glLineWidth(width);
+
+     //     Stippling is not done.
+     //     Instead, we directly calculate and draw the line segments the hard way.
+     //     This allows for simple stipple patterns that are not easily coerced into 16 bits
+
+#if 0
+     wxDash *dash_array;
+     int dashes = m_pen.GetDashes(&dash_array);
+     if(dashes)
+     {
+           int on_bits = dash_array[0] * width;
+           int off_bits = dash_array[1] * width;
+           int mult = 1;
+           while(on_bits + off_bits > 16)
+           {
+                 mult *= 2;
+                 on_bits /= 2;
+                 off_bits /= 2;
+           }
+           unsigned short pattern;
+
+           for(int i=0 ; i < on_bits ; i++)
+           {
+                 pattern = pattern << 1;
+                 pattern |= 0x01;
+           }
+
+           glLineStipple(mult, pattern);
+           glEnable(GL_LINE_STIPPLE);
+     }
+#endif
+
      return true;
 }
 
