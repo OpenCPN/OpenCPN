@@ -9,7 +9,7 @@ License: GPL-2.0+
 
 Files: debian/*
 Copyright: 2010-2011 Anton Martchukov <anton@martchukov.com>
-           2010-2011 DebianGIS Team http://wiki.debian.org/DebianGis
+           2010-2012 DebianGIS Team http://wiki.debian.org/DebianGis
 License: GPL-2.0+
 
 Files: debian/cmake_Modules/FindTinyXML.cmake
@@ -24,21 +24,51 @@ Copyright: 1999-2000 Alan Bleasby
 License: GPL-2.0+
 
 Files: src/mygdal/*
-Copyright: 1998-2011 GDAL/OGR Project http://www.gdal.org/
+Copyright: 1998-2011 GDAL/OGR Project http://www.gdal.org
 License: Expat
+Comment: Dave Register (OpenCPN lead author) wrote:
+ "We could use libgdal, with what I would call "moderate"
+ effort, with some loss of functionality.
+ .
+ There are good reasons not to.  libgdal is very capable, but
+ not optimum for dynamic GUI based systems like ours.  Its
+ great for generating static data from S57 cells.
+ .
+ I tweaked some of the code to compile on Windows, eliminate
+ redundancy, reduce memory footprint, fix some obvious bugs
+ present in the version I started with, and add call backs to
+ support Progress Dialogs on SENC creation. In theory, these
+ fixes should go upstream to GDAL.  In practice, though.....
+ .
+ IMHO, this kind of improvement for a specific application
+ should not block debian repo inclusion.  Otherwise we wear a
+ ball and chain, and innovation is stifled.
+ .
+ Thanks Dave"
 
 Files: src/myiso8211/*
-Copyright: 1999 Frank Warmerdam <warmerda@home.com>
+Copyright: 1999 Frank Warmerdam <warmerda@pobox.com>
 License: Expat
+Comment: Also from GDAL source tree, see above comments.
 
 Files: src/nmea0183/* plugins/*/src/nmea0183/*
 Copyright: 2010 Samuel R. Blackburn
            2010-2011 David S Register <bdbcat@yahoo.com>
 License: GPL-2.0+
+Comment: wrt code duplication,
+ plugins/demo_pi_sample's copy is just for illustrative purposes.
+ see http://opencpn.org/ocpn/flyspray/index.php?do=details&task_id=725
+ .
+ wrt being an embedded library,
+ It does not exist in elsewhere in Debian; the code here has been
+ specifically tailored/reworked by the OpenCPN lead author and is
+ maintained within the OpenCPN source tree.
 
 Files: plugins/grib_pi/src/Grib* plugins/grib_pi/src/Iso* plugins/grib_pi/src/ZuFile
 Copyright: 2008 Jacques Zaninetti http://www.zygrib.org
 License: GPL-3.0+
+Comment: Built into a separate binary package which is only Suggested
+ by the main (GPL>=2) package.
 
 Files: data/s57data/*
 Copyright: 2000-2001 Sylvain Duclos <sylvain_duclos@yahoo.com>

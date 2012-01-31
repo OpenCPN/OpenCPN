@@ -7,9 +7,10 @@ opencpn (2.5.0-1) unstable; urgency=low
   * Register docs with doc-base
   * Note what plugins dir should be if -plugins pkg is not installed
   * Suggests xtide and zygrib
+  * Add DEP-5 comments to copyright file explaining embedded copies
   * Closing ITP. (Closes: #538067)
 
- -- M. Hamish Bowman <hamish_b@yahoo.com>  Wed, 18 Jan 2012 22:22:04 +1300
+ -- M. Hamish Bowman <hamish_b@yahoo.com>  Tue, 31 Jan 2012 14:36:54 +1300
 
 opencpn (2.4.708-0) unstable; urgency=low
 
