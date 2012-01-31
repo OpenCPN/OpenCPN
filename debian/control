@@ -17,14 +17,18 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libgps19
 Recommends: gpsd, opencpn-data, opencpn-doc, xtide-coastline
 Suggests: opencpn-plugins, gpsd-clients, xcalib, xtide, zygrib
 Description: GPS ChartPlotter/Navigator
- OpenCPN is a concise ship-borne GUI chart plotter
- application supporting:
+ OpenCPN is a concise ship-borne GUI chart plotter and navigation
+ application for use as a planning tool or while underway. OpenCPN is
+ developed by a team of active sailors using real world conditions
+ for program testing and refinement. It supports:
  .
-     * GPS/GPDS Postition Input
-     * BSB Raster Chart Display
-     * S57 Vector ENChart Display
-     * AIS Input Decoding
-     * Waypoint Autopilot Navigation
+     * GPS/GPDS postition input
+     * BSB raster chart display
+     * S-57 and CM93 vector ENChart display
+     * AIS input decoding with tracking and alerts
+     * Route planning with tidal support
+     * Waypoint autopilot navigation
+     * GPX file input and output
 
 Package: opencpn-doc
 Architecture: all
@@ -32,7 +36,10 @@ Depends: ${misc:Depends}
 Section: doc
 Suggests: opencpn
 Description: Documentation for OpenCPN, a GPS ChartPlotter/Navigator
- OpenCPN is a concise ship-borne GUI chart plotter application.
+ OpenCPN is a concise ship-borne GUI chart plotter and navigation
+ application for use as a planning tool or while underway. OpenCPN is
+ developed by a team of active sailors using real world conditions
+ for program testing and refinement.
  .   
  This package contains the HTML documentation for OpenCPN.
 
@@ -41,7 +48,10 @@ Architecture: all
 Depends: ${misc:Depends}
 Suggests: opencpn
 Description: Tidal harmonics and audio files for OpenCPN
- OpenCPN is a concise ship-borne GUI chart plotter application.
+ OpenCPN is a concise ship-borne GUI chart plotter and navigation
+ application for use as a planning tool or while underway. OpenCPN is
+ developed by a team of active sailors using real world conditions
+ for program testing and refinement.
  .
  This package contains the tidal harmonics and audio files for OpenCPN.
 
@@ -50,9 +60,12 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: opencpn
 Description: Additional plugins for OpenCPN
- OpenCPN is a concise ship-borne GUI chart plotter application.
+ OpenCPN is a concise ship-borne GUI chart plotter and navigation
+ application for use as a planning tool or while underway. OpenCPN is
+ developed by a team of active sailors using real world conditions
+ for program testing and refinement.
  .
  This package contains additional plugins for OpenCPN:
  .
-     * Heads-up dashboard 
+     * Heads-up dashboard
      * GRIB weather data overlay
