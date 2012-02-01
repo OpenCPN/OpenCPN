@@ -39,7 +39,7 @@
 #define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    5
+#define     MY_API_VERSION_MINOR    6
 
 #include <wx/fileconf.h>
 #include <wx/filepicker.h>
