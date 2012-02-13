@@ -80,6 +80,7 @@ int                      s_dns_test_flag;
 static      GenericPosDat     ThreadPositionData;
 
 extern bool             g_bDebugGPSD;
+extern bool             g_bForceGPSDActive;
 extern MyFrame          *gFrame;
 
 #ifdef BUILD_WITH_LIBGPS
@@ -895,6 +896,7 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
             if(!m_bgps_present)
             {
                   if(g_bDebugGPSD)printf("  no gps device\n");
+                  if(g_bForceGPSDActive) m_bgps_present = true;
             }
             else
             {
