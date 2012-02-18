@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Debian GIS Project <debian-gis@lists.debian.org>
 Uploaders: Anton Martchukov <anton@martchukov.com>, M. Hamish Bowman <hamish_b@yahoo.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, libglu-dev, libwxbase2.8-dev,
+Build-Depends: debhelper (>= 7.0.50~), cmake, libglu1-mesa-dev, libwxbase2.8-dev,
    libwxgtk2.8-dev, libgtk2.0-dev, zlib1g-dev, libbz2-dev, libgps-dev,
    libtinyxml-dev
 Standards-Version: 3.9.2
