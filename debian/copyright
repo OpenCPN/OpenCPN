@@ -95,7 +95,7 @@ Files: plugins/grib_pi/src/bzip2/*
 Copyright: 1996-2002 Julian R Seward <jseward@acm.org>
 License: BSD-4-clause
 
-Files: src/tri.c
+Files: src/tri.c include/triangulate.h
 Copyright: 1994 Atul Narkhede <narkhede@cs.unc.edu>
            1994 The University of North Carolina at Chapel Hill (UNC-CH)
 License: public-domain
@@ -106,6 +106,11 @@ License: public-domain
  UNC-CH GIVES NO WARRANTY, EXPRESSED OR IMPLIED, FOR THE SOFTWARE
  AND/OR DOCUMENTATION PROVIDED, INCLUDING, WITHOUT LIMITATION, WARRANTY
  OF MERCHANTABILITY AND WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE.
+
+Files: src/bitmaps/png2wx.pl
+Copyright: 2004-2008 Jan Engelhardt <jengelh [at] medozas de>
+License: public-domain
+ released in the Public Domain
 
 Files: data/s57data/*
 Copyright: 2000-2001 Sylvain Duclos <sylvain_duclos@yahoo.com>
