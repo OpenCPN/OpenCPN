@@ -8,6 +8,7 @@ opencpn (2.5.0+dfsg-1) unstable; urgency=low
   * Note what plugins dir should be if -plugins pkg is not installed
   * Suggests xtide and zygrib
   * Add DEP-5 comments to copyright file explaining embedded copies
+  * Policy bumped to 3.9.3, without changes.
   * Closing ITP. (Closes: #538067)
 
  -- M. Hamish Bowman <hamish_b@yahoo.com>  Tue, 31 Jan 2012 14:36:54 +1300
