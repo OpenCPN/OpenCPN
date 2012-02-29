@@ -11,7 +11,10 @@ opencpn (2.5.0+dfsg-1) unstable; urgency=low
   * Policy bumped to 3.9.3, without changes.
   * Closing ITP. (Closes: #538067)
 
- -- M. Hamish Bowman <hamish_b@yahoo.com>  Tue, 31 Jan 2012 14:36:54 +1300
+  [ Anton Martchukov ]
+  * Additional copyright file auditing
+
+ -- M. Hamish Bowman <hamish_b@yahoo.com>  Thu, 01 Mar 2012 12:53:43 +1300
 
 opencpn (2.4.708-0) unstable; urgency=low
 
