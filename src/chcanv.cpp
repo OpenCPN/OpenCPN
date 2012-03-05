@@ -250,6 +250,9 @@ bool                    g_bDebugOGL;
 extern int              g_memCacheLimit;
 extern bool             g_b_assume_azerty;
 
+extern int              g_GroupIndex;
+extern ChartGroupArray  *g_pGroupArray;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -335,7 +338,10 @@ enum
         ID_DEF_MENU_TIDEINFO,
         ID_DEF_MENU_CURRENTINFO,
 
+        ID_DEF_MENU_GROUPBASE,
+
         ID_DEF_MENU_LAST
+
 
 };
 
@@ -810,6 +816,9 @@ bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy, bool b_allow_vector)
 
 bool Quilt::IsChartQuiltableRef(int db_index)
 {
+      if(db_index < 0)
+            return false;
+
       //    Is the chart targeted by db_index useable as a quilt reference chart?
       const ChartTableEntry &ctei = ChartData->GetChartTableEntry(db_index);
 
@@ -1367,7 +1376,7 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                         int current_db_index = m_refchart_dbIndex;
 //                        int current_type = m_reference_type;
                         int current_family = m_reference_family;
-                        unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
+                        int target_stack_index = m_extended_stack_array.Index(current_db_index);
 
                         while((proposed_scale_onscreen < min_ref_scale) && (target_stack_index > 0))
                         {
@@ -1398,6 +1407,11 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                               if((current_family == ChartData->GetDBChartFamily(new_db_index)) &&
                                   IsChartQuiltableRef(new_db_index))
                               SetReferenceChart(new_db_index);
+                        }
+                        else
+                        {
+                              int new_ref_dbIndex = GetNewRefChart();
+                              SetReferenceChart(new_ref_dbIndex);
                         }
                   }
             }
@@ -1468,6 +1482,12 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
       bool b_need_resort = false;
 
+      if(!pCurrentStack)
+      {
+            pCurrentStack = new ChartStack;
+            ChartData->BuildChartStack(pCurrentStack, vp_in.clat, vp_in.clon);
+      }
+
       int n_charts = 0;
       if(pCurrentStack)
       {
@@ -1521,7 +1541,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
 //                        continue;
 
                   if(ChartData->GetDBChartType(i) == CHART_TYPE_CM93COMP)
-                      continue;
+                        continue;
+
+                  if((g_GroupIndex > 0) && (!ChartData->IsChartInGroup(i, g_GroupIndex)) )
+                        continue;
 
                   wxBoundingBox chart_box;
                   ChartData->GetDBBoundingBox(i, &chart_box);
@@ -3315,6 +3338,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
 
         EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
         EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
+        EVT_MENU ( ID_DEF_MENU_GROUPBASE,       ChartCanvas::PopupMenuHandler )
 
 
 END_EVENT_TABLE()
@@ -3833,6 +3857,64 @@ ChartCanvas::~ChartCanvas()
 
         delete m_glcc;
 }
+
+int ChartCanvas::GetCanvasChartNativeScale()
+{
+      int ret = 1;
+      if(!VPoint.b_quilt)
+      {
+            if(Current_Ch)
+                  ret = Current_Ch->GetNativeScale();
+      }
+      else
+            ret = (int)m_pQuilt->GetRefNativeScale();
+
+      return ret;
+
+
+}
+
+int ChartCanvas::FindClosestCanvasChartdbIndex(int scale)
+{
+      int new_dbIndex = -1;
+      if(!VPoint.b_quilt)
+      {
+            if(pCurrentStack)
+            {
+                  for(int i=0 ; i<pCurrentStack->nEntry ; i++)
+                  {
+                        int sc = ChartData->GetStackChartScale(pCurrentStack, i, NULL, 0);
+                        if(sc >= scale)
+                        {
+                              new_dbIndex = pCurrentStack->GetDBIndex(i);
+                              break;
+                        }
+                  }
+            }
+      }
+      else
+      {
+      //    Using the current quilt, select a useable reference chart
+      //    Said chart will be in the extended (possibly full-screen) stack,
+      //    And will have a scale equal to or just greater than the stipulated value
+            unsigned int im = m_pQuilt->GetExtendedStackIndexArray().GetCount();
+            if(im > 0)
+            {
+                  for(unsigned int is=0 ; is<im ; is++)
+                  {
+                        const ChartTableEntry &m = ChartData->GetChartTableEntry(m_pQuilt->GetExtendedStackIndexArray().Item(is));
+                        if((m.GetScale() >= scale)/* && (m_reference_family == m.GetChartFamily())*/)
+                        {
+                              new_dbIndex = m_pQuilt->GetExtendedStackIndexArray().Item(is);
+                              break;
+                        }
+                  }
+            }
+      }
+
+      return new_dbIndex;
+}
+
 
 bool ChartCanvas::IsQuiltDelta()
 {
@@ -4990,7 +5072,13 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
       return true;
 }
 
+
 void ChartCanvas::ReloadVP ( bool b_adjust )
+{
+      LoadVP(VPoint, b_adjust);
+}
+
+void ChartCanvas::LoadVP ( ViewPort &vp, bool b_adjust )
 {
       if(g_bopengl)
       {
@@ -5008,7 +5096,7 @@ void ChartCanvas::ReloadVP ( bool b_adjust )
       if(m_pQuilt)
             m_pQuilt->Invalidate();
 
-      SetViewPoint ( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, b_adjust );
+      SetViewPoint ( vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation, b_adjust );
 
 }
 
@@ -5019,7 +5107,18 @@ void ChartCanvas::SetQuiltRefChart(int dbIndex)
       m_pQuilt->Invalidate();
 }
 
+void ChartCanvas::UpdateCanvasOnGroupChange(void)
+{
+      delete pCurrentStack;
+      pCurrentStack = NULL;
+      pCurrentStack = new ChartStack;
+      ChartData->BuildChartStack(pCurrentStack, VPoint.clat, VPoint.clon);
 
+      if(m_pQuilt)
+      {
+            m_pQuilt->Compose(VPoint);
+      }
+}
 
 bool ChartCanvas::SetVPScale ( double scale )
 {
@@ -8558,6 +8657,22 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
         g_click_stop = 3;
 #endif
 
+        //  Create and attach the ChartGroup SubMenu
+        if(g_pGroupArray->GetCount())
+        {
+            wxMenu *pGroupMenu = new wxMenu;
+            pGroupMenu->AppendRadioItem(ID_DEF_MENU_GROUPBASE, _("All Active Charts"));
+
+            for(unsigned int i=0 ; i < g_pGroupArray->GetCount(); i++)
+            {
+                  pGroupMenu->AppendRadioItem(ID_DEF_MENU_GROUPBASE + i + 1, g_pGroupArray->Item(i)->m_group_name);
+                  Connect(ID_DEF_MENU_GROUPBASE + i + 1, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::PopupMenuHandler);
+
+            }
+            pGroupMenu->Check(ID_DEF_MENU_GROUPBASE + g_GroupIndex, true);
+            pdef_menu-> AppendSubMenu(pGroupMenu, _( "Chart Groups" ) );
+        }
+
         //  Add PlugIn Context Menu items
         ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
@@ -9314,54 +9429,9 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                 case ID_RC_MENU_FINISH:
                         FinishRoute();
                         gFrame->SurfaceToolbar();
-
-/*
-                        parent_frame->nRoute_State = 0;
-                        parent_frame->SetToolbarItemState ( ID_ROUTE, false );
-                        SetCursor ( pCursorArrow );
-                        m_bDrawingRoute = false;
-
-                        if ( m_pMouseRoute )
-                        {
-                                if ( m_bAppendingRoute )
-                                        pConfig->UpdateRoute ( m_pMouseRoute );
-                                else
-                                {
-                                        if ( m_pMouseRoute->GetnPoints() > 1 )
-                                        {
-                                                pConfig->AddNewRoute ( m_pMouseRoute, -1 );    // use auto next num
-                                        }
-                                        else
-                                        {
-                                              g_pRouteMan->DeleteRoute ( m_pMouseRoute );
-                                                m_pMouseRoute = NULL;
-                                        }
-
-                                        if ( m_pMouseRoute )
-                                                m_pMouseRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
-                                }
-                                if ( m_pMouseRoute )
-                                        m_pMouseRoute->RebuildGUIDList();                  // ensure the GUID list is intact and good
-
-                                if ( pRoutePropDialog )
-                                {
-                                      pRoutePropDialog->SetRouteAndUpdate ( m_pMouseRoute );
-                                      pRoutePropDialog->UpdateProperties();
-                                }
-
-                                if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
-                                      pRouteManagerDialog->UpdateRouteListCtrl();
-
-                        }
-                        m_bAppendingRoute = false;
-                        m_pMouseRoute = NULL;
-
-                        m_pSelectedRoute = NULL;
-//                        m_pFoundRoutePoint = NULL;
-                        m_pFoundRoutePointSecond = NULL;
-*/
                         Refresh ( false );
                         break;
+
 
               default:
               {
@@ -9384,6 +9454,13 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                     break;
               }
         }           // switch
+
+        //  Chart Groups....
+        if((event.GetId() >= ID_DEF_MENU_GROUPBASE) &&
+            (event.GetId() <= ID_DEF_MENU_GROUPBASE + (int)g_pGroupArray->GetCount()))
+        {
+              gFrame->SetGroupIndex(event.GetId() - ID_DEF_MENU_GROUPBASE);
+        }
 
 
         g_click_stop = 0;    // Context menu was processed, all is well
@@ -9457,7 +9534,27 @@ void ChartCanvas::RenderAllChartOutlines ( ocpnDC &dc, ViewPort& vp )
 
         for ( int i=0 ; i < nEntry ; i++ )
         {
-             RenderChartOutline ( dc, i, vp );
+              ChartTableEntry *pt = (ChartTableEntry *)&ChartData->GetChartTableEntry(i);
+
+            //    Check to see if the candidate chart is in the currently active group
+              bool b_group_draw = false;
+              if(g_GroupIndex > 0)
+              {
+                    for(unsigned int ig=0 ; ig < pt->GetGroupArray().GetCount(); ig++)
+                    {
+                          int index = pt->GetGroupArray().Item(ig);
+                          if(g_GroupIndex == index)
+                          {
+                                b_group_draw = true;
+                                break;
+                          }
+                    }
+              }
+              else
+                    b_group_draw = true;
+
+              if(b_group_draw)
+                   RenderChartOutline ( dc, i, vp );
         }
 
 //      Could render in different color/width if thumbnail is selected
@@ -13093,6 +13190,7 @@ void glChartCanvas::render()
         }
 
 //    Now render overlay objects
+        DrawGLOverLayObjects();
         cc1->DrawOverlayObjects ( gldc, ru );
 
         if ( cc1->m_bShowTide )
@@ -13148,6 +13246,13 @@ void glChartCanvas::render()
 
      if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
 }
+
+void glChartCanvas::DrawGLOverLayObjects(void)
+{
+      if(g_pi_manager)
+            g_pi_manager->RenderAllGLCanvasOverlayPlugIns( GetContext(), cc1->GetVP());
+}
+
 
 void glChartCanvas::GrowData(int size)
 {
@@ -15932,7 +16037,7 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
 //--------------------------------------------------------------------------------------------------------
 
 #ifdef __OPCPN_USEICC__
-int CreateSimpleICCProfileFile(char *file_name, double co_red, double co_green, double co_blue);
+int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_green, double co_blue);
 
 wxString temp_file_name;
 #endif
@@ -16143,7 +16248,7 @@ int SetScreenBrightness(int brightness)
 #ifdef __OPCPN_USEICC__
       //  Create a dead simple temporary ICC profile file, with gamma ramps set as desired,
       //  and then activate this temporary profile using xcalib <filename>
-      if(!CreateSimpleICCProfileFile ( ( char * ) temp_file_name.fn_str(),
+      if(!CreateSimpleICCProfileFile ( ( const char * ) temp_file_name.fn_str(),
           brightness * r_gamma_mult,
           brightness * g_gamma_mult,
           brightness * b_gamma_mult ))
@@ -16310,7 +16415,7 @@ unsigned short GetShortEndian(unsigned char *s)
 }
 
 //    Create a very simple Gamma correction file readable by xcalib
-int CreateSimpleICCProfileFile(char *file_name, double co_red, double co_green, double co_blue)
+int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_green, double co_blue)
 {
       FILE *fp;
 

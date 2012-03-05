@@ -275,6 +275,8 @@ class MyFrame: public wxFrame
     void OnPianoMenuDisableChart(wxCommandEvent& event);
     void OnPianoMenuEnableChart(wxCommandEvent& event);
 
+    void SetGroupIndex(int index);
+
     double GetBestVPScale(ChartBase *pchart);
 
     ChartCanvas *GetCanvasWindow(){ return m_pchart_canvas; }
@@ -287,7 +289,7 @@ class MyFrame: public wxFrame
     void OnFrameCOGTimer(wxTimerEvent& event);
     void SetupQuiltMode(void);
 
-    void ChartsRefresh(int dbi_hint);
+    void ChartsRefresh(int dbi_hint, ViewPort &vp);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
 
     ArrayOfRect GetCanvasReserveRects();

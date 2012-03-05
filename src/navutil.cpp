@@ -297,6 +297,9 @@ extern bool             g_bHighliteTracks;
 extern int              g_route_line_width;
 extern int              g_track_line_width;
 
+extern ChartGroupArray  *g_pGroupArray;
+extern int              g_GroupIndex;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -2840,6 +2843,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       g_bopengl = 0;
 #endif
 
+      Read ( _T ( "ActiveChartGroup" ),  &g_GroupIndex, 0 );
+
       Read ( _T ( "GPUMemorySize" ),  &g_GPU_MemSize, 256 );
 
       Read ( _T ( "SmoothPanZoom" ),  &g_bsmoothpanzoom, 0 );
@@ -3407,6 +3412,10 @@ int MyConfig::LoadMyConfig ( int iteration )
 //            int laynum = 0;
             pLayerList = new LayerList;
       }
+
+      //    Groups
+      if ( 0 == iteration )
+            LoadConfigGroups ( g_pGroupArray);
 
       //    Marks
       if ( 0 == iteration )
@@ -4049,6 +4058,104 @@ bool MyConfig::UpdateChartDirs ( ArrayOfCDI& dir_array )
       return true;
 }
 
+void MyConfig::CreateConfigGroups ( ChartGroupArray *pGroupArray )
+{
+      if(!pGroupArray)
+            return;
+
+      SetPath ( _T ( "/Groups" ) );
+      Write ( _T ( "GroupCount" ), (int)pGroupArray->GetCount() );
+
+      for(unsigned int i=0 ; i < pGroupArray->GetCount(); i++)
+      {
+            ChartGroup *pGroup = pGroupArray->Item(i);
+            wxString s;
+            s.Printf(_T("Group%d"), i+1);
+            s.Prepend( _T ( "/Groups/" ) );
+            SetPath ( s );
+
+            Write ( _T ( "GroupName" ), pGroup->m_group_name );
+            Write ( _T ( "GroupItemCount" ), (int)pGroup->m_element_array.GetCount() );
+
+            for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+            {
+                  wxString sg;
+                  sg.Printf(_T("Group%d/Item%d"), i+1, j);
+                  sg.Prepend( _T ( "/Groups/" ) );
+                  SetPath ( sg );
+                  Write ( _T ( "IncludeItem" ), pGroup->m_element_array.Item(j)->m_element_name );
+
+                  wxString t;
+                  wxArrayString u = pGroup->m_element_array.Item(j)->m_missing_name_array;
+                  if(u.GetCount())
+                  {
+                        for(unsigned int k=0; k < u.GetCount(); k++)
+                        {
+                              t += u.Item(k);
+                              t += _T(";");
+                        }
+                        Write ( _T ( "ExcludeItems" ), t );
+                  }
+            }
+      }
+}
+
+void MyConfig::DestroyConfigGroups ( void )
+{
+      DeleteGroup( _T ( "/Groups" ) );                //zap
+}
+
+void MyConfig::LoadConfigGroups ( ChartGroupArray *pGroupArray )
+{
+      SetPath ( _T ( "/Groups" ) );
+      unsigned int group_count;
+      Read ( _T ( "GroupCount" ), (int *)&group_count, 0 );
+
+      for(unsigned int i=0 ; i < group_count; i++)
+      {
+            ChartGroup *pGroup = new ChartGroup;
+            wxString s;
+            s.Printf(_T("Group%d"), i+1);
+            s.Prepend( _T ( "/Groups/" ) );
+            SetPath ( s );
+
+            wxString t;
+            Read ( _T ( "GroupName" ), &t );
+            pGroup->m_group_name = t;
+
+            unsigned int item_count;
+            Read ( _T ( "GroupItemCount" ), (int *)&item_count );
+            for(unsigned int j=0; j < item_count ; j++)
+            {
+                  wxString sg;
+                  sg.Printf(_T("Group%d/Item%d"), i+1, j);
+                  sg.Prepend( _T ( "/Groups/" ) );
+                  SetPath ( sg );
+
+                  wxString v;
+                  Read ( _T ( "IncludeItem" ), &v );
+                  ChartGroupElement *pelement = new ChartGroupElement;
+                  pelement->m_element_name = v;
+                  pGroup->m_element_array.Add(pelement);
+
+                  Read ( _T ( "ExcludeItems" ), &v );
+                  if(!v.IsEmpty())
+                  {
+                        wxStringTokenizer tk(v, _T(";"));
+                        while ( tk.HasMoreTokens() )
+                        {
+                              wxString token = tk.GetNextToken();
+                              pelement->m_missing_name_array.Add(token);
+                        }
+                  }
+            }
+            pGroupArray->Add(pGroup);
+      }
+
+}
+
+
+
 
 
 void MyConfig::UpdateSettings()
@@ -4115,6 +4222,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
       Write ( _T ( "InitialdBIndex" ),  g_restore_dbindex );
+      Write ( _T ( "ActiveChartGroup" ),  g_GroupIndex );
 
       Write ( _T ( "AnchorWatch1GUID" ),   g_AW1GUID );
       Write ( _T ( "AnchorWatch2GUID" ),   g_AW2GUID );
