@@ -247,12 +247,12 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
                         int n_dashes = m_pen.GetDashes(&dashes);
                         if(n_dashes)
                         {
-                              double angle = atan2(y2 - y1, x2 - x1);
+                              double angle = atan2((double)(y2 - y1), (double)(x2 - x1));
                               double cosa = cos(angle);
                               double sina = sin(angle);
                               double t1 = m_pen.GetWidth();
 
-                              double lpix = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+                              double lpix = sqrt((double)(x1-x2)*(x1-x2) + (double)(y1-y2)*(y1-y2));
                               double lrun = 0.;
                               double xa = x1;
                               double ya = y1;
