@@ -183,10 +183,11 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                               case 102:
                               case 103:
                               case 104:
-                              case 105:   // New PlugIn class definition in Version 2.4 Beta,
+                              case 105:
+                              case 106:
                                           break;      // incompatible
 
-                              case 106:   // New PlugIn class definition in Version 2.4 Beta,
+                              case 107:   // New PlugIn class definition in Version 2.4 Beta,
                                     bver_ok = true;
                                     break;
                               default:
@@ -495,6 +496,29 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                                     dc.DrawBitmap(m_cached_overlay_bm, 0, 0, true);
                               }
                         }
+                  }
+                  else if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                  {
+                  }
+
+            }
+      }
+
+      return true;
+}
+
+bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                  {
+                        PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
+
+                        pic->m_pplugin->RenderGLOverlay(pcontext, &pivp);
                   }
             }
       }
@@ -1139,7 +1163,8 @@ bool UpdateChartDBInplace(wxArrayString dir_array,
                   b_force_update, b_ProgressDialog,
                   ChartData->GetDBFileName());
 
-      gFrame->ChartsRefresh(-1);
+      ViewPort vp;
+      gFrame->ChartsRefresh(-1, vp);
 
       return b_ret;
 }
@@ -1229,6 +1254,9 @@ void opencpn_plugin::OnContextMenuItemCallback(int id)
 {}
 
 bool opencpn_plugin::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+{  return false; }
+
+bool opencpn_plugin::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
