@@ -2804,7 +2804,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "OwnshipBeamMeters" ),  &g_n_ownship_beam_meters, 0 );
       Read ( _T ( "OwnshipGPSOffsetY" ),  &g_n_gps_antenna_offset_y, g_n_ownship_length_meters/2 );
       Read ( _T ( "OwnshipGPSOffsetX" ),  &g_n_gps_antenna_offset_x, 0 );
-      Read ( _T ( "OwnshipMinMM" ),  &g_n_ownship_min_mm, 10 );
+      Read ( _T ( "OwnshipMinMM" ),  &g_n_ownship_min_mm, -1 );
 
       Read ( _T ( "UseNMEA_RMC" ),  &g_bUseRMC, 1 );
       Read ( _T ( "UseNMEA_GLL" ),  &g_bUseGLL, 1 );

@@ -5718,6 +5718,9 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                         scale_factor = wxMax(scale_factor, scale_factor_min);
                         scale_factor = wxMin(scale_factor, 10);
 
+                        if(g_n_ownship_min_mm == -1)
+                              scale_factor = 1.0;
+
                         //      Make a new member image under some conditions
                         if((m_cur_ship_pix != ship_scale_pix) || ((SHIP_NORMAL == m_ownship_state) && m_cur_ship_pix_isgrey) || !m_ship_pix_image.IsOk() || (m_ship_cs != m_cs))
                         {
@@ -5731,18 +5734,19 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                         pos_image = &m_ship_pix_image;
 
                 //      Draw the ownship icon
-                        wxPoint rot_ctr(img_width/2, img_height/2);
+                        wxPoint rot_ctr(pos_image->GetWidth()/2, pos_image->GetHeight()/2);
                         wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
                         wxBitmap os_bm(rot_image);
 
                         int w =  os_bm.GetWidth();
                         int h = os_bm.GetHeight();
 
-                        dc.DrawBitmap(os_bm, lShipMidPoint.x - w/2 - 1, lShipMidPoint.y - h/2 - 1, true);
+                        int corr = 0;
+                        dc.DrawBitmap(os_bm, lShipMidPoint.x - w/2 - corr, lShipMidPoint.y - h/2 - corr, true);
 
                         // Maintain dirty box,, missing in __WXMSW__ library
-                        dc.CalcBoundingBox( lShipMidPoint.x - w/2 - 1, lShipMidPoint.y - h/2 - 1);
-                        dc.CalcBoundingBox( lShipMidPoint.x - w/2 + w +1, lShipMidPoint.y - h/2 + h +1);
+                        dc.CalcBoundingBox( lShipMidPoint.x - w/2 - corr, lShipMidPoint.y - h/2 - corr);
+                        dc.CalcBoundingBox( lShipMidPoint.x - w/2 + w +corr, lShipMidPoint.y - h/2 + h +corr);
                 }
 
                 // draw course over ground if they are longer than the ship
