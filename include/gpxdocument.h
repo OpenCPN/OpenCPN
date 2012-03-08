@@ -28,6 +28,7 @@
 #define _GPXDOCUMENT_H_
 
 #include <wx/wx.h>
+#include <wx/regex.h>
 #include <tinyxml.h>
 //#include <tinystr.h>
 #include <stdio.h>
