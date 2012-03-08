@@ -29,7 +29,7 @@
 
 #include <wx/wx.h>
 #include <tinyxml.h>
-#include <tinystr.h>
+//#include <tinystr.h>
 #include <stdio.h>
 
 const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it

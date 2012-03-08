@@ -332,8 +332,8 @@ SET(SRC_TINYXML
             src/tinyxmlerror.cpp
             src/tinyxmlparser.cpp
             include/tinyxml.h
-            include/tinystr.h
-            src/tinystr.cpp
+#            include/tinystr.h
+#            src/tinystr.cpp
       )
 
 IF(TINYXML_FOUND)
@@ -343,6 +343,7 @@ IF(TINYXML_FOUND)
 ELSE(TINYXML_FOUND)
     message (STATUS "tinyxml library not found")
     SET(SRCS ${SRCS} ${SRC_TINYXML})
+    ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
 
