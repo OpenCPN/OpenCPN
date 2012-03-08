@@ -5428,11 +5428,6 @@ int MyFrame::DoOptionsDialog()
             {
                   pConfig->DestroyConfigGroups();
                   pConfig->CreateConfigGroups(pSetDlg->GetGroupArray());
-
-                  //    Establish the new Group Array
-                  delete g_pGroupArray;
-                  g_pGroupArray = pSetDlg->GetGroupArray();
-
             }
 
             if( ((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||

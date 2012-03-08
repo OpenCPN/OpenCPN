@@ -2704,7 +2704,13 @@ void options::OnButtonGroups(wxCommandEvent& event)
       pdlg->Centre();
 
       if(pdlg->ShowModal() == xID_OK)
+      {
             m_groups_changed = GROUPS_CHANGED;
+
+      //    Make a deep copy of the edited  working Group Array
+            delete g_pGroupArray;
+            g_pGroupArray = CloneChartGroupArray(m_pGroupArray);
+      }
       else
             m_groups_changed = 0;
 
