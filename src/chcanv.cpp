@@ -122,9 +122,9 @@ extern TCMgr            *ptcmgr;
 extern Select           *pSelectTC;
 extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
-extern MarkProp         *pMarkPropDialog;
+extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
-extern MarkInfo         *pMarkInfoDialog;
+extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 
 extern IDX_entry        *gpIDX;
@@ -8481,12 +8481,6 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                   pdef_menu->Append ( ID_RT_MENU_DELPOINT,    _( "Delete Waypoint" ) );
             pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
 
-            int NbrLinks = m_pFoundRoutePoint->m_HyperlinkList->GetCount();
-            if (NbrLinks > 0)
-            {
-                  pdef_menu->Append ( ID_WP_MENU_ADDITIONAL_INFO,   _( "Additional information" ) );
-            }
-
             pdef_menu->AppendSeparator();
 
             if(m_pSelectedRoute)
@@ -8516,9 +8510,6 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
                     if (dist*1852. <= g_nAWMax)
                           pdef_menu->Append ( ID_WP_MENU_SET_ANCHORWATCH,   _( "Set Anchor Watch" ) );      //pjotrc 2010.02.15
                     }
-
-              if (m_pFoundRoutePoint->m_HyperlinkList->GetCount() > 0)
-                   pdef_menu->Append ( ID_WP_MENU_ADDITIONAL_INFO,   _( "Additional information" ) );
 
               pdef_menu->AppendSeparator();
 
@@ -8891,7 +8882,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                 }
                 case ID_WP_MENU_PROPERTIES:
                         if ( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-                                pMarkPropDialog = new MarkProp ( this );
+                                pMarkPropDialog = new MarkInfoImpl ( this );
 
                         pMarkPropDialog->SetRoutePoint ( m_pFoundRoutePoint );
                         pMarkPropDialog->UpdateProperties();
@@ -8947,7 +8938,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_WP_MENU_ADDITIONAL_INFO:             // toh, 2009.02.08
                         if ( NULL == pMarkInfoDialog )          // There is one global instance of the MarkInfo Dialog
-                              pMarkInfoDialog = new MarkInfo ( this );
+                              pMarkInfoDialog = new MarkInfoImpl ( this );
 
                         pMarkInfoDialog->SetRoutePoint ( m_pFoundRoutePoint );
                         pMarkInfoDialog->UpdateProperties();

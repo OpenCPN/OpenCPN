@@ -168,9 +168,9 @@ Select          *pSelectAIS;
 
 Routeman        *g_pRouteMan;
 WayPointman     *pWayPointMan;
-MarkProp        *pMarkPropDialog;
+MarkInfoImpl    *pMarkPropDialog;
 RouteProp       *pRoutePropDialog;
-MarkInfo        *pMarkInfoDialog;
+MarkInfoImpl    *pMarkInfoDialog;
 RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
@@ -3432,10 +3432,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
       if(pMarkPropDialog)
             pMarkPropDialog->SetColorScheme(cs);
 
-      if(pRoutePropDialog)
-            pRoutePropDialog->SetColorScheme(cs);
-
-            // toh, 2009.02.08
       if(pMarkInfoDialog)
             pMarkInfoDialog->SetColorScheme(cs);
 
