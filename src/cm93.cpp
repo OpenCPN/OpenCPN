@@ -1761,6 +1761,7 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
                         if ( !read_and_decode_bytes ( stream, pobj->attributes_block, obj_desc_bytes ) )
                               return false;           // the attributes....
 
+                        printf("%s\n", pobj->attributes_block);
                         if ( ( pobj->geotype & 0x0f ) == 1 )
                         {
 //                        int yyp = 5;
@@ -3361,7 +3362,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 //      pobj->prim = geomtype_sub;
 
       //  Debug hook
-//       if(sclass.IsSameAs((char *)"UWTROC"))
+//       if(sclass.IsSameAs((_T("DISMAR"))))
 //             int ggk = 5;
 
 
