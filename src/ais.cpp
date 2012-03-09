@@ -607,8 +607,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             {
                   wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo-1), now.GetYear(), ETA_Hr, ETA_Min);
                   line.Printf(_("ETA:                  "));
-                  line.Append( eta.Format(_T("%b %e")));
-                  line.Append(_T(",  "));
+                  line.Append( eta.Format(_T("%b %d")));
+                  line.Append(_T(" "));
                   line.Append( eta.FormatISOTime());
                   line.Append(_T("\n"));
             }
