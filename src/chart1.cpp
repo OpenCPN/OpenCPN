@@ -122,6 +122,8 @@ WX_DEFINE_OBJARRAY(ArrayOfRect);
 
 class ocpnFloatingCompassWindow;
 
+extern void EmptyChartGroupArray(ChartGroupArray *s);
+
 
 //------------------------------------------------------------------------------
 //      Static variable definition
@@ -3038,8 +3040,24 @@ int MyApp::OnExit()
       if (bGPSValid)
       {
             wxString data;
-            data.Printf(_T("OFF: Lat %10.5f Lon %10.5f COG %10.5f SOG %6.2f"), gLat, gLon, gCog, gSog);
+            data.Printf(_T("OFF: Lat %10.5f Lon %10.5f "), gLat, gLon);
             navmsg += data;
+
+            wxString cog;
+            if(wxIsNaN(gCog))
+                  cog.Printf(_T("COG ----- "));
+            else
+                  cog.Printf(_T("COG %10.5f "), gCog);
+
+            wxString sog;
+            if(wxIsNaN(gSog))
+                  sog.Printf(_T("SOG -----  "));
+            else
+                  sog.Printf(_T("SOG %6.2f"), gSog);
+
+            navmsg += cog;
+            navmsg += sog;
+
       }
       else
       {
@@ -3099,6 +3117,13 @@ int MyApp::OnExit()
         delete g_pCommMan;
 
         delete pLayerList;
+
+        if(g_pGroupArray)
+        {
+              EmptyChartGroupArray(g_pGroupArray);
+//              g_pGroupArray->Clear();
+              delete g_pGroupArray;
+        }
 
 #ifdef USE_S57
         delete s_pcm93mgr;
