@@ -62,18 +62,23 @@ bool GpxDocument::LoadFile(const wxString &filename)
 #ifdef wxHAS_REGEX_ADVANCED
       re_compile_flags |= wxRE_ADVANCED;
 #endif
-      re.Compile(wxT("&(?!amp;|lt;|gt;|apos;|quot;|#[0-9]{1,};|#x[0-f]{1,};)"), re_compile_flags); //Should find all the non-XML entites to be encoded as text
+      bool b = re.Compile(wxT("&(?!amp;|lt;|gt;|apos;|quot;|#[0-9]{1,};|#x[0-f]{1,};)"), re_compile_flags); //Should find all the non-XML entites to be encoded as text
       wxFFile file(filename);
       wxString s;
       if(file.IsOpened()) {
             file.ReadAll(&s, wxConvUTF8);
             file.Close();
       }
-      if (!s.Contains(wxT("![CDATA["))) //CDATA handling makes this task way too complex for regular expressions to handle, so we do nothing and just let the possible damage happen...
+      if(b)
       {
-            int cnt = re.ReplaceAll(&s, wxT("&amp;"));
-            if (cnt > 0)
-                  wxLogMessage(wxString::Format(wxT("File %s seems broken, %i occurences of '&' were replaced with '&amp;' to try to fix it."), filename.c_str(), cnt));
+            //CDATA handling makes this task way too complex for regular expressions to handle,
+            // so we do nothing and just let the possible damage happen...
+            if (!s.Contains(wxT("![CDATA[")))
+            {
+                  int cnt = re.ReplaceAll(&s, wxT("&amp;"));
+                  if (cnt > 0)
+                        wxLogMessage(wxString::Format(wxT("File %s seems broken, %i occurences of '&' were replaced with '&amp;' to try to fix it."), filename.c_str(), cnt));
+            }
       }
       wxFFile gpxfile;
       wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"), &gpxfile);
