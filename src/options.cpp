@@ -57,6 +57,7 @@
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
+void EmptyChartGroupArray(ChartGroupArray *s);
 
 
 extern bool             g_bShowPrintIcon;
@@ -299,6 +300,10 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 options::~options( )
 {
       delete m_pSerialArray;
+
+      EmptyChartGroupArray(m_pGroupArray);
+      delete m_pGroupArray;
+      m_pGroupArray = NULL;
 
 }
 
@@ -2685,6 +2690,31 @@ ChartGroupArray *CloneChartGroupArray(ChartGroupArray *s)
       return d;
 }
 
+void EmptyChartGroupArray(ChartGroupArray *s)
+{
+      if(!s)
+          return;
+      for(unsigned int i=0 ; i < s->GetCount(); i++)
+      {
+            ChartGroup *psg =  s->Item(i);
+      
+            for(unsigned int j=0; j < psg->m_element_array.GetCount(); j++)
+            {
+                 ChartGroupElement *pe = psg->m_element_array.Item(j);
+                 pe->m_missing_name_array.Clear();
+                 psg->m_element_array.RemoveAt(j);
+                 delete pe;
+
+            }
+            s->RemoveAt(i);
+            delete psg;
+      }
+
+      s->Clear();
+}
+
+
+
 void options::OnButtonGroups(wxCommandEvent& event)
 {
       int display_width, display_height;
@@ -2694,6 +2724,7 @@ void options::OnButtonGroups(wxCommandEvent& event)
       pdlg->SetDBDirs(m_CurrentDirList);
 
       //    Make a deep copy of the current global Group Array
+      EmptyChartGroupArray(m_pGroupArray);
       delete m_pGroupArray;
       m_pGroupArray = CloneChartGroupArray(g_pGroupArray);
 
@@ -2708,6 +2739,7 @@ void options::OnButtonGroups(wxCommandEvent& event)
             m_groups_changed = GROUPS_CHANGED;
 
       //    Make a deep copy of the edited  working Group Array
+            EmptyChartGroupArray(g_pGroupArray);
             delete g_pGroupArray;
             g_pGroupArray = CloneChartGroupArray(m_pGroupArray);
       }
@@ -2901,7 +2933,6 @@ void groups_dialog::CreateControls(void)
       }
       PopulateTreeCtrl(BasicGroupDirCtl->GetTreeCtrl(), dir_array0, wxColour(128, 128, 128), iFont);
 
-//      AddEmptyGroupPage(_T("Test Group"));
       BuildNotebookPages(m_pGroupArray);
 
       //    Add the Chart Group (page) "New" and "Delete" buttons
@@ -2937,7 +2968,7 @@ void groups_dialog::PopulateTreeCtrl(wxTreeCtrl *ptc, const wxArrayString &dir_a
 {
       ptc->DeleteAllItems();
 
-      wxDirItemData* rootData = new wxDirItemData(wxEmptyString, wxEmptyString, true);
+      wxDirItemData* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), true);
       wxString rootName;
       rootName = _T("Dummy");
       wxTreeItemId m_rootId = ptc->AddRoot( rootName, 3, -1, rootData);
@@ -2951,7 +2982,7 @@ void groups_dialog::PopulateTreeCtrl(wxTreeCtrl *ptc, const wxArrayString &dir_a
             if(!dirname.IsEmpty())
             {
                   wxDirItemData *dir_item = new wxDirItemData(dirname, dirname,true);
-                  wxTreeItemId id = ptc->AppendItem( m_rootId, dirname, -1, -1, dir_item);
+                  wxTreeItemId id = ptc->AppendItem( m_rootId, dirname, 0, -1, dir_item);
                   if(pFont)
                         ptc->SetItemFont(id, *pFont);
                   ptc->SetItemTextColour(id,  col);
@@ -2985,7 +3016,7 @@ void groups_dialog::OnInsertChartItem(wxCommandEvent &event)
 
                               wxTreeItemId root_Id = ptree->GetRootItem();
                               wxDirItemData *dir_item = new wxDirItemData(insert_candidate, insert_candidate,true);
-                              wxTreeItemId id = ptree->AppendItem( root_Id, insert_candidate, -1, -1, dir_item);
+                              wxTreeItemId id = ptree->AppendItem( root_Id, insert_candidate, 0, -1, dir_item);
                               if(wxDir::Exists(insert_candidate))
                                     ptree->SetItemHasChildren(id);
                         }
@@ -3047,7 +3078,7 @@ void groups_dialog::OnRemoveChartItem(wxCommandEvent &event)
                                     {
 
                                           ptree->SetItemTextColour(id, wxColour(128, 128, 128));
-                                          ptree->SelectItem(id, false);
+//                                          ptree->SelectItem(id, false);
                                     }
                               }//   what about toggle back?
                         }
@@ -3234,7 +3265,7 @@ void groups_dialog::BuildNotebookPages(ChartGroupArray *pGroupArray)
                   if(!itemname.IsEmpty())
                   {
                         wxDirItemData *dir_item = new wxDirItemData(itemname, itemname,true);
-                        wxTreeItemId id = ptc->AppendItem( ptc->GetRootItem(), itemname, -1, -1, dir_item);
+                        wxTreeItemId id = ptc->AppendItem( ptc->GetRootItem(), itemname, 0, -1, dir_item);
 
                         if(wxDir::Exists(itemname))
                               ptc->SetItemHasChildren(id);
