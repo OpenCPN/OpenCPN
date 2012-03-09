@@ -1171,10 +1171,23 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
             else if (!strncmp(buffer, "DTM", 3))
             {
-                  float fdtmlat, fdtmlon;
-                  sscanf(&buffer[4], "%f,%f", &fdtmlat, &fdtmlon);
-                  m_dtm_lat = fdtmlat;
-                  m_dtm_lon = fdtmlon;
+                  double val;
+                  wxStringTokenizer tkz(str_buf, _T("/,="));
+                  wxString token = tkz.GetNextToken();
+
+                  token = tkz.GetNextToken();
+                  if(token.ToDouble(&val))
+                        m_dtm_lat = val;
+
+                  token = tkz.GetNextToken();
+                  if(token.ToDouble(&val))
+                        m_dtm_lon = val;
+
+
+//                  float fdtmlat, fdtmlon;
+//                  sscanf(&buffer[4], "%f,%f", &fdtmlat, &fdtmlon);
+//                  m_dtm_lat = fdtmlat;
+//                  m_dtm_lon = fdtmlon;
             }
 
 
@@ -2919,8 +2932,14 @@ void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
             MolodenskyTransform (vpt.clat, vpt.clon, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
             m_lon_datum_adjust = -(to_lon - vpt.clon);
             m_lat_datum_adjust = -(to_lat - vpt.clat);
-            m_lon_datum_adjust -= m_dtm_lon / 3600.;
-            m_lat_datum_adjust -= m_dtm_lat / 3600.;
+//            m_lon_datum_adjust -= m_dtm_lon / 3600.;
+//            m_lat_datum_adjust -= m_dtm_lat / 3600.;
+
+// testing
+//            double t_lon_datum_adjust = -m_dtm_lon / 3600.;
+//            double t_lat_datum_adjust = -m_dtm_lat / 3600.;
+//            printf("%g %g\n", t_lon_datum_adjust, t_lat_datum_adjust);
+//            printf("%g %g\n", m_lon_datum_adjust * 3600, m_lat_datum_adjust * 3600);
 
       }
 
