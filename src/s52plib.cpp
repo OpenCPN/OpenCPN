@@ -2481,14 +2481,14 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
                   return str;
             }
 
-            while ( *str!=',' && *str!=')' && *str!='\0' /*&& len<bsz*/ )
+            while ( *str!=',' && *str!=')' && *str!='\0' && len<(bsz-1) )
             {
                   *tmp++ = *str++;
                   ++len;
             }
 
-            //if (len > bsz)
-            //    printf("ERROR: chopping input S52 line !? \n");
+            if (len >= bsz)
+                printf("ERROR: chopping input S52 line !? \n");
 
             *tmp = '\0';
             str++;        // skip ',' or ')'
@@ -2521,7 +2521,7 @@ char      *_getParamVal ( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
             if ( vallen >= bsz )
             {
-                  vallen =  bsz;
+                  vallen =  bsz-1;
 //            PRINTF("ERROR: chopping attribut value !? \n");
             }
 
@@ -2598,9 +2598,9 @@ char *_parseTEXT ( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
 
       if(text)
       {
-            str = _getParamVal ( rzRules, str, &text->hjust, 1 );   // HJUST
-            str = _getParamVal ( rzRules, str, &text->vjust, 1 );   // VJUST
-            str = _getParamVal ( rzRules, str, &text->space, 1 );   // SPACE
+            str = _getParamVal ( rzRules, str, &text->hjust, MAXL );   // HJUST
+            str = _getParamVal ( rzRules, str, &text->vjust, MAXL );   // VJUST
+            str = _getParamVal ( rzRules, str, &text->space, MAXL );   // SPACE
 
             // CHARS
             str         = _getParamVal ( rzRules, str, buf, 5 );
@@ -2626,10 +2626,7 @@ S52_TextC   *S52_PL_parseTX ( ObjRazRules *rzRules, Rules *rules, char *cmd )
 {
       S52_TextC *text = NULL;
       char *str      = NULL;
-      char buf[MAXL] = {'\0'};   // output string
       char val[MAXL] = {'\0'};   // value of arg
-      char *b    = buf;
-
 
       str = ( char* ) rules->INSTstr;
 
@@ -2638,7 +2635,6 @@ S52_TextC   *S52_PL_parseTX ( ObjRazRules *rzRules, Rules *rules, char *cmd )
             return 0;   // abort this command word if mandatory param absent
 
       val[MAXL - 1] = '\0';                               // make sure the string terminates
-      sprintf ( b, "%s", val );
 
       text = new S52_TextC;
       str = _parseTEXT ( rzRules, text, str );
