@@ -2299,7 +2299,7 @@ wxColour s52plib::S52_getwxColour ( const wxString &colorName )
 //
 //-----------------------------
 #define APOS   '\047'
-#define MAXL       256
+#define MAXL       512
 
 #if 0
 wxString GetGenericAttr ( S57Obj *obj, char *AttrName )
