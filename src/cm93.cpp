@@ -1761,7 +1761,6 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
                         if ( !read_and_decode_bytes ( stream, pobj->attributes_block, obj_desc_bytes ) )
                               return false;           // the attributes....
 
-                        printf("%s\n", pobj->attributes_block);
                         if ( ( pobj->geotype & 0x0f ) == 1 )
                         {
 //                        int yyp = 5;
