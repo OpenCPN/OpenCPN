@@ -866,6 +866,9 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             wxString str_buf(buffer,  wxConvUTF8);
             wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
 
+            if(str_buf.Find(_T("SHOM")) != wxNOT_FOUND)
+                  m_b_SHOM = true;
+
             if(!strncmp(buffer, "BSB", 3))
             {
                   wxString clip_str_buf(&buffer[0],  iso_conv);  // for single byte French encodings of NAme field
@@ -1169,6 +1172,14 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                 m_cph = float_cph;
             }
 
+            else if (!strncmp(buffer, "VER", 3))
+            {
+                  wxStringTokenizer tkz(str_buf, _T("/,="));
+                  wxString token = tkz.GetNextToken();
+
+                  m_bsb_ver = tkz.GetNextToken();
+            }
+
             else if (!strncmp(buffer, "DTM", 3))
             {
                   double val;
@@ -1256,6 +1267,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       }
 
+      //    Some charts improperly encode the DTM parameters.
+      //    Identify them as necessary, for further processing
+      if(m_b_SHOM && (m_bsb_ver == _T("1.1")))
+            m_b_apply_dtm = false;
 
       //    If imbedded coefficients are found,
       //    then use the polynomial georeferencing algorithms
@@ -1302,6 +1317,9 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       //    Adjust the PLY points to WGS84 datum
       Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);
       int cnPlypoint = GetCOVRTablenPoints(0);
+
+      //  n.b. this is not precisely right for non-wgs84 charts.
+      //  should use molodensky transform, and then consider SHOM Ver 1.1 charts
 
       for(int u=0 ; u<cnPlypoint ; u++)
       {
@@ -1418,6 +1436,8 @@ ChartBaseBSB::ChartBaseBSB()
       m_proj_lat = 0.;
       m_proj_lon = 0.;
       m_proj_parameter = 0.;
+      m_b_SHOM = false;
+      m_b_apply_dtm = true;
 
       m_b_cdebug = 0;
 
@@ -2932,15 +2952,11 @@ void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
             MolodenskyTransform (vpt.clat, vpt.clon, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
             m_lon_datum_adjust = -(to_lon - vpt.clon);
             m_lat_datum_adjust = -(to_lat - vpt.clat);
-//            m_lon_datum_adjust -= m_dtm_lon / 3600.;
-//            m_lat_datum_adjust -= m_dtm_lat / 3600.;
-
-// testing
-//            double t_lon_datum_adjust = -m_dtm_lon / 3600.;
-//            double t_lat_datum_adjust = -m_dtm_lat / 3600.;
-//            printf("%g %g\n", t_lon_datum_adjust, t_lat_datum_adjust);
-//            printf("%g %g\n", m_lon_datum_adjust * 3600, m_lat_datum_adjust * 3600);
-
+            if(m_b_apply_dtm)
+            {
+                  m_lon_datum_adjust -= m_dtm_lon / 3600.;
+                  m_lat_datum_adjust -= m_dtm_lat / 3600.;
+            }
       }
 
       ComputeSourceRectangle(vpt, &Rsrc);

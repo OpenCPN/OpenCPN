@@ -248,6 +248,10 @@ protected:
       double      m_dx;                                 // Pixel scale factors, from KAP header
       double      m_dy;
 
+      wxString    m_bsb_ver;
+      bool        m_b_SHOM;
+      bool        m_b_apply_dtm;
+
       int         m_datum_index;
       double      m_dtm_lat;
       double      m_dtm_lon;
