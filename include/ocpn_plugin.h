@@ -335,7 +335,7 @@ class DECL_EXP opencpn_plugin
 
 public:
       opencpn_plugin(void *pmgr) {}
-      virtual ~opencpn_plugin() {}
+      virtual ~opencpn_plugin();
 
       //    Public API to the PlugIn class
 
@@ -371,8 +371,7 @@ public:
 
       virtual void ShowPreferencesDialog( wxWindow* parent );
 
-      virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-      virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
@@ -389,7 +388,6 @@ public:
       virtual void UpdateAuiStatus(void);
 
       virtual wxArrayString GetDynamicChartClassNameArray(void);
-      virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 
  };
 
@@ -398,6 +396,30 @@ public:
  typedef opencpn_plugin* create_t(void*);
  typedef void destroy_t(opencpn_plugin*);
 
+ class DECL_EXP opencpn_plugin_16 : public opencpn_plugin
+ {
+       public:
+             opencpn_plugin_16(void *pmgr);
+             virtual ~opencpn_plugin_16();
+
+             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
+ };
+
+class DECL_EXP opencpn_plugin_17 : public opencpn_plugin
+{
+       public:
+             opencpn_plugin_17(void *pmgr);
+             virtual ~opencpn_plugin_17();
+
+             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
+};
 
 
 //----------------------------------------------------------------------------------------------------------

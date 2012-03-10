@@ -51,10 +51,11 @@
 
 #define GRIB_TOOL_POSITION    -1          // Request default positioning of toolbar tool
 
-class grib_pi : public opencpn_plugin
+class grib_pi : public opencpn_plugin_16
 {
 public:
       grib_pi(void *ppimgr);
+      ~grib_pi(void);
 
 //    The required PlugIn Methods
       int Init(void);

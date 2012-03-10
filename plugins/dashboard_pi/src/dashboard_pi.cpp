@@ -195,10 +195,21 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
 //---------------------------------------------------------------------------------------------------------
 
 dashboard_pi::dashboard_pi(void *ppimgr)
-      :opencpn_plugin(ppimgr)
+      :opencpn_plugin_16(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
+
+}
+
+dashboard_pi::~dashboard_pi(void)
+{
+      delete _img_dashboard_pi;
+      delete _img_dashboard;
+      delete _img_dial;
+      delete _img_instrument;
+      delete _img_minus;
+      delete _img_plus;
 
 }
 
@@ -273,13 +284,6 @@ bool dashboard_pi::DeInit(void)
       delete g_pFontData;
       delete g_pFontLabel;
       delete g_pFontSmall;
-
-	delete _img_dashboard_pi;
-      delete _img_dashboard;
-	delete _img_dial;
-	delete _img_instrument;
-	delete _img_minus;
-	delete _img_plus;
 
       return true;
 }

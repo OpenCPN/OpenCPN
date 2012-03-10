@@ -109,10 +109,11 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //----------------------------------------------------------------------------------------------------------
 
 
-class dashboard_pi : public wxEvtHandler, opencpn_plugin
+class dashboard_pi : public wxEvtHandler, opencpn_plugin_16
 {
 public:
       dashboard_pi(void *ppimgr);
+      ~dashboard_pi(void);
 
 //    The required PlugIn Methods
       int Init(void);
