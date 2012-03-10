@@ -3807,8 +3807,8 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
                   }
             }
 
-            if((width == 0) || (height == 0))
-                  int yyp = 4;
+//            if((width == 0) || (height == 0))
+//                  int yyp = 4;
 
             wxBitmap *pbm = new wxBitmap ( width, height );
             wxMemoryDC mdc;
