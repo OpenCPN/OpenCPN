@@ -2594,7 +2594,6 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 // sounding labels. It symbolizes swept depth and it also symbolizes for low
 // reliability as indicated by attributes QUASOU and QUAPOS.
 {
-
     wxString sndfrm02;
     char     temp_str[LISTSIZE] = {'\0'};
 
@@ -2617,6 +2616,11 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 
     //      Do the math to convert soundings to ft/metres/fathoms on request
     double depth_value = depth_value_in;
+
+    //      If the sounding value from the ENC is bogus, so state
+    if(depth_value_in > 40000.)
+      depth_value = 99999.;
+
     switch(ps52plib->m_nDepthUnitDisplay)
     {
           case 0:
