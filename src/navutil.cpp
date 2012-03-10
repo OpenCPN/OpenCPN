@@ -56,6 +56,7 @@
 #include "ais.h"
 #include "cutil.h"
 #include "routeman.h"
+#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "tinyxml.h"
@@ -109,6 +110,7 @@ extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 extern ComPortManager   *g_pCommMan;
+extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -2638,33 +2640,135 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 {
 
       Route *route = new Route();
-      RoutePoint *pWP_src = NULL;
       wxRoutePointListNode *prpnode = pRoutePointList->GetFirst();
-      int ic = 0;
-      int nPoints = pRoutePointList->GetCount();
+      RoutePoint *pWP_src = prpnode->GetData();
+      wxRoutePointListNode *prpnodeX;
+      RoutePoint *pWP_dst;
+      RoutePoint *prp_OK = NULL;  // last routepoint known not to exceed xte limit, if not yet added
 
+      wxString icon = _T("xmblue");
+      if (g_TrackDeltaDistance >= 0.1) icon = _T("diamond");
+
+      int ic = 0;
+      int next_ic = 0;
+      int back_ic = 0;
+      int nPoints = pRoutePointList->GetCount();
+      bool isProminent = true;
+      double delta_dist, delta_hdg, xte;
+      double leg_speed = 0.1;
+
+      if (pRoutePropDialog) leg_speed = pRoutePropDialog->m_planspeed;
+      else leg_speed = g_PlanSpeed;
+
+// add first point
+
+      pWP_dst = new RoutePoint ( pWP_src->m_lat, pWP_src->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+      route->AddPoint(pWP_dst);
+
+      pWP_dst->m_bShowName = false;
+
+      pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+// add intermediate points as needed
+
+      prpnode = prpnode->GetNext();
+ 
       while ( prpnode )
       {
             RoutePoint *prp = prpnode->GetData();
+            prpnodeX = prpnode;
+            pWP_dst = pWP_src;
 
-            RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon,  _T ( "xmblue" ) , _T ( "" ) , GPX_EMPTY_STRING );
-            route->AddPoint(pWP_dst);
+            delta_dist = 0.0;
+            delta_hdg = 0.0;
+            back_ic = next_ic;
 
-            pWP_dst->m_bShowName = false;
+            DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, &delta_hdg, &delta_dist);
 
-            pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+            if ((delta_dist > (leg_speed * 6.0)) && !prp_OK) {
+                  int delta_inserts = floor(delta_dist/(leg_speed * 4.0));
+                  delta_dist = delta_dist/(delta_inserts+1);
+                  double tlat = 0.0;
+                  double tlon = 0.0;
 
-            if (pWP_src)
-                  pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
-            pWP_src = pWP_dst;
+                  while (delta_inserts--) {
+                        ll_gc_ll ( pWP_src->m_lat, pWP_src->m_lon, delta_hdg, delta_dist, &tlat, &tlon );
+                        pWP_dst = new RoutePoint ( tlat, tlon,  icon, _T ( "" ), GPX_EMPTY_STRING );
+                        route->AddPoint(pWP_dst);
+                        pWP_dst->m_bShowName = false;
+                        pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
-            prpnode = prpnode->GetNext(); //RoutePoint
+                        pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+ 
+                        pWP_src = pWP_dst;
+                  }
+                  prpnodeX = prpnode;
+                  pWP_dst = pWP_src;
+                  next_ic = 0;
+                  delta_dist = 0.0;
+                  back_ic = next_ic;
+                  prp_OK = prp;
+                  isProminent = true;
+            }
+            else {
+                  isProminent = false;
+                  if (delta_dist >= (leg_speed * 4.0)) isProminent = true;
+                  if (!prp_OK) prp_OK = prp;
+            }
 
+            while (prpnodeX) {
+
+                  RoutePoint *prpX = prpnodeX->GetData();
+                  xte = GetXTE(pWP_src, prpX, prp);
+                  if (isProminent || (xte > g_TrackDeltaDistance)) {
+
+                        pWP_dst = new RoutePoint ( prp_OK->m_lat, prp_OK->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+
+                        route->AddPoint(pWP_dst);
+                        pWP_dst->m_bShowName = false;
+
+                        pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+                        pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+
+                        pWP_src = pWP_dst;
+                        next_ic = 0;
+                        prpnodeX = NULL;
+                        prp_OK = NULL;
+                  }
+
+                  if (prpnodeX) prpnodeX = prpnodeX->GetPrevious();
+                  if (back_ic-- <= 0) {
+                         prpnodeX = NULL;
+                  }
+            }
+
+            if (prp_OK) {
+                  prp_OK = prp;
+            }
+
+            DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, NULL, &delta_dist);
+
+            if (!((delta_dist > (g_TrackDeltaDistance)) && !prp_OK)) {
+                  prpnode = prpnode->GetNext(); //RoutePoint
+                  next_ic++;
+            }
             ic++;
             if(pprog)
                 pprog->Update((ic * 100) /nPoints);
       }
 
+// add last point, if needed
+      if (delta_dist >= g_TrackDeltaDistance) {
+            pWP_dst = new RoutePoint ( pRoutePointList->GetLast()->GetData()->m_lat, pRoutePointList->GetLast()->GetData()->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+            route->AddPoint(pWP_dst);
+ 
+            pWP_dst->m_bShowName = false;
+
+            pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+            pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+      }
       route->m_RouteNameString = m_RouteNameString;
       route->m_RouteStartString = m_RouteStartString;
       route->m_RouteEndString = m_RouteEndString;
@@ -2673,6 +2777,27 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
       return route;
 }
 
+double Track::GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to)
+{
+      if (!fm1 || !fm2 || !to) return 0.0;
+      if (fm1 == to) return 0.0;
+      if (fm2 == to) return 0.0;
+//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
+          VECTOR2D va, vb, vn;
+
+          double brg1, dist1, brg2, dist2;
+          DistanceBearingMercator(to->m_lat, to->m_lon, fm1->m_lat, fm1->m_lon, &brg1, &dist1);
+          vb.x = dist1 * sin(brg1 * PI / 180.);
+          vb.y = dist1 * cos(brg1 * PI / 180.);
+
+          DistanceBearingMercator(to->m_lat, to->m_lon, fm2->m_lat, fm2->m_lon, &brg2, &dist2);
+          va.x = dist2 * sin(brg2 * PI / 180.);
+          va.y = dist2 * cos(brg2 * PI / 180.);
+
+          double sdelta = vGetLengthOfNormal(&va, &vb, &vn);             // NM
+
+           return (abs(sdelta));
+}
 
 //-----------------------------------------------------------------------------
 //          Layer Implementation

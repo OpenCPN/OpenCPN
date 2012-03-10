@@ -296,6 +296,7 @@ class Track : public wxEvtHandler, public Route
             void Draw(ocpnDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
+            double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
 
       private:
             void OnTimerTrack(wxTimerEvent& event);
