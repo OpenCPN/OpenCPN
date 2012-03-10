@@ -18,7 +18,7 @@ PROJECT(grib_pi)
 
 SET(PACKAGE_NAME grib_pi)
 SET(PLUGIN_SOURCE_DIR .)
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 

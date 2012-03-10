@@ -94,7 +94,7 @@ ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
 MESSAGE (${ARCH})
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
@@ -129,7 +129,7 @@ STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
 
 
 MESSAGE (STATUS "")
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME}  ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 

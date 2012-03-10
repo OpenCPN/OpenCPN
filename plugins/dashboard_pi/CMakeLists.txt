@@ -19,7 +19,7 @@ PROJECT(dashboard_pi)
 SET(PACKAGE_NAME dashboard_pi)
 SET(PLUGIN_SOURCE_DIR .)
 MESSAGE (STATUS "")
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
