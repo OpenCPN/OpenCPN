@@ -303,6 +303,13 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
           dc->DrawLines(n, points, xoffset, yoffset);
      else if(ConfigurePen()) {
 
+           glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
+
+           glEnable(GL_LINE_SMOOTH);
+           glEnable(GL_BLEND);
+           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
            if(m_pen.GetWidth() > 1)
            {
               wxPoint p0 = points[0];
@@ -319,6 +326,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                        glVertex2i(points[i].x + xoffset, points[i].y + yoffset);
                  glEnd();
            }
+           glPopAttrib();            // restore state
      }
 }
 
@@ -538,10 +546,29 @@ void ocpnDC::StrokePolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yof
 
 void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask)
 {
+      wxBitmap bmp;
+      if (x < 0 || y < 0) {
+            int dx = (x < 0 ? -x : 0);
+            int dy = (y < 0 ? -y : 0);
+            int w = bitmap.GetWidth()-dx;
+            int h = bitmap.GetHeight()-dy;
+            /* picture is out of viewport */
+            if (w<0 || h<0)
+                  return;
+            wxBitmap newBitmap = bitmap.GetSubBitmap(
+                             wxRect(dx, dy, w, h));
+            x += dx;
+            y += dy;
+            bmp = newBitmap;
+      }
+      else
+      {
+            bmp = bitmap;
+      }
      if(dc)
-          dc->DrawBitmap(bitmap, x, y, usemask);
+          dc->DrawBitmap(bmp, x, y, usemask);
      else {
-          wxImage image = bitmap.ConvertToImage();
+          wxImage image = bmp.ConvertToImage();
           int w = image.GetWidth(), h = image.GetHeight();
 
           if(usemask) {
