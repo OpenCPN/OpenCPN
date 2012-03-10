@@ -5823,9 +5823,14 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                 }
 
                 //      Reference point, where the GPS antenna is
+                int circle_rad = 3;
+                if(m_pos_image_user)
+                      circle_rad = 1;
+
                 dc.SetPen( wxPen( GetGlobalColor ( _T ( "UBLCK" ) ), 1 ));
                 dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "UIBCK" ) )));
-                dc.StrokeCircle(lShipPoint.x, lShipPoint.y, 3);
+//                dc.StrokeCircle(lShipPoint.x, lShipPoint.y, 3);
+                dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, circle_rad);
               }         // ownship draw
 
 
