@@ -3807,6 +3807,9 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
                   }
             }
 
+            if((width == 0) || (height == 0))
+                  int yyp = 4;
+
             wxBitmap *pbm = new wxBitmap ( width, height );
             wxMemoryDC mdc;
             mdc.SelectObject ( *pbm );
@@ -9616,22 +9619,25 @@ void  txfGetStringMetrics(
 
 void txfRenderGlyph(TexFont * txf, int c)
 {
-      TexGlyphVertexInfo *tgvi;
+      if(c > 0)
+      {
+            TexGlyphVertexInfo *tgvi;
 
-      tgvi = getTCVI(txf, c);
-      glBegin(GL_QUADS);
+            tgvi = getTCVI(txf, c);
+            glBegin(GL_QUADS);
 
-      glTexCoord2fv(tgvi->t0);
-      glVertex2sv(tgvi->v0);
-      glTexCoord2fv(tgvi->t1);
-      glVertex2sv(tgvi->v1);
-      glTexCoord2fv(tgvi->t2);
-      glVertex2sv(tgvi->v2);
-      glTexCoord2fv(tgvi->t3);
-      glVertex2sv(tgvi->v3);
+            glTexCoord2fv(tgvi->t0);
+            glVertex2sv(tgvi->v0);
+            glTexCoord2fv(tgvi->t1);
+            glVertex2sv(tgvi->v1);
+            glTexCoord2fv(tgvi->t2);
+            glVertex2sv(tgvi->v2);
+            glTexCoord2fv(tgvi->t3);
+            glVertex2sv(tgvi->v3);
 
-      glEnd();
-      glTranslatef(tgvi->advance, 0.0, 0.0);
+            glEnd();
+            glTranslatef(tgvi->advance, 0.0, 0.0);
+      }
 }
 
 void
