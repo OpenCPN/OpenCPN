@@ -6182,19 +6182,26 @@ void ChartCanvas::AISDraw ( ocpnDC& dc )
 
       AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
 
-      //    Draw all targets in two pass loop, sorted on SOG
+      //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
       //    This way, fast targets are not obscured by slow/stationary targets
       for ( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )
       {
             AIS_Target_Data *td = it->second;
-            if(td->SOG < g_ShowMoored_Kts)
+            if ( (td->SOG < g_ShowMoored_Kts) && !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC)) )
                   AISDrawTarget(td, dc);
       }
 
       for ( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )
       {
             AIS_Target_Data *td = it->second;
-            if(td->SOG >= g_ShowMoored_Kts)
+            if ( (td->SOG >= g_ShowMoored_Kts) && !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC)) )
+                  AISDrawTarget(td, dc);
+      }
+
+      for ( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )
+      {
+            AIS_Target_Data *td = it->second;
+            if((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))
                   AISDrawTarget(td, dc);
       }
 }
@@ -6330,6 +6337,22 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
 
                            //   If this is an AIS Class B target, so symbolize it differently // pjotrc 2010.01.31
                   if(td->Class == AIS_CLASS_B) ais_quad_icon[3].y = 0;               // pjotrc 2010.01.31
+                  if (td->Class == AIS_GPSG_BUDDY) {
+                        ais_quad_icon[0].x = -5;
+                        ais_quad_icon[0].y = -12;
+                        ais_quad_icon[1].x =  -3;
+                        ais_quad_icon[1].y =  12;
+                        ais_quad_icon[2].x =  3;
+                        ais_quad_icon[2].y = 12;
+                        ais_quad_icon[3].x =  5;
+                        ais_quad_icon[3].y = -12;
+		      }
+                  if (td->Class == AIS_DSC) {
+                        ais_quad_icon[0].y = 0;
+                        ais_quad_icon[1].y = 8;
+                        ais_quad_icon[2].y = 0;
+                        ais_quad_icon[3].y = -8;
+                  }
 
                   for ( int i=0; i<4 ; i++ )                                           // pjotrc 2010.01.31
                   {
@@ -6347,6 +6370,8 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                          //and....
                   if(!td->b_nameValid)
                         target_brush =  wxBrush ( GetGlobalColor ( _T ( "CHYLW" ) ) ) ;
+                  if ((td->Class == AIS_DSC) && (td->ShipType == 12))					// distress
+                        target_brush =  wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) ;
 
                   if((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid))
                         target_brush = wxBrush ( GetGlobalColor ( _T ( "URED" ) ) ) ;
@@ -6522,7 +6547,7 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                   else if (td->Class == AIS_BASE) {                       // Base Station
                         Base_Square(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
                   }
-                  else {         // ship class A or B
+                  else {         // ship class A or B or a Buddy or DSC
                        wxPen target_pen ( GetGlobalColor ( _T ( "UBLCK" ) ) , 1 );
 
                        dc.SetPen(target_pen);
@@ -15079,7 +15104,7 @@ void AISTargetQueryDialog::UpdateText()
       if(m_pQueryTextCtl)
              m_pQueryTextCtl->Clear();
 
-      if(m_MMSI >= 0)                        //  Faulty MMSI could be reported as 0
+      if(m_MMSI != 0)                        //  Faulty MMSI could be reported as 0
       {
             AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
             if(td)
