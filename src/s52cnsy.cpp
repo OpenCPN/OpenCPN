@@ -777,12 +777,13 @@ static void *DEPARE01(void *param)
 
 
    double drval1, drval2;
+   bool drval1_found;
 
 //      Determine the color based on mariner selections
 
 
    drval1 = -1.0;                                          // default values
-   GetDoubleAttr(obj, "DRVAL1", drval1);
+   drval1_found = GetDoubleAttr(obj, "DRVAL1", drval1);
    drval2 = drval1 + 0.01;
    GetDoubleAttr(obj, "DRVAL2", drval2);
 
@@ -834,6 +835,11 @@ static void *DEPARE01(void *param)
 
     if(!strncmp(rzRules->LUP->OBCL, "DRGARE", 6))
     {
+        if (!drval1_found) //If DRVAL1 was not defined...
+        {
+            rule_str  = _T("AC(DEPMD)");
+            shallow = FALSE;
+        }
         rule_str.Append(_T(";AP(DRGARE01)"));
         rule_str.Append(_T(";LS(DASH,1,CHGRF)"));
 
