@@ -3091,8 +3091,11 @@ may need to traverse here
       return 0;
 }
 
-
+#ifdef __clang__
+int int_locate_endpoint_a(ipoint_t *v, ipoint_t *vo, int r)
+#else
 inline int int_locate_endpoint_a(ipoint_t *v, ipoint_t *vo, int r)
+#endif
 {
       register int root;
 
