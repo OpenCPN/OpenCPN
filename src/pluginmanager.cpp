@@ -169,42 +169,45 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                   wxString file_name = m_plugin_location + _T("/") + plugin_file;
 
                   PlugInContainer *pic = LoadPlugIn(file_name);
-                  if(pic->m_pplugin)
+                  if(pic)
                   {
-                        plugin_array.Add(pic);
-
-                        //    The common name is available without initialization and startup of the PlugIn
-                        pic->m_common_name = pic->m_pplugin->GetCommonName();
-
-                        //    Check the config file to see if this PlugIn is user-enabled
-                        wxString config_section = ( _T ( "/PlugIns/" ) );
-                        config_section += pic->m_common_name;
-                        pConfig->SetPath ( config_section );
-                        pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
-
-                        if(pic->m_bEnabled)
+                        if(pic->m_pplugin)
                         {
-                              pic->m_cap_flag = pic->m_pplugin->Init();
-                              pic->m_bInitState = true;
+                              plugin_array.Add(pic);
+
+                              //    The common name is available without initialization and startup of the PlugIn
+                              pic->m_common_name = pic->m_pplugin->GetCommonName();
+
+                              //    Check the config file to see if this PlugIn is user-enabled
+                              wxString config_section = ( _T ( "/PlugIns/" ) );
+                              config_section += pic->m_common_name;
+                              pConfig->SetPath ( config_section );
+                              pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
+
+                              if(pic->m_bEnabled)
+                              {
+                                    pic->m_cap_flag = pic->m_pplugin->Init();
+                                    pic->m_bInitState = true;
+                              }
+
+                              pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                              pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                              pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
+                              pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+                              pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
                         }
+                        else        // not loaded
+                        {
+                              wxString msg;
+                              msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
+                              wxLogMessage(msg);
 
-                        pic->m_short_description = pic->m_pplugin->GetShortDescription();
-                        pic->m_long_description = pic->m_pplugin->GetLongDescription();
-                        pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
-                        pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-                        pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+                              pic->m_destroy_fn(pic->m_pplugin);
 
-                  }
-                  else        // not loaded
-                  {
-                        wxString msg;
-                        msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
-                        wxLogMessage(msg);
-
-                        pic->m_destroy_fn(pic->m_pplugin);
-
-                        delete pic->m_plibrary;            // This will unload the PlugIn
-                        delete pic;
+                              delete pic->m_plibrary;            // This will unload the PlugIn
+                              delete pic;
+                        }
                   }
 
 
