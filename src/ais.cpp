@@ -489,8 +489,6 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Append(_T("\n\n"));
             result.Append(line);
       }
-      line.Printf(_("MMSI:                 %09d\n"), MMSI);
-      result.Append(line);
 
       if(Class != AIS_GPSG_BUDDY)
       {
@@ -970,7 +968,7 @@ wxString AIS_Target_Data::Get_vessel_type_string(bool b_short)
 	}
       else if (Class == AIS_GPSG_BUDDY)
             i = 52;
-      else if (Class == AIS_DSC) 
+      else if (Class == AIS_DSC)
             i = (ShipType==12)? 54 : 53;  // 12 is distress
 
       if(!b_short)
@@ -1534,7 +1532,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 
                 mmsi = (int) dse_mmsi;
           }
-      } 
+      }
       else if (str.Mid(1,5).IsSameAs(_T("FRPOS")) )
       {
       // parse a GpsGate Position message			$FRPOS,.....
@@ -1560,7 +1558,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
             gpsg_lat = gpsg_degs + gpsg_mins/60.0;
 
             token = tkz.GetNextToken();			//  hemisphere N or S
-            if (token.Mid(1,1).Contains(_T("Ss")))  
+            if (token.Mid(1,1).Contains(_T("Ss")))
                   gpsg_lat = 0 - gpsg_lat;
 
             token = tkz.GetNextToken();			// longitude DDDMM.MMMM
@@ -1570,12 +1568,12 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
             gpsg_lon = gpsg_degs + gpsg_mins/60.0;
 
             token = tkz.GetNextToken();			// hemisphere E or W
-            if (token.Mid(1,1).Contains(_T("Ww")))  
+            if (token.Mid(1,1).Contains(_T("Ww")))
                   gpsg_lon = 0 - gpsg_lon;
 
             token = tkz.GetNextToken();			//	altitude AA.a
             //    token.toDouble(&gpsg_alt);
- 
+
             token = tkz.GetNextToken();			//  speed over ground SSS.SS knots
             token.ToDouble(&gpsg_sog);
 
@@ -1600,7 +1598,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
             for (i = 0; i<len; i++) {
 		            hash = hash * 10;
 		            hash += (int)(token[i]);
-		            while (hash >= 100000) 
+		            while (hash >= 100000)
                               hash = hash / 100000;
             }
             gpsg_mmsi = 199000000 + hash;  // 199 is INMARSAT-A MID, should not occur ever in AIS stream
@@ -1671,7 +1669,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
         AIS_Bitstring strbit(string_to_parse.mb_str());
 
         //  Extract the MMSI
-        if (!mmsi) 
+        if (!mmsi)
               mmsi = strbit.GetInt(9, 30);
         long mmsi_long = mmsi;
 
@@ -1719,7 +1717,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
             bhad_name =  pStaleTarget->b_nameValid;
 
         bool bdecode_result = false; // for CDDSE assume target is there
-            if (dse_mmsi) 
+            if (dse_mmsi)
                   bdecode_result = true;
 
             if (dse_mmsi && !pTargetData->b_nameValid && pTargetData->b_positionOnceValid && ((now.GetTicks() - pTargetData->PositionReportTicks)) < 20) {  // ignore stray CDDSE sentences
@@ -1764,7 +1762,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 			pTargetData->b_active = true;
 			bdecode_result = true;
 			}
-            else 
+            else
                   bdecode_result = Parse_VDXBitstring(&strbit, pTargetData);            // Parse the new data
 
             if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) ) // debug pjotrc
@@ -1795,7 +1793,7 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
               (*AISTargetList)[mmsi] = pTargetData;            // update the hash table entry
 
               //     Update the most recent report period
-              if (!dse_mmsi) 
+              if (!dse_mmsi)
                     pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
 
               //  If this is not an ownship message, update the AIS Target in the Selectable list, and update the CPA info
@@ -4146,9 +4144,9 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         break;
 
                   case tlMMSI:
-                        if (pAISTarget->Class != AIS_GPSG_BUDDY) 
+                        if (pAISTarget->Class != AIS_GPSG_BUDDY)
                               ret.Printf(_T("%09d"), abs(pAISTarget->MMSI));
-				else 
+				else
                               ret.Printf(_T("   nil   "));
                         break;
 
