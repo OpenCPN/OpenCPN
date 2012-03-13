@@ -2672,7 +2672,7 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 // add intermediate points as needed
 
       prpnode = prpnode->GetNext();
- 
+
       while ( prpnode )
       {
             RoutePoint *prp = prpnode->GetData();
@@ -2699,7 +2699,7 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
                         pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
                         pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
- 
+
                         pWP_src = pWP_dst;
                   }
                   prpnodeX = prpnode;
@@ -2762,7 +2762,7 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
       if (delta_dist >= g_TrackDeltaDistance) {
             pWP_dst = new RoutePoint ( pRoutePointList->GetLast()->GetData()->m_lat, pRoutePointList->GetLast()->GetData()->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
             route->AddPoint(pWP_dst);
- 
+
             pWP_dst->m_bShowName = false;
 
             pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
@@ -4263,14 +4263,17 @@ void MyConfig::LoadConfigGroups ( ChartGroupArray *pGroupArray )
                   pelement->m_element_name = v;
                   pGroup->m_element_array.Add(pelement);
 
-                  Read ( _T ( "ExcludeItems" ), &v );
-                  if(!v.IsEmpty())
+                  wxString u;
+                  if(Read ( _T ( "ExcludeItems" ), &u ))
                   {
-                        wxStringTokenizer tk(v, _T(";"));
-                        while ( tk.HasMoreTokens() )
+                        if(!u.IsEmpty())
                         {
-                              wxString token = tk.GetNextToken();
-                              pelement->m_missing_name_array.Add(token);
+                              wxStringTokenizer tk(u, _T(";"));
+                              while ( tk.HasMoreTokens() )
+                              {
+                                    wxString token = tk.GetNextToken();
+                                    pelement->m_missing_name_array.Add(token);
+                              }
                         }
                   }
             }

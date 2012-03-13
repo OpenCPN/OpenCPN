@@ -1761,11 +1761,22 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                               bool b_add = true;
                               for(unsigned int k=0 ; k < pGroup->m_element_array.Item(j)->m_missing_name_array.GetCount(); k++)
                               {
-//                                    wxString missing_item = pGroup->m_element_array.Item(j)->m_missing_name_array.Item(k)->m_element_name;
-                                    wxString missing_item = pGroup->m_element_array.Item(j)->m_missing_name_array.Item(k);         if(missing_item == chart_full_path)
+                                    wxString missing_item = pGroup->m_element_array.Item(j)->m_missing_name_array.Item(k);
+                                    if(chart_full_path.StartsWith(missing_item))
                                     {
-                                          b_add = false;
-                                          break;
+                                          if(chart_full_path == missing_item) // missing item is full chart name
+                                          {
+                                                b_add = false;
+                                                break;
+                                          }
+                                          else
+                                          {
+                                                if(wxDir::Exists(missing_item))     // missing item is a dir
+                                                {
+                                                      b_add = false;
+                                                      break;
+                                                }
+                                          }
                                     }
                               }
 
