@@ -1257,10 +1257,11 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
             SetReferenceChart(new_ref_dbIndex);
       }
 
-
       int new_db_index = m_refchart_dbIndex;
 
-      if(m_refchart_dbIndex >= 0)
+      unsigned int extended_array_count = m_extended_stack_array.GetCount();
+
+      if(m_refchart_dbIndex >= 0 && (extended_array_count > 0))
       {
             ChartBase *pc = ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
             if(pc)
@@ -1277,10 +1278,13 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
                   {
 //                        printf("ARZO changing ref to smaller scale. \n" );
 
-                        unsigned int target_stack_index = m_extended_stack_array.Index(current_db_index);
+                        unsigned int target_stack_index = 0;
+                        int target_stack_index_check = m_extended_stack_array.Index(current_db_index);  // Lookup
 
+                        if( wxNOT_FOUND != target_stack_index_check)
+                              target_stack_index = target_stack_index_check;
 
-                        while((proposed_scale_onscreen > max_ref_scale) && (target_stack_index < (m_extended_stack_array.GetCount()-1)))
+                        while((proposed_scale_onscreen > max_ref_scale) && (target_stack_index < (extended_array_count-1)))
                         {
                               target_stack_index++;
                               int test_db_index = m_extended_stack_array.Item(target_stack_index);
@@ -1300,7 +1304,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen)
 
 //                        printf("ARZO selected smaller scale.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
-                        if(target_stack_index < m_extended_stack_array.GetCount())
+                        if(target_stack_index < extended_array_count)
                         {
                               new_db_index = m_extended_stack_array.Item(target_stack_index);
 //                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
@@ -1361,7 +1365,9 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
 
       int new_db_index = m_refchart_dbIndex;
 
-      if(m_refchart_dbIndex >= 0)
+      unsigned int extended_array_count = m_extended_stack_array.GetCount();
+
+      if(m_refchart_dbIndex >= 0 && (extended_array_count > 0))
       {
             ChartBase *pc = ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
             if(pc)
@@ -1376,7 +1382,12 @@ int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen)
                         int current_db_index = m_refchart_dbIndex;
 //                        int current_type = m_reference_type;
                         int current_family = m_reference_family;
-                        int target_stack_index = m_extended_stack_array.Index(current_db_index);
+
+                        unsigned int target_stack_index = 0;
+                        int target_stack_index_check = m_extended_stack_array.Index(current_db_index);  // Lookup
+
+                        if( wxNOT_FOUND != target_stack_index_check)
+                              target_stack_index = target_stack_index_check;
 
                         while((proposed_scale_onscreen < min_ref_scale) && (target_stack_index > 0))
                         {
@@ -4753,6 +4764,8 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
       if(!VPoint.b_quilt)
       {
             ChartBase *pc = Current_Ch;
+            if(!pc)
+                  return false;
             if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
                   b_smooth= false;
       }
@@ -4796,6 +4809,8 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
       if(!VPoint.b_quilt)
       {
             ChartBase *pc = Current_Ch;
+            if(!pc)
+                  return false;
             if(pc->GetChartFamily() == CHART_FAMILY_VECTOR)
                   b_smooth= false;
       }
