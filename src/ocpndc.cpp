@@ -553,7 +553,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usema
             int w = bitmap.GetWidth()-dx;
             int h = bitmap.GetHeight()-dy;
             /* picture is out of viewport */
-            if (w<0 || h<0)
+            if (w<=0 || h<=0)
                   return;
             wxBitmap newBitmap = bitmap.GetSubBitmap(
                              wxRect(dx, dy, w, h));
