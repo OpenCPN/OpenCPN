@@ -225,6 +225,7 @@ class GRIBOverlayFactory
 
             void drawWindArrowWithBarbs(wxDC &dc, int x, int y, double vx, double vy, bool south, wxColour arrowColor);
             void drawWaveArrow(wxDC &dc, int i, int j, double dir, wxColour arrowColor);
+            void drawSingleArrow(wxDC &dc, int i, int j, double dir, wxColour arrowColor, int width = 1);
 
             void drawTransformedLine( wxDC &dc, wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
 

@@ -1615,8 +1615,36 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, w
                               wxMask *gr_mask = new wxMask(*m_pbm_current, wxColour(0,0,0));
                               m_pbm_current->SetMask(gr_mask);
 
-                              ::wxEndBusyCursor();
+                        //    Draw little arrows for current direction
+                              wxMemoryDC mdc(*m_pbm_current);
+                              if(mdc.IsOk())
+                              {
+                                    int arrow_pixel_size = 60;
+                                    mdc.SetPen(*wxBLACK_PEN);
+                                    for(int ipix = 0 ; ipix < (width-arrow_pixel_size + 1) ; ipix += arrow_pixel_size)
+                                    {
+                                          for(int jpix = 0 ; jpix < (height-arrow_pixel_size + 1) ; jpix += arrow_pixel_size)
+                                          {
+                                                double lat, lon;
+                                                p.x = ipix + porg.x;
+                                                p.y = jpix + porg.y;
+                                                GetCanvasLLPix( vp, p, &lat, &lon);
 
+                                                double vx = pGRX->getInterpolatedValue(lon, lat);
+                                                double vy = pGRY->getInterpolatedValue(lon, lat);
+
+                                                if ((vx != GRIB_NOTDEF) && (vy != GRIB_NOTDEF))
+                                                {
+                                                      double angle = atan2(vx, vy) * 180./PI;
+                                                      drawSingleArrow(mdc, ipix, jpix, angle-90., *wxBLACK, 2);
+                                                }
+                                          }
+                                    }
+                              }
+
+                              mdc.SelectObject(wxNullBitmap);
+
+                              ::wxEndBusyCursor();
                   }
             }
 
@@ -1837,6 +1865,24 @@ void GRIBOverlayFactory::drawWaveArrow(wxDC &dc, int i, int j, double ang, wxCol
 
 }
 
+
+void GRIBOverlayFactory::drawSingleArrow(wxDC &dc, int i, int j, double ang, wxColour arrowColor, int width)
+{
+      double si=sin(ang * PI / 180.),  co=cos(ang * PI/ 180.);
+
+      wxPen pen( arrowColor, width);
+      dc.SetPen(pen);
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+      int arrowSize = 26;
+      int dec = -arrowSize/2;
+
+      drawTransformedLine(dc, pen, si,co, i,j,  dec, 0,  dec + arrowSize, 0);
+
+      drawTransformedLine(dc, pen, si,co, i,j,  dec-2,  0,  dec+5,  6);    // flèche
+      drawTransformedLine(dc, pen, si,co, i,j,  dec-2,  0,  dec+5, -6);   // flèche
+
+}
 
 
 
