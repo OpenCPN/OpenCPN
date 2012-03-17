@@ -509,6 +509,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         }
                         else
                         {
+                              //    If in OpenGL mode, and the PlugIn has requested OpenGL render callbacks,
+                              //    then there is no need to render by wxDC here.
+                              if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                                    return false;
+
+
                               if((m_cached_overlay_bm.GetWidth() != vp.pix_width) || (m_cached_overlay_bm.GetHeight() != vp.pix_height))
                                     m_cached_overlay_bm.Create(vp.pix_width, vp.pix_height, -1);
 
@@ -517,7 +523,33 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                               mdc.SetBackground ( *wxBLACK_BRUSH );
                               mdc.Clear();
 
-                              bool b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
+
+                              bool b_rendered = false;
+
+                              switch(pic->m_api_version)
+                              {
+                                    case 106:
+                                    {
+                                          opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                b_rendered = ppi->RenderOverlay(mdc, &pivp);
+                                          break;
+                                    }
+                                    case 107:
+                                    {
+                                          opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                b_rendered = ppi->RenderOverlay(mdc, &pivp);
+                                          break;
+                                    }
+
+                                    default:
+                                    {
+                                          b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
+                                          break;
+                                    }
+                              }
+
                               mdc.SelectObject(wxNullBitmap);
 
                               if(b_rendered)
