@@ -39,6 +39,7 @@
 #include <wx/treectrl.h>
 #include <wx/fileconf.h>
 #include <wx/notebook.h>
+#include <wx/glcanvas.h>
 
 
 #include "GribReader.h"
@@ -201,6 +202,7 @@ class GRIBOverlayFactory
 
             void SetGribRecordSet(GribRecordSet *pGribRecordSet);
             bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
+            bool RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp );
             bool IsReadyToRender(){ return m_bReadyToRender; }
             void Reset();
 
@@ -213,6 +215,10 @@ class GRIBOverlayFactory
             void EnableRenderSeatmp(bool b_rend){ m_ben_Seatmp = b_rend; }
             void EnableRenderSeaCurrent(bool b_rend){ m_ben_SeaCurrent = b_rend; }
 
+            void DrawGLLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, int width);
+            void DrawOLBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask);
+            void DrawGLImage(wxImage *pimage, wxCoord x, wxCoord y, bool usemask);
+
       private:
             bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
             bool RenderGribPressure(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
@@ -223,15 +229,26 @@ class GRIBOverlayFactory
             bool RenderGribSeaTemp(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
             bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
 
-            void drawWindArrowWithBarbs(wxDC &dc, int x, int y, double vx, double vy, bool south, wxColour arrowColor);
-            void drawWaveArrow(wxDC &dc, int i, int j, double dir, wxColour arrowColor);
-            void drawSingleArrow(wxDC &dc, int i, int j, double dir, wxColour arrowColor, int width = 1);
+            bool RenderGLGribWind(GribRecord *pGRX, GribRecord *pGRY, wxGLContext *pcontext,
+                   PlugIn_ViewPort *vp);
+            bool RenderGLGribPressure(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
+            bool RenderGLGribSigWh(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
+            bool RenderGLGribWvDir(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
+            bool RenderGLGribCRAIN(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
+            bool RenderGLGribSeaTemp(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
+            bool RenderGLGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxGLContext *pcontext,
+                   PlugIn_ViewPort *vp);
 
-            void drawTransformedLine( wxDC &dc, wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
+            void drawWindArrowWithBarbs(int x, int y, double vx, double vy, bool south,
+                   wxColour arrowColor);
+            void drawWaveArrow(int i, int j, double dir, wxColour arrowColor);
+            void drawSingleArrow(int i, int j, double dir, wxColour arrowColor, int width = 1);
 
-            void drawPetiteBarbule(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
-            void drawGrandeBarbule(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
-            void drawTriangle(wxDC &dc, wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawTransformedLine(wxPen pen, double si, double co,int di, int dj, int i,int j, int k,int l);
+
+            void drawPetiteBarbule(wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawGrandeBarbule(wxPen pen, bool south, double si, double co, int di, int dj, int b);
+            void drawTriangle(wxPen pen, bool south, double si, double co, int di, int dj, int b);
 
             wxColour GetGraphicColor(double val, double val_max);
             wxColour GetQuickscatColor(double val);
@@ -247,7 +264,9 @@ class GRIBOverlayFactory
             wxBitmap                *m_pbm_crain;
             wxBitmap                *m_pbm_seatemp;
             wxBitmap                *m_pbm_current;
+            wxImage                 *m_pimage_current;
 
+            wxDC                    *m_pdc;
 
             bool              m_ben_Wind;
             bool              m_ben_Pressure;

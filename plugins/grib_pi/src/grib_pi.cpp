@@ -74,7 +74,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-      :opencpn_plugin_16(ppimgr)
+      :opencpn_plugin_17(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
@@ -125,6 +125,7 @@ int grib_pi::Init(void)
 //      SetCanvasContextMenuItemViz(miid, true);
 
       return (WANTS_OVERLAY_CALLBACK |
+           WANTS_OPENGL_OVERLAY_CALLBACK |
            WANTS_CURSOR_LATLON       |
            WANTS_TOOLBAR_CALLBACK    |
            INSTALLS_TOOLBAR_TOOL     |
@@ -349,6 +350,26 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
       else
             return false;
 }
+
+bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{
+      if(m_pGribDialog && m_pGRIBOverlayFactory)
+      {
+            if(m_pGRIBOverlayFactory->IsReadyToRender())
+            {
+                  m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
+                  return true;
+            }
+            else
+                  return false;
+      }
+      else
+            return false;
+
+}
+
+
+
 
 void grib_pi::SetCursorLatLon(double lat, double lon)
 {

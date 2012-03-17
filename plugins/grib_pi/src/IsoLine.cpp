@@ -377,7 +377,7 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
@@ -575,7 +575,7 @@ void IsoLine::drawIsoLine(wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool 
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(wxDC &dc, wxColour couleur,
+void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour couleur,
                                 PlugIn_ViewPort *vp,
                             int density, int first, double coef)
 {
@@ -626,6 +626,114 @@ void IsoLine::drawIsoLineLabels(wxDC &dc, wxColour couleur,
     }
 //#endif
 ///
+}
+
+
+void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, wxGLContext *pcontext, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+{
+      int nsegs = trace.size();
+      if(nsegs < 1)
+            return;
+
+     int width = 2;
+
+     glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(), 255/*isoLineColor.Alpha()*/);
+     glLineWidth(width);
+
+     std::list<Segment *>::iterator it;
+
+    //---------------------------------------------------------
+    // Dessine les segments
+    //---------------------------------------------------------
+    for (it=trace.begin(); it!=trace.end(); it++)
+    {
+        Segment *seg = *it;
+
+        {
+            wxPoint ab;
+            GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+            wxPoint cd;
+            GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
+
+
+///            ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
+///                         0, vp->pix_width, 0, vp->pix_height );
+///            if ( res != Invisible )
+             {
+                  pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, width);
+             }
+
+        }
+    }
+
+}
+
+void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxGLContext *pcontext, wxColour couleur,
+                                PlugIn_ViewPort *vp,
+                            int density, int first, double coef)
+{
+    std::list<Segment *>::iterator it;
+    int nb = first;
+    wxString label;
+
+    label.Printf(_T("%d"), (int)(value*coef+0.5));
+
+    int w, h;
+
+    int label_offset = 10;
+
+      if(!m_imageLabel.IsOk())
+      {
+            wxBitmap bm(100,100);          // big enough
+            wxMemoryDC mdc(bm);
+            mdc.Clear();
+
+            mdc.GetTextExtent(label, &w, &h);
+            wxPen penText(couleur);
+
+            mdc.SetPen(penText);
+            mdc.SetBrush(*wxWHITE_BRUSH);
+
+            int xd = 0;
+            int yd = 0;
+//            mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
+            mdc.DrawRectangle(xd, yd, w+(label_offset * 2), h+2);
+            mdc.DrawText(label, label_offset/2 + xd, yd-1);
+            
+            mdc.SelectObject(wxNullBitmap);
+
+            wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));
+            m_imageLabel = sub_BMLabel.ConvertToImage();
+      }
+
+    //---------------------------------------------------------
+    // Ecrit les labels
+    //---------------------------------------------------------
+    for (it=trace.begin(); it!=trace.end(); it++,nb++)
+    {
+        if (nb % density == 0)
+		{
+            Segment *seg = *it;
+
+//            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
+            {
+                  int w = m_imageLabel.GetWidth();
+                  int h = m_imageLabel.GetHeight();
+                  wxPoint ab;
+                  GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+                  wxPoint cd;
+                  GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+
+                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
+                  int yd = (ab.y + cd.y - h)/2;
+
+                  glRasterPos2i(xd, yd);
+                  glPixelZoom(1, -1); /* draw data from top to bottom */
+                  glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, m_imageLabel.GetData());
+                  glPixelZoom(1, 1);
+            }
+        }
+    }
 }
 
 

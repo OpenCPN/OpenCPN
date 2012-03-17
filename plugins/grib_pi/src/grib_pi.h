@@ -33,13 +33,14 @@
 
 #ifndef  WX_PRECOMP
   #include "wx/wx.h"
+  #include <wx/glcanvas.h>
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    1
 #define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    6
+#define     MY_API_VERSION_MINOR    7
 
 #include "../../../include/ocpn_plugin.h"
 
@@ -51,7 +52,7 @@
 
 #define GRIB_TOOL_POSITION    -1          // Request default positioning of toolbar tool
 
-class grib_pi : public opencpn_plugin_16
+class grib_pi : public opencpn_plugin_17
 {
 public:
       grib_pi(void *ppimgr);
@@ -70,9 +71,10 @@ public:
       wxString GetShortDescription();
       wxString GetLongDescription();
 
-//    The required override PlugIn Methods
+//    The override PlugIn Methods
       bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
+      bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
 
       void SetDefaults(void);
