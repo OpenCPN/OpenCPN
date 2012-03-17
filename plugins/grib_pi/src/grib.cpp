@@ -3021,7 +3021,7 @@ void GRIBOverlayFactory::DrawGLLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord
 
                   if(width > 1)
                   {
-                        double angle = atan2(y2 - y1, x2 - x1);
+                        double angle = atan2((double)(y2 - y1), (double)(x2 - x1));
                         double t1 = width;
                         double t2sina1 = t1 / 2 * sin(angle);
                         double t2cosa1 = t1 / 2 * cos(angle);
