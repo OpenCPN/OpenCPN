@@ -6206,8 +6206,23 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             if (bGPSValid)
             {
                   wxString data;
-                  data.Printf(_T(" GPS Lat %10.5f Lon %10.5f COG %10.5f SOG %6.2f"), gLat, gLon, gCog, gSog);
+                  data.Printf(_T(" GPS Lat %10.5f Lon %10.5f "), gLat, gLon);
                   navmsg += data;
+
+                  wxString cog;
+                  if(wxIsNaN(gCog))
+                        cog.Printf(_T("COG ----- "));
+                  else
+                        cog.Printf(_T("COG %10.5f "), gCog);
+
+                  wxString sog;
+                  if(wxIsNaN(gSog))
+                        sog.Printf(_T("SOG -----  "));
+                  else
+                        sog.Printf(_T("SOG %6.2f"), gSog);
+
+                  navmsg += cog;
+                  navmsg += sog;
             }
             else
             {
