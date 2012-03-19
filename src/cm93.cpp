@@ -5377,7 +5377,17 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 
 //extern void catch_signals(int signo);
 
-wxRegion cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, const wxRegion &ScreenRegion )
+
+void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
+{
+      wxRegion screen_region(0,0,VPoint.rv_rect.width, VPoint.rv_rect.height);
+      wxRegion ret = GetValidScreenCanvasRegion ( VPoint, screen_region );
+      *pValidRegion = ret;
+}
+
+
+
+wxRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, const wxRegion &ScreenRegion )
 {
       wxRegion ret_region;
 
@@ -5480,7 +5490,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                   wxRegion vpr_empty = Region;
 
-                  wxRegion chart_region =  GetValidCanvasRegion ( vp_positive, Region );
+                  wxRegion chart_region =  GetValidScreenCanvasRegion ( vp_positive, Region );
                   m_pcm93chart_current->m_render_region = chart_region;
 
                   if ( g_bDebugCM93 )
@@ -5534,7 +5544,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           printf ( "  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
 
 
-                                    wxRegion sscale_region = GetValidCanvasRegion ( vp_positive, Region );
+                                    wxRegion sscale_region = GetValidScreenCanvasRegion ( vp_positive, Region );
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
@@ -5772,7 +5782,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                   wxRegion vpr_empty = Region;
 
-                  wxRegion chart_region = GetValidCanvasRegion ( vp_positive, Region );
+                  wxRegion chart_region = GetValidScreenCanvasRegion ( vp_positive, Region );
 
                   m_pcm93chart_current->m_render_region = chart_region;
 
@@ -5849,7 +5859,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                                     m_pcm93chart_current->RenderRegionViewOnDC ( build_dc, vp_positive, Region );
 
-                                    wxRegion sscale_region = GetValidCanvasRegion ( vp_positive, Region );
+                                    wxRegion sscale_region = GetValidScreenCanvasRegion ( vp_positive, Region );
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );

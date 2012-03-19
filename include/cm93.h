@@ -433,7 +433,7 @@ class cm93compchart : public s57chart
             wxString GetPubDate();
 
             void SetVPParms(const ViewPort &vpt);
-            wxRegion GetValidCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
+            void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
 
 
             ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
@@ -475,6 +475,7 @@ class cm93compchart : public s57chart
 
             void InvalidateCache();
       private:
+            wxRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
             InitReturn CreateHeaderData();
