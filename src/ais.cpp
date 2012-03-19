@@ -2519,15 +2519,17 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget)
       double cpa_calc_ownship_cog = gCog;
       double cpa_calc_target_cog = ptarget->COG;
 
+//    Ownship is not reporting valid SOG, so no way to calculate CPA
+      if(wxIsNaN(gSog) || (gSog > 102.2))
+      {
+            ptarget->bCPA_Valid = false;
+            return;
+      }
+
 //    Ownship is maybe anchored and not reporting COG
       if( wxIsNaN(gCog) || gCog == 360.0 )
       {
-            if(wxIsNaN(gSog) || (gSog > 102.2))
-            {
-                  ptarget->bCPA_Valid = false;
-                  return;
-            }
-            else if(gSog < .01)
+            if(gSog < .01)
                   cpa_calc_ownship_cog = 0.;          // substitute value
                                                       // for the case where SOG ~= 0, and COG is unknown.
             else
