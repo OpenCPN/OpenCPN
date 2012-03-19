@@ -223,7 +223,7 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
 //    VMG
                   // VMG is always to next waypoint, not to end of route
                   // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
-                  double VMG;
+                  double VMG = 0.;
                   if(!wxIsNaN(gCog) && !wxIsNaN(gSog))
                   {
                         double BRG;
@@ -241,7 +241,8 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
 
                   // If showing only "this leg", use VMG for calculation of ttg
                   wxString ttg_s;
-                  if(VMG > 0.)
+                  if((VMG > 0.) && !wxIsNaN(gCog) && !wxIsNaN(gSog))
+
                   {
                         float ttg_sec = (rng / VMG) * 3600.;
                         wxTimeSpan ttg_span(0, 0, long(ttg_sec), 0);
