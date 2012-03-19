@@ -335,6 +335,15 @@ class ChartPlugInWrapper : public ChartBase
             virtual int GetCOVRTablenPoints(int iTable);
             virtual float *GetCOVRTableHead(int iTable);
 
+            //    The following set of methods apply to BSB (i.e. Raster) type PlugIn charts only
+            //    and need not be implemented if the ChartFamily is not CHART_FAMILY_RASTER
+            virtual void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+            virtual double GetRasterScaleFactor();
+            virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
+            virtual int GetSize_X();
+            virtual int GetSize_Y();
+            virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
+
 
       private:
             PlugInChartBase *m_ppicb;

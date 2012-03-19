@@ -279,6 +279,13 @@ class DECL_EXP PlugInChartBase : public wxObject
             virtual double GetChartSkew()                   { return m_Chart_Skew; }
             virtual wxDateTime GetEditionDate(void)         { return m_EdDate;}
 
+//    Methods pertaining to CHART_FAMILY_RASTER type PlugIn charts only
+            virtual void ComputeSourceRectangle(const PlugIn_ViewPort &vp, wxRect *pSourceRect);
+            virtual double GetRasterScaleFactor();
+            virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
+            virtual int GetSize_X();
+            virtual int GetSize_Y();
+            virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
 
       protected:
             ChartTypeEnumPI     m_ChartType;

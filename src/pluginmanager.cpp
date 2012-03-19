@@ -1700,6 +1700,26 @@ double PlugInChartBase::GetNearestPreferredScalePPM(double target_scale_ppm)
 wxBitmap *PlugInChartBase::GetThumbnail(int tnx, int tny, int cs)
 { return NULL; }
 
+void PlugInChartBase::ComputeSourceRectangle(const PlugIn_ViewPort &vp, wxRect *pSourceRect)
+{}
+
+double PlugInChartBase::GetRasterScaleFactor()
+{ return 1.0; }
+
+bool PlugInChartBase::GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp )
+{ return false; }
+
+int PlugInChartBase::GetSize_X()
+{ return 1; }
+
+int PlugInChartBase::GetSize_Y()
+{ return 1; }
+
+void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy)
+{}
+
+
+
 
 // ----------------------------------------------------------------------------
 // ChartPlugInWrapper Implementation
@@ -1772,9 +1792,7 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 int ChartPlugInWrapper::GetCOVREntries()
 {
       if(m_ppicb)
-      {
             return m_ppicb->GetCOVREntries();
-      }
       else
             return 0;
 }
@@ -1782,9 +1800,7 @@ int ChartPlugInWrapper::GetCOVREntries()
 int ChartPlugInWrapper::GetCOVRTablePoints(int iTable)
 {
       if(m_ppicb)
-      {
             return m_ppicb->GetCOVRTablePoints(iTable);
-      }
       else
             return 0;
 }
@@ -1792,9 +1808,7 @@ int ChartPlugInWrapper::GetCOVRTablePoints(int iTable)
 int  ChartPlugInWrapper::GetCOVRTablenPoints(int iTable)
 {
       if(m_ppicb)
-      {
             return m_ppicb->GetCOVRTablenPoints(iTable);
-      }
       else
             return 0;
 }
@@ -1802,9 +1816,7 @@ int  ChartPlugInWrapper::GetCOVRTablenPoints(int iTable)
 float *ChartPlugInWrapper::GetCOVRTableHead(int iTable)
 {
       if(m_ppicb)
-      {
             return m_ppicb->GetCOVRTableHead(iTable);
-      }
       else
             return 0;
 }
@@ -1963,4 +1975,54 @@ double ChartPlugInWrapper::GetNearestPreferredScalePPM(double target_scale_ppm)
       else
             return 1.0;
 }
+
+
+void ChartPlugInWrapper::ComputeSourceRectangle(const ViewPort &VPoint, wxRect *pSourceRect)
+{
+      if(m_ppicb)
+      {
+            PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
+            m_ppicb->ComputeSourceRectangle(pivp, pSourceRect);
+      }
+}
+
+double ChartPlugInWrapper::GetRasterScaleFactor()
+{
+      if(m_ppicb)
+            return m_ppicb->GetRasterScaleFactor();
+      else
+            return 1.0;
+}
+
+bool ChartPlugInWrapper::GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp )
+{
+      if(m_ppicb)
+
+            return m_ppicb->GetChartBits( source, pPix, sub_samp );
+      else
+            return false;
+}
+
+int ChartPlugInWrapper::GetSize_X()
+{
+      if(m_ppicb)
+            return m_ppicb->GetSize_X();
+      else
+            return 1;
+}
+
+int ChartPlugInWrapper::GetSize_Y()
+{
+      if(m_ppicb)
+            return m_ppicb->GetSize_Y();
+      else
+            return 1;
+}
+
+void ChartPlugInWrapper::latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy)
+{
+      if(m_ppicb)
+            m_ppicb->latlong_to_chartpix(lat, lon, pixx, pixy);
+}
+
 

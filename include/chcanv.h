@@ -561,7 +561,7 @@ public:
       wxString GetRendererString(){ return m_renderer; }
 
       void Invalidate() {m_cache_vp.Invalidate(); }
-      void RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region);
+      void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wxRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
       void ClearAllRasterTextures(void);
       void DrawGLOverLayObjects(void);

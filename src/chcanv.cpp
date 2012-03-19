@@ -12340,10 +12340,20 @@ bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
       return true;
 }
 
-void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, ChartBaseBSB *pchart )
+void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, ChartBase *pchart )
 {
       if(!pchart)
             return;
+
+      ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>(pchart);
+      ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>(pchart);
+
+      if(!pPlugInWrapper && !pBSBChart)
+            return;
+
+      bool b_plugin = false;
+      if(pPlugInWrapper)
+            b_plugin = true;
 
       //    We do not need all possible mipmaps, since we can only zoom out so far....
       //    So, save some memory by limiting GL_TEXTURE_MAX_LEVEL
@@ -12371,7 +12381,11 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
       unsigned char *t_buf = (unsigned char *)malloc(rbits.width * rbits.height * 3);
 
       //    Prime the pump with the "zero" level bits, ie. 1x native chart bits
-      pchart->GetChartBits(rbits, t_buf, 1);
+      if(b_plugin)
+            pPlugInWrapper->GetChartBits(rbits, t_buf, 1);
+      else
+            pBSBChart->GetChartBits(rbits, t_buf, 1);
+
 
       //    and cache them here
       ptd->map_array[0] = t_buf;
@@ -12411,10 +12425,20 @@ void OCPNPopulateTD( glTextureDescriptor *ptd, int n_basemult, wxRect &rect, Cha
 
 int s_nquickbind;
 
-void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegion &region)
+void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wxRegion &region)
 {
       if(!chart)
             return;
+
+      ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>(chart);
+      ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>(chart);
+
+      if(!pPlugInWrapper && !pBSBChart)
+            return;
+
+      bool b_plugin = false;
+      if(pPlugInWrapper)
+            b_plugin = true;
 
       int n_longbind = 0;
 
@@ -12428,8 +12452,22 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       svp.pix_height = svp.rv_rect.height;
 
       wxRect R;
-      chart->ComputeSourceRectangle(svp, &R);
-      double scalefactor = chart->GetRasterScaleFactor();
+      double scalefactor;
+      int size_X, size_Y;
+      if(b_plugin)
+      {
+            pPlugInWrapper->ComputeSourceRectangle(svp, &R);
+            scalefactor = pPlugInWrapper->GetRasterScaleFactor();
+            size_X = pPlugInWrapper->GetSize_X();
+            size_Y = pPlugInWrapper->GetSize_X();
+      }
+      else
+      {
+            pBSBChart->ComputeSourceRectangle(svp, &R);
+            scalefactor = pBSBChart->GetRasterScaleFactor();
+            size_X = pBSBChart->GetSize_X();
+            size_Y = pBSBChart->GetSize_X();
+      }
 
       int tex_dim = 512;//max_texture_dimension;
       GrowData(3 * tex_dim * tex_dim);
@@ -12497,8 +12535,8 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       R.height /= n_basemult;
 
       //  Calculate the number of textures needed
-      int nx_tex = ((chart->GetSize_X() / n_basemult) / tex_dim) + 1;
-      int ny_tex = ((chart->GetSize_Y() / n_basemult) / tex_dim) + 1;
+      int nx_tex = ((size_X / n_basemult) / tex_dim) + 1;
+      int ny_tex = ((size_Y / n_basemult) / tex_dim) + 1;
 
       glTextureDescriptor *ptd;
       wxRect rect(0,0,1,1);
@@ -12564,7 +12602,11 @@ void glChartCanvas::RenderChartRegion(ChartBaseBSB *chart, ViewPort &vp, wxRegio
       if(scalefactor < 1.0)
       {
             double pixx, pixy;
-            chart->latlong_to_chartpix(vp.clat, vp.clon, pixx, pixy);
+            if(b_plugin)
+                  pPlugInWrapper->latlong_to_chartpix(vp.clat, vp.clon, pixx, pixy);
+            else
+                  pBSBChart->latlong_to_chartpix(vp.clat, vp.clon, pixx, pixy);
+
             biasy = pixy - spy;
             biasx = pixx - spx;
       }
@@ -12780,15 +12822,34 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp, wxRegion Region)
                         {
                               if(!pqp->b_overlay)
                               {
+                                    bool b_rendered = false;
+
                                     ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>(pch);
                                     if(Patch_Ch_BSB)
                                     {
-                                          RenderChartRegion(Patch_Ch_BSB, cc1->VPoint, get_region);
+                                          RenderRasterChartRegionGL(pch, cc1->VPoint, get_region);
+                                          b_rendered = true;
                                     }
-                                    else if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                    else
                                     {
-                                          get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
-                                          pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                          ChartPlugInWrapper *Patch_Ch_Plugin = dynamic_cast<ChartPlugInWrapper*>(pch);
+                                          if(Patch_Ch_Plugin)
+                                          {
+                                                if(Patch_Ch_Plugin->GetChartFamily() == CHART_FAMILY_RASTER)
+                                                {
+                                                      RenderRasterChartRegionGL(pch, cc1->VPoint, get_region);
+                                                      b_rendered = true;
+                                                }
+                                          }
+                                    }
+
+                                    if(!b_rendered)
+                                    {
+                                          if(pch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                                          {
+                                             get_region.Offset ( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
+                                             pch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, get_region);
+                                          }
                                     }
                               }
                         }
@@ -13184,18 +13245,36 @@ void glChartCanvas::render()
         }         // quilted
         else                  // not quilted
         {
+             bool b_rendered = false;
              ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>(Current_Ch);
              if(Current_Ch_BSB)
              {
                    glClear(GL_COLOR_BUFFER_BIT);
-                   RenderChartRegion(Current_Ch_BSB, cc1->VPoint, chart_get_region);
+                   RenderRasterChartRegionGL(Current_Ch, cc1->VPoint, chart_get_region);
+                   b_rendered = true;
              }
-             else if (!dynamic_cast<ChartDummy*>(Current_Ch))
+             else
              {
-                   glClear(GL_COLOR_BUFFER_BIT);
-                   wxRegion full_region(cc1->VPoint.rv_rect);
-                   Current_Ch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, full_region);
-              }
+                   ChartPlugInWrapper *Current_Ch_PlugInWrapper = dynamic_cast<ChartPlugInWrapper*>(Current_Ch);
+                   if(Current_Ch_PlugInWrapper)
+                   {
+                         if(Current_Ch_PlugInWrapper->GetChartFamily() == CHART_FAMILY_RASTER)
+                         {
+                               RenderRasterChartRegionGL(Current_Ch, cc1->VPoint, chart_get_region);
+                               b_rendered = true;
+                         }
+                   }
+             }
+
+             if(!b_rendered)
+             {
+                  if (!dynamic_cast<ChartDummy*>(Current_Ch))
+                  {
+                      glClear(GL_COLOR_BUFFER_BIT);
+                      wxRegion full_region(cc1->VPoint.rv_rect);
+                      Current_Ch->RenderRegionViewOnGL(*GetContext(), cc1->VPoint, full_region);
+                  }
+             }
         }
 
 //    Render the WVSChart
