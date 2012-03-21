@@ -370,6 +370,7 @@ private:
       void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius);   // pjotrc 2010.02.01
       void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual);  // pjotrc 2010.02.01
       void Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius);
+      void SART_Render(ocpnDC &dc, wxPen pen, int x, int y, int radius);
 
       void GridDraw(ocpnDC& dc); // Display lat/lon Grid in chart display
       void ScaleBarDraw( ocpnDC& dc );

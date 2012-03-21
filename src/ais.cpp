@@ -190,8 +190,8 @@ wxString ais_status[] = {
       _("Reserved 11"),
       _("Reserved 12"),
       _("Reserved 13"),
-      _("Reserved 14"),
-      _("Undefined"),
+      _("Active"),
+      _("Testing"),
       _("Virtual"),
       _("Virtual (On Position)"),
       _("Virtual (Off Position)"),
@@ -468,7 +468,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       wxString result;
       wxDateTime now = wxDateTime::Now();
 
-      if(Class != AIS_BASE)
+      if((Class != AIS_BASE) && (Class != AIS_SART) )
       {
             line.Printf(_("Name:  "));
             if(b_nameValid)
@@ -495,7 +495,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             line.Printf(_T("MMSI:                 %09d\n"), abs(MMSI));
             result.Append(line);
       }
-      if((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_GPSG_BUDDY))
+      if((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_GPSG_BUDDY) && (Class != AIS_SART))
       {
             line.Printf(_("CallSign:             "));
             line.Append( trimAISField(CallSign) );
@@ -517,19 +517,49 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       line.Append(_T("\n"));
       result.Append(line);
 
-      if(Class != AIS_BASE)
+      if( (Class != AIS_BASE) && (Class != AIS_CLASS_B) )
       {
+            line.Printf(_("Navigational Status:  "));
+            if((NavStatus <= 21) && (NavStatus >= 0))
+                  line.Append(  wxGetTranslation(ais_status[NavStatus]) );
+            line.Append(_T("\n"));
+            result.Append(line);
+      }
 
-            //      Nav Status
-            if(Class != AIS_CLASS_B)
+      if( Class == AIS_SART )
+      {
+            line.Printf(_("Type:                 "));
+            int mmsi_start =  MMSI / 1000000;
+            wxString sub_type;
+            switch(mmsi_start)
             {
-                  line.Printf(_("Navigational Status:  "));
-                  if((NavStatus <= 21) && (NavStatus >= 0))
-                        line.Append(  wxGetTranslation(ais_status[NavStatus]) );
+                  case 970:
+//                        sub_type = _T("SART");
+                        break;
+                  case 972:
+                        sub_type = _T("MOB");
+                        break;
+                  case 974:
+                        sub_type = _T("EPIRB");
+                        break;
+                  default:
+                        sub_type = _("Unknown");
+                        break;
+            }
+
+            if(sub_type.Len())
+            {
+                  line.Append(sub_type);
                   line.Append(_T("\n"));
                   result.Append(line);
             }
 
+            result.Append(_T("\n"));
+      }
+
+
+      if( (Class != AIS_BASE) && (Class != AIS_SART) )
+      {
 
       //      Ship type
             line.Printf(_("Type:                 "));
@@ -852,7 +882,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(t);
             result.Append(_T(")"));
       }
-      if (g_bAISRolloverShowClass)
+      if (g_bAISRolloverShowClass || (Class == AIS_SART) )
       {
             if (result.Len())
                   result.Append(_T("\n"));
@@ -861,7 +891,29 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T("] "));
             if((Class != AIS_ATON) && (Class != AIS_BASE))
             {
-                  result.Append(wxGetTranslation(Get_vessel_type_string(false)));
+                  if(Class == AIS_SART)
+                  {
+                        int mmsi_start =  MMSI / 1000000;
+                        switch(mmsi_start)
+                        {
+                              case 970:
+                                    break;
+                              case 972:
+                                    result += _T("MOB");
+                                    break;
+                              case 974:
+                                    result += _T("EPIRB");
+                                    break;
+                              default:
+                                    result += _("Unknown");
+                                    break;
+                        }
+                  }
+
+
+                  if(Class != AIS_SART)
+                        result.Append(wxGetTranslation(Get_vessel_type_string(false)));
+
                   if(Class != AIS_CLASS_B)
                   {
                         if((NavStatus <= 15) && (NavStatus >= 0) )
@@ -993,6 +1045,9 @@ wxString AIS_Target_Data::Get_class_string(bool b_short)
             return b_short ? _("Buddy") : _("GPSGate Buddy");
       case AIS_DSC:
             return b_short ? _("DSC") : _("DSC Position Report");
+      case AIS_SART:
+            return b_short ? _("SART") : _("SART");
+
       default:
             return b_short ? _("Unk") : _("Unknown");
       }
@@ -1971,6 +2026,12 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             ptd->b_blue_paddle = (ptd->blue_paddle == 2);             // paddle is set
 
             ptd->Class = AIS_CLASS_A;
+
+            //    Check for SART and friends by looking at first two digits of MMSI
+            int mmsi_start =  ptd->MMSI / 10000000;
+
+            if( mmsi_start == 97)
+                  ptd->Class = AIS_SART;
 
             parse_result = true;                // so far so good
             b_posn_report = true;
@@ -4126,7 +4187,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
             switch (column)
             {
                   case tlNAME:
-                        if( (pAISTarget->Class == AIS_BASE))
+                        if( (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_SART))
                               ret =  _("-");
                         else
                         {
@@ -4157,7 +4218,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                         break;
 
                   case tlTYPE:
-                        if((pAISTarget->Class == AIS_BASE))
+                        if((pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_SART))
                               ret =  _("-");
                         else
                               ret = wxGetTranslation(pAISTarget->Get_vessel_type_string(false));
@@ -4257,11 +4318,11 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
       {
             case tlNAME:
                   s1 =  trimAISField(t1->ShipName);
-                  if( (t1->Class == AIS_BASE))
+                  if( (t1->Class == AIS_BASE) || (t1->Class == AIS_SART))
                         s1 =  _T("-");
 
                   s2 =  trimAISField(t2->ShipName);
-                  if( (t2->Class == AIS_BASE))
+                  if( (t2->Class == AIS_BASE) || (t2->Class == AIS_SART))
                         s2 =  _T("-");
                   break;
 
@@ -4283,11 +4344,11 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
 
             case tlTYPE:
                   s1 = t1->Get_vessel_type_string(false);
-                  if( (t1->Class == AIS_BASE))
+                  if( (t1->Class == AIS_BASE) || (t1->Class == AIS_SART))
                         s1 =  _T("-");
 
                   s2 = t2->Get_vessel_type_string(false);
-                  if( (t2->Class == AIS_BASE))
+                  if( (t1->Class == AIS_BASE) || (t1->Class == AIS_SART))
                         s2 =  _T("-");
                   break;
 

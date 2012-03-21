@@ -6562,6 +6562,12 @@ void ChartCanvas::AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc )
                   else if (td->Class == AIS_BASE) {                       // Base Station
                         Base_Square(dc,  wxPen ( GetGlobalColor ( _T ( "UBLCK" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
                   }
+                  else if (td->Class == AIS_SART) {                       // SART Target
+                        if(td->NavStatus == 14)       // active
+                              SART_Render(dc,  wxPen ( GetGlobalColor ( _T ( "URED" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
+                        else
+                              SART_Render(dc,  wxPen ( GetGlobalColor ( _T ( "UGREN" )) , 2 ), TargetPoint.x, TargetPoint.y, 8);
+                  }
                   else {         // ship class A or B or a Buddy or DSC
                        wxPen target_pen ( GetGlobalColor ( _T ( "UBLCK" ) ) , 1 );
 
@@ -6806,6 +6812,32 @@ void ChartCanvas::Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius)
       dc.DrawLine(x-gap2, y, x+gap2, y);
       dc.DrawLine(x, y-gap2, x, y+gap2);
 
+      dc.SetPen(pen_save);
+}
+
+void ChartCanvas::SART_Render(ocpnDC &dc, wxPen pen, int x, int y, int radius)
+{
+      //    Constants
+      int gap = (radius * 12)/10;
+      int pen_width = pen.GetWidth();
+
+      wxPen pen_save = dc.GetPen();
+
+      dc.SetPen(pen);
+
+      wxBrush brush_save = dc.GetBrush();
+      wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush ( wxColour(0,0,0), wxTRANSPARENT );
+      dc.SetBrush(*ppBrush);
+
+      dc.DrawCircle(x,y,radius);
+
+      if (pen_width > 1)
+      { pen_width -= 1; pen.SetWidth(pen_width); }    // draw cross inside
+
+      dc.DrawLine(x-gap, y-gap, x+gap, y+gap);
+      dc.DrawLine(x-gap, y+gap, x+gap, y-gap);
+
+      dc.SetBrush(brush_save);
       dc.SetPen(pen_save);
 }
 
