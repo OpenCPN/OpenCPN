@@ -12491,14 +12491,14 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
             pPlugInWrapper->ComputeSourceRectangle(svp, &R);
             scalefactor = pPlugInWrapper->GetRasterScaleFactor();
             size_X = pPlugInWrapper->GetSize_X();
-            size_Y = pPlugInWrapper->GetSize_X();
+            size_Y = pPlugInWrapper->GetSize_Y();
       }
       else
       {
             pBSBChart->ComputeSourceRectangle(svp, &R);
             scalefactor = pBSBChart->GetRasterScaleFactor();
             size_X = pBSBChart->GetSize_X();
-            size_Y = pBSBChart->GetSize_X();
+            size_Y = pBSBChart->GetSize_Y();
       }
 
       int tex_dim = 512;//max_texture_dimension;
