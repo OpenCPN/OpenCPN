@@ -107,8 +107,8 @@ END_EVENT_TABLE()
 
 // Define a constructor
 
-ThumbWin::ThumbWin(wxFrame *frame):
-                   wxWindow(frame, wxID_ANY,    wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER)
+ThumbWin::ThumbWin(wxWindow *parent):
+                   wxWindow(parent, wxID_ANY,    wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER)
 {
       pThumbChart = NULL;
       m_max_size.x = m_max_size.y = 100;

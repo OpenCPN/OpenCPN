@@ -98,7 +98,7 @@ class ThumbWin: public wxWindow
 {
 public:
       ThumbWin();
-      ThumbWin(wxFrame *frame);
+      ThumbWin(wxWindow *parent);
       virtual ~ThumbWin();
 
       void Resize(void);

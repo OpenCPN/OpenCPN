@@ -263,6 +263,9 @@ int g_gamma_mult;
 int b_gamma_mult;
 int gamma_state;
 
+// "Curtain" mode parameters
+wxDialog                *g_pcurtain;
+
 
 //  These are xpm images used to make cursors for this class.
 //  The relevant static identifying label is the same as the file name
@@ -9966,6 +9969,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         if(g_bopengl)
         {
               m_glcc->Update();
+
               return;
         }
 
@@ -10661,6 +10665,12 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect)
           {
                 m_pRolloverWin->Raise();
                 m_pRolloverWin->Refresh(false);
+          }
+
+          if(pthumbwin && pthumbwin->IsShown() )
+          {
+                pthumbwin->Raise();
+                pthumbwin->Refresh(false);
           }
 
      }
@@ -16240,8 +16250,6 @@ bool ocpnCurtain::ProcessEvent(wxEvent& event)
          WORD                             *g_pSavedGammaMap;
 
 #endif
-         // "Curtain" mode parameters
-         wxDialog                        *g_pcurtain;
 
 
 

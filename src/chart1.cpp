@@ -2649,7 +2649,7 @@ bool MyApp::OnInit()
         pWIFI = new WIFIWindow(gFrame, *pWIFIServerName );
 #endif
 
-        pthumbwin = new ThumbWin(gFrame);
+        pthumbwin = new ThumbWin(cc1);
 
         gFrame->ApplyGlobalSettings(1, false);               // done once on init with resize
 
@@ -4444,7 +4444,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent& event)
     stats->Destroy();
     stats = NULL;
 
-    delete pthumbwin;
+//    delete pthumbwin;
     pthumbwin = NULL;
 
     if(pAPilot)
