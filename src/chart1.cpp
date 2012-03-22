@@ -6349,6 +6349,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       }
 
       //    If any PlugIn requested dynamic overlay callbacks, force a full canvas refresh
+      //    thus, ensuring at least 1 Hz. callback.
       bool brq_dynamic = false;
       if(g_pi_manager)
       {
@@ -6358,7 +6359,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
                   PlugInContainer *pic = pplugin_array->Item(i);
                   if(pic->m_bEnabled && pic->m_bInitState)
                   {
-                        if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                        if(pic->m_cap_flag & WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK)
                         {
                               brq_dynamic = true;
                               break;
