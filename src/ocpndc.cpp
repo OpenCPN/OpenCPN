@@ -138,7 +138,7 @@ void ocpnDC::GetSize(wxCoord *width, wxCoord *height) const
 }
 
 // Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
-void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen)
+void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen, bool b_hiqual)
 {
       double angle = atan2(y2 - y1, x2 - x1);
       double t1 = pen.GetWidth();
@@ -150,10 +150,13 @@ void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen)
                   GL_POLYGON_BIT);      //Save state
 
       //      Enable anti-aliased polys, at best quality
-      glEnable(GL_POLYGON_SMOOTH);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+      if(b_hiqual)
+      {
+            glEnable(GL_POLYGON_SMOOTH);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+      }
 
       //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in the dash table.
       //    The first is assumed drawn, second is assumed space
@@ -217,7 +220,7 @@ void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen)
       glPopAttrib();
 }
 
-void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
+void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hiqual)
 {
      if(dc)
           dc->DrawLine ( x1, y1, x2, y2 );
@@ -234,13 +237,16 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
                   glDisable(GL_MULTISAMPLE);
 
                   //      Enable anti-aliased lines, at best quality
-                  glEnable(GL_LINE_SMOOTH);
-                  glEnable(GL_BLEND);
-                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                  if(b_hiqual)
+                  {
+                        glEnable(GL_LINE_SMOOTH);
+                        glEnable(GL_BLEND);
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                  }
 
                   if(m_pen.GetWidth() > 1)
-                        DrawThickLine(x1, y1, x2, y2, m_pen);
+                        DrawThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
                   else
                   {
                         wxDash *dashes;
@@ -297,7 +303,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2)
 }
 
 
-void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset)
+void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, bool b_hiqual)
 {
      if(dc)
           dc->DrawLines(n, points, xoffset, yoffset);
@@ -305,17 +311,20 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
 
-           glEnable(GL_LINE_SMOOTH);
-           glEnable(GL_BLEND);
-           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-           glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+           if(b_hiqual)
+           {
+            glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+           }
 
            if(m_pen.GetWidth() > 1)
            {
               wxPoint p0 = points[0];
               for(int i=1; i<n; i++)
               {
-                DrawThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset, points[i].y + yoffset, m_pen);
+                DrawThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset, points[i].y + yoffset, m_pen, b_hiqual);
                 p0 = points[i];
               }
            }

@@ -71,8 +71,8 @@ public:
 
      void GetSize(wxCoord *width, wxCoord *height) const;
 
-     void DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
-     void DrawLines( int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
+     void DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hiqual = true);
+     void DrawLines( int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0, bool b_hiqual = true);
 
      void StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
      void StrokeLine( wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
