@@ -262,6 +262,8 @@ int r_gamma_mult;
 int g_gamma_mult;
 int b_gamma_mult;
 int gamma_state;
+bool g_brightness_init;
+int   last_brightness;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -5093,6 +5095,9 @@ bool ChartCanvas::PanCanvas(int dx, int dy)
 
 void ChartCanvas::ReloadVP ( bool b_adjust )
 {
+      if(g_brightness_init)
+            SetScreenBrightness(g_nbrightness);
+
       LoadVP(VPoint, b_adjust);
 }
 
@@ -9786,7 +9791,7 @@ void ChartCanvas::RenderChartOutline ( ocpnDC &dc, int dbIndex, ViewPort& vp )
             ClipResult res = cohen_sutherland_line_clip_i ( &pixx, &pixy, &pixx1, &pixy1,
                               0, vp.pix_width, 0, vp.pix_height );
             if ( res != Invisible )
-                 dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
+                 dc.DrawLine ( pixx, pixy, pixx1, pixy1, false );
         }
 
         else                              // Use Aux PlyPoints
@@ -9848,7 +9853,7 @@ void ChartCanvas::RenderChartOutline ( ocpnDC &dc, int dbIndex, ViewPort& vp )
                   ClipResult res = cohen_sutherland_line_clip_i (&pixx, &pixy, &pixx1, &pixy1,
                                                                  0, vp.pix_width, 0, vp.pix_height);
                   if(res != Invisible)
-                       dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
+                        dc.DrawLine ( pixx, pixy, pixx1, pixy1, false );
              }
         }
 
@@ -16183,9 +16188,6 @@ void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
       // We do not want to change the position on lat/lon now
 }
 
-#ifdef __WIN32__
-#define BRIGHT_CURTAIN
-#endif
 
 #ifdef __WXGTK__
 #define BRIGHT_XCALIB
@@ -16240,14 +16242,13 @@ bool ocpnCurtain::ProcessEvent(wxEvent& event)
 #ifdef __WIN32__
 #include <windows.h>
 
-                     HMODULE hGDI32DLL;
+         HMODULE hGDI32DLL;
          typedef BOOL (WINAPI *SetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
          typedef BOOL (WINAPI *GetDeviceGammaRamp_ptr_type)(HDC hDC, LPVOID lpRampTable);
          SetDeviceGammaRamp_ptr_type   g_pSetDeviceGammaRamp;            // the API entry points in the dll
          GetDeviceGammaRamp_ptr_type   g_pGetDeviceGammaRamp;
 
-         //  "Gamma" mode parameters
-         WORD                             *g_pSavedGammaMap;
+         WORD     *g_pSavedGammaMap;
 
 #endif
 
@@ -16255,151 +16256,258 @@ bool ocpnCurtain::ProcessEvent(wxEvent& event)
 
 int InitScreenBrightness(void)
 {
-#ifdef GAMMA__WIN32__
-      HDC hDC;
-      BOOL bbr;
-
-      if(NULL == hGDI32DLL)
+#ifdef __WIN32__
+      if(g_bopengl)
       {
-            hGDI32DLL = LoadLibrary(TEXT("gdi32.dll"));
+            HDC hDC;
+            BOOL bbr;
 
-            if(NULL != hGDI32DLL)
+            if(NULL == hGDI32DLL)
             {
-                        //Get the entry points of the required functions
-                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
-                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+                  hGDI32DLL = LoadLibrary(TEXT("gdi32.dll"));
 
-                        //    If the functions are not found, unload the DLL and return false
-                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                  if(NULL != hGDI32DLL)
                   {
-                        FreeLibrary(hGDI32DLL);
-                        hGDI32DLL = NULL;
-                        return 0;
+                              //Get the entry points of the required functions
+                        g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                        g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                              //    If the functions are not found, unload the DLL and return false
+                        if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                        {
+                              FreeLibrary(hGDI32DLL);
+                              hGDI32DLL = NULL;
+                              return 0;
+                        }
                   }
             }
-      }
 
 
-      //    Interface is ready, so....
-      //    Get some storage
-      g_pSavedGammaMap = (WORD *)malloc( 3 * 256 * sizeof(WORD));
-
-      hDC = GetDC(NULL);                                      // Get the full screen DC
-      bbr = g_pGetDeviceGammaRamp(hDC, g_pSavedGammaMap);    // Get the existing ramp table
-      ReleaseDC(NULL, hDC);                                       // Release the DC
-
-      return 1;
-
-
-#endif
-
-#ifdef BRIGHT_CURTAIN
-
-
-      if(NULL == g_pcurtain)
-      {
-            if(gFrame->CanSetTransparent())
+            //    Interface is ready, so....
+            //    Get some storage
+            if(!g_pSavedGammaMap)
             {
-            //    Build the curtain window
-                  g_pcurtain = new wxDialog(cc1, -1, _T(""), wxPoint(0,0), wxSize(1000,1000),
-                                      wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
+                g_pSavedGammaMap = (WORD *)malloc( 3 * 256 * sizeof(WORD));
 
-//                  g_pcurtain = new ocpnCurtain(gFrame, wxPoint(0,0),::wxGetDisplaySize(),
-//                      wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
-
-                  g_pcurtain->Hide();
-
-#ifdef __WIN32__
-                  HWND hWnd = GetHwndOf(g_pcurtain);
-                  SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
-#endif
-			g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
-                  g_pcurtain->SetTransparent(0);
-
-                  g_pcurtain->Maximize();
-                  g_pcurtain->Show();
-
-                  //    All of this is obtuse, but necessary for Windows...
-                  g_pcurtain->Enable();
-                  g_pcurtain->Disable();
-
-                  gFrame->Disable();
-                  gFrame->Enable();
-                  cc1->SetFocus();
-
+                hDC = GetDC(NULL);                                      // Get the full screen DC
+                bbr = g_pGetDeviceGammaRamp(hDC, g_pSavedGammaMap);    // Get the existing ramp table
+                ReleaseDC(NULL, hDC);                                       // Release the DC
             }
-      }
-      return 1;
-#endif
 
+            g_brightness_init = true;
+            return 1;
+      }
+
+      else
+      {
+            if(NULL == g_pcurtain)
+            {
+                  if(gFrame->CanSetTransparent())
+                  {
+                  //    Build the curtain window
+                        g_pcurtain = new wxDialog(cc1, -1, _T(""), wxPoint(0,0), wxSize(1000,1000),
+                                          wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
+
+      //                  g_pcurtain = new ocpnCurtain(gFrame, wxPoint(0,0),::wxGetDisplaySize(),
+      //                      wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
+
+                        g_pcurtain->Hide();
+
+                        HWND hWnd = GetHwndOf(g_pcurtain);
+                        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | ~WS_EX_APPWINDOW);
+                        g_pcurtain->SetBackgroundColour(wxColour(0,0,0));
+                        g_pcurtain->SetTransparent(0);
+
+                        g_pcurtain->Maximize();
+                        g_pcurtain->Show();
+
+                        //    All of this is obtuse, but necessary for Windows...
+                        g_pcurtain->Enable();
+                        g_pcurtain->Disable();
+
+                        gFrame->Disable();
+                        gFrame->Enable();
+                        cc1->SetFocus();
+
+                  }
+            }
+            g_brightness_init = true;
+
+            return 1;
+      }
+#else
       return 0;
+#endif
 }
 
 int RestoreScreenBrightness(void)
 {
-#ifdef GAMMA__WIN32__
-      HDC hDC;
-      BOOL bbr;
+#ifdef __WIN32__
+      g_brightness_init = false;
 
-      if(g_pSavedGammaMap)
+      if(g_bopengl)
       {
-            hDC = GetDC(NULL);                                            // Get the full screen DC
-            bbr = g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
-            ReleaseDC(NULL, hDC);                                             // Release the DC
-            return 1;
+            HDC hDC;
+            BOOL bbr;
+
+
+            if(g_pSavedGammaMap)
+            {
+                  hDC = GetDC(NULL);                                            // Get the full screen DC
+                  bbr = g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
+                  ReleaseDC(NULL, hDC);                                        // Release the DC
+
+                  free(g_pSavedGammaMap);
+                  g_pSavedGammaMap = NULL;
+
+                  return 1;
+            }
+            else
+                  return 0;
       }
       else
-            return 0;
-#endif
+      {
+            if(g_pcurtain)
+            {
+                  g_pcurtain->Close();
+                  g_pcurtain->Destroy();
+                  g_pcurtain = NULL;
+            }
+      }
 
-#ifdef BRIGHT_CURTAIN
-        if(g_pcurtain)
-        {
-            g_pcurtain->Close();
-            g_pcurtain->Destroy();
-            g_pcurtain = NULL;
-        }
+      return 1;
+
 #endif
 
 #ifdef BRIGHT_XCALIB
+      if(g_brightness_init)
+      {
         wxString cmd;
         cmd = _T("xcalib -clear");
         wxExecute(cmd, wxEXEC_ASYNC);
-
-#endif
+        g_brightness_init = false;
+      }
 
       return 1;
+#endif
+
 }
 
-bool  b_init;
-int   last_brightness;
 
 //    Set brightness. [0..100]
 int SetScreenBrightness(int brightness)
 {
-#ifdef BRIGHT_CURTAIN
+#ifdef __WIN32__
 
-      if(NULL == g_pcurtain)
+      //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
+      //    Load the required library dll, if not already in place
+      if(g_bopengl)
+      {
+            if(g_pcurtain)
+            {
+                  g_pcurtain->Close();
+                  g_pcurtain->Destroy();
+                  g_pcurtain = NULL;
+            }
+
             InitScreenBrightness();
 
-      if(g_pcurtain)
-      {
-            int sbrite = wxMax(1, brightness);
-            sbrite = wxMin(100, sbrite);
+            wchar_t wdll_name[80];
+            LPCWSTR cstr;
+            HDC hDC;
+            BOOL bbr;
+            int cmcap;
+            WORD GammaTable[3][256];
+            int i;
+            int table_val, increment;
 
-            g_pcurtain->SetTransparent((100 - sbrite) * 256 / 100);
+            if(NULL == hGDI32DLL)
+            {
+                  // Unicode stuff.....
+                  MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
+                  cstr = wdll_name;
+
+                  hGDI32DLL = LoadLibrary(cstr);
+
+                  if(NULL != hGDI32DLL)
+                  {
+                              //Get the entry points of the required functions
+                        g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
+                        g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
+
+                              //    If the functions are not found, unload the DLL and return false
+                        if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
+                        {
+                              FreeLibrary(hGDI32DLL);
+                              hGDI32DLL = NULL;
+                              return 0;
+                        }
+                  }
+            }
+
+
+            hDC = GetDC(NULL);                          // Get the full screen DC
+            cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
+            if (cmcap != CM_GAMMA_RAMP)
+            {
+      //            wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
+      //            return false;
+            }
+
+
+            increment = brightness * 256 / 100;
+
+            // Build the Gamma Ramp table
+            table_val = 0;
+            for (i = 0; i < 256; i++)
+            {
+
+                  GammaTable[0][i] = r_gamma_mult * (WORD)table_val;
+                  GammaTable[1][i] = g_gamma_mult * (WORD)table_val;
+                  GammaTable[2][i] = b_gamma_mult * (WORD)table_val;
+
+                  table_val += increment;
+
+                  if (table_val > 65535)
+                        table_val = 65535;
+
+            }
+
+            bbr = g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
+            ReleaseDC(NULL, hDC);                                     // Release the DC
+
+            return 1;
       }
+      else
+      {
+            if(g_pSavedGammaMap)
+            {
+                  HDC hDC = GetDC(NULL);                                            // Get the full screen DC
+                  g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
+                  ReleaseDC(NULL, hDC);                                             // Release the DC
+            }
 
-      return 1;
+            if(NULL == g_pcurtain)
+                  InitScreenBrightness();
+
+            if(g_pcurtain)
+            {
+                  int sbrite = wxMax(1, brightness);
+                  sbrite = wxMin(100, sbrite);
+
+                  g_pcurtain->SetTransparent((100 - sbrite) * 256 / 100);
+            }
+            return 1;
+      }
 
 #endif
 
 #ifdef BRIGHT_XCALIB
 
-      if(!b_init)
+      if(!g_brightness_init)
       {
             last_brightness = 100;
-            b_init = true;
+            g_brightness_init = true;
             temp_file_name = wxFileName::CreateTempFileName(_T(""));
 
       }
@@ -16452,79 +16560,6 @@ int SetScreenBrightness(int brightness)
 #endif
 
 
-#ifdef GAMMA__WIN32__
-
-
-      //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
-      //    Load the required library dll, if not already in place
-      wchar_t wdll_name[80];
-      LPCWSTR cstr;
-      HDC hDC;
-      BOOL bbr;
-      int cmcap;
-      WORD GammaTable[3][256];
-      int i;
-      int table_val, increment;
-
-      if(NULL == hGDI32DLL)
-      {
-                // Unicode stuff.....
-            MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
-            cstr = wdll_name;
-
-            hGDI32DLL = LoadLibrary(cstr);
-
-            if(NULL != hGDI32DLL)
-            {
-                        //Get the entry points of the required functions
-                  g_pSetDeviceGammaRamp = (SetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "SetDeviceGammaRamp");
-                  g_pGetDeviceGammaRamp = (GetDeviceGammaRamp_ptr_type)GetProcAddress(hGDI32DLL, "GetDeviceGammaRamp");
-
-                        //    If the functions are not found, unload the DLL and return false
-                  if((NULL == g_pSetDeviceGammaRamp) || (NULL == g_pGetDeviceGammaRamp))
-                  {
-                        FreeLibrary(hGDI32DLL);
-                        hGDI32DLL = NULL;
-                        return 0;
-                  }
-            }
-      }
-
-
-      hDC = GetDC(NULL);                          // Get the full screen DC
-      cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
-      if (cmcap != CM_GAMMA_RAMP)
-      {
-//            wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
-//            return false;
-      }
-
-
-      increment = brightness * 256 / 100;
-
-      // Build the Gamma Ramp table
-      table_val = 0;
-      for (i = 0; i < 256; i++)
-      {
-
-            GammaTable[0][i] = GammaTable[1][i] = GammaTable[2][i] = (WORD)table_val;
-
-            table_val += increment;
-
-            if (table_val > 65535)
-                  table_val = 65535;
-
-      }
-
-      bbr = g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
-      ReleaseDC(NULL, hDC);                                     // Release the DC
-
-      return 1;
-
-
-
-
-#endif
 
       return 0;
 }
