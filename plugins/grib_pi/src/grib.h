@@ -66,6 +66,13 @@ enum {
 
 enum OVERLAP {_IN,_ON,_OUT};
 
+enum {
+      GENERIC_GRAPHIC_INDEX,
+      CURRENT_GRAPHIC_INDEX,
+      SEATEMP_GRAPHIC_INDEX,
+      CRAIN_GRAPHIC_INDEX
+};
+
 class GRIBFile;
 class GRIBRecord;
 class GribRecordTree;
@@ -191,6 +198,18 @@ class GRIBUIDialog: public wxDialog
 
 };
 
+class GribOverlayBitmap
+{
+public:
+            GribOverlayBitmap(void){ m_pDCBitmap = NULL, m_pRGBA = NULL; }
+            ~GribOverlayBitmap(void) { delete m_pDCBitmap, delete[] m_pRGBA; } 
+
+            wxBitmap          *m_pDCBitmap;
+            unsigned char     *m_pRGBA;
+            int               m_RGBA_width;
+            int               m_RGBA_height;
+};
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Specification
 //----------------------------------------------------------------------------------------------------------
@@ -205,6 +224,7 @@ class GRIBOverlayFactory
             bool RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp );
             bool IsReadyToRender(){ return m_bReadyToRender; }
             void Reset();
+            void ClearCachedData(void);
 
             GribRecordSet           *m_pGribRecordSet;
 
@@ -218,26 +238,19 @@ class GRIBOverlayFactory
             void DrawGLLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, int width);
             void DrawOLBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask);
             void DrawGLImage(wxImage *pimage, wxCoord x, wxCoord y, bool usemask);
+            void DrawMessageWindow(wxString msg, int x, int y);
 
       private:
-            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribPressure(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribSigWh(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribWvDir(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribCRAIN(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribSeaTemp(GribRecord *pGR, wxDC &dc, PlugIn_ViewPort *vp);
-            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxDC &dc, PlugIn_ViewPort *vp);
+            bool DoRenderGribOverlay ( PlugIn_ViewPort *vp );
 
-            bool RenderGLGribWind(GribRecord *pGRX, GribRecord *pGRY, wxGLContext *pcontext,
-                   PlugIn_ViewPort *vp);
-            bool RenderGLGribPressure(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
-            bool RenderGLGribSigWh(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
-            bool RenderGLGribWvDir(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
-            bool RenderGLGribCRAIN(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
-            bool RenderGLGribSeaTemp(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp);
-            bool RenderGLGribCurrent(GribRecord *pGRX, GribRecord *pGRY, wxGLContext *pcontext,
-                   PlugIn_ViewPort *vp);
+            bool RenderGribWind(GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp);
+            bool RenderGribPressure(GribRecord *pGR, PlugIn_ViewPort *vp);
+            bool RenderGribSigWh(GribRecord *pGR, PlugIn_ViewPort *vp);
+            bool RenderGribWvDir(GribRecord *pGR, PlugIn_ViewPort *vp);
+            bool RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp);
+            bool RenderGribCRAIN(GribRecord *pGR, PlugIn_ViewPort *vp);
+            bool RenderGribSeaTemp(GribRecord *pGR, PlugIn_ViewPort *vp);
+            bool RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp);
 
             void drawWindArrowWithBarbs(int x, int y, double vx, double vy, bool south,
                    wxColour arrowColor);
@@ -250,21 +263,26 @@ class GRIBOverlayFactory
             void drawGrandeBarbule(wxPen pen, bool south, double si, double co, int di, int dj, int b);
             void drawTriangle(wxPen pen, bool south, double si, double co, int di, int dj, int b);
 
-            wxColour GetGraphicColor(double val, double val_max);
+            wxColour GetGenericGraphicColor(double val);
             wxColour GetQuickscatColor(double val);
             wxColour GetSeaCurrentGraphicColor(double val_in);
-            wxColour GetSeaTempGraphicColor(double val, double val_max);
+            wxColour GetSeaTempGraphicColor(double val);
 
-            void ClearCachedData(void);
+            void CreateRGBAfromImage(wxImage *pimage, GribOverlayBitmap *pGOB);
+            void DrawGLRGBA(unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd);
+            wxImage CreateGribImage(GribRecord *pGRA, GribRecord *pGRB, PlugIn_ViewPort *vp,
+                          int grib_pixel_size, int colormap_index, const wxPoint &porg);
+
+            bool RenderGribFieldOverlay(GribRecord *pGRA, GribRecord *pGRB, PlugIn_ViewPort *vp,
+                        int grib_pixel_size, int colormap_index, GribOverlayBitmap **ppGOB);
 
             double                  m_last_vp_scale;
             wxArrayPtrVoid          m_IsobarArray;
 
-            wxBitmap                *m_pbm_sigwh;
-            wxBitmap                *m_pbm_crain;
-            wxBitmap                *m_pbm_seatemp;
-            wxBitmap                *m_pbm_current;
-            wxImage                 *m_pimage_current;
+            GribOverlayBitmap       *m_pgob_sigwh;
+            GribOverlayBitmap       *m_pgob_crain;
+            GribOverlayBitmap       *m_pgob_seatemp;
+            GribOverlayBitmap       *m_pgob_current;
 
             wxDC                    *m_pdc;
 

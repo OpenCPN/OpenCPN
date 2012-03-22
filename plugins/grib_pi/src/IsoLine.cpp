@@ -629,7 +629,7 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour coul
 }
 
 
-void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, wxGLContext *pcontext, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
@@ -668,7 +668,7 @@ void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, wxGLContext *pcontext, Plug
 
 }
 
-void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxGLContext *pcontext, wxColour couleur,
+void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour couleur,
                                 PlugIn_ViewPort *vp,
                             int density, int first, double coef)
 {

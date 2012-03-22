@@ -115,9 +115,9 @@ class IsoLine
         void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour couleur, PlugIn_ViewPort *vp,
                                 int density, int first, double coef);
 
-        void drawGLIsoLine(GRIBOverlayFactory *pof, wxGLContext *pcontext,
+        void drawGLIsoLine(GRIBOverlayFactory *pof, 
                    PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
-        void drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxGLContext *pcontext,
+        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,
                    wxColour couleur, PlugIn_ViewPort *vp,
                    int density, int first, double coef);
 
