@@ -117,6 +117,8 @@ s52plib::s52plib ( const wxString& PLib )
       pointPaperLUPArray = NULL;      // points: PAPER_CHART
       condSymbolLUPArray = NULL;      // Dynamic Conditional Symbology
 
+      _symb_sym = NULL;
+
       m_txf_ready = false;
       m_txf = NULL;
 
@@ -128,6 +130,7 @@ s52plib::s52plib ( const wxString& PLib )
 
       _symb_symR = NULL;
       bUseRasterSym = false;
+
 
       //      Sensible defaults
       m_nSymbolStyle = PAPER_CHART;
@@ -2015,21 +2018,27 @@ void s52plib::DestroyLUP ( LUPrec *pLUP )
 
 void s52plib::DestroyLUPArray ( wxArrayOfLUPrec *pLUPArray )
 {
-      for ( unsigned int il = 0 ; il < pLUPArray->GetCount() ; il++ )
-            DestroyLUP ( pLUPArray->Item ( il ) );
+      if(pLUPArray)
+      {
+            for ( unsigned int il = 0 ; il < pLUPArray->GetCount() ; il++ )
+                  DestroyLUP ( pLUPArray->Item ( il ) );
 
-      pLUPArray->Clear();
+            pLUPArray->Clear();
 
-      delete pLUPArray;
+            delete pLUPArray;
+      }
 }
 
 
 void s52plib::ClearCNSYLUPArray ( void )
 {
-      for ( unsigned int i = 0 ; i < condSymbolLUPArray->GetCount() ; i++ )
-            DestroyLUP ( condSymbolLUPArray->Item ( i ) );
+      if(condSymbolLUPArray)
+      {
+            for ( unsigned int i = 0 ; i < condSymbolLUPArray->GetCount() ; i++ )
+                  DestroyLUP ( condSymbolLUPArray->Item ( i ) );
 
-      condSymbolLUPArray->Clear();
+            condSymbolLUPArray->Clear();
+      }
 }
 
 
