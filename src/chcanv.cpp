@@ -4764,7 +4764,7 @@ void ChartCanvas::GetCanvasPixPoint ( int x, int y, double &lat, double &lon )
 
 bool ChartCanvas::ZoomCanvasIn(double factor)
 {
-      bool b_smooth = g_bsmoothpanzoom & g_bopengl;
+      bool b_smooth = g_bsmoothpanzoom & g_bopengl & !g_bEnableZoomToCursor;
 
       if(!VPoint.b_quilt)
       {
@@ -4775,7 +4775,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
                   b_smooth= false;
       }
       else
-            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector();
+            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector() & !g_bEnableZoomToCursor;
 
       if(b_smooth)
       {
@@ -4809,7 +4809,7 @@ bool ChartCanvas::ZoomCanvasIn(double factor)
 
 bool ChartCanvas::ZoomCanvasOut(double factor)
 {
-      bool b_smooth = g_bsmoothpanzoom & g_bopengl;
+      bool b_smooth = g_bsmoothpanzoom & g_bopengl & !g_bEnableZoomToCursor;
 
       if(!VPoint.b_quilt)
       {
@@ -4820,7 +4820,7 @@ bool ChartCanvas::ZoomCanvasOut(double factor)
                   b_smooth= false;
       }
       else
-            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector();
+            b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector() & !g_bEnableZoomToCursor;
 
       if(b_smooth)
       {
@@ -16343,38 +16343,25 @@ int InitScreenBrightness(void)
 int RestoreScreenBrightness(void)
 {
 #ifdef __WIN32__
+
+      if(g_pSavedGammaMap)
+      {
+            HDC hDC = GetDC(NULL);                                 // Get the full screen DC
+            g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
+            ReleaseDC(NULL, hDC);                                  // Release the DC
+
+            free(g_pSavedGammaMap);
+            g_pSavedGammaMap = NULL;
+      }
+
+      if(g_pcurtain)
+      {
+            g_pcurtain->Close();
+            g_pcurtain->Destroy();
+            g_pcurtain = NULL;
+      }
+
       g_brightness_init = false;
-
-      if(g_bopengl)
-      {
-            HDC hDC;
-            BOOL bbr;
-
-
-            if(g_pSavedGammaMap)
-            {
-                  hDC = GetDC(NULL);                                            // Get the full screen DC
-                  bbr = g_pSetDeviceGammaRamp(hDC, g_pSavedGammaMap);          // Restore the saved ramp table
-                  ReleaseDC(NULL, hDC);                                        // Release the DC
-
-                  free(g_pSavedGammaMap);
-                  g_pSavedGammaMap = NULL;
-
-                  return 1;
-            }
-            else
-                  return 0;
-      }
-      else
-      {
-            if(g_pcurtain)
-            {
-                  g_pcurtain->Close();
-                  g_pcurtain->Destroy();
-                  g_pcurtain = NULL;
-            }
-      }
-
       return 1;
 
 #endif
@@ -16412,20 +16399,12 @@ int SetScreenBrightness(int brightness)
 
             InitScreenBrightness();
 
-            wchar_t wdll_name[80];
-            LPCWSTR cstr;
-            HDC hDC;
-            BOOL bbr;
-            int cmcap;
-            WORD GammaTable[3][256];
-            int i;
-            int table_val, increment;
-
             if(NULL == hGDI32DLL)
             {
                   // Unicode stuff.....
+                  wchar_t wdll_name[80];
                   MultiByteToWideChar( 0, 0, "gdi32.dll", -1, wdll_name, 80);
-                  cstr = wdll_name;
+                  LPCWSTR cstr = wdll_name;
 
                   hGDI32DLL = LoadLibrary(cstr);
 
@@ -16445,21 +16424,24 @@ int SetScreenBrightness(int brightness)
                   }
             }
 
+            HDC hDC = GetDC(NULL);                          // Get the full screen DC
 
-            hDC = GetDC(NULL);                          // Get the full screen DC
-            cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
+/*
+            int cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
             if (cmcap != CM_GAMMA_RAMP)
             {
-      //            wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
-      //            return false;
+                  wxLogMessage(_T("    Video hardware does not support brightness control by gamma ramp adjustment."));
+                  return false;
             }
+*/
 
-
-            increment = brightness * 256 / 100;
+            int increment = brightness * 256 / 100;
 
             // Build the Gamma Ramp table
-            table_val = 0;
-            for (i = 0; i < 256; i++)
+            WORD GammaTable[3][256];
+
+            int table_val = 0;
+            for (int i = 0; i < 256; i++)
             {
 
                   GammaTable[0][i] = r_gamma_mult * (WORD)table_val;
@@ -16473,7 +16455,7 @@ int SetScreenBrightness(int brightness)
 
             }
 
-            bbr = g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
+            g_pSetDeviceGammaRamp(hDC, GammaTable);          // Set the ramp table
             ReleaseDC(NULL, hDC);                                     // Release the DC
 
             return 1;

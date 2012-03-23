@@ -399,6 +399,9 @@ void options::CreateControls()
     GetTextExtent(_T("0"), NULL, &font_size_y, &font_descent, &font_lead);
     wxSize small_button_size(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 
+    //      Some members (pointers to controls) need to initialized
+    pEnableZoomToCursor = NULL;
+    pSmoothPanZoom = NULL;
 
     //      Check the display size.
     //      If "small", adjust some factors to squish out some more white space
@@ -1426,6 +1429,12 @@ void options::SetInitialSettings()
       pSkewComp->SetValue(g_bskew_comp);
       pOpenGL->SetValue(g_bopengl);
       pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
+      if(g_bEnableZoomToCursor || pEnableZoomToCursor->GetValue())
+      {
+            pSmoothPanZoom->SetValue(false);
+            pSmoothPanZoom->Disable();
+      }
+
       pSDisplayGrid->SetValue(g_bDisplayGrid);
 
       pCBCourseUp->SetValue(g_bCourseUp);
@@ -2356,6 +2365,12 @@ void options::OnPageChange(wxNotebookEvent& event)
 {
       int i = event.GetSelection();
 
+      if(0 == i)                        // 0 is the index of "Settings" page
+      {
+            if(pEnableZoomToCursor && pSmoothPanZoom)
+                  pSmoothPanZoom->Enable(!pEnableZoomToCursor->GetValue());
+      }
+
       //    User selected Chart Page?
       //    If so, build the "Charts" page variants
       if(2 == i)                        // 2 is the index of "Charts" page
@@ -2697,7 +2712,7 @@ void EmptyChartGroupArray(ChartGroupArray *s)
       for(unsigned int i=0 ; i < s->GetCount(); i++)
       {
             ChartGroup *psg =  s->Item(i);
-      
+
             for(unsigned int j=0; j < psg->m_element_array.GetCount(); j++)
             {
                  ChartGroupElement *pe = psg->m_element_array.Item(j);
