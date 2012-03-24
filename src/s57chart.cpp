@@ -1210,6 +1210,8 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
           pDIB = NULL;
     }
 
+    //      Clear out any cached bitmaps in the text cache
+    ClearRenderedTextCache();
 
     //      Setup the proper thumbnail bitmap pointer
 

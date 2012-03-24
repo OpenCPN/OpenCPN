@@ -223,8 +223,8 @@ typedef struct _S52color{
 class S52_TextC
 {
 public:
-    S52_TextC(){ pcol = NULL, pFont = NULL; }
-    ~S52_TextC(){};
+      S52_TextC(){ pcol = NULL, pFont = NULL, m_pRGBA = NULL; }
+      ~S52_TextC(){ free(m_pRGBA); }
 
     wxString   frmtd;       // formated text string
     char       hjust;
@@ -240,6 +240,10 @@ public:
     int        dis;         // display
     wxFont     *pFont;
     int        rul_seq_creator;  // sequence number of the Rule creating this object
+    unsigned char *m_pRGBA;
+    int           RGBA_width;
+    int           RGBA_height;
+    int           rendered_char_height;
 };
 
 

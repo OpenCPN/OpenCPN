@@ -445,6 +445,7 @@ class cm93compchart : public s57chart
 
             virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                               const wxRegion &Region);
+            void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
             bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
 

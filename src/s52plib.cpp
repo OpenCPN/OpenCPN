@@ -2740,6 +2740,139 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
 
       if(!pdc)                // OpenGL
       {
+#if 1
+            if(1)
+            {
+                  if(!ptext->m_pRGBA)            // is RGBA bitmap ready?
+                  {
+                        wxMemoryDC mdc;
+
+                        mdc.SetFont ( * ( ptext->pFont ) );
+
+                        wxCoord w, h, descent, exlead;
+                        mdc.GetTextExtent ( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
+                        ptext->rendered_char_height = h - descent;
+
+                        wxBitmap bmp(w,h);
+                        mdc.SelectObject(bmp);
+
+                        if(mdc.IsOk())
+                        {
+                              //  Render the text as white on black, so that underlying anti-aliasing of
+                              //  wxDC text rendering can be extracted and converted to alpha-channel values.
+
+                              mdc.SetBackground(wxBrush(wxColour(0,0,0)));
+                              mdc.SetBackgroundMode ( wxTRANSPARENT );
+
+                              mdc.SetTextForeground ( wxColour(255,255,255) );
+
+                              mdc.Clear();
+
+                              mdc.DrawText (   ptext->frmtd, 0, 0 );
+
+                              wxImage image = bmp.ConvertToImage();
+                              int ws = image.GetWidth(), hs = image.GetHeight();
+
+                              ptext->RGBA_width = ws;
+                              ptext->RGBA_height = hs;
+                              ptext->m_pRGBA = (unsigned char *)malloc(4*ws*hs);
+
+                              unsigned char *d = image.GetData();
+                              unsigned char *pdest = ptext->m_pRGBA;
+                              S52color *ccolor = ptext->pcol;
+
+                              for(int y=0; y<hs; y++)
+                                    for(int x=0; x<ws; x++)
+                                    {
+                                          unsigned char r, g, b;
+                                          int off = (y*ws+x);
+                                          r = d[off*3 + 0];
+                                          g = d[off*3 + 1];
+                                          b = d[off*3 + 2];
+
+                                          pdest[off*4 + 0] = ccolor->R;
+                                          pdest[off*4 + 1] = ccolor->G;
+                                          pdest[off*4 + 2] = ccolor->B;
+
+                                          int alpha = (r + g + b)/3;
+                                          pdest[off*4 + 3] = (unsigned char)(alpha & 0xff);
+                                    }
+
+                              mdc.SelectObject(wxNullBitmap);
+                        }     // mdc OK
+
+                  }    // Building m_RGBA
+
+                  //    Render the bitmap
+                  if(ptext->m_pRGBA)
+                  {
+                        //  Adjust the y position to account for the convention that S52 text is drawn
+                        //  with the lower left corner at the specified point, instead of the wx convention
+                        //  using upper right corner
+                        int yp = y  - ( ptext->rendered_char_height );
+                        int xp = x;
+
+                        //  Add in the offsets, specified in units of nominal font height
+                        yp += ptext->yoffs * ( ptext->rendered_char_height );
+                        xp += ptext->xoffs * ( ptext->rendered_char_height );
+
+                        pRectDrawn->SetX ( xp );
+                        pRectDrawn->SetY ( yp );
+                        pRectDrawn->SetWidth ( ptext->RGBA_width );
+                        pRectDrawn->SetHeight ( ptext->RGBA_height );
+
+                        if ( bCheckOverlap )
+                        {
+                              if ( CheckTextRectList ( *pRectDrawn, pobj ) )
+                                    bdraw = false;
+                        }
+
+                        if(bdraw)
+                        {
+                              int x_offset = 0;
+                              int y_offset = 0;
+                              int draw_width = ptext->RGBA_width;
+                              int draw_height = ptext->RGBA_height;
+
+                              if(xp < 0)
+                              {
+                                    x_offset = -xp;
+                                    draw_width += xp;
+                              }
+                              if(yp < 0)
+                              {
+                                    y_offset = -yp;
+                                    draw_height += yp;
+                              }
+
+                              glColor4f(1, 1, 1, 1);
+
+                              glEnable(GL_BLEND);
+                              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                              glPixelZoom(1, -1);
+
+                              glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+
+                              glPixelStorei(GL_UNPACK_ROW_LENGTH, ptext->RGBA_width);
+
+                              glRasterPos2i(xp + x_offset, yp + y_offset);
+
+                              glPixelStorei(GL_UNPACK_SKIP_PIXELS, x_offset);
+                              glPixelStorei(GL_UNPACK_SKIP_ROWS, y_offset);
+
+                              glDrawPixels(draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, ptext->m_pRGBA);
+                              glPixelZoom(1, 1);
+                              glDisable(GL_BLEND);
+
+                              glPopClientAttrib();
+                        }     // bdraw
+
+                  }
+
+            } // 1
+
+#endif
+#if 0
             if(!m_txf_ready)
                   PrepareTxfRenderer();
 
@@ -2816,6 +2949,7 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
             }
             else
                   bdraw = false;
+#endif
       }
       else
       {

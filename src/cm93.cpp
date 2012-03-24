@@ -6268,6 +6268,15 @@ void cm93compchart::ForceEdgePriorityEvaluate ( void )
       }
 }
 
+void cm93compchart::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
+{
+      for ( int i = 0 ; i < 8 ; i++ )
+      {
+            if ( m_pcm93chart_array[i] )
+                  m_pcm93chart_array[i]->SetColorScheme(cs, bApplyImmediate);
+      }
+}
+
 ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon, float select_radius, ViewPort *VPoint )
 {
       float alon = lon;
