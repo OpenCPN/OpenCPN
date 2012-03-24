@@ -1215,8 +1215,9 @@ bool AddLocaleCatalog( wxString catalog )
 
 void PushNMEABuffer( wxString buf )
 {
-      //if ( buf.Mid(3,3).IsSameAs(_T("VDM")) || buf.Mid(3,3).IsSameAs(_T("VDO")) )
-      if ( buf.Mid(1,2).IsSameAs(_T("AI")) ) // AIALR AITXT AIVDM AIVDO
+      if ( buf.Mid(1,2).IsSameAs(_T("AI")) || // AIALR AITXT AIVDM AIVDO
+           buf.Mid(1,4).IsSameAs(_T("CDDS")) || // DSC position message
+           buf.Mid(1,5).IsSameAs(_T("FRPOS")) ) // GpsGate position message
       {
             OCPN_AISEvent event( wxEVT_OCPN_AIS, 0 );
 //            event.SetEventObject( (wxObject *)this );
