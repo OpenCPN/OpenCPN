@@ -726,7 +726,9 @@ paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
 Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 
-      wxMessageDialog odlg(gFrame, msg0, _("Welcome to OpenCPN"), wxCANCEL | wxOK );
+      wxString vs = wxT(" .. Version ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch;
+
+      wxMessageDialog odlg(gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
 
       return(odlg.ShowModal());
 }
