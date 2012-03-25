@@ -125,6 +125,7 @@ extern double           g_AckTimeout_Mins;
 extern bool             bGPSValid;
 
 extern PlugInManager    *g_pi_manager;
+extern TTYWindow        *g_NMEALogWindow;
 
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
@@ -1365,6 +1366,17 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
             int nr = 0;
             if(!message.IsEmpty())
             {
+                  if(g_NMEALogWindow)
+                  {
+                        wxDateTime now = wxDateTime::Now();
+                        wxString ss = now.FormatISOTime();
+                        ss.Append(_T("  "));
+                        ss.Append(message);
+                        g_NMEALogWindow->Add(ss);
+                        g_NMEALogWindow->Refresh(false);
+                  }
+
+
                   if( message.Mid(3,3).IsSameAs(_T("VDM")) || message.Mid(3,3).IsSameAs(_T("VDO")) || message.Mid(1,5).IsSameAs(_T("FRPOS")) || message.Mid(1,2).IsSameAs(_T("CD")) )
                   {
                         nr = Decode(message);
@@ -1783,6 +1795,8 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
             else
             if (dsc_mmsi) {
 	            pTargetData->PositionReportTicks = now.GetTicks();
+                  pTargetData->StaticReportTicks = now.GetTicks();
+
 	            pTargetData->MMSI = mmsi;
 	            pTargetData->NavStatus = 0; // underway
 	            pTargetData->Lat = dsc_lat;
@@ -1796,11 +1810,14 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 		            else strncpy(pTargetData->ShipName, "POSITION REPORT     ", 21);
 	            pTargetData->b_nameValid = false;       // continue cheating, because position maybe incomplete
 	            pTargetData->b_active = true;
+                  pTargetData->b_lost = false;
+
 	            bdecode_result = true;
 	            }
             else if (gpsg_mmsi) {
 			pTargetData->PositionReportTicks = now.GetTicks();
-			pTargetData->m_utc_hour = gpsg_utc_hour;
+                  pTargetData->StaticReportTicks = now.GetTicks();
+                  pTargetData->m_utc_hour = gpsg_utc_hour;
 			pTargetData->m_utc_min = gpsg_utc_min;
 			pTargetData->m_utc_sec = gpsg_utc_sec;
 			pTargetData->MMSI = gpsg_mmsi;
@@ -1815,7 +1832,9 @@ AIS_Error AIS_Decoder::Decode(const wxString& str)
 			strncpy(pTargetData->ShipName, gpsg_name_str, strlen(gpsg_name_str)+1);
 			pTargetData->b_nameValid = true;
 			pTargetData->b_active = true;
-			bdecode_result = true;
+                  pTargetData->b_lost = false;
+
+                  bdecode_result = true;
 			}
             else
                   bdecode_result = Parse_VDXBitstring(&strbit, pTargetData);            // Parse the new data
@@ -3052,6 +3071,8 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
                       long mmsi_long = td->MMSI;
                       pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
 
+                      //      If we have not seen a static report in 3 times the removal spec,
+                      //      then remove the target from all lists.
                       if(target_static_age > removelost_Mins * 60 * 3)
                       {
                         current_targets->erase(it);
