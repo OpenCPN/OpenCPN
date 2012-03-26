@@ -36,7 +36,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    0
-#define     PLUGIN_VERSION_MINOR    2
+#define     PLUGIN_VERSION_MINOR    3
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    6
@@ -55,7 +55,7 @@
 
 class VDRControl;
 
-class vdr_pi : public opencpn_plugin, wxTimer
+class vdr_pi : public opencpn_plugin_16, wxTimer
 {
 public:
       vdr_pi( void *ppimgr );
