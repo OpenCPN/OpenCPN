@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -83,7 +83,7 @@ class ViewPort
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
+            wxRegion GetVPRegionIntersect( const wxRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
 
             void SetBoxes(void);
 

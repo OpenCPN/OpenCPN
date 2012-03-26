@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
@@ -128,7 +128,13 @@ enum {
         ID_TRANSTOOLBARCHECKBOX,
         ID_SHOWLAYERSCHECKBOX,
         ID_SDMMFORMATCHOICE,
-        ID_TRACKHILITE
+        ID_TRACKHILITE,
+        ID_BUTTONGROUP,
+        ID_GROUPNOTEBOOK,
+        ID_GROUPINSERTDIR,
+        ID_GROUPREMOVEDIR,
+        ID_GROUPNEWGROUP,
+        ID_GROUPDELETEGROUP
 
 };
 
@@ -143,7 +149,7 @@ enum {
 #define     TOOLBAR_CHANGED   64
 #define     CHANGE_CHARTS    128
 #define     SCAN_UPDATE      256
-
+#define     GROUPS_CHANGED   512
 
 
 #ifndef wxCLOSE_BOX
@@ -152,6 +158,11 @@ enum {
 #ifndef wxFIXED_MINSIZE
 #define wxFIXED_MINSIZE 0
 #endif
+
+WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
+
+
+
 
 #ifndef bert// wxCHECK_VERSION(2, 9, 0)
 class options: public wxDialog
@@ -203,6 +214,7 @@ public:
     void OnButtonSelectSound(wxCommandEvent& event);
     void OnButtonTestSound(wxCommandEvent& event);
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
+    void OnButtonGroups(wxCommandEvent& event);
 
     void SetControlColors(wxWindow *ctrl, ColorScheme cs);
 
@@ -210,12 +222,17 @@ public:
     void CreateChartsPage();
     void PopulateChartsPage();
 
+    ChartGroupArray *GetGroupArray(void){ return m_pGroupArray; }
+
 // Should we show tooltips?
     static bool ShowToolTips();
 
     wxNotebook*             itemNotebook4;
     wxButton*               m_OKButton;
     wxButton*               m_CancelButton;
+
+    ChartGroupArray         *m_pGroupArray;
+    int                     m_groups_changed;
 
 //    For General Options
     wxScrolledWindow        *itemPanel5;
@@ -371,6 +388,70 @@ public:
     MyFrame                 *pParent;
 
     wxArrayString           *m_pSerialArray;
+};
+
+
+
+class groups_dialog: public wxDialog
+{
+      DECLARE_DYNAMIC_CLASS( groups_dialog )
+                  DECLARE_EVENT_TABLE()
+
+      public:
+            groups_dialog( );
+            groups_dialog( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Chart Groups"),
+                     const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE);
+
+            ~groups_dialog( );
+
+            bool Create( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Chart Groups"),
+                         const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE,
+                         long style = SYMBOL_OPTIONS_STYLE);
+
+            void Init();
+            void CreateControls();
+            void SetDBDirs(ArrayOfCDI &array){ m_db_dirs = array; }
+            void SetGroupArray(ChartGroupArray *pGroupArray){ m_pGroupArray = pGroupArray; }
+
+            void PopulateTreeCtrl(wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col, wxFont *pFont = NULL);
+            wxTreeCtrl *AddEmptyGroupPage(const wxString& label);
+
+            void BuildNotebookPages(ChartGroupArray *pGroupArray);
+
+            void OnNodeExpanded( wxTreeEvent& event );
+            void OnInsertChartItem(wxCommandEvent &event);
+            void OnRemoveChartItem(wxCommandEvent &event);
+            void OnGroupPageChange(wxNotebookEvent& event);
+            void OnNewGroup(wxCommandEvent &event);
+            void OnDeleteGroup(wxCommandEvent &event);
+            void OnOK(wxCommandEvent &event);
+
+      private:
+            int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree,
+                                         wxTreeItemId item, wxString *pbranch_adder );
+
+//            void WalkNode(wxTreeCtrl *ptree, wxTreeItemId &node, ChartGroupElement *p_root_element, wxString root_name );
+//            bool MarkMissing(wxTreeCtrl *ptree, wxTreeItemId node, wxString &xc, wxString root_name);
+
+            MyFrame      *pParent;
+
+            wxButton    *m_OKButton;
+            wxButton    *m_CancelButton;
+            wxButton    *m_pinsertButton;
+            wxButton    *m_premoveButton;
+            wxButton    *m_pNewGroupButton;
+            wxButton    *m_pDeleteGroupButton;
+
+
+            wxGenericDirCtrl *m_pDirCtl;
+            wxTreeCtrl  *m_pactive_treectl;
+            wxNotebook  *m_GroupNB;
+            ArrayOfCDI   m_db_dirs;
+            int          m_GroupSelectedPage;
+
+            ArrayOfDirCtrls   m_DirCtrlArray;
+
+            ChartGroupArray *m_pGroupArray;
 };
 
 

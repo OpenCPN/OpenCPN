@@ -24,7 +24,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
 
  ***************************************************************************
@@ -1169,8 +1169,8 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
       {
             if(m_pShareMutex)
                   wxMutexLocker stateLocker(*m_pShareMutex) ;
-            float kSog = 8;//8.5;
-            float kCog = 5.;//170.;//NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
+            float kSog = 1.;//8.5;
+            float kCog = 40.;//170.;//NAN;//41.;//gCog;  // 28.0;                // gCog to simulate, see hotkey arrows
 
             //    Kludge the startup case
             if(ThreadPositionData.kLat < 1.0)

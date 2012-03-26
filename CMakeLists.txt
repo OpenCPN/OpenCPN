@@ -88,9 +88,13 @@ ELSE (NOT WIN32)
   SET (ARCH "i386")
 ENDIF (NOT WIN32)
 
+IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+  SET (ARCH "armel")
+ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+MESSAGE (${ARCH})
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
@@ -125,7 +129,7 @@ STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
 
 
 MESSAGE (STATUS "")
-MESSAGE (STATUS "*** Building ${PACKAGE_NAME}  ***")
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
@@ -157,12 +161,12 @@ IF(WIN32)
     ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(WIN32)
 
-# Add a definition to fix some 64 bit linux system builds
-IF (NOT WIN32)
+# Add a definition to fix some 64 bit linux system builds, avoiding Apple builds
+IF (NOT WIN32 AND NOT APPLE)
       IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
             ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
       ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-ENDIF (NOT WIN32)
+ENDIF (NOT WIN32 AND NOT APPLE)
 
 
 # Location where cmake first looks for cmake modules.
@@ -332,8 +336,8 @@ SET(SRC_TINYXML
             src/tinyxmlerror.cpp
             src/tinyxmlparser.cpp
             include/tinyxml.h
-            include/tinystr.h
-            src/tinystr.cpp
+#            include/tinystr.h
+#            src/tinystr.cpp
       )
 
 IF(TINYXML_FOUND)
@@ -343,6 +347,7 @@ IF(TINYXML_FOUND)
 ELSE(TINYXML_FOUND)
     message (STATUS "tinyxml library not found")
     SET(SRCS ${SRCS} ${SRC_TINYXML})
+    ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
 

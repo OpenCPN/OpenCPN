@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -45,6 +45,7 @@
 
 #include "dychart.h"
 #include "chart1.h"
+#include "chartdbs.h"
 #include "options.h"
 
 #include "navutil.h"
@@ -56,6 +57,7 @@
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
+void EmptyChartGroupArray(ChartGroupArray *s);
 
 
 extern bool             g_bShowPrintIcon;
@@ -175,10 +177,15 @@ extern wxString         g_locale;
 extern bool             g_bportable;
 extern wxString         *pHome_Locn;
 
+extern ChartGroupArray  *g_pGroupArray;
+
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
 extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
+
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
 
 IMPLEMENT_DYNAMIC_CLASS( options, wxDialog )
 
@@ -201,6 +208,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
+    EVT_BUTTON( ID_BUTTONGROUP, options::OnButtonGroups )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
 
 END_EVENT_TABLE()
@@ -293,6 +301,10 @@ options::~options( )
 {
       delete m_pSerialArray;
 
+      EmptyChartGroupArray(m_pGroupArray);
+      delete m_pGroupArray;
+      m_pGroupArray = NULL;
+
 }
 
 void options::Init()
@@ -320,6 +332,9 @@ void options::Init()
     m_pSerialArray = EnumerateSerialPorts();
 
     itemNotebook4 = NULL;
+    m_pGroupArray = NULL;
+    m_groups_changed = 0;
+
 }
 
 
@@ -2128,6 +2143,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= GENERIC_CHANGED;
     iret |= S52_CHANGED;
     iret |= k_charts;
+    iret |= m_groups_changed;
 
     EndModal(iret);
 
@@ -2263,6 +2279,8 @@ void options::CreateChartsPage()
       wxButton* itemButton18 = new wxButton( itemPanel9, ID_BUTTONDELETE, _("Delete Selection") );
       itemStaticBoxSizer16->Add(itemButton18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 2);
 
+      wxButton* group_button = new wxButton( itemPanel9, ID_BUTTONGROUP, _("Chart Groups...") );
+      itemStaticBoxSizer16->Add(group_button, 0, wxALIGN_RIGHT|wxALL, 2);
 
       wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox(itemPanel9, wxID_ANY, _("Update Control"));
       wxStaticBoxSizer* itemStaticBoxSizerUpdate = new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
@@ -2642,5 +2660,735 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir)
 
       return return_string;
 
+}
+
+ChartGroupArray *CloneChartGroupArray(ChartGroupArray *s)
+{
+      ChartGroupArray *d = new ChartGroupArray;
+      for(unsigned int i=0 ; i < s->GetCount(); i++)
+      {
+            ChartGroup *psg =  s->Item(i);
+            ChartGroup *pdg = new ChartGroup;
+            pdg->m_group_name = psg->m_group_name;
+
+            for(unsigned int j=0; j < psg->m_element_array.GetCount(); j++)
+            {
+                  ChartGroupElement *pde = new ChartGroupElement;
+                  pde->m_element_name = psg->m_element_array.Item(j)->m_element_name;
+                  for(unsigned int k = 0; k < psg->m_element_array.Item(j)->m_missing_name_array.GetCount(); k++)
+                  {
+                        wxString missing_name = psg->m_element_array.Item(j)->m_missing_name_array.Item(k);
+                        pde->m_missing_name_array.Add(missing_name);
+                  }
+
+                  pdg->m_element_array.Add(pde);
+            }
+
+            d->Add(pdg);
+      }
+
+      return d;
+}
+
+void EmptyChartGroupArray(ChartGroupArray *s)
+{
+      if(!s)
+          return;
+      for(unsigned int i=0 ; i < s->GetCount(); i++)
+      {
+            ChartGroup *psg =  s->Item(i);
+      
+            for(unsigned int j=0; j < psg->m_element_array.GetCount(); j++)
+            {
+                 ChartGroupElement *pe = psg->m_element_array.Item(j);
+                 pe->m_missing_name_array.Clear();
+                 psg->m_element_array.RemoveAt(j);
+                 delete pe;
+
+            }
+            s->RemoveAt(i);
+            delete psg;
+      }
+
+      s->Clear();
+}
+
+
+
+void options::OnButtonGroups(wxCommandEvent& event)
+{
+      int display_width, display_height;
+      wxDisplaySize(&display_width, &display_height);
+
+      groups_dialog *pdlg = new groups_dialog;
+      pdlg->SetDBDirs(m_CurrentDirList);
+
+      //    Make a deep copy of the current global Group Array
+      EmptyChartGroupArray(m_pGroupArray);
+      delete m_pGroupArray;
+      m_pGroupArray = CloneChartGroupArray(g_pGroupArray);
+
+      //    And inform the Groups dialog
+      pdlg->SetGroupArray(m_pGroupArray);
+
+      pdlg->Create(pParent, -1, _("Chart Groups"), wxPoint(0, 0), wxSize(display_width-100, 400));
+      pdlg->Centre();
+
+      if(pdlg->ShowModal() == xID_OK)
+      {
+            m_groups_changed = GROUPS_CHANGED;
+
+      //    Make a deep copy of the edited  working Group Array
+            EmptyChartGroupArray(g_pGroupArray);
+            delete g_pGroupArray;
+            g_pGroupArray = CloneChartGroupArray(m_pGroupArray);
+      }
+      else
+            m_groups_changed = 0;
+
+}
+
+//    Chart Groups dialog implementation
+
+IMPLEMENT_DYNAMIC_CLASS( groups_dialog, wxDialog )
+
+            BEGIN_EVENT_TABLE( groups_dialog, wxDialog )
+            EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, groups_dialog::OnNodeExpanded )
+//            EVT_TREE_SEL_CHANGED( ID_DIRCTRL, options::OnDirctrlSelChanged )
+            EVT_BUTTON( ID_GROUPINSERTDIR, groups_dialog::OnInsertChartItem )
+            EVT_BUTTON( ID_GROUPREMOVEDIR, groups_dialog::OnRemoveChartItem )
+            EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, groups_dialog::OnGroupPageChange)
+            EVT_BUTTON( ID_GROUPNEWGROUP, groups_dialog::OnNewGroup )
+            EVT_BUTTON( ID_GROUPDELETEGROUP, groups_dialog::OnDeleteGroup )
+            EVT_BUTTON( xID_OK, groups_dialog::OnOK )
+
+
+            END_EVENT_TABLE()
+
+
+groups_dialog::groups_dialog( )
+{
+      Init();
+}
+
+groups_dialog::groups_dialog(MyFrame* parent , wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
+{
+      Init();
+
+      pParent = parent;
+
+      //    As a display optimization....
+      //    if current color scheme is other than DAY,
+      //    Then create the dialog ..WITHOUT.. borders and title bar.
+      //    This way, any window decorations set by external themes, etc
+      //    will not detract from night-vision
+
+      long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;//| wxVSCROLL;
+//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
+//            wstyle |= (wxNO_BORDER);
+
+      SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
+
+      wxDialog::Create( parent, id, caption, pos, size,wstyle );
+
+      CreateControls();
+}
+
+bool groups_dialog::Create(MyFrame* parent , wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
+{
+      Init();
+
+      pParent = parent;
+
+      //    As a display optimization....
+      //    if current color scheme is other than DAY,
+      //    Then create the dialog ..WITHOUT.. borders and title bar.
+      //    This way, any window decorations set by external themes, etc
+      //    will not detract from night-vision
+
+      long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;//| wxVSCROLL;
+//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
+//            wstyle |= (wxNO_BORDER);
+
+      SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
+
+      wxDialog::Create( parent, id, caption, pos, size,wstyle );
+
+      CreateControls();
+
+      return true;
+}
+
+groups_dialog::~groups_dialog( )
+{
+      m_DirCtrlArray.Clear();
+}
+
+void groups_dialog::Init()
+{
+      m_GroupSelectedPage = -1;
+      m_pactive_treectl = 0;
+}
+
+void groups_dialog::CreateControls(void)
+{
+      int border_size = 4;
+
+      int display_width, display_height;
+      wxDisplaySize(&display_width, &display_height);
+
+      wxFont *qFont = wxTheFontList->FindOrCreateFont ( 10, wxFONTFAMILY_DEFAULT,
+                  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+      SetFont(*qFont);
+
+      int font_size_y, font_descent, font_lead;
+      GetTextExtent(_T("0"), NULL, &font_size_y, &font_descent, &font_lead);
+      wxSize small_button_size(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
+
+      //    The total dialog vertical sizer
+      wxBoxSizer* TopVBoxSizer = new wxBoxSizer(wxVERTICAL);
+      SetSizer(TopVBoxSizer);
+
+      //    Add main horizontal sizer....
+      wxBoxSizer* mainHBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+      TopVBoxSizer->Add(mainHBoxSizer, 1, wxALIGN_TOP|wxEXPAND);
+
+      //    The chart file/dir tree
+      wxStaticBox *GroupActiveChartStaticBox = new wxStaticBox(this, wxID_ANY, _("Active Charts"));
+      wxStaticBoxSizer* GroupActiveChartStaticBoxSizer = new wxStaticBoxSizer(GroupActiveChartStaticBox, wxVERTICAL);
+      mainHBoxSizer->Add(GroupActiveChartStaticBoxSizer, 1, wxALIGN_LEFT|wxALL|wxEXPAND, 5);
+
+      m_pDirCtl = new wxGenericDirCtrl( this, -1, _T(""));
+      GroupActiveChartStaticBoxSizer->Add(m_pDirCtl, 1, wxALIGN_LEFT|wxEXPAND);
+
+
+      //    Fill in the "Active chart" tree control
+      //    from the options dialog "Active Chart Directories" list
+      wxArrayString dir_array;
+      int nDir = m_db_dirs.GetCount();
+      for(int i=0 ; i<nDir ; i++)
+      {
+            wxString dirname = m_db_dirs.Item(i).fullpath;
+            if(!dirname.IsEmpty())
+                  dir_array.Add(dirname);
+      }
+      PopulateTreeCtrl(m_pDirCtl->GetTreeCtrl(), dir_array, wxColour(0,0,0));
+      m_pactive_treectl = m_pDirCtl->GetTreeCtrl();
+
+      //    Add the "Insert/Remove" buttons
+      m_pinsertButton = new wxButton(this, ID_GROUPINSERTDIR, _("Add-->"));
+      m_premoveButton = new wxButton(this, ID_GROUPREMOVEDIR, _("<--Remove"));
+
+      wxBoxSizer* IRSizer = new wxBoxSizer(wxVERTICAL);
+      mainHBoxSizer->AddSpacer(10);
+      mainHBoxSizer->Add(IRSizer, 0, wxALIGN_CENTRE|wxEXPAND);
+      mainHBoxSizer->AddSpacer(10);
+
+      IRSizer->AddSpacer(100);
+      IRSizer->Add(m_pinsertButton, 0, wxALIGN_CENTRE);
+      IRSizer->AddSpacer(50);
+      IRSizer->Add(m_premoveButton, 0, wxALIGN_CENTRE);
+
+
+
+
+      //    Add the Groups notebook control
+      wxStaticBox *GroupNBStaticBox = new wxStaticBox(this, wxID_ANY, _("Groups"));
+      wxStaticBoxSizer* GroupNBStaticBoxSizer = new wxStaticBoxSizer(GroupNBStaticBox, wxVERTICAL);
+      mainHBoxSizer->Add(GroupNBStaticBoxSizer, 1, wxALIGN_RIGHT|wxALL|wxEXPAND, 5);
+
+
+      m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxSize(-1, -1), wxNB_TOP );
+      GroupNBStaticBoxSizer->Add(m_GroupNB, 1, wxALIGN_RIGHT|wxEXPAND);
+
+      //    Add default (always present) Basic Chart Group
+      wxPanel *pPanelBasicGroup = new wxPanel(m_GroupNB, -1, wxDefaultPosition, wxDefaultSize);
+      m_GroupNB->AddPage(pPanelBasicGroup, _("All Active Charts"));
+
+
+      wxBoxSizer* page0BoxSizer = new wxBoxSizer(wxHORIZONTAL);
+      pPanelBasicGroup->SetSizer(page0BoxSizer);
+
+      wxGenericDirCtrl *BasicGroupDirCtl = new wxGenericDirCtrl( pPanelBasicGroup, -1, _T(""));
+
+      //    Set the Font for the Basic Chart Group tree to be italic, dimmed
+      wxFont *iFont = wxTheFontList->FindOrCreateFont ( 10, wxFONTFAMILY_DEFAULT,
+                  wxFONTSTYLE_ITALIC, wxFONTWEIGHT_LIGHT );
+
+
+
+      page0BoxSizer->Add(BasicGroupDirCtl, 1, wxALIGN_TOP|wxALL|wxEXPAND);
+
+      m_DirCtrlArray.Add(BasicGroupDirCtl);
+
+      //    Fill in the Page 0 tree control
+      //    from the options dialog "Active Chart Directories" list
+      wxArrayString dir_array0;
+      int nDir0 = m_db_dirs.GetCount();
+      for(int i=0 ; i<nDir0 ; i++)
+      {
+            wxString dirname = m_db_dirs.Item(i).fullpath;
+            if(!dirname.IsEmpty())
+                  dir_array0.Add(dirname);
+      }
+      PopulateTreeCtrl(BasicGroupDirCtl->GetTreeCtrl(), dir_array0, wxColour(128, 128, 128), iFont);
+
+      BuildNotebookPages(m_pGroupArray);
+
+      //    Add the Chart Group (page) "New" and "Delete" buttons
+      m_pNewGroupButton = new wxButton(this, ID_GROUPNEWGROUP, _("New Group..."));
+      m_pDeleteGroupButton = new wxButton(this, ID_GROUPDELETEGROUP, _("Delete Group"));
+
+      wxBoxSizer* GroupButtonSizer = new wxBoxSizer(wxHORIZONTAL);
+      GroupNBStaticBoxSizer->Add(GroupButtonSizer, 0, wxALIGN_RIGHT|wxALL, border_size);
+
+      GroupButtonSizer->Add(m_pNewGroupButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
+      GroupButtonSizer->Add(m_pDeleteGroupButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
+
+
+      //      Add standard dialog control buttons
+      wxBoxSizer* itemBoxSizer28 = new wxBoxSizer(wxHORIZONTAL);
+      TopVBoxSizer->Add(itemBoxSizer28, 0, wxALIGN_RIGHT|wxALL, border_size);
+
+      m_OKButton = new wxButton( this, xID_OK, _("Ok") );
+      m_OKButton->SetDefault();
+      itemBoxSizer28->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
+
+      m_CancelButton = new wxButton( this, wxID_CANCEL, _("&Cancel") );
+      itemBoxSizer28->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, border_size);
+
+
+
+
+
+}
+
+
+void groups_dialog::PopulateTreeCtrl(wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col, wxFont *pFont)
+{
+      ptc->DeleteAllItems();
+
+      wxDirItemData* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), true);
+      wxString rootName;
+      rootName = _T("Dummy");
+      wxTreeItemId m_rootId = ptc->AddRoot( rootName, 3, -1, rootData);
+      ptc->SetItemHasChildren(m_rootId);
+
+      wxString dirname;
+      int nDir = dir_array.GetCount();
+      for(int i=0 ; i<nDir ; i++)
+      {
+            wxString dirname = dir_array.Item(i);
+            if(!dirname.IsEmpty())
+            {
+                  wxDirItemData *dir_item = new wxDirItemData(dirname, dirname,true);
+                  wxTreeItemId id = ptc->AppendItem( m_rootId, dirname, 0, -1, dir_item);
+                  if(pFont)
+                        ptc->SetItemFont(id, *pFont);
+                  ptc->SetItemTextColour(id,  col);
+                  ptc->SetItemHasChildren(id);
+            }
+      }
+}
+
+void groups_dialog::OnInsertChartItem(wxCommandEvent &event)
+{
+      wxString insert_candidate = m_pDirCtl->GetPath();
+      if(!insert_candidate.IsEmpty())
+      {
+            if(m_DirCtrlArray.GetCount())
+            {
+                  wxGenericDirCtrl *pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+                  ChartGroup *pGroup = m_pGroupArray->Item(m_GroupSelectedPage-1);
+                  if(pDirCtrl)
+                  {
+                        wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
+                        if(ptree)
+                        {
+                              if(ptree->IsEmpty())
+                              {
+                                    wxDirItemData* rootData = new wxDirItemData(wxEmptyString, wxEmptyString, true);
+                                    wxString rootName = _T("Dummy");
+                                    wxTreeItemId rootId = ptree->AddRoot( rootName, 3, -1, rootData);
+
+                                    ptree->SetItemHasChildren(rootId);
+                              }
+
+                              wxTreeItemId root_Id = ptree->GetRootItem();
+                              wxDirItemData *dir_item = new wxDirItemData(insert_candidate, insert_candidate,true);
+                              wxTreeItemId id = ptree->AppendItem( root_Id, insert_candidate, 0, -1, dir_item);
+                              if(wxDir::Exists(insert_candidate))
+                                    ptree->SetItemHasChildren(id);
+                        }
+
+                        ChartGroupElement *pnew_element = new ChartGroupElement;
+                        pnew_element->m_element_name = insert_candidate;
+                        pGroup->m_element_array.Add(pnew_element);
+                   }
+            }
+      }
+}
+
+void groups_dialog::OnRemoveChartItem(wxCommandEvent &event)
+{
+      if(m_DirCtrlArray.GetCount())
+      {
+            wxGenericDirCtrl *pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+            ChartGroup *pGroup = m_pGroupArray->Item(m_GroupSelectedPage-1);
+
+            if(pDirCtrl)
+            {
+                  wxString sel_item = pDirCtrl->GetPath();
+
+                  wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
+                  if(ptree && ptree->GetCount())
+                  {
+                        wxTreeItemId id = ptree->GetSelection();
+                        if(id.IsOk())
+                        {
+                              wxString branch_adder;
+                              int group_item_index = FindGroupBranch(pGroup, ptree, id, &branch_adder );
+                              if(group_item_index >= 0)
+                              {
+                                    ChartGroupElement *pelement = pGroup->m_element_array.Item(group_item_index);
+                                    bool b_duplicate = false;
+                                    for(unsigned int k=0; k < pelement->m_missing_name_array.GetCount(); k++)
+                                    {
+                                          if(pelement->m_missing_name_array.Item(k) == sel_item)
+                                          {
+                                                b_duplicate = true;
+                                                break;
+                                          }
+                                    }
+                                    if(!b_duplicate)
+                                    {
+                                         pelement->m_missing_name_array.Add(sel_item);
+                                    }
+
+                                    //    Special case...
+                                    //    If the selection is a branch itself,
+                                    //    Then delete from the tree, and delete from the group
+                                    if(branch_adder == _T(""))
+                                    {
+                                          ptree->Delete(id);
+                                          pGroup->m_element_array.RemoveAt(group_item_index);
+
+                                    }
+                                    else
+                                    {
+
+                                          ptree->SetItemTextColour(id, wxColour(128, 128, 128));
+//                                          ptree->SelectItem(id, false);
+                                    }
+                              }//   what about toggle back?
+                        }
+                  }
+            }
+      }
+}
+
+void groups_dialog::OnGroupPageChange(wxNotebookEvent& event)
+{
+      m_GroupSelectedPage = event.GetSelection();
+      if(0 == m_GroupSelectedPage)
+      {
+            m_pinsertButton->Disable();
+            m_premoveButton->Disable();
+      }
+      else
+      {
+            m_pinsertButton->Enable();
+            m_premoveButton->Enable();
+      }
+
+}
+
+void groups_dialog::OnNewGroup(wxCommandEvent &event)
+{
+      wxTextEntryDialog *pd = new wxTextEntryDialog(this, _("Enter Group Name"),
+                  _("Chart Groups...New Group"));
+      if(pd->ShowModal() == wxID_OK)
+            AddEmptyGroupPage(pd->GetValue());
+
+      ChartGroup *pGroup = new ChartGroup;
+      pGroup->m_group_name = pd->GetValue();
+      if(m_pGroupArray)
+            m_pGroupArray->Add(pGroup);
+
+      m_GroupSelectedPage = m_GroupNB->GetPageCount()-1;      // select the new page
+      m_GroupNB->ChangeSelection(m_GroupSelectedPage);
+      m_pinsertButton->Enable();
+      m_premoveButton->Enable();
+
+      delete pd;
+}
+
+void groups_dialog::OnDeleteGroup(wxCommandEvent &event)
+{
+      if(0 != m_GroupSelectedPage)
+      {
+            m_DirCtrlArray.RemoveAt(m_GroupSelectedPage);
+            if(m_pGroupArray)
+                  m_pGroupArray->RemoveAt(m_GroupSelectedPage-1);
+            m_GroupNB->DeletePage(m_GroupSelectedPage);
+      }
+}
+
+WX_DEFINE_OBJARRAY(ChartGroupElementArray);
+WX_DEFINE_OBJARRAY(ChartGroupArray);
+
+void groups_dialog::OnOK(wxCommandEvent &event)
+{
+      EndModal(xID_OK);
+}
+
+int groups_dialog::FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item, wxString *pbranch_adder )
+{
+      wxString branch_name;
+      wxString branch_adder;
+
+      wxTreeItemId current_node = item;
+      while(current_node.IsOk())
+      {
+
+            wxTreeItemId parent_node = ptree->GetItemParent(current_node);
+            if(!parent_node)
+                  break;
+
+//#ifdef __WXMSW__
+            if(parent_node == ptree->GetRootItem())
+            {
+                  branch_name = ptree->GetItemText(current_node);
+                  break;
+            }
+//#endif
+/*
+            wxString t = ptree->GetItemText(parent_node);
+            if(t == _T("Dummy"))
+            {
+                  branch_name = ptree->GetItemText(current_node);
+                  break;
+            }
+*/
+            branch_adder.Prepend(ptree->GetItemText(current_node));
+            branch_adder.Prepend( wxString(wxFILE_SEP_PATH ));
+
+            current_node = ptree->GetItemParent(current_node);
+      }
+
+
+      //    Find the index and element pointer of the target branch in the Group
+      ChartGroupElement *target_element = NULL;
+      unsigned int target_item_index = -1;
+
+      for(unsigned int i=0 ; i < pGroup->m_element_array.GetCount(); i++)
+      {
+            wxString target = pGroup->m_element_array.Item(i)->m_element_name;
+            if(branch_name == target)
+            {
+                  target_element = pGroup->m_element_array.Item(i);
+                  target_item_index = i;
+                  break;
+            }
+      }
+
+      if(pbranch_adder)
+            *pbranch_adder = branch_adder;
+
+      return target_item_index;
+}
+
+
+void groups_dialog::OnNodeExpanded( wxTreeEvent& event )
+{
+      wxTreeItemId node = event.GetItem();
+
+      if(m_GroupSelectedPage > 0)
+      {
+            wxGenericDirCtrl *pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+            ChartGroup *pGroup = m_pGroupArray->Item(m_GroupSelectedPage-1);
+            if(pDirCtrl)
+            {
+                  wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
+
+                  wxString branch_adder;
+                  int target_item_index = FindGroupBranch(pGroup, ptree, node, &branch_adder );
+                  if(target_item_index >= 0)
+                  {
+                        ChartGroupElement *target_element = pGroup->m_element_array.Item(target_item_index);
+                        wxString branch_name = target_element->m_element_name;
+
+                        //    Walk the children of the expanded node, marking any items which appear in
+                        //    the "missing" list
+                        if((target_element->m_missing_name_array.GetCount()))
+                        {
+                              wxString full_root = branch_name;
+                              full_root += branch_adder;
+                              full_root += wxString(wxFILE_SEP_PATH);
+
+                              wxTreeItemIdValue cookie;
+                              wxTreeItemId child = ptree->GetFirstChild(node, cookie);
+                              while(child.IsOk())
+                              {
+                                    wxString target_string = full_root;
+                                    target_string += ptree->GetItemText(child);
+
+                                    for(unsigned int k=0; k < target_element->m_missing_name_array.GetCount(); k++)
+                                    {
+                                          if(target_element->m_missing_name_array.Item(k) == target_string)
+                                          {
+                                                ptree->SetItemTextColour(child, wxColour(128, 128, 128));
+                                                break;
+                                          }
+                                    }
+                                    child = ptree->GetNextChild(node, cookie);
+                              }
+                        }
+                  }
+            }
+      }
+}
+
+
+void groups_dialog::BuildNotebookPages(ChartGroupArray *pGroupArray)
+{
+      for(unsigned int i=0 ; i < pGroupArray->GetCount() ; i++)
+      {
+            ChartGroup *pGroup = pGroupArray->Item(i);
+            wxTreeCtrl *ptc = AddEmptyGroupPage(pGroup->m_group_name);
+
+            wxString itemname;
+            int nItems = pGroup->m_element_array.GetCount();
+            for(int i=0 ; i<nItems ; i++)
+            {
+                  wxString itemname = pGroup->m_element_array.Item(i)->m_element_name;
+                  if(!itemname.IsEmpty())
+                  {
+                        wxDirItemData *dir_item = new wxDirItemData(itemname, itemname,true);
+                        wxTreeItemId id = ptc->AppendItem( ptc->GetRootItem(), itemname, 0, -1, dir_item);
+
+                        if(wxDir::Exists(itemname))
+                              ptc->SetItemHasChildren(id);
+                  }
+            }
+      }
+}
+
+/*
+bool groups_dialog::MarkMissing(wxTreeCtrl *ptree, wxTreeItemId node, wxString &xc, wxString root_name)
+{
+      bool b_omit;
+      ptree->Expand(node);
+      wxTreeItemIdValue cookie;
+      wxTreeItemId child = ptree->GetFirstChild(node, cookie);
+
+      while(child.IsOk())
+      {
+                  //  what we do here....
+                  //  if the item matches the passed string,
+                  //  then mark it by setting text colour to grey
+
+            wxString item_name = ptree->GetItemText(child);
+            wxString full_item_name = root_name;
+            full_item_name += wxString(wxFILE_SEP_PATH);
+            full_item_name += item_name;
+            b_omit = full_item_name == xc;
+
+            if(b_omit)
+            {
+                  ptree->SetItemTextColour(child, wxColour(128, 128, 128));
+                  return true;
+            }
+
+
+            //    Is the item a directory?
+
+            if(!b_omit)
+            {
+                  if(wxDir::Exists(full_item_name))
+                  {
+                        // Recurse....
+                        wxString next_root_name = full_item_name;
+                        if(MarkMissing(ptree, child, xc, next_root_name ))
+                              return true;
+                  }
+            }
+
+            child = ptree->GetNextChild(node, cookie);
+      }
+      return b_omit;
+}
+*/
+/*
+void groups_dialog::WalkNode(wxTreeCtrl *ptree, wxTreeItemId &node, ChartGroupElement *p_root_element, wxString root_name )
+{
+      ptree->Expand(node);
+
+      wxTreeItemIdValue cookie;
+      wxTreeItemId child = ptree->GetFirstChild(node, cookie);
+
+      while(child.IsOk())
+      {
+                  //  what we do here....
+                  //  if the item has the omit flag, then create a group element for the item,
+                  //  and add it to "missing" array of the passed ChartGroupElement belonging to node
+
+            bool b_omit = ptree->GetItemTextColour(child) == wxColour(128, 128, 128);
+            wxString item_name = ptree->GetItemText(child);
+            wxString full_item_name = root_name;
+            full_item_name += wxString(wxFILE_SEP_PATH);
+            full_item_name += item_name;
+
+            if(b_omit)
+            {
+                  ChartGroupElement *p_omit_element = new ChartGroupElement;
+                  p_omit_element->m_element_name = full_item_name;
+                  p_root_element->m_missing_name_array.Add(p_omit_element);
+            }
+
+
+            //    Is the item a directory?
+
+            if(!b_omit)
+            {
+                  if(wxDir::Exists(full_item_name))
+                  {
+                        // Recurse....
+                        wxString next_root_name = full_item_name;
+                        WalkNode(ptree, child, p_root_element, next_root_name );
+                  }
+            }
+
+            child = ptree->GetNextChild(node, cookie);
+      }
+}
+*/
+
+wxTreeCtrl *groups_dialog::AddEmptyGroupPage(const wxString& label)
+{
+      wxPanel *pPanel = new wxPanel(m_GroupNB, -1, wxDefaultPosition, wxDefaultSize);
+
+      wxBoxSizer* pageBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+      pPanel->SetSizer(pageBoxSizer);
+
+      wxGenericDirCtrl *GroupDirCtl = new wxGenericDirCtrl( pPanel, -1, _T("TESTDIR"));
+//find a way to add a good imagelist for MSW
+      pageBoxSizer->Add(GroupDirCtl, 1, wxALIGN_TOP|wxALL|wxEXPAND);
+
+      pageBoxSizer->Layout();
+      m_GroupNB->AddPage(pPanel, label);
+
+      wxTreeCtrl *ptree = GroupDirCtl->GetTreeCtrl();
+      ptree->DeleteAllItems();
+
+      wxDirItemData* rootData = new wxDirItemData(wxEmptyString, wxEmptyString, true);
+      wxString rootName = _T("Dummy");
+      wxTreeItemId rootId = ptree->AddRoot( rootName, 3, -1, rootData);
+      ptree->SetItemHasChildren(rootId);
+
+      m_DirCtrlArray.Add(GroupDirCtl);
+
+
+      return ptree;
 }
 

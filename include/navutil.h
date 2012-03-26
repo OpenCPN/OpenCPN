@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -46,6 +46,7 @@
 #include "chcanv.h"
 #include "tinyxml.h"
 #include "gpxdocument.h"
+#include "chartdbs.h"
 
 
 #define STYLE_UNDEFINED -1
@@ -295,6 +296,7 @@ class Track : public wxEvtHandler, public Route
             void Draw(ocpnDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
+            double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
 
       private:
             void OnTimerTrack(wxTimerEvent& event);
@@ -393,6 +395,11 @@ public:
       virtual bool AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
       virtual bool UpdateWayPoint(RoutePoint *pWP);
       virtual bool DeleteWayPoint(RoutePoint *pWP);
+
+      virtual void CreateConfigGroups ( ChartGroupArray *pGroupArray );
+      virtual void DestroyConfigGroups ( void );
+      virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
+
 
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);

@@ -24,7 +24,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  * $Log: s52utils.cpp,v $
@@ -209,76 +209,14 @@ static double _MARparamVal[] = {
     16.0      // NUM
 };
 
-//////////////////////////////////////////////////////////////////
-#if 0
-int S52_getConfig(const char *label, valueBuf *vbuf)
-// return TRUE and string value in vbuf for label, FLASE if fail
-{
-   FILE *fp;
-//   int ret = 0;
-   int  ret = 1;
-   char lbuf[CPATH_MAX] = {'#'};
-   char tmp [CPATH_MAX];
-   char frmt[CPATH_MAX];
-
-   fp = fopen(CONF_NAME, "r");
-   if (NULL == fp) {
-//       PRINTF("ERROR opening " CONF_NAME "\n");
-       return 0;
-   }
-
-   // prevent buffer overflow
-   sprintf(frmt, "%s%i%s", "%s %", MAXL-1, "[^\n]s");
-   //printf("frmt:%s\n", frmt);
-
-   while (ret > 0) {
-       if (lbuf[0] != '#') {
-           if (0 == strncmp(lbuf, label, strlen(label))) {
-               //sscanf(tmp, "%255s", *vbuf);
-               char *c = tmp;
-               while (*c == ' ' || *c == 0x09) c++;
-               sscanf(c, "%255[^\n]", *vbuf);
-//               PRINTF("label:%s value:%s \n", lbuf, *vbuf);
-               fclose(fp);
-               return 1;
-           }
-       }
-
-
-       //ret = fscanf(fp, frmt, lbuf, vbuf);
-       ret = fscanf(fp, "%s%255[^\n]\n", lbuf, tmp);
-       //printf("label:%s \n", lbuf);
-       //printf("value:%s \n", tmp);
-       //printf("ret:%i\n", ret);
-   }
-   fclose(fp);
-
-   *vbuf[0] = '\0';
-   return 0;
-
-}
-#endif
 
 double S52_getMarinerParam(S52_MAR_param_t param)
 // return Mariner parameter or '0.0' if fail
 // FIXME: check mariner param against groups selection
 {
-//    valueBuf vbuf;
 
 //      DSR
     return _MARparamVal[param];
-/*
-    if (S52_MAR_NONE<param && param<S52_MAR_NUM)
-    {
-
-        if (S52_getConfig(_MARparamNm[param], &vbuf))
-            return (float)atof(vbuf);
-        else
-            return (float)_MARparamVal[param];
-    }
-
-    return (float)0.0;
-*/
 }
 
 int    S52_setMarinerParam(S52_MAR_param_t param, double val)

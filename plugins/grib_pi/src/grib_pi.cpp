@@ -22,7 +22,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
@@ -74,11 +74,17 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-      :opencpn_plugin(ppimgr)
+      :opencpn_plugin_16(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
 
+}
+
+grib_pi::~grib_pi(void)
+{
+      delete _img_grib_pi;
+      delete _img_grib;
 }
 
 int grib_pi::Init(void)
@@ -133,10 +139,9 @@ bool grib_pi::DeInit(void)
       if(m_pGribDialog)
             m_pGribDialog->Close();
 
-      delete _img_grib_pi;
-      delete _img_grib;
-
       delete m_pGRIBOverlayFactory;
+      m_pGRIBOverlayFactory = NULL;
+
       return true;
 }
 

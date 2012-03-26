@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -59,6 +59,7 @@ extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern bool         g_bopengl;
 extern ChartCanvas  *cc1;
+extern int          g_GroupIndex;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -293,22 +294,41 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
 
             ChartTableEntry *pt = (ChartTableEntry *)&GetChartTableEntry(db_index);
 
-            if(CheckPositionWithinChart(db_index, lat, lon)  &&  (j < MAXSTACK) )
+            //    Check to see if the candidate chart is in the currently active group
+            bool b_group_add = false;
+            if(g_GroupIndex > 0)
             {
-                  j++;
-                  cstk->nEntry = j;
-                  cstk->SetDBIndex(j-1, db_index);
+                  for(unsigned int ig=0 ; ig < pt->GetGroupArray().GetCount(); ig++)
+                  {
+                        if(g_GroupIndex == pt->GetGroupArray().Item(ig))
+                        {
+                              b_group_add = true;
+                              break;
+                        }
+                  }
             }
+            else
+                  b_group_add = true;
 
-            //    Check the special case where chart spans the international dateline
-            else if( (pt->GetLonMax() > 180.) && (pt->GetLonMin() < 180.) )
+            if(b_group_add)
             {
-                  if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
+                  if(CheckPositionWithinChart(db_index, lat, lon)  &&  (j < MAXSTACK) )
                   {
                         j++;
                         cstk->nEntry = j;
                         cstk->SetDBIndex(j-1, db_index);
+                  }
 
+                  //    Check the special case where chart spans the international dateline
+                  else if( (pt->GetLonMax() > 180.) && (pt->GetLonMin() < 180.) )
+                  {
+                        if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
+                        {
+                              j++;
+                              cstk->nEntry = j;
+                              cstk->SetDBIndex(j-1, db_index);
+
+                        }
                   }
             }
       }
@@ -342,6 +362,28 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
       return j;
 }
 
+bool ChartDB::IsChartInGroup(const int db_index, const int group)
+{
+      ChartTableEntry *pt = (ChartTableEntry *)&GetChartTableEntry(db_index);
+
+      //    Check to see if the candidate chart is in the designated group
+      bool b_in_group = false;
+      if(group > 0)
+      {
+            for(unsigned int ig=0 ; ig < pt->GetGroupArray().GetCount(); ig++)
+            {
+                  if(group == pt->GetGroupArray().Item(ig))
+                  {
+                        b_in_group = true;
+                        break;
+                  }
+            }
+      }
+      else
+            b_in_group = true;
+
+      return b_in_group;
+}
 
 
 //-------------------------------------------------------------------
@@ -467,7 +509,8 @@ int ChartDB::GetStackChartScale(ChartStack *ps, int stackindex, char *buf, int n
 {
       const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(stackindex));
       int sc = entry.GetScale();
-      sprintf(buf, "%d", sc);
+      if(buf)
+            sprintf(buf, "%d", sc);
 
       return sc;
 }

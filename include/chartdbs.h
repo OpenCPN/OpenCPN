@@ -21,7 +21,7 @@
 *   You should have received a copy of the GNU General Public License     *
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
-*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ***************************************************************************
 *
 */
@@ -47,6 +47,7 @@ static const int DB_VERSION_PREVIOUS = 15;
 static const int DB_VERSION_CURRENT = 16;
 
 class ChartDatabase;
+class ChartGroupArray;
 
 struct ChartTableEntry_onDisk_16
 {
@@ -161,6 +162,7 @@ struct ChartTableEntry
 
     bool GetbValid(){ return bValid;}
     void SetEntryOffset(int n) { EntryOffset = n;}
+    ArrayOfInts &GetGroupArray(void){ return m_GroupArray; }
 
   private:
     int         EntryOffset;
@@ -181,6 +183,7 @@ struct ChartTableEntry
     float       Skew;
     int         ProjectionType;
     bool        bValid;
+    ArrayOfInts m_GroupArray;
 };
 
 enum
@@ -249,6 +252,7 @@ public:
     wxString GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_width, int *line_count);
     int FinddbIndex(wxString PathToFind);
     wxString GetDBChartFileName(int dbIndex);
+    void ApplyGroupArray(ChartGroupArray *pGroupArray);
 
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
@@ -278,9 +282,36 @@ private:
 
 };
 
+
+//-------------------------------------------------------------------------------------------
+//    Chart Group Structure Definitions
+//-------------------------------------------------------------------------------------------
+class ChartGroupElement;
+class ChartGroup;
+
+WX_DECLARE_OBJARRAY(ChartGroupElement*, ChartGroupElementArray);
+WX_DECLARE_OBJARRAY(ChartGroup*, ChartGroupArray);
+
+class ChartGroupElement
+{
+public:
+      wxString          m_element_name;
+
+//      ChartGroupElementArray m_missing_name_array;
+      wxArrayString m_missing_name_array;
+};
+
+class ChartGroup
+{
+public:
+      wxString                m_group_name;
+      ChartGroupElementArray  m_element_array;
+};
+
+
 #endif
 
-
+#if 0
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
 
@@ -457,6 +488,6 @@ private:
     int           m_dbversion;
     ChartTable    chartTable;
 };
-
+#endif
 #endif
 

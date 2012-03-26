@@ -21,12 +21,13 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
 */
 
 #include <wx/wx.h>
-
+#include <wx/ffile.h>
+#include <wx/filename.h>
 #include "gpxdocument.h"
 
 #ifdef __MSVC__
@@ -55,7 +56,37 @@ GpxDocument::GpxDocument(const wxString &filename)
 bool GpxDocument::LoadFile(const wxString &filename)
 {
       SeedRandom();
-      return TiXmlDocument::LoadFile((const char*)filename.mb_str());
+      wxRegEx re; //We try to fix popularily broken GPX files. Unencoded '&' is an illegal character in XML, but seems higly popular amongst users (and perhaps even vendors not aware of what XML is...)
+      //The same as above is true for '<' but it would be harder to solve - it's illegal just inside a value, not when it starts a tag
+      int re_compile_flags = wxRE_ICASE;
+#ifdef wxHAS_REGEX_ADVANCED
+      re_compile_flags |= wxRE_ADVANCED;
+#endif
+      bool b = re.Compile(wxT("&(?!amp;|lt;|gt;|apos;|quot;|#[0-9]{1,};|#x[0-f]{1,};)"), re_compile_flags); //Should find all the non-XML entites to be encoded as text
+      wxFFile file(filename);
+      wxString s;
+      if(file.IsOpened()) {
+            file.ReadAll(&s, wxConvUTF8);
+            file.Close();
+      }
+      if(b)
+      {
+            //CDATA handling makes this task way too complex for regular expressions to handle,
+            // so we do nothing and just let the possible damage happen...
+            if (!s.Contains(wxT("![CDATA[")))
+            {
+                  int cnt = re.ReplaceAll(&s, wxT("&amp;"));
+                  if (cnt > 0)
+                        wxLogMessage(wxString::Format(wxT("File %s seems broken, %i occurences of '&' were replaced with '&amp;' to try to fix it."), filename.c_str(), cnt));
+            }
+      }
+      wxFFile gpxfile;
+      wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"), &gpxfile);
+      gpxfile.Write(s);
+      gpxfile.Close();
+      bool res = TiXmlDocument::LoadFile((const char*)gpxfilename.mb_str());
+      ::wxRemoveFile(gpxfilename);
+      return res;
 }
 
 bool GpxDocument::SaveFile(const wxString &filename)

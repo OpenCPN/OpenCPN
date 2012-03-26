@@ -9,7 +9,7 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-MESSAGE (STATUS "*** Building PlugIns ***")
+MESSAGE (STATUS "*** Staging to build PlugIns ***")
 
 # These variables are inherited by all plugins
 SET(PARENT opencpn)

@@ -22,7 +22,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -171,33 +171,9 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                   PlugInContainer *pic = LoadPlugIn(file_name);
                   if(pic)
                   {
-    //    Verify the PlugIn API Version
-
-                        int api_major = pic->m_pplugin->GetAPIVersionMajor();
-                        int api_minor = pic->m_pplugin->GetAPIVersionMinor();
-                        int ver = (api_major * 100) + api_minor;
-                        bool bver_ok = false;
-                        switch(ver)
-                        {
-                              // TODO add more valid API versions to last case as necessary
-                              case 102:
-                              case 103:
-                              case 104:
-                              case 105:   // New PlugIn class definition in Version 2.4 Beta,
-                                          break;      // incompatible
-
-                              case 106:   // New PlugIn class definition in Version 2.4 Beta,
-                                    bver_ok = true;
-                                    break;
-                              default:
-                                    break;
-                        }
-
-                        if(bver_ok)
+                        if(pic->m_pplugin)
                         {
                               plugin_array.Add(pic);
-
-                              pic->m_api_version = ver;                 // record the PlugIn's API version
 
                               //    The common name is available without initialization and startup of the PlugIn
                               pic->m_common_name = pic->m_pplugin->GetCommonName();
@@ -221,11 +197,10 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                               pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
 
                         }
-                        else
+                        else        // not loaded
                         {
                               wxString msg;
-                              msg.Printf(_T("PlugInManager: Unloading PlugIn with invalid API version %d.%d: "), api_major, api_minor );
-                              msg += pic->m_plugin_file;
+                              msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
                               wxLogMessage(msg);
 
                               pic->m_destroy_fn(pic->m_pplugin);
@@ -234,6 +209,7 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
                               delete pic;
                         }
                   }
+
 
                   b_more =pi_dir.GetNext(&plugin_file);
             }
@@ -452,10 +428,48 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     // create an instance of the plugin class
       opencpn_plugin* plug_in = create_plugin(this);
 
-      pic->m_pplugin = plug_in;
+      int api_major = plug_in->GetAPIVersionMajor();
+      int api_minor = plug_in->GetAPIVersionMinor();
+      int ver = (api_major * 100) + api_minor;
+      pic->m_api_version = ver;
+
+
+      switch(ver)
+      {
+            case 105:
+                  pic->m_pplugin = dynamic_cast<opencpn_plugin*>(plug_in);
+                  break;
+
+            case 106:
+                  pic->m_pplugin = dynamic_cast<opencpn_plugin_16*>(plug_in);
+                  break;
+
+            case 107:
+                  pic->m_pplugin = dynamic_cast<opencpn_plugin_17*>(plug_in);
+                  break;
+            default:
+                  break;
+      }
+
+      if(pic->m_pplugin)
+      {
+            msg = _T("  ");
+            msg += plugin_file;
+            wxString msg1;
+            msg1.Printf(_T(" Version detected: %d"), ver);
+            msg += msg1;
+            wxLogMessage(msg);
+      }
+      else
+      {
+            msg = _T("    ");
+            msg += plugin_file;
+            wxString msg1 = _T(" cannot be loaded");
+            msg += msg1;
+            wxLogMessage(msg);
+      }
 
       return pic;
-
 }
 
 bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp)
@@ -472,7 +486,26 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         wxDC *pdc = dc.GetDC();
                         if(pdc)                       // not in OpenGL mode
                         {
-                             pic->m_pplugin->RenderOverlay(*pdc, &pivp);
+                              switch(pic->m_api_version)
+                              {
+                                    case 106:
+                                    {
+                                          opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                ppi->RenderOverlay(*pdc, &pivp);
+                                          break;
+                                    }
+                                    case 107:
+                                    {
+                                          opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                ppi->RenderOverlay(*pdc, &pivp);
+                                          break;
+                                    }
+
+                                    default:
+                                          break;
+                              }
                         }
                         else
                         {
@@ -484,7 +517,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                               mdc.SetBackground ( *wxBLACK_BRUSH );
                               mdc.Clear();
 
-                              bool b_rendered = pic->m_pplugin->RenderOverlay(mdc, &pivp);
+                              bool b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
                               mdc.SelectObject(wxNullBitmap);
 
                               if(b_rendered)
@@ -494,6 +527,41 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
 
                                     dc.DrawBitmap(m_cached_overlay_bm, 0, 0, true);
                               }
+                        }
+                  }
+                  else if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                  {
+                  }
+
+            }
+      }
+
+      return true;
+}
+
+bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp)
+{
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
+                  {
+                        PlugIn_ViewPort pivp = CreatePlugInViewport( vp );
+
+                        switch(pic->m_api_version)
+                        {
+                              case 107:
+                              {
+                                    opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->RenderGLOverlay(pcontext, &pivp);
+                                    break;
+                              }
+
+                              default:
+                                    break;
                         }
                   }
             }
@@ -651,7 +719,28 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
             if(pic->m_bEnabled && pic->m_bInitState)
             {
                   if(pic->m_cap_flag & WANTS_PLUGIN_MESSAGING)
-                        pic->m_pplugin->SetPluginMessage(message_id, message_body);
+                  {
+                        switch(pic->m_api_version)
+                        {
+                              case 106:
+                              {
+                                    opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->SetPluginMessage(message_id, message_body);
+                                    break;
+                              }
+                              case 107:
+                              {
+                                    opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->SetPluginMessage(message_id, message_body);
+                                    break;
+                              }
+
+                              default:
+                                    break;
+                        }
+                  }
             }
       }
 }
@@ -1139,7 +1228,8 @@ bool UpdateChartDBInplace(wxArrayString dir_array,
                   b_force_update, b_ProgressDialog,
                   ChartData->GetDBFileName());
 
-      gFrame->ChartsRefresh(-1);
+      ViewPort vp;
+      gFrame->ChartsRefresh(-1, vp);
 
       return b_ret;
 }
@@ -1157,6 +1247,9 @@ void SendPluginMessage( wxString message_id, wxString message_body )
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
+
+opencpn_plugin::~opencpn_plugin()
+{}
 
 int opencpn_plugin::Init(void)
 {  return 0; }
@@ -1228,7 +1321,7 @@ void opencpn_plugin::OnToolbarToolCallback(int id)
 void opencpn_plugin::OnContextMenuItemCallback(int id)
 {}
 
-bool opencpn_plugin::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+bool opencpn_plugin::RenderOverlay(wxMemoryDC *dc, PlugIn_ViewPort *vp)
 {  return false; }
 
 void opencpn_plugin::SetCursorLatLon(double lat, double lon)
@@ -1256,8 +1349,44 @@ wxArrayString opencpn_plugin::GetDynamicChartClassNameArray()
       return array;
 }
 
-void opencpn_plugin::SetPluginMessage(wxString &message_id, wxString &message_body)
+
+//    Opencpn_Plugin_16 Implementation
+opencpn_plugin_16::opencpn_plugin_16(void *pmgr)
+      : opencpn_plugin(pmgr)
+{
+}
+
+opencpn_plugin_16::~opencpn_plugin_16(void)
 {}
+
+bool opencpn_plugin_16::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+{  return false; }
+
+void opencpn_plugin_16::SetPluginMessage(wxString &message_id, wxString &message_body)
+{}
+
+//    Opencpn_Plugin_17 Implementation
+opencpn_plugin_17::opencpn_plugin_17(void *pmgr)
+      : opencpn_plugin(pmgr)
+{
+}
+
+opencpn_plugin_17::~opencpn_plugin_17(void)
+{}
+
+
+bool opencpn_plugin_17::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+{  return false; }
+
+bool opencpn_plugin_17::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{  return false; }
+
+void opencpn_plugin_17::SetPluginMessage(wxString &message_id, wxString &message_body)
+{}
+
+
+
+
 
 
 //          Helper and interface classes

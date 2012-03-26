@@ -90,7 +90,7 @@ extern ChartCanvas *cc1;
 extern ChartBase *Current_Ch;
 extern Track     *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
-extern MarkProp         *pMarkPropDialog;
+extern MarkInfoImpl     *pMarkPropDialog;
 extern MyFrame          *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
@@ -1709,7 +1709,7 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event)
       cc1->Refresh ( false );      // Needed for MSW, why not GTK??
 
       if ( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-              pMarkPropDialog = new MarkProp ( GetParent() );
+            pMarkPropDialog = new MarkInfoImpl ( GetParent() );
 
       pMarkPropDialog->SetRoutePoint ( pWP );
       pMarkPropDialog->UpdateProperties();
@@ -1732,7 +1732,7 @@ void RouteManagerDialog::OnWptPropertiesClick(wxCommandEvent &event)
       if (!wp) return;
 
       if ( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-              pMarkPropDialog = new MarkProp ( GetParent() );
+            pMarkPropDialog = new MarkInfoImpl ( GetParent() );
 
       pMarkPropDialog->SetRoutePoint ( wp );
       pMarkPropDialog->UpdateProperties();
@@ -2007,9 +2007,11 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event)
 
             // Process Tracks and Routes in this layer
             wxRouteListNode *node1 = pRouteList->GetFirst();
+            wxRouteListNode *node2;
             while ( node1 )
             {
                   Route *pRoute = node1->GetData();
+                  node2 = node1->GetNext();
                   if ( pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
                         pRoute->m_bIsInLayer = false;
                         pRoute->m_LayerID = 0;
@@ -2024,7 +2026,8 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event)
                               g_pRouteMan->DeleteTrack(pRoute);
                         }
                   }
-                  node1 = node1->GetNext();
+                  node1 = node2;
+                  node2 = NULL;
             }
 
             //m_pSelectedRoute = NULL;
@@ -2040,9 +2043,11 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event)
 
             // Process waypoints in this layer
             wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+            wxRoutePointListNode *node3;
 
             while ( node )
             {
+                  node3 = node->GetNext();
                   RoutePoint *rp = node->GetData();
                   if ( rp && (rp->m_LayerID == layer->m_LayerID))
                   {
@@ -2051,7 +2056,8 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event)
                         pWayPointMan->DestroyWaypoint(rp);
                   }
 
-                  node = node->GetNext();
+                  node = node3;
+                  node3 = NULL;
             }
 
             if(pMarkPropDialog)

@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -866,6 +866,9 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             wxString str_buf(buffer,  wxConvUTF8);
             wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
 
+            if(str_buf.Find(_T("SHOM")) != wxNOT_FOUND)
+                  m_b_SHOM = true;
+
             if(!strncmp(buffer, "BSB", 3))
             {
                   wxString clip_str_buf(&buffer[0],  iso_conv);  // for single byte French encodings of NAme field
@@ -1169,12 +1172,33 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                 m_cph = float_cph;
             }
 
+            else if (!strncmp(buffer, "VER", 3))
+            {
+                  wxStringTokenizer tkz(str_buf, _T("/,="));
+                  wxString token = tkz.GetNextToken();
+
+                  m_bsb_ver = tkz.GetNextToken();
+            }
+
             else if (!strncmp(buffer, "DTM", 3))
             {
-                  float fdtmlat, fdtmlon;
-                  sscanf(&buffer[4], "%f,%f", &fdtmlat, &fdtmlon);
-                  m_dtm_lat = fdtmlat;
-                  m_dtm_lon = fdtmlon;
+                  double val;
+                  wxStringTokenizer tkz(str_buf, _T("/,="));
+                  wxString token = tkz.GetNextToken();
+
+                  token = tkz.GetNextToken();
+                  if(token.ToDouble(&val))
+                        m_dtm_lat = val;
+
+                  token = tkz.GetNextToken();
+                  if(token.ToDouble(&val))
+                        m_dtm_lon = val;
+
+
+//                  float fdtmlat, fdtmlon;
+//                  sscanf(&buffer[4], "%f,%f", &fdtmlat, &fdtmlon);
+//                  m_dtm_lat = fdtmlat;
+//                  m_dtm_lon = fdtmlon;
             }
 
 
@@ -1243,6 +1267,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       }
 
+      //    Some charts improperly encode the DTM parameters.
+      //    Identify them as necessary, for further processing
+      if(m_b_SHOM && (m_bsb_ver == _T("1.1")))
+            m_b_apply_dtm = false;
 
       //    If imbedded coefficients are found,
       //    then use the polynomial georeferencing algorithms
@@ -1289,6 +1317,9 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       //    Adjust the PLY points to WGS84 datum
       Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);
       int cnPlypoint = GetCOVRTablenPoints(0);
+
+      //  n.b. this is not precisely right for non-wgs84 charts.
+      //  should use molodensky transform, and then consider SHOM Ver 1.1 charts
 
       for(int u=0 ; u<cnPlypoint ; u++)
       {
@@ -1405,6 +1436,8 @@ ChartBaseBSB::ChartBaseBSB()
       m_proj_lat = 0.;
       m_proj_lon = 0.;
       m_proj_parameter = 0.;
+      m_b_SHOM = false;
+      m_b_apply_dtm = true;
 
       m_b_cdebug = 0;
 
@@ -2919,9 +2952,11 @@ void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
             MolodenskyTransform (vpt.clat, vpt.clon, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
             m_lon_datum_adjust = -(to_lon - vpt.clon);
             m_lat_datum_adjust = -(to_lat - vpt.clat);
-            m_lon_datum_adjust -= m_dtm_lon / 3600.;
-            m_lat_datum_adjust -= m_dtm_lat / 3600.;
-
+            if(m_b_apply_dtm)
+            {
+                  m_lon_datum_adjust -= m_dtm_lon / 3600.;
+                  m_lat_datum_adjust -= m_dtm_lat / 3600.;
+            }
       }
 
       ComputeSourceRectangle(vpt, &Rsrc);

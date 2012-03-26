@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  * $Log: chartimg.h,v $
@@ -247,6 +247,10 @@ protected:
                                                       // Transverse Mercator:    Central Meridian
       double      m_dx;                                 // Pixel scale factors, from KAP header
       double      m_dy;
+
+      wxString    m_bsb_ver;
+      bool        m_b_SHOM;
+      bool        m_b_apply_dtm;
 
       int         m_datum_index;
       double      m_dtm_lat;

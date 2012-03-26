@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -44,13 +44,14 @@
 #endif
 
 #include <wx/xml/xml.h>
+#include <wx/glcanvas.h>
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           6
+#define API_VERSION_MINOR           7
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -63,21 +64,23 @@ class       wxAuiManager;
 //    Bitfield PlugIn Capabilites flag definition
 //
 //---------------------------------------------------------------------------------------------------------
-#define     WANTS_OVERLAY_CALLBACK              0x00000001
-#define     WANTS_CURSOR_LATLON                 0x00000002
-#define     WANTS_TOOLBAR_CALLBACK              0x00000004
-#define     INSTALLS_TOOLBAR_TOOL               0x00000008
-#define     WANTS_CONFIG                        0x00000010
-#define     INSTALLS_TOOLBOX_PAGE               0x00000020
-#define     INSTALLS_CONTEXTMENU_ITEMS          0x00000040
-#define     WANTS_NMEA_SENTENCES                0x00000080
-#define     WANTS_NMEA_EVENTS                   0x00000100
-#define     WANTS_AIS_SENTENCES                 0x00000200
-#define     USES_AUI_MANAGER                    0x00000400
-#define     WANTS_PREFERENCES                   0x00000800
-#define     INSTALLS_PLUGIN_CHART               0x00001000
-#define     WANTS_ONPAINT_VIEWPORT              0x00002000
-#define     WANTS_PLUGIN_MESSAGING              0x00004000
+#define     WANTS_OVERLAY_CALLBACK                    0x00000001
+#define     WANTS_CURSOR_LATLON                       0x00000002
+#define     WANTS_TOOLBAR_CALLBACK                    0x00000004
+#define     INSTALLS_TOOLBAR_TOOL                     0x00000008
+#define     WANTS_CONFIG                              0x00000010
+#define     INSTALLS_TOOLBOX_PAGE                     0x00000020
+#define     INSTALLS_CONTEXTMENU_ITEMS                0x00000040
+#define     WANTS_NMEA_SENTENCES                      0x00000080
+#define     WANTS_NMEA_EVENTS                         0x00000100
+#define     WANTS_AIS_SENTENCES                       0x00000200
+#define     USES_AUI_MANAGER                          0x00000400
+#define     WANTS_PREFERENCES                         0x00000800
+#define     INSTALLS_PLUGIN_CHART                     0x00001000
+#define     WANTS_ONPAINT_VIEWPORT                    0x00002000
+#define     WANTS_PLUGIN_MESSAGING                    0x00004000
+#define     WANTS_OPENGL_OVERLAY_CALLBACK             0x00008000
+#define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -332,7 +335,7 @@ class DECL_EXP opencpn_plugin
 
 public:
       opencpn_plugin(void *pmgr) {}
-      virtual ~opencpn_plugin() {}
+      virtual ~opencpn_plugin();
 
       //    Public API to the PlugIn class
 
@@ -368,7 +371,7 @@ public:
 
       virtual void ShowPreferencesDialog( wxWindow* parent );
 
-      virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+      virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
       virtual void SetCursorLatLon(double lat, double lon);
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
@@ -385,7 +388,6 @@ public:
       virtual void UpdateAuiStatus(void);
 
       virtual wxArrayString GetDynamicChartClassNameArray(void);
-      virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 
  };
 
@@ -394,6 +396,30 @@ public:
  typedef opencpn_plugin* create_t(void*);
  typedef void destroy_t(opencpn_plugin*);
 
+ class DECL_EXP opencpn_plugin_16 : public opencpn_plugin
+ {
+       public:
+             opencpn_plugin_16(void *pmgr);
+             virtual ~opencpn_plugin_16();
+
+             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
+ };
+
+class DECL_EXP opencpn_plugin_17 : public opencpn_plugin
+{
+       public:
+             opencpn_plugin_17(void *pmgr);
+             virtual ~opencpn_plugin_17();
+
+             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
+};
 
 
 //----------------------------------------------------------------------------------------------------------

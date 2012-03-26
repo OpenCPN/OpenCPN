@@ -21,15 +21,16 @@
  *   You should have received a copy of the GNU General Public License        *
  *   along with this program; if not, write to the                            *
  *   Free Software Foundation, Inc.,                                          *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.                *
  ***************************************************************************
 */
 #ifndef _GPXDOCUMENT_H_
 #define _GPXDOCUMENT_H_
 
 #include <wx/wx.h>
+#include <wx/regex.h>
 #include <tinyxml.h>
-#include <tinystr.h>
+//#include <tinystr.h>
 #include <stdio.h>
 
 const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it

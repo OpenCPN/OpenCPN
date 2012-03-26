@@ -21,7 +21,7 @@
 *   You should have received a copy of the GNU General Public License     *
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
-*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ***************************************************************************
 *
 */
@@ -1741,3 +1741,39 @@ int  ChartDatabase::GetnAuxPlyEntries(int dbIndex)
             return 0;
 }
 
+void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
+{
+      for(unsigned int ic=0 ; ic < chartTable.GetCount(); ic++)
+      {
+            ChartTableEntry *pcte = &chartTable[ic];
+            pcte->GetGroupArray().Clear();
+
+            wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+
+            for(unsigned int igroup = 0; igroup < pGroupArray->GetCount(); igroup++)
+            {
+                  ChartGroup *pGroup = pGroupArray->Item(igroup);
+                  for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+                  {
+                        wxString element_root = pGroup->m_element_array.Item(j)->m_element_name;
+                        if(chart_full_path.StartsWith(element_root))
+                        {
+                              bool b_add = true;
+                              for(unsigned int k=0 ; k < pGroup->m_element_array.Item(j)->m_missing_name_array.GetCount(); k++)
+                              {
+//                                    wxString missing_item = pGroup->m_element_array.Item(j)->m_missing_name_array.Item(k)->m_element_name;
+                                    wxString missing_item = pGroup->m_element_array.Item(j)->m_missing_name_array.Item(k);         if(missing_item == chart_full_path)
+                                    {
+                                          b_add = false;
+                                          break;
+                                    }
+                              }
+
+                              if(b_add)
+                                    pcte->GetGroupArray().Add(igroup+1);
+                        }
+                  }
+            }
+      }
+
+}

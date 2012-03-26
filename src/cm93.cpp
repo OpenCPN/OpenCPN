@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -3361,7 +3361,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 //      pobj->prim = geomtype_sub;
 
       //  Debug hook
-//       if(sclass.IsSameAs((char *)"UWTROC"))
+//       if(sclass.IsSameAs((_T("DISMAR"))))
 //             int ggk = 5;
 
 
@@ -5377,9 +5377,9 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 
 //extern void catch_signals(int signo);
 
-void cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, wxRegion *pValidRegion )
+wxRegion cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, const wxRegion &ScreenRegion )
 {
-      pValidRegion->Clear();
+      wxRegion ret_region;
 
       ViewPort vp_positive = VPoint;
       SetVPPositive ( &vp_positive );
@@ -5406,37 +5406,17 @@ void cm93compchart::GetValidCanvasRegion ( const ViewPort& VPoint, wxRegion *pVa
 
                   wxPoint *DrawBuf = m_pcm93chart_current->GetDrawBuffer ( pmcd->m_nvertices );
 
-                  wxRegion rgn_covr = vp_positive.GetVPRegion ( pmcd->m_nvertices, ( float * ) pmcd->pvertices, chart_native_scale, DrawBuf );
+                  wxRegion rgn_covr = vp_positive.GetVPRegionIntersect ( ScreenRegion, pmcd->m_nvertices, ( float * ) pmcd->pvertices, chart_native_scale, DrawBuf );
 
+                  ret_region.Union( rgn_covr );
 
-                  if ( !rgn_covr.Empty() )
-                  {
-                        //    No sense in increasing the region beyond the current VPoint size,
-                        //    Just makes subsequent region iterator loops HUGE....
-//                        rgn_covr.Intersect ( 0,0,VPoint.rv_rect.width, VPoint.rv_rect.height );
-
-                        //    TODO This is really right, but has pervasive effects elsewhere
-                        /*    remove offset in quilt building
-                        add offset back to charting.cpp raster build
-                        on BSB opengl renders, correct opengl stencil and render rects
-                        on S57 opengl renders, correct stencil bits and render offsets...
-                        Check everything again
-                        */
-//                        rgn_covr.Intersect ( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width, VPoint.rv_rect.height );
-
-                        //    This is suboptimal, since it makes the region larger than it needs to be...
-                        //    But works for both dc and opengl renders....
-                        rgn_covr.Intersect ( VPoint.rv_rect.x, VPoint.rv_rect.y,
-                                             VPoint.rv_rect.width + abs(VPoint.rv_rect.x),
-                                             VPoint.rv_rect.height + abs(VPoint.rv_rect.y ));
-                        pValidRegion->Union ( rgn_covr );
-                  }
             }
 
       }
       else
-            pValidRegion->Union ( 0, 0, 1,1 );
+            ret_region.Union(wxRegion( 0, 0, 1,1 ));
 
+      return ret_region;
 
 }
 
@@ -5500,12 +5480,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                   wxRegion vpr_empty = Region;
 
-                  wxRegion chart_region;
-
-                  GetValidCanvasRegion ( vp_positive, &chart_region );
+                  wxRegion chart_region =  GetValidCanvasRegion ( vp_positive, Region );
                   m_pcm93chart_current->m_render_region = chart_region;
-
-                  chart_region.Intersect(Region);
 
                   if ( g_bDebugCM93 )
                   {
@@ -5558,8 +5534,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           printf ( "  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
 
 
-                                    wxRegion sscale_region;
-                                    GetValidCanvasRegion ( vp_positive, &sscale_region );
+                                    wxRegion sscale_region = GetValidCanvasRegion ( vp_positive, Region );
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
@@ -5753,6 +5728,7 @@ bool cm93compchart::RenderViewOnDC ( wxMemoryDC& dc, const ViewPort& VPoint )
 int s_dc1;
 bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region )
 {
+//      g_bDebugCM93 = true;
 
 //      CALLGRIND_START_INSTRUMENTATION
       if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
@@ -5769,7 +5745,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
             while ( upd )
             {
                   wxRect rect = upd.GetRect();
-                  rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
                   printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
                   upd ++ ;
             }
@@ -5797,10 +5772,21 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                   wxRegion vpr_empty = Region;
 
-                  wxRegion chart_region;
+                  wxRegion chart_region = GetValidCanvasRegion ( vp_positive, Region );
 
-                  GetValidCanvasRegion ( vp_positive, &chart_region );
                   m_pcm93chart_current->m_render_region = chart_region;
+
+                  if ( g_bDebugCM93 )
+                  {
+                        printf ( "On DoRenderRegionViewOnDC : Intersecting Ref region rectangles\n" );
+                        wxRegionIterator upd ( chart_region );
+                        while ( upd )
+                        {
+                              wxRect rect = upd.GetRect();
+                              printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
+                              upd ++ ;
+                        }
+                  }
 
                   if ( !chart_region.IsEmpty() )
                         vpr_empty.Subtract ( chart_region );
@@ -5863,8 +5849,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                                     m_pcm93chart_current->RenderRegionViewOnDC ( build_dc, vp_positive, Region );
 
-                                    wxRegion sscale_region;
-                                    GetValidCanvasRegion ( vp_positive, &sscale_region );
+                                    wxRegion sscale_region = GetValidCanvasRegion ( vp_positive, Region );
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
@@ -5876,7 +5861,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                                     while ( upd )
                                     {
                                           wxRect rect = upd.GetRect();
-//                                          rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                                           dumm_dc.Blit ( rect.x, rect.y, rect.width, rect.height, &build_dc, rect.x, rect.y );
                                           upd ++ ;
                                     }
@@ -5894,7 +5878,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         while ( updt )
                         {
                               wxRect rect = updt.GetRect();
-//                              rect.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
                               dumm_dc.Blit ( rect.x, rect.y, rect.width, rect.height, &temp_dc, rect.x, rect.y );
                               updt ++ ;
                         }

@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -56,6 +56,7 @@
 #include "ais.h"
 #include "cutil.h"
 #include "routeman.h"
+#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "tinyxml.h"
@@ -109,6 +110,7 @@ extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 extern ComPortManager   *g_pCommMan;
+extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -296,6 +298,9 @@ extern bool             g_bHighliteTracks;
 
 extern int              g_route_line_width;
 extern int              g_track_line_width;
+
+extern ChartGroupArray  *g_pGroupArray;
+extern int              g_GroupIndex;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2635,33 +2640,135 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
 {
 
       Route *route = new Route();
-      RoutePoint *pWP_src = NULL;
       wxRoutePointListNode *prpnode = pRoutePointList->GetFirst();
-      int ic = 0;
-      int nPoints = pRoutePointList->GetCount();
+      RoutePoint *pWP_src = prpnode->GetData();
+      wxRoutePointListNode *prpnodeX;
+      RoutePoint *pWP_dst;
+      RoutePoint *prp_OK = NULL;  // last routepoint known not to exceed xte limit, if not yet added
 
+      wxString icon = _T("xmblue");
+      if (g_TrackDeltaDistance >= 0.1) icon = _T("diamond");
+
+      int ic = 0;
+      int next_ic = 0;
+      int back_ic = 0;
+      int nPoints = pRoutePointList->GetCount();
+      bool isProminent = true;
+      double delta_dist, delta_hdg, xte;
+      double leg_speed = 0.1;
+
+      if (pRoutePropDialog) leg_speed = pRoutePropDialog->m_planspeed;
+      else leg_speed = g_PlanSpeed;
+
+// add first point
+
+      pWP_dst = new RoutePoint ( pWP_src->m_lat, pWP_src->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+      route->AddPoint(pWP_dst);
+
+      pWP_dst->m_bShowName = false;
+
+      pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+// add intermediate points as needed
+
+      prpnode = prpnode->GetNext();
+ 
       while ( prpnode )
       {
             RoutePoint *prp = prpnode->GetData();
+            prpnodeX = prpnode;
+            pWP_dst = pWP_src;
 
-            RoutePoint *pWP_dst = new RoutePoint ( prp->m_lat, prp->m_lon,  _T ( "xmblue" ) , _T ( "" ) , GPX_EMPTY_STRING );
-            route->AddPoint(pWP_dst);
+            delta_dist = 0.0;
+            delta_hdg = 0.0;
+            back_ic = next_ic;
 
-            pWP_dst->m_bShowName = false;
+            DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, &delta_hdg, &delta_dist);
 
-            pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+            if ((delta_dist > (leg_speed * 6.0)) && !prp_OK) {
+                  int delta_inserts = floor(delta_dist/(leg_speed * 4.0));
+                  delta_dist = delta_dist/(delta_inserts+1);
+                  double tlat = 0.0;
+                  double tlon = 0.0;
 
-            if (pWP_src)
-                  pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
-            pWP_src = pWP_dst;
+                  while (delta_inserts--) {
+                        ll_gc_ll ( pWP_src->m_lat, pWP_src->m_lon, delta_hdg, delta_dist, &tlat, &tlon );
+                        pWP_dst = new RoutePoint ( tlat, tlon,  icon, _T ( "" ), GPX_EMPTY_STRING );
+                        route->AddPoint(pWP_dst);
+                        pWP_dst->m_bShowName = false;
+                        pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
-            prpnode = prpnode->GetNext(); //RoutePoint
+                        pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+ 
+                        pWP_src = pWP_dst;
+                  }
+                  prpnodeX = prpnode;
+                  pWP_dst = pWP_src;
+                  next_ic = 0;
+                  delta_dist = 0.0;
+                  back_ic = next_ic;
+                  prp_OK = prp;
+                  isProminent = true;
+            }
+            else {
+                  isProminent = false;
+                  if (delta_dist >= (leg_speed * 4.0)) isProminent = true;
+                  if (!prp_OK) prp_OK = prp;
+            }
 
+            while (prpnodeX) {
+
+                  RoutePoint *prpX = prpnodeX->GetData();
+                  xte = GetXTE(pWP_src, prpX, prp);
+                  if (isProminent || (xte > g_TrackDeltaDistance)) {
+
+                        pWP_dst = new RoutePoint ( prp_OK->m_lat, prp_OK->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+
+                        route->AddPoint(pWP_dst);
+                        pWP_dst->m_bShowName = false;
+
+                        pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+                        pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+
+                        pWP_src = pWP_dst;
+                        next_ic = 0;
+                        prpnodeX = NULL;
+                        prp_OK = NULL;
+                  }
+
+                  if (prpnodeX) prpnodeX = prpnodeX->GetPrevious();
+                  if (back_ic-- <= 0) {
+                         prpnodeX = NULL;
+                  }
+            }
+
+            if (prp_OK) {
+                  prp_OK = prp;
+            }
+
+            DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, NULL, &delta_dist);
+
+            if (!((delta_dist > (g_TrackDeltaDistance)) && !prp_OK)) {
+                  prpnode = prpnode->GetNext(); //RoutePoint
+                  next_ic++;
+            }
             ic++;
             if(pprog)
                 pprog->Update((ic * 100) /nPoints);
       }
 
+// add last point, if needed
+      if (delta_dist >= g_TrackDeltaDistance) {
+            pWP_dst = new RoutePoint ( pRoutePointList->GetLast()->GetData()->m_lat, pRoutePointList->GetLast()->GetData()->m_lon,  icon , _T ( "" ) , GPX_EMPTY_STRING );
+            route->AddPoint(pWP_dst);
+ 
+            pWP_dst->m_bShowName = false;
+
+            pSelect->AddSelectableRoutePoint ( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
+
+            pSelect->AddSelectableRouteSegment ( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat, pWP_dst->m_lon, pWP_src, pWP_dst, route );
+      }
       route->m_RouteNameString = m_RouteNameString;
       route->m_RouteStartString = m_RouteStartString;
       route->m_RouteEndString = m_RouteEndString;
@@ -2670,6 +2777,27 @@ Route *Track::RouteFromTrack(wxProgressDialog *pprog)
       return route;
 }
 
+double Track::GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to)
+{
+      if (!fm1 || !fm2 || !to) return 0.0;
+      if (fm1 == to) return 0.0;
+      if (fm2 == to) return 0.0;
+//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
+          VECTOR2D va, vb, vn;
+
+          double brg1, dist1, brg2, dist2;
+          DistanceBearingMercator(to->m_lat, to->m_lon, fm1->m_lat, fm1->m_lon, &brg1, &dist1);
+          vb.x = dist1 * sin(brg1 * PI / 180.);
+          vb.y = dist1 * cos(brg1 * PI / 180.);
+
+          DistanceBearingMercator(to->m_lat, to->m_lon, fm2->m_lat, fm2->m_lon, &brg2, &dist2);
+          va.x = dist2 * sin(brg2 * PI / 180.);
+          va.y = dist2 * cos(brg2 * PI / 180.);
+
+          double sdelta = vGetLengthOfNormal(&va, &vb, &vn);             // NM
+
+           return (abs(sdelta));
+}
 
 //-----------------------------------------------------------------------------
 //          Layer Implementation
@@ -2801,7 +2929,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "OwnshipBeamMeters" ),  &g_n_ownship_beam_meters, 0 );
       Read ( _T ( "OwnshipGPSOffsetY" ),  &g_n_gps_antenna_offset_y, g_n_ownship_length_meters/2 );
       Read ( _T ( "OwnshipGPSOffsetX" ),  &g_n_gps_antenna_offset_x, 0 );
-      Read ( _T ( "OwnshipMinMM" ),  &g_n_ownship_min_mm, 10 );
+      Read ( _T ( "OwnshipMinMM" ),  &g_n_ownship_min_mm, -1 );
 
       Read ( _T ( "UseNMEA_RMC" ),  &g_bUseRMC, 1 );
       Read ( _T ( "UseNMEA_GLL" ),  &g_bUseGLL, 1 );
@@ -2839,6 +2967,8 @@ int MyConfig::LoadMyConfig ( int iteration )
 #ifdef __WXMAC__
       g_bopengl = 0;
 #endif
+
+      Read ( _T ( "ActiveChartGroup" ),  &g_GroupIndex, 0 );
 
       Read ( _T ( "GPUMemorySize" ),  &g_GPU_MemSize, 256 );
 
@@ -3407,6 +3537,10 @@ int MyConfig::LoadMyConfig ( int iteration )
 //            int laynum = 0;
             pLayerList = new LayerList;
       }
+
+      //    Groups
+      if ( 0 == iteration )
+            LoadConfigGroups ( g_pGroupArray);
 
       //    Marks
       if ( 0 == iteration )
@@ -4049,6 +4183,104 @@ bool MyConfig::UpdateChartDirs ( ArrayOfCDI& dir_array )
       return true;
 }
 
+void MyConfig::CreateConfigGroups ( ChartGroupArray *pGroupArray )
+{
+      if(!pGroupArray)
+            return;
+
+      SetPath ( _T ( "/Groups" ) );
+      Write ( _T ( "GroupCount" ), (int)pGroupArray->GetCount() );
+
+      for(unsigned int i=0 ; i < pGroupArray->GetCount(); i++)
+      {
+            ChartGroup *pGroup = pGroupArray->Item(i);
+            wxString s;
+            s.Printf(_T("Group%d"), i+1);
+            s.Prepend( _T ( "/Groups/" ) );
+            SetPath ( s );
+
+            Write ( _T ( "GroupName" ), pGroup->m_group_name );
+            Write ( _T ( "GroupItemCount" ), (int)pGroup->m_element_array.GetCount() );
+
+            for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+            {
+                  wxString sg;
+                  sg.Printf(_T("Group%d/Item%d"), i+1, j);
+                  sg.Prepend( _T ( "/Groups/" ) );
+                  SetPath ( sg );
+                  Write ( _T ( "IncludeItem" ), pGroup->m_element_array.Item(j)->m_element_name );
+
+                  wxString t;
+                  wxArrayString u = pGroup->m_element_array.Item(j)->m_missing_name_array;
+                  if(u.GetCount())
+                  {
+                        for(unsigned int k=0; k < u.GetCount(); k++)
+                        {
+                              t += u.Item(k);
+                              t += _T(";");
+                        }
+                        Write ( _T ( "ExcludeItems" ), t );
+                  }
+            }
+      }
+}
+
+void MyConfig::DestroyConfigGroups ( void )
+{
+      DeleteGroup( _T ( "/Groups" ) );                //zap
+}
+
+void MyConfig::LoadConfigGroups ( ChartGroupArray *pGroupArray )
+{
+      SetPath ( _T ( "/Groups" ) );
+      unsigned int group_count;
+      Read ( _T ( "GroupCount" ), (int *)&group_count, 0 );
+
+      for(unsigned int i=0 ; i < group_count; i++)
+      {
+            ChartGroup *pGroup = new ChartGroup;
+            wxString s;
+            s.Printf(_T("Group%d"), i+1);
+            s.Prepend( _T ( "/Groups/" ) );
+            SetPath ( s );
+
+            wxString t;
+            Read ( _T ( "GroupName" ), &t );
+            pGroup->m_group_name = t;
+
+            unsigned int item_count;
+            Read ( _T ( "GroupItemCount" ), (int *)&item_count );
+            for(unsigned int j=0; j < item_count ; j++)
+            {
+                  wxString sg;
+                  sg.Printf(_T("Group%d/Item%d"), i+1, j);
+                  sg.Prepend( _T ( "/Groups/" ) );
+                  SetPath ( sg );
+
+                  wxString v;
+                  Read ( _T ( "IncludeItem" ), &v );
+                  ChartGroupElement *pelement = new ChartGroupElement;
+                  pelement->m_element_name = v;
+                  pGroup->m_element_array.Add(pelement);
+
+                  Read ( _T ( "ExcludeItems" ), &v );
+                  if(!v.IsEmpty())
+                  {
+                        wxStringTokenizer tk(v, _T(";"));
+                        while ( tk.HasMoreTokens() )
+                        {
+                              wxString token = tk.GetNextToken();
+                              pelement->m_missing_name_array.Add(token);
+                        }
+                  }
+            }
+            pGroupArray->Add(pGroup);
+      }
+
+}
+
+
+
 
 
 void MyConfig::UpdateSettings()
@@ -4115,6 +4347,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "InitialStackIndex" ),  g_restore_stackindex );
       Write ( _T ( "InitialdBIndex" ),  g_restore_dbindex );
+      Write ( _T ( "ActiveChartGroup" ),  g_GroupIndex );
 
       Write ( _T ( "AnchorWatch1GUID" ),   g_AW1GUID );
       Write ( _T ( "AnchorWatch2GUID" ),   g_AW2GUID );

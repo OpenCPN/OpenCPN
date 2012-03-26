@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -123,7 +123,9 @@ typedef enum ais_transponder_class
       AIS_CLASS_A = 0,
       AIS_CLASS_B,
       AIS_ATON,    // Aid to Navigation   pjotrc 2010/02/01
-      AIS_BASE     // Base station
+      AIS_BASE,     // Base station
+      AIS_GPSG_BUDDY, // GpsGate Buddy object
+      AIS_DSC	// DSC target
 
 }_ais_transponder_class;
 

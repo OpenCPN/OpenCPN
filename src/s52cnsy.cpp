@@ -24,7 +24,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  * $Log: s52cnsy.cpp,v $
@@ -777,12 +777,13 @@ static void *DEPARE01(void *param)
 
 
    double drval1, drval2;
+   bool drval1_found;
 
 //      Determine the color based on mariner selections
 
 
    drval1 = -1.0;                                          // default values
-   GetDoubleAttr(obj, "DRVAL1", drval1);
+   drval1_found = GetDoubleAttr(obj, "DRVAL1", drval1);
    drval2 = drval1 + 0.01;
    GetDoubleAttr(obj, "DRVAL2", drval2);
 
@@ -834,6 +835,11 @@ static void *DEPARE01(void *param)
 
     if(!strncmp(rzRules->LUP->OBCL, "DRGARE", 6))
     {
+        if (!drval1_found) //If DRVAL1 was not defined...
+        {
+            rule_str  = _T("AC(DEPMD)");
+            shallow = FALSE;
+        }
         rule_str.Append(_T(";AP(DRGARE01)"));
         rule_str.Append(_T(";LS(DASH,1,CHGRF)"));
 
@@ -2594,7 +2600,6 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 // sounding labels. It symbolizes swept depth and it also symbolizes for low
 // reliability as indicated by attributes QUASOU and QUAPOS.
 {
-
     wxString sndfrm02;
     char     temp_str[LISTSIZE] = {'\0'};
 
@@ -2617,6 +2622,11 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 
     //      Do the math to convert soundings to ft/metres/fathoms on request
     double depth_value = depth_value_in;
+
+    //      If the sounding value from the ENC is bogus, so state
+    if(depth_value_in > 40000.)
+      depth_value = 99999.;
+
     switch(ps52plib->m_nDepthUnitDisplay)
     {
           case 0:

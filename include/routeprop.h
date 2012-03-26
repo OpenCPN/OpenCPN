@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  * $Log: routeprop.h,v $
@@ -44,15 +44,16 @@
 #include "chart1.h"                 // for ColorScheme
 #include "wx/hyperlink.h"           // toh, 2009.02.08
 #include <wx/choice.h>
+#include <wx/tglbtn.h>
+#include <wx/bmpcbox.h>
+#include <wx/notebook.h>
+#include <wx/filesys.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
 #else
 #include "scrollingdialog.h"
 #endif
-
-
-WX_DECLARE_LIST(wxHyperlinkCtrl, HyperlinkCtrlList);// establish class as list member
 
 /*!
  * Forward declarations
@@ -62,6 +63,9 @@ class   wxListCtrl;
 class   OCPNTrackListCtrl;
 class   Route;
 class   RoutePoint;
+class   LinkPropImpl;
+class   HyperlinkList;
+
 /*!
  * Control identifiers
  */
@@ -102,17 +106,6 @@ class   RoutePoint;
 #define ID_LATCTRL 8004
 #define ID_LONCTRL 8005
 #define ID_SHOWNAMECHECKBOX1 8006
-
-// toh, 2009.02.08
-#define ID_MARKINFO 8007
-#define SYMBOL_MARKINFO_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_MARKINFO_TITLE _("Mark Information")
-#define SYMBOL_MARKINFO_IDNAME ID_MARKINFO
-#define SYMBOL_MARKINFO_SIZE wxSize(200, 300)
-#define SYMBOL_MARKINFO_POSITION wxDefaultPosition
-#define ID_MARKINFO_CANCEL 8008
-#define ID_MARKINFO_OK 8009
-
 
 ////@end control identifiers
 
@@ -228,79 +221,6 @@ public:
     wxStaticBoxSizer* m_pListSizer;
 };
 
-
-/*!
- * MarkProp class declaration
- */
-#if wxCHECK_VERSION(2, 9, 0)
-class MarkProp: public wxDialog
-#else
-class MarkProp: public wxScrollingDialog
-#endif
-{
-    DECLARE_DYNAMIC_CLASS( MarkProp )
-    DECLARE_EVENT_TABLE()
-
-public:
-    /// Constructors
-    MarkProp( );
-    MarkProp( wxWindow* parent, wxWindowID id = SYMBOL_MARKPROP_IDNAME,
-        const wxString& caption = SYMBOL_MARKPROP_TITLE,
-        const wxPoint& pos = SYMBOL_MARKPROP_POSITION,
-        const wxSize& size = SYMBOL_MARKPROP_SIZE,
-        long style = SYMBOL_MARKPROP_STYLE );
-
-    ~MarkProp();
-
-    /// Creation
-      bool Create( wxWindow* parent, wxWindowID id = SYMBOL_MARKPROP_IDNAME,
-          const wxString& caption = SYMBOL_MARKPROP_TITLE,
-          const wxPoint& pos = SYMBOL_MARKPROP_POSITION,
-          const wxSize& size = SYMBOL_MARKPROP_SIZE, long style = SYMBOL_MARKPROP_STYLE );
-
-      void SetRoutePoint(RoutePoint *pRP);
-      RoutePoint *GetRoutePoint(void){return m_pRoutePoint;}
-
-      void ValidateMark(void);
-      bool UpdateProperties(void);
-
-      void SetColorScheme(ColorScheme cs);
-      void SetDialogTitle(wxString title);
-
-private:
-      void CreateControls();
-
-      void OnMarkpropCancelClick( wxCommandEvent& event );
-      void OnMarkpropOkClick( wxCommandEvent& event );
-      void OnIconListSelected( wxListEvent& event );
-      void OnPositionCtlUpdated( wxCommandEvent& event );
-      void OnShowNamecheckboxClick( wxCommandEvent& event );
-
-    /// Should we show tooltips?
-      static bool ShowToolTips();
-
-      bool SaveChanges(void);
-
-      wxTextCtrl    *m_MarkNameCtl;
-      wxTextCtrl    *m_MarkLatCtl;
-      wxTextCtrl    *m_MarkLonCtl;
-      wxListCtrl    *m_IconList;
-      wxTextCtrl    *m_pDescTextCtl;
-
-      wxCheckBox*   m_ShowNameCheckbox;
-      wxButton*     m_CancelButton;
-      wxButton*     m_OKButton;
-
-      int           m_current_icon_Index;
-      double        m_lat_save;
-      double        m_lon_save;
-      wxString      m_IconName_save;
-      bool          m_bShowName_save;
-
-      RoutePoint  *m_pRoutePoint;
-};
-
-
 //    LatLonTextCtrl Specification
 //    We need a derived wxText control for lat/lon input in the MarkProp dialog
 //    Specifically, we need to catch loss-of-focus events and signal the parent dialog
@@ -327,67 +247,158 @@ public:
 
 };
 
-// toh, 2009.02.08
-/*!
- * MarkInfo class declaration
- */
-
-class MarkInfo: public wxDialog
+///////////////////////////////////////////////////////////////////////////////
+/// Class MarkInfoDef
+///////////////////////////////////////////////////////////////////////////////
+class MarkInfoDef : public wxDialog 
 {
-      DECLARE_DYNAMIC_CLASS( MarkInfo )
-                  DECLARE_EVENT_TABLE()
-
-      public:
-    /// Constructors
-            MarkInfo( );
-            MarkInfo( wxWindow* parent, wxWindowID id = SYMBOL_MARKINFO_IDNAME,
-                      const wxString& caption = SYMBOL_MARKINFO_TITLE,
-                      const wxPoint& pos = SYMBOL_MARKINFO_POSITION,
-                      const wxSize& size = SYMBOL_MARKINFO_SIZE,
-                      long style = SYMBOL_MARKINFO_STYLE );
-
-            ~MarkInfo();
-
-    /// Creation
-            bool Create( wxWindow* parent, wxWindowID id = SYMBOL_MARKINFO_IDNAME,
-                         const wxString& caption = SYMBOL_MARKINFO_TITLE,
-                         const wxPoint& pos = SYMBOL_MARKINFO_POSITION,
-                         const wxSize& size = SYMBOL_MARKINFO_SIZE, long style = SYMBOL_MARKINFO_STYLE );
-
-            void SetRoutePoint(RoutePoint *pRP);
-            RoutePoint *GetRoutePoint(void){return m_pRoutePoint;}
-
-            void SetColorScheme(ColorScheme cs);
-
-            void CreateControls();
-
-            void OnMarkinfoCancelClick( wxCommandEvent& event );
-            void OnMarkinfoOkClick( wxCommandEvent& event );
-            void OnHyperLinkClick(wxHyperlinkEvent &event);
-
-    /// Should we show tooltips?
-            static bool ShowToolTips();
-
-            bool UpdateProperties(void);
-            bool SaveChanges(void);
-
-            wxStaticText*   m_MarkNameCtl;
-            wxStaticText*   m_MarkLatCtl;
-            wxStaticText*   m_MarkLonCtl;
-            wxButton*     m_CancelButton;
-            wxButton*     m_OKButton;
-
-            wxHyperlinkCtrl *m_HyperlinkCtrl;
-            wxHyperlinkCtrl *m_HyperlinkCtrl2;
-
-            double        m_lat_save;
-            double        m_lon_save;
-
-            RoutePoint  *m_pRoutePoint;
-
-            HyperlinkCtrlList *m_HyperlinkCtrlList;   // toh, 2009.02.11
+	private:
+	
+	protected:
+		wxNotebook* m_notebookProperties;
+		wxPanel* m_panelBasicProperties;
+		wxStaticBitmap* m_bitmapIcon;
+		wxStaticText* m_staticTextLayer;
+		wxStaticText* m_staticTextName;
+		wxTextCtrl* m_textName;
+		wxCheckBox* m_checkBoxShowName;
+		wxStaticText* m_staticTextIcon;
+		wxBitmapComboBox* m_bcomboBoxIcon;
+		wxStaticText* m_staticTextLatitude;
+		wxTextCtrl* m_textLatitude;
+		wxStaticText* m_staticTextLongitude;
+		wxTextCtrl* m_textLongitude;
+		wxStaticText* m_staticTextDescription;
+		wxTextCtrl* m_textDescription;
+		wxButton* m_buttonExtDescription;
+		wxStaticBoxSizer* sbSizerLinks;
+		wxScrolledWindow* m_scrolledWindowLinks;
+		wxBoxSizer* bSizerLinks;
+		wxHyperlinkCtrl* m_hyperlink17;
+		wxMenu* m_menuLink;
+		wxButton* m_buttonAddLink;
+		wxToggleButton* m_toggleBtnEdit;
+		wxStaticText* m_staticTextEditEnabled;
+		wxPanel* m_panelDescription;
+		wxTextCtrl* m_textCtrlExtDescription;
+		wxPanel* m_panelExtendedProperties;
+		wxCheckBox* m_checkBoxVisible;
+		wxStaticText* m_staticTextGuid;
+		wxTextCtrl* m_textCtrlGuid;
+		wxStaticText* m_staticTextGpx;
+		wxTextCtrl* m_textCtrlGpx;
+		wxStdDialogButtonSizer* m_sdbSizerButtons;
+		wxButton* m_sdbSizerButtonsOK;
+		wxButton* m_sdbSizerButtonsCancel;
+		
+		// Virtual event handlers, overide them in your derived class
+            virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnExtDescriptionClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDeleteLink( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnEditLink( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAddLink( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnEditLinkToggle( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDescChangedExt( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER ); 
+		~MarkInfoDef();
+		
+		void m_hyperlink17OnContextMenu( wxMouseEvent &event )
+		{
+			m_hyperlink17->PopupMenu( m_menuLink, event.GetPosition() );
+		}
+	
 };
 
+///////////////////////////////////////////////////////////////////////////////
+/// Class LinkPropDlgDef
+///////////////////////////////////////////////////////////////////////////////
+class LinkPropDlgDef : public wxDialog
+{
+	private:
+	
+	protected:
+		wxStaticText* m_staticTextLinkDesc;
+		wxStaticText* m_staticTextLinkUrl;
+		wxButton* m_buttonBrowseLocal;
+		wxStdDialogButtonSizer* m_sdbSizerButtons;
+		wxButton* m_sdbSizerButtonsOK;
+		wxButton* m_sdbSizerButtonsCancel;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnLocalFileClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		wxTextCtrl* m_textCtrlLinkDescription;
+		wxTextCtrl* m_textCtrlLinkUrl;
+		
+		LinkPropDlgDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Link Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 468,247 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~LinkPropDlgDef();
+	
+};
+
+class MarkInfoImpl : public MarkInfoDef
+{
+public :
+      void SetColorScheme( ColorScheme cs );
+      void OnMarkInfoOKClick( wxCommandEvent& event );
+      void OnMarkInfoCancelClick( wxCommandEvent& event );
+      void SetRoutePoint( RoutePoint *pRP );
+      void SetDialogTitle(wxString title) { SetTitle(title); }
+      RoutePoint *GetRoutePoint(void) { return m_pRoutePoint; }
+      bool UpdateProperties(void);
+      void ValidateMark(void);
+
+      MarkInfoImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Information"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+      ~MarkInfoImpl();
+
+      void m_hyperlinkContextMenu( wxMouseEvent &event );
+
+      void dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd);
+
+protected :
+      virtual void OnPositionCtlUpdated( wxCommandEvent& event );
+      void OnDeleteLink( wxCommandEvent& event );
+	void OnEditLink( wxCommandEvent& event );
+	void OnAddLink( wxCommandEvent& event );
+      void OnEditLinkToggle( wxCommandEvent& event );
+      void OnDescChangedBasic( wxCommandEvent& event );
+      void OnDescChangedExt( wxCommandEvent& event );
+      void OnExtDescriptionClick( wxCommandEvent& event );
+
+private :
+      RoutePoint  *m_pRoutePoint;
+      HyperlinkList *m_pMyLinkList;
+      void OnHyperLinkClick(wxHyperlinkEvent &event);
+      LinkPropImpl* m_pLinkProp;
+      bool SaveChanges();
+
+      int           m_current_icon_Index;
+      double        m_lat_save;
+      double        m_lon_save;
+      wxString      m_IconName_save;
+      bool          m_bShowName_save;
+      bool          m_bIsVisible_save;
+};
+
+class LinkPropImpl : public LinkPropDlgDef
+{
+public :
+      LinkPropImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Link Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 468,247 ), long style = wxDEFAULT_DIALOG_STYLE );
+      void SetColorScheme( ColorScheme cs );
+private :
+      void OnLocalFileClick( wxCommandEvent& event );
+      void OnOkClick( wxCommandEvent& event );
+};
 
 #endif
     // _ROUTEPROP_H_

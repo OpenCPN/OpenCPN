@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -275,6 +275,8 @@ class MyFrame: public wxFrame
     void OnPianoMenuDisableChart(wxCommandEvent& event);
     void OnPianoMenuEnableChart(wxCommandEvent& event);
 
+    void SetGroupIndex(int index);
+
     double GetBestVPScale(ChartBase *pchart);
 
     ChartCanvas *GetCanvasWindow(){ return m_pchart_canvas; }
@@ -287,7 +289,7 @@ class MyFrame: public wxFrame
     void OnFrameCOGTimer(wxTimerEvent& event);
     void SetupQuiltMode(void);
 
-    void ChartsRefresh(int dbi_hint);
+    void ChartsRefresh(int dbi_hint, ViewPort &vp);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
 
     ArrayOfRect GetCanvasReserveRects();

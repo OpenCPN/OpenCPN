@@ -22,7 +22,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  */
@@ -33,6 +33,7 @@
 #include <wx/wx.h>
 #include <wx/dynarray.h>
 #include <wx/dynlib.h>
+#include <wx/glcanvas.h>
 
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
@@ -149,6 +150,7 @@ public:
       ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
       bool RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp);
+      bool RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
       void SendViewPortToRequestingPlugIns( ViewPort &vp );
 
