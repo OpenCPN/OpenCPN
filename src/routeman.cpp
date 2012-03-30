@@ -934,7 +934,8 @@ void Routeman::SetColorScheme(ColorScheme cs)
 
       m_pRoutePen =             wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFB")), g_route_line_width, wxSOLID);
       m_pSelectedRoutePen =     wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFO")), g_route_line_width, wxSOLID);
-      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
+//      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
+      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UARTE")), g_route_line_width, wxSOLID);
 //      m_pActiveRoutePointPen =  wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), 2, wxSOLID);
 //      m_pRoutePointPen =        wxThePenList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), 2, wxSOLID);
 

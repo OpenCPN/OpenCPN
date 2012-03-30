@@ -9157,6 +9157,7 @@ static const char *usercolors[] = {
 "DILG3;   0;  0;  0;",              // Text
 "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
 "UDKRD; 124; 16;  0;",
+"UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
 
 "Table:DUSK",
 "GREEN1; 60;128; 60;",
@@ -9177,10 +9178,12 @@ static const char *usercolors[] = {
 "YELO2;  64; 40;  0;",
 "DILG0; 110;110;110;",              // Dialog Background
 "DILG1; 110;110;110;",              // Dialog Background
-"DILG2; 100;100;100;",              // Control Background
+//"DILG2; 100;100;100;",              // Control Background
+"DILG2;   0;  0;  0;",              // Control Background
 "DILG3; 130;130;130;",              // Text
 "UITX1;  41; 46; 46;",              // Menu Text, derived from UINFF
 "UDKRD;  80;  0;  0;",
+"UARTE;  64; 64; 64;",
 
 "Table:NIGHT",
 "GREEN1; 30; 80; 30;",
@@ -9201,10 +9204,12 @@ static const char *usercolors[] = {
 "YELO2;  32; 20;  0;",
 "DILG0;  80; 80; 80;",              // Dialog Background
 "DILG1;  80; 80; 80;",              // Dialog Background
-"DILG2;  52; 52; 52;",              // Control Background
+//"DILG2;  52; 52; 52;",              // Control Background
+"DILG2;   0;  0;  0;",              // Control Background
 "DILG3;  65; 65; 65;",              // Text
 "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
 "UDKRD;  50;  0;  0;",
+"UARTE;  64; 64; 64;",
 
 "*****"
 };
