@@ -476,6 +476,7 @@ class cm93compchart : public s57chart
 
             void InvalidateCache();
       private:
+            void UpdateRenderRegions ( const ViewPort& VPoint );
             wxRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 

@@ -5480,18 +5480,9 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             //    Check the current chart scale to see if it covers the requested region totally
             if ( VPoint.b_quilt )
             {
-
-                  //    Clear all the subchart regions
-                  for ( int i = 0 ; i < 8 ; i++ )
-                  {
-                        if ( m_pcm93chart_array[i] )
-                              m_pcm93chart_array[i]->m_render_region.Clear();
-                  }
-
                   wxRegion vpr_empty = Region;
 
                   wxRegion chart_region =  GetValidScreenCanvasRegion ( vp_positive, Region );
-                  m_pcm93chart_current->m_render_region = chart_region;
 
                   if ( g_bDebugCM93 )
                   {
@@ -5563,7 +5554,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     }
 
                                     m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
-                                    m_pcm93chart_current->m_render_region = sscale_region;
 
                                     //    Update the remaining empty region
                                     if ( !sscale_region.IsEmpty() )
@@ -5773,18 +5763,9 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
             //    Check the current chart scale to see if it covers the requested region totally
             if ( VPoint.b_quilt )
             {
-                  //    Clear all the subchart regions
-                  for ( int i = 0 ; i < 8 ; i++ )
-                  {
-                        if ( m_pcm93chart_array[i] )
-                              m_pcm93chart_array[i]->m_render_region.Clear();
-                  }
-
                   wxRegion vpr_empty = Region;
 
                   wxRegion chart_region = GetValidScreenCanvasRegion ( vp_positive, Region );
-
-                  m_pcm93chart_current->m_render_region = chart_region;
 
                   if ( g_bDebugCM93 )
                   {
@@ -5863,8 +5844,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
-
-                                    m_pcm93chart_current->m_render_region = sscale_region;
 
                                     //    Blit the smaller scale chart patch onto the target DC
                                     wxRegionIterator upd ( sscale_region );
@@ -6047,6 +6026,76 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
       return render_return;
 }
+
+
+void cm93compchart::UpdateRenderRegions ( const ViewPort& VPoint )
+{
+      wxRegion full_screen_region(0,0,VPoint.rv_rect.width, VPoint.rv_rect.height);
+
+      ViewPort vp_positive = VPoint;
+
+      SetVPPositive ( &vp_positive );
+
+      if ( m_pcm93chart_current )
+      {
+            m_pcm93chart_current->SetVPParms ( vp_positive );
+
+            //    Check the current chart scale to see if it covers the requested region totally
+            if ( VPoint.b_quilt )
+            {
+                  //    Clear all the subchart regions
+                  for ( int i = 0 ; i < 8 ; i++ )
+                  {
+                        if ( m_pcm93chart_array[i] )
+                              m_pcm93chart_array[i]->m_render_region.Clear();
+                  }
+
+                  wxRegion vpr_empty = full_screen_region;
+
+                  wxRegion chart_region = GetValidScreenCanvasRegion ( vp_positive, full_screen_region );
+                  m_pcm93chart_current->m_render_region = chart_region;       // update
+
+                  if ( !chart_region.IsEmpty() )
+                        vpr_empty.Subtract ( chart_region );
+
+
+                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
+                  {
+
+                        //    Save the current cm93 chart pointer for restoration later
+                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+
+                        int cmscale_next = m_cmscale;
+
+                        while ( !vpr_empty.Empty() && cmscale_next )
+                        {
+                              //    get the next smaller scale chart
+                              cmscale_next--;
+                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next );
+
+                              if ( m_pcm93chart_current )
+                              {
+                                    wxRegion sscale_region = GetValidScreenCanvasRegion ( vp_positive, full_screen_region );
+                                    sscale_region.Intersect ( vpr_empty );
+                                    m_pcm93chart_current->m_render_region = sscale_region;
+
+                                    //    Update the remaining empty region
+                                    if ( !sscale_region.IsEmpty() )
+                                          vpr_empty.Subtract ( sscale_region );
+                              }
+
+                        }     // while
+
+                        // restore the base chart pointer
+                        m_pcm93chart_current = m_pcm93chart_save;
+                  }
+            }
+      }
+}
+
+
+
+
 
 void cm93compchart::SetSpecialCellIndexOffset ( int cell_index, int object_id, int subcell, int xoff, int yoff )
 {
@@ -6293,6 +6342,8 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon,
             return  m_pcm93chart_current->GetObjRuleListAtLatLon ( lat, alon, select_radius, &vp_positive );
       else
       {
+            UpdateRenderRegions ( *VPoint );
+
             //    Search all of the subcharts, looking for the one whose render region contains the requested point
             wxPoint p = VPoint->GetPixFromLL ( lat, lon );
 
@@ -6300,6 +6351,7 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon,
             {
                   if ( m_pcm93chart_array[i] )
                   {
+
                         if ( !m_pcm93chart_array[i]->m_render_region.IsEmpty() )
                         {
                               if ( wxInRegion == m_pcm93chart_array[i]->m_render_region.Contains ( p ) )
