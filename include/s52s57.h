@@ -97,7 +97,8 @@ typedef enum _RadPrio{
 
 //    PixelPtr type flags
 enum{
-      ID_wxBitmap       = 1,
+      ID_EMPTY          = 0,
+      ID_wxBitmap,
       ID_RGBA,
       ID_GL_PATT_SPEC,
       ID_RGB_PATT_SPEC,
