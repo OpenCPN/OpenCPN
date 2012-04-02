@@ -5361,7 +5361,10 @@ int MyFrame::DoOptionsDialog()
       int rr = pSetDlg->ShowModal();
 
       if(b_sub)
+      {
             SurfaceToolbar();
+            cc1->SetFocus();
+      }
 
 #ifdef __WXGTK__
       Raise();                      // I dunno why...
