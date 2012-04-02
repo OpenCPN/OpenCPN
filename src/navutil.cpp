@@ -302,6 +302,8 @@ extern int              g_track_line_width;
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
 
+extern bool             g_bDebugOGL;
+
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
 //------------------------------------------------------------------------------
@@ -2913,6 +2915,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
+      Read ( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );
       Read ( _T ( "AnchorWatchDefault" ), &g_nAWDefault, 50 );
       Read ( _T ( "AnchorWatchMax" ), &g_nAWMax, 1852);
       Read ( _T ( "GPSDogTimeout" ),  &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );

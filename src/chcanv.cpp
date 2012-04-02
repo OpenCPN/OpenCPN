@@ -8944,8 +8944,16 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                case ID_WP_MENU_DELPOINT:
                 {
-                       if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
-                       else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15
+                       if (m_pFoundRoutePoint == pAnchorWatchPoint1)
+                       {
+                             pAnchorWatchPoint1 = NULL;
+                             g_AW1GUID.Clear();
+                       }
+                       else if (m_pFoundRoutePoint == pAnchorWatchPoint2)
+                       {
+                             pAnchorWatchPoint2 = NULL;
+                             g_AW2GUID.Clear();
+                       }
 
                        if(m_pFoundRoutePoint && !(m_pFoundRoutePoint->m_bIsInLayer) && (m_pFoundRoutePoint->m_IconName != _T("mob")))
                        {
@@ -12345,6 +12353,13 @@ void HalfScaleChartBits(int width, int height, unsigned char *source, unsigned c
 
 bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
 {
+      if(g_bDebugOGL)
+      {
+            wxString msg;
+            msg.Printf(_T("  -->UploadTexture %d"),ptd->tex_name );
+            wxLogMessage(msg);
+      }
+
       glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
       //    Calculate the effective base level
@@ -12366,6 +12381,13 @@ bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
       {
             if(height == 2)
                 break;                  // all done;
+
+            if(g_bDebugOGL)
+            {
+                  wxString msg;
+                  msg.Printf(_T("     -->glTexImage2D...level:%d"), level);
+                  wxLogMessage(msg);
+            }
 
             //    Upload to GPU?
             if(level >= base_level)
@@ -12755,7 +12777,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)
                               {
-                                    if(g_bDebugOGL) printf("  -->Upload tex\n");
                                     GLuint tex_name;
                                     glGenTextures(1, &tex_name);
                                     ptd->tex_name = tex_name;
@@ -12777,6 +12798,13 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
 
                               wxStopWatch sw;
 
+                              if(g_bDebugOGL)
+                              {
+                                    wxString msg;
+                                    msg.Printf(_T("  -->BindTexture %d"), ptd->tex_name );
+                                    wxLogMessage(msg);
+                              }
+
                               glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
                               GLint ltex;
@@ -12790,6 +12818,18 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
 
                               double sx = rect.width;
                               double sy = rect.height;
+
+                              if(g_bDebugOGL)
+                              {
+                                    wxString msg;
+                                    msg.Printf(_T("     glQuads TexCoord (%g,%g) (%g,%g) (%g,%g) (%g,%g)"),
+                                               x1/sx, y1/sy, (x1+w)/sx, y1/sy, (x1+w)/sx, (y1+h)/sy, x1/sx, (y1+h)/sy);
+                                    wxLogMessage(msg);
+
+                                    msg.Printf(_T("     glQuads Vertex2f (%g,%g) (%g,%g) (%g,%g) (%g,%g)"),
+                                               (x2), (y2),(w+ x2) , (y2),(w+ x2) , (h + y2),(x2) , (h + y2));
+                                    wxLogMessage(msg);
+                              }
 
                               glBegin(GL_QUADS);
 
@@ -13410,7 +13450,14 @@ void glChartCanvas::render()
 
      cc1->PaintCleanup();
 
-     if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+//     if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+     if(g_bDebugOGL)
+     {
+           wxString msg;
+           msg.Printf(_T("  -->m_ntex %d %d\n"), m_ntex, m_tex_max_res );
+           wxLogMessage(msg);
+     }
+
 }
 
 void glChartCanvas::DrawGLOverLayObjects(void)
