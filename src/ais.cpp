@@ -794,6 +794,19 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       else
             line.Printf(_("CPA:       \n"));
       result.Append(line);
+
+      if(Class == AIS_SART)
+      {
+            if(MSG_14_text.Len())
+            {
+                  line = _T("\n");
+                  line += _("Safety Broadcast Message:\n  ");
+                  line += MSG_14_text;
+                  line += _T("\n");
+                  result.Append(line);
+            }
+      }
+
 /*
       //    Count lines and characters
       wxString max_line;
@@ -1121,7 +1134,7 @@ int AIS_Bitstring::GetInt(int sp, int len)
 
 }
 
-bool AIS_Bitstring::GetStr(int sp, int len, char *dest, int max_len)
+int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 {
     char temp_str[85];
 
@@ -1132,7 +1145,7 @@ bool AIS_Bitstring::GetStr(int sp, int len, char *dest, int max_len)
     int cp, cx, c0, cs;
 
     int i = 0;
-    while(i < len)
+    while(i < bit_len)
     {
          acc=0;
          for(int j=0 ; j<6 ; j++)
@@ -1159,7 +1172,7 @@ bool AIS_Bitstring::GetStr(int sp, int len, char *dest, int max_len)
     int copy_len = wxMin((int)strlen(temp_str), max_len);
     strncpy(dest, temp_str, copy_len);
 
-    return true;
+    return copy_len;
 }
 
 
@@ -2050,7 +2063,10 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
             int mmsi_start =  ptd->MMSI / 10000000;
 
             if( mmsi_start == 97)
+            {
                   ptd->Class = AIS_SART;
+                  ptd->StaticReportTicks = now.GetTicks();  // won't get a static report, so fake it here
+            }
 
             parse_result = true;                // so far so good
             b_posn_report = true;
@@ -2328,6 +2344,33 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                 }
                 break;
           }
+     case 14:                                    // Safety Related Broadcast
+          {
+                char msg_14_text[968];
+                if(bstr->GetBitCount() > 40)
+                {
+                      int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
+                      int nd = bstr->GetStr(41,nx, msg_14_text, 968);
+                      nd = wxMax(0, nd);
+                      nd = wxMin(nd, 967);
+                      msg_14_text[nd] = 0;
+                      ptd->MSG_14_text = wxString(msg_14_text, wxConvUTF8);
+
+                      if(!g_pais_alert_dialog_active)
+                      {
+                        AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+                        pAISAlertDialog->Create ( ptd->MMSI, m_parent_frame, this, -1, _("AIS SART Alert"),
+                                  wxPoint( g_ais_alert_dialog_x, g_ais_alert_dialog_y),
+                                           wxSize( g_ais_alert_dialog_sx, g_ais_alert_dialog_sy));
+
+                        g_pais_alert_dialog_active = pAISAlertDialog;
+                        pAISAlertDialog->Show();                        // Show modeless, so it stays on the screen
+                      }
+
+                }
+                break;
+          }
+
      case 6:                                    // Addressed Binary Message
           {
                 break;
@@ -3056,6 +3099,10 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 
           //      Remove lost targets if specified
           double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
+
+          if(td->Class == AIS_SART)
+                removelost_Mins =18.0;
+
           if(g_bRemoveLost)
           {
                 if ((target_posn_age > removelost_Mins * 60) && (td->Class != AIS_GPSG_BUDDY))
@@ -3117,8 +3164,17 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
          !g_bShowMoored)
             m_bSuppressed = true;
 
+      //    Is there a SART Alert dialog open?
+      //    If so, update the alert dialog text info, especially BRG and Range
+      bool b_sart_alert = false;
+      if(g_pais_alert_dialog_active)
+      {
+            AIS_Target_Data *palert_target = Get_Target_Data_From_MMSI(g_pais_alert_dialog_active->Get_Dialog_MMSI());
+            if(palert_target->Class == AIS_SART)
+                 b_sart_alert = true;
+      }
 
-      if(g_bAIS_CPA_Alert)
+      if(g_bAIS_CPA_Alert || b_sart_alert)
       {
 
             m_bAIS_Audio_Alert_On = false;            // default, may be set on
@@ -3181,7 +3237,8 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 
                   if(palert_target)
                   {
-                        if((AIS_ALARM_SET == palert_target->n_alarm_state) && !palert_target->b_in_ack_timeout)
+                        if( ((AIS_ALARM_SET == palert_target->n_alarm_state) && !palert_target->b_in_ack_timeout) ||
+                                          (palert_target->Class == AIS_SART) )
                         {
                               g_pais_alert_dialog_active->UpdateText();
                         }

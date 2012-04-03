@@ -15070,7 +15070,7 @@ wxSize AISInfoWin::GetOptimumSize(int *pn_nl, int *pn_cmax)
 
       while(i < m_text.Len())
       {
-            while(m_text.GetChar(i) != '\n')
+            while((m_text.GetChar(i) != '\n') && (i < m_text.Len()))
                   rline.Append(m_text.GetChar(i++));
 
             if(rline.Len() > max_len)

@@ -233,6 +233,8 @@ public:
     double                    Range_NM;
     double                    Brg;
 
+    wxString                  MSG_14_text;
+
     //      Per target collision parameters
     bool                      bCPA_Valid;
     double                    TCPA;                     // Minutes
@@ -253,7 +255,7 @@ public:
     AIS_Bitstring(const char *str);
     unsigned char to_6bit(const char c);
     int GetInt(int sp, int len);
-    bool GetStr(int sp, int len, char *dest, int max_len);
+    int GetStr(int sp, int bit_len, char *dest, int max_len);
     int GetBitCount();
 
 
