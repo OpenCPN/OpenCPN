@@ -236,8 +236,12 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     m_pGRIBUseHiDef = new wxCheckBox( dialog, -1, _("Use High Definition Graphics"));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
 
+    m_pGRIBUseMS = new wxCheckBox( dialog, -1, _("Show metres/sec for Wind Speed"));
+    itemStaticBoxSizerGRIB->Add(m_pGRIBUseMS, 1, wxALIGN_LEFT|wxALL, border_size);
+
     m_pGRIBShowIcon->SetValue(m_bGRIBShowIcon);
     m_pGRIBUseHiDef->SetValue(m_bGRIBUseHiDef);
+    m_pGRIBUseMS->SetValue(m_bGRIBUseMS);
 
       wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizerGRIBPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
@@ -259,11 +263,27 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                         RemovePlugInTool(m_leftclick_tool_id);
             }
 
-            m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
 
+            if(m_bGRIBUseMS != m_pGRIBUseMS->GetValue())
+            {
+                  m_bGRIBUseMS= m_pGRIBUseMS->GetValue();
+
+                  if(m_pGribDialog)
+                  {
+                    m_pGribDialog->Destroy();
+
+                    m_pGribDialog = new GRIBUIDialog();
+                    m_pGribDialog->Create ( m_parent_window, this, -1, _("GRIB Display Control"), m_grib_dir,
+                               wxPoint( m_grib_dialog_x, m_grib_dialog_y), wxSize( m_grib_dialog_sx,
+                               m_grib_dialog_sy));
+
+                    m_pGribDialog->Show();                        // Show modeless, so it stays on the screen
+                  }
+            }
+
+            m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
             SaveConfig();
       }
-
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
@@ -389,6 +409,7 @@ bool grib_pi::LoadConfig(void)
             pConf->SetPath ( _T( "/Settings" ) );
             pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
             pConf->Read ( _T( "ShowGRIBIcon" ),  &m_bGRIBShowIcon, 1 );
+            pConf->Read ( _T( "GRIBUseMS" ),     &m_bGRIBUseMS, 0 );
 
 
             m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
@@ -419,6 +440,7 @@ bool grib_pi::SaveConfig(void)
             pConf->SetPath ( _T ( "/Settings" ) );
             pConf->Write ( _T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef );
             pConf->Write ( _T ( "ShowGRIBIcon" ), m_bGRIBShowIcon );
+            pConf->Write ( _T ( "GRIBUseMS" ),    m_bGRIBUseMS );
 
             pConf->Write ( _T ( "GRIBDialogSizeX" ),  m_grib_dialog_sx );
             pConf->Write ( _T ( "GRIBDialogSizeY" ),  m_grib_dialog_sy );
