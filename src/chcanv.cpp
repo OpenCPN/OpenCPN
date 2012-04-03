@@ -11265,12 +11265,12 @@ void ChartCanvas::DrawAllRoutesInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxReg
                       else if(pRouteDraw->CrossesIDL())
                       {
                               wxPoint2DDouble xlate(-360., 0.);
-                              test_box = pRouteDraw->RBBox;
-                              test_box.Translate( xlate );
+                              wxBoundingBox test_box1 = pRouteDraw->RBBox;
+                              test_box1.Translate( xlate );
                               if(b_run)
-                                    test_box.Expand(gLon, gLat);
+                                    test_box1.Expand(gLon, gLat);
 
-                              if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                              if ( BltBBox.Intersect ( test_box1, 0 ) != _OUT ) // Route is not wholly outside window
                               {
                                     b_drawn = true;
                                     if((pRouteDraw != active_route) && (pRouteDraw != active_track))
@@ -11284,14 +11284,26 @@ void ChartCanvas::DrawAllRoutesInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxReg
                             if((BltBBox.GetMinX() < -180.) && (BltBBox.GetMaxX() > -180.))
                             {
                                     wxPoint2DDouble xlate(-360., 0.);
-                                    test_box = pRouteDraw->RBBox;
-                                    test_box.Translate( xlate );
-                                    if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                                    wxBoundingBox test_box2 = pRouteDraw->RBBox;
+                                    test_box2.Translate( xlate );
+                                    if ( BltBBox.Intersect ( test_box2, 0 ) != _OUT ) // Route is not wholly outside window
                                     {
                                           b_drawn = true;
                                           if((pRouteDraw != active_route) && (pRouteDraw != active_track))
                                                 pRouteDraw->Draw ( dc, GetVP() );
                                     }
+                             }
+                             else if( !b_drawn && (BltBBox.GetMinX() < 180.) && (BltBBox.GetMaxX() > 180.))
+                             {
+                                   wxPoint2DDouble xlate(360., 0.);
+                                   wxBoundingBox test_box3 = pRouteDraw->RBBox;
+                                   test_box3.Translate( xlate );
+                                   if ( BltBBox.Intersect ( test_box3, 0 ) != _OUT ) // Route is not wholly outside window
+                                   {
+                                         b_drawn = true;
+                                         if((pRouteDraw != active_route) && (pRouteDraw != active_track))
+                                               pRouteDraw->Draw ( dc, GetVP() );
+                                   }
                              }
                       }
                 }
