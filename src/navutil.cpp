@@ -212,7 +212,6 @@ extern double           g_ownship_predictor_minutes;
 extern s52plib          *ps52plib;
 #endif
 
-extern wxString         g_CM93DictDir;
 extern int              g_cm93_zoom_factor;
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
@@ -4515,7 +4514,6 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "S57DataLocation" ), *g_pcsv_locn );
       Write ( _T ( "SENCFileLocation" ), g_SENCPrefix );
       Write ( _T ( "PresentationLibraryData" ), g_PresLibData );
-      Write ( _T ( "CM93DictionaryLocation" ), g_CM93DictDir );
 
 #endif
 

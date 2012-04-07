@@ -64,9 +64,7 @@
 
 extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
-extern cm93manager      *s_pcm93mgr;
 extern MyConfig         *pConfig;
-extern wxString         g_CM93DictDir;
 extern bool             g_bDebugCM93;
 extern int              g_cm93_zoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;
@@ -1902,11 +1900,8 @@ cm93chart::cm93chart()
             cm93_decode_table_created = true;
       }
 
-//    Create a global instance of the cm93 manager
-      if ( !s_pcm93mgr )
-            s_pcm93mgr = new cm93manager();
-
       m_pDict = NULL;
+      m_pManager = NULL;
 
       m_current_cell_vearray_offset = 0;
 
@@ -2537,6 +2532,9 @@ InitReturn cm93chart::Init ( const wxString& name, ChartInitFlag flags )
 
       wxFileName fn ( name );
 
+      if(!m_prefix.Len())
+            m_prefix = fn.GetPath ( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+
       m_scalechar = fn.GetExt();
 
 
@@ -2593,6 +2591,9 @@ InitReturn cm93chart::Init ( const wxString& name, ChartInitFlag flags )
             return INIT_OK;
       }
 
+      if(!m_pManager)
+            m_pManager = new cm93manager;
+
 
       if ( flags == HEADER_ONLY )
             return CreateHeaderDataFromCM93Cell();
@@ -2601,12 +2602,15 @@ InitReturn cm93chart::Init ( const wxString& name, ChartInitFlag flags )
       //    Load the cm93 dictionary if necessary
       if ( !m_pDict )
       {
-            if ( s_pcm93mgr->Loadcm93Dictionary ( name ) )
-                  m_pDict = s_pcm93mgr->m_pcm93Dict;
-            else
+            if(m_pManager)
             {
-                  wxLogMessage ( _T ( "   CM93Chart Init cannot locate CM93 dictionary." ) );
-                  return INIT_FAIL_REMOVE;
+                  if ( m_pManager->Loadcm93Dictionary ( name ) )
+                        m_pDict = m_pManager->m_pcm93Dict;
+                  else
+                  {
+                        wxLogMessage ( _T ( "   CM93Chart Init cannot locate CM93 dictionary." ) );
+                        return INIT_FAIL_REMOVE;
+                  }
             }
       }
 
@@ -4334,42 +4338,45 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell ( void )
 
 
       //    Check with the manager to see if a chart of this scale has been processed
-      bool bproc = false;
-      switch ( m_Chart_Scale )
+      //    If there is no manager, punt and open the chart
+      if(m_pManager)
       {
-            case 20000000: bproc = s_pcm93mgr->m_bfoundZ; break;
-            case  3000000: bproc = s_pcm93mgr->m_bfoundA; break;
-            case  1000000: bproc = s_pcm93mgr->m_bfoundB; break;
-            case   200000: bproc = s_pcm93mgr->m_bfoundC; break;
-            case   100000: bproc = s_pcm93mgr->m_bfoundD; break;
-            case    50000: bproc = s_pcm93mgr->m_bfoundE; break;
-            case    20000: bproc = s_pcm93mgr->m_bfoundF; break;
-            case     7500: bproc = s_pcm93mgr->m_bfoundG; break;
+            bool bproc = false;
+            switch ( m_Chart_Scale )
+            {
+                  case 20000000: bproc = m_pManager->m_bfoundZ; break;
+                  case  3000000: bproc = m_pManager->m_bfoundA; break;
+                  case  1000000: bproc = m_pManager->m_bfoundB; break;
+                  case   200000: bproc = m_pManager->m_bfoundC; break;
+                  case   100000: bproc = m_pManager->m_bfoundD; break;
+                  case    50000: bproc = m_pManager->m_bfoundE; break;
+                  case    20000: bproc = m_pManager->m_bfoundF; break;
+                  case     7500: bproc = m_pManager->m_bfoundG; break;
+            }
+
+
+            if ( bproc )
+                  return INIT_FAIL_NOERROR;
+
+
+
+      //      if(!Ingest_CM93_Cell((*m_pFullPath).mb_str(), &m_header, &m_CIB))
+      //            return INIT_FAIL_REMOVE;
+
+
+            //    Inform the manager that a chart of this scale has been processed
+            switch ( m_Chart_Scale )
+            {
+                  case 20000000: m_pManager->m_bfoundZ = true; break;
+                  case  3000000: m_pManager->m_bfoundA = true; break;
+                  case  1000000: m_pManager->m_bfoundB = true; break;
+                  case   200000: m_pManager->m_bfoundC = true; break;
+                  case   100000: m_pManager->m_bfoundD = true; break;
+                  case    50000: m_pManager->m_bfoundE = true; break;
+                  case    20000: m_pManager->m_bfoundF = true; break;
+                  case     7500: m_pManager->m_bfoundG = true; break;
+            }
       }
-
-
-      if ( bproc )
-            return INIT_FAIL_NOERROR;
-
-
-
-//      if(!Ingest_CM93_Cell((*m_pFullPath).mb_str(), &m_header, &m_CIB))
-//            return INIT_FAIL_REMOVE;
-
-
-      //    Inform the manager that a chart of this scale has been processed
-      switch ( m_Chart_Scale )
-      {
-            case 20000000: s_pcm93mgr->m_bfoundZ = true; break;
-            case  3000000: s_pcm93mgr->m_bfoundA = true; break;
-            case  1000000: s_pcm93mgr->m_bfoundB = true; break;
-            case   200000: s_pcm93mgr->m_bfoundC = true; break;
-            case   100000: s_pcm93mgr->m_bfoundD = true; break;
-            case    50000: s_pcm93mgr->m_bfoundE = true; break;
-            case    20000: s_pcm93mgr->m_bfoundF = true; break;
-            case     7500: s_pcm93mgr->m_bfoundG = true; break;
-      }
-
 
       //    Specify the whole world as chart coverage
       m_FullExtent.ELON = 179.0;
@@ -4860,7 +4867,7 @@ void SetVPPositive ( ViewPort *pvp )
 cm93compchart::cm93compchart()
 {
       m_ChartType = CHART_TYPE_CM93COMP;
-      m_pDict = NULL;
+      m_pDictComposite = NULL;
 
       //    Supply a default name for status bar field
       m_FullPath = _T ( "CM93" );
@@ -4886,6 +4893,10 @@ cm93compchart::cm93compchart()
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
       m_pOffsetDialog = NULL;
 
+      m_pcm93mgr = new cm93manager();
+
+
+
 }
 
 cm93compchart::~cm93compchart()
@@ -4893,8 +4904,9 @@ cm93compchart::~cm93compchart()
       for ( int i = 0 ; i < 8 ; i++ )
             delete m_pcm93chart_array[i];
 
-      delete m_pDict;
+      delete m_pDictComposite;
       delete m_pDummyBM;
+      delete m_pcm93mgr;
 
 }
 
@@ -4925,10 +4937,10 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
 
       wxString target = file_path.GetPath ( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
 
-      m_prefix = target;
+      m_prefixComposite = target;
 
       wxString msg ( _T ( "CM93Composite Chart Root is " ) );
-      msg.Append ( m_prefix );
+      msg.Append ( m_prefixComposite );
       wxLogMessage ( msg );
 
 
@@ -4945,8 +4957,9 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
 
 
       //    Load the cm93 dictionary if necessary
-      if ( !m_pDict )
+      if ( !m_pDictComposite )
       {
+/*
             if ( pConfig )
             {
                   pConfig->SetPath ( _T ( "/Directories" ) );
@@ -4954,29 +4967,29 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
             }
 
             if ( g_CM93DictDir.Len() )              // a hint...
-                  m_pDict = FindAndLoadDictFromDir ( g_CM93DictDir );
+                  m_pDictComposite = FindAndLoadDictFromDir ( g_CM93DictDir );
+*/
+            if ( !m_pDictComposite )                           // second try from the file
+                  m_pDictComposite = FindAndLoadDictFromDir ( path );
 
-            if ( !m_pDict )                           // second try from the file
-                  m_pDict = FindAndLoadDictFromDir ( path );
-
-            if ( !m_pDict )
+            if ( !m_pDictComposite )
             {
                   wxLogMessage ( _T ( "   CM93Composite Chart Init cannot locate CM93 dictionary." ) );
                   return INIT_FAIL_REMOVE;
             }
-
+/*
             else
             {
                   if ( pConfig )                                        // update the hint
                   {
-                        if ( !m_pDict->GetDictDir().IsSameAs ( g_CM93DictDir ) )
+                        if ( !m_pDictComposite->GetDictDir().IsSameAs ( g_CM93DictDir ) )
                         {
-                              g_CM93DictDir = m_pDict->GetDictDir();
+                              g_CM93DictDir = m_pDictComposite->GetDictDir();
                               pConfig->UpdateSettings();
                         }
                   }
             }
-
+*/
       }
 
 
@@ -5103,7 +5116,7 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
             //    Open the proper scale chart, if not already open
             while ( NULL == m_pcm93chart_array[cmscale] )
             {
-                  if ( Is_CM93Cell_Present ( m_prefix, vpt.clat, vpt.clon, cmscale ) )
+                  if ( Is_CM93Cell_Present ( m_prefixComposite, vpt.clat, vpt.clon, cmscale ) )
                   {
                         if ( g_bDebugCM93 )
                               printf ( " chart %c at VP clat/clon is present\n", ( char ) ( 'A' + cmscale -1 ) );
@@ -5118,8 +5131,9 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
                         wxString file_dummy = _T ( "CM93." );
                         file_dummy << ext;
 
-                        m_pcm93chart_array[cmscale]->SetCM93Dict ( m_pDict );
-                        m_pcm93chart_array[cmscale]->SetCM93Prefix ( m_prefix );
+                        m_pcm93chart_array[cmscale]->SetCM93Dict ( m_pDictComposite );
+                        m_pcm93chart_array[cmscale]->SetCM93Prefix ( m_prefixComposite );
+                        m_pcm93chart_array[cmscale]->SetCM93Manager ( m_pcm93mgr );
 
                         m_pcm93chart_array[cmscale]->SetColorScheme ( m_global_color_scheme );
                         m_pcm93chart_array[cmscale]->Init ( file_dummy, FULL_INIT );
@@ -5250,7 +5264,7 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
 void cm93compchart::FillScaleArray ( double lat, double lon )
 {
       for ( int cmscale = 0 ; cmscale < 8 ; cmscale++ )
-            m_bScale_Array[cmscale] = Is_CM93Cell_Present ( m_prefix, lat, lon, cmscale );
+            m_bScale_Array[cmscale] = Is_CM93Cell_Present ( m_prefixComposite, lat, lon, cmscale );
 }
 
 //    These methods simply pass the called parameters to the currently active cm93chart
@@ -6175,8 +6189,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                         wxString file_dummy = _T ( "CM93." );
                         file_dummy << ext;
 
-                        psc->SetCM93Dict ( m_pDict );
-                        psc->SetCM93Prefix ( m_prefix );
+                        psc->SetCM93Dict ( m_pDictComposite );
+                        psc->SetCM93Prefix ( m_prefixComposite );
+                        psc->SetCM93Manager ( m_pcm93mgr );
 
                         psc->SetColorScheme ( m_global_color_scheme );
                         psc->Init ( file_dummy, FULL_INIT );
@@ -6498,9 +6513,9 @@ cm93_dictionary *cm93compchart::FindAndLoadDictFromDir ( const wxString &dir )
             target.Append ( path[i] );
             if ( path[i] == wxFileName::GetPathSeparator() )
             {
-                  wxString msg = _T ( " Looking for CM93 dictionary in " );
-                  msg.Append ( target );
-                  wxLogMessage ( msg );
+//                  wxString msg = _T ( " Looking for CM93 dictionary in " );
+//                  msg.Append ( target );
+//                  wxLogMessage ( msg );
 
                   if ( pdict->LoadDictionary ( target ) )
                   {
