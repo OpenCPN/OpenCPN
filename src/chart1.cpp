@@ -116,9 +116,12 @@
 
 #define ocpnUSE_OPNCTOOLBAR
 
+WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 WX_DEFINE_OBJARRAY(ArrayOfRect);
+WX_DEFINE_OBJARRAY(MyDialogPtrArray);
 
 class ocpnFloatingCompassWindow;
 
@@ -318,7 +321,6 @@ s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr   *m_pRegistrarMan;
 
-cm93manager       *s_pcm93mgr;
 CM93OffsetDialog  *g_pCM93OffsetDialog;
 #endif
 
@@ -492,8 +494,6 @@ wxToolBarToolBase *m_pAISTool;
 DummyTextCtrl    *g_pDummyTextCtrl;
 bool             g_bEnableZoomToCursor;
 
-wxString         g_CM93DictDir;
-
 bool             g_bShowTrackIcon;
 bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
@@ -579,6 +579,8 @@ ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
+
+MyDialogPtrArray       g_MacShowDialogArray;
 
 //    OpenGL Globals
 int               g_GPU_MemSize;
@@ -872,9 +874,6 @@ IMPLEMENT_CLASS ( GrabberWin, wxPanel )
 
 GrabberWin::GrabberWin(wxWindow *parent)
 {
-      Init();
-
-
       m_pgrabber_bitmap = new wxBitmap(grabber);
 
       Create(parent, -1);
@@ -1669,6 +1668,19 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       {
             if(g_FloatingToolbarDialog)
                   g_FloatingToolbarDialog->Submerge();
+
+            if(console && console->IsShown())
+            {
+                  console->Hide();
+                  g_MacShowDialogArray.Add(console);
+            }
+
+            if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            {
+                  pRouteManagerDialog->Hide();
+                  g_MacShowDialogArray.Add(pRouteManagerDialog);
+            }
+
       }
       else
       {
@@ -1684,9 +1696,8 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       {
 //            printf("AppDeactivate\n");
             if(g_FloatingToolbarDialog)
-            {
                   g_FloatingToolbarDialog->HideTooltip();   // Hide any existing tip
-            }
+
       }
 
       event.Skip();
@@ -2633,7 +2644,7 @@ bool MyApp::OnInit()
 
         cc1->SetFocus();
 
-        console = new ConsoleCanvas(cc1);                    // the console
+        console = new ConsoleCanvas(gFrame);                    // the console
 
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow(cc1);
 
@@ -3135,7 +3146,6 @@ int MyApp::OnExit()
         }
 
 #ifdef USE_S57
-        delete s_pcm93mgr;
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
 #endif
@@ -3384,7 +3394,18 @@ void MyFrame::OnActivate(wxActivateEvent& event)
       if(event.GetActive())
       {
             SurfaceToolbar();
+
+            for(unsigned int i=0 ; i < g_MacShowDialogArray.GetCount() ; i++)
+            {
+                  wxDialog *ptr = g_MacShowDialogArray.Item(i);
+                  ptr->Show();
+//                  ptr->Raise();
+            }
+
+            g_MacShowDialogArray.Empty();
+
       }
+
 #endif
 
       event.Skip();
@@ -4503,6 +4524,10 @@ void MyFrame::OnMove(wxMoveEvent& event)
 
       UpdateGPSCompassStatusBox(true);
 
+      if(console->IsShown())
+            PositionConsole();
+
+
 //    Somehow, this method does not work right on Windows....
 //      g_nframewin_posx = event.GetPosition().x;
 //      g_nframewin_posy = event.GetPosition().y;
@@ -4533,6 +4558,9 @@ void MyFrame::ProcessCanvasResize(void)
 
             UpdateGPSCompassStatusBox(true);
       }
+
+      if(console->IsShown())
+            PositionConsole();
 
 }
 
@@ -4667,10 +4695,16 @@ void MyFrame::PositionConsole(void)
       if(NULL == cc1)
             return;
       //    Reposition console based on its size and chartcanvas size
-      int ccx, ccy, consx, consy;
-      cc1->GetSize(&ccx, &ccy);
+      int ccx, ccy, ccsx, ccsy, consx, consy;
+      cc1->GetSize(&ccsx, &ccsy);
+      cc1->GetPosition(&ccx, &ccy);
+
       console->GetSize(&consx, &consy);
-      console->SetSize(ccx - consx, 40, -1, -1);
+//      console->SetSize(ccx + ccsx - consx, ccy + 40, -1, -1);
+
+      wxPoint screen_pos = ClientToScreen(wxPoint(ccx + ccsx - consx -2, ccy + 40));
+      console->Move(screen_pos);
+
 }
 
 
@@ -6106,13 +6140,28 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       g_tick++;
 
 #ifdef __WXOSX__
-      //    Hide the toolbar if the application is minimized....
-      if(g_FloatingToolbarDialog)
+      //    To fix an ugly bug in wxWidgets for Carbon.....
+      //    Hide some Dialogs if the application is minimized....
+      //    Add them to an array which will be Shown() in MyFrame::OnActivate()
+
+      if(IsIconized())
       {
-            if(IsIconized())
+            if(g_FloatingToolbarDialog)
             {
                   if(g_FloatingToolbarDialog->IsShown())
                         g_FloatingToolbarDialog->Submerge();
+            }
+
+            if(console && console->IsShown())
+            {
+                   console->Hide();
+                   g_MacShowDialogArray.Add(console);
+            }
+
+            if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            {
+                  pRouteManagerDialog->Hide();
+                  g_MacShowDialogArray.Add(pRouteManagerDialog);
             }
       }
 #endif
@@ -6423,8 +6472,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
         if(console && console->IsShown())
         {
-            console->Raise();
-            console->Refresh(false);
+//            console->Raise();
+            console->RefreshConsoleData();
         }
 
         //  This little hack fixes a problem seen with some UniChrome OpenGL drivers

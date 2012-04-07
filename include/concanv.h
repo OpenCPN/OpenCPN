@@ -131,7 +131,7 @@ DECLARE_EVENT_TABLE()
 //----------------------------------------------------------------------------
 // ConsoleCanvas
 //----------------------------------------------------------------------------
-class ConsoleCanvas: public wxWindow
+class ConsoleCanvas: public wxDialog
 {
 public:
       ConsoleCanvas(wxWindow *frame);
@@ -143,6 +143,7 @@ public:
       void OnLegRouteButton(wxCommandEvent& event);
       void MouseEvent(wxMouseEvent& event);
       void MouseLostCaptureEvent(wxMouseCaptureLostEvent& event);
+      void RefreshConsoleData(void);
 
       wxWindow          *m_pParent;
       wxStaticBox       *pThisLegBox;
@@ -158,7 +159,6 @@ public:
 
       wxFont            *pThisLegFont;
 
-      bool              m_bRouteDataStale;
       bool              m_bNeedClear;
       bool              m_bShowRouteTotal;
 

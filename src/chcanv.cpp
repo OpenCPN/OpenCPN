@@ -1510,6 +1510,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             n_charts = pCurrentStack->nEntry;
 
             //    Walk the current ChartStack...
+            //    Building the quilt candidate array
             for(int ics=0 ; ics < n_charts ; ics++)
             {
                   int i = pCurrentStack->GetDBIndex(ics);
@@ -1537,8 +1538,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
       if(vp_in.b_FullScreenQuilt)
       {
-            //    Search the entire database, potentially adding all charts which are on the ViewPort in any way
+            //    Search the entire database, potentially adding all charts
+            //    which intersect the ViewPort in any way
             //    .AND. other requirements.
+            //    Again, skipping cm93 for now
             int n_all_charts = ChartData->GetChartTableEntries();
 
             LLBBox viewbox = vp_local.GetBBox();
@@ -1599,8 +1602,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                   if((ChartData->GetDBChartScale(i) >= m_reference_scale) || (zoom_factor > .2))
                   {
-
-
                         bool b_add = true;
 
                         //    Special case for S57 ENC
@@ -1618,9 +1619,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
                                     chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
                               }
                               else
-                                    b_add = false;                // this chart has no overlap on screen
-                                                                  // probably because it has a concave outline
-                                                                  // i.e the bboxes overlap, but the actual coverage intersect is null.
+                                    b_add = false;  // this chart has no overlap on screen
+                                                    // probably because it has a concave outline
+                                                    // i.e the bboxes overlap, but the actual coverage intersect is null.
 
                               if(chart_fractional_area < .01)
                               {
@@ -1715,7 +1716,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       //    It is possible that the reference chart is not really part of the visible quilt
       //    This can happen when the reference chart is panned
       //    off-screen in full screen quilt mode
-      //    We detect this case, and set a NOP default value for m_refchart_dbIndex.
+      //    We detect this case, and set a (-1) default value for m_refchart_dbIndex.
       //    This will cause the quilt parameters such as scale, type, and projection
       //    to retain their current settings until the reference chart is later directly set.
       //
@@ -1868,10 +1869,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         pqc->b_include = false;                         // skip this chart, scale is too large
                   }
 
-                  //    Here is a special case for CM93Composite, which covers the world....
-                  //    Adding needs to be deferred........
-// never could be seen                  if(cte.GetChartType() == CHART_TYPE_CM93COMP)
-//                                             pqc->b_include = false;                         // skip for now
 /*
                   wxRegionIterator updd ( vp_region );
                   while ( updd )
@@ -1919,33 +1916,34 @@ bool Quilt::Compose(const ViewPort &vp_in)
             //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
             //    with the quilt.  If this is the case, do not waste time loading cm93....
 
-            bool b_must = false;
+            bool b_must_add_cm93 = false;
             wxRegionIterator updd ( vp_region );
             while ( updd )
             {
                   wxRect rect = updd.GetRect();
                   if((rect.width > 2) && (rect.height > 2))
                   {
-                        b_must = true;
+                        b_must_add_cm93 = true;
                         break;
                   }
                   updd ++ ;
             }
 
-            if(b_must)
+            if(b_must_add_cm93)
             {
-
-
                   for(int ics=0 ; ics < n_charts ; ics++)
                   {
                         int i = pCurrentStack->GetDBIndex(ics);
                         if(CHART_TYPE_CM93COMP == ChartData->GetDBChartType(i))
                         {
+//                              if((g_GroupIndex > 0) && (ChartData->IsChartInGroup(i, g_GroupIndex)) )
+//                                    continue;
+
                               QuiltCandidate *qcnew = new QuiltCandidate;
                               qcnew->dbIndex = i;
                               qcnew->ChartScale = ChartData->GetDBChartScale(i);
                               m_pcandidate_array->Add(qcnew);
-                              break;
+//                              break;
                         }
                   }
             }
@@ -2003,7 +2001,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
 
-#ifdef QUILT_TYPE_1
+#ifdef QUILT_TYPE_1                 // This is not used in normal build
 
       //    Iterate thru the candidate list again, from smallest scale currently included to largest candidate
       //    tentatively adding charts to the quilt until an added chart does not change the quilt coverage...
@@ -2186,15 +2184,26 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   if(!pqp->b_Valid)                         // skip invalid entries
                         continue;
 
-                  const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqp->dbIndex);
-                  wxRegion larger_scale_chart_region = GetChartQuiltRegion(cte, vp_local);
+/// In S57ENC quilts, do not subtract larger scale regions from smaller.
+/// This does two things:
+/// 1. This allows co-incident or overlayed chart regions to both be included
+///    thus covering the case found in layered Euro(Austrian) IENC cells
+/// 2. This make quilted S57 ENC renders much faster, as the larger scale charts are not rendered
+///     until the canvas is zoomed sufficiently.
 
-/// In S57ENC quilts, do not subtract larger scale regions from smaller,
-/// This allows exactly co-incident chart regions to both be included
-/// This covers the case found in layered Euro(Austrian) IENC cells
-                  if((CHART_TYPE_S57 != ctei.GetChartType()) && (CHART_TYPE_CM93COMP != ctei.GetChartType()))
+/// Above logic does not apply to cm93 composites
+                  if((CHART_TYPE_S57 != ctei.GetChartType())/* && (CHART_TYPE_CM93COMP != ctei.GetChartType())*/)
+                  {
+
                         if(!vpr_region.Empty())
+                        {
+                              const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqp->dbIndex);
+                              wxRegion larger_scale_chart_region = GetChartQuiltRegion(cte, vp_local);
+
                               vpr_region.Subtract(larger_scale_chart_region);
+                        }
+                  }
+
 /*
                   wxRegionIterator updd ( vpr_region );
                   while ( updd )
@@ -2258,9 +2267,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   m_PatchList.DeleteNode(pcinode);
                   il = 0;           // restart the list walk
             }
-//            else if(!piqp->b_valid)
-//            {
-//            }
 
             else
                   il++;
@@ -7105,9 +7111,6 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
               ps52plib->SetPPMM ( m_canvas_scale_factor / 1000. );
 #endif
 
-        //  Set the position of the console
-        PositionConsole();
-
         //  Inform the parent Frame that I am being resized...
         gFrame->ProcessCanvasResize();
 
@@ -7153,14 +7156,6 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         ReloadVP();
 }
 
-void ChartCanvas::PositionConsole(void)
-{
-      //    Reposition console based on its size and chartcanvas size
-      int ccx, ccy, consx, consy;
-      GetSize(&ccx, &ccy);
-      console->GetSize(&consx, &consy);
-      console->SetSize(ccx - consx, 40, -1, -1);
-}
 
 void ChartCanvas::ShowChartInfoWindow(int x, int y, int dbIndex)
 {
@@ -7358,6 +7353,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         int sel_rad_pix = 8;
         SelectRadius = sel_rad_pix/ ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
+///   Removed when console became a wxDialog
+/*
 #ifdef __WXMSW__
         if ( console->IsShown() )
         {
@@ -7370,6 +7367,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 }
         }
 #endif
+*/
 
 //      Show cursor position on Status Bar, if present
 
@@ -10004,10 +10002,12 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxMemoryDC temp_dc;
 #endif
 
+        wxRegion rgn_chart ( 0,0,GetVP().pix_width, GetVP().pix_height );
+
 
 //    In case Console is shown, set up dc clipper and blt iterator regions
 
-        wxRegion rgn_chart ( 0,0,GetVP().pix_width, GetVP().pix_height );
+/*
         int conx, cony, consx, consy;
         console->GetPosition ( &conx, &cony );
         console->GetSize ( &consx, &consy );
@@ -10018,8 +10018,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 rgn_chart.Subtract ( rgn_console );               // For dc Drawing clipping
                 ru.Subtract ( rgn_console );                      // for Blit updating
         }
+*/
 
-//    Same for Thumbnail window
+//    In case Thumbnail is shown, set up dc clipper and blt iterator regions
         if ( pthumbwin )
         {
                 int thumbx, thumby, thumbsx, thumbsy;
@@ -16437,6 +16438,7 @@ int RestoreScreenBrightness(void)
       return 1;
 #endif
 
+      return 0;
 }
 
 

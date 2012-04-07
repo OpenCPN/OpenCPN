@@ -386,7 +386,7 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent)
 {
       long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER;
 #ifdef __WXOSX__
-//      style |= wxSTAY_ON_TOP;
+      style |= wxSTAY_ON_TOP;
 #endif
 
       wxDialog::Create(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, style);
