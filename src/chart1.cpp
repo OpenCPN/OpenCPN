@@ -4740,11 +4740,15 @@ void MyFrame::SetGroupIndex(int index)
       ViewPort vp = cc1->GetVP();
 
       g_GroupIndex = new_index;
+
+      //    We need a new chartstack and quilt to figure out which chart to open in the new group
       cc1->UpdateCanvasOnGroupChange();
+
+      int dbi_hint = cc1->FindClosestCanvasChartdbIndex(current_chart_native_scale);
 
       //    Refresh the canvas, selecting the "best" chart,
       //    applying the prior ViewPort exactly
-      ChartsRefresh(cc1->FindClosestCanvasChartdbIndex(current_chart_native_scale), vp);
+      ChartsRefresh(dbi_hint, vp, false);
 }
 
 void MyFrame::OnToolLeftClick(wxCommandEvent& event)
@@ -5595,7 +5599,7 @@ int MyFrame::DoOptionsDialog()
 }
 
 // Flav: This method reloads all charts for convenience
-void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp)
+void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge)
 {
       if(!ChartData)
             return;
@@ -5615,7 +5619,8 @@ void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp)
       pCurrentStack = NULL;
 
 
-      ChartData->PurgeCache();
+      if(b_purge)
+            ChartData->PurgeCache();
 
       //    Build a new ChartStack
       pCurrentStack = new ChartStack;

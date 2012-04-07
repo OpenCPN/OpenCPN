@@ -12277,7 +12277,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           wxString str;
           str.Printf(_T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
           wxLogMessage(str);
-//          printf("  m_tex_max_res: %d\n", m_tex_max_res);
 
           m_bsetup = true;
 //          g_bDebugOGL = true;
@@ -12609,7 +12608,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
             }
       }
 
-
       //    Adjust the chart source rectangle by base multiplier
       R.x      /= n_basemult;
       R.y      /= n_basemult;
@@ -12637,6 +12635,10 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                   for(int j=0 ; j < nx_tex ; j++)
                   {
                         rect.width = tex_dim;
+
+                        wxASSERT(rect.x < 15383);
+                        wxASSERT(rect.y < 15383);
+
                         int key = ((rect.x<<18) + (rect.y << 4)) + n_basemult;
 
                         if(pTextureHash->find(key) !=  pTextureHash->end())  // found?
@@ -12670,7 +12672,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                   rect.y += rect.height;
             }
       }
-
 
       glPushMatrix();
 
@@ -12769,6 +12770,9 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                               //    Is this texture tile already defined?
 
                               //    Create the hash key
+                              wxASSERT(rect.x < 15383);
+                              wxASSERT(rect.y < 15383);
+
                               key = ((rect.x<<18) + (rect.y << 4)) + n_basemult;
                               ChartTextureHashType::iterator it = pTextureHash->find(key);
 
@@ -12785,7 +12789,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                               }
                               else
                                     ptd = (*pTextureHash)[key];
-
 
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)

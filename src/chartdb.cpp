@@ -161,12 +161,19 @@ bool ChartDB::LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check)
 void ChartDB::PurgeCache()
 {
 //    Empty the cache
+      wxLogMessage(_T("Chart cache purge"));
+
       unsigned int nCache = pChartCache->GetCount();
       for(unsigned int i=0 ; i<nCache ; i++)
       {
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
             ChartBase *Ch = (ChartBase *)pce->pChart;
             delete Ch;
+
+            //    The glCanvas may be cacheing some information for this chart
+            if(g_bopengl && cc1)
+                  cc1->PurgeGLCanvasChartCache(Ch);
+
             delete pce;
       }
       pChartCache->Clear();
