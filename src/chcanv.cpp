@@ -4146,6 +4146,8 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 //                        printf("%d\n", g_nbrightness);
 
                SetScreenBrightness(g_nbrightness);
+               SetFocus();                            // just in case the external program steals it....
+
                break;
           }
 
@@ -16399,6 +16401,15 @@ int InitScreenBrightness(void)
             return 1;
       }
 #else
+      //    Look for "xcalib" application
+      wxString cmd ( _T ( "xcalib -version" ) );
+
+      wxArrayString output;
+      long r = wxExecute ( cmd, output );
+      if(0 != r)
+            wxLogMessage(_("   External application \"xcalib\" not found. Screen brightness not changed."));
+
+      g_brightness_init = true;
       return 0;
 #endif
 }
@@ -16555,7 +16566,7 @@ int SetScreenBrightness(int brightness)
             last_brightness = 100;
             g_brightness_init = true;
             temp_file_name = wxFileName::CreateTempFileName(_T(""));
-
+            InitScreenBrightness();
       }
 
 #ifdef __OPCPN_USEICC__
@@ -16604,8 +16615,6 @@ int SetScreenBrightness(int brightness)
       last_brightness = brightness;
 
 #endif
-
-
 
       return 0;
 }
