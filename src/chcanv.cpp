@@ -4143,10 +4143,12 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     }
                }
 
-//                        printf("%d\n", g_nbrightness);
-
                SetScreenBrightness(g_nbrightness);
-               SetFocus();                            // just in case the external program steals it....
+
+               gFrame->ShowBrightnessLevelTimedDialog(g_nbrightness/10, 1, 10);
+
+               SetFocus();             // just in case the external program steals it....
+               gFrame->Raise();        // And reactivate the application main
 
                break;
           }

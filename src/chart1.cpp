@@ -582,6 +582,9 @@ long              g_toolbar_orient;
 
 MyDialogPtrArray       g_MacShowDialogArray;
 
+OCPNBitmapDialog  *g_pbrightness_indicator_dialog;
+int               g_brightness_timeout;
+
 //    OpenGL Globals
 int               g_GPU_MemSize;
 bool              g_b_useStencil;
@@ -4751,6 +4754,59 @@ void MyFrame::SetGroupIndex(int index)
       ChartsRefresh(dbi_hint, vp, false);
 }
 
+void MyFrame::ShowBrightnessLevelTimedDialog(int brightness, int min, int max)
+{
+      wxFont *pfont = wxTheFontList->FindOrCreateFont(40, wxDEFAULT,wxNORMAL, wxBOLD, FALSE,
+                  wxString(_T("Eurostile Extended")));
+
+      if(!g_pbrightness_indicator_dialog)
+      {
+            //    Calculate size
+           int x, y;
+           GetTextExtent(_T("MAX"), &x, &y, NULL, NULL, pfont);
+
+            g_pbrightness_indicator_dialog = new OCPNBitmapDialog(this, wxPoint(200,200), wxSize(x+2, y+2));
+      }
+
+      int bmpsx = g_pbrightness_indicator_dialog->GetSize().x;
+      int bmpsy = g_pbrightness_indicator_dialog->GetSize().y;
+
+      wxBitmap bmp(bmpsx, bmpsx);
+      wxMemoryDC mdc(bmp);
+
+
+      mdc.SetTextForeground(GetGlobalColor(_T("GREEN4")));
+      mdc.SetBackground(wxBrush(GetGlobalColor(_T("UINFD"))));
+      mdc.SetPen(wxPen(wxColour(0,0,0)));
+      mdc.SetBrush(wxBrush(GetGlobalColor(_T("UINFD"))));
+      mdc.Clear();
+
+      mdc.DrawRectangle(0, 0, bmpsx, bmpsy);
+
+      mdc.SetFont(*pfont);
+      wxString val;
+
+      if(brightness == max)
+            val = _T("MAX");
+      else if (brightness == min)
+            val = _T("MIN");
+      else
+            val.Printf(_T("%3d"), brightness);
+
+      mdc.DrawText(val, 0, 0);
+
+
+      mdc.SelectObject(wxNullBitmap);
+
+      g_pbrightness_indicator_dialog->SetBitmap(bmp);
+      g_pbrightness_indicator_dialog->Show();
+      g_pbrightness_indicator_dialog->Refresh();
+
+      g_brightness_timeout = 3;           // seconds
+
+}
+
+
 void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 {
   if(s_ProgDialog)
@@ -6184,6 +6240,18 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             return;
 
       FrameTimer1.Stop();
+
+//    Manage the brightness dialog timeout
+      if(g_brightness_timeout > 0)
+      {
+          g_brightness_timeout--;
+
+          if(g_brightness_timeout == 0)
+          {
+              g_pbrightness_indicator_dialog->Destroy();
+              g_pbrightness_indicator_dialog = NULL;
+          }
+      }
 
 //  Update and check watchdog timer for GPS data source
       gGPS_Watchdog--;
@@ -11484,4 +11552,35 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
            else return d;
 }
 
+//  Generic on-screen bitmap dialog
+
+BEGIN_EVENT_TABLE(OCPNBitmapDialog, wxDialog)
+            EVT_PAINT(OCPNBitmapDialog::OnPaint)
+            END_EVENT_TABLE()
+
+OCPNBitmapDialog::OCPNBitmapDialog(wxWindow *frame, wxPoint position, wxSize size)
+{
+      long wstyle = wxSIMPLE_BORDER;
+      wxDialog::Create( frame, wxID_ANY, _T(""), position, size, wstyle );
+
+      Hide();
+}
+
+OCPNBitmapDialog::~OCPNBitmapDialog()
+{
+}
+
+void OCPNBitmapDialog::SetBitmap(wxBitmap bitmap)
+{
+      m_bitmap = bitmap;
+}
+
+void OCPNBitmapDialog::OnPaint(wxPaintEvent& event)
+{
+
+      wxPaintDC dc(this);
+
+      if(m_bitmap.IsOk())
+            dc.DrawBitmap(m_bitmap, 0, 0);
+}
 

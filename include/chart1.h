@@ -291,6 +291,7 @@ class MyFrame: public wxFrame
 
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
     string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
+    void ShowBrightnessLevelTimedDialog(int brightness, int min, int max);
 
     ArrayOfRect GetCanvasReserveRects();
 
@@ -794,5 +795,22 @@ class OCPNMessageDialog
             wxMessageDialog *m_pdialog;
 };
 
+
+
+//----------------------------------------------------------------------------
+// Generic Bitmap Dialog
+//----------------------------------------------------------------------------
+class OCPNBitmapDialog: public wxDialog
+{
+      public:
+            OCPNBitmapDialog(wxWindow *frame, wxPoint position, wxSize size);
+            ~OCPNBitmapDialog();
+            void  SetBitmap(wxBitmap bitmap);
+            void OnPaint(wxPaintEvent& event);
+      private:
+            wxBitmap    m_bitmap;
+
+            DECLARE_EVENT_TABLE()
+};
 
 #endif
