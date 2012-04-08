@@ -8281,8 +8281,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         // But call the popup handler with identifier appropriate to the type
                       if ( pFindRouteSeg )                  // there is at least one select item
                       {
-                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,SELTYPE_ROUTESEGMENT,SelectRadius );
-
+                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,
+                                        SELTYPE_ROUTESEGMENT,SelectRadius );
 
 
                             if(NULL == m_pSelectedRoute)  // the case where a segment only is selected
@@ -8321,12 +8321,28 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       if ( pFindTrackSeg )
                       {
-                            m_pSelectedTrack = (Route *)pFindTrackSeg->m_pData3;
-                            if ( m_pSelectedTrack   &&  m_pSelectedTrack->IsVisible())
+                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,
+                                        SELTYPE_TRACKSEGMENT,SelectRadius );
+
+                            //  Choose the first visible track containing segment in the list
+                            wxSelectableItemListNode *node = SelList.GetFirst();
+                            while ( node )
                             {
-                                  seltype |= SELTYPE_TRACKSEGMENT;
+                                  SelectItem *pFindSel = node->GetData();
+
+                                  Route *pt = (Route *)pFindSel->m_pData3;
+                                  if(pt->IsVisible())
+                                  {
+                                        m_pSelectedTrack = pt;
+                                        break;
+                                  }
+                                  node = node->GetNext();
                             }
-                      }
+
+
+                      if ( m_pSelectedTrack )
+                           seltype |= SELTYPE_TRACKSEGMENT;
+                }
 
 
                       bool bseltc = false;
