@@ -1300,8 +1300,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_dock_x = 0;
       m_dock_y = 0;
 
-//      RePosition();
-
       Hide();
 }
 
@@ -1390,7 +1388,7 @@ void ocpnFloatingToolbarDialog::Surface()
 {
       Show();
       RePosition();
-      Show();
+//      Show();
       if(m_ptoolbar)
             m_ptoolbar->ShowTooltip();
 }
@@ -5338,7 +5336,7 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
                 }
         }
 
-        SendSizeEvent();
+//        SendSizeEvent();                 // Not needed
 
       if(bnewtoolbar)
           UpdateToolbar(global_color_scheme);

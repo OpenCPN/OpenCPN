@@ -321,6 +321,7 @@ void options::Init()
     m_pSerialArray = NULL;
     pUpdateCheckBox = NULL;
     k_charts = 0;
+    k_vectorcharts = 0;
 
     itemStaticBoxSizer11 = NULL;
     pDirCtl = NULL;;
@@ -2150,7 +2151,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     //      Could be a lot smarter here
     iret |= GENERIC_CHANGED;
-    iret |= S52_CHANGED;
+    iret |= k_vectorcharts;
     iret |= k_charts;
     iret |= m_groups_changed;
 
@@ -2381,6 +2382,11 @@ void options::OnPageChange(wxNotebookEvent& event)
             k_charts = VISIT_CHARTS;
       }
 
+      //    User selected Vector Chart Page?
+      if(3 == i)                        // 3 is the index of "VectorCharts" page
+      {
+            k_vectorcharts = S52_CHANGED;
+      }
 
       else if(5 == i)                        // 5 is the index of "Language/Fonts" page
       {

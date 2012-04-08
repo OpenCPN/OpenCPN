@@ -284,6 +284,7 @@ public:
     wxRadioBox              *pDepthUnitSelect;
     wxSlider                *m_pSlider_CM93_Zoom;
     wxCheckBox              *pSEnableCM93Offset;
+    int                       k_vectorcharts;
 
 //    For "Charts" page
     wxScrolledWindow          *itemPanel9;
