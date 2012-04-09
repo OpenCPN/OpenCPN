@@ -5602,6 +5602,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   glColor4ub(colorb.Red(), colorb.Green(), colorb.Blue(), 255);
                   glLineWidth(outline_width);
 
+                  if(sectr1 > sectr2)
+                        sectr2 += 360;
+
                   glBegin(GL_LINE_STRIP);
                   for(double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a+=2*M_PI/200)
                         glVertex2d(rad*sin(a), -rad*cos(a));
