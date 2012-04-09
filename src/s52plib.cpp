@@ -5430,9 +5430,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             width = ( rad * 2 ) + 28;
             height = ( rad * 2 ) + 28;
-            wxBitmap *pbm = new wxBitmap ( width, height, -1 );
+            wxBitmap bm( width, height, -1 );
             wxMemoryDC mdc;
-            mdc.SelectObject ( *pbm );
+            mdc.SelectObject ( bm );
             mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
             mdc.Clear();
 
@@ -5554,9 +5554,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   mdc.SelectObject ( wxNullBitmap );
 
                   //          Get smallest containing bitmap
-                  sbm = new wxBitmap ( pbm->GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+                  sbm = new wxBitmap ( bm.GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
 
-                  delete pbm;
+//                  delete pbm;
 
                   //      Make the mask
                   wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor );
@@ -5576,7 +5576,7 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             prule->parm3 = bm_orgy - height/2;
             prule->parm5 = bm_width;
             prule->parm6 = bm_height;
-      }
+      }		// instantiation
 
 
       if(!m_pdc)        // opengl
