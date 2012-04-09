@@ -1386,9 +1386,11 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::Surface()
 {
-      Show();
+      Hide();
+      Move(0,0);
+
       RePosition();
-//      Show();
+      Show();
       if(m_ptoolbar)
             m_ptoolbar->ShowTooltip();
 }
