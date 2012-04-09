@@ -40,7 +40,8 @@
 #include <wx/image.h>
 
 #include <wx/glcanvas.h>
-
+#include <wx/graphics.h>
+#include <wx/dcclient.h>
 
 #include "ocpndc.h"
 

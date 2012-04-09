@@ -33,7 +33,7 @@
 #define __S57CHART_H__
 
 #include <wx/wx.h>
-#include "wx/generic/progdlgg.h"
+#include <wx/progdlg.h>
 #include "bbox.h"
 #include "chartbase.h"
 #include "wx/dir.h"

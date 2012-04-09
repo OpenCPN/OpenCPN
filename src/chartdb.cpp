@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "wx/generic/progdlgg.h"
+#include <wx/progdlg.h>
 
 #ifdef USE_S57
 #include "s57chart.h"
@@ -727,8 +727,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               else
                               {
                                     wxString msg(_T("Removing oldest chart from cache: "));
-                                    wxString fn(pDeleteCandidate->GetFullPath(), wxConvUTF8);
-                                    msg += fn;
+                                    msg += pDeleteCandidate->GetFullPath();
                                     wxLogMessage(msg);
 
                                     //  If this chart should happen to be in the thumbnail window....

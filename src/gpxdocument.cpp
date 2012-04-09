@@ -395,11 +395,11 @@ GpxxExtensionsElement::GpxxExtensionsElement(const wxString &element_name) : TiX
 GpxLinkElement::GpxLinkElement(const wxString &uri, const wxString &description, const wxString &mime_type) : TiXmlElement("link")
 {
       SetAttribute("href", uri.ToUTF8()); //TODO: some checks?
-      if(description && description.Length() > 0) {
+      if(!description.IsEmpty()) {
             GpxSimpleElement * g = new GpxSimpleElement(wxString(_T("text")), description);
             LinkEndChild(g);
       }
-      if(mime_type && mime_type.Length() > 0)
+      if(!mime_type.IsEmpty())
             LinkEndChild(new GpxSimpleElement(wxString(_T("type")), mime_type));
 }
 
@@ -422,13 +422,13 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
             SetProperty(wxString(_T("magvar")), wxString::Format(_T("%f"), magvar));
       if (geoidheight != -1)
             SetProperty(wxString(_T("geoidheight")), wxString::Format(_T("%f"), geoidheight));
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links) {
             wxListOfGpxLinksNode *link = links->GetFirst();
@@ -438,9 +438,9 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
                   link = link->GetNext();
             }
       }
-      if (sym && (sym.Length() > 0) && (sym != _T("empty")))
+      if (!sym.IsEmpty() && (sym != _T("empty")))
             SetProperty(wxString(_T("sym")), sym);
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (fixtype != fix_undefined)
             SetProperty(wxString(_T("fix")), FixTypeToStr(fixtype));
@@ -545,13 +545,13 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
               const wxString &src, ListOfGpxLinks *links, int number,
               const wxString &type, GpxExtensionsElement *extensions, ListOfGpxWpts *waypoints) : TiXmlElement("rte")
 {
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
@@ -564,7 +564,7 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
       }
       if (number != -1)
             SetProperty(wxString(_T("number")), wxString::Format(_T("%u"), number));
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (extensions)
             LinkEndChild(extensions);
@@ -620,13 +620,13 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
               const wxString &src, ListOfGpxLinks *links, int number,
               const wxString &type, GpxExtensionsElement *extensions, ListOfGpxTrksegs *segments) : TiXmlElement("trk")
 {
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
@@ -639,7 +639,7 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
       }
       if (number != -1)
             SetProperty(wxString(_T("number")), wxString::Format(_T("%u"), number));
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (extensions)
             LinkEndChild(extensions);

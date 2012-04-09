@@ -46,7 +46,7 @@
 #include <time.h>
 
 #include <wx/listimpl.cpp>
-#include <wx/generic/progdlgg.h>
+#include <wx/progdlg.h>
 
 #include "chart1.h"
 #include "navutil.h"
