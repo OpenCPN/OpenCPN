@@ -5319,6 +5319,7 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
                 {
                     m_pStatusBar = CreateStatusBar(m_StatusBarFieldCount, 0);       // No wxST_SIZEGRIP needed
                     ApplyGlobalColorSchemetoStatusBar();
+                    SendSizeEvent();                        // seem only needed for MSW...
                 }
 
         }
@@ -5330,18 +5331,14 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
                     m_pStatusBar = NULL;
                     SetStatusBar(NULL);
 
-//    Since the chart canvas will need to be resized, we need
-//    to refresh the entire frame.
+                    SendSizeEvent();                        // seem only needed for MSW...
                     Refresh(false);
                 }
         }
 
-//        SendSizeEvent();                 // Not needed
 
       if(bnewtoolbar)
           UpdateToolbar(global_color_scheme);
-
-
 
 }
 
