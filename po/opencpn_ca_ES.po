@@ -2,12 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-23 21:15-0500\n"
+"POT-Creation-Date: 2012-04-09 12:55-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -17,9 +17,11 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: SPAIN\n"
 #
+# 
 msgid "\n"
 msgstr "\n"
 #
+# 
 msgid ""
 "\n"
 "         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
@@ -28,6 +30,7 @@ msgstr ""
 "         L'OpenCPN...Un Agradable Navegador/Traçador de Cartes de Programari "
 "Obert"
 #
+# 
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -60,6 +63,7 @@ msgstr ""
 "Si hi està d'acord, cliqui \"d'Acord\" per acceptar-ho i seguir,\n"
 "per abandonar \"Cancel·lar\".\n"
 #
+# 
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
@@ -67,51 +71,73 @@ msgstr ""
 "       No hi ha Cap Carta Instal·lada.\n"
 "Triï la carpeta de les cartes a Eines->Cartes."
 #
+# 
 msgid "      \"Ship Name\" MMSI (Call Sign)"
 msgstr "      \"Nom del Vaixell\" MMSI (ID Trucada/Call Sign)"
 #
+# 
 msgid "      COG arrow predictor length (Minutes):"
 msgstr "    Llargària de la fletxa previsora COG (Minuts):"
 #
+# 
 msgid "      Max moored target speed (Kts.):"
 msgstr "    Velocitat màx. d'objectes amarrats (Nusos):"
 #
+# 
 msgid "      Target track length (Minutes):"
 msgstr "    Llargària de l'estela dels objectes (Minuts):"
 #
+msgid "    Incompatible PlugIn detected:"
+msgstr ""
+#
+# 
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "Dades RLL de l'Arxiu de la Carta corrompen en la carta"
 #
+# 
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "L'Arxiu de la Carta conté menys de 3 punts PLY:"
 #
+# 
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   Arxiu de Carta corromput a la Capçalera() de la carta "
 #
+# 
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "L'arxiu de la carta no té capçalera de BSB, no es pot Iniciar."
 #
+# 
 msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
 #
+# 
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr ""
 "   No s'ha pogut llegir els primers %d bytes de la capçalera de l'arxiu de la "
 "carta:"
 #
+# 
 msgid "   Error creating Line Index for chart "
 msgstr "Error en crear la línea del Index per la carta"
 #
+msgid ""
+"   External application \"xcalib\" not found. Screen brightness not changed."
+msgstr ""
+#
+# 
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "Línia del Index corrupta, es recrea el Index per la carta"
 #
+# 
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Resultat: d'Acord, usada solució georef interna."
 #
+# 
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   Nou intent amb una solució georef calculada internament "
 #
+# 
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
 "chart "
@@ -119,159 +145,212 @@ msgstr ""
 "   Comprovació definitiva amb georef. intern: Factor_d'Error_de_la_Carta de "
 "Georeferència sobre la carta "
 #
+# 
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr ""
 "   Comprovació Definitiva: Factor_d'Error_de_la_Carta de Georeferència sobre "
 "la carta "
 #
+# 
 msgid "  ..And TCPA is less than (Minutes):"
 msgstr "  ..i si el TCPA és menor que (Minuts):"
 #
+# 
 msgid "  Could not open AIS serial port '"
 msgstr "  No es pot obrir el port sèrie d'AIS '"
 #
+# 
 msgid "  Could not open serial port '"
 msgstr "  No podria obrir el port sèrie '"
 #
+# 
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Dies  %H Hores  %M Minuts"
 #
+# 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Hores  %M Minuts"
 #
+# 
 msgid " (Last Known):  "
 msgstr ""
 #
+# 
 msgid " - "
 msgstr " - "
 #
+msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+# 
 #, c-format
 msgid " COG: %03d Deg."
 msgstr ""
 #
+# 
 msgid " COG: 000 Deg."
 msgstr ""
 #
+# 
 #, fuzzy
 msgid " COG: Unavailable"
 msgstr "Cap Carta Disponible"
 #
+# 
 msgid " ChartFile:  "
 msgstr " Arxius de Cartes:  "
 #
+# 
 msgid " Datum:  "
 msgstr " Datum: "
 #
+# 
 msgid " Depth Units:  "
 msgstr " Unitats de Fondària: "
 #
+# 
 msgid " ID:  "
 msgstr " ID:  "
 #
+# 
 msgid " Name:  "
 msgstr " Nom:   "
 #
+# 
 msgid " Projection:  "
 msgstr " Projecció: "
 #
+# 
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Escala: 1:%d"
 #
+# 
 msgid " Ship: "
 msgstr "Vaixell:"
 #
+# 
 msgid " Soundings:  "
 msgstr " Sondejos: "
 #
+# 
 msgid " Source Edition:  "
 msgstr " Edició de l'Original:  "
 #
+# 
 msgid " Updated:  "
 msgstr " Actualitzat:  "
 #
+# 
 #, c-format
 msgid " is %5g"
 msgstr "és %5g"
 #
+# 
 msgid " to "
 msgstr " fins "
 #
+# 
 msgid "&Acknowledge"
 msgstr "Reconeixement [&A]"
 #
+# 
 msgid "&Activate"
 msgstr "&Activació"
 #
+# 
 msgid "&Cancel"
 msgstr "&Cancel·lar"
 #
+# 
 msgid "&Delete"
 msgstr " [&D] Esborrar"
 #
+# 
 msgid "&Delete All"
 msgstr "[&D] Esborrar-ho Tot"
 #
+# 
 msgid "&Export Route..."
 msgstr "&Exportar la Ruta..."
 #
+# 
 msgid "&Export Track..."
 msgstr "&Exportar Derrota..."
 #
+# 
 msgid "&Export Wpt..."
 msgstr "&Exportar Wpt..."
 #
+# 
 msgid "&Font family:"
 msgstr "&Família de LLetres"
 #
+# 
 msgid "&Go To"
 msgstr "Anar-hi [&G]"
 #
+# 
 msgid "&Kilometers"
 msgstr "&Kilómetres"
 #
+# 
 msgid "&Nautical miles"
 msgstr "Milles &Nàutiques"
 #
+# 
 msgid "&New"
 msgstr "&Nou"
 #
+# 
 msgid "&OK"
 msgstr "d'Ac&ord"
 #
+# 
 msgid "&Point size:"
 msgstr "Mida del &Punt: "
 #
+# 
 msgid "&Properties"
 msgstr "&Propietats"
 #
+# 
 msgid "&Properties..."
 msgstr "&Propietats..."
 #
+# 
 msgid "&Reverse"
 msgstr "Inve&rsió"
 #
+# 
 msgid "&Send to GPS"
 msgstr "Enviar al GP&S"
 #
+# 
 msgid "&Silence Alert"
 msgstr "Apagar &So d'Alerta"
 #
+# 
 msgid "&Start Track"
 msgstr "Inícia la Derota [&S]"
 #
+# 
 msgid "&Style:"
 msgstr "E&stil"
 #
+# 
 msgid "&Underline"
 msgstr "S&Ubratllat"
 #
+# 
 msgid "&Weight:"
 msgstr "Gruix [&W]:"
 #
+# 
 msgid "&Zoom to"
 msgstr "Centrar-s'hi [&Z]"
 #
+# 
 msgid ""
 "'\n"
 " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
@@ -279,6 +358,7 @@ msgstr ""
 "'\n"
 " Consell: Proveu la notació: 'xxx.xxx.xxx.xxx'"
 #
+# 
 msgid ""
 "'\n"
 "Suggestion: Try closing other applications."
@@ -286,47 +366,94 @@ msgstr ""
 "'\n"
 "Suggeriment: Provi de tancar els altres programes."
 #
+# 
 msgid "(Unnamed Layer)"
 msgstr "(Capa Sense Nom)"
 #
+# 
 msgid "(Unnamed Route)"
 msgstr "(Ruta Sense Nom)"
 #
+# 
 msgid "(Unnamed Track)"
 msgstr "(Derrota Sense Nom)"
 #
+# 
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sense Nom)"
 #
+# 
 #, fuzzy
 msgid "(unnamed)"
 msgstr "(Ruta Sense Nom)"
 #
+# 
 msgid "-"
 msgstr "-"
 #
+# 
 msgid "--"
 msgstr "--"
 #
+# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Avís:  Escassa precisió del georef de la carta. >>>---"
 #
+# 
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Avís:  La precisió georef de la carta pot ser escassa. >>>---"
 #
+msgid "..."
+msgstr ""
+#
+msgid "1 pixel"
+msgstr ""
+#
+# 
 msgid "1.0 NM along COG"
 msgstr "1,0 MN sobre Rumb COG"
 #
+msgid "10 pixels"
+msgstr ""
+#
+# 
 msgid "2 Color"
 msgstr "2 Colors"
 #
+msgid "2 pixels"
+msgstr ""
+#
+msgid "3 pixels"
+msgstr ""
+#
+# 
 msgid "4 Color"
 msgstr "4 Colors"
 #
+msgid "4 pixels"
+msgstr ""
+#
+msgid "5 pixels"
+msgstr ""
+#
+msgid "6 pixels"
+msgstr ""
+#
+msgid "7 pixels"
+msgstr ""
+#
+msgid "8 pixels"
+msgstr ""
+#
+msgid "9 pixels"
+msgstr ""
+#
+# 
 #, fuzzy
 msgid ":               "
 msgstr "Classe:               "
 #
+# 
 #, fuzzy
 msgid ""
 ":               Unavailable\n"
@@ -334,224 +461,333 @@ msgid ""
 "\n"
 msgstr "Rumb:                   No Disponible\n"
 #
+msgid "<--Remove"
+msgstr ""
+#
+# 
 msgid "?"
 msgstr "?"
 #
+# 
 msgid "A"
 msgstr "A"
 #
+# 
 msgid "AIS"
 msgstr "AIS"
 #
+# 
 msgid "AIS Alert"
 msgstr "Alerta d'AIS"
 #
+# 
 msgid "AIS Data Port"
 msgstr "Port de Dades d'AIS"
 #
+# 
 msgid "AIS General"
 msgstr "General d'AIS"
 #
+# 
+#, fuzzy
+msgid "AIS SART Alert"
+msgstr "Alerta d'AIS"
+#
+# 
 msgid "AIS Target Query"
 msgstr "Consulta d'objecte AIS"
 #
+# 
 msgid "AIS target list"
 msgstr "Llista d'Objectes AIS"
 #
+# 
 msgid "AISRollover"
 msgstr "Info Extra d'AIS"
 #
+# 
 msgid "AISTargetAlert"
 msgstr "Alerta d'Objecte AIS"
 #
+# 
 msgid "AISTargetQuery"
 msgstr "Consulta d'Objecte AIS"
 #
+# 
 msgid "About"
 msgstr "Quant a"
 #
+# 
 msgid "About OpenCPN"
 msgstr "Quant a l'OpenCPN"
 #
+# 
 msgid "Activate"
 msgstr "Activació"
 #
+# 
 msgid "Activate CM93 Offset"
 msgstr "Activació de la Correcció per CM93 "
 #
+# 
 msgid "Activate Next in Route"
 msgstr "Activació del Proper en la Ruta"
 #
+# 
 msgid "Activate Route"
 msgstr "Activació de la Ruta"
 #
+# 
 msgid "Activate Waypoint"
 msgstr "Activació d'un Waypoint"
 #
+# 
+#, fuzzy
+msgid "Active"
+msgstr "Activació"
+#
+# 
 msgid "Active Chart Directories"
 msgstr "Directoris Actius de Cartes"
 #
+# 
+#, fuzzy
+msgid "Active Charts"
+msgstr "Directoris Actius de Cartes"
+#
+msgid "Add"
+msgstr ""
+#
+# 
 msgid "Add Selection"
 msgstr "Afegir la Selecció"
 #
+msgid "Add new"
+msgstr ""
+#
+# 
 msgid "Add this chart to quilt."
 msgstr "Afegiu aquesta carta al visor"
 #
-msgid "Additional information"
-msgstr "Informació addicional"
+msgid "Add-->"
+msgstr ""
 #
+# 
 msgid "Aground"
 msgstr "Embarrancat"
 #
+# 
 msgid "Aid to Navigation"
 msgstr "Ajut a la Navegació"
 #
+# 
+#, fuzzy
+msgid "All Active Charts"
+msgstr "Directoris Actius de Cartes"
+#
+# 
 msgid "All files (*.*)|*.*"
 msgstr "Tots els arxius (*.*)|*.*"
 #
+# 
 msgid "Append Waypoint"
 msgstr "Afegir un Waypoint"
 #
+# 
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "N'està segur de voler esborrar <TOTES>les rutes?"
 #
+# 
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "N'està segur de voler esborrar <TOTES> les derrotes?"
 #
+# 
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "N'està segur de voler esborrar <TOTS> els waypoints?"
 #
+# 
 msgid "Are you sure you want to delete this track?"
 msgstr "N'està segur de voler esborrar aquesta derrota?"
 #
+# 
 msgid "Assumed 1 Mile Point"
 msgstr "Assumint 1 punt x Milla"
 #
+# 
 msgid "At Anchor"
 msgstr "Ancorat "
 #
+# 
 msgid "AtoN"
 msgstr "AtoN"
 #
+# 
 msgid "Authors"
 msgstr "Autors"
 #
+# 
 msgid "Auto Follow"
 msgstr "Seguiment de la Navegació"
 #
+# 
 msgid "Automatic Daily Tracks"
 msgstr "Les Derrotes Diàries, Automàtiques"
 #
+# 
 msgid "Autopilot Output Port"
 msgstr "Port de Sortida pel Pilot Automàtic"
 #
+# 
 msgid "Available Chart Directories"
 msgstr "Directoris Disponibles de Cartes "
 #
+# 
 msgid "Avg. speed (Kts)"
 msgstr "Velocitat mitja (Kts)"
 #
+# 
 msgid "B"
 msgstr "B"
 #
+# 
 msgid "Barge, tanker, chemical"
 msgstr ""
 #
+# 
 msgid "Base"
 msgstr "E.Base"
 #
+# 
 msgid "Base Station"
 msgstr "Estació Base"
 #
+# 
+#, fuzzy
+msgid "Basic"
+msgstr "E.Base"
+#
+# 
 msgid "Beacon, Isolated Danger"
 msgstr "Radiofar, Perill Aïllat"
 #
+# 
 msgid "Beacon, Port Hand"
 msgstr "Radiofar a Babord"
 #
+# 
 msgid "Beacon, Preferred Channel Port Hand"
 msgstr "Radiofar a Canal Preferit a Babor"
 #
+# 
 msgid "Beacon, Preferred Channel Starboard Hand"
 msgstr "Radiofar a Canal Preferit a Estribord"
 #
+# 
 msgid "Beacon, Safe Water"
 msgstr "Radiofar, Aigües Segures"
 #
+# 
 msgid "Beacon, Special Mark"
 msgstr "Radiofar, Marca Especial"
 #
+# 
 msgid "Beacon, Starboard Hand"
 msgstr "Radiofar a Estribord"
 #
+# 
 msgid "Bearing"
 msgstr "Demora"
 #
+# 
 #, c-format
 msgid "Bearing:                %03d Deg.\n"
 msgstr "Demora:                 %03d Graus.\n"
 #
+# 
 msgid "Bearing:                Unavailable\n"
 msgstr "Demora:                 No Disponible\n"
 #
+# 
 msgid "Black"
 msgstr ""
 #
+# 
 msgid "Blue"
 msgstr ""
 #
+# 
 msgid "Boundaries"
 msgstr "Fronteres"
 #
+# 
 msgid "Brg"
 msgstr "Demora"
 #
+msgid "Buddy"
+msgstr ""
+#
+# 
 msgid "Bulk carrier maritime"
 msgstr ""
 #
+# 
 msgid "Bunkership"
 msgstr ""
 #
+# 
 msgid "C&olour:"
 msgstr "C&olor:"
 #
+# 
 msgid "CM93"
 msgstr "CM93"
 #
+# 
 msgid "CM93 Offset Dialog"
 msgstr "Diàleg per la Correcció CM93"
 #
+# 
 msgid "CM93 Offset Display"
 msgstr "Pantalla de Correcció CM93"
 #
+# 
 msgid "CM93 Offsets"
 msgstr "Correccions en CM93"
 #
+# 
 msgid "CM93 Zoom Detail"
 msgstr "Detall en Ampliació CM93"
 #
+# 
 msgid "CPA"
 msgstr "CPA"
 #
+# 
 msgid "CPA Calculation"
 msgstr "Càlcul de la CPA"
 #
+# 
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 #
+# 
 msgid "CPA/TCPA Alerts"
 msgstr "Alertes de CPA/TCPA"
 #
+# 
 msgid "CPA:       \n"
 msgstr "CPA:       \n"
 #
+# 
 #, c-format
 msgid "CPA:                 %6.1f NM\n"
 msgstr "CPA:                %6.1f  MN\n"
 #
+# 
 msgid "Call"
 msgstr "ID Trucada"
 #
+# 
 msgid ""
 "Call to gps_open failed.\n"
 "Is gpsd running?\n"
@@ -563,951 +799,1368 @@ msgstr ""
 "\n"
 "el host gpsd és: "
 #
+# 
 msgid "CallSign:             "
 msgstr "ID Trucada(CallSign): "
 #
+# 
 msgid "Cancel"
 msgstr "Cancel·lar"
 #
+# 
 msgid "Card. E"
 msgstr "Card. E"
 #
+# 
 msgid "Card. N"
 msgstr "Card. N"
 #
+# 
 msgid "Card. S"
 msgstr "Card. S"
 #
+# 
 msgid "Card. W"
 msgstr "Card. W"
 #
+# 
 msgid "Cardinal E Beacon"
 msgstr "Radiofar Cardinal E"
 #
+# 
 msgid "Cardinal Mark E"
 msgstr "Marca Cardinal E"
 #
+# 
 msgid "Cardinal Mark N"
 msgstr "Marca Cardinal N"
 #
+# 
 msgid "Cardinal Mark S"
 msgstr "Marca Cardinal S"
 #
+# 
 msgid "Cardinal Mark W"
 msgstr "Marca Cardinal W"
 #
+# 
 msgid "Cardinal N Beacon"
 msgstr "Radiofar Cardinal N"
 #
+# 
 msgid "Cardinal S Beacon"
 msgstr "Radiofar Cardinal S"
 #
+# 
 msgid "Cardinal W Beacon"
 msgstr "Radiofar Cardinal W"
 #
+# 
 msgid "Cargo Ship"
 msgstr "Vaixell de Càrrega "
 #
+# 
 msgid "Cell"
 msgstr "Cel·la"
 #
+# 
 msgid "Cell Scale"
 msgstr "Escala de Cel·la"
 #
+# 
 msgid "Change Color Scheme"
 msgstr "Ajust de la Lluminositat / joc de colors"
 #
+# 
 msgid "Chart"
 msgstr "Carta"
 #
+# 
 msgid "Chart Depth Units"
 msgstr "Unitats de Fondaria a Carta"
 #
+# 
 msgid "Chart Display Filters"
 msgstr "Filtres pel Visor de Cartes"
 #
+# 
 msgid "Chart Display Options"
 msgstr "Opcions en la Presentació de la Carta"
 #
+# 
 msgid "Chart Display Style"
 msgstr "Estil de Mostrar la Cartografia"
 #
+# 
+#, fuzzy
+msgid "Chart Groups"
+msgstr "Cartes"
+#
+msgid "Chart Groups..."
+msgstr ""
+#
+msgid "Chart Groups...New Group"
+msgstr ""
+#
+# 
 msgid "Chart Print"
 msgstr "Impressió de la carta"
 #
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carta1::Event...GestorTC No Disponible"
 #
+# 
 msgid "Charts"
 msgstr "Cartes"
 #
+# 
 msgid "Choose Font..."
 msgstr "Tria del tipus de lletra..."
 #
+# 
+#, fuzzy
+msgid "Choose a file"
+msgstr "Valors a Consola"
+#
+# 
 msgid "Class"
 msgstr "Classe"
 #
+# 
 msgid "Class:                "
 msgstr "Classe:               "
 #
+# 
 msgid "Clear All"
 msgstr "Desmarca-ho tot"
 #
+# 
 msgid "Clear Anchor Watch"
 msgstr "Treure la Vigilància d'Ancora"
 #
+# 
 msgid "Click to cancel the font selection."
 msgstr "Cliqui per cancel·lar la selecció de lletres"
 #
+# 
 msgid "Click to confirm the font selection."
 msgstr "Cliqui per confirmar la selecció de lletres"
 #
+# 
 msgid "Close"
 msgstr "Tanca"
 #
+# 
 msgid "CoG"
 msgstr "CoG"
 #
+# 
 #, fuzzy
 msgid "Color:"
 msgstr "C&olor:"
 #
+# 
 msgid "Colors"
 msgstr "Colors"
 #
+msgid "Combo!"
+msgstr ""
+#
+# 
 msgid "Console Legend"
 msgstr "Lectures a Consola"
 #
+# 
 msgid "Console Value"
 msgstr "Valors a Consola"
 #
+# 
 msgid "Constrained by draught"
 msgstr "Constret pel corrent"
 #
+# 
 #, fuzzy
 msgid "Container vessel"
 msgstr "Vaixell Veler"
 #
+# 
 msgid "Could not resolve TCP/IP host '"
 msgstr "No s'ha pogut resoldre la TCP / IP del host"
 #
+# 
 msgid "Course UP Mode"
 msgstr "Mode Rumb Amunt"
 #
+# 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr ""
 #
+# 
 #, c-format
 msgid "Course:                 %03d Deg.\n"
 msgstr "Rumb:                   %03d º.\n"
 #
+# 
 #, fuzzy
 msgid "Course:                 000 Deg.\n"
 msgstr "Rumb:                   %03d º.\n"
 #
+# 
 msgid "Course:                 Unavailable\n"
 msgstr "Rumb:                   No Disponible\n"
 #
+# 
 msgid "Create Route"
 msgstr "Disseny de Rutes"
 #
+# 
 msgid "Cruise ship"
 msgstr ""
 #
+# 
 msgid "Current"
 msgstr "Corrents"
 #
+# 
 msgid "Cursor: "
 msgstr "Cursor: "
 #
+# 
 #, fuzzy
 msgid "Cyan"
 msgstr "Cancel·lar"
 #
+# 
 msgid "D/V"
 msgstr "D/V"
 #
+# 
+#, fuzzy
+msgid "DSC"
+msgstr "HSC"
+#
+# 
+#, fuzzy
+msgid "DSC Position Report"
+msgstr "Hora del Darrer Informe:"
+#
+# 
 msgid "Dark Blue"
 msgstr ""
 #
+# 
 msgid "Dark Cyan"
 msgstr ""
 #
+# 
 msgid "Dark Gray"
 msgstr ""
 #
+# 
 msgid "Dark Green"
 msgstr ""
 #
+# 
 msgid "Dark Magenta"
 msgstr ""
 #
+# 
 msgid "Dark Red"
 msgstr ""
 #
+# 
 msgid "Dark Yellow"
 msgstr ""
 #
+# 
 msgid "De-Clutter Text (exp.)"
 msgstr "Destriar Text (exp.)"
 #
+# 
 msgid "Deactivate"
 msgstr "Desactivació"
 #
+# 
 msgid "Deactivate Route"
 msgstr "Desactivació de la Ruta"
 #
+# 
 msgid "Decimal degrees"
 msgstr ""
 #
+# 
 msgid "Deep Depth"
 msgstr "Aigües Profundes"
 #
+# 
+#, fuzzy
+msgid "Default"
+msgstr "El color de la lletra"
+#
+# 
 #, fuzzy
 msgid "Default color"
 msgstr "El color de la lletra"
 #
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
+# 
 msgid "Degrees, Minutes, Seconds"
 msgstr ""
 #
+# 
+#, fuzzy
+msgid "Delete"
+msgstr " [&D] Esborrar"
+#
+# 
 msgid "Delete All"
 msgstr "Esborrar-ho Tot"
 #
+# 
+#, fuzzy
+msgid "Delete Group"
+msgstr "Esborrar la Ruta"
+#
+# 
 msgid "Delete Mark"
 msgstr "Esborrar la Marca"
 #
+# 
 msgid "Delete Route"
 msgstr "Esborrar la Ruta"
 #
+# 
 msgid "Delete Selection"
 msgstr "Esborrar la Selecció"
 #
+# 
 msgid "Delete Track"
 msgstr "Esborrar la Derrota"
 #
+# 
 msgid "Delete Waypoint"
 msgstr "Esborrar el Waypoint"
 #
+# 
 msgid "Depart From"
 msgstr "Indret de Partença"
 #
+# 
 msgid "Departure Time (m/d/y h:m)"
 msgstr "Hora de Sortida (m/d/a h:m)"
 #
+# 
 msgid "Depth Settings"
 msgstr "Configuració de Fondària"
 #
+# 
 msgid "Depth Settings(m)"
 msgstr "Conf. de Fondària(m)"
 #
+# 
 msgid "Description"
 msgstr "Descripció"
 #
+# 
 msgid "Destination"
 msgstr "Destinació"
 #
+# 
 msgid "Destination:          "
 msgstr "Destí:"
 #
+# 
 msgid "Disable"
 msgstr "Blocat"
 #
+# 
 msgid "Disable Full Screen Quilting"
 msgstr "Inhabilitar Pantalla Complerta "
 #
+# 
 msgid "Display"
 msgstr "Pantalla"
 #
+# 
 msgid "Display Category"
 msgstr "Nivell de Presentació"
 #
+# 
 msgid "Distance"
 msgstr "Distància"
 #
+# 
 msgid "Distance between rings"
 msgstr "Distància entre anells"
 #
+# 
+#, fuzzy
+msgid "Distress"
+msgstr "Distància"
+#
+# 
 msgid "Done."
 msgstr "Fet"
 #
+msgid "Dot"
+msgstr ""
+#
+msgid "Dot dash"
+msgstr ""
+#
+# 
 msgid "Dredge"
 msgstr "Draga"
 #
+# 
 msgid "Drop MOB Marker"
 msgstr "Deixa un Marcador d'Home a l'Aigua, MOB"
 #
+# 
 msgid "Drop Mark Here"
 msgstr "Posa una Marca Aquí"
 #
+# 
 msgid "E&xport All..."
 msgstr "E&xportar-ho Tot..."
 #
+# 
 msgid "ENC/Vector"
 msgstr "ENC/Vectorials"
 #
+# 
 #, fuzzy
 msgid "ETA"
 msgstr "ETA:"
 #
+# 
 msgid "ETA          "
 msgstr "ETA"
 #
+# 
 msgid "ETA:"
 msgstr "ETA:"
 #
+# 
 msgid "ETA:                  "
 msgstr "ETA:                  "
 #
+# 
 msgid "ETE"
 msgstr ""
 #
+# 
 msgid "ETE/ETD"
 msgstr ""
 #
+msgid "Edit"
+msgstr ""
+#
+# 
 msgid "Elapsed time : "
 msgstr "Temps passat:"
 #
+# 
 msgid "Enable"
 msgstr "Habilitat"
 #
+# 
 msgid "Enable CM93 Detail Slider"
 msgstr "Permetre la Colisa pel Detall CM93"
 #
+# 
 msgid "Enable Chart Quilting"
 msgstr "Permetre la superposició Cartografia"
 #
+# 
 msgid "Enable Manual CM93 Offsets"
 msgstr "Permetre Correccions Manuals en CM93"
 #
+# 
 msgid "Enable Smooth Panning / Zooming"
 msgstr ""
 #
+# 
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
 msgstr "Retardar l'Alerta d'Objecte en Reconeixer-la (minuts)  "
 #
+# 
 msgid "Enable Wheel-Zoom-to-Cursor"
 msgstr "Habilitar la roda del ratolí com a eina de Zoom"
 #
+# 
 msgid "Enable transparent toolbar"
 msgstr ""
 #
+# 
 msgid "End Route"
 msgstr "Final de Ruta"
 #
+# 
 msgid "Engaged in Fishing"
 msgstr "Pesquer Enfeinat"
 #
+msgid "Enter Group Name"
+msgstr ""
+#
+# 
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Error en Carregar la Ruta. Comprovi els arxius d'incidència..."
 #
+# 
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Error en carregar waypoints. Comprovi els arxius de notes..."
 #
+# 
 msgid "Estimated time : "
 msgstr "Temps Previst:"
 #
+# 
 msgid "Etc."
 msgstr "Etc."
 #
+# 
 msgid "Export GPX file"
 msgstr "Exportar arxius GPX"
 #
+# 
 msgid "Extend Route"
 msgstr "Ampliació de la Ruta"
 #
+# 
 #, fuzzy
 msgid "Extend Track"
 msgstr "Esborrar la Derrota"
 #
+# 
+#, fuzzy
+msgid "Extended"
+msgstr "Ampliació de la Ruta"
+#
+# 
 msgid "ExtendedTideIcon"
 msgstr "Icona de Marea Estesa"
 #
+# 
 msgid "F/V"
 msgstr "F/V"
 #
+# 
 msgid "Fast ship"
 msgstr ""
 #
+# 
 msgid "Fathoms"
 msgstr "Braces"
 #
+# 
 msgid "Feet"
 msgstr "Peus"
 #
+# 
 msgid "Ferry"
 msgstr ""
 #
+# 
 msgid "Filter NMEA Course and Speed data"
 msgstr "Fer la Mitja de Velocitat i del Rumb de NMEA"
 #
+# 
 msgid "Filter Period (Sec.)"
 msgstr "Període del qual es fa la mitja (Seg.)"
 #
+# 
 msgid "Fishing boat"
 msgstr ""
 #
+# 
 msgid "Fix.Struct."
 msgstr "Estruct.Fixa"
 #
+# 
 msgid "Fixed Structure"
 msgstr "Estructura Estàtica"
 #
+# 
 msgid "Font Options"
 msgstr "Opcions en vers les Fonts de Lletra"
 #
+# 
 msgid "Force Full Database Rebuild"
 msgstr "Forçar la Reconstrucció de la Base de Dades Complerta"
 #
+# 
 msgid "Freightbarge"
 msgstr ""
 #
+# 
 msgid "Freightbarge with containers"
 msgstr ""
 #
+# 
 #, c-format
 msgid "From Ownship: %03d Deg  %6.2f NMi"
 msgstr "DesDelVaixellPropi: %03d º  %6.2f  MNi"
 #
+# 
 msgid "GPS"
 msgstr "GPS"
 #
+# 
 msgid "GPS/Plotter Port"
 msgstr "Port del GPS/Ploter"
 #
+# 
 msgid "GPSD Data Server"
 msgstr "Servidor de Dades GPSD"
 #
+msgid "GPSGate Buddy"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "GPX"
+msgstr "GPS"
+#
+# 
 msgid "GUI Options"
 msgstr "Funcionalitats d'Interfícies Opcionals"
 #
+msgid "GUID"
+msgstr ""
+#
+# 
 #, fuzzy
 msgid "Gas tanker"
 msgstr "Vaixell Cisterna"
 #
+# 
 msgid "General cargo Vessel maritime"
 msgstr ""
 #
+# 
 msgid "Go To Here"
 msgstr "Anar Cap Aquí"
 #
+# 
 msgid "Go To Mark/WP"
 msgstr "Cap a la Marca/Wpt"
 #
+# 
 msgid "Go to "
 msgstr "Anant a  "
 #
+msgid "GpsGate Buddy"
+msgstr ""
+#
+# 
 msgid "Green"
 msgstr ""
 #
+msgid "Groups"
+msgstr ""
+#
+# 
 msgid "HSC"
 msgstr "HSC"
 #
+# 
 msgid "HW"
 msgstr "M.Alta"
 #
+# 
 #, fuzzy, c-format
 msgid "Heading:                %03d Deg.\n"
 msgstr "Demora:                 %03d Graus.\n"
 #
+# 
 msgid "Help"
 msgstr "Ajuda"
 #
+# 
 msgid "Here"
 msgstr "Ací"
 #
+# 
 msgid "Hide WPT names"
 msgstr "Amagar noms de WPT"
 #
+# 
 msgid "Hide from chart"
 msgstr "Amagar de la carta"
 #
+# 
 msgid "High Speed Craft"
 msgstr "Llanxa Ràpida"
 #
+# 
 msgid "Highlight Tracks"
 msgstr ""
 #
+# 
 msgid "Hydrofoil"
 msgstr ""
 #
+# 
 msgid "I&mport GPX..."
 msgstr "I&mportar GPX..."
 #
+# 
 msgid "IMO:\n"
 msgstr ""
 #
+# 
 #, fuzzy, c-format
 msgid "IMO:                 %8d\n"
 msgstr "Tipus:                "
 #
+# 
 msgid "Icon"
 msgstr "Icona"
 #
+# 
 msgid "Import GPX file"
 msgstr "Importar arxius GPX"
 #
+# 
 msgid "Inland Blue Flag        Clear\n"
 msgstr "Bandera Blava            Esborrada\n"
 #
+# 
 msgid "Inland Blue Flag        Set\n"
 msgstr "Bandera Blava         Ajust\n"
 #
+# 
 msgid "Insert Waypoint"
 msgstr "Inserir un Waypoint"
 #
+# 
 msgid "Isol. Dngr"
 msgstr "Perill Aïllat"
 #
+# 
 msgid "Isolated Danger"
 msgstr "Perill Aïllat"
 #
+# 
 msgid "Jump To"
 msgstr "Centrar-s'hi"
 #
+# 
 msgid "Jump To Position"
 msgstr "Salta a la Posició"
 #
+# 
 msgid "Jump To Position..."
 msgstr "Saltar a la Posició..."
 #
+# 
 msgid "LE/V"
 msgstr "LE/V"
 #
+# 
 msgid "LMT @ Location"
 msgstr "Local de la posició"
 #
+# 
 msgid "LW"
 msgstr "M.Baixa"
 #
+# 
 msgid "Language"
 msgstr "Idioma"
 #
+# 
 msgid "Language/Fonts"
 msgstr "Idioma/Lletres"
 #
+# 
 #, fuzzy
 msgid "Last Position Report Time:  "
 msgstr "Hora del Darrer Informe:"
 #
+# 
 msgid "Latitude"
 msgstr "Latitud"
 #
+# 
 msgid "Law Enforcement Vessel"
 msgstr "Vaixell de Força Legal"
 #
+# 
 msgid "Layer Name"
 msgstr "Nom de la capa"
 #
+# 
 msgid "Layers"
 msgstr "Capes"
 #
+# 
 msgid "Ldg Lt Front"
 msgstr "Llum Frontal"
 #
+# 
 msgid "Ldg Lt Rear"
 msgstr "Llum Posterior"
 #
+# 
 msgid "Leading Light Front"
 msgstr "Llum Frontal Principal "
 #
+# 
 msgid "Leading Light Rear"
 msgstr "Llum Trassera Principal"
 #
+# 
 msgid "Leg"
 msgstr "Trajecte"
 #
+# 
 msgid "Leg/Route"
 msgstr "Trajecte/Ruta"
 #
+# 
 msgid "Leg: from "
 msgstr "Trajecte: des de "
 #
+# 
 msgid "Length"
 msgstr "Distància"
 #
+# 
 msgid "License"
 msgstr "Llicència"
 #
+# 
 msgid "Light"
 msgstr "Far"
 #
+# 
 #, fuzzy
 msgid "Light Gray"
 msgstr "Far"
 #
+# 
 msgid "Light Vessel/Rig"
 msgstr "Plataforma/Vaixell Lleuger "
 #
+# 
 msgid "Light w/Sectors"
 msgstr "Far amb Sectors"
 #
+# 
 msgid "Limit range: NM"
 msgstr "Distància límit: MN"
 #
+# 
+#, fuzzy
+msgid "Link"
+msgstr "Enllaços"
+#
+# 
+#, fuzzy
+msgid "Link Properties"
+msgstr "Propietats de la Marca"
+#
+# 
+#, fuzzy
+msgid "Link description"
+msgstr "Descripció"
+#
+msgid "Link not complete, can't be saved."
+msgstr ""
+#
+# 
 msgid "Links"
 msgstr "Enllaços"
 #
+msgid "Links are opened for editing."
+msgstr ""
+#
+msgid "Links are opened in the default browser."
+msgstr ""
+#
+# 
 msgid "Liquified gas tanker"
 msgstr ""
 #
+# 
 msgid "List contents"
 msgstr "Llista contingut"
 #
+# 
 msgid "Local @ PC"
 msgstr "La local del PC"
 #
+msgid "Local file..."
+msgstr ""
+#
+# 
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
 msgstr ""
 "Bloca tots els waypoints a menys que estigui visible la finestra de "
 "Propietats de Waypoints"
 #
+# 
 msgid "Long Tow"
 msgstr "Remolcador Llarg"
 #
+msgid "Long dash"
+msgstr ""
+#
+# 
 msgid "Longitude"
 msgstr "Longitud"
 #
+# 
 msgid "Look Ahead Mode"
 msgstr "Mode Proa Amunt"
 #
+# 
 msgid "Lost Targets"
 msgstr "Objectes perduts"
 #
+# 
 msgid "Lt"
 msgstr "Far"
 #
+# 
 msgid "Lt sect."
 msgstr "Far sect."
 #
+# 
 msgid "LtV/Rig"
 msgstr "LtV/Semirígida"
 #
+# 
 msgid "M/T"
 msgstr "M/T"
 #
+# 
 msgid "M/V"
 msgstr "M/V"
 #
+# 
 msgid "MAN OVERBOARD"
 msgstr "HOME A L'AIGUA"
 #
+# 
 msgid "META Objects"
 msgstr "Mostra Objectes META"
 #
+# 
 msgid "MMSI"
 msgstr "MMSI"
 #
-#, fuzzy, c-format
-msgid "MMSI:                 %09d\n"
-msgstr "Tipus:                "
-#
+# 
 msgid "M_COVR ID"
 msgstr "ID M_COVR"
 #
+# 
 msgid "Magenta"
 msgstr ""
 #
+# 
 msgid "Mariner's Standard"
 msgstr "Estàndards de Marina"
 #
+# 
 msgid "Mariners Standard"
 msgstr "Estàndards de Marina"
 #
-msgid "Mark Icon"
-msgstr "Icona de la Marca"
-#
+# 
 msgid "Mark Information"
 msgstr "Informació de la Marca"
 #
-msgid "Mark Name"
-msgstr "Nom de la Marca"
-#
+# 
 msgid "Mark Properties"
 msgstr "Propietats de la Marca"
 #
+# 
 msgid "Mark targets as lost after (Minutes:):"
 msgstr "Marcar els objectes com a perduts després de (Minuts):"
 #
+# 
 msgid "Mark/WP Properties"
 msgstr "Propietats de la Marca/Wpt "
 #
+# 
 msgid "Marks"
 msgstr "Marques"
 #
+# 
 msgid "Max Detail Here"
 msgstr "Aquí el Màx. Detall"
 #
+# 
 msgid "Measure Off"
 msgstr "Tancar el Mesurador"
 #
+# 
 msgid "Measure....."
 msgstr "Mesurar....."
 #
+# 
 msgid "Med/V"
 msgstr "Med/V"
 #
+# 
 msgid "Medical Transport"
 msgstr "Transport Mèdic"
 #
+# 
 msgid "Mercator"
 msgstr "Mercator"
 #
+# 
 msgid "Meters"
 msgstr "Metres"
 #
+# 
 msgid "Metres"
 msgstr "Metres"
 #
+# 
 msgid "Mil/V"
 msgstr "Mil/V"
 #
+# 
 msgid "Military Vessel"
 msgstr "Vaixell Militar"
 #
+# 
 msgid "Moored"
 msgstr "Amarrat"
 #
+# 
 msgid "Motor freighter"
 msgstr ""
 #
+# 
 msgid "Motor freighter pushing at least one tank-ship"
 msgstr ""
 #
+# 
 msgid "Motor freighter pushing one or more freighters"
 msgstr ""
 #
+# 
 msgid "Motor freighter with one or more ships alongside"
 msgstr ""
 #
+# 
 msgid "Motor freighter with tanker"
 msgstr ""
 #
+# 
 msgid "Motor freighter, tug"
 msgstr ""
 #
+# 
 msgid "Motor tanker"
 msgstr ""
 #
+# 
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 msgstr ""
 #
+# 
 msgid "Motor tanker, liquid cargo, type C"
 msgstr ""
 #
+# 
 msgid "Motor tanker, liquid cargo, type N"
 msgstr ""
 #
+# 
 msgid "Motor tanker, tug"
 msgstr ""
 #
+# 
 msgid "Move Boat Here"
 msgstr "Moure el Vaixell Ací"
 #
+# 
 msgid "NMEA Baud Rate"
 msgstr "Velocitat del NMEA, Bauds"
 #
+# 
 msgid "NMEA Data Source"
 msgstr "Font de les Dades NMEA"
 #
+# 
 msgid "NMEA Options"
 msgstr "Opcions en el NMEA"
 #
+# 
 msgid "Name"
 msgstr "Nom"
 #
+# 
 msgid "Name:  "
 msgstr "Nom:   "
 #
+# 
 msgid "Nav Status"
 msgstr "Estat Nav."
 #
+# 
 msgid "Navigation Data"
 msgstr "Dades de Navegació"
 #
+# 
 msgid "Navigational Status:  "
 msgstr "Estat de Navegació:   "
 #
+msgid "New Group..."
+msgstr ""
+#
+# 
 msgid "Next"
 msgstr "Proper"
 #
+# 
 msgid "Next tide event"
 msgstr "Marea Següent"
 #
+# 
 msgid "No CPA Calculation if target range is greater than (NMi):"
 msgstr "Cap Càlcul de CPA quan la distància superi (MNi):"
 #
+# 
 msgid "No Chart Available"
 msgstr "Cap Carta Disponible"
 #
+# 
 msgid "No. of items"
 msgstr "Nº d'objectes"
 #
+# 
 msgid "Not Under Command"
 msgstr "Fora de Control"
 #
+# 
 msgid "Number of radar rings shown"
 msgstr "Nombre d'anells de radar a mostrar"
 #
+# 
 msgid "OK"
 msgstr "d'Acord"
 #
+# 
 msgid "Object Query"
 msgstr "Consulta sobre l'Objecte"
 #
+# 
 msgid "Object, not otherwise specified"
 msgstr ""
 #
+# 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
 #
+# 
 msgid "Ok"
 msgstr "d'Acord"
 #
+# 
 msgid "OpenCPN Alert"
 msgstr "Alaerta de l'OpenCPN"
 #
+# 
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "Ajustos de centrat de cel·la CM93 de l'OpenCPN"
 #
+# 
 msgid "OpenCPN Chart Add...."
 msgstr "Afegir Cartes OpenCPN"
 #
+# 
 # Cartes esannejades o escaner de cartes
 msgid "OpenCPN Chart Scan...."
 msgstr "Escanner de Cartes d'OpenCPN..."
 #
+# 
 msgid "OpenCPN Chart Update"
 msgstr "Actualització de Cartes d'OpenCPN"
 #
+# 
 msgid "OpenCPN Converting Track to Route...."
 msgstr "L'OpenCPN Converteix de Derrota a Ruta..."
 #
+# 
 msgid "OpenCPN Directory Scan...."
 msgstr "Directori d'Escannejats OpenCPN..."
 #
+# 
 msgid "OpenCPN Info"
 msgstr "Info de l'OpenCPN"
 #
+# 
 msgid "OpenCPN Message"
 msgstr "Missatge de l'OpenCPN"
 #
+# 
 msgid "OpenCPN Route Create"
 msgstr "Creador de Rutes OpenCPN"
 #
+# 
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "Creació de l'Arxiu S57 SENC de l'OpenCPN ..."
 #
+# 
 msgid "OpenCPN Track Delete"
 msgstr "Esborrar una Derrota d'OpenCPN"
 #
+# 
 msgid "Options"
 msgstr "Opcions"
 #
+# 
 msgid "Other"
 msgstr "Altres"
 #
+# 
 msgid "OverZoom"
 msgstr "SobreAmpliat"
 #
+# 
 msgid "Overwrite existing file?"
 msgstr "Aixafo l'arxiu del mateix nom?"
 #
+# 
 msgid "OwnShip COG arrow predictor length (Minutes):"
 msgstr "Llargària de la fletxa admonitora COG del vaixell propi (Minuts):"
 #
+# 
 msgid "OwnShip Display Options"
 msgstr "Opcions en la Presentació del Vaixell Propi "
 #
+# 
 msgid "P/V"
 msgstr "P/V"
 #
+# 
 msgid "PC/V"
 msgstr "PC/V"
 #
+# 
 msgid "Paper Chart"
 msgstr "Carta de Paper"
 #
+# 
 msgid "Pass/V"
 msgstr "Pass/V"
 #
+# 
 msgid "Passenger Ship"
 msgstr "Vaixell de Passatge"
 #
+# 
 msgid "Passenger ship without accomodation"
 msgstr ""
 #
+# 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr ""
 #
+# 
 msgid "Pilot Vessel"
 msgstr "Vaixell dels Pràctics"
 #
+# 
 msgid "Place Trackpoints at distance interval (NMi):"
 msgstr "Intèrval de navegació en inserir punts de Derrota (MNi)"
 #
+# 
 msgid "Place Trackpoints at time interval (Seconds):"
 msgstr "Intèrval de temps en inserir punts de Derrota (Segons)"
 #
+# 
 msgid "Plain"
 msgstr "Simples"
 #
+# 
 msgid "Plan Speed"
 msgstr "Velocitat de la Ruta"
 #
+# 
 msgid "Plan speed (Kts)"
 msgstr "Velocitat de Ruta(Kts)"
 #
+# 
 msgid "Play Sound on CPA/TCPA Alerts"
 msgstr "Fes Sonar les Alertes de CPA/TCPA"
 #
+# 
 msgid "Play ships bells"
 msgstr "Fer sonar la campana d'a bord"
 #
+# 
 msgid "Please restart OpenCPN to activate new language selection."
 msgstr "Cal que reiniciï l'OpenCPN per activar el nou idioma."
 #
+# 
 msgid "Pleasure craft"
 msgstr "Llanxa d'Esbarjo"
 #
+# 
 msgid "Pleasure craft, longer than 20 metres"
 msgstr ""
 #
+# 
 msgid "PlugIns"
 msgstr "Mòduls de Programari"
 #
+# 
 msgid "Points"
 msgstr "Punts"
 #
+# 
 msgid "Pollution Control Vessel"
 msgstr "Vaixell de Control de la Contaminació"
 #
+# 
 msgid "Polyconic"
 msgstr "Policònic "
 #
+# 
 msgid "Port"
 msgstr "Port"
 #
+# 
 msgid "Port Hand"
 msgstr "Mà Babor"
 #
+# 
 msgid "Port Hand Mark"
 msgstr "Marca de Mà a Babord"
 #
+# 
 msgid "Port Tender"
 msgstr "Llanxa del Port"
 #
+# 
 msgid "Position"
 msgstr "Posició"
 #
+# 
+#, fuzzy
+msgid "Position Report"
+msgstr "Hora del Darrer Informe:"
+#
+# 
 #, fuzzy, c-format
 msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
 msgstr "Temps del Informe:   %3d Seg.\n"
 #
+# 
 #, fuzzy
 msgid ""
 "Possible libgps API version mismatch.\n"
@@ -1521,410 +2174,561 @@ msgstr ""
 "                       Voldríeu fer servir aquesta versió de libgps de totes "
 "maneres?"
 #
+# 
 msgid "Pref. Chnl"
 msgstr "Canal Pref."
 #
+# 
 msgid "Preferences"
 msgstr "Preferències"
 #
+# 
 msgid "Preferred Channel Port Hand"
 msgstr "Preferència del Canal Mà Babord"
 #
+# 
 msgid "Preferred Channel Starboard Hand"
 msgstr "Preferència del Canal Mà Estribord"
 #
+# 
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr "Prepari el GPS per carregar-hi Rutes/Wayopoints i premi Enviar... "
 #
+# 
 msgid "Preserve scale when switching charts"
 msgstr "Conservar l'escala en canviar de cartes"
 #
+# 
 msgid "Prev"
 msgstr "Previ"
 #
+# 
 msgid "Preview:"
 msgstr "Vista Prèvia"
 #
+# 
 msgid "Print Chart"
 msgstr "Imprimir la Carta"
 #
+# 
 msgid "Printing"
 msgstr "Impressió"
 #
+msgid "Problem discovered"
+msgstr ""
+#
+# 
 msgid "Processing Waypoints..."
 msgstr "Processant els Waypoints..."
 #
+# 
 msgid "Progress..."
 msgstr "Progrés..."
 #
+# 
 msgid "Properties"
 msgstr "Propietats"
 #
+# 
 msgid "Pushboat, single"
 msgstr ""
 #
+# 
 msgid "Pushtow, eight barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, eight cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, five barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, five cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, four barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, four cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, nine or more barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, one cargo barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, one tank/gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, seven barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, seven cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, six barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, six cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, three barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, three cargo barges"
 msgstr ""
 #
+# 
 msgid "Pushtow, two barges at least one tanker or gas barge"
 msgstr ""
 #
+# 
 msgid "Pushtow, two cargo barges"
 msgstr ""
 #
+# 
 msgid "RACON"
 msgstr "BALISA RADAR "
 #
+# 
 msgid "Radar rings"
 msgstr "Anells de Radar"
 #
+# 
 msgid "Range"
 msgstr "Llunyania"
 #
+# 
 msgid "Range:                  Unavailable\n"
 msgstr "Distància:              No Disponible\n"
 #
+# 
 #, c-format
 msgid "Range:                %5.1f NM\n"
 msgstr "Distància:             %5.1f MN\n"
 #
+# 
 msgid "Raster"
 msgstr "Escanejades"
 #
+# 
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 msgstr "Maniobra de Gir:        %3d Graus/Min. Esquerra\n"
 #
+# 
 #, c-format
 msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 msgstr "Maniobra de Gir:        %3d Graus/Min. Dreta\n"
 #
+# 
 msgid "Rate Of Turn            0\n"
 msgstr "Maniobra de Gir:        0\n"
 #
+# 
 msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 msgstr "Maniobra de Gir:    >5º /30seg. Esquerra\n"
 #
+# 
 msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 msgstr "Maniobra de Gir:    >5º /30seg. Dreta\n"
 #
+# 
 msgid "Real"
 msgstr "Real"
 #
+# 
 msgid "Real (On Position)"
 msgstr "Real (Posicionat)"
 #
+# 
 msgid "Real(Off Position)"
 msgstr "Real (No Posicionat)"
 #
+# 
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "Reconstruint la base de dades de cartografia des de les configuracions "
 "prèvies... "
 #
+# 
 msgid "Red"
 msgstr ""
 #
+# 
 msgid "Red cross ship"
 msgstr ""
 #
+# 
 msgid "Ref. Pt"
 msgstr "Ref.Babor"
 #
+# 
 msgid "Reference Point"
 msgstr "Punt de Referència"
 #
+# 
 msgid "Reference Station :"
 msgstr "Estació de Referència:"
 #
+# 
 msgid "Remaining time : "
 msgstr "Temps restant:"
 #
+# 
 msgid "Remove Waypoint from Route"
 msgstr "Treure el Waypoint de la Ruta"
 #
+# 
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Treure els objectes perduts després de (Minuts): "
 #
+# 
 msgid "Remove this chart from quilt."
 msgstr "Treure aquesta carta del visor"
 #
+# 
 msgid "Rename Waypoints?"
 msgstr "Reanomenar Waypoints?"
 #
+#, c-format
+msgid "Report as of: %d:%d UTC "
+msgstr ""
+#
+# 
 msgid "Reserved 11"
 msgstr "Reservat 11"
 #
+# 
 msgid "Reserved 12"
 msgstr "Reservat 12"
 #
+# 
 msgid "Reserved 13"
 msgstr "Reservat 13"
 #
-msgid "Reserved 14"
-msgstr "Reservat 14"
-#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Maniobrabilitat Restringida"
 #
+# 
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Recuperació del Directori de Cartes inicial del Registre de Windows"
 #
+# 
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperació de la llengua inicial del Registre de Windows "
 #
+# 
 msgid "Reverse Route"
 msgstr "Inverció de la Ruta"
 #
+# 
 msgid "Rollover"
 msgstr "Aportació d'Informació"
 #
+# 
 msgid "Route"
 msgstr "Ruta"
 #
+# 
 msgid "Route Manager"
 msgstr "Gestor de Rutes"
 #
+# 
 msgid "Route Name"
 msgstr "Nom de la Ruta"
 #
+# 
 msgid "Route Properties"
 msgstr "Propietats de la Ruta"
 #
+# 
 msgid "Route Uploaded successfully."
 msgstr "La Ruta s'ha carregat bé."
 #
+# 
 msgid "Route from Track"
 msgstr "De Derrota a Ruta"
 #
+# 
 #, fuzzy
 msgid "Route: "
 msgstr "Ruta"
 #
+# 
 msgid "RouteLegInfoRollover"
 msgstr "Avenç Info, Trajecte/Ruta "
 #
+# 
 msgid "Routes"
 msgstr "Rutes"
 #
+# 
 msgid "S/V"
 msgstr "S/V"
 #
+# 
 msgid "SAR/V"
 msgstr "SAR/V"
 #
+# 
+#, fuzzy
+msgid "SART"
+msgstr "SAR/V"
+#
+# 
 msgid "SOG COG"
 msgstr "SOG COG"
 #
+# 
 msgid "Safe Water"
 msgstr "Aigües Segures"
 #
+msgid ""
+"Safety Broadcast Message:\n"
+"  "
+msgstr ""
+#
+# 
 msgid "Safety Depth"
 msgstr "Fons de Seguretat"
 #
+# 
 msgid "Sailing Vessel"
 msgstr "Vaixell Veler"
 #
+# 
 msgid "Scale In"
 msgstr "Eixamplar"
 #
+# 
 msgid "Scale Out"
 msgstr "Reduir"
 #
+# 
 msgid "Scan Charts and Update Database"
 msgstr ""
 #
+# 
 msgid "Search and Rescue Vessel"
 msgstr "Vaixell de Cerca i Rescat"
 #
+# 
 msgid "Select Alert Sound"
 msgstr "Elecció del So d'Alerta"
 #
+# 
 msgid "Select All"
 msgstr "Selecciona-ho tot"
 #
+# 
 msgid "Select Chart Types for Quilting"
 msgstr "Triar els Tipus de Cartes a Presentar"
 #
+# 
 msgid "Select Sound File"
 msgstr "Selecció de l'arxiu de So"
 #
+# 
 msgid "Send"
 msgstr "Enviar"
 #
+# 
 msgid "Send Route To GPS"
 msgstr "Enviar la Ruta al GPS"
 #
+# 
 msgid "Send To GPS..."
 msgstr "Enviament al GPS..."
 #
+# 
 msgid "Service vessel, police patrol, port service"
 msgstr ""
 #
+# 
 msgid "Set Anchor Watch"
 msgstr "Configurar la Vigilància d'Àncora"
 #
+# 
 #, fuzzy
 msgid "Set Chart Up Mode"
 msgstr "Actualització de Cartes d'OpenCPN"
 #
+# 
 #, fuzzy
 msgid "Set Course Up Mode"
 msgstr "Mode Rumb Amunt"
 #
+# 
 msgid "Set North Up Mode"
 msgstr ""
 #
+# 
 msgid "Settings"
 msgstr "Configuracions"
 #
+# 
 msgid "Shallow Depth"
 msgstr "Aigües Somes"
 #
+# 
 msgid "Shift to Larger Scale Chart"
 msgstr "Passar a una Escala de Carta Major"
 #
+# 
 msgid "Shift to Smaller Scale Chart"
 msgstr "Passar a una Escala de Carta Menor"
 #
+# 
+#, fuzzy
+msgid "Short dash"
+msgstr "Mostrar-hi les Marees"
+#
+# 
 msgid "Show AIS Targets"
 msgstr "Mostrar-hi els Objectes AIS"
 #
+# 
 msgid "Show ATON labels"
 msgstr "Mostra les etiquetes ATON"
 #
+# 
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Obre Diàleg d'Alerta de CPA/TCPA"
 #
+# 
 msgid "Show Chart Outlines"
 msgstr "Mostar-hi els Contorns"
 #
+# 
 #, fuzzy
 msgid "Show Current Information"
 msgstr "Informació de la Marca"
 #
+# 
 msgid "Show Currents"
 msgstr "Mostrar-hi els Corrents"
 #
+# 
 msgid "Show Depth Units"
 msgstr "Mostrar les Unitats de Fondària"
 #
+# 
 msgid "Show ENC Text"
 msgstr "Mostrar-hi el Texte"
 #
+# 
 msgid "Show GPS/NMEA data stream window"
 msgstr "Mostra la finestra de sentències NMEA/GPS"
 #
+# 
 msgid "Show Grid"
 msgstr "Mostar la Graella"
 #
+# 
 msgid "Show Important Text Only"
 msgstr "Mostra només el Text Important"
 #
+# 
 #, fuzzy
 msgid "Show Lat/Long as"
 msgstr "Mostrar a la carta"
 #
+# 
 msgid "Show Light Descriptions"
 msgstr "Mostra la Descripció dels Fars"
 #
-msgid "Show Name"
-msgstr "Mostrar el Nom"
-#
+# 
 msgid "Show Printing Icon"
 msgstr "Mostra la Icona d'Impressió"
 #
+# 
 msgid "Show Soundings"
 msgstr "Mostra les Batimetries"
 #
+# 
 msgid "Show Status Bar"
 msgstr "Mostra la Barra d'Estat"
 #
+# 
 #, fuzzy
 msgid "Show Tide Information"
 msgstr "Informació de la Marca"
 #
+# 
 msgid "Show Tides"
 msgstr "Mostrar-hi les Marees"
 #
+# 
 msgid "Show Track icon"
 msgstr "Mostrar la icona de derrota"
 #
+# 
 msgid "Show WPT names"
 msgstr "Mostrar noms de WPT"
 #
+# 
 msgid "Show layers initially"
 msgstr ""
 #
+# 
+#, fuzzy
+msgid "Show name"
+msgstr "Mostrar el Nom"
+#
+# 
 msgid "Show on chart"
 msgstr "Mostrar a la carta"
 #
+# 
 msgid "Show radar rings"
 msgstr "Mostra anells de radar"
 #
+# 
 msgid "Show skewed raster charts as North-Up"
 msgstr "Mostrar les cartes escanejades desviades amb Nord amunt"
 #
+# 
 msgid "Show target COG arrows"
 msgstr "Mostrar fletxes COG de l'objecte (Rumb)"
 #
+# 
 msgid "Show target tracks"
 msgstr "Mostrar esteles dels objectes"
 #
+# 
 msgid "Show toolbar in fullscreen mode"
 msgstr "Mostra la Barra d'Eines en mode de pantalla complerta"
 #
+# 
 msgid "Shows the font preview."
 msgstr "Mostra la vista previa de les lletres"
 #
+# 
 msgid "Simplified"
 msgstr "Simplificat"
 #
+# 
 #, fuzzy, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
@@ -1933,6 +2737,7 @@ msgstr ""
 "Mida:                 %dm x %dm x ---m\n"
 "\n"
 #
+# 
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
@@ -1941,6 +2746,7 @@ msgstr ""
 "Mida:                 %dm x %dm x %4.1fm\n"
 "\n"
 #
+# 
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x ---m\n"
@@ -1949,6 +2755,7 @@ msgstr ""
 "Mida:                 %dm x %dm x ---m\n"
 "\n"
 #
+# 
 #, c-format
 msgid ""
 "Size:                 ---m x ---m x %4.1fm\n"
@@ -1957,6 +2764,7 @@ msgstr ""
 "Mida:                 ---m x ---m x %4.1fm\n"
 "\n"
 #
+# 
 msgid ""
 "Size:                 ---m x ---m x ---m\n"
 "\n"
@@ -1964,6 +2772,7 @@ msgstr ""
 "Mida:                 ---m x ---m x ---m\n"
 "\n"
 #
+# 
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x %4.1fm\n"
@@ -1972,6 +2781,7 @@ msgstr ""
 "Mida:               %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 #
+# 
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x ---m\n"
@@ -1980,132 +2790,188 @@ msgstr ""
 "Mida:               %5.1fm x %4.1fm x ---m\n"
 "\n"
 #
+# 
 msgid "SoG"
 msgstr "SoG"
 #
+# 
+#, fuzzy
+msgid "Solid"
+msgstr "Amb símbols"
+#
+# 
 msgid "Spare"
 msgstr "Lanxa de Respecte"
 #
+# 
 msgid "Special"
 msgstr "Especial"
 #
+# 
 msgid "Special Mark"
 msgstr "Marca Especial"
 #
+# 
 msgid "Speed (Kts)"
 msgstr "Velocitat (nusos)"
 #
+# 
 msgid "Speed:                  Unavailable\n"
 msgstr "Velocitat:             No Disponible\n"
 #
+# 
 #, c-format
 msgid "Speed:                %5.2f Kts.\n"
 msgstr "Velocitat:             %5.2f Kts.\n"
 #
+# 
 msgid "Split Route"
 msgstr "Dividir la Ruta"
 #
+# 
 #, fuzzy
 msgid "Split Track"
 msgstr "Esborrar la Derrota"
 #
+# 
 msgid "Standard"
 msgstr "Estàndard"
 #
+# 
 msgid "Starboard Hand Mark"
 msgstr "Marca de Mà a Estribord"
 #
+# 
 msgid "Start"
 msgstr "Inici"
 #
+# 
 msgid "Stbd"
 msgstr "Estrb"
 #
+# 
 msgid "Stbd Hand"
 msgstr "Mà Estribor"
 #
+# 
+#, fuzzy
+msgid "Style:"
+msgstr "E&stil"
+#
+# 
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Prescindir d'Alertes d'objectes ancorats/amarrats"
 #
+# 
 msgid "Supress anchored/moored targets"
 msgstr "Prescindir d'objectes ancorats/amarrats"
 #
+# 
 msgid "Symbolized"
 msgstr "Amb símbols"
 #
+# 
 msgid "TCP/IP WiFi Data Server"
 msgstr "Servidor de Dades WiFi TCP/IP"
 #
+# 
 msgid "TCPA:  \n"
 msgstr "TCPA:  \n"
 #
+# 
 #, c-format
 msgid "TCPA:                 %02d:%02d Hr:Min\n"
 msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
+# 
 #, fuzzy
 msgid "Tankbarge"
 msgstr "Vaixell Cisterna"
 #
+# 
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 msgstr ""
 #
+# 
 msgid "Tankbarge, gas"
 msgstr ""
 #
+# 
 msgid "Tankbarge, liquid cargo, type C"
 msgstr ""
 #
+# 
 msgid "Tankbarge, liquid cargo, type N"
 msgstr ""
 #
+# 
 msgid "Tanker"
 msgstr "Vaixell Cisterna"
 #
+# 
 #, fuzzy
 msgid "Target Count"
 msgstr "Info d'Objecte"
 #
+# 
 msgid "Target info"
 msgstr "Info d'Objecte"
 #
+# 
 msgid "Temporary GOTO Route"
 msgstr "Ruta DESTÍ a Banda "
 #
+# 
 msgid "Temporary MOB Route"
 msgstr "Ruta Temporal cap a MOB "
 #
+# 
 #, fuzzy
 msgid "Temporary layer"
 msgstr "Ruta Temporal cap a MOB "
 #
+# 
 msgid "Tender"
 msgstr "Llanxa de Serveis"
 #
+# 
 msgid "Test Alert Sound"
 msgstr "Comprovació del So d'Alerta"
 #
+# 
+#, fuzzy
+msgid "Testing"
+msgstr "Configuracions"
+#
+# 
 msgid "Text Element"
 msgstr "Element de Text"
 #
+# 
 msgid "The font colour."
 msgstr "El color de la lletra"
 #
+# 
 msgid "The font family."
 msgstr "La família de lletres"
 #
+# 
 msgid "The font point size."
 msgstr "La mida del punt de lletra."
 #
+# 
 msgid "The font style."
 msgstr "L'estil de lletra"
 #
+# 
 msgid "The font weight."
 msgstr "El griux de les lletres"
 #
+# 
 msgid "There"
 msgstr "Allà"
 #
+# 
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -2113,113 +2979,154 @@ msgstr ""
 "Ha hagut un problema d'impressió.\n"
 "Potser que la seva actual impressora no estigui ben configurada?"
 #
+# 
 msgid "This Leg"
 msgstr "Trajecte Viu"
 #
+msgid "This waypoint is part of a layer and can't be edited"
+msgstr ""
+#
+# 
 msgid "Tide"
 msgstr "Marea "
 #
+# 
 msgid "TideCurrentGraphRollover"
 msgstr "Avenç Gràfic, Marees/Corrents"
 #
+# 
 msgid "Time Enroute"
 msgstr "Temps en Ruta"
 #
+# 
 msgid "Times shown as"
 msgstr "Hora indicada com"
 #
+# 
 #, fuzzy
 msgid "Timestamp"
 msgstr "Hora-de-Pas/ETE"
 #
+# 
 msgid "To"
 msgstr "Cap a"
 #
+# 
 msgid "To Waypoint"
 msgstr "Al Waypoint"
 #
+# 
 msgid "Today"
 msgstr "Avui"
 #
+# 
 msgid "Toggle Tracking"
 msgstr "Activa/Desact. la Derrota"
 #
+# 
 msgid "Tomorrow"
 msgstr "Demà"
 #
+# 
 msgid "ToolBox"
 msgstr "Eines i Configuracions"
 #
+# 
 msgid "ToolTips"
 msgstr "Aclaracions"
 #
+# 
 msgid "Total Distance"
 msgstr "Distància Total"
 #
+# 
 msgid "Tow"
 msgstr "Remolcador"
 #
+# 
 msgid "Track Name"
 msgstr "Nom de la Derrota"
 #
+# 
 msgid "Track Properties"
 msgstr "Característiques de la Derrota"
 #
+# 
 msgid "Tracks"
 msgstr "Derrotes"
 #
+# 
 msgid "Transverse Mercator"
 msgstr "Transverse Mercator"
 #
+# 
 #, c-format
 msgid "TrueScale: %8.0f             "
 msgstr "EscalaVerd.: %8.0f             "
 #
+# 
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
 msgstr "EscalaVerd.: %8.0f  Zoom %4.1fx"
 #
+# 
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "EscalaVerd.: %8.0f  Zoom %4.2fx"
 #
+# 
 msgid "Tug"
 msgstr "Remolcador"
 #
+# 
 msgid "Tug freighter, coupled"
 msgstr ""
 #
+# 
 msgid "Tug, assisting a vessel or linked combination"
 msgstr ""
 #
+# 
 msgid "Tug, freighter"
 msgstr ""
 #
+# 
 msgid "Tug, freighter/tanker, coupled"
 msgstr ""
 #
+# 
 msgid "Tug, one or more tows"
 msgstr ""
 #
+# 
 msgid "Tug, single"
 msgstr ""
 #
+# 
 #, fuzzy
 msgid "Tug, tanker"
 msgstr "Vaixell Cisterna"
 #
+# 
 msgid "Type"
 msgstr "Tipus"
 #
+# 
 msgid "Type:                 "
 msgstr "Tipus:                "
 #
+# 
 msgid "UN Ship Type:         "
 msgstr "Tipus ONU de Vaixell: "
 #
+msgid "URL"
+msgstr ""
+#
+# 
 msgid "UTC"
 msgstr "UTC"
 #
+# 
 msgid ""
 "Unable to initialize libgps.\n"
 "\n"
@@ -2229,119 +3136,156 @@ msgstr ""
 "\n"
 "el host gpsd és: "
 #
+# 
 #, fuzzy
 msgid "Unable to load libgps"
 msgstr "No es pot carregar libgps.so"
 #
+# 
 msgid "Undefined"
 msgstr "Indefinit"
 #
+# 
 msgid "Under way sailing"
 msgstr "Navegant a vela"
 #
+# 
 msgid "Underway"
 msgstr "En curs"
 #
+# 
 msgid "Unit carrier maritime"
 msgstr ""
 #
+# 
 msgid "Units"
 msgstr "Unitats"
 #
+# 
 msgid "Unk"
 msgstr "Desc."
 #
+# 
 msgid "Unknown"
 msgstr "Desconegut"
 #
+# 
 msgid "Unlist contents"
 msgstr "Continguts no llistats"
 #
+# 
 #, fuzzy
 msgid "Unspecified"
 msgstr "Indefinit"
 #
+# 
 msgid "Update Control"
 msgstr "Actualitzar el Control"
 #
+# 
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Emprar el Mode Garmin GRMN/GRMN (Host) per carregar Waypoints i Rutes."
 #
+# 
 msgid "Use OpenGL"
 msgstr ""
 #
+# 
 msgid "Use SCAMIN"
 msgstr "Emprar SCAMIN"
 #
+# 
 msgid "Use nearby waypoint?"
 msgstr "Emprar waypints propers?"
 #
+# 
 msgid "User X Offset"
 msgstr "Centrat X d'usuari"
 #
+# 
 msgid "User X Offset (Metres)"
 msgstr "Centrat X d'usuari (Metres)"
 #
+# 
 msgid "User Y Offset"
 msgstr "Centrat Y d'Usuari"
 #
+# 
 msgid "User Y Offset (Metres)"
 msgstr "Centrat Y d'usuari (Metres)"
 #
+# 
 msgid "Vector Charts"
 msgstr "Cartes Vectorials"
 #
+# 
 msgid "Vessel Diving"
 msgstr "Vaixell de Sumbarinistes"
 #
+# 
 msgid "Vessel Dredging"
 msgstr "Vaixell Dragant"
 #
+# 
 msgid "Vessel Fishing"
 msgstr "Vaixell Pescant"
 #
+# 
 msgid "Vessel Towing"
 msgstr "Vaixell Remolcant"
 #
+# 
 msgid "Vessel Towing, Long"
 msgstr "Vaixell Llarg Remolcant"
 #
+# 
 #, fuzzy
 msgid "Vessel, type unknown"
 msgstr "Vaixell Remolcant"
 #
+# 
 msgid ""
 "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 "dredge"
 msgstr ""
 #
+# 
 msgid "Virtual"
 msgstr "Virtual"
 #
+# 
 msgid "Virtual (Off Position)"
 msgstr "Virtual (No Posicionat)"
 #
+# 
 msgid "Virtual (On Position)"
 msgstr "Virtual (Posicionat)"
 #
+# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Arxius WAV (*.wav)|*.wav|Tots els arxius (*.*)|*.*"
 #
+# 
 msgid "Warn if CPA less than (NMi):"
 msgstr "Avisa si la CPA és menor que (MNi)"
 #
+# 
 msgid "Waypoint Locking"
 msgstr "Bloqueig de Waypoints"
 #
+# 
 msgid "Waypoint Name"
 msgstr "Nom del Waypoint"
 #
+# 
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Waypoint(s) carregat/s satisfactòriament"
 #
+# 
 msgid "Waypoints"
 msgstr "Waypoints"
 #
+# 
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -2353,61 +3297,83 @@ msgstr ""
 "\n"
 "Vol reanomenar els waypoints? "
 #
+# 
 msgid "Welcome to OpenCPN"
 msgstr "Benvingut/guda a l'OpenCPN"
 #
+# 
 msgid "Whether the font is underlined."
 msgstr "Si la lletra està subratllada"
 #
+# 
 msgid "White"
 msgstr ""
 #
+# 
 msgid "WiFi Options"
 msgstr "Opcions WiFi"
 #
+msgid "Width:"
+msgstr ""
+#
+# 
 msgid "Wing In Ground Effect"
 msgstr "Ala en Efecte Terra"
 #
+# 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "Correcció X (Positiu mou el mapa cal a l'Est) (Projectat en MNi) :"
 #
+# 
 msgid "XTE         L"
 msgstr "XTE     Esq."
 #
+# 
 msgid "XTE         R"
 msgstr "XTE     Drt."
 #
+# 
 msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 msgstr "Correcció Y (Positiu mou el mapa cap el Nord) (Projectat en MNi) :"
 #
+# 
 msgid "Yat"
 msgstr "Iot"
 #
+# 
 #, fuzzy
 msgid "Yellow"
 msgstr "Cel·la"
 #
+# 
 msgid "Zoom In"
 msgstr "Apropa"
 #
+# 
 msgid "Zoom Out"
 msgstr "Allunya"
 #
+# 
 msgid "[Class] Type (Status)"
 msgstr "[Classe] Tipus (Estatus)"
 #
+# 
 msgid "_A"
 msgstr "_A"
 #
+# 
 msgid "_B"
 msgstr "_B"
 #
+# 
 msgid "_plus"
 msgstr "_plus"
 #
+# 
 msgid "cm93 Detail"
 msgstr "Detall CM93"
 #
+# 
 #, c-format
 msgid ""
 "libgps API version mismatch.\n"
@@ -2420,13 +3386,21 @@ msgstr ""
 "\n"
 "Voldríeu fer servir aquesta versió de libgps de totes maneres?"
 #
+# 
 msgid "wgsox"
 msgstr "wgsox"
 #
+# 
 msgid "wgsoy"
 msgstr "wgsoy"
 #
+msgid "wxFB Website"
+msgstr ""
 #
+# 
+# 
+# 
+# 
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -2436,55 +3410,111 @@ msgstr "wgsoy"
 #~ "\n"
 #~ "\n"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar la biblioteca: "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol destruir_pi:"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
 #
+# 
+#~ msgid "Additional information"
+#~ msgstr "Informació addicional"
 #
+# 
+# 
+# 
+# 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentant carregar libgps.so"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Tanca l'OpenCPN"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Fracàs en carregar libgps.so.19"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Import new layer"
 #~ msgstr "Importar noves capes"
 #
+# 
+#, fuzzy
+#~ msgid "MMSI:                 %09d\n"
+#~ msgstr "Tipus:                "
 #
+# 
+#~ msgid "Mark Icon"
+#~ msgstr "Icona de la Marca"
+#
+# 
+#~ msgid "Mark Name"
+#~ msgstr "Nom de la Marca"
+#
+# 
+# 
+# 
+# 
 #~ msgid "New Mark"
 #~ msgstr "Marca Nova"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
@@ -2492,40 +3522,67 @@ msgstr "wgsoy"
 #~ "Mòdul de Clase Bàsica de l'OpenCPN\n"
 #~ "El Gestor de Mòduls ha creat aquesta classe bàsica"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "El Gestor de Mòduls de Programari cerca mòduls en el lloc "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de Mòduls: S'inicialitza el Mòdul:"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Gestor de Mòduls: Es descarrega Mòdul amb una versió d'API invàlida %d.%d: "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
 #~ "\n"
@@ -2533,10 +3590,20 @@ msgstr "wgsoy"
 #~ "Període d'Informe Recent:   %3d Seg.\n"
 #~ "\n"
 #
+# 
+#~ msgid "Reserved 14"
+#~ msgstr "Reservat 14"
 #
+# 
+# 
+# 
+# 
 #~ msgid "Toggle Listing"
 #~ msgstr "Commu&tar la Llista"
 #
-#
+# 
+# 
+# 
+# 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
