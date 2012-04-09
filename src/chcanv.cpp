@@ -5769,6 +5769,15 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                 //      Draw the ownship icon
                         wxPoint rot_ctr(pos_image->GetWidth()/2, pos_image->GetHeight()/2);
                         wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
+
+
+                        // Simple sharpening algorithm.....
+                        // TODO  Needs more work.
+                        for(int ip=0 ; ip < rot_image.GetWidth(); ip++)
+                              for(int jp=0 ; jp < rot_image.GetHeight() ; jp++)
+                                    if(rot_image.GetAlpha(ip,jp) > 64)
+                                          rot_image.SetAlpha(ip, jp, 255);
+
                         wxBitmap os_bm(rot_image);
 
                         int w =  os_bm.GetWidth();
