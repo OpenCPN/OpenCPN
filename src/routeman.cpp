@@ -50,7 +50,24 @@
 #include "georef.h"
 #include "routeprop.h"
 #include "routemanagerdialog.h"
+#include "pluginmanager.h"
 
+/*
+//    Include wxJSON headers
+//    We undefine MIN/MAX so avoid warning of redefinition coming from
+//    json_defs.h
+//    Definitions checked manually, and are identical
+#ifdef MIN
+#undef MIN
+#endif
+
+#ifdef MAX
+#undef MAX
+#endif
+
+#include "json_defs.h"
+#include "jsonwriter.h"
+*/
 
 //    Include a (large) set of XPM images for mark/waypoint icons
 #include "bitmaps/empty.xpm"
@@ -129,6 +146,8 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+
+extern PlugInManager    *g_pi_manager;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -366,14 +385,17 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
         return true;
 }
 
-bool Routeman::ActivateNextPoint(Route *pr)
+bool Routeman::ActivateNextPoint(Route *pr, bool skipped)
 {
+      wxJSONValue v;
       if(pActivePoint)
       {
             pActivePoint->m_bBlink = false;
             pActivePoint->m_bIsActive = false;
-      }
 
+            v[_T("Name")] = pActivePoint->GetName();
+            v[_T("isSkipped")] = skipped;
+      }
       int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
       if((n_index_active + 1) <= pActiveRoute->GetnPoints())
       {
@@ -382,6 +404,7 @@ bool Routeman::ActivateNextPoint(Route *pr)
           pActiveRoute->m_pRouteActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
 
           pActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
+          v[_T("Next_WP")] = pActivePoint->GetName();
 
           pActivePoint->m_bBlink = true;
           pActivePoint->m_bIsActive = true;
@@ -401,7 +424,10 @@ bool Routeman::ActivateNextPoint(Route *pr)
                   }
             }
 
-          return true;
+           wxString msg_id(_T("OCPN_WPT_EVENT"));
+           g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
+           return true;
       }
 
       return false;
@@ -514,7 +540,7 @@ bool Routeman::UpdateProgress()
 
                   bDidArrival = true;
 
-                  if(!ActivateNextPoint(pActiveRoute))            // at the end?
+                  if(!ActivateNextPoint(pActiveRoute, false))            // at the end?
                   {
                           Route *pthis_route = pActiveRoute;
                           DeactivateRoute();

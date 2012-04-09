@@ -793,6 +793,14 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
       }
 }
 
+void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v)
+{
+   wxJSONWriter w;
+   wxString out;
+   w.Write(v, out);
+   SendMessageToAllPlugins(message_id,out);
+}
+
 void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
 {
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)

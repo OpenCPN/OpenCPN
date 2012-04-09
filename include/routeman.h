@@ -125,7 +125,7 @@ public:
 
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
-      bool ActivateNextPoint(Route *pr);
+      bool ActivateNextPoint(Route *pr, bool skipped);
       RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, double cog, double sog);
 
       bool UpdateProgress();

@@ -150,7 +150,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
-  ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
@@ -293,6 +293,9 @@ SET(HDRS
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 		include/gpxdocument.h
+                include/wx/json_defs.h
+                include/wx/jsonwriter.h
+
 )
 
 SET(SRCS 
@@ -320,6 +323,9 @@ SET(SRCS
 		src/ais.cpp
                 src/pluginmanager.cpp
 		src/gpxdocument.cpp
+            	src/wxJSON/jsonwriter.cpp
+            	src/wxJSON/jsonval.cpp
+
     )
 
 IF(wx_Version MATCHES "2.9")

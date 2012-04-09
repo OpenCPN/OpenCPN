@@ -9435,7 +9435,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                 case ID_RT_MENU_ACTNXTPOINT:
                         if ( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute )
                         {
-                                g_pRouteMan->ActivateNextPoint ( m_pSelectedRoute );
+                                g_pRouteMan->ActivateNextPoint ( m_pSelectedRoute, true );
                                 m_pSelectedRoute->m_bRtIsSelected = false;
                         }
 
