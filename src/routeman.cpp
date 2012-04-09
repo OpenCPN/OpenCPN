@@ -301,6 +301,13 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint)
             pActivePoint = node->GetData();               // start at beginning
         }
 
+
+        wxJSONValue v;
+        v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
+        v[_T("GUID")] = pRouteToActivate->m_GUID;
+        wxString msg_id(_T("OCPN_RTE_ACTIVATED"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
         ActivateRoutePoint(pRouteToActivate, pActivePoint);
 
         m_bArrival = false;
@@ -310,14 +317,21 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint)
         m_bDataValid = false;
 
         console->ShowWithFreshFonts();
+
+
         return true;
 }
 
 bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
 {
+        wxJSONValue v;
         pActiveRoute = pA;
+
         pActivePoint = pRP_target;
         pActiveRoute->m_pRouteActivePoint = pRP_target;
+
+        v[_T("GUID")] = pRP_target->m_GUID;
+        v[_T("WP_activated")] = pRP_target->GetName();
 
         wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
         while(node)
@@ -382,6 +396,9 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
                   }
             }
 
+        wxString msg_id(_T("OCPN_WPT_ACTIVATED"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
         return true;
 }
 
@@ -393,8 +410,9 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped)
             pActivePoint->m_bBlink = false;
             pActivePoint->m_bIsActive = false;
 
-            v[_T("Name")] = pActivePoint->GetName();
             v[_T("isSkipped")] = skipped;
+            v[_T("GUID")] = pActivePoint->m_GUID;
+            v[_T("WP_arrived")] = pActivePoint->GetName();
       }
       int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
       if((n_index_active + 1) <= pActiveRoute->GetnPoints())
@@ -405,6 +423,7 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped)
 
           pActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
           v[_T("Next_WP")] = pActivePoint->GetName();
+          v[_T("GUID")] = pActivePoint->m_GUID;
 
           pActivePoint->m_bBlink = true;
           pActivePoint->m_bIsActive = true;
@@ -424,7 +443,7 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped)
                   }
             }
 
-           wxString msg_id(_T("OCPN_WPT_EVENT"));
+           wxString msg_id(_T("OCPN_WPT_ARRIVED"));
            g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
 
            return true;
@@ -543,7 +562,7 @@ bool Routeman::UpdateProgress()
                   if(!ActivateNextPoint(pActiveRoute, false))            // at the end?
                   {
                           Route *pthis_route = pActiveRoute;
-                          DeactivateRoute();
+                          DeactivateRoute(true);                  // this is an arrival
                           if(pthis_route->m_bDeleteOnArrival)
                           {
                                 pConfig->DeleteConfigRoute ( pthis_route );
@@ -572,7 +591,7 @@ bool Routeman::UpdateProgress()
         return bret_val;
 }
 
-bool Routeman::DeactivateRoute()
+bool Routeman::DeactivateRoute(bool b_arrival)
 {
       if(pActivePoint)
       {
@@ -586,6 +605,24 @@ bool Routeman::DeactivateRoute()
           pActiveRoute->m_bRtIsActive = false;
           pActiveRoute->m_pRouteActivePoint = NULL;
       }
+
+      wxJSONValue v;
+      if(!b_arrival)
+      {
+            v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            wxString msg_id(_T("OCPN_RTE_DEACTIVATED"));
+            g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+      }
+      else
+      {
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
+            wxString msg_id(_T("OCPN_RTE_ENDED"));
+            g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+      }
+
+
       pActiveRoute = NULL;
 
       if(pRouteActivatePoint)
@@ -597,6 +634,7 @@ bool Routeman::DeactivateRoute()
       console->Show(false);
 
       m_bDataValid = false;
+
 
       return true;
 }

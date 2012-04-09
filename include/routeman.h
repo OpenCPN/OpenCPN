@@ -130,7 +130,7 @@ public:
 
       bool UpdateProgress();
       bool UpdateAutopilot();
-      bool DeactivateRoute();
+      bool DeactivateRoute( bool b_arrival = false );
       bool IsAnyRouteActive(void){ return (pActiveRoute != NULL); }
       void SetColorScheme(ColorScheme cs);
 

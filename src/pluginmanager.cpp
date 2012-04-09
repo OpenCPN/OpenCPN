@@ -799,6 +799,8 @@ void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValu
    wxString out;
    w.Write(v, out);
    SendMessageToAllPlugins(message_id,out);
+//   wxLogMessage(message_id);
+//   wxLogMessage(out);
 }
 
 void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
