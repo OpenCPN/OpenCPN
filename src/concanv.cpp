@@ -53,6 +53,7 @@
 
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;
+extern MyFrame          *gFrame;
 
 extern                  double gCog;
 extern                  double gSog;
@@ -62,7 +63,7 @@ extern                  double gSog;
 //------------------------------------------------------------------------------
 //    ConsoleCanvas Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ConsoleCanvas, wxDialog)
+BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
             EVT_PAINT(ConsoleCanvas::OnPaint)
             EVT_BUTTON(ID_LEGROUTE, ConsoleCanvas::OnLegRouteButton)
             EVT_MOUSE_EVENTS(ConsoleCanvas::MouseEvent)
@@ -423,8 +424,13 @@ void ConsoleCanvas::MouseLostCaptureEvent(wxMouseCaptureLostEvent& event)
 
 void ConsoleCanvas::ShowWithFreshFonts(void)
 {
+      Hide();
+      Move(0,0);
+
       UpdateFonts();
+      gFrame->PositionConsole();
       Show();
+
 }
 
 void ConsoleCanvas::UpdateFonts(void)
