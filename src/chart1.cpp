@@ -116,9 +116,12 @@
 
 #define ocpnUSE_OPNCTOOLBAR
 
+WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 WX_DEFINE_OBJARRAY(ArrayOfRect);
+WX_DEFINE_OBJARRAY(MyDialogPtrArray);
 
 class ocpnFloatingCompassWindow;
 
@@ -318,7 +321,6 @@ s52plib           *ps52plib;
 S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr   *m_pRegistrarMan;
 
-cm93manager       *s_pcm93mgr;
 CM93OffsetDialog  *g_pCM93OffsetDialog;
 #endif
 
@@ -492,8 +494,6 @@ wxToolBarToolBase *m_pAISTool;
 DummyTextCtrl    *g_pDummyTextCtrl;
 bool             g_bEnableZoomToCursor;
 
-wxString         g_CM93DictDir;
-
 bool             g_bShowTrackIcon;
 bool             g_bTrackActive;
 bool             g_bTrackCarryOver;
@@ -579,6 +579,11 @@ ocpnFloatingCompassWindow     *g_FloatingCompassDialog;
 int               g_toolbar_x;
 int               g_toolbar_y;
 long              g_toolbar_orient;
+
+MyDialogPtrArray       g_MacShowDialogArray;
+
+OCPNBitmapDialog  *g_pbrightness_indicator_dialog;
+int               g_brightness_timeout;
 
 //    OpenGL Globals
 int               g_GPU_MemSize;
@@ -872,9 +877,6 @@ IMPLEMENT_CLASS ( GrabberWin, wxPanel )
 
 GrabberWin::GrabberWin(wxWindow *parent)
 {
-      Init();
-
-
       m_pgrabber_bitmap = new wxBitmap(grabber);
 
       Create(parent, -1);
@@ -1298,8 +1300,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
       m_dock_x = 0;
       m_dock_y = 0;
 
-//      RePosition();
-
       Hide();
 }
 
@@ -1386,7 +1386,9 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::Surface()
 {
-      Show();
+      Hide();
+      Move(0,0);
+
       RePosition();
       Show();
       if(m_ptoolbar)
@@ -1669,6 +1671,19 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       {
             if(g_FloatingToolbarDialog)
                   g_FloatingToolbarDialog->Submerge();
+
+            if(console && console->IsShown())
+            {
+                  console->Hide();
+                  g_MacShowDialogArray.Add(console);
+            }
+
+            if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            {
+                  pRouteManagerDialog->Hide();
+                  g_MacShowDialogArray.Add(pRouteManagerDialog);
+            }
+
       }
       else
       {
@@ -1684,9 +1699,8 @@ void MyApp::OnActivateApp(wxActivateEvent& event)
       {
 //            printf("AppDeactivate\n");
             if(g_FloatingToolbarDialog)
-            {
                   g_FloatingToolbarDialog->HideTooltip();   // Hide any existing tip
-            }
+
       }
 
       event.Skip();
@@ -2601,6 +2615,13 @@ bool MyApp::OnInit()
 // Create the main frame window
         wxString myframe_window_title = wxT("OpenCPN ") + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch; //Gunther
 
+        if(g_bportable)
+        {
+              myframe_window_title += _(" -- [Portable(-p) executing from ");
+              myframe_window_title += *pHome_Locn;
+              myframe_window_title += _T("]");
+        }
+
         gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
         g_pauimgr = new wxAuiManager;
@@ -2626,7 +2647,7 @@ bool MyApp::OnInit()
 
         cc1->SetFocus();
 
-        console = new ConsoleCanvas(cc1);                    // the console
+        console = new ConsoleCanvas(gFrame);                    // the console
 
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow(cc1);
 
@@ -3128,7 +3149,6 @@ int MyApp::OnExit()
         }
 
 #ifdef USE_S57
-        delete s_pcm93mgr;
         delete m_pRegistrarMan;
         CSVDeaccess(NULL);
 #endif
@@ -3377,7 +3397,18 @@ void MyFrame::OnActivate(wxActivateEvent& event)
       if(event.GetActive())
       {
             SurfaceToolbar();
+
+            for(unsigned int i=0 ; i < g_MacShowDialogArray.GetCount() ; i++)
+            {
+                  wxDialog *ptr = g_MacShowDialogArray.Item(i);
+                  ptr->Show();
+//                  ptr->Raise();
+            }
+
+            g_MacShowDialogArray.Empty();
+
       }
+
 #endif
 
       event.Skip();
@@ -4496,6 +4527,10 @@ void MyFrame::OnMove(wxMoveEvent& event)
 
       UpdateGPSCompassStatusBox(true);
 
+      if(console->IsShown())
+            PositionConsole();
+
+
 //    Somehow, this method does not work right on Windows....
 //      g_nframewin_posx = event.GetPosition().x;
 //      g_nframewin_posy = event.GetPosition().y;
@@ -4526,6 +4561,9 @@ void MyFrame::ProcessCanvasResize(void)
 
             UpdateGPSCompassStatusBox(true);
       }
+
+      if(console->IsShown())
+            PositionConsole();
 
 }
 
@@ -4660,10 +4698,16 @@ void MyFrame::PositionConsole(void)
       if(NULL == cc1)
             return;
       //    Reposition console based on its size and chartcanvas size
-      int ccx, ccy, consx, consy;
-      cc1->GetSize(&ccx, &ccy);
+      int ccx, ccy, ccsx, ccsy, consx, consy;
+      cc1->GetSize(&ccsx, &ccsy);
+      cc1->GetPosition(&ccx, &ccy);
+
       console->GetSize(&consx, &consy);
-      console->SetSize(ccx - consx, 40, -1, -1);
+//      console->SetSize(ccx + ccsx - consx, ccy + 40, -1, -1);
+
+      wxPoint screen_pos = ClientToScreen(wxPoint(ccx + ccsx - consx -2, ccy + 40));
+      console->Move(screen_pos);
+
 }
 
 
@@ -4699,12 +4743,69 @@ void MyFrame::SetGroupIndex(int index)
       ViewPort vp = cc1->GetVP();
 
       g_GroupIndex = new_index;
+
+      //    We need a new chartstack and quilt to figure out which chart to open in the new group
       cc1->UpdateCanvasOnGroupChange();
+
+      int dbi_hint = cc1->FindClosestCanvasChartdbIndex(current_chart_native_scale);
 
       //    Refresh the canvas, selecting the "best" chart,
       //    applying the prior ViewPort exactly
-      ChartsRefresh(cc1->FindClosestCanvasChartdbIndex(current_chart_native_scale), vp);
+      ChartsRefresh(dbi_hint, vp, false);
 }
+
+void MyFrame::ShowBrightnessLevelTimedDialog(int brightness, int min, int max)
+{
+      wxFont *pfont = wxTheFontList->FindOrCreateFont(40, wxDEFAULT,wxNORMAL, wxBOLD, FALSE,
+                  wxString(_T("Eurostile Extended")));
+
+      if(!g_pbrightness_indicator_dialog)
+      {
+            //    Calculate size
+           int x, y;
+           GetTextExtent(_T("MAX"), &x, &y, NULL, NULL, pfont);
+
+            g_pbrightness_indicator_dialog = new OCPNBitmapDialog(this, wxPoint(200,200), wxSize(x+2, y+2));
+      }
+
+      int bmpsx = g_pbrightness_indicator_dialog->GetSize().x;
+      int bmpsy = g_pbrightness_indicator_dialog->GetSize().y;
+
+      wxBitmap bmp(bmpsx, bmpsx);
+      wxMemoryDC mdc(bmp);
+
+
+      mdc.SetTextForeground(GetGlobalColor(_T("GREEN4")));
+      mdc.SetBackground(wxBrush(GetGlobalColor(_T("UINFD"))));
+      mdc.SetPen(wxPen(wxColour(0,0,0)));
+      mdc.SetBrush(wxBrush(GetGlobalColor(_T("UINFD"))));
+      mdc.Clear();
+
+      mdc.DrawRectangle(0, 0, bmpsx, bmpsy);
+
+      mdc.SetFont(*pfont);
+      wxString val;
+
+      if(brightness == max)
+            val = _T("MAX");
+      else if (brightness == min)
+            val = _T("MIN");
+      else
+            val.Printf(_T("%3d"), brightness);
+
+      mdc.DrawText(val, 0, 0);
+
+
+      mdc.SelectObject(wxNullBitmap);
+
+      g_pbrightness_indicator_dialog->SetBitmap(bmp);
+      g_pbrightness_indicator_dialog->Show();
+      g_pbrightness_indicator_dialog->Refresh();
+
+      g_brightness_timeout = 3;           // seconds
+
+}
+
 
 void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 {
@@ -5220,6 +5321,7 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
                 {
                     m_pStatusBar = CreateStatusBar(m_StatusBarFieldCount, 0);       // No wxST_SIZEGRIP needed
                     ApplyGlobalColorSchemetoStatusBar();
+                    SendSizeEvent();                        // seem only needed for MSW...
                 }
 
         }
@@ -5231,18 +5333,14 @@ void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
                     m_pStatusBar = NULL;
                     SetStatusBar(NULL);
 
-//    Since the chart canvas will need to be resized, we need
-//    to refresh the entire frame.
+                    SendSizeEvent();                        // seem only needed for MSW...
                     Refresh(false);
                 }
         }
 
-        SendSizeEvent();
 
       if(bnewtoolbar)
           UpdateToolbar(global_color_scheme);
-
-
 
 }
 
@@ -5361,7 +5459,10 @@ int MyFrame::DoOptionsDialog()
       int rr = pSetDlg->ShowModal();
 
       if(b_sub)
+      {
             SurfaceToolbar();
+            cc1->SetFocus();
+      }
 
 #ifdef __WXGTK__
       Raise();                      // I dunno why...
@@ -5551,7 +5652,7 @@ int MyFrame::DoOptionsDialog()
 }
 
 // Flav: This method reloads all charts for convenience
-void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp)
+void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge)
 {
       if(!ChartData)
             return;
@@ -5571,7 +5672,8 @@ void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp)
       pCurrentStack = NULL;
 
 
-      ChartData->PurgeCache();
+      if(b_purge)
+            ChartData->PurgeCache();
 
       //    Build a new ChartStack
       pCurrentStack = new ChartStack;
@@ -6096,13 +6198,28 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       g_tick++;
 
 #ifdef __WXOSX__
-      //    Hide the toolbar if the application is minimized....
-      if(g_FloatingToolbarDialog)
+      //    To fix an ugly bug in wxWidgets for Carbon.....
+      //    Hide some Dialogs if the application is minimized....
+      //    Add them to an array which will be Shown() in MyFrame::OnActivate()
+
+      if(IsIconized())
       {
-            if(IsIconized())
+            if(g_FloatingToolbarDialog)
             {
                   if(g_FloatingToolbarDialog->IsShown())
                         g_FloatingToolbarDialog->Submerge();
+            }
+
+            if(console && console->IsShown())
+            {
+                   console->Hide();
+                   g_MacShowDialogArray.Add(console);
+            }
+
+            if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            {
+                  pRouteManagerDialog->Hide();
+                  g_MacShowDialogArray.Add(pRouteManagerDialog);
             }
       }
 #endif
@@ -6120,6 +6237,18 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             return;
 
       FrameTimer1.Stop();
+
+//    Manage the brightness dialog timeout
+      if(g_brightness_timeout > 0)
+      {
+          g_brightness_timeout--;
+
+          if(g_brightness_timeout == 0)
+          {
+              g_pbrightness_indicator_dialog->Destroy();
+              g_pbrightness_indicator_dialog = NULL;
+          }
+      }
 
 //  Update and check watchdog timer for GPS data source
       gGPS_Watchdog--;
@@ -6413,8 +6542,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
         if(console && console->IsShown())
         {
-            console->Raise();
-            console->Refresh(false);
+//            console->Raise();
+            console->RefreshConsoleData();
         }
 
         //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
@@ -9157,6 +9286,7 @@ static const char *usercolors[] = {
 "DILG3;   0;  0;  0;",              // Text
 "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
 "UDKRD; 124; 16;  0;",
+"UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
 
 "Table:DUSK",
 "GREEN1; 60;128; 60;",
@@ -9177,10 +9307,12 @@ static const char *usercolors[] = {
 "YELO2;  64; 40;  0;",
 "DILG0; 110;110;110;",              // Dialog Background
 "DILG1; 110;110;110;",              // Dialog Background
-"DILG2; 100;100;100;",              // Control Background
+//"DILG2; 100;100;100;",              // Control Background
+"DILG2;   0;  0;  0;",              // Control Background
 "DILG3; 130;130;130;",              // Text
 "UITX1;  41; 46; 46;",              // Menu Text, derived from UINFF
 "UDKRD;  80;  0;  0;",
+"UARTE;  64; 64; 64;",
 
 "Table:NIGHT",
 "GREEN1; 30; 80; 30;",
@@ -9201,10 +9333,12 @@ static const char *usercolors[] = {
 "YELO2;  32; 20;  0;",
 "DILG0;  80; 80; 80;",              // Dialog Background
 "DILG1;  80; 80; 80;",              // Dialog Background
-"DILG2;  52; 52; 52;",              // Control Background
+//"DILG2;  52; 52; 52;",              // Control Background
+"DILG2;   0;  0;  0;",              // Control Background
 "DILG3;  65; 65; 65;",              // Text
 "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
 "UDKRD;  50;  0;  0;",
+"UARTE;  64; 64; 64;",
 
 "*****"
 };
@@ -11415,4 +11549,35 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
            else return d;
 }
 
+//  Generic on-screen bitmap dialog
+
+BEGIN_EVENT_TABLE(OCPNBitmapDialog, wxDialog)
+            EVT_PAINT(OCPNBitmapDialog::OnPaint)
+            END_EVENT_TABLE()
+
+OCPNBitmapDialog::OCPNBitmapDialog(wxWindow *frame, wxPoint position, wxSize size)
+{
+      long wstyle = wxSIMPLE_BORDER;
+      wxDialog::Create( frame, wxID_ANY, _T(""), position, size, wstyle );
+
+      Hide();
+}
+
+OCPNBitmapDialog::~OCPNBitmapDialog()
+{
+}
+
+void OCPNBitmapDialog::SetBitmap(wxBitmap bitmap)
+{
+      m_bitmap = bitmap;
+}
+
+void OCPNBitmapDialog::OnPaint(wxPaintEvent& event)
+{
+
+      wxPaintDC dc(this);
+
+      if(m_bitmap.IsOk())
+            dc.DrawBitmap(m_bitmap, 0, 0);
+}
 

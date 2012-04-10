@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "wx/generic/progdlgg.h"
+#include <wx/progdlg.h>
 
 #ifdef USE_S57
 #include "s57chart.h"
@@ -161,12 +161,19 @@ bool ChartDB::LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check)
 void ChartDB::PurgeCache()
 {
 //    Empty the cache
+      wxLogMessage(_T("Chart cache purge"));
+
       unsigned int nCache = pChartCache->GetCount();
       for(unsigned int i=0 ; i<nCache ; i++)
       {
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
             ChartBase *Ch = (ChartBase *)pce->pChart;
             delete Ch;
+
+            //    The glCanvas may be cacheing some information for this chart
+            if(g_bopengl && cc1)
+                  cc1->PurgeGLCanvasChartCache(Ch);
+
             delete pce;
       }
       pChartCache->Clear();
@@ -720,8 +727,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               else
                               {
                                     wxString msg(_T("Removing oldest chart from cache: "));
-                                    wxString fn(pDeleteCandidate->GetFullPath(), wxConvUTF8);
-                                    msg += fn;
+                                    msg += pDeleteCandidate->GetFullPath();
                                     wxLogMessage(msg);
 
                                     //  If this chart should happen to be in the thumbnail window....

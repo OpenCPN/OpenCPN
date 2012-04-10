@@ -168,7 +168,18 @@ bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
             {
                   wxString file_name = m_plugin_location + _T("/") + plugin_file;
 
-                  PlugInContainer *pic = LoadPlugIn(file_name);
+                  bool b_compat = CheckPluginCompatibility(file_name);
+
+                  if(!b_compat)
+                  {
+                        wxString msg(_("    Incompatible PlugIn detected:"));
+                        msg += file_name;
+                        wxLogMessage(msg);
+                  }
+
+                  PlugInContainer *pic = NULL;
+                  if(b_compat)
+                        pic = LoadPlugIn(file_name);
                   if(pic)
                   {
                         if(pic->m_pplugin)
@@ -376,6 +387,45 @@ bool PlugInManager::DeactivateAllPlugIns()
       }
       return true;
 }
+
+
+bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
+{
+	bool b_compat = true;
+
+#ifdef __WXMSW__
+
+      //    Open the dll, and get the manifest
+      HMODULE module = ::LoadLibraryEx(plugin_file.fn_str(), NULL, LOAD_LIBRARY_AS_DATAFILE);
+      if (module == NULL)
+            return false;
+      HRSRC resInfo = ::FindResource(module, MAKEINTRESOURCE(1), RT_MANIFEST); // resource id #1 should be the manifest
+
+	  if(!resInfo)
+		 resInfo = ::FindResource(module, MAKEINTRESOURCE(2), RT_MANIFEST); // try resource id #2
+
+	  if (resInfo) {
+            HGLOBAL resData = ::LoadResource(module, resInfo);
+            DWORD resSize = ::SizeofResource(module, resInfo);
+            if (resData && resSize) {
+                  const char *res = (const char *)::LockResource(resData); // the manifest
+                  if (res) {
+                // got the manifest as a char *
+                        wxString manifest(res, wxConvUTF8);
+						if(wxNOT_FOUND != manifest.Find(_T("VC90.CRT")))	// cannot load with VC90 runtime (i.e. VS2008)
+							b_compat = false;
+                  }
+                  UnlockResource(resData);
+            }
+            ::FreeResource(resData);
+      }
+      ::FreeLibrary(module);
+
+ #endif
+
+	  return b_compat;
+}
+
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
@@ -743,6 +793,16 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
       }
 }
 
+void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v)
+{
+   wxJSONWriter w;
+   wxString out;
+   w.Write(v, out);
+   SendMessageToAllPlugins(message_id,out);
+//   wxLogMessage(message_id);
+//   wxLogMessage(out);
+}
+
 void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
 {
       for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
@@ -1018,6 +1078,8 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void)
 
       return array;
 }
+
+
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn CallBack API Implementation

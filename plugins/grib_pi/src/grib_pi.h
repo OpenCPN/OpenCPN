@@ -94,6 +94,7 @@ public:
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
 
+      bool GetUseMS(void){ return m_bGRIBUseMS; }
       void OnGribDialogClose();
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
@@ -117,11 +118,12 @@ private:
 
       bool              m_bGRIBUseHiDef;
       bool              m_bGRIBShowIcon;
-
+      bool              m_bGRIBUseMS;
 
       //    Controls added to Preferences panel
       wxCheckBox              *m_pGRIBShowIcon;
       wxCheckBox              *m_pGRIBUseHiDef;
+      wxCheckBox              *m_pGRIBUseMS;
 
 };
 

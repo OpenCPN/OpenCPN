@@ -125,12 +125,12 @@ public:
 
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
-      bool ActivateNextPoint(Route *pr);
+      bool ActivateNextPoint(Route *pr, bool skipped);
       RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, double cog, double sog);
 
       bool UpdateProgress();
       bool UpdateAutopilot();
-      bool DeactivateRoute();
+      bool DeactivateRoute( bool b_arrival = false );
       bool IsAnyRouteActive(void){ return (pActiveRoute != NULL); }
       void SetColorScheme(ColorScheme cs);
 

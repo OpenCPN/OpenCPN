@@ -40,6 +40,21 @@
 #include "chcanv.h"                 // for ViewPort
 #include "nmea.h"                   // for GenericPosDat
 
+//    Include wxJSON headers
+//    We undefine MIN/MAX so avoid warning of redefinition coming from
+//    json_defs.h
+//    Definitions checked manually, and are identical
+#ifdef MIN
+#undef MIN
+#endif
+
+#ifdef MAX
+#undef MAX
+#endif
+
+#include "wx/json_defs.h"
+#include "wx/jsonwriter.h"
+
 //    Assorted static helper routines
 
 PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
@@ -176,6 +191,7 @@ public:
       void SendNMEASentenceToAllPlugIns(wxString &sentence);
       void SendPositionFixToAllPlugIns(GenericPosDat *ppos);
       void SendAISSentenceToAllPlugIns(wxString &sentence);
+      void SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(wxString &message_id, wxString &message_body);
 
       void SendResizeEventToAllPlugIns(int x, int y);
@@ -191,6 +207,7 @@ private:
       bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
       bool UpDateChartDataTypes(void);
+      bool CheckPluginCompatibility(wxString plugin_file);
 
       MyFrame                 *pParent;
 

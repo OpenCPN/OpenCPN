@@ -276,8 +276,8 @@ public:
 
       bool RenderHPGLtoDC(char *str, char *col, wxDC *pdc, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
       bool RenderHPGLtoGL ( char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle );
-      bool RenderHPGL(ObjRazRules *rzRules, Rule * rule_in, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
-      bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxDC *pdc, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
+      bool RenderHPGL(ObjRazRules *rzRules, Rule * rule_in, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
+      bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,  ViewPort *vp, float rot_angle = 0.);
       wxImage RuleXBMToImage(Rule *prule);
 
       bool RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap );
@@ -315,6 +315,8 @@ public:
 
       void DestroyRules(RuleHash *rh);
       void DestroyRuleNode(Rule *pR);
+
+      void ClearRulesCache(Rule *pR);
 
       void DestroyLUPArray(wxArrayOfLUPrec *pLUPArray);
 

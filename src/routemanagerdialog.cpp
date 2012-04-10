@@ -29,7 +29,7 @@
 
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
-#include <wx/generic/progdlgg.h>
+#include <wx/progdlg.h>
 
 #include <iostream>
 
@@ -322,7 +322,7 @@ int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
 // sort callback. Sort by layer size.
 int sort_layer_len_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortTracksOnDistance(long item1, long item2, wxIntPtr list)
+int wxCALLBACK SortLayersOnSize(long item1, long item2, wxIntPtr list)
 #else
 int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 #endif
@@ -386,7 +386,7 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent)
 {
       long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER;
 #ifdef __WXOSX__
-//      style |= wxSTAY_ON_TOP;
+      style |= wxSTAY_ON_TOP;
 #endif
 
       wxDialog::Create(parent, -1, wxString(_("Route Manager")), wxDefaultPosition, wxDefaultSize, style);

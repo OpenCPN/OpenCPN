@@ -1510,6 +1510,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
             n_charts = pCurrentStack->nEntry;
 
             //    Walk the current ChartStack...
+            //    Building the quilt candidate array
             for(int ics=0 ; ics < n_charts ; ics++)
             {
                   int i = pCurrentStack->GetDBIndex(ics);
@@ -1537,8 +1538,10 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
       if(vp_in.b_FullScreenQuilt)
       {
-            //    Search the entire database, potentially adding all charts which are on the ViewPort in any way
+            //    Search the entire database, potentially adding all charts
+            //    which intersect the ViewPort in any way
             //    .AND. other requirements.
+            //    Again, skipping cm93 for now
             int n_all_charts = ChartData->GetChartTableEntries();
 
             LLBBox viewbox = vp_local.GetBBox();
@@ -1599,8 +1602,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
 
                   if((ChartData->GetDBChartScale(i) >= m_reference_scale) || (zoom_factor > .2))
                   {
-
-
                         bool b_add = true;
 
                         //    Special case for S57 ENC
@@ -1618,9 +1619,9 @@ bool Quilt::Compose(const ViewPort &vp_in)
                                     chart_fractional_area = (rect_ch.GetWidth() * rect_ch.GetHeight()) / quilt_area;
                               }
                               else
-                                    b_add = false;                // this chart has no overlap on screen
-                                                                  // probably because it has a concave outline
-                                                                  // i.e the bboxes overlap, but the actual coverage intersect is null.
+                                    b_add = false;  // this chart has no overlap on screen
+                                                    // probably because it has a concave outline
+                                                    // i.e the bboxes overlap, but the actual coverage intersect is null.
 
                               if(chart_fractional_area < .01)
                               {
@@ -1715,7 +1716,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       //    It is possible that the reference chart is not really part of the visible quilt
       //    This can happen when the reference chart is panned
       //    off-screen in full screen quilt mode
-      //    We detect this case, and set a NOP default value for m_refchart_dbIndex.
+      //    We detect this case, and set a (-1) default value for m_refchart_dbIndex.
       //    This will cause the quilt parameters such as scale, type, and projection
       //    to retain their current settings until the reference chart is later directly set.
       //
@@ -1868,10 +1869,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                         pqc->b_include = false;                         // skip this chart, scale is too large
                   }
 
-                  //    Here is a special case for CM93Composite, which covers the world....
-                  //    Adding needs to be deferred........
-// never could be seen                  if(cte.GetChartType() == CHART_TYPE_CM93COMP)
-//                                             pqc->b_include = false;                         // skip for now
 /*
                   wxRegionIterator updd ( vp_region );
                   while ( updd )
@@ -1919,33 +1916,34 @@ bool Quilt::Compose(const ViewPort &vp_in)
             //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
             //    with the quilt.  If this is the case, do not waste time loading cm93....
 
-            bool b_must = false;
+            bool b_must_add_cm93 = false;
             wxRegionIterator updd ( vp_region );
             while ( updd )
             {
                   wxRect rect = updd.GetRect();
                   if((rect.width > 2) && (rect.height > 2))
                   {
-                        b_must = true;
+                        b_must_add_cm93 = true;
                         break;
                   }
                   updd ++ ;
             }
 
-            if(b_must)
+            if(b_must_add_cm93)
             {
-
-
                   for(int ics=0 ; ics < n_charts ; ics++)
                   {
                         int i = pCurrentStack->GetDBIndex(ics);
                         if(CHART_TYPE_CM93COMP == ChartData->GetDBChartType(i))
                         {
+//                              if((g_GroupIndex > 0) && (ChartData->IsChartInGroup(i, g_GroupIndex)) )
+//                                    continue;
+
                               QuiltCandidate *qcnew = new QuiltCandidate;
                               qcnew->dbIndex = i;
                               qcnew->ChartScale = ChartData->GetDBChartScale(i);
                               m_pcandidate_array->Add(qcnew);
-                              break;
+//                              break;
                         }
                   }
             }
@@ -2003,7 +2001,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
       }
 
 
-#ifdef QUILT_TYPE_1
+#ifdef QUILT_TYPE_1                 // This is not used in normal build
 
       //    Iterate thru the candidate list again, from smallest scale currently included to largest candidate
       //    tentatively adding charts to the quilt until an added chart does not change the quilt coverage...
@@ -2186,15 +2184,26 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   if(!pqp->b_Valid)                         // skip invalid entries
                         continue;
 
-                  const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqp->dbIndex);
-                  wxRegion larger_scale_chart_region = GetChartQuiltRegion(cte, vp_local);
+/// In S57ENC quilts, do not subtract larger scale regions from smaller.
+/// This does two things:
+/// 1. This allows co-incident or overlayed chart regions to both be included
+///    thus covering the case found in layered Euro(Austrian) IENC cells
+/// 2. This make quilted S57 ENC renders much faster, as the larger scale charts are not rendered
+///     until the canvas is zoomed sufficiently.
 
-/// In S57ENC quilts, do not subtract larger scale regions from smaller,
-/// This allows exactly co-incident chart regions to both be included
-/// This covers the case found in layered Euro(Austrian) IENC cells
-                  if((CHART_TYPE_S57 != ctei.GetChartType()) && (CHART_TYPE_CM93COMP != ctei.GetChartType()))
+/// Above logic does not apply to cm93 composites
+                  if((CHART_TYPE_S57 != ctei.GetChartType())/* && (CHART_TYPE_CM93COMP != ctei.GetChartType())*/)
+                  {
+
                         if(!vpr_region.Empty())
+                        {
+                              const ChartTableEntry &cte = ChartData->GetChartTableEntry(pqp->dbIndex);
+                              wxRegion larger_scale_chart_region = GetChartQuiltRegion(cte, vp_local);
+
                               vpr_region.Subtract(larger_scale_chart_region);
+                        }
+                  }
+
 /*
                   wxRegionIterator updd ( vpr_region );
                   while ( updd )
@@ -2258,9 +2267,6 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   m_PatchList.DeleteNode(pcinode);
                   il = 0;           // restart the list walk
             }
-//            else if(!piqp->b_valid)
-//            {
-//            }
 
             else
                   il++;
@@ -2419,7 +2425,7 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   if(pc->GetChartType() == CHART_TYPE_S57)
                   {
                         s57chart *ps57 =  dynamic_cast<s57chart *> ( pc );
-                        pqp->b_overlay = (ps57->GetUsageChar() == 'L');
+                        pqp->b_overlay = (ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A');
                         m_bquilt_has_overlays = true;
                   }
             }
@@ -4137,9 +4143,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     }
                }
 
-//                        printf("%d\n", g_nbrightness);
-
                SetScreenBrightness(g_nbrightness);
+
+               gFrame->ShowBrightnessLevelTimedDialog(g_nbrightness/10, 1, 10);
+
+               SetFocus();             // just in case the external program steals it....
+               gFrame->Raise();        // And reactivate the application main
+
                break;
           }
 
@@ -5759,6 +5769,15 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
                 //      Draw the ownship icon
                         wxPoint rot_ctr(pos_image->GetWidth()/2, pos_image->GetHeight()/2);
                         wxImage rot_image = pos_image->Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
+
+
+                        // Simple sharpening algorithm.....
+                        // TODO  Needs more work.
+                        for(int ip=0 ; ip < rot_image.GetWidth(); ip++)
+                              for(int jp=0 ; jp < rot_image.GetHeight() ; jp++)
+                                    if(rot_image.GetAlpha(ip,jp) > 64)
+                                          rot_image.SetAlpha(ip, jp, 255);
+
                         wxBitmap os_bm(rot_image);
 
                         int w =  os_bm.GetWidth();
@@ -7105,9 +7124,6 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
               ps52plib->SetPPMM ( m_canvas_scale_factor / 1000. );
 #endif
 
-        //  Set the position of the console
-        PositionConsole();
-
         //  Inform the parent Frame that I am being resized...
         gFrame->ProcessCanvasResize();
 
@@ -7153,14 +7169,6 @@ void ChartCanvas::OnSize ( wxSizeEvent& event )
         ReloadVP();
 }
 
-void ChartCanvas::PositionConsole(void)
-{
-      //    Reposition console based on its size and chartcanvas size
-      int ccx, ccy, consx, consy;
-      GetSize(&ccx, &ccy);
-      console->GetSize(&consx, &consy);
-      console->SetSize(ccx - consx, 40, -1, -1);
-}
 
 void ChartCanvas::ShowChartInfoWindow(int x, int y, int dbIndex)
 {
@@ -7358,6 +7366,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         int sel_rad_pix = 8;
         SelectRadius = sel_rad_pix/ ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
+///   Removed when console became a wxDialog
+/*
 #ifdef __WXMSW__
         if ( console->IsShown() )
         {
@@ -7370,6 +7380,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                 }
         }
 #endif
+*/
 
 //      Show cursor position on Status Bar, if present
 
@@ -8279,8 +8290,8 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                         // But call the popup handler with identifier appropriate to the type
                       if ( pFindRouteSeg )                  // there is at least one select item
                       {
-                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,SELTYPE_ROUTESEGMENT,SelectRadius );
-
+                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,
+                                        SELTYPE_ROUTESEGMENT,SelectRadius );
 
 
                             if(NULL == m_pSelectedRoute)  // the case where a segment only is selected
@@ -8319,12 +8330,28 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                       if ( pFindTrackSeg )
                       {
-                            m_pSelectedTrack = (Route *)pFindTrackSeg->m_pData3;
-                            if ( m_pSelectedTrack   &&  m_pSelectedTrack->IsVisible())
+                            SelectableItemList SelList = pSelect->FindSelectionList(slat, slon,
+                                        SELTYPE_TRACKSEGMENT,SelectRadius );
+
+                            //  Choose the first visible track containing segment in the list
+                            wxSelectableItemListNode *node = SelList.GetFirst();
+                            while ( node )
                             {
-                                  seltype |= SELTYPE_TRACKSEGMENT;
+                                  SelectItem *pFindSel = node->GetData();
+
+                                  Route *pt = (Route *)pFindSel->m_pData3;
+                                  if(pt->IsVisible())
+                                  {
+                                        m_pSelectedTrack = pt;
+                                        break;
+                                  }
+                                  node = node->GetNext();
                             }
-                      }
+
+
+                      if ( m_pSelectedTrack )
+                           seltype |= SELTYPE_TRACKSEGMENT;
+                }
 
 
                       bool bseltc = false;
@@ -8944,8 +8971,16 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                case ID_WP_MENU_DELPOINT:
                 {
-                       if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;       // pjotrc 2010.02.15
-                       else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;  // pjotrc 2010.02.15
+                       if (m_pFoundRoutePoint == pAnchorWatchPoint1)
+                       {
+                             pAnchorWatchPoint1 = NULL;
+                             g_AW1GUID.Clear();
+                       }
+                       else if (m_pFoundRoutePoint == pAnchorWatchPoint2)
+                       {
+                             pAnchorWatchPoint2 = NULL;
+                             g_AW2GUID.Clear();
+                       }
 
                        if(m_pFoundRoutePoint && !(m_pFoundRoutePoint->m_bIsInLayer) && (m_pFoundRoutePoint->m_IconName != _T("mob")))
                        {
@@ -9400,7 +9435,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                 case ID_RT_MENU_ACTNXTPOINT:
                         if ( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute )
                         {
-                                g_pRouteMan->ActivateNextPoint ( m_pSelectedRoute );
+                                g_pRouteMan->ActivateNextPoint ( m_pSelectedRoute, true );
                                 m_pSelectedRoute->m_bRtIsSelected = false;
                         }
 
@@ -9996,10 +10031,12 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
         wxMemoryDC temp_dc;
 #endif
 
+        wxRegion rgn_chart ( 0,0,GetVP().pix_width, GetVP().pix_height );
+
 
 //    In case Console is shown, set up dc clipper and blt iterator regions
 
-        wxRegion rgn_chart ( 0,0,GetVP().pix_width, GetVP().pix_height );
+/*
         int conx, cony, consx, consy;
         console->GetPosition ( &conx, &cony );
         console->GetSize ( &consx, &consy );
@@ -10010,8 +10047,9 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                 rgn_chart.Subtract ( rgn_console );               // For dc Drawing clipping
                 ru.Subtract ( rgn_console );                      // for Blit updating
         }
+*/
 
-//    Same for Thumbnail window
+//    In case Thumbnail is shown, set up dc clipper and blt iterator regions
         if ( pthumbwin )
         {
                 int thumbx, thumby, thumbsx, thumbsy;
@@ -11257,12 +11295,12 @@ void ChartCanvas::DrawAllRoutesInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxReg
                       else if(pRouteDraw->CrossesIDL())
                       {
                               wxPoint2DDouble xlate(-360., 0.);
-                              test_box = pRouteDraw->RBBox;
-                              test_box.Translate( xlate );
+                              wxBoundingBox test_box1 = pRouteDraw->RBBox;
+                              test_box1.Translate( xlate );
                               if(b_run)
-                                    test_box.Expand(gLon, gLat);
+                                    test_box1.Expand(gLon, gLat);
 
-                              if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                              if ( BltBBox.Intersect ( test_box1, 0 ) != _OUT ) // Route is not wholly outside window
                               {
                                     b_drawn = true;
                                     if((pRouteDraw != active_route) && (pRouteDraw != active_track))
@@ -11276,14 +11314,26 @@ void ChartCanvas::DrawAllRoutesInBBox ( ocpnDC& dc, LLBBox& BltBBox, const wxReg
                             if((BltBBox.GetMinX() < -180.) && (BltBBox.GetMaxX() > -180.))
                             {
                                     wxPoint2DDouble xlate(-360., 0.);
-                                    test_box = pRouteDraw->RBBox;
-                                    test_box.Translate( xlate );
-                                    if ( BltBBox.Intersect ( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+                                    wxBoundingBox test_box2 = pRouteDraw->RBBox;
+                                    test_box2.Translate( xlate );
+                                    if ( BltBBox.Intersect ( test_box2, 0 ) != _OUT ) // Route is not wholly outside window
                                     {
                                           b_drawn = true;
                                           if((pRouteDraw != active_route) && (pRouteDraw != active_track))
                                                 pRouteDraw->Draw ( dc, GetVP() );
                                     }
+                             }
+                             else if( !b_drawn && (BltBBox.GetMinX() < 180.) && (BltBBox.GetMaxX() > 180.))
+                             {
+                                   wxPoint2DDouble xlate(360., 0.);
+                                   wxBoundingBox test_box3 = pRouteDraw->RBBox;
+                                   test_box3.Translate( xlate );
+                                   if ( BltBBox.Intersect ( test_box3, 0 ) != _OUT ) // Route is not wholly outside window
+                                   {
+                                         b_drawn = true;
+                                         if((pRouteDraw != active_route) && (pRouteDraw != active_track))
+                                               pRouteDraw->Draw ( dc, GetVP() );
+                                   }
                              }
                       }
                 }
@@ -12256,7 +12306,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           wxString str;
           str.Printf(_T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res);
           wxLogMessage(str);
-//          printf("  m_tex_max_res: %d\n", m_tex_max_res);
 
           m_bsetup = true;
 //          g_bDebugOGL = true;
@@ -12345,6 +12394,13 @@ void HalfScaleChartBits(int width, int height, unsigned char *source, unsigned c
 
 bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
 {
+      if(g_bDebugOGL)
+      {
+            wxString msg;
+            msg.Printf(_T("  -->UploadTexture %d"),ptd->tex_name );
+            wxLogMessage(msg);
+      }
+
       glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
       //    Calculate the effective base level
@@ -12366,6 +12422,13 @@ bool UploadTexture(  glTextureDescriptor *ptd, int n_basemult )
       {
             if(height == 2)
                 break;                  // all done;
+
+            if(g_bDebugOGL)
+            {
+                  wxString msg;
+                  msg.Printf(_T("     -->glTexImage2D...level:%d"), level);
+                  wxLogMessage(msg);
+            }
 
             //    Upload to GPU?
             if(level >= base_level)
@@ -12574,7 +12637,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
             }
       }
 
-
       //    Adjust the chart source rectangle by base multiplier
       R.x      /= n_basemult;
       R.y      /= n_basemult;
@@ -12602,6 +12664,10 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                   for(int j=0 ; j < nx_tex ; j++)
                   {
                         rect.width = tex_dim;
+
+                        wxASSERT(rect.x < 15383);
+                        wxASSERT(rect.y < 15383);
+
                         int key = ((rect.x<<18) + (rect.y << 4)) + n_basemult;
 
                         if(pTextureHash->find(key) !=  pTextureHash->end())  // found?
@@ -12635,7 +12701,6 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                   rect.y += rect.height;
             }
       }
-
 
       glPushMatrix();
 
@@ -12734,6 +12799,9 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                               //    Is this texture tile already defined?
 
                               //    Create the hash key
+                              wxASSERT(rect.x < 15383);
+                              wxASSERT(rect.y < 15383);
+
                               key = ((rect.x<<18) + (rect.y << 4)) + n_basemult;
                               ChartTextureHashType::iterator it = pTextureHash->find(key);
 
@@ -12751,11 +12819,9 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
                               else
                                     ptd = (*pTextureHash)[key];
 
-
                               //    If the GPU does not know about this texture, upload it
                               if(ptd->tex_name == 0)
                               {
-                                    if(g_bDebugOGL) printf("  -->Upload tex\n");
                                     GLuint tex_name;
                                     glGenTextures(1, &tex_name);
                                     ptd->tex_name = tex_name;
@@ -12777,6 +12843,13 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
 
                               wxStopWatch sw;
 
+                              if(g_bDebugOGL)
+                              {
+                                    wxString msg;
+                                    msg.Printf(_T("  -->BindTexture %d"), ptd->tex_name );
+                                    wxLogMessage(msg);
+                              }
+
                               glBindTexture(GL_TEXTURE_2D,  ptd->tex_name);
 
                               GLint ltex;
@@ -12790,6 +12863,18 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wx
 
                               double sx = rect.width;
                               double sy = rect.height;
+
+                              if(g_bDebugOGL)
+                              {
+                                    wxString msg;
+                                    msg.Printf(_T("     glQuads TexCoord (%g,%g) (%g,%g) (%g,%g) (%g,%g)"),
+                                               x1/sx, y1/sy, (x1+w)/sx, y1/sy, (x1+w)/sx, (y1+h)/sy, x1/sx, (y1+h)/sy);
+                                    wxLogMessage(msg);
+
+                                    msg.Printf(_T("     glQuads Vertex2f (%g,%g) (%g,%g) (%g,%g) (%g,%g)"),
+                                               (x2), (y2),(w+ x2) , (y2),(w+ x2) , (h + y2),(x2) , (h + y2));
+                                    wxLogMessage(msg);
+                              }
 
                               glBegin(GL_QUADS);
 
@@ -13410,7 +13495,14 @@ void glChartCanvas::render()
 
      cc1->PaintCleanup();
 
-     if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+//     if(g_bDebugOGL)  printf("m_ntex: %d %d\n\n", m_ntex, m_tex_max_res);
+     if(g_bDebugOGL)
+     {
+           wxString msg;
+           msg.Printf(_T("  -->m_ntex %d %d\n"), m_ntex, m_tex_max_res );
+           wxLogMessage(msg);
+     }
+
 }
 
 void glChartCanvas::DrawGLOverLayObjects(void)
@@ -15011,7 +15103,7 @@ wxSize AISInfoWin::GetOptimumSize(int *pn_nl, int *pn_cmax)
 
       while(i < m_text.Len())
       {
-            while(m_text.GetChar(i) != '\n')
+            while((m_text.GetChar(i) != '\n') && (i < m_text.Len()))
                   rline.Append(m_text.GetChar(i++));
 
             if(rline.Len() > max_len)
@@ -16336,6 +16428,15 @@ int InitScreenBrightness(void)
             return 1;
       }
 #else
+      //    Look for "xcalib" application
+      wxString cmd ( _T ( "xcalib -version" ) );
+
+      wxArrayString output;
+      long r = wxExecute ( cmd, output );
+      if(0 != r)
+            wxLogMessage(_("   External application \"xcalib\" not found. Screen brightness not changed."));
+
+      g_brightness_init = true;
       return 0;
 #endif
 }
@@ -16378,6 +16479,7 @@ int RestoreScreenBrightness(void)
       return 1;
 #endif
 
+      return 0;
 }
 
 
@@ -16491,7 +16593,7 @@ int SetScreenBrightness(int brightness)
             last_brightness = 100;
             g_brightness_init = true;
             temp_file_name = wxFileName::CreateTempFileName(_T(""));
-
+            InitScreenBrightness();
       }
 
 #ifdef __OPCPN_USEICC__
@@ -16540,8 +16642,6 @@ int SetScreenBrightness(int brightness)
       last_brightness = brightness;
 
 #endif
-
-
 
       return 0;
 }

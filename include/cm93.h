@@ -338,6 +338,7 @@ class cm93chart : public s57chart
 
             void SetCM93Dict(cm93_dictionary *pDict){m_pDict = pDict;}
             void SetCM93Prefix(wxString &prefix){m_prefix = prefix;}
+            void SetCM93Manager(cm93manager *pManager){m_pManager = pManager;}
 
             bool UpdateCovrSet(ViewPort *vpt);
             bool IsPointInLoadedM_COVR(double xc, double yc);
@@ -386,6 +387,7 @@ class cm93chart : public s57chart
             Cell_Info_Block   m_CIB;
 
             cm93_dictionary   *m_pDict;
+            cm93manager       *m_pManager;
 
             wxString          m_prefix;
 
@@ -476,6 +478,7 @@ class cm93compchart : public s57chart
 
             void InvalidateCache();
       private:
+            void UpdateRenderRegions ( const ViewPort& VPoint );
             wxRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
@@ -490,14 +493,17 @@ class cm93compchart : public s57chart
 
 
             //    Data members
-            cm93_dictionary   *m_pDict;
+
+            cm93_dictionary   *m_pDictComposite;
+            cm93manager       *m_pcm93mgr;
+
 
             cm93chart         *m_pcm93chart_array[8];
             bool              m_bScale_Array[8];
             cm93chart         *m_pcm93chart_current;
             int               m_cmscale;
 
-            wxString          m_prefix;
+            wxString          m_prefixComposite;
 
             int               m_current_cell_pub_date;      // the (integer) publish date of the cell at the current VP
 

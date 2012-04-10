@@ -3909,6 +3909,9 @@ int ChartBaseBSB::ReadBSBHdrLine(wxFileInputStream* ifs, char* buf, int buf_len_
                         return(0);
             }
 
+            if(0 == read_char)            // embedded erroneous unicode character?
+                  read_char = 0x20;
+
             //    Manage continued lines
             if( read_char == 10 || read_char == 13 )
             {

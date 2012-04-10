@@ -46,7 +46,7 @@
 #include <time.h>
 
 #include <wx/listimpl.cpp>
-#include <wx/generic/progdlgg.h>
+#include <wx/progdlg.h>
 
 #include "chart1.h"
 #include "navutil.h"
@@ -212,7 +212,6 @@ extern double           g_ownship_predictor_minutes;
 extern s52plib          *ps52plib;
 #endif
 
-extern wxString         g_CM93DictDir;
 extern int              g_cm93_zoom_factor;
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
@@ -301,6 +300,8 @@ extern int              g_track_line_width;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
+
+extern bool             g_bDebugOGL;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2913,6 +2914,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
       Read ( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
+      Read ( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );
       Read ( _T ( "AnchorWatchDefault" ), &g_nAWDefault, 50 );
       Read ( _T ( "AnchorWatchMax" ), &g_nAWMax, 1852);
       Read ( _T ( "GPSDogTimeout" ),  &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );
@@ -4512,7 +4514,6 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "S57DataLocation" ), *g_pcsv_locn );
       Write ( _T ( "SENCFileLocation" ), g_SENCPrefix );
       Write ( _T ( "PresentationLibraryData" ), g_PresLibData );
-      Write ( _T ( "CM93DictionaryLocation" ), g_CM93DictDir );
 
 #endif
 

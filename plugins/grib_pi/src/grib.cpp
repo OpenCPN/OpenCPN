@@ -247,7 +247,11 @@ void GRIBUIDialog::CreateControls()
       m_cbWindSpeed.SetValue(true);
       pDataGrid->Add(&m_cbWindSpeed, 0, wxALIGN_LEFT|wxALL, group_item_spacing);
 
-      wxStaticText *ps1 = new wxStaticText(this, wxID_ANY, _("Wind Speed, Kts."));
+      wxString wind_speed_str = _("Wind Speed, Kts.");
+      if(pPlugIn->GetUseMS())
+           wind_speed_str = _("Wind Speed, m/sec.");
+
+      wxStaticText *ps1 = new wxStaticText(this, wxID_ANY, wind_speed_str);
       pDataGrid->Add(ps1, 0, wxALIGN_LEFT|wxALL, group_item_spacing);
 
       m_pWindSpeedTextCtrl = new wxTextCtrl(this, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
@@ -357,6 +361,8 @@ void GRIBUIDialog::UpdateTrackingControls(void)
                         double ang = 90. + (atan2(vy, -vx)  * 180. / PI);
                         if(ang > 360.) ang -= 360.;
                         if(ang < 0.) ang += 360.;
+                        if(pPlugIn->GetUseMS())
+                              vkn *= .5144;
 
                         wxString t;
                         t.Printf(_T("%2d"), (int)vkn);
@@ -1220,8 +1226,9 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, P
 
                                                 if ((vx != GRIB_NOTDEF) && (vy != GRIB_NOTDEF))
                                                 {
-                                                      double angle = atan2(vx, vy) * 180./PI;
-                                                      drawSingleArrow(p.x, p.y, angle+90., *wxBLACK, 2);
+                                                  double angle = atan2(vx, vy) * 180./PI;
+                                                  drawSingleArrow(p.x, p.y, angle+90., *wxLIGHT_GREY, 2);
+                                                  drawSingleArrow(p.x + 1, p.y + 1, angle+90., *wxBLACK, 2);
                                                 }
                                           }
                                     }

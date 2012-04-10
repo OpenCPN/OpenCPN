@@ -50,7 +50,24 @@
 #include "georef.h"
 #include "routeprop.h"
 #include "routemanagerdialog.h"
+#include "pluginmanager.h"
 
+/*
+//    Include wxJSON headers
+//    We undefine MIN/MAX so avoid warning of redefinition coming from
+//    json_defs.h
+//    Definitions checked manually, and are identical
+#ifdef MIN
+#undef MIN
+#endif
+
+#ifdef MAX
+#undef MAX
+#endif
+
+#include "json_defs.h"
+#include "jsonwriter.h"
+*/
 
 //    Include a (large) set of XPM images for mark/waypoint icons
 #include "bitmaps/empty.xpm"
@@ -129,6 +146,8 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+
+extern PlugInManager    *g_pi_manager;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -282,6 +301,13 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint)
             pActivePoint = node->GetData();               // start at beginning
         }
 
+
+        wxJSONValue v;
+        v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
+        v[_T("GUID")] = pRouteToActivate->m_GUID;
+        wxString msg_id(_T("OCPN_RTE_ACTIVATED"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
         ActivateRoutePoint(pRouteToActivate, pActivePoint);
 
         m_bArrival = false;
@@ -291,14 +317,21 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint)
         m_bDataValid = false;
 
         console->ShowWithFreshFonts();
+
+
         return true;
 }
 
 bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
 {
+        wxJSONValue v;
         pActiveRoute = pA;
+
         pActivePoint = pRP_target;
         pActiveRoute->m_pRouteActivePoint = pRP_target;
+
+        v[_T("GUID")] = pRP_target->m_GUID;
+        v[_T("WP_activated")] = pRP_target->GetName();
 
         wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
         while(node)
@@ -363,17 +396,24 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target)
                   }
             }
 
+        wxString msg_id(_T("OCPN_WPT_ACTIVATED"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
         return true;
 }
 
-bool Routeman::ActivateNextPoint(Route *pr)
+bool Routeman::ActivateNextPoint(Route *pr, bool skipped)
 {
+      wxJSONValue v;
       if(pActivePoint)
       {
             pActivePoint->m_bBlink = false;
             pActivePoint->m_bIsActive = false;
-      }
 
+            v[_T("isSkipped")] = skipped;
+            v[_T("GUID")] = pActivePoint->m_GUID;
+            v[_T("WP_arrived")] = pActivePoint->GetName();
+      }
       int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
       if((n_index_active + 1) <= pActiveRoute->GetnPoints())
       {
@@ -382,6 +422,8 @@ bool Routeman::ActivateNextPoint(Route *pr)
           pActiveRoute->m_pRouteActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
 
           pActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
+          v[_T("Next_WP")] = pActivePoint->GetName();
+          v[_T("GUID")] = pActivePoint->m_GUID;
 
           pActivePoint->m_bBlink = true;
           pActivePoint->m_bIsActive = true;
@@ -401,7 +443,10 @@ bool Routeman::ActivateNextPoint(Route *pr)
                   }
             }
 
-          return true;
+           wxString msg_id(_T("OCPN_WPT_ARRIVED"));
+           g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+
+           return true;
       }
 
       return false;
@@ -514,10 +559,10 @@ bool Routeman::UpdateProgress()
 
                   bDidArrival = true;
 
-                  if(!ActivateNextPoint(pActiveRoute))            // at the end?
+                  if(!ActivateNextPoint(pActiveRoute, false))            // at the end?
                   {
                           Route *pthis_route = pActiveRoute;
-                          DeactivateRoute();
+                          DeactivateRoute(true);                  // this is an arrival
                           if(pthis_route->m_bDeleteOnArrival)
                           {
                                 pConfig->DeleteConfigRoute ( pthis_route );
@@ -546,7 +591,7 @@ bool Routeman::UpdateProgress()
         return bret_val;
 }
 
-bool Routeman::DeactivateRoute()
+bool Routeman::DeactivateRoute(bool b_arrival)
 {
       if(pActivePoint)
       {
@@ -560,6 +605,24 @@ bool Routeman::DeactivateRoute()
           pActiveRoute->m_bRtIsActive = false;
           pActiveRoute->m_pRouteActivePoint = NULL;
       }
+
+      wxJSONValue v;
+      if(!b_arrival)
+      {
+            v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            wxString msg_id(_T("OCPN_RTE_DEACTIVATED"));
+            g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+      }
+      else
+      {
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
+            wxString msg_id(_T("OCPN_RTE_ENDED"));
+            g_pi_manager->SendJSONMessageToAllPlugins(msg_id,v);
+      }
+
+
       pActiveRoute = NULL;
 
       if(pRouteActivatePoint)
@@ -571,6 +634,7 @@ bool Routeman::DeactivateRoute()
       console->Show(false);
 
       m_bDataValid = false;
+
 
       return true;
 }
@@ -934,7 +998,8 @@ void Routeman::SetColorScheme(ColorScheme cs)
 
       m_pRoutePen =             wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFB")), g_route_line_width, wxSOLID);
       m_pSelectedRoutePen =     wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UINFO")), g_route_line_width, wxSOLID);
-      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
+//      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
+      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("UARTE")), g_route_line_width, wxSOLID);
 //      m_pActiveRoutePointPen =  wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), 2, wxSOLID);
 //      m_pRoutePointPen =        wxThePenList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), 2, wxSOLID);
 

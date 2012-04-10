@@ -2193,6 +2193,7 @@ bool MarkInfoImpl::UpdateProperties(void)
                   m_bcomboBoxIcon->Enable(false);
                   m_buttonAddLink->Enable(false);
                   m_toggleBtnEdit->Enable(false);
+                  m_toggleBtnEdit->SetValue(false);
                   m_checkBoxShowName->Enable(false);
                   m_checkBoxVisible->Enable(false);
             }
@@ -2613,7 +2614,7 @@ void MarkInfoImpl::dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxCo
                   ((wxTextCtrl*)win)->SetBackgroundColour(col);
 
             else if(win->IsKindOf(CLASSINFO(wxBitmapComboBox)))
-                  ((wxBitmapComboBox*)win)->SetBackgroundColour(col);
+                  ((wxBitmapComboBox*)win)->GetTextCtrl()->SetBackgroundColour(col);
 
             else if(win->IsKindOf(CLASSINFO(wxChoice)))
                   ((wxChoice*)win)->SetBackgroundColour(col1);

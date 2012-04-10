@@ -1869,14 +1869,15 @@ void S57Reader::AssembleAreaGeometry( DDFRecord * poFRecord,
             int nVC_RCID1 = 0;
             int nVC_RCIDStart, nVC_RCIDEnd;
 
-            if(poField->GetRepeatCount() > 1)
+            if(poField && poField->GetRepeatCount() > 1)
             {
                   nVC_RCID0 = ParseName( poField, 0 );
                   nVC_RCID1 = ParseName( poField, 1 );
             }
             else
             {
-                  nVC_RCID0 = ParseName( poField, 0 );
+                  if (poField)
+                        nVC_RCID0 = ParseName( poField, 0 );
                   DDFField * poFieldEnd = poSRecord->FindField( "VRPT", 1 );
                   if(poFieldEnd)
                         nVC_RCID1 = ParseName( poFieldEnd, 0 );

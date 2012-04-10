@@ -53,6 +53,7 @@ IF (NOT WIN32)
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
     SET (PACKAGE_DEPS "libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libsdl1.2debian")
+    SET (PACKAGE_RECS "xcalib") 
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "amd64")
@@ -83,6 +84,11 @@ IF (NOT WIN32)
       SET (LIB_INSTALL_DIR "lib")
     ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
   ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+  IF(APPLE)
+    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET(ARCH "x86_64")
+    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+  ENDIF()
 ELSE (NOT WIN32)
   # On WIN32 probably CMAKE_SIZEOF_VOID_P EQUAL 8, but we don't use it at all now...
   SET (ARCH "i386")
@@ -149,7 +155,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
-  ADD_DEFINITIONS( "-Wall -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
 ENDIF(NOT WIN32)
 
@@ -292,6 +298,9 @@ SET(HDRS
                 include/pluginmanager.h
                 include/ocpn_plugin.h
 		include/gpxdocument.h
+                include/wx/json_defs.h
+                include/wx/jsonwriter.h
+
 )
 
 SET(SRCS 
@@ -319,6 +328,9 @@ SET(SRCS
 		src/ais.cpp
                 src/pluginmanager.cpp
 		src/gpxdocument.cpp
+            	src/wxJSON/jsonwriter.cpp
+            	src/wxJSON/jsonval.cpp
+
     )
 
 IF(wx_Version MATCHES "2.9")
@@ -971,6 +983,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "Dave Register <bdbcat@yahoo.com>")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
+    SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
     SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
     SET(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
     SET(CPACK_DEBIAN_PACKAGE_SECTION "Miscellaneous")

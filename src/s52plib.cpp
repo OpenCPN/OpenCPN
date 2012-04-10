@@ -917,6 +917,7 @@ Rules *s52plib::StringToRules ( const wxString& str_in )
       Rules *last;
       char strk[20];
 
+      //    Allocate and pre-clear the Rules structure
       Rules *r = ( Rules* ) calloc ( 1, sizeof ( Rules ) );
       top = r;
       last = top;
@@ -1689,6 +1690,35 @@ int s52plib::S52_load_Plib ( const wxString& PLib )
       return 1;
 }
 
+void s52plib::ClearRulesCache(Rule *pR)          //  Clear out any existing cached symbology
+{
+      switch(pR->parm0)
+      {
+            case ID_wxBitmap:
+            {
+                  wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
+                  delete pbm;
+                  pR->pixelPtr = NULL;
+                  pR->parm0 = ID_EMPTY;
+                  break;
+            }
+            case ID_RGBA:
+            {
+                  unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
+                  free ( p );
+                  pR->pixelPtr = NULL;
+                  pR->parm0 = ID_EMPTY;
+                  break;
+            }
+            case ID_EMPTY:
+            default:
+                  break;
+      }
+
+}
+
+
+
 void s52plib::DestroyPatternRuleNode ( Rule *pR )
 {
       if ( pR )
@@ -1737,28 +1767,7 @@ void s52plib::DestroyRuleNode ( Rule *pR )
 
             free ( pR->colRef.SCRF );
 
-            if ( pR->parm0 && pR->pixelPtr )
-            {
-                  switch(pR->parm0)
-                  {
-                        case ID_wxBitmap:
-                        {
-                              wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                              delete pbm;
-                              pR->pixelPtr = NULL;
-                              pR->parm0 = 0;
-                              break;
-                        }
-                        case ID_RGBA:
-                        {
-                              unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
-                              free ( p );
-                              pR->pixelPtr = NULL;
-                              pR->parm0 = 0;
-                              break;
-                        }
-                  }
-            }
+            ClearRulesCache(pR);          //  Clear out any existing cached symbology
 
             if ( pR->pixelPtr )
             {
@@ -1796,28 +1805,7 @@ void s52plib::DestroyRules ( RuleHash *rh )
 
                   free ( pR->colRef.SCRF );
 
-                  if ( pR->parm0 && pR->pixelPtr )
-                  {
-                        switch(pR->parm0)
-                        {
-                              case ID_wxBitmap:
-                              {
-                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                                    delete pbm;
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                              case ID_RGBA:
-                              {
-                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
-                                    free ( p );
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                        }
-                  }
+                  ClearRulesCache(pR);
             }
       }
 
@@ -1841,30 +1829,7 @@ void s52plib::FlushSymbolCaches ( void )
       {
             pR = it->second;
             if ( pR )
-            {
-                  if ( pR->parm0 && pR->pixelPtr )
-                  {
-                        switch(pR->parm0)
-                        {
-                              case ID_wxBitmap:
-                              {
-                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                                    delete pbm;
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                              case ID_RGBA:
-                              {
-                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
-                                    free ( p );
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                        }
-                  }
-            }
+                  ClearRulesCache(pR);
       }
 
       //    Flush any pattern definitions
@@ -1979,28 +1944,7 @@ void s52plib::DestroyLUP ( LUPrec *pLUP )
 
                   free ( pR->colRef.SCRF );
 
-                  if ( pR->parm0 && pR->pixelPtr )
-                  {
-                        switch(pR->parm0)
-                        {
-                              case ID_wxBitmap:
-                              {
-                                    wxBitmap *pbm = ( wxBitmap * ) ( pR->pixelPtr );
-                                    delete pbm;
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                              case ID_RGBA:
-                              {
-                                    unsigned char *p = ( unsigned char * ) ( pR->pixelPtr );
-                                    free ( p );
-                                    pR->pixelPtr = NULL;
-                                    pR->parm0 = 0;
-                                    break;
-                              }
-                        }
-                  }
+                  ClearRulesCache(pR);
 
                   free ( pR );
             }
@@ -2845,26 +2789,29 @@ bool s52plib::RenderText ( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pR
                                     draw_height += yp;
                               }
 
-                              glColor4f(1, 1, 1, 1);
+                              if((draw_width > 0) && (draw_height > 0))
+                              {
+                                    glColor4f(1, 1, 1, 1);
 
-                              glEnable(GL_BLEND);
-                              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                              glPixelZoom(1, -1);
+                                    glEnable(GL_BLEND);
+                                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                                    glPixelZoom(1, -1);
 
-                              glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+                                    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
 
-                              glPixelStorei(GL_UNPACK_ROW_LENGTH, ptext->RGBA_width);
+                                    glPixelStorei(GL_UNPACK_ROW_LENGTH, ptext->RGBA_width);
 
-                              glRasterPos2i(xp + x_offset, yp + y_offset);
+                                    glRasterPos2i(xp + x_offset, yp + y_offset);
 
-                              glPixelStorei(GL_UNPACK_SKIP_PIXELS, x_offset);
-                              glPixelStorei(GL_UNPACK_SKIP_ROWS, y_offset);
+                                    glPixelStorei(GL_UNPACK_SKIP_PIXELS, x_offset);
+                                    glPixelStorei(GL_UNPACK_SKIP_ROWS, y_offset);
 
-                              glDrawPixels(draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, ptext->m_pRGBA);
-                              glPixelZoom(1, 1);
-                              glDisable(GL_BLEND);
+                                    glDrawPixels(draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, ptext->m_pRGBA);
+                                    glPixelZoom(1, 1);
+                                    glDisable(GL_BLEND);
 
-                              glPopClientAttrib();
+                                    glPopClientAttrib();
+                              }
                         }     // bdraw
 
                   }
@@ -3908,7 +3855,7 @@ unsigned char *GetRGBA_Array(wxImage &Image)
 
 
 
-bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoint &r, ViewPort *vp, float rot_angle )
+bool s52plib::RenderHPGL ( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp, float rot_angle )
 {
       float fsf = 100 / canvas_pix_per_mm;
 
@@ -3923,32 +3870,27 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
       int pivot_x = prule->pos.symb.pivot_x.SYCL;
       int pivot_y = prule->pos.symb.pivot_y.SYRW;
 
+      //    Check to see if any cached data is valid
+      bool b_dump_cache = false;
+      if ( prule->pixelPtr)
+      {
+            if(m_pdc)
+            {
+                  if(prule->parm0 != ID_wxBitmap)
+                        b_dump_cache = true;
+            }
+            else
+            {
+                  if(prule->parm0 != ID_RGBA)
+                        b_dump_cache = true;
+            }
+      }
+
       //Instantiate the symbol if necessary
-      if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) )
+      if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) || b_dump_cache )
       {
              // delete any old private data
-            if ( prule->parm0 && prule->pixelPtr )
-            {
-                  switch(prule->parm0)
-                  {
-                        case ID_wxBitmap:
-                        {
-                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
-                              delete pbm;
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                        case ID_RGBA:
-                        {
-                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
-                              free ( p );
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                  }
-            }
+            ClearRulesCache(prule);
 
 //            if((width == 0) || (height == 0))
 //                  int yyp = 4;
@@ -3993,7 +3935,7 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
             //      Associate the mask with the bitmap
             sbm->SetMask ( pmask );
 
-            if(!pdc)          // opengl
+            if(!m_pdc)          // opengl
             {
             //    Create a byte data accessible wxImage from the wxBitmap
                   wxImage Image = sbm->ConvertToImage();
@@ -4032,12 +3974,12 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
       //    then render the symbol directly in HPGL
       if ( ( int ) rot_angle != prule->parm4 )
       {
-            if(pdc)
+            if(m_pdc)
             {
                   char *str = prule->vector.LVCT;
                   char *col = prule->colRef.LCRF;
                   wxPoint pivot ( prule->pos.line.pivot_x.LICL, prule->pos.line.pivot_y.LIRW );
-                  RenderHPGLtoDC ( str, col, pdc, r, pivot, ( double ) rot_angle );
+                  RenderHPGLtoDC ( str, col, m_pdc, r, pivot, ( double ) rot_angle );
             }
             else
             {
@@ -4144,7 +4086,7 @@ bool s52plib::RenderHPGL ( ObjRazRules *rzRules,  Rule *prule, wxDC *pdc, wxPoin
             mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
 
             //      Blit  it into the target dc
-            pdc->Blit ( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+            m_pdc->Blit ( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
 
       // Debug
       //    pdc->SetPen(wxPen(*wxGREEN, 1));
@@ -4274,7 +4216,7 @@ wxImage s52plib::RuleXBMToImage ( Rule *prule )
 //      Symbol is instantiated as a bitmap the first time it is needed
 //      and re-built on color scheme change
 //
-bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc, wxPoint &r, ViewPort *vp, float rot_angle )
+bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp, float rot_angle )
 {
 
 //        int width  = prule->pos.line.bnbox_w.SYHL;
@@ -4283,36 +4225,31 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
       int pivot_x = prule->pos.line.pivot_x.SYCL;
       int pivot_y = prule->pos.line.pivot_y.SYRW;
 
+      //    Check to see if any cached data is valid
+      bool b_dump_cache = false;
+      if ( prule->pixelPtr)
+      {
+            if(m_pdc)
+            {
+                  if(prule->parm0 != ID_wxBitmap)
+                        b_dump_cache = true;
+            }
+            else
+            {
+                  if(prule->parm0 != ID_RGBA)
+                        b_dump_cache = true;
+            }
+      }
+
       //Instantiate the symbol if necessary
-      if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) )
+      if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) || b_dump_cache)
       {
             wxImage Image = RuleXBMToImage ( prule );
 
             // delete any old private data
-            if ( prule->parm0 && prule->pixelPtr )
-            {
-                  switch(prule->parm0)
-                  {
-                        case ID_wxBitmap:
-                        {
-                              wxBitmap *pbm = ( wxBitmap * ) ( prule->pixelPtr );
-                              delete pbm;
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                        case ID_RGBA:
-                        {
-                              unsigned char *p = ( unsigned char * ) ( prule->pixelPtr );
-                              free ( p );
-                              prule->pixelPtr = NULL;
-                              prule->parm0 = 0;
-                              break;
-                        }
-                  }
-            }
+            ClearRulesCache(prule);
 
-            if(!pdc)          // opengl
+            if(!m_pdc)          // opengl
             {
             //    Get the glRGBA format data from the wxImage
                   unsigned char *d = Image.GetData();
@@ -4385,7 +4322,7 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
       //        Get the bounding box for the to-be-drawn symbol
       int b_width, b_height;
 
-      if(!pdc)          // opengl
+      if(!m_pdc)          // opengl
       {
             b_width  = prule->parm2;
             b_height = prule->parm3;
@@ -4417,7 +4354,7 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
 
       //      Now render the symbol
 
-      if(!pdc)          // opengl
+      if(!m_pdc)          // opengl
       {
             glColor4f(1, 1, 1, 1);
 
@@ -4438,7 +4375,7 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxDC *pdc,
             mdc.SelectObject ( ( wxBitmap & ) ( * ( ( wxBitmap * ) ( prule->pixelPtr ) ) ) );
 
             //      Blit it into the target dc
-            pdc->Blit ( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
+            m_pdc->Blit ( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0, 0, wxCOPY,  true );
 // Debug
 //    pdc->SetPen(wxPen(*wxGREEN, 1));
 //    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
@@ -4513,10 +4450,10 @@ int s52plib::RenderSY ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //  Render a raster or vector symbol, as specified by LUP rules
             if ( rules->razRule->definition.SYDF == 'V' )
-                  RenderHPGL ( rzRules, rules->razRule, m_pdc, r, vp, angle );
+                  RenderHPGL ( rzRules, rules->razRule, r, vp, angle );
 
             else if ( rules->razRule->definition.SYDF == 'R' )
-                  RenderRasterSymbol ( rzRules, rules->razRule, m_pdc, r, vp, angle );
+                  RenderRasterSymbol ( rzRules, rules->razRule, r, vp, angle );
 
       }
 
@@ -5493,9 +5430,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             width = ( rad * 2 ) + 28;
             height = ( rad * 2 ) + 28;
-            wxBitmap *pbm = new wxBitmap ( width, height, -1 );
+            wxBitmap bm( width, height, -1 );
             wxMemoryDC mdc;
-            mdc.SelectObject ( *pbm );
+            mdc.SelectObject ( bm );
             mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
             mdc.Clear();
 
@@ -5617,9 +5554,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   mdc.SelectObject ( wxNullBitmap );
 
                   //          Get smallest containing bitmap
-                  sbm = new wxBitmap ( pbm->GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+                  sbm = new wxBitmap ( bm.GetSubBitmap ( wxRect ( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
 
-                  delete pbm;
+//                  delete pbm;
 
                   //      Make the mask
                   wxMask *pmask = new wxMask ( *sbm, m_unused_wxColor );
@@ -5628,28 +5565,7 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   sbm->SetMask ( pmask );
 
                   // delete any old private data
-                  if ( rules->razRule->parm0 && rules->razRule->pixelPtr )
-                  {
-                        switch(rules->razRule->parm0)
-                        {
-                              case ID_wxBitmap:
-                              {
-                                    wxBitmap *pbm = ( wxBitmap * ) ( rules->razRule->pixelPtr );
-                                    delete pbm;
-                                    rules->razRule->pixelPtr = NULL;
-                                    rules->razRule->parm0 = 0;
-                                    break;
-                              }
-                              case ID_RGBA:
-                              {
-                                    unsigned char *p = ( unsigned char * ) ( rules->razRule->pixelPtr );
-                                    free ( p );
-                                    rules->razRule->pixelPtr = NULL;
-                                    rules->razRule->parm0 = 0;
-                                    break;
-                              }
-                        }
-                  }
+                  ClearRulesCache(rules->razRule);
             }
 
             //      Save the bitmap ptr and aux parms in the rule
@@ -5660,7 +5576,7 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             prule->parm3 = bm_orgy - height/2;
             prule->parm5 = bm_width;
             prule->parm6 = bm_height;
-      }
+      }		// instantiation
 
 
       if(!m_pdc)        // opengl
@@ -5685,6 +5601,9 @@ int s52plib::RenderCARC ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                   wxColour colorb = S52_getwxColour ( outline_color );
                   glColor4ub(colorb.Red(), colorb.Green(), colorb.Blue(), 255);
                   glLineWidth(outline_width);
+
+                  if(sectr1 > sectr2)
+                        sectr2 += 360;
 
                   glBegin(GL_LINE_STRIP);
                   for(double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a+=2*M_PI/200)
@@ -7862,9 +7781,14 @@ int s52plib::RenderToGLAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             //    Get the pattern definition
-            if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
+            if ( ( rules->razRule->pixelPtr == NULL ) ||
+                   ( rules->razRule->parm1 != m_colortable_index ) ||
+                   ( rules->razRule->parm0 != ID_GL_PATT_SPEC ) )
             {
                   render_canvas_parms *patt_spec = CreatePatternBufferSpec(rzRules, rules, vp, 32, true);
+
+                  ClearRulesCache(rules->razRule);          //  Clear out any existing cached symbology
+
                   rules->razRule->pixelPtr = patt_spec;
                   rules->razRule->parm1 = m_colortable_index;
                   rules->razRule->parm0 = ID_GL_PATT_SPEC;
@@ -8280,160 +8204,14 @@ int s52plib::RenderToBufferAP ( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
 {
       wxImage Image;
 
-      if ( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) )
+      if ( ( rules->razRule->pixelPtr == NULL ) ||
+             ( rules->razRule->parm1 != m_colortable_index )  ||
+             ( rules->razRule->parm0 != ID_RGB_PATT_SPEC ) )
       {
             render_canvas_parms *patt_spec = CreatePatternBufferSpec(rzRules, rules, vp, BPP);
-#if 0
-            Rule *prule = rules->razRule;
 
-            bool bstagger_pattern = (prule->fillType.PATP == 'S');
+            ClearRulesCache(rules->razRule);          //  Clear out any existing cached symbology
 
-            //      Create a wxImage of the pattern drawn on an "unused_color" field
-            if ( prule->definition.SYDF == 'R' )
-                  Image = RuleXBMToImage ( rules->razRule );
-
-
-            else          // Vector
-            {
-                  float fsf = 100 / canvas_pix_per_mm;
-
-                  // Base bounding box
-                  wxBoundingBox box ( prule->pos.patt.bnbox_x.PBXC,  prule->pos.patt.bnbox_y.PBXR,
-                                      prule->pos.patt.bnbox_x.PBXC + prule->pos.patt.bnbox_w.PAHL,
-                                      prule->pos.patt.bnbox_y.PBXR +prule->pos.patt.bnbox_h.PAVL );
-
-                  // Expand to include pivot
-                  box.Expand ( prule->pos.patt.pivot_x.PACL,  prule->pos.patt.pivot_y.PARW );
-
-                  //    Pattern bounding boxes may be offset from origin, to preset the spacing
-                  //    So, the bitmap must be delta based.
-                  double dwidth = box.GetMaxX() - box.GetMinX();
-                  double dheight = box.GetMaxY() - box.GetMinY();
-
-                  //  Add in the pattern spacing parameters
-                  dwidth  += prule->pos.patt.minDist.PAMI;
-                  dheight += prule->pos.patt.minDist.PAMI;
-
-                  //  Prescale
-                  dwidth  /= fsf;
-                  dheight /= fsf;
-
-                  int width = ( int ) dwidth + 1;
-                  int height = ( int ) dheight + 1;
-
-
-                  //      Instantiate the vector pattern to a wxBitmap
-                  wxMemoryDC mdc;
-                  wxBitmap *pbm = NULL;
-
-                  if ( ( 0 != width ) && ( 0 != height ) )
-                  {
-                        pbm = new wxBitmap ( width, height );
-
-                        mdc.SelectObject ( *pbm );
-                        mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
-                        mdc.Clear();
-
-                        //    For pattern debugging
-//                              mdc.SetPen(*wxGREEN_PEN);
-//                              mdc.DrawRectangle(0, 0, width, height);
-//                              mdc.SetPen(wxNullPen);
-
-                        int pivot_x = prule->pos.patt.pivot_x.PACL;
-                        int pivot_y = prule->pos.patt.pivot_y.PARW ;
-
-                        char *str = prule->vector.LVCT;
-                        char *col = prule->colRef.LCRF;
-                        wxPoint pivot ( pivot_x, pivot_y );
-                        wxPoint r0 ( ( int ) ( (pivot_x  - box.GetMinX())/fsf ) + 1, ( int ) (( pivot_y - box.GetMinY())/fsf ) + 1 );
-                        RenderHPGLtoDC ( str, col, &mdc, r0, pivot, 0 );
-                  }
-                  else
-                  {
-                        pbm = new wxBitmap ( 2, 2 );                // substitute small, blank pattern
-                        mdc.SelectObject ( *pbm );
-                        mdc.SetBackground ( wxBrush (m_unused_wxColor ) );
-                        mdc.Clear();
-                  }
-
-                  //    Build a wxImage from the wxBitmap
-                  Image = pbm->ConvertToImage();
-
-                  delete pbm;
-                  mdc.SelectObject ( wxNullBitmap );
-
-            }
-
-
-
-
-//  Convert the initial wxImage in the rule to a useful PixelBuff
-
-            int sizey = Image.GetHeight();
-            int sizex = Image.GetWidth();
-
-            render_canvas_parms *patt_spec = new render_canvas_parms;
-            patt_spec->depth = BPP;                              // set the depth
-
-            patt_spec->pb_pitch = ( ( sizex * patt_spec->depth / 8 ) );
-            patt_spec->lclip = 0;
-            patt_spec->rclip = sizex - 1;
-            patt_spec->pix_buff = ( unsigned char * ) malloc ( sizey * patt_spec->pb_pitch );
-
-            // Preset background
-            memset ( patt_spec->pix_buff, 0,sizey * patt_spec->pb_pitch );
-            patt_spec->width = sizex;
-            patt_spec->height = sizey;
-            patt_spec->x = 0;
-            patt_spec->y = 0;
-            patt_spec->b_stagger = bstagger_pattern;
-
-            unsigned char *pd0 = patt_spec->pix_buff;
-            unsigned char *pd;
-            unsigned char *ps0 = Image.GetData();
-            unsigned char *ps;
-
-            if ( pb_spec->depth == 24 )
-            {
-                  for ( int iy = 0 ; iy < sizey ; iy++ )
-                  {
-                        pd = pd0 + ( iy * patt_spec->pb_pitch );
-                        ps = ps0 + ( iy * sizex * 3 );
-                        for ( int ix = 0 ; ix<sizex ; ix++ )
-                        {
-#ifdef ocpnUSE_ocpnBitmap
-                              unsigned char c1 = *ps++;
-                              unsigned char c2 = *ps++;
-                              unsigned char c3 = *ps++;
-
-                              *pd++ = c3;
-                              *pd++ = c2;
-                              *pd++ = c1;
-#else
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-#endif
-                        }
-                  }
-            }
-
-            else if ( pb_spec->depth == 32 )
-            {
-                  for ( int iy = 0 ; iy < sizey ; iy++ )
-                  {
-                        pd = pd0 + ( iy * patt_spec->pb_pitch );
-                        ps = ps0 + ( iy * sizex * 3 );
-                        for ( int ix = 0 ; ix<sizex ; ix++ )
-                        {
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-                              pd++;
-                        }
-                  }
-            }
-#endif
             rules->razRule->pixelPtr = patt_spec;
             rules->razRule->parm1 = m_colortable_index;
             rules->razRule->parm0 = ID_RGB_PATT_SPEC;

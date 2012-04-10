@@ -47,8 +47,13 @@
 #include "routeman.h"
 #include "navutil.h"
 
+#ifdef __WXMAC__
+#include "wx/mac/private.h"
+#endif
+
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;
+extern MyFrame          *gFrame;
 
 extern                  double gCog;
 extern                  double gSog;
@@ -68,12 +73,17 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
-            wxWindow(frame, wxID_ANY,   wxPoint(20,20), wxSize(5,5),wxNO_BORDER/*wxSUNKEN_BORDER | wxCLIP_CHILDREN*/ )
+            wxDialog(frame, wxID_ANY, _T(""), wxPoint(-1, -1), wxSize(-1, -1),wxNO_BORDER | wxCLIP_CHILDREN | wxSTAY_ON_TOP )
 {
+
+#ifdef __WXMAC__        //This does not work.....
+//      ChangeWindowAttributes( (WindowRef)m_macWindow, kWindowNoShadowAttribute, 0 );
+//      ChangeWindowAttributes( (WindowRef)m_macWindow, kWindowHideOnSuspendAttribute, 0);
+#endif
       m_pParent = frame;
 
       pThisLegBox = new wxStaticBox(this, -1, _("This Leg"), wxPoint(1,1),
-                                    wxSize(170,200), 0, _T("staticBox"));
+                                    wxSize(170,200), wxCLIP_CHILDREN, _T("staticBox"));
 
       m_pitemStaticBoxSizerLeg = new wxStaticBoxSizer(pThisLegBox, wxVERTICAL);
 
@@ -170,11 +180,22 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
       {
             if(m_bNeedClear)
             {
-                  ClearBackground();
+//                  ClearBackground();
                   pThisLegBox->Refresh();
                   m_bNeedClear = false;
             }
 
+            UpdateRouteData();
+      }
+}
+
+
+void ConsoleCanvas::UpdateRouteData()
+{
+      wxString str_buf;
+
+      if(g_pRouteMan->GetpActiveRoute())
+      {
 
             if(g_pRouteMan->m_bDataValid)
             {
@@ -189,16 +210,16 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                   if((deltarng > .01) && ((deltarng / rng) > .10) && (rng < 10.0))        // show if there is more than 10% difference in ranges, etc...
                   {
                         if(nrng < 10.0)
-                            srng.Printf(_T("%5.2f/%5.2f"), rng, nrng );
+                              srng.Printf(_T("%5.2f/%5.2f"), rng, nrng );
                         else
-                            srng.Printf(_T("%5.1f/%5.1f"), rng, nrng );
+                              srng.Printf(_T("%5.1f/%5.1f"), rng, nrng );
                   }
                   else
                   {
                         if(rng < 10.0)
-                            srng.Printf(_T("%6.2f"), rng );
+                              srng.Printf(_T("%6.2f"), rng );
                         else
-                            srng.Printf(_T("%6.1f"), rng );
+                              srng.Printf(_T("%6.1f"), rng );
                   }
 
 
@@ -216,9 +237,9 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                   str_buf.Printf(_T("%6.2f"), g_pRouteMan->GetCurrentXTEToActivePoint());
                   pXTE->SetAValue(str_buf);
                   if(g_pRouteMan->GetXTEDir() < 0)
-                      pXTE->SetALabel(wxString(_("XTE         L")));
+                        pXTE->SetALabel(wxString(_("XTE         L")));
                   else
-                      pXTE->SetALabel(wxString(_("XTE         R")));
+                        pXTE->SetALabel(wxString(_("XTE         R")));
 
 //    VMG
                   // VMG is always to next waypoint, not to end of route
@@ -277,9 +298,9 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
 //                total rng
                   wxString strng;
                   if(trng < 10.0)
-                      strng.Printf(_T("%6.2f"), trng );
+                        strng.Printf(_T("%6.2f"), trng );
                   else
-                      strng.Printf(_T("%6.1f"), trng );
+                        strng.Printf(_T("%6.1f"), trng );
 
                   if(m_bShowRouteTotal)
                         pRNG->SetAValue(strng);
@@ -320,22 +341,27 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
                         pXTE->SetAValue(seta);
                         pXTE->SetALabel(wxString(_("ETA          ")));
                   }
+
+
+                  pRNG->Refresh();
+                  pBRG->Refresh();
+                  pVMG->Refresh();
+                  pTTG->Refresh();
+                  pXTE->Refresh();
             }
       }
 }
 
-
-void ConsoleCanvas::UpdateRouteData()
+void ConsoleCanvas::RefreshConsoleData(void)
 {
-      if(g_pRouteMan->GetpActiveRoute())
-      {
-            m_bRouteDataStale = true;
-            Refresh(true);
-      }
-      else if(!IsShown())
-      {
-            m_bNeedClear = true;
-      }
+      UpdateRouteData();
+
+      pRNG->Refresh();
+      pBRG->Refresh();
+      pVMG->Refresh();
+      pTTG->Refresh();
+      pXTE->Refresh();
+      pCDI->Refresh();
 }
 
 
@@ -349,6 +375,8 @@ void ConsoleCanvas::OnLegRouteButton(wxCommandEvent& event)
             pThisLegBox->SetLabel(_("This Leg"));
 
       pThisLegBox->Refresh(true);
+
+      RefreshConsoleData();       // to pick up changes in the annunciator contents
 }
 
 void ConsoleCanvas::MouseEvent(wxMouseEvent& event)
@@ -379,10 +407,12 @@ void ConsoleCanvas::MouseEvent(wxMouseEvent& event)
 ///  Why is this necessary???
 //    Because of the CaptureMouse call in chcanv.cpp when mouse enters concanv region
 
+///   Became unnecessary when console became a wxDialog
+/*
       wxRect rr = GetRect();
       if(!rr.Contains(x + rr.x, y + rr.y) )
             ReleaseMouse();
-
+*/
 #endif
 
 
@@ -394,8 +424,13 @@ void ConsoleCanvas::MouseLostCaptureEvent(wxMouseCaptureLostEvent& event)
 
 void ConsoleCanvas::ShowWithFreshFonts(void)
 {
+      Hide();
+      Move(0,0);
+
       UpdateFonts();
+      gFrame->PositionConsole();
       Show();
+
 }
 
 void ConsoleCanvas::UpdateFonts(void)
