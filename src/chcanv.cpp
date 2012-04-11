@@ -5560,7 +5560,7 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
         icon_rad += PI;
 
         if(pSog < 0.2)
-              icon_rad = ((icon_hdt + 90.) * PI / 180.) + GetVP().skew;
+              icon_rad = ((icon_hdt + 90.) * PI / 180.) + GetVP().rotation;
 
 
 //    Calculate ownship Heading pointer as a predictor
