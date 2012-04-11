@@ -47,10 +47,6 @@
 #include "routeman.h"
 #include "navutil.h"
 
-#ifdef __WXMAC__
-#include "wx/mac/private.h"
-#endif
-
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;
 extern MyFrame          *gFrame;
@@ -76,10 +72,6 @@ ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
             wxDialog(frame, wxID_ANY, _T(""), wxPoint(-1, -1), wxSize(-1, -1),wxNO_BORDER | wxCLIP_CHILDREN | wxSTAY_ON_TOP )
 {
 
-#ifdef __WXMAC__        //This does not work.....
-//      ChangeWindowAttributes( (WindowRef)m_macWindow, kWindowNoShadowAttribute, 0 );
-//      ChangeWindowAttributes( (WindowRef)m_macWindow, kWindowHideOnSuspendAttribute, 0);
-#endif
       m_pParent = frame;
 
       pThisLegBox = new wxStaticBox(this, -1, _("This Leg"), wxPoint(1,1),
