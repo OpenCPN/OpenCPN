@@ -501,6 +501,7 @@ bool             g_bTrackDaily;
 bool             g_bHighliteTracks;
 int              g_route_line_width;
 int              g_track_line_width;
+wxString         g_default_wp_icon;
 
 Track            *g_pActiveTrack;
 double           g_TrackIntervalSeconds;
@@ -5114,7 +5115,7 @@ void MyFrame::ActivateMOB(void)
             double zlat, zlon;
             ll_gc_ll(gLat, gLon, gCog, 1.0, &zlat, &zlon);
 
-            RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _( "1.0 NM along COG" ) ), GPX_EMPTY_STRING );
+            RoutePoint *pWP_src = new RoutePoint ( zlat, zlon, g_default_wp_icon, wxString ( _( "1.0 NM along COG" ) ), GPX_EMPTY_STRING );
             pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_src );
 
             Route *temp_route = new Route();

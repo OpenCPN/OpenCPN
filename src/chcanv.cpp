@@ -252,6 +252,7 @@ extern bool             g_b_assume_azerty;
 
 extern int              g_GroupIndex;
 extern ChartGroupArray  *g_pGroupArray;
+extern wxString         g_default_wp_icon;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -4282,7 +4283,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                case 13:                     // Ctrl M                      //    Drop Marker;
                {
                     RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon,
-                                wxString ( _T ( "triangle" ) ), wxString ( _T( "" ) ), GPX_EMPTY_STRING );
+                                g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
                     pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
                     pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
@@ -8876,10 +8877,10 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_DEF_MENU_GOTO_HERE:
               {
-                    RoutePoint *pWP_dest = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                    RoutePoint *pWP_dest = new RoutePoint ( zlat, zlon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                     pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP_dest );
 
-                    RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                    RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                     pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
 
                     Route *temp_route = new Route();
@@ -8908,7 +8909,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
               case ID_DEF_MENU_DROP_WP:
                 {
-                        RoutePoint *pWP = new RoutePoint ( zlat, zlon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                        RoutePoint *pWP = new RoutePoint ( zlat, zlon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
                         pSelect->AddSelectableRoutePoint ( zlat, zlon, pWP );
                         pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
@@ -8926,7 +8927,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_WP_MENU_GOTO:
                   {
-                        RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, wxString ( _T ( "triangle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                        RoutePoint *pWP_src = new RoutePoint ( gLat, gLon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                         pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP_src );
 
                         Route *temp_route = new Route();

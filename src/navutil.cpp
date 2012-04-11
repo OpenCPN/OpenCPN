@@ -297,6 +297,7 @@ extern bool             g_bHighliteTracks;
 
 extern int              g_route_line_width;
 extern int              g_track_line_width;
+extern wxString         g_default_wp_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
@@ -3597,7 +3598,7 @@ int MyConfig::LoadMyConfig ( int iteration )
                         Read ( sipbi, &icon_name );                       // icon
 
                         if ( icon_name.IsEmpty() )
-                              icon_name = _T ( "triangle" );
+                              icon_name = g_default_wp_icon;
 
                         wxString sipb1 = sipb;
                         sipb1.Append ( _T ( "GUID" ) );
@@ -3798,7 +3799,7 @@ int MyConfig::LoadMyConfig ( int iteration )
                   gpx_element = pNavObjectChangesSet->RootElement()->FirstChildElement("wpt");
                   while (gpx_element)
                   {
-                        RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)gpx_element, wxString( _T("triangle") ));
+                        RoutePoint *pWp = ::LoadGPXWaypoint((GpxWptElement *)gpx_element, g_default_wp_icon);
                         wxString action = wxString::FromUTF8( gpx_element->FirstChildElement("extensions")->FirstChildElement("opencpn:action")->GetText());
                         RoutePoint *pExisting = WaypointExists( pWp->m_GUID );
                         if (action == wxString(_T("add")))
@@ -3895,6 +3896,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "RouteLineWidth" ),  &g_route_line_width, 2 );
       Read ( _T ( "TrackLineWidth" ),  &g_track_line_width, 3 );
+      Read ( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
 
       return ( 0 );
 }
@@ -4612,6 +4614,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "RouteLineWidth" ), g_route_line_width );
       Write ( _T ( "TrackLineWidth" ), g_track_line_width );
+      Write ( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
       Flush();
 }
