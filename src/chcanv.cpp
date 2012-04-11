@@ -7723,7 +7723,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       }
 
 
-                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
+                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
                       pMousePoint->m_bShowName = false;
 
                       m_pMeasureRoute->AddPoint ( pMousePoint );

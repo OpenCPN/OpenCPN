@@ -438,7 +438,7 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
                   link = link->GetNext();
             }
       }
-      if (!sym.IsEmpty() && (sym != _T("empty")))
+      if (!sym.IsEmpty() /*&& (sym != _T("empty"))*/) //"empty" is a valid symbol for us, we need to preserve it, otherwise it would be non existent and replaced by a circle on next load...
             SetProperty(wxString(_T("sym")), sym);
       if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);

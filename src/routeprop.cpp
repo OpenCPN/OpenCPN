@@ -2614,7 +2614,7 @@ void MarkInfoImpl::dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxCo
                   ((wxTextCtrl*)win)->SetBackgroundColour(col);
 
             else if(win->IsKindOf(CLASSINFO(wxBitmapComboBox)))
-                  ((wxBitmapComboBox*)win)->GetTextCtrl()->SetBackgroundColour(col);
+                  ((wxBitmapComboBox*)win)->SetBackgroundColour(col);
 
             else if(win->IsKindOf(CLASSINFO(wxChoice)))
                   ((wxChoice*)win)->SetBackgroundColour(col1);
