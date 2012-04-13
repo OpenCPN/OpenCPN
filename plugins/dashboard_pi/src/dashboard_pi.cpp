@@ -1585,9 +1585,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
 {
       m_pauimgr = auimgr;
 
-      wxColour cl;
-      GetGlobalColor(_T("DILG1"), &cl);
-      SetBackgroundColour(cl);
+      DimeWindow(this);
 
 //wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
       itemBoxSizer = new wxBoxSizer(wxVERTICAL);
@@ -1605,9 +1603,8 @@ DashboardWindow::~DashboardWindow()
 
 void DashboardWindow::SetColorScheme(PI_ColorScheme cs)
 {
-      wxColour cl;
-      GetGlobalColor(_T("DILG1"), &cl);
-      SetBackgroundColour(cl);
+
+      DimeWindow(this);
 
       Refresh(false);
 }

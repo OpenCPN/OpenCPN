@@ -6874,20 +6874,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
 void CM93OffsetDialog::SetColorScheme()
 {
 
-      //    This needs to be done, but column headings are not affected,
-      //    which makes the list unreadable at night....
-
-      wxColour cl = GetGlobalColor ( _T ( "DILG1" ) );
-      SetBackgroundColour ( cl );
-      m_pListCtrlMCOVRs->SetBackgroundColour ( cl );
-      m_pSpinCtrlXoff->SetBackgroundColour ( cl );
-      m_pSpinCtrlYoff->SetBackgroundColour ( cl );
-
-      cl = GetGlobalColor ( _T ( "UINFD" ) );        // or UINFF
-      SetForegroundColour ( cl );
-      m_pListCtrlMCOVRs->SetForegroundColour ( cl );
-      m_pSpinCtrlXoff->SetForegroundColour ( cl );
-      m_pSpinCtrlYoff->SetForegroundColour ( cl );
+      DimeControl(this);
 
 }
 

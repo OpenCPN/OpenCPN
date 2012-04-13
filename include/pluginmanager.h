@@ -40,6 +40,12 @@
 #include "chcanv.h"                 // for ViewPort
 #include "nmea.h"                   // for GenericPosDat
 
+//For widgets...
+#include "wx/hyperlink.h"
+#include <wx/choice.h>
+#include <wx/tglbtn.h>
+#include <wx/bmpcbox.h>
+
 //    Include wxJSON headers
 //    We undefine MIN/MAX so avoid warning of redefinition coming from
 //    json_defs.h
@@ -203,6 +209,8 @@ public:
 
       wxString GetLastError();
       MyFrame *GetParentFrame(){ return pParent; }
+
+      void DimeWindow(wxWindow *win);
 
 private:
       bool DeactivatePlugIn(PlugInContainer *pic);

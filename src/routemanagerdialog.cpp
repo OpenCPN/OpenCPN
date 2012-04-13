@@ -769,57 +769,7 @@ RouteManagerDialog::~RouteManagerDialog()
 
 void RouteManagerDialog::SetColorScheme()
 {
-      //    This needs to be done, but column headings are not affected,
-      //    which makes the list unreadable at night....
-
-      wxColour cl = GetGlobalColor( _T("DILG1") );
-      SetBackgroundColour( cl );
-      m_pNotebook->SetBackgroundColour( cl );
-      m_pPanelRte->SetBackgroundColour( cl );
-      m_pPanelTrk->SetBackgroundColour( cl );
-      m_pPanelWpt->SetBackgroundColour( cl );
-      m_pPanelLay->SetBackgroundColour( cl );
-      m_pRouteListCtrl->SetBackgroundColour( cl );
-      m_pTrkListCtrl->SetBackgroundColour( cl );
-      m_pWptListCtrl->SetBackgroundColour( cl );
-      m_pLayListCtrl->SetBackgroundColour( cl );
-      btnRteDelete->SetBackgroundColour( cl );
-      btnRteExport->SetBackgroundColour( cl );
-      btnRteZoomto->SetBackgroundColour( cl );
-      btnRteProperties->SetBackgroundColour( cl );
-      btnRteActivate->SetBackgroundColour( cl );
-      btnRteReverse->SetBackgroundColour( cl );
-      btnRteSendToGPS->SetBackgroundColour( cl );
-      btnRteDeleteAll->SetBackgroundColour( cl );
-      btnTrkNew->SetBackgroundColour( cl );
-      btnTrkProperties->SetBackgroundColour( cl );
-      btnTrkDelete->SetBackgroundColour( cl );
-      btnTrkExport->SetBackgroundColour( cl );
-      btnTrkRouteFromTrack->SetBackgroundColour( cl );
-      btnTrkDeleteAll->SetBackgroundColour( cl );
-      btnWptNew->SetBackgroundColour( cl );
-      btnWptProperties->SetBackgroundColour( cl );
-      btnWptZoomto->SetBackgroundColour( cl );
-      btnWptDelete->SetBackgroundColour( cl );
-      btnWptGoTo->SetBackgroundColour( cl );
-      btnWptExport->SetBackgroundColour( cl );
-      btnWptSendToGPS->SetBackgroundColour( cl );
-      btnWptDeleteAll->SetBackgroundColour( cl );
-      btnLayNew->SetBackgroundColour( cl );;
-      //btnLayProperties->SetBackgroundColour( cl );
-      btnLayToggleChart->SetBackgroundColour( cl );
-      btnLayToggleListing->SetBackgroundColour( cl );
-      btnLayToggleNames->SetBackgroundColour( cl );
-      btnLayDelete->SetBackgroundColour( cl );;
-      btnImport->SetBackgroundColour( cl );
-      btnExport->SetBackgroundColour( cl );
-
-      cl = GetGlobalColor( _T( "UINFD" ) );          // or UINFF
-      SetForegroundColour( cl );
-      m_pRouteListCtrl->SetForegroundColour( cl );
-      m_pTrkListCtrl->SetForegroundColour( cl );
-      m_pWptListCtrl->SetForegroundColour( cl );
-      m_pLayListCtrl->SetForegroundColour( cl );
+      DimeControl(this);
 }
 
 void RouteManagerDialog::UpdateRouteListCtrl()

@@ -164,33 +164,17 @@ bool GRIBUIDialog::Create ( wxWindow *parent, grib_pi *ppi, wxWindowID id,
             return false;
 
 
-//      wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
-//      SetBackgroundColour ( back_color );
-
-//      m_dFont = pFontMgr->GetFont ( _T ( "GRIBUIDialog" ), 10 );
-//      SetFont ( *m_dFont );
-
-//      SetForegroundColour ( pFontMgr->GetFontColor ( _T ( "GRIBUIDialog" ) ) );
-
       m_pfolder_bitmap = new wxBitmap ( folder );   // comes from XPM include
 
       CreateControls();
 
-
- //     if ( CanSetTransparent() )
- //           SetTransparent ( 192 );
-
-// This ensures that the dialog cannot be sized smaller than the minimum size
-//      GetSizer()->SetSizeHints ( this );
+      DimeWindow(this);
 
       Fit();
       SetMinSize(GetBestSize());
 
       return true;
 }
-
-
-
 
 void GRIBUIDialog::CreateControls()
 {
@@ -320,7 +304,6 @@ void GRIBUIDialog::CreateControls()
       wxButton* bOK = new wxButton ( this, ID_OK, _( "&Close" ),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       AckBox->Add ( bOK, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-//      bOK->SetBackgroundColour ( button_color );
 }
 
 

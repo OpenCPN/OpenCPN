@@ -982,46 +982,7 @@ void RouteProp::CreateControls()
 
 void RouteProp::SetColorScheme(ColorScheme cs)
 {
-    SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-
-    wxColour back_color =GetGlobalColor(_T("DILG2"));
-    wxColour text_color = GetGlobalColor(_T("DILG3"));
-
-    m_RouteNameCtl->SetBackgroundColour(back_color);
-    m_RouteNameCtl->SetForegroundColour(text_color);
-
-    m_RouteStartCtl->SetBackgroundColour(back_color);
-    m_RouteStartCtl->SetForegroundColour(text_color);
-
-    m_RouteDestCtl->SetBackgroundColour(back_color);
-    m_RouteDestCtl->SetForegroundColour(text_color);
-
-    m_TotalDistCtl->SetBackgroundColour(back_color);
-    m_TotalDistCtl->SetForegroundColour(text_color);
-
-    m_PlanSpeedCtl->SetBackgroundColour(back_color);
-    m_PlanSpeedCtl->SetForegroundColour(text_color);
-
-    m_TimeEnrouteCtl->SetBackgroundColour(back_color);
-    m_TimeEnrouteCtl->SetForegroundColour(text_color);
-
-    m_StartTimeCtl->SetBackgroundColour(back_color);
-    m_StartTimeCtl->SetForegroundColour(text_color);
-
-    m_wpList->SetBackgroundColour(back_color);
-    m_wpList->SetForegroundColour(text_color);
-
-    m_ExtendButton->SetBackgroundColour(back_color);
-    m_ExtendButton->SetForegroundColour(text_color);
-
-    m_SplitButton->SetBackgroundColour(back_color);
-    m_SplitButton->SetForegroundColour(text_color);
-
-    m_CancelButton->SetBackgroundColour(back_color);
-    m_CancelButton->SetForegroundColour(text_color);
-
-    m_OKButton->SetBackgroundColour(back_color);
-    m_OKButton->SetForegroundColour(text_color);
+      DimeControl(this);
 }
 /*!
 * Should we show tooltips?
@@ -2181,23 +2142,9 @@ MarkInfoImpl::~MarkInfoImpl()
 
 void MarkInfoImpl::SetColorScheme(ColorScheme cs)
 {
-      /*SetBackgroundColour(GetGlobalColor(_T("DILG1")));
+      DimeControl(this);
 
-      wxColour back_color =GetGlobalColor(_T("DILG2"));
-      wxColour text_color = GetGlobalColor(_T("DILG3"));*/
-
-      wxColour col,col1,gridline,uitext,udkrd,back_color,text_color;
-      col = GetGlobalColor(_T("DILG0"));       // Dialog Background white
-      col1 = GetGlobalColor(_T("DILG1"));      // Dialog Background
-      back_color = GetGlobalColor(_T("DILG2"));// Control Background
-      text_color = GetGlobalColor(_T("DILG3"));// Text
-      uitext = GetGlobalColor(_T("UITX1"));    // Menu Text, derived from UINFF
-      udkrd = GetGlobalColor(_T("UDKRD"));
-      gridline = GetGlobalColor(_T("GREY2"));
-
-      dialogDimmer(cs, this, col, col1, back_color, text_color, uitext, udkrd);
-
-      m_pLinkProp->SetColorScheme(cs);
+      DimeControl(m_pLinkProp);
 }
 
 bool MarkInfoImpl::UpdateProperties(void)
@@ -2618,6 +2565,7 @@ void MarkInfoImpl::OnPositionCtlUpdated( wxCommandEvent& event )
     cc1->Refresh();
 }
 
+/*
 void MarkInfoImpl::dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd)
 {
       if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
@@ -2682,7 +2630,7 @@ void MarkInfoImpl::dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxCo
             }
       }
 }
-
+*/
 
 void MarkInfoImpl::OnHyperLinkClick(wxHyperlinkEvent &event)
 {
@@ -2763,21 +2711,7 @@ void MarkInfoImpl::ValidateMark(void)
 LinkPropImpl::LinkPropImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : LinkPropDlgDef( parent, id, title, pos, size, style )
 {
       m_parent = parent;
-      SetColorScheme((ColorScheme)0);
-}
-
-void LinkPropImpl::SetColorScheme(ColorScheme cs)
-{
-      wxColour col,col1,gridline,uitext,udkrd,back_color,text_color;
-      col = GetGlobalColor(_T("DILG0"));       // Dialog Background white
-      col1 = GetGlobalColor(_T("DILG1"));      // Dialog Background
-      back_color = GetGlobalColor(_T("DILG2"));// Control Background
-      text_color = GetGlobalColor(_T("DILG3"));// Text
-      uitext = GetGlobalColor(_T("UITX1"));    // Menu Text, derived from UINFF
-      udkrd = GetGlobalColor(_T("UDKRD"));
-      gridline = GetGlobalColor(_T("GREY2"));
-
-      ((MarkInfoImpl*)m_parent)->dialogDimmer(cs, this, col, col1, back_color, text_color, uitext, udkrd);
+      DimeControl(this);
 }
 
 void LinkPropImpl::OnLocalFileClick( wxCommandEvent& event )

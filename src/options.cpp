@@ -1361,23 +1361,7 @@ void options::CreateControls()
 
 void options::SetColorScheme(ColorScheme cs)
 {
-      SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-
-      wxColour back_color = GetGlobalColor(_T("DILG2"));
-      wxColour text_color = GetGlobalColor(_T("DILG3"));
-
-      SetControlColors(itemNotebook4, cs);
-      SetControlColors(itemPanel5, cs);
-      SetControlColors(itemPanel9, cs);
-      SetControlColors(ps57Ctl, cs);
-      SetControlColors(itemPanelFont, cs);
-//      SetControlColors(pDirCtl, cs);
-//      SetControlColors(pSelCtl, cs);
-//      SetControlColors(pListBox, cs);
-
-      SetControlColors(m_CancelButton, cs);
-      SetControlColors(m_OKButton, cs);
-
+      DimeControl(this);
 }
 
 
@@ -2302,11 +2286,6 @@ void options::CreateChartsPage()
       pUpdateCheckBox = new wxCheckBox( itemPanel9, ID_UPDCHECKBOX, _("Force Full Database Rebuild") );
       itemStaticBoxSizerUpdate->Add(pUpdateCheckBox, 1, wxALIGN_LEFT|wxALL, 5);
 
-
-          //      Establish control colors on deferred creation
-      SetControlColors(pSelCtl, (ColorScheme)0);
-      SetControlColors(pListBox, (ColorScheme)0);
-
       itemBoxSizer10->Layout();
 }
 
@@ -2327,10 +2306,6 @@ void options::PopulateChartsPage()
       itemStaticBoxSizer11->Add(itemBoxSizer14, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
       wxButton* itemButton15 = new wxButton( itemPanel9, ID_BUTTONADD, _("Add Selection") );
       itemBoxSizer14->Add(itemButton15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2);
-
-
-          //      Establish control colors on deferred creation
-      SetControlColors(pDirCtl, (ColorScheme)0);
 
           //        Fill in the control variable data
 
@@ -2356,6 +2331,8 @@ void options::PopulateChartsPage()
  //     pSelCtl->AppendText(SelDir);
 
       itemBoxSizer10->Layout();
+      DimeControl(pDirCtl);
+      DimeControl(pSelCtl);
 }
 
 
@@ -2536,6 +2513,9 @@ void options::OnPageChange(wxNotebookEvent& event)
 
                   m_itemBoxSizerFontPanel->Layout();
 
+                  DimeControl(m_itemFontElementListBox);
+                  DimeControl(m_itemLangListBox);
+
             }
       }
 }
@@ -2572,43 +2552,6 @@ void options::OnNMEASourceChoice(wxCommandEvent& event)
         m_itemNMEA_TCPIP_StaticBox->Disable();
         m_itemNMEA_TCPIP_Source->Disable();
     }
-}
-
-void options::SetControlColors(wxWindow *ctrl, ColorScheme cs)
-{
-      if(NULL != ctrl)
-      {
-            ctrl->SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-
-            wxColour back_color =GetGlobalColor(_T("DILG2"));
-            wxColour text_color = GetGlobalColor(_T("DILG3"));
-
-            ctrl->SetForegroundColour(text_color);
-
-            wxWindowList kids = ctrl->GetChildren();
-            for(unsigned int i = 0 ; i < kids.GetCount() ; i++)
-            {
-                  wxWindowListNode *node = kids.Item(i);
-                  wxWindow *win = node->GetData();
-
-                  if(win->IsKindOf(CLASSINFO(wxListBox)))
-                        win->SetBackgroundColour(back_color);
-
-                  else if(win->IsKindOf(CLASSINFO(wxGenericDirCtrl)))
-                        win->SetBackgroundColour(back_color);
-
-                  else if(win->IsKindOf(CLASSINFO(wxTextCtrl)))
-                        win->SetBackgroundColour(back_color);
-
-                  else if(win->IsKindOf(CLASSINFO(wxComboBox)))               // note ComboBoxes don't change bg properly on gtk
-                        win->SetBackgroundColour(back_color);
-
-                  else
-                        win->SetBackgroundColour(GetGlobalColor(_T("DILG0")));      // msw looks better here
-
-                  win->SetForegroundColour(text_color);
-            }
-      }
 }
 
 void options::OnButtonSelectSound(wxCommandEvent& event)

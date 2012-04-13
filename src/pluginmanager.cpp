@@ -1196,7 +1196,6 @@ wxWindow *GetOCPNCanvasWindow()
       return pret;
 }
 
-
 void RequestRefresh(wxWindow *win)
 {
       if(win)
@@ -1365,6 +1364,20 @@ wxArrayString GetChartDBDirArrayString()
 void SendPluginMessage( wxString message_id, wxString message_body )
 {
       s_ppim->SendMessageToAllPlugins(message_id, message_body);
+}
+
+void DimeWindow(wxWindow *win)
+{
+      wxColour col,col1,gridline,uitext,udkrd,back_color,text_color;
+      col = GetGlobalColor(_T("DILG0"));       // Dialog Background white
+      col1 = GetGlobalColor(_T("DILG1"));      // Dialog Background
+      back_color = GetGlobalColor(_T("DILG2"));// Control Background
+      text_color = GetGlobalColor(_T("DILG3"));// Text
+      uitext = GetGlobalColor(_T("UITX1"));    // Menu Text, derived from UINFF
+      udkrd = GetGlobalColor(_T("UDKRD"));
+      gridline = GetGlobalColor(_T("GREY2"));
+
+      DimeControl(win, col, col1, back_color, text_color, uitext, udkrd);
 }
 
 //-----------------------------------------------------------------------------------------

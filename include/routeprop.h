@@ -363,8 +363,6 @@ public :
 
       void m_hyperlinkContextMenu( wxMouseEvent &event );
 
-      void dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd);
-
 protected :
       virtual void OnPositionCtlUpdated( wxCommandEvent& event );
       void OnDeleteLink( wxCommandEvent& event );
@@ -394,7 +392,6 @@ class LinkPropImpl : public LinkPropDlgDef
 {
 public :
       LinkPropImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Link Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 468,247 ), long style = wxDEFAULT_DIALOG_STYLE );
-      void SetColorScheme( ColorScheme cs );
 private :
       void OnLocalFileClick( wxCommandEvent& event );
       void OnOkClick( wxCommandEvent& event );

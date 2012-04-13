@@ -42,6 +42,7 @@
 
 #include "about.h"
 #include "chart1.h"
+#include "chcanv.h"
 
 extern wxBitmap *_img_donate;
 
@@ -239,31 +240,6 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
 
 void about::Update()
 {
-      SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-
-      wxColour cb = GetGlobalColor(_T("DILG2"));
-      wxColour cf = GetGlobalColor(_T("DILG3"));
-      SetForegroundColour( cf );
-
-      itemPanelAbout->SetBackgroundColour(cb);
-      itemPanelAuthors->SetBackgroundColour(cb);
-      itemPanelLicense->SetBackgroundColour(cb);
-      itemPanelTips->SetBackgroundColour(cb);
-      pAboutTextCtl->SetBackgroundColour(cb);
-      pAuthorTextCtl->SetBackgroundColour(cb);
-      pLicenseTextCtl->SetBackgroundColour(cb);
-
-      itemPanelAbout->SetForegroundColour(cf);
-      itemPanelAuthors->SetForegroundColour(cf);
-      itemPanelLicense->SetForegroundColour(cf);
-      itemPanelTips->SetForegroundColour(cf);
-      pAboutTextCtl->SetForegroundColour(cf);
-      pAuthorTextCtl->SetForegroundColour(cf);
-      pLicenseTextCtl->SetForegroundColour(cf);
-
-      wxTextAttr ta(cf, cb);
-
-      pAboutTextCtl->SetDefaultStyle(ta);
       pAboutTextCtl->Clear();
       wxString *pAboutString = new wxString(AboutText,  wxConvUTF8);
 
@@ -283,14 +259,12 @@ void about::Update()
       conf.Append(gConfig_File);
       pAboutTextCtl->WriteText(conf);
 
-      pAuthorTextCtl->SetDefaultStyle(ta);
       pAuthorTextCtl->Clear();
       wxString *pAuthorsString = new wxString(AuthorText,  wxConvUTF8);
       pAuthorTextCtl->WriteText(*pAuthorsString);
       delete pAuthorsString;
 
 
-      pLicenseTextCtl->SetDefaultStyle(ta);
       pLicenseTextCtl->Clear();
       wxString license_loc(*m_pDataLocn);
       license_loc.Append(_T("license.txt"));
@@ -319,7 +293,7 @@ void about::Update()
       }
       pLicenseTextCtl->SetInsertionPoint(0);
 
-
+      DimeControl(this);
 }
 
 void about::CreateControls()

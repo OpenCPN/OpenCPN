@@ -93,6 +93,7 @@ public:
       void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
+      void SetColorScheme(PI_ColorScheme cs);
 
       bool GetUseMS(void){ return m_bGRIBUseMS; }
       void OnGribDialogClose();

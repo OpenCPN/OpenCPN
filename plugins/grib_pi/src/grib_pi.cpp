@@ -455,3 +455,10 @@ bool grib_pi::SaveConfig(void)
       else
             return false;
 }
+
+void grib_pi::SetColorScheme(PI_ColorScheme cs)
+{
+
+      DimeWindow(m_pGribDialog);
+
+}

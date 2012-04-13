@@ -216,8 +216,6 @@ public:
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnButtonGroups(wxCommandEvent& event);
 
-    void SetControlColors(wxWindow *ctrl, ColorScheme cs);
-
     void UpdateWorkArrayFromTextCtl();
     void CreateChartsPage();
     void PopulateChartsPage();

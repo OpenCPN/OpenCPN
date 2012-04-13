@@ -37,6 +37,7 @@
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
+#include "wx/dirctrl.h"
 #include <wx/sound.h>
 
 #include <wx/glcanvas.h>
@@ -56,6 +57,9 @@ int InitScreenBrightness(void);
 int RestoreScreenBrightness(void);
 int SetScreenBrightness(int brightness);
 
+//Central dimmer...
+void DimeControl(wxWindow* ctrl);
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd);
 
 //    Set up the preferred quilt type
 #define QUILT_TYPE_2
@@ -201,6 +205,7 @@ public:
       int GetNextContextMenuId();
 
       void SetColorScheme(ColorScheme cs);
+      ColorScheme GetColorScheme(){ return m_cs;}
 
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}

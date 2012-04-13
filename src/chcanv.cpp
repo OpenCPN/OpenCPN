@@ -545,9 +545,6 @@ void ChInfoWin::OnPaint(wxPaintEvent& event)
       GetClientSize(&width, &height );
       wxPaintDC dc(this);
 
-//      SetBackgroundColour(GetGlobalColor ( _T ( "UIBCK" ) ));
-//      dc.Clear();
-
       dc.SetBrush(wxBrush(GetGlobalColor ( _T ( "UIBCK" ) ), wxTRANSPARENT));
       dc.SetPen(wxPen(GetGlobalColor ( _T ( "UITX1" ) )));
       dc.DrawRectangle(0, 0, width,  height);
@@ -13806,9 +13803,6 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         wxPoint r ( xc,yc );
         Move ( r );
 
-        SetBackgroundColour ( GetGlobalColor ( _T ( "DILG1" ) ) );
-        SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
-
 //    Figure out this computer timezone minute offset
         wxDateTime this_now = wxDateTime::Now();
         wxDateTime this_gmt = this_now.ToGMT();
@@ -13879,21 +13873,13 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
             m_tList = new wxListBox( this, -1,wxPoint(sx * 63/100 ,11 ),wxSize((sx * 32/100 ) ,( sy * 16/100)),0,
                                 TClist ,wxLB_SINGLE|wxLB_NEEDED_SB );
 
-            m_tList->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG1" ) ) );
-            m_tList->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
-
 
         OK_button = new wxButton ( this, wxID_OK, _( "OK" ),
                                    wxPoint ( sx - 100, sy - 32 ), wxDefaultSize );
-        OK_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-            OK_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
-
 
 
         PR_button = new wxButton ( this, ID_TCWIN_PR, _( "Prev" ),
                                    wxPoint ( 10 , sy - 32 ), wxSize ( 40, -1 ) );
-        PR_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-            PR_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
         int bsx, bsy, bpx, bpy;
         PR_button->GetSize ( &bsx, &bsy );
@@ -13901,11 +13887,10 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
 
         NX_button = new wxButton ( this, ID_TCWIN_NX, _( "Next" ),
                                    wxPoint ( bpx + bsx + 5, bpy ), wxSize ( 40, -1 ) );
-        NX_button->SetBackgroundColour ( GetGlobalColor ( _T ( "DILG2" ) ) );
-            NX_button->SetForegroundColour ( GetGlobalColor ( _T ( "DILG3" ) ) );
 
-            m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
+        m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
 
+        DimeControl(this);
 }
 
 
@@ -15264,13 +15249,8 @@ bool AISTargetQueryDialog::Create ( wxWindow* parent,
       if (( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ))
             wstyle |= ( wxNO_BORDER );
 
- //     m_colorscheme = global_color_scheme;
-
       if ( !wxDialog::Create ( parent, id, caption, pos, size, wstyle ) )
             return false;
-
-//      wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
-//      SetBackgroundColour ( back_color );
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetQuery"), 12);
       int font_size = wxMax(8, dFont->GetPointSize());
@@ -15302,38 +15282,10 @@ void AISTargetQueryDialog::SetColorScheme(ColorScheme cs)
 {
       if(cs != m_colorscheme)
       {
-            long wstyle = wxDEFAULT_FRAME_STYLE;
-            if (( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ))
-                  wstyle |= ( wxNO_BORDER );
-
-            SetWindowStyle(wstyle);
-
-            m_colorscheme = cs;
-
-            wxColour back_color = GetGlobalColor ( _T ( "UIBCK" ) );
-            wxColour text_color = GetGlobalColor ( _T ( "UITX1" ) );          // or UINFD
-
-            SetBackgroundColour ( back_color );
-            SetForegroundColour ( text_color );
-
-            if(m_pQueryTextCtl)
-            {
-                  m_pQueryTextCtl->SetBackgroundColour ( back_color );
-                  m_pQueryTextCtl->SetForegroundColour ( text_color );
-            }
-
-            if(m_okButton)
-            {
-                  m_okButton->SetBackgroundColour ( back_color );
-                  m_okButton->SetForegroundColour ( text_color );
-            }
-
-
+            DimeControl(this);
             Refresh();
       }
 }
-
-
 
 
 void AISTargetQueryDialog::CreateControls()
@@ -16279,22 +16231,7 @@ void GoToPositionDialog::CreateControls()
 
 void GoToPositionDialog::SetColorScheme(ColorScheme cs)
 {
-      SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-
-      wxColour back_color =GetGlobalColor(_T("DILG2"));
-      wxColour text_color = GetGlobalColor(_T("DILG3"));
-
-      m_MarkLatCtl->SetBackgroundColour(back_color);
-      m_MarkLatCtl->SetForegroundColour(text_color);
-
-      m_MarkLonCtl->SetBackgroundColour(back_color);
-      m_MarkLonCtl->SetForegroundColour(text_color);
-
-      m_CancelButton->SetBackgroundColour(back_color);
-      m_CancelButton->SetForegroundColour(text_color);
-
-      m_OKButton->SetBackgroundColour(back_color);
-      m_OKButton->SetForegroundColour(text_color);
+      DimeControl(this);
 }
 
 bool GoToPositionDialog::ShowToolTips()
@@ -16924,5 +16861,92 @@ if ((*IsObjectBufferATI)(buffer) == GL_TRUE) {
 }
 #endif
 
+void DimeControl(wxWindow* ctrl)
+{
+      wxColour col,col1,gridline,uitext,udkrd,back_color,text_color;
+      col = GetGlobalColor(_T("DILG0"));       // Dialog Background white
+      col1 = GetGlobalColor(_T("DILG1"));      // Dialog Background
+      back_color = GetGlobalColor(_T("DILG1"));// Control Background
+      text_color = GetGlobalColor(_T("DILG3"));// Text
+      uitext = GetGlobalColor(_T("UITX1"));    // Menu Text, derived from UINFF
+      udkrd = GetGlobalColor(_T("UDKRD"));
+      gridline = GetGlobalColor(_T("GREY2"));
 
+      DimeControl(ctrl, col, col1, back_color, text_color, uitext, udkrd);
+}
+
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd)
+{
+      ColorScheme cs = cc1->GetColorScheme();
+      if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
+            ctrl->SetBackgroundColour(back_color);
+      else
+            ctrl->SetBackgroundColour(wxNullColour);
+      wxWindowList kids = ctrl->GetChildren();
+      for(unsigned int i = 0 ; i < kids.GetCount() ; i++)
+      {
+            wxWindowListNode *node = kids.Item(i);
+            wxWindow *win = node->GetData();
+
+            if(win->IsKindOf(CLASSINFO(wxListBox)))
+                  ((wxListBox*)win)->SetBackgroundColour(col1);
+
+            if(win->IsKindOf(CLASSINFO(wxListCtrl)))
+                  ((wxListCtrl*)win)->SetBackgroundColour(col1);
+
+            if(win->IsKindOf(CLASSINFO(wxTextCtrl)))
+                  ((wxTextCtrl*)win)->SetBackgroundColour(col);
+
+            if(win->IsKindOf(CLASSINFO(wxStaticText)))
+                  ((wxTextCtrl*)win)->SetForegroundColour(uitext);
+
+            else if(win->IsKindOf(CLASSINFO(wxBitmapComboBox)))
+                  ((wxBitmapComboBox*)win)->SetBackgroundColour(col);
+
+            else if(win->IsKindOf(CLASSINFO(wxChoice)))
+                  ((wxChoice*)win)->SetBackgroundColour(col1);
+
+            else if(win->IsKindOf(CLASSINFO(wxComboBox)))
+                  ((wxComboBox*)win)->SetBackgroundColour(col1);
+
+            else if(win->IsKindOf(CLASSINFO(wxGenericDirCtrl)))
+                  ((wxGenericDirCtrl*)win)->SetBackgroundColour(col1);
+
+            else if(win->IsKindOf(CLASSINFO(wxTreeCtrl)))
+                  ((wxTreeCtrl*)win)->SetBackgroundColour(col1);
+
+            else if(win->IsKindOf(CLASSINFO(wxRadioButton)))
+                  ((wxRadioButton*)win)->SetForegroundColour(col1);
+
+            else if(win->IsKindOf(CLASSINFO(wxNotebook)))
+            {
+                  ((wxNotebook*)win)->SetBackgroundColour(col1);
+                  ((wxNotebook*)win)->SetForegroundColour(text_color);
+            }
+
+            else if(win->IsKindOf(CLASSINFO(wxButton)))
+            {
+                  ((wxButton*)win)->SetBackgroundColour(col1);
+            }
+
+            else if(win->IsKindOf(CLASSINFO(wxToggleButton)))
+            {
+                  ((wxToggleButton*)win)->SetBackgroundColour(col1);
+            }
+
+            else if(win->IsKindOf(CLASSINFO(wxPanel)))
+            {
+                  ((wxPanel*)win)->SetBackgroundColour(col1);
+            }
+
+            else
+            {;}
+
+            if(win->GetChildren().GetCount() > 0)
+            {
+                  wxWindow * w = win;
+                  DimeControl(w,col,col1,back_color,text_color,uitext,udkrd);
+            }
+      }
+}
 

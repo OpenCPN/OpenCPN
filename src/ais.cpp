@@ -4040,13 +4040,6 @@ bool AISTargetAlertDialog::Create ( int target_mmsi,
 
       SetFont ( *fp_font );
 
-      wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
-      SetBackgroundColour ( back_color );
-
-      wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );          // or UINFD
-      SetForegroundColour ( text_color );
-//      SetForegroundColour(pFontMgr->GetFontColor(_T("AISTargetAlert")));
-
       CreateControls();
 
       if(CanSetTransparent())
@@ -4059,6 +4052,8 @@ bool AISTargetAlertDialog::Create ( int target_mmsi,
 // This ensures that the dialog cannot be sized smaller
 // than the minimum size
       GetSizer()->SetSizeHints ( this );
+
+      DimeControl(this);
 
       return true;
 }
@@ -4084,11 +4079,6 @@ void AISTargetAlertDialog::CreateControls()
       m_pAlertTextCtl->SetVPad(2);
 
 
-      wxColour back_color =GetGlobalColor ( _T ( "UIBCK" ) );
-      m_pAlertTextCtl->SetBackgroundColour ( back_color );
-
-      wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );          // or UINFD
-      m_pAlertTextCtl->SetForegroundColour ( text_color );
 //      m_pAlertTextCtl->SetForegroundColour(pFontMgr->GetFontColor(_T("AISTargetAlert")));
 
 
@@ -4121,14 +4111,13 @@ void AISTargetAlertDialog::CreateControls()
       wxButton* silence = new wxButton ( this, ID_SILENCE, _( "&Silence Alert" ),
                                     wxDefaultPosition, wxDefaultSize, 0 );
       AckBox->Add ( silence, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-      silence->SetBackgroundColour ( button_color );
 
 // The Ack button
       wxButton* ack = new wxButton ( this, ID_ACKNOWLEDGE, _( "&Acknowledge" ),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       AckBox->Add ( ack, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-      ack->SetBackgroundColour ( button_color );
 
+      DimeControl(this);
 }
 
 bool AISTargetAlertDialog::GetAlertText()
@@ -4853,29 +4842,7 @@ void AISTargetListDialog::Disconnect_decoder()
 
 void AISTargetListDialog::SetColorScheme()
 {
-      //    This needs to be done, but column headings are not affected,
-      //    which makes the list unreadable at night....
-
-      wxColour cl = GetGlobalColor( _T("DILG1") );
-      SetBackgroundColour(cl);
-      m_pListCtrlAISTargets->SetBackgroundColour( cl );
-      m_pButtonInfo->SetBackgroundColour(cl);
-      m_pButtonJumpTo->SetBackgroundColour(cl);
-      m_pSpinCtrlRange->SetBackgroundColour( cl );
-/* Doesn't work
-      wxListItem item;
-      item.SetMask( wxLIST_MASK_FORMAT );
-      item.SetBackgroundColour( cl );
-      for ( int i = 0; i < m_pListCtrlAISTargets->GetColumnCount(); i++ )
-            m_pListCtrlAISTargets->SetColumn( i, item );
-*/
-
-      cl = GetGlobalColor( _T( "UINFD" ) );          // or UINFF
-      SetForegroundColour( cl );
-      m_pListCtrlAISTargets->SetForegroundColour( cl );
-      m_pStaticTextRange->SetForegroundColour( cl );
-      m_pSpinCtrlRange->SetForegroundColour( cl );
-
+      DimeControl(this);
 }
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )

@@ -495,5 +495,7 @@ extern  DECL_EXP wxArrayString GetChartDBDirArrayString();
 
 extern "C"  DECL_EXP void SendPluginMessage( wxString message_id, wxString message_body );
 
+extern "C"  DECL_EXP void DimeWindow(wxWindow *);
+
 #endif            // _PLUGIN_H_
 
