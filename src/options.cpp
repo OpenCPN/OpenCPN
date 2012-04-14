@@ -2481,12 +2481,15 @@ void options::OnPageChange(wxNotebookEvent& event)
                   //  upon the dtor of the above wxLocale instantiations....
                   //  wxWidgets may do so internally, but there seems to be no effect upon the system libraries, so that
                   //  functions like strftime() do not revert to the correct locale setting.
+                  //  Also, the catalog for the application is not reloaded by the ctor, so we must reload them directly
                   //  So as workaround, we reset the locale explicitely.
 
                   delete plocale_def_lang;
                   plocale_def_lang = new wxLocale(current_language);
 
                   setlocale(LC_NUMERIC,"C");
+                  plocale_def_lang->AddCatalog(_T("opencpn"));
+
 
                   m_itemLangListBox->SetStringSelection(current_sel);
 
