@@ -972,6 +972,8 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog 
 
       }
 
+      // Clear the cm93 file name array
+      m_cm93_filename_array.Clear();
 
     //  Get the new charts
 
@@ -1078,8 +1080,8 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDia
       // If so, skip the DetectDirChange since it may be very slow
       // and give no information
       // Assume a change has happened, and process accordingly
-      wxString cm93_cell_name = Check_CM93_Structure(dir_path);
-      if(cm93_cell_name.Len())
+      bool b_cm93 = Check_CM93_Structure(dir_path);
+      if(b_cm93)
       {
             b_skipDetectDirChange = true;
             b_dirchange = true;
@@ -1223,13 +1225,82 @@ bool ChartDatabase::IsChartDirUsed(const wxString &theDir)
     return false;
 }
 
+//-----------------------------------------------------------------------------
+// Validate a given directory as a cm93 root database
+// If it appears to be a cm93 database, then return true
+//-----------------------------------------------------------------------------
+bool ChartDatabase::Check_CM93_Structure(wxString dir_name)
+{
+      wxString filespec;
+
+      wxRegEx test(_T("[0-9]+"));
+
+      wxDir dirt(dir_name);
+      wxString candidate;
+
+      bool b_maybe_found_cm93 = false;
+      bool b_cont = dirt.GetFirst(&candidate);
+
+      while(b_cont)
+      {
+            if(test.Matches(candidate)&& (candidate.Len() == 8))
+            {
+                  b_maybe_found_cm93 = true;
+                  break;
+            }
+
+            b_cont = dirt.GetNext(&candidate);
+
+      }
+
+      if(b_maybe_found_cm93)
+      {
+            wxString dir_next = dir_name;
+            dir_next += _T("/");
+            dir_next += candidate;
+            if(wxDir::Exists(dir_next))
+            {
+                  wxDir dir_n(dir_next);
+                  wxString candidate_n;
+
+                  wxRegEx test_n(_T("^[A-Ga-g]"));
+                  bool b_probably_found_cm93 = false;
+                  bool b_cont_n = dir_n.GetFirst(&candidate_n);
+                  while(b_cont_n)
+                  {
+                        if(test_n.Matches(candidate_n) && (candidate_n.Len() == 1))
+                        {
+                              b_probably_found_cm93 = true;
+                              break;
+                        }
+                        b_cont_n = dir_n.GetNext(&candidate_n);
+                  }
+
+                  if(b_probably_found_cm93)           // found a directory that looks
+                                                      //like {dir_name}/12345678/A
+                                                      //probably cm93
+                  {
+                        // make sure the dir exists
+                        wxString dir_luk = dir_next;
+                        dir_luk += _T("/");
+                        dir_luk += candidate_n;
+                        if(wxDir::Exists(dir_luk))
+                              return true;
+
+                  }
+            }
+      }
+
+      return false;
+}
 
 //-----------------------------------------------------------------------------
 // Validate a given directory as a cm93 root database
 // If it appears to be a cm93 database, then return the name of an existing cell file
+// File name will be unique with respect to member element m_cm93_filename_array
 // If not cm93, return empty string
 //-----------------------------------------------------------------------------
-wxString ChartDatabase::Check_CM93_Structure(wxString dir_name)
+wxString ChartDatabase::Get_CM93_FileName(wxString dir_name)
 {
       wxString filespec;
 
@@ -1288,13 +1359,30 @@ wxString ChartDatabase::Check_CM93_Structure(wxString dir_name)
                               msg += dir_name;
                               wxLogMessage(msg);
 
-                              wxString dir_name_plus = dir_luk;                 // be very specific about the dir_name, to shorten GatAllFiles()
-//                              gaf_flags =  wxDIR_FILES;                 // dont recurse
+                              wxString dir_name_plus = dir_luk;                 // be very specific about the dir_name,
 
                               wxDir dir_get(dir_name_plus);
                               wxString one_file;
                               dir_get.GetFirst(&one_file);
-                              filespec = one_file;                       // so adjust the filespec
+
+                              //    We must return a unique file name, i.e. one that has not bee seen
+                              //    before in this invocation of chart dir scans.
+                              bool find_unique = false;
+                              while(!find_unique)
+                              {
+                                    find_unique = true;
+                                    for(unsigned int ifile=0; ifile < m_cm93_filename_array.GetCount(); ifile++)
+                                    {
+                                          if(m_cm93_filename_array.Item(ifile) == one_file)
+                                                find_unique = false;
+                                    }
+                                    if(!find_unique)
+                                          dir_get.GetNext(&one_file);
+                              }
+
+                              m_cm93_filename_array.Add(one_file);
+
+                              filespec = one_file;
                         }
 
                   }
@@ -1340,13 +1428,13 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       //    If this directory seems to be a cm93, and we are not explicitely looking for cm93, then abort
       //    Otherwise, we will be looking thru entire cm93 tree for non-existent .KAP files, etc.
 
-      wxString cm93_cell_name = Check_CM93_Structure(dir_name);
-      if(cm93_cell_name.Len())
+      bool b_cm93 = Check_CM93_Structure(dir_name);
+      if(b_cm93)
       {
             if (filespec != _T("00300000.A"))
                   return false;
             else
-                  filespec = cm93_cell_name;
+                  filespec = Get_CM93_FileName(dir_name);;
       }
 
 
