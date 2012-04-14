@@ -472,6 +472,7 @@ IMPLEMENT_DYNAMIC_CLASS( RouteProp, wxDialog )
     EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
     EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
     EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
+    EVT_LIST_ITEM_SELECTED( ID_TRACKLISTCTRL, RouteProp::OnRoutepropListClick )
     EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
     EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
 
@@ -711,10 +712,26 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
 {
     long itemno = 0;
     m_nSelected = 0;
-    const wxListItem &i = event.GetItem();
-    i.GetText().ToLong(&itemno);
 
-    int selected_no = itemno;
+    //      We use different methods to determine the selected point,
+    //      depending on whether this is a Route or a Track.
+    int selected_no;
+    if(!m_pRoute->m_bIsTrack)
+    {
+      const wxListItem &i = event.GetItem();
+      i.GetText().ToLong(&itemno);
+      selected_no = itemno;
+    }
+    else
+    {
+      itemno = -1;
+      itemno = m_wpTrackList->GetNextItem( itemno, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+      if (itemno == -1)
+            selected_no = 0;
+      else
+            selected_no = itemno;
+    }
+
     m_pRoute->ClearHighlights();
 
     wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
@@ -739,6 +756,10 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
         }
     }
 }
+
+
+
+
 
 RouteProp::~RouteProp( )
 {
@@ -2614,7 +2635,13 @@ void MarkInfoImpl::dialogDimmer(ColorScheme cs,wxWindow* ctrl,wxColour col, wxCo
                   ((wxTextCtrl*)win)->SetBackgroundColour(col);
 
             else if(win->IsKindOf(CLASSINFO(wxBitmapComboBox)))
+            {
+#if wxCHECK_VERSION(2,9,0)
+                  ((wxBitmapComboBox*)win)->GetTextCtrl()->SetBackgroundColour(col);
+#else
                   ((wxBitmapComboBox*)win)->SetBackgroundColour(col);
+#endif
+            }
 
             else if(win->IsKindOf(CLASSINFO(wxChoice)))
                   ((wxChoice*)win)->SetBackgroundColour(col1);
