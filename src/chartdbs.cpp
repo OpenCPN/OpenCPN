@@ -154,6 +154,8 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     strcpy(pt, theChart.GetFullPath().mb_str(wxConvUTF8));
     pFullPath = pt;
 
+
+
     ChartType = theChart.GetChartType();
     Scale = theChart.GetNativeScale();
 
@@ -167,6 +169,9 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     wxFileName fn(theChart.GetFullPath());
     if(fn.GetModificationTime().IsValid())
           file_date = fn.GetModificationTime().GetTicks();
+
+    m_pfilename = new wxString;           // create and populate helper members
+    *m_pfilename = fn.GetFullName();
 
     Extent ext;
     theChart.GetChartExtent(&ext);
@@ -245,6 +250,8 @@ ChartTableEntry::~ChartTableEntry()
         free(pAuxPlyTable[i]);
     free(pAuxPlyTable);
     free(pAuxCntTable);
+
+    delete m_pfilename;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -252,10 +259,16 @@ ChartTableEntry::~ChartTableEntry()
 
 ///////////////////////////////////////////////////////////////////////
 
-bool ChartTableEntry::IsEqualToOrEarlierThan(const ChartTableEntry &cte) const {
+bool ChartTableEntry::IsEarlierThan(const ChartTableEntry &cte) const {
     wxDateTime mine(edition_date);
     wxDateTime theirs(cte.edition_date);
-    return (mine.IsEarlierThan(theirs) | mine.IsEqualTo(theirs));
+    return ( mine.IsEarlierThan(theirs) );
+}
+
+bool ChartTableEntry::IsEqualTo(const ChartTableEntry &cte) const {
+      wxDateTime mine(edition_date);
+      wxDateTime theirs(cte.edition_date);
+      return ( mine.IsEqualTo(theirs) );
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -322,6 +335,12 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
           pFullPath = (char *)malloc(cp - path + 1);
           strncpy(pFullPath, path, cp - path + 1);
           wxLogVerbose(_T("  Chart %s"), pFullPath);
+
+     //  Create and populate the helper members
+          m_pfilename = new wxString;
+          wxString fullfilename(pFullPath, wxConvUTF8);
+          wxFileName fn(fullfilename);
+          *m_pfilename = fn.GetFullName();
 
       // Read the table entry
           ChartTableEntry_onDisk_16 cte;
@@ -600,6 +619,14 @@ const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const
             return chartTable[index];
       else
             return m_ChartTableEntryDummy;
+}
+
+ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const
+{
+      if(index < GetChartTableEntries())
+            return &chartTable[index];
+      else
+            return (ChartTableEntry *)&m_ChartTableEntryDummy;
 }
 
 
@@ -1485,11 +1512,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                   pprog->Update(wxMin((ifile * 100) /nFile, 100), full_name);
 
 
-            //    As a speed optimization, use strcmp instead of wxString::IsSameAs()
- //           char path_test_str[512];
- //           strncpy(path_test_str, (const char *)full_name.fn_str(), 511);
-
-
             ChartTableEntry *pnewChart = NULL;
             bool bAddFinal = true;
             int b_add_msg = 0;
@@ -1509,8 +1531,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                   {
                         wxString table_file_name(chartTable[isearch].GetpFullPath(), wxConvUTF8);
 
-                        //    If the chart file paths are exactly the same, select the newer one
-//                        if(bthis_dir_in_dB && !strcmp(path_test_str, chartTable[isearch].GetpFullPath()))
+                        //    If the chart full file paths are exactly the same, select the newer one
                         if(bthis_dir_in_dB && full_name.IsSameAs(table_file_name))
                         {
                               b_add_msg++;
@@ -1537,7 +1558,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                         }
 
 
-                  //  Look at the chart file name for a further check for duplicates
+                  //  Look at the chart file name (without directory prefix) for a further check for duplicates
                   //  This catches the case in which the "same" chart is in different locations,
                   //  and one may be newer than the other.
                         wxFileName table_file(table_file_name);
@@ -1546,7 +1567,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                         {
                               b_add_msg++;
 
-                              if(pnewChart->IsEqualToOrEarlierThan(chartTable[isearch]))
+                              if(pnewChart->IsEarlierThan(chartTable[isearch]))
                               {
                                     //    Make sure the compare file actually exists
                                     if(table_file.IsFileReadable())
@@ -1559,6 +1580,16 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
                                     }
                               }
+                              else if(pnewChart->IsEqualTo(chartTable[isearch]))
+                              {
+                                    //    The file names (without dir prefix) are identical,
+                                    //    and the mod times are identical
+                                    //    Prsume that this is intentional, in order to facilitate
+                                    //    having the same chart in multiple groups.
+                                    //    So, add this chart.
+                                    bAddFinal = true;
+                              }
+
                               else
                               {
                                     chartTable[isearch].SetValid(false);

@@ -1689,7 +1689,52 @@ bool Quilt::Compose(const ViewPort &vp_in)
                   }
             }
       }
-            // Re sort the extended stack array on scale
+
+      //    Remove exact duplicates from the extended stack array,
+      //    i.e. charts that have exactly the same file name and mod time
+      //    These charts can be in the database due to having the exact same chart in different directories,
+      //    as may be desired for some grouping schemes
+      if(m_extended_stack_array.GetCount() > 1)
+      {
+            for(unsigned int id = 0 ; id<m_extended_stack_array.GetCount()-1 ; id++)
+            {
+                  if(m_extended_stack_array.Item(id) != -1)
+                  {
+                        ChartTableEntry *pm = ChartData->GetpChartTableEntry(m_extended_stack_array.Item(id));
+
+                        for(unsigned int jd = id+1; jd < m_extended_stack_array.GetCount(); jd++)
+                        {
+                              if(m_extended_stack_array.Item(jd) != -1)
+                              {
+                                    ChartTableEntry *pn = ChartData->GetpChartTableEntry(m_extended_stack_array.Item(jd));
+                                    if(pm->GetFileTime() == pn->GetFileTime())            // simple test
+                                    {
+                                          if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                                          {
+                                                m_extended_stack_array.Item(jd) = -1;  // mark to remove
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            }
+
+            unsigned int idr = 0;
+            while( (idr < m_extended_stack_array.GetCount()) )
+            {
+                  if(m_extended_stack_array.Item(idr) == -1)
+                  {
+                        m_extended_stack_array.RemoveAt(idr);
+                        idr = 0;
+                  }
+                  else
+                        idr++;
+            }
+
+      }
+
+
+      // Re sort the extended stack array on scale
       if(b_need_resort && m_extended_stack_array.GetCount() > 1)
       {
             int swap = 1;

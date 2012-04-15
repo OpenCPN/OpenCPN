@@ -136,7 +136,8 @@ struct ChartTableEntry
     ChartTableEntry(ChartBase &theChart);
     ~ChartTableEntry();
 
-    bool IsEqualToOrEarlierThan(const ChartTableEntry &cte) const;
+    bool IsEqualTo(const ChartTableEntry &cte) const;
+    bool IsEarlierThan(const ChartTableEntry &cte) const;
     bool Read(const ChartDatabase *pDb, wxInputStream &is);
     bool Write(const ChartDatabase *pDb, wxOutputStream &os);
     void Clear();
@@ -163,6 +164,7 @@ struct ChartTableEntry
     bool GetbValid(){ return bValid;}
     void SetEntryOffset(int n) { EntryOffset = n;}
     ArrayOfInts &GetGroupArray(void){ return m_GroupArray; }
+    wxString *GetpFileName(void){ return m_pfilename; }
 
   private:
     int         EntryOffset;
@@ -184,6 +186,7 @@ struct ChartTableEntry
     int         ProjectionType;
     bool        bValid;
     ArrayOfInts m_GroupArray;
+    wxString    *m_pfilename;             // a helper member, not on disk
 };
 
 enum
@@ -234,6 +237,7 @@ public:
 
     int GetChartTableEntries() const { return chartTable.size(); }
     const ChartTableEntry &GetChartTableEntry(int index) const;
+    ChartTableEntry *GetpChartTableEntry(int index) const;
 
     bool IsValid() const { return bValid; }
     int DisableChart(wxString& PathToDisable);
