@@ -2536,6 +2536,19 @@ bool MyApp::OnInit()
                   ps52plib->m_nBoundaryStyle = ( LUPname ) PLAIN_BOUNDARIES;
                   ps52plib->m_bUseSCAMIN = true;
                   ps52plib->m_bShowAtonText = true;
+
+                  //    Preset some object class visibilites for "Mariner's Standard" disply category
+                  for ( unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++ )
+                  {
+                        OBJLElement *pOLE = ( OBJLElement * ) ( ps52plib->pOBJLArray->Item ( iPtr ) );
+                        if ( !strncmp ( pOLE->OBJLName, "DEPARE", 6 ) )
+                              pOLE->nViz = 1;
+                        if ( !strncmp ( pOLE->OBJLName, "LNDARE", 6 ) )
+                              pOLE->nViz = 1;
+                        if ( !strncmp ( pOLE->OBJLName, "COALNE", 6 ) )
+                              pOLE->nViz = 1;
+                  }
+
               }
 #endif
 
