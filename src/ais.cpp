@@ -2346,28 +2346,33 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
           }
      case 14:                                    // Safety Related Broadcast
           {
-                char msg_14_text[968];
-                if(bstr->GetBitCount() > 40)
-                {
-                      int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
-                      int nd = bstr->GetStr(41,nx, msg_14_text, 968);
-                      nd = wxMax(0, nd);
-                      nd = wxMin(nd, 967);
-                      msg_14_text[nd] = 0;
-                      ptd->MSG_14_text = wxString(msg_14_text, wxConvUTF8);
+                //  Always capture the MSG_14 text
+                  char msg_14_text[968];
+                  if(bstr->GetBitCount() > 40)
+                  {
+                        int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
+                        int nd = bstr->GetStr(41,nx, msg_14_text, 968);
+                        nd = wxMax(0, nd);
+                        nd = wxMin(nd, 967);
+                        msg_14_text[nd] = 0;
+                        ptd->MSG_14_text = wxString(msg_14_text, wxConvUTF8);
+                  }
 
-                      if(!g_pais_alert_dialog_active)
-                      {
-                        AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-                        pAISAlertDialog->Create ( ptd->MMSI, m_parent_frame, this, -1, _("AIS SART Alert"),
-                                  wxPoint( g_ais_alert_dialog_x, g_ais_alert_dialog_y),
-                                           wxSize( g_ais_alert_dialog_sx, g_ais_alert_dialog_sy));
+                //      Show the alert dialog for "active" AIS_SART target only
+                  if((ptd->Class == AIS_SART) && (ptd->NavStatus == 14))
+                  {
+                        if(!g_pais_alert_dialog_active)
+                        {
+                              AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+                              pAISAlertDialog->Create ( ptd->MMSI, m_parent_frame, this, -1, _("AIS SART Alert"),
+                                    wxPoint( g_ais_alert_dialog_x, g_ais_alert_dialog_y),
+                                                wxSize( g_ais_alert_dialog_sx, g_ais_alert_dialog_sy));
 
-                        g_pais_alert_dialog_active = pAISAlertDialog;
-                        pAISAlertDialog->Show();                        // Show modeless, so it stays on the screen
-                      }
+                              g_pais_alert_dialog_active = pAISAlertDialog;
+                              pAISAlertDialog->Show();                        // Show modeless, so it stays on the screen
+                        }
 
-                }
+                  }
                 break;
           }
 
