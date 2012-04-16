@@ -16432,6 +16432,13 @@ int InitScreenBrightness(void)
                 ReleaseDC(NULL, hDC);                                       // Release the DC
             }
 
+            //    On Windows hosts, try to adjust the registry to allow full range setting of Gamma table
+            //    This is an undocumented Windows hack.....
+            wxRegKey *pRegKey = new wxRegKey(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ICM"));
+            if( !pRegKey->Exists() )
+                  pRegKey->Create();
+            pRegKey->SetValue(_T("GdiIcmGammaRange"),256);
+
             g_brightness_init = true;
             return 1;
       }
