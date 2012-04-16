@@ -863,8 +863,11 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             }
 
 
-            wxString str_buf(buffer,  wxConvUTF8);
             wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
+
+            wxString str_buf(buffer,  wxConvUTF8);
+            if(!str_buf.Len())                                    // failed conversion
+                  str_buf = wxString(buffer, iso_conv);
 
             if(str_buf.Find(_T("SHOM")) != wxNOT_FOUND)
                   m_b_SHOM = true;
