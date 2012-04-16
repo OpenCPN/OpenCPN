@@ -191,8 +191,8 @@ wxString ais_status[] = {
       _("Reserved 11"),
       _("Reserved 12"),
       _("Reserved 13"),
-      _("Active"),
-      _("Testing"),
+      _("Reserved 14"),
+      _("Undefined"),
       _("Virtual"),
       _("Virtual (On Position)"),
       _("Virtual (Off Position)"),
@@ -408,7 +408,7 @@ AIS_Target_Data::AIS_Target_Data()
     IMO = 0;                       // pjotrc 2010.02.07
     MID = 555;
     MMSI = 666;
-    NavStatus = 15;
+    NavStatus = UNDEFINED;
     SyncState = 888;
     SlotTO = 999;
     ShipType = 19;	// "Unknown"        // pjotrc 2010.02.10
@@ -518,11 +518,22 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       line.Append(_T("\n"));
       result.Append(line);
 
-      if( (Class != AIS_BASE) && (Class != AIS_CLASS_B) )
+      if( (Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) )
       {
             line.Printf(_("Navigational Status:  "));
             if((NavStatus <= 21) && (NavStatus >= 0))
                   line.Append(  wxGetTranslation(ais_status[NavStatus]) );
+            line.Append(_T("\n"));
+            result.Append(line);
+      }
+      else if( Class == AIS_SART )
+      {
+            line.Printf(_("Navigational Status:  "));
+            if(NavStatus == RESERVED_14)
+                  line.Append( _("Active") );
+            else if(NavStatus == UNDEFINED)
+                line.Append( _("Testing") );
+
             line.Append(_T("\n"));
             result.Append(line);
       }
@@ -928,7 +939,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
                   if(Class != AIS_SART)
                         result.Append(wxGetTranslation(Get_vessel_type_string(false)));
 
-                  if(Class != AIS_CLASS_B)
+                  if( (Class != AIS_CLASS_B) && (Class != AIS_SART) )
                   {
                         if((NavStatus <= 15) && (NavStatus >= 0) )
                         {
@@ -937,6 +948,17 @@ wxString AIS_Target_Data::GetRolloverString( void )
                               result.Append(_T(")"));
                         }
                   }
+                  else if (Class == AIS_SART)
+                  {
+                        result.Append(_T(" ("));
+                        if(NavStatus == RESERVED_14)
+                            result.Append( _("Active") );
+                        else if(NavStatus == UNDEFINED)
+                             result.Append( _("Testing") );
+
+                        result.Append(_T(")"));
+                  }
+
             }
       }
       if(g_bAISRolloverShowCOG && (SOG <= 102.2) && ((Class != AIS_ATON) && (Class != AIS_BASE)))
@@ -4309,10 +4331,22 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlNAVSTATUS:
                   {
-                        if((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
-                              ret =  wxGetTranslation(ais_status[pAISTarget->NavStatus]);
+                        if(pAISTarget->Class == AIS_SART)
+                        {
+                              if(pAISTarget->NavStatus == RESERVED_14)
+                                  ret = _("Active");
+                              else if(pAISTarget->NavStatus == UNDEFINED)
+                                  ret = _("Testing");
+                        }
                         else
-                              ret = _("-");
+                        {
+
+                              if((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
+                                    ret =  wxGetTranslation(ais_status[pAISTarget->NavStatus]);
+                              else
+                                    ret = _("-");
+                        }
+
                         if( (pAISTarget->Class == AIS_ATON)||(pAISTarget->Class == AIS_BASE)||(pAISTarget->Class == AIS_CLASS_B))
                               ret =  _("-");
                         break;
@@ -4443,7 +4477,17 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             case tlNAVSTATUS:
             {
                   if((t1->NavStatus <= 15) && (t1->NavStatus >= 0))
-                        s1 =  ais_status[t1->NavStatus];
+                  {
+                        if(t1->Class == AIS_SART)
+                        {
+                              if(t1->NavStatus == RESERVED_14)
+                                  s1 = _("Active");
+                              else if (t1->NavStatus == UNDEFINED)
+                                  s1 = _("Testing");
+                        }
+                        else
+                              s1 =  ais_status[t1->NavStatus];
+                  }
                   else
                         s1 = _("-");
 
@@ -4451,7 +4495,17 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
                         s1 =  _T("-");
 
                   if((t2->NavStatus <= 15) && (t2->NavStatus >= 0))
-                        s2 =  ais_status[t2->NavStatus];
+                  {
+                        if(t2->Class == AIS_SART)
+                        {
+                              if(t2->NavStatus == RESERVED_14)
+                                    s2 = _("Active");
+                              else if (t2->NavStatus == UNDEFINED)
+                                    s2 = _("Testing");
+                        }
+                        else
+                              s2 =  ais_status[t2->NavStatus];
+                  }
                   else
                         s2 = _("-");
 
