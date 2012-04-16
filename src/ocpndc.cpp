@@ -158,6 +158,12 @@ void DrawThickLine(double x1, double y1, double x2, double y2, wxPen pen, bool b
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
       }
+      else
+      {
+            glDisable(GL_POLYGON_SMOOTH);
+            glDisable(GL_BLEND);
+      }
+
 
       //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in the dash table.
       //    The first is assumed drawn, second is assumed space
@@ -245,6 +251,12 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
                   }
+                  else
+                  {
+                        glDisable(GL_LINE_SMOOTH);
+                        glDisable(GL_BLEND);
+                  }
+
 
                   if(m_pen.GetWidth() > 1)
                         DrawThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
@@ -314,11 +326,17 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
            if(b_hiqual)
            {
-            glEnable(GL_LINE_SMOOTH);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                  glEnable(GL_LINE_SMOOTH);
+                  glEnable(GL_BLEND);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
            }
+           else
+           {
+                 glDisable(GL_LINE_SMOOTH);
+                 glDisable(GL_BLEND);
+           }
+
 
            if(m_pen.GetWidth() > 1)
            {

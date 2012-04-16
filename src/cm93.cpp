@@ -6265,7 +6265,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
                                           if ( btest )
                                           {
-                                                dc.DrawLines ( mcd->m_nvertices, pwp );
+                                                dc.DrawLines ( mcd->m_nvertices, pwp, 0, 0, false );
                                                 bdrawn = true;
                                           }
                                     }

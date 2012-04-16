@@ -9854,7 +9854,7 @@ void ChartCanvas::RenderChartOutline ( ocpnDC &dc, int dbIndex, ViewPort& vp )
                   ClipResult res = cohen_sutherland_line_clip_i ( &pixx, &pixy, &pixx1, &pixy1,
                                     0, vp.pix_width, 0, vp.pix_height );
                   if ( res != Invisible  && !b_skip)
-                       dc.DrawLine ( pixx, pixy, pixx1, pixy1 );
+                       dc.DrawLine ( pixx, pixy, pixx1, pixy1, false );
 
                   plylat = plylat1;
                   plylon = plylon1;
