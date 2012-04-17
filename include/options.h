@@ -222,8 +222,6 @@ public:
     void CreateChartsPage();
     void PopulateChartsPage();
 
-    ChartGroupArray *GetGroupArray(void){ return m_pGroupArray; }
-
 // Should we show tooltips?
     static bool ShowToolTips();
 

@@ -5562,21 +5562,27 @@ int MyFrame::DoOptionsDialog()
             if(bPrevOGL != g_bopengl)
                   b_refresh_after_options = true;
 
-            if(rr & GROUPS_CHANGED)
-            {
-                  pConfig->DestroyConfigGroups();
-                  pConfig->CreateConfigGroups(pSetDlg->GetGroupArray());
-            }
+            bool b_scrub_done = false;
 
             if( ((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
                   (rr & GROUPS_CHANGED) )
             {
+                  ScrubGroupArray();                  // get rid of any empty groups
+                  b_scrub_done = true;                // force config group update
+
                   ChartData->ApplyGroupArray(g_pGroupArray);
                   if(g_GroupIndex > (int)g_pGroupArray->GetCount())
                         SetGroupIndex(0);
                   else
                         SetGroupIndex(g_GroupIndex);
             }
+
+            if((rr & GROUPS_CHANGED) || b_scrub_done)
+            {
+                  pConfig->DestroyConfigGroups();
+                  pConfig->CreateConfigGroups(g_pGroupArray);
+            }
+
 
             pConfig->UpdateSettings();
 
@@ -5664,6 +5670,57 @@ int MyFrame::DoOptionsDialog()
 
       return false;
 }
+
+
+void MyFrame::ScrubGroupArray()
+{
+      //    For each group,
+      //    make sure that each group has at least one element (dir or chart) in the database.
+      //    If a group contains no charts actually in the database, delete the group.
+
+      unsigned int igroup = 0;
+      while(igroup < g_pGroupArray->GetCount())
+      {
+            bool b_chart_in_group = false;
+            ChartGroup *pGroup = g_pGroupArray->Item(igroup);
+
+            for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+            {
+                  wxString element_root = pGroup->m_element_array.Item(j)->m_element_name;
+
+                  for(unsigned int ic=0 ; ic < (unsigned int)ChartData->GetChartTableEntries(); ic++)
+                  {
+                        ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
+                        wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+
+                        if(chart_full_path.StartsWith(element_root))
+                        {
+                              b_chart_in_group = true;
+                              break;
+                        }
+                  }
+
+                  if(b_chart_in_group)
+                        break;
+            }
+
+            if(!b_chart_in_group)                           // this group is empty
+            {
+                  g_pGroupArray->RemoveAt(igroup);
+
+                  wxString msg(_T("Removing empty chart group: "));
+                  msg += pGroup->m_group_name;
+                  wxLogMessage(msg);
+
+                  delete pGroup;
+            }
+            else
+                  igroup++;                                 // next group
+      }
+}
+
+
+
 
 // Flav: This method reloads all charts for convenience
 void MyFrame::ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge)

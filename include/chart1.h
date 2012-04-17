@@ -347,6 +347,8 @@ class MyFrame: public wxFrame
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
 
+    void ScrubGroupArray();
+
     string_to_pchar_hash tool_xpm_hash;         // hash map of [static] toolbar xpm bitmaps
 
 
