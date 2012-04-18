@@ -297,6 +297,9 @@ class MyFrame: public wxFrame
     ArrayOfRect GetCanvasReserveRects();
     bool CheckGroup(int igroup);
 
+    void TouchAISActive(void);
+    void UpdateAISTool(void);
+
     wxStatusBar         *m_pStatusBar;
     int                 nRoute_State;
     int                 nBlinkerTick;
@@ -339,7 +342,6 @@ class MyFrame: public wxFrame
 
     void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
-    void UpdateToolbarDynamics(void);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
     bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);

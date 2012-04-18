@@ -1455,6 +1455,9 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                               }
                         }
                         g_pi_manager->SendAISSentenceToAllPlugIns(message);
+
+                        gFrame->TouchAISActive();
+
                   }
                   else
                   {
@@ -3047,7 +3050,6 @@ void AIS_Decoder::OnTimerAISAudio(wxTimerEvent& event)
       m_AIS_Audio_Alert_Timer.Start(TIMER_AIS_AUDIO_MSEC,wxTIMER_CONTINUOUS);
 }
 
-
 void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
 {
       TimerAIS.Stop();
@@ -3310,7 +3312,6 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
       }
       else
             m_AIS_Audio_Alert_Timer.Stop();
-
 
       TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
 }

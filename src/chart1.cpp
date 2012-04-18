@@ -490,6 +490,8 @@ double           g_AckTimeout_Mins;
 
 
 wxToolBarToolBase *m_pAISTool;
+int               g_nAIS_activity_timer;
+
 
 DummyTextCtrl    *g_pDummyTextCtrl;
 bool             g_bEnableZoomToCursor;
@@ -3924,6 +3926,7 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("AIS_Suppressed")]         = (char *)_img_ais_supressed;
     tool_xpm_hash[_T("AIS_AlertGeneral")]       = (char *)_img_ais_alarm;
     tool_xpm_hash[_T("AIS_Disabled")]           = (char *)_img_ais_disabled;
+    tool_xpm_hash[_T("AIS_Normal_Active")]      = (char *)_img_ais_alive_active;
 
     tool_xpm_hash[_T("gps1Bar")]                = (char *)_img_gps1;
     tool_xpm_hash[_T("gps2Bar")]                = (char *)_img_gps2;
@@ -4162,34 +4165,6 @@ void MyFrame::UpdateToolbar(ColorScheme cs)
     return;
 }
 
-void MyFrame::UpdateToolbarDynamics(void)
-{
-      bool b_need_refresh = false;
-
-      wxString bmp_hash_index;
-
-      if(m_pAISTool)
-      {
-            bmp_hash_index = _T("AIS_Normal");
-            if(g_pAIS->IsAISSuppressed())
-                  bmp_hash_index = _T("AIS_Suppressed");
-            if(g_pAIS->IsAISAlertGeneral())
-                  bmp_hash_index = _T("AIS_AlertGeneral");
-
-            if(m_AIS_bmp_hash_index_last != bmp_hash_index)
-            {
-                  m_pAISTool->SetNormalBitmap(*(*m_phash)[bmp_hash_index]);
-                  b_need_refresh = true;
-            }
-
-      }
-
-      if(b_need_refresh)
-      {
-            m_toolBar->Refresh();
-            m_AIS_bmp_hash_index_last = bmp_hash_index;
-      }
-}
 
 void MyFrame::DeleteToolbarBitmaps()
 {
@@ -6684,8 +6659,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
 
         //  Pick up any change Toolbar status displays
         UpdateGPSCompassStatusBox();
-        UpdateToolbarDynamics();
-
+        UpdateAISTool();
 
         if(console && console->IsShown())
         {
@@ -6709,6 +6683,73 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
         }
 
 }
+
+void MyFrame::TouchAISActive(void)
+{
+      if(m_pAISTool)
+      {
+            if( (!g_pAIS->IsAISSuppressed()) && (!g_pAIS->IsAISAlertGeneral()) )
+            {
+                  g_nAIS_activity_timer = 5;                // seconds
+
+                  wxString bmp_hash_index = _T("AIS_Normal_Active");
+
+                  if(m_AIS_bmp_hash_index_last != bmp_hash_index)
+                  {
+                        m_pAISTool->SetNormalBitmap(*(*m_phash)[bmp_hash_index]);
+                        m_toolBar->Refresh();
+                        m_AIS_bmp_hash_index_last = bmp_hash_index;
+                  }
+            }
+      }
+}
+
+void MyFrame::UpdateAISTool(void)
+{
+      bool b_need_refresh = false;
+
+      wxString bmp_hash_index;
+
+      if(m_pAISTool)
+      {
+            bool b_update = false;
+
+            bmp_hash_index = _T("AIS_Normal");
+            if(g_pAIS->IsAISSuppressed())
+                  bmp_hash_index = _T("AIS_Suppressed");
+            if(g_pAIS->IsAISAlertGeneral())
+                  bmp_hash_index = _T("AIS_AlertGeneral");
+
+
+            //  Manage timeout for AIS activity indicator
+            if(g_nAIS_activity_timer)
+            {
+                  g_nAIS_activity_timer--;
+                  if(0 == g_nAIS_activity_timer)
+                        b_update = true;
+            }
+            else
+            {
+                  if((m_AIS_bmp_hash_index_last != bmp_hash_index))
+                        b_update = true;
+            }
+
+            if(b_update)
+            {
+                  m_pAISTool->SetNormalBitmap(*(*m_phash)[bmp_hash_index]);
+                  b_need_refresh = true;
+            }
+
+      }
+
+      if(b_need_refresh)
+      {
+            m_toolBar->Refresh();
+            m_AIS_bmp_hash_index_last = bmp_hash_index;
+      }
+}
+
+
 
 //    Cause refresh of active Tide/Current data, if displayed
 void MyFrame::OnFrameTCTimer(wxTimerEvent& event)
