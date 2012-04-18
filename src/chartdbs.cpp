@@ -782,6 +782,21 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             wxString line;
             line = _(" ChartFile:  ");
             wxString longline(cte.GetpFullPath(), wxConvUTF8);
+
+            if(CHART_TYPE_CM93COMP == cte.GetChartType())
+            {
+                  //    Remove filename and two trailing directories
+                  //    to make it pretty....
+                  wxString path;
+                  const wxString full_path(cte.GetpFullPath(), wxConvUTF8);
+                  wxFileName::SplitPath(full_path, &path, NULL, NULL);
+
+                  wxFileName fn(path);
+                  fn.RemoveLastDir();
+                  longline = fn.GetPath();
+                  longline += _T("...");
+            }
+
             if(longline.Len() > target_width)
             {
                   line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), target_width, 15, &ncr);
