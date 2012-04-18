@@ -2930,6 +2930,9 @@ bool MyApp::OnInit()
         //  Make sure that the Selected Group is sensible...
         if(g_GroupIndex > (int)g_pGroupArray->GetCount())
               g_GroupIndex = 0;
+        if(!gFrame->CheckGroup(g_GroupIndex))
+              g_GroupIndex = 0;
+
 
         //  Delete any stack built by no-chart startup case
         if (pCurrentStack)
@@ -4752,6 +4755,15 @@ void MyFrame::SetGroupIndex(int index)
       if(index > (int)g_pGroupArray->GetCount())
             new_index = 0;
 
+      bool bgroup_override = false;
+      int old_group_index = new_index;
+
+      if(!CheckGroup(new_index))
+      {
+            new_index = 0;
+            bgroup_override = true;
+      }
+
       //    Get the currently displayed chart native scale, and the current ViewPort
       int current_chart_native_scale = cc1->GetCanvasChartNativeScale();
       ViewPort vp = cc1->GetVP();
@@ -4766,6 +4778,16 @@ void MyFrame::SetGroupIndex(int index)
       //    Refresh the canvas, selecting the "best" chart,
       //    applying the prior ViewPort exactly
       ChartsRefresh(dbi_hint, vp, false);
+
+      //    Message box is deferred so that canvas refresh occurs properly before dialog
+      if(bgroup_override)
+      {
+            wxString msg(_("Group \""));
+            msg += GetGroupName(old_group_index);
+            msg += _("\" is empty, switching to \"All Active Charts\" group.");
+
+            wxMessageBox(msg, _("OpenCPN Group Notice"), wxOK, this);
+      }
 }
 
 void MyFrame::ShowBrightnessLevelTimedDialog(int brightness, int min, int max)
@@ -5320,6 +5342,15 @@ void MyFrame::SetToolbarItemState ( int tool_id, bool state )
             m_toolBar->ToggleTool(tool_id, state);
 }
 
+void MyFrame::SetToolbarItemBitmaps ( int tool_id, wxBitmap *bmp, wxBitmap *bmpDisabled )
+{
+      if(m_toolBar)
+      {
+            m_toolBar->SetToolBitmaps(tool_id, bmp, bmpDisabled);
+            m_toolBar->Refresh();
+      }
+}
+
 void MyFrame::ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar)
 {
  //             ShowDebugWindow as a wxStatusBar
@@ -5562,22 +5593,15 @@ int MyFrame::DoOptionsDialog()
             if(bPrevOGL != g_bopengl)
                   b_refresh_after_options = true;
 
-            bool b_scrub_done = false;
 
             if( ((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
                   (rr & GROUPS_CHANGED) )
             {
-                  ScrubGroupArray();                  // get rid of any empty groups
-                  b_scrub_done = true;                // force config group update
-
                   ChartData->ApplyGroupArray(g_pGroupArray);
-                  if(g_GroupIndex > (int)g_pGroupArray->GetCount())
-                        SetGroupIndex(0);
-                  else
-                        SetGroupIndex(g_GroupIndex);
+                  SetGroupIndex(g_GroupIndex);
             }
 
-            if((rr & GROUPS_CHANGED) || b_scrub_done)
+            if(rr & GROUPS_CHANGED)
             {
                   pConfig->DestroyConfigGroups();
                   pConfig->CreateConfigGroups(g_pGroupArray);
@@ -5671,6 +5695,44 @@ int MyFrame::DoOptionsDialog()
       return false;
 }
 
+wxString MyFrame::GetGroupName(int igroup)
+{
+      ChartGroup *pGroup = g_pGroupArray->Item(igroup-1);
+      return pGroup->m_group_name;
+}
+
+
+bool MyFrame::CheckGroup(int igroup)
+{
+      if(igroup == 0)
+            return true;              // "all charts" is always OK
+
+      ChartGroup *pGroup = g_pGroupArray->Item(igroup-1);
+      bool b_chart_in_group = false;
+
+      for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+      {
+            wxString element_root = pGroup->m_element_array.Item(j)->m_element_name;
+
+            for(unsigned int ic=0 ; ic < (unsigned int)ChartData->GetChartTableEntries(); ic++)
+            {
+                  ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
+                  wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+
+                  if(chart_full_path.StartsWith(element_root))
+                  {
+                        b_chart_in_group = true;
+                        break;
+                  }
+            }
+
+            if(b_chart_in_group)
+                  break;
+      }
+
+      return b_chart_in_group;                           // this group is empty
+
+}
 
 void MyFrame::ScrubGroupArray()
 {
@@ -6294,6 +6356,20 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             }
       }
 #endif
+
+
+      //  testing  toolbar bitmap update
+/*
+      {
+            wxBitmap bmp;
+            if(g_tick & 1)
+                  bmp = *(*GetBitmapHash())[wxString(_T("scin"))];
+            else
+                  bmp = *(*GetBitmapHash())[wxString(_T("scout"))];
+
+            SetToolbarItemBitmaps ( ID_STKDN, &bmp, NULL );
+      }
+*/
 
 //      Listen for quitflag to be set, requesting application close
       if(quitflag)
@@ -11219,7 +11295,6 @@ void ocpnToolBarSimple::SetToggle(int id, bool toggle)
 wxObject *ocpnToolBarSimple::GetToolClientData(int id) const
 {
       wxToolBarToolBase *tool = FindById(id);
-
       return tool ? tool->GetClientData() : (wxObject *)NULL;
 }
 
@@ -11241,6 +11316,18 @@ void ocpnToolBarSimple::EnableTool(int id, bool enable)
             {
                   DoEnableTool(tool, enable);
             }
+      }
+}
+
+void ocpnToolBarSimple::SetToolBitmaps(int id, wxBitmap *bmp, wxBitmap *bmpDisabled)
+{
+      wxToolBarToolBase *tool = FindById(id);
+      if ( tool )
+      {
+            if(bmp)
+                  tool->SetNormalBitmap(*bmp);
+            if(bmpDisabled)
+                  tool->SetDisabledBitmap(*bmpDisabled);
       }
 }
 

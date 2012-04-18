@@ -255,6 +255,7 @@ class MyFrame: public wxFrame
     void ToggleColorScheme();
     int GetnChartStack(void);
     void SetToolbarItemState ( int tool_id, bool state );
+    void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void ToggleQuiltMode(void);
     void ToggleCourseUp(void);
     void SetQuiltMode(bool bquilt);
@@ -294,6 +295,7 @@ class MyFrame: public wxFrame
     void ShowBrightnessLevelTimedDialog(int brightness, int min, int max);
 
     ArrayOfRect GetCanvasReserveRects();
+    bool CheckGroup(int igroup);
 
     wxStatusBar         *m_pStatusBar;
     int                 nRoute_State;
@@ -348,6 +350,7 @@ class MyFrame: public wxFrame
     void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
 
     void ScrubGroupArray();
+    wxString GetGroupName(int igroup);
 
     string_to_pchar_hash tool_xpm_hash;         // hash map of [static] toolbar xpm bitmaps
 
@@ -619,6 +622,8 @@ class ocpnToolBarSimple : public wxControl
 
             virtual void EnableTool(int toolid, bool enable);
             virtual void ToggleTool(int toolid, bool toggle);
+
+            virtual void SetToolBitmaps(int toolid, wxBitmap *bmp, wxBitmap *bmpDisabled);
 
     // Set this to be togglable (or not)
             virtual void SetToggle(int toolid, bool toggle);
