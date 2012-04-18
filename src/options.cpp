@@ -2745,7 +2745,11 @@ void options::OnButtonGroups(wxCommandEvent& event)
       wxDisplaySize(&display_width, &display_height);
 
       groups_dialog *pdlg = new groups_dialog;
-      pdlg->SetDBDirs(m_CurrentDirList);
+
+      if(pListBox)
+            UpdateWorkArrayFromTextCtl();
+
+      pdlg->SetDBDirs(*m_pWorkDirList/*m_CurrentDirList*/);
 
       //    Make a deep copy of the current global Group Array
       EmptyChartGroupArray(m_pGroupArray);
@@ -2778,7 +2782,6 @@ IMPLEMENT_DYNAMIC_CLASS( groups_dialog, wxDialog )
 
             BEGIN_EVENT_TABLE( groups_dialog, wxDialog )
             EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, groups_dialog::OnNodeExpanded )
-//            EVT_TREE_SEL_CHANGED( ID_DIRCTRL, options::OnDirctrlSelChanged )
             EVT_BUTTON( ID_GROUPINSERTDIR, groups_dialog::OnInsertChartItem )
             EVT_BUTTON( ID_GROUPREMOVEDIR, groups_dialog::OnRemoveChartItem )
             EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, groups_dialog::OnGroupPageChange)
