@@ -1299,10 +1299,12 @@ bool RouteProp::UpdateProperties()
         if (m_pRoute) {
             total_seconds = m_pRoute->m_route_time;
             if (m_bStartNow)
+            {
                 if (m_pEnroutePoint)
                     gStart_LMT_Offset = long ((m_pEnroutePoint->m_lon)*3600./15.);
                 else
                     gStart_LMT_Offset = long ((m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)*3600./15.);
+            }
         }
 
         if (m_starttime.IsValid()) {
