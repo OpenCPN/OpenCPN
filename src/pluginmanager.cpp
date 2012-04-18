@@ -497,6 +497,11 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             case 107:
                   pic->m_pplugin = dynamic_cast<opencpn_plugin_17*>(plug_in);
                   break;
+
+            case 108:
+                  pic->m_pplugin = dynamic_cast<opencpn_plugin_18*>(plug_in);
+                  break;
+
             default:
                   break;
       }
@@ -986,6 +991,23 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle)
       }
 }
 
+void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled)
+{
+      for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
+      {
+            PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
+            {
+                  if(pttc->id == item)
+                  {
+                        pParent->SetToolbarItemBitmaps(item, bitmap, bmpDisabled);
+                        break;
+                  }
+            }
+      }
+
+}
+
+
 wxString PlugInManager::GetLastError()
 {
       return m_last_error_string;
@@ -1116,6 +1138,12 @@ void SetToolbarItemState(int item, bool toggle)
 {
       if(s_ppim)
             s_ppim->SetToolbarItemState(item, toggle);
+}
+
+void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled)
+{
+      if(s_ppim)
+            s_ppim->SetToolbarItemBitmaps(item, bitmap, bmpDisabled);
 }
 
 int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
@@ -1479,6 +1507,25 @@ bool opencpn_plugin_17::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
 void opencpn_plugin_17::SetPluginMessage(wxString &message_id, wxString &message_body)
 {}
 
+
+//    Opencpn_Plugin_18 Implementation
+opencpn_plugin_18::opencpn_plugin_18(void *pmgr)
+      : opencpn_plugin(pmgr)
+      {
+}
+
+opencpn_plugin_18::~opencpn_plugin_18(void)
+{}
+
+
+bool opencpn_plugin_18::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+{  return false; }
+
+bool opencpn_plugin_18::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{  return false; }
+
+void opencpn_plugin_18::SetPluginMessage(wxString &message_id, wxString &message_body)
+{}
 
 
 

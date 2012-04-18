@@ -51,7 +51,7 @@
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           7
+#define API_VERSION_MINOR           8
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -428,6 +428,18 @@ class DECL_EXP opencpn_plugin_17 : public opencpn_plugin
 
 };
 
+class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
+{
+      public:
+            opencpn_plugin_18(void *pmgr);
+            virtual ~opencpn_plugin_18();
+
+            virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+            virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+
+            virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
+};
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn CallBack API Definition
@@ -444,6 +456,7 @@ extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBi
 extern "C"  DECL_EXP void RemovePlugInTool(int tool_id);
 extern "C"  DECL_EXP void SetToolbarToolViz(int item, bool viz);      // Temporarily change toolbar tool viz
 extern "C"  DECL_EXP void SetToolbarItemState(int item, bool toggle);
+extern "C"  DECL_EXP void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
 
 extern "C"  DECL_EXP  int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin );
 extern "C"  DECL_EXP void RemoveCanvasContextMenuItem(int item);      // Fully remove this item
