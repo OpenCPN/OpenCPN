@@ -303,6 +303,7 @@ extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
+extern int              g_current_arrow_scale;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -3896,6 +3897,7 @@ int MyConfig::LoadMyConfig ( int iteration )
 
       Read ( _T ( "RouteLineWidth" ),  &g_route_line_width, 2 );
       Read ( _T ( "TrackLineWidth" ),  &g_track_line_width, 3 );
+      Read ( _T ( "CurrentArrowScale" ),  &g_current_arrow_scale, 100 );
       Read ( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
 
       return ( 0 );
@@ -4614,6 +4616,7 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "RouteLineWidth" ), g_route_line_width );
       Write ( _T ( "TrackLineWidth" ), g_track_line_width );
+      Write ( _T ( "CurrentArrowScale" ),  g_current_arrow_scale );
       Write ( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
       Flush();

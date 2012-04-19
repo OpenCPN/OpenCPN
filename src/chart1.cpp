@@ -346,6 +346,7 @@ extern HINSTANCE      s_hGLU_DLL;                   // Handle to DLL
 #endif
 
 double           g_ownship_predictor_minutes;
+int              g_current_arrow_scale;
 
 OCP_AIS_Thread  *pAIS_Thread;
 AIS_Decoder     *g_pAIS;

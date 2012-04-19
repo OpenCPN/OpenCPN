@@ -254,6 +254,8 @@ extern int              g_GroupIndex;
 extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
 
+extern int              g_current_arrow_scale;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -3685,8 +3687,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pix_per_mm = ( ( double ) sx ) / ( ( double ) mmx );
 
         int mm_per_knot = 10;
-        current_draw_scaler =  mm_per_knot * m_pix_per_mm;
-
+        current_draw_scaler =  mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
         pscratch_bm = NULL;
         proute_bm = NULL;
 
