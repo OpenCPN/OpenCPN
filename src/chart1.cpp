@@ -2334,6 +2334,14 @@ bool MyApp::OnInit()
               g_pcsv_locn->Append(_T("s57data"));
         }
 
+        if(g_bportable)
+        {
+            *g_pcsv_locn = _T(".");
+             appendOSDirSlash(g_pcsv_locn);
+             g_pcsv_locn->Append(_T("s57data"));
+        }
+
+
 //      If the config file contains an entry for SENC file prefix, use it.
 //      Otherwise, default to PrivateDataDir
         if(g_SENCPrefix.IsEmpty())
@@ -2341,6 +2349,15 @@ bool MyApp::OnInit()
               g_SENCPrefix = g_PrivateDataDir;
               appendOSDirSlash(&g_SENCPrefix);
               g_SENCPrefix.Append(_T("SENC"));
+        }
+
+        if(g_bportable)
+        {
+              wxFileName f(g_SENCPrefix);
+              if(f.MakeRelativeTo(g_PrivateDataDir))
+                    g_SENCPrefix = f.GetFullPath();
+              else
+                    g_SENCPrefix = _T("SENC");
         }
 
         // S52RAZDS.RLE
@@ -5573,6 +5590,7 @@ int MyFrame::DoOptionsDialog()
             if( ((rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
                   (rr & GROUPS_CHANGED) )
             {
+                  ScrubGroupArray();
                   ChartData->ApplyGroupArray(g_pGroupArray);
                   SetGroupIndex(g_GroupIndex);
             }
@@ -5713,13 +5731,13 @@ bool MyFrame::CheckGroup(int igroup)
 void MyFrame::ScrubGroupArray()
 {
       //    For each group,
-      //    make sure that each group has at least one element (dir or chart) in the database.
-      //    If a group contains no charts actually in the database, delete the group.
+      //    make sure that each group element (dir or chart) references at least oneitem in the database.
+      //    If not, remove the element.
 
       unsigned int igroup = 0;
       while(igroup < g_pGroupArray->GetCount())
       {
-            bool b_chart_in_group = false;
+            bool b_chart_in_element = false;
             ChartGroup *pGroup = g_pGroupArray->Item(igroup);
 
             for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
@@ -5733,27 +5751,20 @@ void MyFrame::ScrubGroupArray()
 
                         if(chart_full_path.StartsWith(element_root))
                         {
-                              b_chart_in_group = true;
+                              b_chart_in_element = true;
                               break;
                         }
                   }
 
-                  if(b_chart_in_group)
-                        break;
+                  if(!b_chart_in_element)             // delete the element
+                  {
+                        ChartGroupElement *pelement = pGroup->m_element_array.Item(j);
+                        pGroup->m_element_array.RemoveAt(j);
+                        delete pelement;
+                  }
             }
 
-            if(!b_chart_in_group)                           // this group is empty
-            {
-                  g_pGroupArray->RemoveAt(igroup);
-
-                  wxString msg(_T("Removing empty chart group: "));
-                  msg += pGroup->m_group_name;
-                  wxLogMessage(msg);
-
-                  delete pGroup;
-            }
-            else
-                  igroup++;                                 // next group
+            igroup++;                                 // next group
       }
 }
 
