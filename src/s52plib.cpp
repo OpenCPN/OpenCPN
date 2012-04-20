@@ -4356,11 +4356,16 @@ bool s52plib::RenderRasterSymbol ( ObjRazRules *rzRules, Rule *prule, wxPoint &r
 
       if(!m_pdc)          // opengl
       {
+            double cr = cos(vp->rotation);
+            double sr = sin(vp->rotation);
+            double ddx = pivot_x * cr + pivot_y * sr;
+            double ddy = pivot_y * cr - pivot_x * sr;
+
             glColor4f(1, 1, 1, 1);
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glRasterPos2i(r.x - pivot_x, r.y - pivot_y);
+            glRasterPos2f(r.x - ddx, r.y - ddy);
             glPixelZoom(1, -1);
             glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr);
             glPixelZoom(1, 1);
