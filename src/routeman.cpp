@@ -1751,8 +1751,10 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used)
       while(node)
       {
             RoutePoint *prp = node->GetData();
-
-            if ( !prp->m_bIsInLayer && (b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)     // if argument is false, then only delete non-route waypoints
+            // if argument is false, then only delete non-route waypoints
+            if ( !prp->m_bIsInLayer &&
+                  (prp->m_IconName != _T("mob")) &&
+                  (b_delete_used || ((!prp->m_bIsInRoute) && (!prp->m_bIsInTrack)
                  && !(prp == pAnchorWatchPoint1) && !(prp == pAnchorWatchPoint2) ))  )
             {
                   if (prp == pAnchorWatchPoint1)
