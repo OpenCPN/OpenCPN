@@ -16863,6 +16863,9 @@ if ((*IsObjectBufferATI)(buffer) == GL_TRUE) {
 
 void DimeControl(wxWindow* ctrl)
 {
+      if(NULL == ctrl)
+            return;
+
       wxColour col,col1,gridline,uitext,udkrd,back_color,text_color;
       col = GetGlobalColor(_T("DILG0"));       // Dialog Background white
       col1 = GetGlobalColor(_T("DILG1"));      // Dialog Background
@@ -16872,10 +16875,10 @@ void DimeControl(wxWindow* ctrl)
       udkrd = GetGlobalColor(_T("UDKRD"));
       gridline = GetGlobalColor(_T("GREY2"));
 
-      DimeControl(ctrl, col, col1, back_color, text_color, uitext, udkrd);
+      DimeControl(ctrl, col, col1, back_color, text_color, uitext, udkrd, gridline);
 }
 
-void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd)
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline)
 {
       ColorScheme cs = cc1->GetColorScheme();
       if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
@@ -16901,7 +16904,13 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
                   ((wxTextCtrl*)win)->SetForegroundColour(uitext);
 
             else if(win->IsKindOf(CLASSINFO(wxBitmapComboBox)))
+            {
+#if wxCHECK_VERSION(2,9,0)
+                  ((wxBitmapComboBox*)win)->GetTextCtrl()->SetBackgroundColour(col);
+#else
                   ((wxBitmapComboBox*)win)->SetBackgroundColour(col);
+#endif
+            }
 
             else if(win->IsKindOf(CLASSINFO(wxChoice)))
                   ((wxChoice*)win)->SetBackgroundColour(col1);
@@ -16939,13 +16948,23 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
                   ((wxPanel*)win)->SetBackgroundColour(col1);
             }
 
+            else if(win->IsKindOf(CLASSINFO(wxGrid)))
+            {
+                  ((wxGrid*)win)->SetDefaultCellBackgroundColour(col1);
+                  ((wxGrid*)win)->SetDefaultCellTextColour(uitext);
+                  ((wxGrid*)win)->SetLabelBackgroundColour(col);
+                  ((wxGrid*)win)->SetLabelTextColour(uitext);
+                  ((wxGrid*)win)->SetDividerPen(wxPen(col));
+                  ((wxGrid*)win)->SetGridLineColour(gridline);
+            }
+
             else
             {;}
 
             if(win->GetChildren().GetCount() > 0)
             {
                   wxWindow * w = win;
-                  DimeControl(w,col,col1,back_color,text_color,uitext,udkrd);
+                  DimeControl(w,col,col1,back_color,text_color,uitext,udkrd,gridline);
             }
       }
 }

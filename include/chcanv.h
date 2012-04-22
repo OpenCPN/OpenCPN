@@ -39,6 +39,7 @@
 #include <wx/treectrl.h>
 #include "wx/dirctrl.h"
 #include <wx/sound.h>
+#include <wx/grid.h>
 
 #include <wx/glcanvas.h>
 
@@ -59,7 +60,7 @@ int SetScreenBrightness(int brightness);
 
 //Central dimmer...
 void DimeControl(wxWindow* ctrl);
-void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd);
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 //    Set up the preferred quilt type
 #define QUILT_TYPE_2
