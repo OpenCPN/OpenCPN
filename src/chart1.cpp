@@ -3943,8 +3943,10 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("AIS_Normal")]             = (char *)_img_ais_alive;
     tool_xpm_hash[_T("AIS_Suppressed")]         = (char *)_img_ais_supressed;
     tool_xpm_hash[_T("AIS_AlertGeneral")]       = (char *)_img_ais_alarm;
-    tool_xpm_hash[_T("AIS_Disabled")]           = (char *)_img_ais_disabled;
     tool_xpm_hash[_T("AIS_Normal_Active")]      = (char *)_img_ais_alive_active;
+    tool_xpm_hash[_T("AIS_Suppressed_Active")]  = (char *)_img_ais_supressed_active;
+    tool_xpm_hash[_T("AIS_AlertGeneral_Active")]= (char *)_img_ais_alarm_active;
+    tool_xpm_hash[_T("AIS_Disabled")]           = (char *)_img_ais_disabled;
 
     tool_xpm_hash[_T("gps1Bar")]                = (char *)_img_gps1;
     tool_xpm_hash[_T("gps2Bar")]                = (char *)_img_gps2;
@@ -6705,6 +6707,10 @@ void MyFrame::TouchAISActive(void)
                   g_nAIS_activity_timer = 5;                // seconds
 
                   wxString bmp_hash_index = _T("AIS_Normal_Active");
+                  if(g_pAIS->IsAISAlertGeneral())
+                        bmp_hash_index = _T("AIS_AlertGeneral_Active");
+                  if(g_pAIS->IsAISSuppressed())
+                        bmp_hash_index = _T("AIS_Suppressed_Active");
 
                   if(m_AIS_bmp_hash_index_last != bmp_hash_index)
                   {
@@ -6737,8 +6743,21 @@ void MyFrame::UpdateAISTool(void)
             if(g_nAIS_activity_timer)
             {
                   g_nAIS_activity_timer--;
+
                   if(0 == g_nAIS_activity_timer)
                         b_update = true;
+                  else
+                  {
+                        bmp_hash_index = _T("AIS_Normal_Active");
+                        if(g_pAIS->IsAISSuppressed())
+                              bmp_hash_index = _T("AIS_Suppressed_Active");
+                        if(g_pAIS->IsAISAlertGeneral())
+                              bmp_hash_index = _T("AIS_AlertGeneral_Active");
+
+                        if((m_AIS_bmp_hash_index_last != bmp_hash_index))
+                              b_update = true;
+                  }
+
             }
             else
             {
