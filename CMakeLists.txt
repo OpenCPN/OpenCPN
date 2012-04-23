@@ -97,7 +97,7 @@ ENDIF (NOT WIN32)
 IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   SET (ARCH "armel")
 ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-MESSAGE (${ARCH})
+MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
@@ -242,6 +242,8 @@ SET(SRC_NMEA0183
 		src/nmea0183/gga.cpp
 		src/nmea0183/gsv.hpp
 		src/nmea0183/gsv.cpp
+		src/nmea0183/GPwpl.cpp
+		src/nmea0183/GPwpl.hpp
 	)
 ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)

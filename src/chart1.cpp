@@ -423,6 +423,8 @@ bool             g_bportable;
 ChartGroupArray  *g_pGroupArray;
 int              g_GroupIndex;
 
+wxString         g_GPS_Ident;
+
 wxProgressDialog *s_ProgDialog;
 
 //-----------------------------------------------------------------------------------------------------
@@ -628,6 +630,11 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0
 #include <crtdbg.h>
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
 #define new DEBUG_NEW
+#endif
+
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
 #endif
 
 

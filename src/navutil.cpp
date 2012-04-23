@@ -304,6 +304,7 @@ extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
+extern wxString         g_GPS_Ident;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2935,6 +2936,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "OwnshipGPSOffsetX" ),  &g_n_gps_antenna_offset_x, 0 );
       Read ( _T ( "OwnshipMinMM" ),  &g_n_ownship_min_mm, -1 );
 
+      Read ( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic"));
+
       Read ( _T ( "UseNMEA_RMC" ),  &g_bUseRMC, 1 );
       Read ( _T ( "UseNMEA_GLL" ),  &g_bUseGLL, 1 );
       Read ( _T ( "UseBigRedX" ),  &g_bbigred, 0 );
@@ -3020,7 +3023,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "GarminPersistance" ),  &g_bGarminPersistance, 0 );
 
       Read ( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
-      
+
       Read ( _T ( "TCDataset" ), &g_TCdataset, wxT("DEFAULT"));
 
       Read ( _T ( "OwnshipCOGPredictorMinutes" ),  &g_ownship_predictor_minutes, 5 );

@@ -99,7 +99,7 @@
 #include "vtg.hpp"
 #include "gsv.hpp"
 #include "gga.hpp"
-
+#include "GPwpl.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -190,6 +190,7 @@ class NMEA0183
        VTG Vtg;
        GSV Gsv;
        GGA Gga;
+       GPWPL GPwpl;
  /*
       ROT Rot;
       RPM Rpm;

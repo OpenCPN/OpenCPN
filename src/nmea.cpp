@@ -81,9 +81,15 @@ static      GenericPosDatEx     ThreadPositionData;
 
 extern bool             g_bDebugGPSD;
 extern MyFrame          *gFrame;
+extern wxString         g_GPS_Ident;
 
 #ifdef BUILD_WITH_LIBGPS
 struct gps_data_t gpsd_data;
+#endif
+
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
 #endif
 
 //------------------------------------------------------------------------------
@@ -1409,46 +1415,294 @@ ret_point:
       else
 #endif    //USE_GARMINHOST
 
-      {                       // Standard NMEA mode
-            SENTENCE    snt;
-            NMEA0183    oNMEA0183;
-            oNMEA0183.TalkerID = _T ( "EC" );
+      {
+            {                       // Standard NMEA mode
+                  SENTENCE    snt;
+                  NMEA0183    oNMEA0183;
+                  oNMEA0183.TalkerID = _T ( "EC" );
 
-            int nProg = pr->pRoutePointList->GetCount() + 1;
-            if ( pProgress )
-                 pProgress->SetRange ( 100 );
+                  int nProg = pr->pRoutePointList->GetCount() + 1;
+                  if ( pProgress )
+                  pProgress->SetRange ( 100 );
 
-            int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
+                  int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
 
-            int progress_stall = 500;
-            if(pr->pRoutePointList->GetCount() > 10)
-                  progress_stall = 500;
+                  int progress_stall = 500;
+                  if(pr->pRoutePointList->GetCount() > 10)
+                        progress_stall = 500;
 
-            //    Send out the waypoints, in order
-            if ( bsend_waypoints )
-            {
+                  //    Send out the waypoints, in order
+                  if ( bsend_waypoints )
+                  {
+                        wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+
+                        int ip = 1;
+                        while ( node )
+                        {
+                              RoutePoint *prp = node->GetData();
+
+                              if(g_GPS_Ident == _T("Generic"))
+                              {
+                                    if ( prp->m_lat < 0. )
+                                          oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                                    else
+                                          oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+
+                                    if ( prp->m_lon < 0. )
+                                          oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+                                    else
+                                          oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+
+                                    oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
+
+                                    oNMEA0183.Wpl.Write ( snt );
+
+                              }
+                              else if(g_GPS_Ident == _T("FurunoGP3X"))
+                              {
+                                    oNMEA0183.TalkerID = _T ( "PFEC," );
+
+                                    if ( prp->m_lat < 0. )
+                                          oNMEA0183.GPwpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                                    else
+                                          oNMEA0183.GPwpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+
+                                    if ( prp->m_lon < 0. )
+                                          oNMEA0183.GPwpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+                                    else
+                                          oNMEA0183.GPwpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+
+
+                                    oNMEA0183.GPwpl.To = prp->GetName().Truncate ( 8 );
+
+                                    oNMEA0183.GPwpl.Write ( snt );
+                              }
+
+
+                              g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+                              wxString msg(_T("-->GPS Port:"));
+                              msg += com_name;
+                              msg += _T("  Sentence: ");
+                              msg += snt.Sentence;
+                              msg.Trim();
+                              wxLogMessage(msg);
+
+
+                              if ( pProgress )
+                              {
+                                    pProgress->SetValue ( ( ip * 100 ) / nProg );
+                                    pProgress->Refresh();
+                                    pProgress->Update();
+                              }
+
+                              wxMilliSleep ( progress_stall );
+
+                              node = node->GetNext();
+
+                              ip++;
+                        }
+                  }
+
+                  //    Create the NMEA Rte sentence
+
+                  oNMEA0183.Rte.Empty();
+                  oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
+
+                  if ( pr->m_RouteNameString.IsEmpty() )
+                        oNMEA0183.Rte.RouteName = _T ( "1" );
+                  else
+                        oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+
+                  if(g_GPS_Ident == _T("FurunoGP3X"))
+                  {
+                        oNMEA0183.Rte.RouteName = _T ( "1" );
+                        oNMEA0183.TalkerID = _T ( "GP" );
+                  }
+
+                  oNMEA0183.Rte.total_number_of_messages     = 1;
+                  oNMEA0183.Rte.message_number               = 1;
+
+                  //    add the waypoints
                   wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
-
-                  int ip = 1;
                   while ( node )
                   {
                         RoutePoint *prp = node->GetData();
+                        wxString name = prp->GetName().Truncate ( 6 );
 
-                        if ( prp->m_lat < 0. )
-                              oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                        if(g_GPS_Ident == _T("FurunoGP3X"))
+                        {
+                              name = prp->GetName().Truncate ( 7 );
+                              name.Prepend(_T(" "));
+                        }
+
+                        oNMEA0183.Rte.AddWaypoint ( name );
+                        node = node->GetNext();
+                  }
+
+                  oNMEA0183.Rte.Write ( snt );
+
+                  unsigned int max_length = 70;
+
+                  if(snt.Sentence.Len() > max_length)
+                  {
+                        //    Make a route with one waypoint to get tare load.
+                        NMEA0183    tNMEA0183;
+                        SENTENCE    tsnt;
+                        tNMEA0183.TalkerID = _T ( "EC" );
+
+                        tNMEA0183.Rte.Empty();
+                        tNMEA0183.Rte.TypeOfRoute = CompleteRoute;
+
+                        if(g_GPS_Ident != _T("FurunoGP3X"))
+                        {
+                              if ( pr->m_RouteNameString.IsEmpty() )
+                                    tNMEA0183.Rte.RouteName = _T ( "1" );
+                              else
+                                    tNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+
+                              tNMEA0183.Rte.AddWaypoint ( _T("123456") );
+                        }
                         else
-                              oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
-
-                        if ( prp->m_lon < 0. )
-                              oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
-                        else
-                        oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+                        {
+                              tNMEA0183.Rte.RouteName = _T ( "1" );
+                              tNMEA0183.Rte.AddWaypoint ( _T(" 1234567") );
+                        }
 
 
-                        oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
+                        tNMEA0183.Rte.Write ( tsnt );
 
-                        oNMEA0183.Wpl.Write ( snt );
+                        unsigned int tare_length = tsnt.Sentence.Len();
 
+                        wxArrayString sentence_array;
+
+                        //    Trial balloon: add the waypoints, with length checking
+                        int n_total = 1;
+                        bool bnew_sentence = true;
+                        int sent_len=0;
+
+                        wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+                        while ( node )
+                        {
+                              RoutePoint *prp = node->GetData();
+                              unsigned int name_len = prp->GetName().Truncate ( 6 ).Len();
+                              if(g_GPS_Ident == _T("FurunoGP3X"))
+                                    name_len = 1 + prp->GetName().Truncate ( 7 ).Len();
+
+
+                              if(bnew_sentence)
+                              {
+                                    sent_len = tare_length;
+                                    sent_len += name_len;
+                                    bnew_sentence = false;
+                                    node = node->GetNext();
+
+                              }
+                              else
+                              {
+                                    if(sent_len + name_len > max_length)
+                                    {
+                                          n_total ++;
+                                          bnew_sentence = true;
+                                    }
+                                    else
+                                    {
+                                          sent_len += name_len;
+                                          node = node->GetNext();
+                                    }
+                              }
+                        }
+
+                        //    Now we have the sentence count, so make the real sentences using the same counting logic
+                        int final_total = n_total;
+                        int n_run = 1;
+                        bnew_sentence = true;
+
+                        node = pr->pRoutePointList->GetFirst();
+                        while ( node )
+                        {
+                              RoutePoint *prp = node->GetData();
+                              wxString name = prp->GetName().Truncate ( 6 );
+                              if(g_GPS_Ident == _T("FurunoGP3X"))
+                              {
+                                    name = prp->GetName().Truncate ( 7 );
+                                    name.Prepend(_T(" "));
+                              }
+
+                              unsigned int name_len = name.Len();
+
+                              if(bnew_sentence)
+                              {
+                                    sent_len = tare_length;
+                                    sent_len += name_len;
+                                    bnew_sentence = false;
+
+                                    oNMEA0183.Rte.Empty();
+                                    oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
+
+                                    if(g_GPS_Ident != _T("FurunoGP3X"))
+                                    {
+                                          if ( pr->m_RouteNameString.IsEmpty() )
+                                                oNMEA0183.Rte.RouteName = _T ( "1" );
+                                          else
+                                                oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+                                    }
+                                    else
+                                          oNMEA0183.Rte.RouteName = _T ( "1" );
+
+
+                                    oNMEA0183.Rte.total_number_of_messages     = final_total;
+                                    oNMEA0183.Rte.message_number               = n_run;
+                                    snt.Sentence.Clear();
+
+                                    oNMEA0183.Rte.AddWaypoint ( name );
+                                    node = node->GetNext();
+                              }
+                              else
+                              {
+                                    if(sent_len + name_len > max_length)
+                                    {
+                                          n_run ++;
+                                          bnew_sentence = true;
+
+                                          oNMEA0183.Rte.Write ( snt );
+      //       printf("%s", snt.Sentence.mb_str());
+
+                                          sentence_array.Add(snt.Sentence);
+
+                                    }
+                                    else
+                                    {
+                                          sent_len += name_len;
+                                          oNMEA0183.Rte.AddWaypoint ( name );
+                                          node = node->GetNext();
+                                    }
+                              }
+                        }
+
+                        oNMEA0183.Rte.Write ( snt );              //last one...
+                        if(snt.Sentence.Len() > tare_length)
+                              sentence_array.Add(snt.Sentence);
+
+                        for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
+                        {
+      //                        printf("%s", sentence_array.Item(ii).mb_str());
+                              g_pCommMan->WriteComPort ( com_name, sentence_array.Item(ii) );
+
+                              wxString msg(_T("-->GPS Port:"));
+                              msg += com_name;
+                              msg += _T("  Sentence: ");
+                              msg += sentence_array.Item(ii);
+                              msg.Trim();
+                              wxLogMessage(msg);
+
+                              wxMilliSleep ( 500 );
+                        }
+
+                  }
+                  else
+                  {
+            //      printf("%s", snt.Sentence.mb_str());
                         g_pCommMan->WriteComPort ( com_name, snt.Sentence );
 
                         wxString msg(_T("-->GPS Port:"));
@@ -1457,202 +1711,40 @@ ret_point:
                         msg += snt.Sentence;
                         msg.Trim();
                         wxLogMessage(msg);
-
-
-                        if ( pProgress )
-                        {
-                              pProgress->SetValue ( ( ip * 100 ) / nProg );
-                              pProgress->Refresh();
-                              pProgress->Update();
-                        }
-
-                        wxMilliSleep ( progress_stall );
-
-                        node = node->GetNext();
-
-                        ip++;
-                  }
-            }
-
-            //    Create the NMEA Rte sentence
-
-            oNMEA0183.Rte.Empty();
-            oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
-
-            if ( pr->m_RouteNameString.IsEmpty() )
-                  oNMEA0183.Rte.RouteName = _T ( "1" );
-            else
-                  oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
-
-            oNMEA0183.Rte.total_number_of_messages     = 1;
-            oNMEA0183.Rte.message_number               = 1;
-
-            //    add the waypoints
-            wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
-            while ( node )
-            {
-                  RoutePoint *prp = node->GetData();
-                  oNMEA0183.Rte.AddWaypoint ( prp->GetName().Truncate ( 6 ) );
-                  node = node->GetNext();
-            }
-
-            oNMEA0183.Rte.Write ( snt );
-
-            unsigned int max_length = 70;
-
-            if(snt.Sentence.Len() > max_length)
-            {
-                  //    Make a route with one waypoint to get tare load.
-                  NMEA0183    tNMEA0183;
-                  SENTENCE    tsnt;
-                  tNMEA0183.TalkerID = _T ( "EC" );
-
-                  tNMEA0183.Rte.Empty();
-                  tNMEA0183.Rte.TypeOfRoute = CompleteRoute;
-
-                  if ( pr->m_RouteNameString.IsEmpty() )
-                        tNMEA0183.Rte.RouteName = _T ( "1" );
-                  else
-                        tNMEA0183.Rte.RouteName = pr->m_RouteNameString;
-                  tNMEA0183.Rte.AddWaypoint ( _T("123456") );
-                  tNMEA0183.Rte.Write ( tsnt );
-
-                  unsigned int tare_length = tsnt.Sentence.Len();
-
-                  wxArrayString sentence_array;
-
-                  //    Trial balloon: add the waypoints, with length checking
-                  int n_total = 1;
-                  bool bnew_sentence = true;
-                  int sent_len=0;
-
-                  wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
-                  while ( node )
-                  {
-                        RoutePoint *prp = node->GetData();
-                        if(bnew_sentence)
-                        {
-                              sent_len = tare_length;
-                              sent_len += prp->GetName().Truncate ( 6 ).Len();
-                              bnew_sentence = false;
-                              node = node->GetNext();
-
-                        }
-                        else
-                        {
-                              if(sent_len + prp->GetName().Truncate ( 6 ).Len() > max_length)
-                              {
-                                    n_total ++;
-                                    bnew_sentence = true;
-                              }
-                              else
-                              {
-                                    sent_len += prp->GetName().Truncate ( 6 ).Len();
-                                    node = node->GetNext();
-                              }
-                        }
                   }
 
-                  //    Now we have the sentence count, so make the real sentences using the same counting logic
-                  int final_total = n_total;
-                  int n_run = 1;
-                  bnew_sentence = true;
-
-                  node = pr->pRoutePointList->GetFirst();
-                  while ( node )
+                  if(g_GPS_Ident == _T("FurunoGP3X"))
                   {
-                        RoutePoint *prp = node->GetData();
-                        if(bnew_sentence)
-                        {
-                              sent_len = tare_length;
-                              sent_len += prp->GetName().Truncate ( 6 ).Len();
-                              bnew_sentence = false;
+                        wxString term;
+                        term.Printf(_T("$PFEC,GPxfr, CTRL, E%c%c"), 0x0d, 0x0a);
 
-                              oNMEA0183.Rte.Empty();
-                              oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
-
-                              if ( pr->m_RouteNameString.IsEmpty() )
-                                    oNMEA0183.Rte.RouteName = _T ( "1" );
-                              else
-                                    oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
-
-                              oNMEA0183.Rte.total_number_of_messages     = final_total;
-                              oNMEA0183.Rte.message_number               = n_run;
-                              snt.Sentence.Clear();
-
-                              oNMEA0183.Rte.AddWaypoint ( prp->GetName().Truncate ( 6 ) );
-                              node = node->GetNext();
-                        }
-                        else
-                        {
-                              if(sent_len + prp->GetName().Truncate ( 6 ).Len() > max_length)
-                              {
-                                    n_run ++;
-                                    bnew_sentence = true;
-
-                                    oNMEA0183.Rte.Write ( snt );
-//       printf("%s", snt.Sentence.mb_str());
-
-                                    sentence_array.Add(snt.Sentence);
-
-                              }
-                              else
-                              {
-                                    sent_len += prp->GetName().Truncate ( 6 ).Len();
-                                    oNMEA0183.Rte.AddWaypoint ( prp->GetName().Truncate ( 6 ) );
-                                    node = node->GetNext();
-                              }
-                        }
-                  }
-
-                  oNMEA0183.Rte.Write ( snt );              //last one...
-                  if(snt.Sentence.Len() > tare_length)
-                        sentence_array.Add(snt.Sentence);
-
-                  for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
-                  {
-//                        printf("%s", sentence_array.Item(ii).mb_str());
-                        g_pCommMan->WriteComPort ( com_name, sentence_array.Item(ii) );
+                        g_pCommMan->WriteComPort ( com_name, term );
 
                         wxString msg(_T("-->GPS Port:"));
                         msg += com_name;
                         msg += _T("  Sentence: ");
-                        msg += sentence_array.Item(ii);
+                        msg += term;
                         msg.Trim();
                         wxLogMessage(msg);
-
-                        wxMilliSleep ( 500 );
                   }
 
+                  if ( pProgress )
+                  {
+                        pProgress->SetValue ( 100 );
+                        pProgress->Refresh();
+                        pProgress->Update();
+                  }
+
+                  wxMilliSleep ( 500 );
+
+                  g_pCommMan->CloseComPort ( port_fd );
+
+                  ret_bool = true;
+                  return ret_bool;
             }
-            else
-            {
-      //      printf("%s", snt.Sentence.mb_str());
-                  g_pCommMan->WriteComPort ( com_name, snt.Sentence );
-
-                  wxString msg(_T("-->GPS Port:"));
-                  msg += com_name;
-                  msg += _T("  Sentence: ");
-                  msg += snt.Sentence;
-                  msg.Trim();
-                  wxLogMessage(msg);
-            }
-
-
-            if ( pProgress )
-            {
-                  pProgress->SetValue ( 100 );
-                  pProgress->Refresh();
-                  pProgress->Update();
-            }
-
-            wxMilliSleep ( 500 );
-
-            g_pCommMan->CloseComPort ( port_fd );
-
-            ret_bool = true;
-            return ret_bool;
       }
+
+      return ret_bool;
 }
 
 
@@ -1822,22 +1914,66 @@ ret_point:
 
             int port_fd = g_pCommMan->OpenComPort ( com_name, 4800 );
 
-            if ( prp->m_lat < 0. )
-                  oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
-            else
-                  oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+            if(g_GPS_Ident == _T("Generic"))
+            {
+                  if ( prp->m_lat < 0. )
+                        oNMEA0183.Wpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                  else
+                        oNMEA0183.Wpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
 
-            if ( prp->m_lon < 0. )
-                  oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
-            else
-                  oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+                  if ( prp->m_lon < 0. )
+                        oNMEA0183.Wpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+                  else
+                        oNMEA0183.Wpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
+
+                  oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
+
+                  oNMEA0183.Wpl.Write ( snt );
+
+            }
+            else if(g_GPS_Ident == _T("FurunoGP3X"))
+            {
+                  oNMEA0183.TalkerID = _T ( "PFEC," );
+
+                  if ( prp->m_lat < 0. )
+                        oNMEA0183.GPwpl.Position.Latitude.Set ( -prp->m_lat, _T ( "S" ) );
+                  else
+                        oNMEA0183.GPwpl.Position.Latitude.Set ( prp->m_lat, _T ( "N" ) );
+
+                  if ( prp->m_lon < 0. )
+                        oNMEA0183.GPwpl.Position.Longitude.Set ( -prp->m_lon, _T ( "W" ) );
+                  else
+                        oNMEA0183.GPwpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
 
 
-            oNMEA0183.Wpl.To = prp->GetName().Truncate ( 6 );
+                  oNMEA0183.GPwpl.To = prp->GetName().Truncate ( 8 );
 
-            oNMEA0183.Wpl.Write ( snt );
+                  oNMEA0183.GPwpl.Write ( snt );
+            }
 
             g_pCommMan->WriteComPort ( com_name, snt.Sentence );
+
+            wxString msg(_T("-->GPS Port:"));
+            msg += com_name;
+            msg += _T("  Sentence: ");
+            msg += snt.Sentence;
+            msg.Trim();
+            wxLogMessage(msg);
+
+            if(g_GPS_Ident == _T("FurunoGP3X"))
+            {
+                  wxString term;
+                  term.Printf(_T("$PFEC,GPxfr, CTRL, E%c%c"), 0x0d, 0x0a);
+
+                  g_pCommMan->WriteComPort ( com_name, term );
+
+                  wxString msg(_T("-->GPS Port:"));
+                  msg += com_name;
+                  msg += _T("  Sentence: ");
+                  msg += term;
+                  msg.Trim();
+                  wxLogMessage(msg);
+            }
 
             if ( pProgress )
             {
