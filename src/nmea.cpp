@@ -77,7 +77,7 @@ int                      s_dns_test_flag;
 
 //    A static structure storing generic position data
 //    Used to communicate from NMEA threads to main application thread
-static      GenericPosDat     ThreadPositionData;
+static      GenericPosDatEx     ThreadPositionData;
 
 extern bool             g_bDebugGPSD;
 extern MyFrame          *gFrame;
@@ -331,6 +331,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
       ThreadPositionData.kLon = 0.;
       ThreadPositionData.kCog = 0.;
       ThreadPositionData.kSog = 0.;
+      ThreadPositionData.kHdm = NAN;
+      ThreadPositionData.kHdt = NAN;
       ThreadPositionData.nSats = 0;
 
 #ifndef OCPN_NO_SOCKETS
@@ -948,6 +950,10 @@ void NMEAHandler::OnTimerLIBGPS(wxTimerEvent& event)
 
             if(m_bgps_present)  // GPS must be online
             {
+                  // gpsd does not produce Hdt/Hdm
+                  ThreadPositionData.kHdm = NAN;
+                  ThreadPositionData.kHdt = NAN;
+
                   if(g_bDebugGPSD) printf("  STATUS_SET: %d status %d\n", (m_gps_data->set & STATUS_SET) != 0, m_gps_data->status);
                   if((m_gps_data->set & STATUS_SET) && (m_gps_data->status > 0)) // and producing a fix
                   {
@@ -1059,6 +1065,9 @@ void NMEAHandler::OnSocketEvent(wxSocketEvent& event)
                           }
                     }
 
+                    // gpsd does not produce Hdt/Hdm
+                    ThreadPositionData.kHdm = NAN;
+                    ThreadPositionData.kHdt = NAN;
 
 //    Signal the main program
 
@@ -1189,6 +1198,9 @@ void NMEAHandler::OnTimerNMEA(wxTimerEvent& event)
             ThreadPositionData.kSog = kSog;
             ThreadPositionData.kLat = pred_lat;
             ThreadPositionData.kLon = pred_lon;
+            ThreadPositionData.kHdm = NAN;
+            ThreadPositionData.kHdt = NAN;
+
             ThreadPositionData.FixTime = 0;
 
     //    Signal the main program thread
@@ -2893,6 +2905,9 @@ void *GARMIN_IO_Thread::Entry()
                   if (course < 0)
                         course += 2*PI;
                   ThreadPositionData.kCog = course * 180 / PI;
+
+                  ThreadPositionData.kHdm = NAN;
+                  ThreadPositionData.kHdt = NAN;
 
                   ThreadPositionData.FixTime = 0;
                   ThreadPositionData.nSats = m_nSats;

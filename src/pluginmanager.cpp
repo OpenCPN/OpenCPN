@@ -856,8 +856,9 @@ void PlugInManager::SendAISSentenceToAllPlugIns(wxString &sentence)
       }
 }
 
-void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDat *ppos)
+void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
 {
+      //    Send basic position fix
       PlugIn_Position_Fix pfix;
       pfix.Lat = ppos->kLat;
       pfix.Lon = ppos->kLon;
@@ -874,6 +875,42 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDat *ppos)
             {
                   if(pic->m_cap_flag & WANTS_NMEA_EVENTS)
                         pic->m_pplugin->SetPositionFix(pfix);
+            }
+      }
+
+      //    Send extended position fix to PlugIns at API 108 and later
+      PlugIn_Position_Fix_Ex pfix_ex;
+      pfix_ex.Lat = ppos->kLat;
+      pfix_ex.Lon = ppos->kLon;
+      pfix_ex.Cog = ppos->kCog;
+      pfix_ex.Sog = ppos->kSog;
+      pfix_ex.Var = ppos->kVar;
+      pfix_ex.FixTime = ppos->FixTime;
+      pfix_ex.nSats = ppos->nSats;
+      pfix_ex.Hdt = ppos->kHdt;
+      pfix_ex.Hdm = ppos->kHdm;
+
+      for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+      {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_bEnabled && pic->m_bInitState)
+            {
+                  if(pic->m_cap_flag & WANTS_NMEA_EVENTS)
+                  {
+                        switch(pic->m_api_version)
+                        {
+                              case 108:
+                              {
+                                    opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->SetPositionFixEx(pfix_ex);
+                                    break;
+                              }
+
+                              default:
+                                    break;
+                        }
+                  }
             }
       }
 }
@@ -1531,6 +1568,8 @@ bool opencpn_plugin_18::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
 void opencpn_plugin_18::SetPluginMessage(wxString &message_id, wxString &message_body)
 {}
 
+void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
+{}
 
 
 

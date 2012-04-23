@@ -129,7 +129,7 @@ extern TTYWindow        *g_NMEALogWindow;
 
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
-static      GenericPosDat     AISPositionData;
+static      GenericPosDatEx     AISPositionData;
 extern ComPortManager   *g_pCommMan;
 
 

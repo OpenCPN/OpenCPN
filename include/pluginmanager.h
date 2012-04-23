@@ -196,7 +196,7 @@ public:
       void SetCanvasContextMenuItemGrey(int item, bool grey);
 
       void SendNMEASentenceToAllPlugIns(wxString &sentence);
-      void SendPositionFixToAllPlugIns(GenericPosDat *ppos);
+      void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
       void SendAISSentenceToAllPlugIns(wxString &sentence);
       void SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(wxString &message_id, wxString &message_body);

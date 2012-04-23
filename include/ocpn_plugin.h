@@ -128,6 +128,20 @@ class PlugIn_Position_Fix
       int    nSats;
 };
 
+class PlugIn_Position_Fix_Ex
+{
+      public:
+            double Lat;
+            double Lon;
+            double Cog;
+            double Sog;
+            double Var;            // Variation, typically from RMC message
+            double Hdm;
+            double Hdt;
+            time_t FixTime;
+            int    nSats;
+};
+
 //    Describe AIS Alarm state
 enum plugin_ais_alarm_type
 {
@@ -438,6 +452,7 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+            virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
 };
 

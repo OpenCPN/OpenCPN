@@ -100,6 +100,7 @@ class     GarminEvent;
 
 // Class declarations
 
+
 //    A generic Position Data structure
 typedef struct {
       double kLat;
@@ -107,10 +108,11 @@ typedef struct {
       double kCog;
       double kSog;
       double kVar;            // Variation, typically from RMC message
+      double kHdm;            // Magnetic heading
+      double kHdt;            // true heading
       time_t FixTime;
       int    nSats;
-} GenericPosDat;
-
+} GenericPosDatEx;
 
 // The MY_FILETIME structure is a 64-bit value
 //    representing the number of 100-nanosecond

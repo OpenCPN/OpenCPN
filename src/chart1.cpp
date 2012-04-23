@@ -180,7 +180,7 @@ RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
 
-double          gLat, gLon, gCog, gSog, gHdt, gHDg, gVar;
+double          gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 double          vLat, vLon;
 double          initial_scale_ppm;
 
@@ -2986,6 +2986,12 @@ bool MyApp::OnInit()
         gGPS_Watchdog = 2;
         gHDx_Watchdog = 2;
         gSAT_Watchdog = 2;
+
+        //  Most likely installations have no ownship heading information
+        g_bHDxValid = false;
+        gHdt = NAN;
+        gHdm = NAN;
+
 
 
 //  Start up a new track if enabled in config file
@@ -6385,6 +6391,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
       if(gHDx_Watchdog <= 0)
       {
             g_bHDxValid = false;
+            gHdt = NAN;
+            gHdm = NAN;
             if(g_nNMEADebug && (gHDx_Watchdog == 0))
                   wxLogMessage(_T("   ***HDx Watchdog timeout..."));
       }
@@ -8549,12 +8557,15 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
       {
             if(g_pi_manager)
             {
-                  GenericPosDat GPSData;
+                  GenericPosDatEx GPSData;
                   GPSData.kLat = gLat;
                   GPSData.kLon = gLon;
                   GPSData.kCog = gCog;
                   GPSData.kSog = gSog;
                   GPSData.kVar = gVar;
+                  GPSData.kHdm = gHdm;
+                  GPSData.kHdt = gHdt;
+
                   GPSData.nSats = g_SatsInView;
 
                   //TODO  This really should be the fix time obtained from the NMEA sentence.
@@ -8587,7 +8598,7 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
         {
                 wxMutexLocker stateLocker(m_mutexNMEAEvent);          // scope is this case
 
-                GenericPosDat *pGPSData = (GenericPosDat *)event.GetClientData();
+                GenericPosDatEx *pGPSData = (GenericPosDatEx *)event.GetClientData();
                 if(!wxIsNaN(pGPSData->kLat))
                       gLat = pGPSData->kLat;
                 if(!wxIsNaN(pGPSData->kLon))
@@ -8596,6 +8607,18 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
                 gSog = pGPSData->kSog;
                 if(!wxIsNaN(pGPSData->kVar))
                       gVar = pGPSData->kVar;
+
+                if(!wxIsNaN(pGPSData->kHdt))
+                {
+                      gHdt = pGPSData->kHdt;
+                      g_bHDxValid = true;
+                }
+
+                if(!wxIsNaN(pGPSData->kHdm))
+                {
+                      gHdm = pGPSData->kHdm;
+                      g_bHDxValid = true;
+                }
 
                 fixtime = pGPSData->FixTime;
 
@@ -8935,7 +8958,7 @@ void MyFrame::LoadHarmonics()
       wxChar sep = wxFileName::GetPathSeparator();
       if (g_TCdataset == _T("DEFAULT"))
             TCDir = *pTC_Dir;
-      else 
+      else
       {
             TCDir = g_PrivateDataDir;
             TCDir.Append( _T("UserTCData") ).Append( sep ).Append(g_TCdataset).Append( sep );
