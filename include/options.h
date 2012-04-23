@@ -249,6 +249,7 @@ public:
     wxCheckBox              *pOpenGL;
     wxCheckBox              *pSmoothPanZoom;
     wxCheckBox              *pFullScreenQuilt;
+    wxChoice                *m_pcTCDatasets;
 
 //    For GPS Page
     wxScrolledWindow        *itemPanelGPS;

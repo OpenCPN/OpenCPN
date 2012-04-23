@@ -198,6 +198,7 @@ wxString        g_SData_Locn;
 wxString        *pChartListFileName;
 wxString        *pTC_Dir;
 wxString        *pHome_Locn;
+wxString        g_TCdataset;
 wxString        *pWVS_Locn;
 wxString        *pInit_Chart_Dir;
 wxString        *g_pcsv_locn;
@@ -4916,10 +4917,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
             if(g_FloatingToolbarDialog)
                   g_FloatingToolbarDialog->RefreshFadeTimer();
 
-
+            if ( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
+                  LoadHarmonics();
 //  The chart display options may have changed, especially on S57 ENC,
 //  So, flush the cache and redraw
-
             cc1->ReloadVP();
             break;
         }
@@ -4927,15 +4928,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_CURRENT:
         {
-            if(!ptcmgr)                                                     // First time, init the manager
-            {
-                  wxString cache_locn = *pHome_Locn;
-#ifndef __WXMSW__
-                  if(!g_bportable)
-                        cache_locn.Append(_T(".opencpn/"));
-#endif
-                  ptcmgr = new TCMgr(*pTC_Dir, cache_locn);
-            }
+            LoadHarmonics();
 
             if(ptcmgr->IsReady())
             {
@@ -4968,15 +4961,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent& event)
 
     case ID_TIDE:
         {
-                if(!ptcmgr)                                                     // First time, init the manager
-                {
-                      wxString cache_locn = *pHome_Locn;
-#ifndef __WXMSW__
-                      if(!g_bportable)
-                            cache_locn.Append(_T(".opencpn/"));
-#endif
-                      ptcmgr = new TCMgr(*pTC_Dir, cache_locn);
-                }
+                LoadHarmonics();
 
                 if(ptcmgr->IsReady())
                 {
@@ -8942,6 +8927,34 @@ void MyFrame::ResumeSockets(void)
 
     if(g_pnmea)
           g_pnmea->UnPause();
+}
+
+void MyFrame::LoadHarmonics()
+{
+      wxString TCDir;
+      wxChar sep = wxFileName::GetPathSeparator();
+      if (g_TCdataset == _T("DEFAULT"))
+            TCDir = *pTC_Dir;
+      else 
+      {
+            TCDir = g_PrivateDataDir;
+            TCDir.Append( _T("UserTCData") ).Append( sep ).Append(g_TCdataset).Append( sep );
+      }
+
+      wxString harm2test = TCDir;
+      harm2test.Append( _T("HARMONIC") );
+
+      if( !ptcmgr || ptcmgr->GetHarmonicFilename() != harm2test )                                                     // First time, init the manager
+      {
+            if( ptcmgr )
+                  delete ptcmgr;
+            wxString cache_locn = *pHome_Locn;
+#ifndef __WXMSW__
+            if(!g_bportable)
+                  cache_locn.Append(_T(".opencpn/"));
+#endif
+            ptcmgr = new TCMgr(TCDir, cache_locn);
+      }
 }
 
 //----------------------------------------------------------------------------------------------------------

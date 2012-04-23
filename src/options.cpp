@@ -161,7 +161,6 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
-extern int              g_iSDMMFormat;
 
 extern wxLocale         *plocale_def_lang;
 
@@ -176,6 +175,8 @@ extern s52plib          *ps52plib;
 extern wxString         g_locale;
 extern bool             g_bportable;
 extern wxString         *pHome_Locn;
+extern wxString         g_PrivateDataDir;
+extern wxString         g_TCdataset;
 
 extern ChartGroupArray  *g_pGroupArray;
 
@@ -613,7 +614,48 @@ void options::CreateControls()
       m_itemWIFI_TCPIP_Source->WriteText(ip);
 #endif
 
+      wxStaticBox* itemStaticBoxTCDisplay = new wxStaticBox(itemPanel5, wxID_ANY, _("Tides && Currents"));
+      wxStaticBoxSizer* itemStaticBoxSizerTCDisplay= new wxStaticBoxSizer(itemStaticBoxTCDisplay, wxVERTICAL);
+      itemBoxSizer6->Add(itemStaticBoxSizerTCDisplay, 0, wxTOP|wxALL|wxEXPAND, border_size);
 
+      wxFlexGridSizer *pTCDisplayGrid = new wxFlexGridSizer(2);
+      pTCDisplayGrid->AddGrowableCol(1);
+      itemStaticBoxSizerTCDisplay->Add(pTCDisplayGrid, 0, wxALL|wxEXPAND, border_size);
+
+      wxStaticText *pStatic_TC_Dataset = new wxStaticText( itemPanel5, -1, _("Harmonic dataset to use:"));
+      pTCDisplayGrid->Add(pStatic_TC_Dataset, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+
+      m_pcTCDatasets = new wxChoice( itemPanel5, wxID_ANY, wxDefaultPosition, wxDefaultSize  );
+      m_pcTCDatasets->Append( _("Default dataset") );
+      int sel = 0;
+      wxString m_UserPlibPath = g_PrivateDataDir; 
+      wxChar sep = wxFileName::GetPathSeparator();
+      if ( m_UserPlibPath.Last() != sep )
+            m_UserPlibPath.Append( sep );
+      m_UserPlibPath.Append( _T("UserTCData") ).Append( sep );
+      wxDir dir(m_UserPlibPath);
+      if ( dir.IsOpened() )
+      {
+            wxString dirname;
+
+            bool cont = dir.GetFirst( &dirname, _T("*"), wxDIR_DIRS );
+            int i = 1;
+            while ( cont )
+            {
+                  wxString harm = m_UserPlibPath;
+                  wxString idx = m_UserPlibPath;
+                  harm.Append(dirname).Append(sep).Append(wxT("HARMONIC"));
+                  idx.Append(dirname).Append(sep).Append(wxT("HARMONIC.IDX"));
+                  if ( wxFileExists(harm) && wxFileExists(idx) )
+                        m_pcTCDatasets->Append( dirname );
+                  if ( dirname == g_TCdataset )
+                        sel = i;
+                  i++;
+                  cont = dir.GetNext( &dirname );
+            }
+      }
+	m_pcTCDatasets->SetSelection( sel );
+	pTCDisplayGrid->Add( m_pcTCDatasets, 1, wxALIGN_RIGHT|wxALL, group_item_spacing );
 
     //  Create "GPS" panel
 
@@ -1880,6 +1922,12 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bHighliteTracks = pTrackHighlite->GetValue();
 
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
+
+    if (m_pcTCDatasets->GetSelection() != 0)
+          g_TCdataset = m_pcTCDatasets->GetString( m_pcTCDatasets->GetSelection() );
+    else
+          g_TCdataset = wxT("DEFAULT");
+
 
     //    AIS Parameters
       //      CPA Box

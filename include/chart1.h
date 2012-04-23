@@ -353,6 +353,7 @@ class MyFrame: public wxFrame
 
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
+    void LoadHarmonics();
 
     string_to_pchar_hash tool_xpm_hash;         // hash map of [static] toolbar xpm bitmaps
 

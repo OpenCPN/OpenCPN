@@ -219,6 +219,7 @@ public:
       int Get_max_IDX(){ return max_IDX;}
       IDX_entry *GetIDX_entry(int i){ return paIDX[i];}
 
+      wxString GetHarmonicFilename() { return wxString::FromUTF8(hfile_name); }
 
 private:
 
