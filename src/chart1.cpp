@@ -284,7 +284,7 @@ ColorScheme     global_color_scheme;
 int             Usercolortable_index;
 wxArrayPtrVoid  *UserColorTableArray;
 wxArrayPtrVoid  *UserColourHashTableArray;
-ColourHash      *pcurrent_user_color_hash;
+wxColorHashMap  *pcurrent_user_color_hash;
 
 int             gps_watchdog_timeout_ticks;
 int             sat_watchdog_timeout_ticks;
@@ -1088,7 +1088,7 @@ ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent)
       wxMemoryDC mdc;
       mdc.SelectObject(m_StatBmp);
 
-      mdc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2")), wxSOLID));
+      mdc.SetBackground(wxBrush(GetGlobalColor(_T("NODTA")), wxSOLID));
       mdc.Clear();
       mdc.SelectObject(wxNullBitmap);
 
@@ -3511,7 +3511,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
       }
 
       //    Set up a pointer to the proper hash table
-      pcurrent_user_color_hash = ( ColourHash * ) UserColourHashTableArray->Item ( Usercolortable_index );
+      pcurrent_user_color_hash = ( wxColorHashMap * ) UserColourHashTableArray->Item ( Usercolortable_index );
 
 
       SetSystemColors(cs);
@@ -9501,7 +9501,7 @@ wxColour GetGlobalColor(wxString colorName)
       //    Use the S52 Presentation library if present
       if(ps52plib)
       {
-            ret_color = ps52plib->S52_getwxColour(colorName);
+            ret_color = ps52plib->getwxColour(colorName);
 
             if(!ret_color.Ok())           //261 likes Ok(), 283 likes IsOk()...
             {
@@ -9695,7 +9695,7 @@ void InitializeUserColors(void)
 
             for ( unsigned int its=0 ; its < UserColorTableArray->GetCount() ; its++ )
             {
-                  ColourHash *phash = new ColourHash;
+                  wxColorHashMap *phash = new wxColorHashMap;
                   UserColourHashTableArray->Add ( ( void * ) phash );
 
                   colTable *ctp = ( colTable * ) ( UserColorTableArray->Item ( its ) );
@@ -9713,7 +9713,7 @@ void InitializeUserColors(void)
 
             //    Establish a default hash table pointer
             //    in case a color is needed before ColorScheme is set
-            pcurrent_user_color_hash = (ColourHash *)UserColourHashTableArray->Item(0);
+            pcurrent_user_color_hash = (wxColorHashMap *)UserColourHashTableArray->Item(0);
 }
 
 void DeInitializeUserColors(void)
@@ -9739,7 +9739,7 @@ void DeInitializeUserColors(void)
 
       for( i = 0 ; i< UserColourHashTableArray->GetCount() ; i++)
       {
-            ColourHash *phash = (ColourHash *)UserColourHashTableArray->Item(i);
+            wxColorHashMap *phash = (wxColorHashMap *)UserColourHashTableArray->Item(i);
             delete phash;
       }
 

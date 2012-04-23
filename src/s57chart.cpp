@@ -6291,8 +6291,8 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                         ret_val->Attributes << LUPstring;
 
                         LUPstring = _T("    LUP ATTC: ");
-                        if(rule->LUP->ATTC)
-                              LUPstring += *(rule->LUP->ATTC);
+                        if(rule->LUP->ATTCArray)
+							LUPstring += rule->LUP->ATTCArray->Item(0);
                         LUPstring += _T("\n");
                         ret_val->Attributes << LUPstring;
 

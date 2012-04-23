@@ -43,7 +43,6 @@
 #include "nmea0183.h"
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
-WX_DECLARE_STRING_HASH_MAP( wxColour, ColourHash );
 
 #ifdef USE_S57
 #include "cpl_error.h"
