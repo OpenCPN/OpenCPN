@@ -302,7 +302,8 @@ SET(HDRS
 		include/gpxdocument.h
                 include/wx/json_defs.h
                 include/wx/jsonwriter.h
-
+                include/chartsymbols.h
+                include/razdsparser.h
 )
 
 SET(SRCS 
@@ -332,6 +333,8 @@ SET(SRCS
 		src/gpxdocument.cpp
             	src/wxJSON/jsonwriter.cpp
             	src/wxJSON/jsonval.cpp
+                src/chartsymbols.cpp
+                src/razdsparser.cpp
 
     )
 
