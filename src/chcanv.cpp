@@ -6134,7 +6134,7 @@ void ChartCanvas::GridDraw( ocpnDC& dc)
            char sbuf[12];
            CalcGridText(lat, gridlatMajor, true, sbuf); // get text for grid line
            GetCanvasPointPix ( lat, (elon + wlon)/2, &r );
-           dc.DrawLine(0,r.y,w,r.y);                             // draw grid line
+           dc.DrawLine(0,r.y,w,r.y, false);                             // draw grid line
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),0,r.y); // draw text
            lat = lat + gridlatMajor;
 
@@ -6150,8 +6150,8 @@ void ChartCanvas::GridDraw( ocpnDC& dc)
      {
            wxPoint r;
            GetCanvasPointPix ( lat, (elon + wlon)/2, &r );
-           dc.DrawLine(0,r.y,10,r.y);
-           dc.DrawLine(w-10,r.y,w,r.y);
+           dc.DrawLine(0,r.y,10,r.y, false);
+           dc.DrawLine(w-10,r.y,w,r.y, false);
            lat = lat + gridlatMinor;
      }
 
@@ -6168,7 +6168,7 @@ void ChartCanvas::GridDraw( ocpnDC& dc)
            char sbuf[12];
            CalcGridText(lon, gridlonMajor, false, sbuf);
            GetCanvasPointPix ( (nlat + slat)/2, lon, &r );
-           dc.DrawLine(r.x,0,r.x,h);
+           dc.DrawLine(r.x,0,r.x,h, false);
            dc.DrawText(wxString ( sbuf, wxConvUTF8 ),r.x,0);
            lon = lon + gridlonMajor;
            if (lon > 180.0)
@@ -6188,8 +6188,8 @@ void ChartCanvas::GridDraw( ocpnDC& dc)
      {
            wxPoint r;
            GetCanvasPointPix ( (nlat + slat)/2, lon, &r );
-           dc.DrawLine(r.x,0,r.x,10);
-           dc.DrawLine(r.x,h-10,r.x,h);
+           dc.DrawLine(r.x,0,r.x,10, false);
+           dc.DrawLine(r.x,h-10,r.x,h, false);
            lon = lon + gridlonMinor;
            if (lon > 180.0)
            {
