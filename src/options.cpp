@@ -108,6 +108,7 @@ extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
 extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
+extern bool             g_bShowAreaNotices;
 
 extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -1198,6 +1199,9 @@ void options::CreateControls()
     m_pText_Moored_Speed = new wxTextCtrl(itemPanelAIS, -1);
     pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALIGN_RIGHT, group_item_spacing);
 
+    m_pCheck_Show_Area_Notices = new wxCheckBox( itemPanelAIS, -1, _("Show area notices (from AIS binary messages)"));
+    pDisplayGrid->Add(m_pCheck_Show_Area_Notices, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
+    
     // Rollover
     wxStaticBox* itemStaticBoxRollover = new wxStaticBox(itemPanelAIS, wxID_ANY, _("Rollover"));
     wxStaticBoxSizer* itemStaticBoxSizerRollover= new wxStaticBoxSizer(itemStaticBoxRollover, wxVERTICAL);
@@ -1551,6 +1555,8 @@ void options::SetInitialSettings()
       s.Printf(_T("%4.1f"),g_ShowMoored_Kts);
       m_pText_Moored_Speed->SetValue(s);
 
+      m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
+      
          //      Alerts
       m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
       m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
@@ -1954,6 +1960,8 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
     m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
+    g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
+    
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();

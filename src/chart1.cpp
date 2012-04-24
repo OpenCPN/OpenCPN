@@ -491,6 +491,7 @@ wxString         g_sAIS_Alert_Sound_File;
 bool             g_bAIS_CPA_Alert_Suppress_Moored;
 bool             g_bAIS_ACK_Timeout;
 double           g_AckTimeout_Mins;
+bool             g_bShowAreaNotices;
 
 
 wxToolBarToolBase *m_pAISTool;
@@ -2547,6 +2548,7 @@ bool MyApp::OnInit()
               g_bFullScreenQuilt = true;
               g_bQuiltEnable = true;
               g_bskew_comp = false;
+              g_bShowAreaNotices = false;
 
 #ifdef USE_S57
               if(ps52plib->m_bOK)

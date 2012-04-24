@@ -144,6 +144,8 @@ static const long long lNaN = 0xfff8000000000000;
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(AISTargetTrackList);
 
+//WX_DEFINE_LIST(Ais8_001_22_SubAreaList);
+
 // the first string in this list produces a 6 digit MMSI... BUGBUG
 
 char test_str[24][79] = {
@@ -318,6 +320,139 @@ wxString short_ais_type[] = {
       _("DSC"),			   //xx        53
       _("Distress")		   //xx        54
 };
+
+const char *ais8_001_22_notice_names[AIS8_001_22_NUM_NAMES] = { // 128] = {
+    "Caution Area: Marine mammals habitat (implies whales NOT observed)", // 0 - WARNING: extra text by Kurt
+    "Caution Area: Marine mammals in area - reduce speed", // 1
+    "Caution Area: Marine mammals in area - stay clear", // 2
+    "Caution Area: Marine mammals in area - report sightings", // 3
+    "Caution Area: Protected habitat - reduce speed", // 4
+    "Caution Area: Protected habitat - stay clear", // 5
+    "Caution Area: Protected habitat - no fishing or anchoring", // 6
+    "Caution Area: Derelicts (drifting objects)", // 7
+    "Caution Area: Traffic congestion", // 8
+    "Caution Area: Marine event", // 9
+    "Caution Area: Divers down", // 10
+    "Caution Area: Swim area", // 11
+    "Caution Area: Dredge operations", // 12
+    "Caution Area: Survey operations", // 13
+    "Caution Area: Underwater operation", // 14
+    "Caution Area: Seaplane operations", // 15
+    "Caution Area: Fishery - nets in water", // 16
+    "Caution Area: Cluster of fishing vessels", // 17
+    "Caution Area: Fairway closed", // 18
+    "Caution Area: Harbour closed", // 19
+    "Caution Area: Risk (define in Associated text field)", // 20
+    "Caution Area: Underwater vehicle operation", // 21
+    "(reserved for future use)", // 22
+    "Environmental Caution Area: Storm front (line squall)", // 23
+    "Environmental Caution Area: Hazardous sea ice", // 24
+    "Environmental Caution Area: Storm warning (storm cell or line of storms)", // 25
+    "Environmental Caution Area: High wind", // 26
+    "Environmental Caution Area: High waves", // 27
+    "Environmental Caution Area: Restricted visibility (fog, rain, etc.)", // 28
+    "Environmental Caution Area: Strong currents", // 29
+    "Environmental Caution Area: Heavy icing", // 30
+    "(reserved for future use)", // 31
+    "Restricted Area: Fishing prohibited", // 32
+    "Restricted Area: No anchoring.", // 33
+    "Restricted Area: Entry approval required prior to transit", // 34
+    "Restricted Area: Entry prohibited", // 35
+    "Restricted Area: Active military OPAREA", // 36
+    "Restricted Area: Firing - danger area.", // 37
+    "Restricted Area: Drifting Mines", // 38
+    "(reserved for future use)", // 39
+    "Anchorage Area: Anchorage open", // 40
+    "Anchorage Area: Anchorage closed", // 41
+    "Anchorage Area: Anchoring prohibited", // 42
+    "Anchorage Area: Deep draft anchorage", // 43
+    "Anchorage Area: Shallow draft anchorage", // 44
+    "Anchorage Area: Vessel transfer operations", // 45
+    "(reserved for future use)", // 46
+    "(reserved for future use)", // 47
+    "(reserved for future use)", // 48
+    "(reserved for future use)", // 49
+    "(reserved for future use)", // 50
+    "(reserved for future use)", // 51
+    "(reserved for future use)", // 52
+    "(reserved for future use)", // 53
+    "(reserved for future use)", // 54
+    "(reserved for future use)", // 55
+    "Security Alert - Level 1", // 56
+    "Security Alert - Level 2", // 57
+    "Security Alert - Level 3", // 58
+    "(reserved for future use)", // 59
+    "(reserved for future use)", // 60
+    "(reserved for future use)", // 61
+    "(reserved for future use)", // 62
+    "(reserved for future use)", // 63
+    "Distress Area: Vessel disabled and adrift", // 64
+    "Distress Area: Vessel sinking", // 65
+    "Distress Area: Vessel abandoning ship", // 66
+    "Distress Area: Vessel requests medical assistance", // 67
+    "Distress Area: Vessel flooding", // 68
+    "Distress Area: Vessel fire/explosion", // 69
+    "Distress Area: Vessel grounding", // 70
+    "Distress Area: Vessel collision", // 71
+    "Distress Area: Vessel listing/capsizing", // 72
+    "Distress Area: Vessel under assault", // 73
+    "Distress Area: Person overboard", // 74
+    "Distress Area: SAR area", // 75
+    "Distress Area: Pollution response area", // 76
+    "(reserved for future use)", // 77
+    "(reserved for future use)", // 78
+    "(reserved for future use)", // 79
+    "Instruction: Contact VTS at this point/juncture", // 80
+    "Instruction: Contact Port Administration at this point/juncture", // 81
+    "Instruction: Do not proceed beyond this point/juncture", // 82
+    "Instruction: Await instructions prior to proceeding beyond this point/juncture", // 83
+    "Proceed to this location - await instructions", // 84
+    "Clearance granted - proceed to berth", // 85
+    "(reserved for future use)", // 86
+    "(reserved for future use)", // 87
+    "Information: Pilot boarding position", // 88
+    "Information: Icebreaker waiting area", // 89
+    "Information: Places of refuge", // 90
+    "Information: Position of icebreakers", // 91
+    "Information: Location of response units", // 92
+    "VTS active target", // 93
+    "Rouge or suspicious vessel", // 94
+    "Vessel requesting non-distress assistance", // 95
+    "Chart Feature: Sunken vessel", // 96
+    "Chart Feature: Submerged object", // 97
+    "Chart Feature: Semi-submerged object", // 98
+    "Chart Feature: Shoal area", // 99
+    "Chart Feature: Shoal area due north", // 100
+    "Chart Feature: Shoal area due east", // 101
+    "Chart Feature: Shoal area due south", // 102
+    "Chart Feature: Shoal area due west", // 103
+    "Chart Feature: Channel obstruction", // 104
+    "Chart Feature: Reduced vertical clearance", // 105
+    "Chart Feature: Bridge closed", // 106
+    "Chart Feature: Bridge partially open", // 107
+    "Chart Feature: Bridge fully open", // 108
+    "(reserved for future use)", // 109
+    "(reserved for future use)", // 110
+    "(reserved for future use)", // 111
+    "Report from ship: Icing info", // 112
+    "(reserved for future use)", // 113
+    "Report from ship: Miscellaneous information - define in Associated text field", // 114
+    "(reserved for future use)", // 115
+    "(reserved for future use)", // 116
+    "(reserved for future use)", // 117
+    "(reserved for future use)", // 118
+    "(reserved for future use)", // 119
+    "Route: Recommended route", // 120
+    "Route: Alternative route", // 121
+    "Route: Recommended route through ice", // 122
+    "(reserved for future use)", // 123
+    "(reserved for future use)", // 124
+    "Other - Define in associated text field", // 125
+    "Cancellation - cancel area as identified by Message Linkage ID", // 126
+    "Undefined (default)" //, // 127
+};
+
+
 
 enum {
       tlNAME = 0,
@@ -1134,7 +1269,7 @@ unsigned char AIS_Bitstring::to_6bit(const char c)
 }
 
 
-int AIS_Bitstring::GetInt(int sp, int len)
+int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag)
 {
     int acc = 0;
     int s0p = sp-1;                          // to zero base
@@ -1149,6 +1284,8 @@ int AIS_Bitstring::GetInt(int sp, int len)
         cx = bitbytes[cp];		// what if cp >= byte_length?
         cs = 5 - ((s0p + i) % 6);
         c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
+        if(i == 0 && signed_flag && c0) // if signed value and first bit is 1, pad with 1's
+            acc = ~acc;
         acc |= c0;
     }
 
@@ -1158,7 +1295,8 @@ int AIS_Bitstring::GetInt(int sp, int len)
 
 int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 {
-    char temp_str[85];
+    //char temp_str[85];
+    char *temp_str = new char[max_len];
 
     char acc = 0;
     int s0p = sp-1;                          // to zero base
@@ -1167,7 +1305,7 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
     int cp, cx, c0, cs;
 
     int i = 0;
-    while(i < bit_len)
+    while(i < bit_len && k < max_len)
     {
          acc=0;
          for(int j=0 ; j<6 ; j++)
@@ -1194,6 +1332,8 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
     int copy_len = wxMin((int)strlen(temp_str), max_len);
     strncpy(dest, temp_str, copy_len);
 
+    delete [] temp_str;
+    
     return copy_len;
 }
 
@@ -2367,6 +2507,83 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                       }
                 }
+                if(dac == 1)                     // IMO
+                {
+                    if(fi == 22)                 // Area Notice
+                    {
+                        //std::cerr << "Area notice " << bstr->GetBitCount() << " bits" << std::endl;
+                        if(bstr->GetBitCount() >= 111)
+                        {
+                            Ais8_001_22 an;
+                            an.link_id =  bstr->GetInt(57,10);
+                            //std::cerr << "\tlink id: " << an.link_id << std::endl;
+                            an.notice_type =  bstr->GetInt(67,7);
+                            //std::cerr << "\tnotice type: " << an.notice_type << "\t" << ais8_001_22_notice_names[an.notice_type] << std::endl;
+                            an.month = bstr->GetInt(74,4);
+                            an.day = bstr->GetInt(78,5);
+                            an.hour = bstr->GetInt(83,5);
+                            an.minute = bstr->GetInt(88,6);
+                            an.duration_minutes = bstr->GetInt(94,18);
+                            //std::cerr << "\t" << an.month << "-" << an.day << " " << an.hour << ":" << an.minute << " duration: " << an.duration_minutes << std::endl;
+                            int subarea_count = (bstr->GetBitCount()-111)/87;
+                            //std::cerr << "\t" << subarea_count << " subareas" << std::endl;
+                            for(int i = 0; i < subarea_count; ++i)
+                            {
+                                int base = 111+i*87;
+                                Ais8_001_22_SubArea sa;
+                                sa.shape = bstr->GetInt(base+1,3);
+                                int scale_factor = 1;
+                                if (sa.shape == AIS8_001_22_SHAPE_TEXT)
+                                {
+                                    char t[15];
+                                    t[14]=0;
+                                    bstr->GetStr(base+4,84,t,14);
+                                    sa.text = wxString(t, wxConvUTF8);
+                                    //std::cerr << "\ttext: " << t << std::endl;
+                                }
+                                else
+                                {
+                                    int scale_multipliers[4] = {1,10,100,1000};
+                                    scale_factor = scale_multipliers[bstr->GetInt(base+4,2)];
+                                    //std::cerr << "\tshape: " << sa.shape << " scale: " << scale_factor << std::endl;
+                                    switch(sa.shape)
+                                    {
+                                        case AIS8_001_22_SHAPE_CIRCLE:
+                                        case AIS8_001_22_SHAPE_SECTOR:
+                                            sa.radius_m = bstr->GetInt(base+58,12)*scale_factor;
+                                        case AIS8_001_22_SHAPE_RECT:
+                                            sa.longitude = bstr->GetInt(base+6,25,true)/60000.0;
+                                            sa.latitude = bstr->GetInt(base+31,24,true)/60000.0;
+                                            break;
+                                        case AIS8_001_22_SHAPE_POLYLINE:
+                                        case AIS8_001_22_SHAPE_POLYGON:
+                                            for(int i = 0; i < 4; ++i)
+                                            {
+                                                sa.angles[i] = bstr->GetInt(base+6+i*20,10)*0.5;
+                                                sa.dists_m[i] = bstr->GetInt(base+16+i*20,10)*scale_factor;
+                                            }
+                                    }
+                                    if(sa.shape == AIS8_001_22_SHAPE_RECT)
+                                    {
+                                        sa.e_dim_m = bstr->GetInt(base+58,8)*scale_factor;
+                                        sa.n_dim_m = bstr->GetInt(base+66,8)*scale_factor;
+                                        sa.orient_deg = bstr->GetInt(base+74,9);
+                                    }
+                                    if(sa.shape == AIS8_001_22_SHAPE_SECTOR)
+                                    {
+                                        sa.left_bound_deg = bstr->GetInt(70,9);
+                                        sa.right_bound_deg = bstr->GetInt(79,9);
+                                    }
+                                }
+                                //std::cerr << "\tlat: " << sa.latitude << " lon: " << sa.longitude << std::endl;
+                                //std::cerr << "\trad: " << sa.radius_m << std::endl;
+                                an.sub_areas.push_back(sa);
+                            }
+                           ptd->area_notices[an.link_id]=an;
+                           parse_result = true;
+                        }
+                    }
+                }
                 break;
           }
      case 14:                                    // Safety Related Broadcast
@@ -3199,7 +3416,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent& event)
       if(g_pais_alert_dialog_active)
       {
             AIS_Target_Data *palert_target = Get_Target_Data_From_MMSI(g_pais_alert_dialog_active->Get_Dialog_MMSI());
-            if(palert_target->Class == AIS_SART)
+            if(palert_target && palert_target->Class == AIS_SART)
                  b_sart_alert = true;
       }
 

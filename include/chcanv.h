@@ -369,7 +369,9 @@ private:
       wxBitmap *DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints = true);
 
       void AISDraw(ocpnDC& dc);
+      void AISDrawAreaNotices (ocpnDC& dc );
       void AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc );
+      
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 

@@ -179,6 +179,7 @@ extern double           g_ShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
+extern bool             g_bShowAreaNotices;
 
 extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -6255,6 +6256,120 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 
 }
 
+void ChartCanvas::AISDrawAreaNotices ( ocpnDC& dc )
+{
+    if ( !g_pAIS || !g_bShowAIS || !g_bShowAreaNotices)
+        return;
+
+    bool b_pens_set = false;
+    wxPen pen_save;
+    wxBrush brush_save;
+    wxColour yellow;
+    wxColour green;
+    wxPen pen;
+    wxBrush *yellow_brush;
+    wxBrush *green_brush;
+    wxBrush *brush;
+
+    AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+
+    float vp_scale =  GetVPScale();
+
+    for(AIS_Target_Hash::iterator target = current_targets->begin(); target != current_targets->end(); ++target)
+    {
+        AIS_Target_Data *target_data = target->second;
+        if(!target_data->area_notices.empty())
+        {
+            if(!b_pens_set)
+            {
+                  pen_save = dc.GetPen();
+                  brush_save = dc.GetBrush();
+
+                  yellow = GetGlobalColor ( _T ( "YELO1" ));
+                  yellow.Set(yellow.Red(),yellow.Green(),yellow.Blue(),64);
+
+                  green = GetGlobalColor ( _T ( "GREEN4" ));
+                  green.Set(green.Red(),green.Green(),green.Blue(),64);
+
+                  pen.SetColour( yellow );
+                  pen.SetWidth( 2 );
+
+                  yellow_brush = wxTheBrushList->FindOrCreateBrush (yellow, wxCROSSDIAG_HATCH );
+                  green_brush =  wxTheBrushList->FindOrCreateBrush (green, wxTRANSPARENT );
+                  brush = yellow_brush;
+
+                  b_pens_set = true;
+            }
+
+            for(AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani)
+            {
+                Ais8_001_22& area_notice = ani->second;
+
+                std::vector<wxPoint> points;
+                bool draw_polygon = false;
+                double lat,lon;
+
+                switch(area_notice.notice_type)
+                {
+                    case 0:
+                        pen.SetColour(green);
+                        brush = green_brush;
+                        break;
+                    case 1:
+                        pen.SetColour(yellow);
+                        brush = yellow_brush;
+                        break;
+                    default:
+                        pen.SetColour(yellow);
+                        brush = yellow_brush;
+                }
+                dc.SetPen(pen);
+                dc.SetBrush(*brush);
+
+                for(Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa)
+                {
+                    switch(sa->shape)
+                    {
+                        case AIS8_001_22_SHAPE_CIRCLE:
+                        {
+                            lat = sa->latitude;
+                            lon = sa->longitude;
+
+                            wxPoint target_point;
+                            GetCanvasPointPix ( sa->latitude, sa->longitude, &target_point );
+                            points.push_back(target_point);
+                            if(sa->radius_m > 0.0)
+                                dc.DrawCircle(target_point,sa->radius_m*vp_scale);
+                            break;
+                        }
+                        case AIS8_001_22_SHAPE_POLYGON:
+                            draw_polygon = true;
+                        case AIS8_001_22_SHAPE_POLYLINE:
+                        {
+                            for(int i = 0; i < 4; ++i)
+                            {
+                                ll_gc_ll(lat, lon, sa->angles[i], sa->dists_m[i]/1852.0,&lat, &lon);
+                                wxPoint target_point;
+                                GetCanvasPointPix ( lat, lon, &target_point );
+                                points.push_back(target_point);
+                            }
+                        }
+                    }
+                }
+                if(draw_polygon)
+                    dc.DrawPolygon(points.size(),&points.front());
+            }
+        }
+    }
+
+    if(b_pens_set) {
+      dc.SetPen(pen_save);
+      dc.SetBrush(brush_save);
+    }
+
+}
+
+
 void ChartCanvas::AISDraw ( ocpnDC& dc )
 {
       if ( !g_pAIS )
@@ -11016,6 +11131,8 @@ void ChartCanvas::DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru )
               g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
               g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP());
         }
+
+        AISDrawAreaNotices ( dc );
 
         EmbossDepthScale ( dc );
         EmbossOverzoomIndicator ( dc );

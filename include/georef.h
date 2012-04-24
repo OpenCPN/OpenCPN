@@ -124,6 +124,7 @@ extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double 
 extern "C" void toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y);
 extern "C" void fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
+/// distance in nautical miles
 extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double *dlat, double *dlon);
 extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                                 double *bearing, double *dist);

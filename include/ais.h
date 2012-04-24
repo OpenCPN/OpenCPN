@@ -37,6 +37,8 @@
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
 
+#include <vector>
+
 ////////////TH//////////////////
 #ifndef OCPN_NO_SOCKETS
 #ifdef __WXGTK__
@@ -150,6 +152,62 @@ class AISTargetTrackPoint
 
 WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
 
+
+
+// IMO Circ. 289 Area Notices, based on libais
+const size_t AIS8_001_22_NUM_NAMES=128;
+const size_t AIS8_001_22_SUBAREA_SIZE=87;
+
+extern const char *ais8_001_22_notice_names[AIS8_001_22_NUM_NAMES];
+
+enum Ais8_001_22_AreaShapeEnum
+{
+    AIS8_001_22_SHAPE_ERROR = -1,
+    AIS8_001_22_SHAPE_CIRCLE = 0, // OR Point
+    AIS8_001_22_SHAPE_RECT = 1,
+    AIS8_001_22_SHAPE_SECTOR = 2,
+    AIS8_001_22_SHAPE_POLYLINE = 3,
+    AIS8_001_22_SHAPE_POLYGON = 4,
+    AIS8_001_22_SHAPE_TEXT = 5,
+    AIS8_001_22_SHAPE_RESERVED_6 = 6,
+    AIS8_001_22_SHAPE_RESERVED_7 = 7
+};
+
+struct Ais8_001_22_SubArea
+{
+    int shape;
+    float longitude, latitude;
+    int radius_m;
+    int e_dim_m; // East dimension in meters
+    int n_dim_m;
+    int orient_deg; // Orientation in degrees from true north
+    int left_bound_deg;
+    int right_bound_deg;
+    float angles[4];
+    float dists_m[4];
+    wxString text;
+};
+
+//WX_DECLARE_LIST(Ais8_001_22_SubArea, Ais8_001_22_SubAreaList);
+typedef std::vector<Ais8_001_22_SubArea> Ais8_001_22_SubAreaList;
+
+struct Ais8_001_22
+{
+    int link_id; // 10 bit id to match up text blocks
+    int notice_type; // area_type / Notice Description
+    int month; // These are in UTC
+    int day;   // UTC!
+    int hour;  // UTC!
+    int minute;
+    int duration_minutes; // Time from the start until the notice expires
+    Ais8_001_22_SubAreaList sub_areas;
+};
+
+
+// key is link_id, which should be unique for a given mmsi
+WX_DECLARE_HASH_MAP( int, Ais8_001_22, wxIntegerHash, wxIntegerEqual, AIS_Area_Notice_Hash );
+
+
 //---------------------------------------------------------------------------------
 //
 //  AIS_Decoder Helpers
@@ -241,6 +299,8 @@ public:
     double                    CPA;                      // Nautical Miles
 
     AISTargetTrackList        *m_ptrack;
+    
+    AIS_Area_Notice_Hash     area_notices;
 };
 
 WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
@@ -254,7 +314,9 @@ public:
 
     AIS_Bitstring(const char *str);
     unsigned char to_6bit(const char c);
-    int GetInt(int sp, int len);
+    
+    /// sp is starting bit, 1-based
+    int GetInt(int sp, int len, bool signed_flag = false);
     int GetStr(int sp, int bit_len, char *dest, int max_len);
     int GetBitCount();
 
