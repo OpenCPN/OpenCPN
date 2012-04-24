@@ -2296,7 +2296,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 //            if((width == 0) || (height == 0))
 //                  int yyp = 4;
 
-		wxBitmap *pbm = new wxBitmap( width, height, 32 );
+		wxBitmap *pbm = new wxBitmap( width, height, -1/*32*/ );
 		wxMemoryDC mdc;
 		mdc.SelectObject( *pbm );
 		mdc.SetBackground( wxBrush( m_unused_wxColor ) );
@@ -6217,7 +6217,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
 		wxBitmap *pbm = NULL;
 
 		if( ( 0 != width ) && ( 0 != height ) ) {
-			pbm = new wxBitmap( width, height );
+			pbm = new wxBitmap( width, height, -1);
 
 			mdc.SelectObject( *pbm );
 			mdc.SetBackground( wxBrush( m_unused_wxColor ) );

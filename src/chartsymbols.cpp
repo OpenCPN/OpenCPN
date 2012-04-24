@@ -694,7 +694,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo ) {
 
 	wxImage rasterFileImg;
 	if( rasterFileImg.LoadFile( filename, wxBITMAP_TYPE_PNG ) ) {
-		rasterSymbols = wxBitmap( rasterFileImg, 32 );
+		rasterSymbols = wxBitmap( rasterFileImg, -1/*32*/ );
 		rasterSymbolsLoadedColorMapNumber = tableNo;
 		return true;
 	}
