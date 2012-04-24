@@ -138,7 +138,7 @@ extern void txfRenderFancyString( TexFont * txf, char *string, int len );
 
 class s52plib {
 public:
-	s52plib( const wxString& PLib );
+      s52plib( const wxString& PLib, bool b_forceLegacy = false );
 	~s52plib();
 
 	void SetPPMM( float ppmm ) {
@@ -272,7 +272,7 @@ public:
 	RuleHash *_symb_sym; // symbol symbolisation rules
 
 private:
-	int S52_load_Plib( const wxString& PLib );
+      int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
 	bool S52_flush_Plib();
 
 	bool PreloadOBJLFromCSV( wxString &csv_file );

@@ -60,7 +60,6 @@
 #endif
 
 extern s52plib *ps52plib;
-FILE *fjlog;
 extern bool g_b_useStencil;
 extern wxString *g_pcsv_locn;
 
@@ -75,9 +74,8 @@ WX_DEFINE_LIST( ObjList );
 //-----------------------------------------------------------------------------
 //      s52plib implementation
 //-----------------------------------------------------------------------------
-s52plib::s52plib( const wxString& PLib ) {
+      s52plib::s52plib( const wxString& PLib, bool b_forceLegacy ) {
 	m_plib_file = PLib;
-	fjlog = fopen("jwlog.xml", "w" );
 
 	pOBJLArray = new wxArrayPtrVoid;
 
@@ -95,7 +93,7 @@ s52plib::s52plib( const wxString& PLib ) {
 
 	ChartSymbols chartSymbols;
 
-	m_bOK = !( S52_load_Plib( PLib ) == 0 );
+	m_bOK = !( S52_load_Plib( PLib, b_forceLegacy ) == 0 );
 
 	m_bShowS57Text = false;
 	m_bShowS57ImportantTextOnly = false;
@@ -240,7 +238,6 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
 
 	for( i = 0; i < nLUPCandidates; ++i ) {
 		LUPrec *LUPCandidate = NULL;
-		wxString *ATTC = NULL;
 		countATT = 0;
 		char *currATT = objAtt;
 		int attIdx = 0;
@@ -629,7 +626,7 @@ int CompareLUPObjects( LUPrec *item1, LUPrec *item2 ) {
 #endif
 
 
-int s52plib::S52_load_Plib( const wxString& PLib ) {
+int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy ) {
 
 	pAlloc = new wxArrayPtrVoid;
 
@@ -653,16 +650,38 @@ int s52plib::S52_load_Plib( const wxString& PLib ) {
 	m_unused_color.B = 0;
 	m_unused_wxColor.Set( 255, 0, 0 );
 
-	// First try to load symbols using the newer XML/PNG format.
-	// If this fails, try legacy S52RAZDS.RLE file.
+      // First, honor the user attempt for force Lecagy mode.
+	// Next, try to load symbols using the newer XML/PNG format.
+	// If this fails, try Legacy S52RAZDS.RLE file.
 
-	useLegacyRaster = false;
-	ChartSymbols chartSymbols;
-	if( ! chartSymbols.LoadConfigFile( this, PLib ) ) {
-		RazdsParser parser;
-		useLegacyRaster = true;
-		if( ! parser.LoadFile( this, PLib ) ) return 0;
-	}
+      if(b_forceLegacy) {
+            RazdsParser parser;
+            useLegacyRaster = true;
+            if( parser.LoadFile( this, PLib ) )
+            {
+                  wxString msg(_("Loaded legacy PLIB data: "));
+                  msg += PLib;
+                  wxLogMessage(msg);
+            }
+            else
+                  return 0;
+      }
+      else {
+            useLegacyRaster = false;
+            ChartSymbols chartSymbols;
+            if( ! chartSymbols.LoadConfigFile( this, PLib ) ) {
+                  RazdsParser parser;
+                  useLegacyRaster = true;
+                  if( parser.LoadFile( this, PLib ) )
+                  {
+                        wxString msg(_("Loaded legacy PLIB data: "));
+                        msg += PLib;
+                        wxLogMessage(msg);
+                  }
+                  else
+                        return 0;
+            }
+      }
 
 	//   Initialize the _cond_sym Hash Table from the jump table found in S52CNSY.CPP
 	//   Hash Table indices are the literal CS Strings, e.g. "RESARE02"
@@ -1036,7 +1055,9 @@ void s52plib::SetPLIBColorScheme( wxString scheme ) {
 		if( scheme.IsSameAs( _T ( "DAY" ) ) ) str_find = _T ( "DAY_BRIGHT" );
 	}
 	m_colortable_index = ChartSymbols::FindColorTable( scheme );
-    ChartSymbols::LoadRasterFileForColorTable( m_colortable_index );
+
+      if(!useLegacyRaster)
+            ChartSymbols::LoadRasterFileForColorTable( m_colortable_index );
 }
 
 S52color* s52plib::getColor( const char *colorName ) {
@@ -2113,7 +2134,8 @@ bool s52plib::RenderHPGLtoGL( char *str, char *col, wxPoint &r, wxPoint &pivot,
 
 			glColor4ub( color.Red(), color.Green(), color.Blue(),
 					color.Alpha() );
-			glLineWidth( (float)width/2.0 );
+
+			glLineWidth( wxMax(1., (float)width/2.0 ) );
 
 			sscanf( str, "%u,%u", &x, &y );
 			x1 = x - pivot.x;
@@ -3584,7 +3606,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 	{
 		//    Set up the color
 		glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
-		glLineWidth( (float)width/2.0 );
+            glLineWidth( wxMax(1., (float)width/2.0 ) );
 
 		for( int iseg = 0; iseg < npt - 1; iseg++ ) {
 			// Do not bother with segments that are invisible
@@ -5001,17 +5023,41 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
 									( ( ix - pPatt_spec->x ) + x_stagger_off )
 											% patt_size_x );
 
-							unsigned char *pp = pp0 + patt_x * 3;
-							//  Todo    This line assumes unused_color is always 0,0,0
-							if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
-								*px++ = *pp++;
-								*px++ = *pp++;
-								*px++ = *pp++;
-							} else {
-								px += 3;
-								pp += 3;
-							}
+/*
+                                          if(pPatt_spec->depth == 24)
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 3);
 
+                                                //  Todo    This line assumes unused_color is always 0,0,0
+                                                if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                } else {
+                                                      px += 3;
+//                                                      pp += 3;
+                                                }
+                                          }
+                                          else
+*/
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 4);
+                                                unsigned char alpha = pp[3];
+                                                if(alpha > 128)
+                                                {
+                                                      double da = (double)alpha / 256.;
+
+                                                      unsigned char r = (unsigned char)(pp[0] * da);
+                                                      unsigned char g = (unsigned char)(pp[1] * da);
+                                                      unsigned char b = (unsigned char)(pp[2] * da);
+
+                                                      *px++ = r;
+                                                      *px++ = g;
+                                                      *px++ = b;
+                                                }
+                                                else
+                                                      px += 3;
+                                          }
 							ix++;
 						}
 					}
@@ -5105,21 +5151,43 @@ __asm__ __volatile__ ( \
 							int patt_x = abs(
 									( ( ix - pPatt_spec->x ) + x_stagger_off )
 											% patt_size_x );
+/*
+                                          if(pPatt_spec->depth == 24)
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 3);
 
-							unsigned char *pp = pp0 + patt_x * 4;
+                                                //  Todo    This line assumes unused_color is always 0,0,0
+                                                if( pp[0] && pp[1] && pp[2] ) {
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      px++;
+                                                } else {
+                                                      px += 4;
+//                                                      pp += 4;
+                                                }
+                                          }
+                                          else
+*/
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 4);
+                                                unsigned char alpha = pp[3];
+                                                if(alpha > 128)
+                                                {
+                                                      double da = (double)alpha / 256.;
 
-							//  Todo    This line assumes unused_color is always 0,0,0
-							if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
-								*px++ = *pp++;
-								*px++ = *pp++;
-								*px++ = *pp++;
-								px++;
-								pp++;
-							} else {
-								px += 4;
-								pp += 4;
-							}
+                                                      unsigned char r = (unsigned char)(pp[0] * da);
+                                                      unsigned char g = (unsigned char)(pp[1] * da);
+                                                      unsigned char b = (unsigned char)(pp[2] * da);
 
+                                                      *px++ = r;
+                                                      *px++ = g;
+                                                      *px++ = b;
+                                                      px++;
+                                                }
+                                                else
+                                                      px += 4;
+                                          }
 							ix++;
 						}
 					}
@@ -5132,7 +5200,6 @@ __asm__ __volatile__ ( \
 							ix++;
 						}
 					}
-
 				}
 			}
 		}
@@ -5362,9 +5429,6 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop,
 				ix = ledge[iyp];
 				ixm = redge[iyp];
 
-//                        if(debug) printf("iyp %d, ix %d, ixm %d\n", iyp, ix, ixm);
-//                           int ix = ledge[iyp];
-//                            if(ix != -1)                    // special clip case
 				if( ledge[iyp] != -1 ) {
 					int xoff = ( ix - pb_spec->x ) * 3;
 
@@ -5385,18 +5449,41 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop,
 							int patt_x = abs(
 									( ( ix - pPatt_spec->x ) + x_stagger_off )
 											% patt_size_x );
+/*
+                                          if(pPatt_spec->depth == 24)
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 3);
 
-							unsigned char *pp = pp0 + patt_x * 3;
+                                                //  Todo    This line assumes unused_color is always 0,0,0
+                                                if( pp[0] && pp[1] && pp[2] ) {
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                } else {
+                                                      px += 3;
+                                                      pp += 3;
+                                                }
+                                          }
+                                          else
+  */
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 4);
+                                                unsigned char alpha = pp[3];
+                                                if(alpha > 128)
+                                                {
+                                                      double da = (double)alpha / 256.;
 
-							//  Todo    This line assumes unused_color is always 0,0,0
-							if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
-								*px++ = *pp++;
-								*px++ = *pp++;
-								*px++ = *pp++;
-							} else {
-								px += 3;
-								pp += 3;
-							}
+                                                      unsigned char r = (unsigned char)(pp[0] * da);
+                                                      unsigned char g = (unsigned char)(pp[1] * da);
+                                                      unsigned char b = (unsigned char)(pp[2] * da);
+
+                                                      *px++ = r;
+                                                      *px++ = g;
+                                                      *px++ = b;
+                                                }
+                                                else
+                                                      px += 3;
+                                          }
 
 							ix++;
 						}
@@ -5477,21 +5564,43 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop,
 							int patt_x = abs(
 									( ( ix - pPatt_spec->x ) + x_stagger_off )
 											% patt_size_x );
+/*
+                                          if(pPatt_spec->depth == 24)
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 3);
 
-							unsigned char *pp = pp0 + patt_x * 4;
+                                                //  Todo    This line assumes unused_color is always 0,0,0
+                                                if( pp[0] && pp[1] && pp[2] ) {
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      *px++ = *pp++;
+                                                      px++;
+                                                } else {
+                                                      px += 4;
+//                                                      pp += 3;
+                                                }
+                                          }
+                                          else
+*/
+                                          {
+                                                unsigned char *pp = pp0 + (patt_x * 4);
+                                                unsigned char alpha = pp[3];
+                                                if(alpha > 128)
+                                                {
+                                                      double da = (double)alpha / 256.;
 
-							//  TODO    This line assumes unused_color is always 0,0,0
-							if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
-								*px++ = *pp++;
-								*px++ = *pp++;
-								*px++ = *pp++;
-								px++;
-								pp++;
-							} else {
-								px += 4;
-								pp += 4;
-							}
+                                                      unsigned char r = (unsigned char)(pp[0] * da);
+                                                      unsigned char g = (unsigned char)(pp[1] * da);
+                                                      unsigned char b = (unsigned char)(pp[2] * da);
 
+                                                      *px++ = r;
+                                                      *px++ = g;
+                                                      *px++ = b;
+                                                      px++;
+                                                }
+                                                else
+                                                      px += 4;
+                                          }
 							ix++;
 						}
 					}
@@ -6166,181 +6275,240 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
 	return 1;
 
 }
+render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, int bpp, bool b_pot)
+{
+      wxImage Image;
 
-render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
-		Rules *rules, ViewPort *vp, int bpp, bool b_pot ) {
-	wxImage Image;
+      Rule *prule = rules->razRule;
 
-	Rule *prule = rules->razRule;
+      bool bstagger_pattern = (prule->fillType.PATP == 'S');
 
-	bool bstagger_pattern = ( prule->fillType.PATP == 'S' );
+            //      Create a wxImage of the pattern drawn on an "unused_color" field
+      if( prule->definition.SYDF == 'R' ) {
+            Image = useLegacyRaster
+                        ? RuleXBMToImage( prule )
+                  : ChartSymbols::GetImage( prule->name.PANM );
+      }
 
-	if( prule->definition.SYDF == 'R' ) {
 
-		Image = useLegacyRaster
-			? RuleXBMToImage( prule )
-			: ChartSymbols::GetImage( prule->name.PANM );
-	}
+      else          // Vector
+      {
+            float fsf = 100 / canvas_pix_per_mm;
 
-	else // Vector
-	{
-		float fsf = 100 / canvas_pix_per_mm;
+                  // Base bounding box
+            wxBoundingBox box ( prule->pos.patt.bnbox_x.PBXC,  prule->pos.patt.bnbox_y.PBXR,
+                                prule->pos.patt.bnbox_x.PBXC + prule->pos.patt.bnbox_w.PAHL,
+                                prule->pos.patt.bnbox_y.PBXR +prule->pos.patt.bnbox_h.PAVL );
 
-		// Base bounding box
-		wxBoundingBox box( prule->pos.patt.bnbox_x.PBXC,
-				prule->pos.patt.bnbox_y.PBXR,
-				prule->pos.patt.bnbox_x.PBXC + prule->pos.patt.bnbox_w.PAHL,
-				prule->pos.patt.bnbox_y.PBXR + prule->pos.patt.bnbox_h.PAVL );
+                  // Expand to include pivot
+            box.Expand ( prule->pos.patt.pivot_x.PACL,  prule->pos.patt.pivot_y.PARW );
 
-		// Expand to include pivot
-		box.Expand( prule->pos.patt.pivot_x.PACL,
-				prule->pos.patt.pivot_y.PARW );
+                  //    Pattern bounding boxes may be offset from origin, to preset the spacing
+                  //    So, the bitmap must be delta based.
+            double dwidth = box.GetMaxX() - box.GetMinX();
+            double dheight = box.GetMaxY() - box.GetMinY();
 
-		//    Pattern bounding boxes may be offset from origin, to preset the spacing
-		//    So, the bitmap must be delta based.
-		double dwidth = box.GetMaxX() - box.GetMinX();
-		double dheight = box.GetMaxY() - box.GetMinY();
+                  //  Add in the pattern spacing parameters
+            dwidth  += prule->pos.patt.minDist.PAMI;
+            dheight += prule->pos.patt.minDist.PAMI;
 
-		//  Add in the pattern spacing parameters
-		dwidth += prule->pos.patt.minDist.PAMI;
-		dheight += prule->pos.patt.minDist.PAMI;
+                  //  Prescale
+            dwidth  /= fsf;
+            dheight /= fsf;
 
-		//  Prescale
-		dwidth /= fsf;
-		dheight /= fsf;
+            int width = ( int ) dwidth + 1;
+            int height = ( int ) dheight + 1;
 
-		int width = (int) dwidth + 1;
-		int height = (int) dheight + 1;
 
-		//      Instantiate the vector pattern to a wxBitmap
-		wxMemoryDC mdc;
-		wxBitmap *pbm = NULL;
+                  //      Instantiate the vector pattern to a wxBitmap
+            wxMemoryDC mdc;
+            wxBitmap *pbm = NULL;
 
-		if( ( 0 != width ) && ( 0 != height ) ) {
-			pbm = new wxBitmap( width, height, -1);
+            if ( ( 0 != width ) && ( 0 != height ) )
+            {
+                  pbm = new wxBitmap ( width, height );
 
-			mdc.SelectObject( *pbm );
-			mdc.SetBackground( wxBrush( m_unused_wxColor ) );
-			mdc.Clear();
+                  mdc.SelectObject ( *pbm );
+                  mdc.SetBackground ( wxBrush ( m_unused_wxColor ) );
+                  mdc.Clear();
 
-			int pivot_x = prule->pos.patt.pivot_x.PACL;
-			int pivot_y = prule->pos.patt.pivot_y.PARW;
 
-			char *str = prule->vector.LVCT;
-			char *col = prule->colRef.LCRF;
-			wxPoint pivot( pivot_x, pivot_y );
-			wxPoint r0( (int) ( ( pivot_x - box.GetMinX() ) / fsf ) + 1,
-					(int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
-			RenderHPGLtoDC( str, col, &mdc, r0, pivot, 0 );
-		} else {
-			pbm = new wxBitmap( 2, 2 ); // substitute small, blank pattern
-			mdc.SelectObject( *pbm );
-			mdc.SetBackground( wxBrush( m_unused_wxColor ) );
-			mdc.Clear();
-		}
+                        //    For pattern debugging
+//                              mdc.SetPen(*wxGREEN_PEN);
+//                              mdc.DrawRectangle(0, 0, width, height);
+//                              mdc.SetPen(wxNullPen);
 
-		mdc.SelectObject( wxNullBitmap );
+                  int pivot_x = prule->pos.patt.pivot_x.PACL;
+                  int pivot_y = prule->pos.patt.pivot_y.PARW ;
 
-		//    Build a wxImage from the wxBitmap
-		Image = pbm->ConvertToImage();
-		delete pbm;
-	}
+                  char *str = prule->vector.LVCT;
+                  char *col = prule->colRef.LCRF;
+                  wxPoint pivot ( pivot_x, pivot_y );
+                  wxPoint r0 ( ( int ) ( (pivot_x  - box.GetMinX())/fsf ) + 1, ( int ) (( pivot_y - box.GetMinY())/fsf ) + 1 );
+                  RenderHPGLtoDC ( str, col, &mdc, r0, pivot, 0 );
+            }
+            else
+            {
+                  pbm = new wxBitmap ( 2, 2 );                // substitute small, blank pattern
+                  mdc.SelectObject ( *pbm );
+                  mdc.SetBackground ( wxBrush (m_unused_wxColor ) );
+                  mdc.Clear();
+            }
+
+                  //    Build a wxImage from the wxBitmap
+            Image = pbm->ConvertToImage();
+
+            delete pbm;
+            mdc.SelectObject ( wxNullBitmap );
+      }
 
 //  Convert the wxImage to a populated render_canvas_parms struct
 
-	int sizey = Image.GetHeight();
-	int sizex = Image.GetWidth();
+      int sizey = Image.GetHeight();
+      int sizex = Image.GetWidth();
 
-	render_canvas_parms *patt_spec = new render_canvas_parms;
-	patt_spec->OGL_tex_name = 0;
+      render_canvas_parms *patt_spec = new render_canvas_parms;
+      patt_spec->OGL_tex_name = 0;
 
-	if( b_pot ) {
-		int xp = sizex;
-		int a = 0;
-		while( xp ) {
-			xp = xp >> 1;
-			a++;
-		}
-		patt_spec->w_pot = 1 << a;
+      if(b_pot)
+      {
+            int xp = sizex;
+            int a = 0;
+            while(xp)
+            {
+                  xp = xp >> 1;
+                  a++;
+            }
+            patt_spec->w_pot = 1 << a;
 
-		xp = sizey;
-		a = 0;
-		while( xp ) {
-			xp = xp >> 1;
-			a++;
-		}
-		patt_spec->h_pot = 1 << a;
+            xp = sizey;
+            a = 0;
+            while(xp)
+            {
+                  xp = xp >> 1;
+                  a++;
+            }
+            patt_spec->h_pot = 1 << a;
 
-	} else {
-		patt_spec->w_pot = sizex;
-		patt_spec->h_pot = sizey;
-	}
+      }
+      else
+      {
+            patt_spec->w_pot = sizex;
+            patt_spec->h_pot = sizey;
+      }
 
-	patt_spec->depth = bpp; // set the depth
-	if( Image.HasAlpha() ) patt_spec->depth = 32;
+      patt_spec->depth = 32;//bpp;                              // set the depth
 
-	patt_spec->pb_pitch = ( ( patt_spec->w_pot * patt_spec->depth / 8 ) );
-	patt_spec->lclip = 0;
-	patt_spec->rclip = patt_spec->w_pot - 1;
-	patt_spec->pix_buff = (unsigned char *) malloc(
-			patt_spec->h_pot * patt_spec->pb_pitch );
+      patt_spec->pb_pitch = ( ( patt_spec->w_pot * patt_spec->depth / 8 ) );
+      patt_spec->lclip = 0;
+      patt_spec->rclip = patt_spec->w_pot - 1;
+      patt_spec->pix_buff = ( unsigned char * ) malloc ( patt_spec->h_pot * patt_spec->pb_pitch );
 
-	// Preset background
-	memset( patt_spec->pix_buff, 0, sizey * patt_spec->pb_pitch );
-	patt_spec->width = sizex;
-	patt_spec->height = sizey;
-	patt_spec->x = 0;
-	patt_spec->y = 0;
-	patt_spec->b_stagger = bstagger_pattern;
+            // Preset background
+      memset ( patt_spec->pix_buff, 0,sizey * patt_spec->pb_pitch );
+      patt_spec->width = sizex;
+      patt_spec->height = sizey;
+      patt_spec->x = 0;
+      patt_spec->y = 0;
+      patt_spec->b_stagger = bstagger_pattern;
 
-	unsigned char *patternPixels = patt_spec->pix_buff;
-	unsigned char *patternRow;
-	unsigned char *imgRGB = Image.GetData();
-	unsigned char *imgAlpha;
-	if( Image.HasAlpha() ) imgAlpha = Image.GetAlpha();
-	unsigned char *imgRow;
+      unsigned char *pd0 = patt_spec->pix_buff;
+      unsigned char *pd;
+      unsigned char *ps0 = Image.GetData();
+      unsigned char *imgAlpha = NULL;
+      if( Image.HasAlpha() ) imgAlpha = Image.GetAlpha();
+      unsigned char *ps;
 
-    unsigned char mr =  m_unused_wxColor.Red();
-    unsigned char mg =  m_unused_wxColor.Green();
-    unsigned char mb =  m_unused_wxColor.Blue();
+/*
+      if ( bpp == 24 )
+      {
+            unsigned char mr =  m_unused_wxColor.Red();
+            unsigned char mg =  m_unused_wxColor.Green();
+            unsigned char mb =  m_unused_wxColor.Blue();
 
-	for( int iy = 0; iy < sizey; iy++ ) {
-		patternRow = patternPixels + ( iy * patt_spec->pb_pitch );
-		imgRow = imgRGB + ( iy * sizex * 3 );
-		for( int ix = 0; ix < sizex; ix++ ) {
+            for ( int iy = 0 ; iy < sizey ; iy++ )
+            {
+                  pd = pd0 + ( iy * patt_spec->pb_pitch );
+                  ps = ps0 + ( iy * sizex * 3 );
+                  for ( int ix = 0 ; ix<sizex ; ix++ )
+                  {
 #ifdef ocpnUSE_ocpnBitmap
-			unsigned char r = *imgRow++;
-			unsigned char g = *imgRow++;
-			unsigned char b = *imgRow++;
+                        unsigned char c1 = *ps++;
+                        unsigned char c2 = *ps++;
+                        unsigned char c3 = *ps++;
 
-			if( patt_spec->depth == 32) {
-				*patternRow++ = r;
-				*patternRow++ = g;
-				*patternRow++ = b;
-
-				// Try to combine alpha channel and the old style unused color mask.
-				if( Image.HasAlpha() ) {
-					*patternRow++ = *imgAlpha++;
-				}
-				else {
-					*patternRow++ = ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
-				}
-			}
-			else {
-				*patternRow++ = b;
-				*patternRow++ = g;
-				*patternRow++ = r;
-			}
+                        *pd++ = c3;
+                        *pd++ = c2;
+                        *pd++ = c1;
 #else
-			*patternRow++ = *imgRow++;
-			*patternRow++ = *imgRow++;
-			*patternRow++ = *imgRow++;
+                        if( Image.HasAlpha() ) {
+                              unsigned char alpha = *imgAlpha++;
+                              if(alpha > 128){
+                                    *pd++ = *ps++;
+                                    *pd++ = *ps++;
+                                    *pd++ = *ps++;
+                              }
+                              else{
+                                    *pd++ = mr;
+                                    *pd++ = mg;
+                                    *pd++ = mb;
+                                    ps += 3;
+                              }
+                        }
+                        else {
+                              *pd++ = *ps++;
+                              *pd++ = *ps++;
+                              *pd++ = *ps++;
+                        }
 #endif
-		}
-	}
-	return patt_spec;
+                  }
+            }
+      }
+
+      else if ( bpp == 32 )       // was pb_spec->depth
+  */
+      {
+            unsigned char mr =  m_unused_wxColor.Red();
+            unsigned char mg =  m_unused_wxColor.Green();
+            unsigned char mb =  m_unused_wxColor.Blue();
+
+            for ( int iy = 0 ; iy < sizey ; iy++ )
+            {
+                  pd = pd0 + ( iy * patt_spec->pb_pitch );
+                  ps = ps0 + ( iy * sizex * 3 );
+                  for ( int ix = 0 ; ix < sizex ; ix++ )
+                  {
+                        if(ix < sizex)
+                        {
+                              unsigned char r = *ps++;
+                              unsigned char g = *ps++;
+                              unsigned char b = *ps++;
+#ifdef ocpnUSE_ocpnBitmap
+                              *pd++ = b;
+                              *pd++ = g;
+                              *pd++ = r;
+#else
+                              *pd++ = r;
+                              *pd++ = g;
+                              *pd++ = b;
+#endif
+                              if( Image.HasAlpha() ) {
+                                    *pd++ = *imgAlpha++;
+                              }
+                              else {
+                                    *pd++ = ((r==mr)&&(g==mg)&&(b==mb) ? 0 : 255);
+                              }
+
+                        }
+                  }
+            }
+      }
+
+      return patt_spec;
 
 }
+
+
 
 int s52plib::RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
 		render_canvas_parms *pb_spec ) {

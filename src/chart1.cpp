@@ -203,7 +203,7 @@ wxString        *pWVS_Locn;
 wxString        *pInit_Chart_Dir;
 wxString        *g_pcsv_locn;
 wxString        g_SENCPrefix;
-wxString        g_PresLibData;
+wxString        g_UserPresLibData;
 wxString        g_Plugin_Dir;
 wxString        g_VisibleLayers;
 wxString        g_InvisibleLayers;
@@ -2294,16 +2294,7 @@ bool MyApp::OnInit()
 
               bool tflag = true;          // assume true
               wxFileName f1;
-/*
-              f1 = wxFileName(fd); fd.Append(_T("s57attributes.csv"));
-              tflag &= f1.FileExists();
-              f1 = wxFileName(fd); fd.Append(_T("attdecode.csv"));
-              tflag &= f1.FileExists();
-              f1 = wxFileName(fd); fd.Append(_T("s57expectedinput.csv"));
-              tflag &= f1.FileExists();
-              f1 = wxFileName(fd); fd.Append(_T("s57objectclasses.csv"));
-              tflag &= f1.FileExists();
-*/
+
               fd = *g_pcsv_locn; //PL
               appendOSDirSlash(&fd); //PL
               fd.Append(_T("s57attributes.csv"));
@@ -2374,7 +2365,8 @@ bool MyApp::OnInit()
 
 //      If the config file contains an entry for PresentationLibraryData, use it.
 //      Otherwise, default to conditionally set spot under g_pcsv_locn
-        if(g_PresLibData.IsEmpty())
+        bool b_force_legacy = false;
+        if(g_UserPresLibData.IsEmpty())
         {
               plib_data = *g_pcsv_locn;
               appendOSDirSlash(&plib_data);
@@ -2382,12 +2374,13 @@ bool MyApp::OnInit()
         }
         else
         {
-              plib_data = g_PresLibData;
+              plib_data = g_UserPresLibData;
+              b_force_legacy = true;
         }
 
 
 
-        ps52plib = new s52plib(plib_data);
+        ps52plib = new s52plib(plib_data, b_force_legacy);
 
         //  If the library load failed, try looking for the s57 data elsewhere
 

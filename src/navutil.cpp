@@ -99,7 +99,7 @@ extern wxString         *pNMEA_AP_Port;
 extern wxString         *pWIFIServerName;
 extern wxString         *g_pcsv_locn;
 extern wxString         g_SENCPrefix;
-extern wxString         g_PresLibData;
+extern wxString         g_UserPresLibData;
 
 extern bool             g_bShowPrintIcon;
 extern AutoPilotWindow  *pAPilot;
@@ -3237,7 +3237,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       SetPath ( _T ( "/Directories" ) );
       Read ( strpres, &valpres );              // Get the File name
       if ( iteration == 0 )
-            g_PresLibData = valpres;
+            g_UserPresLibData = valpres;
 
       wxString strd ( _T ( "S57DataLocation" ) );
       SetPath ( _T ( "/Directories" ) );
@@ -4523,7 +4523,7 @@ void MyConfig::UpdateSettings()
       SetPath ( _T ( "/Directories" ) );
       Write ( _T ( "S57DataLocation" ), *g_pcsv_locn );
       Write ( _T ( "SENCFileLocation" ), g_SENCPrefix );
-      Write ( _T ( "PresentationLibraryData" ), g_PresLibData );
+//      Write ( _T ( "PresentationLibraryData" ), g_UserPresLibData );
 
 #endif
 

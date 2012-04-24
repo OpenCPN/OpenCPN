@@ -566,7 +566,11 @@ IF (USE_S57)
             data/s57data/s57attributes.csv
             data/s57data/s57expectedinput.csv
             data/s57data/s57objectclasses.csv
-            data/s57data/Helvetica.txf
+            data/s57data/rastersymbols-dark.png
+            data/s57data/rastersymbols-day.png
+            data/s57data/rastersymbols-dusk.png
+            data/s57data/chartsymbols.xml
+      
              )
 ENDIF (USE_S57)
 
