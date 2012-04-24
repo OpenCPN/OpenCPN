@@ -200,6 +200,8 @@ struct Ais8_001_22
     int hour;  // UTC!
     int minute;
     int duration_minutes; // Time from the start until the notice expires
+    wxDateTime start_time;
+    wxDateTime expiry_time;
     Ais8_001_22_SubAreaList sub_areas;
 };
 
@@ -299,7 +301,7 @@ public:
     double                    CPA;                      // Nautical Miles
 
     AISTargetTrackList        *m_ptrack;
-    
+
     AIS_Area_Notice_Hash     area_notices;
 };
 
@@ -314,7 +316,7 @@ public:
 
     AIS_Bitstring(const char *str);
     unsigned char to_6bit(const char c);
-    
+
     /// sp is starting bit, 1-based
     int GetInt(int sp, int len, bool signed_flag = false);
     int GetStr(int sp, int bit_len, char *dest, int max_len);

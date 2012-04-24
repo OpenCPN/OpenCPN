@@ -6261,6 +6261,9 @@ void ChartCanvas::AISDrawAreaNotices ( ocpnDC& dc )
     if ( !g_pAIS || !g_bShowAIS || !g_bShowAreaNotices)
         return;
 
+    wxDateTime now = wxDateTime::Now();
+    now.MakeGMT();
+
     bool b_pens_set = false;
     wxPen pen_save;
     wxBrush brush_save;
@@ -6305,59 +6308,62 @@ void ChartCanvas::AISDrawAreaNotices ( ocpnDC& dc )
             {
                 Ais8_001_22& area_notice = ani->second;
 
-                std::vector<wxPoint> points;
-                bool draw_polygon = false;
-                double lat,lon;
-
-                switch(area_notice.notice_type)
+                if(area_notice.expiry_time > now)
                 {
-                    case 0:
-                        pen.SetColour(green);
-                        brush = green_brush;
-                        break;
-                    case 1:
-                        pen.SetColour(yellow);
-                        brush = yellow_brush;
-                        break;
-                    default:
-                        pen.SetColour(yellow);
-                        brush = yellow_brush;
-                }
-                dc.SetPen(pen);
-                dc.SetBrush(*brush);
+                  std::vector<wxPoint> points;
+                  bool draw_polygon = false;
+                  double lat,lon;
 
-                for(Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa)
-                {
-                    switch(sa->shape)
-                    {
-                        case AIS8_001_22_SHAPE_CIRCLE:
-                        {
-                            lat = sa->latitude;
-                            lon = sa->longitude;
+                  switch(area_notice.notice_type)
+                  {
+                        case 0:
+                              pen.SetColour(green);
+                              brush = green_brush;
+                              break;
+                        case 1:
+                              pen.SetColour(yellow);
+                              brush = yellow_brush;
+                              break;
+                        default:
+                              pen.SetColour(yellow);
+                              brush = yellow_brush;
+                  }
+                  dc.SetPen(pen);
+                  dc.SetBrush(*brush);
 
-                            wxPoint target_point;
-                            GetCanvasPointPix ( sa->latitude, sa->longitude, &target_point );
-                            points.push_back(target_point);
-                            if(sa->radius_m > 0.0)
-                                dc.DrawCircle(target_point,sa->radius_m*vp_scale);
-                            break;
-                        }
-                        case AIS8_001_22_SHAPE_POLYGON:
-                            draw_polygon = true;
-                        case AIS8_001_22_SHAPE_POLYLINE:
+                  for(Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa)
+                  {
+                        switch(sa->shape)
                         {
-                            for(int i = 0; i < 4; ++i)
-                            {
-                                ll_gc_ll(lat, lon, sa->angles[i], sa->dists_m[i]/1852.0,&lat, &lon);
-                                wxPoint target_point;
-                                GetCanvasPointPix ( lat, lon, &target_point );
-                                points.push_back(target_point);
-                            }
+                              case AIS8_001_22_SHAPE_CIRCLE:
+                              {
+                              lat = sa->latitude;
+                              lon = sa->longitude;
+
+                              wxPoint target_point;
+                              GetCanvasPointPix ( sa->latitude, sa->longitude, &target_point );
+                              points.push_back(target_point);
+                              if(sa->radius_m > 0.0)
+                                    dc.DrawCircle(target_point,sa->radius_m*vp_scale);
+                              break;
+                              }
+                              case AIS8_001_22_SHAPE_POLYGON:
+                              draw_polygon = true;
+                              case AIS8_001_22_SHAPE_POLYLINE:
+                              {
+                              for(int i = 0; i < 4; ++i)
+                              {
+                                    ll_gc_ll(lat, lon, sa->angles[i], sa->dists_m[i]/1852.0,&lat, &lon);
+                                    wxPoint target_point;
+                                    GetCanvasPointPix ( lat, lon, &target_point );
+                                    points.push_back(target_point);
+                              }
+                              }
                         }
-                    }
+                  }
+                  if(draw_polygon)
+                        dc.DrawPolygon(points.size(),&points.front());
                 }
-                if(draw_polygon)
-                    dc.DrawPolygon(points.size(),&points.front());
             }
         }
     }

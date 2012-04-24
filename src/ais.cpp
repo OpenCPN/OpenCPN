@@ -1333,7 +1333,7 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
     strncpy(dest, temp_str, copy_len);
 
     delete [] temp_str;
-    
+
     return copy_len;
 }
 
@@ -2525,6 +2525,27 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
                             an.minute = bstr->GetInt(88,6);
                             an.duration_minutes = bstr->GetInt(94,18);
                             //std::cerr << "\t" << an.month << "-" << an.day << " " << an.hour << ":" << an.minute << " duration: " << an.duration_minutes << std::endl;
+
+                            wxDateTime now = wxDateTime::Now();
+                            now.MakeGMT();
+
+                            an.start_time.Set(an.day,wxDateTime::Month(an.month-1),now.GetYear(),an.hour,an.minute);
+
+                            // msg is not supposed to be transmitted more than a day before it comes into effect,
+                            // so a start_time less than a day or two away might indicate a month rollover
+                            if (an.start_time > now+wxTimeSpan::Hours(48))
+                                an.start_time.Set(an.day,wxDateTime::Month(an.month-1),now.GetYear()-1,an.hour,an.minute);
+
+                            an.expiry_time = an.start_time+wxTimeSpan::Minutes(an.duration_minutes);
+
+                            // msg is not supposed to be transmitted beyond expiration, so taking into account a
+                            // fudge factor for clock issues, assume an expiry date in the past indicates incorrect year
+                            if (an.expiry_time < now-wxTimeSpan::Hours(24))
+                            {
+                                an.start_time.Set(an.day,wxDateTime::Month(an.month-1),now.GetYear()+1,an.hour,an.minute);
+                                an.expiry_time = an.start_time+wxTimeSpan::Minutes(an.duration_minutes);
+                            }
+
                             int subarea_count = (bstr->GetBitCount()-111)/87;
                             //std::cerr << "\t" << subarea_count << " subareas" << std::endl;
                             for(int i = 0; i < subarea_count; ++i)
