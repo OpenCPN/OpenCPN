@@ -1,3 +1,31 @@
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Symbols
+ * Author:   David Register
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   bdbcat@yahoo.com                                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ ***************************************************************************
+ *
+ */
+
 
 #include "wx/wxprec.h"
 
@@ -646,27 +674,31 @@ bool ChartSymbols::LoadConfigFile( s52plib* plibArg, wxString s52ilePath ) {
 	wxString fullFilePath = configFileDirectory + wxFileName::GetPathSeparator() + xmlFileName;
 
 	if( ! wxFileName::FileExists(fullFilePath) ) {
-            wxString msg( _("ChartSymbols::LoadConfigFile(): File not found: "));
+            wxString msg( _("ChartSymbols ConfigFile not found: "));
             msg += fullFilePath;
-		wxLogWarning( msg );
+		wxLogMessage( msg );
+
+            if( wxFileName::FileExists( xmlFileName ) ) {
+                  fullFilePath = xmlFileName;
+                  configFileDirectory = _T(".");
+            }
+            else
+                  return false;
 	}
-	if( wxFileName::FileExists( xmlFileName ) ) {
-		fullFilePath = xmlFileName;
-		configFileDirectory = _(".");
-	}
+
 	if( ! doc.Load( fullFilePath ) ) {
-            wxString msg( _("ChartSymbols::LoadConfigFile(): Failed to load "));
+            wxString msg( _("    ChartSymbols ConfigFile Failed to load "));
             msg += fullFilePath;
-            wxLogError( msg );
+            wxLogMessage( msg );
 		return false;
 	}
 
-      wxString msg( _("ChartSymbols loaded from %s"));
+      wxString msg( _("ChartSymbols loaded from "));
       msg += fullFilePath;
 	wxLogMessage( msg );
 
 	if( doc.GetRoot()->GetName() != _("chartsymbols") ) {
-		wxLogError( _("ChartSymbols::LoadConfigFile(): Expected XML Root <chartsymbols> not found.") );
+		wxLogMessage( _("    ChartSymbols::LoadConfigFile(): Expected XML Root <chartsymbols> not found.") );
 		return false;
 	}
 
@@ -699,9 +731,9 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo ) {
 		return true;
 	}
 
-      wxString msg( _("ChartSymbols::LoadRasterFileForColorTable(): Failed to load raster symbols file "));
+      wxString msg( _("ChartSymbols...Failed to load raster symbols file "));
       msg += filename;
-	wxLogError( msg );
+	wxLogMessage( msg );
 	return false;
 }
 
