@@ -243,6 +243,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
                   glDisable(GL_MULTISAMPLE);
 
+                  bool b_draw_thick = false;
+
                   //      Enable anti-aliased lines, at best quality
                   if(b_hiqual)
                   {
@@ -250,15 +252,39 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                         glEnable(GL_BLEND);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                        if(m_pen.GetWidth() > 1)
+                        {
+                              GLint parms[2];
+                              glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+                              if(m_pen.GetWidth() > parms[1])
+                                    b_draw_thick = true;
+                              else
+                                    glLineWidth(m_pen.GetWidth());
+                        }
+                        else
+                              glLineWidth(1);
                   }
                   else
                   {
                         glDisable(GL_LINE_SMOOTH);
                         glDisable(GL_BLEND);
+
+                        if(m_pen.GetWidth() > 1)
+                        {
+                              GLint parms[2];
+                              glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+                              if(m_pen.GetWidth() > parms[1])
+                                    b_draw_thick = true;
+                              else
+                                    glLineWidth(m_pen.GetWidth());
+                        }
+                        else
+                              glLineWidth(1);
                   }
 
 
-                  if(m_pen.GetWidth() > 1)
+                  if(b_draw_thick/*m_pen.GetWidth() > 1*/)
                         DrawThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
                   else
                   {
@@ -324,21 +350,48 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT);      //Save state
 
+           bool b_draw_thick = false;
+
+                  //      Enable anti-aliased lines, at best quality
            if(b_hiqual)
            {
-                  glEnable(GL_LINE_SMOOTH);
-                  glEnable(GL_BLEND);
-                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                 glEnable(GL_LINE_SMOOTH);
+                 glEnable(GL_BLEND);
+                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                 glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+                 if(m_pen.GetWidth() > 1)
+                 {
+                       GLint parms[2];
+                       glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+                       if(m_pen.GetWidth() > parms[1])
+                             b_draw_thick = true;
+                       else
+                             glLineWidth(m_pen.GetWidth());
+                 }
+                 else
+                       glLineWidth(1);
            }
            else
            {
                  glDisable(GL_LINE_SMOOTH);
                  glDisable(GL_BLEND);
+
+                 if(m_pen.GetWidth() > 1)
+                 {
+                       GLint parms[2];
+                       glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+                       if(m_pen.GetWidth() > parms[1])
+                             b_draw_thick = true;
+                       else
+                             glLineWidth(m_pen.GetWidth());
+                 }
+                 else
+                       glLineWidth(1);
            }
 
 
-           if(m_pen.GetWidth() > 1)
+           if(b_draw_thick/*m_pen.GetWidth() > 1*/)
            {
               wxPoint p0 = points[0];
               for(int i=1; i<n; i++)
