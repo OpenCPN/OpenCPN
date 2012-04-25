@@ -191,7 +191,6 @@ public:
    DisPrio        DPRI;             // Display Priority
    RadPrio        RPRI;             // 'O' or 'S', Radar Priority
    LUPname        TNAM;             // FTYP:  areas, points, lines
-   wxString       *ATTC;            // Attribute Code/Value (repeat)
    wxArrayString *ATTCArray;        // ArrayString of LUP Attributes
    wxString       *INST;            // Instruction Field (rules)
    DisCat         DISC;             // Display Categorie: D/S/O, DisplayBase, Standard, Other
@@ -213,9 +212,6 @@ typedef struct _Cond{
 
 typedef struct _S52color{
    char colName[20];
-   double x;
-   double y;
-   double L;
    unsigned char  R;
    unsigned char  G;
    unsigned char  B;
@@ -248,12 +244,18 @@ public:
 };
 
 
+WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
 
-//-- COLOR MODULE STRUCTURE ---------------------------------------
-typedef struct _colTable{
-   wxString         *tableName;
-   wxArrayPtrVoid   *color;
-}colTable;
+WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
+
+typedef struct _colTable {
+	wxString *tableName;
+	wxString rasterFileName;
+	wxArrayPtrVoid *color;
+	colorHashMap colors;
+	wxColorHashMap wxColors;
+} colTable;
+
 
 //
 // WARNING: must be in sync OGRatt_t
