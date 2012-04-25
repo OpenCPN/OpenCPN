@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -249,6 +249,9 @@ msgstr "és %5g"
 # 
 msgid " to "
 msgstr " fins "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1104,6 +1107,11 @@ msgid "Default color"
 msgstr "El color de la lletra"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "El color de la lletra"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -1461,6 +1469,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1471,6 +1482,9 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "M.Alta"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, fuzzy, c-format
@@ -1691,6 +1705,9 @@ msgstr ""
 # 
 msgid "List contents"
 msgstr "Llista contingut"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1995,6 +2012,11 @@ msgstr "L'OpenCPN Converteix de Derrota a Ruta..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "Directori d'Escannejats OpenCPN..."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "Creador de Rutes OpenCPN"
 #
 # 
 msgid "OpenCPN Info"
@@ -2427,6 +2449,10 @@ msgid "Reserved 13"
 msgstr "Reservat 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Reservat 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Maniobrabilitat Restringida"
 #
@@ -2686,6 +2712,9 @@ msgstr "Mostrar la icona de derrota"
 # 
 msgid "Show WPT names"
 msgstr "Mostrar noms de WPT"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2993,6 +3022,11 @@ msgstr "Marea "
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "Avenç Gràfic, Marees/Corrents"
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Mostrar-hi els Corrents"
 #
 # 
 msgid "Time Enroute"
@@ -3397,6 +3431,7 @@ msgstr "wgsoy"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3410,12 +3445,14 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar la biblioteca: "
+#
 #
 # 
 # 
@@ -3424,12 +3461,14 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol destruir_pi:"
+#
 #
 # 
 # 
@@ -3438,9 +3477,11 @@ msgstr ""
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 # 
 # 
@@ -3449,12 +3490,14 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentant carregar libgps.so"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
+#
 #
 # 
 # 
@@ -3463,12 +3506,14 @@ msgstr ""
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Tanca l'OpenCPN"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 # 
 # 
@@ -3477,6 +3522,7 @@ msgstr ""
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Fracàs en carregar libgps.so.19"
 #
+#
 # 
 # 
 # 
@@ -3484,18 +3530,22 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Importar noves capes"
 #
+#
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Tipus:                "
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
 #
 # 
 # 
@@ -3504,12 +3554,14 @@ msgstr ""
 #~ msgid "New Mark"
 #~ msgstr "Marca Nova"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 # 
 # 
@@ -3522,12 +3574,14 @@ msgstr ""
 #~ "Mòdul de Clase Bàsica de l'OpenCPN\n"
 #~ "El Gestor de Mòduls ha creat aquesta classe bàsica"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 # 
 # 
@@ -3536,12 +3590,14 @@ msgstr ""
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "El Gestor de Mòduls de Programari cerca mòduls en el lloc "
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 # 
 # 
@@ -3550,6 +3606,7 @@ msgstr ""
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de Mòduls: S'inicialitza el Mòdul:"
 #
+#
 # 
 # 
 # 
@@ -3557,12 +3614,14 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 # 
 # 
@@ -3572,12 +3631,14 @@ msgstr ""
 #~ msgstr ""
 #~ "Gestor de Mòduls: Es descarrega Mòdul amb una versió d'API invàlida %d.%d: "
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 # 
 # 
@@ -3590,9 +3651,6 @@ msgstr ""
 #~ "Període d'Informe Recent:   %3d Seg.\n"
 #~ "\n"
 #
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Reservat 14"
 #
 # 
 # 
@@ -3600,6 +3658,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Commu&tar la Llista"
+#
 #
 # 
 # 

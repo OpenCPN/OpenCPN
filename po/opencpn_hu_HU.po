@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -238,6 +238,9 @@ msgstr ""
 # 
 msgid " to "
 msgstr " hova"
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1083,6 +1086,11 @@ msgid "Default color"
 msgstr "A betűtípus színe"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "A betűtípus színe"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -1437,6 +1445,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1446,6 +1457,9 @@ msgstr ""
 #
 # 
 msgid "HW"
+msgstr ""
+#
+msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -1668,6 +1682,9 @@ msgstr ""
 # 
 msgid "List contents"
 msgstr "Tartalom listázása"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1969,6 +1986,11 @@ msgstr "Az OpenCPN a nyomvonal útvonallá konvertállja..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN könyvtár keresése..."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN útvonal létrehozása"
 #
 # 
 msgid "OpenCPN Info"
@@ -2394,6 +2416,10 @@ msgid "Reserved 13"
 msgstr "Fenntartva 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Fenntartva 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Korlátozott manőverezhetőség"
 #
@@ -2651,6 +2677,9 @@ msgstr "Nyomvonal ikon mutatása"
 # 
 msgid "Show WPT names"
 msgstr "Útpontok nevét mutatni"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2958,6 +2987,11 @@ msgstr "Árapály"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Áramlatok mutatása"
 #
 # 
 msgid "Time Enroute"
@@ -3355,6 +3389,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3372,9 +3407,11 @@ msgstr ""
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "További információ"
+#
 #
 # 
 # 
@@ -3393,6 +3430,7 @@ msgstr ""
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
+#
 # 
 # 
 # 
@@ -3410,18 +3448,22 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
 #
+#
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Típus:"
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
 #
 # 
 # 
@@ -3430,6 +3472,7 @@ msgstr ""
 #~ msgid "New Mark"
 #~ msgstr "Új jel"
 #
+#
 # 
 # 
 # 
@@ -3437,6 +3480,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 # 
 # 
@@ -3459,9 +3503,6 @@ msgstr ""
 #~ "Utolsó jelentési periódus:   %3d mp.\n"
 #~ "\n"
 #
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Fenntartva 14"
 #
 # 
 # 
@@ -3482,6 +3523,7 @@ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3498,6 +3540,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
 #
 # 
 # 

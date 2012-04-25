@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -266,6 +266,9 @@ msgstr " is %5g"
 # 
 # 
 msgid " to "
+msgstr ""
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 #
 # 
@@ -1318,6 +1321,12 @@ msgid "Default color"
 msgstr "Yazı rengi."
 #
 # 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Yazı rengi."
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -1779,6 +1788,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1790,6 +1802,9 @@ msgstr ""
 # 
 # 
 msgid "HW"
+msgstr ""
+#
+msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -2070,6 +2085,9 @@ msgstr ""
 #, fuzzy
 msgid "List contents"
 msgstr "Lisans"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 # 
@@ -2448,6 +2466,12 @@ msgstr ""
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Rota Oluşturma"
 #
 # 
 # 
@@ -2990,6 +3014,9 @@ msgstr ""
 msgid "Reserved 13"
 msgstr ""
 #
+msgid "Reserved 14"
+msgstr ""
+#
 # 
 # 
 msgid "Restricted Manoeuvrability"
@@ -3313,6 +3340,9 @@ msgstr "Seyir İzi İkonunu Göster"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "İsim Göster"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -3689,6 +3719,12 @@ msgstr "Gelgit"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Akıntıları Göster"
 #
 # 
 # 
@@ -4189,6 +4225,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4215,6 +4252,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
 #
 # 
 # 
@@ -4243,6 +4281,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Bütün rotaları sil..."
 #
+#
 # 
 # 
 # 
@@ -4269,6 +4308,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
 #
 # 
 # 
@@ -4297,10 +4337,12 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Aktif Seyir İzi)"
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Ekstra bilgi"
+#
 #
 # 
 # 
@@ -4329,6 +4371,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Arama İşareti:"
 #
+#
 # 
 # 
 # 
@@ -4355,6 +4398,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
 #
 # 
 # 
@@ -4387,6 +4431,7 @@ msgstr ""
 #~ "Sınıf bilinmiyor\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4417,6 +4462,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -4449,6 +4495,7 @@ msgstr ""
 #~ "Sınıf:     B\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4475,6 +4522,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
 #
 # 
 # 
@@ -4503,6 +4551,7 @@ msgstr ""
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA(Tahmini Varış Zamanı): Bilinmiyor"
 #
+#
 # 
 # 
 # 
@@ -4512,6 +4561,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 # 
 # 
@@ -4536,6 +4586,7 @@ msgstr ""
 #~ msgid "Exit OpenCPN"
 #~ msgstr "OpenCPN'den Çıkış"
 #
+#
 # 
 # 
 # 
@@ -4553,6 +4604,7 @@ msgstr ""
 #~ "\n"
 #~ "gpsd hostu: "
 #
+#
 # 
 # 
 # 
@@ -4569,6 +4621,7 @@ msgstr ""
 #~ "libgps yüklenemedi.\n"
 #~ "\n"
 #~ "gpsd hostu: "
+#
 #
 # 
 # 
@@ -4597,6 +4650,7 @@ msgstr ""
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
 #
+#
 # 
 # 
 # 
@@ -4623,6 +4677,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB Verisi"
+#
 #
 # 
 # 
@@ -4651,6 +4706,7 @@ msgstr ""
 #~ msgid "GRIB Display Control"
 #~ msgstr "GRIB Ekranı"
 #
+#
 # 
 # 
 # 
@@ -4678,6 +4734,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Dosyası Klasörü"
 #
+#
 # 
 # 
 # 
@@ -4698,11 +4755,13 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Dışarıdan GPX dosyası al"
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA(Tahmini Varış Zamanı):"
+#
 #
 # 
 # 
@@ -4729,15 +4788,18 @@ msgstr ""
 #~ msgid "MarinersStandard"
 #~ msgstr "Denizci Standartı"
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "İşaret ikonu"
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Burayı İşaretle"
+#
 #
 # 
 # 
@@ -4746,6 +4808,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Yeni İşaret"
+#
 #
 # 
 # 
@@ -4776,6 +4839,7 @@ msgstr ""
 #~ "Saklı CRAIN GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
 #
+#
 # 
 # 
 # 
@@ -4804,6 +4868,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
 #
 # 
 # 
@@ -4834,6 +4899,7 @@ msgstr ""
 #~ "Saklı OCEAN CURRENT GRIB'i görmek için uzaklaştırma yapınız ya da büyük "
 #~ "haritaya geçiniz"
 #
+#
 # 
 # 
 # 
@@ -4863,6 +4929,7 @@ msgstr ""
 #~ "Saklı SEATEMP GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
 #
+#
 # 
 # 
 # 
@@ -4872,6 +4939,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Konum:                 "
+#
 #
 # 
 # 
@@ -4900,6 +4968,7 @@ msgstr ""
 #~ msgid "Pressure, mBar"
 #~ msgstr "Basınç, mBar"
 #
+#
 # 
 # 
 # 
@@ -4924,6 +4993,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Güncel Rapor Peryodu:     %3d Sec.\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -4952,6 +5022,7 @@ msgstr ""
 #~ msgid "Route Manager..."
 #~ msgstr "Rota Yöneticisi..."
 #
+#
 # 
 # 
 # 
@@ -4978,6 +5049,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
 #
 # 
 # 
@@ -5006,6 +5078,7 @@ msgstr ""
 #~ msgid "Select GRIB Directory"
 #~ msgstr "GRIB Klasörünü Seç"
 #
+#
 # 
 # 
 # 
@@ -5033,6 +5106,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Rotayı GPS'e Gönder..."
 #
+#
 # 
 # 
 # 
@@ -5057,6 +5131,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
 #
 # 
 # 
@@ -5085,6 +5160,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "GPX ikonlarını göster"
 #
+#
 # 
 # 
 # 
@@ -5111,6 +5187,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "GRIB kutusunu göster"
+#
 #
 # 
 # 
@@ -5139,6 +5216,7 @@ msgstr ""
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB ikonu göster"
 #
+#
 # 
 # 
 # 
@@ -5166,6 +5244,7 @@ msgstr ""
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Anlamlı Dalga Yüksekliği, m."
 #
+#
 # 
 # 
 # 
@@ -5185,6 +5264,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Büyüklük:            %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -5206,6 +5286,7 @@ msgstr ""
 #~ msgid "Toggle Listing"
 #~ msgstr "İzleme şeklini değiştir"
 #
+#
 # 
 # 
 # 
@@ -5225,6 +5306,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota İsmi"
+#
 #
 # 
 # 
@@ -5253,6 +5335,7 @@ msgstr ""
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Yüksek çözünürlüklü çizim kullan"
 #
+#
 # 
 # 
 # 
@@ -5279,6 +5362,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
 #
 # 
 # 

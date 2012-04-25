@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -279,6 +279,9 @@ msgstr " est %5g"
 # 
 msgid " to "
 msgstr " à "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 # 
@@ -1256,6 +1259,12 @@ msgid "Default color"
 msgstr "Couleur par défaut"
 #
 # 
+# Toolbox/Langue
+#, fuzzy
+msgid "Default dataset"
+msgstr "Couleur par défaut"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Degrés, Minutes décimales"
 #
@@ -1662,6 +1671,9 @@ msgstr ""
 msgid "Green"
 msgstr "Vert"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1672,6 +1684,9 @@ msgstr "grd. vit."
 # 
 msgid "HW"
 msgstr "PM"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, c-format
@@ -1922,6 +1937,9 @@ msgstr "Navire-citerne pour gaz liquéfié"
 # Couche
 msgid "List contents"
 msgstr "---> Routes/Traces/WP"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -2269,6 +2287,12 @@ msgstr "OpenCPN convertit la trace en route ...."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN traite le dossier ..."
+#
+# 
+# Menu contextuel : Route
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "Route : Créer"
 #
 # 
 # 
@@ -2760,6 +2784,11 @@ msgstr "Reservé 13"
 #
 # 
 # AIS
+msgid "Reserved 14"
+msgstr "Reservé 14"
+#
+# 
+# AIS
 msgid "Restricted Manoeuvrability"
 msgstr "Manoeuvrabilité réduite"
 #
@@ -3063,6 +3092,9 @@ msgstr "Afficher l'icône de trace"
 # Couche
 msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -3411,6 +3443,12 @@ msgstr "Marée"
 # Toolbox/Langue
 msgid "TideCurrentGraphRollover"
 msgstr "Info affichées par survol pour marées et courants"
+#
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Afficher les Courants"
 #
 # 
 msgid "Time Enroute"
@@ -3863,6 +3901,7 @@ msgstr "WGS Y"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3877,6 +3916,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3885,6 +3925,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger la bibliothèque"
+#
 #
 # 
 # 
@@ -3895,6 +3936,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de créer le symbole create_pi :"
+#
 #
 # 
 # 
@@ -3907,10 +3949,12 @@ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger le symbole "
 #~ "destroy_pi :"
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Information complémentaire"
+#
 #
 # 
 # 
@@ -3919,6 +3963,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 # 
 # 
@@ -3930,19 +3975,23 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Horodatage"
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icône de la marque"
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la marque"
+#
 #
 # 
 # 
@@ -3952,6 +4001,7 @@ msgstr ""
 #~ msgid "New Mark"
 #~ msgstr "Nouvelle marque"
 #
+#
 # 
 # 
 # 
@@ -3959,6 +4009,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN plugin classe de base"
+#
 #
 # 
 # 
@@ -3972,6 +4023,7 @@ msgstr ""
 #~ "OpenCPN plug-in classe de base\n"
 #~ "Le gestionnaire de compléments a créé cette classe de base"
 #
+#
 # 
 # 
 # 
@@ -3980,6 +4032,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestionnaire de compléments : Recherche du plug-in"
+#
 #
 # 
 # 
@@ -3990,6 +4043,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Désactivation du plug-in :"
 #
+#
 # 
 # 
 # 
@@ -3998,6 +4052,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Initialisation du plug-in :"
+#
 #
 # 
 # 
@@ -4008,6 +4063,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Chargement du plug-in :"
 #
+#
 # 
 # 
 # 
@@ -4016,6 +4072,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Déchargement du plug-in :"
+#
 #
 # 
 # 
@@ -4028,6 +4085,7 @@ msgstr ""
 #~ "Gestionnaire de compléments : Déchargement du plug-in avec version API non "
 #~ "valide %d.%d :"
 #
+#
 # 
 # 
 # 
@@ -4036,8 +4094,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position            :   "
-#
-# 
-# AIS
-#~ msgid "Reserved 14"
-#~ msgstr "Reservé 14"

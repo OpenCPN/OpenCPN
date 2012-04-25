@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -240,6 +240,9 @@ msgstr "är %5g"
 # 
 msgid " to "
 msgstr " till "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1090,6 +1093,11 @@ msgid "Default color"
 msgstr "Standardfärg"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Standardfärg"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Grader, decimala minuter"
 #
@@ -1445,6 +1453,9 @@ msgstr ""
 msgid "Green"
 msgstr "Grön"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1455,6 +1466,9 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, c-format
@@ -1674,6 +1688,9 @@ msgstr "Tankfartyg, flytande gas"
 # 
 msgid "List contents"
 msgstr "Visa innehåll"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1975,6 +1992,11 @@ msgstr "OpenCPN konverterar Spår till Rutt...."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN scannar mappar...."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Skapa rutt"
 #
 # 
 msgid "OpenCPN Info"
@@ -2406,6 +2428,10 @@ msgid "Reserved 13"
 msgstr "Reserverad 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Reserverad 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Nedsatt manöverförmåga"
 #
@@ -2661,6 +2687,9 @@ msgstr "Aktivera spårmeny"
 # 
 msgid "Show WPT names"
 msgstr "Visa Waypoint-namn"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2964,6 +2993,11 @@ msgstr "Tidvatten"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "Tidvatten/Strömdiagram \"Rulla över\""
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Visa strömmar"
 #
 # 
 msgid "Time Enroute"
@@ -3364,6 +3398,7 @@ msgstr "wgsoy"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3378,6 +3413,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3386,6 +3422,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
+#
 #
 # 
 # 
@@ -3396,6 +3433,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera symbol create_pi: "
 #
+#
 # 
 # 
 # 
@@ -3405,9 +3443,11 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Ytterligare information"
+#
 #
 # 
 # 
@@ -3418,6 +3458,7 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
 #
+#
 # 
 # 
 # 
@@ -3426,6 +3467,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 # 
 # 
@@ -3436,6 +3478,7 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Tidmarkering"
 #
+#
 # 
 # 
 # 
@@ -3444,6 +3487,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
+#
 #
 # 
 # 
@@ -3454,17 +3498,21 @@ msgstr ""
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "libgps kan inte laddas"
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Waypointsymbol"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Waypointnamn"
+#
 #
 # 
 # 
@@ -3472,6 +3520,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Ny Waypoint"
+#
 #
 # 
 # 
@@ -3481,6 +3530,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Base Class"
+#
 #
 # 
 # 
@@ -3495,6 +3545,7 @@ msgstr ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "Modulhanterare skapade denna base class"
 #
+#
 # 
 # 
 # 
@@ -3503,6 +3554,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Modulhanterare söker efter moduler i "
+#
 #
 # 
 # 
@@ -3513,6 +3565,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Modulhanterare: Inaktiverar modul: "
 #
+#
 # 
 # 
 # 
@@ -3521,6 +3574,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Modulhanterare: Initialiserar modul: "
+#
 #
 # 
 # 
@@ -3531,6 +3585,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Modulhanterare: Aktiverar modul: "
 #
+#
 # 
 # 
 # 
@@ -3539,6 +3594,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Modulhanterare: stänger modul: "
+#
 #
 # 
 # 
@@ -3549,6 +3605,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "
 #
+#
 # 
 # 
 # 
@@ -3556,7 +3613,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:             "
-#
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Reserverad 14"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -357,6 +357,9 @@ msgstr " on %5g"
 # 
 msgid " to "
 msgstr "--"
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 # 
@@ -1669,6 +1672,14 @@ msgid "Default color"
 msgstr "Teksti värv"
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Teksti värv"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -2215,6 +2226,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -2226,6 +2240,9 @@ msgstr ""
 # 
 # 
 msgid "HW"
+msgstr ""
+#
+msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -2565,6 +2582,9 @@ msgstr ""
 #, fuzzy
 msgid "List contents"
 msgstr "Litsents"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 # 
@@ -3020,6 +3040,14 @@ msgstr "OpenCPN konverteerib jälje teekonnaks"
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN Kaustast otsimine..."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN teekonna looja"
 #
 # 
 # 
@@ -3672,6 +3700,9 @@ msgstr ""
 msgid "Reserved 13"
 msgstr ""
 #
+msgid "Reserved 14"
+msgstr ""
+#
 # 
 # 
 msgid "Restricted Manoeuvrability"
@@ -4096,6 +4127,9 @@ msgstr "Näita jälje ikooni"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Näita nime"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -4568,6 +4602,14 @@ msgstr "Tõus"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Näita hoovuseid"
 #
 # 
 # 
@@ -5175,6 +5217,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -5192,6 +5235,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5203,6 +5247,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Ei suuda laadida library: "
+#
 #
 # 
 # 
@@ -5216,6 +5261,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
 #
+#
 # 
 # 
 # 
@@ -5228,12 +5274,14 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 # 
 # 
@@ -5250,6 +5298,7 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Ei suuda laadida libgps.so"
 #
+#
 # 
 # 
 # 
@@ -5261,6 +5310,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 # 
 # 
@@ -5288,6 +5338,7 @@ msgstr ""
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 nihe väljas"
 #
+#
 # 
 # 
 # 
@@ -5313,6 +5364,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 # 
 # 
@@ -5340,6 +5392,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 nihke vahend väljas"
 #
+#
 # 
 # 
 # 
@@ -5365,6 +5418,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 # 
 # 
@@ -5392,6 +5446,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 nihked sees"
 #
+#
 # 
 # 
 # 
@@ -5418,6 +5473,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
 #
+#
 # 
 # 
 # 
@@ -5443,6 +5499,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 # 
 # 
@@ -5472,6 +5529,7 @@ msgstr ""
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
+#
 # 
 # 
 # 
@@ -5483,6 +5541,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 # 
 # 
@@ -5509,6 +5568,7 @@ msgstr ""
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Välju OpenCPN"
 #
+#
 # 
 # 
 # 
@@ -5524,6 +5584,7 @@ msgstr ""
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Ei suuda laadida libgps.so"
 #
+#
 # 
 # 
 # 
@@ -5538,6 +5599,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 # 
 # 
@@ -5561,6 +5623,7 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Impordi GPX fail"
 #
+#
 # 
 # 
 # 
@@ -5568,6 +5631,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 # 
 # 
@@ -5596,6 +5660,7 @@ msgstr ""
 #~ msgid "MarinersStandard"
 #~ msgstr "Mere standard"
 #
+#
 # 
 # 
 # 
@@ -5603,12 +5668,14 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Punkti Ikoon"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Punkti nimi"
+#
 #
 # 
 # 
@@ -5619,6 +5686,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uus punkt"
+#
 #
 # 
 # 
@@ -5631,6 +5699,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Lisade baasi klass"
+#
 #
 # 
 # 
@@ -5647,6 +5716,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
 #
 # 
 # 
@@ -5668,6 +5738,7 @@ msgstr ""
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
 #
+#
 # 
 # 
 # 
@@ -5678,6 +5749,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 # 
 # 
@@ -5691,6 +5763,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Lisade haldur: deaktiveerin lisa:"
 #
+#
 # 
 # 
 # 
@@ -5702,6 +5775,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 # 
 # 
@@ -5715,6 +5789,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Lisade haldur: laen lisa:"
 #
+#
 # 
 # 
 # 
@@ -5726,6 +5801,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 # 
 # 
@@ -5739,6 +5815,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
 #
+#
 # 
 # 
 # 
@@ -5749,6 +5826,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
 #
 # 
 # 
@@ -5775,6 +5853,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Viimane raporti periood:     %3d Sec.\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -5803,6 +5882,7 @@ msgstr ""
 #~ msgid "ShipName:  "
 #~ msgstr "Laeva nimi:"
 #
+#
 # 
 # 
 # 
@@ -5825,6 +5905,7 @@ msgstr ""
 #~ "Suurus:            %dm x %dm x ---m\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5846,6 +5927,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 # 
 # 

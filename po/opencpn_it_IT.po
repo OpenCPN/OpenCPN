@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -353,6 +353,9 @@ msgstr " è %5g"
 # 
 msgid " to "
 msgstr " a "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 # 
@@ -1646,6 +1649,14 @@ msgid "Default color"
 msgstr "Automatico"
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Automatico"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Gradi, Minuti e decimi"
 #
@@ -2181,6 +2192,9 @@ msgstr ""
 msgid "Green"
 msgstr "Verde"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -2192,6 +2206,9 @@ msgstr ""
 # 
 # 
 msgid "HW"
+msgstr ""
+#
+msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -2520,6 +2537,9 @@ msgstr "Cisterna (Gas Liquefatto)"
 # 
 msgid "List contents"
 msgstr "&Lista contenuti"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 # 
@@ -2972,6 +2992,14 @@ msgstr "OpenCPN Conversione Tracce in Rotte..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN Ricerca Catelle..."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Crea Rotta"
 #
 # 
 # 
@@ -3612,6 +3640,9 @@ msgstr ""
 msgid "Reserved 13"
 msgstr ""
 #
+msgid "Reserved 14"
+msgstr ""
+#
 # 
 # 
 msgid "Restricted Manoeuvrability"
@@ -4020,6 +4051,9 @@ msgstr "Mostra l'icona della Traccia"
 # 
 msgid "Show WPT names"
 msgstr "Mostra nomi WPT"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -4478,6 +4512,14 @@ msgstr "Marea"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Mostra/Nascondi le Correnti"
 #
 # 
 # 
@@ -5056,6 +5098,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -5066,6 +5109,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Non posso caricare la libreria: "
+#
 #
 # 
 # 
@@ -5078,6 +5122,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
 #
+#
 # 
 # 
 # 
@@ -5088,6 +5133,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo destroy_pi: "
+#
 #
 # 
 # 
@@ -5111,6 +5157,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 # 
 # 
@@ -5140,6 +5187,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Elimina tutte le &Rotte..."
 #
+#
 # 
 # 
 # 
@@ -5168,6 +5216,7 @@ msgstr ""
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
 #
+#
 # 
 # 
 # 
@@ -5177,6 +5226,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
 #
 # 
 # 
@@ -5206,12 +5256,14 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informazioni Aggiuntive"
+#
 #
 # 
 # 
@@ -5223,6 +5275,7 @@ msgstr ""
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 # 
 # 
@@ -5241,6 +5294,7 @@ msgstr ""
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Disabilita Offset"
 #
+#
 # 
 # 
 # 
@@ -5257,6 +5311,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 # 
 # 
@@ -5275,6 +5330,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Disattiva Strum. Offset"
 #
+#
 # 
 # 
 # 
@@ -5291,6 +5347,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 # 
 # 
@@ -5309,6 +5366,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offset Attivo"
 #
+#
 # 
 # 
 # 
@@ -5325,6 +5383,7 @@ msgstr ""
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
 #
+#
 # 
 # 
 # 
@@ -5340,6 +5399,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 # 
 # 
@@ -5359,6 +5419,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 # 
 # 
@@ -5392,6 +5453,7 @@ msgstr ""
 #~ "Classe sconosciuta\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5420,12 +5482,14 @@ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI         : %09d\n"
+#
 #
 # 
 # 
@@ -5434,12 +5498,14 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Icona del Punto"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome del Punto"
+#
 #
 # 
 # 
@@ -5450,6 +5516,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nuovo Punto"
+#
 #
 # 
 # 
@@ -5466,6 +5533,7 @@ msgstr ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager ha creato questa base class"
 #
+#
 # 
 # 
 # 
@@ -5475,6 +5543,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager ricerca le cartelle dei PlugIns "
+#
 #
 # 
 # 
@@ -5487,6 +5556,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "PlugInManager: Disattivazione PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -5497,6 +5567,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inizializzazione PlugIn: "
+#
 #
 # 
 # 
@@ -5509,6 +5580,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "PlugInManager: Caricamento PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -5520,6 +5592,7 @@ msgstr ""
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Disabilitazione PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -5530,6 +5603,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Disabilito PlugIn con versione API errata %d.%d: "
+#
 #
 # 
 # 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -246,6 +246,9 @@ msgstr " ist %5g"
 # 
 msgid " to "
 msgstr "nach"
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1102,6 +1105,11 @@ msgid "Default color"
 msgstr "Standardfarbe"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Standardfarbe"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Grad, Dezimalminuten"
 #
@@ -1462,6 +1470,9 @@ msgstr ""
 msgid "Green"
 msgstr "Grün"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1472,6 +1483,9 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, c-format
@@ -1694,6 +1708,9 @@ msgstr "Gastanker (See)"
 # 
 msgid "List contents"
 msgstr "Elemente auflisten"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1995,6 +2012,11 @@ msgstr "OpenCPN konvertiert Track zu Route ..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN Verzeichnis-Scan ..."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Routenerstellung"
 #
 # 
 msgid "OpenCPN Info"
@@ -2430,6 +2452,10 @@ msgid "Reserved 13"
 msgstr "Reserviert 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Reserviert 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "manövrierbehindert"
 #
@@ -2686,6 +2712,9 @@ msgstr "Track-Symbol anzeigen"
 # 
 msgid "Show WPT names"
 msgstr "Wegpkt. Namen anz."
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2989,6 +3018,11 @@ msgstr "Tide"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "Kurzinfo Gezeiten- und Strömungskurve"
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Gezeitenströme anzeigen"
 #
 # 
 msgid "Time Enroute"
@@ -3392,6 +3426,7 @@ msgstr "WGS Y Offset"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3406,6 +3441,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3414,6 +3450,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "Plugin-Manager: Kann Bibliothek nicht laden:"
+#
 #
 # 
 # 
@@ -3424,6 +3461,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol create_pi nicht laden:"
 #
+#
 # 
 # 
 # 
@@ -3432,6 +3470,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 # 
 # 
@@ -3445,6 +3484,7 @@ msgstr ""
 #~ msgid "&Close"
 #~ msgstr "Schließen"
 #
+#
 # 
 # 
 # 
@@ -3457,9 +3497,11 @@ msgstr ""
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Toggle Chart"
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 # 
 # 
@@ -3473,6 +3515,7 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Versuche libgps.so zu laden"
 #
+#
 # 
 # 
 # 
@@ -3481,6 +3524,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 # 
 # 
@@ -3494,6 +3538,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Rufzeichen:  "
 #
+#
 # 
 # 
 # 
@@ -3505,6 +3550,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 # 
 # 
@@ -3521,6 +3567,7 @@ msgstr ""
 #~ "Klasse:     A\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3530,17 +3577,21 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ Zeitstempel"
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                   %09d\n"
+#
 #
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
 #
 # 
 # 
@@ -3548,6 +3599,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Neue Markierung"
+#
 #
 # 
 # 
@@ -3557,6 +3609,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 # 
 # 
@@ -3571,6 +3624,7 @@ msgstr ""
 #~ "           OpenCPN Plugin Basis-Klasse\n"
 #~ "Plugin-Manager hat diese Basis-Klasse erstellt"
 #
+#
 # 
 # 
 # 
@@ -3579,6 +3633,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 # 
 # 
@@ -3589,6 +3644,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Plugin-Manager: Deaktiviere Plugin: "
 #
+#
 # 
 # 
 # 
@@ -3597,6 +3653,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 # 
 # 
@@ -3607,6 +3664,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Plugin-Manager: Lade Plugin:"
 #
+#
 # 
 # 
 # 
@@ -3615,6 +3673,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
 #
 # 
 # 
@@ -3625,6 +3684,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Plugin-Manager: Entlade Plugin mit ungültiger API version %d.%d: "
 #
+#
 # 
 # 
 # 
@@ -3632,7 +3692,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
-#
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Reserviert 14"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.708 beta for 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-07-10 12:27+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -324,6 +324,9 @@ msgstr " is %5g"
 # 
 msgid " to "
 msgstr " naar "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 # 
@@ -1455,6 +1458,13 @@ msgid "Default color"
 msgstr "standaard kleur "
 #
 # 
+# 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "standaard kleur "
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "graden, decimale minuten"
 #
@@ -1922,6 +1932,9 @@ msgstr ""
 msgid "Green"
 msgstr "groen"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1932,6 +1945,9 @@ msgstr "HSV"
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 # 
@@ -2213,6 +2229,9 @@ msgstr "gastanker (zee)"
 # 
 msgid "List contents"
 msgstr "Toon inhoud"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -2596,6 +2615,13 @@ msgstr "OpenCPN converteert track naar route ..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN mappenscan ..."
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Maak route"
 #
 # 
 # 
@@ -3144,6 +3170,10 @@ msgid "Reserved 13"
 msgstr "gereserveerd 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "gereserveerd 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "beperkt manoeuvreerbaar"
 #
@@ -3499,6 +3529,9 @@ msgstr "Toon track-icoon"
 # 
 msgid "Show WPT names"
 msgstr "Toon namen"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -3900,6 +3933,13 @@ msgstr "Getijhoogte"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "Info getijgrafiek bij aanwijzen"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Toon getijstroom-iconen"
 #
 # 
 # 
@@ -4407,6 +4447,7 @@ msgstr "WGS Y offset"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -4423,6 +4464,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -4433,6 +4475,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Kan library niet laden: "
+#
 #
 # 
 # 
@@ -4445,6 +4488,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
 #
+#
 # 
 # 
 # 
@@ -4456,11 +4500,13 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Kan symbool destroy_pi niet laden: "
 #
+#
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
+#
 #
 # 
 # 
@@ -4473,6 +4519,7 @@ msgstr ""
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
 #
+#
 # 
 # 
 # 
@@ -4484,11 +4531,13 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
 #
+#
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 # 
 # 
@@ -4496,11 +4545,13 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
 #
+#
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Markeringspunt-naam"
+#
 #
 # 
 # 
@@ -4510,6 +4561,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "markering, nieuw gevaar"
+#
 #
 # 
 # 
@@ -4521,6 +4573,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 # 
 # 
@@ -4537,6 +4590,7 @@ msgstr ""
 #~ "OpenCPN PlugIn Basis Klasse\n"
 #~ "PlugInManager heeft deze klasse gecreëerd."
 #
+#
 # 
 # 
 # 
@@ -4546,6 +4600,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 # 
 # 
@@ -4558,6 +4613,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "PlugInManager: Deactiveert PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -4568,6 +4624,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 # 
 # 
@@ -4580,6 +4637,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "PlugInManager: Laadt PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -4590,6 +4648,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 # 
 # 
@@ -4602,6 +4661,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
 #
+#
 # 
 # 
 # 
@@ -4611,7 +4671,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
-#
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "gereserveerd 14"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -349,6 +349,9 @@ msgstr "é %5g"
 # 
 # 
 msgid " to "
+msgstr ""
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 #
 # 
@@ -1690,6 +1693,14 @@ msgid "Default color"
 msgstr "Cor da fonte."
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Cor da fonte."
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -2323,6 +2334,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -2334,6 +2348,9 @@ msgstr ""
 # 
 # 
 msgid "HW"
+msgstr ""
+#
+msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -2677,6 +2694,9 @@ msgstr ""
 #, fuzzy
 msgid "List contents"
 msgstr "Licença"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 # 
@@ -3137,6 +3157,14 @@ msgstr ""
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN Criar Derrota"
 #
 # 
 # 
@@ -3799,6 +3827,9 @@ msgstr ""
 msgid "Reserved 13"
 msgstr ""
 #
+msgid "Reserved 14"
+msgstr ""
+#
 # 
 # 
 msgid "Restricted Manoeuvrability"
@@ -4224,6 +4255,9 @@ msgstr "Mostrar ícone Acompanhamentos"
 #, fuzzy
 msgid "Show WPT names"
 msgstr "Mostrar Nome"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -4698,6 +4732,14 @@ msgstr "Maré"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Mostrar Correntes"
 #
 # 
 # 
@@ -5306,6 +5348,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -5338,6 +5381,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 # 
 # 
@@ -5376,6 +5420,7 @@ msgstr ""
 #~ msgid "&Delete All Routes..."
 #~ msgstr "Excluir to&das as Derrotas..."
 #
+#
 # 
 # 
 # 
@@ -5412,6 +5457,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 # 
 # 
@@ -5450,12 +5496,14 @@ msgstr ""
 #~ msgid "(Active Track)"
 #~ msgstr "(Acompanhamento Ativo)"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
 #
 # 
 # 
@@ -5475,6 +5523,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 # 
 # 
@@ -5511,6 +5560,7 @@ msgstr ""
 #~ msgid "CallSign:  "
 #~ msgstr "Indicativo de Chamada:"
 #
+#
 # 
 # 
 # 
@@ -5539,6 +5589,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 # 
 # 
@@ -5581,6 +5632,7 @@ msgstr ""
 #~ "Classe desconhecida\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5618,6 +5670,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -5660,6 +5713,7 @@ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5692,6 +5746,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 # 
 # 
@@ -5730,6 +5785,7 @@ msgstr ""
 #~ msgid "Delete All Routes..."
 #~ msgstr "Excluir TODAS as Derrotas"
 #
+#
 # 
 # 
 # 
@@ -5765,6 +5821,7 @@ msgstr ""
 #~ msgid "ETA:                  Unknown"
 #~ msgstr "ETA:                 Desconhecido"
 #
+#
 # 
 # 
 # 
@@ -5776,6 +5833,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "TED/Marca Temporal"
+#
 #
 # 
 # 
@@ -5801,6 +5859,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
 #
 # 
 # 
@@ -5839,6 +5898,7 @@ msgstr ""
 #~ msgid "Export...."
 #~ msgstr "Exportar..."
 #
+#
 # 
 # 
 # 
@@ -5858,6 +5918,7 @@ msgstr ""
 #~ "\n"
 #~ "O host gpsd é: "
 #
+#
 # 
 # 
 # 
@@ -5876,6 +5937,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 # 
 # 
@@ -5907,6 +5969,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 # 
 # 
@@ -5941,6 +6004,7 @@ msgstr ""
 #~ msgid "GRIB Data"
 #~ msgstr "Dados GRIB"
 #
+#
 # 
 # 
 # 
@@ -5973,6 +6037,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
 #
 # 
 # 
@@ -6007,6 +6072,7 @@ msgstr ""
 #~ msgid "GRIB File Directory"
 #~ msgstr "Diretório de Arquivos GRIB"
 #
+#
 # 
 # 
 # 
@@ -6029,6 +6095,7 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Importar arquivo GPX"
 #
+#
 # 
 # 
 # 
@@ -6036,6 +6103,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 # 
 # 
@@ -6064,6 +6132,7 @@ msgstr ""
 #~ msgid "MarinersStandard"
 #~ msgstr "MarinersStandard"
 #
+#
 # 
 # 
 # 
@@ -6071,12 +6140,14 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Símbolo da Marca"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 # 
 # 
@@ -6087,6 +6158,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 # 
 # 
@@ -6121,6 +6193,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver CRAIN GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -6153,6 +6226,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 # 
 # 
@@ -6188,6 +6262,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Por favor Afaste ou Diminua a Escala para ver OCEAN CURRENT GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -6221,6 +6296,7 @@ msgstr ""
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
 #
+#
 # 
 # 
 # 
@@ -6232,6 +6308,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:"
+#
 #
 # 
 # 
@@ -6266,6 +6343,7 @@ msgstr ""
 #~ msgid "Pressure, mBar"
 #~ msgstr "Pressão, hPa"
 #
+#
 # 
 # 
 # 
@@ -6292,6 +6370,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -6330,6 +6409,7 @@ msgstr ""
 #~ msgid "Route Manager..."
 #~ msgstr "Gerenciador de Derrotas..."
 #
+#
 # 
 # 
 # 
@@ -6363,6 +6443,7 @@ msgstr ""
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Temperatura da Superfície do Mar, C"
 #
+#
 # 
 # 
 # 
@@ -6395,6 +6476,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 # 
 # 
@@ -6433,6 +6515,7 @@ msgstr ""
 #~ msgid "Send Route To GPS..."
 #~ msgstr "Enviar Derrota para o GPS..."
 #
+#
 # 
 # 
 # 
@@ -6459,6 +6542,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
 #
 # 
 # 
@@ -6497,6 +6581,7 @@ msgstr ""
 #~ msgid "Show GPX icons"
 #~ msgstr "Mostrar ícone GPX"
 #
+#
 # 
 # 
 # 
@@ -6534,6 +6619,7 @@ msgstr ""
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
 #
+#
 # 
 # 
 # 
@@ -6564,6 +6650,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar ícone GRIB"
+#
 #
 # 
 # 
@@ -6598,6 +6685,7 @@ msgstr ""
 #~ msgid "Significant Wave Height, m"
 #~ msgstr "Altura Significativa das Ondas, m"
 #
+#
 # 
 # 
 # 
@@ -6619,6 +6707,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Tamanho:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 # 
 # 
@@ -6642,6 +6731,7 @@ msgstr ""
 #~ msgid "Toggle Listing"
 #~ msgstr "Ligar Acompanhamento"
 #
+#
 # 
 # 
 # 
@@ -6663,6 +6753,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nome da Derrota"
+#
 #
 # 
 # 
@@ -6694,6 +6785,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 # 
 # 
@@ -6728,6 +6820,7 @@ msgstr ""
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "AVISO: Dados GRIB são de %d horas atrás."
 #
+#
 # 
 # 
 # 
@@ -6760,6 +6853,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 # 
 # 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -241,6 +241,9 @@ msgstr " er %5g"
 # 
 msgid " to "
 msgstr " til "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1091,6 +1094,11 @@ msgid "Default color"
 msgstr "Standard farge"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Standard farge"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Grader, Desimal minutter"
 #
@@ -1446,6 +1454,9 @@ msgstr ""
 msgid "Green"
 msgstr "Grønn"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1456,6 +1467,9 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, c-format
@@ -1675,6 +1689,9 @@ msgstr "Gasstanker med flytende gass"
 # 
 msgid "List contents"
 msgstr "Vis innhold"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1976,6 +1993,11 @@ msgstr "OpenCPN Konverterer Slepestrek til Rute..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN katalog skann..."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN ruteopprettelse"
 #
 # 
 msgid "OpenCPN Info"
@@ -2406,6 +2428,10 @@ msgid "Reserved 13"
 msgstr "Reservert 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Reservert 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Begrenset manøvrerbarhet"
 #
@@ -2661,6 +2687,9 @@ msgstr "Vis slepestrek ikon"
 # 
 msgid "Show WPT names"
 msgstr "Vis VPT-navn"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2964,6 +2993,11 @@ msgstr "Tidevann"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "TidevannstrømGrafMusOver"
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Vis strømmer"
 #
 # 
 msgid "Time Enroute"
@@ -3364,6 +3398,7 @@ msgstr "wgsoy"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3378,6 +3413,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -3386,6 +3422,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
+#
 #
 # 
 # 
@@ -3396,6 +3433,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol create_pi: "
 #
+#
 # 
 # 
 # 
@@ -3405,9 +3443,11 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Tilleggsinformasjon"
+#
 #
 # 
 # 
@@ -3418,6 +3458,7 @@ msgstr ""
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseKlasseFellesNavn"
 #
+#
 # 
 # 
 # 
@@ -3427,17 +3468,21 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Tids stempel"
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merke ikon"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Merkenavn"
+#
 #
 # 
 # 
@@ -3445,6 +3490,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nytt merke"
+#
 #
 # 
 # 
@@ -3454,6 +3500,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Utvidelses Baseklasse"
+#
 #
 # 
 # 
@@ -3468,6 +3515,7 @@ msgstr ""
 #~ "OpenCPN Utvidelses Baseklasse\n"
 #~ "Utvidelses behandling opprettet denne base klassen"
 #
+#
 # 
 # 
 # 
@@ -3476,6 +3524,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Utvidelses behandling søker etter mappen for utvidelser"
+#
 #
 # 
 # 
@@ -3486,6 +3535,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Utvidelses behandling: Deaktiverer utvidelse: "
 #
+#
 # 
 # 
 # 
@@ -3494,6 +3544,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Utvidelses behandling: Starter utvidelse: "
+#
 #
 # 
 # 
@@ -3504,6 +3555,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster utvidelse: "
 #
+#
 # 
 # 
 # 
@@ -3512,6 +3564,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster ut utvidelse: "
+#
 #
 # 
 # 
@@ -3523,6 +3576,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
 #
+#
 # 
 # 
 # 
@@ -3530,7 +3584,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posisjon:"
-#
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Reservert 14"

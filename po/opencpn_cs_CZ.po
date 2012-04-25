@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-07-08 14:42+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -356,6 +356,9 @@ msgstr " je %5g"
 # 
 msgid " to "
 msgstr " do "
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 # 
@@ -1646,6 +1649,14 @@ msgid "Default color"
 msgstr "Standardní barva"
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Default dataset"
+msgstr "Standardní barva"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr "Stupně, desetinné minuty"
 #
@@ -2181,6 +2192,9 @@ msgstr ""
 msgid "Green"
 msgstr "Zelená"
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -2193,6 +2207,9 @@ msgstr ""
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 # 
@@ -2522,6 +2539,9 @@ msgstr "Tanker s kapalným plynem"
 # 
 msgid "List contents"
 msgstr "Vypiš obsah"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 # 
@@ -2975,6 +2995,14 @@ msgstr "OpenCPN převádí stopu na trasu...."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "Sken složek OpenCPN...."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "Vytvořit OpenCPN Trasu"
 #
 # 
 # 
@@ -3614,6 +3642,11 @@ msgstr "Rezervováno 13"
 #
 # 
 # 
+msgid "Reserved 14"
+msgstr "Rezervováno 14"
+#
+# 
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Omezená manévrovatelnost"
 #
@@ -4020,6 +4053,9 @@ msgstr "Zobrazit ikonu stopy"
 # 
 msgid "Show WPT names"
 msgstr "Zobraz jména trasových bodů"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -4479,6 +4515,14 @@ msgstr "Příliv"
 # 
 msgid "TideCurrentGraphRollover"
 msgstr "PrekryvnyGrafPrilivProudu"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Ukaž proudy"
 #
 # 
 # 
@@ -5063,6 +5107,7 @@ msgstr ""
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -5079,6 +5124,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
@@ -5089,6 +5135,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Nemohu načíst knihovnu: "
+#
 #
 # 
 # 
@@ -5101,6 +5148,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
 #
+#
 # 
 # 
 # 
@@ -5111,6 +5159,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
+#
 #
 # 
 # 
@@ -5128,12 +5177,14 @@ msgstr ""
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 # 
 # 
@@ -5149,6 +5200,7 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
 #
+#
 # 
 # 
 # 
@@ -5159,6 +5211,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 # 
 # 
@@ -5183,6 +5236,7 @@ msgstr ""
 #~ msgid "CM93 Offset Off"
 #~ msgstr "Posun CM93 vyp."
 #
+#
 # 
 # 
 # 
@@ -5205,6 +5259,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 # 
 # 
@@ -5229,6 +5284,7 @@ msgstr ""
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "Nástroj Posun CM93 vypnut"
 #
+#
 # 
 # 
 # 
@@ -5251,6 +5307,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 # 
 # 
@@ -5275,6 +5332,7 @@ msgstr ""
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
 #
+#
 # 
 # 
 # 
@@ -5296,6 +5354,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 # 
 # 
@@ -5319,6 +5378,7 @@ msgstr ""
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
 #
+#
 # 
 # 
 # 
@@ -5331,12 +5391,14 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/časová značka"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 # 
 # 
@@ -5345,12 +5407,14 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Ikona značky"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Jméno značky"
+#
 #
 # 
 # 
@@ -5362,6 +5426,7 @@ msgstr ""
 #~ msgid "New Mark"
 #~ msgstr "Nová značka"
 #
+#
 # 
 # 
 # 
@@ -5372,6 +5437,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN základní třída modulu"
+#
 #
 # 
 # 
@@ -5388,6 +5454,7 @@ msgstr ""
 #~ "OpenCPN základní třída modulu\n"
 #~ "PlugInManager vytvořil tuto základní třídu"
 #
+#
 # 
 # 
 # 
@@ -5398,6 +5465,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager: hledá moduly v umístění  "
+#
 #
 # 
 # 
@@ -5410,6 +5478,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "PlugInManager: Deaktivuji modul: "
 #
+#
 # 
 # 
 # 
@@ -5420,6 +5489,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inicializuji modul: "
+#
 #
 # 
 # 
@@ -5432,6 +5502,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "PlugInManager: Zavádím modul: "
 #
+#
 # 
 # 
 # 
@@ -5442,6 +5513,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Odstraňuji modul: "
+#
 #
 # 
 # 
@@ -5454,6 +5526,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "
 #
+#
 # 
 # 
 # 
@@ -5464,8 +5537,3 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozice:             "
-#
-# 
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Rezervováno 14"

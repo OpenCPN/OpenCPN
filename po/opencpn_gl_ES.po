@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-09 12:55-0400\n"
+"POT-Creation-Date: 2012-04-25 00:06-0400\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -242,6 +242,9 @@ msgstr "é %5g"
 # 
 msgid " to "
 msgstr "a"
+#
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr ""
 #
 # 
 msgid "&Acknowledge"
@@ -1102,6 +1105,11 @@ msgid "Default color"
 msgstr "A cor do tipo de letra"
 #
 # 
+#, fuzzy
+msgid "Default dataset"
+msgstr "A cor do tipo de letra"
+#
+# 
 msgid "Degrees, Decimal minutes"
 msgstr ""
 #
@@ -1460,6 +1468,9 @@ msgstr ""
 msgid "Green"
 msgstr ""
 #
+msgid "Group \""
+msgstr ""
+#
 msgid "Groups"
 msgstr ""
 #
@@ -1470,6 +1481,9 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
+#
+msgid "Harmonic dataset to use:"
+msgstr ""
 #
 # 
 #, fuzzy, c-format
@@ -1694,6 +1708,9 @@ msgstr ""
 # 
 msgid "List contents"
 msgstr "Lista de contidos"
+#
+msgid "Loaded legacy PLIB data: "
+msgstr ""
 #
 # 
 msgid "Local @ PC"
@@ -1998,6 +2015,11 @@ msgstr "OpenCPN Convertindo Derrota a Ruta..."
 # 
 msgid "OpenCPN Directory Scan...."
 msgstr "Examinar Directorio OpenCPN...."
+#
+# 
+#, fuzzy
+msgid "OpenCPN Group Notice"
+msgstr "Crear Ruta OpenCPN"
 #
 # 
 msgid "OpenCPN Info"
@@ -2429,6 +2451,10 @@ msgid "Reserved 13"
 msgstr "Reservado 13"
 #
 # 
+msgid "Reserved 14"
+msgstr "Reservado 14"
+#
+# 
 msgid "Restricted Manoeuvrability"
 msgstr "Manobra restrinxida"
 #
@@ -2690,6 +2716,9 @@ msgstr "Amosa-la icona da Derrota"
 # 
 msgid "Show WPT names"
 msgstr "Amosa-los nomes WPT"
+#
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
 #
 # 
 msgid "Show layers initially"
@@ -2998,6 +3027,11 @@ msgstr "Marea"
 #, fuzzy
 msgid "TideCurrentGraphRollover"
 msgstr "TideCurrentGraphRollover"
+#
+# 
+#, fuzzy
+msgid "Tides && Currents"
+msgstr "Amosar Correntes"
 #
 # 
 msgid "Time Enroute"
@@ -3404,6 +3438,7 @@ msgstr "wgsoy"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -3417,12 +3452,14 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar a libería:"
+#
 #
 # 
 # 
@@ -3431,12 +3468,14 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo create_pi:"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo destroy_pi:"
+#
 #
 # 
 # 
@@ -3445,9 +3484,11 @@ msgstr ""
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Alternar Cartas"
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 # 
 # 
@@ -3456,12 +3497,14 @@ msgstr ""
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentando cargar libgps.so"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClaseComúnNome"
+#
 #
 # 
 # 
@@ -3470,12 +3513,14 @@ msgstr ""
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Saí­r de OpenCPN"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
 #
 # 
 # 
@@ -3484,6 +3529,7 @@ msgstr ""
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Houbo un error cargando libgps.so.19"
 #
+#
 # 
 # 
 # 
@@ -3491,18 +3537,22 @@ msgstr ""
 #~ msgid "Import new layer"
 #~ msgstr "Importar unha nova capa"
 #
+#
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Tipo:"
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 # 
 # 
@@ -3511,12 +3561,14 @@ msgstr ""
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 # 
 # 
@@ -3529,12 +3581,14 @@ msgstr ""
 #~ "Engadido OpenCPN Clase de Base\n"
 #~ "RexistrodeEngadidos creou esta clase de base"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 # 
 # 
@@ -3543,12 +3597,14 @@ msgstr ""
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "O XestordeEngadidos está buscando a localización dos Engadidos"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 # 
 # 
@@ -3557,6 +3613,7 @@ msgstr ""
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "XestordeEngadidos: Iniciando Engadido:"
 #
+#
 # 
 # 
 # 
@@ -3564,12 +3621,14 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "XestordeEngadidos: Cargando Engadido:"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
 #
 # 
 # 
@@ -3580,12 +3639,14 @@ msgstr ""
 #~ "XestordeEngadidos: Descargando Engadido con unha versión API inválida  %d.%"
 #~ "d: "
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
 #
 # 
 # 
@@ -3598,9 +3659,6 @@ msgstr ""
 #~ "Período de Reporte Recente:   %3d Sec.\n"
 #~ "\n"
 #
-# 
-#~ msgid "Reserved 14"
-#~ msgstr "Reservado 14"
 #
 # 
 # 
@@ -3608,6 +3666,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar Listados"
+#
 #
 # 
 # 
