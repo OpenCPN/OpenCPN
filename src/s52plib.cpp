@@ -2598,30 +2598,12 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       int pivot_x = prule->pos.line.pivot_x.SYCL;
       int pivot_y = prule->pos.line.pivot_y.SYRW;
 
-//<<<<<<< HEAD:src/s52plib.cpp
- /*     //    Check to see if any cached data is valid
-      bool b_dump_cache = false;
-      if ( prule->pixelPtr)
-      {
-            if(m_pdc)
-            {
-                  if(prule->parm0 != ID_wxBitmap)
-                        b_dump_cache = true;
-            }
-            else
-            {
-                  if(prule->parm0 != ID_RGBA)
-                        b_dump_cache = true;
-            }
-      }
-*/
       //Instantiate the symbol if necessary
       if ( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) || b_dump_cache)
       {
 		wxImage Image = useLegacyRaster
 				? RuleXBMToImage( prule )
 				: ChartSymbols::GetImage( prule->name.SYNM );
-//            wxImage Image = RuleXBMToImage ( prule );
 
             // delete any old private data
             ClearRulesCache(prule);
@@ -2670,27 +2652,85 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             else
             {
             //      Make the wxBitmap
+                  wxBitmap *pbm;
 
-            //TODO Study this problem, use conditional build?
-#ifdef __WXMSWF__
-//      On some versions of wxMSW, on Windows XP, conversion from wxImage to wxBitmap fails at the ::CreateDIBitmap() call
-//      unless a "compatible" dc is provided.  Why??
-//      As a workaround, just make a simple wxDC for temporary use
-
-                  wxMemoryDC dwxdc;
-                  wxBitmap *pbm = new wxBitmap ( Image, dwxdc );
-#else
-                  wxBitmap *pbm = new wxBitmap ( Image );
-#endif
                   //      Make the mask
 			if( useLegacyRaster ) {
+                        pbm = new wxBitmap ( Image );
 				wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
 				pbm->SetMask( pmask );
 			}
-//                  wxMask *pmask = new wxMask ( *pbm, m_unused_wxColor);
-                  //      Associate the mask with the bitmap
-//                  pbm->SetMask ( pmask );
+                        //    Convert the image....
+                        //    An image with alpha cannot, in the general case,
+                        //    be converted to a mask-blittable bitmap and
+                        //    with expected transparency results on blit.
+                        //    Blit doesn't work that way on all systems....
+                        //    It does, however, work with a 32 bit Bitmap on Windows platforms
+                        //    So, for non-MSW platforms, we convert the image,
+                        //    setting pels with alpha < (arbitrary value)
+                        //    to a mask color, and otherwise set pels equal to (r,g,b) * alpha
 
+                        //    TODO This needs more work....
+
+#ifdef __WXMSW__
+                  else {
+                        pbm = new wxBitmap ( Image, 32 );
+                        wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                        pbm->SetMask( pmask );
+                  }
+#else
+                  else {
+                        if(Image.HasAlpha())
+                        {
+                              unsigned char *d = Image.GetData();
+                              unsigned char *a = Image.GetAlpha();
+
+                              unsigned char mr = m_unused_wxColor.Red();
+                              unsigned char mg = m_unused_wxColor.Green();
+                              unsigned char mb = m_unused_wxColor.Blue();
+
+                              int w = Image.GetWidth();
+                              int h = Image.GetHeight();
+
+                              unsigned char *e = (unsigned char *)malloc(w * h * 3);
+                              for(int y=0; y<h; y++)
+                              {
+                                    for(int x=0; x<w; x++)
+                                    {
+                                          unsigned char r, g, b;
+                                          int off = (y*Image.GetWidth()+x);
+                                          r = d[off*3 + 0];
+                                          g = d[off*3 + 1];
+                                          b = d[off*3 + 2];
+
+                                          double alpha = (double)a[off]/256;
+                                          if(alpha < .3) {
+                                                e[off*3 + 0] = mr;
+                                                e[off*3 + 1] = mg;
+                                                e[off*3 + 2] = mb;
+                                          }
+                                          else {
+                                                e[off*3 + 0] = r * alpha;
+                                                e[off*3 + 1] = g * alpha;
+                                                e[off*3 + 2] = b * alpha;
+                                          }
+                                    }
+                              }
+
+                              wxImage imm(w, h, e);
+                              pbm = new wxBitmap ( imm );
+                              wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                              pbm->SetMask( pmask );
+                        }
+                        else
+                        {
+                              pbm = new wxBitmap ( Image );
+                              wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                              pbm->SetMask( pmask );
+                        }
+
+                  }
+#endif
 
             //      Save the bitmap ptr and aux parms in the rule
                   prule->pixelPtr = pbm;
@@ -2787,148 +2827,6 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       }
 
       return true;
-#if 0
-=======
-	//Instantiate the symbol if necessary
-	if( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index )
-			|| b_dump_cache ) {
-
-		wxImage Image = useLegacyRaster
-				? RuleXBMToImage( prule )
-				: ChartSymbols::GetImage( prule->name.SYNM );
-
-		// delete any old private data
-		ClearRulesCache( prule );
-
-		if( !m_pdc ) // opengl
-		{
-			//    Get the glRGBA format data from the wxImage
-			unsigned char *d = Image.GetData();
-			unsigned char *a = Image.GetAlpha();
-
-			Image.SetMaskColour( m_unused_wxColor.Red(),
-					m_unused_wxColor.Green(), m_unused_wxColor.Blue() );
-			unsigned char mr, mg, mb;
-			if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
-					"trying to use mask to draw a bitmap without alpha or mask\n" );
-
-			int w = Image.GetWidth();
-			int h = Image.GetHeight();
-
-			unsigned char *e = (unsigned char *) malloc( w * h * 4 );
-			for( int y = 0; y < h; y++ ) {
-				for( int x = 0; x < w; x++ ) {
-					unsigned char r, g, b;
-					int off = ( y * Image.GetWidth() + x );
-					r = d[off * 3 + 0];
-					g = d[off * 3 + 1];
-					b = d[off * 3 + 2];
-
-					e[off * 4 + 0] = r;
-					e[off * 4 + 1] = g;
-					e[off * 4 + 2] = b;
-
-					e[off * 4 + 3] =
-							a ? a[off] : (
-									( r == mr ) && ( g == mg ) && ( b == mb ) ?
-											0 : 255 );
-				}
-			}
-
-			//      Save the bitmap ptr and aux parms in the rule
-			prule->pixelPtr = e;
-			prule->parm0 = ID_RGBA;
-			prule->parm1 = m_colortable_index;
-			prule->parm2 = w;
-			prule->parm3 = h;
-		} else {
-			wxBitmap *pbm = new wxBitmap( Image, 32 );
-
-			if( useLegacyRaster ) {
-				wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-				pbm->SetMask( pmask );
-			}
-
-			//      Save the bitmap ptr and aux parms in the rule
-			prule->pixelPtr = pbm;
-			prule->parm0 = ID_wxBitmap;
-			prule->parm1 = m_colortable_index;
-		}
-	} // instantiation
-
-	//        Get the bounding box for the to-be-drawn symbol
-	int b_width, b_height;
-
-	if( !m_pdc ) // opengl
-	{
-		b_width = prule->parm2;
-		b_height = prule->parm3;
-	} else {
-		b_width = ( (wxBitmap *) ( prule->pixelPtr ) )->GetWidth();
-		b_height = ( (wxBitmap *) ( prule->pixelPtr ) )->GetHeight();
-	}
-
-	wxBoundingBox symbox;
-	double plat, plon;
-
-	rzRules->chart->GetPixPoint( r.x - pivot_x, r.y - pivot_y + b_height, &plat,
-			&plon, vp );
-	symbox.SetMin( plon, plat );
-
-	rzRules->chart->GetPixPoint( r.x - pivot_x + b_width, r.y - pivot_y, &plat,
-			&plon, vp );
-	symbox.SetMax( plon, plat );
-
-	//  Special case for GEO_AREA objects with centred symbols
-	if( rzRules->obj->Primitive_type == GEO_AREA ) {
-		if( rzRules->obj->BBObj.Intersect( symbox, 0 ) != _IN ) // Symbol is wholly outside base object
-		return true;
-	}
-
-	//      Now render the symbol
-
-	if( !m_pdc ) // opengl
-	{
-		glColor4f( 1, 1, 1, 1 );
-
-		glEnable( GL_BLEND );
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-		glRasterPos2i( r.x - pivot_x, r.y - pivot_y );
-		glPixelZoom( 1, -1 );
-		glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE,
-				prule->pixelPtr );
-		glPixelZoom( 1, 1 );
-		glDisable( GL_BLEND );
-
-	} else {
-		//      Get the bitmap into a memory dc
-		wxMemoryDC mdc;
-
-		mdc.SelectObject(
-				(wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) ) );
-
-		//      Blit it into the target dc
-		m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0,
-				0, wxCOPY, true );
-
-		mdc.SelectObject( wxNullBitmap );
-	}
-
-	//  Update the object Bounding box
-	//  so that subsequent drawing operations will redraw the item fully
-	//  We expand the object's BBox to account for objects rendered by multiple symbols, such as SOUNGD.
-	//  so that expansions are cumulative.
-	if( rzRules->obj->Primitive_type == GEO_POINT ) {
-		if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-		else {
-			rzRules->obj->BBObj = symbox;
-			rzRules->obj->bBBObj_valid = true;
-		}
-	}
-
-	return true;
->>>>>>> e8647a8... Chartsymbols:src/s52plib.cpp
-#endif
 }
 
 // SYmbol
@@ -6097,7 +5995,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
 				|| ( rules->razRule->parm1 != m_colortable_index )
 				|| ( rules->razRule->parm0 != ID_GL_PATT_SPEC ) ) {
 			render_canvas_parms *patt_spec = CreatePatternBufferSpec( rzRules,
-					rules, vp, 32, true );
+					rules, vp, false, true );
 
 			ClearRulesCache( rules->razRule ); //  Clear out any existing cached symbology
 
@@ -6275,7 +6173,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
 	return 1;
 
 }
-render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, int bpp, bool b_pot)
+render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot)
 {
       wxImage Image;
 
@@ -6397,7 +6295,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rule
             patt_spec->h_pot = sizey;
       }
 
-      patt_spec->depth = 32;//bpp;                              // set the depth
+      patt_spec->depth = 32;             // set the depth, always 32 bit
 
       patt_spec->pb_pitch = ( ( patt_spec->w_pot * patt_spec->depth / 8 ) );
       patt_spec->lclip = 0;
@@ -6419,54 +6317,6 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rule
       if( Image.HasAlpha() ) imgAlpha = Image.GetAlpha();
       unsigned char *ps;
 
-/*
-      if ( bpp == 24 )
-      {
-            unsigned char mr =  m_unused_wxColor.Red();
-            unsigned char mg =  m_unused_wxColor.Green();
-            unsigned char mb =  m_unused_wxColor.Blue();
-
-            for ( int iy = 0 ; iy < sizey ; iy++ )
-            {
-                  pd = pd0 + ( iy * patt_spec->pb_pitch );
-                  ps = ps0 + ( iy * sizex * 3 );
-                  for ( int ix = 0 ; ix<sizex ; ix++ )
-                  {
-#ifdef ocpnUSE_ocpnBitmap
-                        unsigned char c1 = *ps++;
-                        unsigned char c2 = *ps++;
-                        unsigned char c3 = *ps++;
-
-                        *pd++ = c3;
-                        *pd++ = c2;
-                        *pd++ = c1;
-#else
-                        if( Image.HasAlpha() ) {
-                              unsigned char alpha = *imgAlpha++;
-                              if(alpha > 128){
-                                    *pd++ = *ps++;
-                                    *pd++ = *ps++;
-                                    *pd++ = *ps++;
-                              }
-                              else{
-                                    *pd++ = mr;
-                                    *pd++ = mg;
-                                    *pd++ = mb;
-                                    ps += 3;
-                              }
-                        }
-                        else {
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-                              *pd++ = *ps++;
-                        }
-#endif
-                  }
-            }
-      }
-
-      else if ( bpp == 32 )       // was pb_spec->depth
-  */
       {
             unsigned char mr =  m_unused_wxColor.Red();
             unsigned char mg =  m_unused_wxColor.Green();
@@ -6484,9 +6334,17 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules, Rule
                               unsigned char g = *ps++;
                               unsigned char b = *ps++;
 #ifdef ocpnUSE_ocpnBitmap
-                              *pd++ = b;
-                              *pd++ = g;
-                              *pd++ = r;
+                              if(b_revrgb) {
+                                    *pd++ = b;
+                                    *pd++ = g;
+                                    *pd++ = r;
+                              }
+                              else {
+                                    *pd++ = r;
+                                    *pd++ = g;
+                                    *pd++ = b;
+                              }
+
 #else
                               *pd++ = r;
                               *pd++ = g;
@@ -6518,7 +6376,7 @@ int s52plib::RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
 			|| ( rules->razRule->parm1 != m_colortable_index )
 			|| ( rules->razRule->parm0 != ID_RGB_PATT_SPEC ) ) {
 		render_canvas_parms *patt_spec = CreatePatternBufferSpec( rzRules,
-				rules, vp, BPP );
+				rules, vp, true );
 
 		ClearRulesCache( rules->razRule ); //  Clear out any existing cached symbology
 

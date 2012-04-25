@@ -301,7 +301,7 @@ private:
 	void UpdateOBJLArray( S57Obj *obj );
 
 	render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
-			Rules *rules, ViewPort *vp, int bpp, bool b_pot = false );
+			Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 
 	void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
 			S52color *c, wxBoundingBox &BBView, render_canvas_parms *pb_spec,
