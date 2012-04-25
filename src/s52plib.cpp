@@ -2913,9 +2913,28 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
 	} else // OpenGL mode
 	{
 		glPushAttrib(
-				GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_ENABLE_BIT ); //Save state
+				GL_COLOR_BUFFER_BIT |
+                        GL_LINE_BIT |
+                        GL_HINT_BIT |
+                        GL_ENABLE_BIT ); //Save state
+
 		glColor3ub( c->R, c->G, c->B );
-		glLineWidth( (float)w/2.0 );
+
+            glDisable(GL_LINE_SMOOTH);
+            glDisable(GL_BLEND);
+
+            //    Set drawing width
+            if(w > 1)
+            {
+                  GLint parms[2];
+                  glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+                  if(w > parms[1])
+                        glLineWidth(parms[1]);
+                  else
+                        glLineWidth(w);
+            }
+            else
+                  glLineWidth(1);
 
 		if( !strncmp( str, "DASH", 4 ) ) {
 			glLineStipple( 1, 0x3F3F );
@@ -3544,8 +3563,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 							GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT ); //Save state
 
 					//      Enable anti-aliased lines, at best quality
-					glEnable( GL_LINE_SMOOTH );
-					glEnable( GL_BLEND );
+//					glEnable( GL_LINE_SMOOTH );
+//					glEnable( GL_BLEND );
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
@@ -3585,8 +3604,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 							GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT ); //Save state
 
 					//      Enable anti-aliased lines, at best quality
-					glEnable( GL_LINE_SMOOTH );
-					glEnable( GL_BLEND );
+//					glEnable( GL_LINE_SMOOTH );
+//					glEnable( GL_BLEND );
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
