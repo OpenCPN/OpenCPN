@@ -35739,7 +35739,7 @@
 		<symbol RCID="3189">
 			<name>PRCARE12</name>
 			<description>point symbol for traffic precautionary area</description>
-			<bitmap width="12" height="16">
+			<bitmap width="16" height="16">
 				<distance min="0" max="0" />
 				<pivot x="5" y="9" />
 				<origin x="0" y="0" />
@@ -36834,9 +36834,9 @@
 		<symbol RCID="1595">
 			<name>TOPMAR02</name>
 			<description>topmark for buoys, cone point up, paper-chart</description>
-			<bitmap width="7" height="6">
+			<bitmap width="8" height="6">
 				<distance min="0" max="0" />
-				<pivot x="0" y="24" />
+				<pivot x="1" y="24" />
 				<origin x="0" y="0" />
 				<graphics-location x="1378" y="239" />
 			</bitmap>
@@ -36912,7 +36912,7 @@
 			<description>topmark for buoys, 2 cones base to base, paper-chart</description>
 			<bitmap width="8" height="13">
 				<distance min="0" max="0" />
-				<pivot x="-1" y="30" />
+				<pivot x="0" y="30" />
 				<origin x="0" y="0" />
 				<graphics-location x="1452" y="239" />
 			</bitmap>
@@ -36931,7 +36931,7 @@
 			<description>topmark for buoys, 2 cones point to point, paper-chart</description>
 			<bitmap width="11" height="12">
 				<distance min="0" max="0" />
-				<pivot x="0" y="28" />
+				<pivot x="1" y="28" />
 				<origin x="0" y="0" />
 				<graphics-location x="10" y="307" />
 			</bitmap>
@@ -36950,7 +36950,7 @@
 			<description>topmark for buoys, sphere, paper-chart</description>
 			<bitmap width="7" height="7">
 				<distance min="0" max="0" />
-				<pivot x="-1" y="27" />
+				<pivot x="-1" y="25" />
 				<origin x="0" y="0" />
 				<graphics-location x="31" y="307" />
 			</bitmap>
@@ -36988,7 +36988,7 @@
 			<description>topmark for buoys, cylinder, paper-chart</description>
 			<bitmap width="7" height="8">
 				<distance min="0" max="0" />
-				<pivot x="-1" y="27" />
+				<pivot x="0" y="25" />
 				<origin x="0" y="0" />
 				<graphics-location x="66" y="307" />
 			</bitmap>
@@ -37197,7 +37197,7 @@
 			<description>topmark for beacons, sphere, paper-chart</description>
 			<bitmap width="8" height="8">
 				<distance min="0" max="0" />
-				<pivot x="4" y="27" />
+				<pivot x="4" y="25" />
 				<origin x="0" y="0" />
 				<graphics-location x="272" y="307" />
 			</bitmap>
@@ -37235,7 +37235,7 @@
 			<description>topmark for beacons, cylinder, paper-chart</description>
 			<bitmap width="6" height="9">
 				<distance min="0" max="0" />
-				<pivot x="2" y="29" />
+				<pivot x="2" y="27" />
 				<origin x="0" y="0" />
 				<graphics-location x="308" y="307" />
 			</bitmap>
@@ -44013,7 +44013,7 @@
 		</symbol>
 
 		<symbol RCID="327">
-			<name>TOPMAR23</name>
+			<name>23</name>
 			<description>topmark for beacons, cone point up, yellow, filled, full-chart</description>
 			<bitmap width="9" height="6">
 				<distance min="0" max="0" />
@@ -44487,7 +44487,7 @@
 				<distance min="0" max="0" />
 				<pivot x="5" y="15" />
 				<origin x="0" y="0" />
-				<graphics-location x="427" y="778" />
+				<graphics-location x="426" y="778" />
 			</bitmap>
 			<color-ref>ADEPMDBCHBLK</color-ref>
 			<definition>R</definition>
@@ -46569,7 +46569,7 @@
 			<description>beacon top mark, red boarded square board, vertical</description>
 			<bitmap width="15" height="15">
 				<distance min="0" max="0" />
-				<pivot x="7" y="26" />
+				<pivot x="6" y="27" />
 				<origin x="0" y="0" />
 				<graphics-location x="176" y="902" />
 			</bitmap>
