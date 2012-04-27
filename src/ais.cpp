@@ -1296,7 +1296,7 @@ int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag)
 int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 {
     //char temp_str[85];
-    char *temp_str = new char[max_len];
+    char *temp_str = new char[max_len + 1];
 
     char acc = 0;
     int s0p = sp-1;                          // to zero base
