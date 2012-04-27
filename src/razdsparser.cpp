@@ -471,7 +471,7 @@ int RazdsParser::LoadFile( s52plib* plibArg, const wxString& PLib ) {
 
 	if( fp == NULL ) {
             wxString msg;
-            msg =  _("   S52PLIB: Cannot open S52 rules file: ");
+            msg =  _T("   S52PLIB: Cannot open S52 rules file: ");
             msg += PLib;
             wxLogMessage(msg);
 		return 0;

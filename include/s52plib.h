@@ -132,6 +132,8 @@ extern void txfRenderFancyString( TexFont * txf, char *string, int len );
 
 #endif /* __TEXFONT_H__ */
 
+class RenderFromHPGL;
+
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
@@ -143,6 +145,9 @@ public:
 
 	void SetPPMM( float ppmm ) {
 		canvas_pix_per_mm = ppmm;
+	}
+	float GetPPMM() {
+		return canvas_pix_per_mm;
 	}
 	LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
 			S57Obj *pObj, bool bStrict = 0 );
@@ -311,10 +316,6 @@ private:
 			int npt, float sym_len, float sym_factor, Rule *draw_rule,
 			ViewPort *vp );
 
-	bool RenderHPGLtoDC( char *str, char *col, wxDC *pdc, wxPoint &r,
-			wxPoint &pivot, double rot_angle = 0 );
-	bool RenderHPGLtoGL( char *str, char *col, wxPoint &r, wxPoint &pivot,
-			double rot_angle );
 	bool RenderHPGL( ObjRazRules *rzRules, Rule * rule_in, wxPoint &r,
 			ViewPort *vp, float rot_angle = 0. );
 	bool RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
@@ -386,6 +387,49 @@ private:
 	int m_txf_avg_char_width;
 	int m_txf_avg_char_height;
 	CARC_Hash m_CARC_hashmap;
+	RenderFromHPGL* HPGL;
+};
+
+
+#define HPGL_FILLED true
+
+class RenderFromHPGL {
+public:
+	RenderFromHPGL( s52plib* plibarg );
+
+	void SetTargetDC( wxDC* pdc );
+	void SetTargetOpenGl();
+	void SetTargetGCDC( wxGCDC* gdc );
+	bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
+
+private:
+	const char* findColorNameInRef( char colorCode, char* col );
+	void RotatePoint( wxPoint& point, double angle );
+	wxPoint ParsePoint( wxString& argument );
+	void SetPen();
+	void Line( wxPoint from, wxPoint to );
+	void Circle( wxPoint center, int radius, bool filled = false );
+	void Polygon();
+
+	s52plib* plib;
+	int scaleFactor;
+
+	wxDC* targetDC;
+	wxGCDC* targetGCDC;
+
+	wxColor penColor;
+	wxPen* pen;
+	wxColor brushColor;
+	wxBrush* brush;
+	long penWidth;
+
+	int noPoints;
+	wxPoint polygon[100];
+
+	bool renderToDC;
+	bool renderToOpenGl;
+	bool renderToGCDC;
+	bool havePushedOpenGlAttrib;
 };
 
 #endif //_S52PLIB_H_

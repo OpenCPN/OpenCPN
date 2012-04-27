@@ -64,7 +64,7 @@ ChartSymbols::ChartSymbols( void ) {
 ChartSymbols::~ChartSymbols( void ) {}
 
 #define GET_INT_PROPERTY_VALUE( node, name, target )  \
-	propVal = node->GetPropVal( _(name), _("0")); \
+	propVal = node->GetPropVal( _T(name), _T("0")); \
 	propVal.ToLong( &numVal, 0 ); \
 	target = numVal;
 
@@ -74,7 +74,7 @@ void ChartSymbols::ProcessColorTables( wxXmlNode* colortableNodes ) {
 
 	while(tableNode) {
 		colTable *colortable = new colTable;
-		colortable->tableName = new wxString( tableNode->GetPropVal( _("name"), _("<void>")));
+		colortable->tableName = new wxString( tableNode->GetPropVal( _T("name"), _T("<void>")));
 
 		wxXmlNode* colorNode = tableNode->GetChildren();
 
@@ -83,8 +83,8 @@ void ChartSymbols::ProcessColorTables( wxXmlNode* colortableNodes ) {
 			wxString propVal;
 			long numVal;
 
-			if( colorNode->GetName() == _("graphics-file") ) {
-				colortable->rasterFileName = colorNode->GetPropVal( _("name"), _("<void>") );
+			if( colorNode->GetName() == _T("graphics-file") ) {
+				colortable->rasterFileName = colorNode->GetPropVal( _T("name"), _T("<void>") );
 				goto next;
 			}
 			else {
@@ -92,7 +92,7 @@ void ChartSymbols::ProcessColorTables( wxXmlNode* colortableNodes ) {
 				GET_INT_PROPERTY_VALUE( colorNode, "g", color.G )
 				GET_INT_PROPERTY_VALUE( colorNode, "b", color.B )
 
-				wxString key = colorNode->GetPropVal( _("name"), _("<N/A>"));
+				wxString key = colorNode->GetPropVal( _T("name"), _T("<N/A>"));
 				strncpy( color.colName, key.char_str(), 5 );
 				color.colName[5] = 0;
 
@@ -121,69 +121,69 @@ void ChartSymbols::ProcessLookups( wxXmlNode* lookupNodes ) {
 
 		GET_INT_PROPERTY_VALUE( lookupNode, "id", lookup.id )
 		GET_INT_PROPERTY_VALUE( lookupNode, "RCID", lookup.RCID )
-		lookup.name = lookupNode->GetPropVal( _("name"), _("<void>"));
+		lookup.name = lookupNode->GetPropVal( _T("name"), _T("<void>"));
 		lookup.attributeCodeArray = NULL;
 
 		wxXmlNode* subNodes = lookupNode->GetChildren();
 
 		while( subNodes ) {
-			if( subNodes->GetName() == _("type")) {
+			if( subNodes->GetName() == _T("type")) {
 				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _("Area") ) lookup.type = AREAS_T;
-				else if( typeStr == _("Line") ) lookup.type = LINES_T;
+				if( typeStr == _T("Area") ) lookup.type = AREAS_T;
+				else if( typeStr == _T("Line") ) lookup.type = LINES_T;
 				else lookup.type = POINT_T;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("disp-prio")) {
+			if( subNodes->GetName() == _T("disp-prio")) {
 				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
-				else if( typeStr == _("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
-				else if( typeStr == _("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
-				else if( typeStr == _("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
-				else if( typeStr == _("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
-				else if( typeStr == _("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
-				else if( typeStr == _("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
-				else if( typeStr == _("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
+				if( typeStr == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
+				else if( typeStr == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
+				else if( typeStr == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
+				else if( typeStr == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
+				else if( typeStr == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
+				else if( typeStr == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
+				else if( typeStr == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
+				else if( typeStr == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
 				else lookup.displayPrio = PRIO_MARINERS;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("radar-prio")) {
+			if( subNodes->GetName() == _T("radar-prio")) {
 				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _("On Top") ) lookup.radarPrio = RAD_OVER;
+				if( typeStr == _T("On Top") ) lookup.radarPrio = RAD_OVER;
 				else lookup.radarPrio = RAD_SUPP;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("table-name")) {
+			if( subNodes->GetName() == _T("table-name")) {
 				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _("Simplified") ) lookup.tableName = SIMPLIFIED;
-				else if( typeStr == _("Lines") ) lookup.tableName = LINES;
-				else if( typeStr == _("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
-				else if( typeStr == _("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
+				if( typeStr == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
+				else if( typeStr == _T("Lines") ) lookup.tableName = LINES;
+				else if( typeStr == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
+				else if( typeStr == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
 				else lookup.tableName = PAPER_CHART;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("display-cat")) {
+			if( subNodes->GetName() == _T("display-cat")) {
 				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _("Displaybase") ) lookup.displayCat = DISPLAYBASE;
-				else if( typeStr == _("Standard") ) lookup.displayCat = STANDARD;
-				else if( typeStr == _("Other") ) lookup.displayCat = OTHER;
-				else if( typeStr == _("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
+				if( typeStr == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
+				else if( typeStr == _T("Standard") ) lookup.displayCat = STANDARD;
+				else if( typeStr == _T("Other") ) lookup.displayCat = OTHER;
+				else if( typeStr == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
 				else lookup.displayCat = OTHER;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("comment")) {
+			if( subNodes->GetName() == _T("comment")) {
 				wxString comment = subNodes->GetNodeContent();
 				long value;
 				comment.ToLong( &value, 0 );
 				lookup.comment = value;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("instruction")) {
+			if( subNodes->GetName() == _T("instruction")) {
 				lookup.instruction = subNodes->GetNodeContent();
 				lookup.instruction.Append( '\037' );
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("attrib-code")) {
+			if( subNodes->GetName() == _T("attrib-code")) {
 				if( ! lookup.attributeCodeArray ) lookup.attributeCodeArray = new wxArrayString();
 				lookup.attributeCodeArray->Add( subNodes->GetNodeContent() );
 				goto nextNode;
@@ -246,17 +246,17 @@ void ChartSymbols::ProcessVectorTag( wxXmlNode* vectorNode, SymbolSizeInfo_t &ve
 	GET_INT_PROPERTY_VALUE( vectorNode, "height", vectorSize.size.y )
 	wxXmlNode* vectorNodes = vectorNode->GetChildren();
 	while( vectorNodes ) {
-		if( vectorNodes->GetName() == _("distance")) {
+		if( vectorNodes->GetName() == _T("distance")) {
 			GET_INT_PROPERTY_VALUE( vectorNodes, "min", vectorSize.minDistance )
 			GET_INT_PROPERTY_VALUE( vectorNodes, "max", vectorSize.maxDistance )
 			goto nextVector;
 		}
-		if( vectorNodes->GetName() == _("origin")) {
+		if( vectorNodes->GetName() == _T("origin")) {
 			GET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.origin.x )
 			GET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.origin.y )
 			goto nextVector;
 		}
-		if( vectorNodes->GetName() == _("pivot")) {
+		if( vectorNodes->GetName() == _T("pivot")) {
 			GET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.pivot.x )
 			GET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.pivot.y )
 			goto nextVector;
@@ -278,23 +278,23 @@ void ChartSymbols::ProcessLinestyles( wxXmlNode* linestyleNodes ) {
 		wxXmlNode* subNodes = lineStyleNode->GetChildren();
 
 		while( subNodes ) {
-			if( subNodes->GetName() == _("description")) {
+			if( subNodes->GetName() == _T("description")) {
 				lineStyle.description = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("name")) {
+			if( subNodes->GetName() == _T("name")) {
 				lineStyle.name = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("color-ref")) {
+			if( subNodes->GetName() == _T("color-ref")) {
 				lineStyle.colorRef = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("HPGL")) {
+			if( subNodes->GetName() == _T("HPGL")) {
 				lineStyle.HPGL = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("vector")) {
+			if( subNodes->GetName() == _T("vector")) {
 				ProcessVectorTag( subNodes, lineStyle.vectorSize );
 			}
 			nextNode: subNodes = subNodes->GetNext();
@@ -358,57 +358,57 @@ void ChartSymbols::ProcessPatterns( wxXmlNode* patternNodes ) {
 		wxXmlNode* subNodes = patternNode->GetChildren();
 
 		while( subNodes ) {
-			if( subNodes->GetName() == _("description")) {
+			if( subNodes->GetName() == _T("description")) {
 				pattern.description = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("name")) {
+			if( subNodes->GetName() == _T("name")) {
 				pattern.name = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("filltype")) {
+			if( subNodes->GetName() == _T("filltype")) {
 				pattern.fillType = *subNodes->GetNodeContent().c_str();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("spacing")) {
+			if( subNodes->GetName() == _T("spacing")) {
 				pattern.spacing = *subNodes->GetNodeContent().c_str();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("color-ref")) {
+			if( subNodes->GetName() == _T("color-ref")) {
 				pattern.colorRef = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("definition")) {
-				if( subNodes->GetNodeContent() == _("V") ) pattern.hasVector = true;
+			if( subNodes->GetName() == _T("definition")) {
+				if( subNodes->GetNodeContent() == _T("V") ) pattern.hasVector = true;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("prefer-bitmap")) {
-				if( subNodes->GetNodeContent().Lower() == _("no") ) pattern.preferBitmap = false;
-				if( subNodes->GetNodeContent().Lower() == _("false") ) pattern.preferBitmap = false;
+			if( subNodes->GetName() == _T("prefer-bitmap")) {
+				if( subNodes->GetNodeContent().Lower() == _T("no") ) pattern.preferBitmap = false;
+				if( subNodes->GetNodeContent().Lower() == _T("false") ) pattern.preferBitmap = false;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("bitmap")) {
+			if( subNodes->GetName() == _T("bitmap")) {
 				GET_INT_PROPERTY_VALUE( subNodes, "width", pattern.bitmapSize.size.x )
 				GET_INT_PROPERTY_VALUE( subNodes, "height", pattern.bitmapSize.size.y )
 				pattern.hasBitmap = true;
 				wxXmlNode* bitmapNodes = subNodes->GetChildren();
 				while( bitmapNodes ) {
-					if( bitmapNodes->GetName() == _("distance")) {
+					if( bitmapNodes->GetName() == _T("distance")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "min", pattern.bitmapSize.minDistance )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "max", pattern.bitmapSize.maxDistance )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("origin")) {
+					if( bitmapNodes->GetName() == _T("origin")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.origin.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.origin.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("pivot")) {
+					if( bitmapNodes->GetName() == _T("pivot")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.pivot.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.pivot.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("graphics-location")) {
+					if( bitmapNodes->GetName() == _T("graphics-location")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.graphics.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.graphics.y )
 					}
@@ -416,12 +416,12 @@ void ChartSymbols::ProcessPatterns( wxXmlNode* patternNodes ) {
 				}
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("HPGL")) {
+			if( subNodes->GetName() == _T("HPGL")) {
 				pattern.hasVector = true;
 				pattern.HPGL = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("vector")) {
+			if( subNodes->GetName() == _T("vector")) {
 				ProcessVectorTag( subNodes, pattern.vectorSize );
 			}
 			nextNode: subNodes = subNodes->GetNext();
@@ -516,53 +516,53 @@ void ChartSymbols::ProcessSymbols( wxXmlNode* symbolNodes ) {
 		wxXmlNode* subNodes = symbolNode->GetChildren();
 
 		while( subNodes ) {
-			if( subNodes->GetName() == _("description")) {
+			if( subNodes->GetName() == _T("description")) {
 				symbol.description = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("name")) {
+			if( subNodes->GetName() == _T("name")) {
 				symbol.name = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("color-ref")) {
+			if( subNodes->GetName() == _T("color-ref")) {
 				symbol.colorRef = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("definition")) {
-				if( subNodes->GetNodeContent() == _("V") ) symbol.hasVector = true;
+			if( subNodes->GetName() == _T("definition")) {
+				if( subNodes->GetNodeContent() == _T("V") ) symbol.hasVector = true;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("HPGL")) {
+			if( subNodes->GetName() == _T("HPGL")) {
 				symbol.HPGL = subNodes->GetNodeContent();
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("prefer-bitmap")) {
-				if( subNodes->GetNodeContent().Lower() == _("no") ) symbol.preferBitmap = false;
-				if( subNodes->GetNodeContent().Lower() == _("false") ) symbol.preferBitmap = false;
+			if( subNodes->GetName() == _T("prefer-bitmap")) {
+				if( subNodes->GetNodeContent().Lower() == _T("no") ) symbol.preferBitmap = false;
+				if( subNodes->GetNodeContent().Lower() == _T("false") ) symbol.preferBitmap = false;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("bitmap")) {
+			if( subNodes->GetName() == _T("bitmap")) {
 				GET_INT_PROPERTY_VALUE( subNodes, "width", symbol.bitmapSize.size.x )
 				GET_INT_PROPERTY_VALUE( subNodes, "height", symbol.bitmapSize.size.y )
 				symbol.hasBitmap = true;
 				wxXmlNode* bitmapNodes = subNodes->GetChildren();
 				while( bitmapNodes ) {
-					if( bitmapNodes->GetName() == _("distance")) {
+					if( bitmapNodes->GetName() == _T("distance")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "min", symbol.bitmapSize.minDistance )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "max", symbol.bitmapSize.maxDistance )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("origin")) {
+					if( bitmapNodes->GetName() == _T("origin")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.origin.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.origin.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("pivot")) {
+					if( bitmapNodes->GetName() == _T("pivot")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.pivot.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.pivot.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _("graphics-location")) {
+					if( bitmapNodes->GetName() == _T("graphics-location")) {
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.graphics.x )
 						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.graphics.y )
 					}
@@ -570,28 +570,28 @@ void ChartSymbols::ProcessSymbols( wxXmlNode* symbolNodes ) {
 				}
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _("vector")) {
+			if( subNodes->GetName() == _T("vector")) {
 				GET_INT_PROPERTY_VALUE( subNodes, "width", symbol.vectorSize.size.x )
 				GET_INT_PROPERTY_VALUE( subNodes, "height", symbol.vectorSize.size.y )
 				symbol.hasVector = true;
 				wxXmlNode* vectorNodes = subNodes->GetChildren();
 				while( vectorNodes ) {
-					if( vectorNodes->GetName() == _("distance")) {
+					if( vectorNodes->GetName() == _T("distance")) {
 						GET_INT_PROPERTY_VALUE( vectorNodes, "min", symbol.vectorSize.minDistance )
 						GET_INT_PROPERTY_VALUE( vectorNodes, "max", symbol.vectorSize.maxDistance )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _("origin")) {
+					if( vectorNodes->GetName() == _T("origin")) {
 						GET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.origin.x )
 						GET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.origin.y )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _("pivot")) {
+					if( vectorNodes->GetName() == _T("pivot")) {
 						GET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.pivot.x )
 						GET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.pivot.y )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _("HPGL")) {
+					if( vectorNodes->GetName() == _T("HPGL")) {
 						symbol.HPGL = vectorNodes->GetNodeContent();
 					}
 					nextVector: vectorNodes = vectorNodes->GetNext();
@@ -668,47 +668,46 @@ bool ChartSymbols::LoadConfigFile( s52plib* plibArg, wxString s52ilePath ) {
 	// Files in CWD takes precedence.
 
 	wxString name, extension;
-	wxString xmlFileName = _("chartsymbols.xml");
+	wxString xmlFileName = _T("chartsymbols.xml");
 
 	wxFileName::SplitPath( s52ilePath, &configFileDirectory, &name, &extension );
 	wxString fullFilePath = configFileDirectory + wxFileName::GetPathSeparator() + xmlFileName;
 
-	if( ! wxFileName::FileExists(fullFilePath) ) {
-            wxString msg( _("ChartSymbols ConfigFile not found: "));
-            msg += fullFilePath;
-		wxLogMessage( msg );
+    if( wxFileName::FileExists( xmlFileName ) ) {
+        fullFilePath = xmlFileName;
+        configFileDirectory = _T(".");
+    }
 
-            if( wxFileName::FileExists( xmlFileName ) ) {
-                  fullFilePath = xmlFileName;
-                  configFileDirectory = _T(".");
-            }
-            else
-                  return false;
+	if( ! wxFileName::FileExists(fullFilePath) ) {
+        wxString msg( _T("ChartSymbols ConfigFile not found: "));
+        msg += fullFilePath;
+		wxLogMessage( msg );
+        return false;
 	}
 
 	if( ! doc.Load( fullFilePath ) ) {
-            wxString msg( _("    ChartSymbols ConfigFile Failed to load "));
-            msg += fullFilePath;
-            wxLogMessage( msg );
+        wxString msg( _T("    ChartSymbols ConfigFile Failed to load "));
+        msg += fullFilePath;
+        wxLogMessage( msg );
 		return false;
 	}
 
-      wxString msg( _("ChartSymbols loaded from "));
+      wxString msg( _T("ChartSymbols loaded from "));
       msg += fullFilePath;
 	wxLogMessage( msg );
 
-	if( doc.GetRoot()->GetName() != _("chartsymbols") ) {
-		wxLogMessage( _("    ChartSymbols::LoadConfigFile(): Expected XML Root <chartsymbols> not found.") );
+	if( doc.GetRoot()->GetName() != _T("chartsymbols") ) {
+		wxLogMessage( _T("    ChartSymbols::LoadConfigFile(): Expected XML Root <chartsymbols> not found.") );
 		return false;
 	}
 
 	wxXmlNode *child = doc.GetRoot()->GetChildren();
 	while( child ) {
-		if ( child->GetName() == _("color-tables") ) ProcessColorTables( child );
-		if ( child->GetName() == _("lookups") ) ProcessLookups( child );
-		if ( child->GetName() == _("line-styles") ) ProcessLinestyles( child );
-		if ( child->GetName() == _("patterns") ) ProcessPatterns( child );
-		if ( child->GetName() == _("symbols") ) ProcessSymbols( child );
+		if ( child->GetName() == _T("color-tables") ) ProcessColorTables( child );
+		if ( child->GetName() == _T("lookups") ) ProcessLookups( child );
+		if ( child->GetName() == _T("line-styles") ) ProcessLinestyles( child );
+		if ( child->GetName() == _T("patterns") ) ProcessPatterns( child );
+		if ( child->GetName() == _T("symbols") ) ProcessSymbols( child );
 
 		child = child->GetNext();
 	}
@@ -731,7 +730,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo ) {
 		return true;
 	}
 
-      wxString msg( _("ChartSymbols...Failed to load raster symbols file "));
+      wxString msg( _T("ChartSymbols...Failed to load raster symbols file "));
       msg += filename;
 	wxLogMessage( msg );
 	return false;
