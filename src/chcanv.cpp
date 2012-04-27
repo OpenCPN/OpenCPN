@@ -10078,13 +10078,25 @@ void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
       if((lata == latb) && (lona ==  lonb))               // special optimization
             brg = 90.;
 
+      wxString s0;
       wxString s;
-      if ( dist > 0.1 )
-            s.Printf(_T("%03d Deg %6.2f NMi"), (int)brg, dist);
-      else
-            s.Printf(_T("%03d Deg %4.1f (m)"), (int)brg, dist*1852.); //pjotrc 2010.02.16
+      s.Printf(_T("%03d "), (int)brg);
+      s0 = s;
+      s0 += _("Deg");
 
-      s.Prepend(prefix);
+      if ( dist > 0.1 ){
+            s.Printf(_T(" %6.2f "), dist);
+            s0 += s;
+            s = _("NMi");
+            s0 += s;
+      }
+      else {
+            s.Printf(_T(" %4.1f "), dist*1852.); //pjotrc 2010.02.16
+            s0 += s;
+            s = _("(m)");
+            s0 += s;
+      }
+      s0.Prepend(prefix);
 
       wxFont *dFont = pFontMgr->GetFont(_("RouteLegInfoRollover"), 12);
       dc.SetFont(*dFont);
@@ -10092,7 +10104,7 @@ void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
       int w, h;
       int xp, yp;
       int hilite_offset = 3;
-      dc.GetTextExtent(s, &w, &h);
+      dc.GetTextExtent(s0, &w, &h);
 
       xp = ref_point.x  - w;
       yp = ref_point.y  ;
@@ -10101,7 +10113,7 @@ void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
       AlphaBlending ( dc, xp, yp, w, h, GetGlobalColor ( _T ( "YELO1" ) ), 172 );
 
       dc.SetPen ( wxPen ( GetGlobalColor ( _T ( "UBLCK" ) ) ) );
-      dc.DrawText(s, xp, yp);
+      dc.DrawText(s0, xp, yp);
 }
 
 void RenderExtraRouteLegInfo(ocpnDC &dc, wxPoint ref_point, wxString s)
@@ -10150,9 +10162,13 @@ void ChartCanvas::RenderRouteLegs ( ocpnDC &dc )
               DistanceBearingMercator(m_prev_rlat, m_prev_rlon,
                        m_cursor_lat, m_cursor_lon, &brg, &dist);
 
+              wxString s0(_("Route Distance: "));
               wxString s;
-              s.Printf(_T("Route Distance: %6.2f NMi"), m_pMeasureRoute->m_route_length + dist);
-              RenderExtraRouteLegInfo(dc, r_rband, s);
+              s.Printf(_T("%6.2f "), m_pMeasureRoute->m_route_length + dist);
+              s0 += s;
+              s = _("NMi");
+              s0 += s;
+              RenderExtraRouteLegInfo(dc, r_rband, s0);
         }
 }
 
