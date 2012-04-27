@@ -275,7 +275,6 @@ private:
     int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDialog *pprog, wxString& dir_magic, bool bForce);
     bool DetectDirChange(wxString dir_path, wxString magic, wxString &new_magic, wxProgressDialog *pprog);
 
-    wxString Get_CM93_FileName(wxString dir_name);
     bool Check_CM93_Structure(wxString dir_name);
 
     bool          bValid;
@@ -286,7 +285,6 @@ private:
     ChartTableEntry           m_ChartTableEntryDummy;   // used for return value if database is not valid
     wxString      m_DBFileName;
 
-    wxArrayString m_cm93_filename_array;
 };
 
 

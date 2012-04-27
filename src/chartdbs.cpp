@@ -1014,9 +1014,6 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog 
 
       }
 
-      // Clear the cm93 file name array
-      m_cm93_filename_array.Clear();
-
     //  Get the new charts
 
       for(unsigned int j=0 ; j<dir_array.GetCount() ; j++)
@@ -1336,6 +1333,8 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name)
       return false;
 }
 
+
+/*
 //-----------------------------------------------------------------------------
 // Validate a given directory as a cm93 root database
 // If it appears to be a cm93 database, then return the name of an existing cell file
@@ -1433,7 +1432,7 @@ wxString ChartDatabase::Get_CM93_FileName(wxString dir_name)
 
       return filespec;
 }
-
+*/
 
 
 
@@ -1470,30 +1469,39 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       //    If this directory seems to be a cm93, and we are not explicitely looking for cm93, then abort
       //    Otherwise, we will be looking thru entire cm93 tree for non-existent .KAP files, etc.
 
+      bool b_found_cm93 = false;
       bool b_cm93 = Check_CM93_Structure(dir_name);
       if(b_cm93)
       {
             if (filespec != _T("00300000.A"))
                   return false;
-            else
-                  filespec = Get_CM93_FileName(dir_name);;
+            else {
+                  filespec = dir_name;
+                  b_found_cm93 = true;
+            }
       }
 
 
-      wxDir dir(dir_name);
-      dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
-#ifndef __WXMSW__
-      if (filespec != lowerFileSpec)
+      if(!b_found_cm93)
       {
-          // add lowercase filespec files too
-          wxArrayString lowerFileList;
-          dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
-          for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
-              FileList.Add(*item);
-      }
+            wxDir dir(dir_name);
+            dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
+#ifndef __WXMSW__
+            if (filespec != lowerFileSpec)
+            {
+            // add lowercase filespec files too
+            wxArrayString lowerFileList;
+            dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
+            for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
+                  FileList.Add(*item);
+            }
 #endif
+      }
+      else
+            FileList .Add(dir_name);
 
       int nFile = FileList.GetCount();
+
 
       if(!nFile)
             return false;
@@ -1520,7 +1528,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
             //    Validate the file name again, considering MSW's semi-random treatment of case....
             // TODO...something fishy here - may need to normalize saved name?
-            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec))
+            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) && !b_found_cm93)
                 continue;
 
             if(pprog)

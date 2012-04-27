@@ -4917,25 +4917,40 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
 
       wxFileName fn ( name );
 
+      wxString target;
+      wxString path;
+
+      wxString sep(wxFileName::GetPathSeparator());
+
       //    Verify that the passed file name exists
       if ( !fn.FileExists() )
       {
-            wxString msg ( _T ( "   CM93Composite Chart Init cannot find " ) );
-            msg.Append ( name );
-            wxLogMessage ( msg );
-            return INIT_FAIL_REMOVE;
+            // It may be a directory
+            if( wxDir::Exists(name) )
+            {
+                  target = name + sep;
+                  path = name + sep;
+            }
+            else {
+                  wxString msg ( _T ( "   CM93Composite Chart Init cannot find " ) );
+                  msg.Append ( name );
+                  wxLogMessage ( msg );
+                  return  INIT_FAIL_REMOVE;
+            }
       }
+      else              // its a file that exists
+      {
+            //    Get the cm93 cell database prefix
+            path = fn.GetPath ( ( int ) ( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME ) );
 
-      //    Get the cm93 cell database prefix
-      wxString path = fn.GetPath ( ( int ) ( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME ) );
+            //    Remove two subdirectories from the passed file name
+            //    This will give a normal CM93 root
+            wxFileName file_path ( path );
+            file_path.RemoveLastDir();
+            file_path.RemoveLastDir();
 
-      //    Remove two subdirectories from the passed file name
-      //    This will give a normal CM93 root
-      wxFileName file_path ( path );
-      file_path.RemoveLastDir();
-      file_path.RemoveLastDir();
-
-      wxString target = file_path.GetPath ( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+            target = file_path.GetPath ( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+      }
 
       m_prefixComposite = target;
 

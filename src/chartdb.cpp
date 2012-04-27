@@ -244,8 +244,11 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
 
 
       if(!fn.FileExists()) {
-            wxLogMessage(wxT("   ...file does not exist: %s"), theFilePath);
-            return NULL;
+            //    Might be a directory
+            if( !wxDir::Exists(theFilePath) ) {
+                  wxLogMessage(wxT("   ...file does not exist: %s"), theFilePath);
+                  return NULL;
+            }
       }
       ChartBase *pch = NULL;
 
@@ -274,6 +277,11 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
             wxRegEx rxExt(wxT("[A-G]"));
             if (rxName.Matches(fn.GetName()) && rxExt.Matches(chartExt))
                   pch = new cm93compchart;
+            else {
+            //    Might be a directory
+                  if( wxDir::Exists(theFilePath) )
+                        pch = new cm93compchart;
+            }
       }
 #endif
 
