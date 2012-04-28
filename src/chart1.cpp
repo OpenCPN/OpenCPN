@@ -1399,8 +1399,10 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::Surface()
 {
+#ifndef __WXOSX__
       Hide();
       Move(0,0);
+#endif
 
       RePosition();
       Show();
