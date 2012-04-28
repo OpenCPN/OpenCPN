@@ -343,7 +343,7 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle ) {
 
 void ChartSymbols::ProcessPatterns( wxXmlNode* patternNodes ) {
 	wxXmlNode* patternNode = patternNodes->GetChildren();
-	Pattern pattern;
+	OCPNPattern pattern;
 	wxString propVal;
 	long numVal;
 
@@ -434,7 +434,7 @@ void ChartSymbols::ProcessPatterns( wxXmlNode* patternNodes ) {
 }
 
 
-void ChartSymbols::BuildPattern( Pattern &pattern ) {
+void ChartSymbols::BuildPattern( OCPNPattern &pattern ) {
 	Rule *pattmp = NULL;
 
 	Rule *patt = (Rule*) calloc( 1, sizeof(Rule) );

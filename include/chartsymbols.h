@@ -58,7 +58,7 @@ typedef struct _SymbolSizeInfo {
 } SymbolSizeInfo_t;
 
 
-class Pattern {
+class OCPNPattern {
 public:
 	int	RCID;
 	wxString name;
@@ -129,7 +129,7 @@ private:
 	void ProcessSymbols( wxXmlNode* symbolNodes );
 	void BuildLineStyle( LineStyle &lineStyle );
 	void BuildLookup( Lookup &lookup );
-	void BuildPattern( Pattern &pattern );
+	void BuildPattern( OCPNPattern &pattern );
 	void BuildSymbol( ChartSymbol &symol );
 
 	s52plib* plib;
