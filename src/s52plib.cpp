@@ -2100,7 +2100,8 @@ wxImage s52plib::RuleXBMToImage( Rule *prule ) {
 //      and re-built on color scheme change
 //
 bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-            ViewPort *vp, float rot_angle ) {
+            ViewPort *vp, float rot_angle )
+{
 
       //    Check to see if any cached data is valid
       bool b_dump_cache = false;
@@ -2112,19 +2113,25 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             }
       }
 
+      wxBitmap *pbm = NULL;
+      wxImage Image;
+
       int pivot_x = prule->pos.line.pivot_x.SYCL;
       int pivot_y = prule->pos.line.pivot_y.SYRW;
 
       //Instantiate the symbol if necessary
       if( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index )
                   || b_dump_cache ) {
-            wxImage Image =
+            Image =
                         useLegacyRaster ?
                                           RuleXBMToImage( prule ) :
                                           ChartSymbols::GetImage( prule->name.SYNM );
 
             // delete any old private data
             ClearRulesCache( prule );
+
+            int w = Image.GetWidth();
+            int h = Image.GetHeight();
 
             if( !m_pdc )          // opengl
             {
@@ -2137,9 +2144,6 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                   unsigned char mr, mg, mb;
                   if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
                               "trying to use mask to draw a bitmap without alpha or mask\n" );
-
-                  int w = Image.GetWidth();
-                  int h = Image.GetHeight();
 
                   unsigned char *e = (unsigned char *) malloc( w * h * 4 );
                   for( int y = 0; y < h; y++ ) {
@@ -2169,105 +2173,69 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                   prule->parm2 = w;
                   prule->parm3 = h;
             } else {
-                  //      Make the wxBitmap
-                  wxBitmap *pbm;
-
-                  //      Make the mask
+                  //      Make the masked Bitmap
                   if( useLegacyRaster ) {
                         pbm = new wxBitmap( Image );
                         wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
                         pbm->SetMask( pmask );
                   }
-                  //    Convert the image....
-                  //    An image with alpha cannot, in the general case,
-                  //    be converted to a mask-blittable bitmap and
-                  //    with expected transparency results on blit.
-                  //    Blit doesn't work that way on all systems....
-                  //    It does, however, work with a 32 bit Bitmap on Windows platforms
-                  //    So, for non-MSW platforms, we convert the image,
-                  //    setting pels with alpha < (arbitrary value)
-                  //    to a mask color, and otherwise set pels equal to (r,g,b) * alpha
 
-                  //    TODO This needs more work....
 
-#ifdef __WXMSW__
-                  else {
-                        pbm = new wxBitmap( Image, 32 );
+                  bool b_has_trans = false;
+#ifdef __WXGTK__
+                  //    Blitting of wxBitmap with transparency in wxGTK is broken....
+                  //    We can do it the hard way, by manually alpha blending the
+                  //    symbol with a clip taken from the current screen DC contents.
+
+                  //    Inspect the symbol image, to see if it actually has alpha transparency
+                  if(Image.HasAlpha())
+                  {
+                        unsigned char *a = Image.GetAlpha();
+                        for(int i = 0; i < Image.GetHeight() ; i++, a++)
+                        {
+                              for(int j = 0 ; j < Image.GetWidth() ; j++)
+                              {
+                                    if((*a) && (*a != 255)) {
+                                          b_has_trans = true;
+                                          break;
+                                    }
+                              }
+                              if(b_has_trans)
+                                    break;
+                        }
+                  }
+
+                  //    If the symbol image has no transparency, then a standard wxDC:Blit() will work
+                  if(!b_has_trans) {
+                        pbm = new wxBitmap( Image, -1 );
                         wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
                         pbm->SetMask( pmask );
                   }
-                  #else
-                  else {
-                        if(Image.HasAlpha())
-                        {
-                              unsigned char *d = Image.GetData();
-                              unsigned char *a = Image.GetAlpha();
 
-                              unsigned char mr = m_unused_wxColor.Red();
-                              unsigned char mg = m_unused_wxColor.Green();
-                              unsigned char mb = m_unused_wxColor.Blue();
-
-                              int w = Image.GetWidth();
-                              int h = Image.GetHeight();
-
-                              unsigned char *e = (unsigned char *)malloc(w * h * 3);
-                              for(int y=0; y<h; y++)
-                              {
-                                    for(int x=0; x<w; x++)
-                                    {
-                                          unsigned char r, g, b;
-                                          int off = (y*Image.GetWidth()+x);
-                                          r = d[off*3 + 0];
-                                          g = d[off*3 + 1];
-                                          b = d[off*3 + 2];
-
-                                          double alpha = (double)a[off]/256;
-                                          if(alpha < .3) {
-                                                e[off*3 + 0] = mr;
-                                                e[off*3 + 1] = mg;
-                                                e[off*3 + 2] = mb;
-                                          }
-                                          else {
-                                                e[off*3 + 0] = r * alpha;
-                                                e[off*3 + 1] = g * alpha;
-                                                e[off*3 + 2] = b * alpha;
-                                          }
-                                    }
-                              }
-
-                              wxImage imm(w, h, e);
-                              pbm = new wxBitmap ( imm );
-                              wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-                              pbm->SetMask( pmask );
-                        }
-                        else
-                        {
-                              pbm = new wxBitmap ( Image );
-                              wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-                              pbm->SetMask( pmask );
-                        }
-
+#else
+                  if( !useLegacyRaster ) {
+                        pbm = new wxBitmap( Image, 32 );                // windows
+                        wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                        pbm->SetMask( pmask );
                   }
 #endif
+
+
 
                   //      Save the bitmap ptr and aux parms in the rule
                   prule->pixelPtr = pbm;
                   prule->parm0 = ID_wxBitmap;
                   prule->parm1 = m_colortable_index;
+                  prule->parm2 = w;
+                  prule->parm3 = h;
+
             }
       }               // instantiation
 
       //        Get the bounding box for the to-be-drawn symbol
       int b_width, b_height;
-
-      if( !m_pdc )          // opengl
-      {
-            b_width = prule->parm2;
-            b_height = prule->parm3;
-      } else {
-            b_width = ( (wxBitmap *) ( prule->pixelPtr ) )->GetWidth();
-            b_height = ( (wxBitmap *) ( prule->pixelPtr ) )->GetHeight();
-      }
+      b_width = prule->parm2;
+      b_height = prule->parm3;
 
       wxBoundingBox symbox;
       double plat, plon;
@@ -2307,21 +2275,71 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             glDisable( GL_BLEND );
 
       } else {
-            //      Get the bitmap into a memory dc
-            wxMemoryDC mdc;
 
-            mdc.SelectObject(
-                        (wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) ) );
+            if(!pbm)                // This symbol requires manual alpha blending
+            {
+                  // Get the current screen contents
+                  wxBitmap b1(b_width, b_height, -1);
+                  wxMemoryDC mdc1(b1);
+                  mdc1.Blit( 0, 0, b_width, b_height, m_pdc, r.x - pivot_x, r.y - pivot_y, wxCOPY );
+                  wxImage im_back = b1.ConvertToImage();
+
+                  //    Get the symbol
+                  wxImage im_sym = ChartSymbols::GetImage( prule->name.SYNM );
+
+                  wxImage im_result(b_width, b_height);
+                  unsigned char *pdest = im_result.GetData();
+                  unsigned char *pback = im_back.GetData();
+                  unsigned char *psym = im_sym.GetData();
+
+                  unsigned char *asym = NULL;
+                  if(im_sym.HasAlpha())
+                              asym = im_sym.GetAlpha();
+
+                  //    Do alpha blending, the hard way
+
+                  for(int i = 0; i < b_height ; i++)
+                  {
+                        for(int j=0 ; j < b_width ; j++)
+                        {
+                              double alpha = (double)(*asym++)/256.0;
+                              unsigned char r = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                              *pdest++ = r;
+                              unsigned char g = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                              *pdest++ = g;
+                              unsigned char b = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                              *pdest++ = b;
+                        }
+                  }
+
+                  wxBitmap result(im_result);
+                  wxMemoryDC result_dc(result);
+
+                  m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc, 0,
+                               0, wxCOPY, false );
+
+                  result_dc.SelectObject( wxNullBitmap );
+                  mdc1.SelectObject( wxNullBitmap );
+
+            }
+            else
+            {
+            //      Get the symbol bitmap into a memory dc
+                  wxMemoryDC mdc;
+                  mdc.SelectObject((wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) ) );
 
             //      Blit it into the target dc
-            m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0,
-                        0, wxCOPY, true );
+                  m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0,
+                         0, wxCOPY, true );
+
+                  mdc.SelectObject( wxNullBitmap );
+
+            }
 // Debug
 //    pdc->SetPen(wxPen(*wxGREEN, 1));
 //    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
 //    pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
 
-            mdc.SelectObject( wxNullBitmap );
       }
 
       //  Update the object Bounding box
@@ -7003,8 +7021,8 @@ void RenderFromHPGL::RotatePoint( wxPoint& point, double angle ) {
 
 bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
             double rot_angle ) {
-      int width = 1;
-      double radius = 0.0;
+//      int width = 1;
+//      double radius = 0.0;
       wxPoint lineStart;
       wxPoint lineEnd;
 
@@ -7107,8 +7125,9 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
             }
 
             // Only get here if non of the other cases did a continue.
-            wxLogWarning( _("RenderHPGL: The '%s' instruction is not implemented."),
-                        command );
+            wxString msg( _("RenderHPGL: The '%s' instruction is not implemented.") );
+            msg += wxString(command);
+            wxLogWarning( msg );
       }
       if( havePushedOpenGlAttrib ) glPopAttrib();
       havePushedOpenGlAttrib = false;
