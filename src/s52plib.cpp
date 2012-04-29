@@ -3455,7 +3455,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
                   //    Draw wide outline arc
                   glLineWidth( 0.5 );
                   wxColour colorb = getwxColour( outline_color );
-                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
+//                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
+                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 150 );
                   glLineWidth( outline_width );
 
                   if( sectr1 > sectr2 ) sectr2 += 360;
@@ -3469,7 +3470,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
                   //    Draw narrower color arc, overlaying the drawn outline.
                   colorb = getwxColour( arc_color );
                   glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-                  glLineWidth( arc_width );
+//                  glLineWidth( arc_width );
+                  glLineWidth( (float)arc_width + 0.8 );
 
                   glBegin( GL_LINE_STRIP );
                   for( double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.;
@@ -3483,7 +3485,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
 
                         wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                         glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-                        glLineWidth( 0.5 );
+//                        glLineWidth( 0.5 );
+                        glLineWidth( 0.7 );
 
                         glLineStipple( 1, 0x3F3F );
                         glEnable( GL_LINE_STIPPLE );
