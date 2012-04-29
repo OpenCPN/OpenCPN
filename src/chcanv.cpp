@@ -13902,7 +13902,7 @@ TCWin::TCWin ( ChartCanvas *parent, int x, int y, void *pvIDX )
         //    will not detract from night-vision
 
         long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE;
-        if ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
+        if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) )
                 wstyle |= ( wxNO_BORDER );
 
         wxDialog::Create ( parent, wxID_ANY,   wxString ( _T ( "test" ) ), wxPoint ( x,y ), wxSize ( 500,400 ), wstyle );
