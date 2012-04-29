@@ -10594,7 +10594,13 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 //    Draw the rest of the overlay objects directly on the scratch dc
         DrawOverlayObjects ( scratch_dc, ru );
 
+        if ( m_bShowTide )
+              DrawAllTidesInBBox ( scratch_dc, GetVP().GetBBox(), true, true );
 
+        if ( m_bShowCurrent )
+              DrawAllCurrentsInBBox ( scratch_dc, GetVP().GetBBox(), true, true );
+
+#if 0
 //  Using yet another bitmap and DC, draw semi-static overlay objects if necessary
 
         /*    Why go to all this trouble?
@@ -10628,6 +10634,7 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
                         ssdc_r.SelectObject ( wxNullBitmap );
                 }
         }
+#endif
 
         //quiting?
         if(g_bquiting)
