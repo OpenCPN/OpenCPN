@@ -697,7 +697,8 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y)
      if(dc)
           dc->DrawText(text, x, y);
      else {
-          wxCoord w, h;
+          wxCoord w = 0;
+          wxCoord h = 0;
           GetTextExtent(text, &w, &h);
 
           if(w && h)

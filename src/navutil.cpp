@@ -2972,9 +2972,9 @@ int MyConfig::LoadMyConfig ( int iteration )
       Read ( _T ( "SkewToNorthUp" ),  &g_bskew_comp, 0 );
       Read ( _T ( "OpenGL" ),  &g_bopengl, 0 );
 
-#ifdef __WXMAC__
-      g_bopengl = 0;
-#endif
+//#ifdef __WXMAC__
+//      g_bopengl = 0;
+//#endif
 
       Read ( _T ( "ActiveChartGroup" ),  &g_GroupIndex, 0 );
 
@@ -3122,7 +3122,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       s.ToDouble ( &g_ShowMoored_Kts );
 
       Read ( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
-      
+
       Read ( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
 
       Read ( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );

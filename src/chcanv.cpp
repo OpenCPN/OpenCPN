@@ -10181,6 +10181,7 @@ void ChartCanvas::WarpPointerDeferred ( int x, int y )
 
 
 int spaint;
+int s_in_update;
 void ChartCanvas::OnPaint ( wxPaintEvent& event )
 {
 //      CALLGRIND_START_INSTRUMENTATION
@@ -10191,7 +10192,11 @@ void ChartCanvas::OnPaint ( wxPaintEvent& event )
 
         if(g_bopengl)
         {
-              m_glcc->Update();
+              if(!s_in_update) {          // no recursion allowed, seen on lo-spec Mac
+                    s_in_update++;
+                    m_glcc->Update();
+                    s_in_update--;
+              }
 
               return;
         }
