@@ -281,7 +281,6 @@ private:
 	bool S52_flush_Plib();
 
 	bool PreloadOBJLFromCSV( wxString &csv_file );
-	void PrepareTxfRenderer( void );
 
 	int DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
 

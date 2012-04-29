@@ -2,7 +2,8 @@
  *
  * Project:  OpenCPN
  * Purpose:  S52 Presentation Library
- * Author:   David Register
+ * Authors:   David Register
+ *            Jesper Weissglas
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
@@ -91,7 +92,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy ) {
       m_txf_ready = false;
       m_txf = NULL;
 
-      ChartSymbols chartSymbols;
+      ChartSymbols::InitializeGlobals();
 
       m_bOK = !( S52_load_Plib( PLib, b_forceLegacy ) == 0 );
 
@@ -145,35 +146,7 @@ s52plib::~s52plib() {
       delete[] redge;
 
       if( m_txf ) txfUnloadFont( m_txf );
-
-}
-
-void s52plib::PrepareTxfRenderer( void ) {
-      wxFileName txf_file( m_plib_file );
-      txf_file.SetFullName( _T("Helvetica.txf") );
-
-      m_txf_ready = false;
-
-      m_txf = txfLoadFont(
-                  (char *) (const char *) txf_file.GetFullPath().mb_str() );
-      if( m_txf == NULL ) {
-            wxString msg( _T("    Problem loading OpenGL Font Texture File ") );
-            msg.Append( txf_file.GetFullPath() );
-            msg.Append( _T("...") );
-            msg.Append( wxString( txfErrorString(), wxConvUTF8 ) );
-            wxLogMessage( msg );
-      } else {
-            m_txf->texobj = 0;
-            txfEstablishTexture( m_txf, 0, GL_TRUE );
-            m_txf_ready = true;
-
-            //    Get the width of one typical character, to build scale factors
-            int w, h, descent;
-            txfGetStringMetrics( m_txf, (char *) "W", 1, &w, &h, &descent );
-            m_txf_avg_char_width = w;
-            m_txf_avg_char_height = h;
-
-      }
+	  ChartSymbols::DeleteGlobals();
 }
 
 /*
@@ -213,10 +186,7 @@ wxArrayOfLUPrec* s52plib::SelectLUPARRAY( LUPname TNAM ) {
                   return areaSymbolLUPArray;
             default:
                   return NULL;
-//          wxLogMessage(_T("S52:_selctLUP() ERROR"));
       }
-
-//   return NULL;
 }
 
 extern Cond condTable[];
@@ -228,7 +198,6 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
       int nATTMatch = 0;
       int i = 0;
       int countATT = 0;
-//   double current_best_score = 0;
       bool bmatch_found = false;
 
       // setup default to the first LUP
@@ -244,9 +213,6 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
 
             LUPCandidate = (LUPrec*) nameMatch->Item( i );
 
-//      if (0 == strncmp(LUPtmp->OBCL, "BOYLAT", 6))
-//         int eert = 8;
-
             if( !LUPCandidate->ATTCArray ) continue;
 
             if( objAtt == NULL ) return LUP; // att match
@@ -257,21 +223,17 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                   wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
                   wxString LATTValue( LATTC.Mid( 6 ) );
 
-                  // debug
-//                        char *lupatt = ( char * ) ( LATTC.mb_str() + 6);
-//                        int luprec = LUPCandidate->RCID;
-
                   while( *currATT != '\0' ) {
                         if( 0 == strncmp( LATTC.mb_str(), currATT, 6 ) ) {
                               //OK we have an attribute match
                               //checking attribute value
                               S57attVal *v;
-#define BOOL bool
-                              BOOL attValMatch = FALSE;
+
+                              bool attValMatch = false;
 
                               // special case (i)
                               if( LATTC.Mid( 6, 1 ) == ' ' ) // use any value
-                              attValMatch = TRUE;
+                              attValMatch = true;
 
                               // special case (ii)
                               //TODO  Find an ENC with "UNKNOWN" DRVAL1 or DRVAL2 and debug this code
@@ -291,8 +253,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                           char ss[40];
                                           strncpy( ss, LATTValue.mb_str(), 39 );
                                           sscanf( ss, "%d", &a );
-//                                          sscanf ( LATTC.mb_str() + 6, "%d", &a );
-                                          if( a == *(int*) ( v->value ) ) attValMatch = TRUE;
+                                          if( a == *(int*) ( v->value ) ) attValMatch = true;
                                           break;
                                     }
 
@@ -303,7 +264,6 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                           strncpy( ss, LATTValue.mb_str(), 39 );
                                           char *s = &ss[0];
 
-//                                          char *s = ( char * ) ( LATTC.mb_str() + 6 );
                                           int *b = (int*) v->value;
                                           sscanf( s, "%d", &a );
 
@@ -311,9 +271,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                                 if( a == *b ) {
                                                       sscanf( ++s, "%d", &a );
                                                       b++;
-                                                      attValMatch = TRUE;
+                                                      attValMatch = true;
 
-                                                } else attValMatch = FALSE;
+                                                } else attValMatch = false;
                                           }
                                           break;
                                     }
@@ -325,9 +285,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                                       char ss[40];
                                                       strncpy( ss, LATTValue.mb_str(), 39 );
                                                       sscanf( ss, "%f", &a );
-//                                                sscanf ( LATTC.mb_str() + 6, "%f", &a );
-                                                      if( a == *(float*) ( v->value ) ) attValMatch =
-                                                                  TRUE;
+                                                      if( a == *(float*) ( v->value ) ) attValMatch = true;
                                                 }
                                           }
                                           break;
@@ -340,21 +298,12 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                           //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
 
                                           wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
-                                          if( LATTValue.Len() == cs.Len() ) if( LATTValue
-                                                      == cs ) attValMatch = TRUE;
-                                          /*
-                                           char *s = ( char * ) ( LATTC.mb_str() + 6 );   // attribute from LUP candidate
-                                           char *c = ( char * ) v->value;                // Attribute from object
-                                           if ( strlen ( s ) == strlen ( c ) )
-                                           if ( !strcmp ( s,c ) )
-                                           attValMatch = TRUE;
-                                           */
-
+                                          if( LATTValue.Len() == cs.Len() )
+                                                if( LATTValue == cs ) attValMatch = true;
                                           break;
                                     }
 
                                     default:
-                                          //                                                printf("S52:_findFromATT(): unknown attribute type\n");
                                           break;
                               } //switch
 
@@ -373,7 +322,6 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                   } //while
 
                   next_LUP_Attr:
-                  //                        continue;
 
                   currATT = objAtt; // restart the object attribute list
                   attIdx = 0;
@@ -431,7 +379,6 @@ Rules *s52plib::StringToRules( const wxString& str_in ) {
       char *str0 = (char *) calloc( str_in.Len() + 1, 1 );
       strncpy( str0, str_in.mb_str(), str_in.Len() );
       char *str = str0;
-//    char *str = (char *)str_in;
 
       Rules *top;
       Rules *last;
@@ -483,9 +430,6 @@ Rules *s52plib::StringToRules( const wxString& str_in ) {
                   r->ruleType = RUL_SYM_PT;
                   r->INSTstr = str;
 
-//              if(!strncmp(str, "BOYGEN03", 8))
-//                  int kkf = 5;
-
                   strncpy( strk, str, 8 );
                   strk[8] = 0;
                   wxString key( strk, wxConvUTF8 );
@@ -524,7 +468,6 @@ Rules *s52plib::StringToRules( const wxString& str_in ) {
                   strncpy( strk, str, 8 );
                   strk[8] = 0;
                   wxString key( strk, wxConvUTF8 );
-//                    key += 'R';
 
                   r->razRule = ( *_patt_sym )[key];
                   if( r->razRule == NULL ) r->razRule =
@@ -592,7 +535,6 @@ int s52plib::_LUP2rules( LUPrec *LUP, S57Obj *pObj ) {
       if( NULL == LUP ) return -1;
       // check if already parsed
       if( LUP->ruleList != NULL ) {
-            //printf("S52parser:_LUP2rules(): rule list already existe for %s\n", LUP->OBCL);
             return 0;
       }
 
@@ -656,18 +598,18 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy ) {
             RazdsParser parser;
             useLegacyRaster = true;
             if( parser.LoadFile( this, PLib ) ) {
-                  wxString msg( _("Loaded legacy PLIB data: ") );
+                  wxString msg( _T("Loaded legacy PLIB data: ") );
                   msg += PLib;
                   wxLogMessage( msg );
             } else return 0;
       } else {
-            useLegacyRaster = false;
             ChartSymbols chartSymbols;
+            useLegacyRaster = false;
             if( !chartSymbols.LoadConfigFile( this, PLib ) ) {
                   RazdsParser parser;
                   useLegacyRaster = true;
                   if( parser.LoadFile( this, PLib ) ) {
-                        wxString msg( _("Loaded legacy PLIB data: ") );
+                        wxString msg( _T("Loaded legacy PLIB data: ") );
                         msg += PLib;
                         wxLogMessage( msg );
                   } else return 0;
@@ -1451,83 +1393,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
             } // 1
 
 #endif
-#if 0
-            if(!m_txf_ready)
-            PrepareTxfRenderer();
 
-            if(m_txf_ready)
-            {
-                  int w, h, descent;
-                  txfGetStringMetrics(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len(), &w, &h, &descent);
-                  {
-                        glEnable(GL_TEXTURE_2D);
-                        glColor3f(0, 0, 0);
-
-                        txfBindFontTexture(m_txf);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
-                        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//                        glAlphaFunc(GL_GREATER, 0.0625);
-                        glAlphaFunc(GL_GREATER, (float)0.15);
-                        glEnable(GL_ALPHA_TEST);
-                        glEnable(GL_BLEND);
-                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                        glPushMatrix();
-
-                        int yp = y;
-                        int xp = x;
-
-                        //    Calculate pixel size from pica point size
-                        double pixel_per_mm = (double)::wxGetDisplaySize().x / ::wxGetDisplaySizeMM().x;
-                        double pix_size = ptext->bsize * .351 * pixel_per_mm;
-
-                        //    Font will be scaled, so scale width and height too
-                        double scale_factor = pix_size/(m_txf_avg_char_height - 4);
-
-                        //  Add in the offsets, specified in units of nominal font height
-                        xp += ptext->xoffs * pix_size;
-                        yp += ptext->yoffs * pix_size;
-
-                        pRectDrawn->SetX ( xp );
-                        pRectDrawn->SetY ( yp );
-                        pRectDrawn->SetWidth ( w * scale_factor );
-                        pRectDrawn->SetHeight ( h * scale_factor );
-
-                        if ( bCheckOverlap )
-                        {
-                              if ( CheckTextRectList ( *pRectDrawn, pobj ) )
-                              bdraw = false;
-                        }
-
-                        if(bdraw)
-                        {
-                              glTranslatef(xp-4, yp+4, 0);
-                              glScalef(1.0, -1.0, 1.0);
-                              glScalef(scale_factor, scale_factor, 1.0);
-
-                              txfRenderString(m_txf, (char *)(const char *)ptext->frmtd.mb_str(), ptext->frmtd.Len());
-                        }
-
-                        glPopMatrix();
-
-                        glDisable(GL_TEXTURE_2D);
-                        glDisable(GL_ALPHA_TEST);
-                        glDisable(GL_BLEND);
-                        /*
-                         glBegin(GL_LINE_LOOP);
-                         glVertex2i(xp, yp);
-                         glVertex2i(xp+w* scale_factor, yp);
-                         glVertex2i(xp+w* scale_factor, yp-h* scale_factor);
-                         glVertex2i(xp, yp-h* scale_factor);
-                         glEnd();
-                         */
-                  }
-            }
-            else
-            bdraw = false;
-#endif
       } else {
             wxFont oldfont = pdc->GetFont(); // save current font
 
@@ -7003,7 +6869,7 @@ void RenderFromHPGL::Polygon() {
             targetDC->DrawPolygon( noPoints, polygon );
       }
       if( renderToOpenGl ) {
-            wxLogWarning( _("HPGL Polygon not implemented in OpenGl mode.") );
+            wxLogWarning( _T("HPGL Polygon not implemented in OpenGl mode.") );
       }
       if( renderToGCDC ) {
             targetGCDC->DrawPolygon( noPoints, polygon );
@@ -7029,27 +6895,27 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
       wxPoint lineStart;
       wxPoint lineEnd;
 
-      wxStringTokenizer commands( wxString( str, wxConvUTF8 ), _(";") );
+      wxStringTokenizer commands( wxString( str, wxConvUTF8 ), _T(";") );
       while( commands.HasMoreTokens() ) {
             wxString command = commands.GetNextToken();
             wxString arguments = command.Mid( 2 );
             command = command.Left( 2 );
 
-            if( command == _("SP") ) {
+            if( command == _T("SP") ) {
                   S52color* color = plib->getColor(
                               findColorNameInRef( arguments.GetChar( 0 ), col ) );
                   penColor = wxColor( color->R, color->G, color->B );
                   continue;
             }
-            if( command == _("SW") ) {
+            if( command == _T("SW") ) {
                   arguments.ToLong( &penWidth );
                   continue;
             }
-            if( command == _("ST") ) {
+            if( command == _T("ST") ) {
                   // Transparency is ignored for now.
                   continue;
             }
-            if( command == _("PU") ) {
+            if( command == _T("PU") ) {
                   SetPen();
                   lineStart = ParsePoint( arguments );
                   lineStart -= pivot;
@@ -7059,7 +6925,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
                   lineStart += r;
                   continue;
             }
-            if( command == _("PD") ) {
+            if( command == _T("PD") ) {
                   if( arguments.Length() == 0 ) {
                         lineEnd = lineStart;
                         lineEnd.x++;
@@ -7075,35 +6941,35 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
                   lineStart = lineEnd; // For next line.
                   continue;
             }
-            if( command == _("CI") ) {
+            if( command == _T("CI") ) {
                   long radius;
                   arguments.ToLong( &radius );
                   radius = (int) radius / scaleFactor;
                   Circle( lineStart, radius );
                   continue;
             }
-            if( command == _("PM") ) {
+            if( command == _T("PM") ) {
                   noPoints = 1;
                   polygon[0] = lineStart;
 
-                  if( arguments == _("0") ) {
+                  if( arguments == _T("0") ) {
                         do {
                               command = commands.GetNextToken();
                               arguments = command.Mid( 2 );
                               command = command.Left( 2 );
 
-                              if( command == _("AA") ) {
+                              if( command == _T("AA") ) {
                                     wxLogWarning(
-                                                _("RenderHPGL: AA instruction not implemented.") );
+                                                _T("RenderHPGL: AA instruction not implemented.") );
                               }
-                              if( command == _("CI") ) {
+                              if( command == _T("CI") ) {
                                     long radius;
                                     arguments.ToLong( &radius );
                                     radius = (int) radius / scaleFactor;
                                     Circle( lineStart, radius, HPGL_FILLED );
                               }
-                              if( command == _("PD") ) {
-                                    wxStringTokenizer points( arguments, _(",") );
+                              if( command == _T("PD") ) {
+                                    wxStringTokenizer points( arguments, _T(",") );
                                     while( points.HasMoreTokens() ) {
                                           long x, y;
                                           points.GetNextToken().ToLong( &x );
@@ -7117,11 +6983,11 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
                                           polygon[noPoints++] = lineEnd;
                                     }
                               }
-                        } while( command != _("PM") );
+                        } while( command != _T("PM") );
                   }
                   continue;
             }
-            if( command == _("FP") ) {
+            if( command == _T("FP") ) {
                   SetPen();
                   Polygon();
                   continue;

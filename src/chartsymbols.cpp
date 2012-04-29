@@ -2,11 +2,11 @@
  *
  * Project:  OpenCPN
  * Purpose:  Chart Symbols
- * Author:   David Register
+ * Author:   Jesper Weissglas
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
- *   bdbcat@yahoo.com                                                               *
+ *   bdbcat@yahoo.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -54,14 +54,37 @@ WX_DECLARE_STRING_HASH_MAP( wxRect, symbolGraphicsHashMap );
 symbolGraphicsHashMap* symbolGraphicLocations;
 //--------------------------------------------------------------------------------------
 
-
-ChartSymbols::ChartSymbols( void ) {
-	colorTables = new wxArrayPtrVoid;
-	symbolGraphicLocations = new symbolGraphicsHashMap;
-	rasterSymbolsLoadedColorMapNumber = -1;
-}
+ChartSymbols::ChartSymbols( void ) {}
 
 ChartSymbols::~ChartSymbols( void ) {}
+
+
+void ChartSymbols::InitializeGlobals( void ) {
+      if( ! colorTables ) colorTables = new wxArrayPtrVoid;
+      if( ! symbolGraphicLocations ) symbolGraphicLocations = new symbolGraphicsHashMap;
+      rasterSymbolsLoadedColorMapNumber = -1;
+}
+
+
+void ChartSymbols::DeleteGlobals( void ) {
+
+      (*symbolGraphicLocations).clear();
+      delete symbolGraphicLocations;
+      symbolGraphicLocations = NULL;
+
+      for( unsigned int i = 0; i < colorTables->GetCount(); i++ ) {
+            colTable *ct = (colTable *) colorTables->Item( i );
+            delete ct->tableName;
+            ct->colors.clear();
+            ct->wxColors.clear();
+            delete ct;
+      }
+
+      colorTables->Clear();
+      delete colorTables;
+      colorTables = NULL;
+}
+
 
 #define GET_INT_PROPERTY_VALUE( node, name, target )  \
 	propVal = node->GetPropVal( _T(name), _T("0")); \
@@ -316,11 +339,11 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle ) {
 	strcpy( lnst->name.PANM, lineStyle.name.mb_str() );
 	lnst->bitmap.PBTM = NULL;
 
-	lnst->vector.LVCT = (char *) calloc( lineStyle.HPGL.Len() + 1, 1 );
-	strncpy( lnst->vector.LVCT, lineStyle.HPGL.mb_str(), lineStyle.HPGL.Len() );
+	lnst->vector.LVCT = (char *) malloc( lineStyle.HPGL.Len() + 1 );
+	strcpy( lnst->vector.LVCT, lineStyle.HPGL.mb_str() );
 
-	lnst->colRef.LCRF = (char *) calloc( lineStyle.colorRef.Len() + 1, 1 );
-	strncpy( lnst->colRef.LCRF, lineStyle.colorRef.mb_str(), lineStyle.colorRef.Len() );
+	lnst->colRef.LCRF = (char *) malloc( lineStyle.colorRef.Len() + 1 );
+	strcpy( lnst->colRef.LCRF, lineStyle.colorRef.mb_str() );
 
 	lnst->pos.line.minDist.PAMI = lineStyle.vectorSize.minDistance;
 	lnst->pos.line.maxDist.PAMA = lineStyle.vectorSize.maxDistance;
@@ -447,11 +470,11 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern ) {
 	patt->fillType.PATP = pattern.fillType;
 	patt->spacing.PASP = pattern.spacing;
 
-	patt->vector.PVCT = (char *) calloc( pattern.HPGL.Len() + 1, 1 );
-	strncpy( patt->vector.PVCT, pattern.HPGL.mb_str(), pattern.HPGL.Len() );
+	patt->vector.PVCT = (char *) malloc( pattern.HPGL.Len() + 1 );
+	strcpy( patt->vector.PVCT, pattern.HPGL.mb_str() );
 
-	patt->colRef.PCRF = (char *) calloc( pattern.colorRef.Len() + 1, 1 );
-	strncpy( patt->colRef.PCRF, pattern.colorRef.mb_str(), pattern.colorRef.Len() );
+	patt->colRef.PCRF = (char *) malloc( pattern.colorRef.Len() + 1 );
+	strcpy( patt->colRef.PCRF, pattern.colorRef.mb_str() );
 
 	SymbolSizeInfo_t patternSize;
 
@@ -611,7 +634,6 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 
 	Rule *symb = (Rule*) calloc( 1, sizeof(Rule) );
 	plib->pAlloc->Add( symb );
-//	Rule *symbtmp = NULL;
 
 	wxString SVCT;
 	wxString SCRF;
@@ -621,11 +643,11 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 
 	symb->exposition.SXPO = &(symbol.description);
 
-    symb->vector.SVCT = ( char * ) calloc ( symbol.HPGL.Len()+1, 1 );
-    strncpy ( symb->vector.SVCT, symbol.HPGL.mb_str(), symbol.HPGL.Len() );
+    symb->vector.SVCT = ( char * ) malloc ( symbol.HPGL.Len()+1 );
+    strcpy ( symb->vector.SVCT, symbol.HPGL.mb_str() );
 
-    symb->colRef.SCRF = ( char * ) calloc ( symbol.colorRef.Len()+1, 1 );
-    strncpy ( symb->colRef.SCRF, symbol.colorRef.mb_str(), symbol.colorRef.Len() );
+    symb->colRef.SCRF = ( char * ) malloc ( symbol.colorRef.Len()+1 );
+    strcpy ( symb->colRef.SCRF, symbol.colorRef.mb_str() );
 
 	symb->bitmap.SBTM = NULL;
 
@@ -655,7 +677,15 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 	wxRect graphicsLocation( symbol.bitmapSize.graphics, symbol.bitmapSize.size );
 	(*symbolGraphicLocations)[symbol.name] = graphicsLocation;
 
+	// Already something here with same key? Then free its strings, otherwise they leak.
+	Rule* symbtmp = (*plib->_symb_sym)[symbol.name];
+	if( symbtmp ) {
+		free( symbtmp->colRef.SCRF );
+		free( symbtmp->vector.SVCT );
+	}
+
 	(*plib->_symb_sym)[symbol.name] = symb;
+
 }
 
 
