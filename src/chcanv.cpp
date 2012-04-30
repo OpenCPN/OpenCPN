@@ -37,6 +37,8 @@
 #include <wx/graphics.h>
 #include <wx/aui/aui.h>
 
+#include <wx/wxhtml.h>
+
 #include "dychart.h"
 
 #include <wx/listimpl.cpp>
@@ -256,6 +258,8 @@ extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
 
 extern int              g_current_arrow_scale;
+
+extern wxDialog         *g_pObjectQueryDialog;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -3342,6 +3346,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
         EVT_ACTIVATE ( ChartCanvas::OnActivate )
         EVT_SIZE ( ChartCanvas::OnSize )
         EVT_MOUSE_EVENTS ( ChartCanvas::MouseEvent )
+        EVT_TIMER ( DBLCLICK_TIMER, ChartCanvas::MouseTimedEvent )
         EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
         EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
         EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
@@ -3479,6 +3484,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         m_glcc = new glChartCanvas(this);
 
+        singleClickEventIsValid = false;
 
 //    Build the cursors
 
@@ -3656,6 +3662,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
         pRotDefTimer = new wxTimer ( this, ROT_TIMER );
         pRotDefTimer->Stop();
+
+        m_DoubleClickTimer = new wxTimer ( this, DBLCLICK_TIMER );
+        m_DoubleClickTimer->Stop();
 
         pPanKeyTimer = new wxTimer ( this, PANKEY_TIMER );
         pPanKeyTimer->Stop();
@@ -7467,12 +7476,46 @@ bool ChartCanvas::CheckEdgePan ( int x, int y, bool bdragging )
         return ( false );
 }
 
+void ChartCanvas::MouseTimedEvent( wxTimerEvent& event ) {
+      if( singleClickEventIsValid )
+            MouseEvent( singleClickEvent );
+      singleClickEventIsValid = false;
+      m_DoubleClickTimer->Stop();
+}
+
+
 void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 {
         int x,y;
         int mx, my;
 
         event.GetPosition ( &x, &y );
+
+        if( event.LeftDClick() ) {
+              m_DoubleClickTimer->Start();
+              singleClickEventIsValid = false;
+
+              double zlat,zlon;
+              GetCanvasPixPoint ( x, y, zlat, zlon );
+              ShowObjectQueryWindow( x, y, zlat, zlon );
+              return;
+        }
+
+        // Capture LeftUp's and time them, unless it already came from the timer.
+        if( event.LeftUp() && ! singleClickEventIsValid ) {
+
+              // Ignore the second LeftUp after the DClick.
+              if( m_DoubleClickTimer->IsRunning() ) {
+                    m_DoubleClickTimer->Stop();
+                    return;
+              }
+
+              // Save the event for later running if there is no DClick.
+              m_DoubleClickTimer->Start( 250, wxTIMER_ONE_SHOT );
+              singleClickEvent = event;
+              singleClickEventIsValid = true;
+              return;
+        }
 
         //  This logic is necessary on MSW to handle the case where
         //  a context (right-click) menu is dismissed without action
@@ -7733,68 +7776,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
         if(m_pAISRolloverWin && m_pAISRolloverWin->IsShown() && !showRollover)
               m_pAISRolloverWin->Hide();
 
-/*    This logic removed for 2.5 Release
-      Not needed since Toolbar is TopLevelWindow instead of child of canvas.
-
-        // This is a special, platform dependent situation.
-        // If the user (accidentally) drags a route point out of the chart canvas,
-        // then we can end up with an orphan edit target.
-        // This test will detect that condition, and properly close out the route edit
-        // by performing the same actions as on an event.LeftUp()
-
-        // Platform dependence:  we note that the problem only appears on Windows platform.
-        // On gtk, a LeftUp event (generated when the user releases the drag) is always passed to this method,
-        // even if the cursor is not in the canvas window at that time.
-        // Not so for Windows....
-        if(m_bRouteEditing && m_pRoutePointEditTarget && !event.Dragging() && !event.LeftUp())
-        {
-                    pSelect->UpdateSelectableRouteSegments ( m_pRoutePointEditTarget );
-
-                    if ( m_pEditRouteArray )
-                    {
-                          for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
-                          {
-                                Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                pr->CalculateBBox();
-                                pr->UpdateSegmentDistances();
-                                pr->m_bIsBeingEdited = false;
-
-                                pConfig->UpdateRoute ( pr );
-                          }
-                    }
-
-                              //    Update the RouteProperties Dialog, if currently shown
-                    if ( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) )
-                    {
-                          if ( m_pEditRouteArray )
-                          {
-                                for(unsigned int ir=0 ; ir < m_pEditRouteArray->GetCount() ; ir++)
-                                {
-                                      Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                                      if(pRoutePropDialog->m_pRoute == pr)
-                                      {
-                                            pRoutePropDialog->SetRouteAndUpdate ( pr );
-                                            pRoutePropDialog->UpdateProperties();
-                                      }
-                                }
-                          }
-                    }
-
-                    m_pRoutePointEditTarget->m_bPtIsSelected = false;
-
-                    delete m_pEditRouteArray;
-                    m_pEditRouteArray = NULL;
-
-
-              m_bRouteEditing = false;
-              m_pRoutePointEditTarget = NULL;
-
-
-              gFrame->SurfaceToolbar();
-
-        }
-
-*/
 
 //          Mouse Clicks
 
@@ -7904,31 +7885,6 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
                       Refresh ( false );
                 }
 
-/*
-                else if ( m_bMeasure_Active )                     // measure tool on
-                {
-                      SetCursor ( *pCursorPencil );
-
-                      if(NULL != m_pMeasureRoute)
-                            g_pRouteMan->DeleteRoute ( m_pMeasureRoute );
-
-                      m_pMeasureRoute = new Route();
-                      r_rband.x = x;
-                      r_rband.y = y;
-
-                      RoutePoint *pMousePoint = new RoutePoint ( m_cursor_lat, m_cursor_lon, wxString ( _T ( "circle" ) ), wxString ( _T ( "" ) ), GPX_EMPTY_STRING );
-                      pMousePoint->m_bShowName = false;
-
-                      m_pMeasureRoute->AddPoint ( pMousePoint );
-
-                      m_prev_rlat = m_cursor_lat;
-                      m_prev_rlon = m_cursor_lon;
-
-                      m_nMeasureState++;
-
-                      Refresh ( false );
-                }
-*/
                 else                                // Not creating Route
                 {
                         // So look for selectable and visible route point
@@ -8995,24 +8951,108 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
 
 }
 
+void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
+      ChartBase *target_chart;
+      if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) )
+            target_chart = Current_Ch;
+      else if( VPoint.b_quilt )
+            target_chart = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+      else
+            target_chart = NULL;
+
+      s57chart *Chs57 = dynamic_cast<s57chart*>( target_chart );
+      if( Chs57 )
+      {
+//    Go get the array of all objects at the cursor lat/lon
+            int sel_rad_pix = 5;
+            float SelectRadius = sel_rad_pix / ( GetVP().view_scale_ppm * 1852 * 60 );
+
+            SetCursor( wxCURSOR_WAIT );
+            ListOfObjRazRules* rule_list = Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+            wxString objText;
+
+            if( !rule_list->IsEmpty() )
+            {
+                  for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node;
+                              node = node->GetPrevious() )
+                  {
+                        ObjRazRules *current = node->GetData();
+
+                        // Soundings have no information, so don't show them
+                        if( 0 == strncmp( current->LUP->OBCL, "SOUND", 5 ) ) continue;
+
+                        S57ObjectDesc* pdescription = Chs57->CreateObjDescription( current );
+
+                        objText +=  _T("<b>") + pdescription->S57ClassDesc + _T("</b> <font size=-2>(") + pdescription->S57ClassName + _T(")</font>") + _T("<br>");
+                        objText += pdescription->Attributes;
+                        if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
+                        objText += _T("<br>");
+
+                  }
+            }
+            objText += _T("</body></html>");
+
+            #define HTML_HEIGHT 450
+
+            if(NULL == g_pObjectQueryDialog) {
+                  g_pObjectQueryDialog = new wxDialog(this, wxID_ANY, wxString(_("Object Query")),
+                              wxDefaultPosition, wxDefaultSize);
+            }
+
+            if(g_pObjectQueryDialog->GetSizer())
+                  g_pObjectQueryDialog->GetSizer()->Clear(true);
+
+            wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
+            g_pObjectQueryDialog->SetSizer( topSizer );
+
+            wxHtmlWindow *html = new wxHtmlWindow( g_pObjectQueryDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                              wxHW_SCROLLBAR_AUTO );
+            html->SetBorders( 0 );
+            html->SetMinSize(wxSize( 550, HTML_HEIGHT));
+
+            DimeControl(g_pObjectQueryDialog);
+
+            // Make the HTML widget blend with the dialog background to avoid dual borders.
+            wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
+            html->SetBackgroundColour(bg);
+
+            html->SetPage( objText );
+
+            if( html->GetInternalRepresentation()->GetHeight() < HTML_HEIGHT )
+                  html->SetSize( html->GetInternalRepresentation()->GetWidth(),
+                              html->GetInternalRepresentation()->GetHeight() + 20 );
+
+
+            wxBoxSizer* htmlSizer = new wxBoxSizer( wxVERTICAL );
+            htmlSizer->Add( html, 0, wxALL, 10 );
+
+            topSizer->Add( htmlSizer );
+
+            wxSizer* ok = g_pObjectQueryDialog->CreateButtonSizer( wxOK );
+            topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 3 );
+
+            //    I don't know why this is necessary....
+            //    Seems a hack.
+            g_pObjectQueryDialog->SetSize(wxSize( -1,  HTML_HEIGHT + 50) );
+
+            topSizer->Fit(g_pObjectQueryDialog);
+            topSizer->Layout();
+
+            SetCursor( wxCURSOR_ARROW );
+            g_pObjectQueryDialog->Center();
+            g_pObjectQueryDialog->Show();
+            SetFocus();
+
+            delete rule_list;
+      }
+}
+
 void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 {
         RoutePoint *pLast;
 
         wxPoint r;
         double zlat, zlon;
-
-
-
-#ifdef USE_S57
-        float SelectRadius;
-        int sel_rad_pix;
-        S57QueryDialog *pdialog;
-        ListOfObjRazRules *rule_list;
-        s57chart *Chs57;
-        S57ObjectDesc *pdescription;
-        wxString *QueryResult;
-#endif
 
         GetCanvasPixPoint ( popx, popy, zlat, zlon );
 
@@ -9293,71 +9333,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
 
                 case ID_DEF_MENU_QUERY:
                 {
-                      ChartBase *target_chart;
-                      if (Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ))
-                            target_chart = Current_Ch;
-                      else if(VPoint.b_quilt)
-                            target_chart = m_pQuilt->GetChartAtPix(wxPoint(popx, popy));
-                      else
-                            target_chart = NULL;
-
-                      Chs57 = dynamic_cast<s57chart*> ( target_chart );
-
-                      if(Chs57)
-                      {
-//    Go get the array of all objects at the cursor lat/lon
-                                sel_rad_pix = 5;
-                                SelectRadius = sel_rad_pix/ ( GetVP().view_scale_ppm * 1852 * 60 );
-
-                                QueryResult = new wxString;
-
-                                SetCursor(wxCURSOR_WAIT);
-                                rule_list = Chs57->GetObjRuleListAtLatLon ( zlat, zlon, SelectRadius, &GetVP() );
-
-                                S57ObjectDesc **ppOD = (S57ObjectDesc **)malloc(rule_list->GetCount() * sizeof(S57ObjectDesc *));
-
-
-                                int ndescriptions = 0;
-                                if ( !rule_list->IsEmpty() )
-                                {
-                                        for ( ListOfObjRazRules::Node *node = rule_list->GetFirst(); node; node = node->GetNext() )
-                                        {
-                                                ObjRazRules *current = node->GetData();
-
-                                                pdescription = Chs57->CreateObjDescription ( current );
-                                                QueryResult->Append ( pdescription->Attributes );
-
-                                                ppOD[ndescriptions] = pdescription;
-                                                ndescriptions++;
-                                        }
-                                }
-
-
-                                pdialog = new S57QueryDialog();
-
-                                pdialog->SetObjectTree((void **)ppOD, rule_list->GetCount());
-                                pdialog->SetText ( *QueryResult );
-
-                                pdialog->Create ( this, -1, _( "Object Query" ) );
-                                pdialog->SetSize ( g_S57_dialog_sx, g_S57_dialog_sy );
-//                                pdialog->Centre();
-
-                                gFrame->SubmergeToolbar();
-                                SetCursor(wxCURSOR_ARROW);
-                                pdialog->ShowModal();
-                                gFrame->SurfaceToolbar();
-                                gFrame->Raise();
-
-                                delete rule_list;
-                                delete pdialog;
-                                delete QueryResult;
-
-                                for(int j=0 ; j < ndescriptions ; j++)
-                                      delete ppOD[j];
-
-                                free (ppOD);
-
-                        }
+                        ShowObjectQueryWindow(popx, popy, zlat, zlon);
                         break;
                 }
 #endif
@@ -15588,421 +15564,6 @@ void ShowAISTargetQueryDialog(wxWindow *win, int mmsi)
 
 
 
-#ifdef USE_S57
-//---------------------------------------------------------------------------------------
-//          S57QueryDialog Implementation
-//---------------------------------------------------------------------------------------
-IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )  // was wxDialog
-
-
-// S57QueryDialog event table definition
-
-BEGIN_EVENT_TABLE ( S57QueryDialog, wxDialog )  //ws wxDialog
-            EVT_SIZE ( S57QueryDialog::OnSize )
-            EVT_CLOSE( S57QueryDialog::OnClose)
-END_EVENT_TABLE()
-
-
-S57QueryDialog::S57QueryDialog( )
-{
-        Init();
-}
-
-
-S57QueryDialog::S57QueryDialog ( wxWindow* parent,
-                                 wxWindowID id, const wxString& caption,
-                                 const wxPoint& pos, const wxSize& size, long style )
-{
-      Init();
-        Create ( parent, id, caption, pos, size, style );
-}
-
-S57QueryDialog::~S57QueryDialog( )
-{
-      g_S57_dialog_sx = GetSize().x;
-      g_S57_dialog_sy = GetSize().y;
-
-      m_pTree->DeleteAllItems();
-      delete m_pTree;
-      delete[] m_id_array;
-
-}
-
-
-/// Initialisation
-void S57QueryDialog::Init( )
-{
-        m_pTree = NULL;
-        m_n_items = 0;
-        m_ppOD = NULL;
-        m_id_array = NULL;
-        m_current_item_id = (wxTreeItemId)(long)0;
-}
-
-void S57QueryDialog::SetText ( wxString &text_string )
-{
-        QueryResult = text_string;
-}
-
-void S57QueryDialog::SetObjectTree(void **ppOD, int n_items)
-{
-    m_n_items = n_items;
-    m_ppOD = ppOD;
-}
-
-
-/*
-* S57QueryDialog creator
-*/
-
-bool S57QueryDialog::Create ( wxWindow* parent,
-                              wxWindowID id, const wxString& caption,
-                              const wxPoint& pos, const wxSize& size, long style )
-{
-// We have to set extra styles before creating the
-// dialog
-//      SetExtraStyle(wxWS_EX_BLOCK_EVENTS|wxDIALOG_EX_CONTEXTHELP);
-
-        //    As a display optimization....
-        //    if current color scheme is other than DAY,
-        //    Then create the dialog ..WITHOUT.. borders and title bar.
-        //    This way, any window decorations set by external themes, etc
-        //    will not detract from night-vision
-
-        long wstyle = wxDEFAULT_FRAME_STYLE;
-//        if ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
-//                wstyle |= ( wxNO_BORDER );
-
-        if ( !wxDialog::Create ( parent, id, caption, pos, size, wstyle ) )
-                return false;
-
-        wxColour back_color = GetGlobalColor ( _T ( "UIBDR" ) );
-        SetBackgroundColour ( back_color );
-
-        wxFont *dFont = wxTheFontList->FindOrCreateFont ( 10, wxFONTFAMILY_TELETYPE,
-                        wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-
-        SetFont ( *dFont );
-        CreateControls();
-
-// This fits the dialog to the minimum size dictated by
-// the sizers
-        GetSizer()->Fit ( this );
-
-// This ensures that the dialog cannot be sized smaller
-// than the minimum size
-        GetSizer()->SetSizeHints ( this );
-
-// Centre the dialog on the parent or (if none) screen
-        Centre();
-        return true;
-}
-
-
-
-
-void S57QueryDialog::CreateControls()
-{
-      wxFont *qFont = wxTheFontList->FindOrCreateFont ( 14, wxFONTFAMILY_TELETYPE,
-                  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-      wxColour back_color = GetGlobalColor ( _T ( "UIBCK" ) );
-      wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );
-
-// A top-level sizer
-        wxBoxSizer* topSizer = new wxBoxSizer ( wxVERTICAL );
-        SetSizer ( topSizer );
-
-// A second box sizer to give more space around the controls
-        wxBoxSizer* boxSizer = new wxBoxSizer ( wxHORIZONTAL );
-//        topSizer->Add ( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
-        topSizer->Add ( boxSizer, 1, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
-
-//  The Tree control
-        m_pTree = new S57ObjectTree(this, ID_S57QUERYTREECTRL, wxDefaultPosition, wxSize ( 400, 500 ), wxTR_HAS_BUTTONS);
-        m_root_id = m_pTree->AddRoot(_("Chart"));
-
-        m_id_array = new wxTreeItemId[m_n_items];
-
-        for(int i=0 ; i < m_n_items ; i++)
-        {
-              S57ObjectDesc *pOD = (S57ObjectDesc *) m_ppOD[i];
-              MyTreeItemData *pmtid = new MyTreeItemData(pOD);
-              m_id_array[i] = m_pTree->AppendItem(m_root_id, pOD->S57ClassDesc, -1, -1, pmtid);
-        }
-        m_pTree->Expand(m_root_id);
-
-        m_pTree->SetBackgroundColour ( back_color );
-        m_pTree->SetForegroundColour ( text_color );
-        m_pTree->SetFont ( *qFont );
-
-        m_pTree->SetQuickBestSize(false);
-        wxSize sz = m_pTree->GetBestSize();
-        m_pTree->SetSize(sz.x, -1);
-//        boxSizer->Add ( m_pTree, 0, wxALL, 5 );
-        boxSizer->Add ( m_pTree, wxSizerFlags().Proportion(0).Expand().Border(10));
-
-
-// Here is the query result as a Text Control
-
-//    Set the Text Control style
-        int tcstyle = wxTE_MULTILINE | wxTE_READONLY;
-
-//    wxX11 TextCtrl is broken in many ways.
-//    Here, the wxTE_DONTWRAP flag creates a horizontal scroll bar
-//    which fails in wxX11 2.8.2....
-#ifndef __WXX11__
-        tcstyle |= wxTE_DONTWRAP;
-#endif
-
-        m_pQueryTextCtl = new wxTextCtrl ( this, -1, _T ( "" ), wxDefaultPosition, wxSize ( 400, 500 ), tcstyle );
-
-        m_pQueryTextCtl->SetBackgroundColour ( back_color );
-        m_pQueryTextCtl->SetForegroundColour ( text_color );
-
-//        boxSizer->Add ( m_pQueryTextCtl, 0, wxALL|wxEXPAND, 5 );
-        boxSizer->Add ( m_pQueryTextCtl, wxSizerFlags().Proportion(1).Expand().Border(10));
-
-        m_pQueryTextCtl->SetFont ( *qFont );
-
-        //  Get the pixel width of the largest character for future reference
-        int w, h, descent;
-        GetTextExtent(_T("W"), &w, &h, &descent, NULL, qFont);
-        m_char_width = w;
-
-        m_pQueryTextCtl->SetSelection ( 0,0 );
-        m_pQueryTextCtl->SetInsertionPoint ( 0 );
-
-
-// A horizontal box sizer to contain Reset, OK, Cancel and Help
-//        wxBoxSizer* okCancelBox = new wxBoxSizer ( wxHORIZONTAL );
-//        topSizer->Add ( okCancelBox, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND|wxALL, 5 );
-
-//    Button color
-        wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );
-
-// The OK button
-        wxButton* ok = new wxButton ( this, wxID_OK, _( "OK" ), wxDefaultPosition, wxDefaultSize, 0 );
-        topSizer->Add ( ok, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
-        ok->SetBackgroundColour ( button_color );
-        ok->SetForegroundColour ( text_color );
-
-/*
-// The Cancel button
-        wxButton* cancel = new wxButton ( this, wxID_CANCEL, _ ( "&Cancel" ), wxDefaultPosition, wxDefaultSize, 0 );
-        okCancelBox->Add ( cancel, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-        cancel->SetBackgroundColour ( button_color );
-        cancel->SetForegroundColour ( text_color );
-
-// The Help button
-        wxButton* help = new wxButton ( this, wxID_HELP, _T ( "&Help" ), wxDefaultPosition, wxDefaultSize, 0 );
-        okCancelBox->Add ( help, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-        help->SetBackgroundColour ( button_color );
-        help->SetForegroundColour ( text_color );
-*/
-}
-
-//    Process a "notification" from Tree control
-
-void S57QueryDialog::SetSelectedItem(wxTreeItemId item_id)
-{
-      m_current_item_id = item_id;
-
-      UpdateStringFormats();
-}
-
-void S57QueryDialog::UpdateStringFormats(void)
-{
-      if(m_pTree && (m_current_item_id))
-      {
-            MyTreeItemData *pmtid = (MyTreeItemData *)m_pTree->GetItemData(m_current_item_id);
-
-            if(pmtid)
-            {
-                  //    Calculate the column constants based on the text control size....
-                  int width, height;
-                  m_pQueryTextCtl->GetClientSize(&width, &height);
-
-                  //    Format the string
-                  int rcol = width / m_char_width;
-                  int col_adjust = 1;
-#ifdef __WXOSX__
-                  col_adjust = 4;
-#endif
-                  wxString fs = format_attributes(pmtid->m_pOD->Attributes, 15, rcol - col_adjust);
-                  SetText ( fs );
-
-                  m_pQueryTextCtl->Clear();
-                  m_pQueryTextCtl->AppendText ( QueryResult );
-            }
-
-            m_pQueryTextCtl->SetInsertionPoint(0);
-
-            m_pQueryTextCtl->Refresh();
-      }
-}
-
-void S57QueryDialog::OnSize(wxSizeEvent& event)
-{
-      UpdateStringFormats();
-      wxDialog::OnSize(event);
-}
-
-void S57QueryDialog::OnClose(wxCloseEvent& event)
-{
-      g_S57_dialog_sx = GetSize().x;
-      g_S57_dialog_sy = GetSize().y;
-      Destroy();
-}
-
-
-void S57QueryDialog::OnPaint ( wxPaintEvent& event )
-{
-      m_pQueryTextCtl->Clear();
-      m_pQueryTextCtl->AppendText ( QueryResult );
-      m_pQueryTextCtl->SetInsertionPoint(0);
-
-}
-
-wxString S57QueryDialog::format_attributes(wxString &attr, int lcol, int rcol)
-{
-      wxString result;
-
-      //    First, emit verbatim everything up to and including the string "Attributes\n"
-      int index = attr.Find(_T("Attributes\n"));
-      if(index != wxNOT_FOUND)
-      {
-            index += strlen("Attributes\n");
-            result << attr.Mid(0, index);
-      }
-      else
-            index = 0;
-
-      wxString remains = attr.Mid(index);
-      while(remains.Len())
-      {
-            // emit verbatim up to <atval>
-            int rindex = remains.Find(_T("<atval>"));
-            if(rindex != wxNOT_FOUND)
-            {
-                  result << remains.Mid(0, rindex);
-
-                  //    Skip the keyword
-                  rindex += 7;
-                  //    Find the ending keyword
-                  int rtindex = remains.Find(_T("<\\atval>"));
-                  if(rtindex != wxNOT_FOUND)
-                  {
-                        //    extract the denoted string
-                        wxString attval = remains.Mid(rindex, rtindex - rindex);
-
-                        //    Do a gross format of attval
-                        unsigned int icol = lcol;
-                        unsigned int icol_max = rcol;
-
-                        unsigned int iline=0;
-                        wxString tkr;
-
-                        wxStringTokenizer tk(attval, _T(" |,"));
-                        while ( tk.HasMoreTokens() )
-                        {
-                              wxString token = tk.GetNextToken();
-                              if(iline + token.Len() < icol_max - icol)
-                              {
-                                    result << token;
-                                    result << wxChar(' ');
-                                    tkr.Clear();
-                              }
-                              else
-                              {
-                                    tkr = token;
-                                    tkr << wxChar(' ');
-                              }
-
-                              iline += token.Len() + 1;
-
-                              wxChar dlim = tk.GetLastDelimiter();
-
-                              if((iline > icol_max - icol) || (dlim == '|'))
-                              {
-                                    result << wxChar('\n');
-
-                                    for(unsigned int k=0 ; k < icol ; k++)
-                                          result << wxChar(' ');
-
-                                    result << tkr;
-
-                                    iline = tkr.Len();
-                              }
-                        }
-
-                        //    Adjust the remains string
-                        wxString tmp = remains.Mid(rtindex+8);
-                        remains = tmp;
-
-
-                  }
-                  else
-                        result << _T("Format Error (missing <\\atval>)");
-            }
-            else
-            {
-                  result << remains;
-                  remains.Clear();
-            }
-
-      }
-
-
-      return result;
-}
-
-
-
-//---------------------------------------------------------------------------------------
-//          S57 Object Query Tree Control Implementation
-//---------------------------------------------------------------------------------------
-IMPLEMENT_CLASS ( S57ObjectTree, wxTreeCtrl )
-
-
-// S57ObjectTree event table definition
-
-BEGIN_EVENT_TABLE ( S57ObjectTree, wxTreeCtrl )
-            EVT_TREE_ITEM_EXPANDING( ID_S57QUERYTREECTRL, S57ObjectTree::OnItemExpanding)
-            EVT_TREE_SEL_CHANGED( ID_S57QUERYTREECTRL, S57ObjectTree::OnItemSelectChange)
-END_EVENT_TABLE()
-
-
-S57ObjectTree::S57ObjectTree( )
-{
-      Init();
-}
-
-S57ObjectTree::S57ObjectTree ( S57QueryDialog* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style )
-{
-      Init();
-      m_parent = parent;
-      Create ( parent, id, pos, size, style );
-}
-
-S57ObjectTree::~S57ObjectTree( )
-{
-}
-
-void S57ObjectTree::Init( )
-{
-}
-
-void S57ObjectTree::OnItemExpanding( wxTreeEvent& event)
-{
-}
-
-void S57ObjectTree::OnItemSelectChange( wxTreeEvent& event)
-{
-      wxTreeItemId item_id = event.GetItem();
-      m_parent->SetSelectedItem(item_id);
-}
-
-#endif
 
 //-----------------------------------------------------------------------
 //
@@ -16920,98 +16481,6 @@ int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_g
 #endif // __OPCPN_USEICC__
 
 
-// in glext.h typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSPROC) (GLsizei n, GLuint *framebuffers);
-
-
-#if 0
-bool CheckExtension(char* extensionName)
-{
-// get the list of supported extensions
-      char* extensionList = (char*) glGetString(GL_EXTENSIONS);
-      if (!extensionName || !extensionList)
-            return false;
-      while (*extensionList)
-      {
-// find the length of the first extension substring
-            unsigned int firstExtensionLength = strcspn(extensionList, " ");
-            if (strlen(extensionName) == firstExtensionLength &&
-                strncmp(extensionName, extensionList, firstExtensionLength) == 0)
-            {
-                  return true;
-            }
-// move to the next substring
-            extensionList += firstExtensionLength + 1;
-      }
-      return false;
-}
-
-main(int argc, char* argv[]) {
-      ...
-                  if (!QueryExtension("GL_EXT_texture_object")) {
-            fprintf(stderr, "texture_object extension not supported.\n");
-            exit(1);
-                  }
-                  ...
-}
-
-static GLboolean QueryExtension(char *extName)
-{
-    /*
-      ** Search for extName in the extensions string. Use of strstr()
-      ** is not sufficient because extension names can be prefixes of
-      ** other extension names. Could use strtok() but the constant
-      ** string returned by glGetString might be in read-only memory.
-    */
-      char *p;
-      char *end;
-      int extNameLen;
-
-      extNameLen = strlen(extName);
-
-      p = (char *)glGetString(GL_EXTENSIONS);
-      if (NULL == p) {
-            return GL_FALSE;
-      }
-
-      end = p + strlen(p);
-
-      while (p < end) {
-            int n = strcspn(p, " ");
-            if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
-                  return GL_TRUE;
-            }
-            p += (n + 1);
-      }
-      return GL_FALSE;
-}
-
-
-/* Declare global variable containing the extension function pointer */
-PFNGLISOBJECTBUFFERATIPROC IsObjectBufferATI = NULL;
-
-/* Query the function pointer */
-IsObjectBufferATI = (PFNGLISOBJECTBUFFERATIPROC)
-            glXGetProcAddressARB(“glIsObjectBufferATI”);
-
-/* This should never happen if the extension is supported;
- * but sanity check anyway, for robustness. */
-if (IsObjectBufferATI == NULL) {
-      error(“Cannot obtain extension function pointer.”);
-}
-
-...
-
-            /* Later in the program, call the extension function as needed */
-            GLuint buffer = bufferID; /* A buffer ID to be queried */
-
-/* Equivalent to calling
- *  if (glIsObjectBufferATI(buffer) == GL_TRUE) { ...
- */
-if ((*IsObjectBufferATI)(buffer) == GL_TRUE) {
-      /* buffer is indeed a vertex array buffer ID */
-}
-#endif
-
 void DimeControl(wxWindow* ctrl)
 {
       if(NULL == ctrl)
@@ -17036,6 +16505,7 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
             ctrl->SetBackgroundColour(back_color);
       else
             ctrl->SetBackgroundColour(wxNullColour);
+
       wxWindowList kids = ctrl->GetChildren();
       for(unsigned int i = 0 ; i < kids.GetCount() ; i++)
       {
@@ -17097,6 +16567,15 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
             else if(win->IsKindOf(CLASSINFO(wxPanel)))
             {
                   ((wxPanel*)win)->SetBackgroundColour(col1);
+            }
+
+            else if(win->IsKindOf(CLASSINFO(wxHtmlWindow)))
+            {
+                  if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
+                        ((wxPanel*)win)->SetBackgroundColour(back_color);
+                  else
+                        ((wxPanel*)win)->SetBackgroundColour(wxNullColour);
+
             }
 
             else if(win->IsKindOf(CLASSINFO(wxGrid)))

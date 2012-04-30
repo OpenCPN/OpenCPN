@@ -6225,10 +6225,6 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
 
 S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
 {
-// Debug
-//      if(!strncmp(obj->FeatureName, "_bcngn", 6))
-//         int uup = 4;
-
       S57ObjectDesc *ret_val = new S57ObjectDesc;
       char *curr_att;
       int iatt;
@@ -6266,18 +6262,13 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                       name_desc = "";
 
                   // In case there is no nice description for this object class, use the 6 char class name
-                  if(0 == strlen(name_desc))
+                  if( 0 == strlen( name_desc ) ) {
                         name_desc = obj->FeatureName;
-
+                        ret_val->S57ClassDesc = wxString( name_desc, wxConvUTF8, 1 );
+                        ret_val->S57ClassDesc << wxString( name_desc+1, wxConvUTF8 ).MakeLower();
+                  } else {
                   ret_val->S57ClassDesc = wxString(name_desc,  wxConvUTF8);
-
-                                    //    Show Feature Class
-                  wxString fclass =_T("Feature Class: ");
-                  fclass += name;
-                  fclass += _T("\n\n");
-                  ret_val->Attributes << fclass;
-
-
+                  }
 
                   //    Show LUP
                   if(g_bDebugS57)
@@ -6315,12 +6306,10 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                               lon -= 360.;
 
                         wxString pos_st;
-                        pos_st.Printf(_T("Position: "));
                         pos_st += toSDMM(1, lat);
                         pos_st <<_T("   ");
                         pos_st += toSDMM(2, lon);
-                        pos_st << _T('\n');
-                        ret_val->Attributes << pos_st;
+                        ret_val->Attributes << _T("<font size=-2>") << pos_st << _T("</font><br>\n");
                   }
 
 
@@ -6334,7 +6323,9 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
 
                   iatt = 0;
 
-                  ret_val->Attributes << _T("\nAttributes\n");
+                  wxString attribStr;
+                  int noAttr = 0;
+                  attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
 
                   while(*curr_att)
                   {
@@ -6346,23 +6337,18 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                               att.Append(t);
                         }
 
-                        if(*curr_att == '\037')
-                              curr_att++;
+                        if( *curr_att == '\037' ) curr_att++;
 
-                        int is = 0;
-                        while( is < 3)
-                        {
-                              ret_val->Attributes << _T(' ');
-                              is++;
+                        noAttr++;
+                        if( att == _T("DRVAL1") ) {
+                              attribStr << _T("<tr><td><font size=-1>");
                         }
-
-                        ret_val->Attributes << att;
-
-                        is+= att.Len();
-                        while( is < 15)
-                        {
-                              ret_val->Attributes << _T(' ');
-                              is++;
+                        else if( att == _T("DRVAL2") ) {
+                              attribStr << _T(" - ");
+                        }
+                        else {
+                              attribStr << _T("<tr><td valign=top><font size=-2>") << att;
+                              attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                         }
 
 
@@ -6390,7 +6376,8 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                         value = _T("Unknown");
                                     else
                                     {
-                                        wxString decode_val = GetAttributeDecode(att, ival);
+                                                      wxString decode_val = GetAttributeDecode( att,
+                                                                  ival );
                                         if(!decode_val.IsEmpty())
                                         {
                                             value = decode_val;
@@ -6399,7 +6386,7 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                             value.Append(iv);
                                         }
                                         else
-                                            value.Printf(_T("(%d)"), (int)ival);
+                                                      value.Printf( _T("%d"), (int) ival );
                                     }
                                 }
 
@@ -6418,11 +6405,12 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                         long ival;
                                         if(token.ToLong(&ival))
                                         {
-                                            wxString decode_val = GetAttributeDecode(att, ival);
+                                                            wxString decode_val =
+                                                                        GetAttributeDecode( att, ival );
                                             if(!decode_val.IsEmpty())
                                                 value_increment = decode_val;
                                             else
-                                                value_increment.Printf(_T("(%d)"), (int)ival);
+                                                                  value_increment.Printf( _T(" %d"), (int) ival );
 
                                             if(iv)
                                                 value_increment.Prepend(wxT(", "));
@@ -6431,10 +6419,7 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
 
                                         iv++;
                                     }
-
-                                    value.Append(_T("("));
                                     value.Append(val_str);
-                                    value.Append(_T(")"));
                                 }
                             }
                             else
@@ -6466,7 +6451,7 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                         case OGR_REAL:
                         {
                               double dval = *((double *)pval->value);
-                              wxString val_suffix = _T("(m)");
+                                    wxString val_suffix = _T(" m");
 
                               //    As a special case, convert some attribute values to feet.....
                               if((att == _T("VERCLR")) ||
@@ -6479,7 +6464,7 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                           case 0:                       // feet
                                           case 2:                       // fathoms
                                                 dval = dval * 3 * 39.37 / 36;              // feet
-                                                val_suffix = _T("(ft)");
+                                                      val_suffix = _T(" ft");
                                                 break;
                                           default:
                                                 break;
@@ -6494,12 +6479,12 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                                     {
                                           case 0:                       // feet
                                                  dval = dval * 3 * 39.37 / 36;              // feet
-                                                 val_suffix = _T("(ft)");
+                                                      val_suffix = _T(" ft");
                                                  break;
                                           case 2:                       // fathoms
                                                  dval = dval * 3 * 39.37 / 36;              // fathoms
                                                  dval /= 6.0;
-                                                 val_suffix = _T("(fathoms)");
+                                                      val_suffix = _T(" fathoms");
                                                  break;
                                           default:
                                                 break;
@@ -6508,16 +6493,15 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
 
 
                               else if(att == _T("SECTR1"))
-                                    val_suffix = _T("(Deg.)");
+                                    val_suffix = _T(" Deg");
                               else if(att == _T("SECTR2"))
-                                    val_suffix = _T("(Deg.)");
+                                    val_suffix = _T(" Deg");
                               else if(att == _T("ORIENT"))
-                                    val_suffix = _T("(Deg.)");
+                                    val_suffix = _T(" Deg");
                               else if(att == _T("VALNMR"))
-                                    val_suffix = _T("(NM)");
+                                    val_suffix = _T(" Nm");
                               else if(att == _T("SIGPER"))
-                                    val_suffix = _T("(Sec.)");
-
+                                    val_suffix = _T(" Sec");
 
                               value.Printf(_T("%4.1f"), dval);
 
@@ -6532,18 +6516,19 @@ S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
                         }
                     }
 
-                    //  Emit the attribute with surrounding tags
-                    ret_val->Attributes << _T("<atval>");
-                    ret_val->Attributes << value;
-                    ret_val->Attributes << _T("<\\atval>");
+                        if( att == _T("INFORM") || att == _T("NINFOM") ) value.Replace( _T("|"), _T("<br>") );
+                        attribStr << value;
 
-
-                    ret_val->Attributes << _T('\n');
+                        if( ! (att == _T("DRVAL1")) ) {
+                              attribStr << _T("</font></td></tr>\n");
+                        }
 
                     iatt++;
 
                   }             //while *curr_att
 
+                  attribStr << _T("</table>\n");
+                  if( noAttr > 0 ) ret_val->Attributes << attribStr;
                   free(curr_att0);
 
                   return ret_val;
