@@ -25255,6 +25255,17 @@
 			<display-cat>Standard</display-cat>
 			<comment>27020</comment>
 		</lookup>
+		<lookup id="2441" RCID="94011" name="TOPMAR">
+			<type>Point</type>
+			<disp-prio>Area Symbol</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">COLOUR3</attrib-code>
+			<attrib-code index="1">INFORMtriangle, point up|TR</attrib-code>
+			<instruction>SY(TOPMARTR)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27020</comment>
+		</lookup>
 		<lookup id="2442" RCID="94012" name="TOPMAR">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
@@ -25262,6 +25273,17 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">COLOUR4</attrib-code>
 			<instruction>SY(TOPMAR92)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27020</comment>
+		</lookup>
+		<lookup id="2442" RCID="94012" name="TOPMAR">
+			<type>Point</type>
+			<disp-prio>Area Symbol</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">COLOUR4</attrib-code>
+			<attrib-code index="1">INFORMsquare|SG</attrib-code>
+			<instruction>SY(TOPMARSG)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27020</comment>
 		</lookup>
@@ -37005,9 +37027,9 @@
 		<symbol RCID="1604">
 			<name>TOPMAR14</name>
 			<description>topmark for buoys, board, paper-chart</description>
-			<bitmap width="8" height="5">
+			<bitmap width="8" height="8">
 				<distance min="0" max="0" />
-				<pivot x="0" y="23" />
+				<pivot x="2" y="24" />
 				<origin x="0" y="0" />
 				<graphics-location x="83" y="307" />
 			</bitmap>
@@ -44013,7 +44035,7 @@
 		</symbol>
 
 		<symbol RCID="327">
-			<name>23</name>
+			<name>TOPMAR23</name>
 			<description>topmark for beacons, cone point up, yellow, filled, full-chart</description>
 			<bitmap width="9" height="6">
 				<distance min="0" max="0" />
@@ -44487,7 +44509,7 @@
 				<distance min="0" max="0" />
 				<pivot x="5" y="15" />
 				<origin x="0" y="0" />
-				<graphics-location x="426" y="778" />
+				<graphics-location x="427" y="778" />
 			</bitmap>
 			<color-ref>ADEPMDBCHBLK</color-ref>
 			<definition>R</definition>
@@ -47535,6 +47557,28 @@
 				<pivot x="8" y="30" />
 				<origin x="0" y="0" />
 				<graphics-location x="602" y="946" />
+			</bitmap>
+			<color-ref>ADEPMDBCHBLKCCHREDDCHGRN</color-ref>
+			<definition>R</definition>
+		</symbol>
+		<symbol RCID="1">
+			<name>TOPMARSG</name>
+			<bitmap width="17" height="33">
+				<distance min="0" max="0" />
+				<pivot x="8" y="30" />
+				<origin x="0" y="0" />
+				<graphics-location x="631" y="946" />
+			</bitmap>
+			<color-ref>ADEPMDBCHBLKCCHREDDCHGRN</color-ref>
+			<definition>R</definition>
+		</symbol>
+		<symbol RCID="1">
+			<name>TOPMARTR</name>
+			<bitmap width="17" height="33">
+				<distance min="0" max="0" />
+				<pivot x="8" y="30" />
+				<origin x="0" y="0" />
+				<graphics-location x="658" y="946" />
 			</bitmap>
 			<color-ref>ADEPMDBCHBLKCCHREDDCHGRN</color-ref>
 			<definition>R</definition>
