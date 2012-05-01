@@ -84,6 +84,9 @@ char AuthorText[] =
 "   David S Register\n\
       bdbcat@yahoo.com\n\
       OpenCPN Lead Developer\n\n\
+    Jesper Weissglas\n\
+      jesper@journeyman.se\n\
+      Vector Chart Renderer Enhancements\n\n\
     Sean D'Epagnier\n\
       sean@depagnier.com\n\
       OpenGL Architecture\n\n\
