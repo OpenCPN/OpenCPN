@@ -201,7 +201,7 @@ wxString        *pHome_Locn;
 wxString        g_TCdataset;
 wxString        *pWVS_Locn;
 wxString        *pInit_Chart_Dir;
-wxString        *g_pcsv_locn;
+wxString        g_csv_locn;
 wxString        g_SENCPrefix;
 wxString        g_UserPresLibData;
 wxString        g_Plugin_Dir;
@@ -2006,7 +2006,6 @@ bool MyApp::OnInit()
         pNMEA_AP_Port = new wxString();
         pWIFIServerName = new wxString();
         pAIS_Port = new wxString();
-        g_pcsv_locn = new wxString();
         pInit_Chart_Dir = new wxString();
 
         //  Establish an empty ChartCroupArray
@@ -2234,114 +2233,20 @@ bool MyApp::OnInit()
         g_config_version_string = vs;
 
 
-        //        A special case for windows, which has some trouble finding the data files....
-#ifdef __WXMSW__
-        wxString sfd(g_SData_Locn);
-        appendOSDirSlash(&sfd);
-        sfd.Append(_T("s57data"));
-
-        if(!wxDir::Exists(sfd))                 // not found
-        {
-              wxString s_exe = std_path.GetExecutablePath();
-              wxFileName fn_look(s_exe);
-              while(fn_look.GetDirCount())
-              {
-                          wxString cpath = fn_look.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-
-                          // look for  path/s57data/S52RAZDS.RLE
-                          wxString cp1 = cpath;
-                          wxString cp1d = cp1;
-                          cp1 += _T("s57data");
-                          appendOSDirSlash(&cp1);
-                          cp1 += _T("S52RAZDS.RLE");
-                          if(wxFileName::FileExists(cp1))
-                          {
-                                g_SData_Locn = cp1d;
-                                break;
-                          }
-
-                          // look for  path/data/s57data/S52RAZDS.RLE
-                          cp1 = cpath;
-                          cp1 += _T("data");
-                          appendOSDirSlash(&cp1);
-                          cp1d = cp1;
-                          cp1 += _T("s57data");
-                          appendOSDirSlash(&cp1);
-                          cp1 += _T("S52RAZDS.RLE");
-                          if(wxFileName::FileExists(cp1))
-                          {
-                                g_SData_Locn = cp1d;
-                                break;
-                          }
-
-                          fn_look.RemoveLastDir();
-              }
-        }
-
-#endif
-
-
 #ifdef USE_S57
 
 //      Set up a useable CPL library error handler for S57 stuff
         CPLSetErrorHandler( MyCPLErrorHandler );
 
 //      Init the s57 chart object, specifying the location of the required csv files
-
-//      If the config file contains an entry for s57 .csv files,
-//      confirm that the required files are available, and use them.
-//      Otherwise, default to [shared data dir]/s57_data
-        if(!g_pcsv_locn->IsEmpty())
-        {
-              wxString fd(*g_pcsv_locn);
-              appendOSDirSlash(&fd);
-
-              bool tflag = true;          // assume true
-              wxFileName f1;
-
-              fd = *g_pcsv_locn; //PL
-              appendOSDirSlash(&fd); //PL
-              fd.Append(_T("s57attributes.csv"));
-              f1 = wxFileName(fd);
-              tflag &= f1.FileExists();
-
-              fd = *g_pcsv_locn; //PL
-              appendOSDirSlash(&fd); //PL
-              fd.Append(_T("attdecode.csv"));
-              f1 = wxFileName(fd);
-              tflag &= f1.FileExists();
-
-              fd = *g_pcsv_locn; //PL
-              appendOSDirSlash(&fd); //PL
-              fd.Append(_T("s57expectedinput.csv"));
-              f1 = wxFileName(fd);
-              tflag &= f1.FileExists();
-
-              fd = *g_pcsv_locn; //PL
-              appendOSDirSlash(&fd); //PL
-              fd.Append(_T("s57objectclasses.csv"));
-              f1 = wxFileName(fd);
-              tflag &= f1.FileExists();
-
-              if(!tflag)
-              {
-                    g_pcsv_locn->Clear();
-                    g_pcsv_locn->Append(g_SData_Locn);
-                    g_pcsv_locn->Append(_T("s57data"));
-              }
-
-        }
-        else
-        {
-              g_pcsv_locn->Append(g_SData_Locn);
-              g_pcsv_locn->Append(_T("s57data"));
-        }
+        g_csv_locn = g_SData_Locn;
+        g_csv_locn.Append(_T("s57data"));
 
         if(g_bportable)
         {
-            *g_pcsv_locn = _T(".");
-             appendOSDirSlash(g_pcsv_locn);
-             g_pcsv_locn->Append(_T("s57data"));
+             g_csv_locn = _T(".");
+             appendOSDirSlash(&g_csv_locn);
+             g_csv_locn.Append(_T("s57data"));
         }
 
 
@@ -2363,16 +2268,16 @@ bool MyApp::OnInit()
                     g_SENCPrefix = _T("SENC");
         }
 
-        // S52RAZDS.RLE
 
-        wxString plib_data;
 
 //      If the config file contains an entry for PresentationLibraryData, use it.
 //      Otherwise, default to conditionally set spot under g_pcsv_locn
+        wxString plib_data;
         bool b_force_legacy = false;
+
         if(g_UserPresLibData.IsEmpty())
         {
-              plib_data = *g_pcsv_locn;
+              plib_data = g_csv_locn;
               appendOSDirSlash(&plib_data);
               plib_data.Append(_T("S52RAZDS.RLE"));
         }
@@ -2418,7 +2323,7 @@ bool MyApp::OnInit()
 
             if(ps52plib->m_bOK)
             {
-                  *g_pcsv_locn = look_data_dir;
+                  g_csv_locn = look_data_dir;
                   g_SData_Locn = tentative_SData_Locn;
             }
         }
@@ -2442,22 +2347,27 @@ bool MyApp::OnInit()
               ps52plib = new s52plib(plib_data);
 
               if(ps52plib->m_bOK)
-              {
-                    *g_pcsv_locn = look_data_dir;
-              }
+                    g_csv_locn = look_data_dir;
         }
 
 
 
         if(ps52plib->m_bOK)
-            wxLogMessage(_T("Using s57data in ") + *g_pcsv_locn);
+            wxLogMessage(_T("Using s57data in ") + g_csv_locn);
         else
             wxLogMessage(_T("   S52PLIB Initialization failed, disabling S57 charts."));
 
 
 // Todo Maybe initialize only when an s57 chart is actually opened???
         if(ps52plib->m_bOK)
-              m_pRegistrarMan = new s57RegistrarMgr(*g_pcsv_locn, flog);
+              m_pRegistrarMan = new s57RegistrarMgr(g_csv_locn, flog);
+
+
+        if(!ps52plib->m_bOK)
+        {
+              delete ps52plib;
+              ps52plib = NULL;
+        }
 
 
 #endif  // S57
@@ -2505,11 +2415,6 @@ bool MyApp::OnInit()
         pTC_Dir = new wxString(_T("tcdata"));
         pTC_Dir->Prepend(g_SData_Locn);
         pTC_Dir->Append(wxFileName::GetPathSeparator());
-
-        wxLogMessage(_T("Using Tide/Current data from:  ") + *pTC_Dir);
-
-
-
 
 //      Establish guessed location of chart tree
         if(pInit_Chart_Dir->IsEmpty())
@@ -3164,7 +3069,6 @@ int MyApp::OnExit()
 
         delete pChartListFileName;
         delete pHome_Locn;
-        delete g_pcsv_locn;
         delete pTC_Dir;
         delete phost_name;
         delete pInit_Chart_Dir;
@@ -8969,8 +8873,10 @@ void MyFrame::LoadHarmonics()
       else
       {
             TCDir = g_PrivateDataDir;
-            TCDir.Append( _T("UserTCData") ).Append( sep ).Append(g_TCdataset).Append( sep );
+            TCDir.Append( sep ).Append( _T("UserTCData") ).Append( sep ).Append(g_TCdataset).Append( sep );
       }
+
+      wxLogMessage(_T("Using Tide/Current data from:  ") + TCDir);
 
       wxString harm2test = TCDir;
       harm2test.Append( _T("HARMONIC") );

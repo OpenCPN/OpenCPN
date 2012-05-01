@@ -62,7 +62,7 @@
 
 extern s52plib *ps52plib;
 extern bool g_b_useStencil;
-extern wxString *g_pcsv_locn;
+extern wxString g_csv_locn;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
             int dash, int space );
@@ -625,7 +625,7 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy ) {
             ( *_cond_sym )[index] = (Rule *) ( condTable[i].condInst );
       }
 
-      wxString oc_file( *g_pcsv_locn );
+      wxString oc_file( g_csv_locn );
       oc_file.Append( _T("/s57objectclasses.csv") );
 
       PreloadOBJLFromCSV( oc_file );

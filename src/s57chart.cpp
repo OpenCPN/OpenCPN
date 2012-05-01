@@ -79,7 +79,7 @@ const char *MyCSVGetField( const char * pszFilename,
 
 extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
-extern wxString          *g_pcsv_locn;
+extern wxString          g_csv_locn;
 extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
@@ -1075,7 +1075,7 @@ s57chart::s57chart()
 
 
     m_tmpup_array = NULL;
-    m_pcsv_locn = new wxString(*g_pcsv_locn);
+    m_pcsv_locn = new wxString(g_csv_locn);
 
     m_DepthUnits = _T("METERS");
     m_depth_unit_id = DEPTH_UNIT_METERS;
@@ -1183,6 +1183,8 @@ void s57chart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegi
 
 void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
+      if(ps52plib)
+            return;
     //  Here we convert (subjectively) the Global ColorScheme
     //  to an appropriate S52 Color scheme, by name.
 
@@ -1293,7 +1295,8 @@ void s57chart::FreeObjectsAndRules()
                       {
                         delete ctop->obj;
 
-                        ps52plib->DestroyLUP ( ctop->LUP );
+                        if(ps52plib)
+                              ps52plib->DestroyLUP ( ctop->LUP );
                         delete ctop->LUP;
 
                         ObjRazRules *cnxx = ctop->next;
@@ -1570,6 +1573,9 @@ void s57chart::ForceEdgePriorityEvaluate(void)
 
 void s57chart::SetLinePriorities(void)
 {
+      if(!ps52plib)
+            return;
+
     //      If necessary.....
     //      Establish line feature rendering priorities
 
@@ -1628,6 +1634,9 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VP
 {
 //     CALLGRIND_START_INSTRUMENTATION
 //      g_bDebugS57 = true;
+
+      if(!ps52plib)
+            return false;
 
       if(g_bDebugS57) printf ("\n");
 

@@ -97,7 +97,7 @@ extern wxString         g_NMEABaudRate;
 
 extern wxString         *pNMEA_AP_Port;
 extern wxString         *pWIFIServerName;
-extern wxString         *g_pcsv_locn;
+extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
@@ -3242,6 +3242,7 @@ int MyConfig::LoadMyConfig ( int iteration )
       if ( iteration == 0 )
             g_UserPresLibData = valpres;
 
+/*
       wxString strd ( _T ( "S57DataLocation" ) );
       SetPath ( _T ( "/Directories" ) );
       Read ( strd, &val );              // Get the Directory name
@@ -3256,7 +3257,7 @@ int MyConfig::LoadMyConfig ( int iteration )
                   g_pcsv_locn->Append ( val );
             }
       }
-
+*/
       wxString strs ( _T ( "SENCFileLocation" ) );
       SetPath ( _T ( "/Directories" ) );
       wxString vals;
@@ -4525,8 +4526,8 @@ void MyConfig::UpdateSettings()
       Write ( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
 
       SetPath ( _T ( "/Directories" ) );
-      Write ( _T ( "S57DataLocation" ), *g_pcsv_locn );
-      Write ( _T ( "SENCFileLocation" ), g_SENCPrefix );
+      Write ( _T ( "S57DataLocation" ), _T(""));
+      Write ( _T ( "SENCFileLocation" ), _T(""));
 //      Write ( _T ( "PresentationLibraryData" ), g_UserPresLibData );
 
 #endif
