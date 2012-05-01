@@ -629,30 +629,33 @@ void options::CreateControls()
       m_pcTCDatasets = new wxChoice( itemPanel5, wxID_ANY, wxDefaultPosition, wxDefaultSize  );
       m_pcTCDatasets->Append( _("Default dataset") );
       int sel = 0;
-      wxString m_UserPlibPath = g_PrivateDataDir; 
+      wxString m_UserPlibPath = g_PrivateDataDir;
       wxChar sep = wxFileName::GetPathSeparator();
       if ( m_UserPlibPath.Last() != sep )
             m_UserPlibPath.Append( sep );
       m_UserPlibPath.Append( _T("UserTCData") ).Append( sep );
-      wxDir dir(m_UserPlibPath);
-      if ( dir.IsOpened() )
+      if(wxDir::Exists(m_UserPlibPath))
       {
-            wxString dirname;
-
-            bool cont = dir.GetFirst( &dirname, _T("*"), wxDIR_DIRS );
-            int i = 1;
-            while ( cont )
+            wxDir dir(m_UserPlibPath);
+            if ( dir.IsOpened() )
             {
-                  wxString harm = m_UserPlibPath;
-                  wxString idx = m_UserPlibPath;
-                  harm.Append(dirname).Append(sep).Append(wxT("HARMONIC"));
-                  idx.Append(dirname).Append(sep).Append(wxT("HARMONIC.IDX"));
-                  if ( wxFileExists(harm) && wxFileExists(idx) )
-                        m_pcTCDatasets->Append( dirname );
-                  if ( dirname == g_TCdataset )
-                        sel = i;
-                  i++;
-                  cont = dir.GetNext( &dirname );
+                  wxString dirname;
+
+                  bool cont = dir.GetFirst( &dirname, _T("*"), wxDIR_DIRS );
+                  int i = 1;
+                  while ( cont )
+                  {
+                        wxString harm = m_UserPlibPath;
+                        wxString idx = m_UserPlibPath;
+                        harm.Append(dirname).Append(sep).Append(wxT("HARMONIC"));
+                        idx.Append(dirname).Append(sep).Append(wxT("HARMONIC.IDX"));
+                        if ( wxFileExists(harm) && wxFileExists(idx) )
+                              m_pcTCDatasets->Append( dirname );
+                        if ( dirname == g_TCdataset )
+                              sel = i;
+                        i++;
+                        cont = dir.GetNext( &dirname );
+                  }
             }
       }
 	m_pcTCDatasets->SetSelection( sel );
@@ -1201,7 +1204,7 @@ void options::CreateControls()
 
     m_pCheck_Show_Area_Notices = new wxCheckBox( itemPanelAIS, -1, _("Show area notices (from AIS binary messages)"));
     pDisplayGrid->Add(m_pCheck_Show_Area_Notices, 1, wxALIGN_LEFT|wxALL, group_item_spacing);
-    
+
     // Rollover
     wxStaticBox* itemStaticBoxRollover = new wxStaticBox(itemPanelAIS, wxID_ANY, _("Rollover"));
     wxStaticBoxSizer* itemStaticBoxSizerRollover= new wxStaticBoxSizer(itemStaticBoxRollover, wxVERTICAL);
@@ -1556,7 +1559,7 @@ void options::SetInitialSettings()
       m_pText_Moored_Speed->SetValue(s);
 
       m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
-      
+
          //      Alerts
       m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
       m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
@@ -1961,7 +1964,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
-    
+
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
