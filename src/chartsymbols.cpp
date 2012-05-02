@@ -154,51 +154,47 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes ) {
 
             while( subNode ) {
                   wxString nodeType( subNode->Value(), wxConvUTF8);
+                  wxString nodeText( subNode->GetText(), wxConvUTF8);
 
                   if( nodeType == _T("type")) {
 
-                        wxString typeStr(subNode->GetText(), wxConvUTF8);
-                        if( typeStr == _T("Area") ) lookup.type = AREAS_T;
-                        else if( typeStr == _T("Line") ) lookup.type = LINES_T;
+                        if( nodeText == _T("Area") ) lookup.type = AREAS_T;
+                        else if( nodeText == _T("Line") ) lookup.type = LINES_T;
                         else lookup.type = POINT_T;
 
                         goto nextNode;
                   }
 
                   if( nodeType == _T("disp-prio")) {
-                        wxString typeStr(subNode->GetText(), wxConvUTF8);
-                        if( typeStr == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
-                        else if( typeStr == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
-                        else if( typeStr == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
-                        else if( typeStr == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
-                        else if( typeStr == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
-                        else if( typeStr == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
-                        else if( typeStr == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
-                        else if( typeStr == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
+                        if( nodeText == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
+                        else if( nodeText == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
+                        else if( nodeText == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
+                        else if( nodeText == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
+                        else if( nodeText == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
+                        else if( nodeText == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
+                        else if( nodeText == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
+                        else if( nodeText == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
                         else lookup.displayPrio = PRIO_MARINERS;
                         goto nextNode;
                   }
                   if( nodeType == _T("radar-prio")) {
-                        wxString typeStr(subNode->GetText(), wxConvUTF8);
-                        if( typeStr == _T("On Top") ) lookup.radarPrio = RAD_OVER;
+                        if( nodeText == _T("On Top") ) lookup.radarPrio = RAD_OVER;
                         else lookup.radarPrio = RAD_SUPP;
                         goto nextNode;
                   }
                   if( nodeType == _T("table-name")) {
-                        wxString typeStr(subNode->GetText(), wxConvUTF8);
-                        if( typeStr == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
-                        else if( typeStr == _T("Lines") ) lookup.tableName = LINES;
-                        else if( typeStr == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
-                        else if( typeStr == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
+                        if( nodeText == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
+                        else if( nodeText == _T("Lines") ) lookup.tableName = LINES;
+                        else if( nodeText == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
+                        else if( nodeText == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
                         else lookup.tableName = PAPER_CHART;
                         goto nextNode;
                   }
                   if( nodeType == _T("display-cat")) {
-                        wxString typeStr(subNode->GetText(), wxConvUTF8);
-                        if( typeStr == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
-                        else if( typeStr == _T("Standard") ) lookup.displayCat = STANDARD;
-                        else if( typeStr == _T("Other") ) lookup.displayCat = OTHER;
-                        else if( typeStr == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
+                        if( nodeText == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
+                        else if( nodeText == _T("Standard") ) lookup.displayCat = STANDARD;
+                        else if( nodeText == _T("Other") ) lookup.displayCat = OTHER;
+                        else if( nodeText == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
                         else lookup.displayCat = OTHER;
                         goto nextNode;
                   }
@@ -211,7 +207,7 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes ) {
                   }
 
                   if( nodeType == _T("instruction")) {
-                        lookup.instruction = wxString(subNode->GetText(), wxConvUTF8);
+                        lookup.instruction = nodeText;
                         lookup.instruction.Append( '\037' );
                         goto nextNode;
                   }
@@ -316,21 +312,22 @@ void ChartSymbols::ProcessLinestyles( TiXmlElement* linestyleNodes ) {
 
             while( subNode ) {
                   wxString nodeType( subNode->Value(), wxConvUTF8);
+                  wxString nodeText( subNode->GetText(), wxConvUTF8);
 
                   if( nodeType == _T("description")) {
-                        lineStyle.description = wxString(subNode->GetText(), wxConvUTF8);
+                        lineStyle.description = nodeText;
                         goto nextNode;
                   }
                   if( nodeType == _T("name")) {
-                        lineStyle.name = wxString(subNode->GetText(), wxConvUTF8);
+                        lineStyle.name = nodeText;
                         goto nextNode;
                   }
                   if( nodeType == _T("color-ref")) {
-                        lineStyle.colorRef = wxString(subNode->GetText(), wxConvUTF8);
+                        lineStyle.colorRef = nodeText;
                         goto nextNode;
                   }
                   if( nodeType == _T("HPGL")) {
-                        lineStyle.HPGL = wxString(subNode->GetText(), wxConvUTF8);
+                        lineStyle.HPGL = nodeText;
                         goto nextNode;
                   }
                   if( nodeType == _T("vector")) {
@@ -399,13 +396,14 @@ void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes ) {
 
             while( subNodes ) {
                   wxString nodeType( subNodes->Value(), wxConvUTF8);
+                  wxString nodeText( subNodes->GetText(), wxConvUTF8);
 
                   if( nodeType == _T("description")) {
-				pattern.description = wxString(subNodes->GetText(), wxConvUTF8);
+                        pattern.description = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("name")) {
-                        pattern.name = wxString(subNodes->GetText(), wxConvUTF8);
+                        pattern.name = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("filltype")) {
@@ -417,7 +415,7 @@ void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes ) {
 				goto nextNode;
 			}
                   if( nodeType == _T("color-ref")) {
-                        pattern.colorRef = wxString(subNodes->GetText(), wxConvUTF8);
+                        pattern.colorRef = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("definition")) {
@@ -425,9 +423,9 @@ void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes ) {
 				goto nextNode;
 			}
                   if( nodeType == _T("prefer-bitmap")) {
-				if(!strcmp(subNodes->GetText(), "no" )) pattern.preferBitmap = false;
-				if(!strcmp(subNodes->GetText(), "false"))  pattern.preferBitmap = false;
-				goto nextNode;
+                        if(nodeText.Lower() == _T("no")) pattern.preferBitmap = false;
+                        if(nodeText.Lower() == _T("false")) pattern.preferBitmap = false;
+                        goto nextNode;
 			}
                   if( nodeType == _T("bitmap")) {
 				TGET_INT_PROPERTY_VALUE( subNodes, "width", pattern.bitmapSize.size.x )
@@ -463,7 +461,7 @@ void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes ) {
 			}
                   if( nodeType == _T("HPGL")) {
 				pattern.hasVector = true;
-				pattern.HPGL = wxString(subNodes->GetText(), wxConvUTF8);
+                        pattern.HPGL = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("vector")) {
@@ -565,17 +563,18 @@ void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes ) {
 
             while( subNodes ) {
                   wxString nodeType( subNodes->Value(), wxConvUTF8);
+                  wxString nodeText( subNodes->GetText(), wxConvUTF8);
 
                   if( nodeType == _T("description")) {
-				symbol.description = wxString(subNodes->GetText(), wxConvUTF8);
+                        symbol.description = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("name")) {
-                        symbol.name = wxString(subNodes->GetText(), wxConvUTF8);
+                        symbol.name = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("color-ref")) {
-                        symbol.colorRef = wxString(subNodes->GetText(), wxConvUTF8);
+                        symbol.colorRef = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("definition")) {
@@ -583,12 +582,12 @@ void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes ) {
 				goto nextNode;
 			}
                   if( nodeType == _T("HPGL")) {
-                        symbol.HPGL = wxString(subNodes->GetText(), wxConvUTF8);
+                        symbol.HPGL = nodeText;
 				goto nextNode;
 			}
                   if( nodeType == _T("prefer-bitmap")) {
-				if( !strcmp(subNodes->GetText(),"no") ) symbol.preferBitmap = false;
-                        if( !strcmp(subNodes->GetText(),"false") ) symbol.preferBitmap = false;
+                        if( nodeText.Lower() == _T("no") ) symbol.preferBitmap = false;
+                        if( nodeText.Lower() == _T("false") ) symbol.preferBitmap = false;
 				goto nextNode;
 			}
                   if( nodeType == _T("bitmap")) {
