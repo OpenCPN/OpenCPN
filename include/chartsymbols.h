@@ -29,7 +29,7 @@
 #pragma once
 
 #include "s52plib.h"
-#include <wx/xml/xml.h>
+#include <tinyxml.h>
 
 
 class Lookup {
@@ -123,12 +123,12 @@ public:
 
 
 private:
-	void ProcessVectorTag( wxXmlNode* subNodes, SymbolSizeInfo_t &vectorSize );
-	void ProcessColorTables( wxXmlNode* colortableodes );
-	void ProcessLookups( wxXmlNode* lookupNodes );
-	void ProcessLinestyles( wxXmlNode* linestyleNodes );
-	void ProcessPatterns( wxXmlNode* patternNodes );
-	void ProcessSymbols( wxXmlNode* symbolNodes );
+      void ProcessVectorTag( TiXmlElement* subNodes, SymbolSizeInfo_t &vectorSize );
+      void ProcessColorTables( TiXmlElement* colortableodes );
+      void ProcessLookups( TiXmlElement* lookupNodes );
+      void ProcessLinestyles( TiXmlElement* linestyleNodes );
+      void ProcessPatterns( TiXmlElement* patternNodes );
+      void ProcessSymbols( TiXmlElement* symbolNodes );
 	void BuildLineStyle( LineStyle &lineStyle );
 	void BuildLookup( Lookup &lookup );
 	void BuildPattern( OCPNPattern &pattern );

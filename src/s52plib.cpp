@@ -717,6 +717,10 @@ void s52plib::DestroyRules( RuleHash *rh ) {
             if( pR ) {
                   free( pR->vector.LVCT );
                   free( pR->colRef.SCRF );
+                  if(pR->bitmap.SBTM)
+                      delete pR->bitmap.SBTM;
+                  if(pR->exposition.LXPO)
+                      delete pR->exposition.LXPO;
                   ClearRulesCache( pR );
             }
       }
@@ -2142,7 +2146,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
       } else {
 
-            if(!pbm)                // This symbol requires manual alpha blending
+            if(!( prule->pixelPtr ))                // This symbol requires manual alpha blending
             {
                   // Get the current screen contents
                   wxBitmap b1(b_width, b_height, -1);
@@ -3352,7 +3356,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
                         wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                         glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
 //                        glLineWidth( 0.5 );
-                        glLineWidth( 0.7 );
+                        glLineWidth( (float)0.7 );
 
                         glLineStipple( 1, 0x3F3F );
                         glEnable( GL_LINE_STIPPLE );

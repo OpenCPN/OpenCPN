@@ -86,138 +86,146 @@ void ChartSymbols::DeleteGlobals( void ) {
 }
 
 
-#define GET_INT_PROPERTY_VALUE( node, name, target )  \
-	propVal = node->GetPropVal( _T(name), _T("0")); \
-	propVal.ToLong( &numVal, 0 ); \
-	target = numVal;
+#define TGET_INT_PROPERTY_VALUE( node, name, target )  \
+      propVal = wxString(node->Attribute(name), wxConvUTF8); \
+      propVal.ToLong( &numVal, 0 ); \
+      target = numVal;
 
-void ChartSymbols::ProcessColorTables( wxXmlNode* colortableNodes ) {
+void ChartSymbols::ProcessColorTables( TiXmlElement* colortableNodes ) {
 
-	wxXmlNode* tableNode = colortableNodes->GetChildren();
+      for( TiXmlNode *childNode = colortableNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
+      {
+            TiXmlElement *child = childNode->ToElement();
+            colTable *colortable = new colTable;
 
-	while(tableNode) {
-		colTable *colortable = new colTable;
-		colortable->tableName = new wxString( tableNode->GetPropVal( _T("name"), _T("<void>")));
+            const char *pName=child->Attribute("name");
+            colortable->tableName = new wxString( pName, wxConvUTF8);
 
-		wxXmlNode* colorNode = tableNode->GetChildren();
+            TiXmlElement* colorNode = child->FirstChild()->ToElement();
 
-		while( colorNode ) {
-			S52color color;
-			wxString propVal;
-			long numVal;
+            while( colorNode ) {
+                  S52color color;
+                  wxString propVal;
+                  long numVal;
 
-			if( colorNode->GetName() == _T("graphics-file") ) {
-				colortable->rasterFileName = colorNode->GetPropVal( _T("name"), _T("<void>") );
-				goto next;
-			}
-			else {
-				GET_INT_PROPERTY_VALUE( colorNode, "r", color.R )
-				GET_INT_PROPERTY_VALUE( colorNode, "g", color.G )
-				GET_INT_PROPERTY_VALUE( colorNode, "b", color.B )
+                  if( wxString(colorNode->Value(), wxConvUTF8) == _T("graphics-file") ) {
+                        colortable->rasterFileName = wxString(colorNode->Attribute( "name" ), wxConvUTF8);
+                        goto next;
+                  }
+                  else {
+                            TGET_INT_PROPERTY_VALUE( colorNode, "r", color.R )
+                            TGET_INT_PROPERTY_VALUE( colorNode, "g", color.G )
+                            TGET_INT_PROPERTY_VALUE( colorNode, "b", color.B )
 
-				wxString key = colorNode->GetPropVal( _T("name"), _T("<N/A>"));
-				strncpy( color.colName, key.char_str(), 5 );
-				color.colName[5] = 0;
+                        wxString key(colorNode->Attribute("name"), wxConvUTF8);
+                        strncpy( color.colName, key.char_str(), 5 );
+                        color.colName[5] = 0;
 
-				colortable->colors[key] = color;
+                        colortable->colors[key] = color;
 
-				wxColour wxcolor ( color.R, color.G, color.B );
-				colortable->wxColors[key] = wxcolor;
-			}
+                        wxColour wxcolor ( color.R, color.G, color.B );
+                        colortable->wxColors[key] = wxcolor;
+                  }
 
-			next: colorNode = colorNode->GetNext();
-		}
+                  next:colorNode = colorNode->NextSiblingElement();
+            }
 
-		colorTables->Add( (void *) colortable );
-		tableNode = tableNode->GetNext();
-	}
+            colorTables->Add( (void *) colortable );
+
+      }
 }
 
 
-void ChartSymbols::ProcessLookups( wxXmlNode* lookupNodes ) {
-	wxXmlNode* lookupNode = lookupNodes->GetChildren();
+void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes ) {
 	Lookup lookup;
 	wxString propVal;
 	long numVal;
 
-	while(lookupNode) {
+      for( TiXmlNode *childNode = lookupNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
+      {
+            TiXmlElement *child = childNode->ToElement();
 
-		GET_INT_PROPERTY_VALUE( lookupNode, "id", lookup.id )
-		GET_INT_PROPERTY_VALUE( lookupNode, "RCID", lookup.RCID )
-		lookup.name = lookupNode->GetPropVal( _T("name"), _T("<void>"));
-		lookup.attributeCodeArray = NULL;
+            TGET_INT_PROPERTY_VALUE( child, "id", lookup.id )
+            TGET_INT_PROPERTY_VALUE( child, "RCID", lookup.RCID )
+            lookup.name = wxString(child->Attribute("name"), wxConvUTF8);
+            lookup.attributeCodeArray = NULL;
 
-		wxXmlNode* subNodes = lookupNode->GetChildren();
+            TiXmlElement* subNode = child->FirstChild()->ToElement();
 
-		while( subNodes ) {
-			if( subNodes->GetName() == _T("type")) {
-				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _T("Area") ) lookup.type = AREAS_T;
-				else if( typeStr == _T("Line") ) lookup.type = LINES_T;
-				else lookup.type = POINT_T;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("disp-prio")) {
-				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
-				else if( typeStr == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
-				else if( typeStr == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
-				else if( typeStr == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
-				else if( typeStr == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
-				else if( typeStr == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
-				else if( typeStr == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
-				else if( typeStr == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
-				else lookup.displayPrio = PRIO_MARINERS;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("radar-prio")) {
-				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _T("On Top") ) lookup.radarPrio = RAD_OVER;
-				else lookup.radarPrio = RAD_SUPP;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("table-name")) {
-				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
-				else if( typeStr == _T("Lines") ) lookup.tableName = LINES;
-				else if( typeStr == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
-				else if( typeStr == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
-				else lookup.tableName = PAPER_CHART;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("display-cat")) {
-				wxString typeStr = subNodes->GetNodeContent();
-				if( typeStr == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
-				else if( typeStr == _T("Standard") ) lookup.displayCat = STANDARD;
-				else if( typeStr == _T("Other") ) lookup.displayCat = OTHER;
-				else if( typeStr == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
-				else lookup.displayCat = OTHER;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("comment")) {
-				wxString comment = subNodes->GetNodeContent();
-				long value;
-				comment.ToLong( &value, 0 );
-				lookup.comment = value;
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("instruction")) {
-				lookup.instruction = subNodes->GetNodeContent();
-				lookup.instruction.Append( '\037' );
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("attrib-code")) {
-				if( ! lookup.attributeCodeArray ) lookup.attributeCodeArray = new wxArrayString();
-				lookup.attributeCodeArray->Add( subNodes->GetNodeContent() );
-				goto nextNode;
-			}
+            while( subNode ) {
+                  wxString nodeType( subNode->Value(), wxConvUTF8);
 
-			nextNode: subNodes = subNodes->GetNext();
-		}
+                  if( nodeType == _T("type")) {
 
-		BuildLookup( lookup );
-		lookupNode = lookupNode->GetNext();
-	}
+                        wxString typeStr(subNode->GetText(), wxConvUTF8);
+                        if( typeStr == _T("Area") ) lookup.type = AREAS_T;
+                        else if( typeStr == _T("Line") ) lookup.type = LINES_T;
+                        else lookup.type = POINT_T;
+
+                        goto nextNode;
+                  }
+
+                  if( nodeType == _T("disp-prio")) {
+                        wxString typeStr(subNode->GetText(), wxConvUTF8);
+                        if( typeStr == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
+                        else if( typeStr == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
+                        else if( typeStr == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
+                        else if( typeStr == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
+                        else if( typeStr == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
+                        else if( typeStr == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
+                        else if( typeStr == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
+                        else if( typeStr == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
+                        else lookup.displayPrio = PRIO_MARINERS;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("radar-prio")) {
+                        wxString typeStr(subNode->GetText(), wxConvUTF8);
+                        if( typeStr == _T("On Top") ) lookup.radarPrio = RAD_OVER;
+                        else lookup.radarPrio = RAD_SUPP;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("table-name")) {
+                        wxString typeStr(subNode->GetText(), wxConvUTF8);
+                        if( typeStr == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
+                        else if( typeStr == _T("Lines") ) lookup.tableName = LINES;
+                        else if( typeStr == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
+                        else if( typeStr == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
+                        else lookup.tableName = PAPER_CHART;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("display-cat")) {
+                        wxString typeStr(subNode->GetText(), wxConvUTF8);
+                        if( typeStr == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
+                        else if( typeStr == _T("Standard") ) lookup.displayCat = STANDARD;
+                        else if( typeStr == _T("Other") ) lookup.displayCat = OTHER;
+                        else if( typeStr == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
+                        else lookup.displayCat = OTHER;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("comment")) {
+                        wxString comment(subNode->GetText(), wxConvUTF8);
+                        long value;
+                        comment.ToLong( &value, 0 );
+                        lookup.comment = value;
+                        goto nextNode;
+                  }
+
+                  if( nodeType == _T("instruction")) {
+                        lookup.instruction = wxString(subNode->GetText(), wxConvUTF8);
+                        lookup.instruction.Append( '\037' );
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("attrib-code")) {
+                        if( ! lookup.attributeCodeArray ) lookup.attributeCodeArray = new wxArrayString();
+                        lookup.attributeCodeArray->Add( wxString(subNode->GetText(), wxConvUTF8 ) );
+                        goto nextNode;
+                  }
+
+                  nextNode: subNode = subNode->NextSiblingElement();
+            }
+
+            BuildLookup( lookup );
+      }
 }
 
 
@@ -262,70 +270,77 @@ void ChartSymbols::BuildLookup( Lookup &lookup ) {
 }
 
 
-void ChartSymbols::ProcessVectorTag( wxXmlNode* vectorNode, SymbolSizeInfo_t &vectorSize ) {
+void ChartSymbols::ProcessVectorTag( TiXmlElement* vectorNode, SymbolSizeInfo_t &vectorSize ) {
 	wxString propVal;
 	long numVal;
-	GET_INT_PROPERTY_VALUE( vectorNode, "width", vectorSize.size.x )
-	GET_INT_PROPERTY_VALUE( vectorNode, "height", vectorSize.size.y )
-	wxXmlNode* vectorNodes = vectorNode->GetChildren();
-	while( vectorNodes ) {
-		if( vectorNodes->GetName() == _T("distance")) {
-			GET_INT_PROPERTY_VALUE( vectorNodes, "min", vectorSize.minDistance )
-			GET_INT_PROPERTY_VALUE( vectorNodes, "max", vectorSize.maxDistance )
+	TGET_INT_PROPERTY_VALUE( vectorNode, "width", vectorSize.size.x )
+	TGET_INT_PROPERTY_VALUE( vectorNode, "height", vectorSize.size.y )
+
+      TiXmlElement* vectorNodes = vectorNode->FirstChild()->ToElement();
+
+      while( vectorNodes ) {
+            wxString nodeType( vectorNodes->Value(), wxConvUTF8);
+
+            if( nodeType == _T("distance")) {
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "min", vectorSize.minDistance )
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "max", vectorSize.maxDistance )
 			goto nextVector;
 		}
-		if( vectorNodes->GetName() == _T("origin")) {
-			GET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.origin.x )
-			GET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.origin.y )
+            if( nodeType == _T("origin")) {
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.origin.x )
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.origin.y )
 			goto nextVector;
 		}
-		if( vectorNodes->GetName() == _T("pivot")) {
-			GET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.pivot.x )
-			GET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.pivot.y )
+            if( nodeType == _T("pivot")) {
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "x", vectorSize.pivot.x )
+			TGET_INT_PROPERTY_VALUE( vectorNodes, "y", vectorSize.pivot.y )
 			goto nextVector;
 		}
-		nextVector: vectorNodes = vectorNodes->GetNext();
+            nextVector: vectorNodes = vectorNodes->NextSiblingElement();
 	}
 }
 
-void ChartSymbols::ProcessLinestyles( wxXmlNode* linestyleNodes ) {
+void ChartSymbols::ProcessLinestyles( TiXmlElement* linestyleNodes ) {
+
 	LineStyle lineStyle;
 	wxString propVal;
 	long numVal;
-	wxXmlNode* lineStyleNode = linestyleNodes->GetChildren();
 
-	while(lineStyleNode) {
+      for( TiXmlNode *childNode = linestyleNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
+      {
+            TiXmlElement *child = childNode->ToElement();
 
-		GET_INT_PROPERTY_VALUE( lineStyleNode, "RCID", lineStyle.RCID )
+            TGET_INT_PROPERTY_VALUE( child, "RCID", lineStyle.RCID )
 
-		wxXmlNode* subNodes = lineStyleNode->GetChildren();
+            TiXmlElement* subNode = child->FirstChild()->ToElement();
 
-		while( subNodes ) {
-			if( subNodes->GetName() == _T("description")) {
-				lineStyle.description = subNodes->GetNodeContent();
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("name")) {
-				lineStyle.name = subNodes->GetNodeContent();
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("color-ref")) {
-				lineStyle.colorRef = subNodes->GetNodeContent();
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("HPGL")) {
-				lineStyle.HPGL = subNodes->GetNodeContent();
-				goto nextNode;
-			}
-			if( subNodes->GetName() == _T("vector")) {
-				ProcessVectorTag( subNodes, lineStyle.vectorSize );
-			}
-			nextNode: subNodes = subNodes->GetNext();
-		}
+            while( subNode ) {
+                  wxString nodeType( subNode->Value(), wxConvUTF8);
 
-		BuildLineStyle( lineStyle );
-		lineStyleNode = lineStyleNode->GetNext();
-	}
+                  if( nodeType == _T("description")) {
+                        lineStyle.description = wxString(subNode->GetText(), wxConvUTF8);
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("name")) {
+                        lineStyle.name = wxString(subNode->GetText(), wxConvUTF8);
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("color-ref")) {
+                        lineStyle.colorRef = wxString(subNode->GetText(), wxConvUTF8);
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("HPGL")) {
+                        lineStyle.HPGL = wxString(subNode->GetText(), wxConvUTF8);
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("vector")) {
+                        ProcessVectorTag( subNode, lineStyle.vectorSize );
+                  }
+                  nextNode: subNode = subNode->NextSiblingElement();
+            }
+
+            BuildLineStyle( lineStyle );
+      }
 }
 
 
@@ -334,7 +349,7 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle ) {
 	Rule *lnst = (Rule*) calloc( 1, sizeof(Rule) );
 	plib->pAlloc->Add( lnst );
 
-	lnst->exposition.LXPO = new wxString( lineStyle.description );
+//	lnst->exposition.LXPO = new wxString( lineStyle.description );
 	lnst->RCID = lineStyle.RCID;
 	strcpy( lnst->name.PANM, lineStyle.name.mb_str() );
 	lnst->bitmap.PBTM = NULL;
@@ -364,96 +379,103 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle ) {
 }
 
 
-void ChartSymbols::ProcessPatterns( wxXmlNode* patternNodes ) {
-	wxXmlNode* patternNode = patternNodes->GetChildren();
+void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes ) {
+
 	OCPNPattern pattern;
 	wxString propVal;
 	long numVal;
 
-	while(patternNode) {
+      for( TiXmlNode *childNode = patternNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
+      {
+            TiXmlElement *child = childNode->ToElement();
 
-		GET_INT_PROPERTY_VALUE( patternNode, "RCID", pattern.RCID )
+            TGET_INT_PROPERTY_VALUE( child, "RCID", pattern.RCID )
 
-		pattern.hasVector = false;
-		pattern.hasBitmap = false;
-		pattern.preferBitmap = true;
+            pattern.hasVector = false;
+            pattern.hasBitmap = false;
+            pattern.preferBitmap = true;
 
-		wxXmlNode* subNodes = patternNode->GetChildren();
+            TiXmlElement* subNodes = child->FirstChild()->ToElement();
 
-		while( subNodes ) {
-			if( subNodes->GetName() == _T("description")) {
-				pattern.description = subNodes->GetNodeContent();
+            while( subNodes ) {
+                  wxString nodeType( subNodes->Value(), wxConvUTF8);
+
+                  if( nodeType == _T("description")) {
+				pattern.description = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("name")) {
-				pattern.name = subNodes->GetNodeContent();
+                  if( nodeType == _T("name")) {
+                        pattern.name = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("filltype")) {
-				pattern.fillType = *subNodes->GetNodeContent().c_str();
+                  if( nodeType == _T("filltype")) {
+				pattern.fillType = (subNodes->GetText())[0];
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("spacing")) {
-				pattern.spacing = *subNodes->GetNodeContent().c_str();
+                  if( nodeType == _T("spacing")) {
+                        pattern.spacing = (subNodes->GetText())[0];
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("color-ref")) {
-				pattern.colorRef = subNodes->GetNodeContent();
+                  if( nodeType == _T("color-ref")) {
+                        pattern.colorRef = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("definition")) {
-				if( subNodes->GetNodeContent() == _T("V") ) pattern.hasVector = true;
+                  if( nodeType == _T("definition")) {
+				if( !strcmp(subNodes->GetText(), "V" )) pattern.hasVector = true;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("prefer-bitmap")) {
-				if( subNodes->GetNodeContent().Lower() == _T("no") ) pattern.preferBitmap = false;
-				if( subNodes->GetNodeContent().Lower() == _T("false") ) pattern.preferBitmap = false;
+                  if( nodeType == _T("prefer-bitmap")) {
+				if(!strcmp(subNodes->GetText(), "no" )) pattern.preferBitmap = false;
+				if(!strcmp(subNodes->GetText(), "false"))  pattern.preferBitmap = false;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("bitmap")) {
-				GET_INT_PROPERTY_VALUE( subNodes, "width", pattern.bitmapSize.size.x )
-				GET_INT_PROPERTY_VALUE( subNodes, "height", pattern.bitmapSize.size.y )
+                  if( nodeType == _T("bitmap")) {
+				TGET_INT_PROPERTY_VALUE( subNodes, "width", pattern.bitmapSize.size.x )
+				TGET_INT_PROPERTY_VALUE( subNodes, "height", pattern.bitmapSize.size.y )
 				pattern.hasBitmap = true;
-				wxXmlNode* bitmapNodes = subNodes->GetChildren();
-				while( bitmapNodes ) {
-					if( bitmapNodes->GetName() == _T("distance")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "min", pattern.bitmapSize.minDistance )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "max", pattern.bitmapSize.maxDistance )
+
+                        TiXmlElement* bitmapNodes = subNodes->FirstChild()->ToElement();
+                        while( bitmapNodes ) {
+                              wxString bitmapnodeType( bitmapNodes->Value(), wxConvUTF8);
+
+                              if( bitmapnodeType == _T("distance")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "min", pattern.bitmapSize.minDistance )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "max", pattern.bitmapSize.maxDistance )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("origin")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.origin.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.origin.y )
+                              if( bitmapnodeType == _T("origin")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.origin.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.origin.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("pivot")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.pivot.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.pivot.y )
+                              if( bitmapnodeType == _T("pivot")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.pivot.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.pivot.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("graphics-location")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.graphics.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.graphics.y )
+                              if( bitmapnodeType == _T("graphics-location")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", pattern.bitmapSize.graphics.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", pattern.bitmapSize.graphics.y )
 					}
-					nextBitmap: bitmapNodes = bitmapNodes->GetNext();
+                              nextBitmap: bitmapNodes = bitmapNodes->NextSiblingElement();
 				}
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("HPGL")) {
+                  if( nodeType == _T("HPGL")) {
 				pattern.hasVector = true;
-				pattern.HPGL = subNodes->GetNodeContent();
+				pattern.HPGL = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("vector")) {
+                  if( nodeType == _T("vector")) {
 				ProcessVectorTag( subNodes, pattern.vectorSize );
 			}
-			nextNode: subNodes = subNodes->GetNext();
+                  nextNode: subNodes = subNodes->NextSiblingElement();
 		}
 
 		BuildPattern( pattern );
 
-		patternNode = patternNode->GetNext();
 	}
+
 }
 
 
@@ -522,111 +544,119 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern ) {
 
 
 
-void ChartSymbols::ProcessSymbols( wxXmlNode* symbolNodes ) {
-	wxXmlNode* symbolNode = symbolNodes->GetChildren();
+void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes ) {
+
 	ChartSymbol symbol;
 	wxString propVal;
 	long numVal;
 
-	while(symbolNode) {
+      for( TiXmlNode *childNode = symbolNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
+      {
+            TiXmlElement *child = childNode->ToElement();
 
-		GET_INT_PROPERTY_VALUE( symbolNode, "RCID", symbol.RCID )
+            TGET_INT_PROPERTY_VALUE( child, "RCID", symbol.RCID )
 
-		symbol.hasVector = false;
-		symbol.hasBitmap = false;
-		symbol.preferBitmap = true;
+            symbol.hasVector = false;
+            symbol.hasBitmap = false;
+            symbol.preferBitmap = true;
 
-		wxXmlNode* subNodes = symbolNode->GetChildren();
 
-		while( subNodes ) {
-			if( subNodes->GetName() == _T("description")) {
-				symbol.description = subNodes->GetNodeContent();
+            TiXmlElement* subNodes = child->FirstChild()->ToElement();
+
+            while( subNodes ) {
+                  wxString nodeType( subNodes->Value(), wxConvUTF8);
+
+                  if( nodeType == _T("description")) {
+				symbol.description = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("name")) {
-				symbol.name = subNodes->GetNodeContent();
+                  if( nodeType == _T("name")) {
+                        symbol.name = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("color-ref")) {
-				symbol.colorRef = subNodes->GetNodeContent();
+                  if( nodeType == _T("color-ref")) {
+                        symbol.colorRef = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("definition")) {
-				if( subNodes->GetNodeContent() == _T("V") ) symbol.hasVector = true;
+                  if( nodeType == _T("definition")) {
+				if( !strcmp(subNodes->GetText(), "V") ) symbol.hasVector = true;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("HPGL")) {
-				symbol.HPGL = subNodes->GetNodeContent();
+                  if( nodeType == _T("HPGL")) {
+                        symbol.HPGL = wxString(subNodes->GetText(), wxConvUTF8);
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("prefer-bitmap")) {
-				if( subNodes->GetNodeContent().Lower() == _T("no") ) symbol.preferBitmap = false;
-				if( subNodes->GetNodeContent().Lower() == _T("false") ) symbol.preferBitmap = false;
+                  if( nodeType == _T("prefer-bitmap")) {
+				if( !strcmp(subNodes->GetText(),"no") ) symbol.preferBitmap = false;
+                        if( !strcmp(subNodes->GetText(),"false") ) symbol.preferBitmap = false;
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("bitmap")) {
-				GET_INT_PROPERTY_VALUE( subNodes, "width", symbol.bitmapSize.size.x )
-				GET_INT_PROPERTY_VALUE( subNodes, "height", symbol.bitmapSize.size.y )
+                  if( nodeType == _T("bitmap")) {
+				TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.bitmapSize.size.x )
+				TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.bitmapSize.size.y )
 				symbol.hasBitmap = true;
-				wxXmlNode* bitmapNodes = subNodes->GetChildren();
-				while( bitmapNodes ) {
-					if( bitmapNodes->GetName() == _T("distance")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "min", symbol.bitmapSize.minDistance )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "max", symbol.bitmapSize.maxDistance )
+
+                        TiXmlElement* bitmapNodes = subNodes->FirstChild()->ToElement();
+                        while( bitmapNodes ) {
+                              wxString bitmapnodeType( bitmapNodes->Value(), wxConvUTF8);
+                              if( bitmapnodeType == _T("distance")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "min", symbol.bitmapSize.minDistance )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "max", symbol.bitmapSize.maxDistance )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("origin")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.origin.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.origin.y )
+                              if( bitmapnodeType == _T("origin")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.origin.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.origin.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("pivot")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.pivot.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.pivot.y )
+                              if( bitmapnodeType == _T("pivot")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.pivot.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.pivot.y )
 						goto nextBitmap;
 					}
-					if( bitmapNodes->GetName() == _T("graphics-location")) {
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.graphics.x )
-						GET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.graphics.y )
+                              if( bitmapnodeType == _T("graphics-location")) {
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.graphics.x )
+						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.graphics.y )
 					}
-					nextBitmap: bitmapNodes = bitmapNodes->GetNext();
+                              nextBitmap: bitmapNodes = bitmapNodes->NextSiblingElement();
 				}
 				goto nextNode;
 			}
-			if( subNodes->GetName() == _T("vector")) {
-				GET_INT_PROPERTY_VALUE( subNodes, "width", symbol.vectorSize.size.x )
-				GET_INT_PROPERTY_VALUE( subNodes, "height", symbol.vectorSize.size.y )
+                  if( nodeType == _T("vector")) {
+				TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.vectorSize.size.x )
+				TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.vectorSize.size.y )
 				symbol.hasVector = true;
-				wxXmlNode* vectorNodes = subNodes->GetChildren();
-				while( vectorNodes ) {
-					if( vectorNodes->GetName() == _T("distance")) {
-						GET_INT_PROPERTY_VALUE( vectorNodes, "min", symbol.vectorSize.minDistance )
-						GET_INT_PROPERTY_VALUE( vectorNodes, "max", symbol.vectorSize.maxDistance )
+
+                        TiXmlElement* vectorNodes = subNodes->FirstChild()->ToElement();
+                        while( vectorNodes ) {
+                              wxString vectornodeType( vectorNodes->Value(), wxConvUTF8);
+                              if( vectornodeType == _T("distance")) {
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "min", symbol.vectorSize.minDistance )
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "max", symbol.vectorSize.maxDistance )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _T("origin")) {
-						GET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.origin.x )
-						GET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.origin.y )
+                              if( vectornodeType == _T("origin")) {
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.origin.x )
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.origin.y )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _T("pivot")) {
-						GET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.pivot.x )
-						GET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.pivot.y )
+                              if( vectornodeType == _T("pivot")) {
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.pivot.x )
+						TGET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.pivot.y )
 						goto nextVector;
 					}
-					if( vectorNodes->GetName() == _T("HPGL")) {
-						symbol.HPGL = vectorNodes->GetNodeContent();
+                              if( vectornodeType == _T("HPGL")) {
+                                    symbol.HPGL = wxString(vectorNodes->GetText(), wxConvUTF8);
 					}
-					nextVector: vectorNodes = vectorNodes->GetNext();
+                              nextVector: vectorNodes = vectorNodes->NextSiblingElement();
 				}
 			}
-			nextNode: subNodes = subNodes->GetNext();
+                  nextNode: subNodes = subNodes->NextSiblingElement();
 		}
 
 		BuildSymbol( symbol );
-
-		symbolNode = symbolNode->GetNext();
 	}
+
 }
 
 
@@ -641,7 +671,7 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 	symb->RCID = symbol.RCID;
 	strncpy( symb->name.SYNM, symbol.name.char_str(), 8 );
 
-	symb->exposition.SXPO = &(symbol.description);
+	symb->exposition.SXPO = new wxString(symbol.description);
 
     symb->vector.SVCT = ( char * ) malloc ( symbol.HPGL.Len()+1 );
     strcpy ( symb->vector.SVCT, symbol.HPGL.mb_str() );
@@ -682,6 +712,7 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 	if( symbtmp ) {
 		free( symbtmp->colRef.SCRF );
 		free( symbtmp->vector.SVCT );
+        delete symbtmp->exposition.SXPO;
 	}
 
 	(*plib->_symb_sym)[symbol.name] = symb;
@@ -690,7 +721,7 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol ) {
 
 
 bool ChartSymbols::LoadConfigFile( s52plib* plibArg, wxString s52ilePath ) {
-	wxXmlDocument doc;
+	TiXmlDocument doc;
 
 	plib = plibArg;
 
@@ -715,7 +746,7 @@ bool ChartSymbols::LoadConfigFile( s52plib* plibArg, wxString s52ilePath ) {
         return false;
 	}
 
-	if( ! doc.Load( fullFilePath ) ) {
+	if( ! doc.LoadFile( (const char *)fullFilePath .mb_str() ) ) {
         wxString msg( _T("    ChartSymbols ConfigFile Failed to load "));
         msg += fullFilePath;
         wxLogMessage( msg );
@@ -726,21 +757,27 @@ bool ChartSymbols::LoadConfigFile( s52plib* plibArg, wxString s52ilePath ) {
       msg += fullFilePath;
 	wxLogMessage( msg );
 
-	if( doc.GetRoot()->GetName() != _T("chartsymbols") ) {
+      TiXmlHandle hRoot(doc.RootElement());
+
+      wxString root = wxString(doc.RootElement()->Value(), wxConvUTF8);
+      if( root != _T("chartsymbols" )) {
 		wxLogMessage( _T("    ChartSymbols::LoadConfigFile(): Expected XML Root <chartsymbols> not found.") );
 		return false;
 	}
 
-	wxXmlNode *child = doc.GetRoot()->GetChildren();
-	while( child ) {
-		if ( child->GetName() == _T("color-tables") ) ProcessColorTables( child );
-		if ( child->GetName() == _T("lookups") ) ProcessLookups( child );
-		if ( child->GetName() == _T("line-styles") ) ProcessLinestyles( child );
-		if ( child->GetName() == _T("patterns") ) ProcessPatterns( child );
-		if ( child->GetName() == _T("symbols") ) ProcessSymbols( child );
+      TiXmlElement* pElem = hRoot.FirstChild().Element();
 
-		child = child->GetNext();
-	}
+      for( ; pElem != 0; pElem=pElem->NextSiblingElement())
+      {
+            wxString child = wxString(pElem->Value(), wxConvUTF8);
+
+            if ( child == _T("color-tables") ) ProcessColorTables( pElem );
+            if ( child == _T("lookups") ) ProcessLookups( pElem );
+            if ( child == _T("line-styles") ) ProcessLinestyles( pElem );
+            if ( child == _T("patterns") ) ProcessPatterns( pElem );
+            if ( child == _T("symbols") ) ProcessSymbols( pElem );
+
+      }
 
 	return true;
 }
@@ -766,7 +803,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo ) {
 	return false;
 }
 
-// Convinience method for old s52plib code.
+// Convenience method for old s52plib code.
 wxArrayPtrVoid* ChartSymbols::GetColorTables() {
 	return colorTables;
 }
