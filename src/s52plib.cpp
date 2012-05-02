@@ -147,6 +147,8 @@ s52plib::~s52plib() {
 
       if( m_txf ) txfUnloadFont( m_txf );
 	  ChartSymbols::DeleteGlobals();
+
+      delete HPGL;
 }
 
 /*

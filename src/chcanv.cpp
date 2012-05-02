@@ -3899,6 +3899,7 @@ ChartCanvas::~ChartCanvas()
         delete pCurTrackTimer;
         delete pRotDefTimer;
         delete pPanKeyTimer;
+        delete m_DoubleClickTimer;
 
         delete m_pRolloverWin;
         delete m_pAISRolloverWin;
