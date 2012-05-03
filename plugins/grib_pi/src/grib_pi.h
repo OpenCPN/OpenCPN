@@ -80,11 +80,11 @@ public:
       void SetDefaults(void);
 
       int GetToolbarToolCount(void);
-      
+
       void ShowPreferencesDialog( wxWindow* parent );
 
       void OnToolbarToolCallback(int id);
-      
+
 
 // Other public methods
 

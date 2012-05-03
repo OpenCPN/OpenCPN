@@ -1,8 +1,8 @@
 /******************************************************************************
  * $Id: demo_pi.cpp,v 1.8 2010/06/21 01:54:37 bdbcat Exp $
- *
+ * updated: 4-5-2012  
  * Project:  OpenCPN
- * Purpose:  DEMO Plugin
+ * Purpose:  demo Plugin
  * Author:   David Register
  *
  ***************************************************************************
@@ -56,7 +56,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 
 //---------------------------------------------------------------------------------------------------------
 //
-//    Demo PlugIn Implementation
+//    demo PlugIn Implementation
 //
 //---------------------------------------------------------------------------------------------------------
 
@@ -67,6 +67,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //          PlugIn initialization and de-init
 //
 //---------------------------------------------------------------------------------------------------------
+
 
 int demo_pi::Init(void)
 {
@@ -92,7 +93,7 @@ int demo_pi::Init(void)
       m_hide_id = AddCanvasContextMenuItem(pmih, this );
       SetCanvasContextMenuItemViz(m_hide_id, false);
 
-        m_pdemo_window = new DemoWindow(m_parent_window, wxID_ANY);
+        m_pdemo_window = new demoWindow(m_parent_window, wxID_ANY);
 
         m_AUImgr = GetFrameAuiManager();
         m_AUImgr->AddPane(m_pdemo_window);
@@ -117,16 +118,12 @@ int demo_pi::Init(void)
 
 bool demo_pi::DeInit(void)
 {
-//      printf("demo_pi DeInit()\n");
       m_AUImgr->DetachPane(m_pdemo_window);
-
       if(m_pdemo_window)
       {
-            m_pdemo_window->Close();
-            m_pdemo_window->Destroy();
+        m_pdemo_window->Close();
+//          m_pdemo_window->Destroy(); //Gives a Segmentation fault
       }
-
-      
       return true;
 }
 
@@ -163,7 +160,7 @@ wxString demo_pi::GetShortDescription()
 wxString demo_pi::GetLongDescription()
 {
       return _("Demo PlugIn for OpenCPN\n\
-Demonstrates PlugIn processing of NMEA messages.");
+demonstrates PlugIn processing of NMEA messages.");
 
 }
 
@@ -212,7 +209,7 @@ void demo_pi::OnContextMenuItemCallback(int id)
 /*
       if(NULL == m_pdemo_window)
       {
-            m_pdemo_window = new DemoWindow(m_parent_window, wxID_ANY);
+            m_pdemo_window = new demoWindow(m_parent_window, wxID_ANY);
 
             SetCanvasContextMenuItemViz(m_hide_id, true);
             SetCanvasContextMenuItemViz(m_show_id, false);
@@ -225,7 +222,7 @@ void demo_pi::OnContextMenuItemCallback(int id)
 
             SetCanvasContextMenuItemViz(m_hide_id, false);
             SetCanvasContextMenuItemViz(m_show_id, true);
-      }      
+      }
 */
 }
 
@@ -238,7 +235,7 @@ void demo_pi::UpdateAuiStatus(void)
 
       //    We use this callback here to keep the context menu selection in sync with the window state
 
-  
+
       wxAuiPaneInfo &pane = m_AUImgr->GetPane(m_pdemo_window);
       if(!pane.IsOk())
             return;
@@ -250,21 +247,76 @@ void demo_pi::UpdateAuiStatus(void)
 
 }
 
+bool demo_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
+{
+  /*    if(m_pGribDialog && m_pGRIBOverlayFactory)
+      {
+            if(m_pGRIBOverlayFactory->IsReadyToRender())
+            {
+                  m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
+                  return true;
+            }
+            else
+                  return false;
+      }
+      else*/
+            return false;
+}
+void demo_pi::SetCursorLatLon(double lat, double lon)
+{
+
+}
+bool demo_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{
+   /*   if(m_pGribDialog && m_pGRIBOverlayFactory)
+      {
+            if(m_pGRIBOverlayFactory->IsReadyToRender())
+            {
+                  m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
+                  return true;
+            }
+            else
+                  return false;
+      }
+      else*/
+            return false;
+
+}
+int demo_pi::GetToolbarToolCount(void)
+{
+      return 1;
+}
+void demo_pi::ShowPreferencesDialog( wxWindow* parent )
+{
+
+}
+void demo_pi::OnToolbarToolCallback(int id)
+{
+
+}
+void demo_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
+{
+
+}
+void demo_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
+{
+
+}
 
 //----------------------------------------------------------------
 //
-//    Demo Window Implementation
+//    demo Window Implementation
 //
 //----------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(DemoWindow, wxWindow)
-  EVT_PAINT ( DemoWindow::OnPaint )
-  EVT_SIZE(DemoWindow::OnSize)
+BEGIN_EVENT_TABLE(demoWindow, wxWindow)
+  EVT_PAINT ( demoWindow::OnPaint )
+  EVT_SIZE(demoWindow::OnSize)
 
 
 END_EVENT_TABLE()
 
-DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
+demoWindow::demoWindow(wxWindow *pparent, wxWindowID id)
       :wxWindow(pparent, id, wxPoint(10,10), wxSize(200,200),
              wxSIMPLE_BORDER, _T("OpenCPN PlugIn"))
 {
@@ -275,17 +327,17 @@ DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
       mVar = 4.0;
 }
 
-DemoWindow::~DemoWindow()
+demoWindow::~demoWindow()
 {
 }
 
-void DemoWindow::OnSize(wxSizeEvent& event)
+void demoWindow::OnSize(wxSizeEvent& event)
 {
-      printf("DemoWindow OnSize()\n");
+      printf("demoWindow OnSize()\n");
 }
 
 
-void DemoWindow::SetSentence(wxString &sentence)
+void demoWindow::SetSentence(wxString &sentence)
 {
       m_NMEA0183 << sentence;
 
@@ -338,7 +390,7 @@ void DemoWindow::SetSentence(wxString &sentence)
       }
 }
 
-void DemoWindow::OnPaint(wxPaintEvent& event)
+void demoWindow::OnPaint(wxPaintEvent& event)
 {
       wxLogMessage(_T("demo_pi onpaint"));
 

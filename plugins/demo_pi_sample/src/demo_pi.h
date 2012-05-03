@@ -1,9 +1,9 @@
-/******************************************************************************
+*/*****************************************************************************
  * $Id: demo_pi.h,v 1.8 2010/06/21 01:54:37 bdbcat Exp $
  *
  * Project:  OpenCPN
- * Purpose:  DEMO Plugin
- * Author:   David Register
+ * Purpose:  demo Plugin
+ * Author:   Dirk Smits
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -35,28 +35,28 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    1
+#define     PLUGIN_VERSION_MAJOR    0
 #define     PLUGIN_VERSION_MINOR    0
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    1
+#define     MY_API_VERSION_MINOR    8
 
 #include "../../../include/ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
 
 
-class DemoWindow;
+class demoWindow;
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
 
-class demo_pi : public opencpn_plugin
+class demo_pi : public opencpn_plugin_18
 {
 public:
-      demo_pi(void *ppimgr):opencpn_plugin(ppimgr){}
+      demo_pi(void *ppimgr):opencpn_plugin_18(ppimgr){}
 
 //    The required PlugIn Methods
       int Init(void);
@@ -76,13 +76,22 @@ public:
       void SetNMEASentence(wxString &sentence);
       void OnContextMenuItemCallback(int id);
       void UpdateAuiStatus(void);
-      
+
+//    The override PlugIn Methods
+      bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+      void SetCursorLatLon(double lat, double lon);
+      bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      int GetToolbarToolCount(void);
+      void ShowPreferencesDialog( wxWindow* parent );
+      void OnToolbarToolCallback(int id);
+      void SetPluginMessage(wxString &message_id, wxString &message_body);
+      void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
 
 private:
       wxWindow         *m_parent_window;
 
-      DemoWindow       *m_pdemo_window;
+      demoWindow       *m_pdemo_window;
       wxAuiManager     *m_AUImgr;
       int               m_show_id;
       int               m_hide_id;
@@ -91,11 +100,11 @@ private:
 
 
 
-class DemoWindow : public wxWindow
+class demoWindow : public wxWindow
 {
 public:
-      DemoWindow(wxWindow *pparent, wxWindowID id);
-      ~DemoWindow();
+      demoWindow(wxWindow *pparent, wxWindowID id);
+      ~demoWindow();
 
       void OnPaint(wxPaintEvent& event);
       void SetSentence(wxString &sentence);
