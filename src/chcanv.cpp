@@ -8715,7 +8715,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
             pdef_menu->Append ( ID_RT_MENU_REMPOINT,    _( "Remove Waypoint from Route" ) );
             if(m_pFoundRoutePoint->m_IconName != _T("mob"))
                   pdef_menu->Append ( ID_RT_MENU_DELPOINT,    _( "Delete Waypoint" ) );
-            pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
+            pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties..." ) );
 
             pdef_menu->AppendSeparator();
 
@@ -8733,7 +8733,7 @@ void ChartCanvas::CanvasPopupMenu ( int x, int y, int seltype )
 
               if(m_pFoundRoutePoint->m_IconName != _T("mob"))
                     pdef_menu->Append ( ID_WP_MENU_DELPOINT,    _( "Delete Mark" ) );
-              pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties" ) );
+              pdef_menu->Append ( ID_WP_MENU_PROPERTIES,  _( "Mark/WP Properties..." ) );
 
               if ((m_pFoundRoutePoint == pAnchorWatchPoint1) || (m_pFoundRoutePoint == pAnchorWatchPoint2))       //pjotrc 2010.02.15
                     pdef_menu->Append ( ID_WP_MENU_CLEAR_ANCHORWATCH,   _( "Clear Anchor Watch" ) );                //pjotrc 2010.02.15
@@ -9223,6 +9223,7 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                               pMarkPropDialog->SetDialogTitle(_T("Mark Properties"));
 
                         pMarkPropDialog->Show();
+                        pMarkPropDialog->InitialFocus();
                         break;
 
                 case ID_WP_MENU_CLEAR_ANCHORWATCH:             // pjotrc 2010.02.15

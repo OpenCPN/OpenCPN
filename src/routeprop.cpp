@@ -2140,6 +2140,11 @@ MarkInfoImpl::~MarkInfoImpl()
       m_bcomboBoxIcon->Clear();
 }
 
+void MarkInfoImpl::InitialFocus(void) {
+      m_textName->SetFocus();
+      m_textName->SetInsertionPointEnd();
+}
+
 void MarkInfoImpl::SetColorScheme(ColorScheme cs)
 {
       DimeControl(this);
