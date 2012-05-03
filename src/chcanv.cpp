@@ -16546,8 +16546,9 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
             else if(win->IsKindOf(CLASSINFO(wxTreeCtrl)))
                   ((wxTreeCtrl*)win)->SetBackgroundColour(col1);
 
+
             else if(win->IsKindOf(CLASSINFO(wxRadioButton)))
-                  ((wxRadioButton*)win)->SetForegroundColour(col1);
+                  ((wxRadioButton*)win)->SetBackgroundColour(col1);
 
             else if(win->IsKindOf(CLASSINFO(wxNotebook)))
             {
