@@ -679,6 +679,8 @@ class ocpnToolBarSimple : public wxControl
     // get the total button size (by default the same as bitmap size)
             virtual wxSize GetToolSize() const { return GetToolBitmapSize(); }
 
+            virtual wxRect GetToolRect(int tool_id);
+
     // returns a (non separator) tool containing the point (x, y) or NULL if
     // there is no tool at this point (corrdinates are client)
             wxToolBarToolBase *FindToolForPosition(wxCoord x, wxCoord y);

@@ -2459,7 +2459,7 @@ bool MyApp::OnInit()
               g_bShowAreaNotices = false;
 
 #ifdef USE_S57
-              if(ps52plib->m_bOK)
+              if(ps52plib && ps52plib->m_bOK)
               {
                   ps52plib->m_bShowSoundg = true;
                   ps52plib->m_nDisplayCategory = ( enum _DisCat ) STANDARD;
@@ -5245,7 +5245,8 @@ void MyFrame::SetToolbarItemBitmaps ( int tool_id, wxBitmap *bmp, wxBitmap *bmpD
       if(m_toolBar)
       {
             m_toolBar->SetToolBitmaps(tool_id, bmp, bmpDisabled);
-            m_toolBar->Refresh();
+            wxRect rect = m_toolBar->GetToolRect(tool_id);
+            m_toolBar->RefreshRect(rect);
       }
 }
 
@@ -6545,7 +6546,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
             cc1->Refresh();
             bnew_view = true;
       }
-
 
         FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
@@ -10879,6 +10879,21 @@ wxToolBarToolBase *ocpnToolBarSimple::FindToolForPosition(wxCoord x,
 
       return (wxToolBarToolBase *)NULL;
 }
+
+wxRect ocpnToolBarSimple::GetToolRect(int tool_id)
+{
+      wxRect rect;
+      wxToolBarToolBase *tool = FindById(tool_id);
+      if(tool)
+      {
+            ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
+            if(otool)
+                  rect = otool->trect;
+      }
+
+      return rect;
+}
+
 
 // ----------------------------------------------------------------------------
 // tool state change handlers
