@@ -184,7 +184,7 @@ char AuthorText[] =
                    \n\
       CIE->RGB Color Conversion Matrix\n\n\
     Robert Lipe\n\
-      robertlipe@usa.net\n\
+      \n\
       Garmin USB GPS Interface\n"
 
 };
