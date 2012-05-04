@@ -28,9 +28,16 @@
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
 
+enum {
+      SORT_ON_DISTANCE  = 1,
+      SORT_ON_NAME
+};
+
+
 class wxButton;
 class Route;
 class Layer;
+class RoutePoint;
 
 class RouteManagerDialog : public wxDialog {
       DECLARE_EVENT_TABLE()
@@ -41,7 +48,7 @@ class RouteManagerDialog : public wxDialog {
             void SetColorScheme();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
-            void UpdateWptListCtrl();
+            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
             void UpdateLayListCtrl();
             void OnTabSwitch(wxNotebookEvent& event);
 

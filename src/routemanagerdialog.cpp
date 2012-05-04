@@ -224,6 +224,8 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
 
 }
 
+int sort_wp_key;
+
 // sort callback. Sort by wpt name.
 int sort_wp_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1522,15 +1524,20 @@ void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event)
       m_bNeedConfigFlush = true;
 }
 
-void RouteManagerDialog::UpdateWptListCtrl()
+void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select, bool b_retain_sort)
 {
-      // if an item was selected, make it selected again if it still exist
-      long item = -1;
-      item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-
       long selected_id = -1;
-      if (item != -1)
-            selected_id = m_pWptListCtrl->GetItemData(item);
+      long item = -1;
+
+      if(NULL == rp_select)
+      {
+            // if an item was selected, make it selected again if it still exists
+            item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+
+            if (item != -1)
+                  selected_id = m_pWptListCtrl->GetItemData(item);
+      }
+
 
       m_pWptListCtrl->DeleteAllItems();
 
@@ -1553,7 +1560,6 @@ void RouteManagerDialog::UpdateWptListCtrl()
 
                   wxListItem li;
                   li.SetId(index);
-//                  li.SetImage(pWayPointMan->GetIconIndex(rp->m_pbmIcon));
                   li.SetImage( rp->IsVisible() ? pWayPointMan->GetIconIndex(rp->m_pbmIcon) : 0);
                   li.SetData(rp);
                   li.SetText(_T(""));
@@ -1570,13 +1576,33 @@ void RouteManagerDialog::UpdateWptListCtrl()
                   dist.Printf(_T("%5.2f Nm"), dst);
                   m_pWptListCtrl->SetItem(idx, colWPTDIST,  dist);
 
+                  if(rp == rp_select)
+                        selected_id = (long)rp_select; //index; //m_pWptListCtrl->GetItemData(item);
+
                   index++;
             }
 
             node = node->GetNext();
       }
 
-      m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
+      if(!b_retain_sort)
+      {
+            m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
+            sort_wp_key = SORT_ON_NAME;
+      }
+      else
+      {
+            switch(sort_wp_key){
+                  case SORT_ON_NAME:
+                        m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
+                        break;
+                  case SORT_ON_DISTANCE:
+                        m_pWptListCtrl->SortItems(SortWaypointsOnDistance, (long)m_pWptListCtrl);
+                        break;
+            }
+      }
+
+
 
       if (selected_id > -1)
       {
@@ -1604,11 +1630,13 @@ void RouteManagerDialog::OnWptColumnClicked(wxListEvent &event)
       {
             sort_wp_name_dir++;
             m_pWptListCtrl->SortItems(SortWaypointsOnName, (long)m_pWptListCtrl);
+            sort_wp_key = SORT_ON_NAME;
       }
       else if(event.m_col == 2)
       {
             sort_wp_len_dir++;
             m_pWptListCtrl->SortItems(SortWaypointsOnDistance, (long)m_pWptListCtrl);
+            sort_wp_key = SORT_ON_DISTANCE;
       }
 }
 
@@ -1729,17 +1757,14 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event)
       if (item == -1) return;
 
       RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-
       if (!wp) return;
       if (wp->m_bIsInLayer) return;
 
-/* Seth: is this necessary here? Suggestion: move this to pconfig->DeleteWayPoint
-      if (m_pFoundRoutePoint == pAnchorWatchPoint1) pAnchorWatchPoint1 = NULL;
-      else if (m_pFoundRoutePoint == pAnchorWatchPoint2) pAnchorWatchPoint2 = NULL;
-*/
-//      pConfig->DeleteWayPoint ( wp );
-//      pSelect->DeleteSelectablePoint ( wp, SELTYPE_ROUTEPOINT );
-//      delete wp;
+
+      long item_next = m_pWptListCtrl->GetNextItem(item);         // next in list
+      RoutePoint *wp_next = NULL;
+      if(item_next > -1)
+            wp_next = (RoutePoint *)m_pWptListCtrl->GetItemData(item_next);
 
       pWayPointMan->DestroyWaypoint(wp);
 
@@ -1749,7 +1774,7 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event)
             pMarkPropDialog->UpdateProperties();
       }
 
-      UpdateWptListCtrl();
+      UpdateWptListCtrl(wp_next, true);
       UpdateRouteListCtrl();
       cc1->Refresh();
 }
