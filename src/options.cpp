@@ -288,7 +288,13 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
             pageSizer->SetVirtualSizeHints(page);
       }
 
-      SetMaxSize(wxDisplay(wxDisplay::GetFromWindow(this)).GetClientArea().GetSize());
+      wxSize max_size = wxDisplay(wxDisplay::GetFromWindow(this)).GetClientArea().GetSize();
+
+      // Reduce height by a little, just to allow for platform variation
+      // Some platforms have a hard time calculating the Client Area accurately...
+      max_size.y -= 40;
+      SetMaxSize(max_size);
+//      SetMaxSize(parent->GetClientSize());
 
       Fit();
       //    Not sure why, but we need to account for some decorations
