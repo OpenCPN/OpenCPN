@@ -67,6 +67,16 @@ bool GpxDocument::LoadFile(const wxString &filename)
       wxString s;
       if(file.IsOpened()) {
             file.ReadAll(&s, wxConvUTF8);
+
+            //Fallback for not-well formed (non-UTF8) GPX files
+            //the "garbage" characters are lost, but the important part of the information should survive...
+            if (s == wxEmptyString)
+            {
+                  file.Seek(0);
+                  file.ReadAll(&s, wxConvISO8859_1);
+                  wxLogMessage(wxString::Format(wxT("File %s seems not to be well-formed UTF-8 XML, used fallback ASCII format conversion - some text information might have not been imported."), filename.c_str()));
+            }
+
             file.Close();
       }
       if(b)
