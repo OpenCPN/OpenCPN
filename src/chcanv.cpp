@@ -7240,6 +7240,7 @@ void ChartCanvas::UpdateAIS()
             // Draw the AIS Targets on the temp_dc
             ocpnDC ocpndc = ocpnDC(temp_dc);
             AISDraw ( ocpndc );
+            AISDrawAreaNotices( ocpndc );
 
             //  Retrieve the drawing extents
             ais_rect  = wxRect( temp_dc.MinX(),
