@@ -113,7 +113,7 @@ void LATITUDE::Write( SENTENCE& sentence )
     if (neg)
             d = -d;
 
-    temp_string.Printf(_T("%d%02d.%03d"), d, m / 1000, m % 1000);
+    temp_string.Printf(_T("%02d%02d.%03d"), d, m / 1000, m % 1000);
 
    sentence += temp_string;
 
