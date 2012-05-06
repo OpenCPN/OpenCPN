@@ -1925,7 +1925,9 @@ void *DNSTestThread::Entry()
 //-------------------------------------------------------------------------------------------------------------
 
 // Couple of statics
+#ifdef BUILD_WITH_LIBGPS
 struct gps_data_t gpsd_data;
+#endif
 int ic;
 
 OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
@@ -2140,8 +2142,10 @@ void *OCP_GPSD_Thread::Entry()
 }
 
 #ifdef __POSIX__
+
 bool OCP_GPSD_Thread::OpenLibrary(void)
 {
+#ifdef BUILD_WITH_LIBGPS
             //    Try to open the library
       if(19 == m_libgps_api)
       {
@@ -2168,17 +2172,22 @@ bool OCP_GPSD_Thread::OpenLibrary(void)
       }
 
       s_fn_gps_stream(m_pgps_data, WATCH_ENABLE, NULL);
+
+#endif
       return true;
 
 }
 
 void OCP_GPSD_Thread::CloseLibrary(void)
 {
+#ifdef BUILD_WITH_LIBGPS
+
       if(m_pgps_data && s_fn_gps_close)
       {
             s_fn_gps_close(m_pgps_data);
             m_pgps_data = NULL;
       }
+#endif
 }
 
 
