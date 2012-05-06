@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -17,6 +17,12 @@ msgstr ""
 # 
 # 
 msgid "\n"
+msgstr ""
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
 msgstr ""
 #
 # 
@@ -580,6 +586,9 @@ msgstr "(Traccia senza nome)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint senza nome)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1314,13 +1323,6 @@ msgstr "Cambia lo Schema dei colori (giorno...notte)"
 # 
 # 
 # 
-msgid "Chart"
-msgstr "Carta"
-#
-# 
-# 
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Unità di misura"
 #
@@ -1655,6 +1657,12 @@ msgstr "Automatico"
 #, fuzzy
 msgid "Default dataset"
 msgstr "Automatico"
+#
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Draga"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2538,9 +2546,6 @@ msgstr "Cisterna (Gas Liquefatto)"
 msgid "List contents"
 msgstr "&Lista contenuti"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2679,7 +2684,8 @@ msgstr "Segna i Target come persi dopo (Minuti):"
 # 
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Propietà Punto/WP"
 #
 # 
@@ -2837,6 +2843,9 @@ msgstr "Sorgente dati NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opzioni NMEA"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -3622,6 +3631,10 @@ msgid "Rename Waypoints?"
 msgstr "Rinomina Waypoints?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3679,6 +3692,14 @@ msgstr ""
 # 
 msgid "Route"
 msgstr "Rotta"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Distanza Totale"
 #
 # 
 # 
@@ -5073,12 +5094,12 @@ msgstr "Dettagli CM93"
 # 
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "Errore di versione libgps API.\n"
 "OpenCPN ha trovato la versione %d.%d ma richiede almeno la 3.0\n"
@@ -5099,6 +5120,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -5109,6 +5131,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Non posso caricare la libreria: "
+#
 #
 #
 # 
@@ -5123,6 +5146,7 @@ msgstr ""
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
 #
 #
+#
 # 
 # 
 # 
@@ -5133,6 +5157,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo destroy_pi: "
+#
 #
 #
 # 
@@ -5157,6 +5182,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 # 
@@ -5188,6 +5214,7 @@ msgstr ""
 #~ msgstr "Elimina tutte le &Rotte..."
 #
 #
+#
 # 
 # 
 # 
@@ -5217,6 +5244,7 @@ msgstr ""
 #~ msgstr "Elimina tutte le &Tracce..."
 #
 #
+#
 # 
 # 
 # 
@@ -5226,6 +5254,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
 #
 #
 # 
@@ -5257,12 +5286,14 @@ msgstr ""
 #~ msgstr "(Traccia attiva)"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informazioni Aggiuntive"
+#
 #
 #
 # 
@@ -5275,6 +5306,7 @@ msgstr ""
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 # 
@@ -5295,6 +5327,7 @@ msgstr ""
 #~ msgstr "CM93 Disabilita Offset"
 #
 #
+#
 # 
 # 
 # 
@@ -5311,6 +5344,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 # 
@@ -5331,6 +5365,7 @@ msgstr ""
 #~ msgstr "CM93 Disattiva Strum. Offset"
 #
 #
+#
 # 
 # 
 # 
@@ -5347,6 +5382,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 # 
@@ -5367,6 +5403,7 @@ msgstr ""
 #~ msgstr "CM93 Offset Attivo"
 #
 #
+#
 # 
 # 
 # 
@@ -5382,6 +5419,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 # 
@@ -5405,6 +5443,15 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Carta"
+#
+#
+#
+# 
+# 
+# 
+# 
 # 
 # 
 # 
@@ -5419,6 +5466,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 # 
@@ -5454,6 +5502,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -5483,12 +5532,14 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI         : %09d\n"
+#
 #
 #
 # 
@@ -5499,12 +5550,14 @@ msgstr ""
 #~ msgstr "Icona del Punto"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome del Punto"
+#
 #
 #
 # 
@@ -5516,6 +5569,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nuovo Punto"
+#
 #
 #
 # 
@@ -5534,6 +5588,7 @@ msgstr ""
 #~ "PlugInManager ha creato questa base class"
 #
 #
+#
 # 
 # 
 # 
@@ -5543,6 +5598,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager ricerca le cartelle dei PlugIns "
+#
 #
 #
 # 
@@ -5557,6 +5613,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Disattivazione PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -5567,6 +5624,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inizializzazione PlugIn: "
+#
 #
 #
 # 
@@ -5581,6 +5639,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Caricamento PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -5593,6 +5652,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Disabilitazione PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -5603,6 +5663,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Disabilito PlugIn con versione API errata %d.%d: "
+#
 #
 #
 # 

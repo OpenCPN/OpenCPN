@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -21,6 +21,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -586,6 +592,9 @@ msgstr "(Nimetu jälg)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Nimetu Teepunkt)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1325,13 +1334,6 @@ msgstr "Muuda tausta heledust"
 # 
 # 
 # 
-msgid "Chart"
-msgstr "Kaart"
-#
-# 
-# 
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Kaardi sügavuse ühikud"
 #
@@ -1678,6 +1680,14 @@ msgstr "Teksti värv"
 #, fuzzy
 msgid "Default dataset"
 msgstr "Teksti värv"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Reis"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2583,9 +2593,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Litsents"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2725,7 +2732,8 @@ msgstr "Märgi objekt kaotatuks peale (Minutit):"
 # 
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Punkti/Teepunkti omadused"
 #
 # 
@@ -2884,6 +2892,9 @@ msgstr "NMEA andemete allikas"
 # 
 msgid "NMEA Options"
 msgstr "NMEA seaded"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -3682,6 +3693,10 @@ msgid "Rename Waypoints?"
 msgstr "Muudan Teepunkti nime?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3742,6 +3757,14 @@ msgstr "Ülekeere"
 # 
 msgid "Route"
 msgstr "Teekond"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Kogu vahemaa"
 #
 # 
 # 
@@ -5192,12 +5215,12 @@ msgstr "cm93 detailid"
 # 
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API Version sobimatu.\n"
 "Opencpn leidis versiooni %d.%d, kuid nõutud vähemalt versioon 3.0\n"
@@ -5218,6 +5241,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -5236,6 +5260,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -5247,6 +5272,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Ei suuda laadida library: "
+#
 #
 #
 # 
@@ -5262,6 +5288,7 @@ msgstr ""
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
 #
 #
+#
 # 
 # 
 # 
@@ -5275,12 +5302,14 @@ msgstr ""
 #~ msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 #
 # 
@@ -5299,6 +5328,7 @@ msgstr ""
 #~ msgstr "Ei suuda laadida libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -5310,6 +5340,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 # 
@@ -5339,6 +5370,7 @@ msgstr ""
 #~ msgstr "CM93 nihe väljas"
 #
 #
+#
 # 
 # 
 # 
@@ -5364,6 +5396,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 # 
@@ -5393,6 +5426,7 @@ msgstr ""
 #~ msgstr "CM93 nihke vahend väljas"
 #
 #
+#
 # 
 # 
 # 
@@ -5418,6 +5452,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 # 
@@ -5447,6 +5482,7 @@ msgstr ""
 #~ msgstr "CM93 nihked sees"
 #
 #
+#
 # 
 # 
 # 
@@ -5472,6 +5508,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 # 
@@ -5505,6 +5542,15 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Kaart"
+#
+#
+#
+# 
+# 
+# 
+# 
 # 
 # 
 # 
@@ -5530,6 +5576,7 @@ msgstr ""
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
 #
+#
 # 
 # 
 # 
@@ -5541,6 +5588,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 # 
@@ -5569,6 +5617,7 @@ msgstr ""
 #~ msgstr "Välju OpenCPN"
 #
 #
+#
 # 
 # 
 # 
@@ -5585,6 +5634,7 @@ msgstr ""
 #~ msgstr "Ei suuda laadida libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -5599,6 +5649,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 #
 # 
@@ -5624,6 +5675,7 @@ msgstr ""
 #~ msgstr "Impordi GPX fail"
 #
 #
+#
 # 
 # 
 # 
@@ -5631,6 +5683,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 # 
@@ -5661,6 +5714,7 @@ msgstr ""
 #~ msgstr "Mere standard"
 #
 #
+#
 # 
 # 
 # 
@@ -5669,12 +5723,14 @@ msgstr ""
 #~ msgstr "Punkti Ikoon"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Punkti nimi"
+#
 #
 #
 # 
@@ -5688,6 +5744,7 @@ msgstr ""
 #~ msgstr "Uus punkt"
 #
 #
+#
 # 
 # 
 # 
@@ -5699,6 +5756,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Lisade baasi klass"
+#
 #
 #
 # 
@@ -5716,6 +5774,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
 #
 #
 # 
@@ -5739,6 +5798,7 @@ msgstr ""
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
 #
 #
+#
 # 
 # 
 # 
@@ -5749,6 +5809,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 # 
@@ -5764,6 +5825,7 @@ msgstr ""
 #~ msgstr "Lisade haldur: deaktiveerin lisa:"
 #
 #
+#
 # 
 # 
 # 
@@ -5775,6 +5837,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 # 
@@ -5790,6 +5853,7 @@ msgstr ""
 #~ msgstr "Lisade haldur: laen lisa:"
 #
 #
+#
 # 
 # 
 # 
@@ -5801,6 +5865,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 #
 # 
@@ -5816,6 +5881,7 @@ msgstr ""
 #~ msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
 #
 #
+#
 # 
 # 
 # 
@@ -5826,6 +5892,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
 #
 #
 # 
@@ -5853,6 +5920,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Viimane raporti periood:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -5883,6 +5951,7 @@ msgstr ""
 #~ msgstr "Laeva nimi:"
 #
 #
+#
 # 
 # 
 # 
@@ -5906,6 +5975,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -5927,6 +5997,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 # 

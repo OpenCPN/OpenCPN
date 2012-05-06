@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.708 beta for 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-07-10 12:27+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -24,6 +24,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -521,6 +527,9 @@ msgstr "(Track zonder naam)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Markeringspunt zonder naam)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1155,12 +1164,6 @@ msgstr "Wijzig kleurenschema"
 # 
 # 
 # 
-msgid "Chart"
-msgstr "Kaart"
-#
-# 
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Toon dieptes in"
 #
@@ -1463,6 +1466,11 @@ msgstr "standaard kleur "
 #, fuzzy
 msgid "Default dataset"
 msgstr "standaard kleur "
+#
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "bag/v"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2230,9 +2238,6 @@ msgstr "gastanker (zee)"
 msgid "List contents"
 msgstr "Toon inhoud"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 msgid "Local @ PC"
 msgstr "Computertijd"
@@ -2352,7 +2357,8 @@ msgstr "Markeer object als verdwenen na (minuten): "
 # 
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Markeringspunt-/Routepunt-eigenschappen"
 #
 # 
@@ -2484,6 +2490,9 @@ msgstr "NMEA databron"
 # 
 msgid "NMEA Options"
 msgstr "NMEA Opties"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -3154,6 +3163,10 @@ msgid "Rename Waypoints?"
 msgstr "Hernoem routepunten?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3206,6 +3219,13 @@ msgstr "Toon bij aanwijzen"
 # 
 msgid "Route"
 msgstr "Route"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Totale verheid (NM)"
 #
 # 
 # 
@@ -4424,12 +4444,12 @@ msgstr "cm93 detail"
 # 
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API versie verschil\n"
 "OpenCPN heeft versie %d.%d gevonden, maar vereist tenminste versie 3.0\n"
@@ -4448,6 +4468,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4465,6 +4486,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4475,6 +4497,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Kan library niet laden: "
+#
 #
 #
 # 
@@ -4489,6 +4512,7 @@ msgstr ""
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
 #
 #
+#
 # 
 # 
 # 
@@ -4501,11 +4525,13 @@ msgstr ""
 #~ msgstr "   PlugInManager: Kan symbool destroy_pi niet laden: "
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
+#
 #
 #
 # 
@@ -4523,6 +4549,14 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Kaart"
+#
+#
+#
+# 
+# 
+# 
 # 
 # 
 # 
@@ -4532,11 +4566,13 @@ msgstr ""
 #~ msgstr "Vaartijd/Tijdstip"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 # 
@@ -4546,11 +4582,13 @@ msgstr ""
 #~ msgstr "Markeringspunt-icoon"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Markeringspunt-naam"
+#
 #
 #
 # 
@@ -4563,6 +4601,7 @@ msgstr ""
 #~ msgstr "markering, nieuw gevaar"
 #
 #
+#
 # 
 # 
 # 
@@ -4573,6 +4612,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 # 
@@ -4591,6 +4631,7 @@ msgstr ""
 #~ "PlugInManager heeft deze klasse gecreëerd."
 #
 #
+#
 # 
 # 
 # 
@@ -4600,6 +4641,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 # 
@@ -4614,6 +4656,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Deactiveert PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -4624,6 +4667,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 # 
@@ -4638,6 +4682,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Laadt PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -4650,6 +4695,7 @@ msgstr ""
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -4660,6 +4706,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
+#
 #
 #
 # 

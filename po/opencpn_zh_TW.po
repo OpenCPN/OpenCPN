@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -23,6 +23,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -444,6 +450,9 @@ msgstr "(未命名航跡)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(未命名轉向點)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1039,11 +1048,6 @@ msgstr "更換色彩樣式"
 #
 # 
 # 
-msgid "Chart"
-msgstr "海圖"
-#
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "海圖水深單位"
 #
@@ -1313,6 +1317,12 @@ msgstr "預設顏色"
 #, fuzzy
 msgid "Default dataset"
 msgstr "預設顏色"
+#
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "濬挖船"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2033,9 +2043,6 @@ msgstr "液態瓦斯船"
 msgid "List contents"
 msgstr "內容列表"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2148,7 +2155,8 @@ msgstr "信號消失多久後標記為目標遺失(分鐘):"
 #
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "標記/轉向點屬性"
 #
 # 
@@ -2285,6 +2293,9 @@ msgstr "NMEA 資料來源"
 # 
 msgid "NMEA Options"
 msgstr "NMEA 選項"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2925,6 +2936,10 @@ msgid "Rename Waypoints?"
 msgstr "重新命名轉向點?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -2977,6 +2992,12 @@ msgstr "Rollover"
 # 
 msgid "Route"
 msgstr "航路"
+#
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "總距離"
 #
 # 
 # 
@@ -4100,12 +4121,12 @@ msgstr "cm93 詳細度"
 #
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API 版本不吻合.\n"
 "Opencpn 找到版本 %d.%d, 但是最少需要版本 3.0\n"
@@ -4126,6 +4147,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4142,6 +4164,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4151,6 +4174,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   插件管理員: 無法載入程式庫: "
+#
 #
 #
 # 
@@ -4164,6 +4188,7 @@ msgstr ""
 #~ msgstr "   插件管理員: 無法載入 symbol create_pi: "
 #
 #
+#
 # 
 # 
 # 
@@ -4173,6 +4198,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 # 
@@ -4196,6 +4222,7 @@ msgstr ""
 #~ msgstr "關閉(&C)"
 #
 #
+#
 # 
 # 
 # 
@@ -4215,6 +4242,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 # 
@@ -4238,6 +4266,7 @@ msgstr ""
 #~ msgstr "刪除所有航跡(&D)..."
 #
 #
+#
 # 
 # 
 # 
@@ -4256,6 +4285,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 # 
@@ -4279,10 +4309,12 @@ msgstr ""
 #~ msgstr "(使用中航跡)"
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 # 
@@ -4299,6 +4331,7 @@ msgstr ""
 #~ msgstr "嘗試載入 libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -4308,6 +4341,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 # 
@@ -4331,6 +4365,7 @@ msgstr ""
 #~ msgstr "CM93 Offset Off"
 #
 #
+#
 # 
 # 
 # 
@@ -4350,6 +4385,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 # 
@@ -4373,6 +4409,7 @@ msgstr ""
 #~ msgstr "CM93 Offset Tool Off"
 #
 #
+#
 # 
 # 
 # 
@@ -4392,6 +4429,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 # 
@@ -4415,6 +4453,7 @@ msgstr ""
 #~ msgstr "CM93 Offsets On"
 #
 #
+#
 # 
 # 
 # 
@@ -4434,6 +4473,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 # 
@@ -4456,6 +4496,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 # 
@@ -4482,6 +4523,13 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "海圖"
+#
+#
+#
+# 
+# 
 # 
 # 
 # 
@@ -4491,10 +4539,12 @@ msgstr ""
 #~ msgstr "ETE/時間戳記"
 #
 #
+#
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 # 
@@ -4503,10 +4553,12 @@ msgstr ""
 #~ msgstr "標記圖示"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 # 
@@ -4518,6 +4570,7 @@ msgstr ""
 #~ msgstr "新標記"
 #
 #
+#
 # 
 # 
 # 
@@ -4527,6 +4580,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 # 
@@ -4544,6 +4598,7 @@ msgstr ""
 #~ "插件管理員建立基礎class"
 #
 #
+#
 # 
 # 
 # 
@@ -4553,6 +4608,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 # 
@@ -4566,6 +4622,7 @@ msgstr ""
 #~ msgstr "插件管理員: 停止插件: "
 #
 #
+#
 # 
 # 
 # 
@@ -4575,6 +4632,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 # 
@@ -4588,6 +4646,7 @@ msgstr ""
 #~ msgstr "插件管理員: 載入插件: "
 #
 #
+#
 # 
 # 
 # 
@@ -4599,6 +4658,7 @@ msgstr ""
 #~ msgstr "插件管理員: 卸載插件: "
 #
 #
+#
 # 
 # 
 # 
@@ -4608,6 +4668,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
 #
 #
 # 

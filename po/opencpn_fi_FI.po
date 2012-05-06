@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -21,6 +21,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -444,6 +450,9 @@ msgstr "(Nimeämätön jälki)"
 #, fuzzy
 msgid "(Unnamed Waypoint)"
 msgstr "Uudelleennimeä kiintopisteet?"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1052,11 +1061,6 @@ msgstr "Vaihda värikarttaa"
 #
 # 
 # 
-msgid "Chart"
-msgstr "Kartta"
-#
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Kartan syvvysyksikkö"
 #
@@ -1326,6 +1330,12 @@ msgstr "Kirjasinväri."
 #, fuzzy
 msgid "Default dataset"
 msgstr "Kirjasinväri."
+#
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Reittiväli"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2088,9 +2098,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Lisenssi"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2204,7 +2211,8 @@ msgstr "Merkitse maali kadotetuksi (minuutin) jälkeen:"
 #
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Merkkaa /WP ominaisuudet"
 #
 # 
@@ -2342,6 +2350,9 @@ msgstr "NMEA lähde"
 # 
 msgid "NMEA Options"
 msgstr "NMEA asetukset"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2996,6 +3007,10 @@ msgid "Rename Waypoints?"
 msgstr "Uudelleennimeä kiintopisteet?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3046,6 +3061,12 @@ msgstr ""
 # 
 msgid "Route"
 msgstr "Reitti"
+#
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Kokonaismatka"
 #
 # 
 # 
@@ -4207,7 +4228,7 @@ msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API Version mismatch.\n"
 "Opencpn found version %d.%d, but requires at least version 3.1"
@@ -4224,6 +4245,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 # 
@@ -4255,6 +4277,7 @@ msgstr ""
 #~ msgstr "&Sulje"
 #
 #
+#
 # 
 # 
 # 
@@ -4282,6 +4305,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
+#
 #
 #
 # 
@@ -4313,6 +4337,7 @@ msgstr ""
 #~ msgstr "&Poista kaikki jäljet"
 #
 #
+#
 # 
 # 
 # 
@@ -4342,10 +4367,12 @@ msgstr ""
 #~ msgstr "(Aktiivoitu reitti)"
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisätieto"
+#
 #
 #
 # 
@@ -4379,6 +4406,13 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Kartta"
+#
+#
+#
+# 
+# 
 # 
 # 
 # 
@@ -4403,6 +4437,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
 #
 #
 # 
@@ -4438,6 +4473,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4469,6 +4505,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -4504,6 +4541,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4531,6 +4569,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Virran nopeus, solmua"
+#
 #
 #
 # 
@@ -4562,6 +4601,7 @@ msgstr ""
 #~ msgstr "ETA:                  Tuntematon"
 #
 #
+#
 # 
 # 
 # 
@@ -4571,6 +4611,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Aikaleima"
+#
 #
 #
 # 
@@ -4597,6 +4638,7 @@ msgstr ""
 #~ msgstr "Poistu OpenCPN:stä"
 #
 #
+#
 # 
 # 
 # 
@@ -4615,6 +4657,7 @@ msgstr ""
 #~ "gpsd-isäntä on: "
 #
 #
+#
 # 
 # 
 # 
@@ -4631,6 +4674,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 # 
@@ -4662,6 +4706,7 @@ msgstr ""
 #~ msgstr "GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -4689,6 +4734,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 # 
@@ -4720,6 +4766,7 @@ msgstr ""
 #~ msgstr "GRIB-näytön hallinta"
 #
 #
+#
 # 
 # 
 # 
@@ -4749,6 +4796,7 @@ msgstr ""
 #~ msgstr "GRIB-tiedostojen hakemisto"
 #
 #
+#
 # 
 # 
 # 
@@ -4770,11 +4818,13 @@ msgstr ""
 #~ msgstr "Tuo GPX-tiedosto"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 # 
@@ -4803,16 +4853,19 @@ msgstr ""
 #~ msgstr "MarinersStandard"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merkitse ikoni"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Merkitse nimi"
+#
 #
 #
 # 
@@ -4822,6 +4875,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uusi merkintä"
+#
 #
 #
 # 
@@ -4853,6 +4907,7 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt CRAIN GRIB tiedot"
 #
 #
+#
 # 
 # 
 # 
@@ -4880,6 +4935,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 # 
@@ -4911,6 +4967,7 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt OCEAN CURRENT GRIB tiedot"
 #
 #
+#
 # 
 # 
 # 
@@ -4940,6 +4997,7 @@ msgstr ""
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt SEATEMP GRIB tiedot"
 #
 #
+#
 # 
 # 
 # 
@@ -4949,6 +5007,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Sijainti:"
+#
 #
 #
 # 
@@ -4980,6 +5039,7 @@ msgstr ""
 #~ msgstr "Ilmanpaine, mbar"
 #
 #
+#
 # 
 # 
 # 
@@ -5004,6 +5064,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Äskeinen raporttiväli:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -5035,6 +5096,7 @@ msgstr ""
 #~ msgstr "Reittien käsittely"
 #
 #
+#
 # 
 # 
 # 
@@ -5062,6 +5124,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Pintalämpötila, C"
+#
 #
 #
 # 
@@ -5093,6 +5156,7 @@ msgstr ""
 #~ msgstr "Valtse GRIB-hakemisto"
 #
 #
+#
 # 
 # 
 # 
@@ -5122,6 +5186,7 @@ msgstr ""
 #~ msgstr "Lähetä reitti GPS:lle..."
 #
 #
+#
 # 
 # 
 # 
@@ -5146,6 +5211,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
 #
 #
 # 
@@ -5177,6 +5243,7 @@ msgstr ""
 #~ msgstr "Näytä GPX-ikoni"
 #
 #
+#
 # 
 # 
 # 
@@ -5204,6 +5271,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 # 
@@ -5235,6 +5303,7 @@ msgstr ""
 #~ msgstr "Näytä GRIB-ikoni"
 #
 #
+#
 # 
 # 
 # 
@@ -5264,6 +5333,7 @@ msgstr ""
 #~ msgstr "Merkitsevä aallonkorkeus, m"
 #
 #
+#
 # 
 # 
 # 
@@ -5283,6 +5353,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -5306,6 +5377,7 @@ msgstr ""
 #~ msgstr "Kytke jälki"
 #
 #
+#
 # 
 # 
 # 
@@ -5325,6 +5397,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Reitin nimi"
+#
 #
 #
 # 
@@ -5356,6 +5429,7 @@ msgstr ""
 #~ msgstr "Käytä tarkkuusgrafiikkaa"
 #
 #
+#
 # 
 # 
 # 
@@ -5383,6 +5457,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB tieto on %d tuntia vanha."
+#
 #
 #
 # 

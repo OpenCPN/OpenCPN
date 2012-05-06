@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -24,6 +24,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -588,6 +594,9 @@ msgstr "(Acompanhamento sem Nome)"
 #, fuzzy
 msgid "(Unnamed Waypoint)"
 msgstr "Renomear Pontos da Derrota?"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1349,13 +1358,6 @@ msgstr "Mudar Esquema de Cores"
 # 
 # 
 # 
-msgid "Chart"
-msgstr "Carta"
-#
-# 
-# 
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Unidade de Profundidade na Carta"
 #
@@ -1699,6 +1701,14 @@ msgstr "Cor da fonte."
 #, fuzzy
 msgid "Default dataset"
 msgstr "Cor da fonte."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Pernada"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2695,9 +2705,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Licença"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2839,7 +2846,8 @@ msgstr "Marcar alvo como perdido após (Minutos):"
 # 
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Propriedades da Marca/PD..."
 #
 # 
@@ -2999,6 +3007,9 @@ msgstr "Fonte de Dados NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opções NMEA"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -3809,6 +3820,10 @@ msgid "Rename Waypoints?"
 msgstr "Renomear Pontos da Derrota?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3869,6 +3884,14 @@ msgstr ""
 # 
 msgid "Route"
 msgstr "Derrota"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Distância Total"
 #
 # 
 # 
@@ -5330,7 +5353,7 @@ msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "Versão da API libgps não confere.\n"
 "Opencpn encontrou a versão %d.%d, mas é necessário pelo menos a versão 3.1"
@@ -5347,6 +5370,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 # 
@@ -5381,6 +5405,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 # 
@@ -5421,6 +5446,7 @@ msgstr ""
 #~ msgstr "Excluir to&das as Derrotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -5457,6 +5483,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 #
 # 
@@ -5497,12 +5524,14 @@ msgstr ""
 #~ msgstr "(Acompanhamento Ativo)"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
 #
 #
 # 
@@ -5523,6 +5552,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 #
 # 
@@ -5565,6 +5595,15 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Carta"
+#
+#
+#
+# 
+# 
+# 
+# 
 # 
 # 
 # 
@@ -5589,6 +5628,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 #
 # 
@@ -5633,6 +5673,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -5670,6 +5711,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -5714,6 +5756,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -5746,6 +5789,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Velocidade da Corrente, Nós."
+#
 #
 #
 # 
@@ -5786,6 +5830,7 @@ msgstr ""
 #~ msgstr "Excluir TODAS as Derrotas"
 #
 #
+#
 # 
 # 
 # 
@@ -5822,6 +5867,7 @@ msgstr ""
 #~ msgstr "ETA:                 Desconhecido"
 #
 #
+#
 # 
 # 
 # 
@@ -5833,6 +5879,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "TED/Marca Temporal"
+#
 #
 #
 # 
@@ -5859,6 +5906,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
 #
 #
 # 
@@ -5899,6 +5947,7 @@ msgstr ""
 #~ msgstr "Exportar..."
 #
 #
+#
 # 
 # 
 # 
@@ -5919,6 +5968,7 @@ msgstr ""
 #~ "O host gpsd é: "
 #
 #
+#
 # 
 # 
 # 
@@ -5937,6 +5987,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 #
 # 
@@ -5969,6 +6020,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 # 
@@ -6005,6 +6057,7 @@ msgstr ""
 #~ msgstr "Dados GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -6037,6 +6090,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
 #
 #
 # 
@@ -6073,6 +6127,7 @@ msgstr ""
 #~ msgstr "Diretório de Arquivos GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -6096,6 +6151,7 @@ msgstr ""
 #~ msgstr "Importar arquivo GPX"
 #
 #
+#
 # 
 # 
 # 
@@ -6103,6 +6159,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 # 
@@ -6133,6 +6190,7 @@ msgstr ""
 #~ msgstr "MarinersStandard"
 #
 #
+#
 # 
 # 
 # 
@@ -6141,12 +6199,14 @@ msgstr ""
 #~ msgstr "Símbolo da Marca"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 #
 # 
@@ -6158,6 +6218,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 #
 # 
@@ -6194,6 +6255,7 @@ msgstr ""
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver CRAIN GRIB suprimido"
 #
 #
+#
 # 
 # 
 # 
@@ -6226,6 +6288,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 #
 # 
@@ -6263,6 +6326,7 @@ msgstr ""
 #~ "Por favor Afaste ou Diminua a Escala para ver OCEAN CURRENT GRIB suprimido"
 #
 #
+#
 # 
 # 
 # 
@@ -6297,6 +6361,7 @@ msgstr ""
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
 #
 #
+#
 # 
 # 
 # 
@@ -6308,6 +6373,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:"
+#
 #
 #
 # 
@@ -6344,6 +6410,7 @@ msgstr ""
 #~ msgstr "Pressão, hPa"
 #
 #
+#
 # 
 # 
 # 
@@ -6370,6 +6437,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -6410,6 +6478,7 @@ msgstr ""
 #~ msgstr "Gerenciador de Derrotas..."
 #
 #
+#
 # 
 # 
 # 
@@ -6444,6 +6513,7 @@ msgstr ""
 #~ msgstr "Temperatura da Superfície do Mar, C"
 #
 #
+#
 # 
 # 
 # 
@@ -6476,6 +6546,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 #
 # 
@@ -6516,6 +6587,7 @@ msgstr ""
 #~ msgstr "Enviar Derrota para o GPS..."
 #
 #
+#
 # 
 # 
 # 
@@ -6542,6 +6614,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
 #
 #
 # 
@@ -6582,6 +6655,7 @@ msgstr ""
 #~ msgstr "Mostrar ícone GPX"
 #
 #
+#
 # 
 # 
 # 
@@ -6620,6 +6694,7 @@ msgstr ""
 #~ msgstr "Mostrar Janela GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -6650,6 +6725,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar ícone GRIB"
+#
 #
 #
 # 
@@ -6686,6 +6762,7 @@ msgstr ""
 #~ msgstr "Altura Significativa das Ondas, m"
 #
 #
+#
 # 
 # 
 # 
@@ -6707,6 +6784,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Tamanho:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -6732,6 +6810,7 @@ msgstr ""
 #~ msgstr "Ligar Acompanhamento"
 #
 #
+#
 # 
 # 
 # 
@@ -6753,6 +6832,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nome da Derrota"
+#
 #
 #
 # 
@@ -6785,6 +6865,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 #
 # 
@@ -6821,6 +6902,7 @@ msgstr ""
 #~ msgstr "AVISO: Dados GRIB são de %d horas atrás."
 #
 #
+#
 # 
 # 
 # 
@@ -6853,6 +6935,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direção do Vento"
+#
 #
 #
 # 

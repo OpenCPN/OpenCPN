@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -20,6 +20,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 msgid ""
@@ -376,6 +382,9 @@ msgstr "(Slepestrek uten navn)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Veipunkt uten navn)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -867,10 +876,6 @@ msgid "Change Color Scheme"
 msgstr "Bytt fargepalett"
 #
 # 
-msgid "Chart"
-msgstr "Kart"
-#
-# 
 msgid "Chart Depth Units"
 msgstr "Kart dybde enheter"
 #
@@ -1097,6 +1102,11 @@ msgstr "Standard farge"
 #, fuzzy
 msgid "Default dataset"
 msgstr "Standard farge"
+#
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Oppmudring"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -1690,9 +1700,6 @@ msgstr "Gasstanker med flytende gass"
 msgid "List contents"
 msgstr "Vis innhold"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 msgid "Local @ PC"
 msgstr "Lokal @ PC"
@@ -1784,7 +1791,8 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Merk mål som mistet etter (minutter):"
 #
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Egenskaper for Merke/Veipunkt"
 #
 # 
@@ -1894,6 +1902,9 @@ msgstr "NMEA Datakilde"
 # 
 msgid "NMEA Options"
 msgstr "NMEA Valg"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 msgid "Name"
@@ -2412,6 +2423,10 @@ msgid "Rename Waypoints?"
 msgstr "Bytte navn på veipunkter?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -2454,6 +2469,11 @@ msgstr "Mus over"
 # 
 msgid "Route"
 msgstr "Rute"
+#
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Sammenlagt distanse"
 #
 # 
 msgid "Route Manager"
@@ -3375,12 +3395,12 @@ msgid "cm93 Detail"
 msgstr "CM93 detalj"
 #
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "libgps API versjon samsvarer ikke.\n"
 "OpenCPN fant versjon %d.%d, men krever minst versjon 3.0\n"
@@ -3399,6 +3419,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3414,6 +3435,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3422,6 +3444,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
+#
 #
 #
 # 
@@ -3434,6 +3457,7 @@ msgstr ""
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol create_pi: "
 #
 #
+#
 # 
 # 
 # 
@@ -3444,9 +3468,11 @@ msgstr ""
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Tilleggsinformasjon"
+#
 #
 #
 # 
@@ -3460,6 +3486,12 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Chart"
+#~ msgstr "Kart"
+#
+#
+#
+# 
 # 
 # 
 # 
@@ -3469,9 +3501,11 @@ msgstr ""
 #~ msgstr "ETE/Tids stempel"
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 # 
@@ -3479,9 +3513,11 @@ msgstr ""
 #~ msgstr "Merke ikon"
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Merkenavn"
+#
 #
 #
 # 
@@ -3492,6 +3528,7 @@ msgstr ""
 #~ msgstr "Nytt merke"
 #
 #
+#
 # 
 # 
 # 
@@ -3500,6 +3537,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Utvidelses Baseklasse"
+#
 #
 #
 # 
@@ -3516,6 +3554,7 @@ msgstr ""
 #~ "Utvidelses behandling opprettet denne base klassen"
 #
 #
+#
 # 
 # 
 # 
@@ -3524,6 +3563,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Utvidelses behandling søker etter mappen for utvidelser"
+#
 #
 #
 # 
@@ -3536,6 +3576,7 @@ msgstr ""
 #~ msgstr "Utvidelses behandling: Deaktiverer utvidelse: "
 #
 #
+#
 # 
 # 
 # 
@@ -3544,6 +3585,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Utvidelses behandling: Starter utvidelse: "
+#
 #
 #
 # 
@@ -3556,6 +3598,7 @@ msgstr ""
 #~ msgstr "Utvidelses behandling: Laster utvidelse: "
 #
 #
+#
 # 
 # 
 # 
@@ -3564,6 +3607,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster ut utvidelse: "
+#
 #
 #
 # 
@@ -3575,6 +3619,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
+#
 #
 #
 # 

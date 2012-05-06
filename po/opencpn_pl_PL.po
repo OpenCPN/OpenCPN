@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -19,6 +19,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -446,6 +452,9 @@ msgstr "(ślad bez nazwy)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(punkt bez nazwy)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1041,11 +1050,6 @@ msgstr "Zmień schemat kolorów"
 #
 # 
 # 
-msgid "Chart"
-msgstr "Mapa"
-#
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Jednostki głębokości mapy"
 #
@@ -1312,6 +1316,12 @@ msgstr "Kolor domyślny"
 #, fuzzy
 msgid "Default dataset"
 msgstr "Kolor domyślny"
+#
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Odcinek"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2033,9 +2043,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Wylicz zawartość"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2150,7 +2157,8 @@ msgstr "Oznacz obiekty jako zgubione po (minutach:):"
 #
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Właściwości znaku/punktu drogi"
 #
 # 
@@ -2287,6 +2295,9 @@ msgstr "Źródło danych NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opcje NMEA"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2924,6 +2935,10 @@ msgid "Rename Waypoints?"
 msgstr "Przemianować punkty drogi?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -2974,6 +2989,12 @@ msgstr "Najazd myszką "
 # 
 msgid "Route"
 msgstr "Droga"
+#
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Całkowita odległość"
 #
 # 
 # 
@@ -4101,12 +4122,12 @@ msgstr "Poziom szczegółów CM93"
 #
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "Niezgodność wersji API libgps.\n"
 "OpenCPN znalazł wersję %d.%d, ale wymaga co najmniej v. 3.0\n"
@@ -4127,6 +4148,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4143,6 +4165,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4152,6 +4175,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "  Wtyczki: nie można załadować biblioteki "
+#
 #
 #
 # 
@@ -4165,6 +4189,7 @@ msgstr ""
 #~ msgstr "  Wtyczki: nie można załadować symbolu create_pi"
 #
 #
+#
 # 
 # 
 # 
@@ -4174,6 +4199,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 # 
@@ -4196,10 +4222,12 @@ msgstr ""
 #~ msgstr "Wł./Wył. na mapie"
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 # 
@@ -4216,6 +4244,7 @@ msgstr ""
 #~ msgstr "Próba załadowania libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -4225,6 +4254,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 # 
@@ -4255,6 +4285,7 @@ msgstr ""
 #~ msgstr "Przesunięcie CM93 wyłączone"
 #
 #
+#
 # 
 # 
 # 
@@ -4281,6 +4312,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 # 
@@ -4311,6 +4343,7 @@ msgstr ""
 #~ msgstr "Wyłącz narzędzie przesuwania CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -4337,6 +4370,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 # 
@@ -4367,6 +4401,7 @@ msgstr ""
 #~ msgstr "Włącz przesunięcia CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -4392,6 +4427,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 # 
@@ -4423,6 +4459,13 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Mapa"
+#
+#
+#
+# 
+# 
 # 
 # 
 # 
@@ -4430,6 +4473,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 # 
@@ -4446,6 +4490,7 @@ msgstr ""
 #~ msgstr "Błąd ładowania libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -4458,6 +4503,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Błąd ładowania libgps.so.19"
+#
 #
 #
 # 
@@ -4480,11 +4526,13 @@ msgstr ""
 #~ msgstr "Importuj nową warstwę"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:         "
+#
 #
 #
 # 
@@ -4493,10 +4541,12 @@ msgstr ""
 #~ msgstr "Ikona znaku"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nazwa znaku"
+#
 #
 #
 # 
@@ -4508,6 +4558,7 @@ msgstr ""
 #~ msgstr "Nowy znak"
 #
 #
+#
 # 
 # 
 # 
@@ -4517,6 +4568,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 # 
@@ -4534,6 +4586,7 @@ msgstr ""
 #~ "utworzona przez modul obsługi wtyczek"
 #
 #
+#
 # 
 # 
 # 
@@ -4543,6 +4596,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 # 
@@ -4556,6 +4610,7 @@ msgstr ""
 #~ msgstr "Wtyczki: odłączanie "
 #
 #
+#
 # 
 # 
 # 
@@ -4565,6 +4620,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 # 
@@ -4578,6 +4634,7 @@ msgstr ""
 #~ msgstr "Wtyczki: ładowanie"
 #
 #
+#
 # 
 # 
 # 
@@ -4587,6 +4644,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
 #
 #
 # 
@@ -4600,6 +4658,7 @@ msgstr ""
 #~ msgstr "Wtyczki: odstawiona wtyczka o błędnym numerze wersji API %d.%d:"
 #
 #
+#
 # 
 # 
 # 
@@ -4608,6 +4667,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
 #
 #
 # 
@@ -4630,6 +4690,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4648,6 +4709,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 # 

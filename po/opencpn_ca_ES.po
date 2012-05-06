@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -20,6 +20,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 msgid ""
@@ -384,6 +390,9 @@ msgstr "(Derrota Sense Nom)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sense Nom)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -875,10 +884,6 @@ msgid "Change Color Scheme"
 msgstr "Ajust de la Lluminositat / joc de colors"
 #
 # 
-msgid "Chart"
-msgstr "Carta"
-#
-# 
 msgid "Chart Depth Units"
 msgstr "Unitats de Fondaria a Carta"
 #
@@ -1110,6 +1115,11 @@ msgstr "El color de la lletra"
 #, fuzzy
 msgid "Default dataset"
 msgstr "El color de la lletra"
+#
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Draga"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -1706,9 +1716,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Llista contingut"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 msgid "Local @ PC"
 msgstr "La local del PC"
@@ -1802,7 +1809,8 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Marcar els objectes com a perduts després de (Minuts):"
 #
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Propietats de la Marca/Wpt "
 #
 # 
@@ -1912,6 +1920,9 @@ msgstr "Font de les Dades NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opcions en el NMEA"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 msgid "Name"
@@ -2433,6 +2444,10 @@ msgid "Rename Waypoints?"
 msgstr "Reanomenar Waypoints?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -2475,6 +2490,11 @@ msgstr "Aportació d'Informació"
 # 
 msgid "Route"
 msgstr "Ruta"
+#
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Distància Total"
 #
 # 
 msgid "Route Manager"
@@ -3408,12 +3428,12 @@ msgid "cm93 Detail"
 msgstr "Detall CM93"
 #
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "La versió d'API de libgps no coincideix.\n"
 "L'OpenCPN ha trobat versió %d.%d requereix, però, com a mínim la 3.0\n"
@@ -3432,6 +3452,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3446,12 +3467,14 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar la biblioteca: "
+#
 #
 #
 # 
@@ -3462,12 +3485,14 @@ msgstr ""
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol destruir_pi:"
+#
 #
 #
 # 
@@ -3478,9 +3503,11 @@ msgstr ""
 #~ msgstr "Commu&tar la Carta"
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 # 
@@ -3489,6 +3516,7 @@ msgstr ""
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentant carregar libgps.so"
+#
 #
 #
 # 
@@ -3500,11 +3528,18 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Chart"
+#~ msgstr "Carta"
+#
+#
+#
+# 
 # 
 # 
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Tanca l'OpenCPN"
+#
 #
 #
 # 
@@ -3515,12 +3550,14 @@ msgstr ""
 #~ msgstr "Fracàs en carregar libgps.so"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Fracàs en carregar libgps.so.19"
+#
 #
 #
 # 
@@ -3531,10 +3568,12 @@ msgstr ""
 #~ msgstr "Importar noves capes"
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Tipus:                "
+#
 #
 #
 # 
@@ -3542,9 +3581,11 @@ msgstr ""
 #~ msgstr "Icona de la Marca"
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
 #
 #
 # 
@@ -3555,12 +3596,14 @@ msgstr ""
 #~ msgstr "Marca Nova"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 # 
@@ -3575,12 +3618,14 @@ msgstr ""
 #~ "El Gestor de Mòduls ha creat aquesta classe bàsica"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 # 
@@ -3591,12 +3636,14 @@ msgstr ""
 #~ msgstr "El Gestor de Mòduls de Programari cerca mòduls en el lloc "
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 # 
@@ -3607,6 +3654,7 @@ msgstr ""
 #~ msgstr "Gestor de Mòduls: S'inicialitza el Mòdul:"
 #
 #
+#
 # 
 # 
 # 
@@ -3615,12 +3663,14 @@ msgstr ""
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #
 # 
@@ -3632,12 +3682,14 @@ msgstr ""
 #~ "Gestor de Mòduls: Es descarrega Mòdul amb una versió d'API invàlida %d.%d: "
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 # 
@@ -3652,12 +3704,14 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Commu&tar la Llista"
+#
 #
 #
 # 

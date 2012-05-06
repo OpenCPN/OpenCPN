@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -20,6 +20,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -453,6 +459,9 @@ msgstr "(ανώνυμο ίχνος (πορεία))"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο Σημείο)(WP)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # 
@@ -1056,11 +1065,6 @@ msgstr "Αλλαγή Θεματικού Χρώματος"
 #
 # 
 # 
-msgid "Chart"
-msgstr "Χάρτης"
-#
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Μονάδες Βάθους Χάρτη"
 #
@@ -1331,6 +1335,12 @@ msgstr "Χρώμα Γραμματοσειράς."
 #, fuzzy
 msgid "Default dataset"
 msgstr "Χρώμα Γραμματοσειράς."
+#
+# 
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Σκέλος"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -2064,9 +2074,6 @@ msgstr ""
 msgid "List contents"
 msgstr "Άδεια"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 # 
 msgid "Local @ PC"
@@ -2181,7 +2188,8 @@ msgstr "Μαρκάρισε Στόχους ως χαμένους μετά από 
 #
 # 
 # 
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Ιδιότητες Σημαδιών-/ σημείων Πορείας (WP)"
 #
 # 
@@ -2318,6 +2326,9 @@ msgstr "Πηγή ΝΜΕΑ"
 # 
 msgid "NMEA Options"
 msgstr "Ρυθμίσεις ΝΜΕΑ"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2974,6 +2985,10 @@ msgid "Rename Waypoints?"
 msgstr "Μετονομασία σημείου Πορείας (WP);"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -3024,6 +3039,12 @@ msgstr "Αναστροφή"
 # 
 msgid "Route"
 msgstr "Ταξίδι"
+#
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Ολική Απόσταση"
 #
 # 
 # 
@@ -4172,12 +4193,12 @@ msgstr "Λεπτομέρειες CM93"
 #
 # 
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "Μη συμβατή Έκδοση  libgps API .\n"
 "OpenCPN βρήκε την έκδοση %d.%d , αλλά χρειάζεται τουλάχιστον την Έκδοση 3.1"
@@ -4196,6 +4217,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -4212,6 +4234,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4221,6 +4244,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
+#
 #
 #
 # 
@@ -4234,6 +4258,7 @@ msgstr ""
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
 #
 #
+#
 # 
 # 
 # 
@@ -4245,10 +4270,12 @@ msgstr ""
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 # 
@@ -4265,6 +4292,7 @@ msgstr ""
 #~ msgstr "Προσπάθεια να φορτωθεί το libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -4274,6 +4302,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 # 
@@ -4304,6 +4333,7 @@ msgstr ""
 #~ msgstr "Αντιμετάθεση CM93 κλειστή"
 #
 #
+#
 # 
 # 
 # 
@@ -4330,6 +4360,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 # 
@@ -4360,6 +4391,7 @@ msgstr ""
 #~ msgstr "Εργαλείο αντιμετάθεσης CM93 κλειστό"
 #
 #
+#
 # 
 # 
 # 
@@ -4386,6 +4418,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 # 
@@ -4416,6 +4449,7 @@ msgstr ""
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
 #
 #
+#
 # 
 # 
 # 
@@ -4441,6 +4475,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 # 
@@ -4472,6 +4507,13 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Χάρτης"
+#
+#
+#
+# 
+# 
 # 
 # 
 # 
@@ -4498,6 +4540,7 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+#
 # 
 # 
 # 
@@ -4507,6 +4550,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 # 
@@ -4533,6 +4577,7 @@ msgstr ""
 #~ msgstr "Έξοδος OpenCPN"
 #
 #
+#
 # 
 # 
 # 
@@ -4547,6 +4592,7 @@ msgstr ""
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
 #
 #
+#
 # 
 # 
 # 
@@ -4559,6 +4605,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 # 
@@ -4582,11 +4629,13 @@ msgstr ""
 #~ msgstr "Εισαγωγή Αρχείου GPX"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 # 
@@ -4615,16 +4664,19 @@ msgstr ""
 #~ msgstr "Βασικό ναυτικό"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Όνομα Σημαδιού"
+#
 #
 #
 # 
@@ -4636,6 +4688,7 @@ msgstr ""
 #~ msgstr "Νέο Σημάδι"
 #
 #
+#
 # 
 # 
 # 
@@ -4645,6 +4698,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
 #
 #
 # 
@@ -4660,6 +4714,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 # 
@@ -4683,6 +4738,7 @@ msgstr ""
 #~ msgstr "OpenCPN φορτώνει Αρχείο S57 SENC"
 #
 #
+#
 # 
 # 
 # 
@@ -4692,6 +4748,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 # 
@@ -4705,6 +4762,7 @@ msgstr ""
 #~ msgstr "Διαχειριστής PlugIn: Απενεργοποίηση PlugIn: "
 #
 #
+#
 # 
 # 
 # 
@@ -4714,6 +4772,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 # 
@@ -4727,6 +4786,7 @@ msgstr ""
 #~ msgstr "Διαχειριστής PlugIn: Φορτώνω PlugIn:"
 #
 #
+#
 # 
 # 
 # 
@@ -4736,6 +4796,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 # 
@@ -4750,6 +4811,7 @@ msgstr ""
 #~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
 #
 #
+#
 # 
 # 
 # 
@@ -4758,6 +4820,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 # 
@@ -4783,6 +4846,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -4811,6 +4875,7 @@ msgstr ""
 #~ msgstr "Όνομα Σκάφους: "
 #
 #
+#
 # 
 # 
 # 
@@ -4832,6 +4897,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -4851,6 +4917,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 # 

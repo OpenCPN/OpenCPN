@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:06-0400\n"
+"POT-Creation-Date: 2012-05-05 22:25-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -16,6 +16,12 @@ msgstr ""
 # 
 msgid "\n"
 msgstr "\n"
+#
+msgid ""
+"\n"
+"\n"
+"Continuing libgps setup..."
+msgstr ""
 #
 # 
 # 
@@ -449,6 +455,9 @@ msgstr "(Trace sans nom)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sans nom)"
+#
+msgid "(m)"
+msgstr ""
 #
 # 
 # Couche
@@ -1001,11 +1010,6 @@ msgstr "Choisir l'affichage :  Jour / Crépuscule / Nuit"
 #
 # 
 # 
-msgid "Chart"
-msgstr "Carte"
-#
-# 
-# 
 msgid "Chart Depth Units"
 msgstr "Afficher l'unité des cartes"
 #
@@ -1263,6 +1267,11 @@ msgstr "Couleur par défaut"
 #, fuzzy
 msgid "Default dataset"
 msgstr "Couleur par défaut"
+#
+# 
+#, fuzzy
+msgid "Deg"
+msgstr "Drague"
 #
 # 
 msgid "Degrees, Decimal minutes"
@@ -1938,9 +1947,6 @@ msgstr "Navire-citerne pour gaz liquéfié"
 msgid "List contents"
 msgstr "---> Routes/Traces/WP"
 #
-msgid "Loaded legacy PLIB data: "
-msgstr ""
-#
 # 
 msgid "Local @ PC"
 msgstr "Heure du PC"
@@ -2045,7 +2051,8 @@ msgstr "Marquer les cibles comme perdues après ... minutes :"
 #
 # 
 # Menu contextuel : Waypoint
-msgid "Mark/WP Properties"
+#, fuzzy
+msgid "Mark/WP Properties..."
 msgstr "Waypoint/Marque : Propriétés ..."
 #
 # 
@@ -2170,6 +2177,9 @@ msgstr "Source de données NMEA "
 # 
 msgid "NMEA Options"
 msgstr "Options NMEA"
+#
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2764,6 +2774,10 @@ msgid "Rename Waypoints?"
 msgstr "Renommer les waypoint ?"
 #
 #, c-format
+msgid "RenderHPGL: The '%s' instruction is not implemented."
+msgstr ""
+#
+#, c-format
 msgid "Report as of: %d:%d UTC "
 msgstr ""
 #
@@ -2817,6 +2831,12 @@ msgstr "Info par survol d'une cible."
 # 
 msgid "Route"
 msgstr "Route"
+#
+# 
+# 
+#, fuzzy
+msgid "Route Distance: "
+msgstr "Distance totale"
 #
 # 
 msgid "Route Manager"
@@ -3878,12 +3898,12 @@ msgid "cm93 Detail"
 msgstr "CM93 : Détail"
 #
 # 
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "libgps API version mismatch.\n"
 "OpenCPN found version %d.%d, but requires at least version 3.0\n"
 "\n"
-"Would you like to use this version of libgps anyway?"
+"      Would you like to use this version of libgps anyway?"
 msgstr ""
 "Erreur de version de l'API libgps.\n"
 "Opencpn a trouvé la version %d.%d, mais requiert au moins la version 3.0\n"
@@ -3902,6 +3922,7 @@ msgid "wxFB Website"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -3917,6 +3938,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 # 
@@ -3925,6 +3947,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger la bibliothèque"
+#
 #
 #
 # 
@@ -3936,6 +3959,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de créer le symbole create_pi :"
+#
 #
 #
 # 
@@ -3950,10 +3974,12 @@ msgstr ""
 #~ "destroy_pi :"
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Information complémentaire"
+#
 #
 #
 # 
@@ -3967,6 +3993,13 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Chart"
+#~ msgstr "Carte"
+#
+#
+#
+# 
+# 
 # 
 # 
 # 
@@ -3976,9 +4009,11 @@ msgstr ""
 #~ msgstr "ETE/Horodatage"
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 # 
@@ -3987,10 +4022,12 @@ msgstr ""
 #~ msgstr "Icône de la marque"
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la marque"
+#
 #
 #
 # 
@@ -4002,6 +4039,7 @@ msgstr ""
 #~ msgstr "Nouvelle marque"
 #
 #
+#
 # 
 # 
 # 
@@ -4009,6 +4047,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN plugin classe de base"
+#
 #
 #
 # 
@@ -4024,6 +4063,7 @@ msgstr ""
 #~ "Le gestionnaire de compléments a créé cette classe de base"
 #
 #
+#
 # 
 # 
 # 
@@ -4032,6 +4072,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestionnaire de compléments : Recherche du plug-in"
+#
 #
 #
 # 
@@ -4044,6 +4085,7 @@ msgstr ""
 #~ msgstr "Gestionnaire de compléments : Désactivation du plug-in :"
 #
 #
+#
 # 
 # 
 # 
@@ -4052,6 +4094,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Initialisation du plug-in :"
+#
 #
 #
 # 
@@ -4064,6 +4107,7 @@ msgstr ""
 #~ msgstr "Gestionnaire de compléments : Chargement du plug-in :"
 #
 #
+#
 # 
 # 
 # 
@@ -4072,6 +4116,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Déchargement du plug-in :"
+#
 #
 #
 # 
@@ -4084,6 +4129,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Gestionnaire de compléments : Déchargement du plug-in avec version API non "
 #~ "valide %d.%d :"
+#
 #
 #
 # 
