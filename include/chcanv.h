@@ -376,7 +376,7 @@ private:
       void AISDraw(ocpnDC& dc);
       void AISDrawAreaNotices (ocpnDC& dc );
       void AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc );
-      
+
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
@@ -948,6 +948,54 @@ class GoToPositionDialog: public wxDialog
 
             double        m_lat_save;
             double        m_lon_save;
+};
+
+
+//----------------------------------------------------------------------------------------------------------
+//    s57QueryDialog Specification
+//----------------------------------------------------------------------------------------------------------
+class wxHtmlWindow;
+
+class S57QueryDialog: public wxDialog
+{
+      DECLARE_CLASS( S57QueryDialog )
+                  DECLARE_EVENT_TABLE()
+      public:
+
+      /// Constructors
+
+            S57QueryDialog( );
+            S57QueryDialog( wxWindow* parent,
+                            wxWindowID id = wxID_ANY,
+                            const wxString& caption = _("Object Query"),
+                                        const wxPoint& pos = wxDefaultPosition,
+                                        const wxSize& size = wxDefaultSize,
+                                        long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+
+            ~S57QueryDialog( );
+            void Init();
+
+            bool Create( wxWindow* parent,
+                         wxWindowID id = wxID_ANY,
+                         const wxString& caption = _("Object Query"),
+                                     const wxPoint& pos = wxDefaultPosition,
+                                     const wxSize& size = wxDefaultSize,
+                                     long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+
+            void SetColorScheme(void);
+
+            void CreateControls();
+            void OnSize(wxSizeEvent& event);
+            void OnClose(wxCloseEvent& event);
+
+      //    Overrides
+            void OnPaint ( wxPaintEvent& event );
+
+            void SetHTMLPage(wxString& page);
+
+      //    Data
+            wxHtmlWindow      *m_phtml;
+
 };
 
 

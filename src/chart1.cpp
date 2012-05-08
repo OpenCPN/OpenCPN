@@ -427,7 +427,7 @@ wxString         g_GPS_Ident;
 
 wxProgressDialog *s_ProgDialog;
 
-wxDialog         *g_pObjectQueryDialog;
+S57QueryDialog   *g_pObjectQueryDialog;
 //-----------------------------------------------------------------------------------------------------
 //      OCP_NMEA_Thread Static data store
 //-----------------------------------------------------------------------------------------------------
@@ -3472,7 +3472,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
             g_pAISTargetList->SetColorScheme();
 
       if(g_pObjectQueryDialog)
-            DimeControl(g_pObjectQueryDialog);
+            g_pObjectQueryDialog->SetColorScheme();
 
       ApplyGlobalColorSchemetoStatusBar();
 
