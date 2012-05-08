@@ -1183,7 +1183,7 @@ void s57chart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegi
 
 void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
-      if(ps52plib)
+      if(!ps52plib)
             return;
     //  Here we convert (subjectively) the Global ColorScheme
     //  to an appropriate S52 Color scheme, by name.
