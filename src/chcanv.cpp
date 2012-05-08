@@ -15362,7 +15362,7 @@ bool AISTargetQueryDialog::Create ( wxWindow* parent,
 
       wxFont *dFont = pFontMgr->GetFont(_("AISTargetQuery"), 12);
       int font_size = wxMax(8, dFont->GetPointSize());
-      wxString face;
+      wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
       face = _T("Monospace");
 #endif
