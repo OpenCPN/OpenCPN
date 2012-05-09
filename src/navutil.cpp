@@ -3171,8 +3171,8 @@ int MyConfig::LoadMyConfig ( int iteration )
       if((g_NMEALogWindow_y < 0) || (g_NMEALogWindow_y > display_height))
             g_NMEALogWindow_y = 5;
 
-      g_S57_dialog_sx = Read ( _T ( "S57QueryDialogSizeX" ), 200L );
-      g_S57_dialog_sy = Read ( _T ( "S57QueryDialogSizeY" ), 200L );
+      g_S57_dialog_sx = Read ( _T ( "S57QueryDialogSizeX" ), 400L );
+      g_S57_dialog_sy = Read ( _T ( "S57QueryDialogSizeY" ), 400L );
 
 #ifdef USE_S57
       if ( NULL != ps52plib )

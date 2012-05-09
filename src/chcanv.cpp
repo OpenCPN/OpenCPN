@@ -8989,6 +8989,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
                         if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
                         objText += _T("<br>");
 
+                        delete pdescription;
+
                   }
             }
             objText += _T("</body></html>");
@@ -8997,8 +8999,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
             if(NULL == g_pObjectQueryDialog) {
                   g_pObjectQueryDialog = new S57QueryDialog();
 
-                  g_pObjectQueryDialog->Create ( this, -1, _( "Object Query" ) );
-                  g_pObjectQueryDialog->SetSize ( g_S57_dialog_sx, g_S57_dialog_sy );
+                  g_pObjectQueryDialog->Create ( this, -1, _( "Object Query" ),
+                              wxDefaultPosition, wxSize(g_S57_dialog_sx, g_S57_dialog_sy) );
                   g_pObjectQueryDialog->Centre();
             }
 
@@ -16634,13 +16636,12 @@ bool S57QueryDialog::Create ( wxWindow* parent,
       SetFont ( *dFont );
       CreateControls();
 
-// This fits the dialog to the minimum size dictated by
-// the sizers
-      GetSizer()->Fit ( this );
-
 // This ensures that the dialog cannot be sized smaller
 // than the minimum size
       GetSizer()->SetSizeHints ( this );
+
+// Explicitely set the size
+      SetSize(size);
 
 // Centre the dialog on the parent or (if none) screen
       Centre();
