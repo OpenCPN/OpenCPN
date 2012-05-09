@@ -1137,6 +1137,7 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
 {
       bool ret_bool = false;
 
+#ifdef USE_GARMINHOST
 #ifdef __WXMSW__
       if(com_name.Upper().Matches(_T("*GARMIN*")))                // Garmin USB Mode
       {
@@ -1190,7 +1191,6 @@ bool NMEAHandler::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
       }
 #endif
 
-#ifdef USE_GARMINHOST
       if(m_bGarmin_host)
       {
             int ret_val;
@@ -1640,6 +1640,8 @@ ret_point:
 bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGauge *pProgress)
 {
       bool ret_bool = false;
+
+#ifdef  USE_GARMINHOST
 #ifdef __WXMSW__
       if(com_name.Upper().Matches(_T("*GARMIN*")))                // Garmin USB Mode
       {
@@ -1699,7 +1701,6 @@ bool NMEAHandler::SendWaypointToGPS(RoutePoint *prp, wxString &com_name,  wxGaug
       }
 #endif
 
-#ifdef  USE_GARMINHOST
       //    Are we using Garmin Host mode for uploads?
       if(m_bGarmin_host)
       {
