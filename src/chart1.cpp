@@ -2355,7 +2355,7 @@ bool MyApp::OnInit()
         if(ps52plib->m_bOK)
             wxLogMessage(_T("Using s57data in ") + g_csv_locn);
         else
-            wxLogMessage(_T("   S52PLIB Initialization failed, disabling S57 charts."));
+            wxLogMessage(_T("   S52PLIB Initialization failed, disabling Vector charts."));
 
 
 // Todo Maybe initialize only when an s57 chart is actually opened???

@@ -52,6 +52,7 @@
 #include "cm93.h"
 #endif
 
+class s52plib;
 
 extern ChartBase    *Current_Ch;
 extern ThumbWin     *pthumbwin;
@@ -60,6 +61,7 @@ extern int          g_memCacheLimit;
 extern bool         g_bopengl;
 extern ChartCanvas  *cc1;
 extern int          g_GroupIndex;
+extern s52plib      *ps52plib;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -906,15 +908,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 #ifdef USE_S57
             else if(chart_type == CHART_TYPE_S57)
             {
-//                  Ch = new s57chart();
-//                  int dbIndex = pStack->DBIndex[StackEntry];
-
-//                  s57chart *Chs57 = dynamic_cast<s57chart*>(Ch);
-
-//                  Chs57->SetNativeScale(pChartTable[dbIndex].Scale);
-
                   Ch = new s57chart();
-//                  const ChartTableEntry &entry = GetChartTableEntry(pStack->DBIndex[StackEntry]);
                   s57chart *Chs57 = dynamic_cast<s57chart*>(Ch);
 
                   Chs57->SetNativeScale(cte.GetScale());
@@ -933,16 +927,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 #ifdef USE_S57
             else if(chart_type == CHART_TYPE_CM93)
             {
-//                  Ch = new cm93chart();
-//                  int dbIndex = pStack->DBIndex[StackEntry];
-
-//                  cm93chart *Chcm93 = dynamic_cast<cm93chart*>(Ch);
-
-//                  Chcm93->SetNativeScale(pChartTable[dbIndex].Scale);
-
                   Ch = new cm93chart();
-//                  const ChartTableEntry &entry = GetChartTableEntry(pStack->DBIndex[StackEntry]);
-
                   cm93chart *Chcm93 = dynamic_cast<cm93chart*>(Ch);
 
                   Chcm93->SetNativeScale(cte.GetScale());
@@ -959,15 +944,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
             else if(chart_type == CHART_TYPE_CM93COMP)
             {
-//                  Ch = new cm93compchart();
-//                  int dbIndex = pStack->DBIndex[StackEntry];
-
-//                  cm93compchart *Chcm93 = dynamic_cast<cm93compchart*>(Ch);
-
-//                  Chcm93->SetNativeScale(pChartTable[dbIndex].Scale);
-
                   Ch = new cm93compchart();
- //                 const ChartTableEntry &entry = GetChartTableEntry(pStack->DBIndex[StackEntry]);
 
                   cm93compchart *Chcm93 = dynamic_cast<cm93compchart*>(Ch);
 
@@ -1033,12 +1010,26 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             {
                   InitReturn ir;
 
-                  wxString msg(_T("Initializing Chart "));
-                  msg.Append(ChartFullPath);
-                  wxLogMessage(msg);
+                  //    Vector charts need a PLIB for useful display....
+                  if((Ch->GetChartFamily() != CHART_FAMILY_VECTOR) ||
+                      ((Ch->GetChartFamily() == CHART_FAMILY_VECTOR) && ps52plib) )
+                  {
+                        wxString msg(_T("Initializing Chart "));
+                        msg.Append(ChartFullPath);
+                        wxLogMessage(msg);
 
-                  ir = Ch->Init(ChartFullPath, init_flag);    // using the passed flag
-                  Ch->SetColorScheme(pParent->GetColorScheme());
+                        ir = Ch->Init(ChartFullPath, init_flag);    // using the passed flag
+                        Ch->SetColorScheme(pParent->GetColorScheme());
+                  }
+                  else
+                  {
+                        wxString msg(_T("   No PLIB, Skipping vector chart "));
+                        msg.Append(ChartFullPath);
+                        wxLogMessage(msg);
+
+                        ir = INIT_FAIL_REMOVE;
+
+                  }
 
                   if(INIT_OK == ir)
                   {
@@ -1062,16 +1053,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                         Ch = NULL;
 
 //          Mark this chart in the database, so that it will not be seen during this run, but will stay in the database
-//                        int dbIndex = pStack->DBIndex[StackEntry];
-//                        wxString ChartToDisable = wxString(pChartTable[dbIndex].pFullPath,  wxConvUTF8);
-//                        DisableChart(ChartToDisable);
-
-//                        const ChartTableEntry &entry = GetChartTableEntry(pStack->DBIndex[StackEntry]);
-//                        wxString ChartToDisable = wxString(cte.GetpFullPath(),  wxConvUTF8);
                         DisableChart(ChartFullPath);
-
-
-
                   }
                   else if((INIT_FAIL_RETRY == ir) || (INIT_FAIL_NOERROR == ir))   // recoverable problem in chart Init()
                   {

@@ -4506,29 +4506,30 @@ void MyConfig::UpdateSettings()
 
 #ifdef USE_S57
       SetPath ( _T ( "/Settings/GlobalState" ) );
-      Write ( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
-      Write ( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
-      Write ( _T ( "nDisplayCategory" ), ( long ) ps52plib->m_nDisplayCategory );
-      Write ( _T ( "nSymbolStyle" ), ( int ) ps52plib->m_nSymbolStyle );
-      Write ( _T ( "nBoundaryStyle" ), ( int ) ps52plib->m_nBoundaryStyle );
+      if(ps52plib)
+      {
+            Write ( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
+            Write ( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
+            Write ( _T ( "nDisplayCategory" ), ( long ) ps52plib->m_nDisplayCategory );
+            Write ( _T ( "nSymbolStyle" ), ( int ) ps52plib->m_nSymbolStyle );
+            Write ( _T ( "nBoundaryStyle" ), ( int ) ps52plib->m_nBoundaryStyle );
 
-      Write ( _T ( "bShowSoundg" ), ps52plib->m_bShowSoundg );
-      Write ( _T ( "bShowMeta" ), ps52plib->m_bShowMeta );
-      Write ( _T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN );
-      Write ( _T ( "bShowAtonText" ), ps52plib->m_bShowAtonText );
-      Write ( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
-      Write ( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
+            Write ( _T ( "bShowSoundg" ), ps52plib->m_bShowSoundg );
+            Write ( _T ( "bShowMeta" ), ps52plib->m_bShowMeta );
+            Write ( _T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN );
+            Write ( _T ( "bShowAtonText" ), ps52plib->m_bShowAtonText );
+            Write ( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
+            Write ( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
 
-      Write ( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam ( S52_MAR_SAFETY_CONTOUR ) );
-      Write ( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam ( S52_MAR_SHALLOW_CONTOUR ) );
-      Write ( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam ( S52_MAR_DEEP_CONTOUR ) );
-      Write ( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam ( S52_MAR_TWO_SHADES ) );
-      Write ( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
-
+            Write ( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam ( S52_MAR_SAFETY_CONTOUR ) );
+            Write ( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam ( S52_MAR_SHALLOW_CONTOUR ) );
+            Write ( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam ( S52_MAR_DEEP_CONTOUR ) );
+            Write ( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam ( S52_MAR_TWO_SHADES ) );
+            Write ( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
+      }
       SetPath ( _T ( "/Directories" ) );
       Write ( _T ( "S57DataLocation" ), _T(""));
       Write ( _T ( "SENCFileLocation" ), _T(""));
-//      Write ( _T ( "PresentationLibraryData" ), g_UserPresLibData );
 
 #endif
 

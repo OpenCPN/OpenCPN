@@ -1585,22 +1585,22 @@ void options::SetInitialSettings()
 #ifdef USE_S57
       m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
-//    S52 Primary Filters
-      ps57CtlListBox->Clear();
-
-      for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
-      {
-            OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
-
-            ps57CtlListBox->Append(wxString(pOLE->OBJLName, wxConvUTF8));
-            ps57CtlListBox->Check(ps57CtlListBox->GetCount()-1, !(pOLE->nViz == 0));
-      }
-
 //    Diplay Category
       if(ps52plib)
       {
-            int nset = 2;                             // default OTHER
 
+            //    S52 Primary Filters
+            ps57CtlListBox->Clear();
+
+            for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
+            {
+                  OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+
+                  ps57CtlListBox->Append(wxString(pOLE->OBJLName, wxConvUTF8));
+                  ps57CtlListBox->Check(ps57CtlListBox->GetCount()-1, !(pOLE->nViz == 0));
+            }
+
+            int nset = 2;                             // default OTHER
             switch(ps52plib->m_nDisplayCategory)
             {
             case (DISPLAYBASE):
@@ -1622,47 +1622,46 @@ void options::SetInitialSettings()
 
             pDispCat->SetSelection(nset);
 
+            ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
+            itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
+            itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
 
-      ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
-      itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
-      itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->m_nDisplayCategory);
+            //  Other Display Filters
+            pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
+            pCheck_META->SetValue(ps52plib->m_bShowMeta);
+            pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
+            pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+            pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
+            pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
+            pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
 
-      //  Other Display Filters
-      pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
-      pCheck_META->SetValue(ps52plib->m_bShowMeta);
-      pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
-      pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
-      pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
-      pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
-      pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
+      // Chart Display Style
+            if(ps52plib->m_nSymbolStyle == PAPER_CHART)
+            pPointStyle->SetSelection(0);
+            else
+            pPointStyle->SetSelection(1);
 
-     // Chart Display Style
-      if(ps52plib->m_nSymbolStyle == PAPER_CHART)
-          pPointStyle->SetSelection(0);
-      else
-          pPointStyle->SetSelection(1);
+            if(ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
+            pBoundStyle->SetSelection(0);
+            else
+            pBoundStyle->SetSelection(1);
 
-      if(ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
-          pBoundStyle->SetSelection(0);
-      else
-          pBoundStyle->SetSelection(1);
+            if(S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
+                  p24Color->SetSelection(0);
+            else
+                  p24Color->SetSelection(1);
 
-      if(S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
-            p24Color->SetSelection(0);
-      else
-            p24Color->SetSelection(1);
+            wxString s;
+            s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR));
+            m_SafetyCtl->SetValue(s);
 
-      wxString s;
-      s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR));
-      m_SafetyCtl->SetValue(s);
+            s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR));
+            m_ShallowCtl->SetValue(s);
 
-      s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR));
-      m_ShallowCtl->SetValue(s);
+            s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_DEEP_CONTOUR));
+            m_DeepCtl->SetValue(s);
 
-      s.Printf(_T("%6.2f"),S52_getMarinerParam(S52_MAR_DEEP_CONTOUR));
-      m_DeepCtl->SetValue(s);
-
-      pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
+            pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
     }
 #endif
 
