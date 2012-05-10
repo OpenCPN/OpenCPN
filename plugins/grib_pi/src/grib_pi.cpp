@@ -113,7 +113,7 @@ int grib_pi::Init(void)
 
       //    This PlugIn needs a toolbar icon, so request its insertion if enabled locally
       if(m_bGRIBShowIcon)
-            m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_NORMAL,
+            m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_CHECK,
                   _("Grib"), _T(""), NULL,
                    GRIB_TOOL_POSITION, 0, this);
 
@@ -256,7 +256,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                   m_bGRIBShowIcon= m_pGRIBShowIcon->GetValue();
 
                   if(m_bGRIBShowIcon)
-                        m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_NORMAL,
+                        m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_CHECK,
                               _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION,
                               0, this);
                   else
@@ -278,7 +278,11 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                                m_grib_dialog_sy));
 
                     m_pGribDialog->Show();                        // Show modeless, so it stays on the screen
+                    SetToolbarItemState( m_leftclick_tool_id, true );
                   }
+                  else
+                    SetToolbarItemState( m_leftclick_tool_id, false );
+
             }
 
             m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
@@ -317,7 +321,7 @@ void grib_pi::OnToolbarToolCallback(int id)
             window_title_rect.height = 30;
 
             wxRect ClientRect = wxGetClientDisplayRect();
-            ClientRect.Deflate(60, 60);                     // Prevent the new window from being too close to the edge
+            ClientRect.Deflate(60, 60);      // Prevent the new window from being too close to the edge
             if(!ClientRect.Intersects(window_title_rect))
                   b_reset_pos = true;
 
@@ -337,18 +341,24 @@ void grib_pi::OnToolbarToolCallback(int id)
             m_pGribDialog = new GRIBUIDialog();
             m_pGribDialog->Create ( m_parent_window, this, -1, _("GRIB Display Control"), m_grib_dir,
                                wxPoint( m_grib_dialog_x, m_grib_dialog_y), wxSize( m_grib_dialog_sx, m_grib_dialog_sy));
+            m_pGribDialog->Hide();                        // Show modeless, so it stays on the screen
       }
 
-      m_pGribDialog->Show();                        // Show modeless, so it stays on the screen
+      //    Toggle dialog on normal callback
+      if(m_pGribDialog->IsShown())
+            m_pGribDialog->Hide();
+      else
+            m_pGribDialog->Show();
 
+      // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
+      // to actual status to ensure correct status upon toolbar rebuild
+      SetToolbarItemState( m_leftclick_tool_id, m_pGribDialog->IsShown() );
 }
-
-
-
-
 
 void grib_pi::OnGribDialogClose()
 {
+      SetToolbarItemState( m_leftclick_tool_id, false );
+
       m_pGribDialog = NULL;
       if(m_pGRIBOverlayFactory)
             m_pGRIBOverlayFactory->Reset();
