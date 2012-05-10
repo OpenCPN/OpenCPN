@@ -867,7 +867,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
       int brg = (int)wxRound(Brg);
       if(Brg > 359.5)
             brg = 0;
-      if(b_positionOnceValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.))
+      if(b_positionOnceValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.) && (fabs(Lat) < 85.) )
             line.Printf(_("Bearing:                %03d Deg.\n"), brg);
       else
             line.Printf(_("Bearing:                Unavailable\n"));
@@ -4643,7 +4643,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
 
                   case tlBRG:
                   {
-                        if(pAISTarget->b_positionOnceValid && bGPSValid && (pAISTarget->Brg >= 0.))
+                        if(pAISTarget->b_positionOnceValid && bGPSValid && (pAISTarget->Brg >= 0.)
+                           && (fabs(pAISTarget->Lat) < 85.) )
                         {
                               int brg = (int)wxRound(pAISTarget->Brg);
                               if(pAISTarget->Brg > 359.5)
