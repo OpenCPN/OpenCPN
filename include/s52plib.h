@@ -201,12 +201,25 @@ public:
 			ViewPort *vp, wxRect &render_rect );
 
 	// Accessors
+      bool GetShowSoundings() {
+            return m_bShowSoundg;
+      }
+      void SetShowSoundings( bool f ) {
+            m_bVisibilitiesUpdated = true;
+            m_bShowSoundg = f;
+      }
+
 	bool GetShowS57Text() {
 		return m_bShowS57Text;
 	}
 	void SetShowS57Text( bool f ) {
+            m_bVisibilitiesUpdated = true;
 		m_bShowS57Text = f;
 	}
+
+      bool GetVisibilitiesUpdated() {
+            return m_bVisibilitiesUpdated;
+      }
 
 	bool GetShowS57ImportantTextOnly() {
 		return m_bShowS57ImportantTextOnly;
@@ -250,6 +263,7 @@ public:
 	bool m_bShowLdisText;
 	bool m_bShowS57ImportantTextOnly;
 	bool m_bDeClutterText;
+      bool m_bVisibilitiesUpdated;
 
 	int m_VersionMajor;
 	int m_VersionMinor;

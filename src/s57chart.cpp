@@ -2229,9 +2229,7 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
     double    prev_easting_ul = 0., prev_northing_ul = 0.;
     double    prev_easting_lr, prev_northing_lr;
 
-    if(ps52plib->GetShowS57Text() != m_blastS57TextRender)
-          bReallyNew = true;
-    m_blastS57TextRender = ps52plib->GetShowS57Text();
+    if(ps52plib->GetVisibilitiesUpdated()) bReallyNew = true;
 
     if(ps52plib->GetPLIBColorScheme() != m_lastColorScheme)
           bReallyNew = true;

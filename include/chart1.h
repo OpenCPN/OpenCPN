@@ -248,6 +248,9 @@ class MyFrame: public wxFrame
     void ClearbFollow(void);
     void ToggleChartOutlines(void);
     void ToggleENCText(void);
+    void ToggleSoundings(void);
+    void ToggleRocks(void);
+    void ToggleLights(void);
     void TrackOn(void);
     void TrackOff(bool do_add_point = false);
     void TrackMidnightRestart(void);

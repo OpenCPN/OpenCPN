@@ -4321,6 +4321,18 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
 
           switch(key_char)
           {
+                case 'S':
+                     parent_frame->ToggleSoundings();
+                     break;
+
+                case 'L':
+                     parent_frame->ToggleLights();
+                     break;
+
+                case 'R':
+                     parent_frame->ToggleRocks();
+                     break;
+
                case 19:                     // Ctrl S
                     parent_frame->ToggleENCText();
                     break;

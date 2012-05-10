@@ -5191,6 +5191,64 @@ void MyFrame::ToggleENCText(void)
 #endif
 }
 
+void MyFrame::ToggleSoundings(void)
+{
+#ifdef USE_S57
+      if(ps52plib)
+      {
+            ps52plib->SetShowSoundings(!ps52plib->GetShowSoundings());
+            cc1->ReloadVP();
+      }
+#endif
+}
+
+void MyFrame::ToggleLights(void)
+{
+#ifdef USE_S57
+      if(ps52plib)
+      {
+            for ( unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++ )
+            {
+                  OBJLElement *pOLE = ( OBJLElement * ) ( ps52plib->pOBJLArray->Item ( iPtr ) );
+                  if ( !strncmp ( pOLE->OBJLName, "LIGHTS", 6 ) )
+                        pOLE->nViz = ! pOLE->nViz;
+            }
+            cc1->ReloadVP();
+      }
+#endif
+}
+
+void MyFrame::ToggleRocks(void)
+{
+#ifdef USE_S57
+      if(ps52plib)
+      {
+            int vis;
+            // Need to loop once for UWTROC, which is our "master", then for
+            // other categories, since order is unknown?
+            for ( unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++ )
+            {
+                  OBJLElement *pOLE = ( OBJLElement * ) ( ps52plib->pOBJLArray->Item ( iPtr ) );
+                  if ( !strncmp ( pOLE->OBJLName, "UWTROC", 6 ) ) {
+                        pOLE->nViz = ! pOLE->nViz;
+                        vis = pOLE->nViz;
+                  }
+            }
+            for ( unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++ )
+            {
+                  OBJLElement *pOLE = ( OBJLElement * ) ( ps52plib->pOBJLArray->Item ( iPtr ) );
+                  if ( !strncmp ( pOLE->OBJLName, "OBSTRN", 6 ) ) {
+                        pOLE->nViz = vis;
+                  }
+                  if ( !strncmp ( pOLE->OBJLName, "WRECKS", 6 ) ) {
+                        pOLE->nViz = vis;
+                  }
+            }
+            cc1->ReloadVP();
+      }
+#endif
+}
+
 void MyFrame::TogglebFollow(void)
 {
       if(!cc1->m_bFollow)
