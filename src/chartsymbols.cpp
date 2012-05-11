@@ -544,12 +544,13 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern ) {
 
 void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes ) {
 
-	ChartSymbol symbol;
-	wxString propVal;
-	long numVal;
+      ChartSymbol symbol;
+      wxString propVal;
+      long numVal;
 
-      for( TiXmlNode *childNode = symbolNodes->FirstChild(); childNode; childNode = childNode->NextSibling() )
-      {
+      for( TiXmlNode *childNode = symbolNodes->FirstChild(); childNode;
+                  childNode = childNode->NextSibling() )
+                              {
             TiXmlElement *child = childNode->ToElement();
 
             TGET_INT_PROPERTY_VALUE( child, "RCID", symbol.RCID )
@@ -558,103 +559,116 @@ void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes ) {
             symbol.hasBitmap = false;
             symbol.preferBitmap = true;
 
-
             TiXmlElement* subNodes = child->FirstChild()->ToElement();
 
             while( subNodes ) {
-                  wxString nodeType( subNodes->Value(), wxConvUTF8);
-                  wxString nodeText( subNodes->GetText(), wxConvUTF8);
+                  wxString nodeType( subNodes->Value(), wxConvUTF8 );
+                  wxString nodeText( subNodes->GetText(), wxConvUTF8 );
 
-                  if( nodeType == _T("description")) {
+                  if( nodeType == _T("description") ) {
                         symbol.description = nodeText;
-				goto nextNode;
-			}
-                  if( nodeType == _T("name")) {
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("name") ) {
                         symbol.name = nodeText;
-				goto nextNode;
-			}
-                  if( nodeType == _T("color-ref")) {
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("color-ref") ) {
                         symbol.colorRef = nodeText;
-				goto nextNode;
-			}
-                  if( nodeType == _T("definition")) {
-				if( !strcmp(subNodes->GetText(), "V") ) symbol.hasVector = true;
-				goto nextNode;
-			}
-                  if( nodeType == _T("HPGL")) {
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("definition") ) {
+                        if( !strcmp( subNodes->GetText(), "V" ) ) symbol.hasVector = true;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("HPGL") ) {
                         symbol.HPGL = nodeText;
-				goto nextNode;
-			}
-                  if( nodeType == _T("prefer-bitmap")) {
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("prefer-bitmap") ) {
                         if( nodeText.Lower() == _T("no") ) symbol.preferBitmap = false;
                         if( nodeText.Lower() == _T("false") ) symbol.preferBitmap = false;
-				goto nextNode;
-			}
-                  if( nodeType == _T("bitmap")) {
-				TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.bitmapSize.size.x )
-				TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.bitmapSize.size.y )
-				symbol.hasBitmap = true;
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("bitmap") ) {
+                        TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.bitmapSize.size.x )
+                        TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.bitmapSize.size.y )
+                        symbol.hasBitmap = true;
 
                         TiXmlElement* bitmapNodes = subNodes->FirstChild()->ToElement();
                         while( bitmapNodes ) {
-                              wxString bitmapnodeType( bitmapNodes->Value(), wxConvUTF8);
-                              if( bitmapnodeType == _T("distance")) {
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "min", symbol.bitmapSize.minDistance )
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "max", symbol.bitmapSize.maxDistance )
-						goto nextBitmap;
-					}
-                              if( bitmapnodeType == _T("origin")) {
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.origin.x )
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.origin.y )
-						goto nextBitmap;
-					}
-                              if( bitmapnodeType == _T("pivot")) {
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.pivot.x )
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.pivot.y )
-						goto nextBitmap;
-					}
-                              if( bitmapnodeType == _T("graphics-location")) {
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "x", symbol.bitmapSize.graphics.x )
-						TGET_INT_PROPERTY_VALUE( bitmapNodes, "y", symbol.bitmapSize.graphics.y )
-					}
+                              wxString bitmapnodeType( bitmapNodes->Value(), wxConvUTF8 );
+                              if( bitmapnodeType == _T("distance") ) {
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "min",
+                                                symbol.bitmapSize.minDistance )
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "max",
+                                                symbol.bitmapSize.maxDistance )
+                                    goto nextBitmap;
+                              }
+                              if( bitmapnodeType == _T("origin") ) {
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "x",
+                                                symbol.bitmapSize.origin.x )
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "y",
+                                                symbol.bitmapSize.origin.y )
+                                    goto nextBitmap;
+                              }
+                              if( bitmapnodeType == _T("pivot") ) {
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "x",
+                                                symbol.bitmapSize.pivot.x )
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "y",
+                                                symbol.bitmapSize.pivot.y )
+                                    goto nextBitmap;
+                              }
+                              if( bitmapnodeType == _T("graphics-location") ) {
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "x",
+                                                symbol.bitmapSize.graphics.x )
+                                    TGET_INT_PROPERTY_VALUE( bitmapNodes, "y",
+                                                symbol.bitmapSize.graphics.y )
+                              }
                               nextBitmap: bitmapNodes = bitmapNodes->NextSiblingElement();
-				}
-				goto nextNode;
-			}
-                  if( nodeType == _T("vector")) {
-				TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.vectorSize.size.x )
-				TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.vectorSize.size.y )
-				symbol.hasVector = true;
+                        }
+                        goto nextNode;
+                  }
+                  if( nodeType == _T("vector") ) {
+                        TGET_INT_PROPERTY_VALUE( subNodes, "width", symbol.vectorSize.size.x )
+                        TGET_INT_PROPERTY_VALUE( subNodes, "height", symbol.vectorSize.size.y )
+                        symbol.hasVector = true;
 
                         TiXmlElement* vectorNodes = subNodes->FirstChild()->ToElement();
                         while( vectorNodes ) {
-                              wxString vectornodeType( vectorNodes->Value(), wxConvUTF8);
-                              if( vectornodeType == _T("distance")) {
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "min", symbol.vectorSize.minDistance )
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "max", symbol.vectorSize.maxDistance )
-						goto nextVector;
-					}
-                              if( vectornodeType == _T("origin")) {
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.origin.x )
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.origin.y )
-						goto nextVector;
-					}
-                              if( vectornodeType == _T("pivot")) {
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "x", symbol.vectorSize.pivot.x )
-						TGET_INT_PROPERTY_VALUE( vectorNodes, "y", symbol.vectorSize.pivot.y )
-						goto nextVector;
-					}
-                              if( vectornodeType == _T("HPGL")) {
-                                    symbol.HPGL = wxString(vectorNodes->GetText(), wxConvUTF8);
-					}
+                              wxString vectornodeType( vectorNodes->Value(), wxConvUTF8 );
+                              if( vectornodeType == _T("distance") ) {
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "min",
+                                                symbol.vectorSize.minDistance )
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "max",
+                                                symbol.vectorSize.maxDistance )
+                                    goto nextVector;
+                              }
+                              if( vectornodeType == _T("origin") ) {
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "x",
+                                                symbol.vectorSize.origin.x )
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "y",
+                                                symbol.vectorSize.origin.y )
+                                    goto nextVector;
+                              }
+                              if( vectornodeType == _T("pivot") ) {
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "x",
+                                                symbol.vectorSize.pivot.x )
+                                    TGET_INT_PROPERTY_VALUE( vectorNodes, "y",
+                                                symbol.vectorSize.pivot.y )
+                                    goto nextVector;
+                              }
+                              if( vectornodeType == _T("HPGL") ) {
+                                    symbol.HPGL = wxString( vectorNodes->GetText(), wxConvUTF8 );
+                              }
                               nextVector: vectorNodes = vectorNodes->NextSiblingElement();
-				}
-			}
+                        }
+                  }
                   nextNode: subNodes = subNodes->NextSiblingElement();
-		}
+            }
 
-		BuildSymbol( symbol );
-	}
+            BuildSymbol( symbol );
+      }
 
 }
 

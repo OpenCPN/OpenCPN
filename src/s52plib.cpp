@@ -2234,10 +2234,6 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
       float angle = 0;
       double orient;
 
-      //      Debug
-//    if(!strncmp(rzRules->obj->FeatureName, "TOPMAR", 6))
-//          int ggk = 3;
-
       if( rules->razRule != NULL ) {
             if( rules->INSTstr[8] == ',' ) // supplementary parameter assumed to be angle, seen in LIGHTSXX
                         {
