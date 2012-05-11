@@ -510,12 +510,15 @@ void RouteManagerDialog::Create()
       m_pNotebook->AddPage(m_pPanelTrk, _("Tracks"));
 
       m_pTrkListCtrl = new wxListCtrl(m_pPanelTrk, -1, wxDefaultPosition, wxSize(400, -1),
-          wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_SORT_ASCENDING|wxLC_HRULES|wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+          wxLC_REPORT|wxLC_SORT_ASCENDING|wxLC_HRULES|wxBORDER_SUNKEN/*|wxLC_VRULES*/);
       m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler(RouteManagerDialog::OnTrkSelected), NULL, this);
       m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler(RouteManagerDialog::OnTrkSelected), NULL, this);
       m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxListEventHandler(RouteManagerDialog::OnTrkDefaultAction), NULL, this);
       m_pTrkListCtrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(RouteManagerDialog::OnTrkToggleVisibility), NULL, this);
 	  m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler(RouteManagerDialog::OnTrkColumnClicked), NULL, this);
+      m_pTrkListCtrl->Connect(wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler(RouteManagerDialog::OnTrkRightClick), NULL, this);
+      this->Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(RouteManagerDialog::OnTrkMenuSelected), NULL, this);
+
       itemBoxSizer3->Add(m_pTrkListCtrl, 1, wxEXPAND|wxALL, DIALOG_MARGIN);
 
       m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
@@ -1258,6 +1261,114 @@ void RouteManagerDialog::OnTrkDefaultAction(wxListEvent &event)
       OnTrkPropertiesClick(evt);
 }
 
+void RouteManagerDialog::OnTrkRightClick( wxListEvent &event )
+{
+      wxMenu menu;
+      wxMenuItem* mergeItem = menu.Append(17, _("&Merge Selected Tracks") );
+      mergeItem->Enable( m_pTrkListCtrl->GetSelectedItemCount() > 1 );
+      PopupMenu(&menu);
+}
+
+WX_DEFINE_ARRAY( Track*, TrackArray );
+
+static int CompareTracks( const Track** track1, const Track** track2 ) {
+      RoutePoint* start1 = (*track1)->pRoutePointList->GetFirst()->GetData();
+      RoutePoint* start2 = (*track2)->pRoutePointList->GetFirst()->GetData();
+      if( start1->m_CreateTime > start2->m_CreateTime ) return 1;
+      return -1; // Two tracks starting at the same time is not possible.
+}
+
+void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event ) {
+
+      // So far we have only one possible command, so never mind what menu id we got.
+      // Merge the selected tracks.
+
+      int item = -1;
+      Track* targetTrack = NULL;
+      Track* mergeTrack = NULL;
+      RoutePoint* rPoint;
+      RoutePoint* newPoint;
+      RoutePoint* lastPoint;
+      wxRoutePointListNode* routePointNode;
+      TrackArray mergeList;
+      TrackArray deleteList;
+      bool runningSkipped = false;
+
+      ::wxBeginBusyCursor();
+
+      while(1) {
+            item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+            if( item == -1 ) break;
+			Track* track =  (Track*)pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+            mergeList.Add( track );
+      }
+
+      mergeList.Sort( (CMPFUNC_wxArrayTrackArray)CompareTracks );
+
+      targetTrack = (Track *) mergeList.Item( 0 );
+      lastPoint = targetTrack->GetLastPoint();
+
+      for( unsigned int t=1; t < mergeList.Count(); t++ ) {
+
+            mergeTrack = (Track *) mergeList.Item( t );
+
+            if( mergeTrack->IsRunning() ) {
+                  runningSkipped = true;
+                  continue;
+            }
+
+            routePointNode = mergeTrack->pRoutePointList->GetFirst();
+
+            while( routePointNode ) {
+                  rPoint = routePointNode->GetData();
+                  newPoint = new RoutePoint( rPoint->m_lat, rPoint->m_lon, wxString( _T("empty") ),
+                              wxString( _T("") ), GPX_EMPTY_STRING );
+                  newPoint->m_bShowName = false;
+                  newPoint->m_bIsVisible = true;
+                  newPoint->m_GPXTrkSegNo = 1;
+
+                  newPoint->m_CreateTime = rPoint->m_CreateTime;
+
+                  targetTrack->AddPoint( newPoint );
+
+                  newPoint->m_bIsInRoute = false;
+                  newPoint->m_bIsInTrack = true;
+
+                  pSelect->AddSelectableTrackSegment(
+                              lastPoint->m_lat, lastPoint->m_lon,
+                              newPoint->m_lat, newPoint->m_lon,
+                              lastPoint, newPoint, targetTrack );
+
+                  lastPoint = newPoint;
+
+                  routePointNode = routePointNode->GetNext();
+            }
+            deleteList.Add( mergeTrack );
+      }
+
+      for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
+            Track* deleteTrack = (Track*) deleteList.Item( i );
+            pConfig->DeleteConfigRoute( deleteTrack );
+            g_pRouteMan->DeleteTrack( deleteTrack );
+      }
+
+      mergeList.Clear();
+      deleteList.Clear();
+
+      ::wxEndBusyCursor();
+
+      UpdateTrkListCtrl();
+      UpdateRouteListCtrl();
+      cc1->Refresh();
+
+      if( runningSkipped ) {
+            wxMessageDialog skipWarning( NULL, _("The currently running Track was not merged.\nYou can merge it later when it is completed."),
+                    _T("Warning"), wxCANCEL|wxICON_WARNING);
+            skipWarning.ShowModal();
+      }
+}
+
+
 void RouteManagerDialog::UpdateTrkListCtrl()
 {
       // if an item was selected, make it selected again if it still exist
@@ -1347,12 +1458,13 @@ void RouteManagerDialog::UpdateTrkButtons()
 {
       long item = -1;
       item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+	  int items = m_pTrkListCtrl->GetSelectedItemCount();
       bool enable = (item != -1);
 
-      btnTrkProperties->Enable(enable);
-      btnTrkDelete->Enable(enable);
-      btnTrkExport->Enable(enable);
-      btnTrkRouteFromTrack->Enable(enable);
+      btnTrkProperties->Enable(items == 1);
+      btnTrkDelete->Enable(items == 1);
+      btnTrkExport->Enable(items == 1);
+      btnTrkRouteFromTrack->Enable(items == 1);
 }
 
 void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event)

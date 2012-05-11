@@ -88,6 +88,8 @@ class RouteManagerDialog : public wxDialog {
             void OnTrkSelected(wxListEvent &event);
             void OnTrkToggleVisibility(wxMouseEvent &event);
             void OnTrkColumnClicked(wxListEvent &event);
+            void OnTrkRightClick(wxListEvent &event);
+            void OnTrkMenuSelected(wxCommandEvent &event);
             void OnWptDefaultAction(wxListEvent &event);
             void OnWptNewClick(wxCommandEvent &event);
             void OnWptPropertiesClick(wxCommandEvent &event);
