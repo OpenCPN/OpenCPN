@@ -68,9 +68,14 @@ BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
-ConsoleCanvas::ConsoleCanvas(wxWindow *frame):
-            wxDialog(frame, wxID_ANY, _T(""), wxPoint(-1, -1), wxSize(-1, -1),wxNO_BORDER | wxCLIP_CHILDREN | wxSTAY_ON_TOP )
+ConsoleCanvas::ConsoleCanvas(wxWindow *frame)
 {
+      long style = wxNO_BORDER | wxCLIP_CHILDREN;
+#ifdef __WXOSX__
+      style |= wxSTAY_ON_TOP;
+#endif
+
+      wxDialog::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style);
 
       m_pParent = frame;
 
