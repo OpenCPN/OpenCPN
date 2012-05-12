@@ -1702,27 +1702,25 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             // delete any old private data
             ClearRulesCache( prule );
 
-//            if((width == 0) || (height == 0))
-//                  int yyp = 4;
-
-            wxBitmap *pbm = new wxBitmap( width, height, -1/*32*/);
+            wxBitmap *pbm = new wxBitmap( width, height, 32 );
+			pbm->UseAlpha();
             wxMemoryDC mdc;
             mdc.SelectObject( *pbm );
-            mdc.SetBackground( wxBrush( m_unused_wxColor ) );
-            mdc.Clear();
+
+            wxGCDC gdc(mdc);
 
             char *str = prule->vector.LVCT;
             char *col = prule->colRef.LCRF;
             wxPoint pivot( pivot_x, pivot_y );
             wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
-            HPGL->SetTargetDC( &mdc );
+            HPGL->SetTargetGCDC( &gdc );
             HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
-            int bm_width = ( mdc.MaxX() - mdc.MinX() ) + 1;
-            int bm_height = ( mdc.MaxY() - mdc.MinY() ) + 1;
-            int bm_orgx = wxMax ( 0, mdc.MinX() );
-            int bm_orgy = wxMax ( 0, mdc.MinY() );
+            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 3; // Extra margin for antialiasing.
+            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 3;
+            int bm_orgx = wxMax ( 0, gdc.MinX()-1 );
+            int bm_orgy = wxMax ( 0, gdc.MinY()-1 );
 
             //      Pre-clip the sub-bitmap to avoid assert errors
             if( ( bm_height + bm_orgy ) > height ) bm_height = height - bm_orgy;
@@ -1730,23 +1728,18 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             mdc.SelectObject( wxNullBitmap );
 
-            //          Get smallest containing bitmap
+			//          Get smallest containing bitmap
             wxBitmap *sbm = new wxBitmap(
                         pbm->GetSubBitmap(
                                     wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
 
             delete pbm;
 
-            //      Make the mask
-            wxMask *pmask = new wxMask( *sbm, m_unused_wxColor );
-            //      Associate the mask with the bitmap
-            sbm->SetMask( pmask );
-
             if( !m_pdc ) // opengl
             {
                   //    Create a byte data accessible wxImage from the wxBitmap
                   wxImage Image = sbm->ConvertToImage();
-                  delete sbm; // done with this
+                  delete sbm;
 
                   //    Get the glRGBA format data from the wxImage
                   unsigned char *e = GetRGBA_Array( Image );
@@ -1778,54 +1771,53 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       //    If the rotation angle of the cached symbol is not equal to the request,
       //    then render the symbol directly in HPGL
       if( (int) rot_angle != prule->parm4 ) {
+
+            wxBitmap *pbm = new wxBitmap( width, height, 32 );
+            pbm->UseAlpha();
+            wxMemoryDC mdc( *pbm );
+            wxGCDC gdc( mdc );
+
+            char *str = prule->vector.LVCT;
+            char *col = prule->colRef.LCRF;
+            wxPoint pivot( pivot_x, pivot_y );
+            wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
+
+            HPGL->SetTargetGCDC( &gdc );
+            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+
+            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 3;
+            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 3;
+            int bm_orgx = wxMax ( 0, gdc.MinX()-1 );
+            int bm_orgy = wxMax ( 0, gdc.MinY()-1 );
+            int screenOriginX = r.x + ( bm_orgx - (int) ( pivot_x / fsf ) );
+            int screenOriginY = r.y + ( bm_orgy - (int) ( pivot_y / fsf ) );
+
+            //      Pre-clip the sub-bitmap to avoid assert errors
+            if( ( bm_height + bm_orgy ) > height ) bm_height = height - bm_orgy;
+            if( ( bm_width + bm_orgx ) > width ) bm_width = width - bm_orgx;
+
+            mdc.SelectObject( wxNullBitmap );
+
+            //          Get smallest containing bitmap
+            wxBitmap *sbm = new wxBitmap(
+                        pbm->GetSubBitmap(
+                                    wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+            delete pbm;
+
             if( m_pdc ) {
-                  char *str = prule->vector.LVCT;
-                  char *col = prule->colRef.LCRF;
-                  wxPoint pivot( prule->pos.line.pivot_x.LICL,
-                              prule->pos.line.pivot_y.LIRW );
+                  wxBitmap targetBm( bm_width, bm_height, 24 );
+                  wxMemoryDC targetDc( targetBm );
+                  wxGCDC gdc( targetDc );
 
-                  HPGL->SetTargetDC( m_pdc );
-                  HPGL->Render( str, col, r, pivot, (double) rot_angle );
+                  targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
+                  gdc.DrawBitmap( *sbm, 0, 0 );
+                  m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
+
+                  targetDc.SelectObject( wxNullBitmap );
             } else {
-                  wxBitmap *pbm = new wxBitmap( width, height );
-                  wxMemoryDC mdc;
-                  mdc.SelectObject( *pbm );
-                  mdc.SetBackground( wxBrush( m_unused_wxColor ) );
-                  mdc.Clear();
-
-                  char *str = prule->vector.LVCT;
-                  char *col = prule->colRef.LCRF;
-                  wxPoint pivot( pivot_x, pivot_y );
-                  wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
-
-                  HPGL->SetTargetDC( &mdc );
-                  HPGL->Render( str, col, r0, pivot, (double) rot_angle );
-
-                  int bm_width = ( mdc.MaxX() - mdc.MinX() ) + 1;
-                  int bm_height = ( mdc.MaxY() - mdc.MinY() ) + 1;
-                  int bm_orgx = wxMax ( 0, mdc.MinX() );
-                  int bm_orgy = wxMax ( 0, mdc.MinY() );
-
-                  //      Pre-clip the sub-bitmap to avoid assert errors
-                  if( ( bm_height + bm_orgy ) > height ) bm_height = height - bm_orgy;
-                  if( ( bm_width + bm_orgx ) > width ) bm_width = width - bm_orgx;
-
-                  mdc.SelectObject( wxNullBitmap );
-
-                  //          Get smallest containing bitmap
-                  wxBitmap *sbm = new wxBitmap(
-                              pbm->GetSubBitmap(
-                                          wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
-                  delete pbm;
-
-                  //      Make the mask
-                  wxMask *pmask = new wxMask( *sbm, m_unused_wxColor );
-                  //      Associate the mask with the bitmap
-                  sbm->SetMask( pmask );
 
                   //    Create a byte data accessible wxImage from the wxBitmap
                   wxImage Image = sbm->ConvertToImage();
-                  delete sbm; // done with this
 
                   unsigned char *e = GetRGBA_Array( Image );
 
@@ -1834,8 +1826,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                   glEnable( GL_BLEND );
                   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                  glRasterPos2i( r.x + ( bm_orgx - (int) ( pivot_x / fsf ) ),
-                              r.y + ( bm_orgy - (int) ( pivot_y / fsf ) ) );
+                  glRasterPos2i( screenOriginX, screenOriginY );
                   glPixelZoom( 1, -1 );
                   glDrawPixels( Image.GetWidth(), Image.GetHeight(), GL_RGBA,
                               GL_UNSIGNED_BYTE, e );
@@ -1843,9 +1834,9 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                   glDisable( GL_BLEND );
 
                   free( e );
-
             }
 
+            delete sbm;
             return true;
       }
 
@@ -1888,15 +1879,21 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             glDisable( GL_BLEND );
       } else {
             //      Get the bitmap into a memory dc
-            wxMemoryDC mdc;
-            mdc.SelectObject(
-                        (wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) ) );
+            wxBitmap* bm = (wxBitmap *) ( prule->pixelPtr );
 
-            //      Blit  it into the target dc
+            wxBitmap targetBm( b_width, b_height, 24 );
+            wxMemoryDC targetDc( targetBm );
+            wxGCDC gdc( targetDc );
+
+            targetDc.Blit( 0, 0, b_width, b_height, m_pdc, r.x + prule->parm2, r.y + prule->parm3 );
+
+            gdc.DrawBitmap( *bm, 0, 0 );
+
+            // Blit result back into the canvas dc
             m_pdc->Blit( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height,
-                        &mdc, 0, 0, wxCOPY, true );
+                        &targetDc, 0, 0, wxCOPY, true );
 
-            mdc.SelectObject( wxNullBitmap );
+            targetDc.SelectObject( wxNullBitmap );
       }
 
       //  Update the object Bounding box
@@ -6845,6 +6842,9 @@ void RenderFromHPGL::Line( wxPoint from, wxPoint to ) {
             glVertex2i( to.x, to.y );
             glEnd();
       }
+      if( renderToGCDC ) {
+            targetGCDC->DrawLine( from, to );
+      }
 }
 
 void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled ) {
@@ -6865,7 +6865,16 @@ void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled ) {
       if( renderToGCDC ) {
             if( filled ) targetGCDC->SetBrush( *brush );
             else targetGCDC->SetBrush( *wxTRANSPARENT_BRUSH );
+
             targetGCDC->DrawCircle( center, radius );
+
+            // wxGCDC doesn't update min/max X/Y properly for DrawCircle.
+            targetGCDC->SetPen( *wxTRANSPARENT_PEN );
+            targetGCDC->DrawPoint( center.x - radius, center.y );
+            targetGCDC->DrawPoint( center.x + radius, center.y );
+            targetGCDC->DrawPoint( center.x, center.y - radius );
+            targetGCDC->DrawPoint( center.x, center.y + radius );
+            targetGCDC->SetPen( *pen );
       }
 
 }

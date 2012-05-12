@@ -790,7 +790,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC1</attrib-code>
-			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,3,TRFCD);CS(RESTRN01)</instruction>
+			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,2,TRFCD);CS(RESTRN01)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -801,7 +801,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC2</attrib-code>
-			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,3,TRFCD);CS(RESTRN01)</instruction>
+			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,2,TRFCD);CS(RESTRN01)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -812,7 +812,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC3</attrib-code>
-			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,3,TRFCD);CS(RESTRN01)</instruction>
+			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LS(DASH,2,TRFCD);CS(RESTRN01)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -823,7 +823,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC4</attrib-code>
-			<instruction>SY(DWRUTE51,ORIENT);SY(DWRTPT51);LS(DASH,3,TRFCD);CS(RESTRN01)</instruction>
+			<instruction>SY(DWRUTE51,ORIENT);SY(DWRTPT51);LS(DASH,2,TRFCD);CS(RESTRN01)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -832,7 +832,7 @@
 			<disp-prio>Point Symbol</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
-			<instruction>SY(TWRTPT52);SY(DWRTPT51);LS(DASH,3,TRFCD);CS(RESTRN01)</instruction>
+			<instruction>SY(TWRTPT52);SY(DWRTPT51);LS(DASH,2,TRFCD);CS(RESTRN01)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -2421,7 +2421,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC1</attrib-code>
-			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,4,TRFCD)</instruction>
+			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -2432,7 +2432,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC2</attrib-code>
-			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,4,TRFCD)</instruction>
+			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -2443,7 +2443,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC3</attrib-code>
-			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,4,TRFCD)</instruction>
+			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -2454,7 +2454,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC4</attrib-code>
-			<instruction>SY(TWRTPT52,ORIENT);LS(DASH,4,TRFCD)</instruction>
+			<instruction>SY(TWRTPT52,ORIENT);LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -2463,7 +2463,7 @@
 			<disp-prio>Point Symbol</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
-			<instruction>SY(TWRDEF51);LS(DASH,4,TRFCD)</instruction>
+			<instruction>SY(TWRDEF51);LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -8614,7 +8614,7 @@
 			<disp-prio>Routing</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Lines</table-name>
-			<instruction>LS(DASH,4,TRFCD)</instruction>
+			<instruction>LS(DASH,2,TRFCD)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
@@ -9119,7 +9119,7 @@
 			<table-name>Lines</table-name>
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>LS(DASH,1,TRFCD);SY(rdocal02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
+			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -9130,7 +9130,7 @@
 			<table-name>Lines</table-name>
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>LS(DASH,1,TRFCD);SY(rdocal02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
+			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -9141,7 +9141,7 @@
 			<table-name>Lines</table-name>
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>LS(DASH,1,TRFCD);SY(rdocal02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
+			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -9152,7 +9152,7 @@
 			<table-name>Lines</table-name>
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>LS(DASH,1,TRFCD);SY(rdocal03,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
+			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL03,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -24260,7 +24260,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -24271,7 +24271,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -24282,7 +24282,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -24293,7 +24293,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>SY(RDOCAL03,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL03,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
@@ -28830,47 +28830,47 @@
 			<display-cat>Mariners</display-cat>
 			<comment>62010</comment>
 		</lookup>
-		<lookup id="2780" RCID="30848" name="rdocal">
+		<lookup id="2780" RCID="30848" name="_RDOCAL">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC1</attrib-code>
-			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
-		<lookup id="2781" RCID="30849" name="rdocal">
+		<lookup id="2781" RCID="30849" name="_RDOCAL">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC2</attrib-code>
-			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
-		<lookup id="2782" RCID="30850" name="rdocal">
+		<lookup id="2782" RCID="30850" name="_RDOCAL">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC3</attrib-code>
-			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
-		<lookup id="2783" RCID="30851" name="rdocal">
+		<lookup id="2783" RCID="30851" name="_RDOCAL">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC4</attrib-code>
-			<instruction>SY(rdocal03,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
+			<instruction>SY(RDOCAL03,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>15060</comment>
 		</lookup>
-		<lookup id="2784" RCID="30852" name="rdocal">
+		<lookup id="2784" RCID="30852" name="_RDOCAL">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
@@ -31419,7 +31419,7 @@
 				<origin x="264" y="597" />
 			</vector>
 			<description>chart scale boundary, the double line indicates the larger scale</description>
-			<HPGL>SPA;SW3;PU264,597;PD874,597;SPA;SW1;PU264,772;PD865,772;SPA;SW1;PU264,841;PD865,841;</HPGL>
+			<HPGL>SPA;SW2;PU264,597;PD874,597;SPA;SW1;PU264,772;PD865,772;SPA;SW1;PU264,841;PD865,841;</HPGL>
 			<color-ref>ACHGRF</color-ref>
 		</line-style>
 		<line-style RCID="3421">
@@ -32022,7 +32022,7 @@
 				<distance min="0" max="0" />
 				<pivot x="981" y="958" />
 				<origin x="1621" y="1471" />
-				<HPGL>SPA;SW1;PU2193,1471;PD2193,1800;PD1875,1800;PD1875,1912;PD2193,1912;PD2193,2596;PD1987,2550;PD1800,2409;PD1621,2409;PD1875,2596;PD2250,2775;PD2596,2596;PD2850,2409;PD2700,2409;PD2475,2550;PD2268,2596;PD2268,1912;PD2596,1912;PD2596,1800;PD2268,1800;PD2268,1471;PD2193,1471;SPA;SW3;PU2703,1671;PD1701,2679;SPC;SW3;PU3001,2775;PD3056,2775;SPC;SW1;PU3019,2325;PD3019,2671;</HPGL>
+				<HPGL>SPA;SW1;PU2193,1471;PD2193,1800;PD1875,1800;PD1875,1912;PD2193,1912;PD2193,2596;PD1987,2550;PD1800,2409;PD1621,2409;PD1875,2596;PD2250,2775;PD2596,2596;PD2850,2409;PD2700,2409;PD2475,2550;PD2268,2596;PD2268,1912;PD2596,1912;PD2596,1800;PD2268,1800;PD2268,1471;PD2193,1471;SPA;SW2;PU2703,1671;PD1701,2679;SPC;SW2;PU3001,2775;PD3056,2775;SPC;SW1;PU3019,2325;PD3019,2671;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -33390,7 +33390,7 @@
 				<distance min="0" max="0" />
 				<pivot x="3101" y="1855" />
 				<origin x="2930" y="1289" />
-				<HPGL>SPA;SW3;PU3246,1289;PD2930,1791;PD3304,1923;PD3005,2401;</HPGL>
+				<HPGL>SPA;SW2;PU3246,1289;PD2930,1791;PD3304,1923;PD3005,2401;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -33675,7 +33675,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2061" y="1246" />
 				<origin x="276" y="1846" />
-				<HPGL>SPA;SW3;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;</HPGL>
+				<HPGL>SPA;SW2;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -33694,7 +33694,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2061" y="1246" />
 				<origin x="276" y="1846" />
-				<HPGL>SPA;SW3;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;</HPGL>
+				<HPGL>SPA;SW2;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -33713,7 +33713,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2061" y="1246" />
 				<origin x="35" y="1846" />
-				<HPGL>SPA;SW3;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;SPD;SW1;PU127,2827;PD127,2593;PD35,2592;SPD;SW1;PU36,2828;PD223,2828;SPD;SW1;PU81,2474;PD84,2514;</HPGL>
+				<HPGL>SPA;SW2;PU775,2471;PD775,2006;SPA;SW2;PU708,2651;PD851,2651;SPA;SW2;PU773,2343;CI497;SPD;SW1;PU127,2827;PD127,2593;PD35,2592;SPD;SW1;PU36,2828;PD223,2828;SPD;SW1;PU81,2474;PD84,2514;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -34172,6 +34172,7 @@
 				<HPGL>SPA;SW2;PU1587,901;PD1587,1802;PD1880,1804;PD1987,1751;PD2089,1603;PD2089,1105;PD1987,952;PD1883,901;PD1587,901;SPA;SW2;PU2353,899;PD2551,1806;PD2755,904;PD2954,1815;PD3157,881;</HPGL>
 			</vector>
 			<definition>V</definition>
+			<prefer-bitmap>no</prefer-bitmap>
 		</symbol>
 
 		<symbol RCID="3501">
@@ -34247,7 +34248,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2265" y="2721" />
 				<origin x="276" y="1846" />
-				<HPGL>SPA;SW3;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;</HPGL>
+				<HPGL>SPA;SW2;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -34266,7 +34267,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2265" y="2721" />
 				<origin x="276" y="1846" />
-				<HPGL>SPA;SW3;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;SPC;SW1;PU1392,2865;PD1447,2865;SPC;SW1;PU1405,2479;PD1405,2814;</HPGL>
+				<HPGL>SPA;SW2;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;SPC;SW1;PU1392,2865;PD1447,2865;SPC;SW1;PU1405,2479;PD1405,2814;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -34285,7 +34286,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2265" y="2721" />
 				<origin x="35" y="1846" />
-				<HPGL>SPA;SW3;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;SPC;SW1;PU127,2827;PD127,2593;PD35,2592;SPC;SW1;PU36,2828;PD223,2828;SPC;SW1;PU81,2474;PD84,2514;</HPGL>
+				<HPGL>SPA;SW2;PU1020,2344;PD558,2344;SPA;SW2;PU773,2343;CI497;SPC;SW1;PU127,2827;PD127,2593;PD35,2592;SPC;SW1;PU36,2828;PD223,2828;SPC;SW1;PU81,2474;PD84,2514;</HPGL>
 			</vector>
 			<definition>V</definition>
 		</symbol>
@@ -36000,7 +36001,7 @@
 				<distance min="0" max="0" />
 				<pivot x="751" y="748" />
 				<origin x="144" y="231" />
-				<HPGL>SPA;SW1;PU144,651;PD157,623;PD170,598;PD187,581;PD204,564;PD230,555;PD253,557;PD283,566;PD311,572;PD334,606;PD352,625;PD364,647;PD364,672;PD352,696;PD339,717;PD319,741;PD296,766;PD275,792;PD262,811;PD251,828;PD249,850;PD249,873;PD249,890;PD251,912;PD251,914;SPA;SW2;PU230,998;PD283,998;SPA;SW1;PU1133,651;PD1146,623;PD1159,598;PD1176,581;PD1193,564;PD1219,555;PD1242,557;PD1272,566;PD1300,572;PD1323,606;PD1341,625;PD1353,647;PD1353,672;PD1341,696;PD1328,717;PD1308,741;PD1285,766;PD1264,792;PD1251,811;PD1240,828;PD1238,850;PD1238,873;PD1238,890;PD1240,912;PD1240,914;SPA;SW2;PU1219,998;PD1272,998;SPA;SW1;PU750,750;CI218;SPA;SW1;PU580,589;PD752,231;PD923,589;SPA;SW1;PU920,914;PD742,1268;PD580,911;</HPGL>
+				<HPGL>SPA;SW1;PU144,651;PD157,623;PD170,598;PD187,581;PD204,564;PD230,555;PD253,557;PD283,566;PD311,572;PD334,606;PD352,625;PD364,647;PD364,672;PD352,696;PD339,717;PD319,741;PD296,766;PD275,792;PD262,811;PD251,828;PD249,850;PD249,873;PD249,890;PD251,912;PD251,914;SPA;SW2;PU230,998;PD283,998;SPA;SW1;PU1133,651;PD1146,623;PD1159,598;PD1176,581;PD1193,564;PD1219,555;PD1242,557;PD1272,566;PD1300,572;PD1323,606;PD1341,625;PD1353,647;PD1353,672;PD1341,696;PD1328,717;PD1308,741;PD1285,766;PD1264,792;PD1251,811;PD1240,828;PD1238,850;PD1238,873;PD1238,890;PD1240,912;PD1240,914;SPA;SW2;PU1219,998;PD1272,998;SPA;SW2;PU750,750;CI218;SPA;SW2;PU580,589;PD752,231;PD923,589;SPA;SW2;PU920,914;PD742,1268;PD580,911;</HPGL>
 			</vector>
 			<definition>V</definition>
 			<prefer-bitmap>no</prefer-bitmap>
@@ -36040,7 +36041,7 @@
 				<distance min="0" max="0" />
 				<pivot x="750" y="750" />
 				<origin x="532" y="231" />
-				<HPGL>SPA;SW1;PU750,750;CI218;SPA;SW1;PU580,589;PD752,231;PD923,589;</HPGL>
+				<HPGL>SPA;SW2;PU750,750;CI218;SPA;SW2;PU580,589;PD752,231;PD923,589;</HPGL>
 			</vector>
 			<definition>V</definition>
 			<prefer-bitmap>no</prefer-bitmap>
@@ -36060,7 +36061,7 @@
 				<distance min="0" max="0" />
 				<pivot x="750" y="750" />
 				<origin x="532" y="231" />
-				<HPGL>SPA;SW1;PU750,750;CI218;SPA;SW1;PU580,589;PD752,231;PD923,589;SPA;SW1;PU920,914;PD742,1268;PD580,911;</HPGL>
+				<HPGL>SPA;SW2;PU750,750;CI218;SPA;SW2;PU580,589;PD752,231;PD923,589;SPA;SW2;PU920,914;PD742,1268;PD580,911;</HPGL>
 			</vector>
 			<definition>V</definition>
 			<prefer-bitmap>no</prefer-bitmap>
