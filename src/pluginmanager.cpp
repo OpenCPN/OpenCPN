@@ -1408,6 +1408,11 @@ void DimeWindow(wxWindow *win)
       DimeControl(win);
 }
 
+void JumpToPosition(double lat, double lon, double scale)
+{
+      gFrame->JumpToPosition(lat, lon, scale);
+}
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------

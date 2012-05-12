@@ -512,5 +512,7 @@ extern "C"  DECL_EXP void SendPluginMessage( wxString message_id, wxString messa
 
 extern "C"  DECL_EXP void DimeWindow(wxWindow *);
 
+extern "C"  DECL_EXP void JumpToPosition(double lat, double lon, double scale);
+
 #endif            // _PLUGIN_H_
 
