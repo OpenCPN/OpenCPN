@@ -1459,7 +1459,6 @@ void RouteManagerDialog::UpdateTrkButtons()
       long item = -1;
       item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 	  int items = m_pTrkListCtrl->GetSelectedItemCount();
-      bool enable = (item != -1);
 
       btnTrkProperties->Enable(items == 1);
       btnTrkDelete->Enable(items == 1);
