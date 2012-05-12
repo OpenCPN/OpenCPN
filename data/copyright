@@ -1,0 +1,10 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: OpenCPN
+Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
+Source: http://www.opencpn.org
+
+Files: *
+Copyright: 1975-2010 Ulla Upstream
+License: GPL-2
+
+/usr/share/common-licenses
