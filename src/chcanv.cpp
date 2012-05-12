@@ -15964,6 +15964,7 @@ int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_g
 wxString temp_file_name;
 #endif
 
+#if 0
 class ocpnCurtain: public wxDialog
 {
       DECLARE_CLASS( ocpnCurtain )
@@ -15995,7 +15996,7 @@ bool ocpnCurtain::ProcessEvent(wxEvent& event)
       GetParent()->GetEventHandler()->SetEvtHandlerEnabled(true);
       return GetParent()->GetEventHandler()->ProcessEvent(event);
 }
-
+#endif
 
 
 #ifdef __WIN32__
@@ -16071,7 +16072,7 @@ int InitScreenBrightness(void)
                   if(gFrame->CanSetTransparent())
                   {
                   //    Build the curtain window
-                        g_pcurtain = new wxDialog(cc1, -1, _T(""), wxPoint(0,0), wxSize(1000,1000),
+                        g_pcurtain = new wxDialog(cc1, -1, _T(""), wxPoint(0,0), ::wxGetDisplaySize(),
                                           wxNO_BORDER | wxTRANSPARENT_WINDOW |wxSTAY_ON_TOP | wxDIALOG_NO_PARENT);
 
       //                  g_pcurtain = new ocpnCurtain(gFrame, wxPoint(0,0),::wxGetDisplaySize(),
