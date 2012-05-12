@@ -8983,6 +8983,12 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
             SetCursor( wxCURSOR_WAIT );
             ListOfObjRazRules* rule_list = Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
             wxString objText;
+            wxFont *dFont = pFontMgr->GetFont(_("ObjectQuery"), 12);
+            wxString face = dFont->GetFaceName();
+            objText = _T("<html><body><FONT FACE=");
+            objText += _T("\"");
+            objText += face;
+            objText += _T("\">");
 
             if( !rule_list->IsEmpty() )
             {
@@ -9005,8 +9011,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
 
                   }
             }
-            objText += _T("</body></html>");
 
+            objText << _T("</font></body></html>");
 
             if(NULL == g_pObjectQueryDialog) {
                   g_pObjectQueryDialog = new S57QueryDialog();
