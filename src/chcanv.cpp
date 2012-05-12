@@ -4345,16 +4345,42 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     parent_frame->ToggleChartOutlines();
                     break;
 
-               case 13:                     // Ctrl M                      //    Drop Marker;
+               case 13:                     // Ctrl M // Drop Marker at cursor // Enter // Drop Marker at boat;
                {
-                    RoutePoint *pWP = new RoutePoint ( m_cursor_lat, m_cursor_lon,
+                    double lat, lon;
+                    if ( m_modkeys == wxMOD_CONTROL )
+                    {
+                          lat = m_cursor_lat;
+                          lon = m_cursor_lon;
+                    }
+                    else
+                    {
+                          lat = gLat;
+                          lon = gLon;
+                    }
+                    RoutePoint *pWP = new RoutePoint ( lat, lon,
                                 g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
                     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-                    pSelect->AddSelectableRoutePoint ( m_cursor_lat, m_cursor_lon, pWP );
+                    pSelect->AddSelectableRoutePoint ( lat, lon, pWP );
                     pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
 
                     if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
                         pRouteManagerDialog->UpdateWptListCtrl();
+
+                    Refresh ( false );
+                    break;
+               }
+
+               case 32:                     // Space                      //    Drop Marker at boat's position;
+               {
+                    RoutePoint *pWP = new RoutePoint ( gLat, gLon,
+                               g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+                    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+                    pSelect->AddSelectableRoutePoint ( gLat, gLon, pWP );
+                    pConfig->AddNewWayPoint ( pWP, -1 );    // use auto next num
+
+                    if ( pRouteManagerDialog && pRouteManagerDialog->IsShown())
+                       pRouteManagerDialog->UpdateWptListCtrl();
 
                     Refresh ( false );
                     break;
