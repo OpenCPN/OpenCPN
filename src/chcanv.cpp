@@ -7504,15 +7504,30 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         event.GetPosition ( &x, &y );
 
-        if( event.LeftDClick() ) {
-              m_DoubleClickTimer->Start();
-              singleClickEventIsValid = false;
+      if( event.LeftDClick() ) {
+            m_DoubleClickTimer->Start();
+            singleClickEventIsValid = false;
 
-              double zlat,zlon;
-              GetCanvasPixPoint ( x, y, zlat, zlon );
-              ShowObjectQueryWindow( x, y, zlat, zlon );
-              return;
-        }
+            double zlat, zlon;
+            GetCanvasPixPoint( x, y, zlat, zlon );
+
+            float SelectRadius = 8 / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+
+            SelectItem *pFindAIS;
+            pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET, SelectRadius );
+
+            if( pFindAIS ) {
+                  m_FoundAIS_MMSI = pFindAIS->GetUserData();
+                  if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) {
+                        wxWindow *pwin = wxDynamicCast(this, wxWindow);
+                        ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
+                  }
+            } else {
+                  ShowObjectQueryWindow( x, y, zlat, zlon );
+            }
+
+            return;
+      }
 
         // Capture LeftUp's and time them, unless it already came from the timer.
         if( event.LeftUp() && ! singleClickEventIsValid ) {
