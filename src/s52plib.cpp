@@ -1805,10 +1805,10 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             HPGL->SetTargetGCDC( &gdc );
             HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
-            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 3; // Extra margin for antialiasing.
-            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 3;
-            int bm_orgx = wxMax ( 0, gdc.MinX()-1 );
-            int bm_orgy = wxMax ( 0, gdc.MinY()-1 );
+            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4; // Extra margin for antialiasing.
+            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 4;
+            int bm_orgx = wxMax ( 0, gdc.MinX()-2 );
+            int bm_orgy = wxMax ( 0, gdc.MinY()-2 );
 
             //      Pre-clip the sub-bitmap to avoid assert errors
             if( ( bm_height + bm_orgy ) > height ) bm_height = height - bm_orgy;
@@ -1874,10 +1874,10 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             HPGL->SetTargetGCDC( &gdc );
             HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
-            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 3;
-            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 3;
-            int bm_orgx = wxMax ( 0, gdc.MinX()-1 );
-            int bm_orgy = wxMax ( 0, gdc.MinY()-1 );
+            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4;
+            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 4;
+            int bm_orgx = wxMax ( 0, gdc.MinX()-2 );
+            int bm_orgy = wxMax ( 0, gdc.MinY()-2 );
             int screenOriginX = r.x + ( bm_orgx - (int) ( pivot_x / fsf ) );
             int screenOriginY = r.y + ( bm_orgy - (int) ( pivot_y / fsf ) );
 
@@ -1899,7 +1899,9 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                   wxGCDC gdc( targetDc );
 
                   targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
+
                   gdc.DrawBitmap( *sbm, 0, 0 );
+
                   m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
 
                   targetDc.SelectObject( wxNullBitmap );
