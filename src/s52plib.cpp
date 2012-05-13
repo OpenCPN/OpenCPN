@@ -6918,7 +6918,7 @@ void RenderFromHPGL::SetPen() {
       }
       if( renderToGCDC ) {
             pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
-            brush = wxTheBrushList->FindOrCreateBrush( brushColor, wxSOLID );
+            brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
             targetGCDC->SetPen( *pen );
             targetGCDC->SetBrush( *brush );
       }
