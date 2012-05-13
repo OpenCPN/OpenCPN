@@ -111,6 +111,8 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy ) {
 
       UpdateMarinerParams();
 
+      GenerateStateHash();
+
       ledge = new int[2000];
       redge = new int[2000];
 

@@ -1093,6 +1093,7 @@ ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent)
       mdc.SetBackground(wxBrush(GetGlobalColor(_T("NODTA")), wxSOLID));
       mdc.Clear();
       mdc.SelectObject(wxNullBitmap);
+      m_rose_angle = -999;  // force a refresh when first used
 
       m_pStatBoxToolStaticBmp = NULL;
 
@@ -3192,6 +3193,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
 
 
         m_toolBar = NULL;
+        m_toolbar_scale_tools_shown = false;
 
         PrepareToolbarBitmaps();
 
@@ -3222,6 +3224,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, cons
               SOGFilterTable[i] = 0.;
         }
         m_COGFilterLast = 0.;
+        m_last_bGPSValid = false;
 
         m_bpersistent_quilt = false;
 

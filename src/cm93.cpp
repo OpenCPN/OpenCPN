@@ -4893,6 +4893,8 @@ cm93compchart::cm93compchart()
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
       m_pOffsetDialog = NULL;
 
+      m_last_scale_for_busy = 0;
+
       m_pcm93mgr = new cm93manager();
 
 

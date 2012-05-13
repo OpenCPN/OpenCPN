@@ -624,7 +624,7 @@ S57Obj::S57Obj(char *first_line, wxInputStream *pfpx, double dummy, double dummy
                           float ymax = *pf++;
                           float ymin = *pf;
 
-                          delete buft;
+                          free( buft );
 
                           // set s57obj bbox as lat/lon
                           BBObj.SetMin(xmin, ymin);

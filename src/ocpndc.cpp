@@ -731,7 +731,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y)
                         m_textforegroundcolour.Blue(),
                         255);
             GLDrawBlendData(x, y, w, h, GL_ALPHA, data);
-            free(data);
+            delete[] data;
           }
      }
 }
