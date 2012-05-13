@@ -205,20 +205,16 @@ public:
             return m_bShowSoundg;
       }
       void SetShowSoundings( bool f ) {
-            m_bVisibilitiesUpdated = true;
             m_bShowSoundg = f;
+            GenerateStateHash();
       }
 
 	bool GetShowS57Text() {
 		return m_bShowS57Text;
 	}
 	void SetShowS57Text( bool f ) {
-            m_bVisibilitiesUpdated = true;
 		m_bShowS57Text = f;
-	}
-
-      bool GetVisibilitiesUpdated() {
-            return m_bVisibilitiesUpdated;
+            GenerateStateHash();
       }
 
 	bool GetShowS57ImportantTextOnly() {
@@ -226,6 +222,7 @@ public:
 	}
 	void SetShowS57ImportantTextOnly( bool f ) {
 		m_bShowS57ImportantTextOnly = f;
+            GenerateStateHash();
 	}
 
 	int GetMajorVersion( void ) {
@@ -263,7 +260,6 @@ public:
 	bool m_bShowLdisText;
 	bool m_bShowS57ImportantTextOnly;
 	bool m_bDeClutterText;
-      bool m_bVisibilitiesUpdated;
 
 	int m_VersionMajor;
 	int m_VersionMinor;

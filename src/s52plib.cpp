@@ -996,6 +996,8 @@ void s52plib::SetPLIBColorScheme( wxString scheme ) {
 
       if( !useLegacyRaster ) ChartSymbols::LoadRasterFileForColorTable(
                   m_colortable_index );
+
+      m_ColorScheme = scheme;
 }
 
 S52color* s52plib::getColor( const char *colorName ) {

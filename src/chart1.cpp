@@ -5213,6 +5213,7 @@ void MyFrame::ToggleLights(void)
                   if ( !strncmp ( pOLE->OBJLName, "LIGHTS", 6 ) )
                         pOLE->nViz = ! pOLE->nViz;
             }
+            ps52plib->GenerateStateHash();
             cc1->ReloadVP();
       }
 #endif
@@ -5244,6 +5245,7 @@ void MyFrame::ToggleRocks(void)
                         pOLE->nViz = vis;
                   }
             }
+            ps52plib->GenerateStateHash();
             cc1->ReloadVP();
       }
 #endif
