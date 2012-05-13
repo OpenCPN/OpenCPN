@@ -63,6 +63,9 @@
 #define new DEBUG_NEW
 #endif
 
+#ifdef __MSVC__
+#include <algorithm>          // for std::sort
+#endif
 
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 
@@ -2229,7 +2232,6 @@ bool s57chart::DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTy
     double    prev_easting_ul = 0., prev_northing_ul = 0.;
     double    prev_easting_lr, prev_northing_lr;
 
-    if(ps52plib->GetVisibilitiesUpdated()) bReallyNew = true;
 
     if(ps52plib->GetPLIBColorScheme() != m_lastColorScheme)
           bReallyNew = true;
@@ -3078,6 +3080,7 @@ void s57chart::BuildDepthContourArray(void)
             }
       }
 
+/*
     //      And bubble sort it
       bool swap = true;
       int isort;
@@ -3098,6 +3101,9 @@ void s57chart::BuildDepthContourArray(void)
                   isort++;
             }
       }
+*/
+      std::sort(m_pvaldco_array, m_pvaldco_array + m_nvaldco);
+
 
 }
 
