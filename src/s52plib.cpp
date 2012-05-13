@@ -2989,7 +2989,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
       {
             //    Set up the color
             glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
-            glLineWidth( wxMax(1., (float)width/2.0 ) );
+            glLineWidth( (float)width * 0.7 );
 
             for( int iseg = 0; iseg < npt - 1; iseg++ ) {
                   // Do not bother with segments that are invisible
@@ -3029,8 +3029,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                                           GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT ); //Save state
 
                               //      Enable anti-aliased lines, at best quality
-//					glEnable( GL_LINE_SMOOTH );
-//					glEnable( GL_BLEND );
+					glEnable( GL_LINE_SMOOTH );
+					glEnable( GL_BLEND );
                               glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                               glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
@@ -3071,8 +3071,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                                           GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT ); //Save state
 
                               //      Enable anti-aliased lines, at best quality
-//					glEnable( GL_LINE_SMOOTH );
-//					glEnable( GL_BLEND );
+					glEnable( GL_LINE_SMOOTH );
+					glEnable( GL_BLEND );
                               glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                               glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
@@ -6908,7 +6908,7 @@ void RenderFromHPGL::SetPen() {
                   glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );
                   glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(),
                               penColor.Alpha() );
-                  glLineWidth( (float) penWidth / 2.0 );
+                  glLineWidth( (float) penWidth * 0.7 );
                   glEnable( GL_LINE_SMOOTH );
                   glEnable( GL_BLEND );
                   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
