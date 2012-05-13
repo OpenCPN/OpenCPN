@@ -4333,7 +4333,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                      parent_frame->ToggleRocks();
                      break;
 
-               case 19:                     // Ctrl S
+               case 'T':
                     parent_frame->ToggleENCText();
                     break;
 
@@ -4341,7 +4341,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event)
                     parent_frame->TogglebFollow();
                     break;
 
-               case 15:                     // Ctrl O
+               case 'O':
                     parent_frame->ToggleChartOutlines();
                     break;
 
