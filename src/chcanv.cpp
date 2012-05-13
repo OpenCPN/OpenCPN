@@ -9037,8 +9037,12 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
 
             wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
 
-            objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font face=\"%S\">"),
-                        bg.Red(), bg.Blue(), bg.Green(), face );
+            objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font face="),
+                        bg.Red(), bg.Blue(), bg.Green() );
+            objText += _T("\"");
+            objText += face;
+            objText += _T("\">");
+
             objText << Chs57->CreateObjDescriptions( rule_list );
             objText << _T("</font></body></html>");
 
