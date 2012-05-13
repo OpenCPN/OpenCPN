@@ -9026,34 +9026,6 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
             wxString objText;
             wxFont *dFont = pFontMgr->GetFont(_("ObjectQuery"), 12);
             wxString face = dFont->GetFaceName();
-            objText = _T("<html><body><FONT FACE=");
-            objText += _T("\"");
-            objText += face;
-            objText += _T("\">");
-
-            if( !rule_list->IsEmpty() )
-            {
-                  for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node;
-                              node = node->GetPrevious() )
-                  {
-                        ObjRazRules *current = node->GetData();
-
-                        // Soundings have no information, so don't show them
-                        if( 0 == strncmp( current->LUP->OBCL, "SOUND", 5 ) ) continue;
-
-                        S57ObjectDesc* pdescription = Chs57->CreateObjDescription( current );
-
-                        objText +=  _T("<b>") + pdescription->S57ClassDesc + _T("</b> <font size=-2>(") + pdescription->S57ClassName + _T(")</font>") + _T("<br>");
-                        objText += pdescription->Attributes;
-                        if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
-                        objText += _T("<br>");
-
-                        delete pdescription;
-
-                  }
-            }
-
-            objText << _T("</font></body></html>");
 
             if(NULL == g_pObjectQueryDialog) {
                   g_pObjectQueryDialog = new S57QueryDialog();
@@ -9062,6 +9034,13 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
                               wxDefaultPosition, wxSize(g_S57_dialog_sx, g_S57_dialog_sy) );
                   g_pObjectQueryDialog->Centre();
             }
+
+            wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
+
+            objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font face=\"%S\">"),
+                        bg.Red(), bg.Blue(), bg.Green(), face );
+            objText << Chs57->CreateObjDescriptions( rule_list );
+            objText << _T("</font></body></html>");
 
             g_pObjectQueryDialog->SetHTMLPage(objText);
 

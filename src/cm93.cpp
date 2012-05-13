@@ -6401,12 +6401,6 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon,
 
 }
 
-S57ObjectDesc *cm93compchart::CreateObjDescription ( const ObjRazRules *obj )
-{
-      return m_pcm93chart_current->CreateObjDescription ( obj );
-}
-
-
 VE_Hash& cm93compchart::Get_ve_hash ( void )
 {
       return m_pcm93chart_current->Get_ve_hash();

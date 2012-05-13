@@ -6236,327 +6236,6 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
       return false;
 }
 
-S57ObjectDesc *s57chart::CreateObjDescription(const ObjRazRules *rule)
-{
-      S57ObjectDesc *ret_val = new S57ObjectDesc;
-      char *curr_att;
-      int iatt;
-      wxString att, value;
-      S57attVal *pval;
-
-      S57Obj *obj = rule->obj;
-
-      switch(obj->Primitive_type)
-      {
-            case  GEO_POINT:
-            case  GEO_AREA:
-            case  GEO_LINE:
-            {
-
-                  //    Get Name
-                      wxString name(obj->FeatureName,  wxConvUTF8);
-                      ret_val->S57ClassName = name;
-
-                  //    Get the object's nice description from s57objectclasses.csv
-                  //    using cpl_csv from the gdal library
-
-                  const char *name_desc;
-                  if(NULL != m_pcsv_locn)
-                  {
-                    wxString oc_file(*m_pcsv_locn);
-                    oc_file.Append(_T("/s57objectclasses.csv"));
-                    name_desc = MyCSVGetField(oc_file.mb_str(),
-                                     "Acronym",                  // match field
-                                     obj->FeatureName,            // match value
-                                     CC_ExactString,
-                                     "ObjectClass");             // return field
-                  }
-                  else
-                      name_desc = "";
-
-                  // In case there is no nice description for this object class, use the 6 char class name
-                  if( 0 == strlen( name_desc ) ) {
-                        name_desc = obj->FeatureName;
-                        ret_val->S57ClassDesc = wxString( name_desc, wxConvUTF8, 1 );
-                        ret_val->S57ClassDesc << wxString( name_desc+1, wxConvUTF8 ).MakeLower();
-                  } else {
-                  ret_val->S57ClassDesc = wxString(name_desc,  wxConvUTF8);
-                  }
-
-                  //    Show LUP
-                  if(g_bDebugS57)
-                  {
-                        wxString index;
-                        index.Printf(_T("Feature Index: %d\n"), obj->Index);
-                        ret_val->Attributes << index;
-
-                        wxString LUPstring;
-                        LUPstring.Printf(_T("LUP RCID:  %d\n"), rule->LUP->RCID);
-                        ret_val->Attributes << LUPstring;
-
-                        LUPstring = _T("    LUP ATTC: ");
-                        if(rule->LUP->ATTCArray)
-							LUPstring += rule->LUP->ATTCArray->Item(0);
-                        LUPstring += _T("\n");
-                        ret_val->Attributes << LUPstring;
-
-                        LUPstring = _T("    LUP INST: ");
-                        if(rule->LUP->INST)
-                              LUPstring += *(rule->LUP->INST);
-                        LUPstring += _T("\n\n");
-                        ret_val->Attributes << LUPstring;
-
-
-                  }
-
-
-                  if(GEO_POINT == obj->Primitive_type)
-                  {
-                        double lon, lat;
-                        fromSM((obj->x * obj->x_rate) + obj->x_origin, (obj->y * obj->y_rate) + obj->y_origin, ref_lat, ref_lon, &lat, &lon);
-
-                        if(lon > 180.0)
-                              lon -= 360.;
-
-                        wxString pos_st;
-                        pos_st += toSDMM(1, lat);
-                        pos_st <<_T("   ");
-                        pos_st += toSDMM(2, lon);
-                        ret_val->Attributes << _T("<font size=-2>") << pos_st << _T("</font><br>\n");
-                  }
-
-
-
-
-                  //    Get the Attributes and values
-
-                  char *curr_att0 = (char *)calloc(obj->attList->Len()+1, 1);
-                  strncpy(curr_att0, obj->attList->mb_str(), obj->attList->Len());
-                  curr_att = curr_att0;
-
-                  iatt = 0;
-
-                  wxString attribStr;
-                  int noAttr = 0;
-                  attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
-
-                  while(*curr_att)
-                  {
-//    Attribute name
-                        att.Clear();
-                        while((*curr_att) && (*curr_att != '\037'))
-                        {
-                              char t = *curr_att++;
-                              att.Append(t);
-                        }
-
-                        if( *curr_att == '\037' ) curr_att++;
-
-                        noAttr++;
-                        if( att == _T("DRVAL1") ) {
-                              attribStr << _T("<tr><td><font size=-1>");
-                        }
-                        else if( att == _T("DRVAL2") ) {
-                              attribStr << _T(" - ");
-                        }
-                        else {
-                              attribStr << _T("<tr><td valign=top><font size=-2>") << att;
-                              attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
-                        }
-
-
-// What we need to do...
-// Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
-// This will be like (E), (L), (I), (F)
-//  will affect lots of other stuff.  look for S57attVal.valType
-// need to do this in creatsencrecord above, and update the senc format.
-
-//    Attribute encoded value
-                    value.Clear();
-
-                    pval = obj->attVal->Item(iatt);
-                    switch(pval->valType)
-                    {
-                        case OGR_STR:
-                        {
-                            if(pval->value)
-                            {
-                                wxString val_str((char *)(pval->value),  wxConvUTF8);
-                                long ival;
-                                if(val_str.ToLong(&ival))
-                                {
-                                    if(0 == ival)
-                                        value = _T("Unknown");
-                                    else
-                                    {
-                                                      wxString decode_val = GetAttributeDecode( att,
-                                                                  ival );
-                                        if(!decode_val.IsEmpty())
-                                        {
-                                            value = decode_val;
-                                            wxString iv;
-                                            iv.Printf(_T("(%d)"), (int)ival);
-                                            value.Append(iv);
-                                        }
-                                        else
-                                                      value.Printf( _T("%d"), (int) ival );
-                                    }
-                                }
-
-                                else if(val_str.IsEmpty())
-                                    value = _T("Unknown");
-
-                                else
-                                {
-                                    value.Clear();
-                                    wxString value_increment;
-                                    wxStringTokenizer tk(val_str, wxT(","));
-                                    int iv = 0;
-                                    while ( tk.HasMoreTokens() )
-                                    {
-                                        wxString token = tk.GetNextToken();
-                                        long ival;
-                                        if(token.ToLong(&ival))
-                                        {
-                                                            wxString decode_val =
-                                                                        GetAttributeDecode( att, ival );
-                                            if(!decode_val.IsEmpty())
-                                                value_increment = decode_val;
-                                            else
-                                                                  value_increment.Printf( _T(" %d"), (int) ival );
-
-                                            if(iv)
-                                                value_increment.Prepend(wxT(", "));
-                                        }
-                                        value.Append(value_increment);
-
-                                        iv++;
-                                    }
-                                    value.Append(val_str);
-                                }
-                            }
-                            else
-                                value = _T("[NULL VALUE]");
-
-                            break;
-                        }
-
-                        case OGR_INT:
-                        {
-                            int ival = *((int *)pval->value);
-                            wxString decode_val = GetAttributeDecode(att, ival);
-
-                            if(!decode_val.IsEmpty())
-                            {
-                                value = decode_val;
-                                wxString iv;
-                                iv.Printf(_T("(%d)"), ival);
-                                value.Append(iv);
-                            }
-                            else
-                                value.Printf(_T("(%d)"), ival);
-
-                            break;
-                        }
-                        case OGR_INT_LST:
-                              break;
-
-                        case OGR_REAL:
-                        {
-                              double dval = *((double *)pval->value);
-                                    wxString val_suffix = _T(" m");
-
-                              //    As a special case, convert some attribute values to feet.....
-                              if((att == _T("VERCLR")) ||
-                                  (att == _T("VERCLL")) ||
-                                  (att == _T("HEIGHT")) ||
-                                  (att == _T("HORCLR")) )
-                              {
-                                    switch(ps52plib->m_nDepthUnitDisplay)
-                                    {
-                                          case 0:                       // feet
-                                          case 2:                       // fathoms
-                                                dval = dval * 3 * 39.37 / 36;              // feet
-                                                      val_suffix = _T(" ft");
-                                                break;
-                                          default:
-                                                break;
-                                    }
-                              }
-
-                              else if((att == _T("VALSOU")) ||
-                                      (att == _T("DRVAL1")) ||
-                                      (att == _T("DRVAL2")) )
-                              {
-                                    switch(ps52plib->m_nDepthUnitDisplay)
-                                    {
-                                          case 0:                       // feet
-                                                 dval = dval * 3 * 39.37 / 36;              // feet
-                                                      val_suffix = _T(" ft");
-                                                 break;
-                                          case 2:                       // fathoms
-                                                 dval = dval * 3 * 39.37 / 36;              // fathoms
-                                                 dval /= 6.0;
-                                                      val_suffix = _T(" fathoms");
-                                                 break;
-                                          default:
-                                                break;
-                                    }
-                              }
-
-
-                              else if(att == _T("SECTR1"))
-                                    val_suffix = _T(" Deg");
-                              else if(att == _T("SECTR2"))
-                                    val_suffix = _T(" Deg");
-                              else if(att == _T("ORIENT"))
-                                    val_suffix = _T(" Deg");
-                              else if(att == _T("VALNMR"))
-                                    val_suffix = _T(" Nm");
-                              else if(att == _T("SIGPER"))
-                                    val_suffix = _T(" Sec");
-
-                              value.Printf(_T("%4.1f"), dval);
-
-                              value << val_suffix;
-
-                              break;
-                        }
-
-                        case OGR_REAL_LST:
-                        {
-                                break;
-                        }
-                    }
-
-                        if( att == _T("INFORM") || att == _T("NINFOM") ) value.Replace( _T("|"), _T("<br>") );
-                        attribStr << value;
-
-                        if( ! (att == _T("DRVAL1")) ) {
-                              attribStr << _T("</font></td></tr>\n");
-                        }
-
-                    iatt++;
-
-                  }             //while *curr_att
-
-                  attribStr << _T("</table>\n");
-                  if( noAttr > 0 ) ret_val->Attributes << attribStr;
-                  free(curr_att0);
-
-                  return ret_val;
-
-                  }             //case
-
-
-            case  GEO_META:
-            case  GEO_PRIM:
-
-            break;
-      }
-
-      return ret_val;;
-}
 
 
  wxString s57chart::GetAttributeDecode(wxString& att, int ival)
@@ -7012,7 +6691,484 @@ bool s57chart::InitFromSENCMinimal(const wxString &FullPath)
 }
 
 
+wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName ) {
+      wxString value;
+      S57attVal *pval;
 
+                    pval = obj->attVal->Item(iatt);
+                    switch(pval->valType)
+                    {
+                        case OGR_STR:
+                        {
+                            if(pval->value)
+                            {
+                                wxString val_str((char *)(pval->value),  wxConvUTF8);
+                                long ival;
+                                if(val_str.ToLong(&ival))
+                                {
+                                    if(0 == ival)
+                                        value = _T("Unknown");
+                                    else
+                                    {
+                                    wxString decode_val = GetAttributeDecode(
+                                                curAttrName,
+                                                                  ival );
+                                        if(!decode_val.IsEmpty())
+                                        {
+                                            value = decode_val;
+                                            wxString iv;
+                                            iv.Printf(_T("(%d)"), (int)ival);
+                                            value.Append(iv);
+                                        }
+                                        else
+                                                      value.Printf( _T("%d"), (int) ival );
+                                    }
+                                }
+
+                                else if(val_str.IsEmpty())
+                                    value = _T("Unknown");
+
+                                else
+                                {
+                                    value.Clear();
+                                    wxString value_increment;
+                                    wxStringTokenizer tk(val_str, wxT(","));
+                                    int iv = 0;
+                                    while ( tk.HasMoreTokens() )
+                                    {
+                                        wxString token = tk.GetNextToken();
+                                        long ival;
+                                        if(token.ToLong(&ival))
+                                        {
+                                                            wxString decode_val =
+                                                      GetAttributeDecode(
+                                                                  curAttrName,
+                                                                  ival );
+                                            if(!decode_val.IsEmpty())
+                                                value_increment = decode_val;
+                                            else
+                                          value_increment.Printf( _T(" %d"),
+                                                      (int) ival );
+
+                                            if(iv)
+                                                value_increment.Prepend(wxT(", "));
+                                        }
+                                        value.Append(value_increment);
+
+                                        iv++;
+                                    }
+                                    value.Append(val_str);
+                                }
+                            }
+                            else
+                                value = _T("[NULL VALUE]");
+
+                            break;
+                        }
+
+                        case OGR_INT:
+                        {
+                            int ival = *((int *)pval->value);
+                  wxString decode_val = GetAttributeDecode( curAttrName, ival );
+
+                            if(!decode_val.IsEmpty())
+                            {
+                                value = decode_val;
+                                wxString iv;
+                                iv.Printf(_T("(%d)"), ival);
+                                value.Append(iv);
+                            }
+                            else
+                                value.Printf(_T("(%d)"), ival);
+
+                            break;
+                        }
+                        case OGR_INT_LST:
+                              break;
+
+                        case OGR_REAL:
+                        {
+                              double dval = *((double *)pval->value);
+                                    wxString val_suffix = _T(" m");
+
+                              //    As a special case, convert some attribute values to feet.....
+                  if( ( curAttrName == _T("VERCLR") ) ||
+                              ( curAttrName == _T("VERCLL") ) ||
+                              ( curAttrName == _T("HEIGHT") ) ||
+                              ( curAttrName == _T("HORCLR") ) )
+                              {
+                                    switch(ps52plib->m_nDepthUnitDisplay)
+                                    {
+                                          case 0:                       // feet
+                                          case 2:                       // fathoms
+                                                dval = dval * 3 * 39.37 / 36;              // feet
+                                                      val_suffix = _T(" ft");
+                                                break;
+                                          default:
+                                                break;
+                                    }
+                              }
+
+                  else if( ( curAttrName == _T("VALSOU") ) ||
+                              ( curAttrName == _T("DRVAL1") ) ||
+                              ( curAttrName == _T("DRVAL2") ) )
+                              {
+                                    switch(ps52plib->m_nDepthUnitDisplay)
+                                    {
+                                          case 0:                       // feet
+                                                 dval = dval * 3 * 39.37 / 36;              // feet
+                                                      val_suffix = _T(" ft");
+                                                 break;
+                                          case 2:                       // fathoms
+                                                 dval = dval * 3 * 39.37 / 36;              // fathoms
+                                                 dval /= 6.0;
+                                                      val_suffix = _T(" fathoms");
+                                                 break;
+                                          default:
+                                                break;
+                                    }
+                              }
+
+                  else if( curAttrName == _T("SECTR1") )
+                  val_suffix = _T("&deg;");
+                  else if( curAttrName == _T("SECTR2") )
+                  val_suffix = _T("&deg;");
+                  else if( curAttrName == _T("ORIENT") )
+                  val_suffix = _T("&deg;");
+                  else if( curAttrName == _T("VALNMR") )
+                                    val_suffix = _T(" Nm");
+                  else if( curAttrName == _T("SIGPER") )
+                  val_suffix = _T("s");
+
+                  if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
+                  else value.Printf( _T("%4.1f"), dval );
+
+                              value << val_suffix;
+
+                              break;
+                        }
+
+                        case OGR_REAL_LST:
+                        {
+                                break;
+                        }
+                    }
+      return value;
+}
+
+wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
+{
+      wxString ret_val;
+      char *curr_att;
+      int attrCounter;
+      wxString curAttrName, value;
+      bool isLight = false;
+      wxString className;
+      wxString classDesc;
+      wxString classAttributes;
+      wxString objText;
+      wxString lightsHtml;
+      wxString positionString;
+      wxArrayPtrVoid lights;
+      S57Light* curLight;
+
+      for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node;
+                  node = node->GetPrevious() )
+      {
+            ObjRazRules *current = node->GetData();
+            positionString.Clear();
+            objText.Clear();
+
+            // Soundings have no information, so don't show them
+            if( 0 == strncmp( current->LUP->OBCL, "SOUND", 5 ) ) continue;
+
+            if( current->obj->Primitive_type == GEO_META ) continue;
+            if( current->obj->Primitive_type == GEO_PRIM ) continue;
+
+            className = wxString( current->obj->FeatureName, wxConvUTF8 );
+
+            // Lights get grouped together to make display look nicer.
+            isLight = !strcmp( current->obj->FeatureName, "LIGHTS" );
+
+            //    Get the object's nice description from s57objectclasses.csv
+            //    using cpl_csv from the gdal library
+
+            const char *name_desc;
+            if( NULL != m_pcsv_locn )
+                        {
+                  wxString oc_file( *m_pcsv_locn );
+                  oc_file.Append( _T("/s57objectclasses.csv") );
+                  name_desc = MyCSVGetField( oc_file.mb_str(),
+                              "Acronym",                  // match field
+                              current->obj->FeatureName,            // match value
+                              CC_ExactString,
+                              "ObjectClass" );             // return field
+            }
+            else
+                  name_desc = "";
+
+            // In case there is no nice description for this object class, use the 6 char class name
+            if( 0 == strlen( name_desc ) ) {
+                  name_desc = current->obj->FeatureName;
+                  classDesc = wxString( name_desc, wxConvUTF8, 1 );
+                  classDesc << wxString( name_desc + 1, wxConvUTF8 ).MakeLower();
+            } else {
+                  classDesc = wxString( name_desc, wxConvUTF8 );
+            }
+
+            //    Show LUP
+            if( g_bDebugS57 )
+            {
+                  wxString index;
+                  index.Printf( _T("Feature Index: %d\n"), current->obj->Index );
+                  classAttributes << index;
+
+                  wxString LUPstring;
+                  LUPstring.Printf( _T("LUP RCID:  %d\n"), current->LUP->RCID );
+                  classAttributes << LUPstring;
+
+                  LUPstring = _T("    LUP ATTC: ");
+                  if( current->LUP->ATTCArray )
+                  LUPstring += current->LUP->ATTCArray->Item( 0 );
+                  LUPstring += _T("\n");
+                  classAttributes << LUPstring;
+
+                  LUPstring = _T("    LUP INST: ");
+                  if( current->LUP->INST )
+                  LUPstring += *( current->LUP->INST );
+                  LUPstring += _T("\n\n");
+                  classAttributes << LUPstring;
+
+            }
+
+            if( GEO_POINT == current->obj->Primitive_type )
+            {
+                  double lon, lat;
+                  fromSM( ( current->obj->x * current->obj->x_rate ) + current->obj->x_origin,
+                              ( current->obj->y * current->obj->y_rate ) + current->obj->y_origin,
+                              ref_lat, ref_lon,
+                              &lat, &lon );
+
+                  if( lon > 180.0 ) lon -= 360.;
+
+                  positionString.Clear();
+                  positionString += toSDMM( 1, lat );
+                  positionString << _T(" ");
+                  positionString += toSDMM( 2, lon );
+
+                  if( isLight ) {
+                        curLight = new S57Light;
+                        curLight->position = positionString;
+                        lights.Add( curLight );
+                  }
+            }
+
+            //    Get the Attributes and values
+
+            char *curr_att0 = (char *) calloc( current->obj->attList->Len() + 1, 1 );
+            strncpy( curr_att0, current->obj->attList->mb_str(), current->obj->attList->Len() );
+            curr_att = curr_att0;
+
+            attrCounter = 0;
+
+            wxString attribStr;
+            int noAttr = 0;
+            attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
+
+            while( *curr_att )
+            {
+                  //    Attribute name
+                  curAttrName.Clear();
+                  noAttr++;
+                  while( ( *curr_att ) && ( *curr_att != '\037' ) )
+                  {
+                        char t = *curr_att++;
+                        curAttrName.Append( t );
+                  }
+
+                  if( *curr_att == '\037' ) curr_att++;
+
+                  // Sort out how some kinds of attibutes are displayed to get a more readable look.
+                  // DEPARE gets just its range. Lights are grouped.
+
+                  if( isLight ) {
+                        curLight->attributeNames.Add( curAttrName );
+                  }
+                  else {
+                        if( curAttrName == _T("DRVAL1") ) {
+                              attribStr << _T("<tr><td><font size=-1>");
+                        }
+                        else if( curAttrName == _T("DRVAL2") ) {
+                              attribStr << _T(" - ");
+                        }
+                        else {
+                              attribStr
+                                          << _T("<tr><td valign=top><font size=-2>") << curAttrName;
+                              attribStr
+                                          << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
+                        }
+                  }
+
+                  // What we need to do...
+                  // Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
+                  // This will be like (E), (L), (I), (F)
+                  //  will affect lots of other stuff.  look for S57attVal.valType
+                  // need to do this in creatsencrecord above, and update the senc format.
+
+                  value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
+
+                  if( isLight ) {
+                        curLight->attributeValues.Add( value );
+                  } else {
+                        if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") ) value.Replace(
+                                    _T("|"), _T("<br>") );
+                        attribStr << value;
+
+                        if( !( curAttrName == _T("DRVAL1") ) ) {
+                              attribStr << _T("</font></td></tr>\n");
+                        }
+                  }
+
+                  attrCounter++;
+
+                  }             //while *curr_att
+
+            if( !isLight ) {
+                  attribStr << _T("</table>\n");
+
+                  objText += _T("<b>") + classDesc + _T("</b> <font size=-2>(") + className
+                              + _T(")</font>") + _T("<br>");
+
+                  if( positionString.Length())
+                        objText << _T("<font size=-2>") << positionString << _T("</font><br>\n");
+
+                  if( noAttr > 0 ) objText << attribStr;
+
+                  if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
+                  objText += _T("<br>");
+                  ret_val << objText;
+            }
+
+                  free(curr_att0);
+
+
+      } // Object for loop
+
+      if( lights.Count() > 0 ) {
+
+            // For lights we now have all the info gathered but no HTML output yet, now
+            // run through the data and build a merged table for all lights.
+
+            wxString lastPos;
+
+            for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
+                  S57Light* thisLight = (S57Light*)lights.Item( curLightNo );
+                  int attrIndex;
+
+                  if( thisLight->position != lastPos ) {
+
+                        lastPos = thisLight->position;
+
+                        if( curLightNo > 0 ) lightsHtml << _T("</table>\n<hr noshade>\n");
+
+                        lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
+                        lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
+
+                        lightsHtml << _T("<table>");
+                  }
+
+                  lightsHtml << _T("<tr>");
+                  lightsHtml << _T("<td><font size=-1>");
+
+                  attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        wxString color = thisLight->attributeValues.Item( attrIndex );
+                        if( color == _T("red(3)") ) lightsHtml << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                        if( color == _T("green(4)") ) lightsHtml << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                        if( color == _T("white(1)") ) lightsHtml << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                  }
+
+                  lightsHtml << _T("</font></td><td><font size=-1><nobr><b>");
+
+                  attrIndex = thisLight->attributeNames.Index( _T("LITCHR") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        wxString character = thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << character.BeforeFirst( wxChar('(') ) << _T(" ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("SIGGRP") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << _T(" ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("SIGPER") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << _T(" ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("HEIGHT") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << _T(" ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("VALNMR") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << _T(" ");
+                  }
+
+                  lightsHtml << _T("</b>");
+
+                  attrIndex = thisLight->attributeNames.Index( _T("SECTR1") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << _T("(") <<thisLight->attributeValues.Item( attrIndex );
+                        lightsHtml << _T(" - ");
+                        attrIndex = thisLight->attributeNames.Index( _T("SECTR2") );
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex ) << _T(") ");
+                  }
+
+                  lightsHtml << _T("</nobr>");
+
+                  attrIndex = thisLight->attributeNames.Index( _T("CATLIT") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << _T("<nobr>");
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex ).BeforeFirst( wxChar('(') );
+                        lightsHtml << _T("</nobr> ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("EXCLIT") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << _T("<nobr>");
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex ).BeforeFirst( wxChar('(') );
+                        lightsHtml << _T("</nobr> ");
+                  }
+
+                  attrIndex = thisLight->attributeNames.Index( _T("OBJNAM") );
+                  if( attrIndex != wxNOT_FOUND ) {
+                        lightsHtml << _T("<br><nobr>");
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex ).Left(1).Upper();
+                        lightsHtml << thisLight->attributeValues.Item( attrIndex ).Mid(1);
+                        lightsHtml << _T("</nobr> ");
+                  }
+
+                  lightsHtml << _T("</font></td>");
+                  lightsHtml << _T("</tr>");
+
+                  thisLight->attributeNames.Clear();
+                  thisLight->attributeValues.Clear();
+                  delete thisLight;
+            }
+            lightsHtml << _T("</table><hr noshade>\n");
+            ret_val = lightsHtml << ret_val;
+
+            lights.Clear();
+      }
+
+      return ret_val;
+}
 
 
 
