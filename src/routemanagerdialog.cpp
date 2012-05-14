@@ -410,7 +410,7 @@ void RouteManagerDialog::Create()
 
       //  Create "Routes" panel
       m_pPanelRte = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+                                       wxNO_BORDER|wxTAB_TRAVERSAL );
       wxBoxSizer *sbsRoutes = new wxBoxSizer(wxHORIZONTAL);
       m_pPanelRte->SetSizer(sbsRoutes);
       m_pNotebook->AddPage(m_pPanelRte, _("Routes"));
@@ -504,7 +504,7 @@ void RouteManagerDialog::Create()
 
       //  Create "Tracks" panel
       m_pPanelTrk = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+                                       wxNO_BORDER|wxTAB_TRAVERSAL );
       wxBoxSizer* itemBoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
       m_pPanelTrk->SetSizer(itemBoxSizer3);
       m_pNotebook->AddPage(m_pPanelTrk, _("Tracks"));
@@ -562,7 +562,7 @@ void RouteManagerDialog::Create()
 
       //  Create "Waypoints" panel
       m_pPanelWpt = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+                                       wxNO_BORDER|wxTAB_TRAVERSAL );
       wxBoxSizer* itemBoxSizer4 = new wxBoxSizer(wxHORIZONTAL);
       m_pPanelWpt->SetSizer(itemBoxSizer4);
       m_pNotebook->AddPage(m_pPanelWpt, _("Waypoints"));
@@ -642,7 +642,7 @@ void RouteManagerDialog::Create()
 
       //  Create "Layers" panel
       m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                       wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+                                       wxNO_BORDER|wxTAB_TRAVERSAL );
       wxBoxSizer* itemBoxSizer7 = new wxBoxSizer(wxHORIZONTAL);
       m_pPanelLay->SetSizer(itemBoxSizer7);
       m_pNotebook->AddPage(m_pPanelLay, _("Layers"));
