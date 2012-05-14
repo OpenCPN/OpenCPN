@@ -348,9 +348,8 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle ) {
 	Rule *lnst = (Rule*) calloc( 1, sizeof(Rule) );
 	plib->pAlloc->Add( lnst );
 
-//	lnst->exposition.LXPO = new wxString( lineStyle.description );
 	lnst->RCID = lineStyle.RCID;
-	strcpy( lnst->name.PANM, lineStyle.name.mb_str() );
+	strncpy( lnst->name.PANM, lineStyle.name.mb_str(), 8 );
 	lnst->bitmap.PBTM = NULL;
 
 	lnst->vector.LVCT = (char *) malloc( lineStyle.HPGL.Len() + 1 );
@@ -487,7 +486,7 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern ) {
 
 	patt->RCID = pattern.RCID;
 	patt->exposition.PXPO = new wxString( pattern.description );
-	strcpy( patt->name.PANM, pattern.name.mb_str() );
+	strncpy( patt->name.PANM, pattern.name.mb_str(), 8 );
 	patt->bitmap.PBTM = NULL;
 	patt->fillType.PATP = pattern.fillType;
 	patt->spacing.PASP = pattern.spacing;
