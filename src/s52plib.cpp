@@ -1686,6 +1686,94 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       int pivot_x = prule->pos.symb.pivot_x.SYCL;
       int pivot_y = prule->pos.symb.pivot_y.SYRW;
 
+
+#ifdef __WXGTK__
+            // alpha bitmap blit on gtk is broken, so we do this the hard way
+
+      if(m_pdc) {                   // DC mode
+            //    Get the size and position of resulting symbol on the screen
+            //    by doing a simple DC render
+
+            wxBitmap sizebm( width, height);
+            wxMemoryDC smdc( sizebm );
+
+            char *str = prule->vector.LVCT;
+            char *col = prule->colRef.LCRF;
+            wxPoint pivot( pivot_x, pivot_y );
+            wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
+
+            HPGL->SetTargetDC( &smdc );
+            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+
+            smdc.SelectObject( wxNullBitmap );
+
+            int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 3;
+            int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 3;
+            int sbm_orgx = wxMax ( 0, smdc.MinX()-1 );
+            int sbm_orgy = wxMax ( 0, smdc.MinY()-1 );
+
+            //      Pre-clip the sub-bitmap to avoid assert errors
+            if( ( sbm_height + sbm_orgy ) > height ) sbm_height = height - sbm_orgy;
+            if( ( sbm_width + sbm_orgx ) > width ) sbm_width = width - sbm_orgx;
+
+
+            int blit_x = r.x + sbm_orgx - (int) ( pivot_x / fsf );
+            int blit_y = r.y + sbm_orgy - (int) ( pivot_y / fsf );
+
+            //    Grab a bitmap of the current target dc contents at the proper size/position
+            wxBitmap bm_screen_copy(sbm_orgx + sbm_width, sbm_orgy + sbm_height);
+            wxMemoryDC scratchDc;
+            scratchDc.SelectObject(bm_screen_copy);
+            scratchDc.Blit(sbm_orgx, sbm_orgy, sbm_width, sbm_height, m_pdc, blit_x, blit_y);
+
+                  //    Map it into a GCDC
+            wxGCDC gdc( scratchDc );
+
+                  //    Do the GC render on this screen_copy bitmap
+            HPGL->SetTargetDC( &scratchDc );
+            HPGL->SetTargetGCDC( &gdc );
+            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+
+                  //    And blit the result back onto the target dc
+            m_pdc->Blit(blit_x, blit_y, sbm_width, sbm_height, &scratchDc, sbm_orgx, sbm_orgy);
+
+                  //    And release the scratch dc
+            scratchDc.SelectObject( wxNullBitmap );
+
+            //        Get the bounding box for the as-drawn symbol
+            wxBoundingBox symbox;
+            double plat, plon;
+
+            rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )),
+                                         r.y + (sbm_orgy - (int) ( pivot_y / fsf )) + sbm_height, &plat, &plon, vp );
+            symbox.SetMin( plon, plat );
+
+            rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )) + sbm_width,
+                                         r.y + (sbm_orgy - (int) ( pivot_y / fsf )), &plat, &plon, vp );
+            symbox.SetMax( plon, plat );
+
+            //  Update the object Bounding box
+            //  so that subsequent drawing operations will redraw the item fully
+            if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
+            else {
+                  rzRules->obj->BBObj = symbox;
+                  rzRules->obj->bBBObj_valid = true;
+            }
+            return true;
+      }
+      else {
+            char *str = prule->vector.LVCT;
+            char *col = prule->colRef.LCRF;
+            wxPoint pivot( pivot_x, pivot_y );
+
+            HPGL->SetTargetOpenGl();
+            HPGL->Render( str, col, r, pivot, (double) rot_angle );
+
+            return true;
+      }
+
+#endif      //__WXGTK__
+
       //    Check to see if any cached data is valid
       bool b_dump_cache = false;
       if( prule->pixelPtr ) {
@@ -1732,6 +1820,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             wxBitmap *sbm = new wxBitmap(
                         pbm->GetSubBitmap(
                                     wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+
 
             delete pbm;
 
@@ -1838,6 +1927,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             delete sbm;
             return true;
+
       }
 
       //        Get the bounding box for the as-drawn symbol
@@ -6920,6 +7010,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot,
                   S52color* color = plib->getColor(
                               findColorNameInRef( arguments.GetChar( 0 ), col ) );
                   penColor = wxColor( color->R, color->G, color->B );
+                  brushColor = penColor;
                   continue;
             }
             if( command == _T("SW") ) {
