@@ -430,6 +430,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             int libgps_api = 0;
             struct gps_data_t gpsd_data;
             struct gps_data_t *gps_data = &gpsd_data;
+            unsigned int d_VERSION_SET = 0;
 
 #define DYNAMIC_LOAD_LIBGPS 1
 #ifdef DYNAMIC_LOAD_LIBGPS
@@ -509,11 +510,13 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   {
                         wxLogMessage(_T("LIBGPS:  Using libgps API=19"));
                         libgps_api = 19;
+                        d_VERSION_SET = 0x800u;
                   }
                   else if(s_fn_gps_read)
                   {
                         wxLogMessage(_T("LIBGPS:  Using libgps API=20"));
                         libgps_api = 20;
+                        d_VERSION_SET = 1u<28;
                   }
 
 
@@ -551,9 +554,10 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
             if(19 == libgps_api)
             {
-                  gps_data = s_fn_gps_open19(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT);
+                  struct gps_data_t *gps_19data = NULL;
+                  gps_19data = s_fn_gps_open19(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT);
 
-                  if(!gps_data)
+                  if(!gps_19data)
                   {
                       wxString msg(NMEA_data_ip);
                       msg.Prepend(_("Call to gps_open failed.\nIs gpsd running?\n\ngpsd host is: "));
@@ -562,7 +566,10 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                       md.ShowModal();
                   }
                   else
+                  {
                         result_open = 0;
+                        gps_data = gps_19data;
+                  }
             }
 
             else if(20 == libgps_api)
@@ -577,11 +584,14 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                         OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_INFORMATION | wxOK );
                         md.ShowModal();
                    }
+                   else {
+                   }
+
             }
             else
                   result_open = 1;        // not opened
 
-            bool b_use_lib = false;
+            bool b_use_lib = true;
             if(!result_open)              // opened OK
             {
                   int n_check_version = 5;            // check up to five times
@@ -596,12 +606,12 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                         if(s_fn_gps_waiting(gps_data, 1000))
                         {
                               if(20 == libgps_api)
-                              s_fn_gps_read(gps_data);
+                                    s_fn_gps_read(gps_data);
                               else if(19 == libgps_api)
                                     s_fn_gps_poll(gps_data);
                         }
 
-                        if(gps_data->set & VERSION_SET)
+                        if(gps_data->set & d_VERSION_SET)
                         {
                               b_version_set = true;
                               check_version = gps_data->version;
@@ -610,7 +620,6 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                               if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
                               {
                                     b_version_match = true;
-                                    b_use_lib = true;
                                     break;
                               }
                               else
@@ -620,6 +629,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                         n_check_version--;
                   }
 
+#if 0
                   if(!b_version_set)
                   {
                         wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\nWould you like to use this version of libgps anyway?"));
@@ -640,10 +650,16 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                         if(wxID_YES == md.ShowModal())
                               b_use_lib = true;
                   }
+#endif
 
-                  wxString msg;
-                  msg.Printf(_T("LIBGPS: Found libgps version %d.%d"), check_version.proto_major, check_version.proto_minor);
-                  wxLogMessage(msg);
+                  if(b_version_set && (20 == libgps_api)){
+                        wxString msg;
+                        msg.Printf(_T("LIBGPS: Found libgps version %d.%d"), check_version.proto_major,    check_version.proto_minor);
+                        wxLogMessage(msg);
+                        }
+                  else
+                        wxLogMessage(_T("LIBGPS: Version not determined"));
+
 
                   s_fn_gps_close(gps_data);
                   gps_data = NULL;
@@ -1942,6 +1958,28 @@ OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
       m_pgps_data = NULL;
       m_libgps_api = api;
       m_GPSD_data_ip = ip_addr;
+      if(api == 19) {
+            m_PACKET_SET = 0x20000000u;
+            m_TIME_SET   = 0x00000002u;
+            m_LATLON_SET = 0x00000008u;
+            m_TRACK_SET  = 0x00000040u;
+            m_SPEED_SET  = 0x00000020u;
+            m_SATELLITE_SET = 0x00010000u;
+            m_ERROR_SET     = 0x02000000u;
+            m_STATUS_SET    = 0x00000100u;
+
+      }
+      else {
+            m_PACKET_SET    = 1u<<25;
+            m_TIME_SET      = (1u<<2);
+            m_LATLON_SET    = (1u<<4);
+            m_TRACK_SET     = (1u<<7);
+            m_SPEED_SET     = (1u<<6);
+            m_SATELLITE_SET = (1u<<15);
+            m_ERROR_SET     = (1u<<31);
+            m_STATUS_SET    = (1u<<9);
+
+      }
 
       Create();
 
@@ -2004,85 +2042,45 @@ void *OCP_GPSD_Thread::Entry()
 
                   if(g_bDebugGPSD) printf("  Poll/Read Set: %0X\n", (unsigned int)m_pgps_data->set);
 
-                  if (!(m_pgps_data->set & PACKET_SET))  // this is what sometimes happens when gpsd is killed or dies
+                  if (!(m_pgps_data->set & m_PACKET_SET))  // this is what sometimes happens when gpsd is killed or dies
                         b_try_reopen = true;
 
 
                   m_bgps_present = true;
 
-/*
-            //  Once again gpsd is proven to be crap....
-            //  If we get a DEVICE_SET or DEVICELIST_SET with (activated==0), we will never again
-            //  get an (activated > 0) message unless we wait 60 seconds before attaching again.
-            //  Further, all clients have to be detached for 60 seconds....
-                  //
-            //  So what is the point???
-
-                  if (m_gps_data->set & (DEVICE_SET))
-                  {
-                  if(g_bDebugGPSD)  printf("DEVICE_SET\n");
-                  if(g_bDebugGPSD)  printf("Activated %g\n", m_gps_data->dev.activated);
-
-                  if (m_gps_data->dev.activated < 1.0)
-                  m_bgps_present = false;
-                  else
-                  m_bgps_present = true;
-            }
-
-                  if (m_gps_data->set & DEVICELIST_SET)
-                  {
-                  if (m_gps_data->devices.ndevices == 1)
-                  {
-                  if(g_bDebugGPSD) printf("DEVICELIST_SET\n");
-                  if(g_bDebugGPSD) printf("Activated %g\n", m_gps_data->devices.list[0].activated);
-
-                  if (m_gps_data->devices.list[0].activated == 0)
-                  {
-                  if(g_bDebugGPSD)printf("---Being deactivated\n");
-                  m_bgps_present = false;
-                  break;
-            }
-                  else
-                  {
-                  if(g_bDebugGPSD)printf("Active\n");
-                  m_bgps_present = true;
-            }
-            }
-            }
-*/
-                  if(m_pgps_data->set & TIME_SET)
+                  if(m_pgps_data->set & m_TIME_SET)
                         ThreadPositionData.FixTime = (time_t)m_pgps_data->fix.time;
 
-                  if(m_pgps_data->set & LATLON_SET)
+                  if(m_pgps_data->set & m_LATLON_SET)
                   {
-                        if(g_bDebugGPSD) printf("  LATLON  %g  %g \n", m_pgps_data->fix.latitude, m_pgps_data->fix.longitude );
-                        ThreadPositionData.kLat = m_pgps_data->fix.latitude;
-                        ThreadPositionData.kLon = m_pgps_data->fix.longitude;
+                        if(g_bDebugGPSD) printf("  LATLON  %g  %g \n", m_pfix->latitude, m_pfix->longitude );
+                        ThreadPositionData.kLat = m_pfix->latitude;
+                        ThreadPositionData.kLon = m_pfix->longitude;
                   }
 
-                  if(m_pgps_data->set & TRACK_SET)
+                  if(m_pgps_data->set & m_TRACK_SET)
                   {
                         if(g_bDebugGPSD) printf("  TRACK_SET\n");
                         ThreadPositionData.kCog = 0.;
-                        if(!wxIsNaN(m_pgps_data->fix.track))
-                              ThreadPositionData.kCog = m_pgps_data->fix.track;
+                        if(!wxIsNaN(m_pfix->track))
+                              ThreadPositionData.kCog = m_pfix->track;
                   }
 
-                  if(m_pgps_data->set & SPEED_SET)
+                  if(m_pgps_data->set & m_SPEED_SET)
                   {
                         if(g_bDebugGPSD) printf("  SPEED_SET\n");
                         ThreadPositionData.kSog = 0.;
-                        if(!wxIsNaN(m_pgps_data->fix.speed))
-                              ThreadPositionData.kSog = m_pgps_data->fix.speed * 3600. / 1852.;      // convert from m/s to knots
+                        if(!wxIsNaN(m_pfix->speed))
+                              ThreadPositionData.kSog = m_pfix->speed * 3600. / 1852.;      // convert from m/s to knots
                   }
 
-                  if(m_pgps_data->set & SATELLITE_SET)
+                  if(m_pgps_data->set & m_SATELLITE_SET)
                   {
-                        if(g_bDebugGPSD) printf("  SATELLITE_SET  %d\n", m_pgps_data->satellites_visible);
-                        ThreadPositionData.nSats = m_pgps_data->satellites_visible;
+                        if(g_bDebugGPSD) printf("  SATELLITE_SET  %d\n", *m_psats_viz);
+                        ThreadPositionData.nSats = *m_psats_viz;
                   }
 
-                  if(m_pgps_data->set & ERROR_SET)
+                  if((m_libgps_api != 19) && (m_pgps_data->set & m_ERROR_SET) )     // not (easily) available on API 19
                   {
                         if(g_bDebugGPSD)
                         {
@@ -2100,8 +2098,8 @@ void *OCP_GPSD_Thread::Entry()
                         ThreadPositionData.kHdm = NAN;
                         ThreadPositionData.kHdt = NAN;
 
-                        if(g_bDebugGPSD) printf("  STATUS_SET: %d status %d\n", (m_pgps_data->set & STATUS_SET) != 0, m_pgps_data->status);
-                        if((m_pgps_data->set & STATUS_SET) && (m_pgps_data->status > 0)) // and producing a fix
+                        if(g_bDebugGPSD) printf("  STATUS_SET: %d status %d\n", (m_pgps_data->set & m_STATUS_SET) != 0, *m_pstatus);
+                        if((m_pgps_data->set & m_STATUS_SET) && (*m_pstatus > 0)) // and producing a fix
                         {
                               wxCommandEvent event( EVT_NMEA);//,  m_handler_id );
                               event.SetEventObject( (wxObject *)this );
@@ -2113,8 +2111,12 @@ void *OCP_GPSD_Thread::Entry()
                         }
                   }
             }
-            else
+            else {
                   lost_secs++;
+                  if(m_libgps_api == 19)
+                        wxSleep(1);
+            }
+
 
             if( (lost_secs >= 5) || b_try_reopen)
             {
@@ -2157,6 +2159,17 @@ bool OCP_GPSD_Thread::OpenLibrary(void)
                   if(g_bDebugGPSD) printf("  Could not (re)open libgps API 19\n");
                   return false;
             }
+
+            //    API version 19 structure layout differs from API V20.
+            //    We build with the API20 include file, so
+            //    we need to hack an adjusted pointer to the GPS fix location.
+            //    Once more, gpsd architects do it again......
+            int *t19 = (int *)m_pgps_data;
+            t19--;
+            struct gps_data_t *p19_adjust = (struct gps_data_t *)t19;
+            m_pfix = &(p19_adjust->fix);
+            m_pstatus = &(p19_adjust->status);
+            m_psats_viz = &(p19_adjust->satellites_visible);
       }
 
       else if(20 == m_libgps_api)
@@ -2170,6 +2183,10 @@ bool OCP_GPSD_Thread::OpenLibrary(void)
                   m_pgps_data = NULL;
                   return false;
             }
+            m_pfix = &(m_pgps_data->fix);
+            m_pstatus = &(m_pgps_data->status);
+            m_psats_viz = &(m_pgps_data->satellites_visible);
+
       }
 
       s_fn_gps_stream(m_pgps_data, WATCH_ENABLE, NULL);

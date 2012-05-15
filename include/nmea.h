@@ -342,6 +342,18 @@ class OCP_GPSD_Thread: public wxThread
 
             struct gps_data_t *m_pgps_data;
 
+            unsigned int            m_PACKET_SET;
+            unsigned int            m_TIME_SET;
+            unsigned int            m_LATLON_SET;
+            unsigned int            m_TRACK_SET;
+            unsigned int            m_SPEED_SET;
+            unsigned int            m_SATELLITE_SET;
+            unsigned int            m_ERROR_SET;
+            unsigned int            m_STATUS_SET;
+
+            struct gps_fix_t  *m_pfix;
+            int               *m_pstatus;
+            int               *m_psats_viz;
 };
 
 
