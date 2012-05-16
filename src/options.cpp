@@ -973,7 +973,7 @@ void options::CreateControls()
     pCheck_LDISTEXT->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_LDISTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
-    pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Clutter Text (exp.)"));
+    pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Clutter Text"));
     pCheck_DECLTEXT->SetValue(FALSE);
     itemBoxSizer75->Add(pCheck_DECLTEXT, 1, wxALIGN_LEFT|wxALL|wxEXPAND, check_spacing_2);
 
