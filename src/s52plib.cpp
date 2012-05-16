@@ -1586,7 +1586,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                         if( fontSize > 14 ) fontSize = 14;
 
                         text->pFont = wxTheFontList->FindOrCreateFont( fontSize,
-                              wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontweight, false,
+                              wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight, false,
                               templateFont->GetFaceName() );
                   }
             }
