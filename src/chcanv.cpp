@@ -12375,7 +12375,11 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           msg.Printf(_T("OpenGL-> Renderer String: "));
           msg += m_renderer;
           wxLogMessage(msg);
-                      ;
+
+
+          if(ps52plib)
+                ps52plib->SetGLRendererString(m_renderer);
+
         //  This little hack fixes a problem seen with some Intel 945 graphics chips
         //  We need to not do anything that requires (some) complicated stencil operations.
 

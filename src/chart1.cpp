@@ -608,9 +608,9 @@ char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 static char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 static int tick_idx;
 
-//extern char     OpenCPNVersion[]; //Gunther
 extern wxString OpenCPNVersion; //Gunther
 
+double g_GLMinLineWidth;
 
 int             n_NavMessageShown;
 wxString        g_config_version_string;

@@ -45,6 +45,8 @@
 
 #include "ocpndc.h"
 
+extern double g_GLMinLineWidth;
+
 /* pass the dc to the constructor, or NULL to use opengl */
 ocpnDC::ocpnDC(wxGLCanvas &canvas) : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), pgc(NULL)
 {
@@ -260,10 +262,10 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                               if(m_pen.GetWidth() > parms[1])
                                     b_draw_thick = true;
                               else
-                                    glLineWidth(m_pen.GetWidth());
+                                    glLineWidth(wxMax(g_GLMinLineWidth ,m_pen.GetWidth()));
                         }
                         else
-                              glLineWidth(1);
+                              glLineWidth(wxMax(g_GLMinLineWidth, 1));
                   }
                   else
                   {
@@ -277,10 +279,10 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                               if(m_pen.GetWidth() > parms[1])
                                     b_draw_thick = true;
                               else
-                                    glLineWidth(m_pen.GetWidth());
+                                    glLineWidth(wxMax(g_GLMinLineWidth, m_pen.GetWidth()));
                         }
                         else
-                              glLineWidth(1);
+                              glLineWidth(wxMax(g_GLMinLineWidth, 1));
                   }
 
 
@@ -367,10 +369,10 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                        if(m_pen.GetWidth() > parms[1])
                              b_draw_thick = true;
                        else
-                             glLineWidth(m_pen.GetWidth());
+                             glLineWidth(wxMax(g_GLMinLineWidth, m_pen.GetWidth()));
                  }
                  else
-                       glLineWidth(1);
+                       glLineWidth(wxMax(g_GLMinLineWidth, 1));
            }
            else
            {
@@ -384,10 +386,10 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                        if(m_pen.GetWidth() > parms[1])
                              b_draw_thick = true;
                        else
-                             glLineWidth(m_pen.GetWidth());
+                             glLineWidth(wxMax(g_GLMinLineWidth, m_pen.GetWidth()));
                  }
                  else
-                       glLineWidth(1);
+                       glLineWidth(wxMax(g_GLMinLineWidth, 1));
            }
 
 
@@ -772,7 +774,7 @@ bool ocpnDC::ConfigurePen()
      int width = m_pen.GetWidth();
      glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 
-     glLineWidth(width);
+     glLineWidth(wxMax(g_GLMinLineWidth, width));
 
      //     Stippling is not done.
      //     Instead, we directly calculate and draw the line segments the hard way.

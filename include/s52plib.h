@@ -168,6 +168,8 @@ public:
 		return m_ColorScheme;
 	}
 
+      void SetGLRendererString(wxString &renderer);
+
 	bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
 	bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
 	bool ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp );
@@ -397,6 +399,7 @@ private:
 	int m_txf_avg_char_height;
 	CARC_Hash m_CARC_hashmap;
 	RenderFromHPGL* HPGL;
+
 };
 
 

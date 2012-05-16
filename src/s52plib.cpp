@@ -64,6 +64,7 @@ extern s52plib *ps52plib;
 extern bool g_b_useStencil;
 extern wxString g_csv_locn;
 extern FontMgr  *pFontMgr;
+extern double g_GLMinLineWidth;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
             int dash, int space );
@@ -134,6 +135,8 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy ) {
       m_bShowAtonText = true;
 
       HPGL = new RenderFromHPGL( this );
+
+      g_GLMinLineWidth = 0.;
 }
 
 s52plib::~s52plib() {
@@ -153,6 +156,19 @@ s52plib::~s52plib() {
 
       delete HPGL;
 }
+
+void s52plib::SetGLRendererString(wxString &renderer)
+{
+      //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
+      //    Detect this case, and adjust the render parameters.
+
+      if(renderer.Upper().Find(_T("MESA")) != wxNOT_FOUND)
+         g_GLMinLineWidth = 1.5;
+}
+
+
+
+
 
 /*
  Update the S52 Conditional Symbology Parameter Set to reflect the
@@ -2415,9 +2431,9 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
             if( w > 1 ) {
                   GLint parms[2];
                   glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
-                  if( w > parms[1] ) glLineWidth( parms[1] );
-                  else glLineWidth( w );
-            } else glLineWidth( 1 );
+                  if( w > parms[1] ) glLineWidth( wxMax(g_GLMinLineWidth, parms[1]) );
+                  else glLineWidth( wxMax(g_GLMinLineWidth, w) );
+            } else glLineWidth( wxMax(g_GLMinLineWidth, 1) );
 
             if( !strncmp( str, "DASH", 4 ) ) {
                   glLineStipple( 1, 0x3F3F );
@@ -3002,7 +3018,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
       {
             //    Set up the color
             glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
-            glLineWidth( (float)width * 0.7 );
+            glLineWidth( wxMax(g_GLMinLineWidth, (float)width * 0.7) );
 
             for( int iseg = 0; iseg < npt - 1; iseg++ ) {
                   // Do not bother with segments that are invisible
@@ -3427,11 +3443,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
                   //    Render the symbology as a zero based Display List
 
                   //    Draw wide outline arc
-                  glLineWidth( 0.5 );
+                  glLineWidth( wxMax(g_GLMinLineWidth, 0.5) );
                   wxColour colorb = getwxColour( outline_color );
 //                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
                   glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 150 );
-                  glLineWidth( outline_width );
+                  glLineWidth( wxMax(g_GLMinLineWidth, outline_width) );
 
                   if( sectr1 > sectr2 ) sectr2 += 360;
 
@@ -3444,8 +3460,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
                   //    Draw narrower color arc, overlaying the drawn outline.
                   colorb = getwxColour( arc_color );
                   glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-//                  glLineWidth( arc_width );
-                  glLineWidth( (float)arc_width + 0.8 );
+                  glLineWidth( wxMax(g_GLMinLineWidth, (float)arc_width + 0.8) );
 
                   glBegin( GL_LINE_STRIP );
                   for( double a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.;
@@ -3459,8 +3474,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
 
                         wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                         glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-//                        glLineWidth( 0.5 );
-                        glLineWidth( (float)0.7 );
+                        glLineWidth( wxMax(g_GLMinLineWidth, (float)0.7) );
 
                         glLineStipple( 1, 0x3F3F );
                         glEnable( GL_LINE_STIPPLE );
@@ -6921,7 +6935,7 @@ void RenderFromHPGL::SetPen() {
                   glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );
                   glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(),
                               penColor.Alpha() );
-                  glLineWidth( (float) penWidth * 0.7 );
+                  glLineWidth( wxMax(g_GLMinLineWidth, (float) penWidth * 0.7) );
                   glEnable( GL_LINE_SMOOTH );
                   glEnable( GL_BLEND );
                   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
