@@ -58,7 +58,7 @@
             #include <gps.h>
             #undef policy_t
       #else
-            #include <gps.h>
+      #include <gps.h>
       #endif // end rdm
 
       #include <dlfcn.h>
@@ -91,6 +91,17 @@ int                (*s_fn_gps_poll)(struct gps_data_t *);
 bool               (*s_fn_gps_waiting)(struct gps_data_t *, unsigned int);
 int                (*s_fn_gps_stream)(struct gps_data_t *, unsigned int, void *);
 int                (*s_fn_gps_read)(struct gps_data_t *);
+
+
+//    libgps.so changes API frequently, and does not try very hard to preserve ABI compatibility.
+//    One consequence is that the structure "gps_data_t" may be larger than expected
+//    from the perspective of a dynamically loaded .so library.
+//    Since we cannot know this at build time, and cannot even detect it at run-time, all we can
+//    do is over-allocate the storage for our gps_data_t, and hope for the best.
+//    2X ought to be enough...
+
+struct gps_data_t gpsd_data;
+struct gps_data_t gpsd_data_expander;
 
 #endif
 
@@ -428,9 +439,9 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             wxString NMEA_data_ip;
             NMEA_data_ip = m_data_source_string.Mid(7);         // extract the IP
             int libgps_api = 0;
-            struct gps_data_t gpsd_data;
-            struct gps_data_t *gps_data = &gpsd_data;
-            unsigned int d_VERSION_SET = 0;
+            struct gps_data_t *pgps_data = &gpsd_data;
+            unsigned int d_VERSION_SET = VERSION_SET;
+//            printf("  VersionSet: %0X\n", d_VERSION_SET);
 
 #define DYNAMIC_LOAD_LIBGPS 1
 #ifdef DYNAMIC_LOAD_LIBGPS
@@ -516,7 +527,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   {
                         wxLogMessage(_T("LIBGPS:  Using libgps API=20"));
                         libgps_api = 20;
-                        d_VERSION_SET = 1u<28;
+                        d_VERSION_SET = 1u<<28;
                   }
 
 
@@ -568,13 +579,13 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   else
                   {
                         result_open = 0;
-                        gps_data = gps_19data;
+                        pgps_data = gps_19data;
                   }
             }
 
             else if(20 == libgps_api)
             {
-                  result_open = s_fn_gps_open(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT, gps_data);
+                  result_open = s_fn_gps_open(NMEA_data_ip.char_str(), (char *)DEFAULT_GPSD_PORT, pgps_data);
 
                   if (result_open != 0)
                   {
@@ -603,18 +614,20 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   while(n_check_version)
                   {
                   //    Check library version
-                        if(s_fn_gps_waiting(gps_data, 1000))
+                        if(s_fn_gps_waiting(pgps_data, 1000))
                         {
                               if(20 == libgps_api)
-                                    s_fn_gps_read(gps_data);
+                                    s_fn_gps_read(pgps_data);
                               else if(19 == libgps_api)
-                                    s_fn_gps_poll(gps_data);
+                                    s_fn_gps_poll(pgps_data);
                         }
 
-                        if(gps_data->set & d_VERSION_SET)
+//                        printf("  Version Poll/Read Set: %0X  %0X\n", (unsigned int)gps_data->set, d_VERSION_SET);
+
+                        if(pgps_data->set & d_VERSION_SET)
                         {
                               b_version_set = true;
-                              check_version = gps_data->version;
+                              check_version = pgps_data->version;
 
       //                        2.96 (libgps.so.20) gives 3.4
                               if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
@@ -652,7 +665,7 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   }
 #endif
 
-                  if(b_version_set && (20 == libgps_api)){
+                 if( b_version_set && (libgps_api == 20)){
                         wxString msg;
                         msg.Printf(_T("LIBGPS: Found libgps version %d.%d"), check_version.proto_major,    check_version.proto_minor);
                         wxLogMessage(msg);
@@ -661,8 +674,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                         wxLogMessage(_T("LIBGPS: Version not determined"));
 
 
-                  s_fn_gps_close(gps_data);
-                  gps_data = NULL;
+                  s_fn_gps_close(pgps_data);
+                  pgps_data = NULL;
             }
             else              // Open did not work, but carry on anyway
             {
@@ -1941,10 +1954,6 @@ void *DNSTestThread::Entry()
 //
 //-------------------------------------------------------------------------------------------------------------
 
-// Couple of statics
-#ifdef BUILD_WITH_LIBGPS
-struct gps_data_t gpsd_data;
-#endif
 int ic;
 
 OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
