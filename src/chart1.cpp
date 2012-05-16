@@ -3434,11 +3434,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs)
             stats->SetColorScheme(cs);
 
       if(console)
-      {
             console->SetColorScheme(cs);
-//            g_pauimgr->GetPane(console).Show(1);
-//            g_pauimgr->Update();
-      }
 
       if(g_pRouteMan)
             g_pRouteMan->SetColorScheme(cs);
@@ -4461,7 +4457,7 @@ void MyFrame::OnMove(wxMoveEvent& event)
 
       UpdateGPSCompassStatusBox(true);
 
-      if(console->IsShown())
+      if(console && console->IsShown())
             PositionConsole();
 
 
