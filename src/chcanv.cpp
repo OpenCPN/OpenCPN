@@ -9049,7 +9049,6 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon) {
             g_pObjectQueryDialog->SetHTMLPage(objText);
 
             g_pObjectQueryDialog->Show();
-            SetFocus();
 
             delete rule_list;
 
