@@ -1707,8 +1707,8 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             smdc.SelectObject( wxNullBitmap );
 
-            int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 3;
-            int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 3;
+            int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 4;
+            int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 4;
             int sbm_orgx = wxMax ( 0, smdc.MinX()-1 );
             int sbm_orgy = wxMax ( 0, smdc.MinY()-1 );
 
