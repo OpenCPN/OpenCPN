@@ -6783,7 +6783,7 @@ wxString FontMgr::GetSimpleNativeFont(int size)
                         0,                   //lf.lfQuality,
                         0);                    //lf.lfPitchAndFamily,
 
-      nativefont.Append(_T("MS Sans Serif"));
+      nativefont.Append(_T("Verdana"));
 #endif
 
       return nativefont;

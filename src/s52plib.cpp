@@ -63,6 +63,7 @@
 extern s52plib *ps52plib;
 extern bool g_b_useStencil;
 extern wxString g_csv_locn;
+extern FontMgr  *pFontMgr;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
             int dash, int space );
@@ -1432,6 +1433,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
             }
 
             if( bdraw ) {
+/*
                   S52color *bcolor = getColor( "CHGRF" );
                   wxColour color( bcolor->R, bcolor->G, bcolor->B );
 
@@ -1442,19 +1444,11 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
                   pdc->DrawText( ptext->frmtd, xp, yp - 1 );
                   pdc->DrawText( ptext->frmtd, xp + 1, yp );
                   pdc->DrawText( ptext->frmtd, xp - 1, yp );
-
-                  bcolor = ptext->pcol;
-                  wxColour wcolor( bcolor->R, bcolor->G, bcolor->B );
+*/
+                  wxColour wcolor( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
                   pdc->SetTextForeground( wcolor );
 
                   pdc->DrawText( ptext->frmtd, xp, yp );
-
-                  //   TODO Remove Debug
-                  /*
-                   pdc->SetBrush(*wxTRANSPARENT_BRUSH);
-                   pdc->SetPen(*wxBLACK_PEN);
-                   pdc->DrawRectangle(xp, yp, w, h);
-                   */
             }
 
             pdc->SetFont( oldfont ); // restore last font
@@ -1548,18 +1542,37 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                   if( b_free_text ) delete text;
                   return 0;
             }
-
             //    Establish a font
             if( !text->pFont ) {
-                  int spec_weight = text->weight - 0x30;
-                  wxFontWeight fontweight;
-                  if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
-                  else if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
-                  else fontweight = wxFONTWEIGHT_BOLD;
 
-                  text->pFont = wxTheFontList->FindOrCreateFont( text->bsize,
+                  //    If we have loaded a legacy S52 compliant PLIB,
+                  //    then we should use the formal font selection as required by
+                  //    S52 specifications.
+                  if(useLegacyRaster) {
+                        int spec_weight = text->weight - 0x30;
+                        wxFontWeight fontweight;
+                        if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
+                        else if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
+                        else fontweight = wxFONTWEIGHT_BOLD;
+
+                        text->pFont = wxTheFontList->FindOrCreateFont( text->bsize,
                               wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontweight );
+                  }
+                  else {
+                        int spec_weight = text->weight - 0x30;
+                        wxFontWeight fontweight;
+                        if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
+                        else if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
+                        else fontweight = wxFONTWEIGHT_BOLD;
 
+                        wxFont* templateFont = pFontMgr->GetFont( _("ChartTexts"), 12 );
+                        int fontSize = text->bsize + templateFont->GetPointSize() - 12;
+                        if( fontSize > 14 ) fontSize = 14;
+
+                        text->pFont = wxTheFontList->FindOrCreateFont( fontSize,
+                              wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontweight, false,
+                              templateFont->GetFaceName() );
+                  }
             }
 
             //  Render text at declared x/y of object
