@@ -6719,8 +6719,7 @@ wxFont *FontMgr::GetFont ( const wxString &TextElement, int default_size )
 
       wxString nativefont = GetSimpleNativeFont(new_size);
 
-      wxFont *nf0 = new wxFont();
-      wxFont *nf = nf0->New ( nativefont );
+      wxFont *nf =  wxFont::New ( nativefont );
 
       wxColor color(*wxBLACK);
 

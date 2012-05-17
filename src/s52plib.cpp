@@ -1564,7 +1564,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                   //    If we have loaded a legacy S52 compliant PLIB,
                   //    then we should use the formal font selection as required by
                   //    S52 specifications.
-                  if(useLegacyRaster) {
+                  if( useLegacyRaster ) {
                         int spec_weight = text->weight - 0x30;
                         wxFontWeight fontweight;
                         if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
@@ -1572,7 +1572,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                         else fontweight = wxFONTWEIGHT_BOLD;
 
                         text->pFont = wxTheFontList->FindOrCreateFont( text->bsize,
-                              wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontweight );
+                                    wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontweight );
                   }
                   else {
                         int spec_weight = text->weight - 0x30;
@@ -1582,12 +1582,22 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                         else fontweight = wxFONTWEIGHT_BOLD;
 
                         wxFont* templateFont = pFontMgr->GetFont( _("ChartTexts"), 24 );
-                        int fontSize = text->bsize + templateFont->GetPointSize() - 12;
-                        if( fontSize > 14 ) fontSize = 14;
+
+                        // NOAA ENC fles requests font size up to 20 points, which looks very
+                        // disproportioned. Let's scale those sizes down to more reasonable values.
+                        int fontSize = text->bsize;
+
+                        if( fontSize > 18 )
+                              fontSize -= 8;
+                        else if( fontSize > 13 )
+                              fontSize -= 3;
+
+                        // Now factor in the users selected font size.
+                        fontSize += templateFont->GetPointSize() - 12;
 
                         text->pFont = wxTheFontList->FindOrCreateFont( fontSize,
-                              wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight, false,
-                              templateFont->GetFaceName() );
+                                    wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight, false,
+                                    templateFont->GetFaceName() );
                   }
             }
 
