@@ -460,6 +460,7 @@ void GRIBUIDialog::UpdateTrackingControls(void)
 
 void GRIBUIDialog::OnClose ( wxCloseEvent& event )
 {
+/*
       pPlugIn->SetGribDir(m_currentGribDir);
 
 
@@ -471,6 +472,7 @@ void GRIBUIDialog::OnClose ( wxCloseEvent& event )
       delete m_pitemCurrentGribDirectoryCtrl;
 
       Destroy();
+*/
       pPlugIn->OnGribDialogClose();
 }
 

@@ -99,6 +99,7 @@ int grib_pi::Init(void)
       m_grib_dialog_sy = 200;
       m_pGribDialog = NULL;
       m_pGRIBOverlayFactory = NULL;
+      m_bShowGrib = false;
 
       ::wxDisplaySize(&m_display_width, &m_display_height);
 
@@ -335,6 +336,9 @@ void grib_pi::OnToolbarToolCallback(int id)
                   m_grib_dialog_sy = 540;
             }
 
+      //Toggle GRIB overlay display
+      m_bShowGrib = !m_bShowGrib;
+
       // show the GRIB dialog
       if(NULL == m_pGribDialog)
       {
@@ -344,30 +348,34 @@ void grib_pi::OnToolbarToolCallback(int id)
             m_pGribDialog->Hide();                        // Show modeless, so it stays on the screen
       }
 
-      //    Toggle dialog on normal callback
-      if(m_pGribDialog->IsShown())
-            m_pGribDialog->Hide();
-      else
+      //    Toggle dialog?
+      if(m_bShowGrib)
             m_pGribDialog->Show();
+      else
+            m_pGribDialog->Hide();
+
 
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure correct status upon toolbar rebuild
-      SetToolbarItemState( m_leftclick_tool_id, m_pGribDialog->IsShown() );
+      SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+
+
 }
 
 void grib_pi::OnGribDialogClose()
 {
-      SetToolbarItemState( m_leftclick_tool_id, false );
+//      SetToolbarItemState( m_leftclick_tool_id, false );
 
-      m_pGribDialog = NULL;
-      if(m_pGRIBOverlayFactory)
-            m_pGRIBOverlayFactory->Reset();
+      if(m_pGribDialog)
+            m_pGribDialog->Hide();
+//      if(m_pGRIBOverlayFactory)
+//            m_pGRIBOverlayFactory->Reset();
       SaveConfig();
 }
 
 bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
-      if(m_pGribDialog && m_pGRIBOverlayFactory)
+      if(m_bShowGrib && m_pGRIBOverlayFactory)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
             {
@@ -383,7 +391,7 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 
 bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
-      if(m_pGribDialog && m_pGRIBOverlayFactory)
+      if(m_bShowGrib && m_pGRIBOverlayFactory)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
             {

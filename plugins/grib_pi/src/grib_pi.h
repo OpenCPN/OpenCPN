@@ -112,6 +112,7 @@ private:
       int              m_display_width, m_display_height;
       int              m_leftclick_tool_id;
 
+      bool             m_bShowGrib;
 
       int              m_grib_dialog_x, m_grib_dialog_y;
       int              m_grib_dialog_sx, m_grib_dialog_sy;
