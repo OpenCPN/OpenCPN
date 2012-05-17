@@ -163,7 +163,7 @@ void s52plib::SetGLRendererString(wxString &renderer)
       //    Detect this case, and adjust the render parameters.
 
       if(renderer.Upper().Find(_T("MESA")) != wxNOT_FOUND)
-         g_GLMinLineWidth = 1.5;
+         g_GLMinLineWidth = 1.2;
 }
 
 

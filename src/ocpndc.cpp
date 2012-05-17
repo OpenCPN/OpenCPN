@@ -247,6 +247,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
                   bool b_draw_thick = false;
 
+                  float pen_width = wxMax(g_GLMinLineWidth, m_pen.GetWidth());
+
                   //      Enable anti-aliased lines, at best quality
                   if(b_hiqual)
                   {
@@ -255,38 +257,38 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-                        if(m_pen.GetWidth() > 1)
+                        if(pen_width > 1.0)
                         {
                               GLint parms[2];
                               glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-                              if(m_pen.GetWidth() > parms[1])
+                              if(pen_width > parms[1])
                                     b_draw_thick = true;
                               else
-                                    glLineWidth(wxMax(g_GLMinLineWidth ,m_pen.GetWidth()));
+                                    glLineWidth(pen_width);
                         }
                         else
-                              glLineWidth(wxMax(g_GLMinLineWidth, 1));
+                              glLineWidth(pen_width);
                   }
                   else
                   {
                         glDisable(GL_LINE_SMOOTH);
                         glDisable(GL_BLEND);
 
-                        if(m_pen.GetWidth() > 1)
+                        if(pen_width > 1)
                         {
                               GLint parms[2];
                               glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-                              if(m_pen.GetWidth() > parms[1])
+                              if(pen_width > parms[1])
                                     b_draw_thick = true;
                               else
-                                    glLineWidth(wxMax(g_GLMinLineWidth, m_pen.GetWidth()));
+                                    glLineWidth(pen_width);
                         }
                         else
-                              glLineWidth(wxMax(g_GLMinLineWidth, 1));
+                              glLineWidth(pen_width);
                   }
 
 
-                  if(b_draw_thick/*m_pen.GetWidth() > 1*/)
+                  if(b_draw_thick)
                         DrawThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
                   else
                   {
