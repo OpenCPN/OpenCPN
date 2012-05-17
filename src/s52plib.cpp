@@ -1717,34 +1717,34 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
 
 #ifdef __WXGTK__
-            // alpha bitmap blit on gtk is broken, so we do this the hard way
+      // alpha bitmap blit on gtk is broken, so we do this the hard way
 
-      if(m_pdc) {                   // DC mode
-            //    Get the size and position of resulting symbol on the screen
-            //    by doing a simple DC render
+      //    Get the size and position of resulting symbol on the screen
+      //    by doing a simple DC render
 
-            wxBitmap sizebm( width, height);
-            wxMemoryDC smdc( sizebm );
+      wxBitmap sizebm( width, height);
+      wxMemoryDC smdc( sizebm );
 
-            char *str = prule->vector.LVCT;
-            char *col = prule->colRef.LCRF;
-            wxPoint pivot( pivot_x, pivot_y );
-            wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
+      char *str = prule->vector.LVCT;
+      char *col = prule->colRef.LCRF;
+      wxPoint pivot( pivot_x, pivot_y );
+      wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
-            HPGL->SetTargetDC( &smdc );
-            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+      HPGL->SetTargetDC( &smdc );
+      HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
-            smdc.SelectObject( wxNullBitmap );
+      smdc.SelectObject( wxNullBitmap );
 
-            int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 4;
-            int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 4;
-            int sbm_orgx = wxMax ( 0, smdc.MinX()-1 );
-            int sbm_orgy = wxMax ( 0, smdc.MinY()-1 );
+      int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 4;
+      int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 4;
+      int sbm_orgx = wxMax ( 0, smdc.MinX()-1 );
+      int sbm_orgy = wxMax ( 0, smdc.MinY()-1 );
 
             //      Pre-clip the sub-bitmap to avoid assert errors
-            if( ( sbm_height + sbm_orgy ) > height ) sbm_height = height - sbm_orgy;
-            if( ( sbm_width + sbm_orgx ) > width ) sbm_width = width - sbm_orgx;
+      if( ( sbm_height + sbm_orgy ) > height ) sbm_height = height - sbm_orgy;
+      if( ( sbm_width + sbm_orgx ) > width ) sbm_width = width - sbm_orgx;
 
+      if(m_pdc) {                   // DC mode
 
             int blit_x = r.x + sbm_orgx - (int) ( pivot_x / fsf );
             int blit_y = r.y + sbm_orgy - (int) ( pivot_y / fsf );
@@ -1768,38 +1768,33 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                   //    And release the scratch dc
             scratchDc.SelectObject( wxNullBitmap );
+      }
+      else {                  // OpenGL Mode, do a direct render
+            HPGL->SetTargetOpenGl();
+            HPGL->Render( str, col, r, pivot, (double) rot_angle );
+      }
 
-            //        Get the bounding box for the as-drawn symbol
-            wxBoundingBox symbox;
-            double plat, plon;
+      //        Get the bounding box for the as-drawn symbol
+      wxBoundingBox gtk_symbox;
+      double slat, slon;
 
-            rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )),
-                                         r.y + (sbm_orgy - (int) ( pivot_y / fsf )) + sbm_height, &plat, &plon, vp );
-            symbox.SetMin( plon, plat );
+      rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )),
+                                   r.y + (sbm_orgy - (int) ( pivot_y / fsf )) + sbm_height, &slat, &slon, vp );
+      gtk_symbox.SetMin( slon, slat );
 
-            rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )) + sbm_width,
-                                         r.y + (sbm_orgy - (int) ( pivot_y / fsf )), &plat, &plon, vp );
-            symbox.SetMax( plon, plat );
+      rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )) + sbm_width,
+                                   r.y + (sbm_orgy - (int) ( pivot_y / fsf )), &slat, &slon, vp );
+      gtk_symbox.SetMax( slon, slat );
 
             //  Update the object Bounding box
             //  so that subsequent drawing operations will redraw the item fully
-            if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-            else {
-                  rzRules->obj->BBObj = symbox;
-                  rzRules->obj->bBBObj_valid = true;
-            }
-            return true;
-      }
+      if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( gtk_symbox );
       else {
-            char *str = prule->vector.LVCT;
-            char *col = prule->colRef.LCRF;
-            wxPoint pivot( pivot_x, pivot_y );
-
-            HPGL->SetTargetOpenGl();
-            HPGL->Render( str, col, r, pivot, (double) rot_angle );
-
-            return true;
+            rzRules->obj->BBObj = gtk_symbox;
+            rzRules->obj->bBBObj_valid = true;
       }
+
+      return true;
 
 #endif      //__WXGTK__
 
