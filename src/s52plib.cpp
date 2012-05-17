@@ -1581,7 +1581,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                         else if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
                         else fontweight = wxFONTWEIGHT_BOLD;
 
-                        wxFont* templateFont = pFontMgr->GetFont( _("ChartTexts"), 12 );
+                        wxFont* templateFont = pFontMgr->GetFont( _("ChartTexts"), 24 );
                         int fontSize = text->bsize + templateFont->GetPointSize() - 12;
                         if( fontSize > 14 ) fontSize = 14;
 
