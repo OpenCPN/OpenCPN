@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-05-30 21:07+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -289,8 +289,18 @@ msgid "&Go To"
 msgstr "Menj"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Ugrás"
+#
+# 
 msgid "&Kilometers"
 msgstr "Kilométer"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Útvonal törlése"
 #
 # 
 msgid "&Nautical miles"
@@ -486,11 +496,6 @@ msgstr "AIS adatport"
 # 
 msgid "AIS General"
 msgstr "AIS általános"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS riasztás"
 #
 # 
 msgid "AIS Target Query"
@@ -902,6 +907,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Térképek"
+#
+# 
 msgid "Charts"
 msgstr "Térképek"
 #
@@ -1061,7 +1071,8 @@ msgid "Dark Yellow"
 msgstr ""
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Szöveg kitisztázása (kísérleti)"
 #
 # 
@@ -1965,6 +1976,11 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objektum lekérdezése"
 #
 # 
 msgid "Ok"
@@ -2961,6 +2977,11 @@ msgstr "Beállítások"
 msgid "Text Element"
 msgstr "Szöveg elem"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "A betűtípus színe"
@@ -3410,6 +3431,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3428,15 +3450,24 @@ msgstr ""
 #~ msgstr "Térkép kapcsolása"
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS riasztás"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "További információ"
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
 #
 #
 #
@@ -3459,6 +3490,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3478,10 +3510,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Típus:"
+#
 #
 #
 #
@@ -3491,9 +3525,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
 #
 #
 #
@@ -3506,6 +3542,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3513,6 +3550,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3539,6 +3577,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3560,6 +3599,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3576,6 +3616,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Listázás kapcsolása"
+#
 #
 #
 #

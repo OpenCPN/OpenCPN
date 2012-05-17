@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -441,8 +441,24 @@ msgstr "&Mine"
 # 
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Hüppa siia"
+#
+# 
+# 
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Kilomeeetrid"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Kustuta jälg"
 #
 # 
 # 
@@ -745,14 +761,6 @@ msgstr "AIS-i andemte port"
 # 
 msgid "AIS General"
 msgstr "AIS üldine"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS-i alarm"
 #
 # 
 # 
@@ -1390,6 +1398,14 @@ msgstr "Kaart1::Sündmus...TCMgr Pole võimalik"
 # 
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Kaardid"
+#
+# 
+# 
+# 
+# 
 msgid "Charts"
 msgstr "Kaardid"
 #
@@ -1629,7 +1645,8 @@ msgstr ""
 # 
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "De-Clutter Tekst (exp.)"
 #
 # 
@@ -3001,6 +3018,14 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objekti päring"
 #
 # 
 # 
@@ -4551,6 +4576,11 @@ msgstr "Seaded"
 msgid "Text Element"
 msgstr "Teksti element"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5242,6 +5272,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5261,6 +5292,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5272,6 +5304,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Ei suuda laadida library: "
+#
 #
 #
 #
@@ -5289,6 +5322,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5302,6 +5336,16 @@ msgstr ""
 #~ msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
 #
 #
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS-i alarm"
+#
+#
+#
 #
 # 
 # 
@@ -5309,6 +5353,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 #
 #
@@ -5329,6 +5374,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5340,6 +5386,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 #
@@ -5371,6 +5418,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5396,6 +5444,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -5427,6 +5476,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5452,6 +5502,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 #
@@ -5483,6 +5534,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5508,6 +5560,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -5538,12 +5591,14 @@ msgstr ""
 #~ msgstr "Sea CM93 nihe"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -5577,6 +5632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5588,6 +5644,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -5618,6 +5675,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5635,6 +5693,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5649,6 +5708,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 #
 #
@@ -5676,6 +5736,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5683,6 +5744,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -5715,6 +5777,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5724,12 +5787,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Punkti nimi"
+#
 #
 #
 #
@@ -5745,6 +5810,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5756,6 +5822,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Lisade baasi klass"
+#
 #
 #
 #
@@ -5774,6 +5841,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
 #
 #
 #
@@ -5799,6 +5867,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5809,6 +5878,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 #
@@ -5826,6 +5896,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5837,6 +5908,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 #
@@ -5854,6 +5926,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5865,6 +5938,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 #
 #
@@ -5882,6 +5956,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5892,6 +5967,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
 #
 #
 #
@@ -5920,6 +5996,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Viimane raporti periood:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5952,6 +6029,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5976,6 +6054,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5997,6 +6076,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Lülita jälgimisele"
+#
 #
 #
 #

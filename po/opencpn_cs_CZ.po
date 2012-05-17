@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-07-08 14:42+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -440,8 +440,24 @@ msgstr "Navi&govat na"
 # 
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Skok na"
+#
+# 
+# 
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Kilometry"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Smazat trasu"
 #
 # 
 # 
@@ -739,14 +755,6 @@ msgstr "Datový port AIS"
 # 
 msgid "AIS General"
 msgstr "AIS obecné"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Výstraha AIS "
 #
 # 
 # 
@@ -1375,6 +1383,14 @@ msgstr "Chart1::Event...TCMgr Není k dispozici"
 # 
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Mapy"
+#
+# 
+# 
+# 
+# 
 msgid "Charts"
 msgstr "Mapy"
 #
@@ -1607,7 +1623,8 @@ msgstr "Tmavě žlutá"
 # 
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Uspořádat text (exp.)"
 #
 # 
@@ -2954,6 +2971,14 @@ msgstr "Objekt, jinak nespecifikován"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Objekt, tažený, jinak nespecifikován"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Dotaz na objekt"
 #
 # 
 # 
@@ -4462,6 +4487,11 @@ msgstr "Nastavení"
 msgid "Text Element"
 msgstr "Prvek text"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5130,6 +5160,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5148,6 +5179,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5158,6 +5190,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Nemohu načíst knihovnu: "
+#
 #
 #
 #
@@ -5174,6 +5207,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5184,6 +5218,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Nemohu načíst symbol destroy_pi: "
+#
 #
 #
 #
@@ -5204,6 +5239,16 @@ msgstr ""
 #~ msgstr "Přepnou&t mapu"
 #
 #
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Výstraha AIS "
+#
+#
+#
 #
 # 
 # 
@@ -5211,6 +5256,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -5230,6 +5276,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5240,6 +5287,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -5268,6 +5316,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5290,6 +5339,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -5318,6 +5368,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5340,6 +5391,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -5368,6 +5420,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5389,6 +5442,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -5415,12 +5469,14 @@ msgstr ""
 #~ msgstr "Nastav posun CM93"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Mapa"
+#
 #
 #
 #
@@ -5438,12 +5494,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -5456,12 +5514,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Jméno značky"
+#
 #
 #
 #
@@ -5477,6 +5537,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5487,6 +5548,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN základní třída modulu"
+#
 #
 #
 #
@@ -5507,6 +5569,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5517,6 +5580,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager: hledá moduly v umístění  "
+#
 #
 #
 #
@@ -5533,6 +5597,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5543,6 +5608,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inicializuji modul: "
+#
 #
 #
 #
@@ -5559,6 +5625,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5572,6 +5639,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5582,6 +5650,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Odstraňuji PlugIn s chybnou verzí API %d.%d: "
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -348,8 +348,20 @@ msgstr "&Πήγαινε στο"
 #
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Μεταπήδησε σε"
+#
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Χιλιόμετρα"
+#
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Διαγραφή Ίχνους (πορείας)"
 #
 # 
 # 
@@ -587,12 +599,6 @@ msgstr "Θύρα για δεδομένα AIS"
 # 
 msgid "AIS General"
 msgstr "AIS Γενικά"
-#
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Συναγερμός AIS"
 #
 # 
 # 
@@ -1107,6 +1113,12 @@ msgstr "Χάρτης1::Γεγονός...TCMgr δεν είναι διαθέσιμ
 #
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Χάρτες"
+#
+# 
+# 
 msgid "Charts"
 msgstr "Χάρτες"
 #
@@ -1296,7 +1308,8 @@ msgstr ""
 #
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Οργάνωση Κειμένου (exp.)"
 #
 # 
@@ -2414,6 +2427,12 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Ιδιότητες αντικειμένου"
 #
 # 
 # 
@@ -3657,6 +3676,11 @@ msgstr "Ρυθμίσεις"
 msgid "Text Element"
 msgstr "Στοιχείο Κειμένου"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 msgid "The font colour."
@@ -4218,6 +4242,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4235,6 +4260,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4244,6 +4270,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν είναι δυνατή η φόρτωσητης βιβλιοθήκης:"
+#
 #
 #
 #
@@ -4259,6 +4286,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4270,11 +4298,20 @@ msgstr ""
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Συναγερμός AIS"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 #
@@ -4293,6 +4330,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4302,6 +4340,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -4334,6 +4373,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4360,6 +4400,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4392,6 +4433,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4418,6 +4460,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -4450,6 +4493,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4475,6 +4519,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -4505,10 +4550,12 @@ msgstr ""
 #~ msgstr "Θέσε αντιστάθμιση CM93"
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
 #
 #
 #
@@ -4541,6 +4588,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4550,6 +4598,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -4578,6 +4627,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4593,6 +4643,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4605,6 +4656,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -4630,11 +4682,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -4665,6 +4719,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4672,10 +4727,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Όνομα Σημαδιού"
+#
 #
 #
 #
@@ -4689,6 +4746,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4698,6 +4756,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn βασική κατηγορία"
+#
 #
 #
 #
@@ -4714,6 +4773,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -4739,6 +4799,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4748,6 +4809,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -4763,6 +4825,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4772,6 +4835,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -4787,6 +4851,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4796,6 +4861,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -4812,6 +4878,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4820,6 +4887,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -4846,6 +4914,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4876,6 +4945,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4898,6 +4968,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4917,6 +4988,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Αρχή/Παύση ιχνηλάτησης"
+#
 #
 #
 #

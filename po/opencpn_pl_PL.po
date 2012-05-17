@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -342,8 +342,20 @@ msgstr "&Idź do"
 #
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Skocz do"
+#
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Kilometry"
+#
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Usuń ślad"
 #
 # 
 # 
@@ -577,12 +589,6 @@ msgstr "Port danych AIS"
 # 
 msgid "AIS General"
 msgstr "AIS - ustawienia ogólne"
-#
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Ostrzeżenie AIS"
 #
 # 
 # 
@@ -1092,6 +1098,12 @@ msgstr "Chart1::Event...TCMgr Not Available"
 #
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Mapy"
+#
+# 
+# 
 msgid "Charts"
 msgstr "Mapy"
 #
@@ -1278,7 +1290,8 @@ msgstr ""
 #
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Usuwaj nakładające się napisy (exp)"
 #
 # 
@@ -2381,6 +2394,12 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Szczegóły obiektu"
 #
 # 
 # 
@@ -3598,6 +3617,11 @@ msgstr "Ustawienia"
 msgid "Text Element"
 msgstr "Element tekstowy"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 msgid "The font colour."
@@ -4149,6 +4173,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4166,6 +4191,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4175,6 +4201,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "  Wtyczki: nie można załadować biblioteki "
+#
 #
 #
 #
@@ -4190,6 +4217,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4199,6 +4227,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 #
@@ -4222,11 +4251,20 @@ msgstr ""
 #~ msgstr "Wł./Wył. na mapie"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Ostrzeżenie AIS"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 #
@@ -4245,6 +4283,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4254,6 +4293,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4286,6 +4326,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4312,6 +4353,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -4344,6 +4386,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4370,6 +4413,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -4402,6 +4446,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4427,6 +4472,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -4457,10 +4503,12 @@ msgstr ""
 #~ msgstr "Ustaw przesunięcie CM93"
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Mapa"
+#
 #
 #
 #
@@ -4473,6 +4521,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 #
@@ -4491,6 +4540,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4503,6 +4553,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Błąd ładowania libgps.so.19"
+#
 #
 #
 #
@@ -4527,11 +4578,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:         "
+#
 #
 #
 #
@@ -4542,10 +4595,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nazwa znaku"
+#
 #
 #
 #
@@ -4559,6 +4614,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4568,6 +4624,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -4587,6 +4644,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4596,6 +4654,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -4611,6 +4670,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4620,6 +4680,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -4635,6 +4696,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4644,6 +4706,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
 #
 #
 #
@@ -4659,6 +4722,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4667,6 +4731,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
 #
 #
 #
@@ -4691,6 +4756,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4709,6 +4775,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Włącz/wyłącz listę"
+#
 #
 #
 #

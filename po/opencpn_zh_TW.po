@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -340,8 +340,20 @@ msgstr "前往(&G)"
 #
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "跳至"
+#
+# 
+# 
 msgid "&Kilometers"
 msgstr "公里(&K)"
+#
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "刪除航跡"
 #
 # 
 # 
@@ -575,12 +587,6 @@ msgstr "AIS 連接埠"
 # 
 msgid "AIS General"
 msgstr "AIS 一般項目"
-#
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS 警告"
 #
 # 
 # 
@@ -1090,6 +1096,12 @@ msgstr "Chart1::Event...TCMgr 無法獲得"
 #
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "海圖"
+#
+# 
+# 
 msgid "Charts"
 msgstr "海圖"
 #
@@ -1279,7 +1291,8 @@ msgstr "暗黃"
 #
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "De-Clutter 字型 (測試中)"
 #
 # 
@@ -2379,6 +2392,12 @@ msgstr "物件, 未定義"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "物件, 拖曳, 未定義"
+#
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "物件查詢"
 #
 # 
 # 
@@ -3599,6 +3618,11 @@ msgstr "設定"
 msgid "Text Element"
 msgstr "文字項目"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 msgid "The font colour."
@@ -4148,6 +4172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4165,6 +4190,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4174,6 +4200,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   插件管理員: 無法載入程式庫: "
+#
 #
 #
 #
@@ -4189,6 +4216,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4198,6 +4226,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4223,6 +4252,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4242,6 +4272,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4267,6 +4298,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4285,6 +4317,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4309,11 +4342,20 @@ msgstr ""
 #~ msgstr "(使用中航跡)"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS 警告"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4332,6 +4374,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4341,6 +4384,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4366,6 +4410,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4385,6 +4430,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4410,6 +4456,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4429,6 +4476,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4454,6 +4502,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4473,6 +4522,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4499,6 +4549,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4521,10 +4572,12 @@ msgstr ""
 #~ msgstr "設定 CM93 Offset"
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
 #
 #
 #
@@ -4540,10 +4593,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -4554,10 +4609,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 #
@@ -4571,6 +4628,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4580,6 +4638,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -4599,6 +4658,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4608,6 +4668,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -4623,6 +4684,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4632,6 +4694,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -4647,6 +4710,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4659,6 +4723,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4668,6 +4733,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
 #
 #
 #

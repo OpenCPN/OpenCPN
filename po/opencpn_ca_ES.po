@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -300,8 +300,18 @@ msgid "&Go To"
 msgstr "Anar-hi [&G]"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Centrar-s'hi"
+#
+# 
 msgid "&Kilometers"
 msgstr "&Kilómetres"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Esborrar la Derrota"
 #
 # 
 msgid "&Nautical miles"
@@ -499,11 +509,6 @@ msgstr "Port de Dades d'AIS"
 # 
 msgid "AIS General"
 msgstr "General d'AIS"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Alerta d'AIS"
 #
 # 
 msgid "AIS Target Query"
@@ -919,6 +924,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carta1::Event...GestorTC No Disponible"
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Cartes"
+#
+# 
 msgid "Charts"
 msgstr "Cartes"
 #
@@ -1082,7 +1092,8 @@ msgid "Dark Yellow"
 msgstr ""
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Destriar Text (exp.)"
 #
 # 
@@ -1990,6 +2001,11 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Consulta sobre l'Objecte"
 #
 # 
 msgid "Ok"
@@ -2996,6 +3012,11 @@ msgstr "Configuracions"
 msgid "Text Element"
 msgstr "Element de Text"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "El color de la lletra"
@@ -3453,6 +3474,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3468,12 +3490,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar la biblioteca: "
+#
 #
 #
 #
@@ -3486,12 +3510,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol destruir_pi:"
+#
 #
 #
 #
@@ -3503,10 +3529,18 @@ msgstr ""
 #~ msgstr "Commu&tar la Carta"
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Alerta d'AIS"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 #
@@ -3519,6 +3553,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3527,9 +3562,11 @@ msgstr ""
 #~ msgstr "NomHabitual per ClasseBàsica"
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -3542,12 +3579,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -3560,12 +3599,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Import new layer"
 #~ msgstr "Importar noves capes"
+#
 #
 #
 #
@@ -3576,15 +3617,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
 #
 #
 #
@@ -3597,12 +3641,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -3619,12 +3665,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -3637,12 +3685,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -3655,6 +3705,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3664,12 +3715,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #
 #
@@ -3683,12 +3736,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 #
@@ -3705,12 +3760,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Commu&tar la Llista"
+#
 #
 #
 #

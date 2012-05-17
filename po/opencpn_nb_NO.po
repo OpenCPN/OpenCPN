@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.714\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-07-19 00:33+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -292,8 +292,18 @@ msgid "&Go To"
 msgstr "&Gå til"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Gå til"
+#
+# 
 msgid "&Kilometers"
 msgstr "&Kilometer"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Slett slepestrek"
 #
 # 
 msgid "&Nautical miles"
@@ -491,11 +501,6 @@ msgstr "AIS dataport"
 # 
 msgid "AIS General"
 msgstr "AIS Innstillinger"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS varsel"
 #
 # 
 msgid "AIS Target Query"
@@ -911,6 +916,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Kart1::Hendelse...TCMgr Ikke tilgjengelig"
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Karter"
+#
+# 
 msgid "Charts"
 msgstr "Karter"
 #
@@ -1070,7 +1080,8 @@ msgid "Dark Yellow"
 msgstr "Mørk Gul"
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Ryddig visning av ENC-tekst"
 #
 # 
@@ -1972,6 +1983,11 @@ msgstr "Objekt, ikke spesifisert"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Objekt under slep, ikke spesifisert"
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objekt informasjon"
 #
 # 
 msgid "Ok"
@@ -2967,6 +2983,11 @@ msgstr "Innstillinger"
 msgid "Text Element"
 msgstr "Tekstelement"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "Font farge."
@@ -3420,6 +3441,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3436,6 +3458,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3444,6 +3467,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Utvidelses behandling: Kan ikke laste bibliotek: "
+#
 #
 #
 #
@@ -3458,6 +3482,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3468,10 +3493,18 @@ msgstr ""
 #~ msgstr "   Utvidelses behandling: Kan ikke laste symbol destroy_pi: "
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS varsel"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "Tilleggsinformasjon"
+#
 #
 #
 #
@@ -3485,9 +3518,11 @@ msgstr ""
 #~ msgstr "BaseKlasseFellesNavn"
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Kart"
+#
 #
 #
 #
@@ -3502,9 +3537,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -3514,9 +3551,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Merkenavn"
+#
 #
 #
 #
@@ -3529,6 +3568,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3537,6 +3577,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Utvidelses Baseklasse"
+#
 #
 #
 #
@@ -3555,6 +3596,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3563,6 +3605,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Utvidelses behandling søker etter mappen for utvidelser"
+#
 #
 #
 #
@@ -3577,6 +3620,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3585,6 +3629,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Utvidelses behandling: Starter utvidelse: "
+#
 #
 #
 #
@@ -3599,6 +3644,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3607,6 +3653,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Utvidelses behandling: Laster ut utvidelse: "
+#
 #
 #
 #
@@ -3619,6 +3666,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Utvidelses behandling: Laster ut utvidelse med ugyldig API versjon %d.%d: "
+#
 #
 #
 #

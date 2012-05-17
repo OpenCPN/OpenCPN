@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-06-28 18:40+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -291,8 +291,18 @@ msgid "&Go To"
 msgstr "Gå till"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Gå till position"
+#
+# 
 msgid "&Kilometers"
 msgstr "&Kilometer"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Radera Spår"
 #
 # 
 msgid "&Nautical miles"
@@ -490,11 +500,6 @@ msgstr "AIS Dataport"
 # 
 msgid "AIS General"
 msgstr "AIS Allmänt"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS-alarm"
 #
 # 
 msgid "AIS Target Query"
@@ -910,6 +915,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Sjökort1::Händelse...TCMgr inte tillgänglig"
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Sjökort"
+#
+# 
 msgid "Charts"
 msgstr "Sjökort"
 #
@@ -1069,7 +1079,8 @@ msgid "Dark Yellow"
 msgstr "Mörkgul"
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Rensa överlappande text"
 #
 # 
@@ -1971,6 +1982,11 @@ msgstr "Objekt, ej specificerad ytterligare"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Objekt under bogsering, ej specificerad ytterligare"
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objektegenskaper"
 #
 # 
 msgid "Ok"
@@ -2967,6 +2983,11 @@ msgstr "Inställningar"
 msgid "Text Element"
 msgstr "Symboler och Text"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "Textens färg."
@@ -3420,6 +3441,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3436,6 +3458,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3444,6 +3467,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Modulhanterare: Kan inte aktivera bibliotek: "
+#
 #
 #
 #
@@ -3458,6 +3482,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3468,10 +3493,18 @@ msgstr ""
 #~ msgstr "   Modulhanterare: Kan inte aktivera destroy_pi: "
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS-alarm"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "Ytterligare information"
+#
 #
 #
 #
@@ -3486,6 +3519,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3496,9 +3530,11 @@ msgstr ""
 #~ msgstr "BaseClassCommonName"
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Sjökort"
+#
 #
 #
 #
@@ -3513,6 +3549,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3521,6 +3558,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "libgps kan inte laddas"
+#
 #
 #
 #
@@ -3535,9 +3573,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -3547,9 +3587,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Waypointnamn"
+#
 #
 #
 #
@@ -3562,6 +3604,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3570,6 +3613,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Base Class"
+#
 #
 #
 #
@@ -3588,6 +3632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3596,6 +3641,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Modulhanterare söker efter moduler i "
+#
 #
 #
 #
@@ -3610,6 +3656,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3618,6 +3665,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Modulhanterare: Initialiserar modul: "
+#
 #
 #
 #
@@ -3632,6 +3680,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3643,6 +3692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3651,6 +3701,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Modulhanterare: Inaktiverar modul med felaktig API-version %d.%d: "
+#
 #
 #
 #

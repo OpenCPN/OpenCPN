@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -293,8 +293,18 @@ msgid "&Go To"
 msgstr "&Ir a"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Moverse a"
+#
+# 
 msgid "&Kilometers"
 msgstr "&Kilómetros"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Borrar Derrota"
 #
 # 
 msgid "&Nautical miles"
@@ -493,11 +503,6 @@ msgstr "Porto de Datos AIS"
 # 
 msgid "AIS General"
 msgstr "AIS Xeral"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Alerta AIS"
 #
 # 
 msgid "AIS Target Query"
@@ -915,6 +920,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr Non Dispoñí­bel"
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Cartas"
+#
+# 
 msgid "Charts"
 msgstr "Cartas"
 #
@@ -1080,7 +1090,8 @@ msgid "Dark Yellow"
 msgstr ""
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Des/Agrupar Texto (exp.)"
 #
 # 
@@ -1994,6 +2005,11 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Consulta Obxectos"
 #
 # 
 msgid "Ok"
@@ -3000,6 +3016,11 @@ msgstr "Parámetros"
 msgid "Text Element"
 msgstr "Elemento de texto"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "A cor do tipo de letra"
@@ -3460,6 +3481,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3475,12 +3497,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar a libería:"
+#
 #
 #
 #
@@ -3493,12 +3517,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo destroy_pi:"
+#
 #
 #
 #
@@ -3510,10 +3536,18 @@ msgstr ""
 #~ msgstr "&Alternar Cartas"
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Alerta AIS"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -3526,6 +3560,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3534,9 +3569,11 @@ msgstr ""
 #~ msgstr "BaseClaseComúnNome"
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -3549,12 +3586,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
 #
 #
 #
@@ -3567,12 +3606,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Import new layer"
 #~ msgstr "Importar unha nova capa"
+#
 #
 #
 #
@@ -3583,15 +3624,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 #
 #
@@ -3604,12 +3648,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 #
 #
@@ -3626,12 +3672,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 #
 #
@@ -3644,12 +3692,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 #
 #
@@ -3662,6 +3712,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3671,12 +3722,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
 #
 #
 #
@@ -3691,12 +3744,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
 #
 #
 #
@@ -3713,12 +3768,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar Listados"
+#
 #
 #
 #

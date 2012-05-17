@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -297,8 +297,18 @@ msgid "&Go To"
 msgstr "Gehe zu"
 #
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Hinspringen"
+#
+# 
 msgid "&Kilometers"
 msgstr "Kilometer"
+#
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Track löschen"
 #
 # 
 msgid "&Nautical miles"
@@ -500,11 +510,6 @@ msgstr "AIS Daten-Schnittstelle"
 # 
 msgid "AIS General"
 msgstr "AIS Allgemein"
-#
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS Alarm"
 #
 # 
 msgid "AIS Target Query"
@@ -920,6 +925,11 @@ msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event ...TCMgr nicht verfügbar"
 #
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Seekarten"
+#
+# 
 msgid "Charts"
 msgstr "Seekarten"
 #
@@ -1081,7 +1091,8 @@ msgid "Dark Yellow"
 msgstr "Gelb (dunkel)"
 #
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Text \"aufräumen\" (exp.)"
 #
 # 
@@ -1991,6 +2002,11 @@ msgstr "Objekt, nicht näher bezeichnet"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Geschlepptes Objekt"
+#
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objekt-Eigenschaften anzeigen"
 #
 # 
 msgid "Ok"
@@ -2992,6 +3008,11 @@ msgstr "Grundeinstellungen"
 msgid "Text Element"
 msgstr "Textelement"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 msgid "The font colour."
 msgstr "Die Schriftfarbe."
@@ -3448,6 +3469,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3464,6 +3486,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3472,6 +3495,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "Plugin-Manager: Kann Bibliothek nicht laden:"
+#
 #
 #
 #
@@ -3486,6 +3510,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3494,6 +3519,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 #
 #
@@ -3511,6 +3537,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3524,10 +3551,18 @@ msgstr ""
 #~ msgstr "&Toggle Chart"
 #
 #
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS Alarm"
+#
+#
+#
 #
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 #
 #
@@ -3545,6 +3580,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3553,6 +3589,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3569,9 +3606,11 @@ msgstr ""
 #~ msgstr "Rufzeichen:  "
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
 #
 #
 #
@@ -3586,6 +3625,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kartendatei fehlerhaft ... deaktiviere diese Karte \n"
+#
 #
 #
 #
@@ -3606,6 +3646,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3617,9 +3658,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                   %09d\n"
+#
 #
 #
 #
@@ -3629,9 +3672,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
 #
 #
 #
@@ -3644,6 +3689,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3652,6 +3698,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 #
 #
@@ -3670,6 +3717,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3678,6 +3726,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 #
 #
@@ -3692,6 +3741,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3700,6 +3750,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 #
 #
@@ -3714,6 +3765,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3725,6 +3777,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3733,6 +3786,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Plugin-Manager: Entlade Plugin mit ungültiger API version %d.%d: "
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -435,10 +435,24 @@ msgstr "&Rotta al Wpt."
 #
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Vai a"
+#
+# 
+# 
 # 
 # 
 msgid "&Kilometers"
 msgstr "&Chilometri"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Elimina Traccia"
 #
 # 
 # 
@@ -738,14 +752,6 @@ msgstr "Sorgente Dati AIS"
 # 
 msgid "AIS General"
 msgstr "AIS Generale"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Allerta AIS"
 #
 # 
 # 
@@ -1379,6 +1385,14 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Carte"
+#
+# 
+# 
+# 
+# 
 msgid "Charts"
 msgstr "Carte"
 #
@@ -1607,7 +1621,8 @@ msgstr "Giallo scuro"
 # 
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "De-sovrapponi Testo"
 #
 # 
@@ -2951,6 +2966,14 @@ msgstr "Oggetto, non meglio specificato"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Oggetto, rimorchiato, non meglio specificato"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Info Oggetti Vettoriali"
 #
 # 
 # 
@@ -4459,6 +4482,11 @@ msgstr "Configurazioni"
 msgid "Text Element"
 msgstr "Elementi Testo"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5121,6 +5149,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5131,6 +5160,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Non posso caricare la libreria: "
+#
 #
 #
 #
@@ -5147,6 +5177,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5157,6 +5188,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo destroy_pi: "
+#
 #
 #
 #
@@ -5182,6 +5214,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -5215,6 +5248,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5245,6 +5279,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5254,6 +5289,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Mostra/Nascondi Carta"
+#
 #
 #
 #
@@ -5286,6 +5322,16 @@ msgstr ""
 #~ msgstr "(Traccia attiva)"
 #
 #
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Allerta AIS"
+#
+#
+#
 #
 # 
 # 
@@ -5293,6 +5339,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informazioni Aggiuntive"
+#
 #
 #
 #
@@ -5306,6 +5353,7 @@ msgstr ""
 # 
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -5328,6 +5376,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5344,6 +5393,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -5366,6 +5416,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5382,6 +5433,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 #
@@ -5404,6 +5456,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5419,6 +5472,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -5439,12 +5493,14 @@ msgstr ""
 #~ msgstr "Configura Offset CM93"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -5466,6 +5522,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -5503,6 +5560,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5533,12 +5591,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI         : %09d\n"
+#
 #
 #
 #
@@ -5551,12 +5611,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome del Punto"
+#
 #
 #
 #
@@ -5569,6 +5631,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nuovo Punto"
+#
 #
 #
 #
@@ -5589,6 +5652,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5598,6 +5662,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager ricerca le cartelle dei PlugIns "
+#
 #
 #
 #
@@ -5614,6 +5679,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5624,6 +5690,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Inizializzazione PlugIn: "
+#
 #
 #
 #
@@ -5640,6 +5707,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5653,6 +5721,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5663,6 +5732,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Disabilito PlugIn con versione API errata %d.%d: "
+#
 #
 #
 #

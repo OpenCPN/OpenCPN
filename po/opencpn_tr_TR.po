@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2010-12-06 16:30+0200\n"
 "Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
 "Language-Team: \n"
@@ -332,10 +332,19 @@ msgstr "&Yazı tipi ailesi:"
 msgid "&Go To"
 msgstr "Buraya Git"
 #
+msgid "&Jump To"
+msgstr ""
+#
 # 
 # 
 msgid "&Kilometers"
 msgstr "&Kilometre"
+#
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Seyir İzini Sil"
 #
 # 
 # 
@@ -575,12 +584,6 @@ msgstr "AIS Veri Portu"
 # 
 msgid "AIS General"
 msgstr "AIS Genel"
-#
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS (Otomatik Tanımlama Sistemi) Alarmı"
 #
 # 
 # 
@@ -1102,6 +1105,12 @@ msgstr "Chart1::Event...TCMgr Not Available"
 #
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Haritalar"
+#
+# 
+# 
 msgid "Charts"
 msgstr "Haritalar"
 #
@@ -1290,7 +1299,8 @@ msgstr ""
 #
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Metni Düzenle"
 #
 # 
@@ -2435,6 +2445,12 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Nesne Sorgulama"
 #
 # 
 # 
@@ -3684,6 +3700,11 @@ msgstr "Ayarlar"
 msgid "Text Element"
 msgstr "Metin Öğesi"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 msgid "The font colour."
@@ -4248,6 +4269,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4274,6 +4296,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Kapat"
+#
 #
 #
 #
@@ -4306,6 +4329,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4332,6 +4356,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Bütün seyir izlerini sil..."
+#
 #
 #
 #
@@ -4363,11 +4388,20 @@ msgstr ""
 #~ msgstr "(Aktif Seyir İzi)"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS (Otomatik Tanımlama Sistemi) Alarmı"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Ekstra bilgi"
+#
 #
 #
 #
@@ -4399,10 +4433,12 @@ msgstr ""
 #~ msgstr "Arama İşareti:"
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Harita"
+#
 #
 #
 #
@@ -4432,6 +4468,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
 #
 #
 #
@@ -4468,6 +4505,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4498,6 +4536,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Sınıf:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4534,6 +4573,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4560,6 +4600,7 @@ msgstr ""
 # 
 #~ msgid "Current Velocity, Kts."
 #~ msgstr "Şuanki Hız, Kts."
+#
 #
 #
 #
@@ -4592,6 +4633,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4601,6 +4643,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -4629,6 +4672,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4648,6 +4692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4664,6 +4709,7 @@ msgstr ""
 #~ "libgps yüklenemedi.\n"
 #~ "\n"
 #~ "gpsd hostu: "
+#
 #
 #
 #
@@ -4696,6 +4742,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4722,6 +4769,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB Verisi"
+#
 #
 #
 #
@@ -4754,6 +4802,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4783,6 +4832,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4805,11 +4855,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA(Tahmini Varış Zamanı):"
+#
 #
 #
 #
@@ -4840,10 +4892,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "İşaret ikonu"
+#
 #
 #
 #
@@ -4854,6 +4908,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4861,6 +4916,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Yeni İşaret"
+#
 #
 #
 #
@@ -4895,6 +4951,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4923,6 +4980,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
 #~ "geçiniz"
+#
 #
 #
 #
@@ -4957,6 +5015,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4988,6 +5047,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4997,6 +5057,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Konum:                 "
+#
 #
 #
 #
@@ -5029,6 +5090,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5053,6 +5115,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Güncel Rapor Peryodu:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5085,6 +5148,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5111,6 +5175,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
 #
 #
 #
@@ -5143,6 +5208,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5172,6 +5238,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5196,6 +5263,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Gemi İsmi:  "
+#
 #
 #
 #
@@ -5228,6 +5296,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5254,6 +5323,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "GRIB kutusunu göster"
+#
 #
 #
 #
@@ -5286,6 +5356,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5315,6 +5386,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5334,6 +5406,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Büyüklük:            %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5359,6 +5432,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5378,6 +5452,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota İsmi"
+#
 #
 #
 #
@@ -5410,6 +5485,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5436,6 +5512,7 @@ msgstr ""
 # 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
 #
 #
 #

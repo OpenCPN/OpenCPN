@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.708 beta for 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2011-07-10 12:27+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -397,8 +397,22 @@ msgstr "&Ga naar"
 # 
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Spring naar"
+#
+# 
+# 
+# 
 msgid "&Kilometers"
 msgstr "&kilometer"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Track verwijderen"
 #
 # 
 # 
@@ -667,13 +681,6 @@ msgstr "AIS poort"
 # 
 msgid "AIS General"
 msgstr "AIS Algemeen"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "AIS waarschuwing"
 #
 # 
 # 
@@ -1213,6 +1220,13 @@ msgstr "Kaart1::Event ... TCMgr niet beschikbaar"
 # 
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Kaarten"
+#
+# 
+# 
+# 
 msgid "Charts"
 msgstr "Kaarten"
 #
@@ -1422,7 +1436,8 @@ msgstr "donkergeel"
 # 
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Schoon tekst op (experimenteel)"
 #
 # 
@@ -2582,6 +2597,13 @@ msgstr "object, niet nader gespecificeerd"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "gesleept object"
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Objectgegevens"
 #
 # 
 # 
@@ -3889,6 +3911,11 @@ msgstr "Schermweergave"
 msgid "Text Element"
 msgstr "Tekstelement"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 # 
@@ -4469,6 +4496,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4487,6 +4515,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4497,6 +4526,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Kan library niet laden: "
+#
 #
 #
 #
@@ -4513,6 +4543,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4525,12 +4556,22 @@ msgstr ""
 #~ msgstr "   PlugInManager: Kan symbool destroy_pi niet laden: "
 #
 #
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "AIS waarschuwing"
+#
+#
+#
 #
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
+#
 #
 #
 #
@@ -4546,11 +4587,13 @@ msgstr ""
 #~ msgstr "BaseClassCommonName"
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -4567,11 +4610,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -4583,11 +4628,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Markeringspunt-naam"
+#
 #
 #
 #
@@ -4602,6 +4649,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4612,6 +4660,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -4632,6 +4681,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4641,6 +4691,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -4657,6 +4708,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4667,6 +4719,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -4683,6 +4736,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4696,6 +4750,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4706,6 +4761,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
+#
 #
 #
 #

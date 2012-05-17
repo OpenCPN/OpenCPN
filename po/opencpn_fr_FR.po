@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -341,8 +341,20 @@ msgstr "Aller à (+ route)"
 #
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Allez à la position"
+#
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Kilomètres"
+#
+# 
+# Menu contextuel : Trace
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Trace : Supprimer"
 #
 # 
 # 
@@ -578,12 +590,6 @@ msgstr "Port de données AIS"
 # 
 msgid "AIS General"
 msgstr "AIS"
-#
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Alarme AIS"
 #
 # 
 # 
@@ -1052,6 +1058,12 @@ msgstr "Carte1::Evènement...TCMgr invalide"
 #
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Cartes"
+#
+# 
+# 
 msgid "Charts"
 msgstr "Cartes"
 #
@@ -1229,7 +1241,8 @@ msgstr "Jaune foncé"
 #
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Désencombrer le texte (Expérimental )"
 #
 # 
@@ -2260,6 +2273,12 @@ msgstr "Objet, non autrement défini"
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr "Objet, remorqué, non autrement défini"
+#
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Afficher les propriétés de l'objet"
 #
 # 
 # 
@@ -3407,6 +3426,11 @@ msgstr "Configuration"
 msgid "Text Element"
 msgstr "Eléments de texte"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # Toolbox/Langue
 msgid "The font colour."
@@ -3923,6 +3947,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3939,6 +3964,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3947,6 +3973,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr ""
 #~ "  Gestionnaire de compléments : Impossible de charger la bibliothèque"
+#
 #
 #
 #
@@ -3962,6 +3989,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3974,11 +4002,20 @@ msgstr ""
 #~ "destroy_pi :"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Alarme AIS"
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Information complémentaire"
+#
 #
 #
 #
@@ -3991,10 +4028,12 @@ msgstr ""
 #~ msgstr "BaseClassCommonName"
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Carte"
+#
 #
 #
 #
@@ -4010,9 +4049,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -4023,10 +4064,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la marque"
+#
 #
 #
 #
@@ -4040,6 +4083,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4047,6 +4091,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN plugin classe de base"
+#
 #
 #
 #
@@ -4064,6 +4109,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4072,6 +4118,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestionnaire de compléments : Recherche du plug-in"
+#
 #
 #
 #
@@ -4086,6 +4133,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4094,6 +4142,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Initialisation du plug-in :"
+#
 #
 #
 #
@@ -4108,6 +4157,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4116,6 +4166,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestionnaire de compléments : Déchargement du plug-in :"
+#
 #
 #
 #
@@ -4129,6 +4180,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Gestionnaire de compléments : Déchargement du plug-in avec version API non "
 #~ "valide %d.%d :"
+#
 #
 #
 #

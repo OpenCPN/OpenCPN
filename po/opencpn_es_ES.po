@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 22:25-0400\n"
+"POT-Creation-Date: 2012-05-17 09:42-0400\n"
 "PO-Revision-Date: 2010-12-26 23:00+0100\n"
 "Last-Translator: Jesus Estevez <jsio@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -493,8 +493,26 @@ msgstr "&Ir A"
 # 
 # 
 # 
+#, fuzzy
+msgid "&Jump To"
+msgstr "Saltar A"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "&Kilometers"
 msgstr "&Kilómetros"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "&Merge Selected Tracks"
+msgstr "Borrar Derrota"
 #
 # 
 # 
@@ -824,15 +842,6 @@ msgstr "Puerto Datos AIS"
 # 
 msgid "AIS General"
 msgstr "General AIS"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS SART Alert"
-msgstr "Alerta AIS"
 #
 # 
 # 
@@ -1528,6 +1537,15 @@ msgstr "Chart1::Event...TCMgr No Disponible"
 # 
 # 
 # 
+#, fuzzy
+msgid "ChartTexts"
+msgstr "Cartas"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "Charts"
 msgstr "Cartas"
 #
@@ -1788,7 +1806,8 @@ msgstr ""
 # 
 # 
 # 
-msgid "De-Clutter Text (exp.)"
+#, fuzzy
+msgid "De-Clutter Text"
 msgstr "Des/agrupar Texto (exp.)"
 #
 # 
@@ -3280,6 +3299,15 @@ msgstr ""
 # 
 msgid "Object, towed, not otherwise specified"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "ObjectQuery"
+msgstr "Consulta Objetos"
 #
 # 
 # 
@@ -4975,6 +5003,11 @@ msgstr "Ajustes"
 msgid "Text Element"
 msgstr "Elementos de Texto"
 #
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5719,6 +5752,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5738,6 +5772,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5749,6 +5784,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar librería: "
+#
 #
 #
 #
@@ -5766,6 +5802,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5777,6 +5814,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo destroy_pi: "
+#
 #
 #
 #
@@ -5813,6 +5851,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -5857,6 +5896,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5895,6 +5935,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -5938,6 +5979,17 @@ msgstr ""
 #~ msgstr "(Derrota Activa)"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS SART Alert"
+#~ msgstr "Alerta AIS"
+#
+#
+#
 #
 # 
 # 
@@ -5946,6 +5998,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -5966,6 +6019,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5977,6 +6031,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -6009,6 +6064,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6035,6 +6091,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -6067,6 +6124,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6096,6 +6154,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6122,6 +6181,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -6163,6 +6223,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6188,6 +6249,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -6218,6 +6280,7 @@ msgstr ""
 #~ msgstr "Ajustar Compensación CM93"
 #
 #
+#
 # 
 # 
 # 
@@ -6225,6 +6288,7 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -6257,6 +6321,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -6305,6 +6370,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6346,6 +6412,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6358,6 +6425,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -6389,6 +6457,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6406,6 +6475,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6420,6 +6490,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Incapaz de cargar libgps.so.19"
+#
 #
 #
 #
@@ -6448,6 +6519,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6456,6 +6528,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Tiempo estimado llegada:                  "
+#
 #
 #
 #
@@ -6489,6 +6562,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6499,6 +6573,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6506,6 +6581,7 @@ msgstr ""
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
+#
 #
 #
 #
@@ -6522,6 +6598,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6533,6 +6610,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -6551,6 +6629,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Plugin OpenCPN Clase de Base\n"
 #~ "PlugInManager creó esta clase de base"
+#
 #
 #
 #
@@ -6576,6 +6655,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6586,6 +6666,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -6603,6 +6684,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6614,6 +6696,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -6631,6 +6714,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6642,6 +6726,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -6660,6 +6745,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6671,6 +6757,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
 #
 #
 #
@@ -6700,6 +6787,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Plazo Informe Reciente:   %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6733,6 +6821,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6758,6 +6847,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6780,6 +6870,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
+#
 #
 #
 #
