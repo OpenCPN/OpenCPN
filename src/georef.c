@@ -35,6 +35,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "georef.h"
 #include "cutil.h"
@@ -100,73 +101,74 @@ struct DATUM const gDatum[] = {
       { "Geodetic Datum  49",    14,     84,    -22,    209 },    // 32
       { "Guam 1963",              4,   -100,   -248,    259 },    // 33
       { "GUX 1 Astro",           14,    252,   -209,   -751 },    // 34
-      { "Hjorsey 1955",          14,    -73,     46,    -86 },    // 35
-      { "Hong Kong 1963",        14,   -156,   -271,   -189 },    // 36
-      { "Indian Bangladesh",      6,    289,    734,    257 },    // 37
-      { "Indian Thailand",        6,    214,    836,    303 },    // 38
-      { "Ireland 1965",           1,    506,   -122,    611 },    // 39
-      { "ISTS 073 Astro  69",    14,    208,   -435,   -229 },    // 40
-      { "Johnston Island",       14,    191,    -77,   -204 },    // 41
-      { "Kandawala",              6,    -97,    787,     86 },    // 42
-      { "Kerguelen Island",      14,    145,   -187,    103 },    // 43
-      { "Kertau 1948",            7,    -11,    851,      5 },    // 44
-      { "L.C. 5 Astro",           4,     42,    124,    147 },    // 45
-      { "Liberia 1964",           5,    -90,     40,     88 },    // 46
-      { "Luzon Mindanao",         4,   -133,    -79,    -72 },    // 47
-      { "Luzon Philippines",      4,   -133,    -77,    -51 },    // 48
-      { "Mahe 1971",              5,     41,   -220,   -134 },    // 49
-      { "Marco Astro",           14,   -289,   -124,     60 },    // 50
-      { "Massawa",                3,    639,    405,     60 },    // 51
-      { "Merchich",               5,     31,    146,     47 },    // 52
-      { "Midway Astro 1961",     14,    912,    -58,   1227 },    // 53
-      { "Minna",                  5,    -92,    -93,    122 },    // 54
-      { "NAD27 Alaska",           4,     -5,    135,    172 },    // 55
-      { "NAD27 Bahamas",          4,     -4,    154,    178 },    // 56
-      { "NAD27 Canada",           4,    -10,    158,    187 },    // 57
-      { "NAD27 Canal Zone",       4,      0,    125,    201 },    // 58
-      { "NAD27 Caribbean",        4,     -7,    152,    178 },    // 59
-      { "NAD27 Central",          4,      0,    125,    194 },    // 60
-      { "NAD27 CONUS",            4,     -8,    160,    176 },    // 61
-      { "NAD27 Cuba",             4,     -9,    152,    178 },    // 62
-      { "NAD27 Greenland",        4,     11,    114,    195 },    // 63
-      { "NAD27 Mexico",           4,    -12,    130,    190 },    // 64
-      { "NAD27 San Salvador",     4,      1,    140,    165 },    // 65
-      { "NAD83",                 11,      0,      0,      0 },    // 66
-      { "Nahrwn Masirah Ilnd",    5,   -247,   -148,    369 },    // 67
-      { "Nahrwn Saudi Arbia",     5,   -231,   -196,    482 },    // 68
-      { "Nahrwn United Arab",     5,   -249,   -156,    381 },    // 69
-      { "Naparima BWI",          14,     -2,    374,    172 },    // 70
-      { "Observatorio 1966",     14,   -425,   -169,     81 },    // 71
-      { "Old Egyptian",          12,   -130,    110,    -13 },    // 72
-      { "Old Hawaiian",           4,     61,   -285,   -181 },    // 73
-      { "Oman",                   5,   -346,     -1,    224 },    // 74
-      { "Ord Srvy Grt Britn",     0,    375,   -111,    431 },    // 75
-      { "Pico De Las Nieves",    14,   -307,    -92,    127 },    // 76
-      { "Pitcairn Astro 1967",   14,    185,    165,     42 },    // 77
-      { "Prov So Amrican  56",   14,   -288,    175,   -376 },    // 78
-      { "Prov So Chilean  63",   14,     16,    196,     93 },    // 79
-      { "Puerto Rico",            4,     11,     72,   -101 },    // 80
-      { "Qatar National",        14,   -128,   -283,     22 },    // 81
-      { "Qornoq",                14,    164,    138,   -189 },    // 82
-      { "Reunion",               14,     94,   -948,  -1262 },    // 83
-      { "Rome 1940",             14,   -225,    -65,      9 },    // 84
-      { "RT 90",                  3,    498,    -36,    568 },    // 85
-      { "Santo (DOS)",           14,    170,     42,     84 },    // 86
-      { "Sao Braz",              14,   -203,    141,     53 },    // 87
-      { "Sapper Hill 1943",      14,   -355,     16,     74 },    // 88
-      { "Schwarzeck",            21,    616,     97,   -251 },    // 89
-      { "South American  69",    16,    -57,      1,    -41 },    // 90
-      { "South Asia",             8,      7,    -10,    -26 },    // 91
-      { "Southeast Base",        14,   -499,   -249,    314 },    // 92
-      { "Southwest Base",        14,   -104,    167,    -38 },    // 93
-      { "Timbalai 1948",          6,   -689,    691,    -46 },    // 94
-      { "Tokyo",                  3,   -128,    481,    664 },    // 95
-      { "Tristan Astro 1968",    14,   -632,    438,   -609 },    // 96
-      { "Viti Levu 1916",         5,     51,    391,    -36 },    // 97
-      { "Wake-Eniwetok  60",     13,    101,     52,    -39 },    // 98
-      { "WGS 72",                19,      0,      0,      5 },    // 99
-      { "WGS 84",                20,      0,      0,      0 },    // 100
-      { "Zanderij",              14,   -265,    120,   -358 }           // 101
+	  { "Hermannskogel Datum",    3,    682,   -203,    480 },    // 35
+      { "Hjorsey 1955",          14,    -73,     46,    -86 },    // 36
+      { "Hong Kong 1963",        14,   -156,   -271,   -189 },    // 37
+      { "Indian Bangladesh",      6,    289,    734,    257 },    // 38
+      { "Indian Thailand",        6,    214,    836,    303 },    // 39
+      { "Ireland 1965",           1,    506,   -122,    611 },    // 40
+      { "ISTS 073 Astro  69",    14,    208,   -435,   -229 },    // 41
+      { "Johnston Island",       14,    191,    -77,   -204 },    // 42
+      { "Kandawala",              6,    -97,    787,     86 },    // 43
+      { "Kerguelen Island",      14,    145,   -187,    103 },    // 44
+      { "Kertau 1948",            7,    -11,    851,      5 },    // 45
+      { "L.C. 5 Astro",           4,     42,    124,    147 },    // 46
+      { "Liberia 1964",           5,    -90,     40,     88 },    // 47
+      { "Luzon Mindanao",         4,   -133,    -79,    -72 },    // 48
+      { "Luzon Philippines",      4,   -133,    -77,    -51 },    // 49
+      { "Mahe 1971",              5,     41,   -220,   -134 },    // 50
+      { "Marco Astro",           14,   -289,   -124,     60 },    // 51
+      { "Massawa",                3,    639,    405,     60 },    // 52
+      { "Merchich",               5,     31,    146,     47 },    // 53
+      { "Midway Astro 1961",     14,    912,    -58,   1227 },    // 54
+      { "Minna",                  5,    -92,    -93,    122 },    // 55
+      { "NAD27 Alaska",           4,     -5,    135,    172 },    // 56
+      { "NAD27 Bahamas",          4,     -4,    154,    178 },    // 57
+      { "NAD27 Canada",           4,    -10,    158,    187 },    // 58
+      { "NAD27 Canal Zone",       4,      0,    125,    201 },    // 59
+      { "NAD27 Caribbean",        4,     -7,    152,    178 },    // 60
+      { "NAD27 Central",          4,      0,    125,    194 },    // 61
+      { "NAD27 CONUS",            4,     -8,    160,    176 },    // 62
+      { "NAD27 Cuba",             4,     -9,    152,    178 },    // 63
+      { "NAD27 Greenland",        4,     11,    114,    195 },    // 64
+      { "NAD27 Mexico",           4,    -12,    130,    190 },    // 65
+      { "NAD27 San Salvador",     4,      1,    140,    165 },    // 66
+      { "NAD83",                 11,      0,      0,      0 },    // 67
+      { "Nahrwn Masirah Ilnd",    5,   -247,   -148,    369 },    // 68
+      { "Nahrwn Saudi Arbia",     5,   -231,   -196,    482 },    // 69
+      { "Nahrwn United Arab",     5,   -249,   -156,    381 },    // 70
+      { "Naparima BWI",          14,     -2,    374,    172 },    // 71
+      { "Observatorio 1966",     14,   -425,   -169,     81 },    // 72
+      { "Old Egyptian",          12,   -130,    110,    -13 },    // 73
+      { "Old Hawaiian",           4,     61,   -285,   -181 },    // 74
+      { "Oman",                   5,   -346,     -1,    224 },    // 75
+      { "Ord Srvy Grt Britn",     0,    375,   -111,    431 },    // 76
+      { "Pico De Las Nieves",    14,   -307,    -92,    127 },    // 77
+      { "Pitcairn Astro 1967",   14,    185,    165,     42 },    // 78
+      { "Prov So Amrican  56",   14,   -288,    175,   -376 },    // 79
+      { "Prov So Chilean  63",   14,     16,    196,     93 },    // 80
+      { "Puerto Rico",            4,     11,     72,   -101 },    // 81
+      { "Qatar National",        14,   -128,   -283,     22 },    // 82
+      { "Qornoq",                14,    164,    138,   -189 },    // 83
+      { "Reunion",               14,     94,   -948,  -1262 },    // 84
+      { "Rome 1940",             14,   -225,    -65,      9 },    // 85
+      { "RT 90",                  3,    498,    -36,    568 },    // 86
+      { "Santo (DOS)",           14,    170,     42,     84 },    // 87
+      { "Sao Braz",              14,   -203,    141,     53 },    // 88
+      { "Sapper Hill 1943",      14,   -355,     16,     74 },    // 89
+      { "Schwarzeck",            21,    616,     97,   -251 },    // 90
+      { "South American  69",    16,    -57,      1,    -41 },    // 91
+      { "South Asia",             8,      7,    -10,    -26 },    // 92
+      { "Southeast Base",        14,   -499,   -249,    314 },    // 93
+      { "Southwest Base",        14,   -104,    167,    -38 },    // 94
+      { "Timbalai 1948",          6,   -689,    691,    -46 },    // 95
+      { "Tokyo",                  3,   -128,    481,    664 },    // 96
+      { "Tristan Astro 1968",    14,   -632,    438,   -609 },    // 97
+      { "Viti Levu 1916",         5,     51,    391,    -36 },    // 98
+      { "Wake-Eniwetok  60",     13,    101,     52,    -39 },    // 99
+      { "WGS 72",                19,      0,      0,      5 },    // 100
+      { "WGS 84",                20,      0,      0,      0 },    // 101
+      { "Zanderij",              14,   -265,    120,   -358 }     // 102
 };
 
 struct ELLIPSOID const gEllipsoid[] = {
@@ -212,12 +214,28 @@ void datumParams(short datum, double *a, double *es)
     *a = gEllipsoid[gDatum[datum].ellipsoid].a;                   // semimajor axis
 }
 
+static int datumNameCmp(const char *n1, const char *n2)
+{
+	while(*n1 || *n2)
+	{
+		if (*n1 == ' ')
+			n1++;
+		else if (*n2 == ' ')
+			n2++;
+		else if (toupper(*n1) == toupper(*n2))
+			n1++, n2++;
+		else
+			return 1;	// No string match
+	}
+	return 0;	// String match
+}
+
 int GetDatumIndex(const char *str)
 {
       int i = 0;
-      while (i < 102)
+      while (i < (int)nDatums)
       {
-            if(!strcmp(str, gDatum[i].name))
+            if(!datumNameCmp(str, gDatum[i].name))
                   return i;
             i++;
       }
