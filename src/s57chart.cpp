@@ -63,9 +63,7 @@
 #define new DEBUG_NEW
 #endif
 
-#ifdef __MSVC__
 #include <algorithm>          // for std::sort
-#endif
 
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 
