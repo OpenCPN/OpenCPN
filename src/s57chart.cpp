@@ -1105,6 +1105,8 @@ s57chart::s57chart()
     glGenTextures(1, (GLuint *)&m_tex_name);
     m_btex_mem = false;
 
+    ref_lat = 0.0;
+    ref_lon = 0.0;
 }
 
 s57chart::~s57chart()
