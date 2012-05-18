@@ -222,6 +222,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
       int countATT = 0;
       bool bmatch_found = false;
 
+
       // setup default to the first LUP
       LUP = (LUPrec*) nameMatch->Item( 0 );
 
@@ -330,7 +331,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                               } //switch
 
                               // value match
-                              if( attValMatch ) ++countATT;
+                              if( attValMatch ) {
+                                    ++countATT;
+                              }
 
                               goto next_LUP_Attr;
                         } // if attribute match
@@ -380,7 +383,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                         LUPrec *LUPtmp = NULL;
 
                         LUPtmp = (LUPrec*) nameMatch->Item( i );
-                        if( LUPtmp->ATTCArray == NULL ) return LUPtmp;
+                        if( LUPtmp->ATTCArray == NULL ) {
+                              return LUPtmp;
+                        }
                   }
             }
       }
@@ -580,10 +585,16 @@ int CompareLUPObjects( LUPrec *item1, LUPrec *item2 ) {
 #if wxCHECK_VERSION(2, 9, 0)
       int ir = wxStricmp ( item1->OBCL, item2->OBCL );
 #else
-      int ir = Stricmp( item1->OBCL, item2->OBCL );
+      int ir = strcmp( item1->OBCL, item2->OBCL );
 #endif
-      if( ir == 0 ) return item1->nSequence - item2->nSequence;
-      else return ir;
+      if( ir != 0 )  return ir;
+      int c1 = 0;
+      int c2 = 0;
+      if( item1->ATTCArray ) c1 = item1->ATTCArray->Count();
+      if( item2->ATTCArray ) c2 = item2->ATTCArray->Count();
+
+      if( c1 != c2 ) return c2 - c1;
+      return item1->nSequence - item2->nSequence;
 }
 
 #endif

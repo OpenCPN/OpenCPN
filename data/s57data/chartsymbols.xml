@@ -25255,7 +25255,7 @@
 			<display-cat>Standard</display-cat>
 			<comment>27020</comment>
 		</lookup>
-		<lookup id="2441" RCID="94011" name="TOPMAR">
+		<lookup id="2441" RCID="940111" name="TOPMAR">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
@@ -25276,7 +25276,7 @@
 			<display-cat>Standard</display-cat>
 			<comment>27020</comment>
 		</lookup>
-		<lookup id="2442" RCID="94012" name="TOPMAR">
+		<lookup id="2442" RCID="940121" name="TOPMAR">
 			<type>Point</type>
 			<disp-prio>Area Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
