@@ -65,6 +65,7 @@ extern bool g_b_useStencil;
 extern wxString g_csv_locn;
 extern FontMgr  *pFontMgr;
 extern double g_GLMinLineWidth;
+extern wxPlatformInfo   *g_pPlatform;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
             int dash, int space );
@@ -1296,16 +1297,20 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
             if( 1 ) {
                   if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
                   {
-                        wxMemoryDC mdc;
+                        wxScreenDC sdc;
 
-                        mdc.SetFont( *( ptext->pFont ) );
+                        wxCoord w = 0;
+                        wxCoord h = 0;
+                        wxCoord descent = 0;
+                        wxCoord exlead = 0;
 
-                        wxCoord w, h, descent, exlead;
-                        mdc.GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
+                        sdc.GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead, ptext->pFont ); // measure the text
                         ptext->rendered_char_height = h - descent;
 
+                        wxMemoryDC mdc;
                         wxBitmap bmp( w, h );
                         mdc.SelectObject( bmp );
+                        mdc.SetFont( *( ptext->pFont ) );
 
                         if( mdc.IsOk() ) {
                               //  Render the text as white on black, so that underlying anti-aliasing of
@@ -1558,6 +1563,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                   if( b_free_text ) delete text;
                   return 0;
             }
+
             //    Establish a font
             if( !text->pFont ) {
 
@@ -1726,7 +1732,8 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       int pivot_y = prule->pos.symb.pivot_y.SYRW;
 
 
-#ifdef __WXGTK__
+#if ( defined(__WXGTK__) || defined(__WXMAC__))
+
       // alpha bitmap blit on gtk is broken, so we do this the hard way
 
       //    Get the size and position of resulting symbol on the screen
@@ -1769,7 +1776,6 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             wxGCDC gdc( scratchDc );
 
                   //    Do the GC render on this screen_copy bitmap
-            HPGL->SetTargetDC( &scratchDc );
             HPGL->SetTargetGCDC( &gdc );
             HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
@@ -2181,7 +2187,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
 
                   bool b_has_trans = false;
-#ifdef __WXGTK__
+#if (defined(__WXGTK__) || defined(__WXMAC__))
+
                   //    Blitting of wxBitmap with transparency in wxGTK is broken....
                   //    We can do it the hard way, by manually alpha blending the
                   //    symbol with a clip taken from the current screen DC contents.
@@ -2203,6 +2210,10 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                                     break;
                         }
                   }
+#ifdef __WXMAC__
+                  b_has_trans = true;
+#endif
+
 
                   //    If the symbol image has no transparency, then a standard wxDC:Blit() will work
                   if(!b_has_trans) {
@@ -5792,7 +5803,16 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
       unsigned char *pd;
       unsigned char *ps0 = Image.GetData();
       unsigned char *imgAlpha = NULL;
-      if( Image.HasAlpha() ) imgAlpha = Image.GetAlpha();
+      bool b_use_alpha = false;
+      if( Image.HasAlpha() ) {
+            imgAlpha = Image.GetAlpha();
+            b_use_alpha = true;
+      }
+
+#ifdef __WXMAC__
+      b_use_alpha = false;
+#endif
+
       unsigned char *ps;
 
       {
@@ -5824,7 +5844,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
                               *pd++ = g;
                               *pd++ = b;
 #endif
-                              if( Image.HasAlpha() ) {
+                              if( b_use_alpha ) {
                                     *pd++ = *imgAlpha++;
                               } else {
                                     *pd++ = (
