@@ -6856,6 +6856,32 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
       return value;
 }
 
+
+int s57chart::CompareLights( const void** l1ptr, const void** l2ptr ) {
+      S57Light l1 = *(S57Light*)*l1ptr;
+      S57Light l2 = *(S57Light*)*l2ptr;
+
+      int positionDiff = l1.position.Cmp( l2.position );
+      if( positionDiff != 0 ) return positionDiff;
+
+      double angle1, angle2;
+      int attrIndex1 = l1.attributeNames.Index( _T("SECTR1") );
+      int attrIndex2 = l2.attributeNames.Index( _T("SECTR1") );
+
+      // This should put Lights without sectors last in the list.
+      if( attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return 0;
+      if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return -1;
+      if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return 1;
+
+      l1.attributeValues.Item( attrIndex1 ).ToDouble( &angle1 );
+      l2.attributeValues.Item( attrIndex2 ).ToDouble( &angle2 );
+
+      if( angle1 == angle2 ) return 0;
+      if( angle1 > angle2 ) return 1;
+      return -1;
+}
+
+
 wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 {
       wxString ret_val;
@@ -6959,6 +6985,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                   if( isLight ) {
                         curLight = new S57Light;
                         curLight->position = positionString;
+                        curLight->hasSectors = false;
                         lights.Add( curLight );
                   }
             }
@@ -6993,6 +7020,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                   if( isLight ) {
                         curLight->attributeNames.Add( curAttrName );
+                        if( curAttrName.StartsWith( _T("SECTR") ) ) curLight->hasSectors = true;
                   }
                   else {
                         if( curAttrName == _T("DRVAL1") ) {
@@ -7059,6 +7087,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             // For lights we now have all the info gathered but no HTML output yet, now
             // run through the data and build a merged table for all lights.
 
+            lights.Sort( (CMPFUNC_wxArraywxArrayPtrVoid) (&s57chart::CompareLights) );
+
             wxString lastPos;
 
             for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
@@ -7073,6 +7103,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                         lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                         lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
+
+                        if( curLight->hasSectors ) lightsHtml << _("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
 
                         lightsHtml << _T("<table>");
                   }

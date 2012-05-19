@@ -159,6 +159,7 @@ public:
       bool DoesLatLonSelectObject(float lat, float lon, float select_radius, S57Obj *obj);
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
+      static int CompareLights( const void** l1, const void** l2 );
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
       wxString GetAttributeDecode(wxString& att, int ival);
 
@@ -335,6 +336,7 @@ public:
       wxArrayString attributeNames;
       wxArrayString attributeValues;
       wxString position;
+      bool hasSectors;
 };
 
 //------------------------------------------------------------------------
