@@ -1284,12 +1284,6 @@ static void *LIGHTS05 (void *param)
 
     wxString orientstr;
 
-// Debug Hook
-//      if(obj->Index == 1318)
-//            int tty = 5;
-
-
-
     if ( strlen(catlitstr))
     {
         _parseList(catlitstr, catlit, sizeof(colist));
@@ -1539,27 +1533,44 @@ static void *LIGHTS05 (void *param)
 
 l05_end:
 
-    if(ps52plib->m_bShowLdisText)
-    {
-          wxString litdsn01 = _LITDSN01(obj);
-          if (litdsn01.Len())
-          {
-               lights05.Append(_T(";TX('"));
-               lights05.Append(litdsn01);
+      if( ps52plib->m_bShowLdisText )
+      {
+            // Only show Light in certain position once. Otherwise there will be clutter.
+            static double lastLat, lastLon;
+            static wxString lastDescription;
+            bool isFirstSector = true;
 
-               if (flare_at_45)
-                    lights05.Append(_T("',3,3,3,'15110',2,-1,CHBLK,23)" ));
-               else
-                    lights05.Append(_T("',3,2,3,'15110',2,0,CHBLK,23)" ));
-          }
-    }
+            if( lastLat == obj->m_lat && lastLon == obj->m_lon ) isFirstSector = false;
+            lastLat = obj->m_lat;
+            lastLon = obj->m_lon;
 
-    lights05.Append('\037');
+            wxString litdsn01 = _LITDSN01( obj );
 
-    char *r = (char *)malloc(lights05.Len() + 1);
-    strcpy(r, lights05.mb_str());
+            if( litdsn01.Len() && isFirstSector ) {
+                  lastDescription = litdsn01;
+                  lights05.Append( _T(";TX('") );
+                  lights05.Append( litdsn01 );
 
-    return r;
+                  if( flare_at_45 )
+                        lights05.Append( _T("',3,3,3,'15110',2,-1,CHBLK,23)" ) );
+                  else
+                        lights05.Append( _T("',3,2,3,'15110',2,0,CHBLK,23)" ) );
+            }
+
+            if( !isFirstSector && lastDescription != litdsn01 ) {
+                  lastDescription = litdsn01;
+                  lights05.Append( _T(";TX('") );
+                  lights05.Append( litdsn01 );
+                  lights05.Append( _T("',3,2,3,'15110',2,1,CHBLK,23)" ) );
+            }
+      }
+
+      lights05.Append( '\037' );
+
+      char *r = (char *) malloc( lights05.Len() + 1 );
+      strcpy( r, lights05.mb_str() );
+
+      return r;
 }
 
 
@@ -3280,12 +3291,12 @@ static wxString _LITDSN01(S57Obj *obj)
 // This procedure is provided as a C function which has as input, the above
 // listed attribute values and as output, the light description.
 {
-    // CATLIT, LITCHR, COLOUR, HEIGHT, LITCHR, SIGGRP, SIGPER, STATUS, VALNMR
+      // CATLIT, LITCHR, COLOUR, HEIGHT, LITCHR, SIGGRP, SIGPER, STATUS, VALNMR
 
       char colist[20];
       wxString return_value;
 
-    // CATLIT
+      // CATLIT
       int catlit = -9;
       GetIntAttr(obj, "CATLIT", catlit);
 
@@ -3430,40 +3441,33 @@ static wxString _LITDSN01(S57Obj *obj)
             }
       }
 
-    // COLOUR,
+      // COLOUR,
       char col_str[20];
-      GetStringAttr(obj, "COLOUR", col_str, 19);
 
-      int n_cols = 0;
-      if (strlen(col_str))
-            n_cols = _parseList(col_str, colist, sizeof(colist));
+      // Don't show for sectored lights since we are only showing one of the sectors.
+      double sectrTest;
+      bool hasSectors = GetDoubleAttr( obj, "SECTR1", sectrTest );
 
-/*
-      int colour = colist[0];
-      if(-9 != colour)
-      {
-            switch (colour)
+      if( ! hasSectors ) {
+            GetStringAttr(obj, "COLOUR", col_str, 19);
+
+            int n_cols = 0;
+            if (strlen(col_str))
+                  n_cols = _parseList(col_str, colist, sizeof(colist));
+
+            if(n_cols)
+                  return_value.Append(_T(" "));
+
+            for(int i=0 ; i < n_cols ; i++)
             {
-                  case 1:  return_value.Append(_T(" W")); break;
-                  case 3:  return_value.Append(_T(" R")); break;
-                  case 4:  return_value.Append(_T(" G")); break;
-                  case 6:  return_value.Append(_T(" Y")); break;
-                  default:  break;
-            }
-      }
-*/
-      if(n_cols)
-            return_value.Append(_T(" "));
-
-      for(int i=0 ; i < n_cols ; i++)
-      {
-            switch (colist[i])
-            {
-                  case 1:  return_value.Append(_T("W")); break;
-                  case 3:  return_value.Append(_T("R")); break;
-                  case 4:  return_value.Append(_T("G")); break;
-                  case 6:  return_value.Append(_T("Y")); break;
-                  default:  break;
+                  switch (colist[i])
+                  {
+                        case 1:  return_value.Append(_T("W")); break;
+                        case 3:  return_value.Append(_T("R")); break;
+                        case 4:  return_value.Append(_T("G")); break;
+                        case 6:  return_value.Append(_T("Y")); break;
+                        default:  break;
+                  }
             }
       }
 
@@ -3531,10 +3535,10 @@ static wxString _LITDSN01(S57Obj *obj)
       double   valnmr      = UNKNOWN;
       GetDoubleAttr(obj, "VALNMR", valnmr);
 
-      if(UNKNOWN != valnmr)
+      if( UNKNOWN != valnmr && ! hasSectors )
       {
             wxString s;
-            s.Printf(_T("%2.0fM"), valnmr);
+            s.Printf(_T("%2.0fNm"), valnmr);
             s.Trim(false);          // remove leading spaces
             s.Prepend(_T(" "));
             return_value.Append(s);
