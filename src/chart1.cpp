@@ -5068,7 +5068,8 @@ void MyFrame::ActivateMOB(void)
 
             temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
 
-            g_pRouteMan->DeactivateRoute();
+            if ( g_pRouteMan->GetpActiveRoute() )
+                  g_pRouteMan->DeactivateRoute();
             g_pRouteMan->ActivateRoute ( temp_route, pWP_MOB );
       }
 
