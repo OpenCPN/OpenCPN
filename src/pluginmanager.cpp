@@ -647,6 +647,13 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                                     break;
                               }
 
+                              case 108:
+                              {
+                                    opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->RenderGLOverlay(pcontext, &pivp);
+                                    break;
+                              }
                               default:
                                     break;
                         }

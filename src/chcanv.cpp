@@ -10847,7 +10847,7 @@ void ChartCanvas::CancelMouseRoute()
 
 int ChartCanvas::GetNextContextMenuId()
 {
-      return ID_DEF_MENU_LAST;
+      return ID_DEF_MENU_LAST + 100;  //Allowing for 100 dynamic menu item identifiers
 }
 
 bool ChartCanvas::SetCursor ( const wxCursor &c )
