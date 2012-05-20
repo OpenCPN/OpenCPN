@@ -71,6 +71,10 @@ ocpnDC::ocpnDC(wxDC &pdc) : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(
      m_textforegroundcolour = wxColour(0,0,0);
 }
 
+ocpnDC::ocpnDC(): glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), pgc(NULL)
+{
+}
+
 ocpnDC::~ocpnDC()
 {
      if(pgc)

@@ -5628,12 +5628,12 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             }
       }
 
-//      CALLGRIND_STOP_INSTRUMENTATION
 
-#if 0
+
       //    Render the cm93 cell's M_COVR outlines if called for
       if ( m_cell_index_special_outline )
       {
+            ocpnDC dc;
             covr_set *pcover = m_pcm93chart_current->GetCoverSet();
 
             for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
@@ -5700,7 +5700,14 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                               */
                               if ( btest )
                               {
-                                    dc.SetPen ( wxPen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 4, wxLONG_DASH ) );
+                                    wxPen pen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 3);
+                                    wxDash dash1[2];
+                                    dash1[0] = 4; // Long dash
+                                    dash1[1] = 4; // Short gap
+                                    pen.SetStyle(wxUSER_DASH);
+                                    pen.SetDashes( 2, dash1 );
+
+                                    dc.SetPen ( pen );
 
                                     for ( int iseg=0 ; iseg < pmcd->m_nvertices-1 ; iseg++ )
                                     {
@@ -5724,7 +5731,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   }
             }
       }
-#endif
+
       if ( m_b_busy_shown )
       {
                   ::wxEndBusyCursor();

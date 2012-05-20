@@ -57,6 +57,7 @@ class DECL_EXP ocpnDC
 public:
      ocpnDC(wxGLCanvas &canvas);
      ocpnDC(wxDC &pdc);
+     ocpnDC();
 
      ~ocpnDC();
 
