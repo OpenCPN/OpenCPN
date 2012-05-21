@@ -727,16 +727,22 @@ bool Routeman::UpdateAutopilot()
                   m_NMEA0183.Rmc.SpeedOverGroundKnots = gSog;
                   m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = gCog;
 
-                  if(gVar < 0.)
+                  if(!wxIsNaN(gVar))
                   {
-                        m_NMEA0183.Rmc.MagneticVariation = -gVar;
-                        m_NMEA0183.Rmc.MagneticVariationDirection = West;
+                        if(gVar < 0.)
+                        {
+                              m_NMEA0183.Rmc.MagneticVariation = -gVar;
+                              m_NMEA0183.Rmc.MagneticVariationDirection = West;
+                        }
+                        else
+                        {
+                              m_NMEA0183.Rmc.MagneticVariation = gVar;
+                              m_NMEA0183.Rmc.MagneticVariationDirection = East;
+                        }
                   }
                   else
-                  {
-                        m_NMEA0183.Rmc.MagneticVariation = gVar;
-                        m_NMEA0183.Rmc.MagneticVariationDirection = East;
-                  }
+                        m_NMEA0183.Rmc.MagneticVariation = 361.;        // A signal to NMEA converter, gVAR is unknown
+
 
                   wxDateTime now = wxDateTime::Now();
                   wxDateTime utc = now.ToUTC();

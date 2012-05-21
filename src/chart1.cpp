@@ -2902,6 +2902,7 @@ bool MyApp::OnInit()
         g_bHDxValid = false;
         gHdt = NAN;
         gHdm = NAN;
+        gVar = NAN;
 
 
 

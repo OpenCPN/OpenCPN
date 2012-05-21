@@ -164,8 +164,14 @@ bool RMC::Write( SENTENCE& sentence )
    sentence += SpeedOverGroundKnots;
    sentence += TrackMadeGoodDegreesTrue;
    sentence += Date;
-   sentence += MagneticVariation;
-   sentence += MagneticVariationDirection;
+
+   if(MagneticVariation > 360.)
+         sentence += _T(",,");
+   else
+   {
+         sentence += MagneticVariation;
+         sentence += MagneticVariationDirection;
+   }
 
    sentence.Finish();
 
