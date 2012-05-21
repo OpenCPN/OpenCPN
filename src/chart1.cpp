@@ -3611,7 +3611,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if (g_bShowTrackIcon)
     {
           CheckAndAddPlugInTool(tb);
-          tb->AddTool( ID_TRACK, _T(""), *(*phash)[wxString(_T("track"))], _("Toggle Tracking"), wxITEM_CHECK);
+          tb->AddTool( ID_TRACK, _T(""), *(*phash)[wxString(_T("trackon"))], *(*phash)[wxString(_T("track"))],
+                       wxITEM_CHECK, _("Toggle Tracking"));
     }
 
 
@@ -3855,6 +3856,7 @@ void MyFrame::PrepareToolbarBitmaps(void)
     tool_xpm_hash[_T("colorscheme")]            = (char *)_img_colscheme;
     tool_xpm_hash[_T("route_manager")]          = (char *)_img_route_manager;
     tool_xpm_hash[_T("track")]                  = (char *)_img_track;
+    tool_xpm_hash[_T("trackon")]                = (char *)_img_trackon;
     tool_xpm_hash[_T("mob")]                    = (char *)_img_mob;
     tool_xpm_hash[_T("mob_btn")]                = (char *)_img_mob_btn;
 
