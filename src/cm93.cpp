@@ -6358,7 +6358,7 @@ void cm93compchart::ForceEdgePriorityEvaluate ( void )
 
 void cm93compchart::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
-      m_global_color_scheme =cs;
+      m_global_color_scheme = cs;
 
       for ( int i = 0 ; i < 8 ; i++ )
       {
