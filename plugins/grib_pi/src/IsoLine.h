@@ -112,14 +112,13 @@ class IsoLine
 
         void drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
 
-        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour couleur, PlugIn_ViewPort *vp,
-                                int density, int first, double coef);
+        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
+                                PlugIn_ViewPort *vp, int density, int first, double coef);
 
         void drawGLIsoLine(GRIBOverlayFactory *pof, 
                    PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
-        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,
-                   wxColour couleur, PlugIn_ViewPort *vp,
-                   int density, int first, double coef);
+        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,wxColour text_color, wxColour back_color,
+                   PlugIn_ViewPort *vp, int density, int first, double coef);
 
         int getNbSegments()     {return trace.size();}
 

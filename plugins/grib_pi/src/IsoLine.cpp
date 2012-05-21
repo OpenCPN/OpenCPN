@@ -171,8 +171,7 @@ IsoLine::IsoLine(double val, const GribRecord *rec_)
     rec = rec_;
     W = rec->getNi();
     H = rec->getNj();
-    int gr = 80;
-    isoLineColor = wxColour(gr,gr,gr);
+
     //---------------------------------------------------------
     // Génère la liste des segments.
     extractIsoLine(rec);
@@ -383,6 +382,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
       if(nsegs < 1)
             return;
 
+      GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
       wxPen ppISO ( isoLineColor, 2 );
 
 #if wxUSE_GRAPHICS_CONTEXT
@@ -575,9 +575,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour couleur,
-                                PlugIn_ViewPort *vp,
-                            int density, int first, double coef)
+void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
+                                PlugIn_ViewPort *vp, int density, int first, double coef)
 {
 ///
 //#if 0
@@ -587,13 +586,15 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour coul
 
     label.Printf(_T("%d"), (int)(value*coef+0.5));
 
-    wxPen penText(couleur);
+    wxPen penText(text_color);
 
     int w, h;
     dc.GetTextExtent(label, &w, &h);
 
     dc.SetPen(penText);
-    dc.SetBrush(*wxWHITE_BRUSH);
+    dc.SetBrush(wxBrush(back_color));
+    dc.SetTextForeground(text_color);
+    dc.SetTextBackground(back_color);
 
     //---------------------------------------------------------
     // Ecrit les labels
@@ -636,6 +637,7 @@ void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool b
             return;
 
      int width = 2;
+     GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
 
      glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(), 255/*isoLineColor.Alpha()*/);
      glLineWidth(width);
@@ -668,9 +670,8 @@ void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool b
 
 }
 
-void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour couleur,
-                                PlugIn_ViewPort *vp,
-                            int density, int first, double coef)
+void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, wxColour back_color,
+                                PlugIn_ViewPort *vp, int density, int first, double coef)
 {
     std::list<Segment *>::iterator it;
     int nb = first;
@@ -679,6 +680,9 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour couleur,
     label.Printf(_T("%d"), (int)(value*coef+0.5));
 
     int w, h;
+
+    wxPen penText(text_color);
+    wxBrush backBrush(back_color);
 
     int label_offset = 10;
 
@@ -689,10 +693,11 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour couleur,
             mdc.Clear();
 
             mdc.GetTextExtent(label, &w, &h);
-            wxPen penText(couleur);
 
             mdc.SetPen(penText);
-            mdc.SetBrush(*wxWHITE_BRUSH);
+            mdc.SetBrush(backBrush);
+            mdc.SetTextForeground(text_color);
+            mdc.SetTextBackground(back_color);
 
             int xd = 0;
             int yd = 0;

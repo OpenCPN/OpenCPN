@@ -1537,16 +1537,20 @@ bool GRIBOverlayFactory::RenderGribPressure(GribRecord *pGR, PlugIn_ViewPort *vp
                   piso->drawGLIsoLine(this, vp, true, true); //g_bGRIBUseHiDef
 
             // Draw Isobar labels
-            int gr = 80;
-            wxColour color = wxColour(gr,gr,gr);
-            int density = 40;//40;
+            wxColour text_color;
+            GetGlobalColor ( _T ( "DILG3" ), &text_color );
+
+            wxColour back_color;
+            GetGlobalColor ( _T ( "DILG0" ), &back_color );
+
+            int density = 40;
             int first = 0;
 
             double coef = .01;
             if(m_pdc)
-                  piso->drawIsoLineLabels(this, *m_pdc, color, vp, density, first, coef);
+                  piso->drawIsoLineLabels(this, *m_pdc, text_color, back_color, vp, density, first, coef);
             else
-                  piso->drawGLIsoLineLabels(this, color, vp, density, first, coef);
+                  piso->drawGLIsoLineLabels(this, text_color, back_color, vp, density, first, coef);
 
             //
 
