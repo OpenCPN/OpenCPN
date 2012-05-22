@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,15 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
- * $Log: wvschart.h,v $
- * Revision 1.8  2010/05/15 03:55:58  bdbcat
- * Build 514
- *
- * Revision 1.7  2010/04/27 01:45:49  bdbcat
- * Build 426
- *
- * Revision 1.6  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 

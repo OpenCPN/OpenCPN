@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -622,7 +621,7 @@ fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon)
 //North latitudes are positive, South latitudes are negative
 //Lat and Long are in decimal degrees.
       //Written by Chuck Gantz- chuck.gantz@globalstar.com
-      //Adapted for opencpn by David S. Register - bdbcat@yahoo.com
+      //Adapted for opencpn by David S. Register
 
 void  toTM(float lat, float lon, float lat0, float lon0, double *x, double *y)
 {
@@ -681,7 +680,7 @@ void  toTM(float lat, float lon, float lat0, float lon0, double *x, double *y)
 //North latitudes are positive, South latitudes are negative
 //Lat and Long are in decimal degrees
       //Written by Chuck Gantz- chuck.gantz@globalstar.com
-      //Adapted for opencpn by David S. Register - bdbcat@yahoo.com
+      //Adapted for opencpn by David S. Register
 
 void fromTM (double x, double y, double lat0, double lon0, double *lat, double *lon)
 {
@@ -746,7 +745,7 @@ void fromTM (double x, double y, double lat0, double lon0, double *lat, double *
  * The source code in the listing below may be copied and reused without restriction,
  * but it is offered AS-IS with NO WARRANTY.
 
- * Adapted for opencpn by David S. Register - bdbcat@yahoo.com
+ * Adapted for opencpn by David S. Register
 
  * --------------------------------------------------------------------------------- */
 
@@ -798,7 +797,7 @@ void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon
 /* --------------------------------------------------------------------------------- */
 /*
       Geodesic Forward and Reverse calculation functions
-      Abstracted and adapted from PROJ-4.5.0 by David S.Register (bdbcat@yahoo.com)
+      Abstracted and adapted from PROJ-4.5.0 by David S.Register
 
       Original source code contains the following license:
 

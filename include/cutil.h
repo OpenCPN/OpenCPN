@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,33 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
- * $Log: cutil.h,v $
- * Revision 1.7  2010/05/23 23:27:16  bdbcat
- * Build 523a
- *
- * Revision 1.6  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.5  2009/12/17 02:45:42  bdbcat
- * Cleanup definitions
- *
- * Revision 1.4  2009/12/14 23:32:46  bdbcat
- * Correct "C" definitions
- *
- * Revision 1.3  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.2  2007/03/02 02:06:00  dsr
- * Cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.2  2006/06/02 02:06:04  dsr
- * MyPoint becomes double
- *
- * Revision 1.1  2006/05/19 19:37:07  dsr
- * Initial
  *
  */
 

@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,29 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: statwin.cpp,v $
- * Revision 1.24  2010/06/13 21:05:49  bdbcat
- * 613a
- *
- * Revision 1.23  2010/05/23 23:15:24  bdbcat
- * Build 523a
- *
- * Revision 1.22  2010/05/15 04:03:22  bdbcat
- * Build 514
- *
- * Revision 1.21  2010/05/04 04:44:57  bdbcat
- * Build 504
- *
- * Revision 1.20  2010/05/04 01:33:52  bdbcat
- * Build 503
- *
- * Revision 1.19  2010/05/02 03:01:14  bdbcat
- * Build 501
- *
- * Revision 1.18  2010/04/27 01:43:46  bdbcat
- * Build 426
- *
  *
  *
  */

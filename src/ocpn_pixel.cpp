@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,32 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: ocpn_pixel.cpp,v $
- * Revision 1.10  2010/05/15 04:02:12  bdbcat
- * Build 514
- *
- * Revision 1.9  2010/04/27 01:41:36  bdbcat
- * Build 426
- *
- * Revision 1.8  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * Revision 1.7  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.6  2008/04/11 03:25:59  bdbcat
- * Clean up GTK Optimize option
- *
- * Revision 1.5  2008/04/10 01:03:09  bdbcat
- * Cleanup
- *
- * Revision 1.4  2008/03/30 22:27:32  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.3  2008/01/10 03:37:02  bdbcat
- * Update for Mac OSX
- *
  *
  */
 

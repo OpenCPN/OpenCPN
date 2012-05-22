@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,33 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
- * $Log: concanv.h,v $
- * Revision 1.8  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.7  2009/08/22 01:21:44  bdbcat
- * Improved font support
- *
- * Revision 1.6  2009/06/28 03:08:41  bdbcat
- * Set minimum size for Console.
- *
- * Revision 1.5  2008/08/26 13:49:53  bdbcat
- * Better color scheme support
- *
- * Revision 1.4  2008/03/30 23:22:08  bdbcat
- * *** empty log message ***
- *
- * Revision 1.3  2008/01/12 06:18:30  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.2  2007/06/10 02:37:18  bdbcat
- * Cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
  */
 
 #ifndef __concanv_H__

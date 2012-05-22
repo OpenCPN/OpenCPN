@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -28,14 +27,6 @@
  *  Parts of this file were adapted from source code found in              *
  *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
  ***************************************************************************
-
- * $Log: georef.h,v $
- * Revision 1.13  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.12  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
 
  */
 

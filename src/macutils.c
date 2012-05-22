@@ -1,6 +1,5 @@
 /***************************************************************************
  *   Copyright (C) 2007..2010 by David S. Register, Richard M Smith        *
- *   bdbcat@yahoo.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -52,7 +51,7 @@
 // releasing the iterator when iteration is complete.
 static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
 {
-    kern_return_t			kernResult; 
+    kern_return_t			kernResult;
     CFMutableDictionaryRef	classesToMatch;
 
 /*! @function IOServiceMatching
@@ -76,7 +75,7 @@ static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
 		undefined. If the dictionary is a fixed-capacity dictionary and
 		it is full before this operation, and the key does not exist in
 		the dictionary, the behavior is undefined.
-	@param key The key of the value to set into the dictionary. If a key 
+	@param key The key of the value to set into the dictionary. If a key
 		which matches this key is already present in the dictionary, only
 		the value is changed ("add if absent, replace if present"). If
 		no key matches the given key, the key-value pair is added to the
@@ -93,18 +92,18 @@ static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
         CFDictionarySetValue(classesToMatch,
                              CFSTR(kIOSerialBSDTypeKey),
                              CFSTR(kIOSerialBSDRS232Type));
-        
+
 		// Each serial device object has a property with key
         // kIOSerialBSDTypeKey and a value that is one of kIOSerialBSDAllTypes,
         // kIOSerialBSDModemType, or kIOSerialBSDRS232Type. You can experiment with the
         // matching by changing the last parameter in the above call to CFDictionarySetValue.
-        
+
         // As shipped, this sample is only interested in serial ports,
-        // so add this property to the CFDictionary we're matching on. 
+        // so add this property to the CFDictionary we're matching on.
         // This will find devices that advertise themselves as serial ports,
         // such as built-in and USB serial ports. However, this match won't find serial serial ports.
     }
-    
+
     /*! @function IOServiceGetMatchingServices
         @abstract Look up registered IOService objects that match a matching dictionary.
         @discussion This is the preferred method of finding IOService objects currently registered by IOKit. IOServiceAddNotification can also supply this information and install a notification of new IOServices. The matching information used in the matching dictionary may vary depending on the class of service being looked up.
@@ -113,17 +112,17 @@ static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
         @param existing An iterator handle is returned on success, and should be released by the caller when the iteration is finished.
         @result A kern_return_t error code. */
 
-    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, matchingServices);    
+    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, matchingServices);
     if (KERN_SUCCESS != kernResult)
     {
         printf("IOServiceGetMatchingServices returned %d\n", kernResult);
 		goto exit;
     }
-        
+
 exit:
     return kernResult;
 }
-    
+
 // Given an iterator across a set of serial ports, return the BSD path to the first one.
 // If no serial ports are found the path name is set to an empty string.
 static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, int iMaxNames, CFIndex maxPathSize)
@@ -135,9 +134,9 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
 	int				iCurrentNameIndex = 0 ;
     // Initialize the returned path
     *bsdPath = '\0';
-    
+
     // Iterate across all serial ports found.
-    
+
     while ((modemService = IOIteratorNext(serialPortIterator)) && !modemFound)
     {
         CFTypeRef	bsdPathAsCFString;
@@ -145,7 +144,7 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
 		// Get the callout device's path (/dev/cu.xxxxx). The callout device should almost always be
 		// used: the dialin device (/dev/tty.xxxxx) would be used when monitoring a serial port for
 		// incoming calls, e.g. a fax listener.
-	
+
 		bsdPathAsCFString = IORegistryEntryCreateCFProperty(modemService,
                                                             CFSTR(kIOCalloutDeviceKey),
                                                             kCFAllocatorDefault,
@@ -153,16 +152,16 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
         if (bsdPathAsCFString)
         {
             Boolean result;
-            
+
             // Convert the path from a CFString to a C (NUL-terminated) string for use
 			// with the POSIX open() call.
-	    
+
 			result = CFStringGetCString(bsdPathAsCFString,
                                         bsdPath,
-                                        maxPathSize, 
+                                        maxPathSize,
                                         kCFStringEncodingUTF8);
             CFRelease(bsdPathAsCFString);
-            
+
             if (result)
 			{
 				pNames[iCurrentNameIndex] = calloc(1,strlen(bsdPath)+1) ;
@@ -172,7 +171,7 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
         }
         // Release the io_service_t now that we are done with it.
 		(void) IOObjectRelease(modemService);
-	
+
     }
     return iCurrentNameIndex ;
 }
@@ -183,11 +182,11 @@ int FindSerialPortNames(char** pNames, int iMaxNames)
     kern_return_t	kernResult; // on PowerPC this is an int (4 bytes)
 
     io_iterator_t	serialPortIterator;
- 
+
     kernResult = FindSerialPorts(&serialPortIterator);
-    
+
     iActiveNameCount = GetSerialPortPath(serialPortIterator, pNames, iMaxNames, MAXPATHLEN);
-    
+
     IOObjectRelease(serialPortIterator);	// Release the iterator.
 	return iActiveNameCount ;
 }

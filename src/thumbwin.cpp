@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,47 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: thumbwin.cpp,v $
- * Revision 1.7  2010/04/27 01:44:02  bdbcat
- * Build 426
- *
- * Revision 1.6  2009/11/18 01:26:13  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.5  2008/08/26 13:46:25  bdbcat
- * Better color scheme support
- *
- * Revision 1.4  2008/03/30 22:29:22  bdbcat
- * Cleanup
- *
- * Revision 1.3  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.2  2006/09/21 01:37:37  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.3  2006/08/04 11:42:03  dsr
- * no message
- *
- * Revision 1.2  2006/05/19 19:29:58  dsr
- * New Thumbchart logic
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.5  2006/04/19 00:53:01  dsr
- * Do not allow Thumbwin.y to be larger than parent frame.y
- *
- * Revision 1.4  2006/03/16 03:08:25  dsr
- * Cleanup tabs
- *
- * Revision 1.3  2006/02/23 01:52:15  dsr
- * Cleanup
- *
  *
  *
  */

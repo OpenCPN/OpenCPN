@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,36 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
- * $Log: about.h,v $
- * Revision 1.5  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.4  2009/06/28 02:02:56  bdbcat
- * Implement "Tips" tab.
- *
- * Revision 1.3  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.2  2006/10/07 03:50:54  dsr
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.2  2006/04/23 04:04:28  dsr
- * Fix internal names
- *
- * Revision 1.1.1.1  2006/04/19 03:23:27  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.2  2006/03/16 03:28:12  dsr
- * Cleanup tabs
- *
- * Revision 1.1  2006/02/23 03:39:19  dsr
- * Initial
- *
- *
- *
+
  */
 
 

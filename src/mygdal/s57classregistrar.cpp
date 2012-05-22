@@ -27,50 +27,6 @@
  * DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  *
- * $Log: s57classregistrar.cpp,v $
- * Revision 1.5  2008/08/09 23:40:25  bdbcat
- * Fix leaks
- *
- * Revision 1.4  2008/04/20 21:03:43  bdbcat
- * Cleanup memory leaks
- *
- * Revision 1.3  2008/04/10 01:12:10  bdbcat
- * Disallow data directory setup from environment
- *
- * Revision 1.2  2008/03/30 23:08:01  bdbcat
- * Cleanup leaks
- *
- * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:29  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.8  2003/09/12 21:18:54  warmerda
- * open csv files in binary mode, not text mode
- *
- * Revision 1.7  2001/12/17 22:38:42  warmerda
- * restructure LoadInfo() to support in-code tables
- *
- * Revision 1.6  2001/07/18 04:55:16  warmerda
- * added CPL_CSVID
- *
- * Revision 1.5  2000/12/21 21:58:10  warmerda
- * Append class numbers to list rather than inserting at beginning, to
- * preserve original order.
- *
- * Revision 1.4  2000/08/30 09:14:08  warmerda
- * added use of CPLFindFile
- *
- * Revision 1.3  2000/06/07 20:50:58  warmerda
- * make CSV location configurable with env variable
- *
- * Revision 1.2  1999/11/18 19:01:25  warmerda
- * expanded tabs
- *
- * Revision 1.1  1999/11/08 22:22:55  warmerda
- * New
- *
  */
 
 #include "s57.h"

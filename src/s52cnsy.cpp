@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *
  *   Copyright (C) 2000-2001  Sylvain Duclos
  *   sylvain_duclos@yahoo.com
@@ -26,98 +25,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: s52cnsy.cpp,v $
- * Revision 1.25  2010/04/27 01:43:31  bdbcat
- * Build 426
- *
- * Revision 1.24  2010/01/02 02:00:58  bdbcat
- * Add LNDARE01 as point symbol for OBSTRN
- *
- * Revision 1.23  2009/12/26 21:15:52  bdbcat
- * UWTROC
- *
- * Revision 1.22  2009/12/10 20:58:44  bdbcat
- * Beta 1210
- *
- * Revision 1.21  2009/11/18 01:25:31  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.20  2009/07/29 00:54:17  bdbcat
- * Update for gcc 4.2.4
- *
- * Revision 1.19  2009/07/08 01:46:55  bdbcat
- * Correct Green sector light logic.
- *
- * Revision 1.18  2009/06/25 02:32:03  bdbcat
- * Symbolize lights of undefined color as magenta.
- *
- * Revision 1.17  2009/05/05 15:02:25  bdbcat
- * Fix Unicode config bugs
- *
- * Revision 1.16  2009/05/05 03:59:59  bdbcat
- * Add light descriptions
- *
- * Revision 1.15  2009/04/18 03:30:47  bdbcat
- * Correct math on soundings
- *
- * Revision 1.14  2009/03/26 22:30:38  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.13  2008/12/19 01:37:06  bdbcat
- * Add selectable depth unit conversion
- *
- * Revision 1.12  2008/12/09 03:53:47  bdbcat
- * Cleanup Comments
- *
- * Revision 1.11  2008/08/29 04:58:05  bdbcat
- * Correct sector light math
- *
- * Revision 1.10  2008/08/26 19:01:06  bdbcat
- * Correct Colour for Red/Green Sector light
- *
- * Revision 1.9  2008/08/26 13:49:15  bdbcat
- * Better color scheme support
- *
- * Revision 1.8  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.7  2008/03/30 22:15:45  bdbcat
- * Add missing symbology OBSTRN, etc.
- *
- * Revision 1.6  2008/01/12 06:21:06  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.5  2008/01/10 03:37:31  bdbcat
- * Update for Mac OSX
- *
- * Revision 1.4  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.3  2007/03/02 01:59:50  dsr
- * Implement SOUNDG02 Method
- *
- * Revision 1.2  2006/09/21 01:37:36  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.5  2006/08/04 11:42:02  dsr
- * no message
- *
- * Revision 1.4  2006/06/15 02:44:15  dsr
- * Implement more CS
- *
- * Revision 1.3  2006/06/02 02:12:32  dsr
- * More CS
- *
- * Revision 1.2  2006/05/19 19:11:06  dsr
- * Implement some additional rules
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
  *
  */
 

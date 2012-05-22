@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,44 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: thumbwin.h,v $
- * Revision 1.5  2010/04/27 01:45:32  bdbcat
- * Build 426
- *
- * Revision 1.4  2008/04/10 01:01:32  bdbcat
- * Cleanup
- *
- * Revision 1.3  2008/03/30 23:29:52  bdbcat
- * Cleanup/optimize
- *
- * Revision 1.2  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.2  2006/05/19 19:36:19  dsr
- * Cleanup
- *
- * Revision 1.1.1.1  2006/04/19 03:23:27  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.5  2006/04/19 00:59:54  dsr
- * Thumbwin sizing
- *
- * Revision 1.4  2006/03/16 03:28:12  dsr
- * Cleanup tabs
- *
- * Revision 1.3  2006/02/23 01:27:46  dsr
- * Cleanup
- *
- * Revision 1.2  2006/02/09 14:03:46  dsr
- * Define ThumbData and friends
- *
- * Revision 1.3  2006/02/10 03:19:06  dsr
- * *** empty log message ***
- *
  *
  */
 

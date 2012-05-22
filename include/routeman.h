@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,25 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: routeman.h,v $
- * Revision 1.15  2010/06/21 01:55:22  bdbcat
- * 620
- *
- * Revision 1.14  2010/06/04 22:36:37  bdbcat
- * 604
- *
- * Revision 1.13  2010/04/27 01:45:21  bdbcat
- * Build 426
- *
- * Revision 1.12  2010/04/16 23:17:23  bdbcat
- * Updates.
- *
- * Revision 1.11  2010/04/15 15:52:30  bdbcat
- * Build 415.
- *
- * Revision 1.10  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  */
 

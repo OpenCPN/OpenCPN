@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *
  *   Copyright (C) 2000-2004  Sylvain Duclos
  *   sduclos@users.sourceforgue.net
@@ -26,54 +25,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: s52utils.cpp,v $
- * Revision 1.9  2010/04/27 01:43:31  bdbcat
- * Build 426
- *
- * Revision 1.8  2009/11/18 01:26:13  bdbcat
- * 1.3.5 Beta 1117
- *
- * Revision 1.7  2009/08/03 03:14:38  bdbcat
- * Cleanup for MSVC
- *
- * Revision 1.6  2008/10/24 16:18:43  bdbcat
- * Remove/inline  isblank()
- *
- * Revision 1.5  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.4  2008/03/30 22:28:43  bdbcat
- * Cleanup
- *
- * Revision 1.3  2008/01/10 03:38:08  bdbcat
- * Update for Mac OSX
- *
- * Revision 1.2  2007/05/03 13:23:56  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.3  2006/08/04 11:42:02  dsr
- * no message
- *
- * Revision 1.2  2006/05/19 19:25:39  dsr
- * Change Mariner Selections for critical depths
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.4  2006/04/19 00:49:48  dsr
- * *** empty log message ***
- *
- * Revision 1.3  2006/03/16 03:08:24  dsr
- * Cleanup tabs
- *
- * Revision 1.2  2006/02/23 01:48:36  dsr
- * Cleanup
- *
- *
  *
  */
 

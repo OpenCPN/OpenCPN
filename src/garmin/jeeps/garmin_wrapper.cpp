@@ -1,7 +1,7 @@
 /*
     Garmin Jeeps - OpenCPN Interface Wrapper.
 
-    Copyright (C) 2010 David S Register, bdbcat@yahoo.com
+    Copyright (C) 2010 David S Register
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

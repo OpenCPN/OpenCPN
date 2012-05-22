@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,19 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: chartimg.h,v $
- * Revision 1.24  2010/05/19 01:05:19  bdbcat
- * Build 518
- *
- * Revision 1.23  2010/05/15 03:55:04  bdbcat
- * Build 514
- *
- * Revision 1.22  2010/04/27 01:44:36  bdbcat
- * Build 426
- *
- * Revision 1.21  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
  *
  *
  */
