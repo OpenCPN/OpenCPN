@@ -4305,11 +4305,12 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
         return 0;
     }
 
-    char temp[200];
+    char temp[201];
 
     fprintf(fps57, "SENC Version= %d\n", CURRENT_SENC_FORMAT_VERSION);
 
     strncpy(temp, nice_name.mb_str(), 200);
+    temp[200] = '\0';
     fprintf(fps57, "NAME=%s\n", temp);
 
     wxString date000 = m_date000.Format(_T("%Y%m%d"));
