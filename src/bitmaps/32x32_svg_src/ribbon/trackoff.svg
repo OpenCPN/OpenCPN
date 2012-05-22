@@ -16,11 +16,11 @@
    sodipodi:version="0.32"
    inkscape:version="0.48.2 r9819"
    version="1.0"
-   sodipodi:docname="trackon.svg"
+   sodipodi:docname="track.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="trackon.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/will/opencpn_proj/opencpn_icons/oxygen_opencpn/png/track.png"
+   inkscape:export-xdpi="22.5"
+   inkscape:export-ydpi="22.5">
   <defs
      id="defs4">
     <linearGradient
@@ -11791,7 +11791,8 @@
            x="-132.85715"
            y="65.14286" /></flowRegion><flowPara
          id="flowPara4035-8" /></flowRoot>    <g
-       id="g5893">
+       id="g5893"
+       transform="translate(-40,0)">
       <g
          transform="translate(-0.208244,-10.79484)"
          id="g4974">
@@ -11831,7 +11832,7 @@
            y="65.14286" /></flowRegion><flowPara
          id="flowPara4035-2" /></flowRoot>    <g
        id="g5903"
-       transform="translate(3.8977556,-3.498931)">
+       transform="translate(3.8977556,-23.498931)">
       <g
          style="opacity:0.25"
          transform="translate(-3.897756,12.498926)"
