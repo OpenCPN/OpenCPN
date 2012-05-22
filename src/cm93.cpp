@@ -1587,7 +1587,7 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
 
                   switch ( pobj->geotype & 0x0f )
                   {
-                        case 4:                                                     // AREA, 408c3d
+                        case 4:              // AREA
                         {
 
                               if ( !read_and_decode_ushort ( stream, &n_elements ) )
@@ -1721,10 +1721,6 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
 
                   if ( ( pobj->geotype & 0x20 ) == 0x20 )
                   {
-//                  _asm int 3;                               // just after loc_408D8E
-                        //TODO This is not right, n_related_objects is unsigned char.....
-//                   *(int *)(0) = 0;                              // cause break error
-
                         unsigned short nrelated;
                         if ( !read_and_decode_ushort ( stream, &nrelated ) )
                               return false;
@@ -1735,13 +1731,11 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
 
                   if ( ( pobj->geotype & 0x40 ) == 0x40 )
                   {
-//                  _asm int 3;                               // just after loc_408DCA"Relates to relation not implemented"
                   }
 
 
                   if ( ( pobj->geotype & 0x80 ) == 0x80 )        // attributes
                   {
-//                      _asm int 3;                               // just after loc_408DE2
 
                         unsigned char nattr;
                         if ( !read_and_decode_bytes ( stream, &nattr, 1 ) )
@@ -1761,9 +1755,6 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
 
                         if ( ( pobj->geotype & 0x0f ) == 1 )
                         {
-//                        int yyp = 5;
-//                        if(pobj->n_attributes != 1)
-//                              int yyr = 5;
                         }
 
                   }
@@ -1777,7 +1768,6 @@ bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *
 
       catch ( ... )
       {
-//     int yyp = 6;
             printf ( "catch on read_feature_record_table\n" );
       }
 
@@ -1875,7 +1865,6 @@ bool Ingest_CM93_Cell ( const char * cell_file_name, Cell_Info_Block *pCIB )
 
       catch ( ... )
       {
-//      int yyp = 5;
             return false;
       }
 
@@ -1922,18 +1911,6 @@ cm93chart::cm93chart()
       m_pDrawBuffer = ( wxPoint * ) malloc ( 4 * sizeof ( wxPoint ) );
       m_nDrawBufferSize = 1;
 
-
-      /*
-            ooFILE *flstreamt = fopen("/home/dsr/Desktop/Charts/CM93_May2009/03300060/03300060.INF", "rb");
-            if(flstreamt)
-            {
-                  void *p = calloc(10000, 1);
-                  read_and_decode_bytes(flstreamt, p, 10000);
-                  FILE *flstreamo = fopen("/home/dsr/03300060.info", "wb");
-                  fwrite ( p, 1, 10000, flstreamo );
-                  fclose(flstreamo);
-            }
-      */
 
 }
 
@@ -2022,8 +1999,6 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, float north, float east, wxP
       r->x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
       r->y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
 
-//      double xx =(((valx - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
-//      printf("%g\n", xx);
 
 }
 
@@ -2286,46 +2261,6 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
 
 void cm93chart::ProcessVectorEdges ( void )
 {
-      //    Create the vector(edge) table for this cell, appending to the existing member table
-      /*
-            m_current_cell_vearray_offset = m_nve_elements;              // add to the table at this offset
-            m_nve_elements += m_CIB.m_nvector_records;
-
-            if(NULL == m_pve_array)
-                  m_pve_array = (VE_Element **)malloc(m_nve_elements * sizeof(VE_Element *));
-            else
-                  m_pve_array = (VE_Element **)realloc(m_pve_array, m_nve_elements * sizeof(VE_Element *));
-
-            geometry_descriptor *pgd = m_CIB.edge_vector_descriptor_block;
-
-            for(int iedge = 0 ; iedge < m_CIB.m_nvector_records ; iedge++)
-            {
-                  VE_Element *vep = new VE_Element;
-                  vep->index = iedge + m_current_cell_vearray_offset;
-                  vep->nCount = pgd->n_points;
-                  vep->pPoints = NULL;
-                  vep->max_priority = -99;            // Default
-
-                  if(pgd->n_points)
-                  {
-                        double *2 = (double *)malloc(pgd->n_points * 2 * sizeof(double));
-                        vep->pPoints = pPoints;
-
-                        cm93_point *ppt = pgd->p_points;
-                        for(int ip = 0 ; ip < pgd->n_points ; ip++)
-                        {
-                              *pPoints++ = ppt->x;
-                              *pPoints++ = ppt->y;
-                              ppt++;
-                        }
-                  }
-
-                  m_pve_array[iedge + m_current_cell_vearray_offset] = vep;
-
-                  pgd++;                              // next geometry descriptor
-            }
-      */
-
       //    Create the vector(edge) map for this cell, appending to the existing member hash map
 
       VE_Hash &vehash = Get_ve_hash();
@@ -2389,13 +2324,6 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
       {
             if ( ( pobjectDef != NULL ) )
             {
-
-//                  if(pobjectDef->n_related_objects)
-//                        int yyp = 5;
-
-//                  if(iObj == 1310)
-//                        int yyp = 4;
-
                   Extended_Geometry *xgeom = BuildGeom ( pobjectDef, NULL, iObj );
 
                   obj = NULL;
@@ -2472,12 +2400,6 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
 
                                     break;
                         }
-
-// Debug hooks
-//        if(!strncmp(obj->FeatureName, "RESARE", 6))
-//            int ffl = 4;
-//    if(obj->Index == 2173)
-//        int rrt = 5;
 
                         LUP = ps52plib->S52_LUPLookup ( LUP_Name, obj->FeatureName, obj );
 
@@ -2614,11 +2536,6 @@ InitReturn cm93chart::Init ( const wxString& name, ChartInitFlag flags )
             }
       }
 
-
-
-//    Set the color scheme
-//      m_global_color_scheme = cs;
-//      SetColorScheme(cs, false);
 
 
       bReadyToRender = true;
@@ -3080,33 +2997,6 @@ unsigned char *cm93_attr_block::GetNextAttr()
 
 }
 
-/*
-4,1,"conical (nun, ogival)"
-4,2,can (cylindrical)
-4,3,spherical
-4,4,pillar
-4,5,spar (spindle)
-4,6,barrel (tun)
-4,7,super-buoy
-4,8,ice buoy
-
-75,1,white
-75,2,black
-75,3,red
-75,4,green
-75,5,blue
-75,6,yellow
-75,7,grey
-75,8,brown
-75,9,amber
-75,10,violet
-75,11,orange
-75,12,magenta
-75,13,pink
-*/
-
-
-
 
 wxString ParseSLGTA ( wxString& val )
 {
@@ -3291,11 +3181,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       double trans_WGS84_offset_x = 0.;
       double trans_WGS84_offset_y = 0.;
 
-
-      // Debug Hook
-//      if(iobject == 51)
-//            int ffk = 3;
-
       wxString sclass = pDict->GetClassName ( iclass );
       if ( sclass == _T ( "Unknown" ) )
       {
@@ -3325,26 +3210,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
 
 
-      // Debug hook
-//      if(sclass.IsSameAs(_T("CHNWIR")))
-//            int yyp = 5;
-
-
-//        else if(sclass.IsSameAs(_T("_texto")))
-//             sclass_sub = _T("$TEXTS");
-
-      /*
-      _cmapl|L|7|Line, generic|_lcode|INFORM|NINFOM|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _texto|198|P|8|Text|$JUSTH|$JUSTV|$SPACE|$CHARS|$COLOR|$ROTAT|_texta|INFORM|NINFOM|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _slgto|199|P|8|Navigational aid, generic|_slgta|INFORM|NINFOM|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _boygn|200|P|8|Buoy, generic|BOYSHP|COLMAR|COLPAT|CONRAD|DATEND|DATSTA|MARSYS|NOBJNM|OBJNAM|PEREND|PERSTA|QUAVEM|STATUS|VERLEN|INFORM|NINFOM|PICREP|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _extgn|201|P|8|Extended navigational aid, generic|CATCAM|CATLAM|COLMAR|MARSYS|NOBJNM|OBJNAM|INFORM|NINFOM|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _cmapa|202|LA|4|Area, generic|_acode|INFORM|NINFOM|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _bcngn|203|P|8|Beacon, generic|BCNSHP|COLMAR|COLPAT|CONRAD|DATEND|DATSTA|MARSYS|NOBJNM|OBJNAM|PEREND|PERSTA|QUAVEM|STATUS|VERDAT|VERLEN|INFORM|NINFOM|PICREP|SCAMAX|SCAMIN|RECDAT|RECIND|SORDAT|SORIND
-      _m_sor|217|A|0|Source of data|CSCALE|DUNITS|HUNITS|HORACC|NMDATE|HORDAT|_sorhd|_wgsox|_wgsoy|SORDAT|SORIND|VERACC|VERDAT|_hvdat|MARSYS|_chcod|_dgdat|_quart|INFORM|NINFOM|RECDAT|RECIND
-      */
-
-
       //    Create the S57 Object
       S57Obj *pobj = new S57Obj();
 
@@ -3362,13 +3227,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
       if ( geomtype == 4 )                    // convert cm93 area(4) to GDAL area(3)...
             geomtype_sub = 3;
-
-//      pobj->prim = geomtype_sub;
-
-      //  Debug hook
-//       if(sclass.IsSameAs((_T("DISMAR"))))
-//             int ggk = 5;
-
 
       pobj->attList = new wxString();
       pobj->attVal =  new wxArrayOfS57attVal();
@@ -3389,11 +3247,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
             char vtype = pDict->GetAttrType ( iattr );
 
             unsigned char *aval = curr_attr + 1;
-
-            //  Debug hook
-//            if(sattr.IsSameAs((char *)"SIGPER"))
-//                  int ggk = 5;
-
 
             char val[4000];
             int *pi;
@@ -3500,29 +3353,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
 
 
-
-//            Next:  consider added LUPS for _extgn objects like boylat(w/catlam and colour(or colmar));
-//            Like Winyah bay entrance channel
-
-
-            /*
-                        if(sclass.IsSameAs(_T("_slgto")) && (vtype == 'S') && sattr.IsSameAs(_T("_slgta")))
-                        {
-                              wxString aa(val, wxConvUTF8);
-                              wxString add_attr = ParseSLGTA(aa);
-                              sheader += add_attr;
-                        }
-
-
-
-                        if(sclass.IsSameAs(_T("_texto")) && (vtype == 'C') && sattr.IsSameAs(_T("_texta")))
-                        {
-                              wxString aa(val, wxConvUTF8);
-                              wxString add_attr = ParseTEXTA(aa);
-                              sheader += add_attr;
-                        }
-            */
-
             //    Do CM93 $SCODE attribute substitutions
             if ( sclass.IsSameAs ( _T ( "$AREAS" ) ) && ( vtype == 'S' ) && sattr.IsSameAs ( _T ( "$SCODE" ) ) )
             {
@@ -3591,32 +3421,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
       delete pab;
 
-      /*
-              //  Add any attributes unspecified by CMAP
-
-            if(sclass.IsSameAs(_T("SOUNDG")))
-            {
-                  sprintf( line, "  %s (%c) = %d", "SCAMIN", 'I', (int)(scale * 2));
-                  sheader += wxString(line, wxConvUTF8);
-                  sheader += '\n';
-            }
-
-            else if(sclass.IsSameAs(_T("ITDARE")))
-            {
-                  sprintf( line, "  %s (%c) = %g\n", "DRVAL1", 'R', -0.8);
-                  sheader += wxString(line, wxConvUTF8);
-                  sprintf( line, "  %s (%c) = %g\n", "DRVAL2", 'R', 0.);
-                  sheader += wxString(line, wxConvUTF8);
-            }
-
-            else if(sclass.IsSameAs(_T("_texto")))
-            {
-                  sprintf( line, "  %s (%c) = %d", "SCAMIN", 'I', (int)(scale * 3));      // increase to make visible at higher scale
-                  sheader += wxString(line, wxConvUTF8);
-                  sheader += '\n';
-            }
-      */
-
       //    ATON label optimization:
       //    Some CM93 ATON objects do not contain OBJNAM attribute, which means that no label is shown
       //    for these objects when ATON labals are requested
@@ -3678,18 +3482,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                               psz_INFORM = pszatt_name;
                         }
 
-//  Debug
-                        /*
-                                                      S57attVal *pval;
-                                                      pval = pobj->attVal->Item(iatt);
-                                                      if(pval->valType == OGR_STR)
-                                                      {
-                                                            char * t = (char *)pval->value;
-
-                                                            if(!strncmp((const char *)pval->value, "R_CONOLL", 8))
-                                                                  int yyp = 5;
-                                                      }
-                        */
 
                         iatt++;
                   }
@@ -3767,7 +3559,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
                                     ppt++;
 
-//                                    printf("%d %d %g %g\n", p.x, p.y, lon, lat);
                               }
                               pmcd->m_nvertices = npta;
                               pmcd->pvertices = geoPt;
@@ -3874,97 +3665,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         //    Set up a deferred tesselation
                         pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
-#if 0
-                  else
-                  {
-                  //    Build an OGRPolygon from xgeom
-                  //    Coordinates will be cm93 points
-
-                        int npta  = xgeom->contour_array[0];   // Get number of exterior ring points(vertices)
-                        OGRPolygon *pPoly = new OGRPolygon;
-
-                        //    Build an OGRLinearRing
-                        OGRLinearRing *plr0 = new OGRLinearRing;
-
-                        //  and add the cm93 points to LinearRing
-                        for ( int ip = 0 ; ip < npta ; ip++ )
-                        {
-                              cm93_point p;
-                              p.x = ( int ) xgeom->vertex_array[ip + 1].m_x;
-                              p.y = ( int ) xgeom->vertex_array[ip + 1].m_y;
-
-                              plr0->setPoint ( ip, p.x, p.y );
-                        }
-
-                        //    Add the LinearRing to the Poly
-                        pPoly->addRing ( plr0 );
-
-                        //    Now loop on the interior rings
-                        wxPoint2DDouble *pd = &xgeom->vertex_array[npta +1];        // points to the first interior ring
-                        for(int ir=1; ir < xgeom->n_contours; ir++)
-                        {
-                              int nptir = xgeom->contour_array[ir];
-
-                        //    Build an OGRLinearRing
-                              OGRLinearRing *plr = new OGRLinearRing;
-
-                        //  and add the cm93 points to LinearRing
-                              for ( int ip = 0 ; ip < nptir ; ip++ )
-                              {
-                                    cm93_point p;
-                                    p.x = ( int ) pd->m_x;
-                                    p.y = ( int ) pd->m_y;
-
-                                    plr->setPoint ( ip, p.x, p.y );
-
-                                    pd++;
-                              }
-
-                        //    Add the LinearRing to the Poly
-                              pPoly->addRing ( plr );
-                        }
-
-//                        PolyTessGeo *pttt = new PolyTessGeo ( pPoly, false, 0, 0, false );
-//                        pobj->pPolyTessGeo->BuildTessGL();
-//                        int yyp = 5;
-
-                  }
-#endif
-
-#if 0
-                  //  Walk the tesselated triangle chain(s) to compute lat/lon bounding boxes
-                  //  Longitudes range from 0->360.
-
-                  PolyTriGroup *ppg = pobj->pPolyTessGeo->Get_PolyTriGroup_head();
-                  TriPrim *p_tp = ppg->tri_prim_head;
-                  while ( p_tp )
-                  {
-                  //      Get and convert the points
-                        double *pvert_list = p_tp->p_vertex;
-                        double sxmax = -1000;                   // this poly BBox
-                        double sxmin = 1000;
-                        double symax = -90;
-                        double symin = 90;
-
-                        for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
-                        {
-                              double lat, lon;
-                              p.x = *pvert_list++;
-                              p.y = *pvert_list++;
-                              Transform(&p, 0, 0, &lat, &lon);
-
-                              sxmax = wxMax(lon, sxmax);
-                              sxmin = wxMin(lon, sxmin);
-                              symax = wxMax(lat, symax);
-                              symin = wxMin(lat, symin);
-                        }
-
-                        p_tp->p_bbox->SetMin(sxmin, symin);
-                        p_tp->p_bbox->SetMax(sxmax, symax);
-
-                        p_tp = p_tp->p_next;                // pick up the next in chain
-                  }
-#endif
 
                   break;
             }
@@ -4136,9 +3836,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         if ( pmcd )
                         {
                               trans_WGS84_offset_x = pmcd->user_xoff;
-//                              trans_WGS84_offset_x += pmcd->transform_WGS84_offset_x;
                               trans_WGS84_offset_y = pmcd->user_yoff;
-//                              trans_WGS84_offset_y += pmcd->transform_WGS84_offset_y;
                         }
                   }
 
@@ -4187,31 +3885,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       if ( pobj )
       {
             pobj->iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
-            /*
-                        bool bNeedNew = true;
-                        OBJLElement *pOLE;
-
-                        for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
-                        {
-                        pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
-                        if(!strncmp(pOLE->OBJLName, pobj->FeatureName, 6))
-                        {
-                              pobj->iOBJL = iPtr;
-                              bNeedNew = false;
-                              break;
-                        }
-                        }
-
-                        if(bNeedNew)
-                        {
-                              pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
-                              strncpy(pOLE->OBJLName, pobj->FeatureName, 6);
-                              pOLE->nViz = 1;
-
-                              ps52plib->pOBJLArray->Add((void *)pOLE);
-                              pobj->iOBJL  = ps52plib->pOBJLArray->GetCount() - 1;
-                        }
-            */
       }
 
 
@@ -4285,9 +3958,6 @@ wxPoint2DDouble cm93chart::FindM_COVROffset ( double lat, double lon )
             ret.m_y = pmcd0->transform_WGS84_offset_y;
       }
 
-//      int n = m_CIB.m_cell_mcovr_list.GetCount();
-//      printf("%d\n", n);
-
       //    If there are more than one M_COVR in this cell, need to search
       if ( m_CIB.m_cell_mcovr_list.GetCount() > 1 )
       {
@@ -4360,9 +4030,6 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell ( void )
                   return INIT_FAIL_NOERROR;
 
 
-
-      //      if(!Ingest_CM93_Cell((*m_pFullPath).mb_str(), &m_header, &m_CIB))
-      //            return INIT_FAIL_REMOVE;
 
 
             //    Inform the manager that a chart of this scale has been processed
@@ -4509,7 +4176,8 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     pmcd->m_nvertices = npta;
                                     pmcd->pvertices = geoPt;
 
-                                    pmcd->m_covr_bbox = wxBoundingBox ( pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max );
+                                    pmcd->m_covr_bbox = wxBoundingBox ( pmcd->m_covr_lon_min, pmcd->m_covr_lat_min,
+                                                pmcd->m_covr_lon_max, pmcd->m_covr_lat_max );
 
 
                                     //    Capture and store the potential WGS transform offsets grabbed during attribute decode
@@ -4521,8 +4189,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
                                     //    Clean up the xgeom
                                     free ( xgeom->pvector_index );
-//                                    free ( xgeom->contour_array );
-//                                    free ( xgeom->vertex_array );
 
                                     delete xgeom;
                               }
@@ -4816,9 +4482,6 @@ cm93_dictionary *cm93manager::FindAndLoadDict ( const wxString &file )
       wxString target;
       unsigned int i = 0;
 
-//      if(path[0] == fn.GetPathSeparator())      // path starts with sep
-//            target.Append(path[i++]);
-
       while ( i < path.Len() )
       {
             target.Append ( path[i] );
@@ -4854,7 +4517,6 @@ void SetVPPositive ( ViewPort *pvp )
 {
       while ( pvp->GetBBox().GetMinX() < 0 )
       {
-//            if(pvp->clon < 0.)
             pvp->clon += 360.;
             wxPoint2DDouble t ( 360., 0. );
             pvp->GetBBox().Translate ( t );
@@ -4977,16 +4639,6 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
       //    Load the cm93 dictionary if necessary
       if ( !m_pDictComposite )
       {
-/*
-            if ( pConfig )
-            {
-                  pConfig->SetPath ( _T ( "/Directories" ) );
-                  pConfig->Read ( _T ( "CM93DictionaryLocation" ), &g_CM93DictDir );
-            }
-
-            if ( g_CM93DictDir.Len() )              // a hint...
-                  m_pDictComposite = FindAndLoadDictFromDir ( g_CM93DictDir );
-*/
             if ( !m_pDictComposite )                           // second try from the file
                   m_pDictComposite = FindAndLoadDictFromDir ( path );
 
@@ -4995,19 +4647,6 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
                   wxLogMessage ( _T ( "   CM93Composite Chart Init cannot locate CM93 dictionary." ) );
                   return INIT_FAIL_REMOVE;
             }
-/*
-            else
-            {
-                  if ( pConfig )                                        // update the hint
-                  {
-                        if ( !m_pDictComposite->GetDictDir().IsSameAs ( g_CM93DictDir ) )
-                        {
-                              g_CM93DictDir = m_pDictComposite->GetDictDir();
-                              pConfig->UpdateSettings();
-                        }
-                  }
-            }
-*/
       }
 
 
@@ -5028,7 +4667,8 @@ void cm93compchart::Activate ( void )
             if ( !pCM93DetailSlider )
             {
                   pCM93DetailSlider = new CM93DSlide ( gFrame, -1 , 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
-                                                       wxPoint ( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize, wxSIMPLE_BORDER , _T ( "cm93 Detail" ) );
+                                                       wxPoint ( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize,
+                                                                   wxSIMPLE_BORDER , _T ( "cm93 Detail" ) );
             }
 
             //    Here is an ugly piece of code which prevents the slider from taking the keyboard focus

@@ -115,7 +115,6 @@ typedef struct{
 //#pragma pack(pop)
 
 
-//    This is the 128 byte cm93 cell header, found at offset 0x0a in the cell file
 typedef struct{
       double                  lon_min;
       double                  lat_min;
@@ -220,21 +219,6 @@ typedef struct{
 
 
 
-
-/*
-typedef struct{
-      OGRGeometry       *pogrGeom;
-      int               n_vector_indices;
-      int               *pvector_index;
-      int               n_contours;                          // parameters passed to trapezoid tesselator
-      int               *contour_array;
-      int               n_max_vertex;
-      int               pointx;
-      int               pointy;
-      wxPoint2DDouble   *vertex_array;
-      int               xmin, xmax, ymin, ymax;
-}Extended_Geometry;
-*/
 
 //----------------------------------------------------------------------------
 // cm93_dictionary class
@@ -362,8 +346,8 @@ class cm93chart : public s57chart
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
             Extended_Geometry *BuildGeom(Object *pobject, wxFileOutputStream *postream, int iobject);
 
-            S57Obj *CreateS57Obj( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
-                                             double ref_lat, double ref_lon, double scale);
+            S57Obj *CreateS57Obj( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict,
+                                  Extended_Geometry *xgeom, double ref_lat, double ref_lon, double scale);
 
             void ProcessMCOVRObjects(int cell_index, char subcell);
 
