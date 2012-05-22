@@ -2521,33 +2521,35 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
 
 void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
 {
-      m_pRoutePoint->SetVisible(m_bIsVisible_save);
-      m_pRoutePoint->SetNameShown(m_bShowName_save);
-      m_pRoutePoint->SetPosition(m_lat_save, m_lon_save);
-      m_pRoutePoint->m_IconName = m_IconName_save;
-      m_pRoutePoint->ReLoadIcon();
-
-      m_pRoutePoint->m_HyperlinkList->Clear();
-
-      int NbrOfLinks = m_pMyLinkList->GetCount();
-//      int len = 0;
-      if (NbrOfLinks > 0)
+      if (m_pRoutePoint)
       {
-            wxHyperlinkListNode *linknode = m_pMyLinkList->GetFirst();
-            while (linknode)
+            m_pRoutePoint->SetVisible(m_bIsVisible_save);
+            m_pRoutePoint->SetNameShown(m_bShowName_save);
+            m_pRoutePoint->SetPosition(m_lat_save, m_lon_save);
+            m_pRoutePoint->m_IconName = m_IconName_save;
+            m_pRoutePoint->ReLoadIcon();
+
+            m_pRoutePoint->m_HyperlinkList->Clear();
+
+            int NbrOfLinks = m_pMyLinkList->GetCount();
+            if (NbrOfLinks > 0)
             {
-                Hyperlink *link = linknode->GetData();
+                  wxHyperlinkListNode *linknode = m_pMyLinkList->GetFirst();
+                  while (linknode)
+                  {
+                      Hyperlink *link = linknode->GetData();
+                      Hyperlink* h = new Hyperlink();
+                      h->DescrText = link->DescrText;
+                      h->Link = link->Link;
+                      h->Type = link->Type;
 
-                Hyperlink* h = new Hyperlink();
-                h->DescrText = link->DescrText;
-                h->Link = link->Link;
-                h->Type = link->Type;
+                      m_pRoutePoint->m_HyperlinkList->Append(h);
 
-                m_pRoutePoint->m_HyperlinkList->Append(h);
-
-                linknode = linknode->GetNext();
+                      linknode = linknode->GetNext();
+                  }
             }
       }
+
       Show(false);
       delete m_pMyLinkList;
       m_pMyLinkList = NULL;
