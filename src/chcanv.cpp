@@ -9222,12 +9222,12 @@ void ChartCanvas::PopupMenuHandler ( wxCommandEvent& event )
                         pMarkPropDialog->SetRoutePoint ( m_pFoundRoutePoint );
                         pMarkPropDialog->UpdateProperties();
                         if (m_pFoundRoutePoint->m_bIsInLayer) {
-                              wxString caption(_T("Mark Properties, Layer: "));
+                              wxString caption(_("Mark Properties, Layer: "));
                               caption.Append(GetLayerName(m_pFoundRoutePoint->m_LayerID));
                               pMarkPropDialog->SetDialogTitle(caption);
                         }
                         else
-                              pMarkPropDialog->SetDialogTitle(_T("Mark Properties"));
+                              pMarkPropDialog->SetDialogTitle(_("Mark Properties"));
 
                         pMarkPropDialog->Show();
                         pMarkPropDialog->InitialFocus();
