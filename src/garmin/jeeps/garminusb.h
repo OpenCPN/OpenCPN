@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111 USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
 
  */
 #include <stdio.h>
@@ -23,9 +23,9 @@
 /* This structure is a bit funny looking to avoid variable length
  * arrays which aren't present in C89.   This contains the visible
  * fields in the USB packets of the Garmin USB receivers (60C, 76C, etc.)
- * All data are little endian. 
+ * All data are little endian.
  */
-typedef 
+typedef
 union {
 	struct {
 	unsigned char type;
@@ -42,8 +42,8 @@ union {
 } garmin_usb_packet;
 
 /*
- * Internal interfaces that are common regardless of underlying 
- * OS implementation. 
+ * Internal interfaces that are common regardless of underlying
+ * OS implementation.
  */
 #define GUSB_MAX_UNITS 20
 struct garmin_unit_info {
@@ -63,5 +63,5 @@ int gusb_close(gpsdevh *);
  * New packet types in USB.
  */
 #define GUSB_SESSION_START 5	/* We request units attention */
-#define GUSB_SESSION_ACK   6	/* Unit responds that we have its attention */ 
+#define GUSB_SESSION_ACK   6	/* Unit responds that we have its attention */
 #define GUSB_REQUEST_BULK  2	/* Unit requests we read from bulk pipe */

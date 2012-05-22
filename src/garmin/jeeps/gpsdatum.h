@@ -20,8 +20,8 @@
 **
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-** Boston, MA  02111-1307, USA.
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
 ********************************************************************/
 #ifdef __cplusplus
 extern "C"
@@ -209,7 +209,7 @@ GPS_ODatum GPS_Datum[]=
 /* 121 */    { "Sweden",          	4,  	424.3, 	-80.5, 	613.1 	},
 /* 122 */    { "GDA 94",		21,  	0, 	0, 	0 	},
 /* 123 */    { "CH-1903",		4,  	674, 	15, 	405 	},
-/* 124 */    { "Palestine 1923",        27,     -235,   -85,    264     },                 
+/* 124 */    { "Palestine 1923",        27,     -235,   -85,    264     },
 /* 125 */    { "ITM (Israeli New)",     21,     -48,     55,    -52     },
 	     { NULL,                 	0,  	0,    	0,     	0 	}
 };

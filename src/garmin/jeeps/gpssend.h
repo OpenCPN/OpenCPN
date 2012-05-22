@@ -19,8 +19,8 @@
 **
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-** Boston, MA  02111-1307, USA.
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
 ********************************************************************/
 #ifdef __cplusplus
 extern "C"
@@ -38,7 +38,7 @@ extern "C"
 int32  GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet);
 int32  GPS_Serial_Send_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec);
 
-void   GPS_Make_Packet(GPS_PPacket *packet, US type, UC *data, uint32 n);    
+void   GPS_Make_Packet(GPS_PPacket *packet, US type, UC *data, uint32 n);
 
 
 #endif

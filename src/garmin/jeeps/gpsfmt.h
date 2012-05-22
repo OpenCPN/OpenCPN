@@ -20,8 +20,8 @@
 **
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-** Boston, MA  02111-1307, USA.
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
 ********************************************************************/
 #ifdef __cplusplus
 extern "C"
@@ -37,7 +37,7 @@ extern "C"
 #include <time.h>
 
 void   GPS_Fmt_Print_Time(time_t Time, FILE *outf);
-void   GPS_Fmt_Print_Position(double lat, double lon, FILE *outf);    
+void   GPS_Fmt_Print_Position(double lat, double lon, FILE *outf);
 void   GPS_Fmt_Print_Pvt(GPS_PPvt_Data pvt, FILE *outf);
 void   GPS_Fmt_Print_Almanac(GPS_PAlmanac *alm, int32 n, FILE *outf);
 void   GPS_Fmt_Print_Track(GPS_PTrack *trk, int32 n, FILE *outf);
