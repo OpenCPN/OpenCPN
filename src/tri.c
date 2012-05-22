@@ -818,6 +818,7 @@ int read_segments(char *filename, int *genus)
     }
 
   *genus = ncontours - 1;
+  fclose(infile);
   return i-1;
 }
 

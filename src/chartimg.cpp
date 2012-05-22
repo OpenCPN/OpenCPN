@@ -421,12 +421,18 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
                   int i;
                   float ltp,lnp;
                   sscanf(buffer, "Vertex%d=%f %f", &i, &ltp, &lnp);
+                  Plypoint *tmp = pPlyTable;
                   pPlyTable = (Plypoint *)realloc(pPlyTable, sizeof(Plypoint) * (nPlypoint+1));
-                  pPlyTable[nPlypoint].ltp = ltp;
-                  pPlyTable[nPlypoint].lnp = lnp;
-
-                  nPlypoint++;
-
+                  if (NULL == pPlyTable)
+                  {
+                      free(tmp);
+                      tmp = NULL;
+                  } else
+                  {
+                      pPlyTable[nPlypoint].ltp = ltp;
+                      pPlyTable[nPlypoint].lnp = lnp;
+                      nPlypoint++;
+                  }
             }
 
             else if (!strncmp(buffer, "Date Pub", 8))
@@ -1210,11 +1216,18 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                   int i;
                   float ltp,lnp;
                   sscanf(&buffer[4], "%d,%f,%f", &i, &ltp, &lnp);
+                  Plypoint *tmp = pPlyTable;
                   pPlyTable = (Plypoint *)realloc(pPlyTable, sizeof(Plypoint) * (nPlypoint+1));
-                  pPlyTable[nPlypoint].ltp = ltp;
-                  pPlyTable[nPlypoint].lnp = lnp;
-
-                  nPlypoint++;
+                  if (NULL == pPlyTable)
+                  {
+                      free(tmp);
+                      tmp = NULL;
+                  } else
+                  {
+                      pPlyTable[nPlypoint].ltp = ltp;
+                      pPlyTable[nPlypoint].lnp = lnp;
+                      nPlypoint++;
+                  }
             }
 
             else if(!strncmp(buffer, "CED", 3))

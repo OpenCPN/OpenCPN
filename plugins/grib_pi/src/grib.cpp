@@ -1918,7 +1918,7 @@ void GRIBOverlayFactory::DrawOLBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord
       glPixelZoom(1, 1);
       glDisable(GL_BLEND);
 
-               free(e);
+               delete[](e);
           } else {
                glRasterPos2i(x, y);
                glPixelZoom(1, -1); /* draw data from top to bottom */

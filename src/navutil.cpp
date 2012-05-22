@@ -7389,8 +7389,9 @@ void X11FontPicker::OnChangeFace ( wxCommandEvent& WXUNUSED ( event ) )
 void X11FontPicker::SetChoiceOptionsFromFacename ( wxString &facename )
 {
       //    Get a list of matching fonts
-      char face[100];
+      char face[101];
       strncpy ( face, facename.mb_str(), 100 );
+      face[100] = \0;
 
       char pattern[100];
       sprintf ( pattern, "-*-%s-*-*-*-*-*-*-*-*-*-*-iso8859-1", face );

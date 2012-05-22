@@ -690,7 +690,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usema
 
                glColor4f(1, 1, 1, 1);
                GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-               free(e);
+               delete[](e);
           } else {
                glRasterPos2i(x, y);
                glPixelZoom(1, -1); /* draw data from top to bottom */

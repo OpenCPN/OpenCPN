@@ -273,8 +273,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                     case OGR_INT: // S57 attribute type 'E' enumerated, 'I' integer
                                     {
                                           int a;
-                                          char ss[40];
+                                          char ss[41];
                                           strncpy( ss, LATTValue.mb_str(), 39 );
+                                          ss[40]='\0';
                                           sscanf( ss, "%d", &a );
                                           if( a == *(int*) ( v->value ) ) attValMatch = true;
                                           break;
@@ -283,8 +284,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
                                     case OGR_INT_LST: // S57 attribute type 'L' list: comma separated integer
                                     {
                                           int a;
-                                          char ss[40];
+                                          char ss[41];
                                           strncpy( ss, LATTValue.mb_str(), 39 );
+                                          ss[40] = '\0';
                                           char *s = &ss[0];
 
                                           int *b = (int*) v->value;
@@ -6407,7 +6409,7 @@ TexFont *txfLoadFont( char *filename ) {
       FILE *file;
       GLfloat w, h, xstep, ystep;
       char fileid[4], tmp;
-      unsigned char *texbitmap;
+      unsigned char *texbitmap = NULL;
       int min_glyph, max_glyph;
       int endianness, swap, format, stride, width, height;
       int i, j, got;
@@ -6548,6 +6550,7 @@ TexFont *txfLoadFont( char *filename ) {
                                     txf->tex_width * txf->tex_height );
                         if( orig == NULL ) {
                               lastError = (char *) "out of memory.";
+                              free ( orig );
                               goto error;
                         }
                         got = fread( orig, 1, txf->tex_width * txf->tex_height, file );
@@ -6556,6 +6559,7 @@ TexFont *txfLoadFont( char *filename ) {
                                     2 * txf->tex_width * txf->tex_height );
                         if( txf->teximage == NULL ) {
                               lastError = (char *) "out of memory.";
+                              free ( orig );
                               goto error;
                         }
                         for( i = 0; i < txf->tex_width * txf->tex_height; i++ ) {
@@ -6634,6 +6638,8 @@ TexFont *txfLoadFont( char *filename ) {
             free( txf );
       }
       if( file ) fclose( file );
+      if(texbitmap)
+            free(texbitmap);
       return NULL;
 }
 
