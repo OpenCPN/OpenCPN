@@ -4630,7 +4630,10 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
 
                         if(NULL == m_pRolloverWin)
                         {
-                              m_pRolloverWin = new RolloverWin(this);
+                              if( g_bopengl && m_glcc )
+                                    m_pRolloverWin = new RolloverWin(m_glcc);
+                              else
+                                    m_pRolloverWin = new RolloverWin(this);
                               m_pRolloverWin->Hide();
                         }
 
@@ -15628,14 +15631,16 @@ void RolloverWin::OnMouseEvent ( wxMouseEvent& event )
 
 void RolloverWin::SetBitmap(int rollover)
 {
-      wxClientDC cdc(GetParent());
-      wxMemoryDC mdc;
+      wxDC* cdc = new wxScreenDC();
+      wxPoint canvasPos = GetParent()->GetScreenPosition();
 
+      wxMemoryDC mdc;
       delete m_pbm;
       m_pbm = new wxBitmap( m_size.x, m_size.y, -1);
       mdc.SelectObject(*m_pbm);
 
-      mdc.Blit(0, 0, m_size.x, m_size.y, &cdc, m_position.x, m_position.y);
+      mdc.Blit(0, 0, m_size.x, m_size.y, cdc, m_position.x+canvasPos.x, m_position.y+canvasPos.y);
+      delete cdc;
 
        wxFont *dFont;
        ocpnDC dc(mdc);
