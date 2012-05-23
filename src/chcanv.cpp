@@ -4669,7 +4669,6 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
                                     win_size.x -= console->GetSize().x;
                               m_pRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16, LEG_ROLLOVER, win_size);
                               m_pRolloverWin->SetBitmap(LEG_ROLLOVER);
-                              m_pRolloverWin->Refresh();
                               m_pRolloverWin->Show();
                               showRollover = true;
                               break;
@@ -4701,6 +4700,8 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
       {
             m_pRolloverWin->Hide();
             m_pRolloverRouteSeg = NULL;
+            m_pRolloverWin->Destroy();
+            m_pRolloverWin = NULL;
       }
       else if(m_pRolloverWin && showRollover)
       {
