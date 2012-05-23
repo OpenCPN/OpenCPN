@@ -1633,7 +1633,7 @@ ret_point:
                   if(g_GPS_Ident == _T("FurunoGP3X"))
                   {
                         wxString term;
-                        term.Printf(_T("$PFEC,GPxfr, CTRL, E%c%c"), 0x0d, 0x0a);
+                        term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                         g_pCommMan->WriteComPort ( com_name, term );
 
@@ -1881,7 +1881,7 @@ ret_point:
             if(g_GPS_Ident == _T("FurunoGP3X"))
             {
                   wxString term;
-                  term.Printf(_T("$PFEC,GPxfr, CTRL, E%c%c"), 0x0d, 0x0a);
+                  term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                   g_pCommMan->WriteComPort ( com_name, term );
 
