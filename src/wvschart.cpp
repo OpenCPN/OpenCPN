@@ -197,17 +197,7 @@ void WVSChart::RenderViewOnDC(ocpnDC& dc, ViewPort& VPoint)
                                                             plon += 360.;
                                                 }
 
-
-                                                double easting, northing;
-                                                toSM(plat, plon + 360., VPoint.clat, ref_lon + 360., &easting, &northing);
-                                                double epix = easting  * VPoint.view_scale_ppm;
-                                                double npix = northing * VPoint.view_scale_ppm;
-
-                                                double dx = epix * cos(VPoint.skew) + npix * sin(VPoint.skew);
-                                                double dy = npix * cos(VPoint.skew) - epix * sin(VPoint.skew);
-                                                p.x = (int)round((VPoint.pix_width  / 2) + dx);
-                                                p.y = (int)round((VPoint.pix_height / 2) - dy);
-
+                                                p = VPoint.GetPixFromLL(plat, plon + 360.);
                                                 *pr = p;
                                                 pr++;
                                         }

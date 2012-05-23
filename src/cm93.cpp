@@ -5052,7 +5052,7 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 
 void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
-      wxRegion screen_region(0,0,VPoint.rv_rect.width, VPoint.rv_rect.height);
+      wxRegion screen_region(VPoint.rv_rect.x,VPoint.rv_rect.y,VPoint.rv_rect.width, VPoint.rv_rect.height);
       wxRegion ret = GetValidScreenCanvasRegion ( VPoint, screen_region );
       *pValidRegion = ret;
 }

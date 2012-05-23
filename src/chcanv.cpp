@@ -12396,7 +12396,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event)
           }
 
 
-
           //      Stencil buffer test
           glEnable(GL_STENCIL_TEST);
           GLboolean stencil = glIsEnabled(GL_STENCIL_TEST);
@@ -13604,8 +13603,8 @@ void glChartCanvas::render()
         else
               CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
 
-      //    Copy current canvas region
-        wxRegion WVSRegion ( chart_get_region );
+      //    Get full (rotated?) canvas region
+        wxRegion WVSRegion(VPoint.rv_rect.x,VPoint.rv_rect.y,VPoint.rv_rect.width, VPoint.rv_rect.height);
 
       //    Remove the valid chart area
         if(CValidRegion.IsOk())
@@ -13625,7 +13624,6 @@ void glChartCanvas::render()
               glDisable(GL_DEPTH_TEST);
 
         }
-
 //    Now render overlay objects
         DrawGLOverLayObjects();
         cc1->DrawOverlayObjects ( gldc, ru );
@@ -13763,7 +13761,8 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear)
             {
                   wxRect rect = clipit.GetRect();
 
-                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+                  if(vp.b_quilt)
+                        rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
 
                   glBegin(GL_QUADS);
 
@@ -13831,7 +13830,8 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear)
             {
                   wxRect rect = clipit.GetRect();
 
-                  rect.Offset(vp.rv_rect.x, vp.rv_rect.y);              // undo the adjustment made in quilt composition
+                  if(vp.b_quilt)
+                        rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
 
                   glBegin(GL_QUADS);
 
