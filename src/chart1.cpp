@@ -4523,6 +4523,7 @@ void MyFrame::DoSetSize(void)
 #ifdef __WXMAC__
               font_size = wxMax(10, font_size);             // beats me...
 #endif
+              font_size = wxMin( font_size, 11 );
 
               wxFont *pstat_font = wxTheFontList->FindOrCreateFont(font_size,
                                     wxFONTFAMILY_DEFAULT,
