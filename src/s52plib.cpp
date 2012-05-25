@@ -2084,49 +2084,53 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             if(!( prule->pixelPtr ))                // This symbol requires manual alpha blending
             {
-                  // Get the current screen contents
-                  wxBitmap b1(b_width, b_height, -1);
-                  wxMemoryDC mdc1(b1);
-                  mdc1.Blit( 0, 0, b_width, b_height, m_pdc, r.x - pivot_x, r.y - pivot_y, wxCOPY );
-                  wxImage im_back = b1.ConvertToImage();
-
-                  //    Get the symbol
-                  wxImage im_sym = ChartSymbols::GetImage( prule->name.SYNM );
-
-                  wxImage im_result(b_width, b_height);
-                  unsigned char *pdest = im_result.GetData();
-                  unsigned char *pback = im_back.GetData();
-                  unsigned char *psym = im_sym.GetData();
-
-                  unsigned char *asym = NULL;
-                  if(im_sym.HasAlpha())
-                              asym = im_sym.GetAlpha();
-
-                  //    Do alpha blending, the hard way
-
-                  for(int i = 0; i < b_height ; i++)
+                  //    Don't bother if the symbol is off the true screen,
+                  //    as for instance when an area-centered symbol is called for.
+                  if(((r.x- pivot_x + b_width) < vp->pix_width) && ((r.y - pivot_y + b_height) < vp->pix_height))
                   {
-                        for(int j=0 ; j < b_width ; j++)
+                        // Get the current screen contents
+                        wxBitmap b1(b_width, b_height, -1);
+                        wxMemoryDC mdc1(b1);
+                        mdc1.Blit( 0, 0, b_width, b_height, m_pdc, r.x - pivot_x, r.y - pivot_y, wxCOPY );
+                        wxImage im_back = b1.ConvertToImage();
+
+                        //    Get the symbol
+                        wxImage im_sym = ChartSymbols::GetImage( prule->name.SYNM );
+
+                        wxImage im_result(b_width, b_height);
+                        unsigned char *pdest = im_result.GetData();
+                        unsigned char *pback = im_back.GetData();
+                        unsigned char *psym = im_sym.GetData();
+
+                        unsigned char *asym = NULL;
+                        if(im_sym.HasAlpha())
+                                    asym = im_sym.GetAlpha();
+
+                        //    Do alpha blending, the hard way
+
+                        for(int i = 0; i < b_height ; i++)
                         {
-                              double alpha = (double)(*asym++)/256.0;
-                              unsigned char r = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
-                              *pdest++ = r;
-                              unsigned char g = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
-                              *pdest++ = g;
-                              unsigned char b = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
-                              *pdest++ = b;
+                              for(int j=0 ; j < b_width ; j++)
+                              {
+                                    double alpha = (double)(*asym++)/256.0;
+                                    unsigned char r = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                                    *pdest++ = r;
+                                    unsigned char g = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                                    *pdest++ = g;
+                                    unsigned char b = (*psym++ * alpha) + (*pback++ * (1.0 - alpha));
+                                    *pdest++ = b;
+                              }
                         }
+
+                        wxBitmap result(im_result);
+                        wxMemoryDC result_dc(result);
+
+                        m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc, 0,
+                                    0, wxCOPY, false );
+
+                        result_dc.SelectObject( wxNullBitmap );
+                        mdc1.SelectObject( wxNullBitmap );
                   }
-
-                  wxBitmap result(im_result);
-                  wxMemoryDC result_dc(result);
-
-                  m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc, 0,
-                               0, wxCOPY, false );
-
-                  result_dc.SelectObject( wxNullBitmap );
-                  mdc1.SelectObject( wxNullBitmap );
-
             }
             else
             {
@@ -5617,7 +5621,10 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
       }
 
 #ifdef __WXMAC__
-      b_use_alpha = false;
+      if( prule->definition.SYDF == 'V' ) {
+            b_use_alpha = true;
+            imgAlpha = NULL;
+      }
 #endif
 
       unsigned char *ps;
@@ -5651,7 +5658,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules,
                               *pd++ = g;
                               *pd++ = b;
 #endif
-                              if( b_use_alpha ) {
+                              if( b_use_alpha && imgAlpha) {
                                     *pd++ = *imgAlpha++;
                               } else {
                                     *pd++ = (
