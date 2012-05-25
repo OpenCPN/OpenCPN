@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Version 2.4 build 628\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-21 09:21-0300\n"
-"PO-Revision-Date: 2012-05-21 09:23-0300\n"
+"PO-Revision-Date: 2012-05-24 09:23-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "MIME-Version: 1.0\n"
@@ -1196,12 +1196,12 @@ msgstr "Kombo!"
 #
 #
 msgid "Console Legend"
-msgstr "Terminal, rubriker"
+msgstr "Rubriker i Aktiv rutt-fönstret"
 
 #
 #
 msgid "Console Value"
-msgstr "Terminal, värden"
+msgstr "Värden i Aktiv rutt-fönstret"
 
 #
 #
