@@ -1297,7 +1297,7 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 }
 
 bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
-            wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap ) {
+            wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap, ViewPort *vp ) {
 #ifdef DrawText
 #undef DrawText
 #define FIXIT
@@ -1398,14 +1398,22 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
                               int draw_width = ptext->RGBA_width;
                               int draw_height = ptext->RGBA_height;
 
-                              if( xp < 0 ) {
-                                    x_offset = -xp;
-                                    draw_width += xp;
+                              //  glDrawPixels fails if the origin of the pixel array is clipped by the matrix model
+                              //  So, we adjust the pixel array offsets to compensate.
+                              //  Sadly, the same logic does not work for rotated matrices, so we have to let them clip.
+                              //  TODO...do manual matrix operation to determine adjusted pixel array offsets for rotated case
+                              if(fabs(vp->rotation) < 0.01) {
+
+                                    if( xp < 0 ) {
+                                          x_offset = -xp;
+                                          draw_width += xp;
+                                    }
+                                    if( yp < 0 ) {
+                                          y_offset = -yp;
+                                          draw_height += yp;
+                                    }
                               }
-                              if( yp < 0 ) {
-                                    y_offset = -yp;
-                                    draw_height += yp;
-                              }
+
 
                               if( ( draw_width > 0 ) && ( draw_height > 0 ) ) {
                                     glColor4f( 1, 1, 1, 1 );
@@ -1628,7 +1636,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
             wxRect rect;
 
             bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect,
-                        rzRules->obj, m_bDeClutterText );
+                        rzRules->obj, m_bDeClutterText, vp );
 
             //    If this is an un-cached text object render, then do not update the S57Obj in any way
             if( b_free_text ) {

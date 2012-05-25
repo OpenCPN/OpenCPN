@@ -333,7 +333,7 @@ private:
 	wxImage RuleXBMToImage( Rule *prule );
 
 	bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
-			wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap );
+			wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap, ViewPort *vp );
 
 	bool CheckTextRectList( const wxRect &test_rect, S57Obj *pobj );
 	int RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
