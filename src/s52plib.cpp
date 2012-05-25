@@ -5333,27 +5333,38 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp ) {
 
             float ww = (float) ppatt_spec->width / (float) ppatt_spec->w_pot;
             float hh = (float) ppatt_spec->height / (float) ppatt_spec->h_pot;
+            float x_stagger_off = 0;
+            if( ppatt_spec->b_stagger )
+                  x_stagger_off = (float)ppatt_spec->width / 2;
+            int yc = 0;
+
             while( yr < vp->pix_height ) {
-                  xr = obj_xmin; //0;
+                  xr = obj_xmin;
                   while( xr < vp->pix_width ) {
                         //    Render a quad.
 
+                        int xp = xr;
+                        if(yc & 1)
+                              xp += x_stagger_off;
+
+                        //    Render a quad.
                         if( ( ( xr >= obj_xmin ) && ( xr <= obj_xmax ) )
                                     && ( ( yr >= obj_ymin ) && ( yr <= obj_ymax ) ) ) {
                               glBegin( GL_QUADS );
                               glTexCoord2f( 0, 0 );
-                              glVertex3f( xr, yr, z_tex_geom );
+                              glVertex3f( xp, yr, z_tex_geom );
                               glTexCoord2f( ww, 0 );
-                              glVertex3f( xr + w, yr, z_tex_geom );
+                              glVertex3f( xp + w, yr, z_tex_geom );
                               glTexCoord2f( ww, hh );
-                              glVertex3f( xr + w, yr + h, z_tex_geom );
+                              glVertex3f( xp + w, yr + h, z_tex_geom );
                               glTexCoord2f( 0, hh );
-                              glVertex3f( xr, yr + h, z_tex_geom );
+                              glVertex3f( xp, yr + h, z_tex_geom );
                               glEnd();
                         }
                         xr += ppatt_spec->width;
                   }
                   yr += ppatt_spec->height;
+                  yc++;
             }
 
             glDisable( GL_TEXTURE_2D );
