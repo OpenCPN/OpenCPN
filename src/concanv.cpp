@@ -83,10 +83,7 @@ ConsoleCanvas::ConsoleCanvas(wxWindow *frame)
 
       m_pitemStaticBoxSizerLeg = new wxStaticBoxSizer(pThisLegBox, wxVERTICAL);
 
- //     pSBoxRgn = new wxRegion(pThisLegBox->GetRect() );
-
-      pThisLegFont = wxTheFontList->FindOrCreateFont(12, wxDEFAULT,wxNORMAL, wxBOLD, FALSE,
-              wxString(_T("Eurostile Extended")));
+      pThisLegFont = wxTheFontList->FindOrCreateFont(11, wxDEFAULT,wxNORMAL, wxBOLD);
 
       pThisLegBox->SetFont(*pThisLegFont);
 
