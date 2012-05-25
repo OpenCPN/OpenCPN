@@ -2297,7 +2297,10 @@ void MarkInfoImpl::SetRoutePoint( RoutePoint *pRP )
 void MarkInfoImpl::m_hyperlinkContextMenu( wxMouseEvent &event )
 {
       m_pEditedLink = (wxHyperlinkCtrl*)event.GetEventObject();
-      m_pEditedLink->PopupMenu( m_menuLink, event.GetPosition() );
+      m_scrolledWindowLinks->PopupMenu( m_menuLink,
+                                        m_pEditedLink->GetPosition().x + event.GetPosition().x,
+                                        m_pEditedLink->GetPosition().y + event.GetPosition().y );
+
 }
 
 void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
@@ -2317,7 +2320,7 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
                   Hyperlink *link = linknode->GetData();
                   wxString Link = link->Link;
                   wxString Descr = link->DescrText;
-                  if (Link == findurl && Descr == findlabel)
+                  if (Link == findurl && (Descr == findlabel || (Link == findlabel && Descr == wxEmptyString)))
                         nodeToDelete = linknode;
                   else
                   {
@@ -2357,7 +2360,7 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
                         Hyperlink *link = linknode->GetData();
                         wxString Link = link->Link;
                         wxString Descr = link->DescrText;
-                        if (Link == findurl && Descr == findlabel)
+                        if (Link == findurl && (Descr == findlabel || (Link == findlabel && Descr == wxEmptyString)))
                         {
                               link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
                               link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
@@ -2371,6 +2374,9 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
                         linknode = linknode->GetNext();
                   }
             }
+
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
             sbSizerLinks->Layout();
             event.Skip();
       }
