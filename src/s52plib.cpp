@@ -1752,185 +1752,25 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       int pivot_x = prule->pos.symb.pivot_x.SYCL;
       int pivot_y = prule->pos.symb.pivot_y.SYRW;
 
-
-#if ( defined(__WXGTK__) || defined(__WXMAC__))
-
-      // alpha bitmap blit on gtk is broken, so we do this the hard way
-
-      //    Get the size and position of resulting symbol on the screen
-      //    by doing a simple DC render
-
-      wxBitmap sizebm( width, height);
-      wxMemoryDC smdc( sizebm );
-
       char *str = prule->vector.LVCT;
       char *col = prule->colRef.LCRF;
       wxPoint pivot( pivot_x, pivot_y );
       wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
-      HPGL->SetTargetDC( &smdc );
-      HPGL->Render( str, col, r0, pivot, (double) rot_angle );
-
-      smdc.SelectObject( wxNullBitmap );
-
-      int sbm_width = ( smdc.MaxX() - smdc.MinX() ) + 4;
-      int sbm_height = ( smdc.MaxY() - smdc.MinY() ) + 4;
-      int sbm_orgx = wxMax ( 0, smdc.MinX()-1 );
-      int sbm_orgy = wxMax ( 0, smdc.MinY()-1 );
-
-            //      Pre-clip the sub-bitmap to avoid assert errors
-      if( ( sbm_height + sbm_orgy ) > height ) sbm_height = height - sbm_orgy;
-      if( ( sbm_width + sbm_orgx ) > width ) sbm_width = width - sbm_orgx;
-
-      if(m_pdc) {                   // DC mode
-
-            int blit_x = r.x + sbm_orgx - (int) ( pivot_x / fsf );
-            int blit_y = r.y + sbm_orgy - (int) ( pivot_y / fsf );
-
-            //    Grab a bitmap of the current target dc contents at the proper size/position
-            wxBitmap bm_screen_copy(sbm_orgx + sbm_width, sbm_orgy + sbm_height);
-            wxMemoryDC scratchDc;
-            scratchDc.SelectObject(bm_screen_copy);
-            scratchDc.Blit(sbm_orgx, sbm_orgy, sbm_width, sbm_height, m_pdc, blit_x, blit_y);
-
-                  //    Map it into a GCDC
-            wxGCDC gdc( scratchDc );
-
-                  //    Do the GC render on this screen_copy bitmap
-            HPGL->SetTargetGCDC( &gdc );
-            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
-
-                  //    And blit the result back onto the target dc
-            m_pdc->Blit(blit_x, blit_y, sbm_width, sbm_height, &scratchDc, sbm_orgx, sbm_orgy);
-
-                  //    And release the scratch dc
-            scratchDc.SelectObject( wxNullBitmap );
-      }
-      else {                  // OpenGL Mode, do a direct render
+      if( ! m_pdc ) { // OpenGL Mode, do a direct render
             HPGL->SetTargetOpenGl();
             HPGL->Render( str, col, r, pivot, (double) rot_angle );
-      }
 
-      //        Get the bounding box for the as-drawn symbol
-      wxBoundingBox gtk_symbox;
-      double slat, slon;
+      } else {
 
-      rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )),
-                                   r.y + (sbm_orgy - (int) ( pivot_y / fsf )) + sbm_height, &slat, &slon, vp );
-      gtk_symbox.SetMin( slon, slat );
-
-      rzRules->chart->GetPixPoint( r.x + (sbm_orgx - (int) ( pivot_x / fsf )) + sbm_width,
-                                   r.y + (sbm_orgy - (int) ( pivot_y / fsf )), &slat, &slon, vp );
-      gtk_symbox.SetMax( slon, slat );
-
-            //  Update the object Bounding box
-            //  so that subsequent drawing operations will redraw the item fully
-      if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( gtk_symbox );
-      else {
-            rzRules->obj->BBObj = gtk_symbox;
-            rzRules->obj->bBBObj_valid = true;
-      }
-
-      return true;
-
-#endif      //__WXGTK__
-
-      //    Check to see if any cached data is valid
-      bool b_dump_cache = false;
-      if( prule->pixelPtr ) {
-            if( m_pdc ) {
-                  if( prule->parm0 != ID_wxBitmap ) b_dump_cache = true;
-            } else {
-                  if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
-            }
-      }
-
-      //Instantiate the symbol if necessary
-      if( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index )
-                  || b_dump_cache ) {
-            // delete any old private data
-            ClearRulesCache( prule );
-
-            wxBitmap *pbm = new wxBitmap( width, height, 32 );
-			pbm->UseAlpha();
-            wxMemoryDC mdc;
-            mdc.SelectObject( *pbm );
-
-            wxGCDC gdc(mdc);
-
-            char *str = prule->vector.LVCT;
-            char *col = prule->colRef.LCRF;
-            wxPoint pivot( pivot_x, pivot_y );
-            wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
-
-            HPGL->SetTargetGCDC( &gdc );
-            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
-
-            int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4; // Extra margin for antialiasing.
-            int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 4;
-            int bm_orgx = wxMax ( 0, gdc.MinX()-2 );
-            int bm_orgy = wxMax ( 0, gdc.MinY()-2 );
-
-            //      Pre-clip the sub-bitmap to avoid assert errors
-            if( ( bm_height + bm_orgy ) > height ) bm_height = height - bm_orgy;
-            if( ( bm_width + bm_orgx ) > width ) bm_width = width - bm_orgx;
-
-            mdc.SelectObject( wxNullBitmap );
-
-			//          Get smallest containing bitmap
-            wxBitmap *sbm = new wxBitmap(
-                        pbm->GetSubBitmap(
-                                    wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
-
-
-            delete pbm;
-
-            if( !m_pdc ) // opengl
-            {
-                  //    Create a byte data accessible wxImage from the wxBitmap
-                  wxImage Image = sbm->ConvertToImage();
-                  delete sbm;
-
-                  //    Get the glRGBA format data from the wxImage
-                  unsigned char *e = GetRGBA_Array( Image );
-
-                  //      Save the byte array ptr and aux parms in the rule
-                  prule->pixelPtr = e;
-                  prule->parm0 = ID_RGBA;
-                  prule->parm1 = m_colortable_index;
-                  prule->parm2 = bm_orgx - (int) ( pivot_x / fsf );
-                  prule->parm3 = bm_orgy - (int) ( pivot_y / fsf );
-                  prule->parm4 = (int) rot_angle;
-                  prule->parm5 = Image.GetWidth();
-                  prule->parm6 = Image.GetHeight();
-            } else // wxDC render
-            {
-                  //      Save the bitmap ptr and aux parms in the rule
-                  prule->pixelPtr = sbm;
-                  prule->parm0 = ID_wxBitmap;
-                  prule->parm1 = m_colortable_index;
-                  prule->parm2 = bm_orgx - (int) ( pivot_x / fsf );
-                  prule->parm3 = bm_orgy - (int) ( pivot_y / fsf );
-                  prule->parm4 = (int) rot_angle;
-                  prule->parm5 = bm_width;
-                  prule->parm6 = bm_height;
-            }
-
-      } // instantiation
-
-      //    If the rotation angle of the cached symbol is not equal to the request,
-      //    then render the symbol directly in HPGL
-      if( (int) rot_angle != prule->parm4 ) {
-
+#if ( defined(__WXGTK__) || defined(__WXMAC__) )
+            wxBitmap *pbm = new wxBitmap( width, height );
+#else
             wxBitmap *pbm = new wxBitmap( width, height, 32 );
             pbm->UseAlpha();
+#endif
             wxMemoryDC mdc( *pbm );
             wxGCDC gdc( mdc );
-
-            char *str = prule->vector.LVCT;
-            char *col = prule->colRef.LCRF;
-            wxPoint pivot( pivot_x, pivot_y );
-            wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
             HPGL->SetTargetGCDC( &gdc );
             HPGL->Render( str, col, r0, pivot, (double) rot_angle );
@@ -1954,110 +1794,45 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                                     wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
             delete pbm;
 
-            if( m_pdc ) {
-                  wxBitmap targetBm( bm_width, bm_height, 24 );
-                  wxMemoryDC targetDc( targetBm );
-                  wxGCDC gdc( targetDc );
-
-                  targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
-
-                  gdc.DrawBitmap( *sbm, 0, 0 );
-
-                  m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
-
-                  targetDc.SelectObject( wxNullBitmap );
-            } else {
-
-                  //    Create a byte data accessible wxImage from the wxBitmap
-                  wxImage Image = sbm->ConvertToImage();
-
-                  unsigned char *e = GetRGBA_Array( Image );
-
-                  //   And Render
-                  glColor4f( 1, 1, 1, 1 );
-
-                  glEnable( GL_BLEND );
-                  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                  glRasterPos2i( screenOriginX, screenOriginY );
-                  glPixelZoom( 1, -1 );
-                  glDrawPixels( Image.GetWidth(), Image.GetHeight(), GL_RGBA,
-                              GL_UNSIGNED_BYTE, e );
-                  glPixelZoom( 1, 1 );
-                  glDisable( GL_BLEND );
-
-                  free( e );
-            }
-
-            delete sbm;
-            return true;
-
-      }
-
-      //        Get the bounding box for the as-drawn symbol
-      int b_width = prule->parm5;
-      int b_height = prule->parm6;
-
-      wxBoundingBox symbox;
-      double plat, plon;
-
-      rzRules->chart->GetPixPoint( r.x + prule->parm2,
-                  r.y + prule->parm3 + b_height, &plat, &plon, vp );
-      symbox.SetMin( plon, plat );
-
-      rzRules->chart->GetPixPoint( r.x + prule->parm2 + b_width,
-                  r.y + prule->parm3, &plat, &plon, vp );
-      symbox.SetMax( plon, plat );
-
-      /*
-       //  Special case for GEO_AREA objects with centred symbols
-       if ( rzRules->obj->Primitive_type == GEO_AREA )
-       {
-       if ( rzRules->obj->BBObj.Intersect ( symbox, 0 ) == _OUT ) // Symbol is wholly outside base object
-       return true;
-       }
-       */
-
-      //      Now render the symbol
-      if( !m_pdc ) // opengl
-      {
-            glColor4f( 1, 1, 1, 1 );
-
-            glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glRasterPos2i( r.x + prule->parm2, r.y + prule->parm3 );
-            glPixelZoom( 1, -1 );
-            glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE,
-                        prule->pixelPtr );
-            glPixelZoom( 1, 1 );
-            glDisable( GL_BLEND );
-      } else {
-            //      Get the bitmap into a memory dc
-            wxBitmap* bm = (wxBitmap *) ( prule->pixelPtr );
-
-            wxBitmap targetBm( b_width, b_height, 24 );
+            wxBitmap targetBm( bm_width, bm_height, 24 );
             wxMemoryDC targetDc( targetBm );
-            wxGCDC gdc( targetDc );
+            wxGCDC targetGcdc( targetDc );
 
-            targetDc.Blit( 0, 0, b_width, b_height, m_pdc, r.x + prule->parm2, r.y + prule->parm3 );
+            targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
 
-            gdc.DrawBitmap( *bm, 0, 0 );
-
-            // Blit result back into the canvas dc
-            m_pdc->Blit( r.x + prule->parm2, r.y + prule->parm3, b_width, b_height,
-                        &targetDc, 0, 0, wxCOPY, true );
+#if ( defined(__WXGTK__) || defined(__WXMAC__) )
+            r0 -= wxPoint( bm_orgx, bm_orgy );
+            HPGL->SetTargetGCDC( &targetGcdc );
+            HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+#else
+            targetGcdc.DrawBitmap( *sbm, 0, 0 );
+#endif
+            m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
 
             targetDc.SelectObject( wxNullBitmap );
-      }
+            delete sbm;
 
-      //  Update the object Bounding box
-      //  so that subsequent drawing operations will redraw the item fully
-      {
-            if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-            else {
-                  rzRules->obj->BBObj = symbox;
-                  rzRules->obj->bBBObj_valid = true;
+            //  Update the object Bounding box
+            //  so that subsequent drawing operations will redraw the item fully
+
+            wxBoundingBox symbox;
+            double plat, plon;
+
+            rzRules->chart->GetPixPoint( r.x + prule->parm2,
+                        r.y + prule->parm3 + bm_height, &plat, &plon, vp );
+            symbox.SetMin( plon, plat );
+
+            rzRules->chart->GetPixPoint( r.x + prule->parm2 + bm_width,
+                        r.y + prule->parm3, &plat, &plon, vp );
+            symbox.SetMax( plon, plat );
+
+            {
+                  if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
+                  else {
+                        rzRules->obj->BBObj = symbox;
+                        rzRules->obj->bBBObj_valid = true;
+                  }
             }
-
       }
 
       return true;
@@ -7053,7 +6828,10 @@ void RenderFromHPGL::Polygon() {
             targetDC->DrawPolygon( noPoints, polygon );
       }
       if( renderToOpenGl ) {
-            wxLogWarning( _T("HPGL Polygon not implemented in OpenGl mode.") );
+            glBegin( GL_POLYGON );
+            for( int ip = 1; ip < noPoints; ip++ )
+                  glVertex2i( polygon[ip].x, polygon[ip].y );
+            glEnd();
       }
       if( renderToGCDC ) {
             targetGCDC->DrawPolygon( noPoints, polygon );
