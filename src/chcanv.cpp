@@ -10093,8 +10093,12 @@ void RenderRouteLegInfo(ocpnDC &dc, double lata, double lona, double latb,
       int w, h;
       int xp, yp;
       int hilite_offset = 3;
+#ifdef __WXMAC__
+      wxScreenDC sdc;
+      sdc.GetTextExtent(s0, &w, &h, NULL, NULL, dFont);
+#else
       dc.GetTextExtent(s0, &w, &h);
-
+#endif
       xp = ref_point.x  - w;
       yp = ref_point.y  ;
       yp += hilite_offset;
@@ -10113,7 +10117,12 @@ void RenderExtraRouteLegInfo(ocpnDC &dc, wxPoint ref_point, wxString s)
       int w, h;
       int xp, yp;
       int hilite_offset = 3;
+#ifdef __WXMAC__
+      wxScreenDC sdc;
+      sdc.GetTextExtent(s, &w, &h, NULL, NULL, dFont);
+#else
       dc.GetTextExtent(s, &w, &h);
+#endif
 
       xp = ref_point.x - w;
       yp = ref_point.y + h ;

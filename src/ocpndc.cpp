@@ -36,6 +36,7 @@
 #endif
 
 #include <wx/dc.h>
+#include <wx/dcscreen.h>
 #include <wx/dcmemory.h>
 #include <wx/image.h>
 
@@ -707,7 +708,13 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y)
      else {
           wxCoord w = 0;
           wxCoord h = 0;
+#ifdef __WXMAC__
+          wxBitmap tbmp(200, 200);
+          wxMemoryDC mac_dc(tbmp);
+          mac_dc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
+#else
           GetTextExtent(text, &w, &h);
+#endif
 
           if(w && h)
           {
