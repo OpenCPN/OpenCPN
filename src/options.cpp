@@ -2493,8 +2493,12 @@ void options::OnPageChange(wxNotebookEvent& event)
                   {
 //                        if(wxLocale::IsAvailable(lang_list[it]))
                         {
+                              wxLog::EnableLogging(false);        // avoid "Cannot set locale to..." log message
+
                               wxLocale ltest(lang_list[it], 0);
                               ltest.AddCatalog(_T("opencpn"));
+
+                              wxLog::EnableLogging(true);
 
                               if(ltest.IsLoaded(_T("opencpn")))
                               {
