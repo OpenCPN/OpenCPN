@@ -12337,9 +12337,27 @@ void glChartCanvas::BuildFBO(void)
                   (*s_glBindRenderbufferEXT)(GL_RENDERBUFFER_EXT, m_depth_rb);
                   (*s_glRenderbufferStorageEXT)(GL_RENDERBUFFER_EXT,
                     GL_DEPTH24_STENCIL8_EXT, m_cache_tex_x, m_cache_tex_y);
-                  (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
-                    GL_DEPTH_STENCIL_ATTACHMENT,
-                    GL_RENDERBUFFER_EXT, m_depth_rb);
+//                  (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+//                    GL_DEPTH_STENCIL_ATTACHMENT,
+//                    GL_RENDERBUFFER_EXT, m_depth_rb);
+
+                  // Can we attach to depth and stencil at once?  Maybe
+                  // it would be easier to not check for this extension and
+                  // always use 2 calls.
+                  if(QueryExtension("GL_ARB_framebuffer_object"))
+                  {
+                    (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+                      GL_DEPTH_STENCIL_ATTACHMENT,
+                      GL_RENDERBUFFER_EXT, m_depth_rb);
+                  } else {
+                    (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+                      GL_DEPTH_ATTACHMENT_EXT,
+                      GL_RENDERBUFFER_EXT, m_depth_rb);
+
+                    (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
+                      GL_STENCIL_ATTACHMENT_EXT,
+                      GL_RENDERBUFFER_EXT, m_depth_rb);
+                  }
 
             }
             else
