@@ -9,7 +9,7 @@
 # Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
 # Copyright 2006-2009 Kitware, Inc.
 # Copyright 2006 Alexander Neundorf <neundorf@kde.org>
-# Copyright 2010 David Register <bdbcat@yahoo.com>
+# Copyright 2010 David Register 
 #
 #
 # All rights reserved.

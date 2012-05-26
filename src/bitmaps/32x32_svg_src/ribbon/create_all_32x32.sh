@@ -1,6 +1,5 @@
 #!/bin/bash
 #/******************************************************************************
-# * $Id: *.sh,v 1.8 2010/06/21 01:54:37 bdbcat Exp $
 # *
 # * Project:  OpenCPN
 # * Purpose:  helper shell script
@@ -8,7 +7,6 @@
 # *
 # ***************************************************************************
 # *   Copyright (C) 2010 by David S. Register   *
-# *   bdbcat@yahoo.com   *
 # *                                                                         *
 # *   This program is free software; you can redistribute it and/or modify  *
 # *   it under the terms of the GNU General Public License as published by  *

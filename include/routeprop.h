@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,13 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: routeprop.h,v $
- * Revision 1.10  2010/05/15 03:55:35  bdbcat
- * Build 514
- *
- * Revision 1.9  2010/04/27 01:45:21  bdbcat
- * Build 426
  *
  *
  */

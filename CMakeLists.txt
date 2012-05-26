@@ -1,11 +1,26 @@
-##---------------------------------------------------------------------------
-## Author:      bdbcat aka. dsr (Dave Register)
-## Copyright:   
-## License:     wxWidgets License
+#---------------------------------------------------------------------------
+## Author:      Dave Register
+## DEB config from: antonm - Anton Martchukov <anton@martchukov.com>
 ## Update:      sethdart (Jean-Eudes Onfray)
 ##              with parts from balp (Anders Arnholm)
-## DEB config from: antonm - Anton Martchukov <anton@martchukov.com>
-##---------------------------------------------------------------------------
+##***************************************************************************
+## *   Copyright (C) 2010 by David S. Register                               *
+## *   This program is free software; you can redistribute it and/or modify  *
+## *   it under the terms of the GNU General Public License as published by  *
+## *   the Free Software Foundation; either version 2 of the License, or     *
+## *   (at your option) any later version.                                   *
+## *                                                                         *
+## *   This program is distributed in the hope that it will be useful,       *
+## *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+## *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+## *   GNU General Public License for more details.                          *
+## *                                                                         *
+## *   You should have received a copy of the GNU General Public License     *
+## *   along with this program; if not, write to the                         *
+## *   Free Software Foundation, Inc.,                                       *
+## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+## ***************************************************************************
+ 
  
 #TODO:
 # - cross platform compiling
@@ -995,7 +1010,7 @@ IF(UNIX AND NOT APPLE)
 
  
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
-    SET(CPACK_PACKAGE_CONTACT "Dave Register <bdbcat@yahoo.com>")
+    SET(CPACK_PACKAGE_CONTACT "David S. Register ")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
     SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
     SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
