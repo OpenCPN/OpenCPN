@@ -12337,9 +12337,6 @@ void glChartCanvas::BuildFBO(void)
                   (*s_glBindRenderbufferEXT)(GL_RENDERBUFFER_EXT, m_depth_rb);
                   (*s_glRenderbufferStorageEXT)(GL_RENDERBUFFER_EXT,
                     GL_DEPTH24_STENCIL8_EXT, m_cache_tex_x, m_cache_tex_y);
-//                  (*s_glFramebufferRenderbufferEXT)(GL_FRAMEBUFFER_EXT,
-//                    GL_DEPTH_STENCIL_ATTACHMENT,
-//                    GL_RENDERBUFFER_EXT, m_depth_rb);
 
                   // Can we attach to depth and stencil at once?  Maybe
                   // it would be easier to not check for this extension and
@@ -13412,63 +13409,36 @@ void glChartCanvas::render()
 
                                           // Render the cached texture as quad to FBO(m_blit_tex) with offsets
 
-                                          if(dy > 0)
+                                          if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
                                           {
-                                                if(dx > 0)
-                                                {
-                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
-                                                      {
-                                                            glBegin(GL_QUADS);
-                                                            glTexCoord2f(dx,                    m_cache_tex_y);    glVertex2f(0,     -dy);
-                                                            glTexCoord2f(m_cache_tex_x,         m_cache_tex_y);    glVertex2f(sx-dx, -dy);
-                                                            glTexCoord2f(m_cache_tex_x,         0);                glVertex2f(sx-dx,  sy - dy);
-                                                            glTexCoord2f(dx,                    0);                glVertex2f(0,      sy - dy);
-                                                            glEnd();
-                                                      }
-                                                }
-                                                else
-                                                {
-                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
-                                                      {
-                                                            glBegin(GL_QUADS);
-                                                            glTexCoord2f(0,                m_cache_tex_y);    glVertex2f(-dx,      -dy);
-                                                            glTexCoord2f(m_cache_tex_x,    m_cache_tex_y);    glVertex2f(-dx + sx, -dy);
-                                                            glTexCoord2f(m_cache_tex_x,    0);                glVertex2f(-dx + sx,  sy - dy);
-                                                            glTexCoord2f(0,                0);                glVertex2f(-dx,       sy - dy);
-                                                            glEnd();
-                                                      }
-                                                }
-                                           }
-                                           else
-                                           {
-                                                if(dx > 0)
-                                                {
-                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
-                                                      {
-                                                            glBegin(GL_QUADS);
-                                                            glTexCoord2f(dx,            m_cache_tex_y);    glVertex2f(0,     -dy);
-                                                            glTexCoord2f(m_cache_tex_x, m_cache_tex_y);    glVertex2f(sx-dx, -dy);
-                                                            glTexCoord2f(m_cache_tex_x, 0);                glVertex2f(sx-dx, -dy + sy);
-                                                            glTexCoord2f(dx,            0);                glVertex2f(0,     -dy + sy);
-                                                            glEnd();
-                                                      }
-                                                }
-                                                else
-                                                {
-//                                                      glHint( GL_FOG_HINT, GL_DONT_CARE);       // using as a breakpoint
+                                            wxASSERT(sx == m_cache_tex_x);
+                                            wxASSERT(sy == m_cache_tex_y);
+                                            int ow = sx - abs(dx);
+                                            int oh = sy - abs(dy);
+                                            int x1, x2, y1, y2;
+                                            if(dx > 0) {
+                                              x1 = dx;
+                                              x2 = 0;
+                                            } else {
+                                              x1 = 0;
+                                              x2 = -dx;
+                                            }
 
-                                                      if(GL_TEXTURE_RECTANGLE_ARB == m_TEX_TYPE)
-                                                      {
-                                                            glBegin(GL_QUADS);
-                                                            glTexCoord2f(0,             m_cache_tex_y);    glVertex2f(-dx,      -dy);
-                                                            glTexCoord2f(m_cache_tex_x, m_cache_tex_y);    glVertex2f(-dx + sx, -dy);
-                                                            glTexCoord2f(m_cache_tex_x, 0);                glVertex2f(-dx + sx, -dy + sy);
-                                                            glTexCoord2f(0,             0);                glVertex2f(-dx,      -dy + sy);
-                                                            glEnd();
-                                                      }
-                                                }
-                                           }
+                                            if(dy > 0) {
+                                              y1 = dy;
+                                              y2 = 0;
+                                            } else {
+                                              y1 = 0;
+                                              y2 = -dy;
+                                            }
 
+                                            glBegin(GL_QUADS);
+                                            glTexCoord2f(x1,    sy - y1);   glVertex2f(x2,    y2);
+                                            glTexCoord2f(x1+ow, sy - y1);   glVertex2f(x2+ow, y2);
+                                            glTexCoord2f(x1+ow, y2     );   glVertex2f(x2+ow, y2+oh  );
+                                            glTexCoord2f(x1,    y2     );   glVertex2f(x2,    y2+oh   );
+                                            glEnd();
+                                          }
 
                                            //calculate the new regions to render
                                           wxRegion update_region;
