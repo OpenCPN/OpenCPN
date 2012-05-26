@@ -7533,7 +7533,7 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         event.GetPosition ( &x, &y );
 
-      if( event.LeftDClick() ) {
+        if( event.LeftDClick() && (cursor_region == CENTER)) {
             m_DoubleClickTimer->Start();
             singleClickEventIsValid = false;
 
@@ -15710,7 +15710,6 @@ void RolloverWin::OnPaint(wxPaintEvent& event)
 void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, int rollover, wxSize parent_size)
 {
       int h, w;
-      wxClientDC cdc(GetParent());
 
       wxFont *dFont;
       switch ( rollover )
@@ -15731,7 +15730,13 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y, int rollov
       wxFont *plabelFont = wxTheFontList->FindOrCreateFont(font_size,
                    dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
 
+#ifdef __WXMAC__
+      wxScreenDC sdc;
+      sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+#else
+      wxClientDC cdc(GetParent());
       cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+#endif
       m_size.x = w + 4;
       m_size.y = h + 4;
 
