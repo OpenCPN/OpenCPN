@@ -109,7 +109,7 @@ extern double           vLat, vLon;
 extern ChartDB          *ChartData;
 extern bool             bDBUpdateInProgress;
 extern ColorScheme      global_color_scheme;
-extern bool             g_bHDxValid;
+extern bool             g_bHDTValid;
 extern int              g_nbrightness;
 
 extern ConsoleCanvas    *console;
@@ -5637,7 +5637,7 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
         //  Draw the icon rotated to the COG
         //  or to the Hdt if available
         double icon_hdt = pCog;
-        if(g_bHDxValid)
+        if(g_bHDTValid)
              icon_hdt = gHdt;
 
         //  COG may be undefined in NMEA data stream
@@ -5675,9 +5675,12 @@ void ChartCanvas::ShipDraw ( ocpnDC& dc )
 
         double ndelta_pix = 10.;
         bool b_render_hdt = false;
-        double dist = sqrt(pow((double)(lHeadPoint.x - lPredPoint.x), 2) + pow((double)(lHeadPoint.y - lPredPoint.y), 2));
-        if((dist > ndelta_pix) && g_bHDxValid)
-              b_render_hdt = true;
+        if(g_bHDTValid)
+        {
+            double dist = sqrt(pow((double)(lHeadPoint.x - lPredPoint.x), 2) + pow((double)(lHeadPoint.y - lPredPoint.y), 2));
+            if(dist > ndelta_pix)
+                 b_render_hdt = true;
+        }
 
 //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
 //    and is just barely outside the viewport        ....

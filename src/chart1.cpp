@@ -292,7 +292,10 @@ int             gGPS_Watchdog;
 bool            bGPSValid;
 
 int             gHDx_Watchdog;
+int             gHDT_Watchdog;
 bool            g_bHDxValid;
+bool            g_bHDTValid;
+bool            g_bHDT_Rx;
 
 int             gSAT_Watchdog;
 int             g_SatsInView;
@@ -2895,10 +2898,13 @@ bool MyApp::OnInit()
 
         gGPS_Watchdog = 2;
         gHDx_Watchdog = 2;
+        gHDT_Watchdog = 2;
         gSAT_Watchdog = 2;
 
         //  Most likely installations have no ownship heading information
         g_bHDxValid = false;
+        g_bHDTValid = false;
+        g_bHDT_Rx = false;
         gHdt = NAN;
         gHdm = NAN;
         gVar = NAN;
@@ -6362,15 +6368,23 @@ void MyFrame::OnFrameTimer1(wxTimerEvent& event)
                 wxLogMessage(_T("   ***GPS Watchdog timeout..."));
       }
 
-//  Update and check watchdog timer for Heading data source
+//  Update and check watchdog timer for Mag Heading data source
       gHDx_Watchdog--;
       if(gHDx_Watchdog <= 0)
       {
             g_bHDxValid = false;
-            gHdt = NAN;
             gHdm = NAN;
             if(g_nNMEADebug && (gHDx_Watchdog == 0))
                   wxLogMessage(_T("   ***HDx Watchdog timeout..."));
+      }
+
+//  Update and check watchdog timer for True Heading data source
+      gHDT_Watchdog--;
+      if(gHDT_Watchdog <= 0)
+      {
+            g_bHDT_Rx = false;
+            if(g_nNMEADebug && (gHDT_Watchdog == 0))
+                  wxLogMessage(_T("   ***HDT Watchdog timeout..."));
       }
 
 //  Update and check watchdog timer for GSV (Satellite data)
@@ -8314,8 +8328,9 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                               if(!wxIsNaN(m_NMEA0183.Hdt.DegreesTrue))
                               {
                                     gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                                    g_bHDxValid = true;
-                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                                    g_bHDTValid = true;
+                                    g_bHDT_Rx = true;
+                                    gHDT_Watchdog = gps_watchdog_timeout_ticks;
                               }
                         }
                         else if(g_nNMEADebug)
@@ -8336,14 +8351,16 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(!wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
                               {
-                                    gHdt = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                                    gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+
                                     if(!wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees))
                                     {
                                           if(m_NMEA0183.Hdg.MagneticVariationDirection == East)
-                                                gHdt += m_NMEA0183.Hdg.MagneticVariationDegrees;
+                                                gVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
                                           else if(m_NMEA0183.Hdg.MagneticVariationDirection == West)
-                                                gHdt -= m_NMEA0183.Hdg.MagneticVariationDegrees;
+                                                gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
                                     }
+
                                     g_bHDxValid = true;
                                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                               }
@@ -8365,8 +8382,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_NMEAEvent & event)
                         {
                               if(!wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic))
                               {
-                                    gHdt = m_NMEA0183.Hdm.DegreesMagnetic;
-                                    gHdt += gVar;
+                                    gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
 
                                     g_bHDxValid = true;
                                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
@@ -8586,7 +8602,7 @@ void MyFrame::OnEvtNMEA(wxCommandEvent & event)
                 if(!wxIsNaN(pGPSData->kHdt))
                 {
                       gHdt = pGPSData->kHdt;
-                      g_bHDxValid = true;
+                      g_bHDTValid = true;
                 }
 
                 if(!wxIsNaN(pGPSData->kHdm))
@@ -8638,6 +8654,18 @@ void MyFrame::PostProcessNNEA(bool brx_rmc, wxString &sfixtime)
       //    If gSog is greater than some threshold, we determine that we are "cruising"
       if(gSog > 3.0)
             g_bCruising = true;
+
+      //    Here is the one place we try to create gHdt from gHdm and gVar,
+      //    but only if NMEA HDT sentence is not being received
+
+      if(!g_bHDT_Rx)
+      {
+            if(!wxIsNaN(gVar) && !wxIsNaN(gHdm))
+            {
+                  gHdt = gHdm + gVar;
+                  g_bHDTValid = true;
+            }
+      }
 
       if(brx_rmc)
       {
