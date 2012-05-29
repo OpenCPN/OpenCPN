@@ -930,12 +930,7 @@ bool s52plib::S52_flush_Plib() {
       if( _symb_symR ) DestroyRules( _symb_symR );
 
 //      Special case for CS
-      RuleHash::iterator it;
-      Rule *pR;
-      for( it = ( *_cond_sym ).begin(); it != ( *_cond_sym ).end(); ++it ) {
-            pR = it->second;
-//              delete pR;
-      }
+      _cond_sym->clear();
       delete ( _cond_sym );
 
       for( unsigned int ipa = 0; ipa < pAlloc->GetCount(); ipa++ ) {
@@ -943,6 +938,7 @@ bool s52plib::S52_flush_Plib() {
             free( t );
       }
 
+      pAlloc->clear();
       delete pAlloc;
 
       return TRUE;
