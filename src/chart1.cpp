@@ -3594,8 +3594,9 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if(!pAIS_Port->IsSameAs(_T("None"), false))
     {
           CheckAndAddPlugInTool(tb);
-          m_pAISTool = tb->AddTool( ID_AIS, _T(""), *(*phash)[wxString(_T("AIS_Normal"))], *(*phash)[wxString(_T("AIS_Disabled"))],
-                                    wxITEM_CHECK, _("Show AIS Targets"));
+          m_pAISTool = tb->AddTool( ID_AIS, _T(""), *(*phash)[wxString(_T("AIS_Normal"))],
+                                    *(*phash)[wxString(_T("AIS_Disabled"))],
+                                       wxITEM_CHECK, false, _("Show AIS Targets"), wxEmptyString, NULL);
     }
 
 
@@ -3618,7 +3619,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     {
           CheckAndAddPlugInTool(tb);
           tb->AddTool( ID_TRACK, _T(""), *(*phash)[wxString(_T("trackon"))], *(*phash)[wxString(_T("trackoff"))],
-                       wxITEM_CHECK, _("Toggle Tracking"));
+                       wxITEM_CHECK, true, _("Toggle Tracking"), wxEmptyString, NULL);
     }
 
 
@@ -3706,7 +3707,7 @@ bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
 
                   tb->AddTool(pttc->id, wxString(pttc->label),
                               *ptool_bmp, *pttc->bmpDisabled,
-                              pttc->kind, wxString(pttc->shortHelp),
+                              pttc->kind, false, wxString(pttc->shortHelp),
                               wxString(pttc->longHelp), pttc->clientData);
 
                   if (pttc->kind == wxITEM_CHECK)
@@ -10081,6 +10082,7 @@ class ocpnToolBarTool : public wxToolBarToolBase
                           wxRect  trect;
 
                           bool b_hilite;
+                          bool m_bdecorate_toggle;
 
                           DECLARE_NO_COPY_CLASS(ocpnToolBarTool)
 };
@@ -10097,6 +10099,7 @@ ocpnToolBarTool::ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control, co
 
       m_enabled = true;
       m_toggled = false;
+      m_bdecorate_toggle = false;
 
       m_toolStyle = wxTOOL_STYLE_CONTROL;
 }
@@ -10111,6 +10114,7 @@ ocpnToolBarTool::ocpnToolBarTool(ocpnToolBarSimple *tbar, wxControl *control)
 
       m_enabled = true;
       m_toggled = false;
+      m_bdecorate_toggle = false;
 
       m_toolStyle = wxTOOL_STYLE_CONTROL;
 }
@@ -10223,13 +10227,9 @@ wxToolBarToolBase *ocpnToolBarSimple::DoAddTool(int id,
                                               wxCoord xPos,
                                               wxCoord yPos)
 {
-    // rememeber the position for DoInsertTool()
+    // remember the position for DoInsertTool()
       m_xPos = xPos;
       m_yPos = yPos;
-
-//      return wxToolBarBase::DoAddTool(id, label, bitmap, bmpDisabled, kind,
-//                                      shortHelp, longHelp,
-//                                      clientData, xPos, yPos);
 
       InvalidateBestSize();
       return InsertTool(GetToolsCount(), id, label, bitmap, bmpDisabled,
@@ -10237,51 +10237,27 @@ wxToolBarToolBase *ocpnToolBarSimple::DoAddTool(int id,
 
 }
 
-///
 
 wxToolBarToolBase *ocpnToolBarSimple::AddTool(int toolid,
                                const wxString& label,
                                const wxBitmap& bitmap,
                                const wxBitmap& bmpDisabled,
                                wxItemKind kind,
+                               const bool b_decorate_toggle,
                                const wxString& shortHelp,
                                const wxString& longHelp,
                                wxObject *data)
 {
-//      return DoAddTool(toolid, label, bitmap, bmpDisabled, kind,
-//                       shortHelp, longHelp, data);
-
-          // rememeber the position for DoInsertTool()
-///      m_xPos = xPos;
-///      m_yPos = yPos;
-
-//      return wxToolBarBase::DoAddTool(id, label, bitmap, bmpDisabled, kind,
-//                                      shortHelp, longHelp,
-//                                      clientData, xPos, yPos);
-
       InvalidateBestSize();
-      return InsertTool(GetToolsCount(), toolid, label, bitmap, bmpDisabled,
-                        kind, shortHelp, longHelp, data);
+      wxToolBarToolBase *ret_tool = InsertTool(GetToolsCount(), toolid, label, bitmap,
+                                               bmpDisabled,kind, shortHelp, longHelp, data);
+
+      ocpnToolBarTool *otool = (ocpnToolBarTool *)ret_tool;
+      otool->m_bdecorate_toggle = b_decorate_toggle;
+
+      return ret_tool;
 
 }
-
-/*
-wxToolBarToolBase *ocpnToolBarSimple::DoAddTool(int id,
-                                            const wxString& label,
-                                            const wxBitmap& bitmap,
-                                            const wxBitmap& bmpDisabled,
-                                            wxItemKind kind,
-                                            const wxString& shortHelp,
-                                            const wxString& longHelp,
-                                            wxObject *clientData,
-                                            wxCoord WXUNUSED(xPos),
-                                                        wxCoord WXUNUSED(yPos))
-{
-      InvalidateBestSize();
-      return InsertTool(GetToolsCount(), id, label, bitmap, bmpDisabled,
-                        kind, shortHelp, longHelp, clientData);
-}
-*/
 
 wxToolBarToolBase *ocpnToolBarSimple::InsertTool(size_t pos,
                                              int id,
@@ -10330,12 +10306,6 @@ bool ocpnToolBarSimple::DoInsertTool(size_t WXUNUSED(pos),
                                    wxToolBarToolBase *toolBase)
 {
       ocpnToolBarTool *tool = (ocpnToolBarTool *)toolBase;
-
-//      if(tool->IsControl())
-//            return false;
-
-//      wxCHECK_MSG( !tool->IsControl(), false,
-//                    _T("generic wxToolBarSimple doesn't support controls") );
 
       tool->m_x = m_xPos;
       if ( tool->m_x == wxDefaultCoord )
@@ -10593,7 +10563,6 @@ void ocpnToolBarSimple::OnPaint (wxPaintEvent& WXUNUSED(event))
 
       wxRegion ru = GetUpdateRegion();
       wxRect upRect = ru.GetBox();
-//      printf("upRect:  %d %d %d %d\n", upRect.GetX(), upRect.GetY(), upRect.GetWidth(), upRect.GetHeight());
       static int count = 0;
     // Prevent reentry of OnPaint which would cause wxMemoryDC errors.
       if ( count > 0 )
@@ -10607,11 +10576,9 @@ void ocpnToolBarSimple::OnPaint (wxPaintEvent& WXUNUSED(event))
             wxToolBarToolBase *tool = node->GetData();
             ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
             wxRect toolRect = tools->trect;
-//            printf("    toolRect:  %d %d %d %d\n", toolRect.GetX(), toolRect.GetY(), toolRect.GetWidth(), toolRect.GetHeight());
 
             if(toolRect.Intersects(upRect))
             {
-//                  printf("draw\n");
                   if ( tool->IsButton() )
                   {
                         DrawTool(dc, tool);
@@ -10919,9 +10886,11 @@ void ocpnToolBarSimple::DrawTool(wxDC& dc, wxToolBarToolBase *toolBase)
                         bg_pen.SetColour(GetGlobalColor(_T("CHBLK")));
                         bg_brush.SetColour(m_toggle_bg_color);
 
-                        //    If the tool has a disabled state bitmap, then assum the enabled and disabled bitmaps
-                        //    should be shown verbatim without decorations
-                        if(tool->GetDisabledBitmap().IsOk())
+                        //    If the tool has a disabled state bitmap,
+                        //    then assume the enabled and disabled bitmaps
+                        //    should be shown verbatim without decorations.
+                        //    Exception: if m_bdecorate_toggle is true, then decorate
+                        if(tool->GetDisabledBitmap().IsOk() && !tool->m_bdecorate_toggle)
                         {
                               bg_brush.SetColour(GetBackgroundColour());
                               bg_pen.SetColour(GetBackgroundColour());

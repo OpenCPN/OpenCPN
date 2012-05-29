@@ -551,18 +551,19 @@ class ocpnToolBarSimple : public wxControl
                         const wxString& label,
                         const wxBitmap& bitmap,
                         const wxBitmap& bmpDisabled,
-                        wxItemKind kind = wxITEM_NORMAL,
-                        const wxString& shortHelp = wxEmptyString,
-                        const wxString& longHelp = wxEmptyString,
-                        wxObject *data = NULL);
+                        wxItemKind kind,
+                        const bool b_decorate_toggle_state,
+                        const wxString& shortHelp,
+                        const wxString& longHelp,
+                        wxObject *data);
 
             wxToolBarToolBase *AddTool(int toolid,
-                                       const wxString& label,
-                                       const wxBitmap& bitmap,
-                                       const wxString& shortHelp = wxEmptyString,
-                                       wxItemKind kind = wxITEM_NORMAL)
+                        const wxString& label,
+                        const wxBitmap& bitmap,
+                        const wxString& shortHelp = wxEmptyString,
+                        wxItemKind kind = wxITEM_NORMAL)
             {
-                  return AddTool(toolid, label, bitmap, wxNullBitmap, kind, shortHelp);
+                  return AddTool(toolid, label, bitmap, wxNullBitmap, kind, true, shortHelp, wxEmptyString, NULL);
             }
 
 
