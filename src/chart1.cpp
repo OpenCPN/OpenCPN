@@ -3704,7 +3704,11 @@ bool MyFrame::CheckAndAddPlugInTool(ocpnToolBarSimple *tb)
                               break;
                   }
 
-                  tb->AddTool( pttc->id, wxString(pttc->label), *(ptool_bmp), wxString(pttc->shortHelp), pttc->kind);
+                  tb->AddTool(pttc->id, wxString(pttc->label),
+                              *ptool_bmp, *pttc->bmpDisabled,
+                              pttc->kind, wxString(pttc->shortHelp),
+                              wxString(pttc->longHelp), pttc->clientData);
+
                   if (pttc->kind == wxITEM_CHECK)
                         tb->ToggleTool(pttc->id, pttc->b_toggle);
                   bret = true;
