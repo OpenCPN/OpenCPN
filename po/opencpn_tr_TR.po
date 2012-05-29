@@ -237,7 +237,7 @@ msgstr "OpenCPN'e Hoşgeldiniz"
 #: src/navutil.cpp:1284
 #: src/navutil.cpp:2323
 msgid "OpenCPN Info"
-msgstr "Informations OpenCPN "
+msgstr "OpenCPN Hakkında"
 
 #
 #: src/chart1.cpp:2171
@@ -412,7 +412,7 @@ msgstr "OpenCPN Grubunun dikkatine"
 #
 #: src/chart1.cpp:4892
 msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Carte1::Olay...TCMgr'ye ulaşılmıyor."
+msgstr "Harita1::Olay...TCMgr'ye ulaşılmıyor."
 
 #
 #
@@ -448,7 +448,7 @@ msgstr "Yeni seçim dilin geçerli olması için OpenCPN'i yeniden başlatın."
 #: src/chcanv.cpp:4738
 #: src/chcanv.cpp:7675
 msgid "Cursor: "
-msgstr "Fare: "
+msgstr "Fare işaret noktası: "
 
 #
 #
@@ -486,7 +486,7 @@ msgid ""
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 "Yazdırırken br sorun oluştu.\n"
-"Votre imprimante actuelle est peut-être mal configurée ?"
+"Belki kullandığınız yazıcı doğru yapılandırılmamıştır ?"
 
 #
 #
@@ -504,6 +504,7 @@ msgid "ChartTexts"
 msgstr "Harita metinleri"
 
 #: src/s52plib.cpp:7127
+#, c-format
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "HPGL çevrimi: '%ler' yönergesi uygulanmadı."
 
@@ -669,7 +670,7 @@ msgstr "  Sonuç : Tamam, içsel kalibrasyonla çözüldü."
 
 #: src/nmea.cpp:395
 msgid "  Could not open serial port '"
-msgstr " Seri bağlantı noktası açılamadı"
+msgstr "      Bağlantı noktası açılamadı "
 
 #: src/nmea.cpp:396
 #: src/ais.cpp:3157
@@ -678,7 +679,7 @@ msgid ""
 "Suggestion: Try closing other applications."
 msgstr ""
 "'\n"
-"       Tüm uygulamaları kapatarak yeniden deneyin"
+"Tüm uygulamaları kapatarak yeniden deneyin."
 
 #
 #
@@ -809,7 +810,7 @@ msgstr "Sapma     Sağ"
 #
 #: src/concanv.cpp:339
 msgid "ETA          "
-msgstr "ETA :                                           "
+msgstr "Hesaplanan Varış Zamanı                                          "
 
 #
 #
@@ -820,12 +821,12 @@ msgstr "Rota"
 
 #: src/chcanv.cpp:4648
 msgid "Route: "
-msgstr "Rota :"
+msgstr "Rota:"
 
 # Couche
 #: src/chcanv.cpp:4650
 msgid "(unnamed)"
-msgstr "(İsimsiz)"
+msgstr "(Adsız)"
 
 #
 #
@@ -841,18 +842,21 @@ msgstr "Başlangıç - Varış Limanları"
 #
 #
 #: src/chcanv.cpp:5524
+#, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
 msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.1fx"
 
 #
 #
 #: src/chcanv.cpp:5526
+#, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
 msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.2fx"
 
 #
 #
 #: src/chcanv.cpp:5529
+#, c-format
 msgid "TrueScale: %8.0f             "
 msgstr "Doğru ölçüm : %8.de"
 
@@ -1025,7 +1029,7 @@ msgstr "Kuzey yukarıda olacak şekilde kullan"
 
 #: src/chcanv.cpp:8884
 msgid "Measure....."
-msgstr "Mesafeyi ölç"
+msgstr "Uzaklığıi ölç"
 
 #: src/chcanv.cpp:8886
 msgid "Measure Off"
@@ -1091,7 +1095,7 @@ msgstr "Oraya"
 #: src/routemanagerdialog.cpp:1681
 #: src/routemanagerdialog.cpp:1916
 msgid "(Unnamed Waypoint)"
-msgstr "(İsimsiz Seyirnoktası)"
+msgstr "(Adlandırılmamış Seyirnoktası)"
 
 #
 #
@@ -1296,7 +1300,7 @@ msgstr "İptal"
 
 #: src/chcanv.cpp:16157
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr "  Dış uygulama \"xölçümü\" bulunamadı. Ekran parlaklığı değişmedi."
+msgstr "  Dış uygulama \"x ölçümü\" bulunamadı. Ekran parlaklığı değişmedi."
 
 #
 #
@@ -1753,7 +1757,7 @@ msgstr "Bacak"
 #: src/routeprop.cpp:947
 #: src/routeprop.cpp:962
 msgid "To Waypoint"
-msgstr "Seyir noktasına"
+msgstr "Seyirnoktasına"
 
 #
 #
@@ -1761,7 +1765,7 @@ msgstr "Seyir noktasına"
 #: src/routeprop.cpp:963
 #: src/routemanagerdialog.cpp:581
 msgid "Distance"
-msgstr "Mesafe"
+msgstr "Uzaklık"
 
 #
 #: src/routeprop.cpp:949
@@ -1850,7 +1854,7 @@ msgstr "Bu seyirnoktası bir etiketin parçası olduğu için iptal edilemiyor."
 
 #: src/routeprop.cpp:1853
 msgid "Show name"
-msgstr "İsim göster"
+msgstr "Adı göster"
 
 #
 #
@@ -1921,7 +1925,7 @@ msgstr "Haritada göster"
 
 #: src/routeprop.cpp:1989
 msgid "GUID"
-msgstr "Kullanım"
+msgstr "GUID"
 
 #: src/routeprop.cpp:1999
 msgid "GPX"
@@ -1945,7 +1949,7 @@ msgstr "URL"
 
 #: src/routeprop.cpp:2093
 msgid "Local file..."
-msgstr "Bilgisayardaki dosya..."
+msgstr "Bilgisayardaki dosya yolu"
 
 #: src/routeprop.cpp:2413
 msgid "Links are opened for editing."
@@ -2033,7 +2037,7 @@ msgstr "&GPS'e Gönder"
 #: src/routemanagerdialog.cpp:500
 #: src/routemanagerdialog.cpp:558
 msgid "&Delete All"
-msgstr "&Hepsini Sil"
+msgstr "&Tümünü Sil"
 
 #
 #
@@ -2105,7 +2109,7 @@ msgstr "&Seyirnoktalarını Sakla"
 #
 #: src/routemanagerdialog.cpp:623
 msgid "Delete All"
-msgstr "Hepsini sil"
+msgstr "Tümünü sil"
 
 #
 #
@@ -2117,7 +2121,7 @@ msgstr "&GPX dosyası aç"
 #
 #: src/routemanagerdialog.cpp:638
 msgid "E&xport All..."
-msgstr "&Hepsini Sakla"
+msgstr "&Tümünü Sakla"
 
 #
 # Couche
@@ -2162,7 +2166,7 @@ msgstr "İçeriği listele"
 #
 #: src/routemanagerdialog.cpp:817
 msgid "(Unnamed Route)"
-msgstr "(İsimsiz rota)"
+msgstr "(Adlandırılmamış rota)"
 
 #
 #
@@ -2195,7 +2199,7 @@ msgstr "Rotaların<TÜMÜNÜ> silmek istediğinizden emin misiniz ?"
 #: src/routemanagerdialog.cpp:1617
 #: src/routemanagerdialog.cpp:1969
 msgid "OpenCPN Alert"
-msgstr "OpenCPN uyarısı"
+msgstr "OpenCPN Alarmı"
 
 #
 #
@@ -2221,7 +2225,7 @@ msgstr ""
 #
 #: src/routemanagerdialog.cpp:1415
 msgid "(Unnamed Track)"
-msgstr "(İsimsiz seyirizi)"
+msgstr "(Adlandırılmamış seyirizi)"
 
 #
 #: src/routemanagerdialog.cpp:1595
@@ -2272,7 +2276,7 @@ msgstr "İçerik listesini kaldır"
 # Couche
 #: src/routemanagerdialog.cpp:2384
 msgid "(Unnamed Layer)"
-msgstr "(İsimsiz etiket)"
+msgstr "(Adlandırılmamış etiket)"
 
 #
 # AIS
@@ -3654,13 +3658,13 @@ msgstr "  AIS seri bağlantı noktası açılamıyor  '"
 #
 #: src/ais.cpp:4301
 msgid "AISTargetAlert"
-msgstr "AIS hedef uyarısı"
+msgstr "AIS hedef alarmı"
 
 #
 #
 #: src/ais.cpp:4378
 msgid "&Silence Alert"
-msgstr "& Sessiz alarm"
+msgstr "&Sessiz alarm"
 
 #
 #
@@ -3917,7 +3921,7 @@ msgstr "Gelgitler&&Akıntılar"
 
 #: src/options.cpp:632
 msgid "Harmonic dataset to use:"
-msgstr "Kullanılır harmonic veri bileşeni:"
+msgstr "Kullanılacak uyumlu veri bileşeni:"
 
 # Toolbox/Langue
 #: src/options.cpp:636
@@ -3970,7 +3974,7 @@ msgstr "NMEA Yön ve hız verisini süz."
 
 #: src/options.cpp:851
 msgid "Filter Period (Sec.)"
-msgstr "Süzme süresi (dakika)"
+msgstr "Süzme süresi ( ) dakika"
 
 #
 #: src/options.cpp:862
@@ -4007,13 +4011,13 @@ msgstr "Denizci Standardı"
 #
 #: src/options.cpp:928
 msgid "Clear All"
-msgstr "Hepsini kaldır"
+msgstr "Tümünü kaldır"
 
 #
 #
 #: src/options.cpp:931
 msgid "Select All"
-msgstr "Hepsini seç   "
+msgstr "Tümünü seç   "
 
 #
 #
@@ -4317,42 +4321,42 @@ msgstr "CPA / TCPA"
 #
 #: src/options.cpp:1232
 msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA Uyarıları"
+msgstr "CPA/TCPA Alarmları"
 
 #
 #
 #: src/options.cpp:1240
 msgid "Show CPA/TCPA Alert Dialog"
-msgstr "CPA/TCPA uyarı durumunu göster"
+msgstr "CPA/TCPA alarm durumunu göster"
 
 #
 #
 #: src/options.cpp:1243
 msgid "Select Alert Sound"
-msgstr "Uyarı sesini seç"
+msgstr "Alarm sesini seç"
 
 #
 #
 #: src/options.cpp:1246
 msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "CPA/TCPA uyarılarını sesli yap"
+msgstr "CPA/TCPA alarmını sesli yap"
 
 #
 #
 #: src/options.cpp:1249
 msgid "Test Alert Sound"
-msgstr "Uyarı sesini dene"
+msgstr "Alarm sesini dene"
 
 #
 #
 #: src/options.cpp:1252
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Demirdeki/tonozdaki hedefler için uyarıları gizle "
+msgstr "Demirdeki/tonozdaki hedefler için alarmı gizle "
 
 #
 #: src/options.cpp:1258
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr "( ) Dakika sonrasında hedef uyarı bilgisini etkinleştir:"
+msgstr "( ) Dakika sonrasında hedef alarm bilgisini etkinleştir:"
 
 #
 #
