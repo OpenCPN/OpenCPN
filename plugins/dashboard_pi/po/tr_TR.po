@@ -1,0 +1,235 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.2.1110\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-12 12:56-0400\n"
+"PO-Revision-Date: 2012-05-26 19:52+0200\n"
+"Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Poedit-Basepath: F:\\GIT\\opencpn\\plugins\\dashboard_pi\n"
+
+#
+msgid "Add"
+msgstr "Ekle"
+
+#
+msgid "Add instrument"
+msgstr "Alet ekle"
+
+#
+msgid "Apparent wind"
+msgstr "Görünen rüzgar"
+
+#
+msgid "Appearance"
+msgstr "Görünen"
+
+#
+msgid "COG"
+msgstr "COG"
+
+#
+msgid "Caption:"
+msgstr "Başlık"
+
+#
+msgid "Clock"
+msgstr "Saat"
+
+#
+msgid "Compass"
+msgstr "Pusula"
+
+#
+msgid "Cursor"
+msgstr "Fare"
+
+#
+msgid "Dashboard"
+msgstr "Gösterge Paneli"
+
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "OpenCPN i Gösterge Paneli eklentisi"
+
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"OpenCPN Gösterge Paneli\n"
+"ermöglicht Instrumentenanzeigen aus NMEA Quellen."
+
+#
+msgid "Dashboard preferences"
+msgstr "Gösterge Paneli seçenekleri"
+
+#
+msgid "Data:"
+msgstr "Veri:"
+
+#
+msgid "Delete"
+msgstr "Sil"
+
+#
+msgid "Depth"
+msgstr "Derinlik"
+
+#
+msgid "Down"
+msgstr "Aşağı"
+
+#
+msgid "E"
+msgstr "D"
+
+#
+msgid "Edit"
+msgstr "Düzelt"
+
+#
+msgid "Fonts"
+msgstr "Harf"
+
+#
+msgid "GPS in view"
+msgstr "GPS görüntüsü"
+
+#
+msgid "GPS status"
+msgstr "GPS Durumu"
+
+#
+msgid "HDG"
+msgstr "HDG"
+
+#
+msgid "Horizontal"
+msgstr "Yatay"
+
+#
+msgid "Instrument width:"
+msgstr "Alet genişliği:"
+
+#
+msgid "Instruments"
+msgstr "Aletler"
+
+#
+msgid "Label:"
+msgstr "Etiket:"
+
+#
+msgid "Moon phase"
+msgstr "Ay dönemi"
+
+#
+msgid "N"
+msgstr "K"
+
+#
+msgid "NE"
+msgstr "KD"
+
+#
+msgid "NW"
+msgstr "KB"
+
+#
+msgid "Orientation:"
+msgstr "Yönlendirme:"
+
+#
+msgid "Position"
+msgstr "Mevki"
+
+#
+msgid "Rudder angle"
+msgstr "Dümen açısı"
+
+#
+msgid "S"
+msgstr "G"
+
+#
+msgid "SE"
+msgstr "GD"
+
+#
+msgid "SOG"
+msgstr "SOG"
+
+#
+msgid "STW"
+msgstr "STW"
+
+#
+msgid "SW"
+msgstr "GB"
+
+#
+msgid "Select instrument to add:"
+msgstr "Eklemek için alet seçin:"
+
+#
+msgid "Small:"
+msgstr "Küçük:"
+
+#
+msgid "Speedometer"
+msgstr "Hız göstergesi"
+
+#
+msgid "Sunrise/Sunset"
+msgstr "Gün doğumu/Gün batımı"
+
+#
+msgid "Temp"
+msgstr "Sıcaklık"
+
+#
+msgid "Title:"
+msgstr "Adı:"
+
+#
+msgid "True wind"
+msgstr "Gerçek rüzgar"
+
+#
+msgid "Up"
+msgstr "Yukarı"
+
+#
+msgid "VMG"
+msgstr "VMG"
+
+#
+msgid "Vertical"
+msgstr "Dikey"
+
+#
+msgid "W"
+msgstr "B"
+
+#
+msgid "Wind angle"
+msgstr "Rüzgar açısı"
+
+#
+msgid "Wind speed"
+msgstr "Rüzgar hızı"
+
+#
+msgid "show this dashboard"
+msgstr "Bu Gösterge Panelini göster"
+
