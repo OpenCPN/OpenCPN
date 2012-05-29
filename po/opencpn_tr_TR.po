@@ -506,7 +506,7 @@ msgstr "Harita metinleri"
 #: src/s52plib.cpp:7127
 #, c-format
 msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "HPGL çevrimi: '%ler' yönergesi uygulanmadı."
+msgstr "HPGL çevrimi: '%s' yönergesi uygulanmadı."
 
 #
 #: src/cm93.cpp:6750
@@ -844,21 +844,21 @@ msgstr "Başlangıç - Varış Limanları"
 #: src/chcanv.cpp:5524
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.1fx"
+msgstr "Doğru ölçüm : %8.0f  Yakınlaştırma %4.1fx"
 
 #
 #
 #: src/chcanv.cpp:5526
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.2fx"
+msgstr "Doğru ölçüm : %8.0f  Yakınlaştırma %4.2fx"
 
 #
 #
 #: src/chcanv.cpp:5529
 #, c-format
 msgid "TrueScale: %8.0f             "
-msgstr "Doğru ölçüm : %8.de"
+msgstr "Doğru ölçüm : %8.0f"
 
 #
 #
