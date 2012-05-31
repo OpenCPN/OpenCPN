@@ -658,8 +658,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                               if (mPriDateTime >= 3)
                               {
                                     mPriDateTime = 3;
-                                    wxString dt = m_NMEA0183.Rmc.UTCTime;
-                                    dt.Append(m_NMEA0183.Rmc.Date);
+                                    wxString dt = m_NMEA0183.Rmc.Date;
+                                    dt.Append(m_NMEA0183.Rmc.UTCTime);
                                     mUTCDateTime.ParseFormat(dt.c_str(), _T("%d%m%y%H%M%S"));
                               }
                         }
@@ -820,9 +820,9 @@ void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             mVar = pfix.Var;
             SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, pfix.Var, _T("Deg"));
       }
-      if (mPriDateTime >= 1)
+      if (mPriDateTime >= 6) //We prefer the GPS datetime
       {
-            mPriDateTime = 1;
+            mPriDateTime = 6;
             mUTCDateTime.Set(pfix.FixTime);
       }
       mSatsInView = pfix.nSats;
