@@ -381,7 +381,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                               double m_NMEA0183.Dbt.DepthMeters;
                               double m_NMEA0183.Dbt.DepthFathoms;
                               */
-                              SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, m_NMEA0183.Dbt.DepthMeters, _T("m"));
+                              double depth = 999.;
+                              if (m_NMEA0183.Dbt.DepthMeters != 999.)
+                                    depth = m_NMEA0183.Dbt.DepthMeters;
+                              else if (m_NMEA0183.Dbt.DepthFeet != 999.)
+                                    depth = m_NMEA0183.Dbt.DepthFeet * 0.3048;
+                              else if (m_NMEA0183.Dbt.DepthFathoms != 999.)
+                                    depth = m_NMEA0183.Dbt.DepthFathoms * 1.82880;
+                              SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, depth, _T("m"));
                         }
                   }
             }
