@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-12 12:56-0400\n"
-"PO-Revision-Date: 2012-05-26 19:52+0200\n"
+"PO-Revision-Date: 2012-05-30 16:05+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,7 +31,7 @@ msgstr "Görünen rüzgar"
 
 #
 msgid "Appearance"
-msgstr "Görünen"
+msgstr "Görünüm"
 
 #
 msgid "COG"
@@ -67,7 +67,7 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "OpenCPN Gösterge Paneli\n"
-"ermöglicht Instrumentenanzeigen aus NMEA Quellen."
+"NMEA dan beslenen seyiraraçlarının görünmesini sağlar."
 
 #
 msgid "Dashboard preferences"
@@ -75,7 +75,7 @@ msgstr "Gösterge Paneli seçenekleri"
 
 #
 msgid "Data:"
-msgstr "Veri:"
+msgstr "Veriler:"
 
 #
 msgid "Delete"
@@ -99,7 +99,7 @@ msgstr "Düzelt"
 
 #
 msgid "Fonts"
-msgstr "Harf"
+msgstr "Yazı türü, tipi, büyüklüğü"
 
 #
 msgid "GPS in view"
@@ -127,7 +127,7 @@ msgstr "Aletler"
 
 #
 msgid "Label:"
-msgstr "Etiket:"
+msgstr "Etiketler:"
 
 #
 msgid "Moon phase"
@@ -183,7 +183,7 @@ msgstr "Eklemek için alet seçin:"
 
 #
 msgid "Small:"
-msgstr "Küçük:"
+msgstr "Diğerleri:"
 
 #
 msgid "Speedometer"
@@ -199,7 +199,7 @@ msgstr "Sıcaklık"
 
 #
 msgid "Title:"
-msgstr "Adı:"
+msgstr "Alet adları:"
 
 #
 msgid "True wind"
