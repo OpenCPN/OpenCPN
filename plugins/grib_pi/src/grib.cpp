@@ -485,7 +485,7 @@ void GRIBUIDialog::OnIdOKClick ( wxCommandEvent& event )
 void GRIBUIDialog::OnMove ( wxMoveEvent& event )
 {
       //    Record the dialog position
-      wxPoint p = event.GetPosition();
+      wxPoint p =  GetPosition();
       pPlugIn->SetGribDialogX(p.x);
       pPlugIn->SetGribDialogY(p.y);
 
