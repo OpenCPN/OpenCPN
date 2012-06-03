@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 2.4 build 628\n"
+"Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:00-0400\n"
-"PO-Revision-Date: 2011-06-28 18:42+0100\n"
+"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"PO-Revision-Date: 2012-06-02 22:59+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "MIME-Version: 1.0\n"
@@ -18,27 +18,28 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 
-#: src/grib.h:116
-#: src/grib_pi.cpp:270
+#: src/grib.h:124
+#: src/grib_pi.cpp:277
+#: src/grib_pi.cpp:346
 msgid "GRIB Display Control"
 msgstr "GRIB Visningskontroll"
 
-#: src/grib_pi.cpp:112
-#: src/grib_pi.cpp:199
-#: src/grib_pi.cpp:248
+#: src/grib_pi.cpp:118
+#: src/grib_pi.cpp:208
+#: src/grib_pi.cpp:261
 msgid "Grib"
 msgstr "Grib"
 
-#: src/grib_pi.cpp:168
-#: src/grib_pi.cpp:221
+#: src/grib_pi.cpp:177
+#: src/grib_pi.cpp:230
 msgid "GRIB"
 msgstr "GRIB"
 
-#: src/grib_pi.cpp:174
+#: src/grib_pi.cpp:183
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB-modul för OpenCPN"
 
-#: src/grib_pi.cpp:180
+#: src/grib_pi.cpp:189
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -58,76 +59,76 @@ msgstr ""
 "- ytvattentemperatur\n"
 "-  strömhastighet och riktning"
 
-#: src/grib_pi.cpp:212
+#: src/grib_pi.cpp:221
 msgid "GRIB Preferences"
 msgstr "GRIB Inställningar"
 
-#: src/grib_pi.cpp:225
+#: src/grib_pi.cpp:234
 msgid "Show GRIB icon"
 msgstr "Aktivera GRIB-ikon"
 
-#: src/grib_pi.cpp:228
+#: src/grib_pi.cpp:237
 msgid "Use High Definition Graphics"
 msgstr "Använd högupplöst grafik"
 
-#: src/grib.cpp:211
+#: src/grib_pi.cpp:240
+msgid "Show metres/sec for Wind Speed"
+msgstr "Visa m/s för vindstyrka"
+
+#: src/grib.cpp:195
 msgid "GRIB File Directory"
 msgstr "GRIB Filkatalog"
 
-#: src/grib.cpp:237
+#: src/grib.cpp:221
 msgid "GRIB Data"
 msgstr "GRIB Data"
 
-#: src/grib.cpp:250
+#: src/grib.cpp:234
 msgid "Wind Speed, Kts."
-msgstr "Vindhastighet, Knop."
+msgstr "Vindstyrka, Knop."
 
-#: src/grib.cpp:260
+#: src/grib.cpp:236
+msgid "Wind Speed, m/sec."
+msgstr "Vindstyrka, m/s."
+
+#: src/grib.cpp:248
 msgid "Wind Direction"
 msgstr "Vindriktning"
 
-#: src/grib.cpp:270
+#: src/grib.cpp:258
 msgid "Pressure, mBar"
 msgstr "Lufttryck, mBar"
 
-#: src/grib.cpp:280
+#: src/grib.cpp:268
 msgid "Significant Wave Height, m"
 msgstr "Signifikant våghöjd, m"
 
-#: src/grib.cpp:291
+#: src/grib.cpp:279
 msgid "Sea Surface Temp, C"
 msgstr "Yttemperatur, C"
 
-#: src/grib.cpp:301
+#: src/grib.cpp:289
 msgid "Current Velocity, Kts."
 msgstr "Strömhastighet, Knop."
 
-#: src/grib.cpp:316
+#: src/grib.cpp:304
 msgid "&Close"
 msgstr "Stäng"
 
-#: src/grib.cpp:518
+#: src/grib.cpp:510
 msgid "Select GRIB Directory"
 msgstr "Välj GRIB filkatalog"
 
-#: src/grib.cpp:1110
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "VARNING:  QuickScat GRIB data är %d timmar."
-
-#: src/grib.cpp:1230
+#: src/grib.cpp:1092
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB signifikant våghöjd"
 
-#: src/grib.cpp:1403
+#: src/grib.cpp:1156
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
 
-#: src/grib.cpp:1520
+#: src/grib.cpp:1168
+#: src/grib.cpp:1225
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
-
-#: src/grib.cpp:1640
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zooma ut eller öka skalan för att visa GRIB ströminformation"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-22 22:21-0400\n"
-"PO-Revision-Date: 2012-06-01 00:13+0100\n"
+"PO-Revision-Date: 2012-06-02 18:40+0100\n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -189,7 +189,7 @@ msgstr "Horloge"
 
 #: src/dashboard_pi.cpp:146
 msgid "Sunrise/Sunset"
-msgstr "Soleil : Levé/Couché"
+msgstr "Soleil : Lever/Coucher"
 
 #: src/dashboard_pi.cpp:148
 msgid "Moon phase"
@@ -207,20 +207,16 @@ msgstr "Phase de lune"
 msgid "Dashboard"
 msgstr "TABLEAU DE BORD"
 
-#
-#
 #: src/dashboard_pi.cpp:324
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Greffon tableau de bord pour OpenCPN"
+msgstr "Complément \"Tableau de bord\" pour OpenCPN"
 
-#
-#
 #: src/dashboard_pi.cpp:329
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
-"Plug-in tableau de bord pour OpenCPN\n"
+"Complément \"Tableau de bord\" pour OpenCPN\n"
 "Fournit des instruments de navigation à partir de données NMEA."
 
 #

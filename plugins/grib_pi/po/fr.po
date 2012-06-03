@@ -33,12 +33,10 @@ msgstr "GRIB"
 msgid "GRIB"
 msgstr "Affichage"
 
-#
 #: src/grib_pi.cpp:183
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "Plug-in météo d'affichage des fichiers GRIB pour OpenCPN"
+msgstr "Complément \"Météo\" d'affichage des fichiers GRIB pour OpenCPN"
 
-#
 #: src/grib_pi.cpp:189
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
@@ -50,7 +48,7 @@ msgid ""
 "- sea surface temperature\n"
 "- surface current direction and speed."
 msgstr ""
-"Plug-in météo pour l'affichage des fichiers GRIB par OpenCPN\n"
+"Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\n"
 "Fournit un affichage de base des fichiers GRIB pour plusieurs types de fichiers.\n"
 "\n"
 "Supporte les types de fichiers GRIG suivants :\n"

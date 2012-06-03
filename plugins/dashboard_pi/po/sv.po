@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 2.4 build 628\n"
+"Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-28 10:00-0400\n"
-"PO-Revision-Date: 2011-06-28 18:41+0100\n"
+"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"PO-Revision-Date: 2012-06-02 22:59+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: src/compass.cpp:128
 #: src/wind.cpp:85
 #: src/gps.cpp:125
-#: src/dashboard_pi.cpp:550
+#: src/dashboard_pi.cpp:564
 msgid "N"
 msgstr "N"
 
@@ -203,25 +203,25 @@ msgstr "Månfas"
 
 #
 #
-#: src/dashboard_pi.cpp:239
-#: src/dashboard_pi.cpp:304
-#: src/dashboard_pi.cpp:1009
-#: src/dashboard_pi.cpp:1017
-#: src/dashboard_pi.cpp:1161
-#: src/dashboard_pi.cpp:1196
-#: src/dashboard_pi.cpp:1388
+#: src/dashboard_pi.cpp:247
+#: src/dashboard_pi.cpp:318
+#: src/dashboard_pi.cpp:1059
+#: src/dashboard_pi.cpp:1067
+#: src/dashboard_pi.cpp:1211
+#: src/dashboard_pi.cpp:1246
+#: src/dashboard_pi.cpp:1438
 msgid "Dashboard"
 msgstr "Instrumentpanel"
 
 #
 #
-#: src/dashboard_pi.cpp:310
+#: src/dashboard_pi.cpp:324
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Instrumentpanel för OpenCPN"
 
 #
 #
-#: src/dashboard_pi.cpp:315
+#: src/dashboard_pi.cpp:329
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
@@ -231,112 +231,112 @@ msgstr ""
 
 #
 #
-#: src/dashboard_pi.cpp:1142
+#: src/dashboard_pi.cpp:1192
 msgid "Dashboard preferences"
 msgstr "Inställningar"
 
-#: src/dashboard_pi.cpp:1203
+#: src/dashboard_pi.cpp:1253
 msgid "show this dashboard"
 msgstr "Visa den här panelen"
 
-#: src/dashboard_pi.cpp:1208
+#: src/dashboard_pi.cpp:1258
 msgid "Caption:"
 msgstr "Titel:"
 
-#: src/dashboard_pi.cpp:1213
+#: src/dashboard_pi.cpp:1263
 msgid "Orientation:"
 msgstr "Orientering:"
 
-#: src/dashboard_pi.cpp:1216
+#: src/dashboard_pi.cpp:1266
 msgid "Vertical"
 msgstr "Vertikal"
 
-#: src/dashboard_pi.cpp:1217
+#: src/dashboard_pi.cpp:1267
 msgid "Horizontal"
 msgstr "Horisontell"
 
 #
 #
-#: src/dashboard_pi.cpp:1220
+#: src/dashboard_pi.cpp:1270
 msgid "Instrument width:"
 msgstr "Instrumentbredd:"
 
 #
 #
-#: src/dashboard_pi.cpp:1229
-#: src/dashboard_pi.cpp:1236
-#: src/dashboard_pi.cpp:1501
+#: src/dashboard_pi.cpp:1279
+#: src/dashboard_pi.cpp:1286
+#: src/dashboard_pi.cpp:1551
 msgid "Instruments"
 msgstr "Instrument"
 
 #
 #
-#: src/dashboard_pi.cpp:1244
+#: src/dashboard_pi.cpp:1294
 msgid "Add"
 msgstr "Lägg till"
 
 #
 #
-#: src/dashboard_pi.cpp:1248
+#: src/dashboard_pi.cpp:1298
 msgid "Edit"
 msgstr "Ändra"
 
 #
 #
-#: src/dashboard_pi.cpp:1252
+#: src/dashboard_pi.cpp:1302
 msgid "Delete"
 msgstr "Ta bort"
 
 #
 #
-#: src/dashboard_pi.cpp:1257
+#: src/dashboard_pi.cpp:1307
 msgid "Up"
 msgstr "Upp"
 
 #
 #
-#: src/dashboard_pi.cpp:1261
+#: src/dashboard_pi.cpp:1311
 msgid "Down"
 msgstr "Ner"
 
-#: src/dashboard_pi.cpp:1269
+#: src/dashboard_pi.cpp:1319
 msgid "Appearance"
 msgstr "Utseende"
 
 #
-#: src/dashboard_pi.cpp:1271
+#: src/dashboard_pi.cpp:1321
 msgid "Fonts"
 msgstr "Typsnitt"
 
 #
-#: src/dashboard_pi.cpp:1277
+#: src/dashboard_pi.cpp:1327
 msgid "Title:"
 msgstr "Titel:"
 
 #
-#: src/dashboard_pi.cpp:1281
+#: src/dashboard_pi.cpp:1331
 msgid "Data:"
 msgstr "Data:"
 
 #
-#: src/dashboard_pi.cpp:1285
+#: src/dashboard_pi.cpp:1335
 msgid "Label:"
 msgstr "Beskrivning:"
 
 #
-#: src/dashboard_pi.cpp:1289
+#: src/dashboard_pi.cpp:1339
 msgid "Small:"
 msgstr "Liten:"
 
 #
 #
-#: src/dashboard_pi.cpp:1487
+#: src/dashboard_pi.cpp:1537
 msgid "Add instrument"
 msgstr "Lägg till instrument"
 
 #
 #
-#: src/dashboard_pi.cpp:1491
+#: src/dashboard_pi.cpp:1541
 msgid "Select instrument to add:"
-msgstr "Välj instrument att lägga till"
+msgstr "Välj instrument att lägga till:"
 

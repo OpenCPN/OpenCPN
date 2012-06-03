@@ -2923,11 +2923,9 @@ msgstr "DSC"
 msgid "Name:  "
 msgstr "Nom  : "
 
-#
-#
 #: src/ais.cpp:636
 msgid "CallSign:             "
-msgstr "Indicatif d'appel   : "
+msgstr "Indicatif d'appel  : "
 
 #
 #: src/ais.cpp:644
@@ -2940,11 +2938,9 @@ msgstr "IMO:                 %8d\n"
 msgid "IMO:\n"
 msgstr "IMO:\n"
 
-#
-#
 #: src/ais.cpp:651
 msgid "Class:                "
-msgstr "Classe              : "
+msgstr "Classe               : "
 
 #
 #
@@ -2982,8 +2978,6 @@ msgstr "Type :"
 msgid "UN Ship Type:         "
 msgstr "Type de bateau UN : "
 
-#
-#
 #: src/ais.cpp:752
 #: src/ais.cpp:767
 #, c-format
@@ -2991,72 +2985,61 @@ msgid ""
 "Size:                 ---m x ---m x %4.1fm\n"
 "\n"
 msgstr ""
-"Taille              : ---m x ---m x %4.1fm\n"
+"Taille                : ---m x ---m x %4.1fm\n"
 "\n"
 
-#
-#
 #: src/ais.cpp:754
 #: src/ais.cpp:769
 msgid ""
 "Size:                 ---m x ---m x ---m\n"
 "\n"
 msgstr ""
-"Taille              : ---m x ---m x ---m\n"
+"Taille                : ---m x ---m x ---m\n"
 "\n"
 
-#
-#
 #: src/ais.cpp:759
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 msgstr ""
-"Taille              : %5.1fm x %4.1fm x %4.1fm\n"
+"Taille                : %5.1fm x %4.1fm x %4.1fm\n"
 "\n"
 
-#
-#
 #: src/ais.cpp:761
 #, c-format
 msgid ""
 "Size:               %5.1fm x %4.1fm x ---m\n"
 "\n"
 msgstr ""
-"Taille              : %5.1fm x %4.1fm x ---m\n"
+"Taille                : %5.1fm x %4.1fm x ---m\n"
 "\n"
 
-#
-#
 #: src/ais.cpp:773
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x ---m\n"
 "\n"
 msgstr ""
-"Taille              : %dm x %dm x ---m\n"
+"Taille                : %dm x %dm x ---m\n"
 "\n"
 
-#
-#
 #: src/ais.cpp:775
 #, c-format
 msgid ""
 "Size:                 %dm x %dm x %4.1fm\n"
 "\n"
 msgstr ""
-"Taille              : %dm x %dm x %4.1fm\n"
+"Taille                : %dm x %dm x %4.1fm\n"
 "\n"
 
-#
 #: src/ais.cpp:778
 #, c-format
 msgid ""
 "Size:                 %dm x %dm\n"
 "\n"
 msgstr ""
-"Taille              : %dm x %dm \n"
+"Taille                : %dm x %dm \n"
 "\n"
 
 #: src/ais.cpp:786
@@ -3147,29 +3130,23 @@ msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
 msgid "Rate Of Turn            0\n"
 msgstr "Vitesse de rotation : 0\n"
 
-#
-#
 #: src/ais.cpp:861
 #, c-format
 msgid "Range:                %5.1f NM\n"
-msgstr "Distance            :%5.1f  NM\n"
+msgstr "Distance           :%5.1f  NM\n"
 
-#
-#
 #: src/ais.cpp:863
 msgid "Range:                  Unavailable\n"
-msgstr "Distance            : Indisponible\n"
+msgstr "Distance           : Indisponible\n"
 
-#
 #: src/ais.cpp:870
 #, c-format
 msgid "Bearing:                %03d Deg.\n"
-msgstr "Cible relevée au    : %03d   Deg.\n"
+msgstr "Cible relevée au : %03d   Deg.\n"
 
-#
 #: src/ais.cpp:872
 msgid "Bearing:                Unavailable\n"
-msgstr "Cible relevée au   : Indisponible\n"
+msgstr "Cible relevée au : Indisponible\n"
 
 #
 #: src/ais.cpp:879
@@ -3226,7 +3203,7 @@ msgstr "TCPA :\n"
 #: src/ais.cpp:939
 #, c-format
 msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA  :               %6.1f NM\n"
+msgstr "CPA   :               %6.1f NM\n"
 
 #
 #
@@ -4617,15 +4594,13 @@ msgstr "Entrer un nom de groupe"
 msgid "Chart Groups...New Group"
 msgstr "Groupe de cartes ... Nouveau groupe"
 
-#
-#
 #: src/about.cpp:276
 msgid ""
 "\n"
 "         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
 msgstr ""
 "\n"
-"       OpenCPN... Logiciel sympa opensource de cartographie marine et d'aide à la navigation."
+"       OpenCPN... Logiciel  \"opensource\" de cartographie marine et d'aide à la navigation."
 
 #: src/about.cpp:295
 msgid "About"
@@ -4699,7 +4674,7 @@ msgstr "Envoyer"
 
 #: src/pluginmanager.cpp:174
 msgid "    Incompatible PlugIn detected:"
-msgstr "    Plug-in incompatible détecté"
+msgstr "    Complément incompatible détecté :"
 
 #
 #: src/pluginmanager.cpp:1730
