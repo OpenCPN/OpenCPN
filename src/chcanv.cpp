@@ -4630,8 +4630,9 @@ void ChartCanvas::OnRouteLegPopupTimerEvent ( wxTimerEvent& event )
 
                         if(NULL == m_pRolloverWin)
                         {
-                              if( g_bopengl && m_glcc )
-                                    m_pRolloverWin = new RolloverWin(m_glcc);
+                              if( g_bopengl && m_glcc &&
+                                  (m_glcc->GetRendererString().Upper().Find(_T("NVIDIA")) != wxNOT_FOUND))
+                                          m_pRolloverWin = new RolloverWin(m_glcc);
                               else
                                     m_pRolloverWin = new RolloverWin(this);
                               m_pRolloverWin->Hide();
@@ -7808,7 +7809,11 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
                         if(NULL == m_pAISRolloverWin)
                         {
-                              m_pAISRolloverWin = new RolloverWin(this, 10);  // ten second expiration
+                              if( g_bopengl && m_glcc &&
+                                  (m_glcc->GetRendererString().Upper().Find(_T("NVIDIA")) != wxNOT_FOUND))
+                                    m_pAISRolloverWin = new RolloverWin(m_glcc, 10);
+                              else
+                                    m_pAISRolloverWin = new RolloverWin(this, 10);
                               m_pAISRolloverWin->Hide();
                         }
 
