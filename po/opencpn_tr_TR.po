@@ -506,7 +506,7 @@ msgstr "Harita metinleri"
 #: src/s52plib.cpp:7127
 #, c-format
 msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "HPGL çevrimi: '%s' yönergesi uygulanmadı."
+msgstr "HPGL çevrimi: '%ler' yönergesi uygulanmadı."
 
 #
 #: src/cm93.cpp:6750
@@ -844,21 +844,21 @@ msgstr "Başlangıç - Varış Limanları"
 #: src/chcanv.cpp:5524
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Doğru ölçüm : %8.0f  Yakınlaştırma %4.1fx"
+msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.1fx"
 
 #
 #
 #: src/chcanv.cpp:5526
 #, c-format
 msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Doğru ölçüm : %8.0f  Yakınlaştırma %4.2fx"
+msgstr "Doğru ölçüm : %8.de  Yakınlaştırma %4.2fx"
 
 #
 #
 #: src/chcanv.cpp:5529
 #, c-format
 msgid "TrueScale: %8.0f             "
-msgstr "Doğru ölçüm : %8.0f"
+msgstr "Doğru ölçüm : %8.de"
 
 #
 #
@@ -1351,14 +1351,14 @@ msgstr "GPX dosyası aç"
 # Toolbox/Langue
 #: src/navutil.cpp:7186
 msgid "&Font family:"
-msgstr "& Harf türü :"
+msgstr "& Yazı türü :"
 
 #
 # Toolbox/Langue
 #: src/navutil.cpp:7192
 #: src/navutil.cpp:7194
 msgid "The font family."
-msgstr "Harf türü."
+msgstr "Yazı türü."
 
 #
 # Toolbox/Langue
@@ -1371,7 +1371,7 @@ msgstr "&Tipi:"
 #: src/navutil.cpp:7203
 #: src/navutil.cpp:7205
 msgid "The font style."
-msgstr "Harf tipi."
+msgstr "Yazı tipi."
 
 #
 # Toolbox/Langue
@@ -1384,7 +1384,7 @@ msgstr "&Ölçü :"
 #: src/navutil.cpp:7214
 #: src/navutil.cpp:7216
 msgid "The font weight."
-msgstr "Harf ölçüsü."
+msgstr "Yazı büyüklüğü"
 
 #
 # Toolbox/Langue
@@ -1397,19 +1397,19 @@ msgstr "&Renk:"
 #: src/navutil.cpp:7233
 #: src/navutil.cpp:7235
 msgid "The font colour."
-msgstr "Harf rengi"
+msgstr "Yazı rengi"
 
 # Toolbox/Langue
 #: src/navutil.cpp:7241
 msgid "&Point size:"
-msgstr "&Harf büyüklüğü:"
+msgstr "&Yazı büyüklüğü:"
 
 #
 # Toolbox/Langue
 #: src/navutil.cpp:7246
 #: src/navutil.cpp:7248
 msgid "The font point size."
-msgstr "Harf nokta büyüklüğü."
+msgstr "Yazı nokta büyüklüğü."
 
 #
 # Toolbox/Langue
@@ -1449,7 +1449,7 @@ msgstr "&İptal"
 # Toolbox/Langue
 #: src/navutil.cpp:7283
 msgid "Click to cancel the font selection."
-msgstr "Harf seçimini iptal etmek için tıklayın."
+msgstr "Yazı türü seçimini iptal etmek için tıklayın."
 
 #
 #
@@ -1462,7 +1462,7 @@ msgstr "&Tamam"
 #: src/navutil.cpp:7288
 #: src/navutil.cpp:7290
 msgid "Click to confirm the font selection."
-msgstr "Harf seçimini onaylamak için tıklayın."
+msgstr "Yazı türü seçimini onaylamak için tıklayın."
 
 #
 #: src/routeprop.cpp:436
@@ -4362,7 +4362,7 @@ msgstr "( ) Dakika sonrasında hedef alarm bilgisini etkinleştir:"
 #
 #: src/options.cpp:1268
 msgid "Language/Fonts"
-msgstr "Dil / Harfler"
+msgstr "Dil/Yazı Türü"
 
 #
 #
@@ -4552,7 +4552,7 @@ msgstr "Dil"
 #
 #: src/options.cpp:2540
 msgid "Font Options"
-msgstr "Harf türü seçenekleri"
+msgstr "Yazı türü seçenekleri"
 
 #
 #
@@ -4564,7 +4564,7 @@ msgstr "Metin Unsuru"
 #
 #: src/options.cpp:2562
 msgid "Choose Font..."
-msgstr "Harf türünü Seçin ..."
+msgstr "Yazı türünü Seçin ..."
 
 #
 #
