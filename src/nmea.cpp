@@ -429,7 +429,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
 
 #ifdef VERSION_SET
 #if VERSION_SET != 0x10000000
-#warning : VERSION_SET skew detected...gps.h include file is probably out of date
+#warning : VERSION_SET skew detected...Using gps.h from libgps19
+#define LIBGPS19_INCLUDES 1
 #endif
 #endif
 
@@ -574,6 +575,8 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                       msg.Append(_("\n\nContinuing libgps setup..."));
                       OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_INFORMATION | wxOK );
                       md.ShowModal();
+                      result_open = 1;          // fail
+
                   }
                   else
                   {
@@ -601,70 +604,53 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
             else
                   result_open = 1;        // not opened
 
-            bool b_use_lib = true;
-            if(!result_open)              // opened OK
-            {
+            if(!result_open) {             // opened OK
+
+            //    API version 19 structure layout differs from API V20.
+            //    If we build with the API20 include file
+            //    we need to hack an adjusted pointer to the version struct.
+
+                  struct version_t  *pversion = &(pgps_data->version);
+
+#ifndef LIBGPS19_INCLUDES
+                  if(19 == libgps_api) {
+                        char *t19 = (char *)pgps_data;
+                        t19 += 1032;            // this magic number found empirically....
+                        struct gps_data_t *p19_adjust = (struct gps_data_t *)t19;
+                        pversion = (version_t *)p19_adjust;
+                  }
+#endif
+
+
                   int n_check_version = 5;            // check up to five times
-                  bool b_version_match = false;
                   bool b_version_set = false;
                   struct version_t check_version;
                   check_version.proto_major =0; check_version.proto_minor = 0;
 
-                  while(n_check_version)
-                  {
+                  while(n_check_version) {
                   //    Check library version
-                        if(s_fn_gps_waiting(pgps_data, 1000))
-                        {
+                        if(s_fn_gps_waiting(pgps_data, 1000)) {
                               if(20 == libgps_api)
                                     s_fn_gps_read(pgps_data);
                               else if(19 == libgps_api)
                                     s_fn_gps_poll(pgps_data);
                         }
 
-//                        printf("  Version Poll/Read Set: %0X  %0X\n", (unsigned int)gps_data->set, d_VERSION_SET);
-
-                        if(pgps_data->set & d_VERSION_SET)
-                        {
+                        if(pgps_data->set & d_VERSION_SET) {
                               b_version_set = true;
-                              check_version = pgps_data->version;
 
-      //                        2.96 (libgps.so.20) gives 3.4
-                              if((check_version.proto_major >= 3) && (check_version.proto_minor >= 0))
-                              {
-                                    b_version_match = true;
-                                    break;
-                              }
-                              else
-                                    break;
+//                        2.95 (libgps.so.19) gives 3.3
+//                        2.96 (libgps.so.20) gives 3.4
+                              check_version = *pversion;
+
+                              break;
                         }
 
                         n_check_version--;
                   }
 
-#if 0
-                  if(!b_version_set)
-                  {
-                        wxString msg(_("Possible libgps API version mismatch.\nlibgps did not reasonably respond to version request\n\nWould you like to use this version of libgps anyway?"));
-                        OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
 
-                        if(wxID_YES == md.ShowModal())
-                              b_use_lib = true;
-                  }
-
-                  if( b_version_set && !b_version_match )
-                  {
-                        wxString msg;
-                        msg.Printf(_("libgps API version mismatch.\nOpenCPN found version %d.%d, but requires at least version 3.0\n\n\
-      Would you like to use this version of libgps anyway?"),
-                              check_version.proto_major, check_version.proto_minor);
-                        OCPNMessageDialog md(m_parent_frame, msg, _("OpenCPN Message"), wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT );
-
-                        if(wxID_YES == md.ShowModal())
-                              b_use_lib = true;
-                  }
-#endif
-
-                 if( b_version_set && (libgps_api == 20)){
+                 if( b_version_set ){
                         wxString msg;
                         msg.Printf(_T("LIBGPS: Found libgps version %d.%d"), check_version.proto_major,    check_version.proto_minor);
                         wxLogMessage(msg);
@@ -676,24 +662,17 @@ NMEAHandler::NMEAHandler(int handler_id, wxFrame *frame, const wxString& NMEADat
                   s_fn_gps_close(pgps_data);
                   pgps_data = NULL;
             }
-            else              // Open did not work, but carry on anyway
-            {
+            else {             // Open did not work, but carry on anyway
                   wxString msg;
                   msg.Printf(_T("LIBGPS: Initial Open()failed, assuming libgps version at least 3.0"));
                   wxLogMessage(msg);
-                  b_use_lib = true;
             }
 
-            if(b_use_lib)
-            {
-                  // Start the GPSD receiver thread
-                  m_gpsd_thread = new OCP_GPSD_Thread(this, frame, NMEA_data_ip, libgps_api );
-                  m_Thread_run_flag = 1;
-                  m_gpsd_thread->Run();
+            // Start the GPSD receiver thread
+            m_gpsd_thread = new OCP_GPSD_Thread(this, frame, NMEA_data_ip, libgps_api );
+            m_Thread_run_flag = 1;
+            m_gpsd_thread->Run();
 
-            }
-            else
-                  return;
         }
 #endif
 
@@ -1966,29 +1945,30 @@ OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
       m_pgps_data = NULL;
       m_libgps_api = api;
       m_GPSD_data_ip = ip_addr;
+
+      m_PACKET_SET    = PACKET_SET;
+      m_TIME_SET      = TIME_SET;
+      m_LATLON_SET    = LATLON_SET;
+      m_TRACK_SET     = TRACK_SET;
+      m_SPEED_SET     = SPEED_SET;
+      m_SATELLITE_SET = SATELLITE_SET;
+      m_ERROR_SET     = ERROR_SET;
+      m_STATUS_SET    = STATUS_SET;
+
+      //    If we are built with libgps20 include file, but using the libgps19 API
+      //    Then we have to adjust the status bit definitions to reflect libgps19
+#ifndef LIBGPS19_INCLUDES
       if(api == 19) {
-            m_PACKET_SET = 0x20000000u;
-            m_TIME_SET   = 0x00000002u;
-            m_LATLON_SET = 0x00000008u;
-            m_TRACK_SET  = 0x00000040u;
-            m_SPEED_SET  = 0x00000020u;
+            m_PACKET_SET    = 0x20000000u;
+            m_TIME_SET      = 0x00000002u;
+            m_LATLON_SET    = 0x00000008u;
+            m_TRACK_SET     = 0x00000040u;
+            m_SPEED_SET     = 0x00000020u;
             m_SATELLITE_SET = 0x00010000u;
             m_ERROR_SET     = 0x02000000u;
             m_STATUS_SET    = 0x00000100u;
-
       }
-      else {
-            m_PACKET_SET    = 1u<<25;
-            m_TIME_SET      = (1u<<2);
-            m_LATLON_SET    = (1u<<4);
-            m_TRACK_SET     = (1u<<7);
-            m_SPEED_SET     = (1u<<6);
-            m_SATELLITE_SET = (1u<<15);
-            m_ERROR_SET     = (1u<<31);
-            m_STATUS_SET    = (1u<<9);
-
-      }
-
+#endif
       Create();
 
 }
@@ -2169,15 +2149,22 @@ bool OCP_GPSD_Thread::OpenLibrary(void)
             }
 
             //    API version 19 structure layout differs from API V20.
-            //    We build with the API20 include file, so
+            //    If we build with the API20 include file
             //    we need to hack an adjusted pointer to the GPS fix location.
+            //    It is offset by 4 bytes....
             //    Once more, gpsd architects do it again......
+#ifdef LIBGPS19_INCLUDES
+            m_pfix = &(m_pgps_data->fix);
+            m_pstatus = &(m_pgps_data->status);
+            m_psats_viz = &(m_pgps_data->satellites_visible);
+#else
             int *t19 = (int *)m_pgps_data;
             t19--;
             struct gps_data_t *p19_adjust = (struct gps_data_t *)t19;
             m_pfix = &(p19_adjust->fix);
             m_pstatus = &(p19_adjust->status);
             m_psats_viz = &(p19_adjust->satellites_visible);
+#endif
       }
 
       else if(20 == m_libgps_api)
