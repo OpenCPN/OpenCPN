@@ -27,10 +27,18 @@ Files: CMakeLists.txt plugins/CMakeLists.txt plugins/grib_pi/CMakeLists.txt plug
 Copyright: 2010-2011 David S Register <bdbcat@yahoo.com>
 License: WXwindows
 
-Files: src/garmin/jeeps/*
+Files: src/garmin/jeeps/garmin* src/garmin/jeeps/gpsdevice.* src/garmin/jeeps/gpsusb*
 Copyright: 2004-2006 Robert Lipe <robertlipe@usa.net>
 	   2010 David S Register <bdbcat@yahoo.com>
 License: GPL-2.0+
+
+Files: src/garmin/jeeps/gps[acf-s]* src/garmin/jeeps/gpsdatum.h src/garmin/jeeps/gpsutil.*
+Copyright: 1999-2000 Alan Bleasby
+           2004-2006 Robert Lipe <robertlipe@usa.net>
+           2007 Achim Schumacher
+           2010 Martin Buck
+           2010 David S Register <bdbcat@yahoo.com>
+License: LGPL-2.0+
 
 Files: src/garmin/jeeps/gpsprot.c src/garmin/jeeps/gpscom.c src/garmin/jeeps/gpsapp.c src/garmin/jeeps/gpsmath.c src/garmin/jeeps/gpsrqst.c src/garmin/jeeps/gpsutil.c src/garmin/jeeps/gpsread.c src/garmin/jeeps/gpssend.c src/garmin/jeeps/gpsserial.c src/garmin/jeeps/gpsmem.c
 Copyright: 1999-2000 Alan Bleasby
@@ -85,6 +93,10 @@ Copyright: 2008 Jacques Zaninetti http://www.zygrib.org
 License: GPL-3.0+
 Comment: Built into a separate binary package which is only Suggested
  by the main (GPL>=2) package.
+
+Files: plugins/grib_pi/src/icons.sh plugins/dashboard_pi/src/icons.sh src/bitmaps/*.sh src/bitmaps/*/*.sh src/bitmaps/*/*/*.sh
+Copyright: 2010 David S Register <bdbcat@yahoo.com>
+License: GPL-2.0+
 
 Files: src/scrollingdialog.* src/bbox.cpp
 Copyright: 2000 Klaas Holwerda
