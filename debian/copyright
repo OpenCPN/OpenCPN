@@ -87,6 +87,12 @@ Comment: wrt code duplication,
  It does not exist in elsewhere in Debian; the code here has been
  specifically tailored/reworked by the OpenCPN lead author and is
  maintained within the OpenCPN source tree.
+ .
+ Samuel Blackburn's original source license:
+ "You can use it any way you like."
+ More recent (2010) license statement from Samuel:
+ "It is BSD license, do with it what you will"
+ (and what Dave's decided to do with it is make our copy of it GPLv2+)
 
 Files: plugins/grib_pi/src/Grib* plugins/grib_pi/src/Iso* plugins/grib_pi/src/ZuFile*
 Copyright: 2008 Jacques Zaninetti http://www.zygrib.org
@@ -98,7 +104,7 @@ Files: plugins/grib_pi/src/icons.sh plugins/dashboard_pi/src/icons.sh src/bitmap
 Copyright: 2010 David S Register <bdbcat@yahoo.com>
 License: GPL-2.0+
 
-Files: src/scrollingdialog.* src/bbox.cpp
+Files: src/scrollingdialog.* include/scrollingdialog.h src/bbox.cpp include/bbox.h
 Copyright: 2000 Klaas Holwerda
            2007 Julian Smart
 License: WXwindows
@@ -125,7 +131,7 @@ License: public-domain
  This code is in the public domain. Specifically, we give to the public
  domain all rights for future licensing of the source code, all resale
  rights, and all publishing rights.
-
+ .
  UNC-CH GIVES NO WARRANTY, EXPRESSED OR IMPLIED, FOR THE SOFTWARE
  AND/OR DOCUMENTATION PROVIDED, INCLUDING, WITHOUT LIMITATION, WARRANTY
  OF MERCHANTABILITY AND WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE.
