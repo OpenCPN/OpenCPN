@@ -40,12 +40,14 @@
 #include "chartdb.h"
 #include "chart1.h"
 #include "chartbase.h"
+#include "styles.h"
 
 //------------------------------------------------------------------------------
 //    External Static Storage
 //------------------------------------------------------------------------------
 extern ChartDB          *ChartData;
-//extern ChartStack       *pCurrentStack;
+extern ocpnStyle::StyleManager* g_StyleManager;
+
 
 //------------------------------------------------------------------------------
 //    StatWin Implementation
@@ -57,8 +59,8 @@ BEGIN_EVENT_TABLE(StatWin, wxWindow)
 END_EVENT_TABLE()
 
 // ctor
-StatWin::StatWin(wxFrame *frame):
- wxWindow(frame, wxID_ANY, wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER)
+StatWin::StatWin(wxWindow *frame):
+ wxDialog (frame, wxID_ANY, _T(""), wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER | wxFRAME_SHAPED )
 
 {
       int x,y;
@@ -94,11 +96,24 @@ StatWin::~StatWin()
 
 }
 
+void StatWin::RePosition() {
+            wxSize cs = GetParent()->GetClientSize();
+            wxPoint position;
+            position.x = 0;
+            position.y = cs.y - GetSize().y;
+
+            wxPoint screen_pos = GetParent()->ClientToScreen( position );
+            Move( screen_pos );
+}
 
 
 void StatWin::OnPaint(wxPaintEvent& event)
 {
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
       wxPaintDC dc(this);
+      if( style->chartStatusWindowTransparent ) return;
+
       dc.SetBackground(m_backBrush);
       dc.Clear();
 }
@@ -218,7 +233,7 @@ END_EVENT_TABLE()
 
 // Define a constructor
 PianoWin::PianoWin(wxFrame *frame):
-      wxWindow(frame, wxID_ANY, wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER)
+      wxWindow(frame, wxID_ANY, wxPoint(20,20), wxSize(5,5), wxNO_BORDER)
 {
     m_index_last = -1;
     m_iactive = -1;
@@ -235,11 +250,18 @@ PianoWin::PianoWin(wxFrame *frame):
 
     m_pVizIconBmp = NULL;
     m_pInVizIconBmp = NULL;
-
+    m_pPolyIconBmp = NULL;
+    m_pSkewIconBmp = NULL;
+    m_pTmercIconBmp = NULL;
  }
 
 PianoWin::~PianoWin()
 {
+      if( m_pInVizIconBmp ) delete m_pInVizIconBmp;
+      if( m_pPolyIconBmp ) delete m_pPolyIconBmp;
+      if( m_pSkewIconBmp ) delete m_pSkewIconBmp;
+      if( m_pTmercIconBmp ) delete m_pTmercIconBmp;
+      if( m_pVizIconBmp ) delete m_pVizIconBmp;
 }
 
 
@@ -271,9 +293,17 @@ void PianoWin::SetColorScheme(ColorScheme cs)
 
 void PianoWin::OnPaint(wxPaintEvent& event)
 {
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
       int width, height;
       GetClientSize(&width, &height );
       wxPaintDC dc(this);
+
+      wxBitmap shape = wxBitmap(width, height);
+      wxMemoryDC shapeDc(shape);
+      shapeDc.SetBackground( *wxBLACK_BRUSH );
+      shapeDc.SetBrush( *wxWHITE_BRUSH );
+      shapeDc.SetPen( *wxWHITE_PEN );
+      shapeDc.Clear();
 
       dc.SetBackground(m_backBrush);
       dc.Clear();
@@ -356,10 +386,14 @@ void PianoWin::OnPaint(wxPaintEvent& event)
 
                   wxRect box = KeyRegion[i].GetBox();
 
-                  if(m_brounded)
+                  if(m_brounded) {
                         dc.DrawRoundedRectangle(box.x, box.y, box.width, box.height, 4);
-                  else
+                        shapeDc.DrawRoundedRectangle(box.x, box.y, box.width, box.height, 4);
+                  }
+                  else {
                         dc.DrawRectangle(box);
+                        shapeDc.DrawRectangle(box);
+                  }
 
                   for(unsigned int ino=0 ; ino < m_sublite_index_array.GetCount() ; ino++)
                   {
@@ -373,50 +407,51 @@ void PianoWin::OnPaint(wxPaintEvent& event)
                   }
 
                   //    Look in the current noshow array for this index
-                        for(unsigned int ino=0 ; ino < m_noshow_index_array.GetCount() ; ino++)
+                  for(unsigned int ino=0 ; ino < m_noshow_index_array.GetCount() ; ino++)
+                  {
+                        if(m_noshow_index_array.Item(ino) == key_db_index)        // chart is in the noshow list
                         {
-                              if(m_noshow_index_array.Item(ino) == key_db_index)        // chart is in the noshow list
-                              {
-                                    if(m_pInVizIconBmp && m_pInVizIconBmp->IsOk())
-                                          dc.DrawBitmap(*m_pInVizIconBmp, box.x + 4, box.y + 3, true);
-                                    break;
-                              }
+                              if(m_pInVizIconBmp && m_pInVizIconBmp->IsOk())
+                                    dc.DrawBitmap(*m_pInVizIconBmp, box.x + 4, box.y + 3, true);
+                              break;
                         }
+                  }
 
                   //    Look in the current skew array for this index
-                        for(unsigned int ino=0 ; ino < m_skew_index_array.GetCount() ; ino++)
+                  for(unsigned int ino=0 ; ino < m_skew_index_array.GetCount() ; ino++)
+                  {
+                        if(m_skew_index_array.Item(ino) == key_db_index)        // chart is in the list
                         {
-                              if(m_skew_index_array.Item(ino) == key_db_index)        // chart is in the list
-                              {
-                                    if(m_pSkewIconBmp && m_pSkewIconBmp->IsOk())
-                                          dc.DrawBitmap(*m_pSkewIconBmp, box.x + box.width - m_pSkewIconBmp->GetWidth(), box.y, true);
-                                    break;
-                              }
+                              if(m_pSkewIconBmp && m_pSkewIconBmp->IsOk())
+                                    dc.DrawBitmap(*m_pSkewIconBmp, box.x + box.width - m_pSkewIconBmp->GetWidth(), box.y, true);
+                              break;
                         }
+                  }
 
                   //    Look in the current tmerc array for this index
-                        for(unsigned int ino=0 ; ino < m_tmerc_index_array.GetCount() ; ino++)
+                  for(unsigned int ino=0 ; ino < m_tmerc_index_array.GetCount() ; ino++)
+                  {
+                        if(m_tmerc_index_array.Item(ino) == key_db_index)        // chart is in the list
                         {
-                              if(m_tmerc_index_array.Item(ino) == key_db_index)        // chart is in the list
-                              {
-                                    if(m_pTmercIconBmp && m_pTmercIconBmp->IsOk())
-                                          dc.DrawBitmap(*m_pTmercIconBmp,box.x + box.width - m_pTmercIconBmp->GetWidth(), box.y, true);
-                                    break;
-                              }
+                              if(m_pTmercIconBmp && m_pTmercIconBmp->IsOk())
+                                    dc.DrawBitmap(*m_pTmercIconBmp,box.x + box.width - m_pTmercIconBmp->GetWidth(), box.y, true);
+                              break;
                         }
+                  }
 
                   //    Look in the current poly array for this index
-                        for(unsigned int ino=0 ; ino < m_poly_index_array.GetCount() ; ino++)
+                  for(unsigned int ino=0 ; ino < m_poly_index_array.GetCount() ; ino++)
+                  {
+                        if(m_poly_index_array.Item(ino) == key_db_index)        // chart is in the list
                         {
-                              if(m_poly_index_array.Item(ino) == key_db_index)        // chart is in the list
-                              {
-                                    if(m_pPolyIconBmp && m_pPolyIconBmp->IsOk())
-                                          dc.DrawBitmap(*m_pPolyIconBmp,box.x + box.width - m_pPolyIconBmp->GetWidth(), box.y, true);
-                                    break;
-                              }
+                              if(m_pPolyIconBmp && m_pPolyIconBmp->IsOk())
+                                    dc.DrawBitmap(*m_pPolyIconBmp,box.x + box.width - m_pPolyIconBmp->GetWidth(), box.y, true);
+                              break;
                         }
-
+                  }
             }
+            if( style->chartStatusWindowTransparent )
+                  ((wxDialog*)GetParent())->SetShape( wxRegion( shape, *wxBLACK, 0 ) );
       }
 }
 
@@ -460,22 +495,22 @@ void PianoWin::SetPolyIndexArray(ArrayOfInts array)
 
 void PianoWin::FormatKeys(void)
 {
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
       int width, height;
       GetClientSize(&width, &height );
 
       int nKeys = m_key_array.GetCount();
 
-      if(nKeys)
-      {
-            int kw = width / nKeys;
+      if( nKeys ) {
+            int kw = style->chartStatusIconWidth;
+            if( !kw ) kw = width / nKeys;
 
 //    Build the Key Regions
 
 //            assert(nKeys <= KEY_REGIONS_MAX);
 
-            for(int i=0 ; i<nKeys ; i++)
-            {
-                  wxRegion r((i * kw) +3, 2, kw-6, height-4);
+            for( int i = 0; i < nKeys; i++ ) {
+                  wxRegion r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
                   KeyRegion[i] = r;
             }
       }

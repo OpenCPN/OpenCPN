@@ -118,8 +118,8 @@ public:
       void RefreshConsoleData(void);
 
       wxWindow          *m_pParent;
-      wxStaticBox       *pThisLegBox;
-      wxStaticBoxSizer  *m_pitemStaticBoxSizerLeg;
+      wxStaticText       *pThisLegText;
+      wxBoxSizer        *m_pitemBoxSizerLeg;
 
       AnnunText         *pXTE;
       AnnunText         *pBRG;

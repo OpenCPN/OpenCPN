@@ -112,7 +112,7 @@ int grib_pi::Init(void)
 
       //    This PlugIn needs a toolbar icon, so request its insertion if enabled locally
       if(m_bGRIBShowIcon)
-            m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_CHECK,
+            m_leftclick_tool_id  = InsertPlugInTool(_T("grib"), _img_grib, _img_grib, wxITEM_CHECK,
                   _("Grib"), _T(""), NULL,
                    GRIB_TOOL_POSITION, 0, this);
 

@@ -39,8 +39,8 @@
 #include "chartbase.h"        // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
-#include "bitmaps/default_pi.xpm"
 #include "ocpndc.h"
+#include "styles.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -50,6 +50,7 @@ extern wxAuiManager    *g_pauimgr;
 extern wxLocale        *plocale_def_lang;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -1446,7 +1447,10 @@ int opencpn_plugin::GetPlugInVersionMinor()
 {  return 0; }
 
 wxBitmap *opencpn_plugin::GetPlugInBitmap()
-{  return new wxBitmap(default_pi); }
+{
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+	return new wxBitmap(style->GetIcon( _T("default_pi") ) );
+}
 
 wxString opencpn_plugin::GetCommonName()
 {

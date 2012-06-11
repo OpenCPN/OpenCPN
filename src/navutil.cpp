@@ -62,6 +62,7 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 #include "ocpndc.h"
+#include "styles.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -306,6 +307,8 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
+
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2908,6 +2911,10 @@ int MyConfig::LoadMyConfig ( int iteration )
             Read ( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
       }
 
+      wxString uiStyle;
+      Read ( _T ( "UIStyle" ), &uiStyle, wxT(""));
+      g_StyleManager->SetStyle( uiStyle );
+
       Read ( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
       int mem_limit;
@@ -4308,6 +4315,8 @@ void MyConfig::UpdateSettings()
 
       Write ( _T ( "ConfigVersionString" ), g_config_version_string );
       Write ( _T ( "NavMessageShown" ), n_NavMessageShown );
+
+      Write ( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
 
       Write ( _T ( "ShowDebugWindows" ), m_bShowDebugWindows );
       Write ( _T ( "ShowPrintIcon" ), g_bShowPrintIcon );

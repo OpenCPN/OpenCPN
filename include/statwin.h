@@ -83,11 +83,11 @@ public:
       void SetTmercIndexArray(ArrayOfInts array);
       void SetPolyIndexArray(ArrayOfInts array);
 
-      void SetVizIcon(wxBitmap *picon_bmp){ m_pVizIconBmp = picon_bmp; }
-      void SetInVizIcon(wxBitmap *picon_bmp){ m_pInVizIconBmp = picon_bmp; }
-      void SetSkewIcon(wxBitmap *picon_bmp){ m_pSkewIconBmp = picon_bmp; }
-      void SetTMercIcon(wxBitmap *picon_bmp){ m_pTmercIconBmp = picon_bmp; }
-      void SetPolyIcon(wxBitmap *picon_bmp){ m_pPolyIconBmp = picon_bmp; }
+      void SetVizIcon(wxBitmap *picon_bmp){ if( m_pVizIconBmp ) delete m_pVizIconBmp; m_pVizIconBmp = picon_bmp; }
+      void SetInVizIcon(wxBitmap *picon_bmp){ if( m_pInVizIconBmp ) delete m_pInVizIconBmp; m_pInVizIconBmp = picon_bmp; }
+      void SetSkewIcon(wxBitmap *picon_bmp){ if( m_pSkewIconBmp ) delete m_pSkewIconBmp; m_pSkewIconBmp = picon_bmp; }
+      void SetTMercIcon(wxBitmap *picon_bmp){ if( m_pTmercIconBmp ) delete m_pTmercIconBmp; m_pTmercIconBmp = picon_bmp; }
+      void SetPolyIcon(wxBitmap *picon_bmp){ if( m_pPolyIconBmp ) delete m_pPolyIconBmp; m_pPolyIconBmp = picon_bmp; }
 
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
@@ -180,10 +180,10 @@ class WiFiStatWin: public wxWindow
 //----------------------------------------------------------------------------
 // StatWin
 //----------------------------------------------------------------------------
-class StatWin: public wxWindow
+class StatWin: public wxDialog
 {
 public:
-      StatWin(wxFrame *frame);
+      StatWin(wxWindow *frame);
       ~StatWin();
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
@@ -191,6 +191,7 @@ public:
       int  GetFontHeight();
       int  GetRows(){ return(m_rows);}
       void SetColorScheme(ColorScheme cs);
+      void RePosition();
 
       void FormatStat(void);
 
