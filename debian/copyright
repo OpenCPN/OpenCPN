@@ -100,7 +100,7 @@ License: GPL-3.0+
 Comment: Built into a separate binary package which is only Suggested
  by the main (GPL>=2) package.
 
-Files: plugins/grib_pi/src/icons.sh plugins/dashboard_pi/src/icons.sh src/bitmaps/*.sh src/bitmaps/*/*.sh src/bitmaps/*/*/*.sh
+Files: src/bitmaps/icons.* plugins/grib_pi/src/icons.* plugins/dashboard_pi/src/icons.* src/bitmaps/*.sh src/bitmaps/*/*.sh src/bitmaps/*/*/*.sh
 Copyright: 2010 David S Register <bdbcat@yahoo.com>
 License: GPL-2.0+
 
