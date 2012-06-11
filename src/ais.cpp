@@ -58,7 +58,7 @@
 #include "navutil.h"        // for Select
 #include "georef.h"
 #include "pluginmanager.h"  // for PlugInManager
-#include "bitmaps/icons.h" // for sorting icons
+#include "styles.h"
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
@@ -126,6 +126,7 @@ extern bool             bGPSValid;
 
 extern PlugInManager    *g_pi_manager;
 extern TTYWindow        *g_NMEALogWindow;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 //    A static structure storing generic position data
 //    Used to communicate  AIVDO events to main application loop
@@ -4959,8 +4960,11 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       m_pListCtrlAISTargets = new OCPNListCtrl(this, ID_AIS_TARGET_LIST, wxDefaultPosition, wxDefaultSize,
                                                wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN|wxLC_VIRTUAL );
       wxImageList *imglist = new wxImageList( 16, 16, true, 2 );
-      imglist->Add(*_img_sort_asc);
-      imglist->Add(*_img_sort_desc);
+
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+      imglist->Add(style->GetIcon(_T("sort_asc")));
+      imglist->Add(style->GetIcon(_T("sort_desc")));
+
       m_pListCtrlAISTargets->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
       m_pListCtrlAISTargets->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( AISTargetListDialog::OnTargetSelected ), NULL, this );
       m_pListCtrlAISTargets->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED, wxListEventHandler( AISTargetListDialog::OnTargetSelected ), NULL, this );

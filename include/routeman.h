@@ -238,7 +238,7 @@ public:
       RoutePointList    *m_pWayPointList;
 
 private:
-      void ProcessIcon(wxImage *pimage, wxString key, wxString description);
+      void ProcessIcon(wxBitmap pimage, wxString key, wxString description);
 
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 

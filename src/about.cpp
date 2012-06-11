@@ -42,10 +42,7 @@
 #include "about.h"
 #include "chart1.h"
 #include "chcanv.h"
-
-extern wxBitmap *_img_donate;
-
-
+#include "styles.h"
 
 //    Some constants
 
@@ -61,6 +58,7 @@ wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str
 extern wxString        *pHome_Locn;
 extern wxString         glog_file;
 extern wxString         gConfig_File;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 char AboutText[] =
 {
@@ -278,7 +276,8 @@ void about::CreateControls()
   itemBoxSizer2->Add(pST1);
 
   //   "Donate" Button
-  wxBitmap donate_bmp = *_img_donate;
+  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+  wxBitmap donate_bmp = style->GetIcon( _T("donate") );
 
   wxButton* donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, donate_bmp, wxDefaultPosition, wxDefaultSize, 0 );
   donateButton->SetDefault();

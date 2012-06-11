@@ -50,6 +50,7 @@
 #include "routeprop.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
+#include "styles.h"
 
 /*
 //    Include wxJSON headers
@@ -68,51 +69,6 @@
 #include "jsonwriter.h"
 */
 
-//    Include a (large) set of XPM images for mark/waypoint icons
-#include "bitmaps/empty.xpm"
-#include "bitmaps/airplane.xpm"
-#include "bitmaps/anchorage.xpm"
-#include "bitmaps/anchor.xpm"
-#include "bitmaps/boarding.xpm"
-#include "bitmaps/boundary.xpm"
-#include "bitmaps/bouy1.xpm"
-#include "bitmaps/bouy2.xpm"
-#include "bitmaps/campfire.xpm"
-#include "bitmaps/camping.xpm"
-#include "bitmaps/circle.xpm"
-#include "bitmaps/coral.xpm"
-#include "bitmaps/fishhaven.xpm"
-#include "bitmaps/fishing.xpm"
-#include "bitmaps/fish.xpm"
-#include "bitmaps/float.xpm"
-#include "bitmaps/food.xpm"
-#include "bitmaps/fuel.xpm"
-#include "bitmaps/greenlite.xpm"
-#include "bitmaps/kelp.xpm"
-#include "bitmaps/light1.xpm"
-#include "bitmaps/light.xpm"
-#include "bitmaps/litevessel.xpm"
-#include "bitmaps/mob.xpm"
-#include "bitmaps/mooring.xpm"
-#include "bitmaps/oilbouy.xpm"
-#include "bitmaps/platform.xpm"
-#include "bitmaps/redgreenlite.xpm"
-#include "bitmaps/redlite.xpm"
-#include "bitmaps/rock1.xpm"
-#include "bitmaps/rock2.xpm"
-#include "bitmaps/sand.xpm"
-#include "bitmaps/scuba.xpm"
-#include "bitmaps/shoal.xpm"
-#include "bitmaps/snag.xpm"
-#include "bitmaps/square.xpm"
-#include "bitmaps/triangle.xpm"
-#include "bitmaps/wreck1.xpm"
-#include "bitmaps/wreck2.xpm"
-#include "bitmaps/xmblue.xpm"
-#include "bitmaps/xmgreen.xpm"
-#include "bitmaps/xmred.xpm"
-#include "bitmaps/diamond.xpm"
-#include "bitmaps/activepoint.xpm"
 #include <wx/dir.h>                             // 09.10.07; toh
 #include <wx/filename.h>                        // 09.10.07; toh
 #include "wx/stdpaths.h"                        // 09.10.07; toh
@@ -147,6 +103,7 @@ extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
 
 extern PlugInManager    *g_pi_manager;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -1195,102 +1152,61 @@ void SendToGpsDlg::OnCancelClick( wxCommandEvent& event )
 //      WayPointman   Implementation
 //--------------------------------------------------------------------------------
 
-/*
-#define MAKEICONARRAYS(key, xpm_ptr, description)\
-       pmarkiconImage = new wxImage((char **)xpm_ptr);\
-       pmarkiconBitmap = new wxBitmap(*pmarkiconImage, (wxDC)dwxdc);\
-       delete pmarkiconImage;\
-       pmi = new MarkIcon;\
-       pmi->picon_bitmap = pmarkiconBitmap;\
-       pmi->icon_name = _T(key);\
-       pmi->icon_description = _T(description);\
-       DayIconArray.Add((void *)pmi);\
-       pmarkiconImage = new wxImage((char **)xpm_ptr);\
-       pmarkiconBitmap = new wxBitmap(*pmarkiconImage, dwxdc);\
-       delete pmarkiconImage;\
-       pmarkiconBitmapDim = CreateDimBitmap(pmarkiconBitmap, .50, dwxdc);\
-       delete pmarkiconBitmap;\
-       pmi = new MarkIcon;\
-       pmi->picon_bitmap = pmarkiconBitmapDim;\
-       pmi->icon_name = _T(key);\
-       pmi->icon_description = _T(description);\
-       DuskIconArray.Add((void *)pmi);\
-       pmarkiconImage = new wxImage((char **)xpm_ptr);\
-       pmarkiconBitmap = new wxBitmap(*pmarkiconImage, dwxdc);\
-       delete pmarkiconImage;\
-       pmarkiconBitmapDim = CreateDimBitmap(pmarkiconBitmap, .25, dwxdc);\
-       delete pmarkiconBitmap;\
-       pmi = new MarkIcon;\
-       pmi->picon_bitmap = pmarkiconBitmapDim;\
-       pmi->icon_name = _T(key);\
-       pmi->icon_description = _T(description);\
-       NightIconArray.Add((void *)pmi);\
-*/
-#define MAKEICONARRAYS(key, xpm_ptr, description)\
- pmarkiconImage = new wxImage(( const char **)xpm_ptr);\
- ProcessIcon(pmarkiconImage, _T(key), _T(description));\
- delete pmarkiconImage;
-
-
-WayPointman::WayPointman()
-{
+WayPointman::WayPointman() {
 
       m_pWayPointList = new RoutePointList;
 
-      wxImage *pmarkiconImage;
-
       pmarkicon_image_list = NULL;
 
-      MAKEICONARRAYS("empty", empty, "Empty")
-      MAKEICONARRAYS("airplane", airplane, "Airplane")
-      MAKEICONARRAYS("anchorage", anchorage, "Anchorage")
-      MAKEICONARRAYS("anchor", anchor, "Anchor")
-      MAKEICONARRAYS("boarding", boarding, "Boarding Location")
-      MAKEICONARRAYS("boundary", boundary, "Boundary Mark")
-      MAKEICONARRAYS("bouy1", bouy1, "Bouy Type A")
-      MAKEICONARRAYS("bouy2", bouy2, "Bouy Type B")
-      MAKEICONARRAYS("campfire", campfire, "Campfire")
-      MAKEICONARRAYS("camping", camping, "Camping Spot")
-      MAKEICONARRAYS("coral", coral, "Coral")
-      MAKEICONARRAYS("fishhaven", fishhaven, "Fish Haven")
-      MAKEICONARRAYS("fishing", fishing, "Fishing Spot")
-      MAKEICONARRAYS("fish", fish, "Fish")
-      MAKEICONARRAYS("floating", floating, "Float")
-      MAKEICONARRAYS("food", food, "Food")
-      MAKEICONARRAYS("fuel", fuel, "Fuel")
-      MAKEICONARRAYS("greenlite", greenlite, "Green Light")
-      MAKEICONARRAYS("kelp", kelp, "Kelp")
-      MAKEICONARRAYS("light", light1, "Light Type A")
-      MAKEICONARRAYS("light1", light, "Light Type B")
-      MAKEICONARRAYS("litevessel", litevessel, "Light Vessel")
-      MAKEICONARRAYS("mob", mob, "MOB")
-      MAKEICONARRAYS("mooring", mooring, "Mooring Bouy")
-      MAKEICONARRAYS("oilbouy", oilbouy, "Oil Bouy")
-      MAKEICONARRAYS("platform", platform, "Platform")
-      MAKEICONARRAYS("redgreenlite", redgreenlite, "Red/Green Light")
-      MAKEICONARRAYS("redlite", redlite, "Red Light")
-      MAKEICONARRAYS("rock1", rock1, "Rock (exposed)")
-      MAKEICONARRAYS("rock2", rock2, "Rock, (awash)")
-      MAKEICONARRAYS("sand", sand, "Sand")
-      MAKEICONARRAYS("scuba", scuba, "Scuba")
-      MAKEICONARRAYS("shoal", shoal, "Shoal")
-      MAKEICONARRAYS("snag", snag, "Snag")
-      MAKEICONARRAYS("square", square, "Square")
-      MAKEICONARRAYS("triangle", triangle, "Triangle")
-      MAKEICONARRAYS("diamond", diamond, "Diamond")
-      MAKEICONARRAYS("circle", circle, "Circle")
-      MAKEICONARRAYS("wreck1", wreck1, "Wreck A")
-      MAKEICONARRAYS("wreck2", wreck2, "Wreck B")
-      MAKEICONARRAYS("xmblue", xmblue, "Blue X")
-      MAKEICONARRAYS("xmblue_", empty, "Blue Track")
-      MAKEICONARRAYS("xmgreen", xmgreen, "Green X")
-      MAKEICONARRAYS("xmgreen_", empty, "Green Track")
-      MAKEICONARRAYS("xmred", xmred, "Red X")
-      MAKEICONARRAYS("xmred_", empty, "Red Track")
-      MAKEICONARRAYS("activepoint", activepoint, "Active WP")
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+      ProcessIcon( style->GetIcon( _T("empty") ), _T("empty"), _T("Empty") );
+      ProcessIcon( style->GetIcon( _T("airplane") ), _T("airplane"), _T("Airplane") );
+      ProcessIcon( style->GetIcon( _T("anchorage") ), _T("anchorage"), _T("Anchorage") );
+      ProcessIcon( style->GetIcon( _T("anchor") ), _T("anchor"), _T("Anchor") );
+      ProcessIcon( style->GetIcon( _T("boarding") ), _T("boarding"), _T("Boarding Location") );
+      ProcessIcon( style->GetIcon( _T("boundary") ), _T("boundary"), _T("Boundary Mark") );
+      ProcessIcon( style->GetIcon( _T("bouy1") ), _T("bouy1"), _T("Bouy Type A") );
+      ProcessIcon( style->GetIcon( _T("bouy2") ), _T("bouy2"), _T("Bouy Type B") );
+      ProcessIcon( style->GetIcon( _T("campfire") ), _T("campfire"), _T("Campfire") );
+      ProcessIcon( style->GetIcon( _T("camping") ), _T("camping"), _T("Camping Spot") );
+      ProcessIcon( style->GetIcon( _T("coral") ), _T("coral"), _T("Coral") );
+      ProcessIcon( style->GetIcon( _T("fishhaven") ), _T("fishhaven"), _T("Fish Haven") );
+      ProcessIcon( style->GetIcon( _T("fishing") ), _T("fishing"), _T("Fishing Spot") );
+      ProcessIcon( style->GetIcon( _T("fish") ), _T("fish"), _T("Fish") );
+      ProcessIcon( style->GetIcon( _T("float") ), _T("float"), _T("Float") );
+      ProcessIcon( style->GetIcon( _T("food") ), _T("food"), _T("Food") );
+      ProcessIcon( style->GetIcon( _T("fuel") ), _T("fuel"), _T("Fuel") );
+      ProcessIcon( style->GetIcon( _T("greenlite") ), _T("greenlite"), _T("Green Light") );
+      ProcessIcon( style->GetIcon( _T("kelp") ), _T("kelp"), _T("Kelp") );
+      ProcessIcon( style->GetIcon( _T("light") ), _T("light1"), _T("Light Type A") );
+      ProcessIcon( style->GetIcon( _T("light1") ), _T("light"), _T("Light Type B") );
+      ProcessIcon( style->GetIcon( _T("litevessel") ), _T("litevessel"), _T("Light Vessel") );
+      ProcessIcon( style->GetIcon( _T("mob") ), _T("mob"), _T("MOB") );
+      ProcessIcon( style->GetIcon( _T("mooring") ), _T("mooring"), _T("Mooring Bouy") );
+      ProcessIcon( style->GetIcon( _T("oilbouy") ), _T("oilbouy"), _T("Oil Bouy") );
+      ProcessIcon( style->GetIcon( _T("platform") ), _T("platform"), _T("Platform") );
+      ProcessIcon( style->GetIcon( _T("redgreenlite") ), _T("redgreenlite"), _T("Red/Green Light") );
+      ProcessIcon( style->GetIcon( _T("redlite") ), _T("redlite"), _T("Red Light") );
+      ProcessIcon( style->GetIcon( _T("rock1") ), _T("rock1"), _T("Rock (exposed)") );
+      ProcessIcon( style->GetIcon( _T("rock2") ), _T("rock2"), _T("Rock, (awash)") );
+      ProcessIcon( style->GetIcon( _T("sand") ), _T("sand"), _T("Sand") );
+      ProcessIcon( style->GetIcon( _T("scuba") ), _T("scuba"), _T("Scuba") );
+      ProcessIcon( style->GetIcon( _T("shoal") ), _T("shoal"), _T("Shoal") );
+      ProcessIcon( style->GetIcon( _T("snag") ), _T("snag"), _T("Snag") );
+      ProcessIcon( style->GetIcon( _T("square") ), _T("square"), _T("Square") );
+      ProcessIcon( style->GetIcon( _T("triangle") ), _T("triangle"), _T("Triangle") );
+      ProcessIcon( style->GetIcon( _T("diamond") ), _T("diamond"), _T("Diamond") );
+      ProcessIcon( style->GetIcon( _T("circle") ), _T("circle"), _T("Circle") );
+      ProcessIcon( style->GetIcon( _T("wreck1") ), _T("wreck1"), _T("Wreck A") );
+      ProcessIcon( style->GetIcon( _T("wreck2") ), _T("wreck2"), _T("Wreck B") );
+      ProcessIcon( style->GetIcon( _T("xmblue") ), _T("xmblue"), _T("Blue X") );
+      ProcessIcon( style->GetIcon( _T("xmgreen") ), _T("xmgreen"), _T("Green X") );
+      ProcessIcon( style->GetIcon( _T("xmred") ), _T("xmred"), _T("Red X") );
+      ProcessIcon( style->GetIcon( _T("activepoint") ), _T("activepoint"), _T("Active WP") );
 
 // Load user defined icons; toh, 09.10.07
-      wxString UserIconPath = g_PrivateDataDir;  //g_SData_Locn;
+      wxString UserIconPath = g_PrivateDataDir;
       wxChar sep = wxFileName::GetPathSeparator();
       if (UserIconPath.Last() != sep)
             UserIconPath.Append(sep);
@@ -1311,16 +1227,18 @@ WayPointman::WayPointman()
                   wxString iconname = fn.GetName();
                   wxBitmap icon1;
 
-                  if (icon1.LoadFile(name,wxBITMAP_TYPE_XPM))
-                  {
-                        wxImage *iconImage = new wxImage;
-                        *iconImage = icon1.ConvertToImage();
-                        ProcessIcon(iconImage,iconname,iconname);
-                        delete iconImage;
+                  if( fn.GetExt().Lower() == _T("xpm") ) {
+                        if( icon1.LoadFile( name, wxBITMAP_TYPE_XPM ) ) {
+                              ProcessIcon( icon1, iconname, iconname );
+                        }
+                  }
+                  if( fn.GetExt().Lower() == _T("png") ) {
+                        if( icon1.LoadFile( name, wxBITMAP_TYPE_PNG ) ) {
+                              ProcessIcon( icon1, iconname, iconname );
+                        }
                   }
             }
       }
-// End load user defined icons; toh, 09.10.07
 
       m_nIcons = DayIconArray.GetCount();
       m_pcurrent_icon_array = &DayIconArray;
@@ -1379,27 +1297,14 @@ WayPointman::~WayPointman()
       delete pmarkicon_image_list;
 }
 
-void WayPointman::ProcessIcon(wxImage *pimage, wxString key, wxString description)
-{
+void WayPointman::ProcessIcon( wxBitmap pimage, wxString key, wxString description ) {
 
       wxBitmap *pmarkiconBitmap;
       wxBitmap *pmarkiconBitmapDim;
       MarkIcon *pmi;
 
 //    Day Icon
-#ifdef __WXMSW__
-//      wxMSW Bug???
-//      On Windows XP, conversion from wxImage to wxBitmap fails at the ::CreateDIBitmap() call
-//      unless a "compatible" dc is provided.  Why??
-//      As a workaround, just make a simple wxDC for temporary use
-      wxBitmap tbmp ( 1, 1,-1 );
-      wxMemoryDC dwxdc;
-      dwxdc.SelectObject ( tbmp );
-
-      pmarkiconBitmap = new wxBitmap(*pimage, dwxdc);
-#else
-      pmarkiconBitmap = new wxBitmap(*pimage);
-#endif
+      pmarkiconBitmap = new wxBitmap( pimage );
 
       pmi = new MarkIcon;
       pmi->picon_bitmap = pmarkiconBitmap;

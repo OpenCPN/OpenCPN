@@ -290,8 +290,8 @@ ENDIF (NOT WIN32)
 
 #FILE(GLOB_RECURSE SRCS *.cpp *.c)
 SET(HDRS
-                include/ocpn_types.h
-                include/ocpndc.h
+        include/ocpn_types.h
+        include/ocpndc.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -313,20 +313,23 @@ SET(HDRS
 		include/wvschart.h
 		include/about.h
 		include/ais.h
-                include/pluginmanager.h
-                include/ocpn_plugin.h
+        include/pluginmanager.h
+        include/ocpn_plugin.h
 		include/gpxdocument.h
-                include/wx/json_defs.h
-                include/wx/jsonwriter.h
-                include/chartsymbols.h
-                include/razdsparser.h
+        include/wx/json_defs.h
+        include/wx/jsonwriter.h
+        include/chartsymbols.h
+        include/razdsparser.h
+		include/styles.h
+		include/toolbar.h
+		include/compasswin.h
 )
 
 SET(SRCS 
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
-                src/ocpndc.cpp
+        src/ocpndc.cpp
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp
@@ -345,13 +348,15 @@ SET(SRCS
 		src/wvschart.cpp
 		src/about.cpp
 		src/ais.cpp
-                src/pluginmanager.cpp
+        src/pluginmanager.cpp
 		src/gpxdocument.cpp
-            	src/wxJSON/jsonwriter.cpp
-            	src/wxJSON/jsonval.cpp
-                src/chartsymbols.cpp
-                src/razdsparser.cpp
-
+    	src/wxJSON/jsonwriter.cpp
+    	src/wxJSON/jsonval.cpp
+        src/chartsymbols.cpp
+        src/razdsparser.cpp
+		src/styles.cpp
+		src/toolbar.cpp
+		src/compasswin.cpp
     )
 
 IF(wx_Version MATCHES "2.9")
@@ -575,6 +580,13 @@ SET(wvsData
         data/wvsdata/wvs43.dat
    )
 
+SET(uiData
+	src/bitmaps/styles.xml
+	src/bitmaps/toolicons_journeyman.png
+	src/bitmaps/toolicons_journeyman_flat.png
+	src/bitmaps/toolicons_traditional.png
+	)
+
 IF (USE_S57)
       SET(s57data
             data/s57data/attdecode.csv
@@ -646,6 +658,8 @@ IF(APPLE)
 SET_SOURCE_FILES_PROPERTIES(
            ${wvsData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/wvsdata  )
 SET_SOURCE_FILES_PROPERTIES(
+           ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
+SET_SOURCE_FILES_PROPERTIES(
            ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data  )
 SET_SOURCE_FILES_PROPERTIES(
            ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata  )
@@ -673,6 +687,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${HDRS}
       ${SRCS}
       ${wvsData}
+      ${uidata}
       ${s57data}
       ${tcData}
       data/license.txt
@@ -771,6 +786,8 @@ SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
 INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+
+INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
 IF (USE_S57)
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)

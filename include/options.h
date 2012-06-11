@@ -133,8 +133,8 @@ enum {
         ID_GROUPINSERTDIR,
         ID_GROUPREMOVEDIR,
         ID_GROUPNEWGROUP,
-        ID_GROUPDELETEGROUP
-
+        ID_GROUPDELETEGROUP,
+		ID_STYLESCOMBOBOX
 };
 
 //    Define an int bit field for dialog return value
@@ -149,6 +149,7 @@ enum {
 #define     CHANGE_CHARTS    128
 #define     SCAN_UPDATE      256
 #define     GROUPS_CHANGED   512
+#define     STYLE_CHANGED   1024
 
 
 #ifndef wxCLOSE_BOX
@@ -342,6 +343,7 @@ public:
     wxScrolledWindow        *itemPanelFont;
     wxBoxSizer              *m_itemBoxSizerFontPanel;
     wxComboBox              *m_itemFontElementListBox;
+    wxComboBox              *m_itemStyleListBox;
     wxComboBox              *m_itemLangListBox;
     bool                    m_bVisitLang;
 
