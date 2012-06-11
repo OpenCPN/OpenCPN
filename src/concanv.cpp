@@ -45,6 +45,7 @@
 #include "concanv.h"
 #include "routeman.h"
 #include "navutil.h"
+#include "styles.h"
 
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;
@@ -53,6 +54,7 @@ extern MyFrame          *gFrame;
 extern                  double gCog;
 extern                  double gSog;
 
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 
 //------------------------------------------------------------------------------
@@ -69,63 +71,67 @@ END_EVENT_TABLE()
 // Define a constructor for my canvas
 ConsoleCanvas::ConsoleCanvas(wxWindow *frame)
 {
-      long style = wxNO_BORDER | wxCLIP_CHILDREN;
+      long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
 #ifdef __WXOSX__
       style |= wxSTAY_ON_TOP;
 #endif
 
-      wxDialog::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style);
+      wxDialog::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxSize(170,200), style);
 
       m_pParent = frame;
 
-      pThisLegBox = new wxStaticBox(this, -1, _("This Leg"), wxPoint(1,1),
-                                    wxSize(170,200), wxCLIP_CHILDREN, _T("staticBox"));
+      m_pitemBoxSizerLeg = new wxBoxSizer( wxVERTICAL );
 
-      m_pitemStaticBoxSizerLeg = new wxStaticBoxSizer(pThisLegBox, wxVERTICAL);
+      pThisLegText = new wxStaticText(this, -1, _("This Leg"), wxPoint(1,1),
+                                    wxDefaultSize, wxCLIP_CHILDREN, _T("staticBox"));
+      pThisLegText->Fit();
+      m_pitemBoxSizerLeg->Add( pThisLegText, 0, wxALIGN_CENTER_HORIZONTAL, 2 );
 
-      pThisLegFont = wxTheFontList->FindOrCreateFont(11, wxDEFAULT,wxNORMAL, wxBOLD);
+ //     pSBoxRgn = new wxRegion(pThisLegBox->GetRect() );
 
-      pThisLegBox->SetFont(*pThisLegFont);
+      pThisLegFont = wxTheFontList->FindOrCreateFont(10, wxDEFAULT,wxNORMAL, wxBOLD );
+
+      pThisLegText->SetFont(*pThisLegFont);
 
 
       m_pLegRouteButton = new wxButton( this, ID_LEGROUTE, _("Leg/Route"), wxDefaultPosition, wxSize(-1, -1), 0 );
       m_pLegRouteButton->SetMinSize(wxSize(-1, 25));
-      m_pitemStaticBoxSizerLeg->Add(m_pLegRouteButton, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 2);
+      m_pitemBoxSizerLeg->Add(m_pLegRouteButton, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 2);
 
 
       pXTE = new AnnunText(this, -1,  _("Console Legend"), _("Console Value"));
       pXTE->SetALabel(_T("XTE"));
-      m_pitemStaticBoxSizerLeg->Add(pXTE, 1, wxALIGN_LEFT|wxALL, 2);
+      m_pitemBoxSizerLeg->Add(pXTE, 1, wxALIGN_LEFT|wxALL, 2);
 
       pBRG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pBRG->SetALabel(_T("BRG"));
-      m_pitemStaticBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT|wxALL, 2);
+      m_pitemBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT|wxALL, 2);
 
       pVMG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pVMG->SetALabel(_T("VMG"));
-      m_pitemStaticBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT|wxALL, 2);
+      m_pitemBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT|wxALL, 2);
 
       pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
       pRNG->SetALabel(_T("RNG"));
-      m_pitemStaticBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT|wxALL, 2);
+      m_pitemBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT|wxALL, 2);
 
       pTTG = new AnnunText(this, -1,  _("Console Legend"), _("Console Value"));
       pTTG->SetALabel(_T("TTG"));
-      m_pitemStaticBoxSizerLeg->Add(pTTG, 1, wxALIGN_LEFT|wxALL, 2);
+      m_pitemBoxSizerLeg->Add(pTTG, 1, wxALIGN_LEFT|wxALL, 2);
 
 
 //    Create CDI Display Window
 
 
       pCDI = new CDI(this, -1, wxSIMPLE_BORDER, _T("CDI"));
-      m_pitemStaticBoxSizerLeg->AddSpacer(10);
-      m_pitemStaticBoxSizerLeg->Add(pCDI, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 2);
+      m_pitemBoxSizerLeg->AddSpacer(10);
+      m_pitemBoxSizerLeg->Add(pCDI, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 2);
 
 
       m_bShowRouteTotal = false;
 
-      SetSizer( m_pitemStaticBoxSizerLeg );      // use the sizer for layout
-      m_pitemStaticBoxSizerLeg->SetSizeHints(this);
+      SetSizer( m_pitemBoxSizerLeg );      // use the sizer for layout
+      m_pitemBoxSizerLeg->SetSizeHints(this);
       Layout();
       Fit();
 
@@ -147,7 +153,7 @@ void ConsoleCanvas::SetColorScheme(ColorScheme cs)
 
     //  Also apply color scheme to all known children
 
-    pThisLegBox->SetBackgroundColour(GetGlobalColor(_T("DILG1"/*"UIBDR"*/)));
+    pThisLegText->SetBackgroundColour(GetGlobalColor(_T("DILG1"/*"UIBDR"*/)));
 
     m_pLegRouteButton->SetBackgroundColour(GetGlobalColor(_T("DILG1"/*"UIBDR"*/)));
 
@@ -174,7 +180,7 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event)
             if(m_bNeedClear)
             {
 //                  ClearBackground();
-                  pThisLegBox->Refresh();
+                  pThisLegText->Refresh();
                   m_bNeedClear = false;
             }
 
@@ -363,11 +369,11 @@ void ConsoleCanvas::OnLegRouteButton(wxCommandEvent& event)
 {
       m_bShowRouteTotal = !m_bShowRouteTotal;
       if(m_bShowRouteTotal)
-            pThisLegBox->SetLabel(_("Route"));
+            pThisLegText->SetLabel(_("Route"));
       else
-            pThisLegBox->SetLabel(_("This Leg"));
+            pThisLegText->SetLabel(_("This Leg"));
 
-      pThisLegBox->Refresh(true);
+      pThisLegText->Refresh(true);
 
       RefreshConsoleData();       // to pick up changes in the annunciator contents
 }
@@ -389,11 +395,11 @@ void ConsoleCanvas::MouseEvent(wxMouseEvent& event)
             {
                   m_bShowRouteTotal = !m_bShowRouteTotal;
                   if(m_bShowRouteTotal)
-                        pThisLegBox->SetLabel(_("Route"));
+                        pThisLegText->SetLabel(_("Route"));
                   else
-                        pThisLegBox->SetLabel(_("This Leg"));
+                        pThisLegText->SetLabel(_("This Leg"));
 
-                  pThisLegBox->Refresh(true);
+                  pThisLegText->Refresh(true);
             }
       }
 
@@ -434,7 +440,7 @@ void ConsoleCanvas::UpdateFonts(void)
       pRNG->RefreshFonts();
       pVMG->RefreshFonts();
 
-      m_pitemStaticBoxSizerLeg->SetSizeHints(this);
+      m_pitemBoxSizerLeg->SetSizeHints(this);
       Layout();
       Fit();
 
@@ -452,7 +458,7 @@ END_EVENT_TABLE()
 
 
 AnnunText::AnnunText(wxWindow *parent, wxWindowID id, const wxString& LegendElement, const wxString& ValueElement):
-            wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER/*wxSUNKEN_BORDER*/)
+            wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxNO_BORDER )
 {
       m_label = _T("Label");
       m_value = _T("-----");
@@ -499,9 +505,10 @@ void AnnunText::CalculateMinSize(void)
 
 void AnnunText::SetColorScheme(ColorScheme cs)
 {
-      m_pbackBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("UBLCK"/*"UIBCK"*/)), wxSOLID);
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+      m_pbackBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("UBLCK")), wxSOLID);
 
-      m_text_color = GetGlobalColor(_T("GREEN4"/*"UINFD"*/));
+      m_text_color = style->consoleFontColor;
 }
 
 
@@ -542,6 +549,7 @@ void AnnunText::OnPaint(wxPaintEvent& event)
 {
       int sx,sy;
       GetClientSize(&sx, &sy);
+      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
       //    Do the drawing on an off-screen memory DC, and blit into place
       //    to avoid objectionable flashing
@@ -551,6 +559,9 @@ void AnnunText::OnPaint(wxPaintEvent& event)
       mdc.SelectObject(m_bitmap);
       mdc.SetBackground(*m_pbackBrush);
       mdc.Clear();
+
+      if( style->consoleTextBackground.IsOk() )
+            mdc.DrawBitmap( style->consoleTextBackground, 0, 0 );
 
       mdc.SetTextForeground(m_text_color);
 

@@ -129,6 +129,12 @@ class ViewPort
 };
 
 
+//----------------------------------------------------------------------------
+// ocpn Toolbar stuff
+//----------------------------------------------------------------------------
+class ChartBase;
+class wxSocketEvent;
+class ocpnToolBarSimple;
 
 
 
