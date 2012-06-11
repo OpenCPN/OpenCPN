@@ -242,7 +242,7 @@ int dashboard_pi::Init(void)
       LoadConfig();
 
       //    This PlugIn needs a toolbar icon
-      m_toolbar_item_id  = InsertPlugInTool(_T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
+      m_toolbar_item_id  = InsertPlugInTool(_T("dashboard"), _img_dashboard, _img_dashboard, wxITEM_CHECK,
             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
       ApplyConfig();
