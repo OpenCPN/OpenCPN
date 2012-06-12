@@ -47,6 +47,7 @@
 //------------------------------------------------------------------------------
 extern ChartDB          *ChartData;
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern MyFrame          *gFrame;
 
 
 //------------------------------------------------------------------------------
@@ -241,8 +242,6 @@ PianoWin::PianoWin(wxFrame *frame):
     m_hover_icon_last = -1;
     m_hover_last = -1;
     m_brounded = false;
-
-    gparent = (MyFrame *)GetGrandParent();
 
     m_nRegions = 0;
 
@@ -554,7 +553,7 @@ void PianoWin::MouseEvent(wxMouseEvent& event)
 
             if(-1 != sel_index)
             {
-                gparent->HandlePianoClick(sel_index, sel_dbindex);
+                gFrame->HandlePianoClick(sel_index, sel_dbindex);
             }
       }
 
@@ -562,7 +561,7 @@ void PianoWin::MouseEvent(wxMouseEvent& event)
       {
             if(-1 != sel_index)
             {
-                  gparent->HandlePianoRClick(x, y, sel_index, sel_dbindex);
+                  gFrame->HandlePianoRClick(x, y, sel_index, sel_dbindex);
             }
       }
 
@@ -571,7 +570,7 @@ void PianoWin::MouseEvent(wxMouseEvent& event)
 
             if(sel_index != m_hover_last)
             {
-                  gparent->HandlePianoRollover(sel_index, sel_dbindex);
+                  gFrame->HandlePianoRollover(sel_index, sel_dbindex);
                   m_hover_last = sel_index;
             }
 
@@ -579,8 +578,8 @@ void PianoWin::MouseEvent(wxMouseEvent& event)
 
       if(event.Leaving())
       {
-            gparent->HandlePianoRollover(-1, -1);
-            gparent->HandlePianoRolloverIcon(-1, -1);
+            gFrame->HandlePianoRollover(-1, -1);
+            gFrame->HandlePianoRolloverIcon(-1, -1);
 
             m_index_last = -1;
             m_hover_icon_last = -1;

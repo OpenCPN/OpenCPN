@@ -114,7 +114,6 @@ private:
       wxBrush     m_cBrush;
       wxBrush     m_scBrush;
 
-      MyFrame     *gparent;
       ArrayOfInts m_key_array;
       ArrayOfInts m_noshow_index_array;
       ArrayOfInts m_active_index_array;
