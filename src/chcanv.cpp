@@ -13772,6 +13772,9 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear)
 
                   if(vp.b_quilt)
                         rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
+                  else
+                        if(Current_Ch && Current_Ch->GetChartFamily() != CHART_FAMILY_VECTOR)
+                              rect.Offset(vp.rv_rect.x, vp.rv_rect.y);
 
                   glBegin(GL_QUADS);
 
@@ -13841,6 +13844,10 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear)
 
                   if(vp.b_quilt)
                         rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
+                  else
+                        if(Current_Ch && Current_Ch->GetChartFamily() != CHART_FAMILY_VECTOR)
+                              rect.Offset(vp.rv_rect.x, vp.rv_rect.y);
+
 
                   glBegin(GL_QUADS);
 
