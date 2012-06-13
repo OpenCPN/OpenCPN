@@ -635,7 +635,6 @@ void SetSystemColors( ColorScheme cs );
 //------------------------------------------------------------------------------
 //    PNG Icon resources
 //------------------------------------------------------------------------------
-wxBitmap *_img_polyprj;
 
 #ifdef __WXGTK__
 #include "bitmaps/opencpn.xpm"

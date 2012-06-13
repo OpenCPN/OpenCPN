@@ -180,9 +180,9 @@
 			<icon name="CompassRoseBlue">
 				<icon-location x="620" y="60"/>
 			</icon>
-			<icon name="polyconic">
-				<icon-location x="740" y="20"/>
-				<size x="9" y="13"/>
+			<icon name="polyprj">
+				<icon-location x="280" y="160"/>
+				<size x="13" y="13"/>
 			</icon>
 			<icon name="grabber">
 				<icon-location x="700" y="60"/>
@@ -201,12 +201,12 @@
 				<size x="" y=""/>
 			</icon>
 			<icon name="tmercprj">
-				<icon-location x="140" y="100"/>
+				<icon-location x="100" y="100"/>
 				<size x="13" y="13"/>
 			</icon>
 			<icon name="skewprj">
-				<icon-location x="180" y="100"/>
-				<size x="13" y="13"/>
+				<icon-location x="140" y="100"/>
+				<size x="13" y="12"/>
 			</icon>
 			<icon name="sort_asc">
 				<icon-location x="220" y="100"/>
@@ -606,9 +606,9 @@
 			<icon name="CompassRoseBlue">
 				<icon-location x="620" y="60"/>
 			</icon>
-			<icon name="polyconic">
-				<icon-location x="740" y="20"/>
-				<size x="9" y="13"/>
+			<icon name="polyprj">
+				<icon-location x="280" y="160"/>
+				<size x="13" y="13"/>
 			</icon>
 			<icon name="grabber">
 				<icon-location x="700" y="60"/>
@@ -627,12 +627,12 @@
 				<size x="" y=""/>
 			</icon>
 			<icon name="tmercprj">
-				<icon-location x="140" y="100"/>
+				<icon-location x="100" y="100"/>
 				<size x="13" y="13"/>
 			</icon>
 			<icon name="skewprj">
-				<icon-location x="180" y="100"/>
-				<size x="13" y="13"/>
+				<icon-location x="140" y="100"/>
+				<size x="13" y="12"/>
 			</icon>
 			<icon name="sort_asc">
 				<icon-location x="220" y="100"/>
@@ -1037,7 +1037,7 @@
 			<icon name="CompassRoseBlue">
 				<icon-location x="620" y="60"/>
 			</icon>
-			<icon name="polyconic">
+			<icon name="polyprj">
 				<icon-location x="740" y="20"/>
 				<size x="9" y="13"/>
 			</icon>
@@ -1058,11 +1058,11 @@
 				<size x="" y=""/>
 			</icon>
 			<icon name="tmercprj">
-				<icon-location x="140" y="100"/>
+				<icon-location x="100" y="100"/>
 				<size x="13" y="13"/>
 			</icon>
 			<icon name="skewprj">
-				<icon-location x="180" y="100"/>
+				<icon-location x="140" y="100"/>
 				<size x="13" y="13"/>
 			</icon>
 			<icon name="sort_asc">
