@@ -1946,6 +1946,8 @@ OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
       m_libgps_api = api;
       m_GPSD_data_ip = ip_addr;
 
+#ifdef BUILD_WITH_LIBGPS
+
       m_PACKET_SET    = PACKET_SET;
       m_TIME_SET      = TIME_SET;
       m_LATLON_SET    = LATLON_SET;
@@ -1968,6 +1970,8 @@ OCP_GPSD_Thread::OCP_GPSD_Thread(NMEAHandler *Launcher, wxWindow *MessageTarget,
             m_ERROR_SET     = 0x02000000u;
             m_STATUS_SET    = 0x00000100u;
       }
+#endif
+
 #endif
       Create();
 
