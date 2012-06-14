@@ -42,6 +42,7 @@ enum StyleToolIconTypes
 };
 
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset );
+wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front );
 
 namespace ocpnStyle {
 

@@ -362,43 +362,40 @@ void PianoWin::OnPaint( wxPaintEvent& event )
             }
 
             for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
-                if( m_sublite_index_array.Item( ino ) == key_db_index ) // chart is in the sublite list
-                        {
+                if( m_sublite_index_array.Item( ino ) == key_db_index ) { // chart is in the sublite list
                     dc.SetBrush( dc.GetBackground() );
                     int w = 3;
                     dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
                             box.height - ( 2 * w ), 3 );
-
                 }
             }
 
             //    Look in the current noshow array for this index
             for( unsigned int ino = 0; ino < m_noshow_index_array.GetCount(); ino++ ) {
-                if( m_noshow_index_array.Item( ino ) == key_db_index ) // chart is in the noshow list
-                        {
+                if( m_noshow_index_array.Item( ino ) == key_db_index ) { // chart is in the noshow list
                     if( m_pInVizIconBmp && m_pInVizIconBmp->IsOk() ) dc.DrawBitmap(
-                            *m_pInVizIconBmp, box.x + 4, box.y + 3, true );
+                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pInVizIconBmp ), box.x + 4,
+                            box.y + 3, false );
                     break;
                 }
             }
 
             //    Look in the current skew array for this index
             for( unsigned int ino = 0; ino < m_skew_index_array.GetCount(); ino++ ) {
-                if( m_skew_index_array.Item( ino ) == key_db_index )        // chart is in the list
-                        {
-                    if( m_pSkewIconBmp && m_pSkewIconBmp->IsOk() ) dc.DrawBitmap( *m_pSkewIconBmp,
-                            box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, true );
+                if( m_skew_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
+                    if( m_pSkewIconBmp && m_pSkewIconBmp->IsOk() ) dc.DrawBitmap(
+                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pSkewIconBmp ),
+                            box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, false );
                     break;
                 }
             }
 
             //    Look in the current tmerc array for this index
             for( unsigned int ino = 0; ino < m_tmerc_index_array.GetCount(); ino++ ) {
-                if( m_tmerc_index_array.Item( ino ) == key_db_index )        // chart is in the list
-                        {
+                if( m_tmerc_index_array.Item( ino ) == key_db_index ) {      // chart is in the list
                     if( m_pTmercIconBmp && m_pTmercIconBmp->IsOk() ) dc.DrawBitmap(
-                            *m_pTmercIconBmp, box.x + box.width - m_pTmercIconBmp->GetWidth() - 4,
-                            box.y + 2, true );
+                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pTmercIconBmp ),
+                            box.x + box.width - m_pTmercIconBmp->GetWidth() - 4, box.y + 2, false );
                     break;
                 }
             }
@@ -406,8 +403,9 @@ void PianoWin::OnPaint( wxPaintEvent& event )
             //    Look in the current poly array for this index
             for( unsigned int ino = 0; ino < m_poly_index_array.GetCount(); ino++ ) {
                 if( m_poly_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
-                    if( m_pPolyIconBmp && m_pPolyIconBmp->IsOk() ) dc.DrawBitmap( *m_pPolyIconBmp,
-                            box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, true );
+                    if( m_pPolyIconBmp && m_pPolyIconBmp->IsOk() ) dc.DrawBitmap(
+                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pPolyIconBmp ),
+                            box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, false );
                     break;
                 }
             }

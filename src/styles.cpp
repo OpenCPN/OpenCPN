@@ -127,6 +127,43 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     return merged;
 }
 
+// The purpouse of ConvertTo24Bit is to take an icon with 32 bit depth and alpha
+// channel and put it in a 24 bit deep bitmap with no alpha, that can be safely
+// drawn in the crappy wxWindows implementations.
+
+wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
+    if( front.GetDepth() == 24 ) return front;
+
+    wxBitmap result( front.GetWidth(), front.GetHeight(), 24 );
+    front.UseAlpha();
+
+    wxImage im_front = front.ConvertToImage();
+    wxImage im_result = result.ConvertToImage();
+
+    unsigned char *presult = im_result.GetData();
+    unsigned char *pfront = im_front.GetData();
+
+    unsigned char *afront = NULL;
+    if( im_front.HasAlpha() )
+    afront = im_front.GetAlpha();
+
+    for( int i = 0; i < result.GetWidth(); i++ ) {
+        for( int j = 0; j < result.GetHeight(); j++ ) {
+
+            double alphaF = (double) ( *afront++ ) / 256.0;
+            unsigned char r = *pfront++ * alphaF + bgColor.Red() * ( 1.0 - alphaF );
+            *presult++ = r;
+            unsigned char g = *pfront++ * alphaF + bgColor.Green() * ( 1.0 - alphaF );
+            *presult++ = g;
+            unsigned char b = *pfront++ * alphaF + bgColor.Blue() * ( 1.0 - alphaF );
+            *presult++ = b;
+        }
+    }
+
+    result = wxBitmap( im_result );
+    return result;
+}
+
 // Tools and Icons perform on-demand loading and dimming of bitmaps.
 // Changing color scheme invalidatres all loaded bitmaps.
 
