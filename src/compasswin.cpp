@@ -102,10 +102,36 @@ void ocpnFloatingCompassWindow::UpdateStatus( bool bnew )
 
 wxBitmap ocpnFloatingCompassWindow::CreateBmp()
 {
-    bool b_need_refresh = false;
-
     wxString gpsIconName;
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    // In order to draw a horizontal compass window when the toolbar is vertical, we
+    // need to save away the sizes and backgrounds for the two icons.
+
+    static wxBitmap compassBg, gpsBg;
+    static wxSize toolsize;
+    static int topmargin, leftmargin, radius;
+
+    if( ! compassBg.IsOk() ) {
+        int orient = style->GetOrientation();
+        style->SetOrientation( wxTB_HORIZONTAL );
+        if( style->HasBackground() ) {
+            compassBg = style->GetNormalBG();
+            style->DrawToolbarLineStart( compassBg );
+            gpsBg = style->GetNormalBG();
+            style->DrawToolbarLineEnd( gpsBg );
+        }
+
+        leftmargin = style->GetLeftMargin();
+        topmargin = style->GetTopMargin();
+        toolsize = style->GetToolSize();
+        toolsize.x *= 2;
+        radius = style->GetToolbarCornerRadius();
+
+        if( orient ) style->SetOrientation( wxTB_VERTICAL );
+    }
+
+    bool b_need_refresh = false;
 
     if( bGPSValid ) {
         if( g_bSatValid ) {
@@ -155,12 +181,6 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             mdc.DrawRoundedRectangle( 0, 0, StatBmp.GetWidth(), StatBmp.GetHeight(),
                     style->GetToolbarCornerRadius() );
 
-            wxBitmap bg;
-            if( style->HasBackground() ) {
-                bg = style->GetNormalBG();
-                style->DrawToolbarLineStart( bg );
-            }
-
             wxPoint offset( style->GetLeftMargin(), style->GetTopMargin() );
 
             //    Build Compass Rose, rotated...
@@ -181,7 +201,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             wxBitmap iconBm;
 
             if( style->HasBackground() ) {
-                iconBm = MergeBitmaps( bg, BMPRose, wxSize( after_rotate.x, after_rotate.y ) );
+                iconBm = MergeBitmaps( compassBg, BMPRose, wxSize( after_rotate.x, after_rotate.y ) );
             } else {
                 iconBm = BMPRose;
             }
@@ -192,17 +212,13 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             m_rose_angle = rose_angle;
 
             if( style->HasBackground() ) {
-                style->DrawToolbarLineEnd( bg );
-                iconBm = MergeBitmaps( bg, style->GetIcon( gpsIconName ), wxSize( 0, 0 ) );
+                iconBm = MergeBitmaps( gpsBg, style->GetIcon( gpsIconName ), wxSize( 0, 0 ) );
             } else {
                 iconBm = style->GetIcon( gpsIconName );
             }
             mdc.DrawBitmap( iconBm, offset );
-
             mdc.SelectObject( wxNullBitmap );
-
             m_lastgpsIconName = gpsIconName;
-
         }
 
         if( style->marginsInvisible ) {
@@ -212,9 +228,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             sdc.Clear();
             sdc.SetBrush( *wxBLACK_BRUSH );
             sdc.SetPen( *wxBLACK_PEN );
-            sdc.DrawRoundedRectangle( wxPoint( style->GetLeftMargin(), style->GetTopMargin() ),
-                    wxSize( style->GetToolSize().x * 2, style->GetToolSize().y ),
-                    style->GetToolbarCornerRadius() );
+            sdc.DrawRoundedRectangle( wxPoint( leftmargin, topmargin ), toolsize, radius );
             sdc.SelectObject( wxNullBitmap );
             SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
         }

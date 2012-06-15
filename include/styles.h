@@ -130,6 +130,7 @@ public:
       wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
 
       void SetOrientation( long orient );
+      int GetOrientation();
       void SetColorScheme( ColorScheme cs );
       void Unload();
 

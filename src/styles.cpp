@@ -398,6 +398,11 @@ void Style::SetOrientation( long orient )
     Unload();
 }
 
+int Style::GetOrientation()
+{
+    return currentOrientation;
+}
+
 void Style::SetColorScheme( ColorScheme cs )
 {
     colorscheme = cs;
