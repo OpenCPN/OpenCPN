@@ -56,7 +56,7 @@ END_EVENT_TABLE()
 // ctor
 StatWin::StatWin( wxWindow *frame ) :
         wxDialog( frame, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ),
-                wxSIMPLE_BORDER | wxFRAME_SHAPED )
+                wxSIMPLE_BORDER | wxFRAME_SHAPED | wxFRAME_NO_TASKBAR )
 
 {
     int x, y;

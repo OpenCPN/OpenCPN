@@ -170,13 +170,12 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             if( g_bCourseUp ) BMPRose = style->GetIcon( _T("CompassRose") );
             else
                 BMPRose = style->GetIcon( _T("CompassRoseBlue") );
-
             if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
                 wxPoint rot_ctr( BMPRose.GetWidth() / 2, BMPRose.GetHeight() / 2 );
                 wxImage rose_img = BMPRose.ConvertToImage();
 
                 wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-                BMPRose = wxBitmap( rot_image );
+                BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect(0, 0, BMPRose.GetWidth(), BMPRose.GetHeight()) );
             }
 
             wxBitmap iconBm;
@@ -186,6 +185,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
             } else {
                 iconBm = BMPRose;
             }
+
             mdc.DrawBitmap( iconBm, offset );
             offset.x += iconBm.GetWidth();
 

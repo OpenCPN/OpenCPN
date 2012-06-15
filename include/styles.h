@@ -41,6 +41,7 @@ enum StyleToolIconTypes
       TOOLICON_ACTIVE
 };
 
+void bmdump( wxBitmap bm, wxString name );
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset );
 wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front );
 
