@@ -84,11 +84,11 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 
     // Do alpha blending, associative version of "over" operator.
 
-    for( int i = 0; i < back.GetWidth(); i++ ) {
-        for( int j = 0; j < back.GetHeight(); j++ ) {
+    for( int i = 0; i < back.GetHeight(); i++ ) {
+        for( int j = 0; j < back.GetWidth(); j++ ) {
 
-            int fX = i - offset.x;
-            int fY = j - offset.y;
+            int fX = j - offset.x;
+            int fY = i - offset.y;
 
             bool inFront = true;
             if( fX < 0 || fY < 0 ) inFront = false;
@@ -124,6 +124,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     mdc.DrawBitmap( front, offset.x, offset.y, true );
     mdc.SelectObject( wxNullBitmap );
 #endif
+
     return merged;
 }
 
@@ -212,20 +213,22 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
             if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->iconLoc, size );
             if( rollover ) location = wxRect( tool->rolloverLoc, size );
+
+            if( currentOrientation ) {
+                location.x -= verticalIconOffset.x;
+                location.y -= verticalIconOffset.y;
+            }
+
             wxBitmap bm = graphics->GetSubBitmap( location );
             if( hasBackground ) {
-                if( currentOrientation ) bm = MergeBitmaps( GetNormalBG(), bm, verticalIconOffset );
-                else
-                    bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
+                bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
             } else {
                 wxBitmap bg( GetToolSize().x, GetToolSize().y );
                 wxMemoryDC mdc( bg );
                 mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
                 mdc.Clear();
                 mdc.SelectObject( wxNullBitmap );
-                if( currentOrientation ) bm = MergeBitmaps( bg, bm, verticalIconOffset );
-                else
-                    bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
+                bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
             }
             if( rollover ) {
                 tool->rollover = SetBitmapBrightness( bm );
@@ -250,7 +253,10 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
                 offset = GetToggledToolSize() - GetToolSize();
                 offset /= 2;
             }
-            if( currentOrientation ) offset += verticalIconOffset;
+            if( currentOrientation ) {
+                location.x -= verticalIconOffset.x;
+                location.y -= verticalIconOffset.y;
+            }
             wxBitmap bm = MergeBitmaps( GetToggledBG(), graphics->GetSubBitmap( location ),
                     offset );
             if( rollover ) {
@@ -269,10 +275,12 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
             if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->disabledLoc, size );
             wxBitmap bm = graphics->GetSubBitmap( location );
+            if( currentOrientation ) {
+                location.x -= verticalIconOffset.x;
+                location.y -= verticalIconOffset.y;
+            }
             if( hasBackground ) {
-                if( currentOrientation ) bm = MergeBitmaps( GetNormalBG(), bm, verticalIconOffset );
-                else
-                    bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
+                bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
             }
             tool->disabled = SetBitmapBrightness( bm );
             tool->disabledLoaded = true;

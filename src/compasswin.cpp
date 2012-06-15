@@ -195,13 +195,13 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
                 wxImage rose_img = BMPRose.ConvertToImage();
 
                 wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-                BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect(0, 0, BMPRose.GetWidth(), BMPRose.GetHeight()) );
+                BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, BMPRose.GetWidth(), BMPRose.GetHeight()) );
             }
 
             wxBitmap iconBm;
 
             if( style->HasBackground() ) {
-                iconBm = MergeBitmaps( compassBg, BMPRose, wxSize( after_rotate.x, after_rotate.y ) );
+                iconBm = MergeBitmaps( compassBg, BMPRose, wxSize( 0, 0 ) );
             } else {
                 iconBm = BMPRose;
             }
