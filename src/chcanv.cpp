@@ -4255,11 +4255,17 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     DistanceBearingMercator( segShow_point_b->m_lat, segShow_point_b->m_lon,
                             segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
 
+                    wxString totLen;
+                    totLen.Printf(_T("%5.1f"), pr->m_route_length);
+
                     s.Append( _("Route: ") );
                     if( pr->m_RouteNameString.IsEmpty() ) s.Append( _("(unnamed)") );
                     else
                         s.Append( pr->m_RouteNameString );
-                    s.Append( _("\n") );
+                    s.Append( _T("\n") );
+                    s.Append( _("Total Lenght: ") );
+                    s.Append( totLen );
+                    s.Append( _T("\n") );
                     s.Append( _("Leg: from ") );
                     s.Append( segShow_point_a->GetName() );
                     s.Append( _(" to ") );
