@@ -2110,8 +2110,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
 
-//        g_FloatingCompassDialog = new ocpnFloatingCompassWindow(this);
-
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
 
@@ -2987,11 +2985,17 @@ void MyFrame::DoSetSize( void )
 #ifdef __WXMAC__
         font_size = wxMax(10, font_size);             // beats me...
 #endif
+
+        wxFont* templateFont = pFontMgr->GetFont( _("StatusBar"), 11 );
+        font_size += templateFont->GetPointSize() - 11;
+
         font_size = wxMin( font_size, 11 );
         font_size = wxMax( font_size, 5 );
 
-        wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_DEFAULT,
-                wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+        wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
+              wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
+              templateFont->GetFaceName() );
+
         m_pStatusBar->SetFont( *pstat_font );
     }
 

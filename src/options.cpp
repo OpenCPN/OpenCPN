@@ -59,6 +59,7 @@
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
 void EmptyChartGroupArray(ChartGroupArray *s);
 
+extern MyFrame          *gFrame;
 
 extern bool             g_bShowPrintIcon;
 extern bool             g_bShowOutlines;
@@ -2127,6 +2128,8 @@ void options::OnXidOkClick( wxCommandEvent& event )
         if( g_StyleManager->GetStyleNextInvocation() != oldStyle ) {
             iret |= STYLE_CHANGED;
         }
+        wxSizeEvent nullEvent;
+        gFrame->OnSize( nullEvent );
     }
 
     //      PlugIn Manager Panel
