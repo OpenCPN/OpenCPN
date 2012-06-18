@@ -608,27 +608,42 @@ void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
             << _("Depart From") << tab << m_pRoute->m_RouteStartString << eol
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
             << _("Total Distance") << tab << m_TotalDistCtl->GetValue() << eol
-            << _("Plan Speed (Kts)") << tab << m_PlanSpeedCtl->GetValue() << eol
+            << _("Speed (Kts)") << tab << m_PlanSpeedCtl->GetValue() << eol
             << _("Time Enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
 
-    int noCols = m_wpList->GetColumnCount();
-    int noRows = m_wpList->GetItemCount();
+    int noCols;
+    int noRows;
+    if( m_pRoute->m_bIsTrack ) {
+        noCols = m_wpTrackList->GetColumnCount();
+        noRows = m_wpTrackList->GetItemCount();
+    } else {
+        noCols = m_wpList->GetColumnCount();
+        noRows = m_wpList->GetItemCount();
+    }
     wxListItem item;
     item.SetMask( wxLIST_MASK_TEXT );
 
-    for( int i=0; i<noCols; i++ ) {
-        m_wpList->GetColumn( i, item );
+    for( int i = 0; i < noCols; i++ ) {
+        if( m_pRoute->m_bIsTrack ) {
+            m_wpTrackList->GetColumn( i, item );
+        } else {
+            m_wpList->GetColumn( i, item );
+        }
         csvString << item.GetText() << tab;
     }
     csvString << eol;
 
-
     for( int j = 0; j < noRows; j++ ) {
         item.SetId( j );
-        m_wpList->GetItem( item );
         for( int i = 0; i < noCols; i++ ) {
             item.SetColumn( i );
-            m_wpList->GetItem( item );
+
+            if( m_pRoute->m_bIsTrack ) {
+                m_wpTrackList->GetItem( item );
+            } else {
+                m_wpList->GetItem( item );
+            }
+
             csvString << item.GetText() << tab;
         }
         csvString << eol;
@@ -1400,7 +1415,7 @@ bool RouteProp::UpdateProperties()
 
             DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
 
-            t.Printf( _T("%6.2f nm"), leg_dist );
+            t.Printf( _T("%6.2f NM"), leg_dist );
             if( arrival ) m_wpList->SetItem( item_line_index, 2, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 2, nullify );
 
