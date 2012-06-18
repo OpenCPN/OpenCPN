@@ -2858,6 +2858,12 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
 
         //    The ViewPort and the chart region overlap in some way....
         //    Create the intersection of the two bboxes
+        //    Boxes must be same phase
+        while( chart_box.GetMinX() < 0 ) {
+              wxPoint2DDouble t( 360., 0. );
+              chart_box.Translate( t );
+        }
+
         double cb_minlon = wxMax(chart_box.GetMinX(), vp_positive.vpBBox.GetMinX());
         double cb_maxlon = wxMin(chart_box.GetMaxX(), vp_positive.vpBBox.GetMaxX());
         double cb_minlat = wxMax(chart_box.GetMinY(), vp_positive.vpBBox.GetMinY());
