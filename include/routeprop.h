@@ -79,6 +79,7 @@ class   HyperlinkList;
 #define ID_ROUTEPROP_OK 7007
 #define ID_ROUTEPROP_SPLIT 7107
 #define ID_ROUTEPROP_EXTEND 7207
+#define ID_ROUTEPROP_COPYTXT 7307
 #define ID_PLANSPEEDCTL 7008
 #define ID_TEXTCTRL4 7009
 #define ID_TEXTCTRLDESC 7010
@@ -151,6 +152,7 @@ public:
     void OnRoutepropListClick( wxListEvent& event );
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );
+    void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     bool IsThisRouteExtendable();
     bool IsThisTrackExtendable();
     void OnEvtColDragEnd(wxListEvent& event);
@@ -184,6 +186,7 @@ public:
 
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
+    wxButton*     m_CopyTxtButton;
     wxButton*     m_ExtendButton;
     wxButton*     m_SplitButton;
 
@@ -242,10 +245,10 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
-class MarkInfoDef : public wxDialog 
+class MarkInfoDef : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxNotebook* m_notebookProperties;
 		wxPanel* m_panelBasicProperties;
@@ -282,7 +285,7 @@ class MarkInfoDef : public wxDialog
 		wxStdDialogButtonSizer* m_sdbSizerButtons;
 		wxButton* m_sdbSizerButtonsOK;
 		wxButton* m_sdbSizerButtonsCancel;
-		
+
 		// Virtual event handlers, overide them in your derived class
             virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
@@ -294,18 +297,18 @@ class MarkInfoDef : public wxDialog
 		virtual void OnDescChangedExt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER ); 
+
+		MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
 		~MarkInfoDef();
-		
+
 		void m_hyperlink17OnContextMenu( wxMouseEvent &event )
 		{
 			m_hyperlink17->PopupMenu( m_menuLink, event.GetPosition() );
 		}
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -314,7 +317,7 @@ class MarkInfoDef : public wxDialog
 class LinkPropDlgDef : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxStaticText* m_staticTextLinkDesc;
 		wxStaticText* m_staticTextLinkUrl;
@@ -322,20 +325,20 @@ class LinkPropDlgDef : public wxDialog
 		wxStdDialogButtonSizer* m_sdbSizerButtons;
 		wxButton* m_sdbSizerButtonsOK;
 		wxButton* m_sdbSizerButtonsCancel;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnLocalFileClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
 		wxTextCtrl* m_textCtrlLinkDescription;
 		wxTextCtrl* m_textCtrlLinkUrl;
-		
+
 		LinkPropDlgDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Link Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 468,247 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~LinkPropDlgDef();
-	
+
 };
 
 class MarkInfoImpl : public MarkInfoDef

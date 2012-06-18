@@ -33,6 +33,10 @@ enum {
       SORT_ON_NAME
 };
 
+enum TrackContextMenu {
+      TRACK_MERGE  = 1,
+      TRACK_COPY_TEXT
+};
 
 class wxButton;
 class Route;
