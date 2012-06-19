@@ -86,6 +86,9 @@ class   HyperlinkList;
 #define ID_STARTTIMECTL 7011
 #define ID_TIMEZONESEL 7012
 #define ID_TRACKLISTCTRL 7013
+#define ID_RCLK_MENU_COPY_TEXT 7014
+#define ID_RCLK_MENU_EDIT_WP 7015
+#define ID_RCLK_MENU_DELETE 7016
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -153,6 +156,8 @@ public:
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
+    void OnRoutePropRightClick( wxListEvent &event );
+    void OnRoutePropMenuSelected( wxCommandEvent &event );
     bool IsThisRouteExtendable();
     bool IsThisTrackExtendable();
     void OnEvtColDragEnd(wxListEvent& event);

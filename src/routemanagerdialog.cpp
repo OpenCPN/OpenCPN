@@ -1807,8 +1807,16 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 
     if( !wp ) return;
 
-    if( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-    pMarkPropDialog = new MarkInfoImpl( GetParent() );
+    WptShowPropertiesDialog( wp, GetParent() );
+
+    UpdateWptListCtrl();
+    m_bNeedConfigFlush = true;
+}
+
+void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent )
+{
+    // There is one global instance of the MarkProp Dialog
+    if( NULL == pMarkPropDialog ) pMarkPropDialog = new MarkInfoImpl( parent );
 
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();
@@ -1821,10 +1829,6 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 
     if( !pMarkPropDialog->IsShown() ) pMarkPropDialog->ShowModal();
 
-    // waypoint might have changed
-    UpdateWptListCtrl();
-
-    m_bNeedConfigFlush = true;
 }
 
 void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )

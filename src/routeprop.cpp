@@ -56,7 +56,6 @@ extern WayPointman        *pWayPointMan;
 extern ChartCanvas        *cc1;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
-extern RouteProp          *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
@@ -447,20 +446,18 @@ int OCPNTrackListCtrl::OnGetItemColumnImage( long item, long column ) const
 IMPLEMENT_DYNAMIC_CLASS( RouteProp, wxDialog )
 /*!
  * RouteProp event table definition
- */BEGIN_EVENT_TABLE( RouteProp, wxDialog )
+ */
 
-EVT_TEXT( ID_PLANSPEEDCTL, RouteProp::OnPlanSpeedCtlUpdated )
-EVT_TEXT_ENTER( ID_STARTTIMECTL, RouteProp::OnStartTimeCtlUpdated )
-//EVT_RADIOBOX ( ID_TIMEZONESEL, RouteProp::OnStartTimeCtlUpdated )
-EVT_RADIOBOX ( ID_TIMEZONESEL, RouteProp::OnTimeZoneSelected )
-EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
-EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
-EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
-EVT_LIST_ITEM_SELECTED( ID_TRACKLISTCTRL, RouteProp::OnRoutepropListClick )
-EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
-EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
-EVT_BUTTON( ID_ROUTEPROP_COPYTXT, RouteProp::OnRoutepropCopyTxtClick )
-
+BEGIN_EVENT_TABLE( RouteProp, wxDialog )
+    EVT_TEXT( ID_PLANSPEEDCTL, RouteProp::OnPlanSpeedCtlUpdated )
+    EVT_TEXT_ENTER( ID_STARTTIMECTL, RouteProp::OnStartTimeCtlUpdated )
+    EVT_RADIOBOX ( ID_TIMEZONESEL, RouteProp::OnTimeZoneSelected )
+    EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
+    EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
+    EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
+    EVT_LIST_ITEM_SELECTED( ID_TRACKLISTCTRL, RouteProp::OnRoutepropListClick )
+    EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
+    EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
 END_EVENT_TABLE()
 
 /*!
@@ -502,6 +499,27 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     Create( parent, id, caption, pos, size, wstyle );
     GetSizer()->SetSizeHints( this );
     Centre();
+}
+
+void RouteProp::OnRoutePropRightClick( wxListEvent &event )
+{
+    wxMenu menu;
+
+    if( m_pRoute->m_bIsTrack ) {
+        // No track specific items so far.
+    } else {
+        if( ! m_pRoute->m_bIsInLayer ) {
+            wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
+            editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
+
+            wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+            delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
+        }
+    }
+
+    wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+
+    PopupMenu( &menu );
 }
 
 void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
@@ -747,49 +765,6 @@ bool RouteProp::IsThisTrackExtendable()
         return false;
 }
 
-void RouteProp::OnRoutepropListClick( wxListEvent& event )
-{
-    long itemno = 0;
-    m_nSelected = 0;
-
-    //      We use different methods to determine the selected point,
-    //      depending on whether this is a Route or a Track.
-    int selected_no;
-    if( !m_pRoute->m_bIsTrack ) {
-        const wxListItem &i = event.GetItem();
-        i.GetText().ToLong( &itemno );
-        selected_no = itemno;
-    } else {
-        itemno = -1;
-        itemno = m_wpTrackList->GetNextItem( itemno, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-        if( itemno == -1 ) selected_no = 0;
-        else
-            selected_no = itemno;
-    }
-
-    m_pRoute->ClearHighlights();
-
-    wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
-    while( node && itemno-- ) {
-        node = node->GetNext();
-    }
-    if( node ) {
-        RoutePoint *prp = node->GetData();
-        if( prp ) {
-            prp->m_bPtIsSelected = true;                // highlight the routepoint
-
-            if( !( m_pRoute->m_bIsInLayer ) && !( m_pRoute == g_pActiveTrack )
-                    && !( m_pRoute->m_bRtIsActive ) ) {
-                m_nSelected = selected_no + 1;
-                m_SplitButton->Enable( true );
-            }
-
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
-
-        }
-    }
-}
-
 RouteProp::~RouteProp()
 {
     delete m_TotalDistCtl;
@@ -981,11 +956,6 @@ void RouteProp::CreateControls()
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
 
-    m_CopyTxtButton = new wxButton( itemDialog1, ID_ROUTEPROP_COPYTXT, _("Copy as Text"),
-            wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_CopyTxtButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    m_CopyTxtButton->Enable( true );
-
     m_ExtendButton = new wxButton( itemDialog1, ID_ROUTEPROP_EXTEND, _("Extend Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_ExtendButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1045,6 +1015,11 @@ void RouteProp::CreateControls()
     m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 );
     m_wpTrackList->Hide();
 
+    Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
+            wxListEventHandler(RouteProp::OnRoutePropRightClick), NULL, this );
+    Connect( wxEVT_COMMAND_MENU_SELECTED,
+            wxCommandEventHandler(RouteProp::OnRoutePropMenuSelected), NULL, this );
+
     //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
 
@@ -1054,11 +1029,103 @@ void RouteProp::CreateControls()
 
 }
 
+
+void RouteProp::OnRoutepropListClick( wxListEvent& event )
+{
+    long itemno = 0;
+    m_nSelected = 0;
+
+    //      We use different methods to determine the selected point,
+    //      depending on whether this is a Route or a Track.
+    int selected_no;
+    if( !m_pRoute->m_bIsTrack ) {
+        const wxListItem &i = event.GetItem();
+        i.GetText().ToLong( &itemno );
+        selected_no = itemno;
+    } else {
+        itemno = -1;
+        itemno = m_wpTrackList->GetNextItem( itemno, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if( itemno == -1 ) selected_no = 0;
+        else
+            selected_no = itemno;
+    }
+
+    m_pRoute->ClearHighlights();
+
+    wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+    while( node && itemno-- ) {
+        node = node->GetNext();
+    }
+    if( node ) {
+        RoutePoint *prp = node->GetData();
+        if( prp ) {
+            prp->m_bPtIsSelected = true;                // highlight the routepoint
+
+            if( !( m_pRoute->m_bIsInLayer ) && !( m_pRoute == g_pActiveTrack )
+                    && !( m_pRoute->m_bRtIsActive ) ) {
+                m_nSelected = selected_no + 1;
+                m_SplitButton->Enable( true );
+            }
+
+            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+
+        }
+    }
+}
+
+
+void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
+{
+    switch( event.GetId() ) {
+        case ID_RCLK_MENU_COPY_TEXT: {
+            OnRoutepropCopyTxtClick( event );
+            break;
+        }
+        case ID_RCLK_MENU_DELETE: {
+            OCPNMessageDialog wpDeleteConfirm( this,
+                    _("Are you sure you want to remove this waypoint?"),
+                    _("OpenCPN Remove Waypoint"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+            int dlg_return = wpDeleteConfirm.ShowModal();
+
+            if( dlg_return == wxID_YES ) {
+                long item = -1;
+                item = m_wpList->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+
+                if( item == -1 ) break;
+
+                RoutePoint *wp;
+                wp = (RoutePoint *) m_wpList->GetItemData( item );
+
+                cc1->RemovePointFromRoute( wp, m_pRoute );
+
+                SetRouteAndUpdate( m_pRoute );
+            }
+            break;
+        }
+        case ID_RCLK_MENU_EDIT_WP: {
+            long item = -1;
+
+            item = m_wpList->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+
+            if( item == -1 ) break;
+
+            RoutePoint *wp = (RoutePoint *) m_wpList->GetItemData( item );
+            if( !wp ) break;
+
+            RouteManagerDialog::WptShowPropertiesDialog( wp, this );
+
+            UpdateProperties();
+            break;
+        }
+    }
+}
+
 void RouteProp::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
 }
-/*!
+
+/*
  * Should we show tooltips?
  */
 
@@ -1175,6 +1242,7 @@ void RouteProp::InitializeList()
         int in = 0;
         while( pnode ) {
             m_wpList->InsertItem( in, _T(""), 0 );
+            m_wpList->SetItemPtrData( in, (wxUIntPtr)pnode->GetData() );
             in++;
             if( pnode->GetData()->m_seg_etd.IsValid() ) {
                 m_wpList->InsertItem( in, _T(""), 0 );

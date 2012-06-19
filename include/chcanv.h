@@ -275,6 +275,9 @@ public:
 
       bool PurgeGLCanvasChartCache(ChartBase *pc);
 
+      void RemovePointFromRoute( RoutePoint* point, Route* route );
+
+
 private:
       ViewPort    VPoint;
       void        PositionConsole(void);
