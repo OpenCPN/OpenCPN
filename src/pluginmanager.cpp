@@ -102,7 +102,6 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
 }
 
 
-
 //-----------------------------------------------------------------------------------------------------
 //
 //          The PlugIn Manager Implementation
@@ -1051,10 +1050,36 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
 
 }
 
+opencpn_plugin *PlugInManager::FindToolOwner(const int id)
+{
+    for(unsigned int i = 0 ; i < m_PlugInToolbarTools.GetCount() ; i++) {
+        PlugInToolbarToolContainer *pc = m_PlugInToolbarTools.Item(i);
+        if(id == pc->id)
+            return pc->m_pplugin;
+    }
+
+    return NULL;
+}
+
+wxString PlugInManager::GetToolOwnerCommonName(const int id)
+{
+    opencpn_plugin *ppi = FindToolOwner(id);
+    if(ppi) {
+        for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++) {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic && (pic->m_pplugin == ppi)) return pic->m_common_name;
+        }
+    }
+
+    return wxEmptyString;
+}
+
+
+
 
 wxString PlugInManager::GetLastError()
 {
-      return m_last_error_string;
+    return m_last_error_string;
 }
 
 wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio)
