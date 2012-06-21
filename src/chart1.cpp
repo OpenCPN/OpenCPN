@@ -4967,7 +4967,6 @@ void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
 
 void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     int cc1_borderCompensation = 2;
     //    Look for overlap
     bool b_update = false;
