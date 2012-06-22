@@ -5028,20 +5028,6 @@ int MyFrame::GetApplicationMemoryUse( void )
 #ifdef __LINUX__
 
     //    Use a contrived ps command to get the virtual memory size associated with this process
-#if 0
-    wxExecute(_T("ps --no-headers -o vsize -C opencpn >/tmp/ocpn.mem"), wxEXEC_SYNC);
-    wxTextFile f(_T("/tmp/ocpn.mem"));
-
-    if(f.Open())
-    {
-        wxString s = f.GetFirstLine();
-        long vtmp;
-        if(s.ToLong(&vtmp))
-        memsize = vtmp;
-
-        f.Close();
-    }
-#endif
     wxWindow *fWin = wxWindow::FindFocus();
 
     wxArrayString outputArray;
