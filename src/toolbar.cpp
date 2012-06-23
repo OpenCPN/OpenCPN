@@ -37,6 +37,7 @@
 #include "styles.h"
 #include "toolbar.h"
 #include "chart1.h"
+#include "pluginmanager.h"
 
 extern FontMgr* pFontMgr;
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;
@@ -46,6 +47,8 @@ extern bool g_bopengl;
 extern ocpnToolBarSimple* g_toolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
+extern PlugInManager *g_pi_manager;
+
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
@@ -676,20 +679,26 @@ void ToolTipWin::OnPaint( wxPaintEvent& event )
 class ocpnToolBarTool: public wxToolBarToolBase {
 public:
     ocpnToolBarTool( ocpnToolBarSimple *tbar, int id, const wxString& label,
-            const wxBitmap& bmpNormal, const wxBitmap& bmpDisabled, wxItemKind kind,
+            const wxBitmap& bmpNormal, const wxBitmap& bmpRollover, wxItemKind kind,
             wxObject *clientData, const wxString& shortHelp, const wxString& longHelp ) :
-            wxToolBarToolBase( (wxToolBarBase*) tbar, id, label, bmpNormal, bmpDisabled, kind,
+            wxToolBarToolBase( (wxToolBarBase*) tbar, id, label, bmpNormal, bmpRollover, kind,
                     clientData, shortHelp, longHelp )
     {
         m_enabled = true;
         m_toggled = false;
         rollover = false;
         bitmapOK = false;
+
+        toolname = g_pi_manager->GetToolOwnerCommonName( id );
+        if( toolname == _T("") ) {
+            isPluginTool = false;
+            toolname = label;
+        } else {
+            isPluginTool = true;
+            pluginNormalIcon = &bmpNormal;
+            pluginRolloverIcon = &bmpRollover;
+        }
     }
-
-    ocpnToolBarTool( ocpnToolBarSimple *tbar, wxControl *control, const wxString& label );
-
-    ocpnToolBarTool( ocpnToolBarSimple *tbar, wxControl *control );
 
     void SetSize( const wxSize& size )
     {
@@ -701,9 +710,15 @@ public:
     {
         return m_width;
     }
+
     wxCoord GetHeight() const
     {
         return m_height;
+    }
+
+    wxString GetToolname()
+    {
+        return toolname;
     }
 
     wxCoord m_x;
@@ -711,47 +726,17 @@ public:
     wxCoord m_width;
     wxCoord m_height;
     wxRect trect;
+    wxString toolname;
+    const wxBitmap* pluginNormalIcon;
+    const wxBitmap* pluginRolloverIcon;
     bool firstInLine;
     bool lastInLine;
     bool rollover;
     bool bitmapOK;
+    bool isPluginTool;
     bool b_hilite;
 };
 
-// ----------------------------------------------------------------------------
-
-ocpnToolBarTool::ocpnToolBarTool( ocpnToolBarSimple *tbar, wxControl *control,
-        const wxString& label )
-{
-    m_tbar = (wxToolBarBase*) tbar;
-    m_control = control;
-    m_id = control->GetId();
-
-    m_kind = wxITEM_MAX;    // invalid value
-
-    m_enabled = true;
-    m_toggled = false;
-    rollover = false;
-    bitmapOK = false;
-
-    m_toolStyle = wxTOOL_STYLE_CONTROL;
-}
-
-ocpnToolBarTool::ocpnToolBarTool( ocpnToolBarSimple *tbar, wxControl *control )
-{
-    m_tbar = (wxToolBarBase*) tbar;
-    m_control = control;
-    m_id = control->GetId();
-
-    m_kind = wxITEM_MAX;    // invalid value
-
-    m_enabled = true;
-    m_toggled = false;
-    rollover = false;
-    bitmapOK = false;
-
-    m_toolStyle = wxTOOL_STYLE_CONTROL;
-}
 // ----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ocpnToolBarSimple, wxControl) EVT_SIZE(ocpnToolBarSimple::OnSize)
 EVT_PAINT(ocpnToolBarSimple::OnPaint)
@@ -775,16 +760,6 @@ wxToolBarToolBase *ocpnToolBarSimple::CreateTool( int id, const wxString& label,
 {
     return new ocpnToolBarTool( this, id, label, bmpNormal, bmpDisabled, kind, clientData,
             shortHelp, longHelp );
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::CreateTool( wxControl *control )
-{
-    return new ocpnToolBarTool( this, control );
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::CreateTool( wxControl *control, const wxString& label )
-{
-    return new ocpnToolBarTool( this, control, label );
 }
 
 // ----------------------------------------------------------------------------
@@ -971,12 +946,16 @@ void ocpnToolBarSimple::KillTooltip()
     }
     m_tooltip_timer.Stop();
 
-    if( m_last_ro_tool ) if( m_last_ro_tool->IsEnabled() ) if( m_last_ro_tool->IsToggled() ) m_last_ro_tool->SetNormalBitmap(
-            m_style->GetToolIcon( m_last_ro_tool->GetLabel(), TOOLICON_TOGGLED ) );
-    else
-        m_last_ro_tool->SetNormalBitmap(
-                m_style->GetToolIcon( m_last_ro_tool->GetLabel(), TOOLICON_NORMAL ) );
-
+    if( m_last_ro_tool ) {
+        if( m_last_ro_tool->IsEnabled() ) {
+            if( m_last_ro_tool->IsToggled() ) {
+                m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_TOGGLED ) );
+            }
+            else {
+                m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_NORMAL ) );
+            }
+        }
+    }
 }
 
 void ocpnToolBarSimple::HideTooltip()
@@ -1340,6 +1319,9 @@ void ocpnToolBarSimple::DrawTool( wxToolBarToolBase *tool )
     DrawTool( dc, tool );
 }
 
+// NB! The current DrawTool code assumes that plugin tools are never disabled
+// when they are present on the toolbar, since disabled plugins are removed.
+
 void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
 {
     ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
@@ -1352,24 +1334,54 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     if( tool->bitmapOK ) {
         if( tool->IsEnabled() ) {
             bmp = tool->GetNormalBitmap();
-            if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetLabel(), TOOLICON_NORMAL,
+            if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL,
                     tool->rollover );
         } else {
             bmp = tool->GetDisabledBitmap();
-            if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetLabel(), TOOLICON_DISABLED );
+            if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED );
         }
     } else {
-        if( tool->IsEnabled() ) {
-            if( tool->IsToggled() ) bmp = m_style->GetToolIcon( tool->GetLabel(), TOOLICON_TOGGLED,
-                    tool->rollover );
-            else
-                bmp = m_style->GetToolIcon( tool->GetLabel(), TOOLICON_NORMAL, tool->rollover );
+        if ( tool->isPluginTool ) {
+
+            // First try getting the icon from the Style.
+            // If it is not in the style we build a new icon fro the style BG and the plugin icon.
+
+            if( tool->IsToggled() ) {
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
+                if( bmp.GetDepth() == 1 ) {
+                    if( tool->rollover ) {
+                        bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
+						if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
+                    }
+                    else
+                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
+                }
+            } else {
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
+                if( bmp.GetDepth() == 1 ) {
+                    if( tool->rollover ) {
+                        bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_NORMAL );
+                        if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
+                    }
+                    else
+                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
+                }
+            }
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;
         } else {
-            bmp = m_style->GetToolIcon( tool->GetLabel(), TOOLICON_DISABLED );
-            tool->SetDisabledBitmap( bmp );
-            tool->bitmapOK = true;
+            if( tool->IsEnabled() ) {
+                if( tool->IsToggled() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED,
+                        tool->rollover );
+                else
+                    bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
+                tool->SetNormalBitmap( bmp );
+                tool->bitmapOK = true;
+            } else {
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED );
+                tool->SetDisabledBitmap( bmp );
+                tool->bitmapOK = true;
+            }
         }
     }
 
@@ -1561,12 +1573,13 @@ void ocpnToolBarSimple::EnableTool( int id, bool enable )
     }
 }
 
-void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpDisabled )
+void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRollover )
 {
-    wxToolBarToolBase *tool = FindById( id );
+    ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
     if( tool ) {
-        if( bmp ) tool->SetNormalBitmap( *bmp );
-        if( bmpDisabled ) tool->SetDisabledBitmap( *bmpDisabled );
+        tool->pluginNormalIcon = bmp;
+        tool->pluginRolloverIcon = bmpRollover;
+        tool->bitmapOK = false;
     }
 }
 
@@ -1664,31 +1677,6 @@ wxToolBarToolBase *ocpnToolBarSimple::RemoveTool( int id )
     return tool;
 }
 
-wxToolBarToolBase *ocpnToolBarSimple::AddControl( wxControl *control )
-{
-    return InsertControl( GetToolsCount(), control );
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::InsertControl( size_t pos, wxControl *control )
-{
-    wxCHECK_MSG( control, (wxToolBarToolBase *)NULL, _T("toolbar: can't insert NULL control") );
-
-    wxCHECK_MSG( control->GetParent() == this, (wxToolBarToolBase *)NULL,
-            _T("control must have toolbar as parent") );
-
-    wxCHECK_MSG( pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-            _T("invalid position in wxToolBar::InsertControl()") );
-
-    wxToolBarToolBase *tool = CreateTool( control );
-
-    if( !InsertTool( pos, tool ) ) {
-        delete tool;
-
-        return NULL;
-    }
-
-    return tool;
-}
 
 wxControl *ocpnToolBarSimple::FindControl( int id )
 {

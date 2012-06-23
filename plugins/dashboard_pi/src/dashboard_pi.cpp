@@ -242,11 +242,11 @@ int dashboard_pi::Init(void)
       LoadConfig();
 
       //    This PlugIn needs a toolbar icon
-      m_toolbar_item_id  = InsertPlugInTool(_T("dashboard"), _img_dashboard, _img_dashboard, wxITEM_CHECK,
+      m_toolbar_item_id  = InsertPlugInTool(_T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
       ApplyConfig();
-      
+
       return (
            WANTS_CURSOR_LATLON       |
            WANTS_TOOLBAR_CALLBACK    |
@@ -1605,7 +1605,7 @@ DashboardWindow::~DashboardWindow()
       {
             DashboardInstrumentContainer *pdic = m_ArrayOfInstrument.Item(i);
             delete pdic;
-      }      
+      }
 }
 
 void DashboardWindow::SetColorScheme(PI_ColorScheme cs)
@@ -1630,7 +1630,7 @@ bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)
       for (size_t i = 0; i < l1.GetCount(); i++)
             if (l1.Item(i) != l2.Item(i)->m_ID)
                   return false;
-      
+
       return true;
 }
 

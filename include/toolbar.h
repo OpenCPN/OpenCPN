@@ -195,14 +195,6 @@ public:
       int GetLineCount() { return m_LineCount; };
       int GetToolCount() { return m_tools.GetCount(); };
 
-      // add an arbitrary control to the toolbar (notice that
-      // the control will be deleted by the toolbar and that it will also adjust
-      // its position/size)
-      //
-      // NB: the control should have toolbar as its parent
-      virtual wxToolBarToolBase *AddControl( wxControl *control );
-      virtual wxToolBarToolBase *InsertControl( size_t pos, wxControl *control );
-
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
 
@@ -231,7 +223,7 @@ public:
       virtual void EnableTool( int toolid, bool enable );
       virtual void ToggleTool( int toolid, bool toggle );
 
-      virtual void SetToolBitmaps( int toolid, wxBitmap *bmp, wxBitmap *bmpDisabled );
+      virtual void SetToolBitmaps( int toolid, wxBitmap *bmp, wxBitmap *bmpRollover );
       void InvalidateBitmaps();
 
       // set/get tools client data (not for controls)
@@ -332,8 +324,6 @@ protected:
       virtual wxToolBarToolBase *CreateTool( int winid, const wxString& label,
                   const wxBitmap& bmpNormal, const wxBitmap& bmpDisabled, wxItemKind kind,
                   wxObject *clientData, const wxString& shortHelp, const wxString& longHelp );
-      virtual wxToolBarToolBase *CreateTool( wxControl *control, const wxString& label );
-      virtual wxToolBarToolBase *CreateTool( wxControl *control );
 
       // helpers
       void DrawTool( wxToolBarToolBase *tool );

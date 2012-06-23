@@ -3660,10 +3660,10 @@ void MyFrame::SetToolbarItemState( int tool_id, bool state )
     if( g_toolbar ) g_toolbar->ToggleTool( tool_id, state );
 }
 
-void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpDisabled )
+void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRollover )
 {
     if( g_toolbar ) {
-        g_toolbar->SetToolBitmaps( tool_id, bmp, bmpDisabled );
+        g_toolbar->SetToolBitmaps( tool_id, bmp, bmpRollover );
         wxRect rect = g_toolbar->GetToolRect( tool_id );
         g_toolbar->RefreshRect( rect );
     }

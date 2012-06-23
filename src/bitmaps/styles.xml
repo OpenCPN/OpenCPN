@@ -30,12 +30,12 @@
 				<toolbar-end  x="500" y="180"  width="32" height="4"/>
 				<toolbar-corners  radius="3"/>
 			</vertical>
-			<tool name="dashboard">
+			<tool name="Dashboard">
 				<icon-location x="658" y="20"/>
 				<rollover-location x="658" y="220"/>
 				<disabled-location x="658" y="320"/>
 			</tool>
-			<tool name="grib">
+			<tool name="GRIB">
 				<icon-location x="698" y="20"/>
 				<rollover-location x="698" y="220"/>
 				<disabled-location x="698" y="320"/>
@@ -456,12 +456,12 @@
 				<icon-offset x="-3" y="3" />
 				<toolbar-corners  radius="3"/>
 			</vertical>
-			<tool name="dashboard">
+			<tool name="Dashboard">
 				<icon-location x="658" y="20"/>
 				<rollover-location x="658" y="220"/>
 				<disabled-location x="658" y="320"/>
 			</tool>
-			<tool name="grib">
+			<tool name="GRIB">
 				<icon-location x="698" y="20"/>
 				<rollover-location x="698" y="220"/>
 				<disabled-location x="698" y="320"/>
@@ -872,12 +872,12 @@
 				<background-location x="340" y="100" />
 				<size x="32" y="32"/>
 			</vertical>
-			<tool name="dashboard">
+			<tool name="Dashboard">
 				<icon-location x="620" y="100"/>
 				<rollover-location x="420" y="360"/>
 				<disabled-location x="340" y="360"/>
 			</tool>
-			<tool name="grib">
+			<tool name="GRIB">
 				<icon-location x="660" y="100"/>
 				<rollover-location x="460" y="360"/>
 				<disabled-location x="380" y="360"/>

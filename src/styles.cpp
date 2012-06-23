@@ -197,7 +197,7 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
         wxString msg( _T("The requested tool was not found in the style: ") );
         msg += toolname;
         wxLogMessage( msg );
-        return wxBitmap( GetToolSize().x, GetToolSize().y ); // Prevents crashing.
+        return wxBitmap( GetToolSize().x, GetToolSize().y, 1 );
     }
 
     int index = toolIndex[toolname];
@@ -291,6 +291,34 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
     msg += toolname;
     wxLogMessage( msg );
     return wxBitmap( GetToolSize().x, GetToolSize().y ); // Prevents crashing.
+}
+
+wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
+{
+	if( ! bm || ! bm->IsOk() ) return wxNullBitmap;
+
+    wxBitmap iconbm;
+
+    switch( iconType ){
+        case TOOLICON_NORMAL: {
+            if( hasBackground ) {
+                iconbm = MergeBitmaps( GetNormalBG(), *bm, wxSize( 0, 0 ) );
+            } else {
+                wxBitmap bg( GetToolSize().x, GetToolSize().y );
+                wxMemoryDC mdc( bg );
+                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+                mdc.Clear();
+                mdc.SelectObject( wxNullBitmap );
+                iconbm = MergeBitmaps( bg, *bm, wxSize( 0, 0 ) );
+            }
+            break;
+        }
+        case TOOLICON_TOGGLED: {
+            iconbm = MergeBitmaps( GetToggledBG(), *bm, wxSize( 0, 0 ) );
+            break;
+        }
+    }
+    return iconbm;
 }
 
 wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap )

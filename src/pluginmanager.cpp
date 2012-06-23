@@ -1040,7 +1040,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle)
       }
 }
 
-void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled)
+void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpRollover)
 {
       for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
       {
@@ -1048,7 +1048,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
             {
                   if(pttc->id == item)
                   {
-                        pParent->SetToolbarItemBitmaps(item, bitmap, bmpDisabled);
+                        pParent->SetToolbarItemBitmaps(item, bitmap, bmpRollover);
                         break;
                   }
             }
@@ -1215,10 +1215,10 @@ void SetToolbarItemState(int item, bool toggle)
             s_ppim->SetToolbarItemState(item, toggle);
 }
 
-void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled)
+void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmprollover)
 {
       if(s_ppim)
-            s_ppim->SetToolbarItemBitmaps(item, bitmap, bmpDisabled);
+            s_ppim->SetToolbarItemBitmaps(item, bitmap, bmprollover);
 }
 
 int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )

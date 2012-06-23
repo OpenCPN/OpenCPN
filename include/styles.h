@@ -112,6 +112,8 @@ public:
       void HasBackground( bool b ) { hasBackground = b; }
       wxBitmap GetIcon( wxString name );
       wxBitmap GetToolIcon( wxString toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
+      wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType );
+
       int GetTopMargin() { return toolMarginTop[currentOrientation]; }
       int GetRightMargin() { return toolMarginRight[currentOrientation]; }
       int GetBottomMargin() { return toolMarginBottom[currentOrientation]; }
