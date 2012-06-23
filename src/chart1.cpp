@@ -3872,8 +3872,7 @@ int MyFrame::DoOptionsDialog()
             if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
                 OCPNMessageBox( _("Please restart OpenCPN to activate language or style changes."),
                         _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
-                g_blocale_changed = true;
-
+                if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
             }
         }
 

@@ -1271,7 +1271,7 @@ void options::CreateControls()
     m_pText_ACK_Timeout = new wxTextCtrl( itemPanelAIS, -1 );
     pAlertGrid->Add( m_pText_ACK_Timeout, 1, wxALIGN_RIGHT, group_item_spacing );
 
-    //      Build Language/Fonts panel
+    //      Build User Interface panel
 
     itemPanelFont = CreatePanel( itemNotebook4, _("User Interface") );
 
@@ -2343,22 +2343,18 @@ void options::OnPageChange( wxNotebookEvent& event )
 
     //    User selected Chart Page?
     //    If so, build the "Charts" page variants
-    if( 2 == i )                        // 2 is the index of "Charts" page
-            {
+    if( 2 == i ) {                       // 2 is the index of "Charts" page
         if( !k_charts ) PopulateChartsPage();
-
         k_charts = VISIT_CHARTS;
     }
 
     //    User selected Vector Chart Page?
-    if( 3 == i )                        // 3 is the index of "VectorCharts" page
-            {
+    if( 3 == i ) {                      // 3 is the index of "VectorCharts" page
         k_vectorcharts = S52_CHANGED;
     }
 
     else
-        if( 5 == i )                        // 5 is the index of "Language/Fonts" page
-                {
+        if( 5 == i ) {                       // 5 is the index of "User Interface" page
             if( !m_bVisitLang ) {
                 ::wxBeginBusyCursor();
 
@@ -2529,7 +2525,6 @@ void options::OnPageChange( wxNotebookEvent& event )
 
                 DimeControl( m_itemFontElementListBox );
                 DimeControl( m_itemLangListBox );
-
             }
         }
 }
