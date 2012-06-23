@@ -831,6 +831,7 @@ void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
       {
             mPriDateTime = 6;
             mUTCDateTime.Set(pfix.FixTime);
+            mUTCDateTime = mUTCDateTime.ToUTC();
       }
       mSatsInView = pfix.nSats;
 }
