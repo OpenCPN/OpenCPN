@@ -839,7 +839,13 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
                                           ppi->SetPluginMessage(message_id, message_body);
                                     break;
                               }
-
+                              case 108:
+                              {
+                                    opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                                    if(ppi)
+                                          ppi->SetPluginMessage(message_id, message_body);
+                                    break;
+                              }
                               default:
                                     break;
                         }
