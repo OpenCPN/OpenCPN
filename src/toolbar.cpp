@@ -444,7 +444,7 @@ void ocpnFloatingToolbarDialog::Realize()
         // Now create a bitmap mask forthe frame shape.
 
         if( m_style->marginsInvisible ) {
-
+            int toolCount = m_ptoolbar->GetVisibleToolCount();
             wxBitmap shape( GetSize().x, GetSize().y );
             wxMemoryDC sdc( shape );
             sdc.SetBackground( *wxWHITE_BRUSH );
@@ -456,7 +456,7 @@ void ocpnFloatingToolbarDialog::Realize()
             wxSize visibleSize;
             if( m_ptoolbar->IsVertical() ) {
                 int noTools = m_ptoolbar->GetMaxRows();
-                if( noTools > m_ptoolbar->GetToolCount() ) noTools = m_ptoolbar->GetToolCount();
+                if( noTools > toolCount ) noTools = toolCount;
                 visibleSize.x = m_ptoolbar->GetLineCount()
                         * ( m_style->GetToolSize().x + m_style->GetTopMargin() );
                 visibleSize.y = noTools
@@ -465,7 +465,7 @@ void ocpnFloatingToolbarDialog::Realize()
                 visibleSize.y -= m_style->GetToolSeparation();
             } else {
                 int noTools = m_ptoolbar->GetMaxCols();
-                if( noTools > m_ptoolbar->GetToolCount() ) noTools = m_ptoolbar->GetToolCount();
+                if( noTools > toolCount ) noTools = toolCount;
                 visibleSize.x = noTools
                         * ( m_style->GetToolSize().x + m_style->GetToolSeparation() );
                 visibleSize.y = m_ptoolbar->GetLineCount()
@@ -479,7 +479,7 @@ void ocpnFloatingToolbarDialog::Realize()
                 if( m_ptoolbar->IsVertical() ) {
                     wxSize barsize( m_style->GetToolSize().x, visibleSize.y );
                     if( i == lines && i > 1 ) {
-                        int toolsInLastLine = m_ptoolbar->GetToolCount() % m_ptoolbar->GetMaxRows();
+                        int toolsInLastLine = toolCount % m_ptoolbar->GetMaxRows();
                         if( toolsInLastLine == 0 ) toolsInLastLine = m_ptoolbar->GetMaxRows();
                         int emptySpace = ( m_ptoolbar->GetMaxRows() - toolsInLastLine );
                         barsize.y -= emptySpace
@@ -502,7 +502,7 @@ void ocpnFloatingToolbarDialog::Realize()
                         barsize.x += m_style->GetIcon( _T("grabber") ).GetWidth();
                     }
                     if( i == lines && i > 1 ) {
-                        int toolsInLastLine = m_ptoolbar->GetToolCount() % m_ptoolbar->GetMaxCols();
+                        int toolsInLastLine = toolCount % m_ptoolbar->GetMaxCols();
                         if( toolsInLastLine == 0 ) toolsInLastLine = m_ptoolbar->GetMaxCols();
                         int emptySpace = ( m_ptoolbar->GetMaxCols() - toolsInLastLine );
                         barsize.x -= emptySpace
@@ -688,6 +688,7 @@ public:
         m_toggled = false;
         rollover = false;
         bitmapOK = false;
+        isHidden = false;
 
         toolname = g_pi_manager->GetToolOwnerCommonName( id );
         if( toolname == _T("") ) {
@@ -734,6 +735,7 @@ public:
     bool rollover;
     bool bitmapOK;
     bool isPluginTool;
+    bool isHidden;
     bool b_hilite;
 };
 
@@ -812,11 +814,11 @@ wxToolBarToolBase *ocpnToolBarSimple::AddTool( int toolid, const wxString& label
         const wxBitmap& bitmap, const wxBitmap& bmpDisabled, wxItemKind kind,
         const wxString& shortHelp, const wxString& longHelp, wxObject *data )
 {
-
     InvalidateBestSize();
-    return InsertTool( GetToolsCount(), toolid, label, bitmap, bmpDisabled, kind, shortHelp,
-            longHelp, data );
-
+    ocpnToolBarTool* tool = (ocpnToolBarTool*)InsertTool( GetToolsCount(), toolid, label, bitmap, bmpDisabled, kind,
+            shortHelp, longHelp, data );
+    tool->isHidden = m_style->HideTool( label );
+    return tool;
 }
 
 wxToolBarToolBase *ocpnToolBarSimple::InsertTool( size_t pos, int id, const wxString& label,
@@ -1002,6 +1004,11 @@ bool ocpnToolBarSimple::Realize()
         tool->firstInLine = firstNode;
         tool->lastInLine = false;
         firstNode = false;
+
+        if( tool->isHidden ) {
+            node = node->GetNext();
+            continue;
+        }
 
         if( tool->IsSeparator() ) {
             if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) {
@@ -1588,6 +1595,18 @@ void ocpnToolBarSimple::ClearTools()
     while( GetToolsCount() ) {
         DeleteToolByPos( 0 );
     }
+}
+
+int ocpnToolBarSimple::GetVisibleToolCount()
+{
+    int counter = 0;
+    wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+    while( node ) {
+        ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
+        if( ! tool->isHidden ) counter++;
+        node = node->GetNext();
+    }
+    return counter;
 }
 
 bool ocpnToolBarSimple::DeleteToolByPos( size_t pos )

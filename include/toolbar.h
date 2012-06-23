@@ -193,7 +193,7 @@ public:
 
       int GetNoRowsOrColumns() { return m_currentRowsOrColumns; };
       int GetLineCount() { return m_LineCount; };
-      int GetToolCount() { return m_tools.GetCount(); };
+      int GetVisibleToolCount();
 
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );

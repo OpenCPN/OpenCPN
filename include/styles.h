@@ -68,6 +68,7 @@ public:
       bool disabledLoaded;
       bool activeLoaded;
       bool toggledLoaded;
+      bool hideThisTool;
       wxSize customSize;
 
       void Unload(void) {
@@ -79,7 +80,10 @@ public:
             toggledLoaded =false;
       }
 
-      Tool(void) { Unload(); }
+      Tool(void) {
+          Unload();
+          hideThisTool = false;
+      }
 };
 
 class Icon {
@@ -113,6 +117,7 @@ public:
       wxBitmap GetIcon( wxString name );
       wxBitmap GetToolIcon( wxString toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
       wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType );
+      bool HideTool( const wxString& toolname );
 
       int GetTopMargin() { return toolMarginTop[currentOrientation]; }
       int GetRightMargin() { return toolMarginRight[currentOrientation]; }
