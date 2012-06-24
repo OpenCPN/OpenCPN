@@ -49,70 +49,6 @@ public:
 DECLARE_EVENT_TABLE()
 };
 
-//----------------------------------------------------------------------------------------------------------
-//    ocpnFloatingToolbarDialog Specification
-//----------------------------------------------------------------------------------------------------------
-
-#define FADE_TIMER 2
-
-class ocpnFloatingToolbarDialog: public wxDialog {
-DECLARE_EVENT_TABLE()
-
-public:
-      ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient );
-      ~ocpnFloatingToolbarDialog();
-
-      void OnClose( wxCloseEvent& event );
-      void OnWindowCreate( wxWindowCreateEvent& event );
-      void OnToolLeftClick( wxCommandEvent& event );
-      void MouseEvent( wxMouseEvent& event );
-      void FadeTimerEvent( wxTimerEvent& event );
-      bool IsToolbarShown() {
-            return ( m_ptoolbar != 0 );
-      }
-      void Realize();
-      ocpnToolBarSimple *GetToolbar();
-      void Submerge();
-      void Surface();
-      void HideTooltip();
-      void ShowTooltips();
-
-      void DestroyToolBar();
-      void ToggleOrientation();
-      void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
-      void RePosition();
-      void SetColorScheme( ColorScheme cs );
-      void SetGeometry();
-      long GetOrient() {
-            return m_orient;
-      }
-      void RefreshFadeTimer();
-      int GetDockX() {
-            return m_dock_x;
-      }
-      int GetDockY() {
-            return m_dock_y;
-      }
-
-private:
-      void DoFade( int value );
-
-      wxWindow *m_pparent;
-      ocpnToolBarSimple *m_ptoolbar;
-      wxBoxSizer *m_topSizer;
-
-      GrabberWin *m_pGrabberwin;
-
-      long m_orient;
-      wxTimer m_fade_timer;
-      int m_opacity;
-      ColorScheme m_cs;
-
-      wxPoint m_position;
-      int m_dock_x;
-      int m_dock_y;
-      ocpnStyle::Style* m_style;
-};
 
 #define TOOLTIPON_TIMER       10000
 
@@ -300,9 +236,8 @@ public:
 
       void HideTooltip();
       void KillTooltip();
-      void ShowTooltip() {
-            m_btooltip_show = true;
-      }
+      void EnableTooltips() { m_btooltip_show = true; }
+      void DisableTooltips() { m_btooltip_show = false; }
 
 protected:
       // common part of all ctors
@@ -356,3 +291,69 @@ private:
 DECLARE_EVENT_TABLE()
 };
 
+//----------------------------------------------------------------------------------------------------------
+//    ocpnFloatingToolbarDialog Specification
+//----------------------------------------------------------------------------------------------------------
+
+#define FADE_TIMER 2
+
+class ocpnFloatingToolbarDialog: public wxDialog {
+DECLARE_EVENT_TABLE()
+
+public:
+      ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient );
+      ~ocpnFloatingToolbarDialog();
+
+      void OnClose( wxCloseEvent& event );
+      void OnWindowCreate( wxWindowCreateEvent& event );
+      void OnToolLeftClick( wxCommandEvent& event );
+      void MouseEvent( wxMouseEvent& event );
+      void FadeTimerEvent( wxTimerEvent& event );
+      bool IsToolbarShown() {
+            return ( m_ptoolbar != 0 );
+      }
+      void Realize();
+      ocpnToolBarSimple *GetToolbar();
+      void Submerge();
+      void Surface();
+      void HideTooltip();
+      void ShowTooltips();
+      void EnableTooltips() { m_ptoolbar->EnableTooltips(); }
+      void DisableTooltips() { m_ptoolbar->DisableTooltips(); }
+
+      void DestroyToolBar();
+      void ToggleOrientation();
+      void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
+      void RePosition();
+      void SetColorScheme( ColorScheme cs );
+      void SetGeometry();
+      long GetOrient() {
+            return m_orient;
+      }
+      void RefreshFadeTimer();
+      int GetDockX() {
+            return m_dock_x;
+      }
+      int GetDockY() {
+            return m_dock_y;
+      }
+
+private:
+      void DoFade( int value );
+
+      wxWindow *m_pparent;
+      ocpnToolBarSimple *m_ptoolbar;
+      wxBoxSizer *m_topSizer;
+
+      GrabberWin *m_pGrabberwin;
+
+      long m_orient;
+      wxTimer m_fade_timer;
+      int m_opacity;
+      ColorScheme m_cs;
+
+      wxPoint m_position;
+      int m_dock_x;
+      int m_dock_y;
+      ocpnStyle::Style* m_style;
+};

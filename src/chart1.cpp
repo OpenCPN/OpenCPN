@@ -3799,7 +3799,9 @@ int MyFrame::DoOptionsDialog()
     }
 
 // And here goes the (modal) dialog
+    g_FloatingToolbarDialog->DisableTooltips();
     int rr = pSetDlg->ShowModal();
+    g_FloatingToolbarDialog->EnableTooltips();
 
     if( b_sub ) {
         SurfaceToolbar();

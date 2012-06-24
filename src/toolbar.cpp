@@ -291,7 +291,7 @@ void ocpnFloatingToolbarDialog::Surface()
 
     RePosition();
     Show();
-    if( m_ptoolbar ) m_ptoolbar->ShowTooltip();
+    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip()
@@ -301,7 +301,7 @@ void ocpnFloatingToolbarDialog::HideTooltip()
 
 void ocpnFloatingToolbarDialog::ShowTooltips()
 {
-    if( m_ptoolbar ) m_ptoolbar->ShowTooltip();
+    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
 }
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
@@ -790,7 +790,7 @@ void ocpnToolBarSimple::Init()
     m_pToolTipWin = NULL;
     m_last_ro_tool = NULL;
 
-    ShowTooltip();
+    EnableTooltips();
 }
 
 wxToolBarToolBase *ocpnToolBarSimple::DoAddTool( int id, const wxString& label,
