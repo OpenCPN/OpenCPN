@@ -2694,7 +2694,22 @@ bool MyApp::OnInit()
         pConfig->SetPath ( _T ( "/AUI" ) );
         pConfig->Read ( _T ( "AUIPerspective" ), &perspective );
 
-       g_pauimgr->LoadPerspective(perspective, false);
+        //  Make sure the perspective saved in the config file is "reasonable"
+        //  In particular, the perspective should have an entry for every
+        //  windows added to the AUI manager so far.
+        //  If any are not found, then use the default layout
+
+        bool bno_load = false;
+        wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+        for(unsigned int i=0 ; i < pane_array_val.GetCount() ; i++) {
+            wxAuiPaneInfo pane = pane_array_val.Item(i);
+            if(perspective.Find(pane.name) == wxNOT_FOUND) {
+                bno_load = true;
+                break;
+            }
+        }
+        if(!bno_load)
+            g_pauimgr->LoadPerspective(perspective, false);
 
        //   Correct any faulty chart bar position
        g_pauimgr->GetPane(stats).Row(0);
