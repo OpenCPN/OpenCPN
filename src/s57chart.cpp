@@ -3903,7 +3903,9 @@ int s57chart::GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFile
                 ext = file.GetExt();
 
                 long tmp;
-                if(ext.ToLong(&tmp))
+                //  Files of interest have the same base name is the target .000 cell,
+                //  and have numeric extension
+                if(ext.ToLong(&tmp) && (file.GetName() == file000.GetName()))
                 {
                         wxString FileToAdd(DirName000);
                         FileToAdd.Append(file.GetFullName());
@@ -4018,10 +4020,10 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
 
         int retval = 0;
 
-        wxString DirName000 = file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-        wxDir dir(DirName000);
+ //       wxString DirName000 = file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
+ //       wxDir dir(DirName000);
         wxArrayString *UpFiles = new wxArrayString;
-        retval = GetUpdateFileArray(DirName000, UpFiles);
+        retval = GetUpdateFileArray(file000, UpFiles);
 
         if(UpFiles->GetCount())
         {
@@ -4358,8 +4360,11 @@ int s57chart::BuildSENCFile(const wxString& FullPath000, const wxString& SENCFil
 
     int last_applied_update = 0;
     wxString LastUpdateDate = date000;
-    last_applied_update = ValidateAndCountUpdates( file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME)),
-                                                   SENCfile.GetPath(), LastUpdateDate, true);
+    last_applied_update = ValidateAndCountUpdates( file000, SENCfile.GetPath(), LastUpdateDate, true);
+
+    wxString msg1;
+    msg1.Printf(_T("ENC update number is %3d"), last_applied_update);
+    wxLogMessage(msg1);
 
     fprintf(fps57, "UPDT=%d\n", last_applied_update);
 
