@@ -215,6 +215,7 @@ public:
     void OnButtonTestSound(wxCommandEvent& event);
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnButtonGroups(wxCommandEvent& event);
+    void OnCharHook( wxKeyEvent& event );
 
     void UpdateWorkArrayFromTextCtl();
     void CreateChartsPage();
@@ -224,6 +225,7 @@ public:
     static bool ShowToolTips();
 
     wxNotebook*             itemNotebook4;
+    int                     lastPage;
     wxButton*               m_OKButton;
     wxButton*               m_CancelButton;
 

@@ -195,7 +195,6 @@ IMPLEMENT_DYNAMIC_CLASS( options, wxDialog )
 
 BEGIN_EVENT_TABLE( options, wxDialog )
 //    BUGBUG DSR Must use wxID_TREECTRL to capture tree events.
-
     EVT_TREE_SEL_CHANGED( wxID_TREECTRL, options::OnDirctrlSelChanged )
     EVT_CHECKBOX( ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click )
     EVT_TREE_SEL_CHANGED( ID_DIRCTRL, options::OnDirctrlSelChanged )
@@ -214,7 +213,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
     EVT_BUTTON( ID_BUTTONGROUP, options::OnButtonGroups )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
-
+    EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
 
 options::options()
@@ -298,7 +297,6 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     wxSize now_size = GetSize();
     now_size.IncBy( 8 );
     SetSize( now_size );
-
     Centre();
 }
 
@@ -341,7 +339,6 @@ void options::Init()
     itemNotebook4 = NULL;
     m_pGroupArray = NULL;
     m_groups_changed = 0;
-
 }
 
 bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
@@ -1744,6 +1741,17 @@ bool options::ShowToolTips()
     return TRUE;
 }
 
+void options::OnCharHook( wxKeyEvent& event ) {
+    if( event.GetKeyCode() == WXK_RETURN ) {
+        if( event.GetModifiers() == wxMOD_CONTROL ) {
+            wxCommandEvent okEvent;
+            okEvent.SetId( xID_OK );
+            okEvent.SetEventType( wxEVT_COMMAND_BUTTON_CLICKED );
+            GetEventHandler()->ProcessEvent( okEvent );
+        }
+    }
+}
+
 void options::OnButtonaddClick( wxCommandEvent& event )
 {
     wxString SelDir;
@@ -2334,6 +2342,7 @@ void options::PopulateChartsPage()
 void options::OnPageChange( wxNotebookEvent& event )
 {
     int i = event.GetSelection();
+    lastPage = i;
 
     if( 0 == i )                        // 0 is the index of "Settings" page
             {

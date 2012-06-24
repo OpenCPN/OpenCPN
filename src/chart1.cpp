@@ -3744,6 +3744,7 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 int MyFrame::DoOptionsDialog()
 {
     bool b_refresh_after_options = false;
+    static int lastPage = -1;
 
     ::wxBeginBusyCursor();
     options *pSetDlg = new options( this, -1, _("ToolBox") );
@@ -3798,10 +3799,15 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-// And here goes the (modal) dialog
+    if( lastPage >= 0 ) pSetDlg->itemNotebook4->SetSelection( lastPage );
+
     g_FloatingToolbarDialog->DisableTooltips();
+
     int rr = pSetDlg->ShowModal();
+
     g_FloatingToolbarDialog->EnableTooltips();
+
+    lastPage = pSetDlg->lastPage;
 
     if( b_sub ) {
         SurfaceToolbar();
