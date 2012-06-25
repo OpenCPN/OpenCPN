@@ -2201,6 +2201,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= k_vectorcharts;
     iret |= k_charts;
     iret |= m_groups_changed;
+    iret |= k_plugins;
 
     EndModal(iret);
 
@@ -2585,6 +2586,11 @@ void options::OnPageChange(wxNotebookEvent& event)
 
             }
       }
+      else if(7 == i)                        // 7 is the index of "Plugins" page
+      {
+          k_plugins = TOOLBAR_CHANGED;
+      }
+
 }
 
 
