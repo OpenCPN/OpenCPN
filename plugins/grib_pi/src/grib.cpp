@@ -95,7 +95,7 @@ IMPLEMENT_CLASS ( GRIBUIDialog, wxDialog )
 BEGIN_EVENT_TABLE ( GRIBUIDialog, wxDialog )
 
             EVT_CLOSE ( GRIBUIDialog::OnClose )
-            EVT_BUTTON ( ID_OK, GRIBUIDialog::OnIdOKClick )
+//            EVT_BUTTON ( ID_OK, GRIBUIDialog::OnIdOKClick )
             EVT_MOVE ( GRIBUIDialog::OnMove )
             EVT_SIZE ( GRIBUIDialog::OnSize )
             EVT_BUTTON ( ID_CHOOSEGRIBDIR, GRIBUIDialog::OnChooseDirClick )
@@ -300,9 +300,11 @@ void GRIBUIDialog::CreateControls()
 //      wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );;
 
 // The OK button
+/*
       wxButton* bOK = new wxButton ( this, ID_OK, _( "&Close" ),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       AckBox->Add ( bOK, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+*/
 }
 
 

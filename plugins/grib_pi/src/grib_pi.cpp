@@ -229,8 +229,8 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
     itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
 
-    m_pGRIBShowIcon = new wxCheckBox( dialog, -1, _("Show GRIB icon"), wxDefaultPosition, wxSize(-1, -1), 0 );
-    itemStaticBoxSizerGRIB->Add(m_pGRIBShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
+//    m_pGRIBShowIcon = new wxCheckBox( dialog, -1, _("Show GRIB icon"), wxDefaultPosition, wxSize(-1, -1), 0 );
+//    itemStaticBoxSizerGRIB->Add(m_pGRIBShowIcon, 1, wxALIGN_LEFT|wxALL, border_size);
 
     m_pGRIBUseHiDef = new wxCheckBox( dialog, -1, _("Use High Definition Graphics"));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
@@ -238,9 +238,10 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     m_pGRIBUseMS = new wxCheckBox( dialog, -1, _("Show metres/sec for Wind Speed"));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseMS, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    m_pGRIBShowIcon->SetValue(m_bGRIBShowIcon);
+//    m_pGRIBShowIcon->SetValue(m_bGRIBShowIcon);
     m_pGRIBUseHiDef->SetValue(m_bGRIBUseHiDef);
     m_pGRIBUseMS->SetValue(m_bGRIBUseMS);
+
 
       wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizerGRIBPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
@@ -249,6 +250,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
       if(dialog->ShowModal() == wxID_OK)
       {
+/*
             //    Show Icon changed value?
             if(m_bGRIBShowIcon != m_pGRIBShowIcon->GetValue())
             {
@@ -261,7 +263,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                   else
                         RemovePlugInTool(m_leftclick_tool_id);
             }
-
+*/
 
             if(m_bGRIBUseMS != m_pGRIBUseMS->GetValue())
             {
@@ -362,10 +364,12 @@ void grib_pi::OnToolbarToolCallback(int id)
 
 void grib_pi::OnGribDialogClose()
 {
-//      SetToolbarItemState( m_leftclick_tool_id, false );
+      SetToolbarItemState( m_leftclick_tool_id, false );
 
       if(m_pGribDialog)
             m_pGribDialog->Hide();
+
+      m_bShowGrib = false;
 //      if(m_pGRIBOverlayFactory)
 //            m_pGRIBOverlayFactory->Reset();
       SaveConfig();
