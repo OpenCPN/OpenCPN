@@ -1398,8 +1398,7 @@ bool MyApp::OnInit()
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
-        pInit_Chart_Dir->Append( _T("charts") );
-        pInit_Chart_Dir->Prepend( g_SData_Locn );
+        pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
     }
 
 //      Establish the WorldVectorShoreline Dataset location
