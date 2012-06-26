@@ -354,6 +354,7 @@ public:
 
 //    For "PlugIns" Panel
     PluginListPanel         *m_pPlugInCtrl;
+    int                     k_plugins;
 
 //    For "Etc." Page
     wxScrolledWindow        *itemPanelAdvanced;

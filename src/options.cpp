@@ -2157,9 +2157,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= k_vectorcharts;
     iret |= k_charts;
     iret |= m_groups_changed;
+    iret |= k_plugins;
 
     EndModal( iret );
-
 }
 
 void options::OnButtondeleteClick( wxCommandEvent& event )
@@ -2344,198 +2344,199 @@ void options::OnPageChange( wxNotebookEvent& event )
     int i = event.GetSelection();
     lastPage = i;
 
-    if( 0 == i )                        // 0 is the index of "Settings" page
-            {
-        if( pEnableZoomToCursor && pSmoothPanZoom ) pSmoothPanZoom->Enable(
-                !pEnableZoomToCursor->GetValue() );
+    if( 0 == i ) {                       // 0 is the index of "Settings" page
+        if( pEnableZoomToCursor && pSmoothPanZoom )
+            pSmoothPanZoom->Enable( !pEnableZoomToCursor->GetValue() );
     }
 
     //    User selected Chart Page?
     //    If so, build the "Charts" page variants
-    if( 2 == i ) {                       // 2 is the index of "Charts" page
+    else if( 2 == i ) {                       // 2 is the index of "Charts" page
         if( !k_charts ) PopulateChartsPage();
         k_charts = VISIT_CHARTS;
     }
 
     //    User selected Vector Chart Page?
-    if( 3 == i ) {                      // 3 is the index of "VectorCharts" page
+    else if( 3 == i ) {                      // 3 is the index of "VectorCharts" page
         k_vectorcharts = S52_CHANGED;
     }
 
-    else
-        if( 5 == i ) {                       // 5 is the index of "User Interface" page
-            if( !m_bVisitLang ) {
-                ::wxBeginBusyCursor();
+    else if( 5 == i ) {                       // 5 is the index of "User Interface" page
+        if( !m_bVisitLang ) {
+            ::wxBeginBusyCursor();
 
-                int border_size = 4;
+            int border_size = 4;
 
-                wxStaticBox* itemLangStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
-                        _("Language") );
-                wxStaticBoxSizer* itemLangStaticBoxSizer = new wxStaticBoxSizer( itemLangStaticBox,
-                        wxVERTICAL );
-                m_itemBoxSizerFontPanel->Add( itemLangStaticBoxSizer, 0, wxEXPAND | wxALL,
-                        border_size );
+            wxStaticBox* itemLangStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
+                    _("Language") );
+            wxStaticBoxSizer* itemLangStaticBoxSizer = new wxStaticBoxSizer( itemLangStaticBox,
+                    wxVERTICAL );
+            m_itemBoxSizerFontPanel->Add( itemLangStaticBoxSizer, 0, wxEXPAND | wxALL,
+                    border_size );
 
-                m_itemLangListBox = new wxComboBox( itemPanelFont, ID_CHOICE_LANG );
+            m_itemLangListBox = new wxComboBox( itemPanelFont, ID_CHOICE_LANG );
 
-                int current_language = plocale_def_lang->GetLanguage();
+            int current_language = plocale_def_lang->GetLanguage();
 //                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
-                wxString current_sel = wxLocale::GetLanguageName( current_language );
+            wxString current_sel = wxLocale::GetLanguageName( current_language );
 
-                current_sel = GetOCPNKnownLanguage( g_locale, NULL );
+            current_sel = GetOCPNKnownLanguage( g_locale, NULL );
 
-                int nLang = sizeof( lang_list ) / sizeof(int);
+            int nLang = sizeof( lang_list ) / sizeof(int);
 
 #ifdef __WXMSW__
-                // always add us english
-                m_itemLangListBox->Append( _T("English (U.S.)") );
+            // always add us english
+            m_itemLangListBox->Append( _T("English (U.S.)") );
 
-                wxString lang_dir = g_SData_Locn + _T("share/locale/");
-                for( int it = 1; it < nLang; it++ ) {
-                    if( wxLocale::IsAvailable( lang_list[it] ) ) {
-                        wxLocale ltest( lang_list[it], 0 );
-                        ltest.AddCatalog( _T("opencpn") );
-                        if( !ltest.IsLoaded( _T("opencpn") ) ) continue;
+            wxString lang_dir = g_SData_Locn + _T("share/locale/");
+            for( int it = 1; it < nLang; it++ ) {
+                if( wxLocale::IsAvailable( lang_list[it] ) ) {
+                    wxLocale ltest( lang_list[it], 0 );
+                    ltest.AddCatalog( _T("opencpn") );
+                    if( !ltest.IsLoaded( _T("opencpn") ) ) continue;
 
-                        // Defaults
-                        wxString loc_lang_name = wxLocale::GetLanguageName( lang_list[it] );
-                        wxString widgets_lang_name = loc_lang_name;
-                        wxString lang_canonical =
-                                wxLocale::GetLanguageInfo( lang_list[it] )->CanonicalName;
+                    // Defaults
+                    wxString loc_lang_name = wxLocale::GetLanguageName( lang_list[it] );
+                    wxString widgets_lang_name = loc_lang_name;
+                    wxString lang_canonical =
+                            wxLocale::GetLanguageInfo( lang_list[it] )->CanonicalName;
 
-                        //  Make opencpn substitutions
-                        wxString lang_suffix;
-                        loc_lang_name = GetOCPNKnownLanguage( lang_canonical, &lang_suffix );
-
-                        //  Look explicitely to see if .mo is available
-                        wxString test_dir = lang_dir + lang_suffix;
-                        if( !wxDir::Exists( test_dir ) ) continue;
-
-                        m_itemLangListBox->Append( loc_lang_name );
-                    }
-                }
-#else
-                wxArrayString lang_array;
-
-                // always add us english
-                lang_array.Add(_T("en_US"));
-
-                for( int it = 0; it < nLang; it++)
-                {
-//                        if(wxLocale::IsAvailable(lang_list[it]))
-                    {
-                        wxLog::EnableLogging(false);  // avoid "Cannot set locale to..." log message
-
-                        wxLocale ltest(lang_list[it], 0);
-                        ltest.AddCatalog(_T("opencpn"));
-
-                        wxLog::EnableLogging(true);
-
-                        if(ltest.IsLoaded(_T("opencpn")))
-                        {
-                            wxString s0 = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
-                            wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-                            if(wxNOT_FOUND == lang_array.Index(s0))
-                            lang_array.Add(s0);
-
-                        }
-                    }
-                }
-
-                for(unsigned int i=0; i < lang_array.GetCount(); i++)
-                {
                     //  Make opencpn substitutions
-                    wxString loc_lang_name = GetOCPNKnownLanguage(lang_array[i], NULL);
+                    wxString lang_suffix;
+                    loc_lang_name = GetOCPNKnownLanguage( lang_canonical, &lang_suffix );
+
+                    //  Look explicitely to see if .mo is available
+                    wxString test_dir = lang_dir + lang_suffix;
+                    if( !wxDir::Exists( test_dir ) ) continue;
+
                     m_itemLangListBox->Append( loc_lang_name );
                 }
+            }
+#else
+            wxArrayString lang_array;
+
+            // always add us english
+            lang_array.Add(_T("en_US"));
+
+            for( int it = 0; it < nLang; it++)
+            {
+//                        if(wxLocale::IsAvailable(lang_list[it]))
+                {
+                    wxLog::EnableLogging(false);  // avoid "Cannot set locale to..." log message
+
+                    wxLocale ltest(lang_list[it], 0);
+                    ltest.AddCatalog(_T("opencpn"));
+
+                    wxLog::EnableLogging(true);
+
+                    if(ltest.IsLoaded(_T("opencpn")))
+                    {
+                        wxString s0 = wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+                        wxString sl = wxLocale::GetLanguageName(lang_list[it]);
+                        if(wxNOT_FOUND == lang_array.Index(s0))
+                        lang_array.Add(s0);
+
+                    }
+                }
+            }
+
+            for(unsigned int i=0; i < lang_array.GetCount(); i++)
+            {
+                //  Make opencpn substitutions
+                wxString loc_lang_name = GetOCPNKnownLanguage(lang_array[i], NULL);
+                m_itemLangListBox->Append( loc_lang_name );
+            }
 #endif
 
-                // BUGBUG
-                //  Remember that wxLocale ctor has the effect of changing the system locale, including the "C" libraries.
-                //  It should then also happen that the locale should be switched back to ocpn initial load setting
-                //  upon the dtor of the above wxLocale instantiations....
-                //  wxWidgets may do so internally, but there seems to be no effect upon the system libraries, so that
-                //  functions like strftime() do not revert to the correct locale setting.
-                //  Also, the catalog for the application is not reloaded by the ctor, so we must reload them directly
-                //  So as workaround, we reset the locale explicitely.
+            // BUGBUG
+            //  Remember that wxLocale ctor has the effect of changing the system locale, including the "C" libraries.
+            //  It should then also happen that the locale should be switched back to ocpn initial load setting
+            //  upon the dtor of the above wxLocale instantiations....
+            //  wxWidgets may do so internally, but there seems to be no effect upon the system libraries, so that
+            //  functions like strftime() do not revert to the correct locale setting.
+            //  Also, the catalog for the application is not reloaded by the ctor, so we must reload them directly
+            //  So as workaround, we reset the locale explicitely.
 
-                delete plocale_def_lang;
-                plocale_def_lang = new wxLocale( current_language );
+            delete plocale_def_lang;
+            plocale_def_lang = new wxLocale( current_language );
 
-                setlocale( LC_NUMERIC, "C" );
-                plocale_def_lang->AddCatalog( _T("opencpn") );
+            setlocale( LC_NUMERIC, "C" );
+            plocale_def_lang->AddCatalog( _T("opencpn") );
 
-                m_itemLangListBox->SetStringSelection( current_sel );
+            m_itemLangListBox->SetStringSelection( current_sel );
 
-                itemLangStaticBoxSizer->Add( m_itemLangListBox, 0, wxALL, border_size );
+            itemLangStaticBoxSizer->Add( m_itemLangListBox, 0, wxALL, border_size );
 
-                wxStaticBox* itemFontStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
-                        _("Font Options") );
-                wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer( itemFontStaticBox,
-                        wxVERTICAL );
-                m_itemBoxSizerFontPanel->Add( itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
-                        border_size );
+            wxStaticBox* itemFontStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
+                    _("Font Options") );
+            wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer( itemFontStaticBox,
+                    wxVERTICAL );
+            m_itemBoxSizerFontPanel->Add( itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
+                    border_size );
 
-                wxStaticBox* itemFontElementStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
-                        _("Text Element") );
-                wxStaticBoxSizer* itemFontElementStaticBoxSizer = new wxStaticBoxSizer(
-                        itemFontElementStaticBox, wxVERTICAL );
-                itemFontStaticBoxSizer->Add( itemFontElementStaticBoxSizer, 0, wxEXPAND | wxALL,
-                        border_size );
+            wxStaticBox* itemFontElementStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
+                    _("Text Element") );
+            wxStaticBoxSizer* itemFontElementStaticBoxSizer = new wxStaticBoxSizer(
+                    itemFontElementStaticBox, wxVERTICAL );
+            itemFontStaticBoxSizer->Add( itemFontElementStaticBoxSizer, 0, wxEXPAND | wxALL,
+                    border_size );
 
-                m_itemFontElementListBox = new wxComboBox( itemPanelFont, ID_CHOICE_FONTELEMENT );
+            m_itemFontElementListBox = new wxComboBox( itemPanelFont, ID_CHOICE_FONTELEMENT );
 
-                int nFonts = pFontMgr->GetNumFonts();
-                for( int it = 0; it < nFonts; it++ ) {
-                    wxString *t = pFontMgr->GetDialogString( it );
-                    m_itemFontElementListBox->Append( *t );
-                }
-
-                if( nFonts ) m_itemFontElementListBox->SetSelection( 0 );
-
-                itemFontElementStaticBoxSizer->Add( m_itemFontElementListBox, 0, wxEXPAND | wxALL,
-                        border_size );
-
-                wxButton* itemFontChooseButton = new wxButton( itemPanelFont, ID_BUTTONFONTCHOOSE,
-                        _("Choose Font..."), wxDefaultPosition, wxDefaultSize, 0 );
-                itemFontElementStaticBoxSizer->Add( itemFontChooseButton, 0, wxEXPAND | wxALL,
-                        border_size );
-
-                wxStaticBox* itemStyleStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
-                        _("Toolbar and Window Style") );
-                wxStaticBoxSizer* itemStyleStaticBoxSizer = new wxStaticBoxSizer(
-                        itemStyleStaticBox, wxVERTICAL );
-                m_itemBoxSizerFontPanel->Add( itemStyleStaticBoxSizer, 0, wxEXPAND | wxALL,
-                        border_size );
-
-                m_itemStyleListBox = new wxComboBox( itemPanelFont, ID_STYLESCOMBOBOX );
-
-                wxArrayPtrVoid styles = g_StyleManager->GetArrayOfStyles();
-                for( unsigned int i = 0; i < styles.Count(); i++ ) {
-                    ocpnStyle::Style* style = (ocpnStyle::Style*) ( styles.Item( i ) );
-                    m_itemStyleListBox->Append( style->name );
-                }
-                m_itemStyleListBox->SetValue( g_StyleManager->GetCurrentStyle()->name );
-                itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 0, wxEXPAND | wxALL,
-                        border_size );
-
-                //      Initialize Language tab
-                const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
-                if( pli ) {
-                    wxString clang = pli->Description;
-//                        m_itemLangListBox->SetValue(clang);
-                }
-
-                m_bVisitLang = true;
-
-                ::wxEndBusyCursor();
-
-                m_itemBoxSizerFontPanel->Layout();
-
-                DimeControl( m_itemFontElementListBox );
-                DimeControl( m_itemLangListBox );
+            int nFonts = pFontMgr->GetNumFonts();
+            for( int it = 0; it < nFonts; it++ ) {
+                wxString *t = pFontMgr->GetDialogString( it );
+                m_itemFontElementListBox->Append( *t );
             }
+
+            if( nFonts ) m_itemFontElementListBox->SetSelection( 0 );
+
+            itemFontElementStaticBoxSizer->Add( m_itemFontElementListBox, 0, wxEXPAND | wxALL,
+                    border_size );
+
+            wxButton* itemFontChooseButton = new wxButton( itemPanelFont, ID_BUTTONFONTCHOOSE,
+                    _("Choose Font..."), wxDefaultPosition, wxDefaultSize, 0 );
+            itemFontElementStaticBoxSizer->Add( itemFontChooseButton, 0, wxEXPAND | wxALL,
+                    border_size );
+
+            wxStaticBox* itemStyleStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
+                    _("Toolbar and Window Style") );
+            wxStaticBoxSizer* itemStyleStaticBoxSizer = new wxStaticBoxSizer( itemStyleStaticBox,
+                    wxVERTICAL );
+            m_itemBoxSizerFontPanel->Add( itemStyleStaticBoxSizer, 0, wxEXPAND | wxALL,
+                    border_size );
+
+            m_itemStyleListBox = new wxComboBox( itemPanelFont, ID_STYLESCOMBOBOX );
+
+            wxArrayPtrVoid styles = g_StyleManager->GetArrayOfStyles();
+            for( unsigned int i = 0; i < styles.Count(); i++ ) {
+                ocpnStyle::Style* style = (ocpnStyle::Style*) ( styles.Item( i ) );
+                m_itemStyleListBox->Append( style->name );
+            }
+            m_itemStyleListBox->SetValue( g_StyleManager->GetCurrentStyle()->name );
+            itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 0, wxEXPAND | wxALL, border_size );
+
+            //      Initialize Language tab
+            const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
+            if( pli ) {
+                wxString clang = pli->Description;
+//                        m_itemLangListBox->SetValue(clang);
+            }
+
+            m_bVisitLang = true;
+
+            ::wxEndBusyCursor();
+
+            m_itemBoxSizerFontPanel->Layout();
+
+            DimeControl( m_itemFontElementListBox );
+            DimeControl( m_itemLangListBox );
         }
+    }
+
+    else if( 7 == i ) {                    // 7 is the index of "Plugins" page
+        k_plugins = TOOLBAR_CHANGED;
+    }
 }
 
 void options::OnNMEASourceChoice( wxCommandEvent& event )
