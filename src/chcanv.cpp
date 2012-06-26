@@ -7543,6 +7543,11 @@ void ChartCanvas::MouseEvent ( wxMouseEvent& event )
 
         event.GetPosition ( &x, &y );
 
+#ifdef __WXMSW__
+        //TODO Test carefully in other platforms, remove ifdef....
+        if(event.ButtonDown() && !HasCapture()) CaptureMouse();
+        if(event.ButtonUp()   && HasCapture()) ReleaseMouse();
+#endif
         if( event.LeftDClick() && (cursor_region == CENTER)) {
             m_DoubleClickTimer->Start();
             singleClickEventIsValid = false;
