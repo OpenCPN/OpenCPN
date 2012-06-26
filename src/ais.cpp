@@ -1593,6 +1593,15 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                                                 else
                                                       AISPositionData.kSog = m_pLatestTargetData->SOG;
 
+                                                if((int)m_pLatestTargetData->HDG == 511)
+                                                      AISPositionData.kHdt = NAN;
+                                                else
+                                                    AISPositionData.kHdt = m_pLatestTargetData->HDG;
+
+                                                //  VDO messages do not contain variation or magnetic heading
+                                                AISPositionData.kVar = NAN;
+                                                AISPositionData.kHdm = NAN;
+
                                                 wxCommandEvent event( EVT_NMEA,  m_handler_id );
                                                 event.SetEventObject( (wxObject *)this );
                                                 event.SetExtraLong(EVT_NMEA_DIRECT);
