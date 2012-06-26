@@ -4,8 +4,8 @@ LangString Installer ${LANG_POLISH} "installer"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_POLISH} "uninstaller"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_POLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_Windows_Version ${LANG_POLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_POLISH} "The installer is already running."
@@ -348,3 +348,7 @@ LangString ^NameDA ${LANG_POLISH} "@CPACK_PACKAGE_NAME@ Wersja @CPACK_PACKAGE_VE
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_POLISH} "OpenCPN jest Wolnym Oprogramowaniem, którego kopiowanie, modyfikacja, instalacja i dalsze rozpowszechnianie jest dozwolone na warunkach Licencji GPL. $\r$\nUdanych rejsów!"
+
+;Needs to be translated:
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_POLISH} ""Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."

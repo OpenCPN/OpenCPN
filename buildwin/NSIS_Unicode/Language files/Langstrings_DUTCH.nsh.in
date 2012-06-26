@@ -4,8 +4,8 @@ LangString Installer ${LANG_DUTCH} "Installeren"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_DUTCH} "Verwijderen"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_DUTCH} "Uw Windowsversie wordt niet ondersteund!$\r$\nWindows NT of nieuwer is vereist."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_Windows_Version ${LANG_DUTCH} "Uw Windowsversie wordt niet ondersteund!$\r$\nWindows XP SP3 of nieuwer is vereist."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_DUTCH} "Bezig met installeren"
@@ -348,3 +348,7 @@ LangString ^NameDA ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ versie @CPACK_PACKAGE_VER
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_DUTCH} "OpenCPN is vrije software. U mag deze software legaal kopiëren, (her)installeren, aanpassen en (her)distribueren voor uzelf en voor uw vrienden, onder de voorwaarden van de GPL (GNU General Public License). Goede vaart!"
+
+;Needs to be translated:
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_DUTCH} ""Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
