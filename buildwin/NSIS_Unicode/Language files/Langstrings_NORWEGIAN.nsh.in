@@ -4,8 +4,8 @@ LangString Installer ${LANG_NORWEGIAN} "installatør"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_NORWEGIAN} "avinstaller"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_NORWEGIAN} "Din Windows versjon er ikke støttet (for gammel)!$\r$\nDu trenger minst Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_Windows_Version ${LANG_NORWEGIAN} "Din Windows versjon er ikke støttet (for gammel)!$\r$\nDu trenger minst Windows XP SP3."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_NORWEGIAN} "Installasjonen kjører allerede."
@@ -348,3 +348,6 @@ LangString ^NameDA ${LANG_NORWEGIAN} "@CPACK_PACKAGE_NAME@ Versjon @CPACK_PACKAG
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_NORWEGIAN} "OpenCPN er en gratis programvare. Du er oppfordret og lovlig berettiget til å kopiere, reinstallere, modifisere og redistribuere dette programmet for deg selv og dine venner i henhold til reglene gitt i GPL. Seil trygt!"
+
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_CZECH} "Din Windows XP service pakke er ikke støttet (den er for gammel)!$\r$\nDu må ha minst Windows XP SP3"
