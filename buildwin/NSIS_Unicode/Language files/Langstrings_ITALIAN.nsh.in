@@ -4,8 +4,8 @@ LangString Installer ${LANG_ITALIAN} "installatore"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_ITALIAN} "disinstallatore"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_ITALIAN} "La versione di Windows non è supportata (troppo vecchia...)!$\r$\nE' necessaria almeno la versione Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_Windows_Version ${LANG_ITALIAN} "La versione di Windows non è supportata (troppo vecchia...)!$\r$\nE' necessaria almeno la versione Windows XP SP3."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_ITALIAN} "L'installatore è già in esecuzione."
@@ -348,3 +348,7 @@ LangString ^NameDA ${LANG_ITALIAN} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_ITALIAN} "OpenCPN è un software libero. Sei incoraggiato, ed hai legalmente diritto, a copiare, installare, modificare e ridistribuire questo programma per te e per i tuoi amici nei termini della licenza GPL. Buon Vento!"
+
+;Needs to be translated:
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_ITALIAN} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."

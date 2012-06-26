@@ -674,6 +674,10 @@ CMake variables
 	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
 	!insertmacro MUI_LANGUAGE "TradChinese"
 	!include /NONFATAL "Langstrings_CHINESETW.nsh"
+	;!insertmacro MUI_LANGUAGE "Turkish"
+	;!include /NONFATAL "Langstrings_TURKISH.nsh"
+	;!insertmacro MUI_LANGUAGE "Hungarian"
+	;!include /NONFATAL "Langstrings_HUNGARIAN.nsh"
 
 ;-------------------------------- 
 ;# Reserve Files
@@ -1100,6 +1104,10 @@ Function myGuiInit
 			StrCpy $LANG_NAME "Italiano"
 			StrCpy $REG_LANG "it_IT"
 			${Break}
+		${Case} ${LANG_HUNGARIAN}
+            		StrCpy $LANG_NAME "Magyar"
+            		StrCpy $REG_LANG "hu_HU"
+            		${Break}
 		${Case} ${LANG_DUTCH}
 			StrCpy $LANG_NAME "Nederlandse"
 			StrCpy $REG_LANG "nl_NL"
@@ -1132,10 +1140,14 @@ Function myGuiInit
 			StrCpy $LANG_NAME "Suomalainen"
 			StrCpy $REG_LANG "fi_FI"
 			${Break}
-        ${Case} ${LANG_TRADCHINESE}
-            StrCpy $LANG_NAME "正體中文"
-            StrCpy $REG_LANG "zh_TW"
-            ${Break}
+        	${Case} ${LANG_TRADCHINESE}
+            		StrCpy $LANG_NAME "正體中文"
+            		StrCpy $REG_LANG "zh_TW"
+            		${Break}
+		${Case} ${LANG_TURKISH}
+            		StrCpy $LANG_NAME "Türkçe"
+            		StrCpy $REG_LANG "tr_TR"
+            		${Break}
 		${Default}
 			${Break}
 	${EndSwitch}
@@ -4238,6 +4250,8 @@ Var explArrCount
 	LicenseLangString license ${LANG_FINNISH} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_NORWEGIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_TRADCHINESE} "@CPACK_RESOURCE_FILE_LICENSE@"
+	;LicenseLangString license ${LANG_TURKISH} "@CPACK_RESOURCE_FILE_LICENSE@"
+        ;LicenseLangString license ${LANG_HUNGARIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecGrpResetConfig} $(SecGrpResetConfig_Desc)
