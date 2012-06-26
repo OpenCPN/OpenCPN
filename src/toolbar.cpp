@@ -1148,6 +1148,8 @@ void ocpnToolBarSimple::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 
 void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
 {
+    if( !gFrame->IsActive() ) return;
+
     if( m_btooltip_show && IsShown() && m_pToolTipWin && ( !m_pToolTipWin->IsShown() ) ) {
         if( m_last_ro_tool ) {
             wxString s = m_last_ro_tool->GetShortHelp();
