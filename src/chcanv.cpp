@@ -729,6 +729,7 @@ public:
     QuiltPatch *GetCurrentPatch();
     bool IsChartInQuilt( ChartBase *pc );
     bool IsQuiltVector( void );
+    wxRect GetHiliteBox(ViewPort &vp);
 
 private:
     wxRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
@@ -1411,6 +1412,48 @@ bool Quilt::IsChartSmallestScale( int dbIndex )
         }
     }
     return ( dbIndex == target_dbindex );
+}
+
+wxRect Quilt::GetHiliteBox( ViewPort &vp )
+{
+    wxRect box( 0, 0, 0, 0 );
+    if( m_nHiLiteIndex >= 0 ) {
+        // Walk the PatchList, looking for the target hilite index
+        for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
+            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            QuiltPatch *piqp = pcinode->GetData();
+            if( ( m_nHiLiteIndex == piqp->dbIndex ) && ( piqp->b_Valid ) ) // found it
+                    {
+                box = piqp->ActiveRegion.GetBox();
+                break;
+            }
+        }
+
+        // If not in the patchlist, look in the full chartbar
+        if( box.IsEmpty() ) {
+            for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+                QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+                if( m_nHiLiteIndex == pqc->dbIndex ) {
+                    const ChartTableEntry &cte = ChartData->GetChartTableEntry( m_nHiLiteIndex );
+                    wxRegion chart_region = GetChartQuiltRegion( cte, vp );
+                    if( !chart_region.Empty() ) {
+                        // Do not highlite fully eclipsed charts
+                        bool b_eclipsed = false;
+                        for( unsigned int ir = 0; ir < m_eclipsed_stack_array.GetCount(); ir++ ) {
+                            if( m_nHiLiteIndex == m_eclipsed_stack_array.Item( ir ) ) {
+                                b_eclipsed = true;
+                                break;
+                            }
+                        }
+
+                        if( !b_eclipsed ) box = chart_region.GetBox();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return box;
 }
 
 bool Quilt::Compose( const ViewPort &vp_in )
@@ -11978,6 +12021,47 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
             }
         }
 
+        // Hilite rollover patch
+        wxRect hibox = cc1->m_pQuilt->GetHiliteBox( vp );
+
+        if( !hibox.IsEmpty() ) {
+            glPushAttrib( GL_COLOR_BUFFER_BIT );
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+            int x = hibox.x;
+            int y = hibox.y;
+            int w = hibox.width;
+            int h = hibox.height;
+
+            double hitrans;
+            switch( global_color_scheme ){
+                case GLOBAL_COLOR_SCHEME_DAY:
+                    hitrans = .4;
+                    break;
+                case GLOBAL_COLOR_SCHEME_DUSK:
+                    hitrans = .2;
+                    break;
+                case GLOBAL_COLOR_SCHEME_NIGHT:
+                    hitrans = .1;
+                    break;
+                default:
+                    hitrans = .4;
+                    break;
+            }
+
+            glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+
+            glBegin( GL_QUADS );
+            glVertex2i( x, y );
+            glVertex2i( x + w, y );
+            glVertex2i( x + w, y + h );
+            glVertex2i( x, y + h );
+            glEnd();
+
+            glDisable( GL_BLEND );
+            glPopAttrib();
+        }
         cc1->m_pQuilt->SetRenderedVP( vp );
     }
 }
