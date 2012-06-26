@@ -7008,6 +7008,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             int noAttr = 0;
             attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
 
+            bool inDepthRange = false;
+
             while( *curr_att )
             {
                   //    Attribute name
@@ -7031,15 +7033,19 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                   else {
                         if( curAttrName == _T("DRVAL1") ) {
                               attribStr << _T("<tr><td><font size=-1>");
+                              inDepthRange = true;
                         }
                         else if( curAttrName == _T("DRVAL2") ) {
                               attribStr << _T(" - ");
+                              inDepthRange = false;
                         }
                         else {
-                              attribStr
-                                          << _T("<tr><td valign=top><font size=-2>") << curAttrName;
-                              attribStr
-                                          << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
+                            if( inDepthRange ) {
+                                attribStr << _T("</font></td></tr>\n");
+                                inDepthRange = false;
+                            }
+                            attribStr << _T("<tr><td valign=top><font size=-2>") << curAttrName;
+                            attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                         }
                   }
 
