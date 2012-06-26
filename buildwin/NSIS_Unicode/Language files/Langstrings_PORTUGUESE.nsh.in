@@ -351,4 +351,4 @@ LangString License_Message ${LANG_PORTUGUESE} "OpenCPN is software libre. You ar
 
 ;Needs to be translated:
 #LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_XP_SP_Version ${LANG_PORTUGUESE} ""Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_PORTUGUESE} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
