@@ -163,5 +163,30 @@ private:
       void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 };
 
+class DashboardInstrument_FromOwnship : public DashboardInstrument
+{
+public:
+      DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_PLA, int cap_flag2=OCPN_DBP_STC_PLO,int cap_flag3=OCPN_DBP_STC_LAT,int cap_flag4=OCPN_DBP_STC_LON);
+      ~DashboardInstrument_FromOwnship(){}
+
+      void SetInstrumentWidth(int width);
+      void SetData(int st, double data, wxString unit);
+	  
+protected:
+      wxString          m_data1;
+      wxString          m_data2;
+      double            c_lat;
+      double            c_lon;
+      double            s_lat;
+      double            s_lon;
+      int               m_cap_flag1;
+      int               m_cap_flag2;
+      int               m_cap_flag3;
+      int               m_cap_flag4;
+      int               m_DataHeight;
+
+      void Draw(wxBufferedDC* dc);
+};
+
 #endif
 

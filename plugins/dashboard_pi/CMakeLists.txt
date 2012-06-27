@@ -76,6 +76,13 @@ FIND_PACKAGE(Gettext REQUIRED)
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
+SET(SRC_UTILS
+            src/cutil.h
+            src/georef.h
+            src/cutil.c
+            src/georef.c
+
+ 	)
 
 SET(SRC_DASHBOARD
             src/dashboard_pi.h
@@ -163,7 +170,7 @@ SET(SRC_NMEA0183
 	)
 INCLUDE_DIRECTORIES(src/nmea0183)
 
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} ${SRC_UTILS} )
 
 IF(WIN32)
   SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")

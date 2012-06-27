@@ -86,6 +86,7 @@ enum
       ID_DBP_I_SAT,
       ID_DBP_D_GPS,
       ID_DBP_I_PTR,
+      ID_DBP_I_FOS,
       ID_DBP_I_CLK,
       ID_DBP_I_SUN,
       ID_DBP_I_MON
@@ -139,6 +140,8 @@ wxString getInstrumentCaption(unsigned int id)
             return _("GPS status");
       case ID_DBP_I_PTR:
             return _("Cursor");
+      case ID_DBP_I_FOS:
+            return _("From Ownship");
       case ID_DBP_I_CLK:
             return _("Clock");
       case ID_DBP_I_SUN:
@@ -1743,6 +1746,9 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
             case ID_DBP_I_PTR:
                   instrument = new DashboardInstrument_Position(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO);
                   break;
+            case ID_DBP_I_FOS:
+                   instrument = new DashboardInstrument_FromOwnship(this, wxID_ANY, getInstrumentCaption(id));
+                   break;
             case ID_DBP_I_CLK:
                   instrument = new DashboardInstrument_Clock(this, wxID_ANY, getInstrumentCaption(id));
                   break;
