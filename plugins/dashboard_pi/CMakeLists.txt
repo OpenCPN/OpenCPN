@@ -77,11 +77,8 @@ FIND_PACKAGE(Gettext REQUIRED)
 # header files and cpp/c files and CMake will sort them out
 
 SET(SRC_UTILS
-            src/cutil.h
             src/georef.h
-            src/cutil.c
             src/georef.c
-
  	)
 
 SET(SRC_DASHBOARD
