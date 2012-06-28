@@ -556,6 +556,13 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                                                 ppi->RenderOverlay(*pdc, &pivp);
                                           break;
                                     }
+                                    case 108:
+                                    {
+                                          opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                ppi->RenderOverlay(*pdc, &pivp);
+                                          break;
+                                    }
 
                                     default:
                                           break;
@@ -592,6 +599,13 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                                     case 107:
                                     {
                                           opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
+                                          if(ppi)
+                                                b_rendered = ppi->RenderOverlay(mdc, &pivp);
+                                          break;
+                                    }
+                                    case 108:
+                                    {
+                                          opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                                           if(ppi)
                                                 b_rendered = ppi->RenderOverlay(mdc, &pivp);
                                           break;
