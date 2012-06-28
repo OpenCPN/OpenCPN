@@ -10,6 +10,20 @@
 CFLAGS=-Wall
 CXXFLAGS=-Wall -O3
 
+# comment out the above and uncomment the following to enable hardening
+#include /usr/share/hardening-includes/hardening.make
+#DEB_CFLAGS_MAINT_APPEND=-O3
+#CFLAGS=$(shell dpkg-buildflags --get CFLAGS)
+#CPPFLAGS=$(shell dpkg-buildflags --get CPPFLAGS)
+#CXXFLAGS=$(shell dpkg-buildflags --get CXXFLAGS)
+#LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
+#CFLAGS+=$(HARDENING_CFLAGS)
+#CXXFLAGS+=$(HARDENING_CXXFLAGS)
+#LDFLAGS+=$(HARDENING_LDFLAGS)
+#CXXFLAGS+=-fPIC
+#export DEB_CFLAGS_MAINT_APPEND CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+
+
 %:
 	dh $@ --parallel
 
