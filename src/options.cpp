@@ -329,6 +329,7 @@ void options::Init()
     pUpdateCheckBox = NULL;
     k_charts = 0;
     k_vectorcharts = 0;
+    k_plugins = 0;
 
     itemStaticBoxSizer11 = NULL;
     pDirCtl = NULL;;
