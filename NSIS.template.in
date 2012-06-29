@@ -674,8 +674,8 @@ CMake variables
 	!include /NONFATAL "Langstrings_NORWEGIAN.nsh"
 	!insertmacro MUI_LANGUAGE "TradChinese"
 	!include /NONFATAL "Langstrings_CHINESETW.nsh"
-	;!insertmacro MUI_LANGUAGE "Turkish"
-	;!include /NONFATAL "Langstrings_TURKISH.nsh"
+	!insertmacro MUI_LANGUAGE "Turkish"
+	!include /NONFATAL "Langstrings_TURKISH.nsh"
 	;!insertmacro MUI_LANGUAGE "Hungarian"
 	;!include /NONFATAL "Langstrings_HUNGARIAN.nsh"
 
@@ -4250,7 +4250,7 @@ Var explArrCount
 	LicenseLangString license ${LANG_FINNISH} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_NORWEGIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 	LicenseLangString license ${LANG_TRADCHINESE} "@CPACK_RESOURCE_FILE_LICENSE@"
-	;LicenseLangString license ${LANG_TURKISH} "@CPACK_RESOURCE_FILE_LICENSE@"
+	LicenseLangString license ${LANG_TURKISH} "@CPACK_RESOURCE_FILE_LICENSE@"
         ;LicenseLangString license ${LANG_HUNGARIAN} "@CPACK_RESOURCE_FILE_LICENSE@"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
