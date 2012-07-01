@@ -3161,6 +3161,11 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
                   return Region;
             }
 
+            if(_IN == chart_box.Intersect((wxBoundingBox&)vpBBox))
+            {
+                  return Region;
+            }
+
             //    The ViewPort and the chart region overlap in some way....
             //    Create the intersection of the two bboxes
             //    Boxes must be same phase
