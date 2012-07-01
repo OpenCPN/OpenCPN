@@ -196,6 +196,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     //    Set initial "Dock" parameters
     m_dock_x = 0;
     m_dock_y = 0;
+    m_block = false;
 
     Hide();
 }
@@ -255,6 +256,8 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
 void ocpnFloatingToolbarDialog::RePosition()
 {
+    if(m_block) return;
+
     if( m_pparent && m_ptoolbar ) {
         wxSize cs = m_pparent->GetClientSize();
         if( -1 == m_dock_x ) m_position.x = 0;

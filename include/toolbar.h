@@ -325,7 +325,9 @@ public:
       void ToggleOrientation();
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
       void RePosition();
+      void LockPosition(bool lock){ m_block = lock; }
       void SetColorScheme( ColorScheme cs );
+
       void SetGeometry();
       long GetOrient() {
             return m_orient;
@@ -356,4 +358,5 @@ private:
       int m_dock_x;
       int m_dock_y;
       ocpnStyle::Style* m_style;
+      bool m_block;
 };

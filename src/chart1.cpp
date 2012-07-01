@@ -1595,6 +1595,7 @@ bool MyApp::OnInit()
 
     g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog( cc1,
             wxPoint( g_toolbar_x, g_toolbar_y ), g_toolbar_orient );
+    g_FloatingToolbarDialog->LockPosition(true);
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
 
@@ -1885,6 +1886,8 @@ bool MyApp::OnInit()
     }
 
     gFrame->DoChartUpdate();
+
+    g_FloatingToolbarDialog->LockPosition(false);
 
     gFrame->RequestNewToolbar();
 
