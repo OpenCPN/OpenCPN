@@ -12087,7 +12087,7 @@ void glChartCanvas::render()
     m_b_mem_crunch = false;
     int mem_total, mem_used;
     GetMemoryStatus( &mem_total, &mem_used );
-    if( mem_used > g_memCacheLimit * 9 / 10 ) m_b_mem_crunch = true;
+    if(mem_used > g_memCacheLimit * 8 / 10) m_b_mem_crunch = true;
 
     SetCurrent();
     wxPaintDC( this );
