@@ -859,7 +859,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             void RefreshFadeTimer();
             int GetDockX(){ return m_dock_x; }
             int GetDockY(){ return m_dock_y; }
-
+            void LockPosition(bool lock){ m_block = lock; }
       private:
             void DoFade(int value);
 
@@ -877,6 +877,7 @@ class ocpnFloatingToolbarDialog: public wxDialog
             wxPoint           m_position;
             int               m_dock_x;
             int               m_dock_y;
+            bool              m_block;
 };
 
 
@@ -1370,6 +1371,8 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
 void ocpnFloatingToolbarDialog::RePosition()
 {
+      if(m_block) return;
+
       if(m_pparent && m_ptoolbar)
       {
             wxSize cs = m_pparent->GetClientSize();
@@ -2630,6 +2633,7 @@ bool MyApp::OnInit()
         g_toolbar_y = wxMin(g_toolbar_y, ch);
 
         g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog(cc1, wxPoint(g_toolbar_x, g_toolbar_y), g_toolbar_orient);
+        g_FloatingToolbarDialog->LockPosition(true);
 
         gFrame->SetAndApplyColorScheme(global_color_scheme);
 
@@ -2946,6 +2950,7 @@ bool MyApp::OnInit()
 
         gFrame->DoChartUpdate();
 
+        g_FloatingToolbarDialog->LockPosition(false);
         gFrame->RequestNewToolbar();
 
 //      Start up the ticker....
