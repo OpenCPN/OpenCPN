@@ -3823,11 +3823,11 @@ int MyFrame::DoOptionsDialog()
 
     if( lastPage >= 0 ) pSetDlg->itemNotebook4->SetSelection( lastPage );
 
-    g_FloatingToolbarDialog->DisableTooltips();
+    if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->DisableTooltips();
 
     int rr = pSetDlg->ShowModal();
 
-    g_FloatingToolbarDialog->EnableTooltips();
+    if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->EnableTooltips();
 
     lastPage = pSetDlg->lastPage;
 

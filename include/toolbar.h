@@ -318,8 +318,8 @@ public:
       void Surface();
       void HideTooltip();
       void ShowTooltips();
-      void EnableTooltips() { m_ptoolbar->EnableTooltips(); }
-      void DisableTooltips() { m_ptoolbar->DisableTooltips(); }
+      void EnableTooltips() { if(m_ptoolbar) m_ptoolbar->EnableTooltips(); }
+      void DisableTooltips() { if(m_ptoolbar) m_ptoolbar->DisableTooltips(); }
 
       void DestroyToolBar();
       void ToggleOrientation();
