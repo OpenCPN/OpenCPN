@@ -1648,6 +1648,9 @@ bool MyApp::OnInit()
 
     if( g_bframemax ) gFrame->Maximize( true );
 
+        //  Yield to pick up the OnSize() calls that result from Maximize()
+        Yield();
+
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
