@@ -198,7 +198,12 @@ void ChartDB::PurgeCacheUnusedCharts(bool b_force)
           //    Check memory status to see if above limit
             int mem_total, mem_used;
             GetMemoryStatus(&mem_total, &mem_used);
-            if(((mem_used > g_memCacheLimit) || b_force) && !m_b_locked)
+            int mem_limit = g_memCacheLimit * 8 / 10;
+#ifdef __WXMSW__
+            if(g_bopengl)
+                mem_limit = g_memCacheLimit * 5 / 10;
+#endif
+            if(((mem_used > mem_limit) || b_force) && !m_b_locked)
             {
 //                  printf(" ChartdB::PurgeCacheUnusedCharts Before--- Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
                   unsigned int i = 0;
