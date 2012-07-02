@@ -421,6 +421,9 @@ wxProgressDialog          *s_ProgDialog;
 
 S57QueryDialog            *g_pObjectQueryDialog;
 
+wxArrayString             TideCurrentDataSet;
+wxString                  g_TCData_Dir;
+
 //-----------------------------------------------------------------------------------------------------
 //                        OCP_NMEA_Thread Static data store
 //-----------------------------------------------------------------------------------------------------
@@ -1365,7 +1368,7 @@ bool MyApp::OnInit()
     //  as allowing OpenCPN a percentage of available physical memory
 #ifdef __WXMSW__
     if( 0 == g_memCacheLimit ) {
-        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = (int) ( g_mem_total * 0.5 );
+        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = wxMin((int) ( g_mem_total * 0.5 ), 1024);
     }
 #endif
 
@@ -3826,6 +3829,8 @@ int MyFrame::DoOptionsDialog()
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->DisableTooltips();
 
     int rr = pSetDlg->ShowModal();
+    if(rr == -1)
+        int yp =5;
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->EnableTooltips();
 

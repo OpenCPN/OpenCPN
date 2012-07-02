@@ -96,7 +96,7 @@ enum {
         ID_DRAGGINGCHECKBOX,
         ID_ZTCCHECKBOX,
         ID_PRESERVECHECKBOX,
-	  ID_BELLSCHECKBOX,             // pjotrc 2010.01.31
+	    ID_BELLSCHECKBOX,
         ID_AISALERTDIALOG,
         ID_AISALERTAUDIO,
         ID_AISALERTSELECTSOUND,
@@ -134,7 +134,11 @@ enum {
         ID_GROUPREMOVEDIR,
         ID_GROUPNEWGROUP,
         ID_GROUPDELETEGROUP,
-		ID_STYLESCOMBOBOX
+		ID_STYLESCOMBOBOX,
+		ID_TIDESELECTED,
+		ID_BUTTONTCDATA,
+		ID_TCDATAADD,
+		ID_TCDATADEL
 };
 
 //    Define an int bit field for dialog return value
@@ -215,6 +219,7 @@ public:
     void OnButtonTestSound(wxCommandEvent& event);
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnButtonGroups(wxCommandEvent& event);
+    void OnButtonTCData(wxCommandEvent& event);
     void OnCharHook( wxKeyEvent& event );
 
     void UpdateWorkArrayFromTextCtl();
@@ -455,6 +460,44 @@ class groups_dialog: public wxDialog
             ArrayOfDirCtrls   m_DirCtrlArray;
 
             ChartGroupArray *m_pGroupArray;
+};
+
+class tidedata_dialog: public wxDialog
+{
+      DECLARE_DYNAMIC_CLASS( tidedata_dialog )
+                  DECLARE_EVENT_TABLE()
+
+      public:
+            tidedata_dialog( );
+            tidedata_dialog( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Tide/Current Data Selector"),
+                    const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE);
+
+            ~tidedata_dialog( );
+
+            bool Create( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Tide/Current Data Selector"),
+                         const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE,
+                         long style = SYMBOL_OPTIONS_STYLE);
+
+            void Init();
+            void CreateControls();
+
+            void OnInsertTideDataLocation(wxCommandEvent &event);
+            void OnRemoveTideDataLocation(wxCommandEvent &event);
+            void OnOK(wxCommandEvent &event);
+
+      private:
+
+            MyFrame      *pParent;
+
+            wxButton    *m_OKButton;
+            wxButton    *m_CancelButton;
+            wxButton    *m_pinsertButton;
+            wxButton    *m_premoveButton;
+
+
+            wxGenericDirCtrl *m_pDirCtl;
+            wxListBox   *m_DataSelected;
+
 };
 
 
