@@ -747,7 +747,7 @@ int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *p
       PlugInMenuItemContainer *pmic = new PlugInMenuItemContainer;
       pmic->pmenu_item = pitem;
       pmic->m_pplugin = pplugin;
-      pmic->id = m_plugin_menu_item_id_next;
+      pmic->id = pitem->GetId()==wxID_SEPARATOR?wxID_SEPARATOR:m_plugin_menu_item_id_next;
       pmic->b_viz = true;
       pmic->b_grey = false;
 
