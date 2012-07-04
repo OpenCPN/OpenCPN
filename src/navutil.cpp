@@ -2638,7 +2638,8 @@ int MyConfig::LoadMyConfig( int iteration )
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
 
-    if( mem_limit > 0 ) g_memCacheLimit = mem_limit * 1024;       // convert to MBytes
+    if(mem_limit > 0)
+        g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );

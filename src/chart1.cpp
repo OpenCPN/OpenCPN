@@ -1361,12 +1361,14 @@ bool MyApp::OnInit()
 // Set default color scheme
     global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-    //  On Windows platforms, establish a default cache managment policy
-    //  as allowing OpenCPN a percentage of available physical memory
+        //  On Windows platforms, establish a default cache managment policy
+        //  as allowing OpenCPN a percentage of available physical memory,
+        //  not to exceed 1 GB
 #ifdef __WXMSW__
     if( 0 == g_memCacheLimit ) {
         if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = (int) ( g_mem_total * 0.5 );
     }
+        g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024);  // math in kBytes
 #endif
 
 //      Establish location and name of chart database
