@@ -12123,12 +12123,12 @@ void glChartCanvas::render()
         glDisable( GL_STENCIL_TEST );
     }
 
-    //  Delete any textures known to the GPU that
-    //  belong to charts which will not be used in this render
-    //  This is done chart-by-chart...later we will scrub for unused textures
-    //  that belong to charts which ARE used in this render, if we need to....
+        //  Delete any textures known to the GPU that
+        //  belong to charts which will not be used in this render
+        //  This is done chart-by-chart...later we will scrub for unused textures
+        //  that belong to charts which ARE used in this render, if we need to....
 
-    if( m_ntex > m_tex_max_res ) {
+    if((m_ntex > m_tex_max_res) || m_b_mem_crunch ) {
         ChartPointerHashType::iterator it0;
         for( it0 = m_chart_hash.begin(); it0 != m_chart_hash.end(); ++it0 ) {
             ChartBaseBSB *pc = (ChartBaseBSB *) it0->first;
@@ -12167,6 +12167,43 @@ void glChartCanvas::render()
                         }
                     }
                 }
+               }
+               else      // not quilted
+               {
+                             if( Current_Ch != pc )
+                             {
+                                   ChartTextureHashType *pTextureHash = m_chart_hash[pc];
+
+                                 // iterate over all the textures presently loaded
+                                 // and delete the OpenGL texture from the GPU
+                                 // but keep the private texture descriptor for now
+
+                                   ChartTextureHashType::iterator it = pTextureHash->begin();
+                                   while( it != pTextureHash->end())
+                                   {
+                                         glTextureDescriptor *ptd = it->second;
+
+                                         if(ptd->tex_name > 0)
+                                         {
+                                               if(g_bDebugOGL) printf("glDeleteTextures in Unused chart...()\n");
+                                               glDeleteTextures( 1, &ptd->tex_name );
+                                               m_ntex--;
+
+                                               ptd->tex_name = 0;
+
+                                               //    Delete the chart data?
+                                               if(m_b_mem_crunch)
+                                               {
+                                                     pTextureHash->erase(it);
+                                                     delete ptd;
+                                                     it = pTextureHash->begin();    // reset the iterator
+                                               }
+
+                                         }
+                                         else
+                                               ++it;
+                                   }
+                             }
             }
         }
     }

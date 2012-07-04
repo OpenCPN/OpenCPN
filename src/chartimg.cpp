@@ -1014,7 +1014,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                               if(!bp_set)
                               {
-                                    wxString msg(_("   Chart projection is UNKNOWN, assuming Mercator: "));
+                                    wxString msg(_T("   Chart projection is UNKNOWN, assuming embedded georef: "));
+                                    m_projection = PROJECTION_UNKNOWN;
                                     msg.Append(m_FullPath);
                                     wxLogMessage(msg);
                               }
