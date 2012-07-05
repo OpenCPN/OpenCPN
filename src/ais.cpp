@@ -527,6 +527,7 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
     ShipNameExtension[0] = 0;
+	b_show_AIS_CPA = false;             //TR 2012.06.28: Show AIS-CPA
 
     SOG = 555.;
     COG = 666.;
@@ -1224,7 +1225,10 @@ wxString AIS_Target_Data::Get_class_string(bool b_short)
             return b_short ? _("Unk") : _("Unknown");
       }
 }
-
+void AIS_Target_Data::Toggle_AIS_CPA(void) //TR 2012.06.28: Show AIS-CPA
+{
+	b_show_AIS_CPA=!b_show_AIS_CPA?true:false; //TR 2012.06.28: Show AIS-CPA :simply toggle b_show_AIS_CPA 
+}
 
 //---------------------------------------------------------------------------------
 //
