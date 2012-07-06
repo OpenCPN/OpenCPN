@@ -82,7 +82,10 @@ enum
     OCPN_DBP_STC_PLA = 1 << 19, // Cursor latitude
     OCPN_DBP_STC_PLO = 1 << 20, // Cursor longitude
     OCPN_DBP_STC_CLK = 1 << 21,
-    OCPN_DBP_STC_MON = 1 << 22
+    OCPN_DBP_STC_MON = 1 << 22,
+    OCPN_DBP_STC_MET_AIT = 1 << 23, //Meteo instruments AirTemp
+    OCPN_DBP_STC_MET_AIP = 1 << 24, //Meteo instruments AirPressure
+    OCPN_DBP_STC_MET_AIS = 1 << 25 //Meteo instruments Windspeed
 };
 
 class DashboardInstrument : public wxWindow

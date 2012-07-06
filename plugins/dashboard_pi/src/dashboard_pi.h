@@ -59,6 +59,7 @@
 #include "gps.h"
 #include "depth.h"
 #include "clock.h"
+#include "meteo.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;
@@ -156,7 +157,7 @@ private:
       int               m_hide_id;
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
-      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriWindR, mPriWindT, mPriDepth;
+      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriWindR, mPriWindT, mPriDepth, mPriMeteo;
       double               mVar;
       // FFU
       double               mSatsInView;

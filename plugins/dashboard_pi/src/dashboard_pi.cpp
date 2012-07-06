@@ -25,7 +25,6 @@
  ***************************************************************************
  */
 
-
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -88,7 +87,8 @@ enum
       ID_DBP_I_PTR,
       ID_DBP_I_CLK,
       ID_DBP_I_SUN,
-      ID_DBP_I_MON
+      ID_DBP_I_MON,
+      ID_DBP_I_MET
 };
 
 wxString getInstrumentCaption(unsigned int id)
@@ -145,6 +145,8 @@ wxString getInstrumentCaption(unsigned int id)
             return _("Sunrise/Sunset");
       case ID_DBP_I_MON:
             return _("Moon phase");
+      case ID_DBP_I_MET:
+            return _("Meteo");	    
       }
       return _T("");
 }
@@ -169,7 +171,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_I_PTR:
       case ID_DBP_I_CLK:
       case ID_DBP_I_SUN:
-      case ID_DBP_I_MON:
+      case ID_DBP_I_MON:      
             item.SetImage(0);
             break;
       case ID_DBP_D_SOG:
@@ -182,6 +184,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_D_VMG:
       case ID_DBP_D_RSA:
       case ID_DBP_D_GPS:
+      case ID_DBP_I_MET:
             item.SetImage(1);
             break;
       }
@@ -226,6 +229,7 @@ int dashboard_pi::Init(void)
       mPriWindR = 99; // Relative wind
       mPriWindT = 99; // True wind
       mPriDepth = 99;
+      mPriMeteo = 99; 
 
       g_pFontTitle = new wxFont( 10, wxFONTFAMILY_ROMAN, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
       g_pFontData = new wxFont( 14, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -394,8 +398,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
             }
 
             else if(m_NMEA0183.LastSentenceIDReceived == _T("DPT"))
-            {
-                  if(m_NMEA0183.Parse())
+            { 
+		if(m_NMEA0183.Parse())
                   {
                         if (mPriDepth >= 2)
                         {
@@ -801,6 +805,20 @@ Calculated wind angle relative to the vessel, 0 to 180o, left/right L/R of vesse
                               dt.Printf(_T("%4d%02d%02d"), m_NMEA0183.Zda.Year, m_NMEA0183.Zda.Month, m_NMEA0183.Zda.Day);
                               dt.Append(m_NMEA0183.Zda.UTCTime);
                               mUTCDateTime.ParseFormat(dt.c_str(), _T("%Y%m%d%H%M%S"));
+                        }
+                  }
+            }
+            else if(m_NMEA0183.LastSentenceIDReceived == _T("MDA"))
+            {
+                  if(m_NMEA0183.Parse())
+                  {
+                        if (mPriMeteo >= 2)
+                        {
+			    mPriMeteo = 2;
+
+			    SendSentenceToAllInstruments(OCPN_DBP_STC_MET_AIT, m_NMEA0183.Mda.AirTemp, _T("°C"));
+			    SendSentenceToAllInstruments(OCPN_DBP_STC_MET_AIP, m_NMEA0183.Mda.BarometricPressBar, _T("Bar"));			    
+			    // SendSentenceToAllInstruments(OCPN_DBP_STC_MET, m_NMEA0183.Vwt.WindSpeedKnots, _T("Kts"));
                         }
                   }
             }
@@ -1559,7 +1577,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizer01->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
-      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_MON; i++)
+      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_MET; i++)
       {
             wxListItem item;
             getListItemForInstrument(item, i);
@@ -1751,6 +1769,9 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   break;
             case ID_DBP_I_MON:
                   instrument = new DashboardInstrument_Moon(this, wxID_ANY, getInstrumentCaption(id));
+                  break;
+            case ID_DBP_I_MET:
+                  instrument = new DashboardInstrument_Meteo(this, wxID_ANY, getInstrumentCaption(id));
                   break;
             }
             if(instrument)
