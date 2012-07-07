@@ -2204,6 +2204,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= m_groups_changed;
     iret |= k_plugins;
 
+    itemNotebook4->ChangeSelection(0);
     EndModal(iret);
 
 }
@@ -2256,6 +2257,7 @@ void options::OnDebugcheckbox1Click( wxCommandEvent& event )
 
 void options::OnCancelClick( wxCommandEvent& event )
 {
+      itemNotebook4->ChangeSelection(0);
       EndModal(0);
 }
 
