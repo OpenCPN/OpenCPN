@@ -13757,9 +13757,15 @@ void glChartCanvas::render()
 //    Render the WVSChart
 
         wxRegion CValidRegion;
-        if(!VPoint.b_quilt)
+        if(!VPoint.b_quilt) {
               // Make a region covering the current chart on the canvas
-              Current_Ch->GetValidCanvasRegion ( VPoint, &CValidRegion );
+              // growing the box to account for rotation
+              ViewPort svp = VPoint;
+              svp.pix_width = svp.rv_rect.width;
+              svp.pix_height = svp.rv_rect.height;
+              
+              Current_Ch->GetValidCanvasRegion ( svp, &CValidRegion );
+        }
         else
               CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
 
