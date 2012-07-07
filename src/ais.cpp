@@ -1578,6 +1578,7 @@ void AIS_Decoder::OnEvtAIS(OCPN_AISEvent& event)
                                           case 1:
                                           case 2:
                                           case 3:
+                                          case 18:
                                           {
                                                 AISPositionData.kLat = m_pLatestTargetData->Lat;
                                                 AISPositionData.kLon = m_pLatestTargetData->Lon;
