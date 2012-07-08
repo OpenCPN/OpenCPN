@@ -296,6 +296,8 @@ bool                      g_bSatValid;
 bool                      g_bDebugCM93;
 bool                      g_bDebugS57;
 bool                      g_bGarminHost;
+bool                      g_bmanualMagneticVariation;//TR, 06.06.2012: set manual magnetic variation
+double                    g_MagneticVariation;       //TR, 06.06.2012: set manual magnetic variation
 
 bool                      g_bfilter_cogsog;
 int                       g_COGFilterSec;
@@ -6410,7 +6412,15 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                                 else
                                     if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) gVar =
                                             -m_NMEA0183.Hdg.MagneticVariationDegrees;
-                            }
+                            } else { //TR, 06.06.2012: set manual magnetic variation: complete else statement
+										/* Important : this is only used if the magnetic variation is not available via NMEA.
+										               Due to a bugfix in 3.0.0, you don't have the HDG ("drift angle indicator") anymore without magnetic variation,
+													   As this is the case with my setup (Garmin GPS152), and I'm really using the drift angle on my sailing vessel,
+													   I implemented this static workaround;
+										*/
+                                     if(g_bmanualMagneticVariation) //TR, 06.06.2012: set manual magnetic variation: if tick is set (TRUE), then use static value from GPS options tab
+                                        gVar = g_MagneticVariation; //TR, 06.06.2012: set manual magnetic variation
+							}
 
                             g_bHDxValid = true;
                             gHDx_Watchdog = gps_watchdog_timeout_ticks;
