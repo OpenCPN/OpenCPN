@@ -307,8 +307,8 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
-extern bool             g_bmanualMagneticVariation; //TR, 06.06.2012: set manual magnetic variation
-extern double           g_MagneticVariation;        //TR, 06.06.2012: set manual magnetic variation
+extern bool             g_bmanualMagneticVariation;  //TR, 06.06.2012: set manual magnetic variation
+extern double           g_MagneticVariation;         //TR, 06.06.2012: set manual magnetic variation
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 
