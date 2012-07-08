@@ -78,6 +78,8 @@ extern bool             g_bAutoAnchorMark;
 extern ColorScheme      global_color_scheme;
 extern bool             g_bGarminPersistance;
 extern bool             g_bGarminHost;
+extern bool             g_btrigger_alarm_gps;    //TR, 05.06.2012, GPS_lost_alarm
+
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
@@ -835,6 +837,11 @@ void options::CreateControls()
             _("Filter NMEA Course and Speed data") );
     itemNMEAStaticBoxSizer->Add( pFilterNMEA, 1, wxALIGN_LEFT | wxALL, 2 );
 
+    //TR, 05.06.2012: Trigger alarm when GPS connection is lost 
+    pTriggerAlarmGPSLost = new wxCheckBox( itemPanelGPS, ID_TRIGGERALARMGPSLOST, _("Trigger alarm when GPS connection is lost"));
+    pTriggerAlarmGPSLost->SetValue(FALSE);
+    itemNMEAStaticBoxSizer->Add(pTriggerAlarmGPSLost, 1, wxALIGN_LEFT|wxALL, 2);
+
     wxFlexGridSizer *pFilterGrid = new wxFlexGridSizer( 2 );
     pFilterGrid->AddGrowableCol( 1 );
     itemNMEAStaticBoxSizer->Add( pFilterGrid, 0, wxALL | wxEXPAND, border_size );
@@ -1466,6 +1473,7 @@ void options::SetInitialSettings()
     if( g_bGarminHost ) pGarminHost->SetValue( true );
 
     pFilterNMEA->SetValue( g_bfilter_cogsog );
+    pTriggerAlarmGPSLost->SetValue(g_btrigger_alarm_gps);      //TR, 05.06.2012, GPS_lost_alarm
 
     s.Printf( _T("%d"), g_COGFilterSec );
     pFilterSecs->SetValue( s );
@@ -1869,6 +1877,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
     g_bfilter_cogsog = pFilterNMEA->GetValue();
+    g_btrigger_alarm_gps = pTriggerAlarmGPSLost->GetValue();         //TR, 05.06.2012, GPS_lost_alarm
 
     long filter_val = 1;
     pFilterSecs->GetValue().ToLong( &filter_val );

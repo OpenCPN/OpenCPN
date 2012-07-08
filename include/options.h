@@ -122,6 +122,7 @@ enum {
         ID_SMOOTHPANZOOMBOX,
         ID_GARMINHOST,
         ID_FILTERNMEA,
+        ID_TRIGGERALARMGPSLOST,  //TR, 05.06.2012, GPS_lost_alarm
         ID_FULLSCREENQUILT,
         ID_FSTOOLBARCHECKBOX,
         ID_TRANSTOOLBARCHECKBOX,
@@ -257,6 +258,7 @@ public:
     wxScrolledWindow        *itemPanelGPS;
     wxCheckBox              *pShowGPSWin;
     wxCheckBox              *pGarminHost;
+    wxCheckBox              *pTriggerAlarmGPSLost; //TR, 05.06.2012, GPS_lost_alarm
     wxCheckBox              *pFilterNMEA;
     wxTextCtrl              *pFilterSecs;
     wxTextCtrl              *pCOGUPUpdateSecs;

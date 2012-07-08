@@ -297,6 +297,10 @@ bool                      g_bDebugCM93;
 bool                      g_bDebugS57;
 bool                      g_bGarminHost;
 
+bool                      g_btrigger_alarm_gps;     //TR, 05.06.2012, GPS_lost_alarm
+bool                      bGPS_was_valid=FALSE;     //TR, 05.06.2012, GPS_lost_alarm
+wxSound                   GPSLostSound;             //TR, 05.06.2012, GPS_lost_alarm
+
 bool                      g_bfilter_cogsog;
 int                       g_COGFilterSec;
 int                       g_SOGFilterSec;
@@ -4787,7 +4791,38 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( !bGPSValid ) {
         cc1->SetOwnShipState( SHIP_INVALID );
         if( cc1->m_bFollow ) cc1->UpdateShips();
+            //TR, 05.06.2012, GPS_lost_alarm; complete if statement, from here ...
+        if(g_btrigger_alarm_gps && bGPS_was_valid) { // TR, 05.06.2012: Ring alarm bell when options tick is set (TRUE) and GPS was already running before !
+            if(!GPSLostSound.IsOk()) { //TR, 05.06.2012 : load sound file in case not already done ...
+                 wxString GPSLostsoundfile = _T("sounds");
+                 appendOSDirSlash(&GPSLostsoundfile);
+                 GPSLostsoundfile += wxString("8bells.wav", wxConvUTF8);
+                 GPSLostsoundfile.Prepend(g_SData_Locn);
+                 GPSLostSound.Create(GPSLostsoundfile);
+                 wxLogMessage(_T("Using 8bells.wav as GPSLost sound file "));
+            }
+            if(GPSLostSound.IsOk()) { //TR, 05.06.2012 : play sound file ... 
+                GPSLostSound.Play();
+                wxDateTime gpslost_time = wxDateTime::Now();
+                gpslost_time.MakeGMT();
+                wxString gpslost_date = gpslost_time.FormatISODate();
+                wxString gpslost_utc = gpslost_time.FormatISOTime();
+                wxString gpslost_msg = _T("GPS signal lost!\nLast Postion : ");
+                gpslost_msg += toSDMM(1, gLat);
+                gpslost_msg += _T(" ");
+                gpslost_msg += toSDMM(1, gLon);
+                gpslost_msg += _T("\nat date/time :");
+                gpslost_msg += gpslost_date;
+                gpslost_msg += _T(" ");
+                gpslost_msg += gpslost_utc;
+                gpslost_msg += _T(" UTC "); 
+                OCPNMessageBox( gpslost_msg, _("OpenCPN Message"), wxOK | wxICON_ERROR);
+                wxLogMessage(gpslost_msg + _T(" : ringing sound file 8bells.wav"));
+                bGPS_was_valid = FALSE; //TR, 05.06.2012 : but do the whole thing only once
+            }
+        }  //TR ...till here
     }
+    if(bGPSValid && gLon!=0 && gLat !=0)  bGPS_was_valid=TRUE; //TR, 05.06.2012 : trigger a "lost GPS alarm" only, when GPS was already available, not at startup w/o GPS; 
 
     if( bGPSValid != m_last_bGPSValid ) {
         cc1->UpdateShips();
