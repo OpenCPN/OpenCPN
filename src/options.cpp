@@ -2159,7 +2159,9 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= m_groups_changed;
     iret |= k_plugins;
 
-    EndModal( iret );
+    itemNotebook4->ChangeSelection(0);
+    EndModal(iret);
+
 }
 
 void options::OnButtondeleteClick( wxCommandEvent& event )
@@ -2202,7 +2204,8 @@ void options::OnDebugcheckbox1Click( wxCommandEvent& event )
 
 void options::OnCancelClick( wxCommandEvent& event )
 {
-    EndModal( 0 );
+      itemNotebook4->ChangeSelection(0);
+      EndModal(0);
 }
 
 void options::OnChooseFont( wxCommandEvent& event )
