@@ -41,12 +41,14 @@
 ////////////TH//////////////////
 #ifndef OCPN_NO_SOCKETS
 #ifdef __WXGTK__
+#ifdef ocpnHAS_GTK
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
 
 #include <gtk/gtk.h>
 #define GSocket GlibGSocket
+#endif
 #endif
 
 #include "wx/socket.h"

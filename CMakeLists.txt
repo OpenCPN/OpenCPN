@@ -185,12 +185,6 @@ IF(WIN32)
     ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(WIN32)
 
-# Add a definition to satisfy linux system builds, avoiding Apple builds
-IF (NOT WIN32 AND NOT APPLE)
-    ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
-ENDIF (NOT WIN32 AND NOT APPLE)
-
-
 # Location where cmake first looks for cmake modules.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
 
@@ -200,9 +194,16 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
+    ADD_DEFINITIONS(-DocpnHAS_GTK)
+    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+
+    # Add a definition to satisfy some linux system builds, avoiding Apple builds
+    IF (NOT WIN32 AND NOT APPLE)
+       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+    ENDIF (NOT WIN32 AND NOT APPLE)
+    
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
