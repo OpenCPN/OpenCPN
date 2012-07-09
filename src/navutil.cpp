@@ -307,6 +307,8 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
+extern bool             g_bmanualMagneticVariation;  //TR, 06.06.2012: set manual magnetic variation
+extern double           g_MagneticVariation;         //TR, 06.06.2012: set manual magnetic variation
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -2669,6 +2671,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
     Read( _T ( "UseGarminHost" ), &g_bGarminHost, 0 );
+    Read( _T ( "SetManMagneticVariation" ),  &g_bmanualMagneticVariation, 0 ); //TR, 06.06.2012: set manual magnetic variation
+    Read( _T ( "MagneticVariation" ),  &g_MagneticVariation, 0.0 );            //TR, 06.06.2012: set manual magnetic variation
 
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -3919,7 +3923,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "UseGarminHost" ), g_bGarminHost );
-    Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
+    Write( _T ( "SetManMagneticVariation" ),  g_bmanualMagneticVariation ); //TR, 06.06.2012: set manual magnetic variation
+    Write( _T ( "MagneticVariation" ),  g_MagneticVariation );              //TR, 06.06.2012: set manual magnetic variation
+
+	Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     Write( _T ( "TCDataset" ), g_TCdataset );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );

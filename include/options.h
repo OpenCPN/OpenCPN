@@ -122,6 +122,7 @@ enum {
         ID_SMOOTHPANZOOMBOX,
         ID_GARMINHOST,
         ID_FILTERNMEA,
+		ID_SETMANMAGVARIATION,      //TR, 06.06.2012: set manual magnetic variation
         ID_FULLSCREENQUILT,
         ID_FSTOOLBARCHECKBOX,
         ID_TRANSTOOLBARCHECKBOX,
@@ -258,6 +259,8 @@ public:
     wxCheckBox              *pShowGPSWin;
     wxCheckBox              *pGarminHost;
     wxCheckBox              *pFilterNMEA;
+	wxCheckBox              *pSetmanMagVariation;  //TR, 06.06.2012: set manual magnetic variation
+	wxTextCtrl              *pMagVariation;        //TR, 06.06.2012: set manual magnetic variation
     wxTextCtrl              *pFilterSecs;
     wxTextCtrl              *pCOGUPUpdateSecs;
 

@@ -465,7 +465,9 @@ enum {
       tlBRG,
       tlRNG,
       tlCOG,
-      tlSOG
+      tlSOG,
+	  tlCPA,  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+	  tlTCPA  //TR 2012.06.29 : add CPA/TCPA to AIS target list
 };// AISTargetListCtrl Columns;
 
 
@@ -4690,7 +4692,22 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                               ret.Printf(_T("%5.1f"), pAISTarget->SOG);
                         break;
                   }
-
+                  case tlCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+                  {
+                        if( (pAISTarget->TCPA <= 0.) || (pAISTarget->CPA == 100. && pAISTarget->TCPA == 100) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                              ret = _("-");
+                        else
+                              ret.Printf(_T("%5.2f"), pAISTarget->CPA);
+                        break;
+                  }
+                  case tlTCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+                  {
+                        if( (pAISTarget->TCPA <= 0.) || (pAISTarget->CPA == 100. && pAISTarget->TCPA == 100) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                              ret = _("-");
+                        else
+                              ret.Printf(_T("%5.0f"), pAISTarget->TCPA);
+                        break;
+                  }
                   case tlRNG:
                   {
                         if(pAISTarget->b_positionOnceValid && bGPSValid && (pAISTarget->Range_NM >= 0.))
@@ -4877,7 +4894,36 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
                   b_cmptype_num = true;
                   break;
             }
+            case tlCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+            {
+                  if( (t1->TCPA <= 0.) || (t1->CPA == 100. && t1->TCPA == 100) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                        n1 = 99999.0;
+                  else
+                        n1 = t1->CPA;
 
+                  if( (t2->TCPA <= 0.) || (t2->CPA == 100. && t2->TCPA == 100) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                        n2 = 99999.0;
+                  else
+                        n2 = t2->CPA;
+
+                  b_cmptype_num = true;
+                  break;
+            }
+            case tlTCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+            {
+                  if( (t1->TCPA <= 0.) || (t1->CPA == 100. && t1->TCPA == 100) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                        n1 = 99999.0;
+                  else
+                        n1 = t1->TCPA;
+
+                  if( (t2->TCPA <= 0.) || (t2->CPA == 100. && t2->TCPA == 100) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                        n2 = 99999.0;
+                  else
+                        n2 = t2->TCPA;
+
+                  b_cmptype_num = true;
+                  break;
+            }
             case tlRNG:
             {
                   n1 = t1->Range_NM;
@@ -5030,6 +5076,13 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
       if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}
       m_pListCtrlAISTargets->InsertColumn( tlSOG, _("SoG"), wxLIST_FORMAT_RIGHT, width );
 
+	  width = 55;  //TR 2012.06.29 : add CPA/TCPA to AIS target list
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}//TR 2012.06.29 : add CPA/TCPA to AIS target list
+      m_pListCtrlAISTargets->InsertColumn( tlCPA, _("CPA"), wxLIST_FORMAT_RIGHT, width );//TR 2012.06.29 : add CPA/TCPA to AIS target list
+
+      width = 65;//TR 2012.06.29 : add CPA/TCPA to AIS target list
+      if(s_width.ToLong(&lwidth)){ width = wxMax(20, lwidth);  width = wxMin(width, 250);}//TR 2012.06.29 : add CPA/TCPA to AIS target list
+      m_pListCtrlAISTargets->InsertColumn( tlTCPA, _("TCPA"), wxLIST_FORMAT_RIGHT, width );//TR 2012.06.29 : add CPA/TCPA to AIS target list
       wxListItem item;
       item.SetMask(wxLIST_MASK_IMAGE);
       item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );

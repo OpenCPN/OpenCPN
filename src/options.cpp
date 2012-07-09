@@ -81,6 +81,9 @@ extern bool             g_bGarminHost;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
+extern bool             g_bmanualMagneticVariation; //TR, 06.06.2012: set manual magnetic variation
+extern double           g_MagneticVariation;        //TR, 06.06.2012: set manual magnetic variation
+
 
 extern PlugInManager    *g_pi_manager;
 
@@ -835,6 +838,17 @@ void options::CreateControls()
             _("Filter NMEA Course and Speed data") );
     itemNMEAStaticBoxSizer->Add( pFilterNMEA, 1, wxALIGN_LEFT | wxALL, 2 );
 
+    //TR, 06.06.2012: set manual magnetic variation: if not supplied via NMEA --> to show HDG (drift) indicator 
+    wxFlexGridSizer *pMagVar = new wxFlexGridSizer(2);
+    pMagVar->AddGrowableCol(1);
+    itemNMEAStaticBoxSizer->Add(pMagVar, 0, wxALL|wxEXPAND, 2);
+
+    pSetmanMagVariation = new wxCheckBox( itemPanelGPS, ID_SETMANMAGVARIATION, _("Manual setting of mag. Variation [dd mm E|W]:"));
+    pMagVar->Add(pSetmanMagVariation, 1, wxALIGN_LEFT|wxALL, 2);
+
+    pMagVariation = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(100, -1) ); //TR, 06.06.2012: set manual magnetic variation
+    pMagVar->Add(pMagVariation, 0, wxALIGN_RIGHT, 2);                                                        //TR, 06.06.2012: set manual magnetic variation
+
     wxFlexGridSizer *pFilterGrid = new wxFlexGridSizer( 2 );
     pFilterGrid->AddGrowableCol( 1 );
     itemNMEAStaticBoxSizer->Add( pFilterGrid, 0, wxALL | wxEXPAND, border_size );
@@ -1465,6 +1479,11 @@ void options::SetInitialSettings()
 
     if( g_bGarminHost ) pGarminHost->SetValue( true );
 
+    pSetmanMagVariation->SetValue(g_bmanualMagneticVariation); //TR, 06.06.2012: set manual magnetic variation
+    s = toSDMM ( 2, g_MagneticVariation,0 );                   //TR, 06.06.2012: set manual magnetic variation
+      //s.Printf(_T("%.2f"), g_MagneticVariation);             //TR, 06.06.2012: set manual magnetic variation 
+    pMagVariation->SetValue(s);                                //TR, 06.06.2012: set manual magnetic variation
+
     pFilterNMEA->SetValue( g_bfilter_cogsog );
 
     s.Printf( _T("%d"), g_COGFilterSec );
@@ -1867,6 +1886,22 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bskew_comp = pSkewComp->GetValue();
     bool temp_bopengl = pOpenGL->GetValue();
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
+
+    g_bmanualMagneticVariation = pSetmanMagVariation->GetValue();   //TR, 06.06.2012: set manual magnetic variation
+    if(g_bmanualMagneticVariation) {                                //TR, 06.06.2012: set manual magnetic variation
+        wxString magvar=pMagVariation->GetValue().Upper();          //TR, 06.06.2012: set manual magnetic variation
+		//TR Check valid mag.Variation  it must contain E or W
+		if (magvar.Find(_T("W"))>0 || magvar.Find(_T("E"))>0 ) {	//TR, 06.06.2012: set manual magnetic variation
+            g_MagneticVariation = fromDMM(magvar);					//TR, 06.06.2012: set manual magnetic variation
+            OCPNMessageBox(_("Warning: Manual setting of mag. Variation may lead to wrong ownship heading information !"), _("OpenCPN Warning"), wxOK | wxICON_INFORMATION); //TR, 06.06.2012: set manual magnetic variation
+        } 
+		else {                                                      //TR, 06.06.2012: set manual magnetic variation
+            OCPNMessageBox(_("Error: invalid data format for magnetic Variation !"), _("OpenCPN Warning"), wxOK | wxICON_INFORMATION);//TR, 06.06.2012: set manual magnetic variation
+            g_bmanualMagneticVariation=FALSE;                                                       //TR, 06.06.2012: set manual magnetic variation
+            pSetmanMagVariation->SetValue(g_bmanualMagneticVariation);                              //TR, 06.06.2012: set manual magnetic variation
+        }                                                                                           //TR, 06.06.2012: set manual magnetic variation
+	//pMagVariation->GetValue().ToDouble(&g_MagneticVariation);                                     //TR, 06.06.2012: set manual magnetic variation
+	}                                                                                               //TR, 06.06.2012: set manual magnetic variation
 
     g_bfilter_cogsog = pFilterNMEA->GetValue();
 
