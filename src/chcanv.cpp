@@ -313,6 +313,7 @@ enum
         ID_RC_MENU_ZOOM_OUT,
         ID_RC_MENU_FINISH,
         ID_DEF_MENU_AIS_QUERY,
+		ID_DEF_MENU_AIS_CPA, //TR 2012.06.28: Show AIS-CPA
         ID_DEF_MENU_ACTIVATE_MEASURE,
         ID_DEF_MENU_DEACTIVATE_MEASURE,
 
@@ -3179,6 +3180,7 @@ EVT_MENU ( ID_RC_MENU_ZOOM_IN,      ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_RC_MENU_ZOOM_OUT,     ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_RC_MENU_FINISH,       ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_DEF_MENU_AIS_QUERY,   ChartCanvas::PopupMenuHandler )
+EVT_MENU ( ID_DEF_MENU_AIS_CPA,   ChartCanvas::PopupMenuHandler ) //TR 2012.06.28: Show AIS-CPA 
 
 EVT_MENU ( ID_DEF_MENU_ACTIVATE_MEASURE,   ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_DEF_MENU_DEACTIVATE_MEASURE, ChartCanvas::PopupMenuHandler )
@@ -6062,7 +6064,8 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
 //    Check for alarms here, maintained by AIS class timer tick
-        if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) {
+//TR original code:           if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) {
+        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { //TR 2012.06.28: Show AIS-CPA;  show CPA when b_show_AIS_CPA is true
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
             ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
@@ -8098,9 +8101,16 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     pdef_menu->AppendSeparator();
 
     if( g_pAIS ) {
-        if( seltype & SELTYPE_AISTARGET ) pdef_menu->Append( ID_DEF_MENU_AIS_QUERY,
-                _( "AIS Target Query" ) );
-
+        if( seltype & SELTYPE_AISTARGET ) {
+			pdef_menu->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query" ) );
+			AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI); //TR 2012.06.28: Show AIS-CPA
+			if ( myptarget && myptarget->bCPA_Valid) {                                       //TR 2012.06.28: Show AIS-CPA : show menu-selection only, if we have a valid CPA !
+               if(myptarget->b_show_AIS_CPA )                                                //TR 2012.06.28: Hide AIS-CPA
+				   pdef_menu->Append ( ID_DEF_MENU_AIS_CPA,  _( "Hide AIS Target CPA" ) );   //TR 2012.06.28: Hide AIS-CPA
+			   else                                                                          //TR 2012.06.28: Hide AIS-CPA
+                   pdef_menu->Append ( ID_DEF_MENU_AIS_CPA,  _( "Show AIS Target CPA" ) );   //TR 2012.06.28: Show AIS-CPA
+		     }
+		}
         pdef_menu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS target list") );
         pdef_menu->AppendSeparator();
     }
@@ -8547,6 +8557,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             wxWindow *pwin = wxDynamicCast(this, wxWindow);
             ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
             break;
+        }
+
+        case ID_DEF_MENU_AIS_CPA: {             //TR 2012.06.28: Show AIS-CPA     
+            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI); //TR 2012.06.28: Show AIS-CPA
+            if ( myptarget )                    //TR 2012.06.28: Show AIS-CPA
+               myptarget->Toggle_AIS_CPA();     //TR 2012.06.28: Show AIS-CPA
+            break;                              //TR 2012.06.28: Show AIS-CPA
         }
 
         case ID_DEF_MENU_QUILTREMOVE: {
@@ -12441,12 +12458,18 @@ void glChartCanvas::render()
 
 //    Render the WVSChart
 
-    wxRegion CValidRegion;
-    if( !VPoint.b_quilt )
-    // Make a region covering the current chart on the canvas
-    Current_Ch->GetValidCanvasRegion( VPoint, &CValidRegion );
-    else
-        CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
+        wxRegion CValidRegion;
+        if(!VPoint.b_quilt) {
+              // Make a region covering the current chart on the canvas
+              // growing the box to account for rotation
+              ViewPort svp = VPoint;
+              svp.pix_width = svp.rv_rect.width;
+              svp.pix_height = svp.rv_rect.height;
+              
+              Current_Ch->GetValidCanvasRegion ( svp, &CValidRegion );
+        }
+        else
+              CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
 
     //    Get full (rotated?) canvas region
     wxRegion WVSRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
