@@ -325,7 +325,8 @@ void options::Init()
     pUpdateCheckBox = NULL;
     k_charts = 0;
     k_vectorcharts = 0;
-
+    k_plugins = 0;
+    
     itemStaticBoxSizer11 = NULL;
     pDirCtl = NULL;
     ;
@@ -2159,7 +2160,11 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= m_groups_changed;
     iret |= k_plugins;
 
+    //  Required to avoid intermittent crash on wxGTK
     itemNotebook4->ChangeSelection(0);
+    delete pListBox;
+    delete ps57CtlListBox;
+    
     EndModal(iret);
 
 }
@@ -2204,8 +2209,12 @@ void options::OnDebugcheckbox1Click( wxCommandEvent& event )
 
 void options::OnCancelClick( wxCommandEvent& event )
 {
-      itemNotebook4->ChangeSelection(0);
-      EndModal(0);
+    //  Required to avoid intermittent crash on wxGTK
+    itemNotebook4->ChangeSelection(0);
+    delete pListBox;
+    delete ps57CtlListBox;
+    
+    EndModal(0);
 }
 
 void options::OnChooseFont( wxCommandEvent& event )

@@ -3771,16 +3771,16 @@ int MyFrame::DoOptionsDialog()
     static int lastPage = -1;
 
     ::wxBeginBusyCursor();
-    options *pSetDlg = new options( this, -1, _("ToolBox") );
+    options SetDlg( this, -1, _("ToolBox") );
     ::wxEndBusyCursor();
 
 //    Set initial Chart Dir
-    pSetDlg->SetInitChartDir( *pInit_Chart_Dir );
+    SetDlg.SetInitChartDir( *pInit_Chart_Dir );
 
 //      Pass two working pointers for Chart Dir Dialog
-    pSetDlg->SetCurrentDirList( ChartData->GetChartDirArray() );
+    SetDlg.SetCurrentDirList( ChartData->GetChartDirArray() );
     ArrayOfCDI *pWorkDirArray = new ArrayOfCDI;
-    pSetDlg->SetWorkDirListPtr( pWorkDirArray );
+    SetDlg.SetWorkDirListPtr( pWorkDirArray );
 
 //  Grab a copy of the current NMEA source and AP Port and AIS Port
     wxString previous_NMEA_source( *pNMEADataSource );
@@ -3790,9 +3790,9 @@ int MyFrame::DoOptionsDialog()
     wxString previous_AIS_Port( *pAIS_Port );
 
 //      Pass a ptr to MyConfig, for updates
-    pSetDlg->SetConfigPtr( pConfig );
+    SetDlg.SetConfigPtr( pConfig );
 
-    pSetDlg->SetInitialSettings();
+    SetDlg.SetInitialSettings();
 
     bDBUpdateInProgress = true;
 
@@ -3816,22 +3816,22 @@ int MyFrame::DoOptionsDialog()
 
     bool b_sub = false;
     if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown() ) {
-        wxRect bx_rect = pSetDlg->GetScreenRect();
+        wxRect bx_rect = SetDlg.GetScreenRect();
         wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
         if( tb_rect.Intersects( bx_rect ) ) b_sub = true;
 
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-    if( lastPage >= 0 ) pSetDlg->itemNotebook4->SetSelection( lastPage );
+    if( lastPage >= 0 ) SetDlg.itemNotebook4->SetSelection( lastPage );
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->DisableTooltips();
 
-    int rr = pSetDlg->ShowModal();
+    int rr = SetDlg.ShowModal();
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->EnableTooltips();
 
-    lastPage = pSetDlg->lastPage;
+    lastPage = SetDlg.lastPage;
 
     if( b_sub ) {
         SurfaceToolbar();
@@ -3983,8 +3983,6 @@ int MyFrame::DoOptionsDialog()
     delete pWorkDirArray;
 
     bDBUpdateInProgress = false;
-
-    delete pSetDlg;
 
     if( g_FloatingToolbarDialog ) {
         if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
