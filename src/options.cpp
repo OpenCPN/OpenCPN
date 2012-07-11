@@ -2792,33 +2792,14 @@ void options::OnButtonTCData( wxCommandEvent& event )
     int display_width, display_height;
     wxDisplaySize( &display_width, &display_height );
 
-    tidedata_dialog *pdlg = new tidedata_dialog;
-/*
-    if( pListBox ) UpdateWorkArrayFromTextCtl();
+    tidedata_dialog dlg;
+    
+    dlg.Create( pParent, -1, _("Tide & Current Dataset Selection"), wxDefaultPosition,
+                  wxSize( wxMin(display_width-100, 600), 200 ) );
+    dlg.Centre();
 
-    pdlg->SetDBDirs( *m_pWorkDirList);
-
-    //    Make a deep copy of the current global Group Array
-    EmptyChartGroupArray( m_pGroupArray );
-    delete m_pGroupArray;
-    m_pGroupArray = CloneChartGroupArray( g_pGroupArray );
-
-    //    And inform the Groups dialog
-    pdlg->SetGroupArray( m_pGroupArray );
-*/
-    pdlg->Create( pParent, -1, _("Tide & Current Dataset Selection"), wxPoint( 0, 0 ),
-            wxSize( display_width - 100, 400 ) );
-    pdlg->Centre();
-
-    if( pdlg->ShowModal() == xID_OK ) {
-//        m_groups_changed = GROUPS_CHANGED;
-
-        //    Make a deep copy of the edited  working Group Array
-//        EmptyChartGroupArray( g_pGroupArray );
-//        delete g_pGroupArray;
-//        g_pGroupArray = CloneChartGroupArray( m_pGroupArray );
+    if( dlg.ShowModal() == xID_OK ) {
     } else {
-
     }
 
 }
@@ -3474,8 +3455,6 @@ bool tidedata_dialog::Create( MyFrame* parent, wxWindowID id, const wxString& ca
     //    will not detract from night-vision
 
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
-//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
-//            wstyle |= (wxNO_BORDER);
 
     SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
 
@@ -3516,7 +3495,7 @@ void tidedata_dialog::CreateControls( void )
     //    Add main horizontal sizer....
     wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
     TopVBoxSizer->Add( mainHBoxSizer, 1, wxALIGN_TOP | wxEXPAND );
-
+#if 0
     //    The file tree
     wxStaticBox *TideDataSourceStaticBox = new wxStaticBox( this, wxID_ANY, _("File System") );
     wxStaticBoxSizer* TideDataSourceStaticBoxSizer = new wxStaticBoxSizer(
@@ -3527,19 +3506,19 @@ void tidedata_dialog::CreateControls( void )
     m_pDirCtl->ShowHidden(true);
     TideDataSourceStaticBoxSizer->Add( m_pDirCtl, 1, wxALIGN_LEFT | wxEXPAND );
     m_pDirCtl->SetPath(g_TCData_Dir);
-
+#endif
     //    Add the "Insert/Remove" buttons
-    m_pinsertButton = new wxButton( this, ID_TCDATAADD, _("Add-->") );
-    m_premoveButton = new wxButton( this, ID_TCDATADEL, _("<--Remove") );
+    m_pinsertButton = new wxButton( this, ID_TCDATAADD, _("Add") );
+    m_premoveButton = new wxButton( this, ID_TCDATADEL, _("Remove") );
 
     wxBoxSizer* IRSizer = new wxBoxSizer( wxVERTICAL );
     mainHBoxSizer->AddSpacer( 10 );
     mainHBoxSizer->Add( IRSizer, 0, wxALIGN_CENTRE | wxEXPAND );
     mainHBoxSizer->AddSpacer( 10 );
 
-    IRSizer->AddSpacer( 100 );
-    IRSizer->Add( m_pinsertButton, 0, wxALIGN_CENTRE );
     IRSizer->AddSpacer( 50 );
+    IRSizer->Add( m_pinsertButton, 0, wxALIGN_CENTRE );
+    IRSizer->AddSpacer( 20 );
     IRSizer->Add( m_premoveButton, 0, wxALIGN_CENTRE );
 
     //	Add the ListBox control containing the selections
@@ -3581,28 +3560,35 @@ void tidedata_dialog::OnOK( wxCommandEvent &event )
         TideCurrentDataSet.Add( s );
     }
 
-    wxFileName d( m_pDirCtl->GetPath() );
-    while( !d.DirExists() ) {
-        wxFileName e( d.GetPath() );
-        d = e;
-    }
-    g_TCData_Dir = d.GetPath();
-
     EndModal (xID_OK);
 }
 
 void tidedata_dialog::OnInsertTideDataLocation( wxCommandEvent &event )
 {
-    wxString SelDir;
-    SelDir = m_pDirCtl->GetPath();
+    wxString sel_file;
+    int response = wxID_CANCEL;
+    
+    wxFileDialog openDialog( this, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
+                             wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
+                                    wxFD_OPEN  );
+    response = openDialog.ShowModal();
+    if( response == wxID_OK ) {
+        sel_file = openDialog.GetPath();
 
-    if( g_bportable ) {
-        wxFileName f( SelDir );
-        f.MakeRelativeTo( *pHome_Locn );
-        m_DataSelected->Append( f.GetFullPath() );
-    } else
-        m_DataSelected->Append( SelDir );
-
+        if( g_bportable ) {
+            wxFileName f( sel_file );
+            f.MakeRelativeTo( *pHome_Locn );
+            m_DataSelected->Append( f.GetFullPath() );
+        } else
+            m_DataSelected->Append( sel_file );
+        
+        //    Record the currently selected directory for later use
+        wxFileName fn( sel_file );
+        g_TCData_Dir = fn.GetPath();
+    }
+    
+    
+    
 }
 
 void tidedata_dialog::OnRemoveTideDataLocation( wxCommandEvent &event )

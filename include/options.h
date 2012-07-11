@@ -494,8 +494,6 @@ class tidedata_dialog: public wxDialog
             wxButton    *m_pinsertButton;
             wxButton    *m_premoveButton;
 
-
-            wxGenericDirCtrl *m_pDirCtl;
             wxListBox   *m_DataSelected;
 
 };
