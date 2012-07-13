@@ -1751,6 +1751,7 @@ void options::OnCharHook( wxKeyEvent& event ) {
             GetEventHandler()->ProcessEvent( okEvent );
         }
     }
+	event.Skip();
 }
 
 void options::OnButtonaddClick( wxCommandEvent& event )
