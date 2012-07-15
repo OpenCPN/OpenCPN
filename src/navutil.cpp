@@ -55,6 +55,7 @@
 #include "nmea.h"
 #include "ais.h"
 #include "cutil.h"
+#include "styles.h"
 #include "routeman.h"
 #include "routeprop.h"
 #include "s52utils.h"
@@ -62,7 +63,6 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 #include "ocpndc.h"
-#include "styles.h"
 
 #ifdef USE_S57
 #include "s52plib.h"

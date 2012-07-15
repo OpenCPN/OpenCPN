@@ -72,12 +72,11 @@ class markicon_bitmap_list_type;
 class markicon_key_list_type;
 class markicon_description_list_type;
 
-class MarkIcon
-{
-      public:
-            wxBitmap   *picon_bitmap;
-            wxString   icon_name;
-            wxString   icon_description;
+class MarkIcon {
+public:
+    wxBitmap *picon_bitmap;
+    wxString icon_name;
+    wxString icon_description;
 };
 
 
@@ -218,7 +217,7 @@ public:
       ~WayPointman();
       wxBitmap *GetIconBitmap(const wxString& icon_key);
       int GetIconIndex(const wxBitmap *pbm);
-      int GetNumIcons(void){ return m_nIcons; }
+      int GetNumIcons(void){ return m_pIconArray->Count(); }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
       RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, wxString &guid);
@@ -227,6 +226,7 @@ public:
       RoutePoint *FindRoutePointByGUID(wxString &guid);
       void DestroyWaypoint(RoutePoint *pRp);
       void ClearRoutePointFonts(void);
+      void ProcessIcons( ocpnStyle::Style* style );
 
       bool DoesIconExist(const wxString icon_key);
       wxBitmap *GetIconBitmap(int index);
@@ -242,15 +242,9 @@ private:
 
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
-      int m_nIcons;
-
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change
 
-      wxArrayPtrVoid    DayIconArray;
-      wxArrayPtrVoid    DuskIconArray;
-      wxArrayPtrVoid    NightIconArray;
-
-      wxArrayPtrVoid    *m_pcurrent_icon_array;
+      wxArrayPtrVoid    *m_pIconArray;
 
       int         m_nGUID;
 };

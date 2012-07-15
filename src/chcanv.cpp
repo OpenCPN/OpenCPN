@@ -44,6 +44,7 @@
 
 #include "chcanv.h"
 
+#include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
 #include "concanv.h"
@@ -59,7 +60,6 @@
 #include "pluginmanager.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
-#include "styles.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -3536,7 +3536,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     //  Look for user defined ownship image
     //  This may be found in the shared data location along with other user defined icons.
-    //  and will be called "ownship.xpm"
+    //  and will be called "ownship.xpm" or "ownship.png"
     if( pWayPointMan && pWayPointMan->DoesIconExist( _T("ownship") ) ) {
         wxBitmap *pbmp = pWayPointMan->GetIconBitmap( _T("ownship") );
         m_pos_image_user_day = new wxImage;

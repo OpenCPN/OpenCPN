@@ -68,6 +68,7 @@
 #include "chcanv.h"
 #include "chartdb.h"
 #include "navutil.h"
+#include "styles.h"
 #include "routeman.h"
 #include "statwin.h"
 #include "concanv.h"
@@ -79,7 +80,6 @@
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
-#include "styles.h"
 #include "toolbar.h"
 #include "compasswin.h"
 
@@ -1147,6 +1147,7 @@ bool MyApp::OnInit()
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
+    pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
 
     //      Open/Create the Config Object (Must be after UI Style init).
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );

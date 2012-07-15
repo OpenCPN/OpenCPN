@@ -833,7 +833,8 @@ void StyleManager::SetStyle( wxString name )
 {
     Style* style;
     bool ok = true;
-    if( !currentStyle ) ok = false;
+    if( currentStyle ) currentStyle->Unload();
+    else ok = false;
 
     bool selectFirst = false;
 
@@ -856,6 +857,7 @@ void StyleManager::SetStyle( wxString name )
                 msg += fullFilePath;
                 wxLogMessage( msg );
                 ok = false;
+                if( selectFirst ) continue;
                 break;
             }
 
