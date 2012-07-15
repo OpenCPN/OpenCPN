@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-17 09:42-0400\n"
+"POT-Creation-Date: 2012-07-15 06:29-0700\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -108,10 +109,6 @@ msgstr "   Ficheiro de carta corrupto en PostInit() na carta "
 # 
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "   Ficheiro de carta sen encabezado BSB, non se pode Inic."
-#
-# 
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "   Proxección da carta DESCOÑECIDA, asúmese Mercator: "
 #
 # 
 #, c-format
@@ -240,6 +237,9 @@ msgstr " Editar Fonte:  "
 msgid " Updated:  "
 msgstr " Actualizado:  "
 #
+msgid " for details."
+msgstr ""
+#
 # 
 #, c-format
 msgid " is %5g"
@@ -263,6 +263,12 @@ msgstr "&Activar"
 # 
 msgid "&Cancel"
 msgstr "&Cancelar"
+#
+msgid "&Copy all as text"
+msgstr ""
+#
+msgid "&Copy as text"
+msgstr ""
 #
 # 
 msgid "&Delete"
@@ -331,6 +337,11 @@ msgid "&Properties..."
 msgstr "&Propiedades..."
 #
 # 
+#, fuzzy
+msgid "&Remove Selected"
+msgstr "Borrar Derrota"
+#
+# 
 msgid "&Reverse"
 msgstr "&Inverter"
 #
@@ -353,6 +364,11 @@ msgstr "&Estilo:"
 # 
 msgid "&Underline"
 msgstr "&Subliñar"
+#
+# 
+#, fuzzy
+msgid "&Waypoint Properties..."
+msgstr "&Propiedades..."
 #
 # 
 msgid "&Weight:"
@@ -480,6 +496,9 @@ msgstr "Rumbo:                 Non dispoñíbel\n"
 msgid "<--Remove"
 msgstr ""
 #
+msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
+msgstr ""
+#
 # 
 msgid "?"
 msgstr "?"
@@ -601,6 +620,9 @@ msgstr "Activar Directorio de Cartas"
 msgid "All files (*.*)|*.*"
 msgstr "Todos os ficheiros (*.*)|*.*"
 #
+msgid "Anchorage created "
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Append Waypoint"
@@ -621,6 +643,11 @@ msgstr "Seguro que desexa borrar <TODOS> os waypoints?"
 # 
 msgid "Are you sure you want to delete this track?"
 msgstr "Seguro que desexa borrar  esta derrota?"
+#
+# 
+#, fuzzy
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "Seguro que desexa borrar <TODOS> os waypoints?"
 #
 # 
 msgid "Assumed 1 Mile Point"
@@ -1376,6 +1403,9 @@ msgstr "AmpliarIconadaMarea"
 msgid "F/V"
 msgstr "F/V"
 #
+msgid "Failed to initialize the user interface. "
+msgstr ""
+#
 # 
 msgid "Fast ship"
 msgstr ""
@@ -1520,6 +1550,11 @@ msgid "Here"
 msgstr "Aquí"
 #
 # 
+#, fuzzy
+msgid "Hide AIS Target CPA"
+msgstr "Consulta o obxectivo AIS"
+#
+# 
 msgid "Hide WPT names"
 msgstr "Agochar os nomes WPT"
 #
@@ -1608,10 +1643,6 @@ msgstr "LW"
 # 
 msgid "Language"
 msgstr "Idioma"
-#
-# 
-msgid "Language/Fonts"
-msgstr "Idioma/Tipos de letra"
 #
 # 
 #, fuzzy
@@ -1816,6 +1847,11 @@ msgstr "Información sobre a Marca"
 #
 # 
 msgid "Mark Properties"
+msgstr "Propiedades da Marca"
+#
+# 
+#, fuzzy
+msgid "Mark Properties, Layer: "
 msgstr "Propiedades da Marca"
 #
 # 
@@ -2057,6 +2093,11 @@ msgid "OpenCPN Message"
 msgstr "Mensaxe OpenCPN"
 #
 # 
+#, fuzzy
+msgid "OpenCPN Remove Waypoint"
+msgstr "Crear Ruta OpenCPN"
+#
+# 
 msgid "OpenCPN Route Create"
 msgstr "Crear Ruta OpenCPN"
 #
@@ -2067,6 +2108,11 @@ msgstr "Crear Ficheiro OpenCPN S57 SENC..."
 # 
 msgid "OpenCPN Track Delete"
 msgstr "Borrar Derrota OpenCPN "
+#
+# 
+#, fuzzy
+msgid "OpenCPN cannot start. "
+msgstr "Actualizar Cartas OpenCPN"
 #
 # 
 msgid "Options"
@@ -2153,7 +2199,8 @@ msgid "Play ships bells"
 msgstr "Facer soar as campás dos barcos"
 #
 # 
-msgid "Please restart OpenCPN to activate new language selection."
+#, fuzzy
+msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Reinicie OpenCPN para activar o novo idioma seleccionado."
 #
 # 
@@ -2211,20 +2258,6 @@ msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
 msgstr "Antiguedade do Informe:             %3d Sec.\n"
-#
-# 
-#, fuzzy
-msgid ""
-"Possible libgps API version mismatch.\n"
-"libgps did not reasonably respond to version request\n"
-"\n"
-"Would you like to use this version of libgps anyway?"
-msgstr ""
-"Posible discordancia en versión libgps API .\n"
-"libgps non respondeu correctamente á petición desta versión\n"
-"\n"
-"                              ¿Desexa empregar  igualmente esta versión de "
-"libgps?"
 #
 # 
 #, fuzzy
@@ -2528,6 +2561,11 @@ msgid "Route Properties"
 msgstr "Propiedades da Ruta"
 #
 # 
+#, fuzzy
+msgid "Route Properties..."
+msgstr "Propiedades da Ruta"
+#
+# 
 msgid "Route Uploaded successfully."
 msgstr "Ruta Cargada satisfactoriamente."
 #
@@ -2599,6 +2637,9 @@ msgstr ""
 msgid "Search and Rescue Vessel"
 msgstr "Buque de busca e rescate (SAR)"
 #
+msgid "See the log file at "
+msgstr ""
+#
 # 
 msgid "Select Alert Sound"
 msgstr "Seleccione o Son de Alerta"
@@ -2669,6 +2710,11 @@ msgstr "Axustar Carta á Escala Menor"
 #, fuzzy
 msgid "Short dash"
 msgstr "Amosar Mareas"
+#
+# 
+#, fuzzy
+msgid "Show AIS Target CPA"
+msgstr "Amosar Obxectivos AIS"
 #
 # 
 msgid "Show AIS Targets"
@@ -2915,6 +2961,11 @@ msgid "Start"
 msgstr "Comezar"
 #
 # 
+#, fuzzy
+msgid "StatusBar"
+msgstr "Amosa-la Barra de Estado"
+#
+# 
 msgid "Stbd"
 msgstr "Estribor"
 #
@@ -2942,6 +2993,11 @@ msgstr "Con símbolos"
 # 
 msgid "TCP/IP WiFi Data Server"
 msgstr "Servidor Datos TCP/IP WiFi"
+#
+# 
+#, fuzzy
+msgid "TCPA"
+msgstr "CPA TCPA"
 #
 # 
 msgid "TCPA:  \n"
@@ -3041,6 +3097,9 @@ msgstr "Estilo do tipo de letra."
 msgid "The font weight."
 msgstr "Tamaño do tipo de letra."
 #
+msgid "The necessary configuration files were not found. "
+msgstr ""
+#
 # 
 msgid "There"
 msgstr "Alí"
@@ -3115,9 +3174,17 @@ msgstr "Ferramentas"
 msgid "ToolTips"
 msgstr "Info ferramenta"
 #
+msgid "Toolbar and Window Style"
+msgstr ""
+#
 # 
 msgid "Total Distance"
 msgstr "Distancia Total"
+#
+# 
+#, fuzzy
+msgid "Total Length: "
+msgstr "Lonxitude"
 #
 # 
 msgid "Tow"
@@ -3129,6 +3196,11 @@ msgstr "Nome da derrota"
 #
 # 
 msgid "Track Properties"
+msgstr "Propiedades da Derrota"
+#
+# 
+#, fuzzy
+msgid "Track Properties..."
 msgstr "Propiedades da Derrota"
 #
 # 
@@ -3278,6 +3350,9 @@ msgstr "Empregar SCAMIN"
 # 
 msgid "Use nearby waypoint?"
 msgstr "Empregar o waypoint máis próximo?"
+#
+msgid "User Interface"
+msgstr ""
 #
 # 
 msgid "User X Offset"
@@ -3456,19 +3531,6 @@ msgid "cm93 Detail"
 msgstr "Detalle cm93"
 #
 # 
-#, fuzzy, c-format
-msgid ""
-"libgps API version mismatch.\n"
-"OpenCPN found version %d.%d, but requires at least version 3.0\n"
-"\n"
-"      Would you like to use this version of libgps anyway?"
-msgstr ""
-"Versión API libgps non coincide.\n"
-"Opencpn encontrou a  versión %d.%d, pero require polo menos a versión 3.0\n"
-"\n"
-"¿Quere empregar de todos modos esta versión de libgps?"
-#
-# 
 msgid "wgsox"
 msgstr "wgsox"
 #
@@ -3478,6 +3540,7 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 #
@@ -3496,6 +3559,12 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+#~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+#~ msgstr "   Proxección da carta DESCOÑECIDA, asúmese Mercator: "
+#
+#
+#
 #
 #
 # 
@@ -3504,6 +3573,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar a libería:"
+#
 #
 #
 #
@@ -3518,12 +3588,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo destroy_pi:"
+#
 #
 #
 #
@@ -3536,6 +3608,7 @@ msgstr ""
 #~ msgstr "&Alternar Cartas"
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
@@ -3544,9 +3617,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -3561,6 +3636,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3570,9 +3646,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -3587,12 +3665,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
 #
 #
 #
@@ -3607,12 +3687,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Import new layer"
 #~ msgstr "Importar unha nova capa"
+#
+#
+# 
+#~ msgid "Language/Fonts"
+#~ msgstr "Idioma/Tipos de letra"
+#
 #
 #
 #
@@ -3625,6 +3712,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
@@ -3632,9 +3720,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 #
 #
@@ -3649,12 +3739,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 #
 #
@@ -3673,12 +3765,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 #
 #
@@ -3693,12 +3787,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 #
 #
@@ -3713,12 +3809,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "XestordeEngadidos: Cargando Engadido:"
+#
 #
 #
 #
@@ -3733,14 +3831,16 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
-#~ "XestordeEngadidos: Descargando Engadido con unha versión API inválida  %d.%"
-#~ "d: "
+#~ "XestordeEngadidos: Descargando Engadido con unha versión API inválida  %d."
+#~ "%d: "
+#
 #
 #
 #
@@ -3751,6 +3851,22 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Possible libgps API version mismatch.\n"
+#~ "libgps did not reasonably respond to version request\n"
+#~ "\n"
+#~ "Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "Posible discordancia en versión libgps API .\n"
+#~ "libgps non respondeu correctamente á petición desta versión\n"
+#~ "\n"
+#~ "                              ¿Desexa empregar  igualmente esta versión de "
+#~ "libgps?"
+#
 #
 #
 #
@@ -3769,6 +3885,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3779,9 +3896,24 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Alternar Nomes"
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "libgps API version mismatch.\n"
+#~ "OpenCPN found version %d.%d, but requires at least version 3.0\n"
+#~ "\n"
+#~ "      Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "Versión API libgps non coincide.\n"
+#~ "Opencpn encontrou a  versión %d.%d, pero require polo menos a versión 3.0\n"
+#~ "\n"
+#~ "¿Quere empregar de todos modos esta versión de libgps?"
