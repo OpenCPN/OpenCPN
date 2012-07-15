@@ -4313,7 +4313,7 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     else
                         s.Append( pr->m_RouteNameString );
                     s.Append( _T("\n") );
-                    s.Append( _("Total Lenght: ") );
+                    s.Append( _("Total Length: ") );
                     s.Append( totLen );
                     s.Append( _T("\n") );
                     s.Append( _("Leg: from ") );
