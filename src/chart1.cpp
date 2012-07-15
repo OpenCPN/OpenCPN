@@ -2251,23 +2251,6 @@ void MyFrame::OnMaximize( wxMaximizeEvent& event )
     g_click_stop = 0;
 }
 
-ArrayOfRect MyFrame::GetCanvasReserveRects()
-{
-    ArrayOfRect ret_array;
-    if( g_FloatingCompassDialog ) {
-        //    Translate from CompassWindow's parent(gFrame) to CanvasWindow coordinates
-        wxPoint pos_in_frame = g_FloatingCompassDialog->GetPosition();
-        wxPoint pos_abs = ClientToScreen( pos_in_frame );
-        wxPoint pos_in_cc1 = pos_in_frame; //cc1->ScreenToClient(pos_abs);
-        wxRect r( pos_in_cc1.x, pos_in_cc1.y, g_FloatingCompassDialog->GetSize().x,
-                g_FloatingCompassDialog->GetSize().y );
-
-        ret_array.Add( r );
-    }
-
-    return ret_array;
-}
-
 void MyFrame::OnActivate( wxActivateEvent& event )
 {
 //    Code carefully in this method.
