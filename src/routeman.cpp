@@ -1091,7 +1091,7 @@ WayPointman::~WayPointman()
         delete pmi;
     }
 
-    m_pIconArray->Empty();
+    m_pIconArray->Clear();
     delete m_pIconArray;
 
     if( pmarkicon_image_list ) pmarkicon_image_list->RemoveAll();

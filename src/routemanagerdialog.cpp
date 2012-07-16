@@ -34,6 +34,7 @@
 
 #include <iostream>
 
+#include "styles.h"
 #include "dychart.h"
 #include "navutil.h"
 #include "routeprop.h"
