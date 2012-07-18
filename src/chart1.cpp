@@ -2421,23 +2421,31 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
+    wxString tipString;
+
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Zoom In")) << _T(" (+)");
     tb->AddTool( ID_ZOOMIN, _T("zoomin"), style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ),
-            _("Zoom In"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
+
+    tipString = wxString(_("Zoom Out")) << _T(" (-)");
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_ZOOMOUT, _T("zoomout"), style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ),
-            _("Zoom Out"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
 
     if( pCurrentStack && pCurrentStack->b_valid && ( pCurrentStack->nEntry > 1 ) ) {
         CheckAndAddPlugInTool( tb );
+        tipString = wxString(_("Shift to Larger Scale Chart")) << _T(" (F7)");
         newtool = tb->AddTool( ID_STKDN, _T("scin"),
-                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), _("Shift to Larger Scale Chart"),
+                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString,
                 wxITEM_NORMAL );
         newtool->Enable( true );
         CheckAndAddPlugInTool( tb );
+
+        tipString = wxString(_("Shift to Smaller Scale Chart")) << _T(" (F8)");
         newtool = tb->AddTool( ID_STKUP, _T("scout"),
                 style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ),
-                _("Shift to Smaller Scale Chart"), wxITEM_NORMAL );
+                tipString, wxITEM_NORMAL );
         newtool->Enable( true );
         m_toolbar_scale_tools_shown = true;
     } else {
@@ -2457,16 +2465,18 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             _("Create Route"), wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Auto Follow")) << _T(" (F2)");
     tb->AddTool( ID_FOLLOW, _T("follow"), style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, _("Auto Follow") );
+            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_SETTINGS, _T("settings"), style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ),
             _("ToolBox"), wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Show ENC Text")) << _T(" (T)");
     tb->AddTool( ID_TEXT, _T("text"), style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, _("Show ENC Text") );
+            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     m_pAISTool = NULL;
     if( !pAIS_Port->IsSameAs( _T("None"), false ) ) {
@@ -2480,6 +2490,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_CURRENT, _T("current"), style->GetToolIcon( _T("current"), TOOLICON_NORMAL ),
             _("Show Currents"), wxITEM_CHECK );
+
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_TIDE, _T("tide"), style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ),
             _("Show Tides"), wxITEM_CHECK );
@@ -2503,13 +2514,15 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     }
 
     CheckAndAddPlugInTool( tb );
+    tipString =  wxString(_("Change Color Scheme")) << _T(" (F5)");
     tb->AddTool( ID_COLSCHEME, _T("colorscheme"),
-            style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ), _("Change Color Scheme"),
+            style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ), tipString,
             wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)");
     tb->AddTool( ID_MOB, _T("mob_btn"), style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ),
-            _("Drop MOB Marker"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_HELP, _T("help"), style->GetToolIcon( _T("help"), TOOLICON_NORMAL ),
