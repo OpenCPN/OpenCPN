@@ -32,8 +32,8 @@ public:
       ocpnFloatingCompassWindow( wxWindow *parent );
       ~ocpnFloatingCompassWindow();
       void OnPaint( wxPaintEvent& event );
-      wxBitmap CreateBmp();
-      void UpdateStatus( bool bnew = false );
+      wxBitmap CreateBmp( bool bnew = false );
+      void UpdateStatus( bool newColorScheme = false );
 
       void OnClose( wxCloseEvent& event );
       void OnToolLeftClick( wxCommandEvent& event );
