@@ -302,14 +302,20 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
     switch( iconType ){
         case TOOLICON_NORMAL: {
             if( hasBackground ) {
-                iconbm = MergeBitmaps( GetNormalBG(), *bm, wxSize( 0, 0 ) );
+                wxBitmap bg = GetNormalBG();
+                bg = SetBitmapBrightness( bg );
+                wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
+                offset /= 2;
+                iconbm = MergeBitmaps( bg, *bm, offset );
             } else {
                 wxBitmap bg( GetToolSize().x, GetToolSize().y );
                 wxMemoryDC mdc( bg );
+                wxSize offset = GetToolSize() - wxSize( bm->GetWidth(), bm->GetHeight() );
+                offset /= 2;
                 mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
                 mdc.Clear();
                 mdc.SelectObject( wxNullBitmap );
-                iconbm = MergeBitmaps( bg, *bm, wxSize( 0, 0 ) );
+                iconbm = MergeBitmaps( bg, *bm, offset );
             }
             break;
         }
