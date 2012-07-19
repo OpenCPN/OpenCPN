@@ -81,7 +81,8 @@ char AuthorText[] =
 "   David S Register\n\
       OpenCPN Lead Developer\n\n\
     Jesper Weissglas\n\
-      Vector Chart Renderer Enhancements\n\n\
+      Vector Chart Renderer Enhancements\n\
+      User Interface Style\n\n\
     Sean D'Epagnier\n\
       OpenGL Architecture\n\n\
     Kathleen Boswell\n\

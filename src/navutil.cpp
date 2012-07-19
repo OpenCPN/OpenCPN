@@ -102,7 +102,6 @@ extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern bool             g_bShowPrintIcon;
 extern AutoPilotWindow  *pAPilot;
 extern wxString         *pAIS_Port;
 extern AIS_Decoder      *g_pAIS;
@@ -184,15 +183,14 @@ extern bool             g_bShowAreaNotices;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
-extern bool             g_bShowPrintIcon;
-extern bool             g_bNavAidShowRadarRings;            // toh, 2009.02.24
-extern int              g_iNavAidRadarRingsNumberVisible;   // toh, 2009.02.24
-extern float            g_fNavAidRadarRingsStep;            // toh, 2009.02.24
-extern int              g_pNavAidRadarRingsStepUnits;       // toh, 2009.02.24
-extern bool             g_bWayPointPreventDragging;         // toh, 2009.02.24
+extern bool             g_bNavAidShowRadarRings;
+extern int              g_iNavAidRadarRingsNumberVisible;
+extern float            g_fNavAidRadarRingsStep;
+extern int              g_pNavAidRadarRingsStepUnits;
+extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bEnableZoomToCursor;
-extern bool             g_bShowTrackIcon;
+extern wxString         g_toolbarConfig;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern bool             g_bTrackTime;
@@ -217,8 +215,6 @@ extern s52plib          *ps52plib;
 extern int              g_cm93_zoom_factor;
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
-
-extern int              S57_dialog_sx, S57_dialog_sy;
 
 extern bool             g_bUseGreenShip;
 
@@ -2711,6 +2707,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ToolbarX"), &g_toolbar_x, 0 );
     Read( _T ( "ToolbarY" ), &g_toolbar_y, 0 );
     Read( _T ( "ToolbarOrient" ), &g_toolbar_orient, wxTB_HORIZONTAL );
+    Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
 
     Read( _T ( "AnchorWatch1GUID" ), &g_AW1GUID, _T("") );
     Read( _T ( "AnchorWatch2GUID" ), &g_AW2GUID, _T("") );
@@ -2742,7 +2739,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
     Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
     Read( _T ( "ShowLayers" ), &g_bShowLayers, 1 );
-    Read( _T ( "ShowPrintIcon" ), &g_bShowPrintIcon, 0 );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
@@ -3536,10 +3532,6 @@ int MyConfig::LoadMyConfig( int iteration )
     g_bEnableZoomToCursor = false;
     Read( _T ( "EnableZoomToCursor" ), &g_bEnableZoomToCursor );
 
-    g_bShowTrackIcon = false;
-    ;
-    Read( _T ( "ShowTrackIcon" ), &g_bShowTrackIcon );
-
     g_TrackIntervalSeconds = 60.0;
     val.Clear();
     Read( _T ( "TrackIntervalSeconds" ), &val );
@@ -3922,7 +3914,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
 
     Write( _T ( "ShowDebugWindows" ), m_bShowDebugWindows );
-    Write( _T ( "ShowPrintIcon" ), g_bShowPrintIcon );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
@@ -3984,6 +3975,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarX" ), g_toolbar_x );
     Write( _T ( "ToolbarY" ), g_toolbar_y );
     Write( _T ( "ToolbarOrient" ), g_toolbar_orient );
+    Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
 
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
@@ -4221,7 +4213,6 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "EnableZoomToCursor" ), g_bEnableZoomToCursor );
 
-    Write( _T ( "ShowTrackIcon" ), g_bShowTrackIcon );
     Write( _T ( "TrackIntervalSeconds" ), g_TrackIntervalSeconds );
     Write( _T ( "TrackDeltaDistance" ), g_TrackDeltaDistance );
     Write( _T ( "EnableTrackByTime" ), g_bTrackTime );
@@ -6816,7 +6807,7 @@ void X11FontPicker::SetChoiceOptionsFromFacename ( wxString &facename )
     //    Get a list of matching fonts
     char face[101];
     strncpy ( face, facename.mb_str(), 100 );
-    face[100] = \0;
+    face[100] = '\0';
 
     char pattern[100];
     sprintf ( pattern, "-*-%s-*-*-*-*-*-*-*-*-*-*-iso8859-1", face );

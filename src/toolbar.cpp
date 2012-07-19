@@ -39,15 +39,18 @@
 #include "chart1.h"
 #include "pluginmanager.h"
 
-extern FontMgr* pFontMgr;
+extern FontMgr*                   pFontMgr;
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;
-extern bool g_bTransparentToolbar;
-extern ChartCanvas* cc1;
-extern bool g_bopengl;
-extern ocpnToolBarSimple* g_toolbar;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern MyFrame *gFrame;
-extern PlugInManager *g_pi_manager;
+extern bool                       g_bTransparentToolbar;
+extern ChartCanvas*               cc1;
+extern bool                       g_bopengl;
+extern ocpnToolBarSimple*         g_toolbar;
+extern ocpnStyle::StyleManager*   g_StyleManager;
+extern MyFrame*                   gFrame;
+extern PlugInManager*             g_pi_manager;
+extern wxMenu*                    g_FloatingToolbarConfigMenu;
+extern wxString                   g_toolbarConfig;
+
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -156,10 +159,11 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 //---------------------------------------------------------------------------------------
 //          ocpnFloatingToolbarDialog Implementation
 //---------------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog) EVT_MOUSE_EVENTS ( ocpnFloatingToolbarDialog::MouseEvent )
-EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, ocpnFloatingToolbarDialog::OnToolLeftClick)
-EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
-EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
+BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
+    EVT_MOUSE_EVENTS ( ocpnFloatingToolbarDialog::MouseEvent )
+    EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, ocpnFloatingToolbarDialog::OnToolLeftClick)
+    EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
+    EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
 END_EVENT_TABLE()
 
 ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position,
@@ -526,9 +530,27 @@ void ocpnFloatingToolbarDialog::Realize()
 
 void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
 {
-    // Since Dialog events don't propagate automatically, we send it explicitly (instead of relying on event.Skip())
-    // Send events up the window hierarchy
-    m_pparent->GetEventHandler()->AddPendingEvent( event ); //ProcessEvent(event);
+    // First see if it was actually the context menu that was clicked.
+
+    if( event.GetId() >= ID_PLUGIN_BASE + 100 ) {
+
+        int itemId = event.GetId() - ID_PLUGIN_BASE - 100;
+        bool toolIsChecked = g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->IsChecked();
+
+        if( toolIsChecked ) {
+            g_toolbarConfig.SetChar( itemId, _T('X') );
+        } else {
+            g_toolbarConfig.SetChar( itemId, _T('.') );
+        }
+        gFrame->RequestNewToolbar();
+        return;
+    }
+
+    // No it was a button that was clicked.
+    // Since Dialog events don't propagate automatically, we send it explicitly
+    // (instead of relying on event.Skip()). Send events up the window hierarchy
+
+    m_pparent->GetEventHandler()->AddPendingEvent( event );
     gFrame->Raise();
 }
 
@@ -1583,6 +1605,8 @@ void ocpnToolBarSimple::EnableTool( int id, bool enable )
             DoEnableTool( tool, enable );
         }
     }
+    wxMenuItem* configItem = g_FloatingToolbarConfigMenu->FindItem( id );
+    configItem->Check( true );
 }
 
 void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRollover )
@@ -1769,6 +1793,9 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     wxCommandEvent event( wxEVT_COMMAND_TOOL_RCLICKED, id );
     event.SetEventObject( this );
     event.SetInt( id );
+
+    HideTooltip();
+    PopupMenu( g_FloatingToolbarConfigMenu );
 
     GetEventHandler()->ProcessEvent( event );
 }
