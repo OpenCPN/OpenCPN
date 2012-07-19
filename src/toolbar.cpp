@@ -713,7 +713,6 @@ public:
         m_toggled = false;
         rollover = false;
         bitmapOK = false;
-        isHidden = false;
 
         toolname = g_pi_manager->GetToolOwnerCommonName( id );
         if( toolname == _T("") ) {
@@ -760,7 +759,6 @@ public:
     bool rollover;
     bool bitmapOK;
     bool isPluginTool;
-    bool isHidden;
     bool b_hilite;
 };
 
@@ -842,7 +840,6 @@ wxToolBarToolBase *ocpnToolBarSimple::AddTool( int toolid, const wxString& label
     InvalidateBestSize();
     ocpnToolBarTool* tool = (ocpnToolBarTool*)InsertTool( GetToolsCount(), toolid, label, bitmap, bmpDisabled, kind,
             shortHelp, longHelp, data );
-    tool->isHidden = m_style->HideTool( label );
     return tool;
 }
 
@@ -1029,11 +1026,6 @@ bool ocpnToolBarSimple::Realize()
         tool->firstInLine = firstNode;
         tool->lastInLine = false;
         firstNode = false;
-
-        if( tool->isHidden ) {
-            node = node->GetNext();
-            continue;
-        }
 
         if( tool->IsSeparator() ) {
             if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) {
@@ -1632,7 +1624,7 @@ int ocpnToolBarSimple::GetVisibleToolCount()
     wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
     while( node ) {
         ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
-        if( ! tool->isHidden ) counter++;
+        counter++;
         node = node->GetNext();
     }
     return counter;
