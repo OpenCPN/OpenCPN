@@ -182,14 +182,13 @@ bool                      bDBUpdateInProgress;
 ThumbWin                  *pthumbwin;
 TCMgr                     *ptcmgr;
 
+
 bool                      bDrawCurrentValues;
 
 wxString                  g_PrivateDataDir;
 wxString                  g_SData_Locn;
 wxString                  *pChartListFileName;
-wxString                  *pTC_Dir;
 wxString                  *pHome_Locn;
-wxString                  g_TCdataset;
 wxString                  *pWVS_Locn;
 wxString                  *pInit_Chart_Dir;
 wxString                  g_csv_locn;
@@ -420,6 +419,9 @@ wxString                  g_GPS_Ident;
 wxProgressDialog          *s_ProgDialog;
 
 S57QueryDialog            *g_pObjectQueryDialog;
+
+wxArrayString             TideCurrentDataSet;
+wxString                  g_TCData_Dir;
 
 //-----------------------------------------------------------------------------------------------------
 //                        OCP_NMEA_Thread Static data store
@@ -1245,7 +1247,7 @@ bool MyApp::OnInit()
 
     g_config_version_string = vs;
 
-#ifdef USE_S57
+ #ifdef USE_S57
 
 //      Set up a useable CPL library error handler for S57 stuff
     CPLSetErrorHandler( MyCPLErrorHandler );
@@ -1367,7 +1369,7 @@ bool MyApp::OnInit()
         //  not to exceed 1 GB
 #ifdef __WXMSW__
     if( 0 == g_memCacheLimit ) {
-        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = (int) ( g_mem_total * 0.5 );
+        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = wxMin((int) ( g_mem_total * 0.5 ), 1024);
     }
         g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024);  // math in kBytes
 #endif
@@ -1393,11 +1395,6 @@ bool MyApp::OnInit()
 #endif
         pChartListFileName->Prepend( *pHome_Locn );
     }
-
-//      Establish location of Tide and Current data
-    pTC_Dir = new wxString( _T("tcdata") );
-    pTC_Dir->Prepend( g_SData_Locn );
-    pTC_Dir->Append( wxFileName::GetPathSeparator() );
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
@@ -1459,6 +1456,16 @@ bool MyApp::OnInit()
 #endif
 
     }
+    
+    //  Check the global Tide/Current data source array
+    //  If empty, preset one default (US) Ascii data source
+    if(!TideCurrentDataSet.GetCount())
+        TideCurrentDataSet.Add( g_SData_Locn +
+            _T("tcdata") +
+            wxFileName::GetPathSeparator() +
+            _T("HARMONIC.IDX"));
+    
+    
 
     g_StartTime = wxInvalidDateTime;
     g_StartTimeTZ = 1;				// start with local times
@@ -2004,6 +2011,8 @@ int MyApp::OnExit()
     wxLogMessage( navmsg );
     g_loglast_time = lognow;
 
+    if( ptcmgr ) delete ptcmgr;
+    
     wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
     delete pConfig;
     delete pSelect;
@@ -2016,8 +2025,6 @@ int MyApp::OnExit()
 
     delete pDummyChart;
 
-    if( ptcmgr ) delete ptcmgr;
-
     if( logger ) {
         wxLog::SetActiveTarget( Oldlogger );
         delete logger;
@@ -2025,7 +2032,6 @@ int MyApp::OnExit()
 
     delete pChartListFileName;
     delete pHome_Locn;
-    delete pTC_Dir;
     delete phost_name;
     delete pInit_Chart_Dir;
     delete pWVS_Locn;
@@ -6930,29 +6936,29 @@ void MyFrame::ResumeSockets( void )
 
 void MyFrame::LoadHarmonics()
 {
-    wxString TCDir;
-    wxChar sep = wxFileName::GetPathSeparator();
-    if( g_TCdataset == _T("DEFAULT") ) TCDir = *pTC_Dir;
-    else {
-        TCDir = g_PrivateDataDir;
-        TCDir.Append( sep ).Append( _T("UserTCData") ).Append( sep ).Append( g_TCdataset ).Append(
-                sep );
+    if(!ptcmgr) {
+        ptcmgr = new TCMgr;
+        ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
-
-    wxLogMessage( _T("Using Tide/Current data from:  ") + TCDir );
-
-    wxString harm2test = TCDir;
-    harm2test.Append( _T("HARMONIC") );
-
-    if( !ptcmgr || ptcmgr->GetHarmonicFilename() != harm2test )      // First time, init the manager
-            {
-        if( ptcmgr ) delete ptcmgr;
-        wxString cache_locn = *pHome_Locn;
-#ifndef __WXMSW__
-        if(!g_bportable)
-        cache_locn.Append(_T(".opencpn/"));
-#endif
-        ptcmgr = new TCMgr( TCDir, cache_locn );
+    else {
+        bool b_newdataset = false;
+        wxArrayString test = ptcmgr->GetDataSet();
+        for(unsigned int i=0 ; i < test.GetCount() ; i++) {
+            bool b_foundi = false;
+            for(unsigned int j=0 ; j < TideCurrentDataSet.GetCount() ; j++) {
+                if(TideCurrentDataSet.Item(j) == test.Item(i)) {
+                    b_foundi = true;
+                    break;              // j loop
+                }
+            }
+            if(!b_foundi) {
+                b_newdataset = true;
+                break;                  //  i loop
+            }
+        }
+        
+        if(b_newdataset)
+            ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
 }
 

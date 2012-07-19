@@ -188,6 +188,9 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
+extern wxArrayString    TideCurrentDataSet;
+extern wxString         g_TCData_Dir;
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
 
@@ -212,6 +215,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
     EVT_BUTTON( ID_BUTTONGROUP, options::OnButtonGroups )
+    EVT_BUTTON( ID_BUTTONTCDATA, options::OnButtonTCData )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
     EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
@@ -625,10 +629,14 @@ void options::CreateControls()
             wxVERTICAL );
     itemBoxSizer6->Add( itemStaticBoxSizerTCDisplay, 0, wxTOP | wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer *pTCDisplayGrid = new wxFlexGridSizer( 2 );
-    pTCDisplayGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerTCDisplay->Add( pTCDisplayGrid, 0, wxALL | wxEXPAND, border_size );
+//    wxFlexGridSizer *pTCDisplayGrid = new wxFlexGridSizer( 2 );
+//    pTCDisplayGrid->AddGrowableCol( 1 );
+//    itemStaticBoxSizerTCDisplay->Add( pTCDisplayGrid, 0, wxALL | wxEXPAND, border_size );
 
+    wxButton* group_button = new wxButton( itemPanel5, ID_BUTTONTCDATA, _("Tide/Current Datasets...") );
+    itemStaticBoxSizerTCDisplay->Add( group_button, 0, wxALIGN_RIGHT | wxALL, 2 );
+
+/*
     wxStaticText *pStatic_TC_Dataset = new wxStaticText( itemPanel5, -1,
             _("Harmonic dataset to use:") );
     pTCDisplayGrid->Add( pStatic_TC_Dataset, 1, wxALIGN_LEFT | wxALL, group_item_spacing );
@@ -661,6 +669,8 @@ void options::CreateControls()
     }
     m_pcTCDatasets->SetSelection( sel );
     pTCDisplayGrid->Add( m_pcTCDatasets, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+*/
+
 
     //  Create "GPS" panel
 
@@ -1915,11 +1925,12 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
+/*
     if( m_pcTCDatasets->GetSelection() != 0 ) g_TCdataset = m_pcTCDatasets->GetString(
             m_pcTCDatasets->GetSelection() );
     else
         g_TCdataset = wxT("DEFAULT");
-
+*/
     //    AIS Parameters
     //      CPA Box
     g_bCPAMax = m_pCheck_CPA_Max->GetValue();
@@ -2777,6 +2788,34 @@ void options::OnButtonGroups( wxCommandEvent& event )
 
 }
 
+void options::OnButtonTCData( wxCommandEvent& event )
+{
+    int display_width, display_height;
+    wxDisplaySize( &display_width, &display_height );
+
+    tidedata_dialog dlg;
+    
+    dlg.Create( pParent, -1, _("Tide & Current Dataset Selection"), wxDefaultPosition,
+                  wxSize( wxMin(display_width-100, 600), 200 ) );
+    dlg.Centre();
+
+    if( dlg.ShowModal() == xID_OK ) {
+    } else {
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 //    Chart Groups dialog implementation
 
 IMPLEMENT_DYNAMIC_CLASS( groups_dialog, wxDialog )
@@ -3362,5 +3401,209 @@ wxTreeCtrl *groups_dialog::AddEmptyGroupPage( const wxString& label )
     m_DirCtrlArray.Add( GroupDirCtl );
 
     return ptree;
+}
+
+//    Tide/Current Data Source Selection dialog implementation
+
+IMPLEMENT_DYNAMIC_CLASS( tidedata_dialog, wxDialog )
+
+BEGIN_EVENT_TABLE( tidedata_dialog, wxDialog )
+EVT_BUTTON( ID_TCDATAADD, tidedata_dialog::OnInsertTideDataLocation )
+EVT_BUTTON( ID_TCDATADEL, tidedata_dialog::OnRemoveTideDataLocation )
+EVT_BUTTON( xID_OK, tidedata_dialog::OnOK )
+END_EVENT_TABLE()
+
+tidedata_dialog::tidedata_dialog()
+{
+    Init();
+}
+
+tidedata_dialog::tidedata_dialog( MyFrame* parent, wxWindowID id, const wxString& caption,
+        const wxPoint& pos, const wxSize& size, long style )
+{
+    Init();
+
+    pParent = parent;
+
+    //    As a display optimization....
+    //    if current color scheme is other than DAY,
+    //    Then create the dialog ..WITHOUT.. borders and title bar.
+    //    This way, any window decorations set by external themes, etc
+    //    will not detract from night-vision
+
+    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
+//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
+//            wstyle |= (wxNO_BORDER);
+
+    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
+
+    wxDialog::Create( parent, id, caption, pos, size, wstyle );
+
+    CreateControls();
+}
+
+bool tidedata_dialog::Create( MyFrame* parent, wxWindowID id, const wxString& caption,
+        const wxPoint& pos, const wxSize& size, long style )
+{
+    Init();
+
+    pParent = parent;
+
+    //    As a display optimization....
+    //    if current color scheme is other than DAY,
+    //    Then create the dialog ..WITHOUT.. borders and title bar.
+    //    This way, any window decorations set by external themes, etc
+    //    will not detract from night-vision
+
+    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
+
+    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
+
+    wxDialog::Create( parent, id, caption, pos, size, wstyle );
+
+    CreateControls();
+
+    return true;
+}
+
+tidedata_dialog::~tidedata_dialog()
+{
+}
+
+void tidedata_dialog::Init()
+{
+}
+
+void tidedata_dialog::CreateControls( void )
+{
+    int border_size = 4;
+
+    int display_width, display_height;
+    wxDisplaySize( &display_width, &display_height );
+
+    wxFont *qFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+            wxFONTWEIGHT_NORMAL );
+    SetFont( *qFont );
+
+    int font_size_y, font_descent, font_lead;
+    GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
+    wxSize small_button_size( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
+
+    //    The total dialog vertical sizer
+    wxBoxSizer* TopVBoxSizer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( TopVBoxSizer );
+
+    //    Add main horizontal sizer....
+    wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
+    TopVBoxSizer->Add( mainHBoxSizer, 1, wxALIGN_TOP | wxEXPAND );
+#if 0
+    //    The file tree
+    wxStaticBox *TideDataSourceStaticBox = new wxStaticBox( this, wxID_ANY, _("File System") );
+    wxStaticBoxSizer* TideDataSourceStaticBoxSizer = new wxStaticBoxSizer(
+    		TideDataSourceStaticBox, wxVERTICAL );
+    mainHBoxSizer->Add( TideDataSourceStaticBoxSizer, 1, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
+
+    m_pDirCtl = new wxGenericDirCtrl( this, -1, _T("") );
+    m_pDirCtl->ShowHidden(true);
+    TideDataSourceStaticBoxSizer->Add( m_pDirCtl, 1, wxALIGN_LEFT | wxEXPAND );
+    m_pDirCtl->SetPath(g_TCData_Dir);
+#endif
+    //    Add the "Insert/Remove" buttons
+    m_pinsertButton = new wxButton( this, ID_TCDATAADD, _("Add") );
+    m_premoveButton = new wxButton( this, ID_TCDATADEL, _("Remove") );
+
+    wxBoxSizer* IRSizer = new wxBoxSizer( wxVERTICAL );
+    mainHBoxSizer->AddSpacer( 10 );
+    mainHBoxSizer->Add( IRSizer, 0, wxALIGN_CENTRE | wxEXPAND );
+    mainHBoxSizer->AddSpacer( 10 );
+
+    IRSizer->AddSpacer( 50 );
+    IRSizer->Add( m_pinsertButton, 0, wxALIGN_CENTRE );
+    IRSizer->AddSpacer( 20 );
+    IRSizer->Add( m_premoveButton, 0, wxALIGN_CENTRE );
+
+    //	Add the ListBox control containing the selections
+    wxStaticBox *TideDataSelectedStaticBox = new wxStaticBox( this, wxID_ANY, _("Active Tide/Current Data" ));
+    wxStaticBoxSizer* TideDataSelectedtaticBoxSizer = new wxStaticBoxSizer( TideDataSelectedStaticBox, wxVERTICAL );
+    mainHBoxSizer->Add( TideDataSelectedtaticBoxSizer, 1, wxALIGN_RIGHT | wxALL | wxEXPAND, 5 );
+
+    m_DataSelected = new wxListBox(this, ID_TIDESELECTED);
+
+    TideDataSelectedtaticBoxSizer->Add( m_DataSelected, 1, wxALIGN_RIGHT | wxEXPAND );
+
+    //  Populate Selection List Control with the contents
+    //  of the Global static array
+    for( unsigned int id = 0 ; id < TideCurrentDataSet.Count() ; id++ ) {
+        m_DataSelected->Append( TideCurrentDataSet.Item(id) );
+    }
+
+    //      Add standard dialog control buttons
+    wxBoxSizer* itemBoxSizer28 = new wxBoxSizer( wxHORIZONTAL );
+    TopVBoxSizer->Add( itemBoxSizer28, 0, wxALIGN_RIGHT | wxALL, border_size );
+
+    m_OKButton = new wxButton( this, xID_OK, _("Ok") );
+    m_OKButton->SetDefault();
+    itemBoxSizer28->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
+
+    m_CancelButton = new wxButton( this, wxID_CANCEL, _("&Cancel") );
+    itemBoxSizer28->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
+
+}
+void tidedata_dialog::OnOK( wxCommandEvent &event )
+{
+    //  Pick up all the entries in the DataSelected control
+    //  and update the global static array
+    TideCurrentDataSet.Clear();
+    int nEntry = m_DataSelected->GetCount();
+
+    for( int i = 0; i < nEntry; i++ ) {
+        wxString s = m_DataSelected->GetString( i );
+        TideCurrentDataSet.Add( s );
+    }
+
+    EndModal (xID_OK);
+}
+
+void tidedata_dialog::OnInsertTideDataLocation( wxCommandEvent &event )
+{
+    wxString sel_file;
+    int response = wxID_CANCEL;
+    
+    wxFileDialog openDialog( this, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
+                             wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
+                                    wxFD_OPEN  );
+    response = openDialog.ShowModal();
+    if( response == wxID_OK ) {
+        sel_file = openDialog.GetPath();
+
+        if( g_bportable ) {
+            wxFileName f( sel_file );
+            f.MakeRelativeTo( *pHome_Locn );
+            m_DataSelected->Append( f.GetFullPath() );
+        } else
+            m_DataSelected->Append( sel_file );
+        
+        //    Record the currently selected directory for later use
+        wxFileName fn( sel_file );
+        g_TCData_Dir = fn.GetPath();
+    }
+    
+    
+    
+}
+
+void tidedata_dialog::OnRemoveTideDataLocation( wxCommandEvent &event )
+{
+    wxArrayInt sels;
+    int nSel = m_DataSelected->GetSelections(sels);
+    wxArrayString a;
+    for( int i=0 ; i < nSel ; i++) {
+        a.Add( m_DataSelected->GetString(sels.Item( i )));
+    }
+
+    for (unsigned int i=0 ; i < a.Count() ; i++) {
+        int b = m_DataSelected->FindString(a.Item(i));
+        m_DataSelected->Delete( b );
+    }
 }
 

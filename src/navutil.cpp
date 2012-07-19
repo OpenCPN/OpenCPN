@@ -133,7 +133,6 @@ extern int              g_nAWDefault;
 extern int              g_nAWMax;
 
 extern int              g_iSDMMFormat;
-extern wxString         g_TCdataset;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -309,6 +308,8 @@ extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern wxArrayString    TideCurrentDataSet;
+extern wxString         g_TCData_Dir;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -2749,8 +2750,6 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
-    Read( _T ( "TCDataset" ), &g_TCdataset, wxT("DEFAULT") );
-
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
 
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
@@ -2994,6 +2993,7 @@ int MyConfig::LoadMyConfig( int iteration )
     }
 
     Read( _T ( "GPXIODir" ), &m_gpx_path );           // Get the Directory name
+    Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "nColorScheme" ), &read_int, 0 );
@@ -3149,6 +3149,21 @@ int MyConfig::LoadMyConfig( int iteration )
             bCont = GetNextEntry( str, dummy );
         }
         delete pval;
+    }
+
+//  Tide/Current Data Sources
+    SetPath( _T ( "/TideCurrentDataSources" ) );
+    TideCurrentDataSet.Clear();
+    if( GetNumberOfEntries() ) {
+        wxString str, val;
+        long dummy;
+        int iDir = 0;
+        bool bCont = GetFirstEntry( str, dummy );
+        while( bCont ) {
+            Read( str, &val );              // Get a file name
+            TideCurrentDataSet.Add(val);
+            bCont = GetNextEntry( str, dummy );
+        }
     }
 
 //    Routes
@@ -3920,7 +3935,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
-    Write( _T ( "TCDataset" ), g_TCdataset );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
@@ -4124,6 +4138,7 @@ void MyConfig::UpdateSettings()
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "InitChartDir" ), *pInit_Chart_Dir );
     Write( _T ( "GPXIODir" ), m_gpx_path );
+    Write( _T ( "TCDataDir" ), g_TCData_Dir );
 
     if( g_pnmea ) {
         SetPath( _T ( "/Settings/NMEADataSource" ) );
@@ -4181,6 +4196,16 @@ void MyConfig::UpdateSettings()
     } else {
         SetPath( _T("/") );
         if( HasGroup( font_path ) ) pConfig->DeleteGroup( font_path );
+    }
+
+    //  Tide/Current Data Sources
+    DeleteGroup( _T ( "/TideCurrentDataSources" ) );
+    SetPath( _T ( "/TideCurrentDataSources" ) );
+    unsigned int iDirMax = TideCurrentDataSet.Count();
+    for( unsigned int id = 0 ; id < iDirMax ; id++ ) {
+        wxString key;
+        key.Printf(_T("tcds%d"), id);
+        Write( key, TideCurrentDataSet.Item(id) );
     }
 
     SetPath( _T ( "/Settings/Others" ) );
