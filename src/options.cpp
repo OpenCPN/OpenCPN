@@ -61,7 +61,6 @@ void EmptyChartGroupArray(ChartGroupArray *s);
 
 extern MyFrame          *gFrame;
 
-extern bool             g_bShowPrintIcon;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
@@ -74,8 +73,6 @@ extern wxString         *pNMEA_AP_Port;
 extern FontMgr          *pFontMgr;
 extern wxString         *pAIS_Port;
 extern wxString         *pInit_Chart_Dir;
-extern bool             g_bAutoAnchorMark;
-extern ColorScheme      global_color_scheme;
 extern bool             g_bGarminPersistance;
 extern bool             g_bGarminHost;
 extern bool             g_bfilter_cogsog;
@@ -330,7 +327,7 @@ void options::Init()
     k_charts = 0;
     k_vectorcharts = 0;
     k_plugins = 0;
-    
+
     itemStaticBoxSizer11 = NULL;
     pDirCtl = NULL;
     ;
@@ -466,16 +463,6 @@ void options::CreateControls()
     pDebugShowStat = new wxCheckBox( itemPanel5, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
     pDebugShowStat->SetValue( FALSE );
     itemStaticBoxSizerDebug->Add( pDebugShowStat, 1, wxALIGN_LEFT | wxALL, 2 );
-
-    //  Printing checkbox
-    wxStaticBox* itemStaticBoxSizerPrintStatic = new wxStaticBox( itemPanel5, wxID_ANY,
-            _("Printing") );
-    wxStaticBoxSizer* itemStaticBoxSizerPrint = new wxStaticBoxSizer( itemStaticBoxSizerPrintStatic,
-            wxVERTICAL );
-    itemBoxSizer6->Add( itemStaticBoxSizerPrint, 0, wxEXPAND | wxALL, 5 );
-    pPrintShowIcon = new wxCheckBox( itemPanel5, ID_PRINTCHECKBOX1, _("Show Printing Icon") );
-    pPrintShowIcon->SetValue( FALSE );
-    itemStaticBoxSizerPrint->Add( pPrintShowIcon, 1, wxALIGN_LEFT | wxALL, 2 );
 
     // Chart Display Options Box
     wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox( itemPanel5, wxID_ANY,
@@ -1299,8 +1286,6 @@ void options::CreateControls()
     wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer( itemStaticBoxSizerTrackStatic,
             wxVERTICAL );
     itemBoxSizerAdvancedPanel->Add( itemStaticBoxSizerTrack, 0, wxGROW | wxALL, border_size );
-    pTrackShowIcon = new wxCheckBox( itemPanelAdvanced, ID_TRACKCHECKBOX, _("Show Track icon") );
-    itemStaticBoxSizerTrack->Add( pTrackShowIcon, 1, wxALIGN_LEFT | wxALL, border_size );
     pTrackDaily = new wxCheckBox( itemPanelAdvanced, ID_DAILYCHECKBOX,
             _("Automatic Daily Tracks") );
     itemStaticBoxSizerTrack->Add( pTrackDaily, 1, wxALIGN_LEFT | wxALL, border_size );
@@ -1484,7 +1469,6 @@ void options::SetInitialSettings()
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
 
-    pPrintShowIcon->SetValue( g_bShowPrintIcon );
     pCDOOutlines->SetValue( g_bShowOutlines );
     pCDOQuilting->SetValue( g_bQuiltEnable );
     pFullScreenQuilt->SetValue( !g_bFullScreenQuilt );
@@ -1525,7 +1509,6 @@ void options::SetInitialSettings()
     pShowLayers->SetValue( g_bShowLayers );
     pSDMMFormat->Select( g_iSDMMFormat );
 
-    pTrackShowIcon->SetValue( g_bShowTrackIcon );
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
 
@@ -1868,7 +1851,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     g_bGarminHost = pGarminHost->GetValue();
 
-    g_bShowPrintIcon = pPrintShowIcon->GetValue();
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
 
@@ -1914,7 +1896,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
     g_bShowLayers = pShowLayers->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
-    g_bShowTrackIcon = pTrackShowIcon->GetValue();
     m_pText_TP_Secs->GetValue().ToDouble( &g_TrackIntervalSeconds );
     m_pText_TP_Dist->GetValue().ToDouble( &g_TrackDeltaDistance );
     g_bTrackTime = m_pCheck_Trackpoint_time->GetValue();
@@ -2176,7 +2157,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     itemNotebook4->ChangeSelection(0);
     delete pListBox;
     delete ps57CtlListBox;
-    
+
     EndModal(iret);
 
 }
@@ -2225,7 +2206,7 @@ void options::OnCancelClick( wxCommandEvent& event )
     itemNotebook4->ChangeSelection(0);
     delete pListBox;
     delete ps57CtlListBox;
-    
+
     EndModal(0);
 }
 
@@ -2794,7 +2775,7 @@ void options::OnButtonTCData( wxCommandEvent& event )
     wxDisplaySize( &display_width, &display_height );
 
     tidedata_dialog dlg;
-    
+
     dlg.Create( pParent, -1, _("Tide & Current Dataset Selection"), wxDefaultPosition,
                   wxSize( wxMin(display_width-100, 600), 200 ) );
     dlg.Centre();
@@ -3568,7 +3549,7 @@ void tidedata_dialog::OnInsertTideDataLocation( wxCommandEvent &event )
 {
     wxString sel_file;
     int response = wxID_CANCEL;
-    
+
     wxFileDialog openDialog( this, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
                              wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
                                     wxFD_OPEN  );
@@ -3582,14 +3563,14 @@ void tidedata_dialog::OnInsertTideDataLocation( wxCommandEvent &event )
             m_DataSelected->Append( f.GetFullPath() );
         } else
             m_DataSelected->Append( sel_file );
-        
+
         //    Record the currently selected directory for later use
         wxFileName fn( sel_file );
         g_TCData_Dir = fn.GetPath();
     }
-    
-    
-    
+
+
+
 }
 
 void tidedata_dialog::OnRemoveTideDataLocation( wxCommandEvent &event )
