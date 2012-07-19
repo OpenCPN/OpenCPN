@@ -4698,7 +4698,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                   }
                   case tlCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
                   {
-                        if( (pAISTarget->TCPA <= 0.) || (pAISTarget->CPA == 100. && pAISTarget->TCPA == 100) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                        if( (!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
                               ret = _("-");
                         else
                               ret.Printf(_T("%5.2f"), pAISTarget->CPA);
@@ -4706,7 +4706,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data *pAISTarget, long col
                   }
                   case tlTCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
                   {
-                        if( (pAISTarget->TCPA <= 0.) || (pAISTarget->CPA == 100. && pAISTarget->TCPA == 100) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+                        if( (!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
                               ret = _("-");
                         else
                               ret.Printf(_T("%5.0f"), pAISTarget->TCPA);
@@ -4900,12 +4900,12 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             }
             case tlCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
             {
-                  if( (t1->TCPA <= 0.) || (t1->CPA == 100. && t1->TCPA == 100) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                  if( (!t1->bCPA_Valid) ||  (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
                         n1 = 99999.0;
                   else
                         n1 = t1->CPA;
 
-                  if( (t2->TCPA <= 0.) || (t2->CPA == 100. && t2->TCPA == 100) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                  if( (!t2->bCPA_Valid) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
                         n2 = 99999.0;
                   else
                         n2 = t2->CPA;
@@ -4915,12 +4915,12 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             }
             case tlTCPA:  //TR 2012.06.29 : add CPA/TCPA to AIS target list
             {
-                  if( (t1->TCPA <= 0.) || (t1->CPA == 100. && t1->TCPA == 100) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
+                  if( (!t1->bCPA_Valid) || (t1->Class == AIS_ATON) || (t1->Class == AIS_BASE))
                         n1 = 99999.0;
                   else
                         n1 = t1->TCPA;
 
-                  if( (t2->TCPA <= 0.) || (t2->CPA == 100. && t2->TCPA == 100) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
+                  if( (!t2->bCPA_Valid) || (t2->Class == AIS_ATON) || (t2->Class == AIS_BASE))
                         n2 = 99999.0;
                   else
                         n2 = t2->TCPA;

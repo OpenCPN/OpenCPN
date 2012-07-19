@@ -6135,6 +6135,23 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.StrokeCircle( tCPAPoint_sav.x, tCPAPoint_sav.y, 5 );
                 dc.StrokeCircle( oCPAPoint_sav.x, oCPAPoint_sav.y, 5 );
             }
+            //TR 14.07.2012: Draw the intercept line from ownship
+
+            wxPoint oShipPoint;
+            GetCanvasPointPix ( gLat, gLon, &oShipPoint );
+            ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y, &oCPAPoint.x, &oCPAPoint.y, 0, GetVP().pix_width, 0, GetVP().pix_height );
+
+            if ( ownres != Invisible ){
+                wxDash dash_long[2];
+                dash_long[0] = ( int ) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
+                dash_long[1] = ( int ) ( 0.5 * m_pix_per_mm );  // Short gap            |
+
+                wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
+                ppPen2.SetDashes( 2, dash_long );
+                dc.SetPen(ppPen2);
+
+                dc.StrokeLine ( oShipPoint.x, oShipPoint.y, oCPAPoint.x, oCPAPoint.y );
+            } //TR : till here
 
             dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
