@@ -133,7 +133,6 @@ extern int              g_nAWDefault;
 extern int              g_nAWMax;
 
 extern int              g_iSDMMFormat;
-extern wxString         g_TCdataset;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -2751,8 +2750,6 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
-    Read( _T ( "TCDataset" ), &g_TCdataset, wxT("DEFAULT") );
-
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
 
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
@@ -3938,7 +3935,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
-    Write( _T ( "TCDataset" ), g_TCdataset );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
