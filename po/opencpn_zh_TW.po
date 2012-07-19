@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-17 09:42-0400\n"
+"POT-Creation-Date: 2012-07-15 06:29-0700\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -118,11 +119,6 @@ msgstr "   圖檔無法呼叫 PostInit() "
 # 
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "   圖檔無BSB標頭, 無法起始."
-#
-# 
-# 
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
 #
 # 
 # 
@@ -274,6 +270,9 @@ msgstr " 來源版本: "
 msgid " Updated:  "
 msgstr " 更新: "
 #
+msgid " for details."
+msgstr ""
+#
 # 
 # 
 #, c-format
@@ -302,6 +301,12 @@ msgstr "啟用(&A)"
 # 
 msgid "&Cancel"
 msgstr "取消(&C)"
+#
+msgid "&Copy all as text"
+msgstr ""
+#
+msgid "&Copy as text"
+msgstr ""
 #
 # 
 # 
@@ -387,6 +392,12 @@ msgstr "屬性(&P)..."
 #
 # 
 # 
+#, fuzzy
+msgid "&Remove Selected"
+msgstr "刪除航跡"
+#
+# 
+# 
 msgid "&Reverse"
 msgstr "反向(&R)"
 #
@@ -414,6 +425,12 @@ msgstr "樣式(&S):"
 # 
 msgid "&Underline"
 msgstr "底線(&U)"
+#
+# 
+# 
+#, fuzzy
+msgid "&Waypoint Properties..."
+msgstr "屬性(&P)..."
 #
 # 
 # 
@@ -556,6 +573,9 @@ msgid ""
 msgstr "方位:                無法取得\n"
 #
 msgid "<--Remove"
+msgstr ""
+#
+msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 #
 # 
@@ -705,6 +725,9 @@ msgstr "使用中的海圖目錄"
 msgid "All files (*.*)|*.*"
 msgstr "所有檔案 (*.*)|*.*"
 #
+msgid "Anchorage created "
+msgstr ""
+#
 # 
 # 
 msgid "Append Waypoint"
@@ -729,6 +752,12 @@ msgstr "確定刪除<所有>轉向點?"
 # 
 msgid "Are you sure you want to delete this track?"
 msgstr "確定要刪除這條航跡?"
+#
+# 
+# 
+#, fuzzy
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "確定刪除<所有>轉向點?"
 #
 # 
 # 
@@ -1633,6 +1662,9 @@ msgstr "擴大潮汐圖示"
 msgid "F/V"
 msgstr "漁船"
 #
+msgid "Failed to initialize the user interface. "
+msgstr ""
+#
 # 
 # 
 msgid "Fast ship"
@@ -1805,6 +1837,12 @@ msgstr "這裡"
 #
 # 
 # 
+#, fuzzy
+msgid "Hide AIS Target CPA"
+msgstr "AIS 目標查詢"
+#
+# 
+# 
 msgid "Hide WPT names"
 msgstr "隱藏轉向點名稱"
 #
@@ -1913,11 +1951,6 @@ msgstr "LW"
 # 
 msgid "Language"
 msgstr "語系"
-#
-# 
-# 
-msgid "Language/Fonts"
-msgstr "語系/字型"
 #
 # 
 # 
@@ -2159,6 +2192,12 @@ msgstr "標記資訊"
 # 
 # 
 msgid "Mark Properties"
+msgstr "標記屬性"
+#
+# 
+# 
+#, fuzzy
+msgid "Mark Properties, Layer: "
 msgstr "標記屬性"
 #
 # 
@@ -2457,6 +2496,12 @@ msgstr "OpenCPN 訊息"
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Remove Waypoint"
+msgstr "OpenCPN 航路建立"
+#
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN 航路建立"
 #
@@ -2469,6 +2514,12 @@ msgstr "OpenCPN S57 SENC檔案建立..."
 # 
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 航跡刪除"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN cannot start. "
+msgstr "OpenCPN 海圖更新"
 #
 # 
 # 
@@ -2577,7 +2628,8 @@ msgstr "播放船鐘"
 #
 # 
 # 
-msgid "Please restart OpenCPN to activate new language selection."
+#, fuzzy
+msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "請重新啟動 OpenCPN 來顯示新設定的語系"
 #
 # 
@@ -2650,19 +2702,6 @@ msgid ""
 msgstr ""
 "位置發報經過時間:       %3d Sec.\n"
 "\n"
-#
-# 
-# 
-msgid ""
-"Possible libgps API version mismatch.\n"
-"libgps did not reasonably respond to version request\n"
-"\n"
-"Would you like to use this version of libgps anyway?"
-msgstr ""
-"libgps API 版本可能不符合.\n"
-"libgps 無法正確回應版本請求\n"
-"\n"
-"仍要繼續使用這一版的libgps?"
 #
 # 
 # 
@@ -3035,6 +3074,12 @@ msgstr "航路屬性"
 #
 # 
 # 
+#, fuzzy
+msgid "Route Properties..."
+msgstr "航路屬性"
+#
+# 
+# 
 msgid "Route Uploaded successfully."
 msgstr "航路上傳成功."
 #
@@ -3118,6 +3163,9 @@ msgstr ""
 # 
 msgid "Search and Rescue Vessel"
 msgstr "搜救船"
+#
+msgid "See the log file at "
+msgstr ""
 #
 # 
 # 
@@ -3205,6 +3253,12 @@ msgstr "顯示小比例尺海圖"
 #, fuzzy
 msgid "Short dash"
 msgstr "顯示潮汐"
+#
+# 
+# 
+#, fuzzy
+msgid "Show AIS Target CPA"
+msgstr "顯示 AIS 目標"
 #
 # 
 # 
@@ -3497,6 +3551,12 @@ msgstr "開始"
 #
 # 
 # 
+#, fuzzy
+msgid "StatusBar"
+msgstr "顯示狀態列"
+#
+# 
+# 
 msgid "Stbd"
 msgstr "右舷"
 #
@@ -3530,6 +3590,12 @@ msgstr "符號化"
 # 
 msgid "TCP/IP WiFi Data Server"
 msgstr "TCP/IP WiFi 資料伺服器"
+#
+# 
+# 
+#, fuzzy
+msgid "TCPA"
+msgstr "CPA TCPA"
 #
 # 
 # 
@@ -3648,6 +3714,9 @@ msgstr "字型樣式"
 msgid "The font weight."
 msgstr "字體寬度"
 #
+msgid "The necessary configuration files were not found. "
+msgstr ""
+#
 # 
 # 
 msgid "There"
@@ -3736,10 +3805,19 @@ msgstr "工具箱"
 msgid "ToolTips"
 msgstr "工具提示"
 #
+msgid "Toolbar and Window Style"
+msgstr ""
+#
 # 
 # 
 msgid "Total Distance"
 msgstr "總距離"
+#
+# 
+# 
+#, fuzzy
+msgid "Total Length: "
+msgstr "長度"
 #
 # 
 # 
@@ -3754,6 +3832,12 @@ msgstr "航跡名稱"
 # 
 # 
 msgid "Track Properties"
+msgstr "航跡屬性"
+#
+# 
+# 
+#, fuzzy
+msgid "Track Properties..."
 msgstr "航跡屬性"
 #
 # 
@@ -3931,6 +4015,9 @@ msgstr "使用 SCAMIN"
 # 
 msgid "Use nearby waypoint?"
 msgstr "使用最近的轉向點?"
+#
+msgid "User Interface"
+msgstr ""
 #
 # 
 # 
@@ -4145,20 +4232,6 @@ msgstr "cm93 詳細度"
 #
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"libgps API version mismatch.\n"
-"OpenCPN found version %d.%d, but requires at least version 3.0\n"
-"\n"
-"      Would you like to use this version of libgps anyway?"
-msgstr ""
-"libgps API 版本不吻合.\n"
-"Opencpn 找到版本 %d.%d, 但是最少需要版本 3.0\n"
-"\n"
-"仍要繼續使用這一版的 libgps?"
-#
-# 
-# 
 msgid "wgsox"
 msgstr "wgsox"
 #
@@ -4169,6 +4242,7 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 #
@@ -4189,6 +4263,13 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+#~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+#~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
+#
+#
 #
 #
 # 
@@ -4200,6 +4281,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   插件管理員: 無法載入程式庫: "
+#
 #
 #
 #
@@ -4217,6 +4299,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4226,6 +4309,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4253,6 +4337,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4272,6 +4357,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4299,6 +4385,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4317,6 +4404,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4342,6 +4430,7 @@ msgstr ""
 #~ msgstr "(使用中航跡)"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4351,10 +4440,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4375,6 +4466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4384,6 +4476,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4411,6 +4504,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4430,6 +4524,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4457,6 +4552,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4476,6 +4572,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4503,6 +4600,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4522,6 +4620,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4550,6 +4649,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4573,10 +4673,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
 #
 #
 #
@@ -4592,12 +4694,20 @@ msgstr ""
 #~ msgstr "ETE/時間戳記"
 #
 #
+# 
+# 
+#~ msgid "Language/Fonts"
+#~ msgstr "語系/字型"
+#
+#
+#
 #
 #
 # 
 # 
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
+#
 #
 #
 #
@@ -4610,10 +4720,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 #
@@ -4629,6 +4741,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4638,6 +4751,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -4659,6 +4773,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4668,6 +4783,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -4685,6 +4801,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4694,6 +4811,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -4711,6 +4829,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4720,6 +4839,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
 #
 #
 #
@@ -4737,6 +4857,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4745,3 +4866,32 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Possible libgps API version mismatch.\n"
+#~ "libgps did not reasonably respond to version request\n"
+#~ "\n"
+#~ "Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "libgps API 版本可能不符合.\n"
+#~ "libgps 無法正確回應版本請求\n"
+#~ "\n"
+#~ "仍要繼續使用這一版的libgps?"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "libgps API version mismatch.\n"
+#~ "OpenCPN found version %d.%d, but requires at least version 3.0\n"
+#~ "\n"
+#~ "      Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "libgps API 版本不吻合.\n"
+#~ "Opencpn 找到版本 %d.%d, 但是最少需要版本 3.0\n"
+#~ "\n"
+#~ "仍要繼續使用這一版的 libgps?"

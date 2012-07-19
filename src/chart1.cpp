@@ -68,6 +68,7 @@
 #include "chcanv.h"
 #include "chartdb.h"
 #include "navutil.h"
+#include "styles.h"
 #include "routeman.h"
 #include "statwin.h"
 #include "concanv.h"
@@ -79,7 +80,6 @@
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
-#include "styles.h"
 #include "toolbar.h"
 #include "compasswin.h"
 
@@ -1147,6 +1147,7 @@ bool MyApp::OnInit()
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
+    pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
 
     //      Open/Create the Config Object (Must be after UI Style init).
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );
@@ -2251,23 +2252,6 @@ void MyFrame::OnMaximize( wxMaximizeEvent& event )
     g_click_stop = 0;
 }
 
-ArrayOfRect MyFrame::GetCanvasReserveRects()
-{
-    ArrayOfRect ret_array;
-    if( g_FloatingCompassDialog ) {
-        //    Translate from CompassWindow's parent(gFrame) to CanvasWindow coordinates
-        wxPoint pos_in_frame = g_FloatingCompassDialog->GetPosition();
-        wxPoint pos_abs = ClientToScreen( pos_in_frame );
-        wxPoint pos_in_cc1 = pos_in_frame; //cc1->ScreenToClient(pos_abs);
-        wxRect r( pos_in_cc1.x, pos_in_cc1.y, g_FloatingCompassDialog->GetSize().x,
-                g_FloatingCompassDialog->GetSize().y );
-
-        ret_array.Add( r );
-    }
-
-    return ret_array;
-}
-
 void MyFrame::OnActivate( wxActivateEvent& event )
 {
 //    Code carefully in this method.
@@ -2437,23 +2421,31 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
+    wxString tipString;
+
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Zoom In")) << _T(" (+)");
     tb->AddTool( ID_ZOOMIN, _T("zoomin"), style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ),
-            _("Zoom In"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
+
+    tipString = wxString(_("Zoom Out")) << _T(" (-)");
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_ZOOMOUT, _T("zoomout"), style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ),
-            _("Zoom Out"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
 
     if( pCurrentStack && pCurrentStack->b_valid && ( pCurrentStack->nEntry > 1 ) ) {
         CheckAndAddPlugInTool( tb );
+        tipString = wxString(_("Shift to Larger Scale Chart")) << _T(" (F7)");
         newtool = tb->AddTool( ID_STKDN, _T("scin"),
-                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), _("Shift to Larger Scale Chart"),
+                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString,
                 wxITEM_NORMAL );
         newtool->Enable( true );
         CheckAndAddPlugInTool( tb );
+
+        tipString = wxString(_("Shift to Smaller Scale Chart")) << _T(" (F8)");
         newtool = tb->AddTool( ID_STKUP, _T("scout"),
                 style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ),
-                _("Shift to Smaller Scale Chart"), wxITEM_NORMAL );
+                tipString, wxITEM_NORMAL );
         newtool->Enable( true );
         m_toolbar_scale_tools_shown = true;
     } else {
@@ -2473,16 +2465,18 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             _("Create Route"), wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Auto Follow")) << _T(" (F2)");
     tb->AddTool( ID_FOLLOW, _T("follow"), style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, _("Auto Follow") );
+            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_SETTINGS, _T("settings"), style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ),
             _("ToolBox"), wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Show ENC Text")) << _T(" (T)");
     tb->AddTool( ID_TEXT, _T("text"), style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, _("Show ENC Text") );
+            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     m_pAISTool = NULL;
     if( !pAIS_Port->IsSameAs( _T("None"), false ) ) {
@@ -2496,6 +2490,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_CURRENT, _T("current"), style->GetToolIcon( _T("current"), TOOLICON_NORMAL ),
             _("Show Currents"), wxITEM_CHECK );
+
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_TIDE, _T("tide"), style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ),
             _("Show Tides"), wxITEM_CHECK );
@@ -2519,13 +2514,15 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     }
 
     CheckAndAddPlugInTool( tb );
+    tipString =  wxString(_("Change Color Scheme")) << _T(" (F5)");
     tb->AddTool( ID_COLSCHEME, _T("colorscheme"),
-            style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ), _("Change Color Scheme"),
+            style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ), tipString,
             wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)");
     tb->AddTool( ID_MOB, _T("mob_btn"), style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ),
-            _("Drop MOB Marker"), wxITEM_NORMAL );
+            tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tb->AddTool( ID_HELP, _T("help"), style->GetToolIcon( _T("help"), TOOLICON_NORMAL ),

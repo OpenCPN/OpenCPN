@@ -279,7 +279,6 @@ class MyFrame: public wxFrame
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
     void ShowBrightnessLevelTimedDialog(int brightness, int min, int max);
 
-    ArrayOfRect GetCanvasReserveRects();
     bool CheckGroup(int igroup);
 
     void TouchAISActive(void);

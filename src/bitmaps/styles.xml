@@ -6,7 +6,7 @@
 		<chart-status-window transparent="true"/>
 		<active-route>
 			<font-color r="50" g="50" b="50" />
-			<text-background-location x="660" y="260" width="111" height="43" />
+			<text-background-location x="660" y="260" width="140" height="55" />
 		</active-route>
 		<tools>
 			<horizontal>
@@ -154,7 +154,7 @@
 
 		<icons>
 			<icon name="mob">
-				<icon-location x="700" y="20"/>
+				<icon-location x="140" y="160"/>
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
@@ -436,7 +436,7 @@
 		<chart-status-window transparent="true"/>
 		<active-route>
 			<font-color r="50" g="50" b="50" />
-			<text-background-location x="660" y="260" width="111" height="43" />
+			<text-background-location x="660" y="260" width="140" height="55" />
 		</active-route>
 		<tools>
 			<horizontal>
@@ -580,7 +580,7 @@
 
 		<icons>
 			<icon name="mob">
-				<icon-location x="700" y="20"/>
+				<icon-location x="140" y="160"/>
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
@@ -854,7 +854,7 @@
 	<style name="Traditional">
 		<graphics-file name="toolicons_traditional.png" />
 		<active-route>
-			<font-color r="50" g="50" b="50" />
+			<font-color r="50" g="240" b="50" />
 			<text-background-location x="660" y="260" width="111" height="43" />
 		</active-route>
 		<tools>

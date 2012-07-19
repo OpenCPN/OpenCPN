@@ -35,6 +35,7 @@
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 
+#include "styles.h"
 #include "routeprop.h"
 #include "navutil.h"                // for Route
 #include "georef.h"
@@ -621,7 +622,7 @@ void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
     wxString eol("\n", wxConvUTF8);
     wxString csvString;
 
-    csvString << _("Route Properties") << eol
+    csvString << this->GetTitle() << eol
             << _("Name") << tab << m_pRoute->m_RouteNameString << eol
             << _("Depart From") << tab << m_pRoute->m_RouteStartString << eol
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol

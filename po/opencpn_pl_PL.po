@@ -4,10 +4,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-17 09:42-0400\n"
+"POT-Creation-Date: 2012-07-15 06:29-0700\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -118,11 +119,6 @@ msgstr "   Plik mapy uszkodzony w PostInit() "
 # 
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "   Chart file has no BSB header, cannot Init."
-#
-# 
-# 
-msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
 #
 # 
 # 
@@ -276,6 +272,9 @@ msgstr " Oryginalne wydanie:  "
 msgid " Updated:  "
 msgstr " Aktualizowane:"
 #
+msgid " for details."
+msgstr ""
+#
 # 
 # 
 #, c-format
@@ -304,6 +303,12 @@ msgstr "&Aktywuj drogę"
 # 
 msgid "&Cancel"
 msgstr "&Anuluj"
+#
+msgid "&Copy all as text"
+msgstr ""
+#
+msgid "&Copy as text"
+msgstr ""
 #
 # 
 # 
@@ -389,6 +394,12 @@ msgstr "&Właściwości"
 #
 # 
 # 
+#, fuzzy
+msgid "&Remove Selected"
+msgstr "Usuń ślad"
+#
+# 
+# 
 msgid "&Reverse"
 msgstr "Odw&róć drogę"
 #
@@ -416,6 +427,12 @@ msgstr "&Styl:"
 # 
 msgid "&Underline"
 msgstr "&Podkreślenie"
+#
+# 
+# 
+#, fuzzy
+msgid "&Waypoint Properties..."
+msgstr "&Właściwości"
 #
 # 
 # 
@@ -558,6 +575,9 @@ msgid ""
 msgstr "Namiar:                b.d.\n"
 #
 msgid "<--Remove"
+msgstr ""
+#
+msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 #
 # 
@@ -707,6 +727,9 @@ msgstr "Katalogi aktywnych map"
 msgid "All files (*.*)|*.*"
 msgstr "Wszystkie pliki (*.*)|*.*"
 #
+msgid "Anchorage created "
+msgstr ""
+#
 # 
 # 
 msgid "Append Waypoint"
@@ -731,6 +754,12 @@ msgstr "Naprawdę chcesz usunąć <WSZYSTKIE> punkty drogi?"
 # 
 msgid "Are you sure you want to delete this track?"
 msgstr "Naprawdę chcesz usunąć ten ślad?"
+#
+# 
+# 
+#, fuzzy
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "Naprawdę chcesz usunąć <WSZYSTKIE> punkty drogi?"
 #
 # 
 # 
@@ -1633,6 +1662,9 @@ msgstr ""
 msgid "F/V"
 msgstr ""
 #
+msgid "Failed to initialize the user interface. "
+msgstr ""
+#
 # 
 # 
 msgid "Fast ship"
@@ -1805,6 +1837,12 @@ msgstr "Tutaj"
 #
 # 
 # 
+#, fuzzy
+msgid "Hide AIS Target CPA"
+msgstr "Dane obiektu AIS"
+#
+# 
+# 
 msgid "Hide WPT names"
 msgstr "Ukryj nazwy"
 #
@@ -1913,11 +1951,6 @@ msgstr ""
 # 
 msgid "Language"
 msgstr "Język"
-#
-# 
-# 
-msgid "Language/Fonts"
-msgstr "Język/Czcionki"
 #
 # 
 # 
@@ -2161,6 +2194,12 @@ msgstr "Informacje o znaku"
 # 
 # 
 msgid "Mark Properties"
+msgstr "Właściwości znaku/punktu drogi"
+#
+# 
+# 
+#, fuzzy
+msgid "Mark Properties, Layer: "
 msgstr "Właściwości znaku/punktu drogi"
 #
 # 
@@ -2459,6 +2498,12 @@ msgstr "Komunikat OpenCPN"
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Remove Waypoint"
+msgstr "Tworzenie drogi OpenCPN"
+#
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "Tworzenie drogi OpenCPN"
 #
@@ -2471,6 +2516,12 @@ msgstr ""
 # 
 msgid "OpenCPN Track Delete"
 msgstr "Ostrzeżenie OpenCPN"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN cannot start. "
+msgstr "Aktualizacja zbioru map OpenCPN"
 #
 # 
 # 
@@ -2579,7 +2630,8 @@ msgstr "Wybijaj szklanki"
 #
 # 
 # 
-msgid "Please restart OpenCPN to activate new language selection."
+#, fuzzy
+msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Uruchom ponownie OpenCPN aby aktywować wybrany język"
 #
 # 
@@ -2650,19 +2702,6 @@ msgid ""
 "Position Report Age:       %3d Sec.\n"
 "\n"
 msgstr "Wiek raportu:                  %3d sek.\n"
-#
-# 
-# 
-msgid ""
-"Possible libgps API version mismatch.\n"
-"libgps did not reasonably respond to version request\n"
-"\n"
-"Would you like to use this version of libgps anyway?"
-msgstr ""
-"Możliwa niezgodność wersji API libgps.\n"
-"Brak sensownej odpowiedzi o numer wersji\n"
-"\n"
-"                              Czy mimo to chcesz użyć tej wersji libgps?"
 #
 # 
 # 
@@ -3032,6 +3071,12 @@ msgstr "Właściwości drogi"
 #
 # 
 # 
+#, fuzzy
+msgid "Route Properties..."
+msgstr "Właściwości drogi"
+#
+# 
+# 
 msgid "Route Uploaded successfully."
 msgstr "Przesyłanie drogi zakończone pomyślnie."
 #
@@ -3111,6 +3156,9 @@ msgstr ""
 # 
 # 
 msgid "Search and Rescue Vessel"
+msgstr ""
+#
+msgid "See the log file at "
 msgstr ""
 #
 # 
@@ -3199,6 +3247,12 @@ msgstr "Zmień na mapę o mniejszej skali"
 #, fuzzy
 msgid "Short dash"
 msgstr "Pokaż pływy"
+#
+# 
+# 
+#, fuzzy
+msgid "Show AIS Target CPA"
+msgstr "Pokaż obiekty AIS"
 #
 # 
 # 
@@ -3494,6 +3548,12 @@ msgstr "Start"
 #
 # 
 # 
+#, fuzzy
+msgid "StatusBar"
+msgstr "Pokaż pasek statusu"
+#
+# 
+# 
 msgid "Stbd"
 msgstr ""
 #
@@ -3527,6 +3587,12 @@ msgstr "Symbolizowane"
 # 
 msgid "TCP/IP WiFi Data Server"
 msgstr "Serwer danych TCP/IP WiFi"
+#
+# 
+# 
+#, fuzzy
+msgid "TCPA"
+msgstr "CPA/TCPA"
 #
 # 
 # 
@@ -3647,6 +3713,9 @@ msgstr "Styl czcionki."
 msgid "The font weight."
 msgstr "Waga czcionki."
 #
+msgid "The necessary configuration files were not found. "
+msgstr ""
+#
 # 
 # 
 msgid "There"
@@ -3736,10 +3805,19 @@ msgstr "Narzędzia"
 msgid "ToolTips"
 msgstr "ToolTips"
 #
+msgid "Toolbar and Window Style"
+msgstr ""
+#
 # 
 # 
 msgid "Total Distance"
 msgstr "Całkowita odległość"
+#
+# 
+# 
+#, fuzzy
+msgid "Total Length: "
+msgstr "Odcinek"
 #
 # 
 # 
@@ -3754,6 +3832,12 @@ msgstr "Nazwa śladu"
 # 
 # 
 msgid "Track Properties"
+msgstr "Właściwości śladu"
+#
+# 
+# 
+#, fuzzy
+msgid "Track Properties..."
 msgstr "Właściwości śladu"
 #
 # 
@@ -3932,6 +4016,9 @@ msgstr "Użyj SCAMIN"
 # 
 msgid "Use nearby waypoint?"
 msgstr "Użyć najbliższego punktu drogi?"
+#
+msgid "User Interface"
+msgstr ""
 #
 # 
 # 
@@ -4146,20 +4233,6 @@ msgstr "Poziom szczegółów CM93"
 #
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"libgps API version mismatch.\n"
-"OpenCPN found version %d.%d, but requires at least version 3.0\n"
-"\n"
-"      Would you like to use this version of libgps anyway?"
-msgstr ""
-"Niezgodność wersji API libgps.\n"
-"OpenCPN znalazł wersję %d.%d, ale wymaga co najmniej v. 3.0\n"
-"\n"
-"Czy mimo to chcesz tej wersji libgps?"
-#
-# 
-# 
 msgid "wgsox"
 msgstr ""
 #
@@ -4170,6 +4243,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 #
@@ -4190,6 +4264,13 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+#~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+#~ msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
+#
+#
+#
 #
 #
 # 
@@ -4201,6 +4282,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "  Wtyczki: nie można załadować biblioteki "
+#
 #
 #
 #
@@ -4218,6 +4300,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4227,6 +4310,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 #
@@ -4251,6 +4335,7 @@ msgstr ""
 #~ msgstr "Wł./Wył. na mapie"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4260,10 +4345,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 #
@@ -4284,6 +4371,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4293,6 +4381,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4327,6 +4416,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4353,6 +4443,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -4387,6 +4478,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4413,6 +4505,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -4447,6 +4540,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4472,6 +4566,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -4504,10 +4599,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Mapa"
+#
 #
 #
 #
@@ -4521,6 +4618,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 #
@@ -4541,6 +4639,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4553,6 +4652,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Błąd ładowania libgps.so.19"
+#
 #
 #
 #
@@ -4577,6 +4677,13 @@ msgstr ""
 #~ msgstr "Importuj nową warstwę"
 #
 #
+# 
+# 
+#~ msgid "Language/Fonts"
+#~ msgstr "Język/Czcionki"
+#
+#
+#
 #
 #
 # 
@@ -4584,6 +4691,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:         "
+#
 #
 #
 #
@@ -4596,10 +4704,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nazwa znaku"
+#
 #
 #
 #
@@ -4615,6 +4725,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4624,6 +4735,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -4645,6 +4757,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4654,6 +4767,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -4671,6 +4785,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4680,6 +4795,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -4697,6 +4813,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4706,6 +4823,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
 #
 #
 #
@@ -4723,6 +4841,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4731,6 +4850,21 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Possible libgps API version mismatch.\n"
+#~ "libgps did not reasonably respond to version request\n"
+#~ "\n"
+#~ "Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "Możliwa niezgodność wersji API libgps.\n"
+#~ "Brak sensownej odpowiedzi o numer wersji\n"
+#~ "\n"
+#~ "                              Czy mimo to chcesz użyć tej wersji libgps?"
+#
 #
 #
 #
@@ -4757,6 +4891,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4779,6 +4914,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4797,3 +4933,18 @@ msgstr ""
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Włącz/wyłącz nazwy"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "libgps API version mismatch.\n"
+#~ "OpenCPN found version %d.%d, but requires at least version 3.0\n"
+#~ "\n"
+#~ "      Would you like to use this version of libgps anyway?"
+#~ msgstr ""
+#~ "Niezgodność wersji API libgps.\n"
+#~ "OpenCPN znalazł wersję %d.%d, ale wymaga co najmniej v. 3.0\n"
+#~ "\n"
+#~ "Czy mimo to chcesz tej wersji libgps?"

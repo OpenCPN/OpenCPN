@@ -43,9 +43,9 @@
 
 #include "chart1.h"
 #include "concanv.h"
+#include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
-#include "styles.h"
 
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;

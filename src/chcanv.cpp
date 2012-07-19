@@ -44,6 +44,7 @@
 
 #include "chcanv.h"
 
+#include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
 #include "concanv.h"
@@ -59,7 +60,6 @@
 #include "pluginmanager.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
-#include "styles.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -3180,7 +3180,7 @@ EVT_MENU ( ID_RC_MENU_ZOOM_IN,      ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_RC_MENU_ZOOM_OUT,     ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_RC_MENU_FINISH,       ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_DEF_MENU_AIS_QUERY,   ChartCanvas::PopupMenuHandler )
-EVT_MENU ( ID_DEF_MENU_AIS_CPA,   ChartCanvas::PopupMenuHandler ) //TR 2012.06.28: Show AIS-CPA 
+EVT_MENU ( ID_DEF_MENU_AIS_CPA,   ChartCanvas::PopupMenuHandler ) //TR 2012.06.28: Show AIS-CPA
 
 EVT_MENU ( ID_DEF_MENU_ACTIVATE_MEASURE,   ChartCanvas::PopupMenuHandler )
 EVT_MENU ( ID_DEF_MENU_DEACTIVATE_MEASURE, ChartCanvas::PopupMenuHandler )
@@ -3536,7 +3536,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     //  Look for user defined ownship image
     //  This may be found in the shared data location along with other user defined icons.
-    //  and will be called "ownship.xpm"
+    //  and will be called "ownship.xpm" or "ownship.png"
     if( pWayPointMan && pWayPointMan->DoesIconExist( _T("ownship") ) ) {
         wxBitmap *pbmp = pWayPointMan->GetIconBitmap( _T("ownship") );
         m_pos_image_user_day = new wxImage;
@@ -4313,7 +4313,7 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     else
                         s.Append( pr->m_RouteNameString );
                     s.Append( _T("\n") );
-                    s.Append( _("Total Lenght: ") );
+                    s.Append( _("Total Length: ") );
                     s.Append( totLen );
                     s.Append( _T("\n") );
                     s.Append( _("Leg: from ") );
@@ -8559,7 +8559,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             break;
         }
 
-        case ID_DEF_MENU_AIS_CPA: {             //TR 2012.06.28: Show AIS-CPA     
+        case ID_DEF_MENU_AIS_CPA: {             //TR 2012.06.28: Show AIS-CPA
             AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI); //TR 2012.06.28: Show AIS-CPA
             if ( myptarget )                    //TR 2012.06.28: Show AIS-CPA
                myptarget->Toggle_AIS_CPA();     //TR 2012.06.28: Show AIS-CPA
@@ -9346,13 +9346,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             rgn_chart.Subtract( rgn_thumbwin );
             ru.Subtract( rgn_thumbwin );
         }
-    }
-
-    ArrayOfRect rect_array = gFrame->GetCanvasReserveRects();
-    for( unsigned int ir = 0; ir < rect_array.GetCount(); ir++ ) {
-        wxRect r = rect_array.Item( ir );
-        rgn_chart.Subtract( r );
-        ru.Subtract( r );
     }
 
     //  Is this viewpoint the same as the previously painted one?
@@ -12465,7 +12458,7 @@ void glChartCanvas::render()
               ViewPort svp = VPoint;
               svp.pix_width = svp.rv_rect.width;
               svp.pix_height = svp.rv_rect.height;
-              
+
               Current_Ch->GetValidCanvasRegion ( svp, &CValidRegion );
         }
         else

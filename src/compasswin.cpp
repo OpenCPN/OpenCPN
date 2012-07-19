@@ -93,14 +93,14 @@ void ocpnFloatingCompassWindow::UpdateStatus( bool bnew )
 {
     if( bnew ) m_lastgpsIconName.Clear();        // force an update to occur
 
-    wxBitmap statbmp = CreateBmp();
+    wxBitmap statbmp = CreateBmp( bnew );
     if( statbmp.IsOk() ) m_StatBmp = statbmp;
 
     Show();
     Refresh( false );
 }
 
-wxBitmap ocpnFloatingCompassWindow::CreateBmp()
+wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 {
     wxString gpsIconName;
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -112,14 +112,16 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp()
     static wxSize toolsize;
     static int topmargin, leftmargin, radius;
 
-    if( ! compassBg.IsOk() ) {
+    if( ! compassBg.IsOk() || newColorScheme ) {
         int orient = style->GetOrientation();
         style->SetOrientation( wxTB_HORIZONTAL );
         if( style->HasBackground() ) {
             compassBg = style->GetNormalBG();
             style->DrawToolbarLineStart( compassBg );
+            compassBg = style->SetBitmapBrightness( compassBg );
             gpsBg = style->GetNormalBG();
             style->DrawToolbarLineEnd( gpsBg );
+            gpsBg = style->SetBitmapBrightness( gpsBg );
         }
 
         leftmargin = style->GetLeftMargin();
