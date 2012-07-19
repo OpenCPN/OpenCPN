@@ -327,13 +327,6 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
     return iconbm;
 }
 
-bool Style::HideTool( const wxString& toolname ) {
-    if( toolIndex.find( toolname ) == toolIndex.end() ) return false;
-    int index = toolIndex[toolname];
-    Tool* tool = (Tool*) tools.Item( index );
-    return tool->hideThisTool;
-}
-
 wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap )
 {
     double dimLevel;
@@ -860,10 +853,6 @@ void StyleManager::Init( wxString fromPath )
                                     toolTag->QueryIntAttribute( "x", &x );
                                     toolTag->QueryIntAttribute( "y", &y );
                                     tool->customSize = wxSize( x, y );
-                                }
-                                toolTag = toolHandle.Child( "hide-in-toolbar", 0 ).ToElement();
-                                if( toolTag ) {
-                                    tool->hideThisTool = true;
                                 }
                                 continue;
                             }
