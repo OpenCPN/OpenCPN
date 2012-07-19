@@ -810,7 +810,14 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
         TC_Error_Code r = s->LoadData(sources.Item(i));
         if(r != TC_NO_ERROR) {
             wxString msg;
-            msg.Printf(_T("   Error loading Tide/Currect data source %s:  Error code: %d"), sources.Item(i).c_str(), r);
+            msg.Printf(_T("   Error loading Tide/Currect data source %s "), sources.Item(i).c_str());
+            if( r == TC_FILE_NOT_FOUND) 
+                msg += _T("Error Code: TC_FILE_NOT_FOUND");
+            else {
+                wxString msg1;
+                msg1.Printf(_T("Error code: %d"), r);
+                msg += msg1;
+            }
             wxLogMessage(msg);
             delete s;
         }
@@ -1307,7 +1314,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadData(wxString &data_file_path)
         return error_return;
 
     wxFileName f(data_file_path);
-    m_harmfile_name = f.GetPath( wxPATH_GET_SEPARATOR );
+    m_harmfile_name = f.GetPath( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME );
     m_harmfile_name += f.GetName();
     error_return = LoadHarmonicConstants(m_harmfile_name);
 
@@ -1451,8 +1458,6 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
 TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
 {
     int TZHr, TZMin ;
-    harmonic_file_entry *pHarmonic;
-//    IDX_entry *pIDXh;
     char stz[80];
 
     pIDX->pref_sta_data = NULL;                     // no reference data yet
@@ -1571,7 +1576,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(wxString &data_file_pat
 
     free_data();
 
-    fp = fopen (data_file_path.fn_str(), "r");
+    fp = fopen (data_file_path.mb_str(), "r");
     if (NULL == fp)
         return TC_FILE_NOT_FOUND;
 
@@ -1679,7 +1684,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
     //    Find and load appropriate constituents
     FILE *fp;
     char linrec[linelen];
-    fp = fopen (m_harmfile_name.fn_str(), "r");
+    fp = fopen (m_harmfile_name.mb_str(), "r");
 
     while (read_next_line (fp, linrec, 1))
     {
@@ -1796,7 +1801,7 @@ long TCDS_Ascii_Harmonic::IndexFileIO(int func, long value) {
 
         // Open
     case IFF_OPEN :
-        m_IndexFile = fopen( m_indexfile_name.fn_str(), "rt");
+        m_IndexFile = fopen( m_indexfile_name.mb_str(), "rt");
         if (m_IndexFile == NULL) return(0);
         return(1);
 
