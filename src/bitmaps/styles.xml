@@ -876,7 +876,6 @@
 		<chart-status-window transparent="true"/>
 		<active-route>
 			<font-color r="50" g="50" b="50" />
-			<text-background-location x="660" y="260" width="140" height="55" />
 		</active-route>
 		<tools>
 			<horizontal>
