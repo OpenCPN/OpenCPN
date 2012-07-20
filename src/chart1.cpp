@@ -570,7 +570,7 @@ wxAuiDefaultDockArt       *g_pauidockart;
 
 bool                      g_blocale_changed;
 
-wxMenu                    *g_FloatingToolbarConfigMenu = NULL;
+wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 ocpnFloatingCompassWindow *g_FloatingCompassDialog;
@@ -2224,6 +2224,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SaveSystemColors();
 #endif
 
+    g_FloatingToolbarConfigMenu = new wxMenu();
+
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
     m_COGFilterLast = 0.;
@@ -2245,8 +2247,7 @@ MyFrame::~MyFrame()
         node = node->GetNext();
     }
     delete pRouteList;
-
-    if( g_FloatingToolbarConfigMenu ) delete g_FloatingToolbarConfigMenu;
+    delete g_FloatingToolbarConfigMenu;
 }
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
@@ -2417,42 +2418,49 @@ void MyFrame::DestroyMyToolbar()
     }
 }
 
-ocpnToolBarSimple *MyFrame::CreateAToolbar()
+bool _toolbarConfigMenuUtil( int toolid, wxString tipString )
 {
-    ocpnToolBarSimple *tb = NULL;
-    wxToolBarToolBase* newtool;
-    wxMenuItem* newitem;
-
-    if( g_FloatingToolbarDialog ) tb = g_FloatingToolbarDialog->GetToolbar();
-    if( !tb ) return 0;
-
-    if( g_FloatingToolbarConfigMenu ) delete g_FloatingToolbarConfigMenu;
-
-    g_FloatingToolbarConfigMenu = new wxMenu( _("Visible Buttons") );
-
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    wxMenuItem* menuitem;
 
     // Item ID trickery is needed because the wxCommandEvents for menu item clicked and toolbar button
     // clicked are 100% identical, so if we use same id's we can't tell the events apart.
 
-    wxString tipString;
     int idOffset = ID_PLUGIN_BASE - ID_ZOOMIN + 100;  // Hopefully no more than 100 plugins loaded...
-    int menuItemId;
+    int menuItemId = toolid + idOffset;
+
+    menuitem = g_FloatingToolbarConfigMenu->FindItem( menuItemId );
+
+    if( menuitem ) {
+        return menuitem->IsChecked();
+    }
+
+    menuitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
+    menuitem->Check( g_toolbarConfig.GetChar( toolid - ID_ZOOMIN ) == _T('X') );
+    return menuitem->IsChecked();
+}
+
+ocpnToolBarSimple *MyFrame::CreateAToolbar()
+{
+    ocpnToolBarSimple *tb = NULL;
+    wxToolBarToolBase* newtool;
+
+    if( g_FloatingToolbarDialog ) tb = g_FloatingToolbarDialog->GetToolbar();
+    if( !tb ) return 0;
+
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    wxString tipString;
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Zoom In") ) << _T(" (+)");
-    menuItemId = ID_ZOOMIN + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_ZOOMIN - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_ZOOMIN, _T("zoomin"),
+    if( _toolbarConfigMenuUtil( ID_ZOOMIN, tipString ) )
+        tb->AddTool( ID_ZOOMIN, _T("zoomin"),
             style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Zoom Out") ) << _T(" (-)");
-    menuItemId = ID_ZOOMOUT + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_ZOOMOUT - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
+    if( _toolbarConfigMenuUtil( ID_ZOOMOUT, tipString ) )
+        tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
             style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
@@ -2460,10 +2468,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
-    menuItemId = ID_STKDN + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_STKDN - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) {
+    if( _toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {
         newtool = tb->AddTool( ID_STKDN, _T("scin"),
                 style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
         newtool->Enable( m_toolbar_scale_tools_shown );
@@ -2471,10 +2476,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Smaller Scale Chart") ) << _T(" (F8)");
-    menuItemId = ID_STKUP + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_STKUP - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) {
+    if( _toolbarConfigMenuUtil( ID_STKUP, tipString ) ) {
         newtool = tb->AddTool( ID_STKUP, _T("scout"),
                 style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
         newtool->Enable( m_toolbar_scale_tools_shown );
@@ -2482,36 +2484,28 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Create Route");
-    menuItemId = ID_ROUTE + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_ROUTE - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_ROUTE, _T("route"),
+    if( _toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
+        tb->AddTool( ID_ROUTE, _T("route"),
             style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Auto Follow") ) << _T(" (F2)");
-    menuItemId = ID_FOLLOW + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_FOLLOW - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_FOLLOW, _T("follow"),
+    if( _toolbarConfigMenuUtil( ID_FOLLOW, tipString ) )
+        tb->AddTool( ID_FOLLOW, _T("follow"),
             style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Settings");
-    menuItemId = ID_SETTINGS + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_SETTINGS - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_SETTINGS, _T("settings"),
+    if( _toolbarConfigMenuUtil( ID_SETTINGS, tipString ) )
+        tb->AddTool( ID_SETTINGS, _T("settings"),
             style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
-    menuItemId = ID_TEXT + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_TEXT - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_TEXT, _T("text"),
+    if( _toolbarConfigMenuUtil( ID_TEXT, tipString ) )
+        tb->AddTool( ID_TEXT, _T("text"),
             style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
@@ -2519,77 +2513,61 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( !pAIS_Port->IsSameAs( _T("None"), false ) ) {
         CheckAndAddPlugInTool( tb );
         tipString = _("Show AIS Targets");
-        menuItemId = ID_AIS + idOffset;
-        newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-        newitem->Check( g_toolbarConfig.GetChar( ID_AIS - ID_ZOOMIN ) == _T('X') );
-        if( newitem->IsChecked() ) m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"),
-                style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
+        if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
+            m_pAISTool = tb->AddTool( ID_AIS,
+                _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
                 style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
     }
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Currents");
-    menuItemId = ID_CURRENT + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_CURRENT - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_CURRENT, _T("current"),
+    if( _toolbarConfigMenuUtil( ID_CURRENT, tipString ) )
+        tb->AddTool( ID_CURRENT, _T("current"),
             style->GetToolIcon( _T("current"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Tides");
-    menuItemId = ID_TIDE + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_TIDE - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_TIDE, _T("tide"),
+    if( _toolbarConfigMenuUtil( ID_TIDE, tipString ) )
+        tb->AddTool( ID_TIDE, _T("tide"),
             style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Print Chart");
-    menuItemId = ID_PRINT + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_PRINT - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_PRINT, _T("print"),
+    if( _toolbarConfigMenuUtil( ID_PRINT, tipString ) )
+        tb->AddTool( ID_PRINT, _T("print"),
             style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Route Manager");
-    menuItemId = ID_ROUTEMANAGER + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_ROUTEMANAGER - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_ROUTEMANAGER, _T("route_manager"),
-            style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    if( _toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
+        tb->AddTool( ID_ROUTEMANAGER,
+            _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
+            tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Toggle Tracking");
-    menuItemId = ID_TRACK + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_TRACK - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_TRACK, _T("track"),
+    if( _toolbarConfigMenuUtil( ID_TRACK, tipString ) )
+        tb->AddTool( ID_TRACK, _T("track"),
             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Change Color Scheme") ) << _T(" (F5)");
-    menuItemId = ID_COLSCHEME + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_COLSCHEME - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_COLSCHEME, _T("colorscheme"),
-            style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    if( _toolbarConfigMenuUtil( ID_COLSCHEME, tipString ) )
+        tb->AddTool( ID_COLSCHEME,
+            _T("colorscheme"), style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ),
+            tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
-    menuItemId = ID_MOB + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_MOB - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_MOB, _T("mob_btn"),
+    if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
+        tb->AddTool( ID_MOB, _T("mob_btn"),
             style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
-    menuItemId = ID_HELP + idOffset;
-    newitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    newitem->Check( g_toolbarConfig.GetChar( ID_HELP - ID_ZOOMIN ) == _T('X') );
-    if( newitem->IsChecked() ) tb->AddTool( ID_HELP, _T("help"),
+    if( _toolbarConfigMenuUtil( ID_HELP, tipString ) )
+        tb->AddTool( ID_HELP, _T("help"),
             style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     //      Add any PlugIn toolbar tools that request default positioning
