@@ -161,7 +161,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 //---------------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
     EVT_MOUSE_EVENTS ( ocpnFloatingToolbarDialog::MouseEvent )
-    EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, ocpnFloatingToolbarDialog::OnToolLeftClick)
+    EVT_MENU(wxID_ANY, ocpnFloatingToolbarDialog::OnToolLeftClick)
     EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
     EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
 END_EVENT_TABLE()
@@ -542,7 +542,7 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
         } else {
             g_toolbarConfig.SetChar( itemId, _T('.') );
         }
-        gFrame->RequestNewToolbar();
+        toolbarConfigChanged = true;
         return;
     }
 
@@ -1787,7 +1787,15 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     event.SetInt( id );
 
     HideTooltip();
-    PopupMenu( g_FloatingToolbarConfigMenu );
+    ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged = false;
+    wxMenu* contextMenu = new wxMenu();
+    wxMenuItem* submenu = contextMenu->AppendSubMenu( g_FloatingToolbarConfigMenu, _T("Visible buttons") );
+
+    PopupMenu( contextMenu );
+
+    if( ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged ) gFrame->RequestNewToolbar();
+    contextMenu->Remove( submenu );
+    delete contextMenu;
 
     GetEventHandler()->ProcessEvent( event );
 }

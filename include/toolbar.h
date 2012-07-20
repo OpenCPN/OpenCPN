@@ -339,6 +339,7 @@ public:
       int GetDockY() {
             return m_dock_y;
       }
+      bool toolbarConfigChanged;
 
 private:
       void DoFade( int value );
