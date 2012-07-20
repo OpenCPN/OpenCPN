@@ -39,7 +39,9 @@ public:
       void OnToolLeftClick( wxCommandEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
-
+      int GetXOffset(void){ return m_xoffset; }
+      int GetYOffset(void){ return m_yoffset; }
+      
 private:
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;
@@ -52,6 +54,8 @@ private:
 
       wxBitmap _img_compass;
       wxBitmap _img_gpsRed;
+      int m_xoffset;
+      int m_yoffset;
 
       DECLARE_EVENT_TABLE()
 };

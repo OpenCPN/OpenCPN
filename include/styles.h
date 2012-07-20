@@ -125,6 +125,14 @@ public:
       int GetLeftMargin() { return toolMarginLeft[currentOrientation]; }
       int GetToolbarCornerRadius();
 
+      int GetCompassTopMargin() { return compassMarginTop; }
+      int GetCompassRightMargin() { return compassMarginRight; }
+      int GetCompassBottomMargin() { return compassMarginBottom; }
+      int GetCompassLeftMargin() { return compassMarginLeft; }
+      int GetCompassCornerRadius() { return compasscornerRadius; }
+      int GetCompassXOffset() { return compassXoffset; }
+      int GetCompassYOffset() { return compassYoffset; }
+      
       int GetToolSeparation() { return toolSeparation[currentOrientation]; }
       wxSize GetToolSize() { return toolSize[currentOrientation]; }
       wxSize GetToggledToolSize() { return toggledBGSize[currentOrientation]; }
@@ -150,6 +158,14 @@ public:
       int toolMarginLeft[2];
       int toolSeparation[2];
       int cornerRadius[2];
+      int compassMarginTop;
+      int compassMarginRight;
+      int compassMarginBottom;
+      int compassMarginLeft;
+      int compasscornerRadius;
+      int compassXoffset;
+      int compassYoffset;
+      
       wxSize toolSize[2];
       wxSize toggledBGSize[2];
       wxPoint toggledBGlocation[2];

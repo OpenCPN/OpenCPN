@@ -58,9 +58,12 @@ ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent )
     m_pStatBoxToolStaticBmp = NULL;
 
     SetSize(
-            _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetLeftMargin() * 2
+            _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
                     + style->GetToolSeparation(),
-            _img_compass.GetHeight() + style->GetTopMargin() + style->GetBottomMargin() );
+            _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+    
+    m_xoffset = style->GetCompassXOffset();
+    m_yoffset = style->GetCompassYOffset();
 }
 
 ocpnFloatingCompassWindow::~ocpnFloatingCompassWindow()
@@ -124,11 +127,11 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             gpsBg = style->SetBitmapBrightness( gpsBg );
         }
 
-        leftmargin = style->GetLeftMargin();
-        topmargin = style->GetTopMargin();
+        leftmargin = style->GetCompassLeftMargin();
+        topmargin = style->GetCompassTopMargin();
         toolsize = style->GetToolSize();
         toolsize.x *= 2;
-        radius = style->GetToolbarCornerRadius();
+        radius = style->GetCompassCornerRadius();
 
         if( orient ) style->SetOrientation( wxTB_VERTICAL );
     }
@@ -166,9 +169,9 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
         wxBitmap StatBmp;
 
         StatBmp.Create(
-                ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetLeftMargin() * 2
+                ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
                         + style->GetToolSeparation(),
-                _img_compass.GetHeight() + style->GetTopMargin() + style->GetBottomMargin() );
+                _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
 
         if( StatBmp.IsOk() ) {
 
@@ -181,9 +184,9 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxTRANSPARENT ) );
 
             mdc.DrawRoundedRectangle( 0, 0, StatBmp.GetWidth(), StatBmp.GetHeight(),
-                    style->GetToolbarCornerRadius() );
+                    style->GetCompassCornerRadius() );
 
-            wxPoint offset( style->GetLeftMargin(), style->GetTopMargin() );
+            wxPoint offset( style->GetCompassLeftMargin(), style->GetCompassTopMargin() );
 
             //    Build Compass Rose, rotated...
             wxBitmap BMPRose;
@@ -234,6 +237,18 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             sdc.SelectObject( wxNullBitmap );
             SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
         }
+        else if(radius) {
+            m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
+            wxMemoryDC sdc( m_MaskBmp );
+            sdc.SetBackground( *wxWHITE_BRUSH );
+            sdc.Clear();
+            sdc.SetBrush( *wxBLACK_BRUSH );
+            sdc.SetPen( *wxBLACK_PEN );
+            sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), radius );
+            sdc.SelectObject( wxNullBitmap );
+            SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
+        }
+        
 
         return StatBmp;
     }

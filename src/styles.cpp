@@ -484,6 +484,15 @@ Style::Style( void )
     chartStatusIconWidth = 0;
     chartStatusWindowTransparent = false;
 
+    //  Set compass window style defauilts
+    compassMarginTop = 4;
+    compassMarginRight = 0;
+    compassMarginBottom = 4;
+    compassMarginLeft = 4;
+    compasscornerRadius = 3;
+    compassXoffset = 0;
+    compassYoffset = 0;
+    
     for( int i = 0; i < 2; i++ ) {
         toolbarStartLoc[i] = wxPoint( 0, 0 );
         toolbarEndLoc[i] = wxPoint( 0, 0 );
@@ -785,7 +794,39 @@ void StyleManager::Init( wxString fromPath )
                                 }
                                 continue;
                             }
-                            if( nodeType == _T("tool") ) {
+                            if( nodeType == _T("compass") ) {
+                                
+                                TiXmlElement* attrNode = toolNode->FirstChild()->ToElement();
+                                for( ; attrNode; attrNode = attrNode->NextSiblingElement() ) {
+                                    wxString nodeType( attrNode->Value(), wxConvUTF8 );
+                                    if( nodeType == _T("margin") ) {
+                                        attrNode->QueryIntAttribute( "top",
+                                                                     &style->compassMarginTop );
+                                        attrNode->QueryIntAttribute( "right",
+                                                                     &style->compassMarginRight );
+                                        attrNode->QueryIntAttribute( "bottom",
+                                                                     &style->compassMarginBottom );
+                                        attrNode->QueryIntAttribute( "left",
+                                                                     &style->compassMarginLeft );
+                                        continue;
+                                    }
+                                    if( nodeType == _T("compass-corners") ) {
+                                            int r;
+                                            attrNode->QueryIntAttribute( "radius", &r );
+                                            style->compasscornerRadius = r;
+                                            continue;
+                                        }
+                                    if( nodeType == _T("offset") ) {
+                                        attrNode->QueryIntAttribute( "x",
+                                                                     &style->compassXoffset );
+                                        attrNode->QueryIntAttribute( "y",
+                                                                     &style->compassYoffset );
+                                        continue;
+                                    }
+                                }
+                             }
+                                 
+                             if( nodeType == _T("tool") ) {
                                 Tool* tool = new Tool();
                                 style->tools.Add( tool );
                                 tool->name = wxString( toolNode->Attribute( "name" ), wxConvUTF8 );
