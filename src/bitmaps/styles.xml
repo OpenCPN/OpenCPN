@@ -855,7 +855,6 @@
 		<graphics-file name="toolicons_traditional.png" />
 		<active-route>
 			<font-color r="50" g="240" b="50" />
-			<text-background-location x="660" y="260" width="111" height="43" />
 		</active-route>
 		<tools>
 			<horizontal>
