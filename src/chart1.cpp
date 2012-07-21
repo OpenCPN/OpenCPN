@@ -2128,6 +2128,7 @@ EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, EVT_NMEA, MyFrame::OnEvtNMEA)
 EVT_COMMAND(wxID_ANY, EVT_THREADMSG, MyFrame::OnEvtTHREADMSG)
+EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbar)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 END_EVENT_TABLE()
 
@@ -2687,6 +2688,11 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
         }
     }
     return bret;
+}
+
+void MyFrame::RequestNewToolbar( wxCommandEvent& event )
+{
+    RequestNewToolbar();
 }
 
 void MyFrame::RequestNewToolbar()
@@ -5035,7 +5041,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         int x_offset = g_FloatingCompassDialog->GetXOffset();
         int y_offset = g_FloatingCompassDialog->GetYOffset();
         int cc1_edge_comp = 2;
-        
+
         // check to see if it would overlap if it was in its home position (upper right)
         wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
         wxPoint tentative_pt_in_screen = g_FloatingCompassDialog->GetParent()->ClientToScreen(
