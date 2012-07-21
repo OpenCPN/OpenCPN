@@ -129,7 +129,8 @@ class PlugInToolbarToolContainer
             wxBitmap          *bitmap_day;
             wxBitmap          *bitmap_dusk;
             wxBitmap          *bitmap_night;
-            wxBitmap          *bmpDisabled;
+            wxBitmap          *bitmap_Rollover;
+            
             wxItemKind        kind;
             wxString          shortHelp;
             wxString          longHelp;
