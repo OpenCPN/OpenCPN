@@ -570,9 +570,9 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
     // No it was a button that was clicked.
     // Since Dialog events don't propagate automatically, we send it explicitly
     // (instead of relying on event.Skip()). Send events up the window hierarchy
-    event.Skip();
-    //m_pparent->GetEventHandler()->AddPendingEvent( event );
-    //gFrame->Raise();
+
+    m_pparent->GetEventHandler()->AddPendingEvent( event );
+    gFrame->Raise();
 }
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
@@ -1345,6 +1345,10 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             tool->Toggle();
         }
     }
+
+    wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
+    GetParent()->GetEventHandler()->AddPendingEvent( *pev );
+    wxDELETE( pev );
     event.Skip();
 }
 
