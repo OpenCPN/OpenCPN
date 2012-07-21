@@ -540,6 +540,23 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
         if( toolIsChecked ) {
             g_toolbarConfig.SetChar( itemId, _T('X') );
         } else {
+
+            if( itemId + ID_ZOOMIN == ID_MOB ) {
+                OCPNMessageDialog mdlg( this,
+                        _("The Man Over Board button is an important safety feature.\nAre you sure you want to hide it?"),
+                        _("OpenCPN Alert"), wxYES_NO | wxNO_DEFAULT );
+                int dialog_ret = mdlg.ShowModal();
+                if( dialog_ret == wxID_NO ) return;
+            }
+
+            if( m_ptoolbar->GetVisibleToolCount() == 1 ) {
+                OCPNMessageDialog mdlg( this,
+                        _("You can't hide the last tool from the toolbar\nas this would make is inaccessible."),
+                        _("OpenCPN Alert"), wxOK );
+                int dialog_ret = mdlg.ShowModal();
+                return;
+            }
+
             g_toolbarConfig.SetChar( itemId, _T('.') );
         }
         toolbarConfigChanged = true;
@@ -1797,7 +1814,7 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     contextMenu->Remove( submenu );
     delete contextMenu;
 
-    GetEventHandler()->ProcessEvent( event );
+    //GetEventHandler()->ProcessEvent( event );
 }
 
 // Called when the mouse cursor enters a tool bitmap (no button pressed).
