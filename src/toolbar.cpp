@@ -546,7 +546,10 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
                         _("The Man Over Board button is an important safety feature.\nAre you sure you want to hide it?"),
                         _("OpenCPN Alert"), wxYES_NO | wxNO_DEFAULT );
                 int dialog_ret = mdlg.ShowModal();
-                if( dialog_ret == wxID_NO ) return;
+                if( dialog_ret == wxID_NO ) {
+                    g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
+                    return;
+                }
             }
 
             if( m_ptoolbar->GetVisibleToolCount() == 1 ) {
@@ -554,6 +557,7 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
                         _("You can't hide the last tool from the toolbar\nas this would make is inaccessible."),
                         _("OpenCPN Alert"), wxOK );
                 int dialog_ret = mdlg.ShowModal();
+                g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
                 return;
             }
 
@@ -566,9 +570,9 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
     // No it was a button that was clicked.
     // Since Dialog events don't propagate automatically, we send it explicitly
     // (instead of relying on event.Skip()). Send events up the window hierarchy
-
-    m_pparent->GetEventHandler()->AddPendingEvent( event );
-    gFrame->Raise();
+    event.Skip();
+    //m_pparent->GetEventHandler()->AddPendingEvent( event );
+    //gFrame->Raise();
 }
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
@@ -1340,16 +1344,8 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             // then change it back
             tool->Toggle();
         }
-
-//            DrawTool(tool);
     }
-
-    wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
-    GetParent()->GetEventHandler()->AddPendingEvent( *pev );
-    wxDELETE( pev );
-
     event.Skip();
-
 }
 
 // ----------------------------------------------------------------------------
@@ -1810,11 +1806,11 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
 
     PopupMenu( contextMenu );
 
-    if( ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged ) gFrame->RequestNewToolbar();
     contextMenu->Remove( submenu );
     delete contextMenu;
 
-    //GetEventHandler()->ProcessEvent( event );
+    if( ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged )
+        gFrame->GetEventHandler()->AddPendingEvent( event );
 }
 
 // Called when the mouse cursor enters a tool bitmap (no button pressed).
