@@ -4030,7 +4030,7 @@ int MyFrame::DoOptionsDialog()
         if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
     }
 
-    return false;
+    return b_refresh_after_options;
 }
 
 wxString MyFrame::GetGroupName( int igroup )
