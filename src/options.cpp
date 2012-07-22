@@ -2491,7 +2491,10 @@ void options::OnPageChange( wxNotebookEvent& event )
             int nFonts = pFontMgr->GetNumFonts();
             for( int it = 0; it < nFonts; it++ ) {
                 wxString *t = pFontMgr->GetDialogString( it );
-                m_itemFontElementListBox->Append( *t );
+
+                if( pFontMgr->GetConfigString( it )->StartsWith( g_locale ) ) {
+                    m_itemFontElementListBox->Append( *t );
+                }
             }
 
             if( nFonts ) m_itemFontElementListBox->SetSelection( 0 );

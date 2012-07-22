@@ -44,6 +44,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <locale>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -3141,7 +3142,12 @@ int MyConfig::LoadMyConfig( int iteration )
         bool bCont = GetFirstEntry( str, dummy );
         while( bCont ) {
             Read( str, pval );
-            pFontMgr->LoadFontNative( &str, pval );
+            if( str.StartsWith( _T("Font") ) ) {
+                // Pre 3.1 setting.
+                DeleteEntry( str );
+            }
+            else
+                pFontMgr->LoadFontNative( &str, pval );
             bCont = GetNextEntry( str, dummy );
         }
         delete pval;
@@ -4175,19 +4181,14 @@ void MyConfig::UpdateSettings()
     font_path = ( _T ( "/Settings/MacFonts" ) );
 #endif
 
-    if( !g_blocale_changed ) {
-        SetPath( font_path );
+    SetPath( font_path );
 
-        int nFonts = pFontMgr->GetNumFonts();
+    int nFonts = pFontMgr->GetNumFonts();
 
-        for( int i = 0; i < nFonts; i++ ) {
-            wxString cfstring( *pFontMgr->GetConfigString( i ) );
-            wxString valstring = pFontMgr->GetFullConfigDesc( i );
-            Write( cfstring, valstring );
-        }
-    } else {
-        SetPath( _T("/") );
-        if( HasGroup( font_path ) ) pConfig->DeleteGroup( font_path );
+    for( int i = 0; i < nFonts; i++ ) {
+        wxString cfstring( *pFontMgr->GetConfigString( i ) );
+        wxString valstring = pFontMgr->GetFullConfigDesc( i );
+        Write( cfstring, valstring );
     }
 
     //  Tide/Current Data Sources
@@ -6152,15 +6153,24 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
         node = node->GetNext();
     }
 
-    //    Found no font, so create a nice one and add to the list
-    //    First, create the configstring by contortion of the TextElement
-    wxString configstring( _T ( "Font" ) );
-    int i = 0;
-    while( TextElement[i] ) {
-        if( TextElement[i] != ' ' )                    // strip out the spaces
-        configstring += TextElement[i];
-        i++;
-    }
+    // Found no font, so create a nice one and add to the list
+    // First, create the configstring by combining the locale with
+    // a hash of the font description. Hash is used because the i18n
+    // description can contain characters that mess up the config file.
+
+    wxString configstring;
+    configstring = g_locale;
+	configstring.Append( _T("-") );
+
+	// Use C++ stdlib functions to get ahash value of font description.
+
+	unsigned long hash;
+	std::locale loc;
+	const std::collate<char>& coll = std::use_facet<std::collate<char> >(loc);
+	const char* cFontDesc = (const char*)TextElement.mb_str(wxConvUTF8);
+	hash = coll.hash( cFontDesc, cFontDesc+TextElement.Length() );
+
+    configstring.Append( wxString::Format( _T("%08lx"), hash ) );
 
     //    Now create a benign, always present native string
     //    Optional user requested default size
