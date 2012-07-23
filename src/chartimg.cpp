@@ -1014,10 +1014,14 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                               if(!bp_set)
                               {
-                                    wxString msg(_T("   Chart projection is UNKNOWN, assuming embedded georef: "));
-                                    m_projection = PROJECTION_UNKNOWN;
-                                    msg.Append(m_FullPath);
-                                    wxLogMessage(msg);
+                                  m_projection = PROJECTION_UNKNOWN;
+                                  wxString msg(_T("   Chart projection is "));
+                                  msg += tkz.GetNextToken();
+                                  msg += _T(" which is unsupported.  Disabling chart ");
+                                  msg += m_FullPath;
+                                  wxLogMessage(msg);
+                                  
+                                  return INIT_FAIL_REMOVE;
                               }
 
                         }
