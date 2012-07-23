@@ -6165,7 +6165,7 @@ wxString FontMgr::GetFontConfigKey( const wxString &description )
 
     using namespace std;
     locale loc;
-    const collate<char>& coll = use_facet<collate<char>>( loc );
+    const collate<char>& coll = use_facet<collate<char> >( loc );
     char cFontDesc[101];
     wcstombs( cFontDesc, description.c_str(), 100 );
     cFontDesc[100] = 0;
