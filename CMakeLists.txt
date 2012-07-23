@@ -20,8 +20,8 @@
 ## *   Free Software Foundation, Inc.,                                       *
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ## ***************************************************************************
- 
- 
+
+
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -68,7 +68,7 @@ IF (NOT WIN32)
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
     SET (PACKAGE_DEPS "libc6, libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libsdl1.2debian, libtinyxml2.6.2")
-    SET (PACKAGE_RECS "xcalib") 
+    SET (PACKAGE_RECS "xcalib")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "amd64")
@@ -203,7 +203,7 @@ IF (GTK2_FOUND)
     IF (NOT WIN32 AND NOT APPLE)
        ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
     ENDIF (NOT WIN32 AND NOT APPLE)
-    
+
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
@@ -218,7 +218,7 @@ IF(UNIX)
     FIND_PACKAGE(TinyXML)
 ENDIF(UNIX)
 
-# For convenience we define the sources as a variable. You can add 
+# For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
 SET(SRC_NMEA0183
@@ -267,7 +267,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 
 
 IF(NOT WIN32)
-OPTION (USE_GPSD "Enable GPSD Library" ON) 
+OPTION (USE_GPSD "Enable GPSD Library" ON)
 IF (USE_GPSD)
       message (STATUS "GPSD Library support: enabled")
 
@@ -314,19 +314,20 @@ SET(HDRS
 		include/wvschart.h
 		include/about.h
 		include/ais.h
-        include/pluginmanager.h
-        include/ocpn_plugin.h
+		include/pluginmanager.h
+		include/ocpn_plugin.h
 		include/gpxdocument.h
-        include/wx/json_defs.h
-        include/wx/jsonwriter.h
-        include/chartsymbols.h
-        include/razdsparser.h
+		include/wx/json_defs.h
+		include/wx/jsonwriter.h
+		include/wx/jsonreader.h
+		include/chartsymbols.h
+		include/razdsparser.h
 		include/styles.h
 		include/toolbar.h
 		include/compasswin.h
 )
 
-SET(SRCS 
+SET(SRCS
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
@@ -349,12 +350,13 @@ SET(SRCS
 		src/wvschart.cpp
 		src/about.cpp
 		src/ais.cpp
-        src/pluginmanager.cpp
+		src/pluginmanager.cpp
 		src/gpxdocument.cpp
-    	src/wxJSON/jsonwriter.cpp
-    	src/wxJSON/jsonval.cpp
-        src/chartsymbols.cpp
-        src/razdsparser.cpp
+		src/wxJSON/jsonwriter.cpp
+		src/wxJSON/jsonreader.cpp
+		src/wxJSON/jsonval.cpp
+		src/chartsymbols.cpp
+		src/razdsparser.cpp
 		src/styles.cpp
 		src/toolbar.cpp
 		src/compasswin.cpp
@@ -455,7 +457,7 @@ IF (USE_S57)
 		src/mygdal/ogrfeature.cpp
 		src/mygdal/ogrfeaturedefn.cpp
 		src/mygdal/ogrfielddefn.cpp
-		src/mygdal/ogrgeometry.cpp 
+		src/mygdal/ogrgeometry.cpp
 		src/mygdal/ogrgeometrycollection.cpp
 		src/mygdal/ogrgeometryfactory.cpp
 		src/mygdal/ogrlinearring.cpp
@@ -527,7 +529,7 @@ IF (USE_GARMINHOST)
                   src/garmin/jeeps/gpssend.h
                   src/garmin/jeeps/gpsusbcommon.h
                   src/garmin/jeeps/gpsutil.h
-                  
+
 	)
         IF(WIN32)
            SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
@@ -599,7 +601,7 @@ IF (USE_S57)
             data/s57data/rastersymbols-day.png
             data/s57data/rastersymbols-dusk.png
             data/s57data/chartsymbols.xml
-      
+
              )
 ENDIF (USE_S57)
 
@@ -830,7 +832,7 @@ IF (GETTEXT_XGETTEXT_EXECUTABLE)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot.dummy
-   COMMAND ${GETTEXT_XGETTEXT_EXECUTABLE} --force-po --package-name=${PACKAGE_NAME} --package-version="${PACKAGE_VERSION}" --output=${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot  --keyword=_ --width=80 --files-from=${CMAKE_SOURCE_DIR}/po/POTFILES.in 
+   COMMAND ${GETTEXT_XGETTEXT_EXECUTABLE} --force-po --package-name=${PACKAGE_NAME} --package-version="${PACKAGE_VERSION}" --output=${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot  --keyword=_ --width=80 --files-from=${CMAKE_SOURCE_DIR}/po/POTFILES.in
    DEPENDS ${CMAKE_SOURCE_DIR}/po/POTFILES.in ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
    COMMENT "pot-update [${PACKAGE_NAME}]: Generated pot file."
@@ -958,10 +960,10 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
 
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup" )
-  
+
   SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
-  
+
 # Install the VC100 Redistributable
   SET(vc10_redist "vcredist_x86.exe")
 
@@ -1024,7 +1026,7 @@ IF(UNIX AND NOT APPLE)
 #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
 #    ENDIF(RPMTools_FOUND)
 
- 
+
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "David S. Register ")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
@@ -1080,7 +1082,7 @@ IF(APPLE)
   SET(DIRS "")
 
   SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
-  SET(LIBS 
+  SET(LIBS
       ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
 
   INSTALL(CODE "
@@ -1103,4 +1105,4 @@ ENDIF(APPLE)
 
 MESSAGE(STATUS "Writing spec file...")
 
- 	  	 
+

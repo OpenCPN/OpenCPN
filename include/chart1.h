@@ -63,6 +63,7 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 class OCPN_NMEAEvent;
 class ChartCanvas;
 class ocpnFloatingToolbarDialog;
+class OCPN_MsgEvent;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -199,6 +200,7 @@ class MyFrame: public wxFrame
     void OnEvtNMEA(wxCommandEvent& event);
     void OnEvtTHREADMSG(wxCommandEvent& event);
     void OnEvtOCPN_NMEA(OCPN_NMEAEvent & event);
+    void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
 
     void UpdateAllFonts(void);

@@ -112,6 +112,8 @@
 #endif
 #endif
 
+#include <wx/jsonreader.h>
+
 WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
 
 #include <wx/arrimpl.cpp>
@@ -283,9 +285,12 @@ bool                      bGPSValid;
 
 int                       gHDx_Watchdog;
 int                       gHDT_Watchdog;
+int                       gVAR_Watchdog;
 bool                      g_bHDxValid;
 bool                      g_bHDTValid;
+bool                      g_bVARValid;
 bool                      g_bHDT_Rx;
+bool                      g_bVAR_Rx;
 
 int                       gSAT_Watchdog;
 int                       g_SatsInView;
@@ -1873,11 +1878,15 @@ bool MyApp::OnInit()
     gHDx_Watchdog = 2;
     gHDT_Watchdog = 2;
     gSAT_Watchdog = 2;
+    gVAR_Watchdog = 2;
 
     //  Most likely installations have no ownship heading information
     g_bHDxValid = false;
     g_bHDTValid = false;
+    g_bVARValid = false;
     g_bHDT_Rx = false;
+    g_bVAR_Rx = false;
+
     gHdt = NAN;
     gHdm = NAN;
     gVar = NAN;
@@ -2199,6 +2208,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //  Create/connect a dynamic event handler slot for OCPN_NMEAEvent(s) coming from NMEA or AIS threads
     Connect( wxEVT_OCPN_NMEA, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
+
+    //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
+    Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
 
     bFirstAuto = true;
 
@@ -4646,7 +4658,14 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 _T("   ***HDT Watchdog timeout...") );
     }
 
-//  Update and check watchdog timer for GSV (Satellite data)
+    //  Update and check watchdog timer for Magnetic Variation data source
+    gVAR_Watchdog--;
+    if( gVAR_Watchdog <= 0 ) {
+        g_bVAR_Rx = false;
+        if( g_nNMEADebug && ( gVAR_Watchdog == 0 ) ) wxLogMessage(
+            _T("   ***VAR Watchdog timeout...") );
+    }
+    //  Update and check watchdog timer for GSV (Satellite data)
     gSAT_Watchdog--;
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
@@ -6336,6 +6355,16 @@ void *x_malloc( size_t t )
 
 }
 
+
+void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
+{
+    wxString message_ID = event.GetID();
+    wxString message_JSONText = event.GetJSONText();
+
+    //  We are free to use or ignore any or all of the PlugIn messages flying thru this pipe tee.
+
+}
+
 void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 {
     wxLogMessage( event.GetString() );
@@ -6399,6 +6428,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                         else
                             if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) gVar =
                                     -m_NMEA0183.Rmc.MagneticVariation;
+
+                        g_bVARValid = true;
+                        g_bVAR_Rx = true;
+                        gVAR_Watchdog = gps_watchdog_timeout_ticks;
+
                     }
 
                     sfixtime = m_NMEA0183.Rmc.UTCTime;
@@ -6450,6 +6484,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                                 else
                                     if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) gVar =
                                             -m_NMEA0183.Hdg.MagneticVariationDegrees;
+
+                                g_bVARValid = true;
+                                g_bVAR_Rx = true;
+                                gVAR_Watchdog = gps_watchdog_timeout_ticks;
                             }
 
                             g_bHDxValid = true;
@@ -6660,16 +6698,25 @@ void MyFrame::OnEvtNMEA( wxCommandEvent & event )
             if( !wxIsNaN(pGPSData->kLon) ) gLon = pGPSData->kLon;
             gCog = pGPSData->kCog;
             gSog = pGPSData->kSog;
-            if( !wxIsNaN(pGPSData->kVar) ) gVar = pGPSData->kVar;
+            if( !wxIsNaN(pGPSData->kVar) ) {
+                gVar = pGPSData->kVar;
+                g_bVARValid = true;
+                g_bVAR_Rx = true;
+                gVAR_Watchdog = gps_watchdog_timeout_ticks;
+
+            }
 
             if( !wxIsNaN(pGPSData->kHdt) ) {
                 gHdt = pGPSData->kHdt;
                 g_bHDTValid = true;
+                g_bHDT_Rx = true;
+                gHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
 
             if( !wxIsNaN(pGPSData->kHdm) ) {
                 gHdm = pGPSData->kHdm;
                 g_bHDxValid = true;
+                gHDx_Watchdog = gps_watchdog_timeout_ticks;
             }
 
             fixtime = pGPSData->FixTime;
