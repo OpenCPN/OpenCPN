@@ -67,6 +67,43 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 class PluginListPanel;
 class PluginPanel;
 
+//----------------------------------------------------------------------------
+// PlugIn Messaging scheme Event
+//----------------------------------------------------------------------------
+
+class OCPN_MsgEvent: public wxEvent
+{
+public:
+    OCPN_MsgEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
+    
+    OCPN_MsgEvent(const OCPN_MsgEvent & event)
+    : wxEvent(event),
+    m_MessageID(event.m_MessageID),
+    m_MessageText(event.m_MessageText)
+    { }
+    
+    ~OCPN_MsgEvent( );
+    
+    // accessors
+    wxString GetID() { return m_MessageID; }
+    wxString GetJSONText() { return m_MessageText; }
+    
+    void SetID(wxString &string) { m_MessageID = string; }
+    void SetJSONText(wxString &string) { m_MessageText = string; }
+    
+    
+    // required for sending with wxPostEvent()
+    wxEvent *Clone() const; 
+    
+private:
+    wxString    m_MessageID;
+    wxString    m_MessageText;
+        
+        
+};
+    
+extern  const wxEventType wxEVT_OCPN_MSG;
+    
 
 //-----------------------------------------------------------------------------------------------------
 //

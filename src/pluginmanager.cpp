@@ -84,6 +84,30 @@ PlugIn_ViewPort CreatePlugInViewport( const ViewPort &vp)
 }
 
 
+//------------------------------------------------------------------------------
+//    NMEA Event Implementation
+//    PlugIn Messaging scheme Event
+//------------------------------------------------------------------------------
+
+const wxEventType wxEVT_OCPN_MSG = wxNewEventType();
+
+OCPN_MsgEvent::OCPN_MsgEvent( wxEventType commandType, int id )
+:wxEvent(id, commandType)
+{
+}
+
+OCPN_MsgEvent::~OCPN_MsgEvent( )
+{
+}
+
+wxEvent* OCPN_MsgEvent::Clone() const
+{
+    OCPN_MsgEvent *newevent=new OCPN_MsgEvent(*this);
+    newevent->m_MessageID=this->m_MessageID.c_str();  // this enforces a deep copy of the string data
+    newevent->m_MessageText=this->m_MessageText.c_str();  
+    return newevent;
+}
+
 //------------------------------------------------------------------------------------------------
 //
 //          The PlugInToolbarToolContainer Implementation
@@ -1467,6 +1491,17 @@ wxArrayString GetChartDBDirArrayString()
 void SendPluginMessage( wxString message_id, wxString message_body )
 {
     s_ppim->SendMessageToAllPlugins(message_id, message_body);
+    
+    //  We will send an event to the main application frame (gFrame)
+    //  for informational purposes.
+    //  Of course, gFrame is encouraged to use any or all the 
+    //  data flying by if judged useful and dependable....
+    
+    OCPN_MsgEvent Nevent(wxEVT_OCPN_MSG, 0);
+    Nevent.SetID(message_id);
+    Nevent.SetJSONText(message_body);
+    gFrame->AddPendingEvent(Nevent);
+    
 }
 
 void DimeWindow(wxWindow *win)
