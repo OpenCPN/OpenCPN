@@ -3138,18 +3138,29 @@ int MyConfig::LoadMyConfig( int iteration )
         wxString str;
         long dummy;
         wxString *pval = new wxString;
+        wxArrayString deleteList;
 
         bool bCont = GetFirstEntry( str, dummy );
         while( bCont ) {
             Read( str, pval );
+
             if( str.StartsWith( _T("Font") ) ) {
-                // Pre 3.1 setting.
-                DeleteEntry( str );
+                // Convert pre 3.1 setting. Can't delete old entries from inside the
+                // GetNextEntry() loop, so we need to save those and delete outside.
+                deleteList.Add( str );
+                wxString oldKey = pval->BeforeFirst( _T(':') );
+                str = FontMgr::GetFontConfigKey( oldKey );
             }
-            else
-                pFontMgr->LoadFontNative( &str, pval );
+
+            pFontMgr->LoadFontNative( &str, pval );
+
             bCont = GetNextEntry( str, dummy );
         }
+
+        for( unsigned int i=0; i<deleteList.Count(); i++ ) {
+            DeleteEntry( deleteList[i] );
+        }
+        deleteList.Clear();
         delete pval;
     }
 
@@ -6142,6 +6153,30 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement )
     return wxColour( 0, 0, 0 );
 }
 
+wxString FontMgr::GetFontConfigKey( const wxString &description )
+{
+    // Create the configstring by combining the locale with
+    // a hash of the font description. Hash is used because the i18n
+    // description can contain characters that mess up the config file.
+
+    wxString configkey;
+    configkey = g_locale;
+    configkey.Append( _T("-") );
+
+    using namespace std;
+    locale loc;
+    const collate<char>& coll = use_facet<collate<char>>( loc );
+    char cFontDesc[101];
+    wcstombs( cFontDesc, description.c_str(), 100 );
+    cFontDesc[100] = 0;
+    int fdLen = strlen( cFontDesc );
+
+    configkey.Append(
+            wxString::Format( _T("%08lx"),
+                    coll.hash( cFontDesc, cFontDesc + fdLen ) ) );
+    return configkey;
+}
+
 wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
 {
     //    Look thru the font list for a match
@@ -6154,23 +6189,7 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
     }
 
     // Found no font, so create a nice one and add to the list
-    // First, create the configstring by combining the locale with
-    // a hash of the font description. Hash is used because the i18n
-    // description can contain characters that mess up the config file.
-
-    wxString configstring;
-    configstring = g_locale;
-	configstring.Append( _T("-") );
-
-	// Use C++ stdlib functions to get ahash value of font description.
-
-	unsigned long hash;
-	std::locale loc;
-	const std::collate<char>& coll = std::use_facet<std::collate<char> >(loc);
-	const char* cFontDesc = (const char*)TextElement.mb_str(wxConvUTF8);
-	hash = coll.hash( cFontDesc, cFontDesc+TextElement.Length() );
-
-    configstring.Append( wxString::Format( _T("%08lx"), hash ) );
+    wxString configkey = GetFontConfigKey( TextElement );
 
     //    Now create a benign, always present native string
     //    Optional user requested default size
@@ -6185,7 +6204,7 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
 
     wxColor color( *wxBLACK );
 
-    MyFontDesc *pnewfd = new MyFontDesc( TextElement, configstring, nf, color );
+    MyFontDesc *pnewfd = new MyFontDesc( TextElement, configkey, nf, color );
     m_fontlist->Append( pnewfd );
 
     return pnewfd->m_font;

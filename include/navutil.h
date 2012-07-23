@@ -595,6 +595,7 @@ public:
       wxString *GetDialogString(int i);
       wxString *GetNativeDesc(int i);
       wxString GetFullConfigDesc ( int i );
+      static wxString GetFontConfigKey( const wxString &description );
 
       void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
       bool SetFont(wxString &TextElement, wxFont *pFont, wxColour color);
