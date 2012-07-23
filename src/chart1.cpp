@@ -6363,6 +6363,33 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 
     //  We are free to use or ignore any or all of the PlugIn messages flying thru this pipe tee.
 
+    //  We can possibly use the estimated magnetic variation if WMM_pi is present and active
+    //  and we have no other source of Variation
+    if(!g_bVAR_Rx) {
+        if(message_ID == _T("WMM_VARIATION_BOAT")) {
+
+        // construct the JSON root object
+            wxJSONValue  root;
+        // construct a JSON parser
+            wxJSONReader reader;
+
+        // now read the JSON text and store it in the 'root' structure
+        // check for errors before retreiving values...
+            int numErrors = reader.Parse( message_JSONText, &root );
+            if ( numErrors > 0 )  {
+//              const wxArrayString& errors = reader.GetErrors();
+                return;
+            }
+
+            // get the DECL value from the JSON message
+            wxString decl = root[_T("Decl")].AsString();
+            double decl_val;
+            decl.ToDouble(&decl_val);
+
+            gVar = decl_val;
+            g_bVARValid = true;
+        }
+    }
 }
 
 void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
