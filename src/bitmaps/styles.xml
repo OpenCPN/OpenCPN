@@ -223,7 +223,7 @@
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="sort_desc">
-				<icon-location x="260" y="100"/>
+				<icon-location x="180" y="100"/>
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="activepoint">
@@ -653,7 +653,7 @@
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="sort_desc">
-				<icon-location x="260" y="100"/>
+				<icon-location x="180" y="100"/>
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="activepoint">
@@ -1083,7 +1083,7 @@
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="sort_desc">
-				<icon-location x="260" y="100"/>
+				<icon-location x="180" y="100"/>
 				<size x="16" y="16"/>
 			</icon>
 			<icon name="activepoint">
