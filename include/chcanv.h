@@ -939,6 +939,7 @@ class GoToPositionDialog: public wxDialog
             void OnGoToPosCancelClick( wxCommandEvent& event );
             void OnGoToPosOkClick( wxCommandEvent& event );
             void OnPositionCtlUpdated( wxCommandEvent& event );
+            void CheckPasteBufferForPosition();
 
       /// Should we show tooltips?
             static bool ShowToolTips();

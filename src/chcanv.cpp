@@ -34,6 +34,7 @@
 #endif //precompiled headers
 #include "wx/image.h"
 #include <wx/graphics.h>
+#include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
 
 #include <wx/wxhtml.h>
@@ -8395,6 +8396,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_DEF_MENU_GOTOPOSITION:
         if( NULL == pGoToPositionDialog ) // There is one global instance of the Go To Position Dialog
             pGoToPositionDialog = new GoToPositionDialog( this );
+        pGoToPositionDialog->CheckPasteBufferForPosition();
         pGoToPositionDialog->Show();
         break;
 
@@ -14628,6 +14630,22 @@ void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
     Hide();
     gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
     event.Skip();
+}
+
+void GoToPositionDialog::CheckPasteBufferForPosition() {
+    if( wxTheClipboard->Open() ) {
+        wxTextDataObject data;
+        wxTheClipboard->GetData( data );
+        wxString pasteBuf = data.GetText();
+
+        PositionParser pparse( pasteBuf );
+
+        if( pparse.IsOk() ) {
+            m_MarkLatCtl->SetValue( pparse.GetLatitudeString() );
+            m_MarkLonCtl->SetValue( pparse.GetLongitudeString() );
+        }
+        wxTheClipboard->Close();
+    }
 }
 
 void GoToPositionDialog::OnPositionCtlUpdated( wxCommandEvent& event )
