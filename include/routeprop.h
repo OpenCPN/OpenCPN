@@ -70,25 +70,29 @@ class   HyperlinkList;
 #define SYMBOL_ROUTEPROP_SIZE wxSize(450, 300)
 #define SYMBOL_ROUTEPROP_POSITION wxDefaultPosition
 
-#define ID_TEXTCTRL 7001
-#define ID_TEXTCTRL2 7002
-#define ID_TEXTCTRL1 7003
-#define ID_TEXTCTRL3 7005
-#define ID_LISTCTRL 7004
-#define ID_ROUTEPROP_CANCEL 7006
-#define ID_ROUTEPROP_OK 7007
-#define ID_ROUTEPROP_SPLIT 7107
-#define ID_ROUTEPROP_EXTEND 7207
-#define ID_ROUTEPROP_COPYTXT 7307
-#define ID_PLANSPEEDCTL 7008
-#define ID_TEXTCTRL4 7009
-#define ID_TEXTCTRLDESC 7010
-#define ID_STARTTIMECTL 7011
-#define ID_TIMEZONESEL 7012
-#define ID_TRACKLISTCTRL 7013
+#define ID_TEXTCTRL            7001
+#define ID_TEXTCTRL2           7002
+#define ID_TEXTCTRL1           7003
+#define ID_TEXTCTRL3           7005
+#define ID_LISTCTRL            7004
+#define ID_ROUTEPROP_CANCEL    7006
+#define ID_ROUTEPROP_OK        7007
+#define ID_ROUTEPROP_SPLIT     7107
+#define ID_ROUTEPROP_EXTEND    7207
+#define ID_ROUTEPROP_COPYTXT   7307
+#define ID_PLANSPEEDCTL        7008
+#define ID_TEXTCTRL4           7009
+#define ID_TEXTCTRLDESC        7010
+#define ID_STARTTIMECTL        7011
+#define ID_TIMEZONESEL         7012
+#define ID_TRACKLISTCTRL       7013
 #define ID_RCLK_MENU_COPY_TEXT 7014
-#define ID_RCLK_MENU_EDIT_WP 7015
-#define ID_RCLK_MENU_DELETE 7016
+#define ID_RCLK_MENU_EDIT_WP   7015
+#define ID_RCLK_MENU_DELETE    7016
+#define ID_RCLK_MENU_COPY      7017
+#define ID_RCLK_MENU_COPY_LL   7018
+#define ID_RCLK_MENU_PASTE     7019
+#define ID_RCLK_MENU_PASTE_LL  7020
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -255,44 +259,45 @@ class MarkInfoDef : public wxDialog
 	private:
 
 	protected:
-		wxNotebook* m_notebookProperties;
-		wxPanel* m_panelBasicProperties;
-		wxStaticBitmap* m_bitmapIcon;
-		wxStaticText* m_staticTextLayer;
-		wxStaticText* m_staticTextName;
-		wxTextCtrl* m_textName;
-		wxCheckBox* m_checkBoxShowName;
-		wxStaticText* m_staticTextIcon;
-		wxBitmapComboBox* m_bcomboBoxIcon;
-		wxStaticText* m_staticTextLatitude;
-		wxTextCtrl* m_textLatitude;
-		wxStaticText* m_staticTextLongitude;
-		wxTextCtrl* m_textLongitude;
-		wxStaticText* m_staticTextDescription;
-		wxTextCtrl* m_textDescription;
-		wxButton* m_buttonExtDescription;
-		wxStaticBoxSizer* sbSizerLinks;
-		wxScrolledWindow* m_scrolledWindowLinks;
-		wxBoxSizer* bSizerLinks;
-		wxHyperlinkCtrl* m_hyperlink17;
-		wxMenu* m_menuLink;
-		wxButton* m_buttonAddLink;
-		wxToggleButton* m_toggleBtnEdit;
-		wxStaticText* m_staticTextEditEnabled;
-		wxPanel* m_panelDescription;
-		wxTextCtrl* m_textCtrlExtDescription;
-		wxPanel* m_panelExtendedProperties;
-		wxCheckBox* m_checkBoxVisible;
-		wxStaticText* m_staticTextGuid;
-		wxTextCtrl* m_textCtrlGuid;
-		wxStaticText* m_staticTextGpx;
-		wxTextCtrl* m_textCtrlGpx;
-		wxStdDialogButtonSizer* m_sdbSizerButtons;
-		wxButton* m_sdbSizerButtonsOK;
-		wxButton* m_sdbSizerButtonsCancel;
+        wxBoxSizer*             bSizerLinks;
+        wxBitmapComboBox*       m_bcomboBoxIcon;
+        wxStaticBitmap*         m_bitmapIcon;
+        wxButton*               m_buttonAddLink;
+        wxButton*               m_buttonExtDescription;
+        wxCheckBox*             m_checkBoxShowName;
+        wxCheckBox*             m_checkBoxVisible;
+        wxHyperlinkCtrl*        m_hyperlink17;
+        wxObject*               m_contextObject;
+        wxMenu*                 m_menuLink;
+        wxNotebook*             m_notebookProperties;
+        wxPanel*                m_panelBasicProperties;
+        wxPanel*                m_panelDescription;
+        wxPanel*                m_panelExtendedProperties;
+        wxScrolledWindow*       m_scrolledWindowLinks;
+        wxStdDialogButtonSizer* m_sdbSizerButtons;
+        wxButton*               m_sdbSizerButtonsCancel;
+        wxButton*               m_sdbSizerButtonsOK;
+        wxStaticText*           m_staticTextDescription;
+        wxStaticText*           m_staticTextEditEnabled;
+        wxStaticText*           m_staticTextGpx;
+        wxStaticText*           m_staticTextGuid;
+        wxStaticText*           m_staticTextIcon;
+        wxStaticText*           m_staticTextLatitude;
+        wxStaticText*           m_staticTextLayer;
+        wxStaticText*           m_staticTextLongitude;
+        wxStaticText*           m_staticTextName;
+        wxTextCtrl*             m_textCtrlExtDescription;
+        wxTextCtrl*             m_textCtrlGpx;
+        wxTextCtrl*             m_textCtrlGuid;
+        wxTextCtrl*             m_textDescription;
+        wxTextCtrl*             m_textLatitude;
+        wxTextCtrl*             m_textLongitude;
+        wxTextCtrl*             m_textName;
+        wxToggleButton*         m_toggleBtnEdit;
+        wxStaticBoxSizer*       sbSizerLinks;
 
 		// Virtual event handlers, overide them in your derived class
-            virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnExtDescriptionClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDeleteLink( wxCommandEvent& event ) { event.Skip(); }
@@ -302,7 +307,7 @@ class MarkInfoDef : public wxDialog
 		virtual void OnDescChangedExt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
-
+		void OnCopyPasteLatLon( wxCommandEvent& event );
 
 	public:
 
@@ -358,6 +363,7 @@ public :
       bool UpdateProperties(void);
       void ValidateMark(void);
       void InitialFocus(void);
+      void OnRightClick( wxCommandEvent& event );
 
       MarkInfoImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Information"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
       ~MarkInfoImpl();
@@ -398,5 +404,26 @@ private :
       void OnOkClick( wxCommandEvent& event );
 };
 
-#endif
-    // _ROUTEPROP_H_
+class PositionParser {
+public:
+    PositionParser( wxString& src );
+    wxString GetSeparator() { return separator; }
+    wxString GetLatitudeString() { return latitudeString; }
+    wxString GetLongitudeString() { return longitudeString; }
+    double GetLatitude() { return latitude; }
+    double GetLongitude() { return longitude; }
+    bool FindSeparator( wxString src );
+    bool IsOk() { return parsedOk; }
+
+private:
+    wxString source;
+    wxString separator;
+    wxString latitudeString;
+    wxString longitudeString;
+    double latitude;
+    double longitude;
+    bool parsedOk;
+};
+
+
+#endif // _ROUTEPROP_H_
