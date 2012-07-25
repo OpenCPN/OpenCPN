@@ -470,6 +470,36 @@
 				<offset x="0" y="0"/>
 				<compass-corners  radius="3"/>
 			</compass>
+			<tool name="Display">
+				<icon-location x="20" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="20" y="430"/>
+			</tool>
+			<tool name="Connections">
+				<icon-location x="80" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="80" y="430"/>
+			</tool>
+			<tool name="Charts">
+				<icon-location x="140" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="140" y="430"/>
+			</tool>
+			<tool name="Ship">
+				<icon-location x="200" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="200" y="430"/>
+			</tool>
+			<tool name="UI">
+				<icon-location x="260" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="260" y="430"/>
+			</tool>
+			<tool name="Plugins">
+				<icon-location x="320" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="320" y="430"/>
+			</tool>
 			<tool name="Dashboard">
 				<icon-location x="658" y="20"/>
 				<rollover-location x="658" y="220"/>

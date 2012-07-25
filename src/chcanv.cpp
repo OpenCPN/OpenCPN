@@ -6892,6 +6892,65 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
     return ( false );
 }
 
+// Look for waypoints at the current position.
+// Used to determine what a mouse event should act on.
+
+void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdited ) {
+
+    m_pRoutePointEditTarget = NULL;
+    m_pFoundPoint = NULL;
+
+    SelectItem *pFind = NULL;
+    SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                 SELTYPE_ROUTEPOINT, selectRadius );
+    wxSelectableItemListNode *node = SelList.GetFirst();
+    while( node ) {
+        pFind = node->GetData();
+
+        RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+
+        //    Get an array of all routes using this point
+        m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining( frp );
+
+        // Use route array to determine actual visibility for the point
+        bool brp_viz = false;
+        if( m_pEditRouteArray ) {
+            for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                if( pr->IsVisible() ) {
+                    brp_viz = true;
+                    break;
+                }
+            }
+        } else
+            brp_viz = frp->IsVisible();               // isolated point
+
+        if( brp_viz ) {
+            //    Use route array to rubberband all affected routes
+            if( m_pEditRouteArray )                 // Editing Waypoint as part of route
+            {
+                for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                    Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                    pr->m_bIsBeingEdited = setBeingEdited;
+                }
+                m_bRouteEditing = setBeingEdited;
+
+            } else                                      // editing Mark
+            {
+                frp->m_bIsBeingEdited = setBeingEdited;
+                m_bMarkEditing = setBeingEdited;
+            }
+
+            m_pRoutePointEditTarget = frp;
+            m_pFoundPoint = pFind;
+
+            break;            // out of the while(node)
+        }
+
+        node = node->GetNext();
+    }       // while (node)
+}
+
 void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 {
     if( singleClickEventIsValid ) MouseEvent( singleClickEvent );
@@ -6912,6 +6971,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( event.ButtonUp() && HasCapture() ) ReleaseMouse();
 #endif
 
+    // We start with Double Click processing. The first left click just starts a timer and
+    // is remembered, then we actually do something if there is a LeftDClick.
+    // If there is, the two single clicks are ignored.
+
     if( event.LeftDClick() && ( cursor_region == CENTER ) ) {
         m_DoubleClickTimer->Start();
         singleClickEventIsValid = false;
@@ -6930,10 +6993,38 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 wxWindow *pwin = wxDynamicCast(this, wxWindow);
                 ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
             }
-        } else {
-            ShowObjectQueryWindow( x, y, zlat, zlon );
+            return;
         }
 
+        if( m_pRoutePointEditTarget ) {
+            ShowMarkPropertiesDialog( m_pRoutePointEditTarget );
+            return;
+        }
+
+        SelectItem* cursorItem;
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_ROUTESEGMENT, SelectRadius );
+
+        if( cursorItem ) {
+            Route *pr = (Route *) cursorItem->m_pData3;
+            if( pr->IsVisible() ) {
+                ShowRoutePropertiesDialog( _("Route Properties"), pr );
+                return;
+            }
+        }
+
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_TRACKSEGMENT, SelectRadius );
+
+        if( cursorItem ) {
+            Route *pr = (Route *) cursorItem->m_pData3;
+            if( pr->IsVisible() ) {
+                ShowRoutePropertiesDialog( _("Track Properties"), pr );
+                return;
+            }
+        }
+
+        // Found no object to act on, so show chart info.
+
+        ShowObjectQueryWindow( x, y, zlat, zlon );
         return;
     }
 
@@ -7001,22 +7092,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     float SelectRadius;
     int sel_rad_pix = 8;
     SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-
-///   Removed when console became a wxDialog
-    /*
-     #ifdef __WXMSW__
-     if ( console->IsShown() )
-     {
-     wxRegion rgn_console ( console->GetRect() );
-     if ( rgn_console.Contains ( x,y )  == wxInRegion )
-     {
-     //                wxLogMessage(_T("chcanv::MouseEvent invoking concanv::CaptureMouse"));
-     console->CaptureMouse();
-     return;
-     }
-     }
-     #endif
-     */
 
 //      Show cursor position on Status Bar, if present
 //      except for GTK, under which status bar updates are very slow
@@ -7191,7 +7266,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         last_drag.x = mx;
         last_drag.y = my;
 
-        if( parent_frame->nRoute_State )                     // creating route?
+        if( parent_frame->nRoute_State )                  // creating route?
         {
             double rlat, rlon;
 
@@ -7286,63 +7361,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             Refresh( false );
         }
 
-        else                                // Not creating Route
-        {
-            // So look for selectable and visible route point
-            m_pRoutePointEditTarget = NULL;
-            m_pFoundPoint = NULL;
-
-            SelectItem *pFind = NULL;
-            SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
-                                         SELTYPE_ROUTEPOINT, SelectRadius );
-            wxSelectableItemListNode *node = SelList.GetFirst();
-            while( node ) {
-                pFind = node->GetData();
-
-                RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
-
-                //    Get an array of all routes using this point
-                m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining( frp );
-
-                // Use route array to determine actual visibility for the point
-                bool brp_viz = false;
-                if( m_pEditRouteArray ) {
-                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        if( pr->IsVisible() ) {
-                            brp_viz = true;
-                            break;
-                        }
-                    }
-                } else
-                    brp_viz = frp->IsVisible();               // isolated point
-
-                if( brp_viz ) {
-                    //    Use route array to rubberband all affected routes
-                    if( m_pEditRouteArray )                 // Editing Waypoint as part of route
-                    {
-                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                            pr->m_bIsBeingEdited = true;
-                        }
-                        m_bRouteEditing = true;
-
-                    } else                                      // editing Mark
-                    {
-                        frp->m_bIsBeingEdited = true;
-                        m_bMarkEditing = true;
-                    }
-
-                    m_pRoutePointEditTarget = frp;
-                    m_pFoundPoint = pFind;
-
-                    break;            // out of the while(node)
-                }
-
-                node = node->GetNext();
-            }       // while (node)
-
-        }                   // else
+        else FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
     }
 
     if( event.Dragging() ) {
@@ -8270,6 +8289,40 @@ void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
     }
 }
 
+void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
+    if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
+        pMarkPropDialog = new MarkInfoImpl( this );
+
+    pMarkPropDialog->SetRoutePoint( markPoint );
+    pMarkPropDialog->UpdateProperties();
+    if( markPoint->m_bIsInLayer ) {
+        wxString caption( _("Mark Properties, Layer: ") );
+        caption.Append( GetLayerName( m_pFoundRoutePoint->m_LayerID ) );
+        pMarkPropDialog->SetDialogTitle( caption );
+    } else
+        pMarkPropDialog->SetDialogTitle( _("Mark Properties") );
+
+    pMarkPropDialog->Show();
+    pMarkPropDialog->InitialFocus();
+}
+
+void ChartCanvas::ShowRoutePropertiesDialog( wxString title, Route* selected ) {
+    if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
+        pRoutePropDialog = new RouteProp( this );
+
+    pRoutePropDialog->SetRouteAndUpdate( selected );
+    pRoutePropDialog->UpdateProperties();
+    if( !selected->m_bIsInLayer ) pRoutePropDialog->SetDialogTitle( title );
+    else {
+        wxString caption( title << _T(", Layer: ") );
+        caption.Append( GetLayerName( selected->m_LayerID ) );
+        pRoutePropDialog->SetDialogTitle( caption );
+    }
+
+    pRoutePropDialog->Show();
+
+    Refresh( false );
+}
 void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 {
     RoutePoint *pLast;
@@ -8426,20 +8479,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         break;
     }
     case ID_WP_MENU_PROPERTIES:
-        if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
-            pMarkPropDialog = new MarkInfoImpl( this );
-
-        pMarkPropDialog->SetRoutePoint( m_pFoundRoutePoint );
-        pMarkPropDialog->UpdateProperties();
-        if( m_pFoundRoutePoint->m_bIsInLayer ) {
-            wxString caption( _("Mark Properties, Layer: ") );
-            caption.Append( GetLayerName( m_pFoundRoutePoint->m_LayerID ) );
-            pMarkPropDialog->SetDialogTitle( caption );
-        } else
-            pMarkPropDialog->SetDialogTitle( _("Mark Properties") );
-
-        pMarkPropDialog->Show();
-        pMarkPropDialog->InitialFocus();
+        ShowMarkPropertiesDialog( m_pFoundRoutePoint );
         break;
 
     case ID_WP_MENU_CLEAR_ANCHORWATCH:             // pjotrc 2010.02.15
@@ -8744,41 +8784,12 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         break;
 
     case ID_RT_MENU_PROPERTIES: {
-        if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
-            pRoutePropDialog = new RouteProp( this );
-
-        pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-        pRoutePropDialog->UpdateProperties();
-        if( !m_pSelectedRoute->m_bIsInLayer ) pRoutePropDialog->SetDialogTitle(
-                _("Route Properties") );
-        else {
-            wxString caption( _T("Route Properties, Layer: ") );
-            caption.Append( GetLayerName( m_pSelectedRoute->m_LayerID ) );
-            pRoutePropDialog->SetDialogTitle( caption );
-        }
-
-        pRoutePropDialog->Show();
-
+        ShowRoutePropertiesDialog( _("Route Properties"), m_pSelectedRoute );
         break;
     }
 
     case ID_TK_MENU_PROPERTIES: {
-        if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
-            pRoutePropDialog = new RouteProp( this );
-
-        pRoutePropDialog->SetRouteAndUpdate( m_pSelectedTrack );
-        pRoutePropDialog->UpdateProperties();
-        if( !m_pSelectedTrack->m_bIsInLayer ) pRoutePropDialog->SetDialogTitle(
-                _("Track Properties") );
-        else {
-            wxString caption( _T("Track Properties, Layer: ") );
-            caption.Append( GetLayerName( m_pSelectedTrack->m_LayerID ) );
-            pRoutePropDialog->SetDialogTitle( caption );
-        }
-
-        pRoutePropDialog->Show();
-
-        Refresh( false );
+        ShowRoutePropertiesDialog( _("Track Properties"), m_pSelectedTrack );
         break;
     }
 

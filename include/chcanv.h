@@ -353,6 +353,7 @@ private:
       void ShipDraw(ocpnDC& dc);
       void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
       void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
+      void FindRoutePointsAtCursor( float selectRadius, bool setBeingEdited );
 
       void RotateTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
@@ -407,8 +408,8 @@ private:
 
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
-
-
+      void ShowMarkPropertiesDialog( RoutePoint* markPoint );
+      void ShowRoutePropertiesDialog( wxString title, Route* selected );
 
       //    Data
       int         m_canvas_width, m_canvas_height;
