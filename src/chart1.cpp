@@ -489,6 +489,7 @@ bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 bool                      g_bAIS_ACK_Timeout;
 double                    g_AckTimeout_Mins;
 bool                      g_bShowAreaNotices;
+bool                      g_bDrawAISSize;
 
 wxToolBarToolBase         *m_pAISTool;
 int                       g_nAIS_activity_timer;
@@ -1437,6 +1438,7 @@ bool MyApp::OnInit()
         g_bQuiltEnable = true;
         g_bskew_comp = false;
         g_bShowAreaNotices = false;
+        g_bDrawAISSize = false;
 
 #ifdef USE_S57
         if( ps52plib && ps52plib->m_bOK ) {

@@ -178,6 +178,7 @@ extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
+extern bool             g_bDrawAISSize;
 
 extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -6015,6 +6016,37 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         ais_quad_icon[3].x = 0;
         ais_quad_icon[3].y = -6;
 
+        wxPoint ais_real_size[4];
+        bool bcan_draw_size;
+        if (g_bDrawAISSize)
+        {
+            if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0)
+            {
+                bcan_draw_size = false;
+            }
+            else
+            {
+                double ref_lat, ref_lon;
+                ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat,
+                          &ref_lon );
+                wxPoint2DDouble b_point = GetVP().GetDoublePixFromLL( td->Lat, td->Lon );
+                wxPoint2DDouble r_point = GetVP().GetDoublePixFromLL( ref_lat, ref_lon );
+                double ppm = r_point.GetDistance(b_point) / 100.;
+                ais_real_size[0].x = -td->DimD * ppm;
+                ais_real_size[0].y = -td->DimB * ppm;
+                ais_real_size[1].x = -td->DimD * ppm;
+                ais_real_size[1].y = td->DimA * ppm;
+                ais_real_size[2].x = td->DimC * ppm;
+                ais_real_size[2].y = td->DimA * ppm;
+                ais_real_size[3].x = td->DimC * ppm;
+                ais_real_size[3].y = -td->DimB * ppm;
+                if (ais_real_size[2].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
+                    bcan_draw_size = false; //drawing too small does not make sense
+                else
+                    bcan_draw_size = true;
+            }
+        }
+
         //   If this is an AIS Class B target, so symbolize it differently // pjotrc 2010.01.31
         if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;               // pjotrc 2010.01.31
         if( td->Class == AIS_GPSG_BUDDY ) {
@@ -6042,6 +6074,15 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                         - ( (double) ais_quad_icon[i].x ) * cos( theta );
             ais_quad_icon[i].x = (int) round( px );
             ais_quad_icon[i].y = (int) round( py );
+            if (g_bDrawAISSize && bcan_draw_size)
+            {
+                double px = ( (double) ais_real_size[i].x ) * sin( theta )
+                        + ( (double) ais_real_size[i].y ) * cos( theta );
+                double py = ( (double) ais_real_size[i].y ) * sin( theta )
+                            - ( (double) ais_real_size[i].x ) * cos( theta );
+                ais_real_size[i].x = (int) round( px );
+                ais_real_size[i].y = (int) round( py );
+            }
         }
 
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
@@ -6269,6 +6310,12 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
             } else
                 dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );
+
+            if (g_bDrawAISSize && bcan_draw_size)
+            {
+                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+                dc.StrokePolygon( 4, ais_real_size, TargetPoint.x, TargetPoint.y );
+            }
 
             //        If this is a moored/anchored target, so symbolize it
             if( ( ( td->NavStatus == MOORED ) || ( td->NavStatus == AT_ANCHOR ) ) /*&&(target_sog < g_ShowMoored_Kts)*/) // pjotrc 2010.01.31
