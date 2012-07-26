@@ -298,7 +298,7 @@ class MyFrame: public wxFrame
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
-    void RequestNewToolbar( wxCommandEvent & event );
+    void RequestNewToolbarArgEvent( wxCommandEvent & event ){ return RequestNewToolbar(); }
     void RequestNewToolbar();
 
     void ActivateMOB(void);

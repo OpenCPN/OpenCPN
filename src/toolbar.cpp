@@ -170,7 +170,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
         long orient )
 {
     m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
+#ifndef __WXMAC__
+    wstyle |= wxFRAME_SHAPED;
+#endif    
+    
     m_ptoolbar = NULL;
 
 #ifdef __WXOSX__
@@ -521,8 +525,9 @@ void ocpnFloatingToolbarDialog::Realize()
                     upperLeft.y += m_style->GetTopMargin() + m_style->GetToolSize().y;
                 }
             }
-
+#ifndef __WXMAC__
             SetShape( wxRegion( shape, *wxWHITE, 10 ) );
+#endif            
         }
         GetParent()->Update();
     }

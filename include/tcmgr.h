@@ -309,7 +309,7 @@ class TCDataFactory
 {
 public:
     TCDataFactory();
-    ~TCDataFactory();
+    virtual ~TCDataFactory();
 
     virtual TC_Error_Code LoadData(wxString &data_file_path) = 0;
 

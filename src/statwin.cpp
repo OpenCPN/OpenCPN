@@ -54,11 +54,19 @@ EVT_MOUSE_EVENTS(StatWin::MouseEvent)
 END_EVENT_TABLE()
 
 // ctor
-StatWin::StatWin( wxWindow *frame ) :
-        wxDialog( frame, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ),
-                wxSIMPLE_BORDER | wxFRAME_SHAPED | wxFRAME_NO_TASKBAR )
-
+StatWin::StatWin( wxWindow *frame )
 {
+
+    long wstyle = wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR;
+#ifndef __WXMAC__
+    wstyle |= wxFRAME_SHAPED;
+#endif    
+#ifdef __WXMAC__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
+    
+    wxDialog::Create( frame, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
+    
     int x, y;
     GetClientSize( &x, &y );
 
@@ -410,10 +418,12 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
             }
         }
+#ifndef __WXMAC__        
         if( style->chartStatusWindowTransparent ) ( (wxDialog*) GetParent() )->SetShape(
                 wxRegion( shape, *wxBLACK, 0 ) );
-            }
-        }
+#endif        
+    }
+}
 
 void PianoWin::SetKeyArray( ArrayOfInts array )
 {

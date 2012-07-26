@@ -749,6 +749,11 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 //      Activating?
 
 #ifdef __WXOSX__
+
+//      On the Mac, this method gets hit when...
+//      a) switching between apps by clicking title bars, coming and going
+//      b) un-iconizing, activeate only/
+//      It does NOT get hit on iconizing the app
     if(!event.GetActive())
     {
         if(g_FloatingToolbarDialog)
@@ -765,22 +770,16 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
             pRouteManagerDialog->Hide();
             g_MacShowDialogArray.Add(pRouteManagerDialog);
         }
-
     }
     else
     {
-        if(gFrame)
-        gFrame->SurfaceToolbar();
-
-        if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Raise();
+        if(gFrame) gFrame->SurfaceToolbar();
+        if(g_FloatingToolbarDialog) g_FloatingToolbarDialog->Raise();
     }
 #endif
 
     if( !event.GetActive() ) {
-//            printf("AppDeactivate\n");
         if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
-
     }
 
     event.Skip();
@@ -2137,7 +2136,7 @@ EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, EVT_NMEA, MyFrame::OnEvtNMEA)
 EVT_COMMAND(wxID_ANY, EVT_THREADMSG, MyFrame::OnEvtTHREADMSG)
-EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbar)
+EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 END_EVENT_TABLE()
 
@@ -2290,12 +2289,23 @@ void MyFrame::OnActivate( wxActivateEvent& event )
         {
             wxDialog *ptr = g_MacShowDialogArray.Item(i);
             ptr->Show();
-//                  ptr->Raise();
         }
 
         g_MacShowDialogArray.Empty();
 
     }
+    else {
+        if(stats && stats->IsShown()) {
+            stats->Hide();
+            g_MacShowDialogArray.Add(stats);
+        }
+        
+        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
+            g_FloatingCompassDialog->Hide();
+            g_MacShowDialogArray.Add(g_FloatingCompassDialog);
+        }
+    }
+        
 
 #endif
 
@@ -2700,11 +2710,6 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
         }
     }
     return bret;
-}
-
-void MyFrame::RequestNewToolbar( wxCommandEvent& event )
-{
-    RequestNewToolbar();
 }
 
 void MyFrame::RequestNewToolbar()
@@ -3672,7 +3677,7 @@ void MyFrame::ToggleRocks( void )
 {
 #ifdef USE_S57
     if( ps52plib ) {
-        int vis;
+        int vis =  0;
         // Need to loop once for UWTROC, which is our "master", then for
         // other categories, since order is unknown?
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
@@ -3877,6 +3882,10 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
+#ifdef __WXMAC__
+    if(stats) stats->Hide();
+#endif
+    
     if( lastPage >= 0 ) SetDlg.itemNotebook4->SetSelection( lastPage );
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->DisableTooltips();
@@ -4042,6 +4051,10 @@ int MyFrame::DoOptionsDialog()
         if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
     }
 
+#ifdef __WXMAC__
+    if(stats) stats->Show();
+#endif
+    
     return b_refresh_after_options;
 }
 
@@ -4591,22 +4604,29 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     if(IsIconized())
     {
-        if(g_FloatingToolbarDialog)
-        {
+        if(g_FloatingToolbarDialog) {
             if(g_FloatingToolbarDialog->IsShown())
             g_FloatingToolbarDialog->Submerge();
         }
 
-        if(console && console->IsShown())
-        {
+        if(console && console->IsShown()) {
             console->Hide();
             g_MacShowDialogArray.Add(console);
         }
 
-        if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
-        {
+        if(pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
             pRouteManagerDialog->Hide();
             g_MacShowDialogArray.Add(pRouteManagerDialog);
+        }
+
+        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
+            g_FloatingCompassDialog->Hide();
+            g_MacShowDialogArray.Add(g_FloatingCompassDialog);
+        }
+        
+        if(stats && stats->IsShown()) {
+            stats->Hide();
+            g_MacShowDialogArray.Add(stats);
         }
     }
 #endif
@@ -5085,6 +5105,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
                         cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x
                         - x_offset - cc1_edge_comp, y_offset );
                 g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
+            
             } else {
                 wxPoint posn_in_canvas =
                         wxPoint(
@@ -5099,7 +5120,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         }
     }
 
-    if( g_FloatingCompassDialog ) {
+    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
         g_FloatingCompassDialog->UpdateStatus( b_force_new | b_update );
         g_FloatingCompassDialog->Update();
     }

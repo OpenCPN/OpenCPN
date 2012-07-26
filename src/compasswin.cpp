@@ -46,7 +46,13 @@ extern bool g_bskew_comp;
 ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent )
 {
     m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
+#ifndef __WXMAC__
+    wstyle |= wxFRAME_SHAPED;
+#endif    
+#ifdef __WXMAC__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
     wxDialog::Create( parent, -1, _T(""), wxPoint( 0, 0 ), wxSize( -1, -1 ), wstyle );
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -226,6 +232,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             m_lastgpsIconName = gpsIconName;
         }
 
+#ifndef __WXMAC__       
         if( style->marginsInvisible ) {
             m_MaskBmp = wxBitmap( StatBmp.GetWidth(), StatBmp.GetHeight() );
             wxMemoryDC sdc( m_MaskBmp );
@@ -248,7 +255,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             sdc.SelectObject( wxNullBitmap );
             SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
         }
-        
+#endif        
 
         return StatBmp;
     }
