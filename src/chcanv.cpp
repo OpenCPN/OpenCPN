@@ -13185,7 +13185,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
         //      Show flood and ebb directions
-        if( strchr( "c", pIDX->IDX_type ) ) {
+        if(( strchr( "c", pIDX->IDX_type ) ) || ( strchr( "C", pIDX->IDX_type ) )) {
             dc.SetFont( *pSFont );
 
             wxString fdir;

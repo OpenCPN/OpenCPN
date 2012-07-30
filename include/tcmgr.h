@@ -118,6 +118,7 @@ public:
     double      *epoch;
     double      DATUM;
     int         meridian;               // **UNUSED**
+    double      zone_offset;
     char        tzfile[40];
     char        unit[40];
     char        units_conv[40];         // printable converted units
@@ -195,7 +196,6 @@ public:
     float     Value15;
     float     Dir15;
     bool      Ret15;
-//    bool      b_is_secondary;
     char     *IDX_tzname;                    // Timezone name
     int       IDX_ref_file_num;              // # of reference file where reference station is
     char      IDX_reference_name[MAXNAMELEN];// Name of reference station
@@ -205,7 +205,7 @@ public:
     int       station_tz_offset;             // Offset in seconds to convert from harmonic data (epochs) to
                                              // the station time zone.  Depends on Master Station reference only.
                                              // For ASCII data, typically 0
-                                             // For Binary data, probably -(IDX_time_zone * 60)-(tiderec->zone_offset)
+                                             // For Binary data, probably -(IDX_time_zone * 60)-(tiderec->zone_offset * 3600)
     int       IDX_time_zone;                 // Station location minutes offset from UTC
     
 

@@ -1739,7 +1739,8 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
         /* Get meridian */
         read_next_line (fp, linrec, 0);
         psd->meridian = hhmm2seconds (linrec);
-
+        psd->zone_offset = 0;
+        
         /* Get tzfile, if present */
         if (sscanf (nojunk(linrec), "%s %s", junk, psd->tzfile) < 2)
             strcpy (psd->tzfile, "UTC0");
@@ -8603,8 +8604,8 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
             else
                 pIDX->IDX_type = 'T';
             
-//            int t1 = ptiderec->zone_offset;
-//            double t1a = (double)(t1 / 100) + ((double)(t1 % 100))/60.;
+            int t1 = ptiderec->zone_offset;
+            double zone_offset = (double)(t1 / 100) + ((double)(t1 % 100))/60.;
 //            pIDX->IDX_time_zone = t1a;
 
             pIDX->IDX_ht_time_off = pIDX->IDX_lt_time_off = 0;
@@ -8625,8 +8626,8 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
 
 
             // Get meridian, which is seconds difference from UTC, not figuring DST, so that New York is always (-300 * 60)
-           psd->meridian =  -(tz_info->tzi.Bias * 60);
-
+            psd->meridian =  -(tz_info->tzi.Bias * 60);
+            psd->zone_offset = zone_offset;
 
             // Get units
             strncpy (psd->unit, get_level_units (ptiderec->level_units), ONELINER_LENGTH);
@@ -8743,7 +8744,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
         IDX_entry *pIDX_Ref = &m_IDX_array.Item(pIDX->IDX_ref_dbIndex);
         Station_Data *pRefSta = pIDX_Ref->pref_sta_data;
         pIDX->pref_sta_data = pRefSta;
-        pIDX->station_tz_offset = -pRefSta->meridian;
+        pIDX->station_tz_offset = -pRefSta->meridian + (pRefSta->zone_offset * 3600);
     }
     return TC_NO_ERROR;
 }
