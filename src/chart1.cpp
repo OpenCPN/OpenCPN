@@ -1619,39 +1619,12 @@ bool MyApp::OnInit()
     //  It is important to have set the chartcanvas and status bar sizes before this point,
     //  so that the pane.BestSize values are correctly captured by the AuiManager.
 
-#if 1// __USEAUI__
     g_pauimgr->AddPane( cc1 );
     g_pauimgr->GetPane( cc1 ).Name( _T("ChartCanvas") );
     g_pauimgr->GetPane( cc1 ).Fixed();
     g_pauimgr->GetPane( cc1 ).CaptionVisible( false );
     g_pauimgr->GetPane( cc1 ).CenterPane();
     g_pauimgr->GetPane( cc1 ).BestSize( cc1->GetSize() );
-
-    //  Status bar is set up to be fixed, unmovable, and docked at the bottom.
-    /*g_pauimgr->AddPane(stats);
-     g_pauimgr->GetPane(stats).Name(_T("PianoStats"));
-     g_pauimgr->GetPane(stats).Fixed();
-     g_pauimgr->GetPane(stats).Bottom();
-     g_pauimgr->GetPane(stats).Dock();
-     g_pauimgr->GetPane(stats).CaptionVisible(false);
-     g_pauimgr->GetPane(stats).GripperTop(false);
-     g_pauimgr->GetPane(stats).CloseButton(false);*/
-#endif
-
-    stats->RePosition();
-
-    //  AUI Test code for a simple managed control (Window)
-#if 0
-    g_text = new wxTextCtrl(cc1,wxID_ANY, _T("Text"), wxPoint(200,200), wxSize(150,90), wxNO_BORDER | wxTE_MULTILINE);
-    g_pauimgr->AddPane(g_text);
-    g_pauimgr->GetPane(g_text).Name(_T("Text"));
-    g_pauimgr->GetPane(g_text).Float();
-    g_pauimgr->GetPane(g_text).FloatingPosition(300,300);
-    g_pauimgr->GetPane(g_text).CaptionVisible();
-    g_pauimgr->GetPane(g_text).GripperTop();
-    g_pauimgr->GetPane(g_text).CloseButton();
-    g_pauimgr->GetPane(g_text).Show();
-#endif
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
@@ -1664,9 +1637,11 @@ bool MyApp::OnInit()
 
     if( g_bframemax ) gFrame->Maximize( true );
 
-        //  Yield to pick up the OnSize() calls that result from Maximize()
-        Yield();
-
+    //  Yield to pick up the OnSize() calls that result from Maximize()
+    Yield();
+    
+    stats->Show();              // sometimes gets turned off in gtk??
+  
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -1689,26 +1664,6 @@ bool MyApp::OnInit()
 
     if( !bno_load ) g_pauimgr->LoadPerspective( perspective, false );
 
-
-    //   Correct any faulty chart bar position
-    /*g_pauimgr->GetPane(stats).Row(0);
-     g_pauimgr->GetPane(stats).Position(1);
-
-     wxAuiPaneInfoArray pane_array = g_pauimgr->GetAllPanes();
-     for(unsigned int i=0 ; i < pane_array.GetCount() ; i++)
-     {
-     wxAuiPaneInfo pane = pane_array.Item(i);
-     if((pane.name != _T("PianoStats")) && (pane.name != _T("ChartCanvas")))
-     {
-     if(pane.IsDocked() && (pane.dock_row == 0))
-     {
-     pane.Float();
-     pane.Row(1);
-     pane.Position(0);
-
-     }
-     }
-     }*/
 
     g_pauimgr->Update();
 
