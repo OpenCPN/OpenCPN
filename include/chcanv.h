@@ -215,6 +215,7 @@ public:
       float GetVPChartScale(){return GetVP().chart_scale;}
       double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
+      double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP(); const
 
       glChartCanvas *GetglCanvas(){ return m_glcc; }
@@ -338,7 +339,8 @@ private:
                                              // useage....
                                              // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
-
+      double      m_absolute_min_scale_ppm;
+      
       int m_panx, m_pany, m_panspeed, m_modkeys;
       bool m_bmouse_key_mod;
 
@@ -580,7 +582,7 @@ public:
 
       wxString GetRendererString(){ return m_renderer; }
 
-      void Invalidate() {m_cache_vp.Invalidate(); }
+      void Invalidate() { m_gl_cache_vp.Invalidate(); }
       void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wxRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
       void ClearAllRasterTextures(void);
@@ -610,7 +612,7 @@ protected:
       //    Value is ChartTextureHashType*
       ChartPointerHashType          m_chart_hash;
 
-      ViewPort    m_cache_vp;
+      ViewPort    m_gl_cache_vp;
 
 
       bool m_bGenMM;
@@ -631,7 +633,8 @@ protected:
       GLuint       m_blit_tex;
       int          m_cache_tex_x;
       int          m_cache_tex_y;
-
+      wxRegion     m_gl_rendered_region;
+      
 DECLARE_EVENT_TABLE()
 };
 

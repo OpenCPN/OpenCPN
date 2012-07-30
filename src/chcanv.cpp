@@ -635,39 +635,23 @@ public:
         m_canvas_width = CanvasWidth;
     }
 
+    bool BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
     bool Compose( const ViewPort &vp );
-    bool IsComposed()
-    {
-        return m_bcomposed;
-    }
-
+    bool IsComposed(){ return m_bcomposed; }
     ChartBase *GetFirstChart();
     ChartBase *GetNextChart();
     ChartBase *GetLargestScaleChart();
     ArrayOfInts GetQuiltIndexArray( void );
     bool IsQuiltDelta( ViewPort &vp );
     bool IsChartQuiltableRef( int db_index );
-    ViewPort &GetQuiltVP()
-    {
-        return m_vp_quilt;
-    }
-    wxString GetQuiltDepthUnit()
-    {
-        return m_quilt_depth_unit;
-    }
-    void SetRenderedVP( ViewPort &vp )
-    {
-        m_vp_rendered = vp;
-    }
-    bool HasOverlays( void )
-    {
-        return m_bquilt_has_overlays;
-    }
-
-    int GetnCharts()
-    {
-        return m_PatchList.GetCount();
-    }
+    ViewPort &GetQuiltVP(){ return m_vp_quilt; }
+    wxString GetQuiltDepthUnit() { return m_quilt_depth_unit; }
+    void SetRenderedVP( ViewPort &vp ) { m_vp_rendered = vp; }
+    bool HasOverlays( void ) { return m_bquilt_has_overlays; }
+    
+    int GetExtendedStackCount(void) { return m_extended_stack_array.GetCount(); }
+    
+    int GetnCharts() { return m_PatchList.GetCount(); }
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( wxPoint p );
@@ -680,27 +664,16 @@ public:
     }
     void AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed );
 
-    wxRegion &GetFullQuiltRegion( void )
-    {
-        return m_covered_region;
-    }
+    wxRegion &GetFullQuiltRegion( void ) { return m_covered_region; }
+    wxRegion &GetFullQuiltRenderedRegion( void ) { return m_rendered_region; }
     bool IsChartSmallestScale( int dbIndex );
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
 
-    void SetHiliteIndex( int index )
-    {
-        m_nHiLiteIndex = index;
-    }
-    void SetReferenceChart( int dbIndex )
-    {
-        m_refchart_dbIndex = dbIndex;
-    }
-    int GetRefChartdbIndex( void )
-    {
-        return m_refchart_dbIndex;
-    }
+    void SetHiliteIndex( int index ){ m_nHiLiteIndex = index; }
+    void SetReferenceChart( int dbIndex ) { m_refchart_dbIndex = dbIndex; }
+    int GetRefChartdbIndex( void ) { return m_refchart_dbIndex; }
     int GetQuiltProj( void )
     {
         return m_quilt_proj;
@@ -725,6 +698,8 @@ public:
         return m_eclipsed_stack_array;
     }
 
+    unsigned long GetXStackHash() { return m_xa_hash; }
+    
     bool IsBusy()
     {
         return m_bbusy;
@@ -741,6 +716,8 @@ private:
     int GetNewRefChart( void );
 
     wxRegion m_covered_region;
+    wxRegion m_rendered_region;
+    
     PatchList m_PatchList;
     wxBitmap *m_pBM;
 
@@ -770,6 +747,9 @@ private:
     double m_canvas_scale_factor;
     int m_canvas_width;
     bool m_bquilt_has_overlays;
+    bool m_btemp_no_fullscreen;
+    unsigned long m_xa_hash;
+    
 };
 
 WX_DEFINE_LIST( PatchList );
@@ -796,6 +776,8 @@ Quilt::Quilt()
 
     m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareScales );
     m_nHiLiteIndex = -1;
+    
+    m_btemp_no_fullscreen = false;
 
 }
 
@@ -1234,6 +1216,11 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
         SetReferenceChart( new_ref_dbIndex );
     }
 
+    if(IsChartSmallestScale(m_refchart_dbIndex)) {
+        BuildExtendedChartStack(false, m_refchart_dbIndex, m_vp_quilt);
+        m_btemp_no_fullscreen = true;
+    }
+        
     int new_db_index = m_refchart_dbIndex;
 
     unsigned int extended_array_count = m_extended_stack_array.GetCount();
@@ -1245,13 +1232,8 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
             int current_family = m_reference_family;
 
             double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
-//                  max_ref_scale *= 1.1;         // Fudge factor, to err on the side of more detail on zoomout
-
-//                  printf("ARZO checking.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
 
             if( proposed_scale_onscreen > max_ref_scale ) {
-//                        printf("ARZO changing ref to smaller scale. \n" );
-
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
 
@@ -1263,8 +1245,6 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                     target_stack_index++;
                     int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
-//                              if((current_type == ChartData->GetDBChartType(test_db_index)) &&
-//                                    IsChartQuiltableRef(test_db_index))
                     if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
                             && IsChartQuiltableRef( test_db_index ) ) {
                         //    open the target, and check the min_scale
@@ -1273,60 +1253,32 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                         if( ptest_chart ) max_ref_scale = ptest_chart->GetNormalScaleMax(
                                                                   m_canvas_scale_factor, m_canvas_width );
                     }
-
                 }
 
-//                        printf("ARZO selected smaller scale.  max_ref_scale: %g  proposed: %g\n", max_ref_scale, proposed_scale_onscreen );
+                if( proposed_scale_onscreen > max_ref_scale) {          // could not find a useful chart
+                    m_btemp_no_fullscreen = true;
+                }
 
                 if( target_stack_index < extended_array_count ) {
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
-//                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
                     if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
-                            && IsChartQuiltableRef( new_db_index ) ) SetReferenceChart(
-                                    new_db_index );
-                }
-            } else if( 0 ) {
-//                        printf("ARZO checking smaller scale.\n" );
-
-                // Check to see if a smaller scale chart's zoom range is ueable
-                unsigned int target_stack_index = m_extended_stack_array.Index(
-                                                      current_db_index );
-                double min_ref_scale = 1e8;
-
-                while( ( proposed_scale_onscreen < min_ref_scale )
-                        && ( target_stack_index < ( m_extended_stack_array.GetCount() - 1 ) ) ) {
-                    target_stack_index++;
-                    int test_db_index = m_extended_stack_array.Item( target_stack_index );
-
-                    if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
-                            && IsChartQuiltableRef( test_db_index ) ) {
-                        //    open the target, and check the min_scale
-                        ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
-                                                 FULL_INIT );
-                        if( ptest_chart != NULL ) min_ref_scale =
-                                ptest_chart->GetNormalScaleMin( m_canvas_scale_factor, false );
-                    }
-
-                }
-
-//                        printf("ARZO selected smaller scale in min range.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
-
-                if( target_stack_index < m_extended_stack_array.GetCount() ) {
-                    new_db_index = m_extended_stack_array.Item( target_stack_index );
-                    if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
-                            && IsChartQuiltableRef( new_db_index ) ) SetReferenceChart(
-                                    new_db_index );
+                            && IsChartQuiltableRef( new_db_index ) )
+                                    SetReferenceChart( new_db_index );
                 }
             }
         }
     }
-//      printf("\n");
-
     return m_refchart_dbIndex;
 }
 
 int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 {
+    if(m_btemp_no_fullscreen) {
+        double max_allowed_scale = m_canvas_scale_factor / cc1->GetAbsoluteMinScalePpm();
+        if(proposed_scale_onscreen < 0.10 * max_allowed_scale )
+            m_btemp_no_fullscreen = false;
+    }
+    
     //    If the reference chart is undefined, we really need to select one now.
     if( m_refchart_dbIndex < 0 ) {
         int new_ref_dbIndex = GetNewRefChart();
@@ -1342,12 +1294,8 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
 
-//                  printf("ARZI checking.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
-
             if( proposed_scale_onscreen < min_ref_scale ) {
-//                        printf("ARZI changing ref to larger scale.\n" );
                 int current_db_index = m_refchart_dbIndex;
-//                        int current_type = m_reference_type;
                 int current_family = m_reference_family;
 
                 unsigned int target_stack_index = 0;
@@ -1361,7 +1309,6 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                     int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
                     if( pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
-//                                    if((current_type == ChartData->GetDBChartType(test_db_index)) &&
                         if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
                                 && IsChartQuiltableRef( test_db_index ) ) {
 
@@ -1374,11 +1321,8 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                     }
                 }
 
-//                        printf("ARZI selected larger scale.  min_ref_scale: %g  proposed: %g\n", min_ref_scale, proposed_scale_onscreen );
-
                 if( target_stack_index >= 0 ) {
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
-//                              if((current_type == ChartData->GetDBChartType(new_db_index)) && IsChartQuiltableRef(new_db_index))
                     if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index ) ) SetReferenceChart(
                                     new_db_index );
@@ -1389,7 +1333,6 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
             }
         }
     }
-//      printf("\n");
     return m_refchart_dbIndex;
 }
 
@@ -1402,7 +1345,7 @@ bool Quilt::IsChartSmallestScale( int dbIndex )
 
     unsigned int target_stack_index = 0;
     if( m_extended_stack_array.GetCount() ) {
-        while( ( target_stack_index < ( m_extended_stack_array.GetCount() - 1 ) ) ) {
+        while( ( target_stack_index <= ( m_extended_stack_array.GetCount() - 1 ) ) ) {
             int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
             if( specified_type == ChartData->GetDBChartType( test_db_index ) ) target_dbindex =
@@ -1456,6 +1399,219 @@ wxRect Quilt::GetHiliteBox( ViewPort &vp )
     return box;
 }
 
+bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPort &vp_in)
+{
+    int reference_scale;
+    int reference_type;
+    int reference_family;
+    int quilt_proj;
+    
+    if( ref_db_index >= 0 ) {
+        const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( ref_db_index );
+        reference_scale = cte_ref.GetScale();
+        reference_type = cte_ref.GetChartType();
+        quilt_proj = ChartData->GetDBChartProj( ref_db_index );
+        reference_family = cte_ref.GetChartFamily();
+    }
+    
+    m_extended_stack_array.Clear();
+    
+    bool b_need_resort = false;
+ 
+    ViewPort vp_local = vp_in;          // non-const copy
+    
+    if( !pCurrentStack ) {
+        pCurrentStack = new ChartStack;
+        ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
+    }
+    
+    int n_charts = 0;
+    if( pCurrentStack ) {
+        n_charts = pCurrentStack->nEntry;
+        
+        //    Walk the current ChartStack...
+        //    Building the quilt candidate array
+        for( int ics = 0; ics < n_charts; ics++ ) {
+            int i = pCurrentStack->GetDBIndex( ics );
+            m_extended_stack_array.Add( i );
+         }
+    }
+    if( b_fullscreen ) {
+        //    Search the entire database, potentially adding all charts
+        //    which intersect the ViewPort in any way
+        //    .AND. other requirements.
+        //    Again, skipping cm93 for now
+        int n_all_charts = ChartData->GetChartTableEntries();
+        
+        LLBBox viewbox = vp_local.GetBBox();
+        int sure_index = -1;
+        int sure_index_scale = 0;
+        
+        for( int i = 0; i < n_all_charts; i++ ) {
+            //    We can eliminate some charts immediately
+            //    Try to make these tests in some sensible order....
+            
+            if( reference_type != ChartData->GetDBChartType( i ) ) continue;
+            
+            if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP ) continue;
+            
+            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
+            
+            wxBoundingBox chart_box;
+            ChartData->GetDBBoundingBox( i, &chart_box );
+            if( ( viewbox.Intersect( chart_box ) == _OUT ) ) continue;
+            
+            if( quilt_proj != ChartData->GetDBChartProj( i ) ) continue;
+            
+            double chart_skew = ChartData->GetDBChartSkew( i );
+            if( chart_skew > 180. ) chart_skew -= 360.;
+            if( fabs( chart_skew ) > 1.0 ) continue;
+            
+            //    Calculate zoom factor for this chart
+            double chart_native_ppm;
+            chart_native_ppm = m_canvas_scale_factor / ChartData->GetDBChartScale( i );
+            double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
+            
+            //  Try to guarantee that there is one chart added with scale larger than reference scale
+            //    Take note here, and keep track of the smallest scale chart that is larger scale than reference....
+            if( ChartData->GetDBChartScale( i ) < reference_scale ) {
+                if( ChartData->GetDBChartScale( i ) > sure_index_scale ) {
+                    sure_index = i;
+                    sure_index_scale = ChartData->GetDBChartScale( i );
+                }
+            }
+            
+            //    At this point, the candidate is the right type, skew, and projection, and is on-screen somewhere....
+            //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
+            
+            if( ( ChartData->GetDBChartScale( i ) >= reference_scale ) || ( zoom_factor > .2 ) ) {
+                bool b_add = true;
+                
+                //    Special case for S57 ENC
+                //    Add the chart only if the chart's fractional area exceeds n%
+                if( CHART_TYPE_S57 == reference_type ) {
+                    //Get the fractional area of this chart
+                    double chart_fractional_area = 0.;
+                    double quilt_area = vp_local.pix_width * vp_local.pix_height;
+                    const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
+                    wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
+                    if( !chart_region.Empty() ) {
+                        wxRect rect_ch = chart_region.GetBox();
+                        chart_fractional_area = ( rect_ch.GetWidth() * rect_ch.GetHeight() )
+                        / quilt_area;
+                    } else
+                        b_add = false;  // this chart has no overlap on screen
+                        // probably because it has a concave outline
+                        // i.e the bboxes overlap, but the actual coverage intersect is null.
+                        
+                        if( chart_fractional_area < .01 ) {
+                            b_add = false;
+                        }
+                }
+                
+                if( b_add ) {
+                    // Check to see if this chart is already in the stack array
+                    // by virtue of being under the Viewport center point....
+                    bool b_exists = false;
+                    for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
+                        if( i == m_extended_stack_array.Item( ir ) ) {
+                            b_exists = true;
+                            break;
+                        }
+                    }
+                    
+                    if( !b_exists ) {
+                        m_extended_stack_array.Add( i );
+                        b_need_resort = true;
+                    }
+                }
+            }
+        }
+        
+        //    Check to be sure that at least one chart was added that is larger scale than reference scale
+        if( -1 != sure_index ) {
+            // check to see if it is already in
+            bool sure_exists = false;
+            for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
+                if( sure_index == m_extended_stack_array.Item(ir) ) {
+                    sure_exists = true;
+                    break;
+                }
+            }
+            
+            //    If not already added, do so now
+            if( !sure_exists ) {
+                m_extended_stack_array.Add( sure_index );
+                b_need_resort = true;
+            }
+        }
+    }
+    
+    //    Remove exact duplicates from the extended stack array,
+    //    i.e. charts that have exactly the same file name and mod time
+    //    These charts can be in the database due to having the exact same chart in different directories,
+    //    as may be desired for some grouping schemes
+    if( m_extended_stack_array.GetCount() > 1 ) {
+        for( unsigned int id = 0; id < m_extended_stack_array.GetCount() - 1; id++ ) {
+            if( m_extended_stack_array.Item( id ) != -1 ) {
+                ChartTableEntry *pm = ChartData->GetpChartTableEntry(
+                    m_extended_stack_array.Item( id ) );
+                
+                for( unsigned int jd = id + 1; jd < m_extended_stack_array.GetCount(); jd++ ) {
+                    if( m_extended_stack_array.Item( jd ) != -1 ) {
+                        ChartTableEntry *pn = ChartData->GetpChartTableEntry(
+                            m_extended_stack_array.Item( jd ) );
+                        if( pm->GetFileTime() == pn->GetFileTime() )            // simple test
+                        {
+                            if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) {
+                                m_extended_stack_array.Item( jd ) = -1;  // mark to remove
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        unsigned int idr = 0;
+        while( ( idr < m_extended_stack_array.GetCount() ) ) {
+            if( m_extended_stack_array.Item( idr ) == -1 ) {
+                m_extended_stack_array.RemoveAt( idr );
+                idr = 0;
+            } else
+                idr++;
+        }
+        
+    }
+    
+    // Re sort the extended stack array on scale
+    if( b_need_resort && m_extended_stack_array.GetCount() > 1 ) {
+        int swap = 1;
+        int ti;
+        while( swap == 1 ) {
+            swap = 0;
+            for( unsigned int is = 0; is < m_extended_stack_array.GetCount() - 1; is++ ) {
+                const ChartTableEntry &m = ChartData->GetChartTableEntry(
+                    m_extended_stack_array.Item( is ) );
+                const ChartTableEntry &n = ChartData->GetChartTableEntry(
+                    m_extended_stack_array.Item( is + 1 ) );
+                
+                if( n.GetScale() < m.GetScale() ) {
+                    ti = m_extended_stack_array.Item( is );
+                    m_extended_stack_array.RemoveAt( is );
+                    m_extended_stack_array.Insert( ti, is + 1 );
+                    swap = 1;
+                }
+            }
+        }
+    }
+    
+    
+    
+        return true;
+}
+
+
+
 bool Quilt::Compose( const ViewPort &vp_in )
 {
     if( !ChartData ) return false;
@@ -1480,234 +1636,32 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Set up the vieport projection type
     vp_local.SetProjectionType( m_quilt_proj );
 
-    //    Build an array of chart database indices of all charts for which the ViewPort center
-    //    is on the chart, and whose type matches the ReferenceChart,
-
-    //    They will be added to an auto-sorted array based on scale, largest first
-
+    bool bfull = vp_in.b_FullScreenQuilt;
+    if(m_btemp_no_fullscreen) bfull = false;
+    BuildExtendedChartStack(bfull, m_refchart_dbIndex, vp_local);
+    
+    //  Now we walk the stack building quilt candidates
     EmptyCandidateArray();
-    m_extended_stack_array.Clear();
-
-    bool b_need_resort = false;
-
-    if( !pCurrentStack ) {
-        pCurrentStack = new ChartStack;
-        ChartData->BuildChartStack( pCurrentStack, vp_in.clat, vp_in.clon );
-    }
-
-    int n_charts = 0;
-    if( pCurrentStack ) {
-        n_charts = pCurrentStack->nEntry;
-
-        //    Walk the current ChartStack...
-        //    Building the quilt candidate array
-        for( int ics = 0; ics < n_charts; ics++ ) {
-            int i = pCurrentStack->GetDBIndex( ics );
-            m_extended_stack_array.Add( i );
-
-            double chart_skew = ChartData->GetDBChartSkew( i );
-            if( chart_skew > 180. ) chart_skew -= 360.;
-
-            // only unskewed charts of the proper projection and type may be quilted....
-            // and we avoid adding CM93 Composite until later
-//                  if((m_reference_family == ChartData->GetDBChartFamily(i)) &&
-            if( ( m_reference_type == ChartData->GetDBChartType( i ) )
-                    && ( fabs( chart_skew ) < 1.0 )
-                    && ( ChartData->GetDBChartProj( i ) == m_quilt_proj )
-                    && ( ChartData->GetDBChartType( i ) != CHART_TYPE_CM93COMP ) ) {
+    
+    for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
+        int i = m_extended_stack_array.Item(ir);        // chart index
+        double chart_skew = ChartData->GetDBChartSkew( i );
+        if( chart_skew > 180. ) chart_skew -= 360.;
+        
+        // only unskewed charts of the proper projection and type may be quilted....
+        // and we avoid adding CM93 Composite until later
+        if( ( m_reference_type == ChartData->GetDBChartType( i ) )
+            && ( fabs( chart_skew ) < 1.0 )
+            && ( ChartData->GetDBChartProj( i ) == m_quilt_proj )
+            && ( ChartData->GetDBChartType( i ) != CHART_TYPE_CM93COMP ) ) {
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = i;
                 qcnew->ChartScale = ChartData->GetDBChartScale( i );
                 m_pcandidate_array->Add( qcnew );
             }
-        }
     }
-    if( vp_in.b_FullScreenQuilt ) {
-        //    Search the entire database, potentially adding all charts
-        //    which intersect the ViewPort in any way
-        //    .AND. other requirements.
-        //    Again, skipping cm93 for now
-        int n_all_charts = ChartData->GetChartTableEntries();
+            
 
-        LLBBox viewbox = vp_local.GetBBox();
-        int sure_index = -1;
-        int sure_index_scale = 0;
-
-        for( int i = 0; i < n_all_charts; i++ ) {
-            //    We can eliminate some charts immediately
-            //    Try to make these tests in some sensible order....
-
-            if( m_reference_type != ChartData->GetDBChartType( i ) ) continue;
-
-//                  if(m_reference_family != ChartData->GetDBChartFamily(i))
-//                        continue;
-
-            if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP ) continue;
-
-            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
-
-            wxBoundingBox chart_box;
-            ChartData->GetDBBoundingBox( i, &chart_box );
-            if( ( viewbox.Intersect( chart_box ) == _OUT ) ) continue;
-
-            if( m_quilt_proj != ChartData->GetDBChartProj( i ) ) continue;
-
-            double chart_skew = ChartData->GetDBChartSkew( i );
-            if( chart_skew > 180. ) chart_skew -= 360.;
-            if( fabs( chart_skew ) > 1.0 ) continue;
-
-            //    Calculate zoom factor for this chart
-            double chart_native_ppm;
-            chart_native_ppm = m_canvas_scale_factor / ChartData->GetDBChartScale( i );
-            double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
-//                  printf("scale: %d zoom: %g  \n", ChartData->GetDBChartScale(i), zoom_factor);
-
-            //  Try to guarantee that there is one chart added with scale larger than reference scale
-            //    Take note here, and keep track of the smallest scale chart that is larger scale than reference....
-            if( ChartData->GetDBChartScale( i ) < m_reference_scale ) {
-                if( ChartData->GetDBChartScale( i ) > sure_index_scale ) {
-                    sure_index = i;
-                    sure_index_scale = ChartData->GetDBChartScale( i );
-                }
-            }
-
-            //    At this point, the candidate is the right type, skew, and projection, and is on-screen somewhere....
-            //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
-
-            if( ( ChartData->GetDBChartScale( i ) >= m_reference_scale ) || ( zoom_factor > .2 ) ) {
-                bool b_add = true;
-
-                //    Special case for S57 ENC
-                //    Add the chart only if the chart's fractional area exceeds n%
-                if( CHART_TYPE_S57 == m_reference_type ) {
-                    //Get the fractional area of this chart
-                    double chart_fractional_area = 0.;
-                    double quilt_area = vp_local.pix_width * vp_local.pix_height;
-                    const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
-                    wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
-                    if( !chart_region.Empty() ) {
-                        wxRect rect_ch = chart_region.GetBox();
-                        chart_fractional_area = ( rect_ch.GetWidth() * rect_ch.GetHeight() )
-                                                / quilt_area;
-                    } else
-                        b_add = false;  // this chart has no overlap on screen
-                    // probably because it has a concave outline
-                    // i.e the bboxes overlap, but the actual coverage intersect is null.
-
-                    if( chart_fractional_area < .01 ) {
-                        b_add = false;
-//                                    printf("Skipping S57 less than x percent\n");
-                    }
-                }
-
-                if( b_add ) {
-                    // Check to see if this chart is already in the candidate array
-                    // by virtue of being under the Viewport center point....
-                    bool b_exists = false;
-                    for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
-                        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-                        if( i == pqc->dbIndex ) {
-                            b_exists = true;
-                            break;
-                        }
-                    }
-
-                    if( !b_exists ) {
-                        QuiltCandidate *qcnew = new QuiltCandidate;
-                        qcnew->dbIndex = i;
-                        qcnew->ChartScale = ChartData->GetDBChartScale( i );
-                        m_pcandidate_array->Add( qcnew );
-
-                        m_extended_stack_array.Add( i );
-                        b_need_resort = true;
-//                                    printf("adding scale %d\n", ChartData->GetDBChartScale(i));
-
-                    }
-                }
-            }
-        }
-
-        //    Check to be sure that at least one chart was added that is larger scale than reference scale
-        if( -1 != sure_index ) {
-            // check to see if it is already in
-            bool sure_exists = false;
-            for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
-                QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-                if( sure_index == pqc->dbIndex ) {
-                    sure_exists = true;
-                    break;
-                }
-            }
-
-            //    If not already added, do so now
-            if( !sure_exists ) {
-                QuiltCandidate *qcnew = new QuiltCandidate;
-                qcnew->dbIndex = sure_index;
-                qcnew->ChartScale = ChartData->GetDBChartScale( sure_index );
-                m_pcandidate_array->Add( qcnew );
-                m_extended_stack_array.Add( sure_index );
-                b_need_resort = true;
-            }
-        }
-    }
-
-    //    Remove exact duplicates from the extended stack array,
-    //    i.e. charts that have exactly the same file name and mod time
-    //    These charts can be in the database due to having the exact same chart in different directories,
-    //    as may be desired for some grouping schemes
-    if( m_extended_stack_array.GetCount() > 1 ) {
-        for( unsigned int id = 0; id < m_extended_stack_array.GetCount() - 1; id++ ) {
-            if( m_extended_stack_array.Item( id ) != -1 ) {
-                ChartTableEntry *pm = ChartData->GetpChartTableEntry(
-                                          m_extended_stack_array.Item( id ) );
-
-                for( unsigned int jd = id + 1; jd < m_extended_stack_array.GetCount(); jd++ ) {
-                    if( m_extended_stack_array.Item( jd ) != -1 ) {
-                        ChartTableEntry *pn = ChartData->GetpChartTableEntry(
-                                                  m_extended_stack_array.Item( jd ) );
-                        if( pm->GetFileTime() == pn->GetFileTime() )            // simple test
-                        {
-                            if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) {
-                                m_extended_stack_array.Item( jd ) = -1;  // mark to remove
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        unsigned int idr = 0;
-        while( ( idr < m_extended_stack_array.GetCount() ) ) {
-            if( m_extended_stack_array.Item( idr ) == -1 ) {
-                m_extended_stack_array.RemoveAt( idr );
-                idr = 0;
-            } else
-                idr++;
-        }
-
-    }
-
-    // Re sort the extended stack array on scale
-    if( b_need_resort && m_extended_stack_array.GetCount() > 1 ) {
-        int swap = 1;
-        int ti;
-        while( swap == 1 ) {
-            swap = 0;
-            for( unsigned int is = 0; is < m_extended_stack_array.GetCount() - 1; is++ ) {
-                const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is ) );
-                const ChartTableEntry &n = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is + 1 ) );
-
-                if( n.GetScale() < m.GetScale() ) {
-                    ti = m_extended_stack_array.Item( is );
-                    m_extended_stack_array.RemoveAt( is );
-                    m_extended_stack_array.Insert( ti, is + 1 );
-                    swap = 1;
-                }
-            }
-        }
-    }
 
     //    It is possible that the reference chart is not really part of the visible quilt
     //    This can happen when the reference chart is panned
@@ -1729,7 +1683,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    if( !bf && m_pcandidate_array->GetCount() ) m_refchart_dbIndex = -1;
+    if( !bf && m_pcandidate_array->GetCount() ) m_refchart_dbIndex = -1;  ///maybe???
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -1759,15 +1713,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         wxRegion chart_region = GetChartQuiltRegion( cte_ref, vp_local );
 
-        /*
-         wxRegionIterator upd ( chart_region );
-         while ( upd )
-         {
-         wxRect rect = upd.GetRect();
-         printf("  Ref chart_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-         upd ++ ;
-         }
-         */
         if( !chart_region.Empty() ) vpu_region.Intersect( chart_region );
 
         if( vpu_region.IsEmpty() ) pqc_ref->b_include = false;   // skip this chart, no true overlap
@@ -1777,15 +1722,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    /*
-     wxRegionIterator updd ( vp_region );
-     while ( updd )
-     {
-     wxRect rect = updd.GetRect();
-     printf("  Region left to fill: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-     updd ++ ;
-     }
-     */
     //    Now the rest of the candidates
     //    We always walk the entire list for s57 quilts, to pick up eclipsed overlays
     if( !vp_region.IsEmpty() || ( CHART_TYPE_S57 == m_reference_type ) ) {
@@ -1820,15 +1756,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
                     wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
                     if( !chart_region.Empty() ) vpu_region.Intersect( chart_region );
-                    /*
-                     wxRegionIterator updd ( vpu_region );
-                     while ( updd )
-                     {
-                     wxRect rect = updd.GetRect();
-                     printf("      Candidate region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-                     updd ++ ;
-                     }
-                     */
+
                     if( vpu_region.IsEmpty() ) pqc->b_include = false; // skip this chart, no true overlap
                     else {
                         pqc->b_include = true;
@@ -1842,15 +1770,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 pqc->b_include = false;                       // skip this chart, scale is too large
             }
 
-            /*
-             wxRegionIterator updd ( vp_region );
-             while ( updd )
-             {
-             wxRect rect = updd.GetRect();
-             printf("  Further Region left to fill: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-             updd ++ ;
-             }
-             */
             /// Don't break early if the quilt is S57 ENC
             /// This will allow the overlay cells found in Euro(Austrian) IENC to be included
             if( CHART_TYPE_S57 != m_reference_type ) {
@@ -1896,17 +1815,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
 
         if( b_must_add_cm93 ) {
-            for( int ics = 0; ics < n_charts; ics++ ) {
+            for( int ics = 0; ics < pCurrentStack->nEntry; ics++ ) {
                 int i = pCurrentStack->GetDBIndex( ics );
                 if( CHART_TYPE_CM93COMP == ChartData->GetDBChartType( i ) ) {
-//                              if((g_GroupIndex > 0) && (ChartData->IsChartInGroup(i, g_GroupIndex)) )
-//                                    continue;
-
                     QuiltCandidate *qcnew = new QuiltCandidate;
                     qcnew->dbIndex = i;
                     qcnew->ChartScale = ChartData->GetDBChartScale( i );
                     m_pcandidate_array->Add( qcnew );
-//                              break;
                 }
             }
         }
@@ -2014,9 +1929,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
             // would not be in candidate array if not elected
 
             if( pqc->b_include ) {
-//                       const ChartTableEntry &m = ChartData->GetChartTableEntry(pqc->dbIndex);
-//                       printf("First list Build i:%d   Chart Scale: %d\n", i, m.GetScale());
-
                 QuiltPatch *pqp = new QuiltPatch;
                 pqp->dbIndex = pqc->dbIndex;
                 pqp->ProjType = m.GetChartProjectionType();
@@ -2057,33 +1969,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    /*
-     //    If using chart database < 1.6
-     //    Walk the list again, removing any skewed chart entries
-     if(ChartData->GetVersion() < 16)
-     {
-     unsigned int il = 0;
-     while(il < m_PatchList.GetCount())
-     {
-     wxPatchListNode *pcinode = m_PatchList.Item(il);
-     QuiltPatch *piqp = pcinode->GetData();
-     ChartBase *pc = ChartData->OpenChartFromDB(piqp->dbIndex, FULL_INIT);
-
-     if(pc)
-     {
-     if(pc->GetChartSkew() != 0.0)
-     {
-     m_PatchList.DeleteNode(pcinode);
-     il = 0;           // restart the list walk
-     }
-     else
-     il++;
-     }
-     else
-     il++;
-     }
-     }
-     */
     //    Generate the final render regions for the patches, one by one, smallest to largest scale
     wxRegion unrendered_region( vp_local.rv_rect );
 
@@ -2102,15 +1987,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
         const ChartTableEntry &ctei = ChartData->GetChartTableEntry( piqp->dbIndex );
         vpr_region = GetChartQuiltRegion( ctei, vp_local );
 
-        /*
-         wxRegionIterator updd ( vpr_region );
-         while ( updd )
-         {
-         wxRect rect = updd.GetRect();
-         printf("  vpr_region: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-         updd ++ ;
-         }
-         */
 
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
@@ -2141,15 +2017,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 }
             }
 
-            /*
-             wxRegionIterator updd ( vpr_region );
-             while ( updd )
-             {
-             wxRect rect = updd.GetRect();
-             printf("  vpr_region after remove: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-             updd ++ ;
-             }
-             */
         }
 #endif
 
@@ -2345,31 +2212,24 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    /*  This was some debug code looking for inconsistent quilt
-     //   Find the index into the extended array corresponding to the current db index
-     int current_ref_stack_index = -1;
-     for(unsigned int im=0 ; im < m_extended_stack_array.GetCount() ; im++)
-     {
-     int dbindex = m_extended_stack_array.Item(im);
-     if(m_refchart_dbIndex == m_extended_stack_array.Item(im))
-     {
-     current_ref_stack_index = im;
-     break;
-     }
-     }
-
-     if(-1 == current_ref_stack_index)
-     int yyp = 9;
-     */
-
     m_bcomposed = true;
 
     m_vp_quilt = vp_in;                 // save the corresponding ViewPort locally
 
     ChartData->LockCache();
 
+    //  Create and store a hash value representing the contents of the m_extended_stack_array
+    unsigned long xa_hash = 5381;
+    for(unsigned int im=0 ; im < m_extended_stack_array.GetCount() ; im++) {
+        int dbindex = m_extended_stack_array.Item(im);
+        xa_hash = ((xa_hash << 5) + xa_hash) + dbindex; /* hash * 33 + dbindex */
+    }
+
+    m_xa_hash = xa_hash;
+
     return true;
 }
+
 
 int g_render;
 
@@ -2383,25 +2243,30 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 #endif
 
     if( !m_bcomposed ) return false;
+ 
+    wxRegion rendered_region;
+    
+    double scale_onscreen = vp.view_scale_ppm;
+    double max_allowed_scale =    4. * cc1->GetAbsoluteMinScalePpm();
+    
     if( GetnCharts() && !m_bbusy ) {
         int ip = 0;
 
         wxRegion screen_region = chart_region;
 
-//      printf("\n");
         //  Walk the quilt, drawing each chart from smallest scale to largest
         //  Render the quilt's charts onto a temp dc
-        // and blit the active region rectangles to to target dc, one-by-one
+        //  and blit the active region rectangles to to target dc, one-by-one
 
         ChartBase *pch = GetFirstChart();
-        while( pch ) {
-//                  printf("%d Patch: %d\n", g_render++, ip);
+        
+        while( pch  && (max_allowed_scale < scale_onscreen) ) {
             QuiltPatch *pqp = GetCurrentPatch();
-            if( pqp->b_Valid ) {
-//                              printf("Valid patch %d\n", pqp->dbIndex);
-
+            if( pqp->b_Valid  ) {
                 if( !chart_region.IsEmpty() ) {
                     wxRegion get_region = pqp->ActiveRegion;
+                    rendered_region.Union(get_region);
+                    
                     get_region.Intersect( chart_region );
 
                     if( !get_region.IsEmpty() ) {
@@ -2411,14 +2276,10 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                             screen_region.Subtract( get_region );
                         }
                     }
-//                                    else
-//                                          printf("Skipping Render due to empty region\n");
 
                     wxRegionIterator upd( get_region );
                     while( upd ) {
                         wxRect rect = upd.GetRect();
-//                                          printf("  Quilt Blit: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-
                         dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x, rect.y,
                                  wxCOPY, true );
                         upd++;
@@ -2426,8 +2287,6 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 
                     tmp_dc.SelectObject( wxNullBitmap );
                 }
-            } else {
-//                              printf("  invalid patch %d\n", pqp->dbIndex);
             }
 
             pch = GetNextChart();
@@ -2542,7 +2401,6 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                 //    Create a "mask" bitmap from the chart's region
                 //    WxGTK has an error in this method....Creates a color bitmap, not usable for mask creation
                 //    So, I clone with correction
-//                      wxBitmap hl_mask_bm = piqp->ActiveRegion.ConvertToBitmap();
                 wxBitmap hl_mask_bm( vp.rv_rect.width, vp.rv_rect.height, 1 );
                 wxMemoryDC mdc;
                 mdc.SelectObject( hl_mask_bm );
@@ -2607,13 +2465,14 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
             SubstituteClearDC( dc, vp );
         }
 
-//            return true;
-    } else              // no charts yet, or busy....
-    {
+    } else {             // no charts yet, or busy....
         SubstituteClearDC( dc, vp );
-//            return true;                // no quilt yet...
     }
 
+    //  Record the region actually rendered, modulo screen dimensions
+    rendered_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
+    m_rendered_region = rendered_region;
+    
     m_vp_rendered = vp;
     return true;
 }
@@ -4664,8 +4523,21 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
 
     bool b_smallest = false;
 
-    if( !VPoint.b_quilt ) {
+    if( !VPoint.b_quilt ) {             // not quilted
         pc = Current_Ch;
+        double target_scale_ppm = GetVPScale() / zoom_factor;
+        double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
+        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+  
+        //  Clamp the minimum scale zoom-out to the value specified by the chart
+        max_allowed_scale = 1.01 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
+        if( proposed_scale_onscreen > max_allowed_scale ) {
+             if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) )
+                 b_do_zoom = false;
+             else
+                proposed_scale_onscreen = max_allowed_scale;
+        }
+        
     } else {
         int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
         if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
@@ -4673,28 +4545,16 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
         pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
         b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
+        double target_scale_ppm = GetVPScale() / zoom_factor;
+        proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
+
+        if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount())) 
+            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                            GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
     }
 
-    if( pc ) {
-        max_allowed_scale = 1.01
-                            * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
-
-        if( b_smallest ) max_allowed_scale *= 2;
-
-        double target_scale_ppm = GetVPScale() / zoom_factor;
-        double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-
-        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-
-        //  Query the chart to determine the appropriate zoom range
-        if( proposed_scale_onscreen > max_allowed_scale ) {
-            if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) b_do_zoom = false;
-            else
-                proposed_scale_onscreen = max_allowed_scale;
-        }
-    } else {
-        double min_scale = m_canvas_width / ( WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
-        if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < min_scale ) b_do_zoom = false;
+    if( !pc ) {                         // no chart, so set a minimum scale 
+        if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm ) b_do_zoom = false;
     }
 
     if( b_do_zoom ) {
@@ -4971,7 +4831,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
                 int new_ref_index = pCurrentStack->GetDBIndex( candidate_stack_index );
 
-                m_pQuilt->SetReferenceChart( new_ref_index );
+                m_pQuilt->SetReferenceChart( new_ref_index ); //maybe???
 
             }
 
@@ -4984,13 +4844,20 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             //    If this quilt will be a perceptible delta from the existing quilt, then refresh the entire screen
             if( m_pQuilt->IsQuiltDelta( VPoint ) ) {
-//                        printf("---Quilt:Compose and Refresh\n");
                 //  Allow the quilt to adjust the new ViewPort for performance optimization
                 //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
                 if( b_adjust ) m_pQuilt->AdjustQuiltVP( last_vp, VPoint );
 
                 ChartData->ClearCacheInUseFlags();
+                unsigned long hash1 = m_pQuilt->GetXStackHash();
                 m_pQuilt->Compose( VPoint );
+                
+                //      If the extended chart stack has changed, invalidate any cached render bitmap
+                if(m_pQuilt->GetXStackHash() != hash1) {
+                    m_bm_cache_vp.Invalidate();
+                    if(g_bopengl)
+                        m_glcc->Invalidate();
+                }
 
                 ChartData->UnLockCache();
                 ChartData->PurgeCacheUnusedCharts( false );
@@ -6783,6 +6650,8 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //        m_canvas_scale_factor = m_canvas_width / display_size_meters;
     m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
 
+    m_absolute_min_scale_ppm = m_canvas_width / ( .95 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
+    
 #ifdef USE_S57
     if( ps52plib ) ps52plib->SetPPMM( m_canvas_scale_factor / 1000. );
 #endif
@@ -9366,21 +9235,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxRegion rgn_chart( 0, 0, GetVP().pix_width, GetVP().pix_height );
 
-//    In case Console is shown, set up dc clipper and blt iterator regions
-
-    /*
-     int conx, cony, consx, consy;
-     console->GetPosition ( &conx, &cony );
-     console->GetSize ( &consx, &consy );
-     wxRegion rgn_console ( conx, cony, consx - 1, consy - 1 );
-
-     if ( console->IsShown() )
-     {
-     rgn_chart.Subtract ( rgn_console );               // For dc Drawing clipping
-     ru.Subtract ( rgn_console );                      // for Blit updating
-     }
-     */
-
 //    In case Thumbnail is shown, set up dc clipper and blt iterator regions
     if( pthumbwin ) {
         int thumbx, thumby, thumbsx, thumbsy;
@@ -9558,9 +9412,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //    Arrange to render the WVSChart vector data ..BEHIND.. the rendered current chart
 //    So that uncovered canvas areas show at least the WVS chart
     wxRegion CValidRegion;
-    if( !VPoint.b_quilt ) Current_Ch->GetValidCanvasRegion( VPoint, &CValidRegion ); // Make a region covering the current chart on the canvas
+    if( !VPoint.b_quilt )
+        Current_Ch->GetValidCanvasRegion( VPoint, &CValidRegion ); // Make a region covering the current chart on the canvas
     else
-        CValidRegion = m_pQuilt->GetFullQuiltRegion();
+        CValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();//GetFullQuiltRegion();
 
     //      CValidRegion.Clear(); CValidRegion.Union(0,  0, 1, 1);          // This line for debug, to show all of WVS chart
 
@@ -12014,13 +11869,20 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
         //  We only need a screen clear if the test region is non-empty
         if( !clear_test_region.IsEmpty() ) glClear( GL_COLOR_BUFFER_BIT );
 
+        double scale_onscreen = vp.view_scale_ppm;
+        double max_allowed_scale =    2. * cc1->GetAbsoluteMinScalePpm();
+        
+        m_gl_rendered_region.Clear();
+        
         //  Now render the quilt
         ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
-        while( pch ) {
+ 
+        while( pch  && (max_allowed_scale < scale_onscreen) ) {
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
             if( pqp->b_Valid ) {
                 wxRegion get_region = pqp->ActiveRegion;
-
+                m_gl_rendered_region.Union(get_region);
+                
                 get_region.Intersect( Region );
                 if( !get_region.IsEmpty() ) {
                     if( !pqp->b_overlay ) {
@@ -12124,6 +11986,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
             glPopAttrib();
         }
         cc1->m_pQuilt->SetRenderedVP( vp );
+        
+        //  Record the region actually rendered, modulo screen dimensions
+        m_gl_rendered_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
     }
 }
 
@@ -12149,9 +12014,9 @@ void glChartCanvas::render()
     //  Is this viewpoint the same as the previously painted one?
     bool b_newview = true;
     ;
-    if( ( m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm )
-            && ( m_cache_vp.rotation == VPoint.rotation ) && ( m_cache_vp.clat == VPoint.clat )
-            && ( m_cache_vp.clon == VPoint.clon ) && m_cache_vp.IsValid() ) {
+    if( ( m_gl_cache_vp.view_scale_ppm == VPoint.view_scale_ppm )
+        && ( m_gl_cache_vp.rotation == VPoint.rotation ) && ( m_gl_cache_vp.clat == VPoint.clat )
+        && ( m_gl_cache_vp.clon == VPoint.clon ) && m_gl_cache_vp.IsValid() ) {
         b_newview = false;
     }
 
@@ -12270,11 +12135,11 @@ void glChartCanvas::render()
 
         // Try to do accelerated pans
         if( m_b_useFBO ) {
-            if( m_cache_vp.IsValid() && ( m_cache_tex > 0 ) && !g_bCourseUp ) {
+            if( m_gl_cache_vp.IsValid() && ( m_cache_tex > 0 ) && !g_bCourseUp ) {
                 if( b_newview ) {
 
                     wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
-                    wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
+                    wxPoint c_new = m_gl_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
 
                     int dy = c_new.y - c_old.y;
                     int dx = c_new.x - c_old.x;
@@ -12453,7 +12318,7 @@ void glChartCanvas::render()
             }
             glDisable( m_TEX_TYPE );
 
-            m_cache_vp = VPoint;
+            m_gl_cache_vp = VPoint;
             cc1->m_pQuilt->SetRenderedVP( VPoint );
 
         }         // useFBO
@@ -12503,7 +12368,7 @@ void glChartCanvas::render()
         Current_Ch->GetValidCanvasRegion ( svp, &CValidRegion );
     }
     else
-        CValidRegion = cc1->m_pQuilt->GetFullQuiltRegion();
+        CValidRegion = m_gl_rendered_region; //->m_pQuilt->GetFullQuiltRenderedRegion();
 
     //    Get full (rotated?) canvas region
     wxRegion WVSRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
