@@ -11851,6 +11851,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, w
 
 void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
 {
+    m_gl_rendered_region.Clear();
+    
     if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
         //  Walk the region list to determine whether we need a clear before starting
         wxRegion clear_test_region = Region;
@@ -11867,12 +11869,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
         }
 
         //  We only need a screen clear if the test region is non-empty
-        if( !clear_test_region.IsEmpty() ) glClear( GL_COLOR_BUFFER_BIT );
+        if( !clear_test_region.IsEmpty() ) 
+            glClear( GL_COLOR_BUFFER_BIT );
 
         double scale_onscreen = vp.view_scale_ppm;
         double max_allowed_scale =    2. * cc1->GetAbsoluteMinScalePpm();
         
-        m_gl_rendered_region.Clear();
         
         //  Now render the quilt
         ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
@@ -11989,6 +11991,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
         
         //  Record the region actually rendered, modulo screen dimensions
         m_gl_rendered_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
+    }
+    else if( !cc1->m_pQuilt->GetnCharts() ) {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 }
 
@@ -12208,6 +12213,7 @@ void glChartCanvas::render()
                                 glTexCoord2f( x1, y2 );
                                 glVertex2f( x2, y2 + oh );
                                 glEnd();
+                                
                             }
 
                             //calculate the new regions to render
