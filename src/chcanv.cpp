@@ -1,5 +1,5 @@
 /******************************************************************************
- *
+    *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
  * Author:   David Register
