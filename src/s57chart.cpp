@@ -254,12 +254,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
             FEIndex = atoi( buf + 19 );
 
-            // Debug hooks
-            //       if(!strncmp(obj->FeatureName, "DEPCNT", 6))
-            //           int ffl = 4;
-            //       if(FEIndex == 91)
-            //           int rrt = 5;
-
             strncpy( szFeatureName, buf + 11, 6 );
             szFeatureName[6] = 0;
             strcpy( FeatureName, szFeatureName );
@@ -268,31 +262,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
             //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
             iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
-                    /*
-                     bool bNeedNew = true;
-                     OBJLElement *pOLE;
-
-                     for(unsigned int iPtr = 0 ; iPtr < ps52plib->pOBJLArray->GetCount() ; iPtr++)
-                     {
-                     pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
-                     if(!strncmp(pOLE->OBJLName, szFeatureName, 6))
-                     {
-                     iOBJL = iPtr;
-                     bNeedNew = false;
-                     break;
-                     }
-                     }
-
-                     if(bNeedNew)
-                     {
-                     pOLE = (OBJLElement *)calloc(sizeof(OBJLElement), 1);
-                     strncpy(pOLE->OBJLName, szFeatureName, 6);
-                     pOLE->nViz = 1;
-
-                     ps52plib->pOBJLArray->Add((void *)pOLE);
-                     iOBJL  = ps52plib->pOBJLArray->GetCount() - 1;
-                     }
-                     */
 
             //      Walk thru the attributes, adding interesting ones
             int hdr_len = 0;
@@ -622,11 +591,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                 case 3:                                                           // area as polygon
                 {
-// Debug hook
-//       if(!strncmp(obj->FeatureName, "DEPCNT", 6))
-//           int ffl = 4;
-//        if(FEIndex == 1226)
-//            int rrt = 5;
                     Primitive_type = GEO_AREA;
 
                     if( !strncmp( FeatureName, "DEPARE", 6 )
@@ -3973,10 +3937,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
         m_vector_helper_hash[record_id] = feid;
 
-        //      Strip out the absurd RCID values
-//          if((record_id >= 0) && (record_id < m_nvector_table_size))
-//              m_pVectorEdgeHelperTable[record_id] = feid;
-
         feid++;
         delete pEdgeVectorRecordFeature;
         pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
@@ -3989,10 +3949,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF" );
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
-
-//    Debug
-//    FILE *fdebug = VSIFOpen( "\\ocpdebug", "w");
-//    s_fpdebug = fdebug;
 
     while( bcont ) {
         //  Prepare for possible CE_Fatal error in GDAL
@@ -4014,11 +3970,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
         if( objectDef != NULL ) {
 
             iObj++;
-//    Debug hooks
-//                            if(!strncmp(objectDef->GetDefnRef()->GetName(), "M_SREL", 6))
-//                                    int ggk = 4;
-//                            if(iObj == 498)
-//                                  int ggk = 4;
 
 //  Update the progress dialog
             sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
@@ -4028,9 +3979,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
             nProg = iObj;
             if( nProg > m_nGeoRecords - 1 ) nProg = m_nGeoRecords - 1;
-
-//                            if(0 == (nProg % 1000))
-//                                  bcont = s_ProgDialog->Update(nProg, sobj);
             if( s_ProgDialog ) bcont = s_ProgDialog->Update( nProg, sobj );
 
             geoType = wkbUnknown;
@@ -4044,56 +3992,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             if( objectDef->GetGeometryRef() != NULL ) geoType =
                     objectDef->GetGeometryRef()->getGeometryType();
 
-//      Look for polygons to process
-            /*
-             if(geoType == wkbPolygon)
-             {
-             int error_code;
-             PolyTessGeo *ppg = NULL;
-
-             OGRPolygon *poly = (OGRPolygon *)(objectDef->GetGeometryRef());
-
-             //                                  bcont = SENC_prog->Update(nProg, sobj);
-
-             CreateSENCRecord( objectDef, fps57, 0, poReader );
-
-             ppg = new PolyTessGeo(poly, true, ref_lat, ref_lon, 0);   //try to use glu library
-
-             error_code = ppg->ErrorCode;
-             if(error_code == ERROR_NO_DLL)
-             {
-             if(!bGLUWarningSent)
-             {
-             wxLogMessage(_T("   Warning...Could not find glu32.dll, trying internal tess."));
-             bGLUWarningSent = true;
-             }
-
-             delete ppg;
-             //  Try with internal tesselator
-             ppg = new PolyTessGeo(poly, true, ref_lat, ref_lon, 1);
-             error_code = ppg->ErrorCode;
-             }
-
-
-             if(error_code)
-             {
-             wxLogMessage(_T("   Error: S57 SENC Create Error %d"), ppg->ErrorCode);
-
-             delete ppg;
-             delete objectDef;
-             delete SENC_prog;
-             fclose(fps57);
-             delete poS57DS;
-             CPLPopErrorHandler();
-             unlink(tmp_file.mb_str());           // delete the temp file....
-
-             return 0;                           // soft error return
-             }
-
-             ppg->Write_PolyTriGroup( fps57 );
-             delete ppg;
-             }
-             */
 //      n.b  This next line causes skip of C_AGGR features w/o geometry
             if( geoType != wkbUnknown )                             // Write only if has wkbGeometry
                     {
@@ -4116,8 +4014,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     }
 
     abort_point: delete poS57DS;
-
-//    VSIFClose( s_fpdebug);
 
     delete s_ProgDialog;
     s_ProgDialog = NULL;
@@ -4160,15 +4056,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             ret_code = BUILD_SENC_OK;
 
     }
-
-    /*
-     wxLogMessage(_T("sw_build: %ld"), sw_build.Time());
-     wxLogMessage(_T("sw_ingest: %ld"), sw_ingest.Time());
-     wxLogMessage(_T("sw_polygon: %ld"), sw_polygon.Time());
-     wxLogMessage(_T("sw_other: %ld"), sw_other.Time());
-     wxLogMessage(_T("sw_create_senc_record: %ld"), sw_create_senc_record.Time());
-     wxLogMessage(_T("sw_get_next_feature: %ld"), sw_get_next_feature.Time());
-     */
 
     if( bbad_update ) OCPNMessageBox(
             _T("Errors encountered processing ENC update file(s).\nENC features may be incomplete or inaccurate."),
@@ -4228,9 +4115,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
 
         if( !strncmp( buf, "OGRF", 4 ) ) {
-            //  Debug Hook
-//                      if(!strncmp(buf, "OGRFeature(SOUNDG)", 16))
-//                            int yyo = 6;
 
             S57Obj *obj = new S57Obj( buf, &fpx, 0, 0 );
             if( obj ) {
@@ -4284,12 +4168,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
                         break;
                 }
-
-                // Debug hooks
-//        if(!strncmp(obj->FeatureName, "_m_sor", 6))
-//            int ffl = 4;
-//    if(obj->Index == 311)
-//        int rrt = 5;
 
                 LUP = ps52plib->S52_LUPLookup( LUP_Name, obj->FeatureName, obj );
 
@@ -4838,8 +4716,6 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
     //    Clear the dynamically created Conditional Symbology LUP Array
     // This can not be done on a per-chart basis, since the plib services all charts
     // TODO really should make the dynamic LUPs belong to the chart class that created them
-//    ps52plib->ClearCNSYLUPArray();
-
 }
 
 void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader )
@@ -4852,10 +4728,6 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
     fprintf( fpOut, "OGRFeature(%s):%ld\n", pFeature->GetDefnRef()->GetName(), pFeature->GetFID() );
 
-// DEBUG
-//        if(pFeature->GetFID() == 549)
-//          int hhl = 5;
-
 //      In the interests of output file size, DO NOT report fields that are not set.
     for( int iField = 0; iField < pFeature->GetFieldCount(); iField++ ) {
         if( pFeature->IsFieldSet( iField ) ) {
@@ -4867,7 +4739,18 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 snprintf( line, MAX_HDR_LINE - 2, "  %s (%c) = %s", poFDefn->GetNameRef(), *pType,
                         pFeature->GetFieldAsString( iField ) );
 
-                sheader += wxString( line, wxConvUTF8 );
+				// Attempt different conversions to accomodate different language encodings in
+				// theoriginal files.
+
+				wxString wxAttrValue( line, wxConvUTF8 );
+
+				if( wxAttrValue.Length() < strlen(line) ) 
+					wxAttrValue = wxString( line, wxConvISO8859_1 );
+
+				if( wxAttrValue.Length() < strlen(line) ) 
+					wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
+
+                sheader += wxAttrValue;
                 sheader += '\n';
             }
         }
@@ -4997,22 +4880,8 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 //    Capture the beginning and end point connected nodes for each edge vector record
                 for( i = 0; i < nEdgeVectorRecords; i++ ) {
                     int start_rcid, end_rcid;
-                    /*
-                     //  Filter out absurd RCIDs, found first on cell IT300017.000
-                     if((pNAME_RCID[i] >= 0) && (pNAME_RCID[i] <= m_nvector_table_size))
-                     {
-                     int target_record_feid = m_pVectorEdgeHelperTable[pNAME_RCID[i]];
-                     pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-                     }
-                     else
-                     pEdgeVectorRecordFeature = NULL;
-                     */
                     int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
                     pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-
-// Debug
-//                          int yypo = pNAME_RCID[i];
-//                          int ttt = pEdgeVectorRecordFeature-> GetFieldAsInteger( "RCID" );
 
                     if( NULL != pEdgeVectorRecordFeature ) {
                         start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
@@ -5027,9 +4896,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                         if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) ) end_rcid =
                                 -2;
 
-                        int edge_ornt = 1; //pORNT[i]; //pEdgeVectorRecordFeature->GetFieldAsInteger( "ORNT");
-
-//think about pOrnt... Do we need it at all?
+                        int edge_ornt = 1; 
                         //  Allocate some storage for converted points
 
                         if( edge_ornt == 1 )                                    // forward
