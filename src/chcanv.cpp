@@ -11221,6 +11221,11 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
             m_b_useFBO = true;
         }
 
+        if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
+            wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
+            m_b_useFBO = false;
+        }
+        
         if( !GetglEntryPoints() ) m_b_useFBO = false;              // default is false
 
         //      Can we use the stencil buffer in a FBO?
