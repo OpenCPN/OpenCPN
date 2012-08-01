@@ -637,21 +637,35 @@ public:
 
     bool BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
     bool Compose( const ViewPort &vp );
-    bool IsComposed(){ return m_bcomposed; }
+    bool IsComposed() {
+        return m_bcomposed;
+    }
     ChartBase *GetFirstChart();
     ChartBase *GetNextChart();
     ChartBase *GetLargestScaleChart();
     ArrayOfInts GetQuiltIndexArray( void );
     bool IsQuiltDelta( ViewPort &vp );
     bool IsChartQuiltableRef( int db_index );
-    ViewPort &GetQuiltVP(){ return m_vp_quilt; }
-    wxString GetQuiltDepthUnit() { return m_quilt_depth_unit; }
-    void SetRenderedVP( ViewPort &vp ) { m_vp_rendered = vp; }
-    bool HasOverlays( void ) { return m_bquilt_has_overlays; }
+    ViewPort &GetQuiltVP() {
+        return m_vp_quilt;
+    }
+    wxString GetQuiltDepthUnit() {
+        return m_quilt_depth_unit;
+    }
+    void SetRenderedVP( ViewPort &vp ) {
+        m_vp_rendered = vp;
+    }
+    bool HasOverlays( void ) {
+        return m_bquilt_has_overlays;
+    }
 
-    int GetExtendedStackCount(void) { return m_extended_stack_array.GetCount(); }
+    int GetExtendedStackCount(void) {
+        return m_extended_stack_array.GetCount();
+    }
 
-    int GetnCharts() { return m_PatchList.GetCount(); }
+    int GetnCharts() {
+        return m_PatchList.GetCount();
+    }
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( wxPoint p );
@@ -664,16 +678,26 @@ public:
     }
     void AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed );
 
-    wxRegion &GetFullQuiltRegion( void ) { return m_covered_region; }
-    wxRegion &GetFullQuiltRenderedRegion( void ) { return m_rendered_region; }
+    wxRegion &GetFullQuiltRegion( void ) {
+        return m_covered_region;
+    }
+    wxRegion &GetFullQuiltRenderedRegion( void ) {
+        return m_rendered_region;
+    }
     bool IsChartSmallestScale( int dbIndex );
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
 
-    void SetHiliteIndex( int index ){ m_nHiLiteIndex = index; }
-    void SetReferenceChart( int dbIndex ) { m_refchart_dbIndex = dbIndex; }
-    int GetRefChartdbIndex( void ) { return m_refchart_dbIndex; }
+    void SetHiliteIndex( int index ) {
+        m_nHiLiteIndex = index;
+    }
+    void SetReferenceChart( int dbIndex ) {
+        m_refchart_dbIndex = dbIndex;
+    }
+    int GetRefChartdbIndex( void ) {
+        return m_refchart_dbIndex;
+    }
     int GetQuiltProj( void )
     {
         return m_quilt_proj;
@@ -698,7 +722,9 @@ public:
         return m_eclipsed_stack_array;
     }
 
-    unsigned long GetXStackHash() { return m_xa_hash; }
+    unsigned long GetXStackHash() {
+        return m_xa_hash;
+    }
 
     bool IsBusy()
     {
@@ -1263,7 +1289,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
                     if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index ) )
-                                    SetReferenceChart( new_db_index );
+                        SetReferenceChart( new_db_index );
                 }
             }
         }
@@ -1434,7 +1460,7 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
         for( int ics = 0; ics < n_charts; ics++ ) {
             int i = pCurrentStack->GetDBIndex( ics );
             m_extended_stack_array.Add( i );
-         }
+        }
     }
     if( b_fullscreen ) {
         //    Search the entire database, potentially adding all charts
@@ -1498,15 +1524,15 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
                     if( !chart_region.Empty() ) {
                         wxRect rect_ch = chart_region.GetBox();
                         chart_fractional_area = ( rect_ch.GetWidth() * rect_ch.GetHeight() )
-                        / quilt_area;
+                                                / quilt_area;
                     } else
                         b_add = false;  // this chart has no overlap on screen
-                        // probably because it has a concave outline
-                        // i.e the bboxes overlap, but the actual coverage intersect is null.
+                    // probably because it has a concave outline
+                    // i.e the bboxes overlap, but the actual coverage intersect is null.
 
-                        if( chart_fractional_area < .01 ) {
-                            b_add = false;
-                        }
+                    if( chart_fractional_area < .01 ) {
+                        b_add = false;
+                    }
                 }
 
                 if( b_add ) {
@@ -1555,12 +1581,12 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
         for( unsigned int id = 0; id < m_extended_stack_array.GetCount() - 1; id++ ) {
             if( m_extended_stack_array.Item( id ) != -1 ) {
                 ChartTableEntry *pm = ChartData->GetpChartTableEntry(
-                    m_extended_stack_array.Item( id ) );
+                                          m_extended_stack_array.Item( id ) );
 
                 for( unsigned int jd = id + 1; jd < m_extended_stack_array.GetCount(); jd++ ) {
                     if( m_extended_stack_array.Item( jd ) != -1 ) {
                         ChartTableEntry *pn = ChartData->GetpChartTableEntry(
-                            m_extended_stack_array.Item( jd ) );
+                                                  m_extended_stack_array.Item( jd ) );
                         if( pm->GetFileTime() == pn->GetFileTime() )            // simple test
                         {
                             if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) {
@@ -1591,9 +1617,9 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
             swap = 0;
             for( unsigned int is = 0; is < m_extended_stack_array.GetCount() - 1; is++ ) {
                 const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                    m_extended_stack_array.Item( is ) );
+                                               m_extended_stack_array.Item( is ) );
                 const ChartTableEntry &n = ChartData->GetChartTableEntry(
-                    m_extended_stack_array.Item( is + 1 ) );
+                                               m_extended_stack_array.Item( is + 1 ) );
 
                 if( n.GetScale() < m.GetScale() ) {
                     ti = m_extended_stack_array.Item( is );
@@ -1644,14 +1670,14 @@ bool Quilt::Compose( const ViewPort &vp_in )
         // only unskewed charts of the proper projection and type may be quilted....
         // and we avoid adding CM93 Composite until later
         if( ( m_reference_type == ChartData->GetDBChartType( i ) )
-            && ( fabs( chart_skew ) < 1.0 )
-            && ( ChartData->GetDBChartProj( i ) == m_quilt_proj )
-            && ( ChartData->GetDBChartType( i ) != CHART_TYPE_CM93COMP ) ) {
-                QuiltCandidate *qcnew = new QuiltCandidate;
-                qcnew->dbIndex = i;
-                qcnew->ChartScale = ChartData->GetDBChartScale( i );
-                m_pcandidate_array->Add( qcnew );
-            }
+                && ( fabs( chart_skew ) < 1.0 )
+                && ( ChartData->GetDBChartProj( i ) == m_quilt_proj )
+                && ( ChartData->GetDBChartType( i ) != CHART_TYPE_CM93COMP ) ) {
+            QuiltCandidate *qcnew = new QuiltCandidate;
+            qcnew->dbIndex = i;
+            qcnew->ChartScale = ChartData->GetDBChartScale( i );
+            m_pcandidate_array->Add( qcnew );
+        }
     }
 
     //    It is possible that the reference chart is not really part of the visible quilt
@@ -4557,9 +4583,9 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
         //  Clamp the minimum scale zoom-out to the value specified by the chart
         max_allowed_scale = 1.01 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
         if( proposed_scale_onscreen > max_allowed_scale ) {
-             if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) )
-                 b_do_zoom = false;
-             else
+            if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) )
+                b_do_zoom = false;
+            else
                 proposed_scale_onscreen = max_allowed_scale;
         }
 
@@ -5966,7 +5992,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             if (g_bDrawAISSize && bcan_draw_size)
             {
                 double px = ( (double) ais_real_size[i].x ) * sin( theta )
-                        + ( (double) ais_real_size[i].y ) * cos( theta );
+                            + ( (double) ais_real_size[i].y ) * cos( theta );
                 double py = ( (double) ais_real_size[i].y ) * sin( theta )
                             - ( (double) ais_real_size[i].x ) * cos( theta );
                 ais_real_size[i].x = (int) round( px );
@@ -6067,7 +6093,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             GetCanvasPointPix ( gLat, gLon, &oShipPoint );
             ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y, &oCPAPoint.x, &oCPAPoint.y, 0, GetVP().pix_width, 0, GetVP().pix_height );
 
-            if ( ownres != Invisible ){
+            if ( ownres != Invisible ) {
                 wxDash dash_long[2];
                 dash_long[0] = ( int ) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
                 dash_long[1] = ( int ) ( 0.5 * m_pix_per_mm );  // Short gap            |
@@ -9443,12 +9469,12 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
     //    Copy current chart region
-	wxRegion backgroundRegion( rgn_chart );
-	if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
+    wxRegion backgroundRegion( rgn_chart );
+    if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
 
     //    Associate with temp_dc
     temp_dc.DestroyClippingRegion();
-	temp_dc.SetClippingRegion( backgroundRegion );
+    temp_dc.SetClippingRegion( backgroundRegion );
 
     //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
@@ -12052,8 +12078,8 @@ void glChartCanvas::render()
     bool b_newview = true;
     ;
     if( ( m_gl_cache_vp.view_scale_ppm == VPoint.view_scale_ppm )
-        && ( m_gl_cache_vp.rotation == VPoint.rotation ) && ( m_gl_cache_vp.clat == VPoint.clat )
-        && ( m_gl_cache_vp.clon == VPoint.clon ) && m_gl_cache_vp.IsValid() ) {
+            && ( m_gl_cache_vp.rotation == VPoint.rotation ) && ( m_gl_cache_vp.clat == VPoint.clat )
+            && ( m_gl_cache_vp.clon == VPoint.clon ) && m_gl_cache_vp.IsValid() ) {
         b_newview = false;
     }
 
@@ -12409,7 +12435,7 @@ void glChartCanvas::render()
 
     //    Get full (rotated?) canvas region
     wxRegion backgroundRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
-                        VPoint.rv_rect.height );
+                               VPoint.rv_rect.height );
 
     //    Remove the valid chart area
     if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
@@ -12417,7 +12443,7 @@ void glChartCanvas::render()
     //    Draw the World Chart only in the areas NOT covered by the current chart view
     //    And, only if the region is ..not.. empty
 
-	if( !backgroundRegion.IsEmpty() && ( fabs( cc1->GetVP().skew ) < .01 ) ) {
+    if( !backgroundRegion.IsEmpty() && ( fabs( cc1->GetVP().skew ) < .01 ) ) {
         SetClipRegion( VPoint, backgroundRegion, true );       // clear background
 
         cc1->pWorldBackgroundChart->RenderViewOnDC( gldc, VPoint );
@@ -12680,7 +12706,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "test" ) ), wxPoint( x, y ),
-                      wxSize( 500, 400 ), wstyle );
+                      wxSize( 550, 480 ), wstyle );
 
     pParent = parent;
 
@@ -12739,37 +12765,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_corr_mins = station_offset - diff_mins;
     if( this_now.IsDST() ) m_corr_mins += 60;
 
-#if 0
-    int h = station_offset / 60;
-    int m = station_offset - (h * 60);
-    if ( this_now.IsDST() )
-        h += 1;
-    m_stz.Printf(_T("Z %+03d:%02d"), h, m);
-
-//    Make the "nice" (for the US) station time-zone string, brutally by hand
-    wxString mtz;
-    switch ( ptcmgr->GetStationTimeOffset(pIDX) )
-    {
-    case -240:
-        mtz = _T( "AST" );
-        break;
-    case -300:
-        mtz = _T( "EST" );
-        break;
-    case -360:
-        mtz = _T( "CST" );
-        break;
-    }
-
-    if(mtz.Len())
-    {
-        if ( this_now.IsDST() )
-            mtz[1] = 'D';
-
-        m_stz = mtz;
-    }
-#endif
-
 //    Establish the inital drawing day as today
     m_graphday = wxDateTime::Now();
     wxDateTime graphday_00 = wxDateTime::Today();
@@ -12784,26 +12779,120 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     btc_valid = false;
 
     wxString* TClist = NULL;
-    m_tList = new wxListBox( this, -1, wxPoint( sx * 63 / 100, 11 ),
-                             wxSize( ( sx * 32 / 100 ), ( sy * 16 / 100 ) ), 0, TClist,
+    m_tList = new wxListBox( this, -1, wxPoint( sx * 65 / 100, 11 ),
+                             wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), 0, TClist,
                              wxLB_SINGLE | wxLB_NEEDED_SB );
 
     OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - 32 ),
                               wxDefaultSize );
 
     PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - 32 ),
-                              wxSize( 40, -1 ) );
+                              wxSize( 60, -1 ) );
 
+    m_ptextctrl = new wxTextCtrl( this, -1, _T(""), wxPoint( sx * 3 / 100, 6 ),
+                                  wxSize( ( sx * 60 / 100 ), ( sy *29 / 100 ) ) ,
+                                  wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
     int bsx, bsy, bpx, bpy;
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
 
     NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, bpy ),
-                              wxSize( 40, -1 ) );
+                              wxSize( 60, -1 ) );
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 
+    
+    //  establish some graphic element sizes/locations
+    int x_graph = sx * 1 / 10;
+    int y_graph = sy * 32 / 100;
+    int x_graph_w = sx * 8 / 10;
+    int y_graph_h = sy * 50 / 100;
+    m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
+    
+    
+    // Build graphics tools
+   
+    pSFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+                                                    wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
+    pSMFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_SWISS, wxNORMAL,
+                                                       wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
+    pMFont = wxTheFontList->FindOrCreateFont( 11, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+                                                      FALSE, wxString( _T ( "Arial" ) ) );
+    pLFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+                                                      FALSE, wxString( _T ( "Arial" ) ) );
+
+    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
+                                                                          wxSOLID );
+    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2,
+                                                                          wxSOLID );
+    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1,
+                                                                          wxSOLID );
+    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4,
+                                                                        wxSOLID );
+    pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
+                                                                               wxSOLID );
+    pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
+                                                                                wxSOLID );
+    
     DimeControl( this );
+    
+    //  Fill in some static text control information
+    
+    //  Tidi station information
+    m_ptextctrl->Clear();
+
+    wxString locn( pIDX->IDX_station_name, wxConvUTF8 );
+    wxString locna, locnb;
+    if( locn.Contains( wxString( _T ( "," ) ) ) ) {
+        locna = locn.BeforeFirst( ',' );
+        locnb = locn.AfterFirst( ',' );
+    } else {
+        locna = locn;
+        locnb.Empty();
+    }
+
+    // write the first line
+    wxTextAttr style;
+    style.SetFont( *pLFont );
+    m_ptextctrl->SetDefaultStyle( style );
+    
+    m_ptextctrl->AppendText( locna );
+    m_ptextctrl->AppendText(_T("\n"));
+
+    style.SetFont( *pSMFont );
+    m_ptextctrl->SetDefaultStyle( style );
+    
+    if( !locnb.IsEmpty() ) m_ptextctrl->AppendText( locnb );
+    m_ptextctrl->AppendText(_T("\n\n"));
+
+
+    //Reference to the master station
+    if(( 't' == pIDX->IDX_type ) || ( 'c' == pIDX->IDX_type )) {
+        wxString mref( pIDX->IDX_reference_name, wxConvUTF8 );
+        mref.Prepend(_T(" "));
+
+        m_ptextctrl->AppendText( _( "Reference Station :" ) );
+        m_ptextctrl->AppendText(_T("\n"));
+
+        m_ptextctrl->AppendText( mref );
+        m_ptextctrl->AppendText(_T("\n"));
+
+    }
+    else {
+        m_ptextctrl->AppendText(_T("\n"));
+        m_ptextctrl->AppendText(_T("\n"));
+    }
+
+    //      Show the data source
+    wxString dsource( pIDX->source_ident, wxConvUTF8 );
+    dsource.Prepend(_T(" "));
+
+    m_ptextctrl->AppendText( _( "Data Source :" ) );
+    m_ptextctrl->AppendText(_T("\n"));
+
+    m_ptextctrl->AppendText( dsource );
+
+    m_ptextctrl->ShowPosition( 0 );
 }
 
 TCWin::~TCWin()
@@ -12901,79 +12990,53 @@ void TCWin::OnPaint( wxPaintEvent& event )
 //     if(1/*bForceRedraw*/)
     {
 
-        //    Make pens, etc...
-        wxPen *pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
-                          wxSOLID );
-        wxPen *pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2,
-                          wxSOLID );
-        wxPen *pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1,
-                          wxSOLID );
-        wxPen *pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4,
-                        wxSOLID );
-        wxBrush *pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
-                           wxSOLID );
-        wxBrush *pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
-                            wxSOLID );
-
-        wxFont *pSFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,
-                         wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-        wxFont *pSMFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_SWISS, wxNORMAL,
-                          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-        wxFont *pMFont = wxTheFontList->FindOrCreateFont( 11, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
-                         FALSE, wxString( _T ( "Arial" ) ) );
-        wxFont *pLFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
-                         FALSE, wxString( _T ( "Arial" ) ) );
-
-        int x_graph = x * 1 / 10;
-        int y_graph = y * 22 / 100;
-        int x_graph_w = x * 8 / 10;
-        int y_graph_h = y * 58 / 100;
 
         int x_textbox = x * 5 / 100;
+        int y_textbox = 6;
 
         int x_textbox_w = x * 51 / 100;
-        int y_textbox_h = y * 19 / 100;
+        int y_textbox_h = y * 25 / 100;
 
         // box the location text & tide-current table
         dc.SetPen( *pblack_3 );
         dc.SetBrush( *pltgray2 );
-        dc.DrawRoundedRectangle( x_textbox, 6, x_textbox_w, y_textbox_h, 4 );    //location text box
-//                  dc.DrawRoundedRectangle( x * 62/100, 6, x * 28/100 , y_textbox_h ,4);       //tide-current table box
+        dc.DrawRoundedRectangle( x_textbox, y_textbox, x_textbox_w, y_textbox_h, 4 );    //location text box
+
         wxRect tab_rect = m_tList->GetRect();
-        dc.DrawRoundedRectangle( tab_rect.x - 4, 6, tab_rect.width + 8, y_textbox_h, 4 ); //tide-current table box
+        dc.DrawRoundedRectangle( tab_rect.x - 4, y_textbox, tab_rect.width + 8, y_textbox_h, 4 ); //tide-current table box
 
         //    Box the graph
         dc.SetPen( *pblack_1 );
         dc.SetBrush( *pltgray );
-        dc.DrawRectangle( x_graph, y_graph, x_graph_w, y_graph_h );
+        dc.DrawRectangle( m_graph_rect.x, m_graph_rect.y, m_graph_rect.width, m_graph_rect.height );
 
         //    Horizontal axis
         dc.SetFont( *pSFont );
         for( i = 0; i < 25; i++ ) {
-            int xd = x_graph + ( ( i ) * x_graph_w / 25 );
-            dc.DrawLine( xd, y_graph, xd, y_graph + y_graph_h + 5 );
+            int xd = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
+            dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
 
             char sbuf[5];
             sprintf( sbuf, "%02d", i );
 #ifdef __WXMSW__
             wxString sst;
             sst.Printf( _T("%02d"), i );
-            dc.DrawRotatedText( sst, xd + ( x_graph_w / 25 ) / 2, y_graph + y_graph_h + 8, 270. );
+            dc.DrawRotatedText( sst, xd + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8, 270. );
 #else
             int x_shim = -12;
-            dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), xd + x_shim + ( x_graph_w/25 ) /2, y_graph + y_graph_h + 8 );
+            dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width/25 ) /2, m_graph_rect.y + m_graph_rect.height + 8 );
 #endif
         }
 
         //    Make a line for "right now"
         time_t t_now = wxDateTime::Now().GetTicks();       // now, in ticks
 
-        float t_ratio = x_graph_w * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
+        float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
 
         //must eliminate line outside the graph (in that case put it outside the window)
-        int xnow = ( t_ratio < 0 || t_ratio > x_graph_w ) ? -1 : x_graph + (int) t_ratio;
+        int xnow = ( t_ratio < 0 || t_ratio > m_graph_rect.width ) ? -1 : m_graph_rect.x + (int) t_ratio;
         dc.SetPen( *pred_2 );
-        dc.DrawLine( xnow, y_graph, xnow, y_graph + y_graph_h );
+        dc.DrawLine( xnow, m_graph_rect.y, xnow, m_graph_rect.y + m_graph_rect.height );
         dc.SetPen( *pblack_1 );
 
         //    Build the array of values, capturing max and min and HW/LW list
@@ -13052,7 +13115,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
                 ib = -it;
 
                 im = 2 * it;
-                m_plot_y_offset = y_graph_h / 2;
+                m_plot_y_offset = m_graph_rect.height / 2;
                 val_off = 0;
             } else {
                 ib = (int) tcmin;
@@ -13060,7 +13123,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
                 it = (int) tcmax + 1;
 
                 im = it - ib; //abs ( ib ) + abs ( it );
-                m_plot_y_offset = ( y_graph_h * ( it - ib ) ) / im;
+                m_plot_y_offset = ( m_graph_rect.height * ( it - ib ) ) / im;
                 val_off = ib;
             }
 
@@ -13071,9 +13134,9 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
             for( i = 0; i < 26; i++ ) {
                 wxPoint *pp = new wxPoint;
-                pp->x = x_graph + ( ( i ) * x_graph_w / 25 );
-                pp->y = y_graph + ( m_plot_y_offset )
-                        - (int) ( ( tcv[i] - val_off ) * y_graph_h / im );
+                pp->x = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
+                pp->y = m_graph_rect.y + ( m_plot_y_offset )
+                - (int) ( ( tcv[i] - val_off ) * m_graph_rect.height / im );
 
                 m_sList.Append( pp );
             }
@@ -13087,69 +13150,25 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         //      Maybe skip some lines and legends if the range is too high
         int height_stext;
-        ;
-        dc.GetTextExtent( _T("1"), NULL, &height_stext );
+         dc.GetTextExtent( _T("1"), NULL, &height_stext );
 
         int i_skip = 1;
-        if( height_stext > y_graph_h / im ) i_skip = 2;
+        if( height_stext > m_graph_rect.height / im ) i_skip = 2;
 
         i = ib;
         while( i < it + 1 ) {
-            int yd = y_graph + ( m_plot_y_offset ) - ( ( i - val_off ) * y_graph_h / im );
+            int yd = m_graph_rect.y + ( m_plot_y_offset ) - ( ( i - val_off ) * m_graph_rect.height / im );
 
-            if( ( m_plot_y_offset + y_graph ) == yd ) dc.SetPen( *pblack_2 );
+            if( ( m_plot_y_offset + m_graph_rect.y ) == yd ) dc.SetPen( *pblack_2 );
             else
                 dc.SetPen( *pblack_1 );
 
-            dc.DrawLine( x_graph, yd, x_graph + x_graph_w, yd );
+            dc.DrawLine( m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd );
             snprintf( sbuf, 99, "%d", i );
-            dc.DrawText( wxString( sbuf, wxConvUTF8 ), x_graph - 20, yd - 5 );
+            dc.DrawText( wxString( sbuf, wxConvUTF8 ), m_graph_rect.x - 20, yd - 5 );
             i += i_skip;
 
         }
-        //    Units
-        /*
-         if ( pIDX->pref_sta_data )
-         {
-         wxString units ( pIDX->pref_sta_data->units_abbrv, wxConvUTF8 );
-         dc.DrawText ( units, x_graph - 40, y_graph + y_graph_h/2 );
-         }
-         */
-        //  Location text ( must never exceed text box width )
-        dc.SetClippingRegion( x_textbox, 6, x_textbox_w - 3, y_textbox_h );
-
-        wxString locn( pIDX->IDX_station_name, wxConvUTF8 );
-        wxString locna, locnb;
-        if( locn.Contains( wxString( _T ( "," ) ) ) ) {
-            locna = locn.BeforeFirst( ',' );
-            locnb = locn.AfterFirst( ',' );
-        } else {
-            locna = locn;
-            locnb.Empty();
-        }
-        // write the first line
-        dc.SetFont( *pLFont );
-        dc.GetTextExtent( locna, &w, &h );
-        int y_first_line = y * 3 / 100;
-        dc.DrawText( locna, x_textbox + 3, y_first_line );
-
-        dc.SetFont( *pSMFont );
-
-        // may be write the second line
-        if( !locnb.IsEmpty() ) dc.DrawText( locnb, x_textbox + 7, y_first_line + h );
-
-        //Reference to the master station
-
-        if( 't' == pIDX->IDX_type ) {
-            wxString mref( pIDX->IDX_reference_name, wxConvUTF8 );
-
-            dc.GetTextExtent( mref, &w, &h );
-            int y_master_reference = y_graph - ( h * 2 + 3 );
-            dc.DrawText( _( "Reference Station :" ), x_graph + 3, y_master_reference );
-            dc.DrawText( mref, x_textbox + 3, y_master_reference + h - 2 );
-        }
-
-        dc.DestroyClippingRegion();
 
         //    Draw the Value curve
 #if wxCHECK_VERSION(2, 9, 0)
@@ -13217,7 +13236,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         if( pmsd ) {
             dc.GetTextExtent( wxString( pmsd->units_conv, wxConvUTF8 ), &w, &h );
             dc.DrawRotatedText( wxString( pmsd->units_conv, wxConvUTF8 ), 5,
-                                y_graph + y_graph_h / 2 + w / 2, 90. );
+                                m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90. );
         }
 
         //      Show flood and ebb directions
@@ -13226,11 +13245,11 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
             wxString fdir;
             fdir.Printf( _T("%03d"), pIDX->IDX_flood_dir );
-            dc.DrawText( fdir, x_graph + x_graph_w + 4, y_graph + y_graph_h * 1 / 4 );
+            dc.DrawText( fdir, m_graph_rect.x + m_graph_rect.width + 4, m_graph_rect.y + m_graph_rect.height * 1 / 4 );
 
             wxString edir;
             edir.Printf( _T("%03d"), pIDX->IDX_ebb_dir );
-            dc.DrawText( edir, x_graph + x_graph_w + 4, y_graph + y_graph_h * 3 / 4 );
+            dc.DrawText( edir, m_graph_rect.x + m_graph_rect.width + 4, m_graph_rect.y + m_graph_rect.height * 3 / 4 );
 
         }
 
@@ -13279,8 +13298,7 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
     bool ShowRollover;
 
     GetClientSize( &x, &y );
-    wxRegion cursorarea( ( x * 9 / 100 ), ( y * 22 / 100 ), ( x * 81 / 100 ), ( y * 58 / 100 ) );
-
+    wxRegion cursorarea(m_graph_rect);
     if( cursorarea.Contains( curs_x, curs_y ) ) {
         ShowRollover = true;
         SetCursor( *pParent->pCursorCross );

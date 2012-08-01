@@ -328,6 +328,7 @@ void options::Init()
     k_charts = 0;
     k_vectorcharts = 0;
     k_plugins = 0;
+    k_tides = 0;
 
     itemStaticBoxSizer11 = NULL;
     pDirCtl = NULL;
@@ -2164,6 +2165,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     iret |= k_charts;
     iret |= m_groups_changed;
     iret |= k_plugins;
+    iret |= k_tides;
 
     //  Required to avoid intermittent crash on wxGTK
     itemNotebook4->ChangeSelection(0);
@@ -2799,6 +2801,7 @@ void options::OnButtonTCData( wxCommandEvent& event )
     } else {
     }
 
+    k_tides = TIDES_CHANGED;
 }
 
 
@@ -3492,18 +3495,7 @@ void tidedata_dialog::CreateControls( void )
     //    Add main horizontal sizer....
     wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
     TopVBoxSizer->Add( mainHBoxSizer, 1, wxALIGN_TOP | wxEXPAND );
-#if 0
-    //    The file tree
-    wxStaticBox *TideDataSourceStaticBox = new wxStaticBox( this, wxID_ANY, _("File System") );
-    wxStaticBoxSizer* TideDataSourceStaticBoxSizer = new wxStaticBoxSizer(
-    		TideDataSourceStaticBox, wxVERTICAL );
-    mainHBoxSizer->Add( TideDataSourceStaticBoxSizer, 1, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
 
-    m_pDirCtl = new wxGenericDirCtrl( this, -1, _T("") );
-    m_pDirCtl->ShowHidden(true);
-    TideDataSourceStaticBoxSizer->Add( m_pDirCtl, 1, wxALIGN_LEFT | wxEXPAND );
-    m_pDirCtl->SetPath(g_TCData_Dir);
-#endif
     //    Add the "Insert/Remove" buttons
     m_pinsertButton = new wxButton( this, ID_TCDATAADD, _("Add") );
     m_premoveButton = new wxButton( this, ID_TCDATADEL, _("Remove") );

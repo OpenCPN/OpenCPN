@@ -1192,8 +1192,10 @@ TC_Error_Code TCDataSource::LoadData(wxString &data_file_path)
     unsigned int max_index = GetMaxIndex();
     for(unsigned int i=0 ; i < max_index ; i++) {
         IDX_entry *pIDX = GetIndexEntry( i );
-        if(pIDX)
+        if(pIDX){
             pIDX->pDataSource = this;
+            strncpy(pIDX->source_ident, m_data_source_path.mb_str(), MAXNAMELEN );
+        }
     }
 
     return err_code;
@@ -8520,6 +8522,8 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
 
     DB_HEADER_PUBLIC hdr = get_tide_db_header ();
 
+    source_ident = wxString( hdr.version, wxConvUTF8 );
+    
     num_csts = hdr.constituents;
 
     //  Allocate a working buffer

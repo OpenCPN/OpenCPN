@@ -96,7 +96,7 @@ enum {
         ID_DRAGGINGCHECKBOX,
         ID_ZTCCHECKBOX,
         ID_PRESERVECHECKBOX,
-	    ID_BELLSCHECKBOX,
+        ID_BELLSCHECKBOX,
         ID_AISALERTDIALOG,
         ID_AISALERTAUDIO,
         ID_AISALERTSELECTSOUND,
@@ -134,11 +134,11 @@ enum {
         ID_GROUPREMOVEDIR,
         ID_GROUPNEWGROUP,
         ID_GROUPDELETEGROUP,
-		ID_STYLESCOMBOBOX,
-		ID_TIDESELECTED,
-		ID_BUTTONTCDATA,
-		ID_TCDATAADD,
-		ID_TCDATADEL
+        ID_STYLESCOMBOBOX,
+        ID_TIDESELECTED,
+        ID_BUTTONTCDATA,
+        ID_TCDATAADD,
+        ID_TCDATADEL
 };
 
 //    Define an int bit field for dialog return value
@@ -154,7 +154,7 @@ enum {
 #define     SCAN_UPDATE      256
 #define     GROUPS_CHANGED   512
 #define     STYLE_CHANGED   1024
-
+#define     TIDES_CHANGED   2048
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -257,6 +257,7 @@ public:
     wxCheckBox              *pSmoothPanZoom;
     wxCheckBox              *pFullScreenQuilt;
     wxChoice                *m_pcTCDatasets;
+    int                      k_tides;
 
 //    For GPS Page
     wxScrolledWindow        *itemPanelGPS;

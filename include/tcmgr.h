@@ -175,7 +175,8 @@ public:
 
     source_data_t       source_data_type;
     TCDataSource        *pDataSource;
-
+    char                source_ident[MAXNAMELEN];       // actually, the file name
+    
     int       IDX_rec_num;                   // Keeps track of multiple entries w/same name
     char      IDX_type;                      // Entry "TCtcIUu" identifier
     char      IDX_zone[40];                  // Alpha region/country/state ID
@@ -301,8 +302,8 @@ public:
     TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
 
 private:
-    
     wxString             m_data_source_path;
+    
     TCDataFactory        *m_pfactory;
     TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
     TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
@@ -323,6 +324,8 @@ public:
 
     int findunit (const char *unit);
     unit  known_units[NUMUNITS];
+    
+    wxString source_ident;
     
 private:
     
@@ -408,8 +411,6 @@ private:
     
     ArrayOfAbbrEntry    m_abbreviation_array;
     ArrayOfIDXEntry     m_IDX_array;
-    
-//    unit        known_units[NUMUNITS];
     
     int         num_IDX;
     int         num_nodes;

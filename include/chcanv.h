@@ -682,11 +682,12 @@ public:
 
 
 private:
-	  wxTimer	  m_TCWinPopupTimer;
-	  RolloverWin *m_pTCRolloverWin;
-	  int		  curs_x;
-	  int		  curs_y;
-      int         m_plot_type;
+    wxTextCtrl  *m_ptextctrl;
+    wxTimer	  m_TCWinPopupTimer;
+    RolloverWin *m_pTCRolloverWin;
+    int           curs_x;
+    int           curs_y;
+    int          m_plot_type;
 
       IDX_entry   *pIDX;
       wxButton    *OK_button;
@@ -697,6 +698,7 @@ private:
       int         ib;
       int         it;
       int         val_off;
+      wxRect    m_graph_rect;
 
 
       float       tcv[26];
@@ -710,6 +712,19 @@ private:
       int         m_plot_y_offset;
 
       SplineList  m_sList;
+      
+      wxFont *pSFont;
+      wxFont *pSMFont;
+      wxFont *pMFont;
+      wxFont *pLFont;
+                                                        
+      wxPen *pblack_1;
+      wxPen *pblack_2;
+      wxPen *pblack_3;
+      wxPen *pred_2;
+      wxBrush *pltgray;
+      wxBrush *pltgray2;
+                                                                                                               
 
 DECLARE_EVENT_TABLE()
 };

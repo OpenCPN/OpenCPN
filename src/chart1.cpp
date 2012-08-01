@@ -3947,6 +3947,10 @@ int MyFrame::DoOptionsDialog()
             pConfig->CreateConfigGroups( g_pGroupArray );
         }
 
+        if( rr & TIDES_CHANGED ) {
+            LoadHarmonics();
+        }
+        
         pConfig->UpdateSettings();
 
         if( g_pActiveTrack ) {
@@ -7029,6 +7033,8 @@ void MyFrame::LoadHarmonics()
     }
     else {
         bool b_newdataset = false;
+        
+        //      Test both ways
         wxArrayString test = ptcmgr->GetDataSet();
         for(unsigned int i=0 ; i < test.GetCount() ; i++) {
             bool b_foundi = false;
@@ -7044,6 +7050,21 @@ void MyFrame::LoadHarmonics()
             }
         }
 
+        test = TideCurrentDataSet;
+        for(unsigned int i=0 ; i < test.GetCount() ; i++) {
+            bool b_foundi = false;
+            for(unsigned int j=0 ; j < ptcmgr->GetDataSet().GetCount() ; j++) {
+                if(ptcmgr->GetDataSet().Item(j) == test.Item(i)) {
+                    b_foundi = true;
+                    break;              // j loop
+                }
+            }
+            if(!b_foundi) {
+                b_newdataset = true;
+                break;                  //  i loop
+            }
+        }
+        
         if(b_newdataset)
             ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
