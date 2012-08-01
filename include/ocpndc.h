@@ -31,6 +31,7 @@
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
+#include <vector>
 
 #ifndef DECL_EXP
 #ifdef __WXMSW__
@@ -46,12 +47,12 @@
 #define DECL_EXP       __attribute__((visibility("default")))
 #endif
 
-
-class wxGLCanvas;
-
 //----------------------------------------------------------------------------
 // ocpnDC
 //----------------------------------------------------------------------------
+
+class wxGLCanvas;
+
 class DECL_EXP ocpnDC
 {
 public:
@@ -61,10 +62,12 @@ public:
 
      ~ocpnDC();
 
+     void SetBackground( const wxBrush &brush );
      void SetPen( const wxPen &pen);
      void SetBrush( const wxBrush &brush);
      void SetTextForeground(const wxColour &colour);
      void SetFont(const wxFont& font);
+     static void SetGLAttrs( bool highQuality );
 
      const wxPen& GetPen() const;
      const wxBrush& GetBrush() const;
@@ -78,6 +81,7 @@ public:
      void StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
      void StrokeLine( wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
 
+     void Clear();
      void DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h );
      void DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, wxCoord rr );
      void DrawCircle(wxCoord x, wxCoord y, wxCoord radius);
@@ -86,6 +90,7 @@ public:
 
      void DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height);
      void DrawPolygon(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
+     void DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
      void StrokePolygon(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0);
 
      void DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask);

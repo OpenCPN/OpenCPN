@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -187,6 +187,9 @@ msgstr " %D 天  %H 小時  %M 分鐘"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H 小時  %M 分鐘"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -684,6 +687,9 @@ msgstr "使用中的海圖目錄"
 #, fuzzy
 msgid "Active Charts"
 msgstr "使用中的海圖目錄"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1357,12 +1363,6 @@ msgstr "預設顏色"
 # 
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "預設顏色"
-#
-# 
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "濬挖船"
 #
@@ -1685,6 +1685,9 @@ msgstr "英呎"
 msgid "Ferry"
 msgstr "渡輪"
 #
+msgid "File System"
+msgstr ""
+#
 # 
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -1815,9 +1818,6 @@ msgstr "高速船"
 # 
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr ""
 #
 # 
 # 
@@ -2748,11 +2748,6 @@ msgstr "預覽:"
 msgid "Print Chart"
 msgstr "列印海圖"
 #
-# 
-# 
-msgid "Printing"
-msgstr "列印"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -2973,6 +2968,9 @@ msgstr "參考點:"
 msgid "Remaining time : "
 msgstr "剩餘時間 : "
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 # 
 msgid "Remove Waypoint from Route"
@@ -3187,6 +3185,9 @@ msgstr "選擇自動接圖使用之海圖格式"
 msgid "Select Sound File"
 msgstr "選擇音效檔"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 # 
 msgid "Send"
@@ -3267,6 +3268,12 @@ msgstr "顯示 AIS 目標"
 #
 # 
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "顯示 AIS 目標"
+#
+# 
+# 
 msgid "Show ATON labels"
 msgstr "顯示 ATON 標籤"
 #
@@ -3327,11 +3334,6 @@ msgstr "顯示燈號說明"
 #
 # 
 # 
-msgid "Show Printing Icon"
-msgstr "顯示列印圖示"
-#
-# 
-# 
 msgid "Show Soundings"
 msgstr "顯示水深"
 #
@@ -3349,11 +3351,6 @@ msgstr "顯示潮汐資訊"
 # 
 msgid "Show Tides"
 msgstr "顯示潮汐"
-#
-# 
-# 
-msgid "Show Track icon"
-msgstr "顯示航跡圖示"
 #
 # 
 # 
@@ -3685,6 +3682,11 @@ msgid "Text Element"
 msgstr "文字項目"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3743,6 +3745,21 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "潮汐"
+#
+# 
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "顯示海流"
+#
+# 
+# 
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "潮流圖表Rollover"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 # 
@@ -4195,6 +4212,11 @@ msgstr "遊艇"
 msgid "Yellow"
 msgstr "黃"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 # 
 msgid "Zoom In"
@@ -4247,6 +4269,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4263,10 +4286,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4286,6 +4311,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4300,6 +4326,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4309,6 +4336,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4338,6 +4366,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4357,6 +4386,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4386,6 +4416,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4404,6 +4435,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4431,6 +4463,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4441,10 +4474,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4467,6 +4502,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4476,6 +4512,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4505,6 +4542,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4524,6 +4562,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4553,6 +4592,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4572,6 +4612,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4601,6 +4642,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4620,6 +4662,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4650,6 +4693,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4674,10 +4718,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "預設顏色"
+#
 #
 #
 #
@@ -4694,10 +4747,12 @@ msgstr ""
 #~ msgstr "ETE/時間戳記"
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
 #
 #
 #
@@ -4712,6 +4767,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4721,10 +4777,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 #
@@ -4742,6 +4800,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4751,6 +4810,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -4774,6 +4834,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4783,6 +4844,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -4802,6 +4864,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4811,6 +4874,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -4830,6 +4894,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4839,6 +4904,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
 #
 #
 #
@@ -4858,6 +4924,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4866,6 +4933,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
 #
 #
 # 
@@ -4880,6 +4948,25 @@ msgstr ""
 #~ "libgps 無法正確回應版本請求\n"
 #~ "\n"
 #~ "仍要繼續使用這一版的libgps?"
+#
+#
+# 
+# 
+#~ msgid "Printing"
+#~ msgstr "列印"
+#
+#
+# 
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "顯示列印圖示"
+#
+#
+# 
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "顯示航跡圖示"
+#
 #
 #
 # 

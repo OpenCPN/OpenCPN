@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6 (Pt01)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2010-02-05 16:06+0100\n"
 "Last-Translator: as <as400big@gmail.com>\n"
 "Language-Team: Minhota <zemaria@zemaria.biz>\n"
@@ -248,6 +248,9 @@ msgstr " %D Dias  %H Horas  %M Minutos"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Horas  %M Minutos"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -997,6 +1000,9 @@ msgstr "Pastas de Arquivo de Cartas, Activas"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Pastas de Arquivo de Cartas, Activas"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1941,15 +1947,6 @@ msgstr "Cor da Letra."
 # 
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "Cor da Letra."
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Perna"
 #
@@ -2491,6 +2488,9 @@ msgstr "Pés"
 msgid "Ferry"
 msgstr ""
 #
+msgid "File System"
+msgstr ""
+#
 # 
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -2690,9 +2690,6 @@ msgstr ""
 # 
 # 
 msgid "HW"
-msgstr ""
-#
-msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -3970,14 +3967,6 @@ msgstr "Pré-Visualização:"
 msgid "Print Chart"
 msgstr "Imprimir Carta"
 #
-# 
-# 
-# 
-# 
-# 
-msgid "Printing"
-msgstr "Impressão"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -4271,6 +4260,9 @@ msgstr "Estação de Referência:"
 msgid "Remaining time : "
 msgstr ""
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4557,6 +4549,9 @@ msgstr ""
 msgid "Select Sound File"
 msgstr "Seleccionar Som Alarme"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4679,6 +4674,15 @@ msgstr "Mostrar Rastro da Embarcação Alvo"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Mostrar Rastro da Embarcação Alvo"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "Show ATON labels"
 msgstr "Etiquetas ATON"
 #
@@ -4779,14 +4783,6 @@ msgstr "Características sinais luminosos"
 # 
 # 
 # 
-msgid "Show Printing Icon"
-msgstr "Mostrar Ícone Impressão"
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Show Soundings"
 msgstr "Sonda Reduzida"
@@ -4815,14 +4811,6 @@ msgstr "Ícone"
 # 
 msgid "Show Tides"
 msgstr "Mostrar Marés"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Show Track icon"
-msgstr "Mostrar Ícone Rastro"
 #
 # 
 # 
@@ -5287,6 +5275,11 @@ msgid "Text Element"
 msgstr "Elementos de Texto"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -5374,6 +5367,21 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Maré"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Mostrar Correntes"
+#
+msgid "Tide/Current Data Selector"
+msgstr ""
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 # 
@@ -5963,6 +5971,11 @@ msgstr ""
 msgid "Yellow"
 msgstr "Apagar Tudo"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 # 
 # 
@@ -6026,6 +6039,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6060,6 +6074,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -6109,6 +6124,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6148,6 +6164,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Apagar todas as Rotas..."
+#
 #
 #
 #
@@ -6195,6 +6212,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6208,6 +6226,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6215,6 +6234,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
 #
 #
 #
@@ -6259,6 +6279,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6266,6 +6287,7 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -6300,6 +6322,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Ficheiro de carta corrompido.. a desactivar carta \n"
+#
 #
 #
 #
@@ -6348,6 +6371,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6390,6 +6414,17 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     B\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "Cor da Letra."
+#
 #
 #
 #
@@ -6446,6 +6481,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6486,6 +6522,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6511,6 +6548,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair do OpenCPN"
+#
 #
 #
 #
@@ -6567,6 +6605,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6598,6 +6637,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -6641,6 +6681,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6674,6 +6715,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 #
 #
@@ -6714,6 +6756,7 @@ msgstr ""
 #~ msgstr "Pasta de Ficheiros GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -6721,6 +6764,7 @@ msgstr ""
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fontes"
+#
 #
 #
 #
@@ -6734,6 +6778,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -6771,6 +6816,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6778,6 +6824,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Ícone"
+#
 #
 #
 #
@@ -6795,6 +6842,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6805,6 +6853,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 #
 #
@@ -6848,6 +6897,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6881,6 +6931,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -6925,6 +6976,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6964,6 +7016,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6976,6 +7029,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:              "
+#
 #
 #
 #
@@ -7016,6 +7070,16 @@ msgstr ""
 #~ msgstr "Pressão, mBar"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Printing"
+#~ msgstr "Impressão"
+#
+#
+#
 #
 #
 #
@@ -7046,6 +7110,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Período das aquisições mais recentes:     %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7085,6 +7150,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 #
@@ -7134,6 +7200,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7161,6 +7228,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 #
 #
@@ -7209,6 +7277,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7252,6 +7321,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7283,6 +7353,25 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostrar Ícone GRIB"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Mostrar Ícone Impressão"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Mostrar Ícone Rastro"
+#
 #
 #
 #
@@ -7326,6 +7415,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7348,6 +7438,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7380,6 +7471,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7402,6 +7494,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota"
+#
 #
 #
 #
@@ -7438,6 +7531,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos Alta Definição"
+#
 #
 #
 #
@@ -7481,6 +7575,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7514,6 +7609,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 #
 #

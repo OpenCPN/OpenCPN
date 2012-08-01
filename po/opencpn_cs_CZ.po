@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2012-05-23 06:58+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -238,6 +238,9 @@ msgstr " %D Dnů  %H Hodin %M Minut"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Hodin  %M Minut"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 #
 msgid " (Last Known):  "
@@ -878,6 +881,9 @@ msgstr "Aktivní složky map"
 #
 msgid "Active Charts"
 msgstr "Aktivní mapy"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Přidat"
@@ -1691,13 +1697,6 @@ msgstr "Standardní barva"
 #
 #
 #
-#
-#
-msgid "Default dataset"
-msgstr "Standardní dataset"
-#
-#
-#
 msgid "Deg"
 msgstr "Stupně"
 #
@@ -2097,6 +2096,9 @@ msgstr "Stopy"
 msgid "Ferry"
 msgstr "Trajekt"
 #
+msgid "File System"
+msgstr ""
+#
 #
 #
 msgid "Filter NMEA Course and Speed data"
@@ -2250,9 +2252,6 @@ msgstr ""
 #
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr "Použít harmonicou databázi:"
 #
 #
 #
@@ -3386,13 +3385,6 @@ msgstr "Náhled:"
 msgid "Print Chart"
 msgstr "Vytiskni mapu"
 #
-#
-#
-#
-#
-msgid "Printing"
-msgstr "Tisk"
-#
 msgid "Problem discovered"
 msgstr "Objeven problém"
 #
@@ -3647,6 +3639,10 @@ msgstr "Referenční stanice:"
 #
 msgid "Remaining time : "
 msgstr "Zbývající čas"
+#
+#, fuzzy
+msgid "Remove"
+msgstr "<--Odstranit"
 #
 #
 #
@@ -3905,6 +3901,9 @@ msgstr "Vyber typy map pro skládání"
 msgid "Select Sound File"
 msgstr "Vybrat zvukový soubor"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 #
 #
@@ -4009,6 +4008,14 @@ msgstr "Zobrazit AIS cíle"
 #
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Zobrazit AIS cíle"
+#
+#
+#
+#
+#
 msgid "Show ATON labels"
 msgstr "Zobrazit popisky ATON"
 #
@@ -4093,13 +4100,6 @@ msgstr "Zobrazit popisy světel"
 #
 #
 #
-msgid "Show Printing Icon"
-msgstr "Zobrazit ikonu tisku"
-#
-#
-#
-#
-#
 msgid "Show Soundings"
 msgstr "Zobrazit hloubky"
 #
@@ -4123,13 +4123,6 @@ msgstr "Ukaž info o přílivu"
 #
 msgid "Show Tides"
 msgstr "Ukaž přílivy"
-#
-#
-#
-#
-#
-msgid "Show Track icon"
-msgstr "Zobrazit ikonu stopy"
 #
 #
 #
@@ -4538,6 +4531,11 @@ msgid "Text Element"
 msgstr "Prvek text"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -4616,6 +4614,23 @@ msgstr "Tento bod je součástí vrstvy a nemůže být upraven."
 #
 msgid "Tide"
 msgstr "Příliv"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Přílivy a proudy"
+#
+#
+#
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "PrekryvnyGrafPrilivProudu"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 #
 #
@@ -5162,6 +5177,11 @@ msgstr ""
 msgid "Yellow"
 msgstr "Žlutá"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 #
 #
@@ -5230,6 +5250,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5243,8 +5264,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5273,8 +5296,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5308,8 +5333,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
+#
 #
 #
 #
@@ -5329,8 +5356,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -5362,8 +5391,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -5416,8 +5447,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -5470,8 +5503,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -5522,9 +5557,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -5557,8 +5594,22 @@ msgstr ""
 #
 #
 #
+#~ msgid "Default dataset"
+#~ msgstr "Standardní dataset"
+#
+#
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Použít harmonicou databázi:"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Jazyk/fonty"
+#
 #
 #
 #
@@ -5574,6 +5625,31 @@ msgstr ""
 #~ "libgps neodpověděla rozumně na dotaz na verzi\n"
 #~ "\n"
 #~ "Chceš přesto použít tuto verzi libgps?"
+#
+#
+#
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Tisk"
+#
+#
+#
+#
+#
+#
+#~ msgid "Show Printing Icon"
+#~ msgstr "Zobrazit ikonu tisku"
+#
+#
+#
+#
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Zobrazit ikonu stopy"
+#
 #
 #
 #

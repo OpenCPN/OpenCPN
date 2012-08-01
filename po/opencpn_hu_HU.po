@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -170,6 +170,9 @@ msgstr " %D nap %H óra %M perc"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H óra %M perc"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 #
 msgid " (Last Known):  "
@@ -582,6 +585,9 @@ msgstr "Aktív térkép könyvtárak"
 #
 msgid "Active Charts"
 msgstr "Aktív térképek"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Hozzáad"
@@ -1126,10 +1132,6 @@ msgid "Default color"
 msgstr "Alapszín"
 #
 #
-msgid "Default dataset"
-msgstr "Alap adatkészlet"
-#
-#
 msgid "Deg"
 msgstr "fok"
 #
@@ -1392,6 +1394,9 @@ msgstr "Láb"
 msgid "Ferry"
 msgstr "Komp"
 #
+msgid "File System"
+msgstr ""
+#
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA irány és sebesség adatok szűrése"
@@ -1498,9 +1503,6 @@ msgstr ""
 #
 msgid "HW"
 msgstr ""
-#
-msgid "Harmonic dataset to use:"
-msgstr "Használandó harmonikus adatsor:"
 #
 #
 #, c-format
@@ -2248,10 +2250,6 @@ msgstr "Előnézet:"
 msgid "Print Chart"
 msgstr "Térkép nyomtatása"
 #
-#
-msgid "Printing"
-msgstr "Nyomtatás"
-#
 msgid "Problem discovered"
 msgstr "Probléma lépett fel"
 #
@@ -2430,6 +2428,10 @@ msgstr "Referencia állomás :"
 msgid "Remaining time : "
 msgstr "Hátralévő idő : "
 #
+#, fuzzy
+msgid "Remove"
+msgstr "<--Eltávolít"
+#
 #
 msgid "Remove Waypoint from Route"
 msgstr "Útpont törlése az útvonalból"
@@ -2604,6 +2606,9 @@ msgstr "Válaszd ki az összefűzendő térkép típusokat"
 msgid "Select Sound File"
 msgstr "Hang fájl kiválasztása"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 msgid "Send"
 msgstr "Küldés"
@@ -2666,6 +2671,11 @@ msgid "Show AIS Targets"
 msgstr "AIS célpontok mutatása"
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "AIS célpontok mutatása"
+#
+#
 msgid "Show ATON labels"
 msgstr "ATON címkék mutatása"
 #
@@ -2714,10 +2724,6 @@ msgid "Show Light Descriptions"
 msgstr "Fények leírásának mutatása"
 #
 #
-msgid "Show Printing Icon"
-msgstr "Nyomtatási ikon mutatása"
-#
-#
 msgid "Show Soundings"
 msgstr "Mélység adatok mutatása"
 #
@@ -2732,10 +2738,6 @@ msgstr "Árapály információ mutatása"
 #
 msgid "Show Tides"
 msgstr "Árapály mutatása"
-#
-#
-msgid "Show Track icon"
-msgstr "Nyomvonal ikon mutatása"
 #
 #
 msgid "Show WPT names"
@@ -3005,6 +3007,11 @@ msgid "Text Element"
 msgstr "Szöveg elem"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3056,6 +3063,17 @@ msgstr "Ez az útpont része egy rétegnek, ezért nem szerkeszthető"
 #
 msgid "Tide"
 msgstr "Árapály"
+#
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Árapály és áramlatok"
+#
+msgid "Tide/Current Data Selector"
+msgstr ""
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 #
 msgid "TideCurrentGraphRollover"
@@ -3428,6 +3446,11 @@ msgstr ""
 msgid "Yellow"
 msgstr "Sárga"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 msgid "Zoom In"
 msgstr "Nagyítás"
@@ -3469,8 +3492,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3492,8 +3517,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
+#
 #
 #
 #
@@ -3502,8 +3529,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
+#
+#
+#~ msgid "Default dataset"
+#~ msgstr "Alap adatkészlet"
+#
 #
 #
 #
@@ -3522,6 +3556,11 @@ msgstr ""
 #
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
+#
+#
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Használandó harmonikus adatsor:"
+#
 #
 #
 #
@@ -3543,11 +3582,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Nyelv/betűtípus"
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
 #
 #
 #
@@ -3557,13 +3599,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
 #
 #
 #
@@ -3579,8 +3624,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3594,6 +3641,12 @@ msgstr ""
 #~ "A libgps nem válaszolt megfelelően a verzió lekérdezésére\n"
 #~ "\n"
 #~ "Ennek ellenére használjam a libgps-t?"
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -3619,6 +3672,17 @@ msgstr ""
 #
 #
 #
+#~ msgid "Show Printing Icon"
+#~ msgstr "Nyomtatási ikon mutatása"
+#
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Nyomvonal ikon mutatása"
+#
+#
+#
+#
 #
 #
 #
@@ -3636,6 +3700,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #

@@ -3204,8 +3204,8 @@ Function Delete_Installation_Dir
 		RMDir /r "$Uninstall_Path_Tmp\TCDATA"
 	${EndIf}
 	
-	${If} ${FileExists} "$Uninstall_Path_Tmp\wvsdata\*.*"
-		RMDir /r "$Uninstall_Path_Tmp\wvsdata"
+	${If} ${FileExists} "$Uninstall_Path_Tmp\gshhs\*.*"
+		RMDir /r "$Uninstall_Path_Tmp\gshhs"
 	${EndIf}
 	
 	${If} ${FileExists} "$Uninstall_Path_Tmp\plugins\*.*"

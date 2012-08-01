@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -166,6 +166,9 @@ msgstr " %D Días  %H Horas  %M Minutos"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Horas  %M Minutos"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -585,6 +588,9 @@ msgstr "Activar Directorio de Cartas"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Activar Directorio de Cartas"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1149,11 +1155,6 @@ msgstr "A cor do tipo de letra"
 #
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "A cor do tipo de letra"
-#
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Dragar"
 #
@@ -1422,6 +1423,9 @@ msgstr "Pés"
 msgid "Ferry"
 msgstr ""
 #
+msgid "File System"
+msgstr ""
+#
 # 
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filtrar datos NMEA de Rumbo e Velocidade"
@@ -1532,9 +1536,6 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr ""
 #
 # 
 #, fuzzy, c-format
@@ -2296,10 +2297,6 @@ msgstr "Vista previa:"
 msgid "Print Chart"
 msgstr "Imprimir Carta"
 #
-# 
-msgid "Printing"
-msgstr "Imprimindo"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -2477,6 +2474,9 @@ msgstr "Estación de referencia:"
 # 
 msgid "Remaining time : "
 msgstr "Tempo para rematar : "
+#
+msgid "Remove"
+msgstr ""
 #
 # 
 msgid "Remove Waypoint from Route"
@@ -2656,6 +2656,9 @@ msgstr "Seleccionar Tipos de Cartas para o Retallado"
 msgid "Select Sound File"
 msgstr "Seleccionar ficheiro de son"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 msgid "Send"
 msgstr "Enviar"
@@ -2721,6 +2724,11 @@ msgid "Show AIS Targets"
 msgstr "Amosar Obxectivos AIS"
 #
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Amosar Obxectivos AIS"
+#
+# 
 msgid "Show ATON labels"
 msgstr "Amosa-las etiquetas ATON"
 #
@@ -2771,10 +2779,6 @@ msgid "Show Light Descriptions"
 msgstr "Amosa-las Descripcións das Luces"
 #
 # 
-msgid "Show Printing Icon"
-msgstr "Amosa-la Icona de Impresión"
-#
-# 
 msgid "Show Soundings"
 msgstr "Amosa-los Sondeos"
 #
@@ -2790,10 +2794,6 @@ msgstr "Información sobre a Marca"
 # 
 msgid "Show Tides"
 msgstr "Amosar Mareas"
-#
-# 
-msgid "Show Track icon"
-msgstr "Amosa-la icona da Derrota"
 #
 # 
 msgid "Show WPT names"
@@ -3073,6 +3073,11 @@ msgid "Text Element"
 msgstr "Elemento de texto"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3122,6 +3127,19 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Marea"
+#
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Amosar Correntes"
+#
+# 
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "TideCurrentGraphRollover"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 #, fuzzy
@@ -3502,6 +3520,11 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Cela"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 msgid "Zoom In"
 msgstr "Ampliar"
@@ -3545,6 +3568,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3559,9 +3583,11 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proxección da carta DESCOÑECIDA, asúmese Mercator: "
+#
 #
 #
 #
@@ -3578,12 +3604,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo create_pi:"
+#
 #
 #
 #
@@ -3600,12 +3628,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Alternar Cartas"
+#
 #
 #
 #
@@ -3618,9 +3648,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -3637,6 +3669,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3647,9 +3680,17 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "A cor do tipo de letra"
+#
 #
 #
 #
@@ -3666,12 +3707,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
 #
 #
 #
@@ -3688,6 +3731,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3696,9 +3740,11 @@ msgstr ""
 #~ msgstr "Importar unha nova capa"
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Tipos de letra"
+#
 #
 #
 #
@@ -3713,6 +3759,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
@@ -3721,9 +3768,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 #
 #
@@ -3740,12 +3789,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 #
 #
@@ -3766,12 +3817,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 #
 #
@@ -3788,12 +3841,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 #
 #
@@ -3810,6 +3865,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3821,12 +3877,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
 #
 #
 #
@@ -3845,12 +3903,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
 #
 #
 # 
@@ -3868,6 +3928,12 @@ msgstr ""
 #~ "libgps?"
 #
 #
+# 
+#~ msgid "Printing"
+#~ msgstr "Imprimindo"
+#
+#
+#
 #
 #
 #
@@ -3881,6 +3947,17 @@ msgstr ""
 #~ msgstr ""
 #~ "Período de Reporte Recente:   %3d Sec.\n"
 #~ "\n"
+#
+#
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Amosa-la Icona de Impresión"
+#
+#
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Amosa-la icona da Derrota"
+#
 #
 #
 #
@@ -3897,12 +3974,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Alternar Nomes"
+#
 #
 #
 # 

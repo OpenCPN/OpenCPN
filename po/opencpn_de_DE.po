@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -171,6 +171,9 @@ msgstr " %D Tage  %H Stunden  %M Minuten"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Stunden  %M Minuten"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -591,6 +594,9 @@ msgstr "Aktive Kartenverzeichnisse"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Aktive Kartenverzeichnisse"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1149,11 +1155,6 @@ msgstr "Standardfarbe"
 #
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "Standardfarbe"
-#
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Dredge"
 #
@@ -1426,6 +1427,9 @@ msgstr "Fuß"
 msgid "Ferry"
 msgstr "Fähre"
 #
+msgid "File System"
+msgstr ""
+#
 # 
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA Kurs- und Geschwindigkeitsdaten filtern"
@@ -1534,9 +1538,6 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr ""
 #
 # 
 #, c-format
@@ -2297,10 +2298,6 @@ msgstr "Vorschau:"
 msgid "Print Chart"
 msgstr "Karte drucken"
 #
-# 
-msgid "Printing"
-msgstr "Drucken"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -2481,6 +2478,9 @@ msgstr "Bezugsort:"
 msgid "Remaining time : "
 msgstr "Noch benötigte Zeit:"
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 msgid "Remove Waypoint from Route"
 msgstr "Wegpunkt aus Route entfernen"
@@ -2658,6 +2658,9 @@ msgstr "Kartentypen für \"Patchwork\" Anzeige auswählen"
 msgid "Select Sound File"
 msgstr "Warnton-Datei auswählen"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 msgid "Send"
 msgstr "Senden"
@@ -2722,6 +2725,11 @@ msgid "Show AIS Targets"
 msgstr "AIS-Ziele anzeigen"
 #
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "AIS-Ziele anzeigen"
+#
+# 
 msgid "Show ATON labels"
 msgstr "ATON (Seezeichen) Namen anzeigen"
 #
@@ -2770,10 +2778,6 @@ msgid "Show Light Descriptions"
 msgstr "Leuchtfeuer-Kennungen anzeigen"
 #
 # 
-msgid "Show Printing Icon"
-msgstr "Druck-Symbol anzeigen"
-#
-# 
 msgid "Show Soundings"
 msgstr "Tiefenangaben anzeigen"
 #
@@ -2788,10 +2792,6 @@ msgstr "Zeige Tiden-Informationen"
 # 
 msgid "Show Tides"
 msgstr "Tiden-Referenzorte anzeigen"
-#
-# 
-msgid "Show Track icon"
-msgstr "Track-Symbol anzeigen"
 #
 # 
 msgid "Show WPT names"
@@ -3067,6 +3067,11 @@ msgid "Text Element"
 msgstr "Textelement"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3116,6 +3121,19 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Tide"
+#
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Gezeitenströme anzeigen"
+#
+# 
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "Kurzinfo Gezeiten- und Strömungskurve"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 msgid "TideCurrentGraphRollover"
@@ -3491,6 +3509,11 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gelb"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 msgid "Zoom In"
 msgstr "Hineinzoomen"
@@ -3534,6 +3557,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3549,9 +3573,11 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
 #
 #
 #
@@ -3570,6 +3596,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3583,6 +3610,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3591,6 +3619,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 #
 #
@@ -3612,6 +3641,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3626,6 +3656,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
@@ -3635,9 +3666,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 #
 #
@@ -3659,6 +3692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3667,6 +3701,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3687,9 +3722,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
 #
 #
 #
@@ -3711,6 +3748,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3727,6 +3765,13 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "Standardfarbe"
+#
+#
+#
 #
 #
 #
@@ -3740,9 +3785,11 @@ msgstr ""
 #~ msgstr "ETE/ Zeitstempel"
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
 #
 #
 #
@@ -3756,6 +3803,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
@@ -3764,9 +3812,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
 #
 #
 #
@@ -3783,6 +3833,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3791,6 +3842,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 #
 #
@@ -3813,6 +3865,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3821,6 +3874,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 #
 #
@@ -3839,6 +3893,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3847,6 +3902,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 #
 #
@@ -3865,6 +3921,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3873,6 +3930,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
 #
 #
 #
@@ -3891,6 +3949,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3898,6 +3957,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
+#
 #
 #
 # 
@@ -3911,6 +3971,22 @@ msgstr ""
 #~ "libgps lieferte keine verwertbare Antwort auf die Versionsanfrage.\n"
 #~ "\n"
 #~ "Möchten Sie diese Version von libgps trotzdem verwenden?"
+#
+#
+# 
+#~ msgid "Printing"
+#~ msgstr "Drucken"
+#
+#
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Druck-Symbol anzeigen"
+#
+#
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Track-Symbol anzeigen"
+#
 #
 #
 # 

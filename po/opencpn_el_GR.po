@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -194,6 +194,9 @@ msgstr " %D Ημέρες  %H Ώρες  %M Λεπτά"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Ώρες   %M Λεπτά"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -696,6 +699,9 @@ msgstr "Ενεργοί φάκελοι Χαρτών"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Ενεργοί φάκελοι Χαρτών"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1376,12 +1382,6 @@ msgstr "Χρώμα Γραμματοσειράς."
 # 
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "Χρώμα Γραμματοσειράς."
-#
-# 
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Σκέλος"
 #
@@ -1709,6 +1709,9 @@ msgstr "Πόδια"
 msgid "Ferry"
 msgstr ""
 #
+msgid "File System"
+msgstr ""
+#
 # 
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -1839,9 +1842,6 @@ msgstr ""
 # 
 # 
 msgid "HW"
-msgstr ""
-#
-msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -2788,11 +2788,6 @@ msgstr "Προεπισκόπηση:"
 msgid "Print Chart"
 msgstr "Εκτύπωσε Χάρτη"
 #
-# 
-# 
-msgid "Printing"
-msgstr "Εκτύπωση"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -3021,6 +3016,9 @@ msgstr "Σταθμός αναφοράς:"
 msgid "Remaining time : "
 msgstr ""
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 # 
 msgid "Remove Waypoint from Route"
@@ -3230,6 +3228,9 @@ msgstr "Διάλεξε τύπους χαρτών για επικάλυψη"
 msgid "Select Sound File"
 msgstr "Διάλεξε αρχείο ήχου"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 # 
 msgid "Send"
@@ -3311,6 +3312,12 @@ msgstr "Δείξε στόχους AIS"
 #
 # 
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Δείξε στόχους AIS"
+#
+# 
+# 
 msgid "Show ATON labels"
 msgstr "Δείξε ετικέτες ATON"
 #
@@ -3375,11 +3382,6 @@ msgstr "Δείξε Στοιχεία Φάρων"
 #
 # 
 # 
-msgid "Show Printing Icon"
-msgstr "Δείξε εικόνα εκτύπωσης"
-#
-# 
-# 
 #, fuzzy
 msgid "Show Soundings"
 msgstr "Δείξε βάθη"
@@ -3399,11 +3401,6 @@ msgstr "Πληροφορίες Σημαδιού"
 # 
 msgid "Show Tides"
 msgstr "Δείξε πλημμύριδα"
-#
-# 
-# 
-msgid "Show Track icon"
-msgstr "Δείξε εικόνα ίχνους"
 #
 # 
 # 
@@ -3742,6 +3739,11 @@ msgid "Text Element"
 msgstr "Στοιχείο Κειμένου"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3800,6 +3802,18 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Πλημμύριδα"
+#
+# 
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Δείξε παλίρροια"
+#
+msgid "Tide/Current Data Selector"
+msgstr ""
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 # 
@@ -4264,6 +4278,11 @@ msgstr ""
 msgid "Yellow"
 msgstr "Κλήση"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 # 
 msgid "Zoom In"
@@ -4318,6 +4337,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4334,10 +4354,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
 #
 #
 #
@@ -4357,6 +4379,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4366,6 +4389,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -4383,6 +4407,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4393,10 +4418,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 #
@@ -4419,6 +4446,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4428,6 +4456,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -4464,6 +4493,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4490,6 +4520,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4526,6 +4557,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4552,6 +4584,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -4588,6 +4621,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4613,6 +4647,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -4647,10 +4682,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
 #
 #
 #
@@ -4684,6 +4721,14 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "Χρώμα Γραμματοσειράς."
+#
+#
+#
 #
 #
 #
@@ -4696,6 +4741,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -4728,6 +4774,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4745,6 +4792,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4757,6 +4805,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -4783,10 +4832,12 @@ msgstr ""
 #~ msgstr "Εισαγωγή Αρχείου GPX"
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Γλώσσα/Γραμματοσειρές"
+#
 #
 #
 #
@@ -4797,6 +4848,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -4831,10 +4883,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
+#
 #
 #
 #
@@ -4849,6 +4903,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4856,6 +4911,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Νέο Σημάδι"
+#
 #
 #
 #
@@ -4875,6 +4931,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4888,6 +4945,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -4917,6 +4975,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4926,6 +4985,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -4945,6 +5005,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4954,6 +5015,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -4973,6 +5035,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4982,6 +5045,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -5002,6 +5066,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5010,6 +5075,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 # 
@@ -5026,6 +5092,13 @@ msgstr ""
 #~ "\n"
 #~ "                              Επιθυμείτε να χρησιμοποιήσετε σε κάθε "
 #~ "περίπτωση αυτή την έκδοση της libgps;"
+#
+#
+# 
+# 
+#~ msgid "Printing"
+#~ msgstr "Εκτύπωση"
+#
 #
 #
 #
@@ -5059,6 +5132,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5083,6 +5157,19 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Όνομα Σκάφους: "
+#
+#
+# 
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Δείξε εικόνα εκτύπωσης"
+#
+#
+# 
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Δείξε εικόνα ίχνους"
+#
 #
 #
 #
@@ -5112,6 +5199,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5136,6 +5224,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5155,6 +5244,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Όνομα Ταξιδίου"
+#
 #
 #
 # 

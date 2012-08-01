@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
-"PO-Revision-Date: 2012-07-15 23:12+0100\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"PO-Revision-Date: 2012-07-31 21:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: \n"
@@ -189,6 +189,10 @@ msgstr " %D dagar %H timmar %M minuter"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H timmar %M minuter"
+
+#
+msgid " (Ctrl-Space)"
+msgstr "(Ctrl-Mellanslag)"
 
 #
 #
@@ -702,6 +706,10 @@ msgstr "Valda mappar för sjökort"
 #
 msgid "Active Charts"
 msgstr "Använda sjökortsmappar"
+
+#
+msgid "Active Tide/Current Data"
+msgstr "Aktiv tidvatten och strömdata"
 
 #
 msgid "Add"
@@ -1383,11 +1391,6 @@ msgstr "Standardfärg"
 
 #
 #
-msgid "Default dataset"
-msgstr "Standarddata"
-
-#
-#
 msgid "Deg"
 msgstr "Grader"
 
@@ -1717,6 +1720,10 @@ msgid "Ferry"
 msgstr "Färja"
 
 #
+msgid "File System"
+msgstr "Filsystem"
+
+#
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filtrera NMEA Kurs- och hastighetsdata"
@@ -1851,10 +1858,6 @@ msgstr "HSC"
 #
 msgid "HW"
 msgstr "HW"
-
-#
-msgid "Harmonic dataset to use:"
-msgstr "Data för tidvatten (Harmonics):"
 
 #
 #
@@ -2780,11 +2783,6 @@ msgid "Print Chart"
 msgstr "Skriv ut sjökort"
 
 #
-#
-msgid "Printing"
-msgstr "Utskrift"
-
-#
 msgid "Problem discovered"
 msgstr "Ett problem upptäcktes"
 
@@ -3007,6 +3005,10 @@ msgid "Remaining time : "
 msgstr "Återstående tid :"
 
 #
+msgid "Remove"
+msgstr "Ta bort"
+
+#
 #
 msgid "Remove Waypoint from Route"
 msgstr "Radera Waypoint från rutt"
@@ -3224,6 +3226,10 @@ msgid "Select Sound File"
 msgstr "Välj ljudfil"
 
 #
+msgid "Select Tide/Current Data"
+msgstr "Välj tidvatten och strömdata"
+
+#
 #
 msgid "Send"
 msgstr "Skicka"
@@ -3300,6 +3306,11 @@ msgstr "Visa AIS-mål"
 
 #
 #
+msgid "Show AIS targets real size"
+msgstr "Visa AIS-mål med verklig storlek"
+
+#
+#
 msgid "Show ATON labels"
 msgstr "Visa AtoN-etiketter"
 
@@ -3360,11 +3371,6 @@ msgstr "Visa fyrkaraktärer"
 
 #
 #
-msgid "Show Printing Icon"
-msgstr "Aktivera utskriftsmeny"
-
-#
-#
 msgid "Show Soundings"
 msgstr "Visa djupinformation"
 
@@ -3382,11 +3388,6 @@ msgstr "Visa tidvatteninformation"
 #
 msgid "Show Tides"
 msgstr "Visa tidvatten"
-
-#
-#
-msgid "Show Track icon"
-msgstr "Aktivera spårmeny"
 
 #
 #
@@ -3715,6 +3716,12 @@ msgstr "Symboler och Text"
 
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "Man-över-bord-knappen är en viktig säkerhetsfunktion.Är du säker på att du vill dölja den?"
+
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3777,6 +3784,20 @@ msgstr "Den här "
 #
 msgid "Tide"
 msgstr "Tidvatten"
+
+#
+#
+msgid "Tide & Current Dataset Selection"
+msgstr "Välj uppsättning strömmar och tidvatten"
+
+#
+#
+msgid "Tide/Current Data Selector"
+msgstr "Tidvatten och strömdiagram"
+
+#
+msgid "Tide/Current Datasets..."
+msgstr "Uppsättningar med tidvatten och strömmar..."
 
 #
 #
@@ -4228,6 +4249,12 @@ msgstr "Yat"
 #
 msgid "Yellow"
 msgstr "Gul"
+
+#
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr "Du kan inte dölja det sista verktyget i verktygslisten,då skulle du inte komma åt den längre."
 
 #
 #

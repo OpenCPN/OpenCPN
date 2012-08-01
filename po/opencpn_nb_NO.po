@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -171,6 +171,9 @@ msgstr " %D Dager  %H Timer  %M Minutter"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Timer  %M Minutter"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 #
 msgid " (Last Known):  "
@@ -583,6 +586,9 @@ msgstr "Aktiverte kartmapper"
 #
 msgid "Active Charts"
 msgstr "Aktive karter"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Legg til"
@@ -1131,10 +1137,6 @@ msgid "Default color"
 msgstr "Standard farge"
 #
 #
-msgid "Default dataset"
-msgstr "Standard datasett"
-#
-#
 msgid "Deg"
 msgstr "Gra."
 #
@@ -1397,6 +1399,9 @@ msgstr "Fot"
 msgid "Ferry"
 msgstr "Ferge"
 #
+msgid "File System"
+msgstr ""
+#
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filtrer NMEA Kurs og Fartsdata"
@@ -1504,9 +1509,6 @@ msgstr "HSC"
 #
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr "Tidevannstabell i bruk:"
 #
 #
 #, c-format
@@ -2254,10 +2256,6 @@ msgstr "Forhåndsvisning:"
 msgid "Print Chart"
 msgstr "Skriv ut kart"
 #
-#
-msgid "Printing"
-msgstr "Utskrift"
-#
 msgid "Problem discovered"
 msgstr "Problem oppdaget"
 #
@@ -2436,6 +2434,10 @@ msgstr "Referansestasjon :"
 msgid "Remaining time : "
 msgstr "Gjenværende tid : "
 #
+#, fuzzy
+msgid "Remove"
+msgstr "<--Fjern"
+#
 #
 msgid "Remove Waypoint from Route"
 msgstr "Fjern veipunkt fra rute"
@@ -2611,6 +2613,9 @@ msgstr "Velg kart typer for fletting"
 msgid "Select Sound File"
 msgstr "Velg lydfil"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 msgid "Send"
 msgstr "Send"
@@ -2673,6 +2678,11 @@ msgid "Show AIS Targets"
 msgstr "Vis AIS-mål"
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Vis AIS-mål"
+#
+#
 msgid "Show ATON labels"
 msgstr "Vis AtoN etiketter"
 #
@@ -2721,10 +2731,6 @@ msgid "Show Light Descriptions"
 msgstr "Vis lyskarakteristikk"
 #
 #
-msgid "Show Printing Icon"
-msgstr "Vis utskrifts ikon"
-#
-#
 msgid "Show Soundings"
 msgstr "Vis loddskudd"
 #
@@ -2739,10 +2745,6 @@ msgstr "Vis tidevannsinformasjon"
 #
 msgid "Show Tides"
 msgstr "Vis tidevann"
-#
-#
-msgid "Show Track icon"
-msgstr "Vis slepestrek ikon"
 #
 #
 msgid "Show WPT names"
@@ -3014,6 +3016,11 @@ msgid "Text Element"
 msgstr "Tekstelement"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3063,6 +3070,19 @@ msgstr "Dette veipunktet er del av et lag og kan ikke redigeres"
 #
 msgid "Tide"
 msgstr "Tidevann"
+#
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Tidevann && Strømmer"
+#
+#
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "TidevannstrømGrafMusOver"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 #
 msgid "TideCurrentGraphRollover"
@@ -3435,6 +3455,11 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gul"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 msgid "Zoom In"
 msgstr "Zoom inn"
@@ -3476,8 +3501,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
 #
 #
 #
@@ -3486,8 +3513,19 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "Default dataset"
+#~ msgstr "Standard datasett"
+#
+#
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Tidevannstabell i bruk:"
+#
+#
+#
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
 #
 #
 #
@@ -3501,6 +3539,22 @@ msgstr "wxFB Nettsted"
 #~ "libgps gav ikke et gyldig svar på versjon forespørsel\n"
 #~ "\n"
 #~ "Vil du benytte denne versjonen av libgps?"
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Utskrift"
+#
+#
+#
+#~ msgid "Show Printing Icon"
+#~ msgstr "Vis utskrifts ikon"
+#
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Vis slepestrek ikon"
+#
 #
 #
 #

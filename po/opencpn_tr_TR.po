@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -158,6 +158,9 @@ msgstr " %D Gün  %H Saat  %M Dakika"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Saat  %M Dakika"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 msgid " (Last Known):  "
 msgstr "(Son bilinen) :"
@@ -546,6 +549,9 @@ msgstr "Etkin Harita Dosyaları"
 #
 msgid "Active Charts"
 msgstr "Etkin harita"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Ekle"
@@ -1020,10 +1026,6 @@ msgstr "Varsayılan"
 msgid "Default color"
 msgstr "Varsayılan renk"
 #
-# Toolbox/Langue
-msgid "Default dataset"
-msgstr "Varsayılan veri bileşeni"
-#
 msgid "Deg"
 msgstr "Deg"
 #
@@ -1254,6 +1256,9 @@ msgstr "Ayak"
 msgid "Ferry"
 msgstr "Arabalıvapur"
 #
+msgid "File System"
+msgstr ""
+#
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA Yön ve hız verisini süz."
 #
@@ -1345,9 +1350,6 @@ msgstr "HSC"
 #
 msgid "HW"
 msgstr "HW"
-#
-msgid "Harmonic dataset to use:"
-msgstr "Kullanılacak uyumlu veri bileşeni:"
 #
 #, c-format
 msgid "Heading:                %03d Deg.\n"
@@ -2009,10 +2011,6 @@ msgstr "Önizleme :"
 msgid "Print Chart"
 msgstr "Haritayı bas"
 #
-#
-msgid "Printing"
-msgstr "Yazılıyor"
-#
 msgid "Problem discovered"
 msgstr "Bir sorun oluştu"
 #
@@ -2171,6 +2169,10 @@ msgstr "Referance istasyonu :"
 #
 msgid "Remaining time : "
 msgstr "Kalan zaman:"
+#
+#, fuzzy
+msgid "Remove"
+msgstr "<-- Kaldır"
 #
 # Menu contextuel : Waypoint
 msgid "Remove Waypoint from Route"
@@ -2331,6 +2333,9 @@ msgstr "Birbirine eklenecek harita tiplerini seç"
 msgid "Select Sound File"
 msgstr "Ses dosyasını seçin"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 msgid "Send"
 msgstr "Gönder"
@@ -2388,6 +2393,11 @@ msgid "Show AIS Targets"
 msgstr "AIS hedeflerini göster"
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "AIS hedeflerini göster"
+#
+#
 msgid "Show ATON labels"
 msgstr "ATON etiketlerini göster"
 #
@@ -2435,10 +2445,6 @@ msgid "Show Light Descriptions"
 msgstr "Fener açıklamalarını göster"
 #
 #
-msgid "Show Printing Icon"
-msgstr "Yazıcı Simgesini göster"
-#
-#
 msgid "Show Soundings"
 msgstr "Derinlikleri göster"
 #
@@ -2453,9 +2459,6 @@ msgstr "Gelgit bilgisini göster"
 #
 msgid "Show Tides"
 msgstr "Gelgitleri göster"
-#
-msgid "Show Track icon"
-msgstr "Seyirizi simgesini göster"
 #
 # Couche
 msgid "Show WPT names"
@@ -2702,6 +2705,11 @@ msgid "Text Element"
 msgstr "Metin Unsuru"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -2753,6 +2761,18 @@ msgstr "Bu seyirnoktası bir etiketin parçası olduğu için iptal edilemiyor."
 #
 msgid "Tide"
 msgstr "Gelgit"
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Gelgitler&&Akıntılar"
+#
+# Toolbox/Langue
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "GelgitAkıntıÇizelgeUzantısı"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # Toolbox/Langue
 msgid "TideCurrentGraphRollover"
@@ -3092,6 +3112,11 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Sarı"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 msgid "Zoom In"
 msgstr "Yakınlaştır"
@@ -3126,17 +3151,30 @@ msgid "wxFB Website"
 msgstr "wxFB veb sayfası"
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
+#
+# Toolbox/Langue
+#~ msgid "Default dataset"
+#~ msgstr "Varsayılan veri bileşeni"
+#
+#
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Kullanılacak uyumlu veri bileşeni:"
+#
 #
 #
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Dil/Yazı Türü"
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #~ msgid ""
@@ -3149,6 +3187,21 @@ msgstr "wxFB veb sayfası"
 #~ "libGPS istenen sürüme neden yanıt vermediği anlaşılamadı\n"
 #~ "\n"
 #~ "Gene de libGPS'in bu sürümünü kullanmak ister misiniz ?"
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Yazılıyor"
+#
+#
+#
+#~ msgid "Show Printing Icon"
+#~ msgstr "Yazıcı Simgesini göster"
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Seyirizi simgesini göster"
+#
 #
 #~ msgid ""
 #~ "libgps API version mismatch.\n"

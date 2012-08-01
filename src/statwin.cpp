@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  *
@@ -48,9 +48,10 @@ extern MyFrame *gFrame;
 //------------------------------------------------------------------------------
 //    StatWin Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(StatWin, wxWindow) EVT_PAINT(StatWin::OnPaint)
-EVT_SIZE(StatWin::OnSize)
-EVT_MOUSE_EVENTS(StatWin::MouseEvent)
+BEGIN_EVENT_TABLE(StatWin, wxWindow)
+    EVT_PAINT(StatWin::OnPaint)
+    EVT_SIZE(StatWin::OnSize)
+    EVT_MOUSE_EVENTS(StatWin::MouseEvent)
 END_EVENT_TABLE()
 
 // ctor
@@ -60,13 +61,13 @@ StatWin::StatWin( wxWindow *frame )
     long wstyle = wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR;
 #ifndef __WXMAC__
     wstyle |= wxFRAME_SHAPED;
-#endif    
+#endif
 #ifdef __WXMAC__
     wstyle |= wxSTAY_ON_TOP;
 #endif
-    
+
     wxDialog::Create( frame, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
-    
+
     int x, y;
     GetClientSize( &x, &y );
 
@@ -151,7 +152,6 @@ void StatWin::MouseEvent( wxMouseEvent& event )
 {
     int x, y;
     event.GetPosition( &x, &y );
-
 }
 
 int StatWin::GetFontHeight()
@@ -180,8 +180,9 @@ void StatWin::SetColorScheme( ColorScheme cs )
 //------------------------------------------------------------------------------
 //          TextStat Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(TStatWin, wxWindow) EVT_PAINT(TStatWin::OnPaint)
-EVT_SIZE(TStatWin::OnSize)
+BEGIN_EVENT_TABLE(TStatWin, wxWindow)
+    EVT_PAINT(TStatWin::OnPaint)
+    EVT_SIZE(TStatWin::OnSize)
 END_EVENT_TABLE()
 
 TStatWin::TStatWin( wxFrame *frame ) :
@@ -190,7 +191,6 @@ TStatWin::TStatWin( wxFrame *frame ) :
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
     pText = new wxString();
     bTextSet = false;
-
 }
 
 TStatWin::~TStatWin( void )
@@ -217,9 +217,10 @@ void TStatWin::TextDraw( const wxString& text )
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(PianoWin, wxWindow) EVT_PAINT(PianoWin::OnPaint)
-EVT_SIZE(PianoWin::OnSize)
-EVT_MOUSE_EVENTS(PianoWin::MouseEvent)
+BEGIN_EVENT_TABLE(PianoWin, wxWindow)
+    EVT_PAINT(PianoWin::OnPaint)
+    EVT_SIZE(PianoWin::OnSize)
+    EVT_MOUSE_EVENTS(PianoWin::MouseEvent)
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -419,11 +420,21 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
             }
         }
-#ifndef __WXMAC__        
-        if( style->chartStatusWindowTransparent ) ( (wxDialog*) GetParent() )->SetShape(
-                wxRegion( shape, *wxBLACK, 0 ) );
-#endif        
+#ifndef __WXMAC__
+        if( style->chartStatusWindowTransparent )
+            ((wxDialog*) GetParent())->SetShape( wxRegion( shape, *wxBLACK, 0 ) );
     }
+    else {
+        // SetShape() with a completely empty shape doesn't work, and leaving the shape
+        // but hiding the window causes artifacts when dragging in GL mode on MSW.
+        // The best solution found so far is to show just a single pixel, this is less
+        // disturbing than flashing piano keys when dragging. (wxWidgets 2.8)
+        if( style->chartStatusWindowTransparent )
+            ((wxDialog*) GetParent())->SetShape( wxRegion( wxRect(0,0,1,1) ) );
+    }
+#else
+    }
+#endif
 }
 
 void PianoWin::SetKeyArray( ArrayOfInts array )
@@ -521,21 +532,18 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
         }
     }
 
-    else
-        if( event.RightDown() ) {
+    else if( event.RightDown() ) {
             if( -1 != sel_index ) {
                 gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
             }
         }
 
-        else {
-
-            if( sel_index != m_hover_last ) {
+    else if(!event.ButtonUp()){
+         if( sel_index != m_hover_last ) {
                 gFrame->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
-            }
-
-        }
+          }
+    }
 
     if( event.Leaving() ) {
         gFrame->HandlePianoRollover( -1, -1 );

@@ -44,6 +44,7 @@
 
 #include "chart1.h"                 // for enum types
 #include "ocpndc.h"
+#include "gshhs.h"
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -219,6 +220,7 @@ public:
       ViewPort &GetVP(); const
 
       glChartCanvas *GetglCanvas(){ return m_glcc; }
+      GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
       bool  GetbTCUpdate(){ return m_bTCupdate;}
@@ -255,7 +257,7 @@ public:
       void InvalidateQuilt(void);
       double GetQuiltMaxErrorFactor();
       bool IsChartQuiltableRef(int db_index);
-
+      bool IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp );
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
@@ -340,7 +342,7 @@ private:
                                              // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
       double      m_absolute_min_scale_ppm;
-      
+
       int m_panx, m_pany, m_panspeed, m_modkeys;
       bool m_bmouse_key_mod;
 
@@ -449,7 +451,7 @@ private:
       int         m_curtrack_timer_msec;
       int         m_routeleg_popup_timer_msec;
 
-      WVSChart    *pwvs_chart;
+      GSHHSChart  *pWorldBackgroundChart;
 
       ChartBaseBSB *pCBSB;
       wxBitmap    *pss_overlay_bmp;
@@ -634,7 +636,7 @@ protected:
       int          m_cache_tex_x;
       int          m_cache_tex_y;
       wxRegion     m_gl_rendered_region;
-      
+
 DECLARE_EVENT_TABLE()
 };
 

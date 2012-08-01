@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.708 beta for 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2011-07-10 12:27+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -244,6 +244,9 @@ msgstr " %D dagen  %H uur  %M minuten"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H uur   %M minuten"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 # 
@@ -918,6 +921,9 @@ msgstr "Actieve Kaartmap"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Actieve Kaartmap"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 # 
 msgid "Add"
@@ -1768,14 +1774,6 @@ msgstr "standaard kleur "
 #
 # 
 # 
-# 
-# 
-#, fuzzy
-msgid "Default dataset"
-msgstr "standaard kleur "
-#
-# 
-# 
 #, fuzzy
 msgid "Deg"
 msgstr "bag/v"
@@ -2197,6 +2195,9 @@ msgstr "voet"
 msgid "Ferry"
 msgstr "veerboot"
 #
+msgid "File System"
+msgstr ""
+#
 # 
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -2357,10 +2358,6 @@ msgstr "HSV"
 # 
 msgid "HW"
 msgstr "HW"
-#
-# 
-msgid "Harmonic dataset to use:"
-msgstr ""
 #
 # 
 # 
@@ -3523,13 +3520,6 @@ msgid "Print Chart"
 msgstr "Afdrukken kaart"
 #
 # 
-# 
-# 
-# 
-msgid "Printing"
-msgstr "Weergaveoptie Afdrukken"
-#
-# 
 msgid "Problem discovered"
 msgstr ""
 #
@@ -3788,6 +3778,9 @@ msgstr "Referentiestation: "
 # 
 msgid "Remaining time : "
 msgstr "Resterende tijd:"
+#
+msgid "Remove"
+msgstr ""
 #
 # 
 # 
@@ -4059,6 +4052,9 @@ msgstr "Selecteer kaarttypen voor samenvoeging"
 msgid "Select Sound File"
 msgstr "Selecteer geluidbestand"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4165,6 +4161,14 @@ msgstr "Toon AIS objecten"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Toon AIS objecten"
+#
+# 
+# 
+# 
+# 
 msgid "Show ATON labels"
 msgstr "Toon labels bij navigatiesymbolen"
 #
@@ -4249,13 +4253,6 @@ msgstr "Toon vuureigenschappen"
 # 
 # 
 # 
-msgid "Show Printing Icon"
-msgstr "Toon afdruk-icoon"
-#
-# 
-# 
-# 
-# 
 msgid "Show Soundings"
 msgstr "Toon dieptes"
 #
@@ -4279,13 +4276,6 @@ msgstr "Toon getijhoogteinformatie"
 # 
 msgid "Show Tides"
 msgstr "Toon getijhoogte-iconen"
-#
-# 
-# 
-# 
-# 
-msgid "Show Track icon"
-msgstr "Toon track-icoon"
 #
 # 
 # 
@@ -4704,6 +4694,11 @@ msgstr "Schermweergave"
 msgid "Text Element"
 msgstr "Tekstelement"
 #
+msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
 # 
 msgid ""
 "The currently running Track was not merged.\n"
@@ -4783,6 +4778,23 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Getijhoogte"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Toon getijstroom-iconen"
+#
+# 
+# 
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "Info getijgrafiek bij aanwijzen"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 # 
@@ -5341,6 +5353,11 @@ msgstr "ple/v"
 msgid "Yellow"
 msgstr "geel"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5402,6 +5419,7 @@ msgstr "WGS Y offset"
 msgid "wxFB Website"
 msgstr ""
 #
+#
 # 
 # 
 # 
@@ -5422,12 +5440,14 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 # 
 # 
@@ -5444,6 +5464,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   PlugInManager: Kan library niet laden: "
 #
+#
 # 
 # 
 # 
@@ -5458,6 +5479,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 # 
 # 
@@ -5474,6 +5496,7 @@ msgstr ""
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: Kan symbool destroy_pi niet laden: "
 #
+#
 # 
 # 
 # 
@@ -5482,6 +5505,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS waarschuwing"
+#
 #
 # 
 # 
@@ -5492,6 +5516,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
+#
 #
 # 
 # 
@@ -5508,6 +5533,7 @@ msgstr ""
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
 #
+#
 # 
 # 
 # 
@@ -5516,6 +5542,16 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "standaard kleur "
+#
 #
 # 
 # 
@@ -5532,12 +5568,14 @@ msgstr ""
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
 #
 # 
 # 
@@ -5549,6 +5587,7 @@ msgstr ""
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
 #
+#
 # 
 # 
 # 
@@ -5559,6 +5598,7 @@ msgstr ""
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
 #
+#
 # 
 # 
 # 
@@ -5568,6 +5608,7 @@ msgstr ""
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Markeringspunt-naam"
+#
 #
 # 
 # 
@@ -5581,6 +5622,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "markering, nieuw gevaar"
+#
 #
 # 
 # 
@@ -5596,6 +5638,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 # 
 # 
@@ -5616,6 +5659,7 @@ msgstr ""
 #~ "OpenCPN PlugIn Basis Klasse\n"
 #~ "PlugInManager heeft deze klasse gecreëerd."
 #
+#
 # 
 # 
 # 
@@ -5629,6 +5673,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 # 
 # 
@@ -5645,6 +5690,7 @@ msgstr ""
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "PlugInManager: Deactiveert PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -5659,6 +5705,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 # 
 # 
@@ -5675,6 +5722,7 @@ msgstr ""
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "PlugInManager: Laadt PlugIn: "
 #
+#
 # 
 # 
 # 
@@ -5689,6 +5737,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 # 
 # 
@@ -5705,6 +5754,7 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
 #
+#
 # 
 # 
 # 
@@ -5718,6 +5768,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 # 
 # 
@@ -5733,6 +5784,31 @@ msgstr ""
 #~ "libgps reageerde niet op versie verzoek.\n"
 #~ "\n"
 #~ "Wilt u deze versie van Libgps toch gebruiken?"
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Printing"
+#~ msgstr "Weergaveoptie Afdrukken"
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Toon afdruk-icoon"
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Toon track-icoon"
+#
 #
 # 
 # 

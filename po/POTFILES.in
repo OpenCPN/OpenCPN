@@ -1,6 +1,6 @@
 include/routeprop.h
 include/options.h
-include/wvschart.h
+include/gshhs.h
 include/ocpn_pixel.h
 include/chcanv.h
 include/chartdb.h
@@ -112,7 +112,7 @@ src/myiso8211/ddfutils.cpp
 src/concanv.cpp
 src/chcanv.cpp
 src/navutil.cpp
-src/wvschart.cpp
+src/gshhs.cpp
 src/bbox.cpp
 src/routeprop.cpp
 src/ocpn_pixel.cpp

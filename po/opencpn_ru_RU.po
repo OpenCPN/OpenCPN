@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -246,6 +246,9 @@ msgstr " %D Дн  %H Ч  %M М"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Ч  %M М"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -995,6 +998,9 @@ msgstr "Выбранные каталоги карт"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Выбранные каталоги карт"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1937,15 +1943,6 @@ msgstr "Цвет шрифта."
 # 
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "Цвет шрифта."
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Участок"
 #
@@ -2479,6 +2476,9 @@ msgstr "Футы"
 msgid "Ferry"
 msgstr ""
 #
+msgid "File System"
+msgstr ""
+#
 # 
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -2678,9 +2678,6 @@ msgstr ""
 # 
 # 
 msgid "HW"
-msgstr ""
-#
-msgid "Harmonic dataset to use:"
 msgstr ""
 #
 # 
@@ -3956,14 +3953,6 @@ msgstr "Предварительный просмотр:"
 msgid "Print Chart"
 msgstr "Распечатать карту"
 #
-# 
-# 
-# 
-# 
-# 
-msgid "Printing"
-msgstr "Печать"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -4255,6 +4244,9 @@ msgstr "Опорная станция:"
 msgid "Remaining time : "
 msgstr ""
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4541,6 +4533,9 @@ msgstr ""
 msgid "Select Sound File"
 msgstr "Выберите звук предупреждения"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4662,6 +4657,15 @@ msgstr "Отображать треки целей"
 # 
 # 
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Отображать треки целей"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "Show ATON labels"
 msgstr "Показать метки ATON"
 #
@@ -4762,14 +4766,6 @@ msgstr "Показывать описания маяков"
 # 
 # 
 # 
-msgid "Show Printing Icon"
-msgstr "Показать иконку печати"
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Show Soundings"
 msgstr "Показывать мелководья"
@@ -4798,14 +4794,6 @@ msgstr "Иконка маркера"
 # 
 msgid "Show Tides"
 msgstr "Показать приливы"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Show Track icon"
-msgstr "Показать иконку треков"
 #
 # 
 # 
@@ -5254,6 +5242,11 @@ msgid "Text Element"
 msgstr "Текстовый элемент"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -5340,6 +5333,21 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Прилив"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Показать течения"
+#
+msgid "Tide/Current Data Selector"
+msgstr ""
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 # 
@@ -5927,6 +5935,11 @@ msgstr ""
 msgid "Yellow"
 msgstr "Очистить всё"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 # 
 # 
@@ -5990,6 +6003,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6024,6 +6038,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -6073,6 +6088,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6112,6 +6128,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
 #
 #
 #
@@ -6159,6 +6176,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6172,6 +6190,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6179,6 +6198,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Дополнительная информация"
+#
 #
 #
 #
@@ -6223,6 +6243,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6230,6 +6251,7 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Карта"
+#
 #
 #
 #
@@ -6264,6 +6286,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
 #
 #
 #
@@ -6312,6 +6335,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6354,6 +6378,17 @@ msgstr ""
 #~ msgstr ""
 #~ "Класс:     B\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "Цвет шрифта."
+#
 #
 #
 #
@@ -6410,6 +6445,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6450,6 +6486,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6475,6 +6512,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 #
@@ -6531,6 +6569,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6562,6 +6601,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -6605,6 +6645,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6638,6 +6679,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 #
@@ -6678,6 +6720,7 @@ msgstr ""
 #~ msgstr "Каталог файлов GRIB"
 #
 #
+#
 # 
 # 
 # 
@@ -6685,6 +6728,7 @@ msgstr ""
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Языки/шрифты"
+#
 #
 #
 #
@@ -6698,6 +6742,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -6735,6 +6780,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6742,6 +6788,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Иконка маркера"
+#
 #
 #
 #
@@ -6759,6 +6806,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6769,6 +6817,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Новый маркер"
+#
 #
 #
 #
@@ -6812,6 +6861,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6845,6 +6895,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -6889,6 +6940,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6928,6 +6980,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6940,6 +6993,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Координаты:              "
+#
 #
 #
 #
@@ -6980,6 +7034,16 @@ msgstr ""
 #~ msgstr "Давление, мБар"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Printing"
+#~ msgstr "Печать"
+#
+#
+#
 #
 #
 #
@@ -7010,6 +7074,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Период последних отчётов:     %3d Сек.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7049,6 +7114,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -7098,6 +7164,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7125,6 +7192,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
 #
 #
 #
@@ -7173,6 +7241,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7216,6 +7285,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7247,6 +7317,25 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Показать иконку GRIB"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Показать иконку печати"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Показать иконку треков"
+#
 #
 #
 #
@@ -7290,6 +7379,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7310,6 +7400,7 @@ msgstr ""
 #~ "Size:                 %dm x %dm \n"
 #~ "\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -7342,6 +7433,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7364,6 +7456,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Маршрут"
+#
 #
 #
 #
@@ -7400,6 +7493,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 #
@@ -7443,6 +7537,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7476,6 +7571,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 #

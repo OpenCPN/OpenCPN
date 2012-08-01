@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -168,6 +168,9 @@ msgstr " %D Jours  %H heures  %M minutes"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H heures  %M minutes"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 msgid " (Last Known):  "
 msgstr "(Dernier connu) :"
@@ -576,6 +579,9 @@ msgstr "Répertoires actifs des cartes"
 #
 msgid "Active Charts"
 msgstr "Cartes actives"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Ajouter"
@@ -1048,10 +1054,6 @@ msgstr "Défaut"
 msgid "Default color"
 msgstr "Couleur par défaut"
 #
-# Toolbox/Langue
-msgid "Default dataset"
-msgstr "Données par défaut"
-#
 msgid "Deg"
 msgstr "Deg"
 #
@@ -1284,6 +1286,9 @@ msgstr "Pieds"
 msgid "Ferry"
 msgstr "Ferry"
 #
+msgid "File System"
+msgstr ""
+#
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA : Filtre des données cap et vitesse"
 #
@@ -1375,9 +1380,6 @@ msgstr "grd. vit."
 #
 msgid "HW"
 msgstr "PM"
-#
-msgid "Harmonic dataset to use:"
-msgstr "Données à utiliser :"
 #
 #, c-format
 msgid "Heading:                %03d Deg.\n"
@@ -2038,10 +2040,6 @@ msgstr "Pré-visualisation :"
 msgid "Print Chart"
 msgstr "Imprimer la carte"
 #
-#
-msgid "Printing"
-msgstr "Impression"
-#
 msgid "Problem discovered"
 msgstr "Problème découvert"
 #
@@ -2192,6 +2190,10 @@ msgstr "Port de référence :"
 #
 msgid "Remaining time : "
 msgstr "Durée restante :"
+#
+#, fuzzy
+msgid "Remove"
+msgstr "<-- Retirer"
 #
 # Menu contextuel : Waypoint
 msgid "Remove Waypoint from Route"
@@ -2356,6 +2358,9 @@ msgstr "Sélectionner les types de cartes pour l'affichage en mosaïque"
 msgid "Select Sound File"
 msgstr "Sélectionner l'alarme sonore"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 msgid "Send"
 msgstr "Envoyer"
@@ -2413,6 +2418,11 @@ msgid "Show AIS Targets"
 msgstr "AIS : Afficher les cibles"
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "AIS : Afficher les cibles"
+#
+#
 msgid "Show ATON labels"
 msgstr "Afficher : Compléments d'aide à la navigation."
 #
@@ -2460,10 +2470,6 @@ msgid "Show Light Descriptions"
 msgstr "Afficher : Descriptions des feux"
 #
 #
-msgid "Show Printing Icon"
-msgstr "Afficher l'icône d'impression"
-#
-#
 msgid "Show Soundings"
 msgstr "Afficher : Sondes"
 #
@@ -2478,9 +2484,6 @@ msgstr "Marée : Montrer les informations"
 #
 msgid "Show Tides"
 msgstr "Afficher les marées"
-#
-msgid "Show Track icon"
-msgstr "Trace : Afficher l'icône"
 #
 # Couche
 msgid "Show WPT names"
@@ -2721,6 +2724,11 @@ msgid "Text Element"
 msgstr "Eléments de texte"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -2772,6 +2780,18 @@ msgstr "Ce waypoint appartient à une couche et ne peut être édité"
 #
 msgid "Tide"
 msgstr "Marée"
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Marées et courants"
+#
+# Toolbox/Langue
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "Info affichées par survol pour marées et courants"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # Toolbox/Langue
 msgid "TideCurrentGraphRollover"
@@ -3110,6 +3130,11 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Jaune"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 msgid "Zoom In"
 msgstr "Zoomer"
@@ -3144,17 +3169,30 @@ msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
+#
+# Toolbox/Langue
+#~ msgid "Default dataset"
+#~ msgstr "Données par défaut"
+#
+#
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Données à utiliser :"
+#
 #
 #
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Langues / polices"
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #~ msgid ""
@@ -3167,6 +3205,21 @@ msgstr "Site web wxFB"
 #~ "Cette version ne correspond pas à la version attendue\n"
 #~ "\n"
 #~ "Voulez vous l'utiliser malgré tout ?"
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Impression"
+#
+#
+#
+#~ msgid "Show Printing Icon"
+#~ msgstr "Afficher l'icône d'impression"
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Trace : Afficher l'icône"
+#
 #
 #~ msgid ""
 #~ "libgps API version mismatch.\n"

@@ -5554,7 +5554,6 @@ wxString s57chart::GetAttributeDecode( wxString& att, int ival )
 }
 
 //----------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------
 
 bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57Obj *obj )
 {

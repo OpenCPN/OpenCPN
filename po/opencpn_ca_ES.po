@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -173,6 +173,9 @@ msgstr " %D Dies  %H Hores  %M Minuts"
 # 
 msgid " %H Hours  %M Minutes"
 msgstr " %H Hores  %M Minuts"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 # 
 msgid " (Last Known):  "
@@ -590,6 +593,9 @@ msgstr "Directoris Actius de Cartes"
 #, fuzzy
 msgid "Active Charts"
 msgstr "Directoris Actius de Cartes"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr ""
@@ -1151,11 +1157,6 @@ msgstr "El color de la lletra"
 #
 # 
 #, fuzzy
-msgid "Default dataset"
-msgstr "El color de la lletra"
-#
-# 
-#, fuzzy
 msgid "Deg"
 msgstr "Draga"
 #
@@ -1424,6 +1425,9 @@ msgstr "Peus"
 msgid "Ferry"
 msgstr ""
 #
+msgid "File System"
+msgstr ""
+#
 # 
 msgid "Filter NMEA Course and Speed data"
 msgstr "Fer la Mitja de Velocitat i del Rumb de NMEA"
@@ -1533,9 +1537,6 @@ msgstr "HSC"
 # 
 msgid "HW"
 msgstr "M.Alta"
-#
-msgid "Harmonic dataset to use:"
-msgstr ""
 #
 # 
 #, fuzzy, c-format
@@ -2292,10 +2293,6 @@ msgstr "Vista Prèvia"
 msgid "Print Chart"
 msgstr "Imprimir la Carta"
 #
-# 
-msgid "Printing"
-msgstr "Impressió"
-#
 msgid "Problem discovered"
 msgstr ""
 #
@@ -2476,6 +2473,9 @@ msgstr "Estació de Referència:"
 msgid "Remaining time : "
 msgstr "Temps restant:"
 #
+msgid "Remove"
+msgstr ""
+#
 # 
 msgid "Remove Waypoint from Route"
 msgstr "Treure el Waypoint de la Ruta"
@@ -2652,6 +2652,9 @@ msgstr "Triar els Tipus de Cartes a Presentar"
 msgid "Select Sound File"
 msgstr "Selecció de l'arxiu de So"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 # 
 msgid "Send"
 msgstr "Enviar"
@@ -2717,6 +2720,11 @@ msgid "Show AIS Targets"
 msgstr "Mostrar-hi els Objectes AIS"
 #
 # 
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Mostrar-hi els Objectes AIS"
+#
+# 
 msgid "Show ATON labels"
 msgstr "Mostra les etiquetes ATON"
 #
@@ -2767,10 +2775,6 @@ msgid "Show Light Descriptions"
 msgstr "Mostra la Descripció dels Fars"
 #
 # 
-msgid "Show Printing Icon"
-msgstr "Mostra la Icona d'Impressió"
-#
-# 
 msgid "Show Soundings"
 msgstr "Mostra les Batimetries"
 #
@@ -2786,10 +2790,6 @@ msgstr "Informació de la Marca"
 # 
 msgid "Show Tides"
 msgstr "Mostrar-hi les Marees"
-#
-# 
-msgid "Show Track icon"
-msgstr "Mostrar la icona de derrota"
 #
 # 
 msgid "Show WPT names"
@@ -3069,6 +3069,11 @@ msgid "Text Element"
 msgstr "Element de Text"
 #
 msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
+msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
@@ -3118,6 +3123,19 @@ msgstr ""
 # 
 msgid "Tide"
 msgstr "Marea "
+#
+# 
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Mostrar-hi els Corrents"
+#
+# 
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "Avenç Gràfic, Marees/Corrents"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 # 
 msgid "TideCurrentGraphRollover"
@@ -3495,6 +3513,11 @@ msgstr "Iot"
 msgid "Yellow"
 msgstr "Cel·la"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 # 
 msgid "Zoom In"
 msgstr "Apropa"
@@ -3538,6 +3561,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3552,9 +3576,11 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
 #
 #
 #
@@ -3571,12 +3597,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
 #
 #
 #
@@ -3593,12 +3621,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
+#
 #
 #
 #
@@ -3611,9 +3641,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 #
@@ -3630,6 +3662,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3640,9 +3673,17 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "El color de la lletra"
+#
 #
 #
 #
@@ -3659,12 +3700,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -3681,6 +3724,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3689,9 +3733,11 @@ msgstr ""
 #~ msgstr "Importar noves capes"
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Lletres"
+#
 #
 #
 #
@@ -3706,6 +3752,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
@@ -3714,9 +3761,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
 #
 #
 #
@@ -3733,12 +3782,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -3759,12 +3810,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -3781,12 +3834,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -3803,6 +3858,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3814,12 +3870,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #
 #
@@ -3837,12 +3895,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 # 
@@ -3860,6 +3920,12 @@ msgstr ""
 #~ "totes maneres?"
 #
 #
+# 
+#~ msgid "Printing"
+#~ msgstr "Impressió"
+#
+#
+#
 #
 #
 #
@@ -3873,6 +3939,17 @@ msgstr ""
 #~ msgstr ""
 #~ "Període d'Informe Recent:   %3d Seg.\n"
 #~ "\n"
+#
+#
+# 
+#~ msgid "Show Printing Icon"
+#~ msgstr "Mostra la Icona d'Impressió"
+#
+#
+# 
+#~ msgid "Show Track icon"
+#~ msgstr "Mostrar la icona de derrota"
+#
 #
 #
 #
@@ -3889,12 +3966,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
+#
 #
 #
 # 

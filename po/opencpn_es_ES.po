@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 2.6 Beta Build 1729\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-15 06:29-0700\n"
+"POT-Creation-Date: 2012-07-31 21:42+0200\n"
 "PO-Revision-Date: 2012-05-30 13:42+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -265,6 +265,9 @@ msgstr " %D Días  %H Horas  %M Minutos"
 #
 msgid " %H Hours  %M Minutes"
 msgstr " %H Horas  %M Minutos"
+#
+msgid " (Ctrl-Space)"
+msgstr ""
 #
 #
 msgid " (Last Known):  "
@@ -985,6 +988,9 @@ msgstr "Carpetas de Cartas Activadas"
 #
 msgid "Active Charts"
 msgstr "Cartas Activas"
+#
+msgid "Active Tide/Current Data"
+msgstr ""
 #
 msgid "Add"
 msgstr "Añadir"
@@ -1882,15 +1888,6 @@ msgstr "Color por defecto"
 #
 #
 #
-#, fuzzy
-msgid "Default dataset"
-msgstr "Datos por defecto"
-#
-#
-#
-#
-#
-#
 msgid "Deg"
 msgstr "Deg"
 #
@@ -2335,6 +2332,9 @@ msgstr "Pies"
 msgid "Ferry"
 msgstr "Ferry"
 #
+msgid "File System"
+msgstr ""
+#
 #
 #
 msgid "Filter NMEA Course and Speed data"
@@ -2500,10 +2500,6 @@ msgstr "HSC"
 #
 msgid "HW"
 msgstr "HW"
-#
-#, fuzzy
-msgid "Harmonic dataset to use:"
-msgstr "Usar datos harmónicos:"
 #
 #
 #
@@ -3745,14 +3741,6 @@ msgstr "Vista previa:"
 msgid "Print Chart"
 msgstr "Imprimir Carta"
 #
-#
-#
-#
-#
-#
-msgid "Printing"
-msgstr "Imprimiendo"
-#
 msgid "Problem discovered"
 msgstr "Encontrado problema"
 #
@@ -4034,6 +4022,10 @@ msgstr "Estación de Referencia :"
 #
 msgid "Remaining time : "
 msgstr "Tiempo restante : "
+#
+#, fuzzy
+msgid "Remove"
+msgstr "<--Eliminar"
 #
 #
 #
@@ -4318,6 +4310,9 @@ msgstr "Seleccionar Tipo de Cartas para Continuidad"
 msgid "Select Sound File"
 msgstr "Seleccionar Fichero Sonido"
 #
+msgid "Select Tide/Current Data"
+msgstr ""
+#
 #
 #
 #
@@ -4438,6 +4433,15 @@ msgstr "Mostrar objetivos AIS"
 #
 #
 #
+#, fuzzy
+msgid "Show AIS targets real size"
+msgstr "Mostrar objetivos AIS"
+#
+#
+#
+#
+#
+#
 msgid "Show ATON labels"
 msgstr "Mostrar Etiquetas ATON"
 #
@@ -4534,14 +4538,6 @@ msgstr "Mostrar Descripción Luces"
 #
 #
 #
-msgid "Show Printing Icon"
-msgstr "Mostrar Icono Impresión"
-#
-#
-#
-#
-#
-#
 msgid "Show Soundings"
 msgstr "Mostrar Sondeos"
 #
@@ -4568,14 +4564,6 @@ msgstr "Mostrar Información Marea"
 #
 msgid "Show Tides"
 msgstr "Mostrar Mareas"
-#
-#
-#
-#
-#
-#
-msgid "Show Track icon"
-msgstr "Mostrar Icono Derrotas"
 #
 #
 #
@@ -5026,6 +5014,11 @@ msgstr "Probando"
 msgid "Text Element"
 msgstr "Elementos de Texto"
 #
+msgid ""
+"The Man Over Board button is an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+#
 #, fuzzy
 msgid ""
 "The currently running Track was not merged.\n"
@@ -5115,6 +5108,24 @@ msgstr "Este waypoint es parte de una capa y no puede ser editado"
 #
 msgid "Tide"
 msgstr "Marea"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Tide & Current Dataset Selection"
+msgstr "Mareas && Corrientes"
+#
+#
+#
+#, fuzzy
+msgid "Tide/Current Data Selector"
+msgstr "TideCurrentGraphRollover"
+#
+msgid "Tide/Current Datasets..."
+msgstr ""
 #
 #
 #
@@ -5714,6 +5725,11 @@ msgstr "Yate"
 msgid "Yellow"
 msgstr "Amarillo"
 #
+msgid ""
+"You can't hide the last tool from the toolbar\n"
+"as this would make is inaccessible."
+msgstr ""
+#
 #
 #
 #
@@ -5789,6 +5805,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5803,8 +5820,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
 #
 #
 #
@@ -5835,8 +5854,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
+#
 #
 #
 #
@@ -5889,8 +5910,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -5975,8 +5998,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -6028,6 +6053,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta AIS"
@@ -6041,8 +6067,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -6076,8 +6104,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -6138,8 +6168,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -6200,8 +6232,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
+#
 #
 #
 #
@@ -6271,8 +6305,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
 #
 #
 #
@@ -6330,9 +6366,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -6376,8 +6414,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -6463,11 +6503,23 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Default dataset"
+#~ msgstr "Datos por defecto"
+#
 #
 #
 #
@@ -6485,6 +6537,7 @@ msgstr "wxFB Website"
 #
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -6532,6 +6585,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
 #
@@ -6551,8 +6605,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Incapaz de cargar libgps.so.19"
+#
+#
+#, fuzzy
+#~ msgid "Harmonic dataset to use:"
+#~ msgstr "Usar datos harmónicos:"
+#
 #
 #
 #
@@ -6587,8 +6648,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fuentes"
+#
 #
 #
 #
@@ -6632,8 +6695,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
 #
 #
 #
@@ -6656,8 +6721,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
+#
 #
 #
 #
@@ -6687,8 +6754,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -6731,6 +6800,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
 #
@@ -6746,8 +6816,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -6778,8 +6850,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -6810,8 +6884,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -6843,8 +6919,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
 #
 #
 #
@@ -6861,6 +6939,16 @@ msgstr "wxFB Website"
 #~ "libgps no respondió correctamente a la petición de esta versión\n"
 #~ "\n"
 #~ "¿Desea usar igualmente esta versión de libgps?"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Printing"
+#~ msgstr "Imprimiendo"
+#
 #
 #
 #
@@ -6922,8 +7010,28 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ShipName:  "
 #~ msgstr "Nombre Barco:"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show Printing Icon"
+#~ msgstr "Mostrar Icono Impresión"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show Track icon"
+#~ msgstr "Mostrar Icono Derrotas"
+#
 #
 #
 #
@@ -6975,6 +7083,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
@@ -7002,9 +7111,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
+#
 #
 #
 #

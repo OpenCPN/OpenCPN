@@ -314,7 +314,7 @@ SET(HDRS
 		include/tcmgr.h
 		include/thumbwin.h
 		include/options.h
-		include/wvschart.h
+		include/gshhs.h
 		include/about.h
 		include/ais.h
 		include/pluginmanager.h
@@ -350,7 +350,7 @@ SET(SRCS
 		src/tcmgr.cpp
 		src/thumbwin.cpp
 		src/options.cpp
-		src/wvschart.cpp
+		src/gshhs.cpp
 		src/about.cpp
 		src/ais.cpp
 		src/pluginmanager.cpp
@@ -580,10 +580,16 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # Various data files
-SET(wvsData
-        data/wvsdata/readmewvs.txt
-        data/wvsdata/wvs1.dat
-        data/wvsdata/wvs43.dat
+SET(gshhs
+        data/gshhs/poly-c-1.dat
+        data/gshhs/poly-i-1.dat
+        data/gshhs/poly-l-1.dat
+        data/gshhs/wdb_borders_c.b
+        data/gshhs/wdb_borders_i.b
+        data/gshhs/wdb_borders_l.b
+        data/gshhs/wdb_rivers_c.b
+        data/gshhs/wdb_rivers_i.b
+        data/gshhs/wdb_rivers_l.b
    )
 
 SET(uiData
@@ -662,7 +668,7 @@ ENDIF(WIN32)
 IF(APPLE)
 
 SET_SOURCE_FILES_PROPERTIES(
-           ${wvsData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/wvsdata  )
+           ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
 SET_SOURCE_FILES_PROPERTIES(
            ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
 SET_SOURCE_FILES_PROPERTIES(
@@ -692,7 +698,7 @@ SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
 ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${HDRS}
       ${SRCS}
-      ${wvsData}
+      ${gshhs}
       ${uidata}
       ${s57data}
       ${tcData}
@@ -791,7 +797,7 @@ IF(WIN32)
 SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
-INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
 INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
@@ -822,9 +828,11 @@ ENDIF(NOT APPLE)
 
 #uninstall-local:
 #        rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/*
+#        rm -fr $(DESTDIR)$(pkgdatadir)/gshhs/*
 #        rm -fr $(DESTDIR) $(pkgdatadir)/s57data/*
 #        rm -fr $(DESTDIR)$(pkgdatadir)/tcdata/*
 #        rmdir $(DESTDIR)$(pkgdatadir)/wvsdata
+#        rmdir $(DESTDIR)$(pkgdatadir)/gshhs
 #        rmdir $(DESTDIR)$(pkgdatadir)/s57data
 #        rmdir $(DESTDIR)$(pkgdatadir)/tcdata
 #        rmdir $(DESTDIR)$(pkgdatadir)
