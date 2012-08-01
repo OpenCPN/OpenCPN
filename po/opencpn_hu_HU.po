@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -1104,6 +1104,11 @@ msgid "Dark Yellow"
 msgstr "Sötét-sárga"
 #
 #
+#, fuzzy
+msgid "Data Source :"
+msgstr "NMEA adatforrás"
+#
+#
 msgid "De-Clutter Text"
 msgstr "Szöveg kitisztázása"
 #
@@ -1393,9 +1398,6 @@ msgstr "Láb"
 #
 msgid "Ferry"
 msgstr "Komp"
-#
-msgid "File System"
-msgstr ""
 #
 #
 msgid "Filter NMEA Course and Speed data"
@@ -3493,8 +3495,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3518,8 +3522,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
+#
 #
 #
 #
@@ -3530,8 +3536,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
 #
 #
 #
@@ -3554,12 +3562,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Használandó harmonikus adatsor:"
+#
 #
 #
 #
@@ -3583,12 +3594,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Nyelv/betűtípus"
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
 #
 #
 #
@@ -3600,14 +3614,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
 #
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
 #
 #
 #
@@ -3625,8 +3642,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3644,8 +3663,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -3672,13 +3693,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Nyomvonal ikon mutatása"
+#
 #
 #
 #
@@ -3700,6 +3724,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #

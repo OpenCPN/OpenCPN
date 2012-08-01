@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -1685,6 +1685,14 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Data Source :"
+msgstr "NMEA andemete allikas"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "De-Clutter Text"
 msgstr "De-Clutter Tekst (exp.)"
 #
@@ -2145,9 +2153,6 @@ msgstr "Jalg"
 # 
 # 
 msgid "Ferry"
-msgstr ""
-#
-msgid "File System"
 msgstr ""
 #
 # 
@@ -5380,6 +5385,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5399,12 +5405,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "Kaardi projektsioon on tundmatu, jultunud Mercator:"
+#
 #
 #
 #
@@ -5428,6 +5436,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5439,6 +5448,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
 #
 #
 #
@@ -5460,6 +5470,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5473,12 +5484,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 #
 #
@@ -5505,6 +5518,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5516,6 +5530,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 #
@@ -5553,6 +5568,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5578,6 +5594,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -5615,6 +5632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5640,6 +5658,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 #
@@ -5677,6 +5696,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5702,6 +5722,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -5738,12 +5759,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -5779,6 +5802,7 @@ msgstr ""
 #~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
 #
 #
+#
 # 
 # 
 # 
@@ -5786,6 +5810,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Teksti värv"
+#
 #
 #
 #
@@ -5803,6 +5828,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -5839,6 +5865,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5859,6 +5886,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5873,6 +5901,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
 #
 #
 #
@@ -5903,12 +5932,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Keeled/Fondid"
+#
 #
 #
 #
@@ -5922,6 +5953,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -5960,12 +5992,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Punkti Ikoon"
+#
 #
 #
 #
@@ -5984,6 +6018,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5993,6 +6028,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uus punkt"
+#
 #
 #
 #
@@ -6016,6 +6052,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6031,6 +6068,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
 #
 #
 #
@@ -6062,6 +6100,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6072,6 +6111,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 #
@@ -6095,6 +6135,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6106,6 +6147,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 #
@@ -6129,6 +6171,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6140,6 +6183,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 #
 #
@@ -6163,6 +6207,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6173,6 +6218,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
 #
 #
 #
@@ -6193,12 +6239,14 @@ msgstr ""
 #~ "                              Kas soovid ikkagi kasutada seda libgps-i?"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Prindin"
+#
 #
 #
 #
@@ -6236,6 +6284,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6264,6 +6313,7 @@ msgstr ""
 #~ msgstr "Laeva nimi:"
 #
 #
+#
 # 
 # 
 # 
@@ -6272,12 +6322,14 @@ msgstr ""
 #~ msgstr "Näita printimis ikooni"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näita jälje ikooni"
+#
 #
 #
 #
@@ -6311,6 +6363,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6338,6 +6391,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6359,6 +6413,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Teekonna nimi"
+#
 #
 #
 #

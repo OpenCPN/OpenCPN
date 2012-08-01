@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -1327,6 +1327,12 @@ msgstr "暗黃"
 # 
 # 
 #, fuzzy
+msgid "Data Source :"
+msgstr "NMEA 資料來源"
+#
+# 
+# 
+#, fuzzy
 msgid "De-Clutter Text"
 msgstr "De-Clutter 字型 (測試中)"
 #
@@ -1684,9 +1690,6 @@ msgstr "英呎"
 # 
 msgid "Ferry"
 msgstr "渡輪"
-#
-msgid "File System"
-msgstr ""
 #
 # 
 # 
@@ -4270,6 +4273,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4287,10 +4291,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4312,6 +4318,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4327,6 +4334,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4336,6 +4344,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4367,6 +4376,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4386,6 +4396,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4417,6 +4428,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4435,6 +4447,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4464,6 +4477,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4475,10 +4489,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4503,6 +4519,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4512,6 +4529,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4543,6 +4561,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4562,6 +4581,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4593,6 +4613,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4612,6 +4633,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4643,6 +4665,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4662,6 +4685,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4694,6 +4718,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4719,10 +4744,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
 #
 #
 # 
@@ -4730,6 +4757,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
+#
 #
 #
 #
@@ -4748,10 +4776,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
 #
 #
 #
@@ -4768,6 +4798,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4778,10 +4809,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 #
@@ -4801,6 +4834,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4810,6 +4844,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -4835,6 +4870,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4844,6 +4880,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -4865,6 +4902,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4874,6 +4912,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -4895,6 +4934,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4904,6 +4944,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
 #
 #
 #
@@ -4925,6 +4966,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4933,6 +4975,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
 #
 #
 #
@@ -4950,10 +4993,12 @@ msgstr ""
 #~ "仍要繼續使用這一版的libgps?"
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "列印"
+#
 #
 #
 # 
@@ -4962,10 +5007,12 @@ msgstr ""
 #~ msgstr "顯示列印圖示"
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
+#
 #
 #
 #

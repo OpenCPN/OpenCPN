@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -1126,6 +1126,11 @@ msgstr ""
 #
 # 
 #, fuzzy
+msgid "Data Source :"
+msgstr "Font de les Dades NMEA"
+#
+# 
+#, fuzzy
 msgid "De-Clutter Text"
 msgstr "Destriar Text (exp.)"
 #
@@ -1423,9 +1428,6 @@ msgstr "Peus"
 #
 # 
 msgid "Ferry"
-msgstr ""
-#
-msgid "File System"
 msgstr ""
 #
 # 
@@ -3562,6 +3564,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3577,9 +3580,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
 #
 #
 #
@@ -3598,12 +3603,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
 #
 #
 #
@@ -3622,12 +3629,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
+#
 #
 #
 #
@@ -3642,9 +3651,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 #
@@ -3663,6 +3674,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3674,15 +3686,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "El color de la lletra"
+#
 #
 #
 #
@@ -3701,12 +3716,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -3725,6 +3742,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3734,9 +3752,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Lletres"
+#
 #
 #
 #
@@ -3753,6 +3773,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
@@ -3762,9 +3783,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
 #
 #
 #
@@ -3783,12 +3806,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -3811,12 +3836,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -3835,12 +3862,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -3859,6 +3888,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3871,12 +3901,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #
 #
@@ -3896,12 +3928,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 #
@@ -3920,9 +3954,11 @@ msgstr ""
 #~ "totes maneres?"
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Impressió"
+#
 #
 #
 #
@@ -3941,14 +3977,17 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 #~ msgid "Show Printing Icon"
 #~ msgstr "Mostra la Icona d'Impressió"
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar la icona de derrota"
+#
 #
 #
 #
@@ -3967,12 +4006,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
+#
 #
 #
 #

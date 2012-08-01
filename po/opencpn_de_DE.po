@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -1125,6 +1125,11 @@ msgstr "Gelb (dunkel)"
 #
 # 
 #, fuzzy
+msgid "Data Source :"
+msgstr "NMEA-Datenquelle"
+#
+# 
+#, fuzzy
 msgid "De-Clutter Text"
 msgstr "Text \"aufräumen\" (exp.)"
 #
@@ -1426,9 +1431,6 @@ msgstr "Fuß"
 # 
 msgid "Ferry"
 msgstr "Fähre"
-#
-msgid "File System"
-msgstr ""
 #
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -3558,6 +3560,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3574,9 +3577,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
 #
 #
 #
@@ -3597,6 +3602,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3611,6 +3617,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3619,6 +3626,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 #
 #
@@ -3642,6 +3650,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3657,6 +3666,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
@@ -3667,9 +3677,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 #
 #
@@ -3693,6 +3705,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3701,6 +3714,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3723,9 +3737,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
 #
 #
 #
@@ -3749,6 +3765,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3765,10 +3782,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Standardfarbe"
+#
 #
 #
 #
@@ -3786,9 +3805,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
 #
 #
 #
@@ -3804,6 +3825,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
@@ -3813,9 +3835,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
 #
 #
 #
@@ -3834,6 +3858,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3842,6 +3867,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 #
 #
@@ -3866,6 +3892,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3874,6 +3901,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 #
 #
@@ -3894,6 +3922,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3902,6 +3931,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 #
 #
@@ -3922,6 +3952,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3930,6 +3961,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
 #
 #
 #
@@ -3950,6 +3982,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3957,6 +3990,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
+#
 #
 #
 #
@@ -3973,9 +4007,11 @@ msgstr ""
 #~ "Möchten Sie diese Version von libgps trotzdem verwenden?"
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Drucken"
+#
 #
 #
 # 
@@ -3983,9 +4019,11 @@ msgstr ""
 #~ msgstr "Druck-Symbol anzeigen"
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Track-Symbol anzeigen"
+#
 #
 #
 #

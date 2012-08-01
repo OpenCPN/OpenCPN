@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -1000,6 +1000,11 @@ msgstr "Koyu kırmızı"
 msgid "Dark Yellow"
 msgstr "Koyu sarı"
 #
+#
+#, fuzzy
+msgid "Data Source :"
+msgstr " NMEA Veri kaynağı"
+#
 msgid "De-Clutter Text"
 msgstr "Dağınık metin"
 #
@@ -1255,9 +1260,6 @@ msgstr "Ayak"
 #
 msgid "Ferry"
 msgstr "Arabalıvapur"
-#
-msgid "File System"
-msgstr ""
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA Yön ve hız verisini süz."
@@ -3152,14 +3154,17 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
+#
 #
 #
 #~ msgid "Harmonic dataset to use:"
@@ -3168,12 +3173,15 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Dil/Yazı Türü"
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #
@@ -3190,8 +3198,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
+#
 #
 #
 #
@@ -3199,8 +3209,10 @@ msgstr "wxFB veb sayfası"
 #~ msgstr "Yazıcı Simgesini göster"
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #~ msgid ""

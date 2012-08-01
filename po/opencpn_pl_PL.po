@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 21:42+0200\n"
+"POT-Creation-Date: 2012-08-01 18:38-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -1326,6 +1326,12 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Data Source :"
+msgstr "Źródło danych NMEA"
+#
+# 
+# 
+#, fuzzy
 msgid "De-Clutter Text"
 msgstr "Usuwaj nakładające się napisy (exp)"
 #
@@ -1683,9 +1689,6 @@ msgstr "Stopy"
 # 
 # 
 msgid "Ferry"
-msgstr ""
-#
-msgid "File System"
 msgstr ""
 #
 # 
@@ -4268,6 +4271,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4285,10 +4289,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
+#
 #
 #
 #
@@ -4310,6 +4316,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4325,6 +4332,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4334,6 +4342,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 #
@@ -4362,6 +4371,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4373,10 +4383,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 #
@@ -4401,6 +4413,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4410,6 +4423,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4448,6 +4462,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4474,6 +4489,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -4512,6 +4528,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4538,6 +4555,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -4576,6 +4594,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4601,6 +4620,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -4637,10 +4657,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Mapa"
+#
 #
 #
 # 
@@ -4648,6 +4670,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Kolor domyślny"
+#
 #
 #
 #
@@ -4663,6 +4686,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 #
@@ -4687,6 +4711,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4699,6 +4724,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Błąd ładowania libgps.so.19"
+#
 #
 #
 #
@@ -4726,10 +4752,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Język/Czcionki"
+#
 #
 #
 #
@@ -4747,6 +4775,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4757,10 +4786,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nazwa znaku"
+#
 #
 #
 #
@@ -4780,6 +4811,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4789,6 +4821,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -4814,6 +4847,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4823,6 +4857,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -4844,6 +4879,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4853,6 +4889,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -4874,6 +4911,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4883,6 +4921,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
 #
 #
 #
@@ -4904,6 +4943,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4912,6 +4952,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
 #
 #
 #
@@ -4929,10 +4970,12 @@ msgstr ""
 #~ "                              Czy mimo to chcesz użyć tej wersji libgps?"
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Drukowanie"
+#
 #
 #
 # 
@@ -4941,10 +4984,12 @@ msgstr ""
 #~ msgstr "Pokaż ikonę drukarki"
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Pokaż ikonę Ślad"
+#
 #
 #
 #
@@ -4975,6 +5020,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4999,6 +5045,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5017,6 +5064,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Włącz/wyłącz nazwy"
+#
 #
 #
 #
