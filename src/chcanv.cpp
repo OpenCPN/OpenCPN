@@ -7229,7 +7229,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                        nearby_radius_meters );
             if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
-                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer ) // pjotrc 2010.02.13
+                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
             {
                 OCPNMessageDialog near_point_dlg( this, _("Use nearby waypoint?"),
                                                   _("OpenCPN Route Create"),
@@ -8825,6 +8825,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 void ChartCanvas::FinishRoute( void )
 {
     parent_frame->nRoute_State = 0;
+    m_prev_pMousePoint = NULL;
+
     parent_frame->SetToolbarItemState( ID_ROUTE, false );
     SetCursor( *pCursorArrow );
     m_bDrawingRoute = false;
