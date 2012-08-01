@@ -4274,10 +4274,8 @@ void MyConfig::StoreNavObjChanges( void )
 
 bool MyConfig::ExportGPXRoute( wxWindow* parent, Route *pRoute )
 {
-    //if (pRoute->m_bIsInLayer) return true;
-
     //FIXME: get rid of the Dialogs and unite with the other
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
+    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, pRoute->m_RouteNameString,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
