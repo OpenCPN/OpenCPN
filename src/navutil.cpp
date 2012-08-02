@@ -2633,13 +2633,15 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
     g_StyleManager->SetStyle( uiStyle );
 
-    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+    if( iteration == 0 ) {
+        Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
-    int mem_limit;
-    Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+        int mem_limit;
+        Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
 
-    if(mem_limit > 0)
-        g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
+        if(mem_limit > 0)
+            g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
+    }
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
