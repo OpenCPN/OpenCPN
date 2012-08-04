@@ -8106,9 +8106,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( bneed_sep ) pdef_menu->AppendSeparator();
 
-    if( ( VPoint.b_quilt )
-            && ( pCurrentStack && pCurrentStack->b_valid && ( pCurrentStack->nEntry > 1 ) ) ) {
-        pdef_menu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Remove this chart from quilt." ) );
+    if( ( VPoint.b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
+        int dbIndex = m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
+        if( dbIndex != -1 )
+            pdef_menu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Remove this chart from quilt." ) );
     }
 
     if( seltype & SELTYPE_TIDEPOINT ) pdef_menu->Append( ID_DEF_MENU_TIDEINFO,
