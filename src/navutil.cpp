@@ -3424,8 +3424,8 @@ int MyConfig::LoadMyConfig( int iteration )
         if( NULL == m_pNavObjectInputSet ) m_pNavObjectInputSet = new NavObjectCollection();
 
         if( ::wxFileExists( m_sNavObjSetFile ) ) {
-            m_pNavObjectInputSet->LoadFile( m_sNavObjSetFile );
-            m_pNavObjectInputSet->LoadAllGPXObjects();
+            if( m_pNavObjectInputSet->LoadFile( m_sNavObjSetFile ) )
+                m_pNavObjectInputSet->LoadAllGPXObjects();
         }
 
         m_pNavObjectInputSet->Clear();

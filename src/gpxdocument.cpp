@@ -94,6 +94,14 @@ bool GpxDocument::LoadFile(const wxString &filename)
       gpxfile.Write(s);
       gpxfile.Close();
       bool res = TiXmlDocument::LoadFile((const char*)gpxfilename.mb_str());
+
+	  if( ! res ) {
+		  wxString msg = _T("Failed to load ");
+		  msg << filename;
+		  msg << _T(": ");
+		  msg << wxString( TiXmlDocument::ErrorDesc(), wxConvUTF8 );
+ 		  wxLogMessage( msg );
+	  }
       ::wxRemoveFile(gpxfilename);
       return res;
 }
