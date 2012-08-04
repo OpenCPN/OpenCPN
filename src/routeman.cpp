@@ -1192,7 +1192,7 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
 
     }
 
-    //Build an image list large enough
+    // Build an image list large enough
 
     if( NULL != pmarkicon_image_list ) {
         pmarkicon_image_list->RemoveAll();
@@ -1200,7 +1200,7 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
     }
     pmarkicon_image_list = new wxImageList( w, h );
 
-    //  Add the icons
+    // Add the icons
     for( unsigned int ii = 0; ii < m_pIconArray->GetCount(); ii++ ) {
         pmi = (MarkIcon *) m_pIconArray->Item( ii );
         wxImage icon_image = pmi->picon_bitmap->ConvertToImage();
@@ -1213,8 +1213,8 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
 
         wxImage icon_larger;
         if( h0 <= h && w0 <= w ) {
-            // Just resize
-            icon_larger = icon_image.Resize( wxSize( h, w ), wxPoint( 0, 0 ) );
+            // Resize & Center smaller icons in the bitmap, so menus won't look so weird.
+            icon_larger = icon_image.Resize( wxSize( h, w ), wxPoint( (w-w0)/2, (h-h0)/2 ) );
         } else {
             // rescale in one or two directions to avoid cropping, then resize to fit to cell
             int h1 = h;
