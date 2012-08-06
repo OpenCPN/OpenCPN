@@ -1587,10 +1587,11 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
                     if( m_extended_stack_array.Item( jd ) != -1 ) {
                         ChartTableEntry *pn = ChartData->GetpChartTableEntry(
                                                   m_extended_stack_array.Item( jd ) );
-                        if( pm->GetFileTime() == pn->GetFileTime() )            // simple test
-                        {
-                            if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) {
-                                m_extended_stack_array.Item( jd ) = -1;  // mark to remove
+                        
+                        if( pm->GetFileTime() && pn->GetFileTime()) {
+                            if( pm->GetFileTime() == pn->GetFileTime() ) {           // simple test
+                                if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) 
+                                    m_extended_stack_array.Item( jd ) = -1;  // mark to remove
                             }
                         }
                     }

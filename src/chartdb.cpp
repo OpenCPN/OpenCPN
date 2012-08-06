@@ -357,6 +357,8 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
 //    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
 //    These charts can be in the database due to having the exact same chart in different directories,
 //    as may be desired for some grouping schemes
+//    Note that if the target name is actually a directory, then windows fails to produce a valid
+//    file modification time.  Detect GetFileTime() == 0, and skip the test in this case     
       for(int id = 0 ; id < j-1 ; id++)
       {
             if(cstk->GetDBIndex(id) != -1)
@@ -368,12 +370,11 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                         if(cstk->GetDBIndex(jd) != -1)
                         {
                               ChartTableEntry *pn = GetpChartTableEntry(cstk->GetDBIndex(jd));
-                              if(pm->GetFileTime() == pn->GetFileTime())      // simple test
-                              {
+                              if( pm->GetFileTime() && pn->GetFileTime()) {
+                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
                                     if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
-                                    {
                                           cstk->SetDBIndex(jd, -1);           // mark to remove
-                                    }
+                                }
                               }
                         }
                   }
