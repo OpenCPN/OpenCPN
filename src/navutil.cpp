@@ -1196,6 +1196,9 @@ Route::Route( void )
     } else
         m_LayerID = 0;
     m_Colour = wxEmptyString;
+
+    m_lastMousePointIndex = 0;
+    m_NextLegGreatCircle = false;
 }
 
 Route::~Route( void )

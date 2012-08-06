@@ -209,6 +209,8 @@ public:
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
+      wxString FormatDistanceAdaptive( double distance );
+
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
       int GetCanvasHeight(){ return m_canvas_height;}
@@ -374,6 +376,7 @@ private:
       void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox,
                            bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
       void DrawTCWindow(int x, int y, void *pIDX);
+
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
@@ -712,19 +715,19 @@ private:
       int         m_plot_y_offset;
 
       SplineList  m_sList;
-      
+
       wxFont *pSFont;
       wxFont *pSMFont;
       wxFont *pMFont;
       wxFont *pLFont;
-                                                        
+
       wxPen *pblack_1;
       wxPen *pblack_2;
       wxPen *pblack_3;
       wxPen *pred_2;
       wxBrush *pltgray;
       wxBrush *pltgray2;
-                                                                                                               
+
 
 DECLARE_EVENT_TABLE()
 };

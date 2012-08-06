@@ -249,6 +249,8 @@ public:
       int         m_LayerID;
       int         m_width;
       int         m_style;
+      int         m_lastMousePointIndex;
+      bool        m_NextLegGreatCircle;
 
       wxArrayString      RoutePointGUIDList;
       RoutePointList     *pRoutePointList;
@@ -265,7 +267,6 @@ private:
       bool        m_bListed;
       double      m_ArrivalRadius;
       bool        m_bcrosses_idl;
-
 };
 
 WX_DECLARE_LIST(Route, RouteList);                    // establish class Route as list member

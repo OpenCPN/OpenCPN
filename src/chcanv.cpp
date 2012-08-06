@@ -45,6 +45,7 @@
 
 #include "chcanv.h"
 
+#include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
@@ -1587,10 +1588,10 @@ bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPor
                     if( m_extended_stack_array.Item( jd ) != -1 ) {
                         ChartTableEntry *pn = ChartData->GetpChartTableEntry(
                                                   m_extended_stack_array.Item( jd ) );
-                        
+
                         if( pm->GetFileTime() && pn->GetFileTime()) {
                             if( pm->GetFileTime() == pn->GetFileTime() ) {           // simple test
-                                if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) ) 
+                                if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) )
                                     m_extended_stack_array.Item( jd ) = -1;  // mark to remove
                             }
                         }
@@ -4207,27 +4208,14 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     DistanceBearingMercator( segShow_point_b->m_lat, segShow_point_b->m_lon,
                                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
 
-                    wxString totLen;
-                    totLen.Printf(_T("%5.1f"), pr->m_route_length);
-
                     s.Append( _("Route: ") );
                     if( pr->m_RouteNameString.IsEmpty() ) s.Append( _("(unnamed)") );
                     else
                         s.Append( pr->m_RouteNameString );
-                    s.Append( _T("\n") );
-                    s.Append( _("Total Length: ") );
-                    s.Append( totLen );
-                    s.Append( _T("\n") );
-                    s.Append( _("Leg: from ") );
-                    s.Append( segShow_point_a->GetName() );
-                    s.Append( _(" to ") );
-                    s.Append( segShow_point_b->GetName() );
-                    s.Append( _T("\n") );
-                    wxString t;
-                    if( dist > 0.1 ) t.Printf( _T("%03d Deg %6.2f NMi"), (int) brg, dist );
-                    else
-                        t.Printf( _T("%03d Deg %4.1f (m)"), (int) brg, dist * 1852. );
-                    s.Append( t );
+
+                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pr->m_route_length) << _T("\n");
+                    s << _("Leg: from ") << segShow_point_a->GetName() << _(" to ") << segShow_point_b->GetName();
+                    s << _T("\n") << FormatDistanceAdaptive( dist );
 
                     m_pRolloverWin->SetString( s );
 
@@ -4300,7 +4288,8 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
                     double brg, dist;
                     DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
                     wxString s;
-                    s.Printf(_("From Ownship: %03d Deg  %6.2f NMi"), (int)brg, dist);
+                    s.Printf(_("From Ownship: %03d Deg   "), (int)brg );
+                    s << FormatDistanceAdaptive( dist );
                     parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
                 }
             }
@@ -7089,7 +7078,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 double brg, dist;
                 DistanceBearingMercator( m_cursor_lat, m_cursor_lon, gLat, gLon, &brg, &dist );
                 wxString s;
-                s.Printf( _("From Ownship: %03d Deg  %6.2f NMi"), (int) brg, dist );
+                s.Printf( _("From Ownship: %03d Deg   "), (int) brg );
+                s << FormatDistanceAdaptive( dist );
                 parent_frame->SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
             }
         }
@@ -7275,24 +7265,78 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
             if( NULL == pMousePoint )                   // need a new point
             {
-                pMousePoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
-                                              wxString( _T ( "" ) ), GPX_EMPTY_STRING );
+                pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
                 pMousePoint->SetNameShown( false );
 
                 pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
                 pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
             }
 
-            m_pMouseRoute->AddPoint( pMousePoint );
-            if( parent_frame->nRoute_State > 1 ) pSelect->AddSelectableRouteSegment( m_prev_rlat,
-                        m_prev_rlon, rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+            if( parent_frame->nRoute_State == 1 ) {
+                // First point in the route.
+                m_pMouseRoute->AddPoint( pMousePoint );
+           } else {
+                if( m_pMouseRoute->m_NextLegGreatCircle ) {
+                    double rhumbBearing, rhumbDist, gcBearing, gcDist;
+                    DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+                    Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
+                    double gcDistNM = gcDist / 1852.0;
+
+                    // Empirically found expression to get reasonable route segments.
+                    int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
+
+                    wxString msg;
+                    msg << _("For this leg the Great Circle route is ")
+                        << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
+                        << _("Would you like include the Great Circle routing points for this leg?");
+
+                    OCPNMessageDialog question( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                    int answer = question.ShowModal();
+
+                    if( answer == wxID_YES ) {
+                        RoutePoint* gcPoint;
+                        RoutePoint* prevGcPoint = m_prev_pMousePoint;
+                        wxRealPoint gcCoord;
+
+                        for( int i = 1; i <= segmentCount; i++ ) {
+                            double fraction = (double) i * ( 1.0 / (double) segmentCount );
+                            Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
+                                    gcBearing, &gcCoord.x, &gcCoord.y, NULL );
+
+                            if( i < segmentCount ) {
+                                gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
+                                        GPX_EMPTY_STRING );
+                                gcPoint->SetNameShown( false );
+                                pConfig->AddNewWayPoint( gcPoint, -1 );
+                                pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
+                            } else {
+                                gcPoint = pMousePoint; // Last point, previously exsisting!
+                            }
+
+                            m_pMouseRoute->AddPoint( gcPoint );
+                            pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
+                                    gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
+                            prevGcPoint = gcPoint;
+                        }
+                    } else {
+                        m_pMouseRoute->AddPoint( pMousePoint );
+                        pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                    }
+                } else {
+                    // Ordinary rhumblinesegment.
+                    m_pMouseRoute->AddPoint( pMousePoint );
+                    pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                            rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                }
+            }
 
             m_prev_rlat = rlat;
             m_prev_rlon = rlon;
             m_prev_pMousePoint = pMousePoint;
+            m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
             parent_frame->nRoute_State++;
-
             Refresh( false );
         }
 
@@ -7320,6 +7364,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             m_prev_rlat = m_cursor_lat;
             m_prev_rlon = m_cursor_lon;
             m_prev_pMousePoint = pMousePoint;
+            m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
 
             m_nMeasureState++;
 
@@ -9133,55 +9178,26 @@ bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
     return true;
 }
 
-void RenderRouteLegInfo( ocpnDC &dc, double lata, double lona, double latb, double lonb,
-                         wxPoint ref_point, wxString prefix )
-{
-
-    double brg, dist;
-    DistanceBearingMercator( latb, lonb, lata, lona, &brg, &dist );
-
-    if( ( lata == latb ) && ( lona == lonb ) )               // special optimization
-        brg = 90.;
-
-    wxString s0;
-    wxString s;
-    s.Printf( _T("%03d "), (int) brg );
-    s0 = s;
-    s0 += _("Deg");
-
-    if( dist > 0.1 ) {
-        s.Printf( _T(" %6.2f "), dist );
-        s0 += s;
-        s = _("NMi");
-        s0 += s;
-    } else {
-        s.Printf( _T(" %4.1f "), dist * 1852. ); //pjotrc 2010.02.16
-        s0 += s;
-        s = _("(m)");
-        s0 += s;
+wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
+    wxString result;
+    if( distance < 0.1 ) {
+        result << wxString::Format(_T("%3.0f "), distance*1852.0 ) << _T("m");
+        return result;
     }
-    s0.Prepend( prefix );
-
-    wxFont *dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
-    dc.SetFont( *dFont );
-
-    int w, h;
-    int xp, yp;
-    int hilite_offset = 3;
-#ifdef __WXMAC__
-    wxScreenDC sdc;
-    sdc.GetTextExtent(s0, &w, &h, NULL, NULL, dFont);
-#else
-    dc.GetTextExtent( s0, &w, &h );
-#endif
-    xp = ref_point.x - w;
-    yp = ref_point.y;
-    yp += hilite_offset;
-
-    AlphaBlending( dc, xp, yp, w, h, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-
-    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
-    dc.DrawText( s0, xp, yp );
+    if( distance < 5.0 ) {
+        result << wxString::Format(_T("%1.2f "), distance ) << _T("NMi");
+        return result;
+    }
+    if( distance < 100.0 ) {
+        result << wxString::Format(_T("%2.1f "), distance ) << _T("NMi");
+        return result;
+    }
+    if( distance < 1000.0 ) {
+        result << wxString::Format(_T("%3.0f "), distance ) << _T("NMi");
+        return result;
+    }
+    result << wxString::Format(_T("%4.0f "), distance ) << _T("NMi");
+    return result;
 }
 
 void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
@@ -9211,34 +9227,84 @@ void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
-    if( parent_frame->nRoute_State >= 2 ) {
-        wxPoint rpt;
-        m_pMouseRoute->DrawPointWhich( dc, parent_frame->nRoute_State - 1, &rpt );
-        m_pMouseRoute->DrawSegment( dc, &rpt, &r_rband, GetVP(), false );
+    if( (parent_frame->nRoute_State >= 2) ||
+        (m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 )) ) {
 
-        RenderRouteLegInfo( dc, m_prev_rlat, m_prev_rlon, m_cursor_lat, m_cursor_lon, r_rband,
-                            _T("") );
-    }
+        double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
+        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
+        double gcDistm = gcDist / 1852.0;
 
-    if( m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) {
-        wxPoint rpt;
-        m_pMeasureRoute->DrawPointWhich( dc, m_nMeasureState - 1, &rpt );
-        m_pMeasureRoute->DrawSegment( dc, &rpt, &r_rband, GetVP(), false );
+        if( ( m_prev_rlat == m_cursor_lat ) && ( m_prev_rlon == m_cursor_lon ) ) rhumbBearing = 90.;
 
-        RenderRouteLegInfo( dc, m_prev_rlat, m_prev_rlon, m_cursor_lat, m_cursor_lon, r_rband,
-                            _T("") );
+        wxPoint destPoint, lastPoint;
+        Route* route;
+        int state;
 
-        double brg, dist;
-        DistanceBearingMercator( m_prev_rlat, m_prev_rlon, m_cursor_lat, m_cursor_lon, &brg,
-                                 &dist );
+        if( m_pMeasureRoute ) {
+            route = m_pMeasureRoute;
+            state = m_nMeasureState;
+        } else {
+            route = m_pMouseRoute;
+            state = parent_frame->nRoute_State;
+        }
 
-        wxString s0( _("Route Distance: ") );
-        wxString s;
-        s.Printf( _T("%6.2f "), m_pMeasureRoute->m_route_length + dist );
-        s0 += s;
-        s = _("NMi");
-        s0 += s;
-        RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        double brg = rhumbBearing;
+        double dist = rhumbDist;
+        route->m_NextLegGreatCircle = false;
+        int milesDiff = rhumbDist - gcDistm;
+        if( milesDiff > 1 ) {
+            brg = gcBearing;
+            dist = gcDistm;
+            route->m_NextLegGreatCircle = true;
+        }
+
+        route->DrawPointWhich( dc, route->m_lastMousePointIndex, &lastPoint );
+
+        if( route->m_NextLegGreatCircle ) {
+            for( int i=1; i<=milesDiff; i++ ) {
+                double p = (double)i * (1.0/(double)milesDiff);
+                double pLat, pLon;
+                Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
+                destPoint = VPoint.GetPixFromLL( pLat, pLon );
+                route->DrawSegment( dc, &lastPoint, &destPoint, GetVP(), false );
+                lastPoint = destPoint;
+            }
+        }
+        else {
+            route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+        }
+
+        wxString routeInfo;
+        routeInfo << wxString::Format( _T("%03d "), (int) brg ) << _("Deg");
+        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+
+        wxFont *dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
+        dc.SetFont( *dFont );
+
+        int w, h;
+        int xp, yp;
+        int hilite_offset = 3;
+    #ifdef __WXMAC__
+        wxScreenDC sdc;
+        sdc.GetTextExtent(routeInfo, &w, &h, NULL, NULL, dFont);
+    #else
+        dc.GetTextExtent( routeInfo, &w, &h );
+    #endif
+        xp = r_rband.x - w;
+        yp = r_rband.y;
+        yp += hilite_offset;
+
+        AlphaBlending( dc, xp, yp, w, h, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+        dc.DrawText( routeInfo, xp, yp );
+
+        if( m_pMeasureRoute ) {
+            wxString s0( _("Route: ") );
+            s0 += FormatDistanceAdaptive( m_pMeasureRoute->m_route_length + dist );
+            RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        }
     }
 }
 
@@ -12803,17 +12869,17 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 
-    
+
     //  establish some graphic element sizes/locations
     int x_graph = sx * 1 / 10;
     int y_graph = sy * 32 / 100;
     int x_graph_w = sx * 8 / 10;
     int y_graph_h = sy * 50 / 100;
     m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
-    
-    
+
+
     // Build graphics tools
-   
+
     pSFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,
                                                     wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
     pSMFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_SWISS, wxNORMAL,
@@ -12835,11 +12901,11 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
                                                                                wxSOLID );
     pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
                                                                                 wxSOLID );
-    
+
     DimeControl( this );
-    
+
     //  Fill in some static text control information
-    
+
     //  Tidi station information
     m_ptextctrl->Clear();
 
@@ -12857,13 +12923,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxTextAttr style;
     style.SetFont( *pLFont );
     m_ptextctrl->SetDefaultStyle( style );
-    
+
     m_ptextctrl->AppendText( locna );
     m_ptextctrl->AppendText(_T("\n"));
 
     style.SetFont( *pSMFont );
     m_ptextctrl->SetDefaultStyle( style );
-    
+
     if( !locnb.IsEmpty() ) m_ptextctrl->AppendText( locnb );
     m_ptextctrl->AppendText(_T("\n\n"));
 

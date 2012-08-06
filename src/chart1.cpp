@@ -4770,7 +4770,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         double brg, dist;
         DistanceBearingMercator( cursor_lat, cursor_lon, gLat, gLon, &brg, &dist );
         wxString s;
-        s.Printf( _("From Ownship: %03d Deg  %6.2f NMi"), (int) brg, dist );
+        s.Printf( _("From Ownship: %03d Deg   "), (int) brg );
+        s << cc1->FormatDistanceAdaptive( dist );
         if( GetStatusBar() ) SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
     }
 

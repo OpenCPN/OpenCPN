@@ -328,6 +328,7 @@ SET(HDRS
 		include/styles.h
 		include/toolbar.h
 		include/compasswin.h
+		include/geodesic.h
 )
 
 SET(SRCS
@@ -363,6 +364,7 @@ SET(SRCS
 		src/styles.cpp
 		src/toolbar.cpp
 		src/compasswin.cpp
+		src/geodesic.cpp
     )
 
 IF(wx_Version MATCHES "2.9")
