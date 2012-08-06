@@ -1182,10 +1182,11 @@ bool MyApp::OnInit()
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 #endif
 
-    //  Get the default for info
-    wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    if( wxLanguageInfo ) {
-        wxString def_lang_canonical = languageInfo->CanonicalName;
+    //  Get the default language info
+    wxString def_lang_canonical;
+    const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    if( languageInfo ) {
+        def_lang_canonical = languageInfo->CanonicalName;
         imsg = _T("System default Language:  ");
         imsg += def_lang_canonical;
         wxLogMessage( imsg );
