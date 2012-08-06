@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -290,6 +290,11 @@ msgstr ""
 msgid " is %5g"
 msgstr "είναι %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 msgid " to "
@@ -491,9 +496,6 @@ msgstr "(ανώνυμο ίχνος (πορεία))"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο Σημείο)(WP)"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 # 
@@ -1745,6 +1747,9 @@ msgstr ""
 msgid "Font Options"
 msgstr "Επιλογές Γραμματοσειράς"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 # 
 msgid "Force Full Database Rebuild"
@@ -1762,8 +1767,8 @@ msgstr ""
 #
 # 
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Από το Σκάφος: %03d Μοίρες %6.2f ΝΜ"
 #
 # 
@@ -2382,9 +2387,6 @@ msgstr "Πηγή ΝΜΕΑ"
 # 
 msgid "NMEA Options"
 msgstr "Ρυθμίσεις ΝΜΕΑ"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 # 
@@ -3097,12 +3099,6 @@ msgstr "Αναστροφή"
 # 
 msgid "Route"
 msgstr "Ταξίδι"
-#
-# 
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "Ολική Απόσταση"
 #
 # 
 # 
@@ -4250,6 +4246,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr ""
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -4342,6 +4341,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4360,10 +4360,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
 #
 #
 #
@@ -4387,6 +4389,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4396,6 +4399,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -4417,6 +4421,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4429,10 +4434,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 #
@@ -4459,6 +4466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4468,6 +4476,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -4508,6 +4517,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4534,6 +4544,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4574,6 +4585,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4600,6 +4612,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -4640,6 +4653,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4665,6 +4679,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -4703,10 +4718,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
 #
 #
 #
@@ -4743,11 +4760,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Χρώμα Γραμματοσειράς."
+#
 #
 #
 #
@@ -4764,6 +4783,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -4800,6 +4820,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4819,6 +4840,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4831,6 +4853,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
+#
 #
 #
 #
@@ -4861,10 +4884,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Γλώσσα/Γραμματοσειρές"
+#
 #
 #
 #
@@ -4877,6 +4902,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -4915,10 +4941,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
+#
 #
 #
 #
@@ -4937,6 +4965,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4944,6 +4973,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Νέο Σημάδι"
+#
 #
 #
 #
@@ -4967,6 +4997,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4980,6 +5011,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -5013,6 +5045,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5022,6 +5055,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -5045,6 +5079,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5054,6 +5089,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -5077,6 +5113,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5086,6 +5123,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -5110,6 +5148,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5118,6 +5157,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -5139,10 +5179,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Εκτύπωση"
+#
 #
 #
 #
@@ -5173,6 +5215,14 @@ msgstr ""
 #~ msgstr ""
 #~ "Πρόσφατη τελευταία ειδοποίηση:  %3d δευτ.\n"
 #~ "\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "Ολική Απόσταση"
+#
 #
 #
 #
@@ -5207,6 +5257,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -5214,10 +5265,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Δείξε εικόνα ίχνους"
+#
 #
 #
 #
@@ -5251,6 +5304,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5277,6 +5331,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5296,6 +5351,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Όνομα Ταξιδίου"
+#
 #
 #
 #

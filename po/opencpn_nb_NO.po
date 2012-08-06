@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -252,6 +252,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " er %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 #
 msgid " to "
 msgstr " til "
@@ -414,9 +419,6 @@ msgstr "(Slepestrek uten navn)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Veipunkt uten navn)"
-#
-msgid "(m)"
-msgstr "(m)"
 #
 #
 msgid "(unnamed)"
@@ -1428,6 +1430,9 @@ msgstr "Fast konstruksjon"
 msgid "Font Options"
 msgstr "Skriftvalg"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 #
 msgid "Force Full Database Rebuild"
 msgstr "Fremtving full kartdatabase gjenoppbygging"
@@ -1441,8 +1446,8 @@ msgid "Freightbarge with containers"
 msgstr "Fraktelekter med kontainere"
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Fra eget skip: %03d Gra.  %6.2f Nm"
 #
 #
@@ -1934,9 +1939,6 @@ msgstr "NMEA Datakilde"
 #
 msgid "NMEA Options"
 msgstr "NMEA Valg"
-#
-msgid "NMi"
-msgstr "Nm"
 #
 #
 msgid "Name"
@@ -2503,10 +2505,6 @@ msgstr "Mus over"
 #
 msgid "Route"
 msgstr "Rute"
-#
-#
-msgid "Route Distance: "
-msgstr "Rutedistanse"
 #
 #
 msgid "Route Manager"
@@ -3433,6 +3431,9 @@ msgstr "Bredde:"
 msgid "Wing In Ground Effect"
 msgstr "Vingen i bakken-effekt fartøy (WIG)"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X forskyvning (Positiv, flytter kart mot øst) (Nm Projisert) :"
@@ -3505,8 +3506,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
+#
+#~ msgid "(m)"
+#~ msgstr "(m)"
+#
 #
 #
 #
@@ -3518,8 +3525,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
+#
 #
 #
 #
@@ -3530,8 +3539,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
+#
+#~ msgid "NMi"
+#~ msgstr "Nm"
+#
 #
 #
 #
@@ -3551,8 +3566,15 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
+#
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Rutedistanse"
+#
 #
 #
 #
@@ -3563,8 +3585,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -251,6 +251,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 #
 msgid " to "
 msgstr " hova "
@@ -413,9 +418,6 @@ msgstr "(Névtelen nyomvonal)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Névtelen útpont)"
-#
-msgid "(m)"
-msgstr ""
 #
 #
 msgid "(unnamed)"
@@ -1423,6 +1425,9 @@ msgstr "Fix építmény"
 msgid "Font Options"
 msgstr "Betűtípus  beállítások"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 #
 msgid "Force Full Database Rebuild"
 msgstr "Teljes adatbázis újraépítés kényszerítése"
@@ -1436,8 +1441,8 @@ msgid "Freightbarge with containers"
 msgstr "Konténeres teherbárka"
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Saját hajótól: %03d fok  %6.2f tmf"
 #
 #
@@ -1928,9 +1933,6 @@ msgstr "NMEA adatforrás"
 #
 msgid "NMEA Options"
 msgstr "NMEA beállítások"
-#
-msgid "NMi"
-msgstr "tmf"
 #
 #
 msgid "Name"
@@ -2497,10 +2499,6 @@ msgstr "Görgetés"
 #
 msgid "Route"
 msgstr "Útvonal"
-#
-#
-msgid "Route Distance: "
-msgstr "Útvonal táv: "
 #
 #
 msgid "Route Manager"
@@ -3424,6 +3422,9 @@ msgstr "Szélesség:"
 msgid "Wing In Ground Effect"
 msgstr "Talajközelséghatás"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X eltolás (Pozitív érték keletre mozgatja a térképet) (tmf) :"
@@ -3496,8 +3497,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3523,8 +3526,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
+#
 #
 #
 #
@@ -3537,8 +3542,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
 #
 #
 #
@@ -3563,13 +3570,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Használandó harmonikus adatsor:"
+#
 #
 #
 #
@@ -3595,13 +3605,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Nyelv/betűtípus"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
 #
 #
 #
@@ -3615,6 +3628,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
 #
@@ -3622,8 +3636,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
+#
+#~ msgid "NMi"
+#~ msgstr "tmf"
+#
 #
 #
 #
@@ -3643,8 +3663,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3664,8 +3686,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -3693,6 +3717,12 @@ msgstr ""
 #
 #
 #
+#~ msgid "Route Distance: "
+#~ msgstr "Útvonal táv: "
+#
+#
+#
+#
 #
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
@@ -3700,8 +3730,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Nyomvonal ikon mutatása"
+#
 #
 #
 #
@@ -3724,6 +3756,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #

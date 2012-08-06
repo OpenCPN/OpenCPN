@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -248,6 +248,11 @@ msgstr ""
 msgid " is %5g"
 msgstr "é %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 msgid " to "
 msgstr "a"
@@ -412,9 +417,6 @@ msgstr "(Derrota sen nome)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sen nome)"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 #, fuzzy
@@ -1453,6 +1455,9 @@ msgstr "Estrutura arranxada"
 msgid "Font Options"
 msgstr "Opcións de tipo de letra"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 msgid "Force Full Database Rebuild"
 msgstr "Forzar a Reconstrución de Toda a Base de Datos"
@@ -1466,8 +1471,8 @@ msgid "Freightbarge with containers"
 msgstr ""
 #
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Dende a embarcación: %03d Graos  %6.2f NMi"
 #
 # 
@@ -1974,9 +1979,6 @@ msgstr "Orixe  Datos NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opcións NMEA"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 msgid "Name"
@@ -2544,11 +2546,6 @@ msgstr "Rollover"
 # 
 msgid "Route"
 msgstr "Ruta"
-#
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "Distancia Total"
 #
 # 
 msgid "Route Manager"
@@ -3497,6 +3494,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr ""
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X Desprazado (En positivo move ó mapa ó Este) (Proxectadas en NMi) :"
@@ -3572,6 +3572,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3588,9 +3589,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proxección da carta DESCOÑECIDA, asúmese Mercator: "
+#
 #
 #
 #
@@ -3611,12 +3614,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo create_pi:"
+#
 #
 #
 #
@@ -3637,12 +3642,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Alternar Cartas"
+#
 #
 #
 #
@@ -3659,9 +3666,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -3682,6 +3691,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3694,9 +3704,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -3704,6 +3716,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "A cor do tipo de letra"
+#
 #
 #
 #
@@ -3724,12 +3737,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
 #
 #
 #
@@ -3750,6 +3765,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3760,9 +3776,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Tipos de letra"
+#
 #
 #
 #
@@ -3781,6 +3799,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
@@ -3791,9 +3810,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
 #
 #
 #
@@ -3814,12 +3835,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
 #
 #
 #
@@ -3844,12 +3867,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
 #
 #
 #
@@ -3870,12 +3895,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
 #
 #
 #
@@ -3896,6 +3923,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3909,12 +3937,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
 #
 #
 #
@@ -3937,12 +3967,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
 #
 #
 #
@@ -3963,9 +3995,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Imprimindo"
+#
 #
 #
 #
@@ -3985,6 +4019,13 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "Distancia Total"
+#
+#
+#
 #
 # 
 #~ msgid "Show Printing Icon"
@@ -3992,9 +4033,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Amosa-la icona da Derrota"
+#
 #
 #
 #
@@ -4015,12 +4058,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Alternar Nomes"
+#
 #
 #
 #

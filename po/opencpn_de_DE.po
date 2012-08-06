@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -252,6 +252,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " ist %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 msgid " to "
 msgstr "nach"
@@ -416,9 +421,6 @@ msgstr "(unbenannter Track)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Unbenannter Wegpunkte)"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 #, fuzzy
@@ -1456,6 +1458,9 @@ msgstr "festes Seezeichen"
 msgid "Font Options"
 msgstr "Schriftoptionen"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 msgid "Force Full Database Rebuild"
 msgstr "Gesamte Datenbank neu aufbauen"
@@ -1469,8 +1474,8 @@ msgid "Freightbarge with containers"
 msgstr "Tankkahn / Tankleichter mit Containern"
 #
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Vom Schiff: %03d Grad  %6.2f sm"
 #
 # 
@@ -1971,9 +1976,6 @@ msgstr "NMEA-Datenquelle"
 # 
 msgid "NMEA Options"
 msgstr "NMEA-Einstellungen"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 msgid "Name"
@@ -2547,11 +2549,6 @@ msgstr "Kurzübersicht"
 # 
 msgid "Route"
 msgstr "Route"
-#
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "Gesamtentfernung"
 #
 # 
 msgid "Route Manager"
@@ -3485,6 +3482,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr "Bodeneffektfahrzeug (WIG)"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X Versatz (pos. Werte verschieben die Karte nach Osten) "
@@ -3561,6 +3561,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3578,9 +3579,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
 #
 #
 #
@@ -3603,6 +3606,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3618,6 +3622,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3626,6 +3631,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
 #
 #
 #
@@ -3651,6 +3657,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3667,6 +3674,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
@@ -3678,9 +3686,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 #
 #
@@ -3706,6 +3716,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3714,6 +3725,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -3738,9 +3750,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
 #
 #
 #
@@ -3766,6 +3780,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3783,10 +3798,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Standardfarbe"
+#
 #
 #
 #
@@ -3806,9 +3823,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
 #
 #
 #
@@ -3826,6 +3845,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
@@ -3836,9 +3856,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
 #
 #
 #
@@ -3859,6 +3881,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3867,6 +3890,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
 #
 #
 #
@@ -3893,6 +3917,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3901,6 +3926,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
 #
 #
 #
@@ -3923,6 +3949,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3931,6 +3958,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
 #
 #
 #
@@ -3953,6 +3981,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3961,6 +3990,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
 #
 #
 #
@@ -3983,6 +4013,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3990,6 +4021,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
+#
 #
 #
 #
@@ -4008,9 +4040,17 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Drucken"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "Gesamtentfernung"
+#
 #
 #
 #
@@ -4020,9 +4060,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Track-Symbol anzeigen"
+#
 #
 #
 #

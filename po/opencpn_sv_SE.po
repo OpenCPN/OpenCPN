@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2012-07-31 21:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -251,6 +251,11 @@ msgstr " för ytterligare information."
 msgid " is %5g"
 msgstr "är %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 #
 msgid " to "
 msgstr " till "
@@ -411,9 +416,6 @@ msgstr "(Ej namngivet spår)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint namn)"
-#
-msgid "(m)"
-msgstr "(m)"
 #
 #
 msgid "(unnamed)"
@@ -1423,6 +1425,9 @@ msgstr "Fast struktur"
 msgid "Font Options"
 msgstr "Alternativ för Teckensnitt"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 #
 msgid "Force Full Database Rebuild"
 msgstr "Tvinga fullständig databasuppdatering"
@@ -1436,8 +1441,8 @@ msgid "Freightbarge with containers"
 msgstr "Fraktpråm med containers"
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "EBL: %03d°  %6.2f NM"
 #
 #
@@ -1927,9 +1932,6 @@ msgstr "NMEA datakälla"
 #
 msgid "NMEA Options"
 msgstr "NMEA-inställningar"
-#
-msgid "NMi"
-msgstr "Nm"
 #
 #
 msgid "Name"
@@ -2495,10 +2497,6 @@ msgstr "\"Rulla över\""
 #
 msgid "Route"
 msgstr "Rutt"
-#
-#
-msgid "Route Distance: "
-msgstr "Total distans:"
 #
 #
 msgid "Route Manager"
@@ -3421,6 +3419,9 @@ msgstr "Bredd:"
 msgid "Wing In Ground Effect"
 msgstr "Markeffektfarkost"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X-korrektion (Positiva värden justerar sjökortet österut) (NM) :"
@@ -3492,5 +3493,19 @@ msgid "wxFB Website"
 msgstr "Webbsida för wxFB"
 #
 #
+#~ msgid "(m)"
+#~ msgstr "(m)"
+#
+#
+#
 #~ msgid "File System"
 #~ msgstr "Filsystem"
+#
+#
+#~ msgid "NMi"
+#~ msgstr "Nm"
+#
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Total distans:"

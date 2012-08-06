@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -282,6 +282,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " is %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 msgid " to "
@@ -482,9 +487,6 @@ msgstr "(未命名航跡)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(未命名轉向點)"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 # 
@@ -1721,6 +1723,9 @@ msgstr "固定結構體"
 msgid "Font Options"
 msgstr "字型選項"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 # 
 msgid "Force Full Database Rebuild"
@@ -1738,8 +1743,8 @@ msgstr "載有貨櫃之貨運駁船"
 #
 # 
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "距離本船: %03d 度  %6.2f 海浬"
 #
 # 
@@ -2348,9 +2353,6 @@ msgstr "NMEA 資料來源"
 # 
 msgid "NMEA Options"
 msgstr "NMEA 選項"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 # 
@@ -3051,12 +3053,6 @@ msgstr "Rollover"
 # 
 msgid "Route"
 msgstr "航路"
-#
-# 
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "總距離"
 #
 # 
 # 
@@ -4185,6 +4181,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr "翼地效應"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -4274,6 +4273,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4292,10 +4292,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4319,6 +4321,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4335,6 +4338,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4344,6 +4348,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4377,6 +4382,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4396,6 +4402,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4429,6 +4436,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4447,6 +4455,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4478,6 +4487,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4490,10 +4500,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4520,6 +4532,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4529,6 +4542,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4562,6 +4576,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4581,6 +4596,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4614,6 +4630,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4633,6 +4650,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4666,6 +4684,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4685,6 +4704,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4719,6 +4739,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4745,10 +4766,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
 #
 #
 #
@@ -4757,6 +4780,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
+#
 #
 #
 #
@@ -4777,10 +4801,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
 #
 #
 #
@@ -4799,6 +4825,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4810,10 +4837,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
 #
 #
 #
@@ -4835,6 +4864,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4844,6 +4874,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -4871,6 +4902,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4880,6 +4912,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -4903,6 +4936,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4912,6 +4946,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -4935,6 +4970,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4944,6 +4980,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
 #
 #
 #
@@ -4967,6 +5004,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4975,6 +5013,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
 #
 #
 #
@@ -4994,10 +5033,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "列印"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "總距離"
+#
 #
 #
 #
@@ -5008,10 +5056,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -233,6 +233,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " %5g tir"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 msgid " to "
 msgstr "Başlangıç - Varış Limanları"
 #
@@ -391,9 +396,6 @@ msgstr "(Adlandırılmamış seyirizi)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Adlandırılmamış Seyirnoktası)"
-#
-msgid "(m)"
-msgstr "(m)"
 #
 # Couche
 msgid "(unnamed)"
@@ -1280,6 +1282,9 @@ msgstr "Sabit yapı"
 msgid "Font Options"
 msgstr "Yazı türü seçenekleri"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 msgid "Force Full Database Rebuild"
 msgstr "Tüm veritabanını yeniden yapılandırmaya zorla"
 #
@@ -1290,8 +1295,8 @@ msgid "Freightbarge with containers"
 msgstr "Konteynırlı yük barjı"
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "KendiTeknenden: %03d Derece  %6.2f NMil"
 #
 #
@@ -1721,9 +1726,6 @@ msgstr " NMEA Veri kaynağı"
 #
 msgid "NMEA Options"
 msgstr "NMEA Seçenekleri"
-#
-msgid "NMi"
-msgstr "NMi"
 #
 #
 msgid "Name"
@@ -2236,9 +2238,6 @@ msgstr "Uzatmalar"
 #
 msgid "Route"
 msgstr "Rota"
-#
-msgid "Route Distance: "
-msgstr "Rota mesafesi"
 #
 msgid "Route Manager"
 msgstr "RotaYöneticisi"
@@ -3093,6 +3092,9 @@ msgstr "Genişlik:"
 msgid "Wing In Ground Effect"
 msgstr "Yer etkili kanat"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "X Uzantısı (Haritanın doğusuna doğru hareketlerde +) (NMi öngörüldü) :"
 #
@@ -3155,15 +3157,22 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
+#
+#~ msgid "(m)"
+#~ msgstr "(m)"
+#
 #
 #
 #
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
+#
 #
 #
 #
@@ -3174,13 +3183,20 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Dil/Yazı Türü"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
+#
+#~ msgid "NMi"
+#~ msgstr "NMi"
+#
 #
 #
 #
@@ -3199,8 +3215,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Rota mesafesi"
+#
 #
 #
 #
@@ -3210,8 +3232,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #

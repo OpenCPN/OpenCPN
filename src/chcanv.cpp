@@ -9300,11 +9300,9 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
         dc.DrawText( routeInfo, xp, yp );
 
-        if( m_pMeasureRoute ) {
-            wxString s0( _("Route: ") );
-            s0 += FormatDistanceAdaptive( m_pMeasureRoute->m_route_length + dist );
-            RenderExtraRouteLegInfo( dc, r_rband, s0 );
-        }
+        wxString s0( _("Route: ") );
+        s0 += FormatDistanceAdaptive( route->m_route_length + dist );
+        RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }
 }
 
@@ -13046,7 +13044,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
     int x, y;
     int i;
     char sbuf[100];
-    int w, h;
+    int w;
     float tcmax, tcmin;
 
     GetClientSize( &x, &y );

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -302,6 +302,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " er %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 msgid " to "
@@ -530,9 +535,6 @@ msgstr "(unavngivet spor)"
 # 
 msgid "(Unnamed Waypoint)"
 msgstr "(Unavngivet Waypoint)"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 # 
@@ -1882,6 +1884,9 @@ msgstr ""
 msgid "Font Options"
 msgstr "Valgmuligheder for skrifttyper"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 # 
 # 
@@ -1901,8 +1906,8 @@ msgstr ""
 # 
 # 
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Herfra kurs: %03d gr. %6.2f sømil"
 #
 # 
@@ -2563,9 +2568,6 @@ msgstr "NMEA datakilde"
 # 
 msgid "NMEA Options"
 msgstr "Valgmuligheder for NMEA-data"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 # 
@@ -3337,13 +3339,6 @@ msgstr ""
 # 
 msgid "Route"
 msgstr "Rute"
-#
-# 
-# 
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "Afstand i alt"
 #
 # 
 # 
@@ -4611,6 +4606,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr ""
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -4703,10 +4701,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kortprojektion kan ikke uddrages. Mercator antages: "
+#
 #
 #
 #
@@ -4730,6 +4730,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4746,6 +4747,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4755,6 +4757,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   PlugInManager: 'destroy_pi' kan ikke indlæses: "
+#
 #
 #
 #
@@ -4791,6 +4794,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 #
@@ -4839,6 +4843,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4873,6 +4878,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Slet alle spor..."
+#
 #
 #
 #
@@ -4919,6 +4925,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4932,11 +4939,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Yderligere information"
+#
 #
 #
 #
@@ -4957,6 +4966,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Ikke muligt at indlæse 'libgps.so.19'"
+#
 #
 #
 #
@@ -5001,11 +5011,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kort"
+#
 #
 #
 #
@@ -5040,6 +5052,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 #
 #
@@ -5092,6 +5105,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5133,6 +5147,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5165,12 +5180,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Farve"
+#
 #
 #
 #
@@ -5188,6 +5205,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Kl."
+#
 #
 #
 #
@@ -5225,6 +5243,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5245,6 +5264,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5258,6 +5278,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ikke muligt at indlæse 'libgps.so.19'"
+#
 #
 #
 #
@@ -5301,6 +5322,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5330,6 +5352,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 #
@@ -5373,6 +5396,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5409,6 +5433,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5433,6 +5458,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5445,11 +5471,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "FREMME KL:                   "
+#
 #
 #
 #
@@ -5489,12 +5517,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # Translation?
 #~ msgid "Mark Icon"
 #~ msgstr "Ikon for waypoint"
+#
 #
 #
 #
@@ -5515,6 +5545,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5523,6 +5554,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nyt waypoint"
+#
 #
 #
 #
@@ -5546,6 +5578,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5559,6 +5592,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn base klasse\n"
 #~ "PlugInManager oprettede denne base klasse"
+#
 #
 #
 #
@@ -5602,6 +5636,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5631,6 +5666,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -5674,6 +5710,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5703,6 +5740,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -5744,6 +5782,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5753,6 +5792,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager søger tilføjelser på lokation "
+#
 #
 #
 #
@@ -5776,6 +5816,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5785,6 +5826,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiserer tilføjelse: "
+#
 #
 #
 #
@@ -5808,6 +5850,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5817,6 +5860,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Frakobler tilføjelse: "
+#
 #
 #
 #
@@ -5840,6 +5884,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5848,6 +5893,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:             "
+#
 #
 #
 #
@@ -5866,6 +5912,7 @@ msgstr ""
 #~ "\n"
 #~ "                              Vil du køre denne version af 'libgps' "
 #~ "alligevel?"
+#
 #
 #
 #
@@ -5905,11 +5952,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Udskrift"
+#
 #
 #
 #
@@ -5940,6 +5989,15 @@ msgstr ""
 #~ msgstr ""
 #~ "Nyeste data interval:   %3d Sek.\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "Afstand i alt"
+#
 #
 #
 #
@@ -5983,6 +6041,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6012,6 +6071,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Meteorologi(GRIB) folder"
+#
 #
 #
 #
@@ -6051,6 +6111,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6083,6 +6144,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6091,11 +6153,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Vis ikon for spor"
+#
 #
 #
 #
@@ -6139,6 +6203,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6158,6 +6223,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6192,6 +6258,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6212,6 +6279,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rute"
+#
 #
 #
 #
@@ -6255,6 +6323,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6291,6 +6360,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6320,6 +6390,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Vindretning"
+#
 #
 #
 #

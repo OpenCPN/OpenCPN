@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -375,6 +375,11 @@ msgstr " voor details."
 msgid " is %5g"
 msgstr " is %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -644,10 +649,6 @@ msgstr "(Track zonder naam)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Markeringspunt zonder naam)"
-#
-#
-msgid "(m)"
-msgstr "(m)"
 #
 #
 #
@@ -2219,6 +2220,9 @@ msgstr "platform"
 msgid "Font Options"
 msgstr "Opties Lettertype"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 #
 #
 #
@@ -2240,8 +2244,8 @@ msgstr "vrachtduwbak met containers"
 #
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "WP cursor: %03d° | %6.2f NM"
 #
 #
@@ -2987,10 +2991,6 @@ msgstr "NMEA databron"
 #
 msgid "NMEA Options"
 msgstr "NMEA Opties"
-#
-#
-msgid "NMi"
-msgstr "NM"
 #
 #
 #
@@ -3856,13 +3856,6 @@ msgstr "Toon bij aanwijzen"
 #
 msgid "Route"
 msgstr "Route"
-#
-#
-#
-#
-#
-msgid "Route Distance: "
-msgstr "Totale verheid (NM):"
 #
 #
 #
@@ -5282,6 +5275,9 @@ msgstr "Breedte:"
 msgid "Wing In Ground Effect"
 msgstr "WIG-tuig (grondeffect)"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 #
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -5396,6 +5392,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5410,8 +5407,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5442,8 +5441,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5463,6 +5464,12 @@ msgstr "wxFB website"
 #
 #
 #
+#~ msgid "(m)"
+#~ msgstr "(m)"
+#
+#
+#
+#
 #
 #
 #
@@ -5470,6 +5477,7 @@ msgstr "wxFB website"
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS waarschuwing"
+#
 #
 #
 #
@@ -5495,6 +5503,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
 #
@@ -5505,8 +5514,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -5529,8 +5540,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
 #
 #
 #
@@ -5542,8 +5555,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
 #
 #
 #
@@ -5564,6 +5579,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
 #
@@ -5575,8 +5591,15 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Markeringspunt-naam"
+#
+#
+#
+#~ msgid "NMi"
+#~ msgstr "NM"
+#
 #
 #
 #
@@ -5605,8 +5628,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -5640,8 +5665,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -5672,8 +5699,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -5704,8 +5733,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 #
 #
@@ -5735,8 +5766,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 #
 #
@@ -5759,8 +5792,18 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
+#
+#
+#
+#
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Totale verheid (NM):"
+#
 #
 #
 #
@@ -5775,8 +5818,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
 #
 #
 #

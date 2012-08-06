@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -242,6 +242,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " est %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 msgid " to "
 msgstr " à "
 #
@@ -417,9 +422,6 @@ msgstr "(Trace sans nom)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint sans nom)"
-#
-msgid "(m)"
-msgstr "(m)"
 #
 # Couche
 msgid "(unnamed)"
@@ -1310,6 +1312,9 @@ msgstr "Structure fixe"
 msgid "Font Options"
 msgstr "Options de police"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 msgid "Force Full Database Rebuild"
 msgstr "Forcer la reconstruction de la base de données"
 #
@@ -1320,8 +1325,8 @@ msgid "Freightbarge with containers"
 msgstr "Chaland porte-containeurs"
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Le  bateau : %03d Deg  %6.2f NMi"
 #
 #
@@ -1752,9 +1757,6 @@ msgstr "Source de données NMEA "
 #
 msgid "NMEA Options"
 msgstr "Options NMEA"
-#
-msgid "NMi"
-msgstr "NMi"
 #
 #
 msgid "Name"
@@ -2261,9 +2263,6 @@ msgstr "Info par survol d'une cible."
 #
 msgid "Route"
 msgstr "Route"
-#
-msgid "Route Distance: "
-msgstr "Route : Longeur"
 #
 msgid "Route Manager"
 msgstr "Gestionnaire de routes, traces, waypoint et couches."
@@ -3111,6 +3110,9 @@ msgstr "Largeur :"
 msgid "Wing In Ground Effect"
 msgstr "Avion à effet de sol (WIG)"
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 msgstr "Horizontalement (+ : carte déplacée vers l'est)     (NMi projeté) :"
 #
@@ -3173,15 +3175,22 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
+#
+#~ msgid "(m)"
+#~ msgstr "(m)"
+#
 #
 #
 #
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Données par défaut"
+#
 #
 #
 #
@@ -3192,13 +3201,20 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Langues / polices"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
+#
+#~ msgid "NMi"
+#~ msgstr "NMi"
+#
 #
 #
 #
@@ -3217,8 +3233,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Route : Longeur"
+#
 #
 #
 #
@@ -3228,8 +3250,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -355,6 +355,11 @@ msgstr ""
 msgid " is %5g"
 msgstr " è %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -621,9 +626,6 @@ msgstr "(Traccia senza nome)"
 #
 msgid "(Unnamed Waypoint)"
 msgstr "(Punto senza nome)"
-#
-msgid "(m)"
-msgstr ""
 #
 #
 #
@@ -2133,6 +2135,9 @@ msgstr "Struttura Fissa"
 msgid "Font Options"
 msgstr "Opzioni Caratteri"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 #
 #
 #
@@ -2154,8 +2159,8 @@ msgstr "Chiatta merci con Container"
 #
 #
 #
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Dall'imbarcazione: %03d ° %6.2f M"
 #
 #
@@ -2883,9 +2888,6 @@ msgstr "Sorgente dati NMEA"
 #
 msgid "NMEA Options"
 msgstr "Opzioni NMEA"
-#
-msgid "NMi"
-msgstr ""
 #
 #
 #
@@ -3737,13 +3739,6 @@ msgstr ""
 #
 msgid "Route"
 msgstr "Rotta"
-#
-#
-#
-#
-#
-msgid "Route Distance: "
-msgstr "Distanza Rotta:"
 #
 #
 #
@@ -5133,6 +5128,9 @@ msgstr "Spessore:"
 msgid "Wing In Ground Effect"
 msgstr ""
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 #
 #
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -5235,8 +5233,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+#
 #
 #
 #
@@ -5263,8 +5263,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
 #
 #
 #
@@ -5303,8 +5305,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -5365,8 +5369,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
 #
 #
 #
@@ -5409,8 +5415,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
 #
 #
 #
@@ -5422,6 +5430,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Allerta AIS"
+#
 #
 #
 #
@@ -5444,8 +5453,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -5484,8 +5495,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -5524,8 +5537,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 #
@@ -5562,6 +5577,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
@@ -5581,9 +5597,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -5614,8 +5632,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -5677,6 +5697,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
@@ -5689,8 +5710,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Default File"
+#
 #
 #
 #
@@ -5704,8 +5727,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Lingua/Caratteri"
+#
 #
 #
 #
@@ -5730,8 +5755,18 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Stampa"
+#
+#
+#
+#
+#
+#
+#~ msgid "Route Distance: "
+#~ msgstr "Distanza Rotta:"
+#
 #
 #
 #
@@ -5748,8 +5783,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostra l'icona della Traccia"
+#
 #
 #
 #

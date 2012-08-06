@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b620\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-01 18:38-0400\n"
+"POT-Creation-Date: 2012-08-06 18:45+0200\n"
 "PO-Revision-Date: 2010-06-25 19:44-0300\n"
 "Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
 "Language-Team: \n"
@@ -350,6 +350,11 @@ msgstr ""
 msgid " is %5g"
 msgstr "é %5g"
 #
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 # 
@@ -632,9 +637,6 @@ msgstr "(Acompanhamento sem Nome)"
 #, fuzzy
 msgid "(Unnamed Waypoint)"
 msgstr "Renomear Pontos da Derrota?"
-#
-msgid "(m)"
-msgstr ""
 #
 # 
 # 
@@ -2264,6 +2266,9 @@ msgstr ""
 msgid "Font Options"
 msgstr "Opções de Fonte"
 #
+msgid "For this leg the Great Circle route is "
+msgstr ""
+#
 # 
 # 
 # 
@@ -2285,8 +2290,8 @@ msgstr ""
 # 
 # 
 # 
-#, c-format
-msgid "From Ownship: %03d Deg  %6.2f NMi"
+#, fuzzy, c-format
+msgid "From Ownship: %03d Deg   "
 msgstr "Do próprio Barco: %03d Deg  %6.2f NMi"
 #
 # 
@@ -3072,9 +3077,6 @@ msgstr "Fonte de Dados NMEA"
 # 
 msgid "NMEA Options"
 msgstr "Opções NMEA"
-#
-msgid "NMi"
-msgstr ""
 #
 # 
 # 
@@ -3956,14 +3958,6 @@ msgstr ""
 # 
 msgid "Route"
 msgstr "Derrota"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Route Distance: "
-msgstr "Distância Total"
 #
 # 
 # 
@@ -5411,6 +5405,9 @@ msgstr ""
 msgid "Wing In Ground Effect"
 msgstr ""
 #
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
 # 
 # 
 msgid "X Offset (Positive moves map to East) (NMi Projected) :"
@@ -5518,12 +5515,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "A Projeção da Carta é DESCONHECIDA, assumindo Mercator:"
+#
 #
 #
 #
@@ -5563,6 +5562,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -5613,6 +5613,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5649,6 +5650,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Excluir to&dos os Acompanhamentos..."
+#
 #
 #
 #
@@ -5697,6 +5699,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5711,12 +5714,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
 #
 #
 #
@@ -5742,6 +5747,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 #
 #
@@ -5789,12 +5795,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -5830,6 +5838,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Arquivo da Carta corrompido...desabilitando esta carta\n"
+#
 #
 #
 #
@@ -5884,6 +5893,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5921,6 +5931,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5975,6 +5986,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6010,6 +6022,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6017,6 +6030,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Cor da fonte."
+#
 #
 #
 #
@@ -6067,6 +6081,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6108,6 +6123,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6119,6 +6135,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "TED/Marca Temporal"
+#
 #
 #
 #
@@ -6150,6 +6167,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair OpenCPN"
+#
 #
 #
 #
@@ -6200,6 +6218,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6225,6 +6244,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6243,6 +6263,7 @@ msgstr ""
 #~ "Não foi possível carregar libgps.\n"
 #~ "\n"
 #~ "O host gpsd é: "
+#
 #
 #
 #
@@ -6280,6 +6301,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -6326,6 +6348,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6358,6 +6381,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controle da Apresentação GRIB"
+#
 #
 #
 #
@@ -6404,6 +6428,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6429,12 +6454,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fontes"
+#
 #
 #
 #
@@ -6449,6 +6476,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -6489,12 +6517,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Símbolo da Marca"
+#
 #
 #
 #
@@ -6515,6 +6545,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6524,6 +6555,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 #
 #
@@ -6570,6 +6602,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6602,6 +6635,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
 #
 #
 #
@@ -6649,6 +6683,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6688,6 +6723,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6699,6 +6735,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:"
+#
 #
 #
 #
@@ -6716,6 +6753,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Versão da API libgps não confere.\n"
 #~ "Opencpn encontrou a versão %d.%d, mas é necessário pelo menos a versão 3.1"
+#
 #
 #
 #
@@ -6758,12 +6796,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Imprimir"
+#
 #
 #
 #
@@ -6797,6 +6837,16 @@ msgstr ""
 #~ msgstr ""
 #~ "Período Recente do Relatório:     %3d Seg.\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Route Distance: "
+#~ msgstr "Distância Total"
+#
 #
 #
 #
@@ -6847,6 +6897,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6886,6 +6937,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6918,6 +6970,7 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Selecionar Diretório de Arquivos GRIB"
+#
 #
 #
 #
@@ -6968,6 +7021,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6994,6 +7048,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome do Navio:"
+#
 #
 #
 #
@@ -7044,6 +7099,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7087,6 +7143,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7120,6 +7177,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7129,12 +7187,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar ícone Acompanhamentos"
+#
 #
 #
 #
@@ -7181,6 +7241,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7202,6 +7263,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Tamanho:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7237,6 +7299,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7258,6 +7321,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nome da Derrota"
+#
 #
 #
 #
@@ -7295,6 +7359,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos de Alta Definição"
+#
 #
 #
 #
@@ -7341,6 +7406,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7380,6 +7446,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7412,6 +7479,7 @@ msgstr ""
 # 
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Veloc. do Vento, Nós"
+#
 #
 #
 #
