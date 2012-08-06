@@ -1183,10 +1183,13 @@ bool MyApp::OnInit()
 #endif
 
     //  Get the default for info
-    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
-    imsg = _T("System default Language:  ");
-    imsg += def_lang_canonical;
-    wxLogMessage( imsg );
+    wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    if( wxLanguageInfo ) {
+        wxString def_lang_canonical = languageInfo->CanonicalName;
+        imsg = _T("System default Language:  ");
+        imsg += def_lang_canonical;
+        wxLogMessage( imsg );
+    }
 
     //  For windows, installer may have left information in the registry defining the
     //  user's selected install language.
@@ -3933,7 +3936,7 @@ int MyFrame::DoOptionsDialog()
         if( rr & TIDES_CHANGED ) {
             LoadHarmonics();
         }
-        
+
         pConfig->UpdateSettings();
 
         if( g_pActiveTrack ) {
@@ -5021,7 +5024,7 @@ void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
 void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
     if( !g_FloatingCompassDialog ) return;
-    
+
     //    Look for overlap
     bool b_update = false;
     if( g_FloatingCompassDialog && g_FloatingToolbarDialog ) {
@@ -5052,7 +5055,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
                     cc1->GetSize().y - ( g_FloatingCompassDialog->GetSize().y + y_offset + cc1_edge_comp ) );
             g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
         }
-        
+
         b_update = true;
     }
 
@@ -7006,7 +7009,7 @@ void MyFrame::LoadHarmonics()
     }
     else {
         bool b_newdataset = false;
-        
+
         //      Test both ways
         wxArrayString test = ptcmgr->GetDataSet();
         for(unsigned int i=0 ; i < test.GetCount() ; i++) {
@@ -7037,7 +7040,7 @@ void MyFrame::LoadHarmonics()
                 break;                  //  i loop
             }
         }
-        
+
         if(b_newdataset)
             ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
