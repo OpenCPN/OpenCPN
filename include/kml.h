@@ -68,7 +68,7 @@ private:
     int ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name );
     int ParseTrack( TiXmlNode* node, wxString& name );
     int ParseCoordinates( TiXmlNode* node, dPointList& points );
-    static TiXmlElement* Kml::StandardHead( TiXmlDocument& xmlDoc, wxString name );
+    static TiXmlElement* StandardHead( TiXmlDocument& xmlDoc, wxString name );
     static std::string PointPlacemark(  TiXmlElement* document, RoutePoint* routepoint );
 
     wxString kmlText;
