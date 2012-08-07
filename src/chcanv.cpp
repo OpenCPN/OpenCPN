@@ -48,6 +48,7 @@
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
+#include "statwin.h"
 #include "navutil.h"
 #include "kml.h"
 #include "concanv.h"
@@ -159,6 +160,7 @@ extern AIS_Decoder      *g_pAIS;
 extern FontMgr         *pFontMgr;
 
 extern MyFrame          *gFrame;
+extern StatWin          *stats;
 
 //    AIS Global configuration
 extern bool             g_bShowAIS; //pjotrc 2010.02.09
@@ -503,19 +505,19 @@ private:
     wxString m_string;
     wxSize m_size;
     wxPoint m_position;
-//            wxTextCtrl        *m_pInfoTextCtl;
     wxStaticText *m_pInfoTextCtl;
 
     DECLARE_EVENT_TABLE()
 };
+
 //-----------------------------------------------------------------------
 //
 //    Chart Info Rollover window implementation
 //
 //-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ChInfoWin, wxWindow) EVT_PAINT ( ChInfoWin::OnPaint )
+BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
+    EVT_PAINT ( ChInfoWin::OnPaint )
     EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
-
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -544,22 +546,19 @@ void ChInfoWin::OnPaint( wxPaintEvent& event )
     GetClientSize( &width, &height );
     wxPaintDC dc( this );
 
-    dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ), wxTRANSPARENT ) );
+    dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
     dc.SetPen( wxPen( GetGlobalColor( _T ( "UITX1" ) ) ) );
     dc.DrawRectangle( 0, 0, width, height );
-
 }
 
 void ChInfoWin::SetBitmap()
 {
-
     SetBackgroundColour( GetGlobalColor( _T ( "UIBCK" ) ) );
 
     m_pInfoTextCtl->SetBackgroundColour( GetGlobalColor( _T ( "UIBCK" ) ) );
     m_pInfoTextCtl->SetForegroundColour( GetGlobalColor( _T ( "UITX1" ) ) );
 
     m_pInfoTextCtl->SetSize( 1, 1, m_size.x - 2, m_size.y - 2 );
-//      m_pInfoTextCtl->SetSize(0, 0, m_size.x, m_size.y );
     m_pInfoTextCtl->SetLabel( m_string );
 
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
@@ -4170,14 +4169,6 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
     ReloadVP();
 }
 
-/*
-
- void ChartCanvas::MouseWheelTimerEvent ( wxTimerEvent& event )
- {
- m_bEnableWheelEvents = true;
- }
- */
-
 void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
 {
     // Route info rollover
@@ -6761,33 +6752,31 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             wxString s;
             ChartBase *pc = NULL;
 
-            if( ( ChartData->IsChartInCache( dbIndex ) ) && ChartData->IsValid() ) pc =
-                    ChartData->OpenChartFromDB( dbIndex, FULL_INIT );   // this must come from cache
+            if( ( ChartData->IsChartInCache( dbIndex ) ) && ChartData->IsValid() )
+                pc = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );   // this must come from cache
 
             int char_width, char_height;
-
             s = ChartData->GetFullChartInfo( pc, dbIndex, &char_width, &char_height );
-
             m_pCIWin->SetString( s );
-
-//                  m_pCIWin->SetWinSize(wxSize(400, 250));
             m_pCIWin->FitToChars( char_width, char_height );
 
             wxPoint p;
             p.x = x;
-            if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width ) p.x = m_canvas_width
-                        - m_pCIWin->GetWinSize().x;
+            if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
+                p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
 
-            p.y = y - m_pCIWin->GetWinSize().y;
+            int statsW, statsH;
+            stats->GetSize( &statsW, &statsH );
+            p.y = m_canvas_height - statsH - 4 - m_pCIWin->GetWinSize().y;
 
             m_pCIWin->SetPosition( p );
             m_pCIWin->SetBitmap();
             m_pCIWin->Refresh();
             m_pCIWin->Show();
-
         }
-    } else
+    } else {
         HideChartInfoWindow();
+    }
 }
 
 void ChartCanvas::HideChartInfoWindow( void )

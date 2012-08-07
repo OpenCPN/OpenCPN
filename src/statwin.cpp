@@ -54,7 +54,6 @@ BEGIN_EVENT_TABLE(StatWin, wxWindow)
     EVT_MOUSE_EVENTS(StatWin::MouseEvent)
 END_EVENT_TABLE()
 
-// ctor
 StatWin::StatWin( wxWindow *frame )
 {
 

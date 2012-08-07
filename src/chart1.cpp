@@ -1374,14 +1374,15 @@ bool MyApp::OnInit()
 // Set default color scheme
     global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-        //  On Windows platforms, establish a default cache managment policy
-        //  as allowing OpenCPN a percentage of available physical memory,
-        //  not to exceed 1 GB
+    // On Windows platforms, establish a default cache managment policy
+    // as allowing OpenCPN a percentage of available physical memory,
+    // not to exceed 1 GB
+    // Note that this logic implies that Windows platforms always use
+    // the memCacheLimit policy, and never use the fallback nCacheLimit policy
 #ifdef __WXMSW__
-    if( 0 == g_memCacheLimit ) {
-        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = wxMin((int) ( g_mem_total * 0.5 ), 1024);
-    }
-        g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024);  // math in kBytes
+if( 0 == g_memCacheLimit )
+    g_memCacheLimit = (int) ( g_mem_total * 0.5 );
+    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
 #endif
 
 //      Establish location and name of chart database
@@ -3081,8 +3082,6 @@ void MyFrame::DoSetSize( void )
         }
     }
 
-    if( pthumbwin ) pthumbwin->SetMaxSize( cc1->GetSize() );
-
 //  Update the stored window size
     GetSize( &x, &y );
     g_nframewin_x = x;
@@ -3098,6 +3097,7 @@ void MyFrame::DoSetSize( void )
             DoChartUpdate();
     }
 
+    if( pthumbwin ) pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
 }
 
 void MyFrame::PositionConsole( void )
@@ -5206,21 +5206,17 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
             cc1->SetQuiltChartHiLiteIndex( selected_dbIndex );
 
             cc1->ReloadVP( false );         // no VP adjustment allowed
-        } else
-            if( pCurrentStack->nEntry == 1 ) {
-                const ChartTableEntry &cte = ChartData->GetChartTableEntry(
-                        pCurrentStack->GetDBIndex( 0 ) );
-                if( CHART_TYPE_CM93COMP != cte.GetChartType() ) {
-                    cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
-                    cc1->ReloadVP( false );
-                } else
-                    if( ( -1 == selected_index ) && ( -1 == selected_dbIndex ) ) {
-                        cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
-                    }
-
+        } else if( pCurrentStack->nEntry == 1 ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry(
+                    pCurrentStack->GetDBIndex( 0 ) );
+            if( CHART_TYPE_CM93COMP != cte.GetChartType() ) {
+                cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
+                cc1->ReloadVP( false );
+            } else if( ( -1 == selected_index ) && ( -1 == selected_dbIndex ) ) {
+                cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
             }
+        }
         SetChartThumbnail( -1 );        // hide all thumbs in quilt mode
-
     }
 }
 
@@ -5228,8 +5224,9 @@ void MyFrame::HandlePianoRolloverIcon( int selected_index, int selected_dbIndex 
 {
     if( !cc1 ) return;
 
-    if( !cc1->GetQuiltMode() ) SetChartThumbnail( selected_index );
-    else {
+    if( !cc1->GetQuiltMode() ) {
+        SetChartThumbnail( selected_index );
+    } else {
         cc1->SetQuiltChartHiLiteIndex( selected_dbIndex );
     }
 }
@@ -5408,7 +5405,7 @@ void MyFrame::SetChartThumbnail( int index )
 
     if( index == -1 ) {
         wxRect thumb_rect_in_parent = pthumbwin->GetRect();
-        ;
+
         pthumbwin->pThumbChart = NULL;
         pthumbwin->Show( false );
         cc1->RefreshRect( thumb_rect_in_parent, FALSE );
