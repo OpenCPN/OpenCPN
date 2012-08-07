@@ -168,3 +168,4 @@ src/pluginmanager.cpp
 include/pluginmanager.h
 src/toolbar.cpp
 src/styles.cpp
+src/kml.cpp

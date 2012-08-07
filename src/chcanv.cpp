@@ -49,6 +49,7 @@
 #include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
+#include "kml.h"
 #include "concanv.h"
 #include "thumbwin.h"
 #include "chartdb.h"
@@ -298,6 +299,12 @@ enum
     ID_RT_MENU_DEACTIVATE,
     ID_RT_MENU_INSERT,
     ID_RT_MENU_APPEND,
+    ID_RT_MENU_COPY,
+    ID_TK_MENU_COPY,
+    ID_WPT_MENU_COPY,
+    ID_PASTE_WAYPOINT,
+    ID_PASTE_ROUTE,
+    ID_PASTE_TRACK,
     ID_RT_MENU_DELETE,
     ID_RT_MENU_REVERSE,
     ID_RT_MENU_DELPOINT,
@@ -3042,6 +3049,12 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_MENU ( ID_RT_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_INSERT,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_APPEND,       ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_PASTE_ROUTE,          ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_PASTE_TRACK,          ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_DELETE,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_REVERSE,      ChartCanvas::PopupMenuHandler )
 
@@ -8001,13 +8014,15 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Route Properties..." ) );
-        if( m_pSelectedRoute )
+        if( m_pSelectedRoute ) {
             if( m_pSelectedRoute->IsActive() )
                 subMenuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
             else
                 subMenuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+        }
         subMenuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
         subMenuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
+        subMenuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         subMenuRoute->Append( ID_RT_MENU_DELETE, _( "Delete Route" ) );
         subMenuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse" ) );
     }
@@ -8015,6 +8030,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         if( seltype & SELTYPE_ROUTESEGMENT ) subMenuRoute->AppendSeparator();
         subMenuRoute->Append( ID_TK_MENU_PROPERTIES, _( "Track Properties..." ) );
+        subMenuRoute->Append( ID_TK_MENU_COPY, _( "Copy" ) );
         subMenuRoute->Append( ID_TK_MENU_DELETE, _( "Delete Track" ) );
     }
 
@@ -8025,6 +8041,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             subMenuWaypoint->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next in Route" ) );
         }
         subMenuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+        subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             subMenuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete Waypoint" ) );
     }
@@ -8034,6 +8051,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
         if( !g_pRouteMan->GetpActiveRoute() )
             subMenuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
+
+        subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
 
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             subMenuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
@@ -8072,9 +8091,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
                 subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
             }
-
         }
-
     }
 
     //        Following Select type are exclusive
@@ -8099,6 +8116,33 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     subMenuPosition->Append( ID_DEF_MENU_GOTOPOSITION, _("Jump To...") );
 
+    Kml* kml = new Kml;
+    int pasteBuffer = kml->ParsePasteBuffer();
+    if( pasteBuffer != KML_PASTE_INVALID ) {
+        contextMenu->AppendSeparator();
+        switch( pasteBuffer ) {
+            case KML_PASTE_WAYPOINT: {
+                contextMenu->Append( ID_PASTE_WAYPOINT, _( "Paste Waypoint..." ) );
+                break;
+            }
+            case KML_PASTE_ROUTE: {
+                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route..." ) );
+                break;
+            }
+            case KML_PASTE_TRACK: {
+                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track..." ) );
+                break;
+            }
+            case KML_PASTE_ROUTE_TRACK: {
+                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route..." ) );
+                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track..." ) );
+                break;
+            }
+        }
+        contextMenu->AppendSeparator();
+    }
+    delete kml;
+
     if( !g_bCourseUp ) contextMenu->Append( ID_DEF_MENU_COGUP, _("Course Up Mode") );
     else {
         if( !VPoint.b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
@@ -8108,9 +8152,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( ! m_pMouseRoute ) {
-        if( m_bMeasure_Active ) 
+        if( m_bMeasure_Active )
         	contextMenu->Append( ID_DEF_MENU_DEACTIVATE_MEASURE, _( "Measure Off" ) );
-        else 
+        else
         	contextMenu->Append( ID_DEF_MENU_ACTIVATE_MEASURE, _( "Measure" ) );
     }
 
@@ -8324,6 +8368,221 @@ void ChartCanvas::ShowRoutePropertiesDialog( wxString title, Route* selected ) {
 
     Refresh( false );
 }
+
+void pupHandler_PasteWaypoint() {
+    Kml* kml = new Kml();
+    ::wxBeginBusyCursor();
+
+    int pasteBuffer = kml->ParsePasteBuffer();
+    RoutePoint* pasted = kml->GetParsedRoutePoint();
+
+    int nearby_sel_rad_pix = 8;
+    double nearby_radius_meters = nearby_sel_rad_pix / cc1->GetCanvasTrueScale();
+
+    RoutePoint *nearPoint = pWayPointMan->GetNearbyWaypoint( pasted->m_lat, pasted->m_lon,
+                               nearby_radius_meters );
+
+    int answer = wxID_NO;
+    if( nearPoint && !nearPoint->m_bIsInTrack && !nearPoint->m_bIsInLayer ) {
+        wxString msg;
+        msg << _("There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n");
+        msg << _("Answering 'No' will create a new waypoint at the same location.");
+        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoint?"),
+                 (long) wxYES_NO | wxCANCEL | wxNO_DEFAULT );
+        answer = dlg.ShowModal();
+    }
+
+    if( answer == wxID_YES ) {
+        nearPoint->SetName( pasted->GetName() );
+        nearPoint->m_MarkDescription = pasted->m_MarkDescription;
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    }
+
+    if( answer == wxID_NO ) {
+        RoutePoint* newPoint = new RoutePoint( pasted );
+        newPoint->m_bIsolatedMark = true;
+        pSelect->AddSelectableRoutePoint( newPoint->m_lat, newPoint->m_lon, newPoint );
+        pConfig->AddNewWayPoint( newPoint, -1 );
+        pWayPointMan->m_pWayPointList->Append( newPoint );
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    }
+
+    cc1->Refresh( false );
+    delete kml;
+    ::wxEndBusyCursor();
+}
+
+void pupHandler_PasteRoute() {
+    Kml* kml = new Kml();
+    ::wxBeginBusyCursor();
+
+    int pasteBuffer = kml->ParsePasteBuffer();
+    Route* pasted = kml->GetParsedRoute();
+    if( ! pasted ) return;
+
+    int nearby_sel_rad_pix = 8;
+    double nearby_radius_meters = nearby_sel_rad_pix / cc1->GetCanvasTrueScale();
+
+    RoutePoint* curPoint;
+    RoutePoint* nearPoint;
+    RoutePoint* prevPoint = NULL;
+
+    bool mergepoints = false;
+    bool createNewRoute = true;
+    int existingWaypointCounter = 0;
+
+    for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
+		curPoint = pasted->GetPoint( i ); // NB! n starts at 1 !
+        nearPoint = pWayPointMan->GetNearbyWaypoint( curPoint->m_lat,
+                curPoint->m_lon, nearby_radius_meters );
+        if( nearPoint ) {
+            mergepoints = true;
+            existingWaypointCounter++;
+            // Small hack here to avoid both extending RoutePoint and repeating all the GetNearbyWaypoint
+            // calculations. Use existin data field in RoutePoint as temporary storage.
+            curPoint->m_bPtIsSelected = true;
+        }
+    }
+
+    int answer = wxID_NO;
+    if( mergepoints ) {
+        wxString msg;
+        msg << _("There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n");
+        msg << _("Answering 'No' will create all new waypoints for this route.");
+        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoints?"),
+                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+        answer = dlg.ShowModal();
+
+        if( answer == wxID_CANCEL ) {
+            delete kml;
+            return;
+        }
+    }
+
+    // If all waypoints exist since before, and a route with the same name, we don't create a new route.
+    if( mergepoints && answer==wxID_YES && existingWaypointCounter==pasted->GetnPoints() ) {
+
+        wxRouteListNode *route_node = pRouteList->GetFirst();
+        while( route_node ) {
+            Route *proute = route_node->GetData();
+
+            if( pasted->m_RouteNameString == proute->m_RouteNameString ) {
+                createNewRoute = false;
+                break;
+            }
+            route_node = route_node->GetNext();
+        }
+    }
+
+    Route* newRoute;
+    RoutePoint* newPoint;
+
+    if( createNewRoute ) {
+        newRoute = new Route();
+        newRoute->m_RouteNameString = pasted->m_RouteNameString;
+    }
+
+    for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
+        curPoint = pasted->GetPoint( i );
+        if( answer == wxID_YES && curPoint->m_bPtIsSelected ) {
+            curPoint->m_bPtIsSelected = false;
+            newPoint = pWayPointMan->GetNearbyWaypoint( curPoint->m_lat, curPoint->m_lon,
+                    nearby_radius_meters );
+            newPoint->SetName( curPoint->GetName() );
+            newPoint->m_MarkDescription = curPoint->m_MarkDescription;
+
+            if( createNewRoute ) newRoute->AddPoint( newPoint );
+        } else {
+            curPoint->m_bPtIsSelected = false;
+
+            newPoint = new RoutePoint( curPoint );
+            newPoint->m_bIsolatedMark = true;
+            newPoint->m_IconName = _T("circle");
+            newPoint->m_bIsVisible = true;
+            newPoint->m_bShowName = true;
+
+            newRoute->AddPoint( newPoint );
+            pSelect->AddSelectableRoutePoint( newPoint->m_lat, newPoint->m_lon, newPoint );
+            pConfig->AddNewWayPoint( newPoint, -1 );
+            pWayPointMan->m_pWayPointList->Append( newPoint );
+        }
+        if( i > 1 && createNewRoute ) pSelect->AddSelectableRouteSegment( prevPoint->m_lat,
+                prevPoint->m_lon, curPoint->m_lat, curPoint->m_lon, prevPoint, newPoint, newRoute );
+        prevPoint = newPoint;
+    }
+
+    if( createNewRoute ) {
+        pRouteList->Append( newRoute );
+        pConfig->AddNewRoute( newRoute, -1 );    // use auto next num
+        newRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
+
+        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+            pRoutePropDialog->SetRouteAndUpdate( newRoute );
+            pRoutePropDialog->UpdateProperties();
+        }
+
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+        }
+        cc1->Refresh( false );
+    }
+
+    delete kml;
+    ::wxEndBusyCursor();
+}
+
+void pupHandler_PasteTrack() {
+    Kml* kml = new Kml();
+    ::wxBeginBusyCursor();
+
+    int pasteBuffer = kml->ParsePasteBuffer();
+    Track* pasted = kml->GetParsedTrack();
+    if( ! pasted ) return;
+
+    RoutePoint* curPoint;
+
+    Track* newTrack = new Track();
+    RoutePoint* newPoint;
+    RoutePoint* prevPoint = NULL;
+
+    newTrack->m_RouteNameString = pasted->m_RouteNameString;
+
+    for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
+        curPoint = pasted->GetPoint( i );
+
+        newPoint = new RoutePoint( curPoint );
+        newPoint->m_bShowName = false;
+        newPoint->m_bIsVisible = false;
+        newPoint->m_GPXTrkSegNo = 1;
+
+        wxDateTime now = wxDateTime::Now();
+        newPoint->m_CreateTime = curPoint->m_CreateTime;
+
+        newTrack->AddPoint( newPoint );
+
+        //    This is a hack, need to undo the action of Route::AddPoint
+        newPoint->m_bIsInRoute = false;
+        newPoint->m_bIsInTrack = true;
+
+        if( prevPoint )
+            pSelect->AddSelectableTrackSegment(
+                prevPoint->m_lat, prevPoint->m_lon,
+                newPoint->m_lat, newPoint->m_lon,
+                prevPoint, newPoint, newTrack );
+
+        prevPoint = newPoint;
+    }
+
+    pRouteList->Append( newTrack );
+    pConfig->AddNewRoute( newTrack, -1 );    // use auto next num
+    newTrack->RebuildGUIDList(); // ensure the GUID list is intact and good
+
+    cc1->Refresh( false );
+    delete kml;
+    ::wxEndBusyCursor();
+}
+
 void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 {
     RoutePoint *pLast;
@@ -8735,6 +8994,30 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         SetCursor( *pCursorPencil );
 
+        break;
+
+    case ID_RT_MENU_COPY:
+        if( m_pSelectedRoute ) Kml::CopyRouteToClipboard( m_pSelectedRoute );
+        break;
+
+    case ID_TK_MENU_COPY:
+        if( m_pSelectedTrack ) Kml::CopyTrackToClipboard( (Track*)m_pSelectedTrack );
+        break;
+
+    case ID_WPT_MENU_COPY:
+        if( m_pFoundRoutePoint ) Kml::CopyWaypointToClipboard( m_pFoundRoutePoint );
+        break;
+
+    case ID_PASTE_WAYPOINT:
+        pupHandler_PasteWaypoint();
+        break;
+
+    case ID_PASTE_ROUTE:
+        pupHandler_PasteRoute();
+        break;
+
+    case ID_PASTE_TRACK:
+        pupHandler_PasteTrack();
         break;
 
     case ID_RT_MENU_DELPOINT:

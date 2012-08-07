@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -540,7 +540,17 @@ msgid "AIS Target Query"
 msgstr "AIS-Zielabfrage"
 #
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS-Zielabfrage"
+#
+# 
 msgid "AIS target list"
+msgstr "Liste AIS-Ziele"
+#
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Liste AIS-Ziele"
 #
 # 
@@ -574,14 +584,6 @@ msgstr "Aktiviere CM93 Versatz (Offset)"
 # 
 msgid "Activate Next in Route"
 msgstr "Nächsten WP auf Route aktivieren"
-#
-# 
-msgid "Activate Route"
-msgstr "Route aktivieren"
-#
-# 
-msgid "Activate Waypoint"
-msgstr "Wegpunkt aktivieren"
 #
 # 
 #, fuzzy
@@ -635,6 +637,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Alle Dateien (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -796,7 +804,8 @@ msgid "CM93"
 msgstr "CM93"
 #
 # 
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 Offset Dialog"
 #
 # 
@@ -956,6 +965,11 @@ msgid "Chart Print"
 msgstr "Kartendruck"
 #
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Karte nach Norden ausrichten"
+#
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event ...TCMgr nicht verfügbar"
 #
@@ -1036,12 +1050,23 @@ msgstr "tiefgangsbehindert"
 msgid "Container vessel"
 msgstr "Containerschiff"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 msgid "Could not resolve TCP/IP host '"
 msgstr "Der TCP/IP Host konnte nicht ermittelt werden: '"
 #
 # 
 msgid "Course UP Mode"
+msgstr "Karte nach Kurs ausrichten"
+#
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Karte nach Kurs ausrichten"
 #
 # 
@@ -1140,10 +1165,6 @@ msgid "Deactivate"
 msgstr "Deaktivieren"
 #
 # 
-msgid "Deactivate Route"
-msgstr "Route deaktivieren"
-#
-# 
 msgid "Decimal degrees"
 msgstr "Dezimalgrad"
 #
@@ -1186,10 +1207,6 @@ msgstr "Alle löschen"
 #, fuzzy
 msgid "Delete Group"
 msgstr "Route löschen"
-#
-# 
-msgid "Delete Mark"
-msgstr "Markierung löschen"
 #
 # 
 msgid "Delete Route"
@@ -1518,10 +1535,6 @@ msgid "Go To Here"
 msgstr "Zielfahrt hierhin (Direktwegpunkt)"
 #
 # 
-msgid "Go To Mark/WP"
-msgstr "Gehe zu Markierung/ Wegpunkt"
-#
-# 
 msgid "Go to "
 msgstr "Gehe zu"
 #
@@ -1635,8 +1648,15 @@ msgid "Jump To Position"
 msgstr "Springe zu Position"
 #
 # 
-msgid "Jump To Position..."
-msgstr "Springe zu Position ..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Hinspringen"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 msgid "LE/V"
@@ -1865,11 +1885,6 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Ziele als verloren markieren nach (Minuten):"
 #
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "Markierungs-/ WP-Eigenschaften"
-#
-# 
 msgid "Marks"
 msgstr "Markierungen"
 #
@@ -1878,12 +1893,13 @@ msgid "Max Detail Here"
 msgstr "max. Vergrößerung hier"
 #
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Mess-Werkzeug ausschalten"
 #
 # 
-msgid "Measure....."
-msgstr "Mess-Werkzeug einschalten"
+msgid "Measure Off"
+msgstr "Mess-Werkzeug ausschalten"
 #
 # 
 msgid "Med/V"
@@ -1896,6 +1912,16 @@ msgstr "Hospitalschiff"
 # 
 msgid "Mercator"
 msgstr "Mercator-Projektion"
+#
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Wegpunkte umbenennen?"
+#
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Wegpunkte umbenennen?"
 #
 # 
 msgid "Meters"
@@ -1989,6 +2015,9 @@ msgstr "Name: "
 msgid "Nav Status"
 msgstr "Navigationsstatus"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 msgid "Navigation Data"
 msgstr "Navigationsdaten"
@@ -2021,6 +2050,11 @@ msgid "No. of items"
 msgstr "Anz. Elemente"
 #
 # 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Karte nach Norden ausrichten"
+#
+# 
 msgid "Not Under Command"
 msgstr "manövrierunfähig"
 #
@@ -2034,6 +2068,11 @@ msgstr "OK"
 #
 # 
 msgid "Object Query"
+msgstr "Objekt-Eigenschaften anzeigen"
+#
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "Objekt-Eigenschaften anzeigen"
 #
 # 
@@ -2108,6 +2147,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN Erstelle S57 SENC Datei ..."
 #
 # 
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Löschen OpenCPN Track"
+#
+# 
 msgid "OpenCPN Track Delete"
 msgstr "Löschen OpenCPN Track"
 #
@@ -2167,6 +2211,21 @@ msgstr "Personen-Ausflugsschiff ohne Kabinen"
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Fahrgastschiff (Binnen)"
+#
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Route erstellen"
+#
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "Track exportieren"
+#
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Wegpunkt aktivieren"
 #
 # 
 msgid "Pilot Vessel"
@@ -2315,6 +2374,11 @@ msgstr "Fortschritt ..."
 #
 # 
 msgid "Properties"
+msgstr "Eigenschaften"
+#
+# 
+#, fuzzy
+msgid "Properties..."
 msgstr "Eigenschaften"
 #
 # 
@@ -2486,7 +2550,8 @@ msgid "Remove"
 msgstr ""
 #
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Wegpunkt aus Route entfernen"
 #
 # 
@@ -2539,8 +2604,9 @@ msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Rufe die ursprüngliche Sprachauswahl aus der Windows Registrierung ab"
 #
 # 
-msgid "Reverse Route"
-msgstr "Route umkehren"
+#, fuzzy
+msgid "Reverse"
+msgstr "Umkehren"
 #
 # 
 msgid "Rollover"
@@ -2573,6 +2639,11 @@ msgstr "Route erfolgreich hochgeladen."
 #
 # 
 msgid "Route from Track"
+msgstr "Route aus Track"
+#
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "Route aus Track"
 #
 # 
@@ -2679,19 +2750,6 @@ msgstr "Dienstfahrzeug"
 # 
 msgid "Set Anchor Watch"
 msgstr "Ankerwache einstellen"
-#
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "Karte nach Norden ausrichten"
-#
-# 
-msgid "Set Course Up Mode"
-msgstr "Karte nach Kurs ausrichten"
-#
-# 
-msgid "Set North Up Mode"
-msgstr "Karte nach Norden ausrichten"
 #
 # 
 msgid "Settings"
@@ -3102,6 +3160,18 @@ msgstr ""
 msgid "There"
 msgstr "Zielpunkt"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 msgid ""
 "There was a problem printing.\n"
@@ -3432,6 +3502,11 @@ msgid "Warn if CPA less than (NMi):"
 msgstr "Warnung, wenn CPA geringer ist als (sm):"
 #
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "Wegpunkte"
+#
+# 
 msgid "Waypoint Locking"
 msgstr "Wegpunkte sperren"
 #
@@ -3562,6 +3637,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3580,9 +3658,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
+#
+#
 #
 #
 #
@@ -3607,6 +3691,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3623,6 +3710,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3631,6 +3721,9 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
+#
+#
 #
 #
 #
@@ -3658,6 +3751,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3675,10 +3771,23 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS Alarm"
+#
+#
+#
+#
+# 
+#~ msgid "Activate Route"
+#~ msgstr "Route aktivieren"
+#
+#
+#
 #
 #
 #
@@ -3690,6 +3799,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
+#
+#
 #
 #
 #
@@ -3717,6 +3829,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3725,6 +3840,9 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -3751,9 +3869,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
+#
+#
 #
 #
 #
@@ -3781,6 +3905,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3800,9 +3927,29 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "Route deaktivieren"
+#
+#
+#
+#
+#
+#
+#
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Standardfarbe"
+#
+#
+#
+#
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "Markierung löschen"
+#
+#
+#
 #
 #
 #
@@ -3823,10 +3970,30 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Gehe zu Markierung/ Wegpunkt"
+#
+#
+#
+#
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "Springe zu Position ..."
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
+#
+#
 #
 #
 #
@@ -3846,6 +4013,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
@@ -3857,9 +4027,30 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Name der Markierung"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Markierungs-/ WP-Eigenschaften"
+#
+#
+#
+#
+# 
+#~ msgid "Measure....."
+#~ msgstr "Mess-Werkzeug einschalten"
+#
+#
+#
 #
 #
 #
@@ -3882,6 +4073,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3890,6 +4084,9 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
+#
+#
 #
 #
 #
@@ -3918,6 +4115,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3926,6 +4126,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
+#
+#
 #
 #
 #
@@ -3950,6 +4153,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3958,6 +4164,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
+#
+#
 #
 #
 #
@@ -3982,6 +4191,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3990,6 +4202,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
+#
+#
 #
 #
 #
@@ -4014,6 +4229,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4021,6 +4239,9 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
+#
+#
+#
 #
 #
 #
@@ -4041,9 +4262,22 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Drucken"
+#
+#
+#
+#
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "Route umkehren"
+#
+#
+#
 #
 #
 # 
@@ -4055,8 +4289,21 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Karte nach Kurs ausrichten"
+#
+#
+#
+#
+#
+#
+#
+# 
 #~ msgid "Show Printing Icon"
 #~ msgstr "Druck-Symbol anzeigen"
+#
+#
+#
 #
 #
 #
@@ -4064,6 +4311,9 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Track-Symbol anzeigen"
+#
+#
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2012-05-23 06:58+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -793,7 +793,23 @@ msgstr "Dotaz na cíl AIS"
 #
 #
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Dotaz na cíl AIS"
+#
+#
+#
+#
+#
 msgid "AIS target list"
+msgstr "Seznam cílů AIS"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Seznam cílů AIS"
 #
 #
@@ -848,20 +864,6 @@ msgstr "Aktivovat posuny CM93"
 #
 msgid "Activate Next in Route"
 msgstr "Aktivovat další v trase"
-#
-#
-#
-#
-#
-msgid "Activate Route"
-msgstr "Aktivovat trasu"
-#
-#
-#
-#
-#
-msgid "Activate Waypoint"
-msgstr "Aktivovat trasový bod"
 #
 #
 #
@@ -937,6 +939,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Všechny soubory (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 #
@@ -1178,7 +1186,8 @@ msgstr "CM93"
 #
 #
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Dialog posunu CM93"
 #
 #
@@ -1409,6 +1418,12 @@ msgstr "Tisk mapy"
 #
 #
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Nastav mód mapa nahoru"
+#
+#
+#
 #
 #
 msgid "Chart1::Event...TCMgr Not Available"
@@ -1535,6 +1550,12 @@ msgstr "Omezené ponorem"
 msgid "Container vessel"
 msgstr "Kontejnerová loď"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 #
 #
@@ -1547,6 +1568,14 @@ msgstr "Nemohu rozpoznat TCP/IP hostitele '"
 #
 #
 msgid "Course UP Mode"
+msgstr "Mód kurs nahoru"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Mód kurs nahoru"
 #
 #
@@ -1674,13 +1703,6 @@ msgid "Deactivate"
 msgstr "Deaktivovat"
 #
 #
-#
-#
-#
-msgid "Deactivate Route"
-msgstr "Deaktivovat trasu"
-#
-#
 msgid "Decimal degrees"
 msgstr "Desetinné stupně"
 #
@@ -1738,13 +1760,6 @@ msgstr "Smazat vše"
 #
 msgid "Delete Group"
 msgstr "Smazat skupinu"
-#
-#
-#
-#
-#
-msgid "Delete Mark"
-msgstr "Smazat značku"
 #
 #
 #
@@ -2230,13 +2245,6 @@ msgstr "Navigovat sem"
 #
 #
 #
-msgid "Go To Mark/WP"
-msgstr "Navigovat na značku/WP"
-#
-#
-#
-#
-#
 msgid "Go to "
 msgstr "Navigovat na"
 #
@@ -2400,8 +2408,17 @@ msgstr "Skok na pozici"
 #
 #
 #
-msgid "Jump To Position..."
-msgstr "Skočit na pozici...."
+#
+#
+#, fuzzy
+msgid "Jump To..."
+msgstr "Skok na"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 #
 #
@@ -2735,13 +2752,6 @@ msgstr "Označit cíle za ztracené po (minut)"
 #
 #
 #
-msgid "Mark/WP Properties..."
-msgstr "Vlastnosti TB..."
-#
-#
-#
-#
-#
 msgid "Marks"
 msgstr "Značky"
 #
@@ -2756,15 +2766,16 @@ msgstr "Maximální detail zde"
 #
 #
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Vypnout měření"
 #
 #
 #
 #
 #
-msgid "Measure....."
-msgstr "Měřit....."
+msgid "Measure Off"
+msgstr "Vypnout měření"
 #
 #
 #
@@ -2782,6 +2793,22 @@ msgstr "Lékařský transport"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Přejmenovat trasové body"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Přejmenovat trasové body"
 #
 #
 #
@@ -2915,6 +2942,9 @@ msgstr "Jméno:"
 msgid "Nav Status"
 msgstr "Nav status"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 #
 #
@@ -2965,6 +2995,12 @@ msgstr "Počet kusů"
 #
 #
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Nastav mód sever nahoru"
+#
+#
+#
 msgid "Not Under Command"
 msgstr "Neovladatelné"
 #
@@ -2987,6 +3023,14 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
+msgstr "Dotaz na objekt"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Dotaz na objekt"
 #
 #
@@ -3103,6 +3147,14 @@ msgstr "Vytváření souboru S57 SENC..."
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Smazat OpenCPN stopu"
+#
+#
+#
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "Smazat OpenCPN stopu"
 #
@@ -3192,6 +3244,30 @@ msgstr "Loď s pasažéry bez ubytování"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Loď s pasažéry, trajekt, výletní loď, loď červeného kříže"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Vytvořit trasu"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Export stopy...."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Aktivovat trasový bod"
 #
 #
 #
@@ -3415,6 +3491,14 @@ msgstr "Průběh..."
 #
 msgid "Properties"
 msgstr "Vlastnosti"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Vlastnosti"
 #
 #
 #
@@ -3655,7 +3739,8 @@ msgstr "<--Odstranit"
 #
 #
 #
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Odstranit bod z trasy"
 #
 #
@@ -3728,8 +3813,9 @@ msgstr "Získávám úvodní nastavení jazyka z registru Windows"
 #
 #
 #
-msgid "Reverse Route"
-msgstr "Otočit trasu"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Otočit"
 #
 #
 #
@@ -3783,6 +3869,13 @@ msgstr "Trasa nahrána úspěšně."
 #
 #
 msgid "Route from Track"
+msgstr "Trasa ze stopy"
+#
+#
+#
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Trasa ze stopy"
 #
 #
@@ -3936,23 +4029,6 @@ msgstr ""
 #
 msgid "Set Anchor Watch"
 msgstr "Nastavit kotevní alarm"
-#
-#
-#
-msgid "Set Chart Up Mode"
-msgstr "Nastav mód mapa nahoru"
-#
-#
-#
-#
-#
-msgid "Set Course Up Mode"
-msgstr "Mód kurs nahoru"
-#
-#
-#
-msgid "Set North Up Mode"
-msgstr "Nastav mód sever nahoru"
 #
 #
 #
@@ -4587,6 +4663,18 @@ msgstr ""
 msgid "There"
 msgstr "Tam"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -5070,6 +5158,14 @@ msgstr "Varuj, pokud CPA je méně než (nm):"
 #
 #
 #
+#, fuzzy
+msgid "Waypoint"
+msgstr "Trasové body"
+#
+#
+#
+#
+#
 msgid "Waypoint Locking"
 msgstr "Zamykání trasových bodů"
 #
@@ -5256,6 +5352,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5272,8 +5371,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
+#
+#
 #
 #
 #
@@ -5308,8 +5413,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
+#
+#
 #
 #
 #
@@ -5349,8 +5460,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
+#
+#
+#
 #
 #
 #
@@ -5372,12 +5489,28 @@ msgstr ""
 #
 #
 #
+#~ msgid "Activate Route"
+#~ msgstr "Aktivovat trasu"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
 #
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
+#
+#
 #
 #
 #
@@ -5415,8 +5548,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -5475,8 +5614,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
+#
+#
 #
 #
 #
@@ -5535,8 +5680,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
+#
+#
 #
 #
 #
@@ -5593,9 +5744,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
+#
+#
 #
 #
 #
@@ -5633,8 +5790,44 @@ msgstr ""
 #
 #
 #
+#~ msgid "Deactivate Route"
+#~ msgstr "Deaktivovat trasu"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standardní dataset"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Delete Mark"
+#~ msgstr "Smazat značku"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Navigovat na značku/WP"
+#
+#
+#
 #
 #
 #
@@ -5647,11 +5840,45 @@ msgstr ""
 #
 #
 #
+#~ msgid "Jump To Position..."
+#~ msgstr "Skočit na pozici...."
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Jazyk/fonty"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Vlastnosti TB..."
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Měřit....."
+#
+#
+#
 #
 #
 #
@@ -5678,6 +5905,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Tisk"
 #
@@ -5686,8 +5916,34 @@ msgstr ""
 #
 #
 #
+#
+#
+#~ msgid "Reverse Route"
+#~ msgstr "Otočit trasu"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Délka trasy"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Mód kurs nahoru"
+#
+#
+#
 #
 #
 #
@@ -5706,8 +5962,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Zobrazit ikonu stopy"
+#
+#
+#
 #
 #
 #

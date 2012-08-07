@@ -315,6 +315,7 @@ SET(HDRS
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
+		include/kml.h
 		include/about.h
 		include/ais.h
 		include/pluginmanager.h
@@ -352,6 +353,7 @@ SET(SRCS
 		src/thumbwin.cpp
 		src/options.cpp
 		src/gshhs.cpp
+		src/kml.cpp
 		src/about.cpp
 		src/ais.cpp
 		src/pluginmanager.cpp

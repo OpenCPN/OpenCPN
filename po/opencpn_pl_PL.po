@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -622,7 +622,19 @@ msgstr "Dane obiektu AIS"
 #
 # 
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Dane obiektu AIS"
+#
+# 
+# 
 msgid "AIS target list"
+msgstr "Pokaż listę obiektów AIS"
+#
+# 
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Pokaż listę obiektów AIS"
 #
 # 
@@ -664,16 +676,6 @@ msgstr "Włącz przesunięcie CM93"
 # 
 msgid "Activate Next in Route"
 msgstr "Aktywuj następny w drodze"
-#
-# 
-# 
-msgid "Activate Route"
-msgstr "Aktywuj drogę"
-#
-# 
-# 
-msgid "Activate Waypoint"
-msgstr "Aktywuj punkt drogi"
 #
 # 
 # 
@@ -736,6 +738,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Wszystkie pliki (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -934,7 +942,8 @@ msgstr "CM93"
 #
 # 
 # 
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Wyswietl przesunięcie CM93"
 #
 # 
@@ -1130,6 +1139,12 @@ msgstr "Wydruk mapy"
 #
 # 
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "N do góry"
+#
+# 
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr Not Available"
 #
@@ -1228,6 +1243,12 @@ msgstr "Ograniczony zanurzeniem"
 msgid "Container vessel"
 msgstr ""
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 # 
 msgid "Could not resolve TCP/IP host '"
@@ -1236,6 +1257,12 @@ msgstr "Nie można rozwiązać adresu węzła TCP/IP"
 # 
 # 
 msgid "Course UP Mode"
+msgstr "Obracaj wg kursu do góry"
+#
+# 
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Obracaj wg kursu do góry"
 #
 # 
@@ -1343,11 +1370,6 @@ msgid "Deactivate"
 msgstr "Dezaktywuj drogę"
 #
 # 
-# 
-msgid "Deactivate Route"
-msgstr "Dezaktywuj drogę"
-#
-# 
 msgid "Decimal degrees"
 msgstr "Stopnie i dziesiętne"
 #
@@ -1397,11 +1419,6 @@ msgstr "Usuń wszystkie"
 #, fuzzy
 msgid "Delete Group"
 msgstr "Usuń drogę"
-#
-# 
-# 
-msgid "Delete Mark"
-msgstr "Usuń znak"
 #
 # 
 # 
@@ -1796,11 +1813,6 @@ msgstr "Płyń tutaj"
 #
 # 
 # 
-msgid "Go To Mark/WP"
-msgstr "Płyń do znaku/punktu drogi"
-#
-# 
-# 
 msgid "Go to "
 msgstr "Płyń tutaj "
 #
@@ -1937,8 +1949,15 @@ msgstr "Skocz do pozycji"
 #
 # 
 # 
-msgid "Jump To Position..."
-msgstr "Mapa do pozycji..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Skocz do"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 # 
@@ -2217,12 +2236,6 @@ msgstr "Oznacz obiekty jako zgubione po (minutach:):"
 #
 # 
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "Właściwości znaku/punktu drogi"
-#
-# 
-# 
 msgid "Marks"
 msgstr "Znaki"
 #
@@ -2233,13 +2246,14 @@ msgstr "Max szczegółów tutaj"
 #
 # 
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Wyłącz pomiary"
 #
 # 
 # 
-msgid "Measure....."
-msgstr "Mierz..."
+msgid "Measure Off"
+msgstr "Wyłącz pomiary"
 #
 # 
 # 
@@ -2255,6 +2269,18 @@ msgstr ""
 # 
 msgid "Mercator"
 msgstr "Merkatora"
+#
+# 
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Przemianować punkty drogi?"
+#
+# 
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Przemianować punkty drogi?"
 #
 # 
 # 
@@ -2371,6 +2397,9 @@ msgstr "Nazwa: "
 msgid "Nav Status"
 msgstr "Status nawigacyjny"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 # 
 msgid "Navigation Data"
@@ -2411,6 +2440,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "N do góry"
+#
+# 
+# 
 msgid "Not Under Command"
 msgstr "Nie odpowiada za ruchy"
 #
@@ -2427,6 +2462,12 @@ msgstr "OK"
 # 
 # 
 msgid "Object Query"
+msgstr "Szczegóły obiektu"
+#
+# 
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "Szczegóły obiektu"
 #
 # 
@@ -2519,6 +2560,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Ostrzeżenie OpenCPN"
+#
+# 
+# 
 msgid "OpenCPN Track Delete"
 msgstr "Ostrzeżenie OpenCPN"
 #
@@ -2592,6 +2639,24 @@ msgstr ""
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Utwórz drogę"
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Eksportuj ślad..."
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Aktywuj punkt drogi"
 #
 # 
 # 
@@ -2770,6 +2835,12 @@ msgstr "Postęp..."
 # 
 msgid "Properties"
 msgstr "Właściwości"
+#
+# 
+# 
+#, fuzzy
+msgid "Properties..."
+msgstr "&Właściwości"
 #
 # 
 # 
@@ -2977,7 +3048,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Usuń punkt z drogi"
 #
 # 
@@ -3038,8 +3110,9 @@ msgstr "Wstępny wybór języka na podstawie Rejestru Windows"
 #
 # 
 # 
-msgid "Reverse Route"
-msgstr "Odwróć drogę"
+#, fuzzy
+msgid "Reverse"
+msgstr "Odw&róć drogę"
 #
 # 
 # 
@@ -3080,6 +3153,12 @@ msgstr "Przesyłanie drogi zakończone pomyślnie."
 # 
 # 
 msgid "Route from Track"
+msgstr "Droga ze śladu"
+#
+# 
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "Droga ze śladu"
 #
 # 
@@ -3205,22 +3284,6 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Włącz alarm kotwiczny"
-#
-# 
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "N do góry"
-#
-# 
-# 
-msgid "Set Course Up Mode"
-msgstr "Obracaj wg kursu do góry"
-#
-# 
-# 
-msgid "Set North Up Mode"
-msgstr "N do góry"
 #
 # 
 # 
@@ -3722,6 +3785,18 @@ msgstr ""
 msgid "There"
 msgstr "Inne"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 msgid ""
@@ -4122,6 +4197,12 @@ msgstr "Ostrzegaj jeżeli CPA jest mniejsze niż (Mm):"
 #
 # 
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "Punkty drogi"
+#
+# 
+# 
 msgid "Waypoint Locking"
 msgstr "Blokowanie punktów drogi"
 #
@@ -4272,6 +4353,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4291,10 +4375,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
+#
+#
+#
 #
 #
 #
@@ -4320,6 +4410,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4337,6 +4430,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4346,6 +4442,9 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
+#
+#
 #
 #
 #
@@ -4378,11 +4477,25 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Ostrzeżenie AIS"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Activate Route"
+#~ msgstr "Aktywuj drogę"
+#
+#
+#
 #
 #
 #
@@ -4395,6 +4508,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
+#
+#
 #
 #
 #
@@ -4423,6 +4539,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4432,6 +4551,9 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -4474,6 +4596,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4500,6 +4625,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
+#
+#
 #
 #
 #
@@ -4542,6 +4670,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4568,6 +4699,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
+#
+#
 #
 #
 #
@@ -4610,6 +4744,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4635,6 +4772,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
+#
+#
 #
 #
 #
@@ -4675,6 +4815,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Chart"
@@ -4685,9 +4828,31 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "Dezaktywuj drogę"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Kolor domyślny"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "Usuń znak"
+#
+#
+#
 #
 #
 #
@@ -4705,6 +4870,9 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
+#
+#
 #
 #
 #
@@ -4733,6 +4901,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4745,6 +4916,17 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Błąd ładowania libgps.so.19"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Płyń do znaku/punktu drogi"
+#
+#
+#
 #
 #
 #
@@ -4775,11 +4957,25 @@ msgstr ""
 #
 #
 #
+# 
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "Mapa do pozycji..."
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Język/Czcionki"
+#
+#
+#
 #
 #
 #
@@ -4801,6 +4997,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4813,10 +5012,33 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nazwa znaku"
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Właściwości znaku/punktu drogi"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Measure....."
+#~ msgstr "Mierz..."
+#
+#
+#
 #
 #
 #
@@ -4840,6 +5062,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4849,6 +5074,9 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
+#
+#
 #
 #
 #
@@ -4878,6 +5106,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4887,6 +5118,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
+#
+#
 #
 #
 #
@@ -4912,6 +5146,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4921,6 +5158,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
+#
+#
 #
 #
 #
@@ -4946,6 +5186,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4955,6 +5198,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
+#
+#
 #
 #
 #
@@ -4980,6 +5226,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4988,6 +5237,9 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
+#
+#
 #
 #
 #
@@ -5009,10 +5261,24 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Drukowanie"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "Odwróć drogę"
+#
+#
+#
 #
 #
 # 
@@ -5026,8 +5292,22 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Obracaj wg kursu do góry"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
 #~ msgid "Show Printing Icon"
 #~ msgstr "Pokaż ikonę drukarki"
+#
+#
+#
 #
 #
 #
@@ -5036,6 +5316,9 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Pokaż ikonę Ślad"
+#
+#
+#
 #
 #
 #
@@ -5070,6 +5353,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5096,6 +5382,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5114,6 +5403,9 @@ msgstr ""
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Włącz/wyłącz nazwy"
+#
+#
+#
 #
 #
 #

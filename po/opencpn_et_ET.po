@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -800,7 +800,23 @@ msgstr "AIS-i sihtmärgi päring"
 # 
 # 
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS-i sihtmärgi päring"
+#
+# 
+# 
+# 
+# 
 msgid "AIS target list"
+msgstr "AIS-i objektide nimekiri"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS-i objektide nimekiri"
 #
 # 
@@ -856,20 +872,6 @@ msgstr "Aktiveeri CM93 nihe"
 # 
 msgid "Activate Next in Route"
 msgstr "Aktiveeri järgmine teekonnas"
-#
-# 
-# 
-# 
-# 
-msgid "Activate Route"
-msgstr "Aktiveeri teekond"
-#
-# 
-# 
-# 
-# 
-msgid "Activate Waypoint"
-msgstr "Aktiveeri Teepunktid"
 #
 # 
 # 
@@ -948,6 +950,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Kõik failid (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -1195,7 +1203,7 @@ msgstr "CM93"
 # 
 # 
 #, fuzzy
-msgid "CM93 Offset Dialog"
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 nihe näitamisel"
 #
 # 
@@ -1432,6 +1440,14 @@ msgstr "Kaardi print"
 # 
 # 
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Kurss ülesse töörežiim"
+#
+# 
+# 
+# 
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Kaart1::Sündmus...TCMgr Pole võimalik"
 #
@@ -1563,6 +1579,12 @@ msgstr ""
 msgid "Container vessel"
 msgstr ""
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 # 
 # 
@@ -1575,6 +1597,14 @@ msgstr "Ei lahendanud TCP/IP hosti"
 # 
 # 
 msgid "Course UP Mode"
+msgstr "Kurss ülesse töörežiim"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Kurss ülesse töörežiim"
 #
 # 
@@ -1706,13 +1736,6 @@ msgid "Deactivate"
 msgstr "Deaktiveeri"
 #
 # 
-# 
-# 
-# 
-msgid "Deactivate Route"
-msgstr "Deaktiveeri teekond"
-#
-# 
 msgid "Decimal degrees"
 msgstr ""
 #
@@ -1777,13 +1800,6 @@ msgstr "Kustuta kõik"
 #, fuzzy
 msgid "Delete Group"
 msgstr "Kustuta teekond"
-#
-# 
-# 
-# 
-# 
-msgid "Delete Mark"
-msgstr "Kustuta punkt"
 #
 # 
 # 
@@ -2283,13 +2299,6 @@ msgstr "Mine siia"
 # 
 # 
 # 
-msgid "Go To Mark/WP"
-msgstr "Mine Punkti/Teepunkti"
-#
-# 
-# 
-# 
-# 
 msgid "Go to "
 msgstr "Mine"
 #
@@ -2458,8 +2467,17 @@ msgstr "Hüppa asukohta"
 #
 # 
 # 
-msgid "Jump To Position..."
-msgstr "Hüppa positsioonile"
+# 
+# 
+#, fuzzy
+msgid "Jump To..."
+msgstr "Hüppa siia"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 # 
@@ -2802,14 +2820,6 @@ msgstr "Märgi objekt kaotatuks peale (Minutit):"
 # 
 # 
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "Punkti/Teepunkti omadused"
-#
-# 
-# 
-# 
-# 
 msgid "Marks"
 msgstr "Märgid"
 #
@@ -2824,15 +2834,16 @@ msgstr "Max. detailid siin"
 # 
 # 
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Mõõtmine välja"
 #
 # 
 # 
 # 
 # 
-msgid "Measure....."
-msgstr "Mõõda....."
+msgid "Measure Off"
+msgstr "Mõõtmine välja"
 #
 # 
 # 
@@ -2850,6 +2861,22 @@ msgstr ""
 # 
 msgid "Mercator"
 msgstr "Mercator"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Muudan Teepunkti nime?"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Muudan Teepunkti nime?"
 #
 # 
 # 
@@ -2985,6 +3012,9 @@ msgstr "Nimi:"
 msgid "Nav Status"
 msgstr "Nav. staatus"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 # 
 # 
@@ -3035,6 +3065,14 @@ msgstr ""
 #
 # 
 # 
+# 
+# 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Kurss ülesse töörežiim"
+#
+# 
+# 
 msgid "Not Under Command"
 msgstr ""
 #
@@ -3057,6 +3095,14 @@ msgstr "OK"
 # 
 # 
 msgid "Object Query"
+msgstr "Objekti päring"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "Objekti päring"
 #
 # 
@@ -3176,6 +3222,14 @@ msgstr "OpenCPNS57 SENC fail loo..."
 # 
 # 
 #, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN alarm"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN alarm"
 #
@@ -3265,6 +3319,30 @@ msgstr ""
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Moodusta teekond"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Ekspordi jälg..."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Aktiveeri Teepunktid"
 #
 # 
 # 
@@ -3494,6 +3572,14 @@ msgstr "Edenemine..."
 # 
 msgid "Properties"
 msgstr "Omadused"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Properties..."
+msgstr "&Omadused..."
 #
 # 
 # 
@@ -3740,7 +3826,8 @@ msgstr ""
 # 
 # 
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Eemalda punkt teekonnast"
 #
 # 
@@ -3813,8 +3900,9 @@ msgstr "Saan keeleinfo Windowsi registrist"
 # 
 # 
 # 
-msgid "Reverse Route"
-msgstr "Vastupidine teekond"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Tagurpidi"
 #
 # 
 # 
@@ -3871,6 +3959,14 @@ msgstr "Teekond laetud edukalt"
 # 
 # 
 msgid "Route from Track"
+msgstr "Teekond jäljest"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "Teekond jäljest"
 #
 # 
@@ -4024,27 +4120,6 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Sea ankruvalve"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "Kurss ülesse töörežiim"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Set Course Up Mode"
-msgstr "Kurss ülesse töörežiim"
-#
-# 
-# 
-msgid "Set North Up Mode"
-msgstr ""
 #
 # 
 # 
@@ -4702,6 +4777,18 @@ msgstr ""
 msgid "There"
 msgstr "Seal"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 # 
@@ -5197,6 +5284,14 @@ msgstr "Hoiata kui TCPA on lähemal (Minutit):"
 # 
 # 
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "Teepunktid"
+#
+# 
+# 
+# 
+# 
 msgid "Waypoint Locking"
 msgstr "Teepunkti lukustus"
 #
@@ -5384,6 +5479,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5405,12 +5503,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "Kaardi projektsioon on tundmatu, jultunud Mercator:"
+#
+#
+#
 #
 #
 #
@@ -5438,6 +5542,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5449,6 +5556,9 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
+#
+#
 #
 #
 #
@@ -5474,6 +5584,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5481,6 +5594,19 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS-i alarm"
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Activate Route"
+#~ msgstr "Aktiveeri teekond"
+#
+#
+#
 #
 #
 #
@@ -5495,6 +5621,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
+#
+#
 #
 #
 #
@@ -5525,6 +5654,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5536,6 +5668,9 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
+#
+#
 #
 #
 #
@@ -5577,6 +5712,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5602,6 +5740,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
+#
+#
 #
 #
 #
@@ -5643,6 +5784,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5668,6 +5812,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
+#
+#
 #
 #
 #
@@ -5709,6 +5856,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5734,6 +5884,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
+#
+#
 #
 #
 #
@@ -5774,12 +5927,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
+#
+#
 #
 #
 #
@@ -5823,9 +5982,35 @@ msgstr ""
 # 
 # 
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "Deaktiveeri teekond"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Teksti värv"
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "Kustuta punkt"
+#
+#
+#
 #
 #
 #
@@ -5845,6 +6030,9 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
+#
+#
 #
 #
 #
@@ -5885,6 +6073,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5907,6 +6098,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5921,6 +6115,19 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so.19"
 #~ msgstr "Ei suuda laadida libgps.so19"
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Mine Punkti/Teepunkti"
+#
+#
+#
 #
 #
 #
@@ -5954,6 +6161,17 @@ msgstr ""
 #
 #
 #
+# 
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "Hüppa positsioonile"
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 # 
@@ -5969,6 +6187,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5976,6 +6197,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
+#
+#
 #
 #
 #
@@ -6018,12 +6242,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Punkti Ikoon"
+#
+#
+#
 #
 #
 #
@@ -6042,6 +6272,30 @@ msgstr ""
 #
 #
 #
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Punkti/Teepunkti omadused"
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Measure....."
+#~ msgstr "Mõõda....."
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -6055,6 +6309,9 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uus punkt"
+#
+#
+#
 #
 #
 #
@@ -6082,6 +6339,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6097,6 +6357,9 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
+#
+#
 #
 #
 #
@@ -6132,6 +6395,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6142,6 +6408,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
+#
+#
 #
 #
 #
@@ -6169,6 +6438,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6180,6 +6452,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
+#
+#
 #
 #
 #
@@ -6207,6 +6482,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6218,6 +6496,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
+#
+#
 #
 #
 #
@@ -6245,6 +6526,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6255,6 +6539,9 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
+#
+#
 #
 #
 #
@@ -6279,12 +6566,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Prindin"
+#
+#
+#
 #
 #
 #
@@ -6320,6 +6613,19 @@ msgstr ""
 #~ "\n"
 #
 #
+#
+#
+# 
+# 
+# 
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "Vastupidine teekond"
+#
+#
+#
+#
+#
 # 
 # 
 # 
@@ -6327,6 +6633,20 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Kogu vahemaa"
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Kurss ülesse töörežiim"
+#
+#
+#
 #
 #
 #
@@ -6365,6 +6685,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6375,12 +6698,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näita jälje ikooni"
+#
+#
+#
 #
 #
 #
@@ -6418,6 +6747,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6447,6 +6779,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -6468,6 +6803,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Teekonna nimi"
+#
+#
+#
 #
 #
 #

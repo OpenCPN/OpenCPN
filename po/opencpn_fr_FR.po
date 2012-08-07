@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -530,8 +530,17 @@ msgstr "AIS"
 msgid "AIS Target Query"
 msgstr "AIS : Informations émises par la cible"
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS : Informations émises par la cible"
+#
 # Menu contextuel : AIS
 msgid "AIS target list"
+msgstr "AIS : Liste des cibles"
+#
+# Menu contextuel : AIS
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS : Liste des cibles"
 #
 # Toolbox/Langue
@@ -563,14 +572,6 @@ msgstr "Activer la compensation."
 # Menu contextuel : Waypoint
 msgid "Activate Next in Route"
 msgstr "Waypoint : Activer le suivant sur la route"
-#
-# Menu contextuel : Route
-msgid "Activate Route"
-msgstr "Route : Activer"
-#
-# Menu contextuel : Waypoint
-msgid "Activate Waypoint"
-msgstr "Waypoint : Activer"
 #
 msgid "Active"
 msgstr "Active"
@@ -618,6 +619,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Tous les fichiers  (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # Menu contextuel : Route
@@ -751,7 +758,8 @@ msgstr "C&ouleur :"
 msgid "CM93"
 msgstr "CM93 : Quantité de détails affichés"
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 : Dialogue de compensation"
 #
 msgid "CM93 Offset Display"
@@ -888,6 +896,10 @@ msgstr "Groupe de cartes ... Nouveau groupe"
 msgid "Chart Print"
 msgstr "Imprimer la carte"
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Carte vers le haut : Activer"
+#
 #
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carte1::Evènement...TCMgr invalide"
@@ -960,12 +972,23 @@ msgstr "Handicapé par son tirant d'eau"
 msgid "Container vessel"
 msgstr "Porte-conteneurs"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Résolution hôte TCP/IP impossible '"
 #
 #
 msgid "Course UP Mode"
+msgstr "Cap vers le haut : Activer"
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Cap vers le haut : Activer"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
@@ -1042,10 +1065,6 @@ msgstr "Désencombrer le texte (Expérimental )"
 msgid "Deactivate"
 msgstr "Désactiver"
 #
-# Menu contextuel : Route
-msgid "Deactivate Route"
-msgstr "Route : Désactiver"
-#
 msgid "Decimal degrees"
 msgstr "Degrés décimaux"
 #
@@ -1080,9 +1099,6 @@ msgstr "Supprimer tout"
 # Menu contextuel : Route
 msgid "Delete Group"
 msgstr "Supprimer le groupe"
-#
-msgid "Delete Mark"
-msgstr "Waypoint/marque : Effacer"
 #
 # Menu contextuel : Route
 msgid "Delete Route"
@@ -1363,9 +1379,6 @@ msgstr "Cargo maritime, marchandises diverses"
 msgid "Go To Here"
 msgstr "Créer une route jusqu'ici"
 #
-msgid "Go To Mark/WP"
-msgstr "Waypoint/Marque : Y Aller (avec route)"
-#
 #
 msgid "Go to "
 msgstr "Aller au curseur (avec route)"
@@ -1464,8 +1477,15 @@ msgstr "Centrer sur la cible sélectionnée"
 msgid "Jump To Position"
 msgstr "Allez à la position"
 #
-msgid "Jump To Position..."
-msgstr "Allez à la position ..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Centrer sur la cible sélectionnée"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 msgid "LE/V"
 msgstr "Pol. Mar."
@@ -1661,10 +1681,6 @@ msgstr "Waypoint/marque, couches : Lles propriétés"
 msgid "Mark targets as lost after (Minutes:):"
 msgstr "Marquer les cibles comme perdues après ... minutes :"
 #
-# Menu contextuel : Waypoint
-msgid "Mark/WP Properties..."
-msgstr "Waypoint/Marque : Propriétés ..."
-#
 #
 msgid "Marks"
 msgstr "Marques"
@@ -1673,11 +1689,12 @@ msgstr "Marques"
 msgid "Max Detail Here"
 msgstr "Détails maximum ici"
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Mesure : Arrêter"
 #
-msgid "Measure....."
-msgstr "Mesure : Démarer ..."
+msgid "Measure Off"
+msgstr "Mesure : Arrêter"
 #
 msgid "Med/V"
 msgstr "Nav. sanit."
@@ -1689,6 +1706,16 @@ msgstr "Transport sanitaires"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Renommer les waypoint ?"
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Renommer les waypoint ?"
 #
 #
 msgid "Meters"
@@ -1770,6 +1797,9 @@ msgstr "Nom  : "
 msgid "Nav Status"
 msgstr "Statut de nav."
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 msgid "Navigation Data"
 msgstr "Données de navigation"
@@ -1800,6 +1830,10 @@ msgstr "Pas de carte disponible"
 msgid "No. of items"
 msgstr "Nombre d'objet(s)"
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Nord vers le haut : Activer"
+#
 # AIS
 msgid "Not Under Command"
 msgstr "Non maitre de sa manoeuvre"
@@ -1812,6 +1846,10 @@ msgid "OK"
 msgstr "OK"
 #
 msgid "Object Query"
+msgstr "Objets présents : Propriétés"
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Objets présents : Propriétés"
 #
 msgid "Object, not otherwise specified"
@@ -1877,6 +1915,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN crée le fichier des cartes S57 ..."
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Trace effacée par OpenCPN"
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "Trace effacée par OpenCPN"
 #
@@ -1930,6 +1973,21 @@ msgstr "Bateau d'excursions journalières"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Bateau de passagers, ferry, bateau de croisière, bateau-hôpital"
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Route : Créer"
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Exporter ...."
+#
+# Menu contextuel : Waypoint
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Waypoint : Activer"
 #
 # AIS
 msgid "Pilot Vessel"
@@ -2058,6 +2116,11 @@ msgstr "Chargement..."
 #
 msgid "Properties"
 msgstr "Propriétés"
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Propriétés ..."
 #
 msgid "Pushboat, single"
 msgstr "Bateau pousseur, seul"
@@ -2200,7 +2263,8 @@ msgid "Remove"
 msgstr "<-- Retirer"
 #
 # Menu contextuel : Waypoint
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Waypoint : Déconnecter"
 #
 #
@@ -2253,9 +2317,10 @@ msgstr ""
 "Récupération de la langue, initialement sélectionnée, dans le registre "
 "Windows."
 #
-# Menu contextuel : Route
-msgid "Reverse Route"
-msgstr "Route : Inverser"
+#
+#, fuzzy
+msgid "Reverse"
+msgstr "Inve&rser"
 #
 msgid "Rollover"
 msgstr "Info par survol d'une cible."
@@ -2284,6 +2349,10 @@ msgid "Route Uploaded successfully."
 msgstr "Route : Chargement réussi"
 #
 msgid "Route from Track"
+msgstr "Trace -> Route"
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Trace -> Route"
 #
 msgid "Route: "
@@ -2380,15 +2449,6 @@ msgstr "Bateau de service, police fluviale, service du port"
 #
 msgid "Set Anchor Watch"
 msgstr "Alarme de mouillage : Activer"
-#
-msgid "Set Chart Up Mode"
-msgstr "Carte vers le haut : Activer"
-#
-msgid "Set Course Up Mode"
-msgstr "Cap vers le haut : Activer"
-#
-msgid "Set North Up Mode"
-msgstr "Nord vers le haut : Activer"
 #
 #
 msgid "Settings"
@@ -2763,6 +2823,18 @@ msgstr ""
 msgid "There"
 msgstr "Là"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 msgid ""
 "There was a problem printing.\n"
@@ -3063,6 +3135,11 @@ msgstr "Fichiers WAV (*.wav)|*.wav|Tous les fichiers (*.*)|*.*"
 msgid "Warn if CPA less than (NMi):"
 msgstr "Déclencher un avertissement si le CPA est inférieur à... (milles) :"
 #
+#
+#, fuzzy
+msgid "Waypoint"
+msgstr "Waypoint"
+#
 msgid "Waypoint Locking"
 msgstr "Verrouillage des waypoint"
 #
@@ -3176,13 +3253,36 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
+#
+# Menu contextuel : Route
+#~ msgid "Activate Route"
+#~ msgstr "Route : Activer"
+#
+#
+#
+#
+# Menu contextuel : Route
+#~ msgid "Deactivate Route"
+#~ msgstr "Route : Désactiver"
+#
+#
+#
 #
 #
 #
@@ -3194,8 +3294,32 @@ msgstr "Site web wxFB"
 #
 #
 #
+#~ msgid "Delete Mark"
+#~ msgstr "Waypoint/marque : Effacer"
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Waypoint/Marque : Y Aller (avec route)"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Données à utiliser :"
+#
+#
+#
+#
+#~ msgid "Jump To Position..."
+#~ msgstr "Allez à la position ..."
+#
+#
+#
 #
 #
 #
@@ -3208,12 +3332,34 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
 #
 #
+#
+#
+# Menu contextuel : Waypoint
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Waypoint/Marque : Propriétés ..."
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Mesure : Démarer ..."
+#
+#
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
 #
 #
 #
@@ -3234,12 +3380,34 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
 #
 #
+#
+#
+# Menu contextuel : Route
+#~ msgid "Reverse Route"
+#~ msgstr "Route : Inverser"
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Route : Longeur"
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Cap vers le haut : Activer"
+#
+#
+#
 #
 #
 #
@@ -3251,8 +3419,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
+#
+#
 #
 #
 #

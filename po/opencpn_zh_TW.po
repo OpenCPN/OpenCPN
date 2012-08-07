@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -620,7 +620,19 @@ msgstr "AIS 目標查詢"
 #
 # 
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS 目標查詢"
+#
+# 
+# 
 msgid "AIS target list"
+msgstr "AIS 目標列表"
+#
+# 
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS 目標列表"
 #
 # 
@@ -662,16 +674,6 @@ msgstr "啟用 CM93 Offset "
 # 
 msgid "Activate Next in Route"
 msgstr "航路下一點啟動導航"
-#
-# 
-# 
-msgid "Activate Route"
-msgstr "啟動導航"
-#
-# 
-# 
-msgid "Activate Waypoint"
-msgstr "啟用轉向點"
 #
 # 
 # 
@@ -734,6 +736,12 @@ msgid "All files (*.*)|*.*"
 msgstr "所有檔案 (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -932,7 +940,8 @@ msgstr "CM93"
 #
 # 
 # 
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 Offset 顯示"
 #
 # 
@@ -1128,6 +1137,12 @@ msgstr "海圖列印"
 #
 # 
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "設定北方朝上模式"
+#
+# 
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr 無法獲得"
 #
@@ -1226,6 +1241,12 @@ msgstr "吃水受限"
 msgid "Container vessel"
 msgstr "貨櫃船"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 # 
 msgid "Could not resolve TCP/IP host '"
@@ -1234,6 +1255,12 @@ msgstr "無法解析 TCP/IP 主機 '"
 # 
 # 
 msgid "Course UP Mode"
+msgstr "航向朝上模式"
+#
+# 
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "航向朝上模式"
 #
 # 
@@ -1344,11 +1371,6 @@ msgid "Deactivate"
 msgstr "取消作用"
 #
 # 
-# 
-msgid "Deactivate Route"
-msgstr "取消導航"
-#
-# 
 msgid "Decimal degrees"
 msgstr "十進位度"
 #
@@ -1398,11 +1420,6 @@ msgstr "刪除全部"
 #, fuzzy
 msgid "Delete Group"
 msgstr "刪除航路"
-#
-# 
-# 
-msgid "Delete Mark"
-msgstr "刪除標記"
 #
 # 
 # 
@@ -1796,11 +1813,6 @@ msgstr "前往這裡"
 #
 # 
 # 
-msgid "Go To Mark/WP"
-msgstr "前往標記/轉向點"
-#
-# 
-# 
 msgid "Go to "
 msgstr "前往"
 #
@@ -1937,8 +1949,15 @@ msgstr "變更位置"
 #
 # 
 # 
-msgid "Jump To Position..."
-msgstr "跳至位置..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "跳至"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 # 
@@ -2215,12 +2234,6 @@ msgstr "信號消失多久後標記為目標遺失(分鐘):"
 #
 # 
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "標記/轉向點屬性"
-#
-# 
-# 
 msgid "Marks"
 msgstr "標記"
 #
@@ -2231,13 +2244,14 @@ msgstr "在此處顯示最大詳細度"
 #
 # 
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "結束測量"
 #
 # 
 # 
-msgid "Measure....."
-msgstr "測量....."
+msgid "Measure Off"
+msgstr "結束測量"
 #
 # 
 # 
@@ -2253,6 +2267,18 @@ msgstr "醫療交通船"
 # 
 msgid "Mercator"
 msgstr "麥卡托"
+#
+# 
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "重新命名轉向點?"
+#
+# 
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "重新命名轉向點?"
 #
 # 
 # 
@@ -2369,6 +2395,9 @@ msgstr "名稱:  "
 msgid "Nav Status"
 msgstr "航行狀態"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 # 
 msgid "Navigation Data"
@@ -2409,6 +2438,12 @@ msgstr "項目編號"
 #
 # 
 # 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "設定北方朝上模式"
+#
+# 
+# 
 msgid "Not Under Command"
 msgstr "無法控制"
 #
@@ -2425,6 +2460,12 @@ msgstr "OK"
 # 
 # 
 msgid "Object Query"
+msgstr "物件查詢"
+#
+# 
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "物件查詢"
 #
 # 
@@ -2517,6 +2558,12 @@ msgstr "OpenCPN S57 SENC檔案建立..."
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN 航跡刪除"
+#
+# 
+# 
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 航跡刪除"
 #
@@ -2590,6 +2637,24 @@ msgstr "無住艙區載客船"
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "客船, 渡輪, 遊輪, 紅十字船(醫療服務船)"
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "建立航路"
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "匯出航跡(&E)..."
+#
+# 
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "啟用轉向點"
 #
 # 
 # 
@@ -2770,6 +2835,12 @@ msgstr "進行中..."
 # 
 msgid "Properties"
 msgstr "屬性"
+#
+# 
+# 
+#, fuzzy
+msgid "Properties..."
+msgstr "屬性(&P)..."
 #
 # 
 # 
@@ -2978,7 +3049,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "從航路中移除轉向點"
 #
 # 
@@ -3041,8 +3113,9 @@ msgstr "從Windows Registry取得啟始語言"
 #
 # 
 # 
-msgid "Reverse Route"
-msgstr "反向航路"
+#, fuzzy
+msgid "Reverse"
+msgstr "反向(&R)"
 #
 # 
 # 
@@ -3083,6 +3156,12 @@ msgstr "航路上傳成功."
 # 
 # 
 msgid "Route from Track"
+msgstr "從航跡設定航路"
+#
+# 
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "從航跡設定航路"
 #
 # 
@@ -3211,22 +3290,6 @@ msgstr "服務船舶, 水警巡邏, 港勤服務"
 # 
 msgid "Set Anchor Watch"
 msgstr "設定流錨警報"
-#
-# 
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "設定北方朝上模式"
-#
-# 
-# 
-msgid "Set Course Up Mode"
-msgstr "設定航向朝上模式"
-#
-# 
-# 
-msgid "Set North Up Mode"
-msgstr "設定北方朝上模式"
 #
 # 
 # 
@@ -3723,6 +3786,18 @@ msgstr ""
 msgid "There"
 msgstr "那裡"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 # 
 msgid ""
@@ -4124,6 +4199,12 @@ msgstr "當 CPA 小於多少(海浬)時發出警告:"
 #
 # 
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "轉向點"
+#
+# 
+# 
 msgid "Waypoint Locking"
 msgstr "轉向點鎖定"
 #
@@ -4274,6 +4355,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4293,10 +4377,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
+#
+#
 #
 #
 #
@@ -4322,6 +4412,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4339,6 +4432,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4348,6 +4444,9 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
+#
+#
 #
 #
 #
@@ -4383,6 +4482,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4402,6 +4504,9 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
+#
+#
 #
 #
 #
@@ -4437,6 +4542,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4455,6 +4563,9 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
+#
+#
 #
 #
 #
@@ -4488,11 +4599,25 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS 警告"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Activate Route"
+#~ msgstr "啟動導航"
+#
+#
+#
 #
 #
 #
@@ -4505,6 +4630,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
+#
+#
 #
 #
 #
@@ -4533,6 +4661,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4542,6 +4673,9 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -4577,6 +4711,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4596,6 +4733,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
+#
+#
 #
 #
 #
@@ -4631,6 +4771,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4650,6 +4793,9 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
+#
+#
 #
 #
 #
@@ -4685,6 +4831,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4704,6 +4853,9 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
+#
+#
 #
 #
 #
@@ -4740,6 +4892,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4767,6 +4922,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Chart"
@@ -4777,9 +4935,31 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "取消導航"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "刪除標記"
+#
+#
+#
 #
 #
 #
@@ -4801,11 +4981,33 @@ msgstr ""
 #
 #
 #
+# 
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "前往標記/轉向點"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "跳至位置..."
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
+#
+#
 #
 #
 #
@@ -4826,6 +5028,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Mark Icon"
@@ -4838,10 +5043,33 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "標記/轉向點屬性"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Measure....."
+#~ msgstr "測量....."
+#
+#
+#
 #
 #
 #
@@ -4865,6 +5093,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4874,6 +5105,9 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
+#
+#
 #
 #
 #
@@ -4903,6 +5137,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4912,6 +5149,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
+#
+#
 #
 #
 #
@@ -4937,6 +5177,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4946,6 +5189,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
+#
+#
 #
 #
 #
@@ -4971,6 +5217,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4980,6 +5229,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
+#
+#
 #
 #
 #
@@ -5005,6 +5257,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -5013,6 +5268,9 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
+#
+#
 #
 #
 #
@@ -5034,10 +5292,24 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "列印"
+#
+#
+#
+#
+# 
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "反向航路"
+#
+#
+#
 #
 #
 # 
@@ -5051,8 +5323,22 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Set Course Up Mode"
+#~ msgstr "設定航向朝上模式"
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
 #~ msgid "Show Printing Icon"
 #~ msgstr "顯示列印圖示"
+#
+#
+#
 #
 #
 #
@@ -5061,6 +5347,9 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
+#
+#
+#
 #
 #
 #

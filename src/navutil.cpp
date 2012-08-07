@@ -872,6 +872,88 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
 //-----------------------------------------------------------------------------
 //          WayPoint Implementation
 //-----------------------------------------------------------------------------
+
+RoutePoint::RoutePoint() {
+    m_pbmIcon = NULL;
+
+    //  Nice defaults
+    m_seg_len = 0.0;
+    m_seg_vmg = 0.0;
+    m_seg_etd = wxInvalidDateTime;
+    m_bDynamicName = false;
+    m_bPtIsSelected = false;
+    m_bIsBeingEdited = false;
+    m_bIsActive = false;
+    m_bBlink = false;
+    m_bIsInRoute = false;
+    m_bIsInTrack = false;
+    wxDateTime now = wxDateTime::Now();
+    m_CreateTime = now.ToUTC();
+    m_GPXTrkSegNo = 1;
+    m_bIsolatedMark = false;
+    m_bShowName = true;
+    m_bKeepXRoute = false;
+    m_bIsVisible = true;
+    m_bIsListed = true;
+    m_ConfigWPNum = -1;
+    CurrentRect_in_DC = wxRect( 0, 0, 0, 0 );
+    m_NameLocationOffsetX = -10;
+    m_NameLocationOffsetY = 8;
+    m_pMarkFont = NULL;
+
+    m_prop_string_format = _T ( "A" );
+
+    m_HyperlinkList = new HyperlinkList;
+
+    m_GUID = pWayPointMan->CreateGUID( this );
+
+    m_IconName = wxEmptyString;
+    ReLoadIcon();
+
+    m_MarkName = wxEmptyString;
+
+    m_bIsInLayer = false;
+    m_LayerID = 0;
+}
+
+// Copy Constructor
+RoutePoint::RoutePoint( RoutePoint* orig ) {
+    m_MarkName = orig->GetName();
+    m_lat = orig->m_lat;
+    m_lon = orig->m_lon;
+    m_seg_len = orig->m_seg_len;
+    m_seg_vmg = orig->m_seg_vmg;
+    m_seg_etd = orig->m_seg_etd;
+    m_bDynamicName = orig->m_bDynamicName;
+    m_bPtIsSelected = orig->m_bPtIsSelected;
+    m_bIsBeingEdited = orig->m_bIsBeingEdited;
+    m_bIsActive = orig->m_bIsActive;
+    m_bBlink = orig->m_bBlink;
+    m_bIsInRoute = orig->m_bIsInRoute;
+    m_bIsInTrack = orig->m_bIsInTrack;
+    m_CreateTime = orig->m_CreateTime;
+    m_GPXTrkSegNo = orig->m_GPXTrkSegNo;
+    m_bIsolatedMark = orig->m_bIsolatedMark;
+    m_bShowName = orig->m_bShowName;
+    m_bKeepXRoute = orig->m_bKeepXRoute;
+    m_bIsVisible = orig->m_bIsVisible;
+    m_bIsListed = orig->m_bIsListed;
+    m_ConfigWPNum = orig->m_ConfigWPNum;
+    CurrentRect_in_DC = orig->CurrentRect_in_DC;
+    m_NameLocationOffsetX = orig->m_NameLocationOffsetX;
+    m_NameLocationOffsetY = orig->m_NameLocationOffsetY;
+    m_pMarkFont = orig->m_pMarkFont;
+    m_prop_string_format = orig->m_prop_string_format;
+	m_MarkDescription = orig->m_MarkDescription;
+
+    m_HyperlinkList = new HyperlinkList;
+    m_IconName = orig->m_IconName;
+    ReLoadIcon();
+
+    m_bIsInLayer = orig->m_bIsInLayer;
+    m_GUID = pWayPointMan->CreateGUID( this );
+}
+
 RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, const wxString& name,
         const wxString &pGUID, bool bAddToList )
 {
@@ -894,10 +976,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
-    m_bIsInTrack = false;              // pjotrc 2010.02.11
-    wxDateTime now = wxDateTime::Now();      // pjotrc 2010.02.19
+    m_bIsInTrack = false;
+    wxDateTime now = wxDateTime::Now();
     m_CreateTime = now.ToUTC();
-    m_GPXTrkSegNo = 1;                       // pjotrc 2010.02.27
+    m_GPXTrkSegNo = 1;
     m_bIsolatedMark = false;
     m_bShowName = true;
     m_bKeepXRoute = false;
@@ -911,7 +993,6 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
 
     m_prop_string_format = _T ( "A" );           // Set the current Property String format indicator
 
-    m_HyperlinkList = NULL;
     m_HyperlinkList = new HyperlinkList;
 
     if( !pGUID.IsEmpty() ) m_GUID = pGUID;
@@ -2105,7 +2186,8 @@ bool Route::IsEqualTo( Route *ptargetroute )
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE ( Track, wxEvtHandler ) EVT_TIMER ( TIMER_TRACK1, Track::OnTimerTrack )
+BEGIN_EVENT_TABLE ( Track, wxEvtHandler )
+    EVT_TIMER ( TIMER_TRACK1, Track::OnTimerTrack )
 END_EVENT_TABLE()
 
 Track::Track( void )
@@ -2124,6 +2206,7 @@ Track::Track( void )
     m_prev_time = wxInvalidDateTime;
     m_prev_glon = -999.;
     m_prev_glat = -999.;
+    m_prev_pTrackPoint = NULL;
 
     wxDateTime now = wxDateTime::Now();
     m_ConfigRouteNum = now.GetTicks();        // a unique number....
@@ -2242,23 +2325,17 @@ void Track::AddPointNow( bool do_add_point )
 
     wxDateTime now = wxDateTime::Now();
 
-    //wxString imsg = now.FormatISODate()+now.FormatISOTime()+_T("AddPointNow()");
-    //wxLogMessage(imsg);
-
     if( ( m_prev_glat == gLat ) && ( m_prev_glon == gLon ) )              // avoid zero length segs
     if( !do_add_point ) return;
 
     if( m_prev_time.IsValid() ) if( m_prev_time == now )                    // avoid zero time segs
     if( !do_add_point ) return;
 
-    //imsg = now.FormatISODate()+now.FormatISOTime()+_T("Adding Point Now");
-    //wxLogMessage(imsg);
-
     RoutePoint *pTrackPoint = new RoutePoint( gLat, gLon, wxString( _T ( "empty" ) ),
             wxString( _T ( "" ) ), GPX_EMPTY_STRING );
     pTrackPoint->m_bShowName = false;
-    pTrackPoint->m_bIsVisible = true;                    // pjotrc 2010.02.11
-    pTrackPoint->m_GPXTrkSegNo = 1;                       // pjotrc 2010.02.28
+    pTrackPoint->m_bIsVisible = true;
+    pTrackPoint->m_GPXTrkSegNo = 1;
 
     pTrackPoint->m_CreateTime = now.ToUTC();
 
@@ -2636,15 +2713,13 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
     g_StyleManager->SetStyle( uiStyle );
 
-    if( iteration == 0 ) {
-        Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
-        int mem_limit;
-        Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+    int mem_limit;
+    Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
 
-        if(mem_limit > 0)
-            g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
-    }
+    if(mem_limit > 0)
+        g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
@@ -3428,7 +3503,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
         if( ::wxFileExists( m_sNavObjSetFile ) ) {
             if( m_pNavObjectInputSet->LoadFile( m_sNavObjSetFile ) )
-                m_pNavObjectInputSet->LoadAllGPXObjects();
+				m_pNavObjectInputSet->LoadAllGPXObjects();
         }
 
         m_pNavObjectInputSet->Clear();

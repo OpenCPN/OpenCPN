@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -499,8 +499,18 @@ msgstr "AIS Genel"
 msgid "AIS Target Query"
 msgstr "AIS Hedef sorgusu"
 #
+#
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS Hedef sorgusu"
+#
 # Menu contextuel : AIS
 msgid "AIS target list"
+msgstr "AIS hedef listesi"
+#
+# Menu contextuel : AIS
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS hedef listesi"
 #
 # Toolbox/Langue
@@ -533,14 +543,6 @@ msgstr "CM93 Uzantısını etkinleştir"
 # Menu contextuel : Waypoint
 msgid "Activate Next in Route"
 msgstr "Rotada diğerini etkinleştir"
-#
-# Menu contextuel : Route
-msgid "Activate Route"
-msgstr "Rotayı etkinleştir"
-#
-# Menu contextuel : Waypoint
-msgid "Activate Waypoint"
-msgstr "Seyirnoktasını etkinleştir"
 #
 msgid "Active"
 msgstr "Etkin"
@@ -588,6 +590,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Tüm dosyalar (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # Menu contextuel : Route
@@ -721,7 +729,8 @@ msgstr "&Renk:"
 msgid "CM93"
 msgstr "CM93"
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 Diyalog Dengelemesi"
 #
 msgid "CM93 Offset Display"
@@ -859,6 +868,10 @@ msgstr "Hrita grupları... Yeni grup"
 msgid "Chart Print"
 msgstr "Haritayı yazdır"
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Harita yukarı yönlü olacak şekilde kullan"
+#
 #
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Harita1::Olay...TCMgr'ye ulaşılmıyor."
@@ -932,12 +945,23 @@ msgstr "Su kesimi sınırlı"
 msgid "Container vessel"
 msgstr "Conteyner gemisi"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "TCP/IP servis sağlayıcısı bulunamadı"
 #
 #
 msgid "Course UP Mode"
+msgstr "Gidiş yönü YUKARI olacak şekilde göster"
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Gidiş yönü YUKARI olacak şekilde göster"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
@@ -1014,10 +1038,6 @@ msgstr "Dağınık metin"
 msgid "Deactivate"
 msgstr "Etkinsizleştir"
 #
-# Menu contextuel : Route
-msgid "Deactivate Route"
-msgstr "Rotayı etkisizleştir"
-#
 msgid "Decimal degrees"
 msgstr "Ondalık dakika"
 #
@@ -1052,9 +1072,6 @@ msgstr "Tümünü sil"
 # Menu contextuel : Route
 msgid "Delete Group"
 msgstr "Grubu sil"
-#
-msgid "Delete Mark"
-msgstr "İşareti sil"
 #
 # Menu contextuel : Route
 msgid "Delete Route"
@@ -1333,9 +1350,6 @@ msgstr "Açık deniz genel yük gemisi"
 msgid "Go To Here"
 msgstr "Buraya git"
 #
-msgid "Go To Mark/WP"
-msgstr "Seyirnoktasına/İşarete git"
-#
 #
 msgid "Go to "
 msgstr "Oraya git"
@@ -1435,8 +1449,15 @@ msgstr "Oraya git"
 msgid "Jump To Position"
 msgstr "Pozisyona Git"
 #
-msgid "Jump To Position..."
-msgstr "Pozisyona git..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Oraya git"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 msgid "LE/V"
 msgstr "LE/V"
@@ -1632,10 +1653,6 @@ msgstr "İşaret Özellikleri"
 msgid "Mark targets as lost after (Minutes:):"
 msgstr "Hedefleri ( ) dakika sonra kayıp olarak işaretle :"
 #
-# Menu contextuel : Waypoint
-msgid "Mark/WP Properties..."
-msgstr "Seyirnoktası/İşaret özellikleri"
-#
 #
 msgid "Marks"
 msgstr "İşaretler"
@@ -1644,11 +1661,12 @@ msgstr "İşaretler"
 msgid "Max Detail Here"
 msgstr "Dahafazla açıklama burada"
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Ölçümü sonlandır"
 #
-msgid "Measure....."
-msgstr "Uzaklığıi ölç"
+msgid "Measure Off"
+msgstr "Ölçümü sonlandır"
 #
 msgid "Med/V"
 msgstr "Med/V"
@@ -1660,6 +1678,16 @@ msgstr "Sağlıkhizmeti taşıması"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Seyirnoktasını yeniden mi adlandıracaksınız ?"
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Seyirnoktasını yeniden mi adlandıracaksınız ?"
 #
 #
 msgid "Meters"
@@ -1739,6 +1767,9 @@ msgstr "Adı : "
 msgid "Nav Status"
 msgstr "Seyir durumu"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 msgid "Navigation Data"
 msgstr "Seyir verisi"
@@ -1769,6 +1800,10 @@ msgstr "Kullanılabilir harita yok."
 msgid "No. of items"
 msgstr "Parça Numarası"
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Kuzey yukarıda olacak şekilde kullan"
+#
 # AIS
 msgid "Not Under Command"
 msgstr "Kumanda altında değil"
@@ -1782,6 +1817,11 @@ msgstr "Tamam"
 #
 #
 msgid "Object Query"
+msgstr "İşaret Sorgusu"
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "İşaret Sorgusu"
 #
 msgid "Object, not otherwise specified"
@@ -1848,6 +1888,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC dosya oluşturuyor"
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN seyirizini sil"
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN seyirizini sil"
 #
@@ -1901,6 +1946,21 @@ msgstr "Yataklı yolcu gemisi"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Yolcu gemisi, arabalıvapur, yolcu gemisi, sağlık gemisi"
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Rota oluştur"
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Seyirizini Sakla"
+#
+# Menu contextuel : Waypoint
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Seyirnoktasını etkinleştir"
 #
 # AIS
 msgid "Pilot Vessel"
@@ -2029,6 +2089,11 @@ msgstr "İşlem sürüyor..."
 #
 msgid "Properties"
 msgstr "Özellikler"
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Özellikler"
 #
 msgid "Pushboat, single"
 msgstr "İtilen tekne, tek"
@@ -2179,7 +2244,8 @@ msgid "Remove"
 msgstr "<-- Kaldır"
 #
 # Menu contextuel : Waypoint
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Seyirnoktasını rotadan çıkar"
 #
 #
@@ -2228,9 +2294,10 @@ msgstr "Windows kaydından başlangıçtaki Harita Dosyası alınıyor."
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Windows kaydından başlangıç dilini alınıyor."
 #
-# Menu contextuel : Route
-msgid "Reverse Route"
-msgstr "Rotayı tersine çevir"
+#
+#, fuzzy
+msgid "Reverse"
+msgstr "&Tersine Çevir"
 #
 msgid "Rollover"
 msgstr "Uzatmalar"
@@ -2259,6 +2326,10 @@ msgid "Route Uploaded successfully."
 msgstr "Rota başarıyla yüklendi"
 #
 msgid "Route from Track"
+msgstr "Seyirizinden Rota"
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Seyirizinden Rota"
 #
 msgid "Route: "
@@ -2355,15 +2426,6 @@ msgstr "Servis teknesi, polis devriyesi, liman servisi"
 #
 msgid "Set Anchor Watch"
 msgstr "Demir nöbetçisini etkinleştir"
-#
-msgid "Set Chart Up Mode"
-msgstr "Harita yukarı yönlü olacak şekilde kullan"
-#
-msgid "Set Course Up Mode"
-msgstr "Yön yukarı olacak şekilde kullan"
-#
-msgid "Set North Up Mode"
-msgstr "Kuzey yukarıda olacak şekilde kullan"
 #
 #
 msgid "Settings"
@@ -2744,6 +2806,18 @@ msgstr ""
 msgid "There"
 msgstr "Oraya"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 msgid ""
 "There was a problem printing.\n"
@@ -3045,6 +3119,11 @@ msgstr "WAV dosyaları (*.wav)|*.wav|Tüm dosyalar (*.*)|*.*"
 msgid "Warn if CPA less than (NMi):"
 msgstr "Eğer CPA küçükse uyar (NMI):"
 #
+#
+#, fuzzy
+msgid "Waypoint"
+msgstr "Seyirnoktaları"
+#
 msgid "Waypoint Locking"
 msgstr "Seyirnoktalarını kilitlemek"
 #
@@ -3158,13 +3237,36 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
+#
+# Menu contextuel : Route
+#~ msgid "Activate Route"
+#~ msgstr "Rotayı etkinleştir"
+#
+#
+#
+#
+# Menu contextuel : Route
+#~ msgid "Deactivate Route"
+#~ msgstr "Rotayı etkisizleştir"
+#
+#
+#
 #
 #
 #
@@ -3176,8 +3278,32 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#~ msgid "Delete Mark"
+#~ msgstr "İşareti sil"
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Seyirnoktasına/İşarete git"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Kullanılacak uyumlu veri bileşeni:"
+#
+#
+#
+#
+#~ msgid "Jump To Position..."
+#~ msgstr "Pozisyona git..."
+#
+#
+#
 #
 #
 #
@@ -3190,12 +3316,34 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
+#
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
 #
 #
+#
+#
+# Menu contextuel : Waypoint
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Seyirnoktası/İşaret özellikleri"
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Uzaklığıi ölç"
+#
+#
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
 #
 #
 #
@@ -3216,12 +3364,34 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
 #
 #
+#
+#
+# Menu contextuel : Route
+#~ msgid "Reverse Route"
+#~ msgstr "Rotayı tersine çevir"
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rota mesafesi"
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Yön yukarı olacak şekilde kullan"
+#
+#
+#
 #
 #
 #
@@ -3233,8 +3403,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
+#
+#
 #
 #
 #

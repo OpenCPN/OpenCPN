@@ -1377,13 +1377,11 @@ bool MyApp::OnInit()
         //  On Windows platforms, establish a default cache managment policy
         //  as allowing OpenCPN a percentage of available physical memory,
         //  not to exceed 1 GB
-        //  Note that this logic implies that Windows platforms always use
-        //  the memCacheLimit policy, and never use the fallback nCacheLimit policy
 #ifdef __WXMSW__
-    if( 0 == g_memCacheLimit )
-        g_memCacheLimit = (int) ( g_mem_total * 0.5 );
-
-    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024);  // math in kBytes
+    if( 0 == g_memCacheLimit ) {
+        if( CACHE_N_LIMIT_DEFAULT == g_nCacheLimit ) g_memCacheLimit = wxMin((int) ( g_mem_total * 0.5 ), 1024);
+    }
+        g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024);  // math in kBytes
 #endif
 
 //      Establish location and name of chart database

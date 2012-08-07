@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 2.6 Beta Build 1729\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2012-05-30 13:42+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -890,7 +890,25 @@ msgstr "Consulta objetivo AIS"
 #
 #
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Consulta objetivo AIS"
+#
+#
+#
+#
+#
+#
 msgid "AIS target list"
+msgstr "Lista Destino AIS"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Lista Destino AIS"
 #
 #
@@ -953,22 +971,6 @@ msgstr "Activar Compensación CM93"
 #
 msgid "Activate Next in Route"
 msgstr "Activar Siguiente en Ruta"
-#
-#
-#
-#
-#
-#
-msgid "Activate Route"
-msgstr "Activar Ruta"
-#
-#
-#
-#
-#
-#
-msgid "Activate Waypoint"
-msgstr "Activar Waypoint"
 #
 # No se si hay que traducirlo como activar o como activo
 #, fuzzy
@@ -1049,6 +1051,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Todos los archivos (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 #
@@ -1314,7 +1322,8 @@ msgstr "CM93"
 #
 #
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Diálogo Compensación CM93"
 #
 #
@@ -1567,6 +1576,15 @@ msgstr "Imprimir Carta"
 #
 #
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Fijar modo carta hacia arriba"
+#
+#
+#
+#
+#
+#
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr No Disponible"
 #
@@ -1707,6 +1725,12 @@ msgstr "Limitación por calado"
 msgid "Container vessel"
 msgstr "Portacontenedores"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 #
 #
@@ -1721,6 +1745,15 @@ msgstr "No se pudo resolver anfitrión TCP/IP"
 #
 #
 msgid "Course UP Mode"
+msgstr "Modo rumbo hacia arriba"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Modo rumbo hacia arriba"
 #
 #
@@ -1859,14 +1892,6 @@ msgid "Deactivate"
 msgstr "Desactivar"
 #
 #
-#
-#
-#
-#
-msgid "Deactivate Route"
-msgstr "Desactivar Ruta"
-#
-#
 msgid "Decimal degrees"
 msgstr "Grados Decimales"
 #
@@ -1933,14 +1958,6 @@ msgstr "Borrar Todo"
 #
 msgid "Delete Group"
 msgstr "Borrar Grupo"
-#
-#
-#
-#
-#
-#
-msgid "Delete Mark"
-msgstr "Eliminar Marca"
 #
 #
 #
@@ -2478,14 +2495,6 @@ msgstr "Ir Aquí"
 #
 #
 #
-msgid "Go To Mark/WP"
-msgstr "Ir a Marca/WP"
-#
-#
-#
-#
-#
-#
 msgid "Go to "
 msgstr "Ir A "
 #
@@ -2664,8 +2673,18 @@ msgstr "Saltar a Posición"
 #
 #
 #
-msgid "Jump To Position..."
-msgstr "Saltar A Posición..."
+#
+#
+#
+#, fuzzy
+msgid "Jump To..."
+msgstr "Saltar A"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 #
 #
@@ -3028,14 +3047,6 @@ msgstr "Marcar objetivos como perdidos después de (Minutos):"
 #
 #
 #
-msgid "Mark/WP Properties..."
-msgstr "Propiedades Marca/WP..."
-#
-#
-#
-#
-#
-#
 msgid "Marks"
 msgstr "Marcas"
 #
@@ -3052,7 +3063,8 @@ msgstr "Max Detalle Aquí"
 #
 #
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Finalizar Medir"
 #
 #
@@ -3060,8 +3072,8 @@ msgstr "Finalizar Medir"
 #
 #
 #
-msgid "Measure....."
-msgstr "Medir....."
+msgid "Measure Off"
+msgstr "Finalizar Medir"
 #
 #
 #
@@ -3080,6 +3092,24 @@ msgstr "Transporte Médico"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "¿Renombrar Waypoints?"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "¿Renombrar Waypoints?"
 #
 #
 #
@@ -3222,6 +3252,9 @@ msgstr "Nombre:"
 msgid "Nav Status"
 msgstr "Estado Navegación:  "
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 #
 #
@@ -3277,6 +3310,12 @@ msgstr "Nº de objetos"
 #
 #
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Fijar Modo Norte Arriba"
+#
+#
+#
 msgid "Not Under Command"
 msgstr "Sin Control"
 #
@@ -3302,6 +3341,15 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
+msgstr "Consulta Objetos"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Consulta Objetos"
 #
 #
@@ -3431,6 +3479,15 @@ msgstr "Crear archivo OpenCPN S57 SENC..."
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Borrar Track OpenCPN "
+#
+#
+#
+#
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "Borrar Track OpenCPN "
 #
@@ -3528,6 +3585,33 @@ msgstr "Barco pasajeros sin acomodaciópn"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Barco pasajeros, ferry, crucero, barco Cruz Roja"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Crear Ruta"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Exportar Track..."
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Activar Waypoint"
 #
 #
 #
@@ -3780,6 +3864,15 @@ msgstr "Progreso..."
 #
 msgid "Properties"
 msgstr "Propiedades"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Propiedades..."
 #
 #
 #
@@ -4040,7 +4133,8 @@ msgstr "<--Eliminar"
 #
 #
 #
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Eliminar Waypoint de Ruta"
 #
 #
@@ -4117,8 +4211,9 @@ msgstr "Recuperando selección inicial de idioma desde Registro de Windows"
 #
 #
 #
-msgid "Reverse Route"
-msgstr "Ruta Inversa"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Inversa"
 #
 #
 #
@@ -4180,6 +4275,14 @@ msgstr "Ruta Cargada correctamente."
 #
 #
 msgid "Route from Track"
+msgstr "Ruta desde Track"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Ruta desde Track"
 #
 #
@@ -4349,27 +4452,6 @@ msgstr "Barco servicio, policia, servicio puerto"
 #
 msgid "Set Anchor Watch"
 msgstr "Establecer Alarma Fondeo "
-#
-#
-#
-#
-#
-#
-msgid "Set Chart Up Mode"
-msgstr "Fijar modo carta hacia arriba"
-#
-#
-#
-#
-#
-#
-msgid "Set Course Up Mode"
-msgstr "Fijar modo rumbo hacia arriba"
-#
-#
-#
-msgid "Set North Up Mode"
-msgstr "Fijar Modo Norte Arriba"
 #
 #
 #
@@ -5078,6 +5160,18 @@ msgstr ""
 msgid "There"
 msgstr "Allí"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -5608,6 +5702,15 @@ msgstr "Aviso si CPA es inferior a (NMi):"
 #
 #
 #
+#, fuzzy
+msgid "Waypoint"
+msgstr "Waypoints"
+#
+#
+#
+#
+#
+#
 msgid "Waypoint Locking"
 msgstr "Bloqueo de Waypoints"
 #
@@ -5811,6 +5914,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5828,8 +5934,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
+#
+#
 #
 #
 #
@@ -5866,8 +5978,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
+#
+#
+#
 #
 #
 #
@@ -5926,8 +6044,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
+#
+#
 #
 #
 #
@@ -6018,8 +6142,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
+#
+#
 #
 #
 #
@@ -6068,8 +6198,14 @@ msgstr "wxFB Website"
 #~ msgstr "(Derrota Activa)"
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
 #
 #
 #
@@ -6093,12 +6229,29 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Activate Route"
+#~ msgstr "Activar Ruta"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
 #
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
+#
+#
 #
 #
 #
@@ -6138,8 +6291,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -6206,8 +6365,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
+#
+#
 #
 #
 #
@@ -6274,8 +6439,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
+#
+#
+#
 #
 #
 #
@@ -6351,8 +6522,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
+#
+#
 #
 #
 #
@@ -6416,9 +6593,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
+#
+#
 #
 #
 #
@@ -6468,8 +6651,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
+#
+#
 #
 #
 #
@@ -6561,11 +6750,28 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Deactivate Route"
+#~ msgstr "Desactivar Ruta"
+#
+#
+#
 #
 #
 #
@@ -6587,6 +6793,20 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Delete Mark"
+#~ msgstr "Eliminar Marca"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -6598,6 +6818,9 @@ msgstr "wxFB Website"
 #
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
+#
+#
 #
 #
 #
@@ -6651,8 +6874,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
+#
+#
+#
 #
 #
 #
@@ -6679,9 +6908,26 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Ir a Marca/WP"
+#
+#
+#
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Usar datos harmónicos:"
+#
+#
+#
 #
 #
 #
@@ -6718,12 +6964,26 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Jump To Position..."
+#~ msgstr "Saltar A Posición..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fuentes"
+#
+#
+#
 #
 #
 #
@@ -6773,8 +7033,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
+#
+#
 #
 #
 #
@@ -6803,12 +7069,43 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Propiedades Marca/WP..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Medir....."
+#
+#
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
 #
 #
 #
@@ -6844,8 +7141,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
+#
+#
 #
 #
 #
@@ -6894,6 +7197,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
 #
@@ -6912,8 +7218,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
+#
+#
 #
 #
 #
@@ -6950,8 +7262,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -6988,8 +7306,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -7027,8 +7351,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
+#
+#
 #
 #
 #
@@ -7057,8 +7387,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Imprimiendo"
+#
+#
+#
 #
 #
 #
@@ -7100,8 +7436,36 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#~ msgid "Reverse Route"
+#~ msgstr "Ruta Inversa"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distancia Ruta:"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Fijar modo rumbo hacia arriba"
+#
+#
+#
 #
 #
 #
@@ -7146,6 +7510,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Mostrar Icono Impresión"
 #
@@ -7157,8 +7524,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Icono Derrotas"
+#
+#
+#
 #
 #
 #
@@ -7216,6 +7589,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
@@ -7246,9 +7622,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
+#
+#
+#
 #
 #
 #

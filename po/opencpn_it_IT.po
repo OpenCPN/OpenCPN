@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -788,7 +788,23 @@ msgstr "Interroga Target AIS"
 #
 #
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Interroga Target AIS"
+#
+#
+#
+#
+#
 msgid "AIS target list"
+msgstr "Lista Target AIS"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Lista Target AIS"
 #
 #
@@ -844,20 +860,6 @@ msgstr "Attiva CM93 Offset"
 #
 msgid "Activate Next in Route"
 msgstr "Attiva Waypoint successivo"
-#
-#
-#
-#
-#
-msgid "Activate Route"
-msgstr "Attiva Rotta"
-#
-#
-#
-#
-#
-msgid "Activate Waypoint"
-msgstr "Attiva Waypoint"
 #
 #
 #
@@ -933,6 +935,12 @@ msgid "All files (*.*)|*.*"
 msgstr ""
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 #
@@ -1178,7 +1186,8 @@ msgstr ""
 #
 #
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Aggiusta Offset CM93"
 #
 #
@@ -1409,6 +1418,12 @@ msgstr "Stampa la Carta"
 #
 #
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Visualizza 'Carta in Alto'"
+#
+#
+#
 #
 #
 msgid "Chart1::Event...TCMgr Not Available"
@@ -1532,6 +1547,12 @@ msgstr "Condizionata dall'Immersione"
 msgid "Container vessel"
 msgstr "Unità porta Container"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 #
 #
@@ -1544,6 +1565,14 @@ msgstr "Indirizzo IP non trovato"
 #
 #
 msgid "Course UP Mode"
+msgstr "Modalità 'Rotta in Alto' (Course Up)"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Modalità 'Rotta in Alto' (Course Up)"
 #
 #
@@ -1671,13 +1700,6 @@ msgid "Deactivate"
 msgstr "&Disattiva"
 #
 #
-#
-#
-#
-msgid "Deactivate Route"
-msgstr "Disattiva Rotta"
-#
-#
 msgid "Decimal degrees"
 msgstr "Gradi e decimi di grado"
 #
@@ -1735,13 +1757,6 @@ msgstr "E&limina tutto"
 #
 msgid "Delete Group"
 msgstr "Elimina Gruppo"
-#
-#
-#
-#
-#
-msgid "Delete Mark"
-msgstr "Elimina Punto"
 #
 #
 #
@@ -2227,13 +2242,6 @@ msgstr "Rotta fino a qui!"
 #
 #
 #
-msgid "Go To Mark/WP"
-msgstr "Vai a Punto/WP"
-#
-#
-#
-#
-#
 msgid "Go to "
 msgstr "Vai a "
 #
@@ -2395,8 +2403,15 @@ msgstr "Zoom a Lat/Lon"
 #
 #
 #
-msgid "Jump To Position..."
-msgstr "Zoom a Lat/Lon"
+#, fuzzy
+msgid "Jump To..."
+msgstr "Vai a"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 #
 #
@@ -2730,13 +2745,6 @@ msgstr "Segna i Target come persi dopo (Minuti):"
 #
 #
 #
-msgid "Mark/WP Properties..."
-msgstr "Propietà Punto/WP..."
-#
-#
-#
-#
-#
 msgid "Marks"
 msgstr "Punti"
 #
@@ -2751,15 +2759,16 @@ msgstr "Massimo Dettaglio"
 #
 #
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Chiudi Stumento Misura"
 #
 #
 #
 #
 #
-msgid "Measure....."
-msgstr "Strumento Misura..."
+msgid "Measure Off"
+msgstr "Chiudi Stumento Misura"
 #
 #
 #
@@ -2777,6 +2786,22 @@ msgstr "Trasporto Medico"
 #
 msgid "Mercator"
 msgstr "Mercatore"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Rinomina Waypoints?"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Rinomina Waypoints?"
 #
 #
 #
@@ -2910,6 +2935,9 @@ msgstr "Nome Target  : "
 msgid "Nav Status"
 msgstr "Stato"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 #
 #
@@ -2960,6 +2988,12 @@ msgstr "Numero oggetti"
 #
 #
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Visualizza 'Nord in Alto'"
+#
+#
+#
 msgid "Not Under Command"
 msgstr "Che Non Governa"
 #
@@ -2982,6 +3016,14 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
+msgstr "Info Oggetti Vettoriali"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Info Oggetti Vettoriali"
 #
 #
@@ -3098,6 +3140,14 @@ msgstr "OpenCPN Creazione File S57 SENC..."
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN Eliminazione Tracce"
+#
+#
+#
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Eliminazione Tracce"
 #
@@ -3187,6 +3237,30 @@ msgstr "Nave Passeggeri senza alloggio "
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Nave Passeggeri, Traghetto, Crociera, Croce Rossa"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Crea una Rotta"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "E&sporta Traccia"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Attiva Waypoint"
 #
 #
 #
@@ -3412,6 +3486,14 @@ msgstr "Avanzamento..."
 #
 msgid "Properties"
 msgstr "Proprietà"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Proprietà"
 #
 #
 #
@@ -3653,7 +3735,8 @@ msgstr "<--Rimuovi"
 #
 #
 #
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Rimuovi Waypoint dalla Rotta"
 #
 #
@@ -3724,8 +3807,9 @@ msgstr "Selezione iniziale della lingua dal Registro di Windows"
 #
 #
 #
-msgid "Reverse Route"
-msgstr "Inverti Rotta"
+#, fuzzy
+msgid "Reverse"
+msgstr "In&verti"
 #
 #
 #
@@ -3779,6 +3863,13 @@ msgstr "Rotta caricata correttamente."
 #
 #
 msgid "Route from Track"
+msgstr "&Rotta da Traccia"
+#
+#
+#
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "&Rotta da Traccia"
 #
 #
@@ -3930,23 +4021,6 @@ msgstr "Unità di Servizio, Polizia, Portuale"
 #
 msgid "Set Anchor Watch"
 msgstr "Attiva allarme Ancora"
-#
-#
-#
-msgid "Set Chart Up Mode"
-msgstr "Visualizza 'Carta in Alto'"
-#
-#
-#
-#
-#
-msgid "Set Course Up Mode"
-msgstr "Visualizza 'Rotta in Alto'"
-#
-#
-#
-msgid "Set North Up Mode"
-msgstr "Visualizza 'Nord in Alto'"
 #
 #
 #
@@ -4578,6 +4652,18 @@ msgstr ""
 msgid "There"
 msgstr "Destinazione"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -5058,6 +5144,14 @@ msgstr "Avverti se il CPA è minore di (Miglia):"
 #
 #
 #
+#, fuzzy
+msgid "Waypoint"
+msgstr "WP"
+#
+#
+#
+#
+#
 msgid "Waypoint Locking"
 msgstr "Blocco Punti/WP"
 #
@@ -5234,8 +5328,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+#
+#
+#
 #
 #
 #
@@ -5264,8 +5364,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
+#
+#
 #
 #
 #
@@ -5306,8 +5412,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
+#
+#
 #
 #
 #
@@ -5370,8 +5482,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
+#
+#
 #
 #
 #
@@ -5416,8 +5534,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
+#
+#
 #
 #
 #
@@ -5430,6 +5554,19 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Allerta AIS"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Activate Route"
+#~ msgstr "Attiva Rotta"
+#
+#
+#
 #
 #
 #
@@ -5454,8 +5591,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
+#
+#
 #
 #
 #
@@ -5496,8 +5639,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
+#
+#
 #
 #
 #
@@ -5538,8 +5687,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
+#
+#
 #
 #
 #
@@ -5578,6 +5733,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
@@ -5598,9 +5756,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
+#
+#
 #
 #
 #
@@ -5633,8 +5797,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
+#
+#
 #
 #
 #
@@ -5698,11 +5868,27 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Deactivate Route"
+#~ msgstr "Disattiva Rotta"
+#
+#
+#
 #
 #
 #
@@ -5717,8 +5903,42 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
+#~ msgid "Delete Mark"
+#~ msgstr "Elimina Punto"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Vai a Punto/WP"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "File Maree (Harmonic) da utilizzare:"
+#
+#
+#
+#
+#
+#
+#~ msgid "Jump To Position..."
+#~ msgstr "Zoom a Lat/Lon"
+#
+#
+#
 #
 #
 #
@@ -5730,6 +5950,29 @@ msgstr ""
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Lingua/Caratteri"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Propietà Punto/WP..."
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Strumento Misura..."
+#
+#
+#
 #
 #
 #
@@ -5756,6 +5999,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Stampa"
 #
@@ -5764,8 +6010,34 @@ msgstr ""
 #
 #
 #
+#
+#
+#~ msgid "Reverse Route"
+#~ msgstr "Inverti Rotta"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distanza Rotta:"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Visualizza 'Rotta in Alto'"
+#
+#
+#
 #
 #
 #
@@ -5784,8 +6056,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostra l'icona della Traccia"
+#
+#
+#
 #
 #
 #

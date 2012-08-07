@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -534,7 +534,17 @@ msgid "AIS Target Query"
 msgstr "AIS mål informasjon"
 #
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS mål informasjon"
+#
+#
 msgid "AIS target list"
+msgstr "AIS fartøyliste"
+#
+#
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS fartøyliste"
 #
 #
@@ -568,14 +578,6 @@ msgstr "Aktiver CM93 korrigering"
 #
 msgid "Activate Next in Route"
 msgstr "Aktiver neste i ruten"
-#
-#
-msgid "Activate Route"
-msgstr "Aktiver ruten"
-#
-#
-msgid "Activate Waypoint"
-msgstr "Aktiver veipunkt"
 #
 #
 msgid "Active"
@@ -626,6 +628,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Alle filer (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 #
@@ -786,7 +794,8 @@ msgid "CM93"
 msgstr "CM93"
 #
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 forskyvnings dialog"
 #
 #
@@ -945,6 +954,11 @@ msgid "Chart Print"
 msgstr "Skriv ut kart"
 #
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Sett kart opp modus"
+#
+#
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Kart1::Hendelse...TCMgr Ikke tilgjengelig"
 #
@@ -1024,12 +1038,23 @@ msgstr "Forhindret av dypgående"
 msgid "Container vessel"
 msgstr "Kontainerfartøy"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 msgid "Could not resolve TCP/IP host '"
 msgstr "Kunne ikke løse TCP/IP vert '"
 #
 #
 msgid "Course UP Mode"
+msgstr "Kurs opp"
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Kurs opp"
 #
 #
@@ -1124,10 +1149,6 @@ msgid "Deactivate"
 msgstr "Deaktiver"
 #
 #
-msgid "Deactivate Route"
-msgstr "Deaktiver rute"
-#
-#
 msgid "Decimal degrees"
 msgstr "Desimal grader"
 #
@@ -1166,10 +1187,6 @@ msgstr "Slett alle"
 #
 msgid "Delete Group"
 msgstr "Slett gruppe"
-#
-#
-msgid "Delete Mark"
-msgstr "Slett merke"
 #
 #
 msgid "Delete Route"
@@ -1489,10 +1506,6 @@ msgid "Go To Here"
 msgstr "Gå hit"
 #
 #
-msgid "Go To Mark/WP"
-msgstr "Gå til merke/veipunkt"
-#
-#
 msgid "Go to "
 msgstr "Gå til"
 #
@@ -1605,8 +1618,15 @@ msgid "Jump To Position"
 msgstr "Gå til posisjon"
 #
 #
-msgid "Jump To Position..."
-msgstr "Gå til posisjon"
+#, fuzzy
+msgid "Jump To..."
+msgstr "Gå til"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 #
 msgid "LE/V"
@@ -1829,10 +1849,6 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Merk mål som mistet etter (minutter):"
 #
 #
-msgid "Mark/WP Properties..."
-msgstr "Egenskaper for Merke/Veipunkt"
-#
-#
 msgid "Marks"
 msgstr "Merker"
 #
@@ -1841,12 +1857,13 @@ msgid "Max Detail Here"
 msgstr "Maks detalj her"
 #
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Avslutt måling"
 #
 #
-msgid "Measure....."
-msgstr "Avstandsmåling..."
+msgid "Measure Off"
+msgstr "Avslutt måling"
 #
 #
 msgid "Med/V"
@@ -1859,6 +1876,16 @@ msgstr "Medisinsk Fartøy"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Bytte navn på veipunkter?"
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Bytte navn på veipunkter?"
 #
 #
 msgid "Meters"
@@ -1952,6 +1979,9 @@ msgstr "Navn:  "
 msgid "Nav Status"
 msgstr "Nav Status"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 msgid "Navigation Data"
 msgstr "Navigasjonsdata"
@@ -1984,6 +2014,11 @@ msgid "No. of items"
 msgstr "Ant. enheter"
 #
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Sett nord opp"
+#
+#
 msgid "Not Under Command"
 msgstr "Ikke under kommando"
 #
@@ -1997,6 +2032,11 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
+msgstr "Objekt informasjon"
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Objekt informasjon"
 #
 #
@@ -2070,6 +2110,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC Filopprettelse..."
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN Slett slepestrek"
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Slett slepestrek"
 #
@@ -2129,6 +2174,21 @@ msgstr "Passasjerskip uten overnatting"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Passasjerskip, ferge, cruiseskip, rødekors skip"
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Lag rute"
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Eksporter slepestrek..."
+#
+#
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Aktiver veipunkt"
 #
 #
 msgid "Pilot Vessel"
@@ -2274,6 +2334,11 @@ msgstr "Forløp..."
 #
 msgid "Properties"
 msgstr "Egenskaper"
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Egenskaper..."
 #
 #
 msgid "Pushboat, single"
@@ -2443,7 +2508,8 @@ msgid "Remove"
 msgstr "<--Fjern"
 #
 #
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Fjern veipunkt fra rute"
 #
 #
@@ -2495,8 +2561,9 @@ msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Innhenter grunnleggende språkvalg fra Windows registeret"
 #
 #
-msgid "Reverse Route"
-msgstr "Snu rute"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Reverser"
 #
 #
 msgid "Rollover"
@@ -2529,6 +2596,11 @@ msgstr "Rute ble opplastet."
 #
 #
 msgid "Route from Track"
+msgstr "Rute fra Slepestrek"
+#
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Rute fra Slepestrek"
 #
 #
@@ -2635,18 +2707,6 @@ msgstr "Servicefartøy, politipatrulje, havneservice"
 #
 msgid "Set Anchor Watch"
 msgstr "Sett ankervakt"
-#
-#
-msgid "Set Chart Up Mode"
-msgstr "Sett kart opp modus"
-#
-#
-msgid "Set Course Up Mode"
-msgstr "Sett kurs opp"
-#
-#
-msgid "Set North Up Mode"
-msgstr "Sett nord opp"
 #
 #
 msgid "Settings"
@@ -3052,6 +3112,18 @@ msgstr ""
 msgid "There"
 msgstr "Der"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 msgid ""
 "There was a problem printing.\n"
@@ -3381,6 +3453,11 @@ msgid "Warn if CPA less than (NMi):"
 msgstr "Advar om CPA er mindre enn (Nm):"
 #
 #
+#, fuzzy
+msgid "Waypoint"
+msgstr "Veipunkter"
+#
+#
 msgid "Waypoint Locking"
 msgstr "Veipunkt lås"
 #
@@ -3507,12 +3584,21 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
 #
 #
 #
@@ -3526,8 +3612,42 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "Activate Route"
+#~ msgstr "Aktiver ruten"
+#
+#
+#
+#
+#
+#~ msgid "Deactivate Route"
+#~ msgstr "Deaktiver rute"
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
+#
+#
+#
+#
+#
+#~ msgid "Delete Mark"
+#~ msgstr "Slett merke"
+#
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Gå til merke/veipunkt"
+#
+#
+#
 #
 #
 #
@@ -3539,13 +3659,43 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "Jump To Position..."
+#~ msgstr "Gå til posisjon"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
 #
 #
+#
+#
+#
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Egenskaper for Merke/Veipunkt"
+#
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Avstandsmåling..."
+#
+#
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "Nm"
+#
+#
+#
 #
 #
 #
@@ -3567,13 +3717,36 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
 #
 #
 #
+#
+#
+#~ msgid "Reverse Route"
+#~ msgstr "Snu rute"
+#
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
+#
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Sett kurs opp"
+#
+#
+#
 #
 #
 #
@@ -3586,8 +3759,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
+#
+#
+#
 #
 #
 #

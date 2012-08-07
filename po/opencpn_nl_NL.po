@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -831,7 +831,23 @@ msgstr "AIS objectgegevens"
 #
 #
 #
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "AIS objectgegevens"
+#
+#
+#
+#
+#
 msgid "AIS target list"
+msgstr "AIS objectlijst"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "AIS target list..."
 msgstr "AIS objectlijst"
 #
 #
@@ -887,20 +903,6 @@ msgstr "Activeer CM93 offsets"
 #
 msgid "Activate Next in Route"
 msgstr "Activeer volgende routepunt"
-#
-#
-#
-#
-#
-msgid "Activate Route"
-msgstr "Activeer route"
-#
-#
-#
-#
-#
-msgid "Activate Waypoint"
-msgstr "Activeer markeringspunt"
 #
 #
 #
@@ -980,6 +982,12 @@ msgstr "Alle bestanden (*.*)|*.*"
 #
 msgid "Anchorage created "
 msgstr "Ankerplaats gemaakt"
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
+msgstr ""
 #
 #
 #
@@ -1224,7 +1232,8 @@ msgstr "CM93"
 #
 #
 #
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "CM93 offsets ..."
 #
 #
@@ -1459,6 +1468,12 @@ msgstr "Kaart afdrukken"
 #
 #
 #
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Noord-Boven presentatie"
+#
+#
+#
 #
 #
 msgid "Chart1::Event...TCMgr Not Available"
@@ -1590,6 +1605,12 @@ msgstr "beperkt door diepgang"
 msgid "Container vessel"
 msgstr "containerschip"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 #
 #
 #
@@ -1602,6 +1623,14 @@ msgstr "Kan TCP/IP host niet vinden"
 #
 #
 msgid "Course UP Mode"
+msgstr "Koers-Boven presentatie"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Koers-Boven presentatie"
 #
 #
@@ -1740,13 +1769,6 @@ msgstr "Deactiveren"
 #
 #
 #
-#
-#
-msgid "Deactivate Route"
-msgstr "Deactiveer route"
-#
-#
-#
 msgid "Decimal degrees"
 msgstr "decimale graden"
 #
@@ -1806,13 +1828,6 @@ msgstr "Verwijder alles"
 #
 msgid "Delete Group"
 msgstr "Groep verwijderen"
-#
-#
-#
-#
-#
-msgid "Delete Mark"
-msgstr "Markeringspunt verwijderen"
 #
 #
 #
@@ -2314,13 +2329,6 @@ msgstr "Ga naar hier"
 #
 #
 #
-msgid "Go To Mark/WP"
-msgstr "Ga naar markeringspunt/routepunt"
-#
-#
-#
-#
-#
 msgid "Go to "
 msgstr "Ga naar"
 #
@@ -2490,8 +2498,17 @@ msgstr "Spring naar positie"
 #
 #
 #
-msgid "Jump To Position..."
-msgstr "Spring naar positie ..."
+#
+#
+#, fuzzy
+msgid "Jump To..."
+msgstr "Spring naar"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 #
 #
@@ -2832,13 +2849,6 @@ msgstr "Markeer object als verdwenen na (minuten): "
 #
 #
 #
-msgid "Mark/WP Properties..."
-msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
-#
-#
-#
-#
-#
 msgid "Marks"
 msgstr "Markeringspunten"
 #
@@ -2853,15 +2863,16 @@ msgstr "Max. details hier"
 #
 #
 #
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Meten Uit"
 #
 #
 #
 #
 #
-msgid "Measure....."
-msgstr "Meten Aan"
+msgid "Measure Off"
+msgstr "Meten Uit"
 #
 #
 #
@@ -2879,6 +2890,22 @@ msgstr "hospitaalschip"
 #
 msgid "Mercator"
 msgstr "Mercator"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Hernoem routepunten?"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Hernoem routepunten?"
 #
 #
 #
@@ -3013,6 +3040,9 @@ msgstr " Naam: "
 msgid "Nav Status"
 msgstr "Nav. status"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 #
 #
 #
@@ -3064,6 +3094,12 @@ msgstr "Aantal items"
 #
 #
 #
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Noord-Boven presentatie"
+#
+#
+#
 msgid "Not Under Command"
 msgstr "onmanoeuvreerbaar"
 #
@@ -3086,6 +3122,14 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
+msgstr "Objectgegevens"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Object Query..."
 msgstr "Objectgegevens"
 #
 #
@@ -3201,6 +3245,14 @@ msgstr "OpenCPN S57 SENC Maak bestand ..."
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "OpenCPN verwijdert track"
+#
+#
+#
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN verwijdert track"
 #
@@ -3289,6 +3341,30 @@ msgstr "passagierschip zonder accomodatie"
 #
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "passagierschip binnenvaart"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Maak route"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Exporteer track ..."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Activeer markeringspunt"
 #
 #
 #
@@ -3520,6 +3596,14 @@ msgstr "Voortgang ..."
 #
 msgid "Properties"
 msgstr "Eigenschappen"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Properties..."
+msgstr "&Eigenschappen ..."
 #
 #
 #
@@ -3763,7 +3847,8 @@ msgstr "<--Verwijder"
 #
 #
 #
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Routepunt uit route weghalen"
 #
 #
@@ -3840,8 +3925,9 @@ msgstr "Haal de initiele taalselectie op uit het Windows register"
 #
 #
 #
-msgid "Reverse Route"
-msgstr "Route omdraaien"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Omdraaien"
 #
 #
 #
@@ -3897,6 +3983,14 @@ msgstr "Route goed geladen."
 #
 #
 msgid "Route from Track"
+msgstr "Maak route van track"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Route/Track"
 msgstr "Maak route van track"
 #
 #
@@ -4055,23 +4149,6 @@ msgstr "dienstvaartuig"
 #
 msgid "Set Anchor Watch"
 msgstr "Activeer ankerwacht"
-#
-#
-#
-msgid "Set Chart Up Mode"
-msgstr "Noord-Boven presentatie"
-#
-#
-#
-#
-#
-msgid "Set Course Up Mode"
-msgstr "Koers-Boven presentatie"
-#
-#
-#
-msgid "Set North Up Mode"
-msgstr "Noord-Boven presentatie"
 #
 #
 #
@@ -4711,6 +4788,18 @@ msgstr "De noodzakelijke configuratiebestanden zijn niet gevonden."
 msgid "There"
 msgstr "Daar"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 #
 #
 #
@@ -5201,6 +5290,14 @@ msgstr "Waarschuw als kortste naderingsafstand minder is dan (zeemijl):"
 #
 #
 #
+#, fuzzy
+msgid "Waypoint"
+msgstr "Markeringspunten"
+#
+#
+#
+#
+#
 msgid "Waypoint Locking"
 msgstr "Route- en Markeringspunten Vastzetten"
 #
@@ -5393,6 +5490,9 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5408,8 +5508,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
+#
+#
 #
 #
 #
@@ -5442,8 +5548,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
+#
+#
 #
 #
 #
@@ -5464,8 +5576,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
 #
 #
 #
@@ -5477,6 +5595,19 @@ msgstr "wxFB website"
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS waarschuwing"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Activate Route"
+#~ msgstr "Activeer route"
+#
+#
+#
 #
 #
 #
@@ -5504,8 +5635,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -5524,8 +5661,34 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#~ msgid "Deactivate Route"
+#~ msgstr "Deactiveer route"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Delete Mark"
+#~ msgstr "Markeringspunt verwijderen"
+#
+#
+#
 #
 #
 #
@@ -5547,8 +5710,32 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
+#
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Ga naar markeringspunt/routepunt"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
+#
+#
+#
+#
+#
+#
+#~ msgid "Jump To Position..."
+#~ msgstr "Spring naar positie ..."
+#
+#
+#
 #
 #
 #
@@ -5558,6 +5745,9 @@ msgstr "wxFB website"
 #
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
+#
+#
 #
 #
 #
@@ -5580,8 +5770,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
+#
+#
 #
 #
 #
@@ -5597,8 +5793,34 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
+#
+#
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Measure....."
+#~ msgstr "Meten Aan"
+#
+#
+#
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NM"
+#
+#
+#
 #
 #
 #
@@ -5629,8 +5851,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
+#
+#
 #
 #
 #
@@ -5666,8 +5894,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
+#
+#
 #
 #
 #
@@ -5700,8 +5934,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -5734,8 +5974,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -5767,8 +6013,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
+#
+#
 #
 #
 #
@@ -5793,6 +6045,9 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
 #
@@ -5801,8 +6056,34 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#~ msgid "Reverse Route"
+#~ msgstr "Route omdraaien"
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Koers-Boven presentatie"
+#
+#
+#
 #
 #
 #
@@ -5819,8 +6100,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
+#
+#
 #
 #
 #

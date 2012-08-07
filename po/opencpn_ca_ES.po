@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -539,7 +539,17 @@ msgid "AIS Target Query"
 msgstr "Consulta d'objecte AIS"
 #
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Consulta d'objecte AIS"
+#
+# 
 msgid "AIS target list"
+msgstr "Llista d'Objectes AIS"
+#
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Llista d'Objectes AIS"
 #
 # 
@@ -573,14 +583,6 @@ msgstr "Activació de la Correcció per CM93 "
 # 
 msgid "Activate Next in Route"
 msgstr "Activació del Proper en la Ruta"
-#
-# 
-msgid "Activate Route"
-msgstr "Activació de la Ruta"
-#
-# 
-msgid "Activate Waypoint"
-msgstr "Activació d'un Waypoint"
 #
 # 
 #, fuzzy
@@ -634,6 +636,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Tots els arxius (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -795,7 +803,8 @@ msgid "CM93"
 msgstr "CM93"
 #
 # 
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Diàleg per la Correcció CM93"
 #
 # 
@@ -955,6 +964,11 @@ msgid "Chart Print"
 msgstr "Impressió de la carta"
 #
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Actualització de Cartes d'OpenCPN"
+#
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carta1::Event...GestorTC No Disponible"
 #
@@ -1037,12 +1051,23 @@ msgstr "Constret pel corrent"
 msgid "Container vessel"
 msgstr "Vaixell Veler"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 msgid "Could not resolve TCP/IP host '"
 msgstr "No s'ha pogut resoldre la TCP / IP del host"
 #
 # 
 msgid "Course UP Mode"
+msgstr "Mode Rumb Amunt"
+#
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Mode Rumb Amunt"
 #
 # 
@@ -1141,10 +1166,6 @@ msgid "Deactivate"
 msgstr "Desactivació"
 #
 # 
-msgid "Deactivate Route"
-msgstr "Desactivació de la Ruta"
-#
-# 
 msgid "Decimal degrees"
 msgstr ""
 #
@@ -1188,10 +1209,6 @@ msgstr "Esborrar-ho Tot"
 #, fuzzy
 msgid "Delete Group"
 msgstr "Esborrar la Ruta"
-#
-# 
-msgid "Delete Mark"
-msgstr "Esborrar la Marca"
 #
 # 
 msgid "Delete Route"
@@ -1517,10 +1534,6 @@ msgid "Go To Here"
 msgstr "Anar Cap Aquí"
 #
 # 
-msgid "Go To Mark/WP"
-msgstr "Cap a la Marca/Wpt"
-#
-# 
 msgid "Go to "
 msgstr "Anant a  "
 #
@@ -1633,8 +1646,15 @@ msgid "Jump To Position"
 msgstr "Salta a la Posició"
 #
 # 
-msgid "Jump To Position..."
-msgstr "Saltar a la Posició..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Centrar-s'hi"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 msgid "LE/V"
@@ -1864,11 +1884,6 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Marcar els objectes com a perduts després de (Minuts):"
 #
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "Propietats de la Marca/Wpt "
-#
-# 
 msgid "Marks"
 msgstr "Marques"
 #
@@ -1877,12 +1892,13 @@ msgid "Max Detail Here"
 msgstr "Aquí el Màx. Detall"
 #
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Tancar el Mesurador"
 #
 # 
-msgid "Measure....."
-msgstr "Mesurar....."
+msgid "Measure Off"
+msgstr "Tancar el Mesurador"
 #
 # 
 msgid "Med/V"
@@ -1895,6 +1911,16 @@ msgstr "Transport Mèdic"
 # 
 msgid "Mercator"
 msgstr "Mercator"
+#
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Reanomenar Waypoints?"
+#
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Reanomenar Waypoints?"
 #
 # 
 msgid "Meters"
@@ -1988,6 +2014,9 @@ msgstr "Nom:   "
 msgid "Nav Status"
 msgstr "Estat Nav."
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 msgid "Navigation Data"
 msgstr "Dades de Navegació"
@@ -2020,6 +2049,11 @@ msgid "No. of items"
 msgstr "Nº d'objectes"
 #
 # 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Actualització de Cartes d'OpenCPN"
+#
+# 
 msgid "Not Under Command"
 msgstr "Fora de Control"
 #
@@ -2033,6 +2067,11 @@ msgstr "d'Acord"
 #
 # 
 msgid "Object Query"
+msgstr "Consulta sobre l'Objecte"
+#
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "Consulta sobre l'Objecte"
 #
 # 
@@ -2108,6 +2147,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Creació de l'Arxiu S57 SENC de l'OpenCPN ..."
 #
 # 
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Esborrar una Derrota d'OpenCPN"
+#
+# 
 msgid "OpenCPN Track Delete"
 msgstr "Esborrar una Derrota d'OpenCPN"
 #
@@ -2167,6 +2211,21 @@ msgstr ""
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Disseny de Rutes"
+#
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Exportar Derrota..."
+#
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Activació d'un Waypoint"
 #
 # 
 msgid "Pilot Vessel"
@@ -2311,6 +2370,11 @@ msgstr "Progrés..."
 # 
 msgid "Properties"
 msgstr "Propietats"
+#
+# 
+#, fuzzy
+msgid "Properties..."
+msgstr "&Propietats..."
 #
 # 
 msgid "Pushboat, single"
@@ -2481,7 +2545,8 @@ msgid "Remove"
 msgstr ""
 #
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Treure el Waypoint de la Ruta"
 #
 # 
@@ -2533,8 +2598,9 @@ msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperació de la llengua inicial del Registre de Windows "
 #
 # 
-msgid "Reverse Route"
-msgstr "Inverció de la Ruta"
+#, fuzzy
+msgid "Reverse"
+msgstr "Inve&rsió"
 #
 # 
 msgid "Rollover"
@@ -2567,6 +2633,11 @@ msgstr "La Ruta s'ha carregat bé."
 #
 # 
 msgid "Route from Track"
+msgstr "De Derrota a Ruta"
+#
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "De Derrota a Ruta"
 #
 # 
@@ -2673,20 +2744,6 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Configurar la Vigilància d'Àncora"
-#
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "Actualització de Cartes d'OpenCPN"
-#
-# 
-#, fuzzy
-msgid "Set Course Up Mode"
-msgstr "Mode Rumb Amunt"
-#
-# 
-msgid "Set North Up Mode"
-msgstr ""
 #
 # 
 msgid "Settings"
@@ -3104,6 +3161,18 @@ msgstr ""
 msgid "There"
 msgstr "Allà"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 msgid ""
 "There was a problem printing.\n"
@@ -3437,6 +3506,11 @@ msgid "Warn if CPA less than (NMi):"
 msgstr "Avisa si la CPA és menor que (MNi)"
 #
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "Waypoints"
+#
+# 
 msgid "Waypoint Locking"
 msgstr "Bloqueig de Waypoints"
 #
@@ -3566,6 +3640,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3583,9 +3660,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
+#
+#
 #
 #
 #
@@ -3608,12 +3691,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
+#
+#
 #
 #
 #
@@ -3636,12 +3725,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
+#
+#
+#
 #
 #
 #
@@ -3656,6 +3751,16 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Activate Route"
+#~ msgstr "Activació de la Ruta"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3663,6 +3768,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
+#
+#
 #
 #
 #
@@ -3685,12 +3793,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
+#
+#
+#
 #
 #
 #
@@ -3706,9 +3820,29 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "Desactivació de la Ruta"
+#
+#
+#
+#
+#
+#
+#
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "El color de la lletra"
+#
+#
+#
+#
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "Esborrar la Marca"
+#
+#
+#
 #
 #
 #
@@ -3731,12 +3865,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
+#
+#
 #
 #
 #
@@ -3755,6 +3895,16 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Cap a la Marca/Wpt"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3769,10 +3919,23 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "Saltar a la Posició..."
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Lletres"
+#
+#
+#
 #
 #
 #
@@ -3793,6 +3956,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
@@ -3804,9 +3970,30 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nom de la Marca"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Propietats de la Marca/Wpt "
+#
+#
+#
+#
+# 
+#~ msgid "Measure....."
+#~ msgstr "Mesurar....."
+#
+#
+#
 #
 #
 #
@@ -3829,12 +4016,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
+#
+#
 #
 #
 #
@@ -3861,12 +4054,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
+#
+#
 #
 #
 #
@@ -3889,12 +4088,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
+#
+#
 #
 #
 #
@@ -3917,6 +4122,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3931,12 +4139,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
+#
+#
 #
 #
 #
@@ -3960,12 +4174,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
+#
+#
 #
 #
 #
@@ -3988,9 +4208,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Impressió"
+#
+#
+#
 #
 #
 #
@@ -4011,10 +4237,31 @@ msgstr ""
 #~ "\n"
 #
 #
+#
+#
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "Inverció de la Ruta"
+#
+#
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Distància Total"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Mode Rumb Amunt"
+#
+#
+#
 #
 #
 #
@@ -4026,9 +4273,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar la icona de derrota"
+#
+#
+#
 #
 #
 #
@@ -4051,12 +4304,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
+#
+#
+#
 #
 #
 #

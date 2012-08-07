@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-06 18:45+0200\n"
+"POT-Creation-Date: 2012-08-07 10:28+0200\n"
 "PO-Revision-Date: 2011-10-06 15:29+0100\n"
 "Last-Translator: Kaptan <khanyux@gmail.com>\n"
 "Language-Team: http://trasno.net/ <proxecto@trasno.net>\n"
@@ -533,7 +533,17 @@ msgid "AIS Target Query"
 msgstr "Consulta o obxectivo AIS"
 #
 # 
+#, fuzzy
+msgid "AIS Target Query..."
+msgstr "Consulta o obxectivo AIS"
+#
+# 
 msgid "AIS target list"
+msgstr "Lista de obxectivos AIS"
+#
+# 
+#, fuzzy
+msgid "AIS target list..."
 msgstr "Lista de obxectivos AIS"
 #
 # 
@@ -568,14 +578,6 @@ msgstr "Activar Desprazamento en CM93"
 # 
 msgid "Activate Next in Route"
 msgstr "Activar Seguinte en Ruta"
-#
-# 
-msgid "Activate Route"
-msgstr "Activar Ruta"
-#
-# 
-msgid "Activate Waypoint"
-msgstr "Activar Waypoint"
 #
 # 
 #, fuzzy
@@ -629,6 +631,12 @@ msgid "All files (*.*)|*.*"
 msgstr "Todos os ficheiros (*.*)|*.*"
 #
 msgid "Anchorage created "
+msgstr ""
+#
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr ""
+#
+msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 #
 # 
@@ -791,7 +799,8 @@ msgid "CM93"
 msgstr "CM93"
 #
 # 
-msgid "CM93 Offset Dialog"
+#, fuzzy
+msgid "CM93 Offset Dialog..."
 msgstr "Desprazar Diálogo CM93"
 #
 # 
@@ -951,6 +960,11 @@ msgid "Chart Print"
 msgstr "Imprimir Carta"
 #
 # 
+#, fuzzy
+msgid "Chart Up Mode"
+msgstr "Actualizar Cartas OpenCPN"
+#
+# 
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr Non Dispoñí­bel"
 #
@@ -1034,6 +1048,12 @@ msgstr "Restrinxido/Obligado polo calado"
 msgid "Container vessel"
 msgstr "Buque de Vela"
 #
+msgid "Copy"
+msgstr ""
+#
+msgid "Copy..."
+msgstr ""
+#
 # 
 msgid "Could not resolve TCP/IP host '"
 msgstr "Non se puido resolver o servidor TCP/IP '"
@@ -1041,6 +1061,11 @@ msgstr "Non se puido resolver o servidor TCP/IP '"
 # 
 #, fuzzy
 msgid "Course UP Mode"
+msgstr "Course UP Mode"
+#
+# 
+#, fuzzy
+msgid "Course Up Mode"
 msgstr "Course UP Mode"
 #
 # 
@@ -1139,10 +1164,6 @@ msgid "Deactivate"
 msgstr "Desactivar"
 #
 # 
-msgid "Deactivate Route"
-msgstr "Desactivar Ruta"
-#
-# 
 msgid "Decimal degrees"
 msgstr ""
 #
@@ -1186,10 +1207,6 @@ msgstr "Borrar Todo"
 #, fuzzy
 msgid "Delete Group"
 msgstr "Borrar Ruta"
-#
-# 
-msgid "Delete Mark"
-msgstr "Borrar Marca"
 #
 # 
 msgid "Delete Route"
@@ -1516,10 +1533,6 @@ msgid "Go To Here"
 msgstr "Ir Aquí"
 #
 # 
-msgid "Go To Mark/WP"
-msgstr "Ir á Marca/WP"
-#
-# 
 msgid "Go to "
 msgstr "Ir a"
 #
@@ -1633,8 +1646,15 @@ msgid "Jump To Position"
 msgstr "Moverse á posición"
 #
 # 
-msgid "Jump To Position..."
-msgstr "Moverse á posición..."
+#, fuzzy
+msgid "Jump To..."
+msgstr "Moverse a"
+#
+msgid "KML Standard (Google Earth and others)"
+msgstr ""
+#
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
 #
 # 
 msgid "LE/V"
@@ -1867,11 +1887,6 @@ msgid "Mark targets as lost after (Minutes:):"
 msgstr "Marcar obxectivos como perdidos despois de (Minutos):"
 #
 # 
-#, fuzzy
-msgid "Mark/WP Properties..."
-msgstr "Propiedades da Marca/WP"
-#
-# 
 msgid "Marks"
 msgstr "Marcas"
 #
@@ -1880,12 +1895,13 @@ msgid "Max Detail Here"
 msgstr "Detalle Máximo Aquí"
 #
 # 
-msgid "Measure Off"
+#, fuzzy
+msgid "Measure"
 msgstr "Rematar de medir"
 #
 # 
-msgid "Measure....."
-msgstr "Medir....."
+msgid "Measure Off"
+msgstr "Rematar de medir"
 #
 # 
 msgid "Med/V"
@@ -1898,6 +1914,16 @@ msgstr "Transporte Médico"
 # 
 msgid "Mercator"
 msgstr "Mercator"
+#
+# 
+#, fuzzy
+msgid "Merge waypoint?"
+msgstr "Renomear Waypoints?"
+#
+# 
+#, fuzzy
+msgid "Merge waypoints?"
+msgstr "Renomear Waypoints?"
 #
 # 
 msgid "Meters"
@@ -1992,6 +2018,9 @@ msgstr "Nome:"
 msgid "Nav Status"
 msgstr "Estado da Navegación"
 #
+msgid "Navigate To This"
+msgstr ""
+#
 # 
 msgid "Navigation Data"
 msgstr "Datos da Navegación"
@@ -2024,6 +2053,11 @@ msgid "No. of items"
 msgstr "No. de elementos"
 #
 # 
+#, fuzzy
+msgid "North Up Mode"
+msgstr "Actualizar Cartas OpenCPN"
+#
+# 
 msgid "Not Under Command"
 msgstr "Inhabilitado Para Maniobrar (NUC)"
 #
@@ -2037,6 +2071,11 @@ msgstr "Aceptar"
 #
 # 
 msgid "Object Query"
+msgstr "Consulta Obxectos"
+#
+# 
+#, fuzzy
+msgid "Object Query..."
 msgstr "Consulta Obxectos"
 #
 # 
@@ -2111,6 +2150,11 @@ msgid "OpenCPN S57 SENC File Create..."
 msgstr "Crear Ficheiro OpenCPN S57 SENC..."
 #
 # 
+#, fuzzy
+msgid "OpenCPN Track"
+msgstr "Borrar Derrota OpenCPN "
+#
+# 
 msgid "OpenCPN Track Delete"
 msgstr "Borrar Derrota OpenCPN "
 #
@@ -2170,6 +2214,21 @@ msgstr ""
 # 
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr ""
+#
+# 
+#, fuzzy
+msgid "Paste Route..."
+msgstr "Crear Ruta"
+#
+# 
+#, fuzzy
+msgid "Paste Track..."
+msgstr "&Exportar Derrota..."
+#
+# 
+#, fuzzy
+msgid "Paste Waypoint..."
+msgstr "Activar Waypoint"
 #
 # 
 msgid "Pilot Vessel"
@@ -2315,6 +2374,11 @@ msgstr "Progreso..."
 # 
 msgid "Properties"
 msgstr "Propiedades"
+#
+# 
+#, fuzzy
+msgid "Properties..."
+msgstr "&Propiedades..."
 #
 # 
 msgid "Pushboat, single"
@@ -2483,7 +2547,8 @@ msgid "Remove"
 msgstr ""
 #
 # 
-msgid "Remove Waypoint from Route"
+#, fuzzy
+msgid "Remove from Route"
 msgstr "Borrar Waypoint  da Ruta"
 #
 # 
@@ -2535,8 +2600,9 @@ msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperando selección inicial de idioma dende o Rexistro de Windows"
 #
 # 
-msgid "Reverse Route"
-msgstr "Ruta Inversa"
+#, fuzzy
+msgid "Reverse"
+msgstr "&Inverter"
 #
 # 
 #, fuzzy
@@ -2570,6 +2636,11 @@ msgstr "Ruta Cargada satisfactoriamente."
 #
 # 
 msgid "Route from Track"
+msgstr "Ruta dende Derrota"
+#
+# 
+#, fuzzy
+msgid "Route/Track"
 msgstr "Ruta dende Derrota"
 #
 # 
@@ -2677,20 +2748,6 @@ msgstr ""
 # 
 msgid "Set Anchor Watch"
 msgstr "Establecer Alarma de Fondeo"
-#
-# 
-#, fuzzy
-msgid "Set Chart Up Mode"
-msgstr "Actualizar Cartas OpenCPN"
-#
-# 
-#, fuzzy
-msgid "Set Course Up Mode"
-msgstr "Course UP Mode"
-#
-# 
-msgid "Set North Up Mode"
-msgstr ""
 #
 # 
 msgid "Settings"
@@ -3108,6 +3165,18 @@ msgstr ""
 msgid "There"
 msgstr "Alí"
 #
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are "
+"pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+#
+msgid ""
+"There is an existing waypoint at the same location as the one you are "
+"pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+#
 # 
 msgid ""
 "There was a problem printing.\n"
@@ -3444,6 +3513,11 @@ msgid "Warn if CPA less than (NMi):"
 msgstr "Aviso se CPA é inferior a (NMi):"
 #
 # 
+#, fuzzy
+msgid "Waypoint"
+msgstr "Waypoints"
+#
+# 
 msgid "Waypoint Locking"
 msgstr "Bloquear Waypoint"
 #
@@ -3573,6 +3647,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3590,9 +3667,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proxección da carta DESCOÑECIDA, asúmese Mercator: "
+#
+#
+#
 #
 #
 #
@@ -3615,12 +3698,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   XestordeEngadidos: Non se pode cargar símbolo create_pi:"
+#
+#
+#
 #
 #
 #
@@ -3643,12 +3732,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Alternar Cartas"
+#
+#
+#
 #
 #
 #
@@ -3663,6 +3758,16 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Activate Route"
+#~ msgstr "Activar Ruta"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3670,6 +3775,9 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
+#
+#
 #
 #
 #
@@ -3692,12 +3800,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClaseComúnNome"
+#
+#
+#
 #
 #
 #
@@ -3713,9 +3827,29 @@ msgstr ""
 #
 #
 # 
+#~ msgid "Deactivate Route"
+#~ msgstr "Desactivar Ruta"
+#
+#
+#
+#
+#
+#
+#
+# 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "A cor do tipo de letra"
+#
+#
+#
+#
+# 
+#~ msgid "Delete Mark"
+#~ msgstr "Borrar Marca"
+#
+#
+#
 #
 #
 #
@@ -3738,12 +3872,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Houbo un erro cargando libgps.so"
+#
+#
+#
 #
 #
 #
@@ -3762,6 +3902,16 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Go To Mark/WP"
+#~ msgstr "Ir á Marca/WP"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -3776,10 +3926,23 @@ msgstr ""
 #
 #
 #
+# 
+#~ msgid "Jump To Position..."
+#~ msgstr "Moverse á posición..."
+#
+#
+#
+#
+#
+#
+#
 #
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Tipos de letra"
+#
+#
+#
 #
 #
 #
@@ -3800,6 +3963,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona da Marca"
@@ -3811,9 +3977,30 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Name"
 #~ msgstr "Nome da Marca"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Mark/WP Properties..."
+#~ msgstr "Propiedades da Marca/WP"
+#
+#
+#
+#
+# 
+#~ msgid "Measure....."
+#~ msgstr "Medir....."
+#
+#
+#
 #
 #
 #
@@ -3836,12 +4023,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Engadido OpenCPN Clase de base"
+#
+#
+#
 #
 #
 #
@@ -3868,12 +4061,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Cargar ficheiro OpenCPN S57 SENC"
+#
+#
+#
 #
 #
 #
@@ -3896,12 +4095,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "XestorEngadidos: Desactivando Engadido:"
+#
+#
+#
 #
 #
 #
@@ -3924,6 +4129,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3938,12 +4146,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "XestordeEngadidos: Descargando Engadido:"
+#
+#
+#
 #
 #
 #
@@ -3968,12 +4182,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posición:"
+#
+#
+#
 #
 #
 #
@@ -3996,9 +4216,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Imprimindo"
+#
+#
+#
 #
 #
 #
@@ -4019,10 +4245,31 @@ msgstr ""
 #~ "\n"
 #
 #
+#
+#
+# 
+#~ msgid "Reverse Route"
+#~ msgstr "Ruta Inversa"
+#
+#
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Distancia Total"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Set Course Up Mode"
+#~ msgstr "Course UP Mode"
+#
+#
+#
 #
 #
 #
@@ -4034,9 +4281,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Amosa-la icona da Derrota"
+#
+#
+#
 #
 #
 #
@@ -4059,12 +4312,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Alternar Nomes"
+#
+#
+#
 #
 #
 #
