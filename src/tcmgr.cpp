@@ -805,7 +805,8 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 
     //  Arrange for the index array to begin counting at "one"
     m_Combined_IDX_array.Add((IDX_entry *)(NULL));
-
+    int num_IDX = 1;
+    
     for(unsigned int i=0 ; i < sources.GetCount() ; i++) {
         TCDataSource *s = new TCDataSource;
         TC_Error_Code r = s->LoadData(sources.Item(i));
@@ -827,6 +828,8 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 
             for( int k=0 ; k < s->GetMaxIndex() ; k++ ) {
                 IDX_entry *pIDX = s->GetIndexEntry(k);
+                pIDX->IDX_rec_num = num_IDX;
+                num_IDX++;
                 m_Combined_IDX_array.Add(pIDX);
             }
         }
@@ -1188,7 +1191,7 @@ TC_Error_Code TCDataSource::LoadData(wxString &data_file_path)
 
     TC_Error_Code err_code = m_pfactory->LoadData(data_file_path);
 
-    //  Mark the index entries indiviually with owner
+    //  Mark the index entries individually with owner
     unsigned int max_index = GetMaxIndex();
     for(unsigned int i=0 ; i < max_index ; i++) {
         IDX_entry *pIDX = GetIndexEntry( i );
@@ -1418,7 +1421,6 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
                 pIDX->pDataSource = NULL;
 
                 index_in_memory   = TRUE;
-                pIDX->IDX_rec_num = num_IDX;
                 pIDX->Valid15 = 0;
 
                 if(TC_NO_ERROR != build_IDX_entry(pIDX ) ) {
@@ -1558,15 +1560,6 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
         pIDX->IDX_sta_num     = 0;
         strcpy(pIDX->IDX_reference_name, pIDX->IDX_station_name);
 
-        /*
-                pIDX->IDX_ref_file_num= 0;
-                pHarmonic = harmonic_file_list;
-                while (pHarmonic && (pHarmonic->rec_start <= pIDX->IDX_rec_num))
-                {
-                    pHarmonic = (harmonic_file_entry *)pHarmonic->next;
-                    pIDX->IDX_ref_file_num++;
-                }
-        */
     }
 
     if( pIDX->IDX_ht_time_off ||
@@ -8578,7 +8571,6 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
         pIDX->source_data_type = SOURCE_TYPE_BINARY_HARMONIC;
         pIDX->pDataSource = NULL;
 
-        pIDX->IDX_rec_num = num_IDX;
         pIDX->Valid15 = 0;
 
         pIDX->pref_sta_data = NULL;                     // no reference data yet
