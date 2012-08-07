@@ -7241,10 +7241,16 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
                 else
                     s.Printf( _T ( "%d %02ld.%01ld'" ), d, m / 10, m % 10 );
             } else {
-                if( hi_precision ) s.Printf( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000,
-                        ( m % 10000 ), c );
+                if( hi_precision )
+                    if (NEflag == 1)
+                        s.Printf( _T ( "%02d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
+                    else
+                        s.Printf( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
                 else
-                    s.Printf( _T ( "%03d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                    if (NEflag == 1)
+                        s.Printf( _T ( "%02d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                    else
+                        s.Printf( _T ( "%03d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
             }
             break;
         case 1:
@@ -7265,10 +7271,16 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
                 else
                     s.Printf( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
             } else {
-                if( hi_precision ) s.Printf( _T ( "%03d %02ld %02ld.%03ld %c" ), d, m, sec / 1000,
-                        sec % 1000, c );
+                if( hi_precision )
+                    if (NEflag == 1)
+                        s.Printf( _T ( "%02d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                    else
+                        s.Printf( _T ( "%03d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
                 else
-                    s.Printf( _T ( "%03d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                    if (NEflag == 1)
+                        s.Printf( _T ( "%02d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                    else
+                        s.Printf( _T ( "%03d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
             }
             break;
     }
