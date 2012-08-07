@@ -4341,7 +4341,7 @@ bool MyConfig::ExportGPXWaypoint( wxWindow* parent, RoutePoint *pRoutePoint )
         GpxDocument *gpx = new GpxDocument();
         GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
 //          This should not be necessary
-        if( !WptIsInRouteList( pRoutePoint ) ) {
+        if( !WptIsInRouteList( pRoutePoint ) || pRoutePoint->m_bKeepXRoute ) {
             gpxroot->AddWaypoint( ::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ) );
         }
         gpx->SaveFile( fn.GetFullPath() );
