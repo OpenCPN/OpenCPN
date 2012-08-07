@@ -5420,13 +5420,20 @@ void MyFrame::SetChartThumbnail( int index )
                 if( new_pThumbChart )         // chart opened ok
                 {
 
-                    ThumbData *pTD = new_pThumbChart->GetThumbData( 200, 200, gLat, gLon );
+                    ThumbData *pTD = new_pThumbChart->GetThumbData( 150, 150, gLat, gLon );
                     if( pTD ) {
                         pthumbwin->pThumbChart = new_pThumbChart;
 
                         pthumbwin->Resize();
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( FALSE );
+                        pthumbwin->Move( wxPoint( 4, 4 ) );
+
+                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
+                        if( g_FloatingToolbarDialog )
+                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
+                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
+                        }
                     }
 
                     else {

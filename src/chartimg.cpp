@@ -2109,8 +2109,8 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
 
 //    Calculate the size and divisors
 
-      int divx = Size_X / tnx;
-      int divy = Size_Y / tny;
+      int divx = Size_X / (4 * tnx);
+      int divy = Size_Y / (4 * tny);
 
       int div_factor = __min(divx, divy);
 
@@ -2185,7 +2185,11 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
       wxBitmap *retBMP;
 
 #ifdef ocpnUSE_ocpnBitmap
-      retBMP = new ocpnBitmap(pPixTN, des_width, des_height, -1);
+      wxBitmap* bmx2 = new ocpnBitmap(pPixTN, des_width, des_height, -1);
+      wxImage imgx2 = bmx2->ConvertToImage();
+      imgx2.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
+      retBMP = new wxBitmap( imgx2 );
+      delete bmx2;
 #else
       wxImage thumb_image(des_width, des_height, pPixTN, true);
       retBMP = new wxBitmap(thumb_image);
