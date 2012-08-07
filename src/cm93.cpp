@@ -2212,8 +2212,6 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
       //    Create an array of CellIndexes covering the current viewport
       ArrayOfInts vpcells;
 
-      vpcells.Clear();
-
       int lower_left_cell = Get_CM93_CellIndex ( ll_lat, ll_lon, GetNativeScale() );
       vpcells.Add ( lower_left_cell );                // always add the lower left cell
 
