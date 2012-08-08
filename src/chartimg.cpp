@@ -267,7 +267,7 @@ bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, co
 
 bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
-      if(m_pBM)
+      if( m_pBM  && m_pBM->IsOk() )
       {
             if((m_pBM->GetWidth() != VPoint.pix_width) || (m_pBM->GetHeight() != VPoint.pix_height))
             {
@@ -275,14 +275,20 @@ bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
                   m_pBM = NULL;
             }
       }
+      else {
+          delete m_pBM;
+          m_pBM =NULL;
+      }
 
-      if(NULL == m_pBM)
+      if( VPoint.pix_width && VPoint.pix_height ) {
+        if(NULL == m_pBM)
             m_pBM = new wxBitmap(VPoint.pix_width, VPoint.pix_height,-1);
 
-      dc.SelectObject(*m_pBM);
+        dc.SelectObject(*m_pBM);
 
-      dc.SetBackground(*wxBLACK_BRUSH);
-      dc.Clear();
+        dc.SetBackground(*wxBLACK_BRUSH);
+        dc.Clear();
+      }
 
       return true;
 }
