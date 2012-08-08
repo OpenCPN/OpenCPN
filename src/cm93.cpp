@@ -4796,9 +4796,9 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
                   }
                   else if ( cmscale == 0 )
                   {
-                        wxString msg;
-                        msg.Printf ( _T ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g" ), vpt.clat, vpt.clon );
-                        wxLogMessage ( msg );
+//                        wxString msg;
+//                        msg.Printf ( _T ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g" ), vpt.clat, vpt.clon );
+//                        wxLogMessage ( msg );
                         if ( g_bDebugCM93 )
                               printf ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g\n", vpt.clat, vpt.clon );
 
@@ -5142,7 +5142,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
       SetVPPositive ( &vp_positive );
 
-      bool render_return = true;
+      bool render_return = false;
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5323,20 +5323,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     p++;
                               }
 
-                              //    Scrub the points
-                              //   looking for segments for which the wrong longitude decision was made
-                              //    TODO all this mole needs to be rethought, again
                               bool btest = true;
-                              /*
-                              wxPoint p0 = pwp[0];
-                              for(int ip = 1 ; ip < pmcd->m_nvertices ; ip++)
-                              {
-                               //                                   if(((p0.x > VPoint.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > VPoint.pix_width)))
-                               //                                         btest = false;
-
-                              p0 = pwp[ip];
-                        }
-                              */
                               if ( btest )
                               {
                                     wxPen pen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 3);
@@ -5366,7 +5353,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     }
                               }
                         }
-
                   }
             }
       }
@@ -5432,7 +5418,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
       SetVPPositive ( &vp_positive );
 
-      bool render_return = true;
+      bool render_return = false;
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5556,11 +5542,12 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         //    And the return dc is the quilt
                         dc.SelectObject ( *m_pDummyBM );
 
-
+                        render_return = true;
                   }
-                  else
-                        render_return = m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
-
+                  else {
+                        m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
+                        render_return = true;
+                  }
                   m_Name = m_pcm93chart_current->GetName();
 
             }
@@ -6117,16 +6104,45 @@ InitReturn cm93compchart::CreateHeaderData()
 
       m_Chart_Scale = 20000000;
 
-      //    Specify the whole world as chart coverage
-      //    Note the odd longitude range, to align with cm93 cell boundaries
-      m_FullExtent.ELON = 360.0;
-      m_FullExtent.WLON = -360.0;
-      m_FullExtent.NLAT = 80.0;
-      m_FullExtent.SLAT = -80.0;
+      //        Read the root directory, getting subdirectories to build a small scale coverage region
+      wxRect extent_rect;
+ 
+      wxDir dirt(m_prefixComposite);
+      wxString candidate;
+      wxRegEx test(_T("[0-9]+"));
+      
+      bool b_cont = dirt.GetFirst(&candidate);
+      
+      while(b_cont) {
+          if(test.Matches(candidate)&& (candidate.Len() == 8)) {
+              wxString dir = m_prefixComposite;
+              dir += candidate;
+              if( wxDir::Exists(dir) ) {
+                  wxFileName name( dir );
+                  wxString num_name = name.GetName();
+                  long number;
+                  if( num_name.ToLong( &number ) ) {
+                      int ilat = number / 10000;
+                      int ilon = number % 10000;
+                      
+                      int lat_base = ilat - 270;
+                      int lon_base = ilon;
+                      extent_rect.Union(wxRect(lon_base, lat_base, 60, 30));
+                  }
+              }
+          }
+          b_cont = dirt.GetNext(&candidate);
+      }
+
+      //    Specify the chart coverage
+      m_FullExtent.ELON = ((double)extent_rect.x + (double)extent_rect.width ) / 3.;
+      m_FullExtent.WLON = ((double)extent_rect.x) / 3.;
+      m_FullExtent.NLAT = ((double)extent_rect.y + (double)extent_rect.height ) / 3.;
+      m_FullExtent.SLAT = ((double)extent_rect.y) / 3.;
       m_bExtentSet = true;
 
 
-      //    Populate one (huge) M_COVR Entry
+      //    Populate one M_COVR Entry
       m_nCOVREntries = 1;
       m_pCOVRTablePoints = ( int * ) malloc ( sizeof ( int ) );
       *m_pCOVRTablePoints = 4;

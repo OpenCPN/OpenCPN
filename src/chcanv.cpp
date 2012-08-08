@@ -835,25 +835,20 @@ bool Quilt::IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector
         wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
         double deltax = p2.m_x - p1.m_x;
         double deltay = p2.m_y - p1.m_y;
-        //                       printf(" on IsBlitable: quilt delta = %g %g\n", deltax, deltay);
-        //                       printf(" on IsBlitable: quilt rem = %g %g\n\n", deltax - dx, deltay- dy);
 
         ChartBase *pch = GetFirstChart();
         while( pch ) {
             if( pch->GetChartFamily() == CHART_FAMILY_RASTER ) {
                 if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) ) {
-//                              printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
                     ret_val = false;
                     break;
                 }
 
             } else {
                 if( !b_allow_vector ) {
-//                            printf("   NOT Blitable (not raster)\n");
                     ret_val = false;
                     break;
                 } else if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) ) {
-//                             printf("   NOT Blitable deltax: %g  deltay:%g\n", deltax, deltay);
                     ret_val = false;
                     break;
                 }
@@ -965,7 +960,6 @@ ChartBase *Quilt::GetFirstChart()
 
     if( m_bbusy ) return NULL;
 
-//      printf("getfirst\n");
     m_bbusy = true;
     ChartBase *pret = NULL;
     cnode = m_PatchList.GetFirst();
@@ -986,7 +980,6 @@ ChartBase *Quilt::GetNextChart()
 
     if( m_bbusy ) return NULL;
 
-//      printf("getnext\n");
     m_bbusy = true;
     ChartBase *pret = NULL;
     if( cnode ) {
@@ -1030,7 +1023,8 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 
             wxRegion t_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
                                 cte.GetScale() );
-            if( !t_region.Empty() ) chart_region.Union( t_region );
+            if( !t_region.Empty() )
+                chart_region.Union( t_region );
         }
     }
 
@@ -1042,37 +1036,25 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         {
             wxRegion t_region = vp.GetVPRegionIntersect( screen_region, n_ply_entries, pfp,
                                 cte.GetScale() );
-            if( !t_region.Empty() ) chart_region.Union( t_region );
+            if( !t_region.Empty() ) 
+                chart_region.Union( t_region );
 
         } else
             chart_region = screen_region; //wxRegion(0, 0, vp.pix_width, vp.pix_height);
     }
 
-    //    This super bad hack needs to be fixed by changing the the plypoints on cm93 composite,
-    //    If we don't do this, cm93 reports empty (invalid) region due to +/- 360 degree coverage declared in chart table...
-    if( cte.GetChartType() == CHART_TYPE_CM93COMP ) {
-        LLBBox viewbox = vp.GetBBox();
-
-        if( viewbox.GetValid()
-                && ( ( viewbox.GetMaxY() > 80.0 ) || ( viewbox.GetMinY() < -80.0 ) ) ) {
-            int cm93_index = ChartData->FinddbIndex( wxString( cte.GetpFullPath(), wxConvUTF8 ) );
-            if( cm93_index >= 0 ) {
-                ChartBase *pch = ChartData->OpenChartFromDB( cm93_index, FULL_INIT );
-                wxRegion r;
-                if( pch ) pch->GetValidCanvasRegion( vp, &r );
-                chart_region = r;
-            } else
-                chart_region = screen_region; //wxRegion(vp.rv_rect);
-        } else
-            chart_region = screen_region; //wxRegion(vp.rv_rect);
-    }
 
     //    Another superbad hack....
     //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
     //    and Plypoints georef is problematic......
     //    So, force full screen coverage in the quilt
-    else if( cte.GetScale() > 90000000 ) chart_region = screen_region; //wxRegion(vp.rv_rect/*0, 0, vp.pix_width, vp.pix_height*/);
+    if( (cte.GetScale() > 90000000) && (cte.GetChartFamily() == CHART_FAMILY_RASTER) )
+        chart_region = screen_region; 
 
+    // Special case for charts which extend around the world, or near to it
+    if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.)
+        chart_region = screen_region; 
+    
     //    Clip the region to the current viewport
     chart_region.Intersect( vp.rv_rect );
 
@@ -2194,7 +2176,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     for( unsigned int k = 0; k < m_PatchList.GetCount(); k++ ) {
         wxPatchListNode *pnode = m_PatchList.Item( k );
         QuiltPatch *pqp = pnode->GetData();
-//            printf("validating %d\n", pqp->dbIndex);
 
         if( pqp->b_Valid ) {
             if( !ChartData->IsChartInCache( pqp->dbIndex ) ) {
@@ -2296,16 +2277,19 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
             }
             QuiltPatch *pqp = GetCurrentPatch();
             if( pqp->b_Valid  ) {
+                bool b_chart_rendered = false;
+                wxRegion get_region = pqp->ActiveRegion;
+                
                 if( !chart_region.IsEmpty() ) {
-                    wxRegion get_region = pqp->ActiveRegion;
-                    rendered_region.Union(get_region);
 
                     get_region.Intersect( chart_region );
 
                     if( !get_region.IsEmpty() ) {
 
                         if( !pqp->b_overlay ) {
-                            chart->RenderRegionViewOnDC( tmp_dc, vp, get_region );
+                            b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_region );
+                            if( chart->GetChartType() != CHART_TYPE_CM93COMP )
+                                b_chart_rendered = true;
                             screen_region.Subtract( get_region );
                         }
                     }
@@ -2320,6 +2304,9 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 
                     tmp_dc.SelectObject( wxNullBitmap );
                 }
+                
+                if(b_chart_rendered)
+                    rendered_region.Union(get_region);
             }
 
             chartsDrawn++;
@@ -2643,9 +2630,6 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         toTM( clat, clon, 0., clon, &tmceasting, &tmcnorthing );
         toTM( lat, xlon, 0., clon, &tmeasting, &tmnorthing );
 
-//            tmeasting -= tmceasting;
-//            tmnorthing -= tmcnorthing;
-
         northing = tmnorthing - tmcnorthing;
         easting = tmeasting - tmceasting;
     } else if( PROJECTION_POLYCONIC == m_projection_type ) {
@@ -2884,51 +2868,6 @@ void ViewPort::SetBoxes( void )
 
     //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
     if( ( g_bskew_comp && ( fabs( skew ) > .001 ) ) || ( fabs( rotation ) > .001 ) ) {
-        /*
-         //  Get four reference "corner" points in rotated space
-
-         //  First, get screen geometry factors
-         double pw2 = pix_width / 2;
-         double ph2 = pix_height / 2;
-         double pix_l = sqrt ( ( pw2 * pw2 ) + ( ph2 * ph2 ) );
-         double phi = atan2 ( ph2, pw2 );
-
-
-         //Rotate the 4 corner points, and get the max rectangle enclosing it
-         double rotator = rotation;
-         rotator -= skew;
-
-         double a_east = pix_l * cos ( phi + rotator ) ;
-         double a_north = pix_l * sin ( phi + rotator ) ;
-
-         double b_east = pix_l * cos ( rotator - phi + PI ) ;
-         double b_north = pix_l * sin ( rotator - phi + PI ) ;
-
-         double c_east = pix_l * cos ( phi + rotator + PI ) ;
-         double c_north = pix_l * sin ( phi + rotator + PI ) ;
-
-         double d_east = pix_l * cos ( rotator - phi ) ;
-         double d_north = pix_l * sin ( rotator - phi ) ;
-
-
-         int xmin = (int)wxMin( wxMin(a_east, b_east), wxMin(c_east, d_east));
-         int xmax = (int)wxMax( wxMax(a_east, b_east), wxMax(c_east, d_east));
-         int ymin = (int)wxMin( wxMin(a_north, b_north), wxMin(c_north, d_north));
-         int ymax = (int)wxMax( wxMax(a_north, b_north), wxMax(c_north, d_north));
-
-         int dx = xmax - xmin;
-         int dy = ymax - ymin;
-
-         //  It is important for MSW build that viewport pixel dimensions be multiples of 4.....
-         if(dy % 4)
-         dy+= 4 - (dy%4);
-         if(dx % 4)
-         dx+= 4 - (dx%4);
-
-         //  Grow the source rectangle appropriately
-         if(fabs(rotator) > .001)
-         rv_rect.Inflate((dx - pix_width)/2, (dy - pix_height)/2);
-         */
 
         double rotator = rotation;
         rotator -= skew;
@@ -10422,6 +10361,8 @@ void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
 void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 {
+    GridDraw( dc );
+    
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
         g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );
@@ -10443,7 +10384,6 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
     ScaleBarDraw( dc );
-    GridDraw( dc );
 }
 
 void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
@@ -12266,13 +12206,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
             if( pqp->b_Valid ) {
                 wxRegion get_region = pqp->ActiveRegion;
-                m_gl_rendered_region.Union(get_region);
-
                 get_region.Intersect( Region );
+
+                bool b_rendered = false;
+                
                 if( !get_region.IsEmpty() ) {
                     if( !pqp->b_overlay ) {
-                        bool b_rendered = false;
-
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
                         if( Patch_Ch_BSB ) {
                             RenderRasterChartRegionGL( chart, cc1->VPoint, get_region );
@@ -12291,13 +12230,17 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
                         if( !b_rendered ) {
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                                 get_region.Offset( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
-                                chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, get_region );
+                                b_rendered = chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, get_region );
                             }
                         }
                     }
                 }
+                
+                if(b_rendered)
+                    m_gl_rendered_region.Union(get_region);
             }
 
+            
             chart = cc1->m_pQuilt->GetNextChart();
         }
 
