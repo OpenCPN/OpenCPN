@@ -81,10 +81,42 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
 
     if( ! proj ) proj = new Projection();
     proj->SetCenterInMap( vp.clon, vp.clat );
-    proj->SetScreenSize( vp.pix_width, vp.pix_height );
+    proj->SetScreenSize( vp.rv_rect.width, vp.rv_rect.height );
 
-	proj->SetScale(
-		(float)vp.pix_width / ( vp.GetBBox().GetMaxX() - vp.GetBBox().GetMinX() ) );
+    // Calculate the horizontal extents in degrees for the enlarged rotated ViewPort
+    ViewPort nvp = vp;
+    nvp.SetRotationAngle( 0. );
+    nvp.pix_width = vp.rv_rect.width;
+    nvp.pix_height = vp.rv_rect.height;
+    
+    double lat_ul, lat_ur;
+    double lon_ul, lon_ur;
+    
+    nvp.GetLLFromPix( wxPoint( 0, 0 ), &lat_ul, &lon_ul );
+    nvp.GetLLFromPix( wxPoint( nvp.pix_width, nvp.pix_height ), &lat_ur, &lon_ur );
+    
+    if( nvp.clon < 0. ) {
+        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
+            lon_ul -= 360.;
+        }
+    } else {
+        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
+            lon_ur += 360.;
+        }
+    }
+    
+    if( lon_ur < lon_ul ) {
+        lon_ur += 360.;
+    }
+    
+    if( lon_ur > 360. ) {
+        lon_ur -= 360.;
+        lon_ul -= 360.;
+    }
+
+    //  And set the scale for the gshhs renderer
+    proj->SetScale( (float)vp.rv_rect.width / ( fabs(lon_ul - lon_ur ) ));
+        
 
     if( ! reader ) {
         reader = new GshhsReader( proj );
@@ -98,9 +130,11 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
         }
     }
 
-    dc.SetBackground( wxBrush( water ) );
-    dc.Clear();
-
+//    dc.SetBackground( wxBrush( water ) );
+//    dc.Clear();
+    dc.SetBrush( wxBrush( water ) );
+    dc.DrawRectangle( 0, 0, vp.rv_rect.width, vp.rv_rect.height );
+    
     reader->drawContinents( dc, proj, water, land );
     reader->drawBoundaries( dc, proj );
 }

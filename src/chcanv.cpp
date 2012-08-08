@@ -2504,8 +2504,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
         SubstituteClearDC( dc, vp );
     }
 
-    //  Record the region actually rendered, modulo screen dimensions
-    rendered_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
+    //  Record the region actually rendered
     m_rendered_region = rendered_region;
 
     m_vp_rendered = vp;
@@ -4737,8 +4736,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             && ( fabs( VPoint.rotation - rotation ) < 1e-9 ) && ( fabs( VPoint.clat - lat ) < 1e-9 )
             && ( fabs( VPoint.clon - lon ) < 1e-9 ) && VPoint.IsValid() ) return false;
 
-//        printf("New set viewpoint %g %g %g \n",VPoint.view_scale_ppm - scale_ppm, VPoint.clat - lat, VPoint.clon - lon);
-
     VPoint.SetProjectionType( PROJECTION_MERCATOR );            // default
 
     VPoint.Validate();                     // Mark this ViewPoint as OK
@@ -4750,10 +4747,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     VPoint.clat = lat;
     VPoint.clon = lon;
     VPoint.view_scale_ppm = scale_ppm;
-//        VPoint.rotation = 20.0 * PI/180.; // hardcode test
     VPoint.rotation = rotation;
 
-    if( ( VPoint.pix_width < 0 ) || ( VPoint.pix_height < 0 ) )    // Canvas parameters not yet set
+    if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
 
     //  Has the Viewport scale changed?  If so, invalidate the vp describing the cached bitmap
@@ -9792,12 +9788,13 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //    so that uncovered canvas areas show at least the world chart.
     wxRegion chartValidRegion;
     if( !VPoint.b_quilt )
-        Current_Ch->GetValidCanvasRegion( VPoint, &chartValidRegion ); // Make a region covering the current chart on the canvas
+        Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
     else
         chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
     //    Copy current chart region
-    wxRegion backgroundRegion( rgn_chart );
+    wxRegion backgroundRegion( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
+        
     if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
 
     //    Associate with temp_dc
@@ -12375,8 +12372,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
         }
         cc1->m_pQuilt->SetRenderedVP( vp );
 
-        //  Record the region actually rendered, modulo screen dimensions
-        m_gl_rendered_region.Intersect(0, 0, vp.pix_width, vp.pix_height);
     }
     else if( !cc1->m_pQuilt->GetnCharts() ) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -12535,12 +12530,8 @@ void glChartCanvas::render()
                     int dy = c_new.y - c_old.y;
                     int dx = c_new.x - c_old.x;
 
-//                              printf("In OnPaint Trying Blit dx: %d  dy:%d\n\n", dx, dy);
-
                     if( cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true ) ) // allow vector charts
                     {
-//                                    printf("In OnPaint IsBlittable dx: %d  dy:%d\n\n", dx, dy);
-
                         if( dx || dy ) {
                             //    Render the reuseable portion of the cached texture
                             ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
@@ -12746,40 +12737,71 @@ void glChartCanvas::render()
         }
     }
 
-//    Render the WVSChart
+//    Render the WorldChart
 
     wxRegion chartValidRegion;
-    if(!VPoint.b_quilt) {
-        // Make a region covering the current chart on the canvas
-        // growing the box to account for rotation
-        ViewPort svp = VPoint;
-        svp.pix_width = svp.rv_rect.width;
-        svp.pix_height = svp.rv_rect.height;
-
+    ViewPort svp = VPoint;
+    svp.pix_width = svp.rv_rect.width;
+    svp.pix_height = svp.rv_rect.height;
+    
+    if(!VPoint.b_quilt) 
         Current_Ch->GetValidCanvasRegion ( svp, &chartValidRegion );
-    }
-    else
-        chartValidRegion = m_gl_rendered_region; //->m_pQuilt->GetFullQuiltRenderedRegion();
+    else 
+        chartValidRegion = m_gl_rendered_region;
 
-    //    Get full (rotated?) canvas region
+    // Make a region covering the current chart on the canvas
+        // growing the box to account for rotation
     wxRegion backgroundRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
-                               VPoint.rv_rect.height );
-
-    //    Remove the valid chart area
-    if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
-
-    //    Draw the World Chart only in the areas NOT covered by the current chart view
-    //    And, only if the region is ..not.. empty
-
+                                   VPoint.rv_rect.height );
+        
+        
+        //    Remove the valid chart area
+    if( chartValidRegion.IsOk() ) {
+            chartValidRegion.Offset( wxPoint(VPoint.rv_rect.x, VPoint.rv_rect.y) );
+            backgroundRegion.Subtract( chartValidRegion );
+    }
+        
+        //    Draw the World Chart only in the areas NOT covered by the current chart view
+        //    And, only if the region is ..not.. empty
+        
     if( !backgroundRegion.IsEmpty() && ( fabs( cc1->GetVP().skew ) < .01 ) ) {
-        SetClipRegion( VPoint, backgroundRegion, true );       // clear background
+        ViewPort nvp = VPoint;
+        nvp.rv_rect.x = 0;
+        nvp.rv_rect.y = 0;
+            
+        SetClipRegion( nvp, backgroundRegion, true );       // clear background
+            
+        glPushMatrix();
+        if( fabs( cc1->GetVP().rotation ) > .01 ) {
+            double w2 = cc1->GetVP().rv_rect.width / 2;
+            double h2 = cc1->GetVP().rv_rect.height / 2;
+                
+            double angle = cc1->GetVP().rotation;
+                
+            //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+            double ddx = ( w2 * cos( -angle ) - h2 * sin( -angle ) - w2 ) ;
+            double ddy = ( h2 * cos( -angle ) + w2 * sin( -angle ) - h2 ) ;
+            glRotatef( angle * 180. / PI, 0, 0, 1 );
+            glTranslatef( ddx, ddy, 0 );                 // post rotate translation
 
+                // WorldBackgroundChart renders in an offset rectangle,
+                // So translate back to standard coordinates
+            double x1 = cc1->GetVP().rv_rect.x;
+            double y1 = cc1->GetVP().rv_rect.y;
+            double x2 =  x1 * cos( angle ) + y1 * sin( angle );
+            double y2 =  y1 * cos( angle ) - x1 * sin( angle );
+            glTranslatef( x2, y2, 0 );     
+        }
+            
         cc1->pWorldBackgroundChart->RenderViewOnDC( gldc, VPoint );
-
+           
         glDisable( GL_STENCIL_TEST );
         glDisable( GL_DEPTH_TEST );
-
+          
+        glPopMatrix();
     }
+        
+    
 //    Now render overlay objects
     DrawGLOverLayObjects();
     cc1->DrawOverlayObjects( gldc, ru );
@@ -12892,7 +12914,7 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
         //    As a convenience, while we are creating the stencil or depth mask,
         //    also clear the background if selected
         if( b_clear ) {
-            glColor3f( 0, 0, 0 );
+            glColor3f( 0, 255, 0 );
             glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
         } else
             glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
@@ -12961,7 +12983,7 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
         //    As a convenience, while we are creating the stencil or depth mask,
         //    also clear the background if selected
         if( b_clear ) {
-            glColor3f( 0, 0, 0 );
+            glColor3f( 255, 0, 0 );
             glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
         } else
             glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
