@@ -528,12 +528,14 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
 
         if( -1 != sel_index ) {
             gFrame->HandlePianoClick( sel_index, sel_dbindex );
+            gFrame->Raise();
         }
     }
 
     else if( event.RightDown() ) {
             if( -1 != sel_index ) {
                 gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
+                gFrame->Raise();
             }
         }
 
