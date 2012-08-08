@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -4291,6 +4291,9 @@ msgstr ""
 msgid "Virtual (On Position)"
 msgstr ""
 #
+msgid "Visible buttons"
+msgstr ""
+#
 # 
 # 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
@@ -4469,10 +4472,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
+#
 #
 #
 #
@@ -4524,6 +4529,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4551,6 +4557,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
+#
 #
 #
 #
@@ -4602,6 +4609,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4639,11 +4647,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS hälytysluettelo"
+#
 #
 #
 #
@@ -4665,10 +4675,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisätieto"
+#
 #
 #
 #
@@ -4719,10 +4731,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kartta"
+#
 #
 #
 #
@@ -4761,6 +4775,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
 #
 #
 #
@@ -4816,6 +4831,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4847,6 +4863,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Luokka:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4902,6 +4919,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4934,10 +4952,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Deaktivoi reitti"
+#
 #
 #
 #
@@ -4956,10 +4976,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Poista merkintä"
+#
 #
 #
 #
@@ -5011,6 +5033,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5020,6 +5043,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Aikaleima"
+#
 #
 #
 #
@@ -5066,6 +5090,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5094,6 +5119,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5110,6 +5136,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -5161,6 +5188,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5188,6 +5216,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 #
@@ -5239,6 +5268,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5271,11 +5301,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Mene tänne"
+#
 #
 #
 #
@@ -5316,10 +5348,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Kielet/kirjasimet"
+#
 #
 #
 #
@@ -5337,6 +5371,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -5385,10 +5420,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merkitse ikoni"
+#
 #
 #
 #
@@ -5410,11 +5447,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Merkkaa /WP ominaisuudet"
+#
 #
 #
 #
@@ -5436,6 +5475,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5443,6 +5483,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uusi merkintä"
+#
 #
 #
 #
@@ -5494,6 +5535,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5521,6 +5563,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 #
@@ -5572,6 +5615,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5611,6 +5655,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5620,6 +5665,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Sijainti:"
+#
 #
 #
 #
@@ -5640,6 +5686,7 @@ msgstr ""
 #~ msgstr ""
 #~ "libgps API Version mismatch.\n"
 #~ "Opencpn found version %d.%d, but requires at least version 3.1"
+#
 #
 #
 #
@@ -5687,10 +5734,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Tulostus"
+#
 #
 #
 #
@@ -5732,10 +5781,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Käännä reitti"
+#
 #
 #
 #
@@ -5747,6 +5798,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Kokonaismatka"
+#
 #
 #
 #
@@ -5798,6 +5850,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5825,6 +5878,7 @@ msgstr ""
 # 
 #~ msgid "Sea Surface Temp, C"
 #~ msgstr "Pintalämpötila, C"
+#
 #
 #
 #
@@ -5876,6 +5930,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5908,11 +5963,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Kurssi-ylhäällä moodi"
+#
 #
 #
 #
@@ -5949,6 +6006,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Aluksen nimi:"
+#
 #
 #
 #
@@ -6000,6 +6058,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6027,6 +6086,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 #
@@ -6074,6 +6134,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -6086,10 +6147,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näytä jälki-ikoni"
+#
 #
 #
 #
@@ -6141,6 +6204,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6160,6 +6224,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6203,6 +6268,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6222,6 +6288,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Reitin nimi"
+#
 #
 #
 #
@@ -6273,6 +6340,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6312,6 +6380,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6339,6 +6408,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Tuulen suunta"
+#
 #
 #
 #

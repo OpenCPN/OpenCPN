@@ -1819,7 +1819,7 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     HideTooltip();
     ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged = false;
     wxMenu* contextMenu = new wxMenu();
-    wxMenuItem* submenu = contextMenu->AppendSubMenu( g_FloatingToolbarConfigMenu, _T("Visible buttons") );
+    wxMenuItem* submenu = contextMenu->AppendSubMenu( g_FloatingToolbarConfigMenu, _("Visible buttons") );
 
     PopupMenu( contextMenu );
 

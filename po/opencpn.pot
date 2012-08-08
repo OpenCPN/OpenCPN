@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.802\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Jump To Position"
 msgstr ""
 
-#: include/about.h:39 src/chart1.cpp:2558
+#: include/about.h:39 src/chart1.cpp:2559
 msgid "About OpenCPN"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Welcome to OpenCPN"
 msgstr ""
 
-#: src/chart1.cpp:971 src/chart1.cpp:1772 src/chart1.cpp:3916
+#: src/chart1.cpp:971 src/chart1.cpp:1773 src/chart1.cpp:3917
 #: src/navutil.cpp:1238 src/navutil.cpp:2152
 msgid "OpenCPN Info"
 msgstr ""
@@ -188,192 +188,192 @@ msgstr ""
 msgid " for details."
 msgstr ""
 
-#: src/chart1.cpp:1203
+#: src/chart1.cpp:1204
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:1552
+#: src/chart1.cpp:1553
 msgid " -- [Portable(-p) executing from "
 msgstr ""
 
-#: src/chart1.cpp:1696
+#: src/chart1.cpp:1697
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:1747
+#: src/chart1.cpp:1748
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/chart1.cpp:1750
+#: src/chart1.cpp:1751
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/chart1.cpp:1751
+#: src/chart1.cpp:1752
 msgid "Estimated time : "
 msgstr ""
 
-#: src/chart1.cpp:1752
+#: src/chart1.cpp:1753
 msgid "Remaining time : "
 msgstr ""
 
-#: src/chart1.cpp:1753 src/chart1.cpp:4182
+#: src/chart1.cpp:1754 src/chart1.cpp:4183
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/chart1.cpp:1770
+#: src/chart1.cpp:1771
 msgid ""
 "           No Charts Installed.\n"
 "Please select chart folders in ToolBox->Charts."
 msgstr ""
 
-#: src/chart1.cpp:2352 src/chcanv.cpp:14489
+#: src/chart1.cpp:2353 src/chcanv.cpp:14489
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chart1.cpp:2445 src/chcanv.cpp:8093
+#: src/chart1.cpp:2446 src/chcanv.cpp:8093
 msgid "Zoom In"
 msgstr ""
 
-#: src/chart1.cpp:2451 src/chcanv.cpp:8094
+#: src/chart1.cpp:2452 src/chcanv.cpp:8094
 msgid "Zoom Out"
 msgstr ""
 
-#: src/chart1.cpp:2460
+#: src/chart1.cpp:2461
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:2468
+#: src/chart1.cpp:2469
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:2476
+#: src/chart1.cpp:2477
 msgid "Create Route"
 msgstr ""
 
-#: src/chart1.cpp:2483
+#: src/chart1.cpp:2484
 msgid "Auto Follow"
 msgstr ""
 
-#: src/chart1.cpp:2490 src/options.cpp:454
+#: src/chart1.cpp:2491 src/options.cpp:454
 msgid "Settings"
 msgstr ""
 
-#: src/chart1.cpp:2496
+#: src/chart1.cpp:2497
 msgid "Show ENC Text"
 msgstr ""
 
-#: src/chart1.cpp:2505
+#: src/chart1.cpp:2506
 msgid "Show AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:2513
+#: src/chart1.cpp:2514
 msgid "Show Currents"
 msgstr ""
 
-#: src/chart1.cpp:2519
+#: src/chart1.cpp:2520
 msgid "Show Tides"
 msgstr ""
 
-#: src/chart1.cpp:2525
+#: src/chart1.cpp:2526
 msgid "Print Chart"
 msgstr ""
 
-#: src/chart1.cpp:2531 src/routemanagerdialog.cpp:390
+#: src/chart1.cpp:2532 src/routemanagerdialog.cpp:390
 msgid "Route Manager"
 msgstr ""
 
-#: src/chart1.cpp:2538
+#: src/chart1.cpp:2539
 msgid "Toggle Tracking"
 msgstr ""
 
-#: src/chart1.cpp:2545
+#: src/chart1.cpp:2546
 msgid "Change Color Scheme"
 msgstr ""
 
-#: src/chart1.cpp:2552
+#: src/chart1.cpp:2553
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/chart1.cpp:2552
+#: src/chart1.cpp:2553
 msgid " (Ctrl-Space)"
 msgstr ""
 
-#: src/chart1.cpp:2846
+#: src/chart1.cpp:2847
 msgid "Anchorage created "
 msgstr ""
 
-#: src/chart1.cpp:3025
+#: src/chart1.cpp:3026
 msgid "StatusBar"
 msgstr ""
 
-#: src/chart1.cpp:3170
+#: src/chart1.cpp:3171
 msgid "Group \""
 msgstr ""
 
-#: src/chart1.cpp:3172
+#: src/chart1.cpp:3173
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 
-#: src/chart1.cpp:3174
+#: src/chart1.cpp:3175
 msgid "OpenCPN Group Notice"
 msgstr ""
 
-#: src/chart1.cpp:3331
+#: src/chart1.cpp:3332
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 
-#: src/chart1.cpp:3453 src/chart1.cpp:3500
+#: src/chart1.cpp:3454 src/chart1.cpp:3501
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:3467
+#: src/chart1.cpp:3468
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/chart1.cpp:3478
+#: src/chart1.cpp:3479
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/chart1.cpp:3479
+#: src/chart1.cpp:3480
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/chart1.cpp:3783
+#: src/chart1.cpp:3784
 msgid "ToolBox"
 msgstr ""
 
-#: src/chart1.cpp:3915
+#: src/chart1.cpp:3916
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/chart1.cpp:4765 src/chcanv.cpp:4286 src/chcanv.cpp:7074
+#: src/chart1.cpp:4766 src/chcanv.cpp:4286 src/chcanv.cpp:7074
 msgid "Cursor: "
 msgstr ""
 
-#: src/chart1.cpp:4774 src/chcanv.cpp:4295 src/chcanv.cpp:7083
+#: src/chart1.cpp:4775 src/chcanv.cpp:4295 src/chcanv.cpp:7083
 #, c-format
 msgid "From Ownship: %03d Deg   "
 msgstr ""
 
-#: src/chart1.cpp:5972
+#: src/chart1.cpp:5973
 msgid "Add this chart to quilt."
 msgstr ""
 
-#: src/chart1.cpp:5977 src/chcanv.cpp:8178
+#: src/chart1.cpp:5978 src/chcanv.cpp:8178
 msgid "Remove this chart from quilt."
 msgstr ""
 
-#: src/chart1.cpp:6222
+#: src/chart1.cpp:6223
 msgid "Chart Print"
 msgstr ""
 
-#: src/chart1.cpp:6225
+#: src/chart1.cpp:6226
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 
-#: src/chart1.cpp:6792
+#: src/chart1.cpp:6793
 msgid " Ship: "
 msgstr ""
 
@@ -1662,7 +1662,7 @@ msgid "Are you sure you want to delete <ALL> routes?"
 msgstr ""
 
 #: src/routemanagerdialog.cpp:971 src/routemanagerdialog.cpp:1624
-#: src/routemanagerdialog.cpp:1955 src/toolbar.cpp:572 src/toolbar.cpp:1859
+#: src/routemanagerdialog.cpp:1955 src/toolbar.cpp:571 src/toolbar.cpp:1858
 msgid "OpenCPN Alert"
 msgstr ""
 
@@ -3546,29 +3546,33 @@ msgstr ""
 msgid "Disable"
 msgstr ""
 
-#: src/toolbar.cpp:571
+#: src/toolbar.cpp:570
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
 msgstr ""
 
-#: src/toolbar.cpp:694
+#: src/toolbar.cpp:693
 msgid "ToolTips"
 msgstr ""
 
-#: src/toolbar.cpp:1866
+#: src/toolbar.cpp:1822
+msgid "Visible buttons"
+msgstr ""
+
+#: src/toolbar.cpp:1865
 msgid "No, I don't want to hide it."
 msgstr ""
 
-#: src/toolbar.cpp:1869
+#: src/toolbar.cpp:1868
 msgid "No, and permanently remove the option to hide it."
 msgstr ""
 
-#: src/toolbar.cpp:1872
+#: src/toolbar.cpp:1871
 msgid "Yes, hide it."
 msgstr ""
 
-#: src/toolbar.cpp:1878
+#: src/toolbar.cpp:1877
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"

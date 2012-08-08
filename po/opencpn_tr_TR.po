@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -3130,6 +3130,9 @@ msgstr "Sanal (Mevkiden)"
 msgid "Virtual (On Position)"
 msgstr "Sanal (Mevkide)"
 #
+msgid "Visible buttons"
+msgstr ""
+#
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV dosyaları (*.wav)|*.wav|Tüm dosyalar (*.*)|*.*"
@@ -3263,9 +3266,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -3279,9 +3284,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
+#
 #
 #
 #
@@ -3298,6 +3305,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
@@ -3306,8 +3314,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
 #
 #
 #
@@ -3323,6 +3333,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Kullanılacak uyumlu veri bileşeni:"
 #
@@ -3330,8 +3341,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozisyona git..."
+#
 #
 #
 #
@@ -3352,8 +3365,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #
@@ -3367,6 +3382,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Uzaklığıi ölç"
 #
@@ -3375,8 +3391,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
 #
 #
 #
@@ -3405,8 +3423,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
+#
 #
 #
 #
@@ -3421,6 +3441,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rota mesafesi"
 #
@@ -3428,8 +3449,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Yön yukarı olacak şekilde kullan"
+#
 #
 #
 #
@@ -3449,8 +3472,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #

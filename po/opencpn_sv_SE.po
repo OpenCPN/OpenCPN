@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
-"PO-Revision-Date: 2012-08-08 11:28+0100\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"PO-Revision-Date: 2012-08-08 12:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -112,7 +112,9 @@ msgstr "   Sjökortets RLL-data är felaktigt "
 #
 #
 msgid "   Chart File contains less than 3 PLY points: "
-msgstr "   Sjökortet innehåller färre än 3 referenspunkter: "
+msgstr ""
+"   Sjökortet kan inte visas. Det krävs minst tre punkter i definitionen av "
+"kortets ytterkant (PLY)."
 
 #
 #
@@ -738,7 +740,7 @@ msgstr "Lägg till ny"
 #
 #
 msgid "Add this chart to quilt."
-msgstr "Inkludera sjökortet i sömlös visning"
+msgstr "Visa sjökortet"
 
 #
 msgid "Add-->"
@@ -3127,7 +3129,7 @@ msgstr "Ta bort förlorade mål efter (Minuter):"
 #
 #
 msgid "Remove this chart from quilt."
-msgstr "Exkludera sjökortet från sömlös visning"
+msgstr "Dölj det här sjökortet"
 
 #
 #
@@ -4267,6 +4269,10 @@ msgstr "Virtuell (utanför position)"
 #
 msgid "Virtual (On Position)"
 msgstr "Virtuell (på position)"
+
+#
+msgid "Visible buttons"
+msgstr "Synliga verktyg"
 
 #
 #

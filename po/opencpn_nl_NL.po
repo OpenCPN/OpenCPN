@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -5297,6 +5297,9 @@ msgstr "virtueel (niet op positie)"
 msgid "Virtual (On Position)"
 msgstr "virtueel (op positie)"
 #
+msgid "Visible buttons"
+msgstr ""
+#
 #
 #
 #
@@ -5522,6 +5525,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5541,8 +5545,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5583,8 +5589,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5613,8 +5621,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -5639,8 +5649,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Activeer route"
+#
 #
 #
 #
@@ -5676,8 +5688,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -5702,6 +5716,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "Deactiveer route"
 #
@@ -5715,8 +5730,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
+#
 #
 #
 #
@@ -5747,8 +5764,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
 #
 #
 #
@@ -5768,8 +5787,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
+#
 #
 #
 #
@@ -5790,8 +5811,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
 #
 #
 #
@@ -5822,8 +5845,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
 #
 #
 #
@@ -5849,8 +5874,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
 #
 #
 #
@@ -5869,8 +5896,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NM"
+#
 #
 #
 #
@@ -5909,8 +5938,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -5954,8 +5985,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -5996,8 +6029,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -6038,8 +6073,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 #
 #
@@ -6079,8 +6116,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 #
 #
@@ -6113,8 +6152,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
+#
 #
 #
 #
@@ -6136,6 +6177,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
 #
@@ -6147,8 +6189,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Koers-Boven presentatie"
+#
 #
 #
 #
@@ -6173,8 +6217,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
 #
 #
 #

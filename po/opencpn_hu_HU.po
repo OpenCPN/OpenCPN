@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -3454,6 +3454,9 @@ msgstr "Virtuális (Kikapcsolt)"
 msgid "Virtual (On Position)"
 msgstr "Virtuális (Bekapcsolt)"
 #
+msgid "Visible buttons"
+msgstr ""
+#
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV fájlok (*.wav)|*.wav|Minden fájl (*.*)|*.*"
@@ -3601,8 +3604,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3638,6 +3643,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
 #
@@ -3646,8 +3652,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Útvonal aktiválása"
+#
 #
 #
 #
@@ -3670,8 +3678,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
 #
 #
 #
@@ -3689,8 +3699,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Alap adatkészlet"
+#
 #
 #
 #
@@ -3722,6 +3734,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
@@ -3730,8 +3743,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Menj a jelhez/útponthoz"
+#
 #
 #
 #
@@ -3765,6 +3780,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
 #
@@ -3773,8 +3789,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozícióra ugrás..."
+#
 #
 #
 #
@@ -3795,8 +3813,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
 #
 #
 #
@@ -3820,8 +3840,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
+#
 #
 #
 #
@@ -3840,8 +3862,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Jel/útpont tulajdonságok..."
+#
 #
 #
 #
@@ -3856,8 +3880,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "tmf"
+#
 #
 #
 #
@@ -3887,8 +3913,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3918,8 +3946,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -3955,6 +3985,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Reverse Route"
 #~ msgstr "Útvonal megfordítása"
 #
@@ -3964,8 +3995,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Útvonal táv: "
+#
 #
 #
 #
@@ -3983,8 +4016,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
+#
 #
 #
 #
@@ -4016,6 +4051,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid ""
 #~ "Size:                 %dm x %dm \n"
@@ -4023,6 +4059,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -3146,6 +3146,9 @@ msgstr "Virtuel (Etat Off)"
 msgid "Virtual (On Position)"
 msgstr "Virtuel (Etat On)"
 #
+msgid "Visible buttons"
+msgstr ""
+#
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Fichiers WAV (*.wav)|*.wav|Tous les fichiers (*.*)|*.*"
@@ -3279,9 +3282,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
 #
 #
 #
@@ -3295,9 +3300,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Route : Activer"
+#
 #
 #
 #
@@ -3314,6 +3321,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Données par défaut"
@@ -3322,8 +3330,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Waypoint/marque : Effacer"
+#
 #
 #
 #
@@ -3339,6 +3349,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Données à utiliser :"
 #
@@ -3346,8 +3357,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Allez à la position ..."
+#
 #
 #
 #
@@ -3368,8 +3381,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #
@@ -3383,6 +3398,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Mesure : Démarer ..."
 #
@@ -3391,8 +3407,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
 #
 #
 #
@@ -3421,8 +3439,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
+#
 #
 #
 #
@@ -3437,6 +3457,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Route : Longeur"
 #
@@ -3444,8 +3465,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Cap vers le haut : Activer"
+#
 #
 #
 #
@@ -3465,8 +3488,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
 #
 #
 #

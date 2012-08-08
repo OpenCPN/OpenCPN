@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"POT-Creation-Date: 2012-08-08 12:47+0200\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -3516,6 +3516,9 @@ msgstr "Virtual (No Posicionat)"
 msgid "Virtual (On Position)"
 msgstr "Virtual (Posicionat)"
 #
+msgid "Visible buttons"
+msgstr ""
+#
 # 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Arxius WAV (*.wav)|*.wav|Tots els arxius (*.*)|*.*"
@@ -3666,6 +3669,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3687,9 +3691,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
 #
 #
 #
@@ -3720,12 +3726,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
 #
 #
 #
@@ -3756,6 +3764,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3772,10 +3781,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta d'AIS"
+#
 #
 #
 #
@@ -3796,9 +3807,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 #
@@ -3829,12 +3842,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
+#
 #
 #
 #
@@ -3854,9 +3869,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Desactivació de la Ruta"
+#
 #
 #
 #
@@ -3874,9 +3891,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Esborrar la Marca"
+#
 #
 #
 #
@@ -3907,12 +3926,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -3936,9 +3957,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Cap a la Marca/Wpt"
+#
 #
 #
 #
@@ -3962,6 +3985,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Saltar a la Posició..."
@@ -3974,9 +3998,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Lletres"
+#
 #
 #
 #
@@ -4005,9 +4031,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
+#
 #
 #
 #
@@ -4028,6 +4056,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
@@ -4037,9 +4066,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mesurar....."
+#
 #
 #
 #
@@ -4070,12 +4101,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -4110,12 +4143,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -4146,12 +4181,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -4182,6 +4219,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4200,12 +4238,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es descarrega el Mòdul:"
+#
 #
 #
 #
@@ -4237,12 +4277,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 #
@@ -4273,9 +4315,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Impressió"
+#
 #
 #
 #
@@ -4303,9 +4347,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Inverció de la Ruta"
+#
 #
 #
 #
@@ -4321,10 +4367,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Mode Rumb Amunt"
+#
 #
 #
 #
@@ -4344,9 +4392,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar la icona de derrota"
+#
 #
 #
 #
@@ -4377,12 +4427,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
+#
 #
 #
 #
