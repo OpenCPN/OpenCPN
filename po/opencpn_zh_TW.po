@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -1161,6 +1161,9 @@ msgstr "海圖"
 # 
 msgid "Choose Font..."
 msgstr "選擇字型"
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 # 
 # 
@@ -2431,6 +2434,12 @@ msgstr "如果目標距離大於多少海浬時不予計算 CPA"
 msgid "No Chart Available"
 msgstr "無此區域海圖"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # 
 # 
 msgid "No. of items"
@@ -2548,6 +2557,12 @@ msgstr "OpenCPN 航路建立"
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN 航路建立"
+#
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN 航路建立"
 #
@@ -2566,6 +2581,12 @@ msgstr "OpenCPN 航跡刪除"
 # 
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 航跡刪除"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN 航路建立"
 #
 # 
 # 
@@ -3744,7 +3765,7 @@ msgid "Text Element"
 msgstr "文字項目"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -4295,6 +4316,9 @@ msgstr "遊艇"
 msgid "Yellow"
 msgstr "黃"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -4358,6 +4382,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4380,10 +4405,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4415,6 +4442,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4435,6 +4463,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4444,6 +4473,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4485,6 +4515,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4504,6 +4535,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4545,6 +4577,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4563,6 +4596,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4602,11 +4636,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS 警告"
+#
 #
 #
 #
@@ -4626,10 +4662,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4664,6 +4702,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4673,6 +4712,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4714,6 +4754,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4733,6 +4774,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4774,6 +4816,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4793,6 +4836,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4834,6 +4878,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4853,6 +4898,7 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
 #
 #
 #
@@ -4895,6 +4941,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4925,6 +4972,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
@@ -4933,10 +4981,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "取消導航"
+#
 #
 #
 #
@@ -4953,10 +5003,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "刪除標記"
+#
 #
 #
 #
@@ -4981,10 +5033,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "前往標記/轉向點"
+#
 #
 #
 #
@@ -5001,10 +5055,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
 #
 #
 #
@@ -5031,10 +5087,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "標記圖示"
+#
 #
 #
 #
@@ -5054,6 +5112,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5063,10 +5122,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "測量....."
+#
 #
 #
 #
@@ -5096,6 +5157,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5105,6 +5167,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -5140,6 +5203,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5149,6 +5213,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -5180,6 +5245,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5189,6 +5255,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -5220,6 +5287,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5229,6 +5297,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
+#
 #
 #
 #
@@ -5260,6 +5329,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5268,6 +5338,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
+#
 #
 #
 #
@@ -5295,6 +5366,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
@@ -5303,10 +5375,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "反向航路"
+#
 #
 #
 #
@@ -5321,10 +5395,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Set Course Up Mode"
 #~ msgstr "設定航向朝上模式"
+#
 #
 #
 #
@@ -5343,10 +5419,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
+#
 #
 #
 #

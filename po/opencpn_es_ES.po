@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 2.6 Beta Build 1729\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2012-05-30 13:42+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -1611,6 +1611,9 @@ msgstr "Cartas"
 #
 msgid "Choose Font..."
 msgstr "Elegir Fuente..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 #
 #
@@ -3303,6 +3306,12 @@ msgstr "Sin cálculo CPA si distancia al objetivo mayor de (NMi):"
 msgid "No Chart Available"
 msgstr "No Hay Carta Disponible"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 #
 msgid "No. of items"
@@ -3463,6 +3472,15 @@ msgstr "Crear Ruta OpenCPN"
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "Crear Ruta OpenCPN"
+#
+#
+#
+#
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "Crear Ruta OpenCPN"
 #
@@ -3490,6 +3508,15 @@ msgstr "Borrar Track OpenCPN "
 #
 msgid "OpenCPN Track Delete"
 msgstr "Borrar Track OpenCPN "
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "Crear Ruta OpenCPN"
 #
 #
 #
@@ -5097,7 +5124,7 @@ msgid "Text Element"
 msgstr "Elementos de Texto"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -5831,6 +5858,9 @@ msgstr "Yate"
 msgid "Yellow"
 msgstr "Amarillo"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -5917,6 +5947,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5937,8 +5968,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
 #
 #
 #
@@ -5981,8 +6014,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
+#
 #
 #
 #
@@ -6047,8 +6082,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -6145,8 +6182,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -6201,8 +6240,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -6220,6 +6261,7 @@ msgstr "wxFB Website"
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta AIS"
+#
 #
 #
 #
@@ -6247,8 +6289,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -6294,8 +6338,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -6368,8 +6414,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -6442,8 +6490,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
+#
 #
 #
 #
@@ -6525,8 +6575,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
 #
 #
 #
@@ -6596,9 +6648,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -6654,8 +6708,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -6753,11 +6809,13 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6781,9 +6839,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Datos por defecto"
+#
 #
 #
 #
@@ -6816,8 +6876,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -6877,8 +6939,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
+#
 #
 #
 #
@@ -6913,8 +6977,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ir a Marca/WP"
+#
 #
 #
 #
@@ -6955,9 +7021,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar Fichero GPX"
+#
 #
 #
 #
@@ -6979,8 +7047,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fuentes"
+#
 #
 #
 #
@@ -7036,8 +7106,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
 #
 #
 #
@@ -7072,8 +7144,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
+#
 #
 #
 #
@@ -7094,6 +7168,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Medir....."
 #
@@ -7101,8 +7176,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
 #
 #
 #
@@ -7144,8 +7221,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -7200,6 +7279,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
 #
@@ -7221,8 +7301,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -7265,8 +7347,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -7309,8 +7393,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -7354,8 +7440,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
 #
 #
 #
@@ -7390,8 +7478,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Imprimiendo"
+#
 #
 #
 #
@@ -7438,8 +7528,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Reverse Route"
 #~ msgstr "Ruta Inversa"
+#
 #
 #
 #
@@ -7461,8 +7553,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Fijar modo rumbo hacia arriba"
+#
 #
 #
 #
@@ -7513,6 +7607,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Mostrar Icono Impresión"
 #
@@ -7527,8 +7622,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Icono Derrotas"
+#
 #
 #
 #
@@ -7592,6 +7689,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
@@ -7625,9 +7723,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
+#
 #
 #
 #

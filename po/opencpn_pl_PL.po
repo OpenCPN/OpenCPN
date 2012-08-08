@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -1163,6 +1163,9 @@ msgstr "Mapy"
 # 
 msgid "Choose Font..."
 msgstr "Wybierz czcionkę ..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 # 
 # 
@@ -2433,6 +2436,12 @@ msgstr "Nie obliczaj CPA jeżeli obiekt jest dalej niż (Mm):"
 msgid "No Chart Available"
 msgstr "Brak dostępnej mapy"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # 
 # 
 msgid "No. of items"
@@ -2550,6 +2559,12 @@ msgstr "Tworzenie drogi OpenCPN"
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "Tworzenie drogi OpenCPN"
+#
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "Tworzenie drogi OpenCPN"
 #
@@ -2568,6 +2583,12 @@ msgstr "Ostrzeżenie OpenCPN"
 # 
 msgid "OpenCPN Track Delete"
 msgstr "Ostrzeżenie OpenCPN"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "Tworzenie drogi OpenCPN"
 #
 # 
 # 
@@ -3743,7 +3764,7 @@ msgid "Text Element"
 msgstr "Element tekstowy"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -4293,6 +4314,9 @@ msgstr ""
 msgid "Yellow"
 msgstr ""
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -4356,6 +4380,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4378,10 +4403,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
+#
 #
 #
 #
@@ -4413,6 +4440,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4433,6 +4461,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4442,6 +4471,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu destroy_pi"
+#
 #
 #
 #
@@ -4480,11 +4510,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Ostrzeżenie AIS"
+#
 #
 #
 #
@@ -4504,10 +4536,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 #
@@ -4542,6 +4576,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4551,6 +4586,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -4599,6 +4635,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4625,6 +4662,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -4673,6 +4711,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4699,6 +4738,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Narzędzie przesuwania CM93..."
+#
 #
 #
 #
@@ -4747,6 +4787,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4772,6 +4813,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Ustaw przesunięcie CM93"
+#
 #
 #
 #
@@ -4818,6 +4860,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
@@ -4826,10 +4869,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Dezaktywuj drogę"
+#
 #
 #
 #
@@ -4846,10 +4891,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Usuń znak"
+#
 #
 #
 #
@@ -4870,6 +4917,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 #
@@ -4904,6 +4952,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4920,10 +4969,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Płyń do znaku/punktu drogi"
+#
 #
 #
 #
@@ -4957,6 +5008,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Jump To Position..."
@@ -4969,10 +5021,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Język/Czcionki"
+#
 #
 #
 #
@@ -5000,10 +5054,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Ikona znaku"
+#
 #
 #
 #
@@ -5023,6 +5079,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5032,10 +5089,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mierz..."
+#
 #
 #
 #
@@ -5065,6 +5124,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5074,6 +5134,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -5109,6 +5170,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5118,6 +5180,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -5149,6 +5212,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5158,6 +5222,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -5189,6 +5254,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5198,6 +5264,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Wtyczki: usuwanie "
+#
 #
 #
 #
@@ -5229,6 +5296,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5237,6 +5305,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Pozycja:              "
+#
 #
 #
 #
@@ -5264,6 +5333,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
@@ -5272,10 +5342,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Odwróć drogę"
+#
 #
 #
 #
@@ -5290,10 +5362,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Obracaj wg kursu do góry"
+#
 #
 #
 #
@@ -5312,10 +5386,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Pokaż ikonę Ślad"
+#
 #
 #
 #
@@ -5356,6 +5432,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5385,6 +5462,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5403,6 +5481,7 @@ msgstr ""
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Włącz/wyłącz nazwy"
+#
 #
 #
 #

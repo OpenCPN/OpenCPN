@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -1472,6 +1472,9 @@ msgstr "Kaardid"
 # 
 msgid "Choose Font..."
 msgstr "Vali Kirjatüüp..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 # 
 # 
@@ -3058,6 +3061,12 @@ msgstr "Ei kalkuleeri CPA kui siht on kaugemal kui (miili):"
 msgid "No Chart Available"
 msgstr "Kaart pole saadaval"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # 
 # 
 msgid "No. of items"
@@ -3207,6 +3216,14 @@ msgstr "OpenCPN teekonna looja"
 # 
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN teekonna looja"
+#
+# 
+# 
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN teekonna looja"
 #
@@ -3232,6 +3249,14 @@ msgstr "OpenCPN alarm"
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN alarm"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN teekonna looja"
 #
 # 
 # 
@@ -4723,7 +4748,7 @@ msgid "Text Element"
 msgstr "Teksti element"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -5405,6 +5430,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Kutsung"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -5482,6 +5510,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5506,12 +5535,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "Kaardi projektsioon on tundmatu, jultunud Mercator:"
+#
 #
 #
 #
@@ -5545,6 +5576,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5556,6 +5588,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
 #
 #
 #
@@ -5587,6 +5620,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5594,6 +5628,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS-i alarm"
+#
 #
 #
 #
@@ -5615,12 +5650,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 #
 #
@@ -5657,6 +5694,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5668,6 +5706,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "Baasi klassi põhiline nimi"
+#
 #
 #
 #
@@ -5715,6 +5754,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5740,6 +5780,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -5787,6 +5828,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5812,6 +5854,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 nihke tööriist..."
+#
 #
 #
 #
@@ -5859,6 +5902,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5884,6 +5928,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Sea CM93 nihe"
+#
 #
 #
 #
@@ -5930,12 +5975,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -5978,12 +6025,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Deaktiveeri teekond"
+#
 #
 #
 #
@@ -6002,12 +6051,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Kustuta punkt"
+#
 #
 #
 #
@@ -6030,6 +6081,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Timestamp"
+#
 #
 #
 #
@@ -6076,6 +6128,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6090,6 +6143,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Ei suuda laadida libgps.so"
+#
 #
 #
 #
@@ -6119,12 +6173,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Mine Punkti/Teepunkti"
+#
 #
 #
 #
@@ -6161,10 +6217,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Hüppa positsioonile"
+#
 #
 #
 #
@@ -6190,6 +6248,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6197,6 +6256,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -6245,12 +6305,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Punkti Ikoon"
+#
 #
 #
 #
@@ -6272,6 +6334,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6279,6 +6342,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Punkti/Teepunkti omadused"
+#
 #
 #
 #
@@ -6300,6 +6364,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6309,6 +6374,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uus punkt"
+#
 #
 #
 #
@@ -6342,6 +6408,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6357,6 +6424,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN lisade baasi klass\n"
 #~ "Lisade haldur lõi selle baas klassi"
+#
 #
 #
 #
@@ -6398,6 +6466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6408,6 +6477,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 #
@@ -6441,6 +6511,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6452,6 +6523,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 #
@@ -6485,6 +6557,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6496,6 +6569,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 #
 #
@@ -6529,6 +6603,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6539,6 +6614,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Koht:"
+#
 #
 #
 #
@@ -6569,12 +6645,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Prindin"
+#
 #
 #
 #
@@ -6615,12 +6693,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Vastupidine teekond"
+#
 #
 #
 #
@@ -6637,6 +6717,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6644,6 +6725,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Kurss ülesse töörežiim"
+#
 #
 #
 #
@@ -6688,6 +6770,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6701,12 +6784,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näita jälje ikooni"
+#
 #
 #
 #
@@ -6750,6 +6835,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6782,6 +6868,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6803,6 +6890,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Teekonna nimi"
+#
 #
 #
 #

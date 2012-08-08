@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -1499,6 +1499,9 @@ msgstr "Kaarten"
 #
 msgid "Choose Font..."
 msgstr "Kies lettertype ..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 #
 #
@@ -3087,6 +3090,12 @@ msgstr "Geen CPA berekening als afstand groter is dan (zeemijl): "
 msgid "No Chart Available"
 msgstr "Geen kaart beschikbaar"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 #
 msgid "No. of items"
@@ -3231,6 +3240,14 @@ msgstr "OpenCPN verwijder markeringspunt"
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN Maak route"
+#
+#
+#
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Maak route"
 #
@@ -3255,6 +3272,14 @@ msgstr "OpenCPN verwijdert track"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN verwijdert track"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN verwijder markeringspunt"
 #
 #
 #
@@ -4731,7 +4756,7 @@ msgid "Text Element"
 msgstr "Tekstelement"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -5411,6 +5436,9 @@ msgstr "ple/v"
 msgid "Yellow"
 msgstr "geel"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -5493,6 +5521,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5511,8 +5540,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5551,8 +5582,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5579,8 +5612,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -5603,8 +5638,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Activeer route"
+#
 #
 #
 #
@@ -5638,8 +5675,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -5662,6 +5701,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "Deactiveer route"
 #
@@ -5674,8 +5714,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
+#
 #
 #
 #
@@ -5704,8 +5746,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
 #
 #
 #
@@ -5723,8 +5767,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
+#
 #
 #
 #
@@ -5743,8 +5789,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
 #
 #
 #
@@ -5773,8 +5821,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
 #
 #
 #
@@ -5798,8 +5848,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
 #
 #
 #
@@ -5816,8 +5868,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NM"
+#
 #
 #
 #
@@ -5854,8 +5908,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -5897,8 +5953,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -5937,8 +5995,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -5977,8 +6037,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 #
 #
@@ -6016,8 +6078,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 #
 #
@@ -6048,8 +6112,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
+#
 #
 #
 #
@@ -6069,6 +6135,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
 #
@@ -6079,8 +6146,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Koers-Boven presentatie"
+#
 #
 #
 #
@@ -6103,8 +6172,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
 #
 #
 #

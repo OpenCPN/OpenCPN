@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <vector>
+
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "styles.h"
@@ -50,7 +52,7 @@ extern MyFrame*                   gFrame;
 extern PlugInManager*             g_pi_manager;
 extern wxMenu*                    g_FloatingToolbarConfigMenu;
 extern wxString                   g_toolbarConfig;
-
+extern bool                       g_bPermanentMOBIcon;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -173,8 +175,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
 #ifndef __WXMAC__
     wstyle |= wxFRAME_SHAPED;
-#endif    
-    
+#endif
+
     m_ptoolbar = NULL;
 
 #ifdef __WXOSX__
@@ -527,7 +529,7 @@ void ocpnFloatingToolbarDialog::Realize()
             }
 #ifndef __WXMAC__
             SetShape( wxRegion( shape, *wxWHITE, 10 ) );
-#endif            
+#endif
         }
         GetParent()->Update();
     }
@@ -547,12 +549,18 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
         } else {
 
             if( itemId + ID_ZOOMIN == ID_MOB ) {
-                OCPNMessageDialog mdlg( this,
-                        _("The Man Over Board button is an important safety feature.\nAre you sure you want to hide it?"),
-                        _("OpenCPN Alert"), wxYES_NO | wxNO_DEFAULT );
+                ToolbarMOBDialog mdlg( this );
                 int dialog_ret = mdlg.ShowModal();
-                if( dialog_ret == wxID_NO ) {
+                int answer = mdlg.GetSelection();
+
+                if( answer == 0 || answer == 1 || dialog_ret == wxID_CANCEL ) {
                     g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
+                    if( answer == 1 && dialog_ret == wxID_OK ) {
+                        g_bPermanentMOBIcon = true;
+                        delete g_FloatingToolbarConfigMenu;
+                        g_FloatingToolbarConfigMenu = new wxMenu();
+                        toolbarConfigChanged = true;
+                    }
                     return;
                 }
             }
@@ -1842,4 +1850,45 @@ void ocpnToolBarSimple::OnMouseEnter( int id )
     }
 
     (void) GetEventHandler()->ProcessEvent( event );
+}
+
+//-------------------------------------------------------------------------------------
+
+ToolbarMOBDialog::ToolbarMOBDialog( wxWindow* parent )
+       : wxDialog( parent, wxID_ANY, _("OpenCPN Alert"), wxDefaultPosition, wxSize(250, 230) )
+{
+    wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
+    topSizer->Add( sizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
+
+    choices.push_back( new wxRadioButton( this, 0,  _("No, I don't want to hide it."),
+            wxDefaultPosition, wxDefaultSize, wxRB_GROUP ) );
+
+    choices.push_back( new wxRadioButton( this, 1, _("No, and permanently remove the option to hide it."),
+            wxDefaultPosition) );
+
+    choices.push_back( new wxRadioButton( this, 2, _("Yes, hide it."),
+            wxDefaultPosition) );
+
+    wxStdDialogButtonSizer* buttonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
+
+
+    wxStaticText* textCtrl = new wxStaticText( this, wxID_ANY, _("The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?") );
+
+    sizer->Add( textCtrl, 0, wxEXPAND | wxALL, 5 );
+    sizer->Add( choices[0], 0, wxEXPAND | wxALL, 5 );
+    sizer->Add( choices[1], 0, wxEXPAND | wxALL, 5 );
+    sizer->Add( choices[2], 0, wxEXPAND | wxALL, 5 );
+    sizer->Add( buttonSizer, 0, wxEXPAND | wxTOP, 5 );
+
+    topSizer->SetSizeHints(this);
+    SetSizer( topSizer );
+}
+
+int ToolbarMOBDialog::GetSelection() {
+    for( unsigned int i=0; i<choices.size(); i++ ) {
+        if( choices[i]->GetValue() ) return choices[i]->GetId();
+    }
+    return 0;
 }

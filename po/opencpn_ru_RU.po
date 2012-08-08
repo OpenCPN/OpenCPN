@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -1655,6 +1655,9 @@ msgstr "Карты"
 # 
 msgid "Choose Font..."
 msgstr "Шрифт..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 msgid "Choose a file"
 msgstr ""
@@ -3496,6 +3499,12 @@ msgstr "Не вычислять CPA если цель дальше чем (мо�
 msgid "No Chart Available"
 msgstr "Карты недоступны"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # 
 # 
 msgid "No. of items"
@@ -3663,6 +3672,15 @@ msgstr "Создать маршрут OpenCPN"
 # 
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "Создать маршрут OpenCPN"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "Создать маршрут OpenCPN"
 #
@@ -3692,6 +3710,15 @@ msgstr "Предупреждение OpenCPN"
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "Предупреждение OpenCPN"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "Создать маршрут OpenCPN"
 #
 # 
 # 
@@ -5324,7 +5351,7 @@ msgid "Text Element"
 msgstr "Текстовый элемент"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -6041,6 +6068,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Очистить всё"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -6115,6 +6145,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6149,6 +6180,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -6210,6 +6242,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6249,6 +6282,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Удалить все маршруты"
+#
 #
 #
 #
@@ -6308,6 +6342,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6316,6 +6351,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Предупреждение АИС"
+#
 #
 #
 #
@@ -6338,6 +6374,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6345,6 +6382,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Дополнительная информация"
+#
 #
 #
 #
@@ -6401,6 +6439,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6408,6 +6447,7 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Карта"
+#
 #
 #
 #
@@ -6448,6 +6488,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
 #
 #
 #
@@ -6508,6 +6549,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6554,6 +6596,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6561,6 +6604,7 @@ msgstr ""
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Деактивировать маршрут"
+#
 #
 #
 #
@@ -6576,6 +6620,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Цвет шрифта."
+#
 #
 #
 #
@@ -6637,6 +6682,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6644,6 +6690,7 @@ msgstr ""
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Удалить маркер"
+#
 #
 #
 #
@@ -6701,6 +6748,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6726,6 +6774,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 #
@@ -6794,6 +6843,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6825,6 +6875,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -6880,6 +6931,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6913,6 +6965,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 #
@@ -6961,6 +7014,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6969,6 +7023,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Установить судно здесь"
+#
 #
 #
 #
@@ -6995,6 +7050,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7003,6 +7059,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -7052,6 +7109,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7059,6 +7117,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Иконка маркера"
+#
 #
 #
 #
@@ -7081,6 +7140,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7089,6 +7149,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Параметры маркера/точки"
+#
 #
 #
 #
@@ -7111,6 +7172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7121,6 +7183,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Новый маркер"
+#
 #
 #
 #
@@ -7176,6 +7239,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7209,6 +7273,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -7265,6 +7330,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7310,6 +7376,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7322,6 +7389,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Координаты:              "
+#
 #
 #
 #
@@ -7373,6 +7441,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7380,6 +7449,7 @@ msgstr ""
 # 
 #~ msgid "Printing"
 #~ msgstr "Печать"
+#
 #
 #
 #
@@ -7422,6 +7492,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7429,6 +7500,7 @@ msgstr ""
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Обратный маршрут"
+#
 #
 #
 #
@@ -7442,6 +7514,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Общая дистанция"
+#
 #
 #
 #
@@ -7487,6 +7560,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
 #
 #
 #
@@ -7548,6 +7622,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7575,6 +7650,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Название корабля:  "
+#
 #
 #
 #
@@ -7635,6 +7711,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7684,6 +7761,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7722,6 +7800,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7736,6 +7815,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7743,6 +7823,7 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Показать иконку треков"
+#
 #
 #
 #
@@ -7798,6 +7879,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7818,6 +7900,7 @@ msgstr ""
 #~ "Size:                 %dm x %dm \n"
 #~ "\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -7862,6 +7945,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7884,6 +7968,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Маршрут"
+#
 #
 #
 #
@@ -7926,6 +8011,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Использовать графику с высоким разрешением"
+#
 #
 #
 #
@@ -7981,6 +8067,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8014,6 +8101,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Направление ветра"
+#
 #
 #
 #

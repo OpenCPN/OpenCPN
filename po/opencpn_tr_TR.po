@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -886,6 +886,9 @@ msgstr "Haritalar"
 #
 msgid "Choose Font..."
 msgstr "Yazı türünü Seçin ..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 msgid "Choose a file"
 msgstr "Dosya seçin"
@@ -1796,6 +1799,12 @@ msgstr "Eğer hedef büyükse CPA hesaplaması yapma (NMI)."
 msgid "No Chart Available"
 msgstr "Kullanılabilir harita yok."
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # Couche
 msgid "No. of items"
 msgstr "Parça Numarası"
@@ -1880,6 +1889,11 @@ msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN Rota oluştursun"
 #
 # Menu contextuel : Route
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN Rota oluştursun"
+#
+# Menu contextuel : Route
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Rota oluştursun"
 #
@@ -1895,6 +1909,11 @@ msgstr "OpenCPN seyirizini sil"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN seyirizini sil"
+#
+# Menu contextuel : Route
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN Rota oluştursun"
 #
 #
 #, fuzzy
@@ -2768,7 +2787,7 @@ msgid "Text Element"
 msgstr "Metin Unsuru"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -3195,6 +3214,9 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Sarı"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -3240,9 +3262,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -3254,9 +3278,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
+#
 #
 #
 #
@@ -3271,6 +3297,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
@@ -3278,8 +3305,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
 #
 #
 #
@@ -3293,14 +3322,17 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Kullanılacak uyumlu veri bileşeni:"
 #
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozisyona git..."
+#
 #
 #
 #
@@ -3319,8 +3351,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #
@@ -3332,6 +3366,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Uzaklığıi ölç"
 #
@@ -3339,8 +3374,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
 #
 #
 #
@@ -3367,8 +3404,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
+#
 #
 #
 #
@@ -3381,14 +3420,17 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rota mesafesi"
 #
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Yön yukarı olacak şekilde kullan"
+#
 #
 #
 #
@@ -3406,8 +3448,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #

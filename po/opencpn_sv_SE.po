@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
-"PO-Revision-Date: 2012-08-07 10:30+0100\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
+"PO-Revision-Date: 2012-08-08 11:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -1195,6 +1195,10 @@ msgstr "Sjökort"
 #
 msgid "Choose Font..."
 msgstr "Välj Teckensnitt..."
+
+#
+msgid "Choose Format for Copy"
+msgstr "Välj vilket format du vill kopiera i"
 
 #
 #
@@ -2483,6 +2487,14 @@ msgid "No Chart Available"
 msgstr "Inget sjökort tillgängligt"
 
 #
+msgid "No, I don't want to hide it."
+msgstr "Nej, jag vill inte dölja den."
+
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr "Nej, dölj inte, och ta dessutom bort möjligheten att göra det."
+
+#
 #
 msgid "No. of items"
 msgstr "Antal förekomster"
@@ -2594,6 +2606,11 @@ msgstr "OpenCPN Ta bort waypoint"
 
 #
 #
+msgid "OpenCPN Route"
+msgstr "OpenCPN rutt"
+
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Skapa rutt"
 
@@ -2611,6 +2628,11 @@ msgstr "OpenCPN Spår"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Radera spår"
+
+#
+#
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN Waypoint"
 
 #
 #
@@ -3785,11 +3807,11 @@ msgstr "Symboler och Text"
 
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
-"Man-över-bord-knappen är en viktig säkerhetsfunktion.Är du säker på att du "
-"vill dölja den?"
+"Man-över-bord-knappen kan vara en viktig säkerhetsfunktion. \n"
+"Är du säker på att du vill dölja den?"
 
 #
 msgid ""
@@ -4356,6 +4378,10 @@ msgstr "Yat"
 #
 msgid "Yellow"
 msgstr "Gul"
+
+#
+msgid "Yes, hide it."
+msgstr "Ja, dölj den."
 
 #
 msgid ""

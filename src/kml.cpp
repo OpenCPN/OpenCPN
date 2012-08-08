@@ -583,7 +583,7 @@ Kml::~Kml() {
 //----------------------------------------------------------------------------------
 
 KmlFormatDialog::KmlFormatDialog( wxWindow* parent )
-       : wxDialog( parent, wxID_ANY, _T("Choose Format for Copy"), wxDefaultPosition, wxSize(250, 230) )
+       : wxDialog( parent, wxID_ANY, _("Choose Format for Copy"), wxDefaultPosition, wxSize(250, 230) )
 {
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
 

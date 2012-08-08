@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -915,6 +915,9 @@ msgstr "Cartes"
 msgid "Choose Font..."
 msgstr "Choix de police ..."
 #
+msgid "Choose Format for Copy"
+msgstr ""
+#
 msgid "Choose a file"
 msgstr "Choisir un fichier"
 #
@@ -1826,6 +1829,12 @@ msgstr "CPA : Pas de calcul si la distance est supérieure à ... (milles) :"
 msgid "No Chart Available"
 msgstr "Pas de carte disponible"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # Couche
 msgid "No. of items"
 msgstr "Nombre d'objet(s)"
@@ -1908,6 +1917,11 @@ msgid "OpenCPN Remove Waypoint"
 msgstr "Route : Créer"
 #
 # Menu contextuel : Route
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "Route : Créer"
+#
+# Menu contextuel : Route
 msgid "OpenCPN Route Create"
 msgstr "Route : Créer"
 #
@@ -1922,6 +1936,11 @@ msgstr "Trace effacée par OpenCPN"
 #
 msgid "OpenCPN Track Delete"
 msgstr "Trace effacée par OpenCPN"
+#
+# Menu contextuel : Route
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "Route : Créer"
 #
 #
 #, fuzzy
@@ -2785,7 +2804,7 @@ msgid "Text Element"
 msgstr "Eléments de texte"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -3211,6 +3230,9 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Jaune"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -3256,9 +3278,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
 #
 #
 #
@@ -3270,9 +3294,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Route : Activer"
+#
 #
 #
 #
@@ -3287,6 +3313,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Données par défaut"
@@ -3294,8 +3321,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Waypoint/marque : Effacer"
+#
 #
 #
 #
@@ -3309,14 +3338,17 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Données à utiliser :"
 #
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Allez à la position ..."
+#
 #
 #
 #
@@ -3335,8 +3367,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
 #
 #
 #
@@ -3348,6 +3382,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Mesure : Démarer ..."
 #
@@ -3355,8 +3390,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
 #
 #
 #
@@ -3383,8 +3420,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
+#
 #
 #
 #
@@ -3397,14 +3436,17 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Route : Longeur"
 #
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Cap vers le haut : Activer"
+#
 #
 #
 #
@@ -3422,8 +3464,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
 #
 #
 #

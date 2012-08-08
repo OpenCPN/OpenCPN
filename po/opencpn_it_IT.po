@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -1449,6 +1449,9 @@ msgstr "Carte"
 #
 msgid "Choose Font..."
 msgstr "Scegli Carattere..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 msgid "Choose a file"
 msgstr ""
@@ -2981,6 +2984,12 @@ msgstr "Nessun calcolo CPA se la distanza è maggiore di (Miglia):"
 msgid "No Chart Available"
 msgstr "Nessuna Carta disponibile"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 #
 msgid "No. of items"
@@ -3126,6 +3135,14 @@ msgstr "OpenCPN Crea Rotta"
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN Crea Rotta"
+#
+#
+#
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Crea Rotta"
 #
@@ -3150,6 +3167,14 @@ msgstr "OpenCPN Eliminazione Tracce"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Eliminazione Tracce"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN Crea Rotta"
 #
 #
 #
@@ -4598,7 +4623,7 @@ msgid "Text Element"
 msgstr "Elementi Testo"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -5261,6 +5286,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Giallo"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -5331,8 +5359,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+#
 #
 #
 #
@@ -5367,8 +5397,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
 #
 #
 #
@@ -5415,8 +5447,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -5485,8 +5519,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
 #
 #
 #
@@ -5537,8 +5573,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
 #
 #
 #
@@ -5562,8 +5600,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Attiva Rotta"
+#
 #
 #
 #
@@ -5594,8 +5634,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -5642,8 +5684,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -5690,8 +5734,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
 #
 #
 #
@@ -5736,6 +5782,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
@@ -5759,9 +5806,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -5800,8 +5849,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -5871,11 +5922,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5897,8 +5950,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Default File"
+#
 #
 #
 #
@@ -5917,8 +5972,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Vai a Punto/WP"
+#
 #
 #
 #
@@ -5934,8 +5991,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Zoom a Lat/Lon"
+#
 #
 #
 #
@@ -5958,6 +6017,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Propietà Punto/WP..."
 #
@@ -5968,8 +6028,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Strumento Misura..."
+#
 #
 #
 #
@@ -6002,8 +6064,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Stampa"
+#
 #
 #
 #
@@ -6023,6 +6087,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distanza Rotta:"
 #
@@ -6033,8 +6098,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Visualizza 'Rotta in Alto'"
+#
 #
 #
 #
@@ -6059,8 +6126,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostra l'icona della Traccia"
+#
 #
 #
 #

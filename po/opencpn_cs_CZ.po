@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2012-05-23 06:58+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -1449,6 +1449,9 @@ msgstr "Mapy"
 #
 msgid "Choose Font..."
 msgstr "Vybrat font..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 #
 #
@@ -2988,6 +2991,12 @@ msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm):"
 msgid "No Chart Available"
 msgstr "Žádná mapa není k dispozici"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 #
 msgid "No. of items"
@@ -3133,6 +3142,14 @@ msgstr "Vytvořit OpenCPN Trasu"
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "Vytvořit OpenCPN Trasu"
+#
+#
+#
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "Vytvořit OpenCPN Trasu"
 #
@@ -3157,6 +3174,14 @@ msgstr "Smazat OpenCPN stopu"
 #
 msgid "OpenCPN Track Delete"
 msgstr "Smazat OpenCPN stopu"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "Vytvořit OpenCPN Trasu"
 #
 #
 #
@@ -4607,7 +4632,7 @@ msgid "Text Element"
 msgstr "Prvek text"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -5276,6 +5301,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Žlutá"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -5355,6 +5383,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5374,8 +5403,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5416,8 +5447,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5463,8 +5496,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
+#
 #
 #
 #
@@ -5481,6 +5516,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Výstraha AIS "
+#
 #
 #
 #
@@ -5506,8 +5542,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -5551,8 +5589,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
 #
 #
 #
@@ -5617,8 +5657,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -5683,8 +5725,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
+#
 #
 #
 #
@@ -5747,9 +5791,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -5790,8 +5836,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "Deaktivovat trasu"
+#
 #
 #
 #
@@ -5813,8 +5861,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Smazat značku"
+#
 #
 #
 #
@@ -5832,6 +5882,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Použít harmonicou databázi:"
 #
@@ -5840,8 +5891,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Skočit na pozici...."
+#
 #
 #
 #
@@ -5864,6 +5917,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Vlastnosti TB..."
 #
@@ -5874,8 +5928,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Měřit....."
+#
 #
 #
 #
@@ -5908,8 +5964,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Tisk"
+#
 #
 #
 #
@@ -5929,6 +5987,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Délka trasy"
 #
@@ -5939,8 +5998,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Mód kurs nahoru"
+#
 #
 #
 #
@@ -5965,8 +6026,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Zobrazit ikonu stopy"
+#
 #
 #
 #

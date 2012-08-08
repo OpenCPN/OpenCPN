@@ -361,3 +361,14 @@ private:
       ocpnStyle::Style* m_style;
       bool m_block;
 };
+
+//---------------------------------------------------------------------------
+
+class ToolbarMOBDialog : public wxDialog{
+private:
+    std::vector<wxRadioButton*> choices;
+
+public:
+    ToolbarMOBDialog( wxWindow* parent );
+    int GetSelection();
+};

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -1178,6 +1178,9 @@ msgstr "Χάρτες"
 # 
 msgid "Choose Font..."
 msgstr "Επέλεξε γραμματοσειρά..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 # 
 # 
@@ -2466,6 +2469,12 @@ msgstr ""
 msgid "No Chart Available"
 msgstr "Μη διαθέσιμος Χάρτης"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 # 
 # 
 msgid "No. of items"
@@ -2583,6 +2592,12 @@ msgstr "OpenCPN Κατασκευή Διαδρομής"
 #
 # 
 # 
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN Κατασκευή Διαδρομής"
+#
+# 
+# 
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Κατασκευή Διαδρομής"
 #
@@ -2602,6 +2617,12 @@ msgstr "Συναγερμός OpenCPN"
 #, fuzzy
 msgid "OpenCPN Track Delete"
 msgstr "Συναγερμός OpenCPN"
+#
+# 
+# 
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN Κατασκευή Διαδρομής"
 #
 # 
 # 
@@ -3799,7 +3820,7 @@ msgid "Text Element"
 msgstr "Στοιχείο Κειμένου"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -4359,6 +4380,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Κλήση"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -4424,6 +4448,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4446,10 +4471,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
 #
 #
 #
@@ -4481,6 +4508,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4490,6 +4518,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -4519,11 +4548,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Συναγερμός AIS"
+#
 #
 #
 #
@@ -4543,10 +4574,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 #
@@ -4581,6 +4614,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4590,6 +4624,7 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
 #
 #
 #
@@ -4638,6 +4673,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4664,6 +4700,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4712,6 +4749,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4738,6 +4776,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
 #
 #
 #
@@ -4786,6 +4825,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4811,6 +4851,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Θέσε αντιστάθμιση CM93"
+#
 #
 #
 #
@@ -4857,10 +4898,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
 #
 #
 #
@@ -4902,10 +4945,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Απενεργοποίησε Ταξίδι (Route)"
+#
 #
 #
 #
@@ -4922,10 +4967,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Σβήσε σημάδια"
+#
 #
 #
 #
@@ -4946,6 +4993,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -4990,6 +5038,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5002,6 +5051,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
+#
 #
 #
 #
@@ -5029,10 +5079,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Μετάβαση στο Σημάδι/WP"
+#
 #
 #
 #
@@ -5067,10 +5119,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Μεταπήδησε στη Θέση..."
+#
 #
 #
 #
@@ -5094,11 +5148,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5145,10 +5201,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
+#
 #
 #
 #
@@ -5168,11 +5226,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Ιδιότητες Σημαδιών-/ σημείων Πορείας (WP)"
+#
 #
 #
 #
@@ -5192,6 +5252,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5199,6 +5260,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Νέο Σημάδι"
+#
 #
 #
 #
@@ -5230,6 +5292,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5243,6 +5306,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -5284,6 +5348,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5293,6 +5358,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -5324,6 +5390,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5333,6 +5400,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -5364,6 +5432,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5373,6 +5442,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -5405,6 +5475,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5413,6 +5484,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -5442,10 +5514,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Εκτύπωση"
+#
 #
 #
 #
@@ -5484,10 +5558,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Αντιστροφή Ταξιδίου(Route)"
+#
 #
 #
 #
@@ -5502,11 +5578,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
+#
 #
 #
 #
@@ -5549,6 +5627,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -5560,10 +5639,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Δείξε εικόνα ίχνους"
+#
 #
 #
 #
@@ -5605,6 +5686,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5635,6 +5717,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5654,6 +5737,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Όνομα Ταξιδίου"
+#
 #
 #
 #

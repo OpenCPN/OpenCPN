@@ -261,6 +261,7 @@ bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
+bool                      g_bPermanentMOBIcon;
 
 int                       g_iSDMMFormat;
 
@@ -2408,6 +2409,8 @@ void MyFrame::DestroyMyToolbar()
 bool _toolbarConfigMenuUtil( int toolid, wxString tipString )
 {
     wxMenuItem* menuitem;
+
+    if( toolid == ID_MOB && g_bPermanentMOBIcon ) return true;
 
     // Item ID trickery is needed because the wxCommandEvents for menu item clicked and toolbar button
     // clicked are 100% identical, so if we use same id's we can't tell the events apart.

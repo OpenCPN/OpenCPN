@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -974,6 +974,9 @@ msgstr "Karter"
 #
 msgid "Choose Font..."
 msgstr "Velg skrifttype"
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 #
 msgid "Choose a file"
@@ -2009,6 +2012,12 @@ msgstr "Ingen CPA kalkulering om målet er lengre borte enn (Nm): "
 msgid "No Chart Available"
 msgstr "Ingen kart er tilgjengelig"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 msgid "No. of items"
 msgstr "Ant. enheter"
@@ -2102,6 +2111,11 @@ msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN ruteopprettelse"
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN ruteopprettelse"
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN ruteopprettelse"
 #
@@ -2117,6 +2131,11 @@ msgstr "OpenCPN Slett slepestrek"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Slett slepestrek"
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN ruteopprettelse"
 #
 #
 #, fuzzy
@@ -3076,7 +3095,7 @@ msgid "Text Element"
 msgstr "Tekstelement"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -3535,6 +3554,9 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gul"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -3587,8 +3609,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
 #
 #
 #
@@ -3605,6 +3629,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART Varsel"
 #
@@ -3612,8 +3637,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Aktiver ruten"
+#
 #
 #
 #
@@ -3629,6 +3656,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
 #
@@ -3636,8 +3664,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Slett merke"
+#
 #
 #
 #
@@ -3652,8 +3682,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Tidevannstabell i bruk:"
+#
 #
 #
 #
@@ -3670,8 +3702,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
 #
 #
 #
@@ -3684,6 +3718,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Avstandsmåling..."
 #
@@ -3691,8 +3726,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "Nm"
+#
 #
 #
 #
@@ -3720,8 +3757,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
+#
 #
 #
 #
@@ -3735,6 +3774,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
 #
@@ -3742,8 +3782,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Sett kurs opp"
+#
 #
 #
 #
@@ -3762,8 +3804,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
+#
 #
 #
 #

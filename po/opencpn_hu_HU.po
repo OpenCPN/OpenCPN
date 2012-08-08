@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-07 10:28+0200\n"
+"POT-Creation-Date: 2012-08-08 11:26+0200\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -972,6 +972,9 @@ msgstr "Térképek"
 #
 msgid "Choose Font..."
 msgstr "Betűtípus választása..."
+#
+msgid "Choose Format for Copy"
+msgstr ""
 #
 msgid "Choose a file"
 msgstr "Válassz egy fájlt"
@@ -2003,6 +2006,12 @@ msgstr "Ne számítson CPA-t, ha a célpont távolsága nagyobb mint (tmf):"
 msgid "No Chart Available"
 msgstr "Nincs elérhető térkép"
 #
+msgid "No, I don't want to hide it."
+msgstr ""
+#
+msgid "No, and permanently remove the option to hide it."
+msgstr ""
+#
 #
 msgid "No. of items"
 msgstr "Tételek száma"
@@ -2095,6 +2104,11 @@ msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN útvonal létrehozása"
 #
 #
+#, fuzzy
+msgid "OpenCPN Route"
+msgstr "OpenCPN útvonal létrehozása"
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN útvonal létrehozása"
 #
@@ -2110,6 +2124,11 @@ msgstr "OpenCPN nyomvonal törlése"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN nyomvonal törlése"
+#
+#
+#, fuzzy
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN útvonal létrehozása"
 #
 #
 #, fuzzy
@@ -3067,7 +3086,7 @@ msgid "Text Element"
 msgstr "Szöveg elem"
 #
 msgid ""
-"The Man Over Board button is an important safety feature.\n"
+"The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 #
@@ -3526,6 +3545,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Sárga"
 #
+msgid "Yes, hide it."
+msgstr ""
+#
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
@@ -3578,8 +3600,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3613,6 +3637,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
 #
@@ -3620,8 +3645,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Útvonal aktiválása"
+#
 #
 #
 #
@@ -3642,8 +3669,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
 #
 #
 #
@@ -3659,8 +3688,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Alap adatkészlet"
+#
 #
 #
 #
@@ -3690,6 +3721,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
@@ -3697,8 +3729,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Menj a jelhez/útponthoz"
+#
 #
 #
 #
@@ -3730,6 +3764,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
 #
@@ -3737,8 +3772,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozícióra ugrás..."
+#
 #
 #
 #
@@ -3757,8 +3794,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
 #
 #
 #
@@ -3780,8 +3819,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
+#
 #
 #
 #
@@ -3798,8 +3839,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Jel/útpont tulajdonságok..."
+#
 #
 #
 #
@@ -3812,8 +3855,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "tmf"
+#
 #
 #
 #
@@ -3841,8 +3886,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -3870,8 +3917,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -3905,6 +3954,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Reverse Route"
 #~ msgstr "Útvonal megfordítása"
 #
@@ -3913,8 +3963,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Útvonal táv: "
+#
 #
 #
 #
@@ -3930,8 +3982,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
+#
 #
 #
 #
@@ -3961,6 +4015,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid ""
 #~ "Size:                 %dm x %dm \n"
@@ -3968,6 +4023,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
