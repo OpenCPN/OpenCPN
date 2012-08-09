@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: 2011-07-25 00:25+0100\n"
 "Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -1094,6 +1094,11 @@ msgid "Create Route"
 msgstr "Route erstellen"
 #
 # 
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Wegpunkt löschen"
+#
+# 
 msgid "Cruise ship"
 msgstr "Kabinenschiff"
 #
@@ -1995,6 +2000,11 @@ msgid "Move Boat Here"
 msgstr "Bootsposition hierhin verschieben"
 #
 # 
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "zum Wegpunkt"
+#
+# 
 msgid "NMEA Baud Rate"
 msgstr "NMEA Baudrate"
 #
@@ -2549,6 +2559,9 @@ msgstr "Rot"
 msgid "Red cross ship"
 msgstr "Rot Kreuz Schiff"
 #
+msgid "Redo"
+msgstr ""
+#
 # 
 msgid "Ref. Pt"
 msgstr "Ref. Pt"
@@ -2576,6 +2589,11 @@ msgstr "Wegpunkt aus Route entfernen"
 # 
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Verlorene Ziele entfernen nach (Minuten):"
+#
+# 
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Karte aus dem Patchwork entfernen"
 #
 # 
 msgid "Remove this chart from quilt."
@@ -3401,6 +3419,9 @@ msgstr "Segelschiff in Fahrt"
 msgid "Underway"
 msgstr "in Fahrt befindlich"
 #
+msgid "Undo"
+msgstr ""
+#
 # 
 msgid "Unit carrier maritime"
 msgstr "Containerschiff (See)"
@@ -3667,6 +3688,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3690,9 +3714,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
+#
+#
 #
 #
 #
@@ -3727,6 +3757,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3748,6 +3781,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3756,6 +3792,9 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol destroy_pi nicht laden:"
+#
+#
+#
 #
 #
 #
@@ -3793,6 +3832,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3815,10 +3857,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS Alarm"
+#
+#
+#
 #
 #
 #
@@ -3841,9 +3889,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
+#
+#
 #
 #
 #
@@ -3881,6 +3935,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3889,6 +3946,9 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -3925,9 +3985,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Seekarte"
+#
+#
+#
 #
 #
 #
@@ -3965,6 +4031,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -3985,9 +4054,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Route deaktivieren"
+#
+#
+#
 #
 #
 #
@@ -4007,9 +4082,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Markierung löschen"
+#
+#
+#
 #
 #
 #
@@ -4037,9 +4118,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Gehe zu Markierung/ Wegpunkt"
+#
+#
+#
 #
 #
 #
@@ -4059,9 +4146,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
+#
+#
 #
 #
 #
@@ -4091,9 +4184,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
+#
+#
+#
 #
 #
 #
@@ -4116,6 +4215,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
@@ -4126,9 +4228,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mess-Werkzeug einschalten"
+#
+#
+#
 #
 #
 #
@@ -4161,6 +4269,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4169,6 +4280,9 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Plugin Basis-Klasse"
+#
+#
+#
 #
 #
 #
@@ -4207,6 +4321,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4215,6 +4332,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Plugin-Manager sucht nach vorhandenen Plugins"
+#
+#
+#
 #
 #
 #
@@ -4249,6 +4369,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4257,6 +4380,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Plugin-Manager: Initialisiere Plugin: "
+#
+#
+#
 #
 #
 #
@@ -4291,6 +4417,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4299,6 +4428,9 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Plugin-Manager: Entlade Plugin:"
+#
+#
+#
 #
 #
 #
@@ -4333,6 +4465,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 # 
 # 
@@ -4340,6 +4475,9 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Position:               "
+#
+#
+#
 #
 #
 #
@@ -4370,6 +4508,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Drucken"
@@ -4379,9 +4520,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Route umkehren"
+#
+#
+#
 #
 #
 #
@@ -4399,9 +4546,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Karte nach Kurs ausrichten"
+#
+#
+#
 #
 #
 #
@@ -4423,9 +4576,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Track-Symbol anzeigen"
+#
+#
+#
 #
 #
 #

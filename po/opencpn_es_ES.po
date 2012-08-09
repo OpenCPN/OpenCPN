@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 2.6 Beta Build 1729\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: 2012-05-30 13:42+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -1798,6 +1798,15 @@ msgstr "Crear Ruta"
 #
 #
 #
+#
+#
+#
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Eliminar Waypoint"
+#
+#
+#
 msgid "Cruise ship"
 msgstr "Crucero"
 #
@@ -3212,6 +3221,15 @@ msgstr "Mover Barco Aquí"
 #
 #
 #
+#
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "Hacia Waypoint"
+#
+#
+#
+#
+#
 msgid "NMEA Baud Rate"
 msgstr "Tasa Baudios NMEA"
 #
@@ -4125,6 +4143,9 @@ msgstr "Rojo"
 msgid "Red cross ship"
 msgstr "Barco Cruz Roja"
 #
+msgid "Redo"
+msgstr ""
+#
 #
 #
 msgid "Ref. Pt"
@@ -4171,6 +4192,15 @@ msgstr "Eliminar Waypoint de Ruta"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Eliminar objetivos perdidos después de (Minutos):"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Eliminar esta carta de continuidad."
 #
 #
 #
@@ -5546,6 +5576,9 @@ msgstr "Navegando a vela"
 msgid "Underway"
 msgstr "Navegando"
 #
+msgid "Undo"
+msgstr ""
+#
 #
 #
 msgid "Unit carrier maritime"
@@ -5952,6 +5985,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5974,8 +6010,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
+#
+#
 #
 #
 #
@@ -6022,8 +6064,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
+#
+#
+#
 #
 #
 #
@@ -6092,8 +6140,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
+#
+#
 #
 #
 #
@@ -6194,8 +6248,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
+#
+#
 #
 #
 #
@@ -6254,8 +6314,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
 #
 #
 #
@@ -6275,6 +6341,9 @@ msgstr "wxFB Website"
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta AIS"
+#
+#
+#
 #
 #
 #
@@ -6306,8 +6375,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
+#
+#
 #
 #
 #
@@ -6357,8 +6432,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -6435,8 +6516,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
+#
+#
 #
 #
 #
@@ -6513,8 +6600,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
+#
+#
+#
 #
 #
 #
@@ -6600,8 +6693,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
+#
+#
 #
 #
 #
@@ -6675,9 +6774,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
+#
+#
 #
 #
 #
@@ -6737,8 +6842,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
+#
+#
 #
 #
 #
@@ -6840,11 +6951,17 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
+#
+#
 #
 #
 #
@@ -6872,9 +6989,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Datos por defecto"
+#
+#
+#
 #
 #
 #
@@ -6911,8 +7034,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
+#
+#
 #
 #
 #
@@ -6976,8 +7105,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
+#
+#
+#
 #
 #
 #
@@ -7016,8 +7151,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ir a Marca/WP"
+#
+#
+#
 #
 #
 #
@@ -7062,9 +7203,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar Fichero GPX"
+#
+#
+#
 #
 #
 #
@@ -7090,8 +7237,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fuentes"
+#
+#
+#
 #
 #
 #
@@ -7151,8 +7304,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
+#
+#
 #
 #
 #
@@ -7191,8 +7350,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
+#
+#
+#
 #
 #
 #
@@ -7217,6 +7382,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Measure....."
 #~ msgstr "Medir....."
 #
@@ -7226,8 +7394,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
 #
 #
 #
@@ -7273,8 +7447,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
+#
+#
 #
 #
 #
@@ -7333,6 +7513,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
 #
@@ -7356,8 +7539,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
+#
+#
 #
 #
 #
@@ -7404,8 +7593,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -7452,8 +7647,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -7501,8 +7702,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "Posición:              "
+#
+#
+#
 #
 #
 #
@@ -7541,8 +7748,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Imprimiendo"
+#
+#
+#
 #
 #
 #
@@ -7593,8 +7806,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Reverse Route"
 #~ msgstr "Ruta Inversa"
+#
+#
+#
 #
 #
 #
@@ -7620,8 +7839,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Fijar modo rumbo hacia arriba"
+#
+#
+#
 #
 #
 #
@@ -7676,6 +7901,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Mostrar Icono Impresión"
 #
@@ -7692,8 +7920,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Icono Derrotas"
+#
+#
+#
 #
 #
 #
@@ -7761,6 +7995,9 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Toggle Listing"
 #~ msgstr "Alternar seguimiento"
@@ -7796,9 +8033,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
+#
+#
+#
 #
 #
 #

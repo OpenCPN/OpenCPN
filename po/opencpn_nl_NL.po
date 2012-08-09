@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -1672,6 +1672,14 @@ msgstr "Maak route"
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Routepunt geheel verwijderen"
+#
+#
+#
 msgid "Cruise ship"
 msgstr "cruise schip"
 #
@@ -3005,6 +3013,14 @@ msgstr "Plaats schip hier"
 #
 #
 #
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "Naar punt"
+#
+#
+#
+#
+#
 msgid "NMEA Baud Rate"
 msgstr "NMEA baud rate"
 #
@@ -3839,6 +3855,9 @@ msgstr "rood"
 msgid "Red cross ship"
 msgstr "rode kruis schip"
 #
+msgid "Redo"
+msgstr ""
+#
 #
 #
 msgid "Ref. Pt"
@@ -3882,6 +3901,14 @@ msgstr "Routepunt uit route weghalen"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Verwijder verdwenen objecten na (minuten): "
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Verwijder deze kaart uit samenvoeging."
 #
 #
 #
@@ -5143,6 +5170,9 @@ msgstr "varend onder zeil"
 msgid "Underway"
 msgstr "varend"
 #
+msgid "Undo"
+msgstr ""
+#
 #
 #
 msgid "Unit carrier maritime"
@@ -5526,6 +5556,9 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5546,8 +5579,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
+#
+#
 #
 #
 #
@@ -5590,8 +5629,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
+#
+#
 #
 #
 #
@@ -5622,8 +5667,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
 #
 #
 #
@@ -5650,8 +5701,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Activate Route"
 #~ msgstr "Activeer route"
+#
+#
+#
 #
 #
 #
@@ -5689,8 +5746,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
 #
 #
 #
@@ -5717,6 +5780,9 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "Deactiveer route"
 #
@@ -5731,8 +5797,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
+#
+#
+#
 #
 #
 #
@@ -5765,8 +5837,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
+#
+#
 #
 #
 #
@@ -5788,8 +5866,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
+#
+#
+#
 #
 #
 #
@@ -5812,8 +5896,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
+#
+#
 #
 #
 #
@@ -5846,8 +5936,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
+#
+#
 #
 #
 #
@@ -5875,8 +5971,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
+#
+#
 #
 #
 #
@@ -5897,8 +5999,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NM"
+#
+#
+#
 #
 #
 #
@@ -5939,8 +6047,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
+#
+#
 #
 #
 #
@@ -5986,8 +6100,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
+#
+#
 #
 #
 #
@@ -6030,8 +6150,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -6074,8 +6200,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
+#
+#
 #
 #
 #
@@ -6117,8 +6249,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
+#
+#
 #
 #
 #
@@ -6153,8 +6291,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
+#
+#
+#
 #
 #
 #
@@ -6178,6 +6322,9 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
 #
@@ -6190,8 +6337,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Koers-Boven presentatie"
+#
+#
+#
 #
 #
 #
@@ -6218,8 +6371,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
+#
+#
 #
 #
 #

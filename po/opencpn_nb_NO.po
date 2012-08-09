@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -1082,6 +1082,11 @@ msgid "Create Route"
 msgstr "Lag rute"
 #
 #
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Slett veipunkt"
+#
+#
 msgid "Cruise ship"
 msgstr "Cruiseskip"
 #
@@ -1959,6 +1964,11 @@ msgid "Move Boat Here"
 msgstr "Flytt båt hit"
 #
 #
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "Til veipunkt"
+#
+#
 msgid "NMEA Baud Rate"
 msgstr "NMEA porthastighet"
 #
@@ -2506,6 +2516,9 @@ msgstr "Rød"
 msgid "Red cross ship"
 msgstr "Rødekorsbåt"
 #
+msgid "Redo"
+msgstr ""
+#
 #
 msgid "Ref. Pt"
 msgstr "Ref.Pkt."
@@ -2534,6 +2547,11 @@ msgstr "Fjern veipunkt fra rute"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Fjern mistede mål etter (minutter): "
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Fjern dette kartet fra fletting."
 #
 #
 msgid "Remove this chart from quilt."
@@ -3352,6 +3370,9 @@ msgstr "Underveis for seil"
 msgid "Underway"
 msgstr "Underveis"
 #
+msgid "Undo"
+msgstr ""
+#
 #
 msgid "Unit carrier maritime"
 msgstr "Maritim enhetsfrakt"
@@ -3614,8 +3635,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
+#
+#
 #
 #
 #
@@ -3636,6 +3663,9 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART Varsel"
 #
@@ -3645,8 +3675,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Activate Route"
 #~ msgstr "Aktiver ruten"
+#
+#
+#
 #
 #
 #
@@ -3666,6 +3702,9 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
 #
@@ -3675,8 +3714,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Slett merke"
+#
+#
+#
 #
 #
 #
@@ -3695,8 +3740,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Tidevannstabell i bruk:"
+#
+#
+#
 #
 #
 #
@@ -3717,8 +3768,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
+#
+#
 #
 #
 #
@@ -3735,6 +3792,9 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Measure....."
 #~ msgstr "Avstandsmåling..."
 #
@@ -3744,8 +3804,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "Nm"
+#
+#
+#
 #
 #
 #
@@ -3777,8 +3843,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
+#
+#
+#
 #
 #
 #
@@ -3796,6 +3868,9 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
 #
@@ -3805,8 +3880,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Sett kurs opp"
+#
+#
+#
 #
 #
 #
@@ -3829,8 +3910,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
+#
+#
+#
 #
 #
 #

@@ -1042,7 +1042,7 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         {
             wxRegion t_region = vp.GetVPRegionIntersect( screen_region, n_ply_entries, pfp,
                                 cte.GetScale() );
-            if( !t_region.Empty() ) 
+            if( !t_region.Empty() )
                 chart_region.Union( t_region );
 
         } else
@@ -1055,12 +1055,12 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
     //    and Plypoints georef is problematic......
     //    So, force full screen coverage in the quilt
     if( (cte.GetScale() > 90000000) && (cte.GetChartFamily() == CHART_FAMILY_RASTER) )
-        chart_region = screen_region; 
+        chart_region = screen_region;
 
     // Special case for charts which extend around the world, or near to it
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.)
-        chart_region = screen_region; 
-    
+        chart_region = screen_region;
+
     //    Clip the region to the current viewport
     chart_region.Intersect( vp.rv_rect );
 
@@ -2285,7 +2285,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
             if( pqp->b_Valid  ) {
                 bool b_chart_rendered = false;
                 wxRegion get_region = pqp->ActiveRegion;
-                
+
                 if( !chart_region.IsEmpty() ) {
 
                     get_region.Intersect( chart_region );
@@ -2310,7 +2310,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 
                     tmp_dc.SelectObject( wxNullBitmap );
                 }
-                
+
                 if(b_chart_rendered)
                     rendered_region.Union(get_region);
             }
@@ -8143,7 +8143,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ( VPoint.b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
         int dbIndex = m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
         if( dbIndex != -1 )
-            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Remove this chart from quilt." ) );
+            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Remove this chart from quilt" ) );
     }
 
     if( seltype & SELTYPE_TIDEPOINT ) contextMenu->Append( ID_DEF_MENU_TIDEINFO,
@@ -9780,7 +9780,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //    Copy current chart region
     wxRegion backgroundRegion( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
-        
+
     if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
 
     //    Associate with temp_dc
@@ -10409,7 +10409,7 @@ void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 {
     GridDraw( dc );
-    
+
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
         g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );
@@ -12256,7 +12256,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
                 get_region.Intersect( Region );
 
                 bool b_rendered = false;
-                
+
                 if( !get_region.IsEmpty() ) {
                     if( !pqp->b_overlay ) {
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
@@ -12282,12 +12282,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
                         }
                     }
                 }
-                
+
                 if(b_rendered)
                     m_gl_rendered_region.Union(get_region);
             }
 
-            
+
             chart = cc1->m_pQuilt->GetNextChart();
         }
 
@@ -12733,41 +12733,41 @@ void glChartCanvas::render()
     ViewPort svp = VPoint;
     svp.pix_width = svp.rv_rect.width;
     svp.pix_height = svp.rv_rect.height;
-    
-    if(!VPoint.b_quilt) 
+
+    if(!VPoint.b_quilt)
         Current_Ch->GetValidCanvasRegion ( svp, &chartValidRegion );
-    else 
+    else
         chartValidRegion = m_gl_rendered_region;
 
     // Make a region covering the current chart on the canvas
         // growing the box to account for rotation
     wxRegion backgroundRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
                                    VPoint.rv_rect.height );
-        
-        
+
+
         //    Remove the valid chart area
     if( chartValidRegion.IsOk() ) {
             chartValidRegion.Offset( wxPoint(VPoint.rv_rect.x, VPoint.rv_rect.y) );
             backgroundRegion.Subtract( chartValidRegion );
     }
-        
+
         //    Draw the World Chart only in the areas NOT covered by the current chart view
         //    And, only if the region is ..not.. empty
-        
+
     if( !backgroundRegion.IsEmpty() && ( fabs( cc1->GetVP().skew ) < .01 ) ) {
         ViewPort nvp = VPoint;
         nvp.rv_rect.x = 0;
         nvp.rv_rect.y = 0;
-            
+
         SetClipRegion( nvp, backgroundRegion, true );       // clear background
-            
+
         glPushMatrix();
         if( fabs( cc1->GetVP().rotation ) > .01 ) {
             double w2 = cc1->GetVP().rv_rect.width / 2;
             double h2 = cc1->GetVP().rv_rect.height / 2;
-                
+
             double angle = cc1->GetVP().rotation;
-                
+
             //    Rotations occur around 0,0, so calculate a post-rotate translation factor
             double ddx = ( w2 * cos( -angle ) - h2 * sin( -angle ) - w2 ) ;
             double ddy = ( h2 * cos( -angle ) + w2 * sin( -angle ) - h2 ) ;
@@ -12780,18 +12780,18 @@ void glChartCanvas::render()
             double y1 = cc1->GetVP().rv_rect.y;
             double x2 =  x1 * cos( angle ) + y1 * sin( angle );
             double y2 =  y1 * cos( angle ) - x1 * sin( angle );
-            glTranslatef( x2, y2, 0 );     
+            glTranslatef( x2, y2, 0 );
         }
-            
+
         cc1->pWorldBackgroundChart->RenderViewOnDC( gldc, VPoint );
-           
+
         glDisable( GL_STENCIL_TEST );
         glDisable( GL_DEPTH_TEST );
-          
+
         glPopMatrix();
     }
-        
-    
+
+
 //    Now render overlay objects
     DrawGLOverLayObjects();
     cc1->DrawOverlayObjects( gldc, ru );

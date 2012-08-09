@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -1011,6 +1011,11 @@ msgstr "COG                 : Indisponible\n"
 msgid "Create Route"
 msgstr "Route : Créer"
 #
+# Menu contextuel : Waypoint
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Waypoint : Supprimer"
+#
 msgid "Cruise ship"
 msgstr "Navire de croisière"
 #
@@ -1777,6 +1782,11 @@ msgstr "Péniche-citerne automoteur, remorqueur"
 msgid "Move Boat Here"
 msgstr "Placer le bateau ici"
 #
+#
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "Vers le waypoint"
+#
 msgid "NMEA Baud Rate"
 msgstr "NMEA : Vitesse en baud "
 #
@@ -2264,6 +2274,9 @@ msgstr "Rouge"
 msgid "Red cross ship"
 msgstr "Bateau-hôpital"
 #
+msgid "Redo"
+msgstr ""
+#
 msgid "Ref. Pt"
 msgstr "Point de réf."
 #
@@ -2289,6 +2302,11 @@ msgstr "Waypoint : Déconnecter"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Effacer les cibles perdues après ... minutes :"
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Mosaïque des cartes : Retirer cette carte"
 #
 #
 msgid "Remove this chart from quilt."
@@ -3046,6 +3064,9 @@ msgstr "A la voile"
 msgid "Underway"
 msgstr "Faisant route"
 #
+msgid "Undo"
+msgstr ""
+#
 msgid "Unit carrier maritime"
 msgstr "Porte containers de haute mer"
 #
@@ -3283,9 +3304,15 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
+#
+#
 #
 #
 #
@@ -3301,9 +3328,15 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Route : Activer"
+#
+#
+#
 #
 #
 #
@@ -3322,6 +3355,9 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Données par défaut"
@@ -3331,8 +3367,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Waypoint/marque : Effacer"
+#
+#
+#
 #
 #
 #
@@ -3350,6 +3392,9 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Données à utiliser :"
 #
@@ -3358,8 +3403,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Allez à la position ..."
+#
+#
+#
 #
 #
 #
@@ -3382,8 +3433,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
+#
+#
+#
 #
 #
 #
@@ -3399,6 +3456,9 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Measure....."
 #~ msgstr "Mesure : Démarer ..."
 #
@@ -3408,8 +3468,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
 #
 #
 #
@@ -3440,8 +3506,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
+#
+#
+#
 #
 #
 #
@@ -3458,6 +3530,9 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Route : Longeur"
 #
@@ -3466,8 +3541,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Cap vers le haut : Activer"
+#
+#
+#
 #
 #
 #
@@ -3489,8 +3570,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
+#
+#
 #
 #
 #

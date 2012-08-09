@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: 2012-05-21 08:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -1079,6 +1079,11 @@ msgid "Create Route"
 msgstr "Útvonal létrehozása"
 #
 #
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Útpont törlése"
+#
+#
 msgid "Cruise ship"
 msgstr "Kirándulóhajó"
 #
@@ -1953,6 +1958,11 @@ msgid "Move Boat Here"
 msgstr "Hajó mozgatása ide"
 #
 #
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "Útpontig"
+#
+#
 msgid "NMEA Baud Rate"
 msgstr "NMEA baud"
 #
@@ -2500,6 +2510,9 @@ msgstr "Vörös"
 msgid "Red cross ship"
 msgstr "Vöröskeresztes hajó"
 #
+msgid "Redo"
+msgstr ""
+#
 #
 msgid "Ref. Pt"
 msgstr "Ref. pont"
@@ -2528,6 +2541,11 @@ msgstr "Útpont törlése az útvonalból"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Eltűnt célpontok eltávolítása (perc):"
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Térkép kivétele az összefűzésből."
 #
 #
 msgid "Remove this chart from quilt."
@@ -3343,6 +3361,9 @@ msgstr "Vitorlával úton"
 msgid "Underway"
 msgstr "Úton"
 #
+msgid "Undo"
+msgstr ""
+#
 #
 msgid "Unit carrier maritime"
 msgstr "Csapatszállító"
@@ -3605,8 +3626,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
+#
+#
 #
 #
 #
@@ -3644,6 +3671,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS SART riasztás"
 #
@@ -3653,8 +3683,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Activate Route"
 #~ msgstr "Útvonal aktiválása"
+#
+#
+#
 #
 #
 #
@@ -3679,8 +3715,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Chart"
 #~ msgstr "Térkép"
+#
+#
+#
 #
 #
 #
@@ -3700,8 +3742,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "Alap adatkészlet"
+#
+#
+#
 #
 #
 #
@@ -3735,6 +3783,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
 #
@@ -3744,8 +3795,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Menj a jelhez/útponthoz"
+#
+#
+#
 #
 #
 #
@@ -3781,6 +3838,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
 #
@@ -3790,8 +3850,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozícióra ugrás..."
+#
+#
+#
 #
 #
 #
@@ -3814,8 +3880,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
+#
+#
+#
 #
 #
 #
@@ -3841,8 +3913,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
+#
+#
+#
 #
 #
 #
@@ -3863,8 +3941,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Jel/útpont tulajdonságok..."
+#
+#
+#
 #
 #
 #
@@ -3881,8 +3965,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "NMi"
 #~ msgstr "tmf"
+#
+#
+#
 #
 #
 #
@@ -3914,8 +4004,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
+#
+#
 #
 #
 #
@@ -3947,8 +4043,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
+#
+#
 #
 #
 #
@@ -3986,6 +4088,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Reverse Route"
 #~ msgstr "Útvonal megfordítása"
 #
@@ -3996,8 +4101,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Útvonal táv: "
+#
+#
+#
 #
 #
 #
@@ -4017,8 +4128,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
+#
+#
+#
 #
 #
 #
@@ -4052,6 +4169,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid ""
 #~ "Size:                 %dm x %dm \n"
@@ -4059,6 +4179,9 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
+#
+#
 #
 #
 #

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
-"PO-Revision-Date: 2012-08-08 12:56+0100\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"PO-Revision-Date: 2012-08-09 22:15+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -1332,6 +1332,11 @@ msgstr "Skapa rutt"
 
 #
 #
+msgid "Create Waypoint"
+msgstr "Skapa Waypoint"
+
+#
+#
 msgid "Cruise ship"
 msgstr "Kryssningsfartyg"
 
@@ -2422,6 +2427,11 @@ msgstr "Flytta båt till position"
 
 #
 #
+msgid "Move Waypoint"
+msgstr "Flytta Waypoint"
+
+#
+#
 msgid "NMEA Baud Rate"
 msgstr "NMEA Baudrate"
 
@@ -3093,6 +3103,10 @@ msgid "Red cross ship"
 msgstr "Röda korset-fartyg"
 
 #
+msgid "Redo"
+msgstr "Gör om"
+
+#
 #
 msgid "Ref. Pt"
 msgstr "Ref pkt"
@@ -3125,6 +3139,11 @@ msgstr "Ta bort från rutt"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Ta bort förlorade mål efter (Minuter):"
+
+#
+#
+msgid "Remove this chart from quilt"
+msgstr "Dölj det här sjökortet"
 
 #
 #
@@ -4130,6 +4149,10 @@ msgstr "Under segel"
 #
 msgid "Underway"
 msgstr "Under gång"
+
+#
+msgid "Undo"
+msgstr "Ångra"
 
 #
 #

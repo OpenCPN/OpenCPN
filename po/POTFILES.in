@@ -169,3 +169,4 @@ include/pluginmanager.h
 src/toolbar.cpp
 src/styles.cpp
 src/kml.cpp
+src/undo.cpp

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 12:47+0200\n"
+"POT-Creation-Date: 2012-08-09 22:14+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -1613,6 +1613,14 @@ msgstr "Crea una Rotta"
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "Create Waypoint"
+msgstr "Elimina Waypoint"
+#
+#
+#
 msgid "Cruise ship"
 msgstr "Nave da Crociera"
 #
@@ -2900,6 +2908,14 @@ msgstr "Muovi Imbarcazione qui!"
 #
 #
 #
+#
+#, fuzzy
+msgid "Move Waypoint"
+msgstr "-> Waypoint"
+#
+#
+#
+#
 msgid "NMEA Baud Rate"
 msgstr ""
 #
@@ -3728,6 +3744,9 @@ msgstr "Rosso"
 msgid "Red cross ship"
 msgstr "Nave Croce Rossa"
 #
+msgid "Redo"
+msgstr ""
+#
 #
 #
 msgid "Ref. Pt"
@@ -3770,6 +3789,14 @@ msgstr "Rimuovi Waypoint dalla Rotta"
 #
 msgid "Remove lost targets after (Minutes:):"
 msgstr "Rimuovi i Target persi dopo (Minuti):"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Remove this chart from quilt"
+msgstr "Rimuovi carta dal Mosaico"
 #
 #
 #
@@ -5000,6 +5027,9 @@ msgstr "In Navigazione a Vela"
 msgid "Underway"
 msgstr "In Navigazione"
 #
+msgid "Undo"
+msgstr ""
+#
 #
 #
 msgid "Unit carrier maritime"
@@ -5364,8 +5394,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+#
+#
+#
 #
 #
 #
@@ -5404,8 +5440,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
+#
+#
 #
 #
 #
@@ -5456,8 +5498,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
+#
+#
 #
 #
 #
@@ -5530,8 +5578,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
+#
+#
 #
 #
 #
@@ -5586,8 +5640,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
+#
+#
 #
 #
 #
@@ -5615,8 +5675,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Activate Route"
 #~ msgstr "Attiva Rotta"
+#
+#
+#
 #
 #
 #
@@ -5651,8 +5717,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
+#
+#
 #
 #
 #
@@ -5703,8 +5775,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
+#
+#
 #
 #
 #
@@ -5755,8 +5833,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
+#
+#
+#
 #
 #
 #
@@ -5805,6 +5889,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "Configura Offset CM93"
@@ -5830,9 +5917,15 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
+#
+#
 #
 #
 #
@@ -5875,8 +5968,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
+#
+#
 #
 #
 #
@@ -5950,11 +6049,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
+#
+#
 #
 #
 #
@@ -5980,8 +6085,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Default dataset"
 #~ msgstr "Default File"
+#
+#
+#
 #
 #
 #
@@ -6004,8 +6115,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Vai a Punto/WP"
+#
+#
+#
 #
 #
 #
@@ -6025,8 +6142,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Zoom a Lat/Lon"
+#
+#
+#
 #
 #
 #
@@ -6053,6 +6176,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Propietà Punto/WP..."
 #
@@ -6065,8 +6191,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Measure....."
 #~ msgstr "Strumento Misura..."
+#
+#
+#
 #
 #
 #
@@ -6103,8 +6235,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Printing"
 #~ msgstr "Stampa"
+#
+#
+#
 #
 #
 #
@@ -6128,6 +6266,9 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distanza Rotta:"
 #
@@ -6140,8 +6281,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Visualizza 'Rotta in Alto'"
+#
+#
+#
 #
 #
 #
@@ -6170,8 +6317,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostra l'icona della Traccia"
+#
+#
+#
 #
 #
 #
