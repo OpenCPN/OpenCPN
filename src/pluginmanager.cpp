@@ -1006,10 +1006,16 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
     PlugInToolbarToolContainer *pttc = new PlugInToolbarToolContainer;
     pttc->label = label;
 
-    pttc->bitmap_day = new wxBitmap(*bitmap);
-    pttc->bitmap_dusk = BuildDimmedToolBitmap(bitmap, 128);
-    pttc->bitmap_night = BuildDimmedToolBitmap(bitmap, 32);
-    pttc->bitmap_Rollover = new wxBitmap(*bitmap);
+    if( !bitmap->IsOk() ) {
+        ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
+        pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
+    } else {
+        pttc->bitmap_day = new wxBitmap(*bitmap);
+    }
+    
+    pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
+    pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
+    pttc->bitmap_Rollover = new wxBitmap(*pttc->bitmap_day);
 
     pttc->kind = kind;
     pttc->shortHelp = shortHelp;
@@ -1095,7 +1101,13 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
                 delete pttc->bitmap_night;
                 delete pttc->bitmap_Rollover;
 
-                pttc->bitmap_day = new wxBitmap(*bitmap);
+                if( !bitmap->IsOk() ) {
+                    ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
+                    pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
+                } else {
+                    pttc->bitmap_day = new wxBitmap(*bitmap);
+                }
+                
                 pttc->bitmap_dusk = BuildDimmedToolBitmap(bitmap, 128);
                 pttc->bitmap_night = BuildDimmedToolBitmap(bitmap, 32);
                 pttc->bitmap_Rollover = new wxBitmap(*bmpRollover);
@@ -1144,6 +1156,8 @@ wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned c
 {
     wxImage img_dup = pbmp_normal->ConvertToImage();
 
+    if( !img_dup.IsOk() ) return NULL;
+    
     if(dim_ratio < 200)
     {
         //  Create a dimmed version of the image/bitmap
