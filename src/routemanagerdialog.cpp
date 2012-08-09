@@ -988,7 +988,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
 
         if( pRoutePropDialog ) pRoutePropDialog->Hide();
-
+        cc1->undo->InvalidateUndo();
         cc1->Refresh();
 
         m_bNeedConfigFlush = true;
@@ -1965,6 +1965,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
 
     UpdateRouteListCtrl();
     UpdateWptListCtrl();
+    cc1->undo->InvalidateUndo();
     cc1->Refresh();
 }
 

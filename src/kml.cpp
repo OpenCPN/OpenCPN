@@ -203,6 +203,8 @@ int Kml::ParsePasteBuffer() {
     kmlText = data.GetText();
     wxTheClipboard->Close();
 
+    if( kmlText.Find( _T("<kml") ) == wxNOT_FOUND ) return false;
+
     TiXmlDocument doc;
     if( ! doc.Parse( kmlText.mb_str( wxConvUTF8 ), 0, TIXML_ENCODING_UTF8 ) ) {
 		wxLogError( wxString( doc.ErrorDesc(), wxConvUTF8 ) );

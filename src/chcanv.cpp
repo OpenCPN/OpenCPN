@@ -63,6 +63,8 @@
 #include "pluginmanager.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
+#include "undo.h"
+#include "toolbar.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -141,6 +143,7 @@ extern wxString         g_AW2GUID;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
 
+extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
@@ -315,8 +318,8 @@ enum
     ID_RT_MENU_ACTNXTPOINT,
     ID_RT_MENU_REMPOINT,
     ID_RT_MENU_PROPERTIES,
-    ID_WP_MENU_SET_ANCHORWATCH,             // pjotrc 2010.02.15
-    ID_WP_MENU_CLEAR_ANCHORWATCH,           // pjotrc 2010.02.15
+    ID_WP_MENU_SET_ANCHORWATCH,
+    ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
 
     ID_RC_MENU_SCALE_IN,
@@ -325,9 +328,12 @@ enum
     ID_RC_MENU_ZOOM_OUT,
     ID_RC_MENU_FINISH,
     ID_DEF_MENU_AIS_QUERY,
-    ID_DEF_MENU_AIS_CPA, //TR 2012.06.28: Show AIS-CPA
+    ID_DEF_MENU_AIS_CPA,
     ID_DEF_MENU_ACTIVATE_MEASURE,
     ID_DEF_MENU_DEACTIVATE_MEASURE,
+
+    ID_UNDO,
+    ID_REDO,
 
     ID_DEF_MENU_CM93OFFSET_DIALOG,
 
@@ -3001,8 +3007,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_MENU ( ID_RT_MENU_DEACTPOINT,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_ACTNXTPOINT,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_PROPERTIES,   ChartCanvas::PopupMenuHandler )
-    EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )    // pjotrc 2010.02.15
-    EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )    // pjotrc 2010.02.15
+    EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
 
     EVT_MENU ( ID_RC_MENU_SCALE_IN,     ChartCanvas::PopupMenuHandler )
@@ -3011,18 +3017,21 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_MENU ( ID_RC_MENU_ZOOM_OUT,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RC_MENU_FINISH,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AIS_QUERY,   ChartCanvas::PopupMenuHandler )
-    EVT_MENU ( ID_DEF_MENU_AIS_CPA,   ChartCanvas::PopupMenuHandler ) //TR 2012.06.28: Show AIS-CPA
+    EVT_MENU ( ID_DEF_MENU_AIS_CPA,     ChartCanvas::PopupMenuHandler )
+
+    EVT_MENU ( ID_UNDO,                 ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_REDO,                 ChartCanvas::PopupMenuHandler )
 
     EVT_MENU ( ID_DEF_MENU_ACTIVATE_MEASURE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_DEACTIVATE_MEASURE, ChartCanvas::PopupMenuHandler )
-    EVT_MENU ( ID_DEF_MENU_CM93ZOOM,           ChartCanvas::PopupMenuHandler )
 
+    EVT_MENU ( ID_DEF_MENU_CM93ZOOM,            ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_CM93OFFSET_DIALOG,   ChartCanvas::PopupMenuHandler )
 
-    EVT_MENU ( ID_WP_MENU_GOTO,           ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WP_MENU_GOTO,               ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_DELPOINT,           ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_PROPERTIES,         ChartCanvas::PopupMenuHandler )
-    EVT_MENU ( ID_WP_MENU_ADDITIONAL_INFO,    ChartCanvas::PopupMenuHandler )   // toh, 2009.02.08
+    EVT_MENU ( ID_WP_MENU_ADDITIONAL_INFO,    ChartCanvas::PopupMenuHandler )
 
     EVT_MENU ( ID_TK_MENU_PROPERTIES,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_DELETE,           ChartCanvas::PopupMenuHandler )
@@ -3096,6 +3105,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_zoom_timer.SetOwner(this, ZOOM_TIMER);
     m_bzooming_in = false;;
     m_bzooming_out = false;;
+
+    undo = new Undo;
 
     VPoint.Invalidate();
 
@@ -3487,7 +3498,7 @@ ChartCanvas::~ChartCanvas()
     delete m_pos_image_user_grey_day;
     delete m_pos_image_user_grey_dusk;
     delete m_pos_image_user_grey_night;
-
+    delete undo;
     delete m_glcc;
 }
 
@@ -3777,11 +3788,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         parent_frame->ToggleFullScreen();
         break;
 
-        /*
-         case WXK_F11:
-         ShowGribDialog();
-         break;
-         */
     case WXK_F12: {
         parent_frame->ToggleChartOutlines();
         break;
@@ -3817,7 +3823,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             case '+' - 64:
             case '=':
             case '=' - 64:          // Ctrl =
-            case 26:                // Ctrl Z
                 if( ( m_modkeys == wxMOD_CONTROL ) ) ZoomCanvasIn( 1.1 );
                 else
                     ZoomCanvasIn( 2.0 );
@@ -3826,7 +3831,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             case '-':
             case '-' - 64:          // Ctrl -
             case '_':
-            case 24:                // Ctrl X
                 if( ( m_modkeys == wxMOD_CONTROL ) ) ZoomCanvasOut( 1.1 );
                 else
                     ZoomCanvasOut( 2.0 );
@@ -3836,7 +3840,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             switch( key_char ) {
             case 43:
             case -21:
-            case 26:                     // Ctrl Z
                 if( ( m_modkeys == wxMOD_CONTROL ) ) ZoomCanvasIn( 1.1 );
                 else
                     ZoomCanvasIn( 2.0 );
@@ -3846,7 +3849,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             case 56:                     // '_'  alpha/num pad
             case -10:                     // Ctrl '-'  alpha/num pad
             case -8:                     // Ctrl '_' alpha/num pad
-            case 24:                     // Ctrl X
                 if( ( m_modkeys == wxMOD_CONTROL ) ) ZoomCanvasOut( 1.1 );
                 else
                     ZoomCanvasOut( 2.0 );
@@ -3896,7 +3898,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-
+            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            undo->AfterUndoableAction( NULL );
             Refresh( false );
             break;
         }
@@ -3910,7 +3913,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-
+            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            undo->AfterUndoableAction( NULL );
             Refresh( false );
             break;
         }
@@ -3930,6 +3934,20 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( NULL == pGoToPositionDialog ) // There is one global instance of the Go To Position Dialog
                 pGoToPositionDialog = new GoToPositionDialog( this );
             pGoToPositionDialog->Show();
+            break;
+
+        case 25:                       // Ctrl Y
+            if( undo->AnythingToRedo() ) {
+                undo->RedoNextAction();
+                Refresh( false );
+            }
+            break;
+
+        case 26:                       // Ctrl Z
+            if( undo->AnythingToUndo() ) {
+                undo->UndoLastAction();
+                Refresh( false );
+            }
             break;
 
         case 27:
@@ -6834,7 +6852,6 @@ void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdit
 
             m_pRoutePointEditTarget = frp;
             m_pFoundPoint = pFind;
-
             break;            // out of the while(node)
         }
 
@@ -7308,7 +7325,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             Refresh( false );
         }
 
-        else FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
+        else {
+            FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
+        }
     }
 
     if( event.Dragging() ) {
@@ -7327,6 +7346,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
 
             if( DraggingAllowed ) {
+
+                if( !undo->InUndoableAction() ) {
+                    undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
+                            Undo_NeedsCopy, m_pFoundPoint );
+                }
 
                 // Get the update rectangle for the union of the un-edited routes
                 wxRect pre_rect;
@@ -7378,7 +7402,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }     // if Route Editing
 
         else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
-            // toh, 2009.02.24
+
             bool DraggingAllowed = true;
 
             if( NULL == pMarkPropDialog ) {
@@ -7393,6 +7417,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
 
             if( DraggingAllowed ) {
+                if( !undo->InUndoableAction() ) {
+                    undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
+                            Undo_NeedsCopy, m_pFoundPoint );
+                }
+
                 //      The mark may be an anchorwatch
                 double lpp1 = 0.;
                 double lpp2 = 0.;
@@ -7485,32 +7514,24 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 delete m_pEditRouteArray;
                 m_pEditRouteArray = NULL;
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
             }
 
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
-            gFrame->SurfaceToolbar();
-
+            if( !g_FloatingToolbarDialog->IsShown() ) gFrame->SurfaceToolbar();
         }
 
         else if( m_bMarkEditing ) {
             if( m_pRoutePointEditTarget ) {
                 pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
                 m_pRoutePointEditTarget->m_bIsBeingEdited = false;
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            gFrame->SurfaceToolbar();
-
-        }
-
-        else if( parent_frame->nRoute_State )            // creating route?
-        {
-        }
-
-        else if( m_bMeasure_Active )                    // Measure Tool in use?
-        {
+            if( !g_FloatingToolbarDialog->IsShown() ) gFrame->SurfaceToolbar();
         }
 
         else                      // left click for chart center
@@ -7936,6 +7957,25 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 #endif
 
+    if( undo->AnythingToUndo() ) {
+        wxString undoItem;
+        undoItem << _("Undo") << _T(" ") << undo->GetNextUndoableAction()->Description();
+        contextMenu->Prepend( ID_UNDO, undoItem );
+    }
+
+    if( undo->AnythingToRedo() ) {
+        wxString redoItem;
+        redoItem << _("Redo") << _T(" ") << undo->GetNextRedoableAction()->Description();
+        contextMenu->Prepend( ID_REDO, redoItem );
+    }
+
+    if( ! m_pMouseRoute ) {
+        if( m_bMeasure_Active )
+            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _( "Measure Off" ) );
+        else
+            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _( "Measure" ) );
+    }
+
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Route Properties..." ) );
         if( m_pSelectedRoute ) {
@@ -8073,13 +8113,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 && !g_bskew_comp ) contextMenu->Append( ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
         else
             contextMenu->Append( ID_DEF_MENU_NORTHUP, _("North Up Mode") );
-    }
-
-    if( ! m_pMouseRoute ) {
-        if( m_bMeasure_Active )
-        	contextMenu->Append( ID_DEF_MENU_DEACTIVATE_MEASURE, _( "Measure Off" ) );
-        else
-        	contextMenu->Append( ID_DEF_MENU_ACTIVATE_MEASURE, _( "Measure" ) );
     }
 
     if( g_pAIS ) {
@@ -8536,6 +8569,16 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         parent_frame->DoStackUp();
         break;
 
+    case ID_UNDO:
+        undo->UndoLastAction();
+        Refresh( false );
+        break;
+
+    case ID_REDO:
+        undo->RedoNextAction();
+        Refresh( false );
+        break;
+
     case ID_DEF_MENU_MOVE_BOAT_HERE:
         gLat = zlat;
         gLon = zlon;
@@ -8581,7 +8624,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-
+        undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+        undo->AfterUndoableAction( NULL );
         Refresh( false );      // Needed for MSW, why not GTK??
         break;
     }
@@ -8648,10 +8692,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
                 && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
+
+            undo->BeforeUndoableAction( Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded, m_pFoundPoint );
             pConfig->DeleteWayPoint( m_pFoundRoutePoint );
             pSelect->DeleteSelectablePoint( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
-            delete m_pFoundRoutePoint;
+            if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( m_pFoundRoutePoint );
             m_pFoundRoutePoint = NULL;
+            undo->AfterUndoableAction( NULL );
 
             if( pMarkPropDialog ) {
                 pMarkPropDialog->SetRoutePoint( NULL );

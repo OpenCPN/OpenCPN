@@ -45,6 +45,7 @@
 #include "chart1.h"                 // for enum types
 #include "ocpndc.h"
 #include "gshhs.h"
+#include "undo.h"
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -277,6 +278,7 @@ public:
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
+      Undo        *undo;
 
       bool PurgeGLCanvasChartCache(ChartBase *pc);
 
@@ -306,7 +308,6 @@ private:
       RoutePoint  *m_pRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
       bool        m_bChartDragging;
-
 
       Route       *m_pMouseRoute;
       double      m_prev_rlat;

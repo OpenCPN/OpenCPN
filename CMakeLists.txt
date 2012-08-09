@@ -316,6 +316,7 @@ SET(HDRS
 		include/options.h
 		include/gshhs.h
 		include/kml.h
+		include/undo.h
 		include/about.h
 		include/ais.h
 		include/pluginmanager.h
@@ -354,6 +355,7 @@ SET(SRCS
 		src/options.cpp
 		src/gshhs.cpp
 		src/kml.cpp
+		src/undo.cpp
 		src/about.cpp
 		src/ais.cpp
 		src/pluginmanager.cpp
