@@ -43,7 +43,9 @@
 #include "tinyxml.h"
 #include "kml.h"
 
-extern MyFrame          *gFrame;
+extern MyFrame *gFrame;
+extern double gLat;
+extern double gLon;
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;
@@ -341,9 +343,11 @@ std::string Kml::PointPlacemark(  TiXmlElement* document, RoutePoint* routepoint
     if( insertQtVlmExtendedData ) {
         // Does the RoutePoint description parse as XML with an <ExtendedData> root tag?
         TiXmlDocument descrDoc;
+        TiXmlElement* extendedData;
         if( descrDoc.Parse( descrString, 0, TIXML_ENCODING_UTF8 ) ) {
             if( 0 == strncmp( descrDoc.RootElement()->Value(), "ExtendedData", 12 ) ) {
                 descrIsPlainText = false;
+                extendedData = descrDoc.RootElement();
                 TiXmlHandle docHandle( &descrDoc );
                 TiXmlElement* seq = docHandle.FirstChild( "ExtendedData" ).FirstChild( "vlm:sequence" ).ToElement();
                 if( ! seq ) {
@@ -359,10 +363,10 @@ std::string Kml::PointPlacemark(  TiXmlElement* document, RoutePoint* routepoint
         if( descrIsPlainText ) {
             // We want Sequence names but there was some non-parsing stuff in the description.
             // Push that into a sub-tag of an XML formatted description.
-            TiXmlElement* ed = new TiXmlElement( "ExtendedData" );
-            pmPoint->LinkEndChild( ed );
+            extendedData = new TiXmlElement( "ExtendedData" );
+            pmPoint->LinkEndChild( extendedData );
             TiXmlElement* seq = new TiXmlElement( "vlm:sequence" );
-            ed->LinkEndChild( seq );
+            extendedData->LinkEndChild( seq );
             TiXmlText* snVal = new TiXmlText(
                     wxString::Format( _T("%04d"), seqCounter ).mb_str( wxConvUTF8 ) );
             seq->LinkEndChild( snVal );
@@ -370,12 +374,41 @@ std::string Kml::PointPlacemark(  TiXmlElement* document, RoutePoint* routepoint
             if( routepoint->m_MarkDescription.Length() ) {
                 TiXmlElement* data = new TiXmlElement( "Data" );
                 data->SetAttribute( "name", "Description" );
-                ed->LinkEndChild( data );
+                extendedData->LinkEndChild( data );
 
                 TiXmlElement* value = new TiXmlElement( "value" );
                 data->LinkEndChild( value );
                 TiXmlText* txtVal = new TiXmlText( descrString );
                 value->LinkEndChild( txtVal );
+            }
+        }
+        if( extendedData && seqCounter == 0 ) {
+            const wxCharBuffer ownshipPos = wxString::Format( _T("%f %f"), gLon, gLat ).mb_str( wxConvUTF8 );
+            TiXmlHandle h( extendedData );
+            TiXmlElement* route = h.FirstChild( "vlm:route" ).ToElement();
+            TiXmlElement* ownship = h.FirstChild( "vlm:route" ).FirstChild( "ownship" ).ToElement();
+            if( route ) {
+                if( ownship ) {
+                    TiXmlText* owns = ownship->FirstChild()->ToText();
+                    if( owns ) {
+                        owns->SetValue( ownshipPos );
+                    } else {
+                        owns = new TiXmlText( ownshipPos );
+                        ownship->LinkEndChild( owns );
+                    }
+                } else {
+                    ownship = new TiXmlElement( "ownship" );
+                    route->LinkEndChild( ownship );
+                    TiXmlText* owns = new TiXmlText( ownshipPos );
+                    ownship->LinkEndChild( owns );
+                }
+            } else {
+                route = new TiXmlElement( "vlm:route" );
+                extendedData->LinkEndChild( route );
+                ownship = new TiXmlElement( "ownship" );
+                route->LinkEndChild( ownship );
+                TiXmlText* owns = new TiXmlText( ownshipPos );
+                ownship->LinkEndChild( owns );
             }
         }
     }
