@@ -11421,9 +11421,8 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
-    SetSize( cc1->GetVP().pix_width, cc1->GetVP().pix_height );
-    
     if( !g_bopengl ) {
+        SetSize( cc1->GetVP().pix_width, cc1->GetVP().pix_height );
         event.Skip();
         return;
     }
