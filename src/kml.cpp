@@ -56,7 +56,7 @@ int Kml::ParseCoordinates( TiXmlNode* node, dPointList& points ) {
         wxString msg( _T("KML Parser found no <coordinates> for the element: ") );
         msg << wxString( node->ToElement()->Value(), wxConvUTF8 );
         wxLogMessage( msg );
-        return KML_PASTE_INVALID;
+        return 0;
     }
 
     // Parse "long,lat,z" format.
@@ -81,7 +81,7 @@ int Kml::ParseCoordinates( TiXmlNode* node, dPointList& points ) {
     return points.size();
 }
 
-int Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
+KmlPastebufferType Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
     parsedTrack = new Track();
     parsedTrack->m_RouteNameString = name;
 
@@ -139,7 +139,7 @@ int Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
     return KML_PASTE_INVALID;
 }
 
-int Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name ) {
+KmlPastebufferType Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name ) {
     double newLat = 0., newLon = 0.;
     dPointList coordinates;
 
@@ -197,15 +197,15 @@ int Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name ) {
     return KML_PASTE_WAYPOINT;
 }
 
-int Kml::ParsePasteBuffer() {
-    if( ! wxTheClipboard->Open() ) return false;
+KmlPastebufferType Kml::ParsePasteBuffer() {
+    if( ! wxTheClipboard->Open() ) return KML_PASTE_INVALID;
 
     wxTextDataObject data;
     wxTheClipboard->GetData( data );
     kmlText = data.GetText();
     wxTheClipboard->Close();
 
-    if( kmlText.Find( _T("<kml") ) == wxNOT_FOUND ) return false;
+    if( kmlText.Find( _T("<kml") ) == wxNOT_FOUND ) return KML_PASTE_INVALID;
 
     TiXmlDocument doc;
     if( ! doc.Parse( kmlText.mb_str( wxConvUTF8 ), 0, TIXML_ENCODING_UTF8 ) ) {

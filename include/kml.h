@@ -31,7 +31,7 @@
 
 #define KML_INSERT_EXTRADATA true // For QtVlm Routing.
 
-enum {
+enum KmlPastebufferType {
     KML_PASTE_WAYPOINT,
     KML_PASTE_ROUTE,
     KML_PASTE_TRACK,
@@ -52,7 +52,7 @@ class Kml {
 public:
     Kml();
     ~Kml();
-    int ParsePasteBuffer();
+    KmlPastebufferType ParsePasteBuffer();
     Route* GetParsedRoute() { return parsedRoute; }
     Track* GetParsedTrack() { return parsedTrack; }
     RoutePoint* GetParsedRoutePoint() { return parsedRoutePoint; }
@@ -65,8 +65,8 @@ public:
     static void CopyTrackToClipboard( Track* route );
 
 private:
-    int ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name );
-    int ParseTrack( TiXmlNode* node, wxString& name );
+    KmlPastebufferType ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name );
+    KmlPastebufferType ParseTrack( TiXmlNode* node, wxString& name );
     int ParseCoordinates( TiXmlNode* node, dPointList& points );
     static TiXmlElement* StandardHead( TiXmlDocument& xmlDoc, wxString name );
     static std::string PointPlacemark(  TiXmlElement* document, RoutePoint* routepoint );
