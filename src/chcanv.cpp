@@ -6686,7 +6686,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
 
-    if( g_bopengl && m_glcc ) {
+    if( m_glcc ) {
         m_glcc->OnSize( event );
     }
     //  Invalidate the whole window
@@ -11421,6 +11421,8 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
+    SetSize( cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+    
     if( !g_bopengl ) {
         event.Skip();
         return;
@@ -11513,11 +11515,9 @@ int s_in_glpaint;
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
-
     wxPaintDC dc( this );
 
     if( !GetContext() ) return;
-
     SetCurrent();
 
     Show( g_bopengl );

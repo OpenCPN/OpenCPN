@@ -5251,7 +5251,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                         //    Finally, render the target scale chart
                         if ( !chart_region.IsEmpty() )
-                              m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+                            render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
 
                   }
                   else
