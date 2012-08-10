@@ -1442,26 +1442,32 @@ void WayPointman::ClearRoutePointFonts( void )
     }
 }
 
+bool WayPointman::SharedWptsExist()
+{
+    wxRoutePointListNode *node = m_pWayPointList->GetFirst();
+    while( node ) {
+        RoutePoint *prp = node->GetData();
+        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp->m_bIsInTrack || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
+            return true;
+        node = node->GetNext();
+    }
+    return false;
+}
+
 void WayPointman::DeleteAllWaypoints( bool b_delete_used )
 {
     //    Iterate on the RoutePoint list, deleting all
-
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *prp = node->GetData();
         // if argument is false, then only delete non-route waypoints
         if( !prp->m_bIsInLayer && ( prp->m_IconName != _T("mob") )
-                && ( b_delete_used
+            && ( ( b_delete_used && prp->m_bKeepXRoute )
                         || ( ( !prp->m_bIsInRoute ) && ( !prp->m_bIsInTrack )
                                 && !( prp == pAnchorWatchPoint1 ) && !( prp == pAnchorWatchPoint2 ) ) ) ) {
-            if( prp == pAnchorWatchPoint1 ) pAnchorWatchPoint1 = NULL;
-            else if( prp == pAnchorWatchPoint2 ) pAnchorWatchPoint2 = NULL;
-            pConfig->m_bIsImporting = true;
-            pConfig->DeleteWayPoint( prp );
-            pSelect->DeleteSelectablePoint( prp, SELTYPE_ROUTEPOINT );
+            DestroyWaypoint(prp);
             delete prp;
             node = m_pWayPointList->GetFirst();
-            pConfig->m_bIsImporting = false;
         } else
             node = node->GetNext();
     }
@@ -1511,8 +1517,8 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp )
         // This will leak, although called infrequently....
         //  12/15/10...Seems to occur only on MOB delete....
 
-        if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( pRp );
-//            delete pRp;
+        if( NULL != pWayPointMan )
+            pWayPointMan->m_pWayPointList->DeleteObject( pRp );
 
         //    The RoutePoint might be currently in use as an anchor watch point
         if( pRp == pAnchorWatchPoint1 ) pAnchorWatchPoint1 = NULL;

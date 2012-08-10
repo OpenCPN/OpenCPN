@@ -222,6 +222,7 @@ public:
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
       RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, wxString &guid);
       void SetColorScheme(ColorScheme cs);
+      bool SharedWptsExist();
       void DeleteAllWaypoints(bool b_delete_used);
       RoutePoint *FindRoutePointByGUID(wxString &guid);
       void DestroyWaypoint(RoutePoint *pRp);

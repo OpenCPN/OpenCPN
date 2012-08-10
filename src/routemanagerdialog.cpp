@@ -1863,7 +1863,13 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
     RoutePoint *wp_next = NULL;
     if( item_next > -1 ) wp_next = (RoutePoint *) m_pWptListCtrl->GetItemData( item_next );
 
-    pWayPointMan->DestroyWaypoint( wp );
+    if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
+    {
+        if ( wxYES == wxMessageBox( _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
+            pWayPointMan->DestroyWaypoint( wp );
+    }
+    else
+        pWayPointMan->DestroyWaypoint( wp );
 
     if( pMarkPropDialog ) {
         pMarkPropDialog->SetRoutePoint( NULL );
@@ -1951,12 +1957,27 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
 {
-    OCPNMessageDialog mdlg( this, _("Are you sure you want to delete <ALL> waypoints?"),
-            wxString( _("OpenCPN Alert") ), wxYES_NO );
-    if( mdlg.ShowModal() == wxID_YES ) {
-        pWayPointMan->DeleteAllWaypoints( false );          // only delete unused waypoints
-//          m_pFoundRoutePoint = NULL;
+    wxString prompt;
+    int buttons, type;
+    if ( !pWayPointMan->SharedWptsExist() )
+    {
+        prompt = _("Are you sure you want to delete <ALL> waypoints?");
+        buttons = wxYES_NO;
+        type = 1;
     }
+    else 
+    {
+        prompt = _("There are some waypoints used in routes or anchor alarms. Do you want to delete them as well? This will change the routes and disable the anchor alarms. Answering No keeps the waypoints used in routes or alarms.");
+        buttons = wxYES_NO | wxCANCEL;
+        type = 2;
+    }
+    OCPNMessageDialog mdlg( this, prompt,
+            wxString( _("OpenCPN Alert") ), buttons );
+    int answer = mdlg.ShowModal();
+    if ( answer == wxID_YES )
+        pWayPointMan->DeleteAllWaypoints( true );
+    if ( answer == wxID_NO && type == 2 )
+        pWayPointMan->DeleteAllWaypoints( false );          // only delete unused waypoints
 
     if( pMarkPropDialog ) {
         pMarkPropDialog->SetRoutePoint( NULL );
