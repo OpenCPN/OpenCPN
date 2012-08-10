@@ -679,6 +679,8 @@ public:
     int GetnCharts() {
         return m_PatchList.GetCount();
     }
+    
+    void ComputeRenderRegion( ViewPort &vp, wxRegion &chart_region );
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( wxPoint p );
@@ -2242,6 +2244,54 @@ bool Quilt::Compose( const ViewPort &vp_in )
 }
 
 
+//      Compute and update the member quilt render region, considering all scale factors, group exclusions, etc.
+void Quilt::ComputeRenderRegion( ViewPort &vp, wxRegion &chart_region )
+{
+    if( !m_bcomposed ) return;
+    
+    wxRegion rendered_region;
+    
+    if( GetnCharts() && !m_bbusy ) {
+        
+        wxRegion screen_region = chart_region;
+        
+        //  Walk the quilt, considering each chart from smallest scale to largest
+        
+        ChartBase *chart = GetFirstChart();
+        
+        while( chart ) {
+            bool okToRender = cc1->IsChartLargeEnoughToRender( chart, vp );
+            
+            if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
+                okToRender = false;
+            
+            if( ! okToRender ) {
+                chart = GetNextChart();
+                continue;
+            }
+            QuiltPatch *pqp = GetCurrentPatch();
+            if( pqp->b_Valid  ) {
+                wxRegion get_region = pqp->ActiveRegion;
+                
+                if( !chart_region.IsEmpty() ) {
+                    
+                    get_region.Intersect( chart_region );
+                    
+                    if( !get_region.IsEmpty() ) {
+                        rendered_region.Union(get_region);
+                    }
+                }
+           }
+            
+            chart = GetNextChart();
+        }
+    }    
+    //  Record the region actually rendered
+    m_rendered_region = rendered_region;
+}
+
+
+
 int g_render;
 
 bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region )
@@ -2257,8 +2307,8 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 
     wxRegion rendered_region;
 
-    double scale_onscreen = vp.view_scale_ppm;
-    double max_allowed_scale = 4. * cc1->GetAbsoluteMinScalePpm();
+//    double scale_onscreen = vp.view_scale_ppm;
+//    double max_allowed_scale = 4. * cc1->GetAbsoluteMinScalePpm();
 
     if( GetnCharts() && !m_bbusy ) {
 
@@ -9681,18 +9731,24 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                             cache_dc.SelectObject( m_cached_chart_bm );
 
                             if( dy > 0 ) {
-                                if( dx > 0 ) temp_dc.Blit( 0, 0, VPoint.pix_width - dx,
+                                if( dx > 0 ) {
+                                    temp_dc.Blit( 0, 0, VPoint.pix_width - dx,
                                                                VPoint.pix_height - dy, &cache_dc, dx, dy );
-                                else
+                                }
+                                else {
                                     temp_dc.Blit( -dx, 0, VPoint.pix_width + dx,
                                                   VPoint.pix_height - dy, &cache_dc, 0, dy );
+                                }
 
                             } else {
-                                if( dx > 0 ) temp_dc.Blit( 0, -dy, VPoint.pix_width - dx,
+                                if( dx > 0 ) {
+                                    temp_dc.Blit( 0, -dy, VPoint.pix_width - dx,
                                                                VPoint.pix_height + dy, &cache_dc, dx, 0 );
-                                else
+                                }
+                                else {
                                     temp_dc.Blit( -dx, -dy, VPoint.pix_width + dx,
                                                   VPoint.pix_height + dy, &cache_dc, 0, 0 );
+                                }
                             }
 
                             wxRegion update_region;
@@ -9719,6 +9775,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                             b_save = false;
 
                         }
+                        m_pQuilt->ComputeRenderRegion( svp, chart_get_region );
+                        
                     } else              // not blitable
                     {
                         temp_dc.SelectObject( m_working_bm );
@@ -9775,7 +9833,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     wxRegion chartValidRegion;
     if( !VPoint.b_quilt )
         Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
-    else
+    else 
         chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
     //    Copy current chart region
