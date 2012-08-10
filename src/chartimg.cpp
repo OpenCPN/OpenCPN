@@ -2198,6 +2198,7 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
       delete bmx2;
 #else
       wxImage thumb_image(des_width, des_height, pPixTN, true);
+      thumb_image.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
       retBMP = new wxBitmap(thumb_image);
 #endif
 
