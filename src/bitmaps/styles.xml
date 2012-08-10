@@ -624,7 +624,8 @@
 
 		<icons>
 			<icon name="mob">
-				<icon-location x="140" y="160"/>
+				<icon-location x="620" y="100"/>
+				<size x="21" y="21"/>
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
@@ -1054,7 +1055,8 @@
 
 		<icons>
 			<icon name="mob">
-				<icon-location x="140" y="160"/>
+				<icon-location x="620" y="100"/>
+				<size x="21" y="21"/>
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
