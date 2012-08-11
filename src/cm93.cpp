@@ -5117,15 +5117,13 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
 //      CALLGRIND_START_INSTRUMENTATION
 
-      if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
-      {
-                  ::wxBeginBusyCursor();
-                  m_b_busy_shown = true;
-                  m_last_scale_for_busy = VPoint.view_scale_ppm;
+      if ( m_last_scale_for_busy != VPoint.view_scale_ppm ) {
+        ::wxBeginBusyCursor();
+        m_b_busy_shown = true;
+        m_last_scale_for_busy = VPoint.view_scale_ppm;
       }
 
-      if ( g_bDebugCM93 )
-      {
+      if ( g_bDebugCM93 ) {
             printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c %g\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ), VPoint.view_scale_ppm );
             wxRegionIterator upd ( Region );
             while ( upd )
@@ -5223,7 +5221,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           }
                                     }
 
-                                    m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
+                                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
 
                                     //    Update the remaining empty region
                                     if ( !sscale_region.IsEmpty() )
@@ -5251,7 +5249,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                         //    Finally, render the target scale chart
                         if ( !chart_region.IsEmpty() )
-                            render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+                            render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
 
                   }
                   else
