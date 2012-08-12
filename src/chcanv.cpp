@@ -790,6 +790,7 @@ private:
     bool m_bquilt_has_overlays;
     bool m_btemp_no_fullscreen;
     unsigned long m_xa_hash;
+    int m_zout_dbindex;
 
 };
 
@@ -1239,11 +1240,12 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
         SetReferenceChart( new_ref_dbIndex );
     }
 
+/*    
     if(IsChartSmallestScale(m_refchart_dbIndex)) {
         BuildExtendedChartStack(false, m_refchart_dbIndex, m_vp_quilt);
         m_btemp_no_fullscreen = true;
     }
-
+*/
     int new_db_index = m_refchart_dbIndex;
 
     unsigned int extended_array_count = m_extended_stack_array.GetCount();
@@ -1257,6 +1259,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
             double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
 
             if( proposed_scale_onscreen > max_ref_scale ) {
+                m_zout_dbindex = -1;
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
 
@@ -1278,11 +1281,26 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                     }
                 }
 
+                bool b_ref_set = false;
                 if( proposed_scale_onscreen > max_ref_scale) {          // could not find a useful chart
-                    m_btemp_no_fullscreen = true;
+
+                    //  If cm93 is available, allow a one-time switch of chart family
+                    //  and leave a bread crumb (m_zout_dbindex) to allow selecting this chart
+                    //  and family on subsequent zoomin.
+                    for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
+                        int i = m_extended_stack_array.Item(ir);        // chart index
+    
+                        if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP )  {
+                            target_stack_index = ir;
+                            m_zout_dbindex = m_refchart_dbIndex;  //save for later
+                            SetReferenceChart( i );
+                            b_ref_set = true;
+                            break;
+                        }
+                    }                       
                 }
 
-                if( target_stack_index < extended_array_count ) {
+                if( !b_ref_set && (target_stack_index < extended_array_count) ) {
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
                     if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index ) )
@@ -1296,12 +1314,13 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
 
 int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 {
+/*
     if(m_btemp_no_fullscreen) {
         double max_allowed_scale = m_canvas_scale_factor / cc1->GetAbsoluteMinScalePpm();
         if(proposed_scale_onscreen < 0.10 * max_allowed_scale )
             m_btemp_no_fullscreen = false;
     }
-
+*/
     //    If the reference chart is undefined, we really need to select one now.
     if( m_refchart_dbIndex < 0 ) {
         int new_ref_dbIndex = GetNewRefChart();
@@ -1309,7 +1328,9 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     }
 
     int new_db_index = m_refchart_dbIndex;
-
+    int current_db_index = m_refchart_dbIndex;
+    int current_family = m_reference_family;
+    
     unsigned int extended_array_count = m_extended_stack_array.GetCount();
 
     if( m_refchart_dbIndex >= 0 && ( extended_array_count > 0 ) ) {
@@ -1317,10 +1338,15 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
 
-            if( proposed_scale_onscreen < min_ref_scale ) {
-                int current_db_index = m_refchart_dbIndex;
-                int current_family = m_reference_family;
-
+            //  If the current chart is cm93, and it became so due to a zout from another family,
+            //  detect this case and allow switch to save chart index if the min/max scales comply
+            if( ( pc->GetChartType() == CHART_TYPE_CM93COMP ) && (m_zout_dbindex >= 0) ) {
+                min_ref_scale = proposed_scale_onscreen + 1;  // just to force the test below to pass
+                current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
+            }
+            
+            if( proposed_scale_onscreen < min_ref_scale )  {
+ 
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
 
@@ -1346,9 +1372,22 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
                 if( target_stack_index >= 0 ) {
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
+                    
+                    //  The target chart min/max scales must comply with propsed chart scale on-screen
+                    ChartBase *pcandidate = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+                    double test_max_ref_scale = 1e8;
+                    double test_min_ref_scale = 0;
+                    if(pcandidate) {
+                        test_max_ref_scale = 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
+                        test_min_ref_scale = 0.99 * pcandidate->GetNormalScaleMin( m_canvas_scale_factor, false );
+                    }
+                    
                     if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
-                            && IsChartQuiltableRef( new_db_index ) ) SetReferenceChart(
-                                    new_db_index );
+                            && IsChartQuiltableRef( new_db_index ) 
+                            && (proposed_scale_onscreen >= test_min_ref_scale)
+                            && (proposed_scale_onscreen <= test_max_ref_scale) )
+                            
+                            SetReferenceChart( new_db_index );
                 } else {
                     int new_ref_dbIndex = GetNewRefChart();
                     SetReferenceChart( new_ref_dbIndex );
@@ -2822,6 +2861,13 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
         }
 
         //    Case:  vpBBox is completely inside the chart box
+        //      Note that this test is not perfect, and will fail for some charts.
+        //      The chart coverage may be  essentially triangular, and the viewport box
+        //      may be in the "cut off" segment of the chart_box, and not actually
+        //      exhibit any true overlap.  Results will be reported incorrectly.
+        //      How to fix: maybe scrub the chart points and see if it is likely that
+        //      a region may be safely built and intersection tested.
+        
         if( _IN == chart_box.Intersect( (wxBoundingBox&) vp_positive.vpBBox ) ) {
             return Region;
         }
