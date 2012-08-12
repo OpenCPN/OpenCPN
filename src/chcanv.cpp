@@ -3664,6 +3664,11 @@ bool ChartCanvas::GetQuiltMode( void )
     return VPoint.b_quilt;
 }
 
+int ChartCanvas::GetQuiltReferenceChartIndex(void)
+{
+    return m_pQuilt->GetRefChartdbIndex();
+}
+
 void ChartCanvas::InvalidateAllQuiltPatchs( void )
 {
     m_pQuilt->InvalidateAllQuiltPatchs();
@@ -3732,24 +3737,7 @@ bool ChartCanvas::IsChartQuiltableRef( int db_index )
 bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
 {
     double chartMaxScale = chart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
-    bool okToRender = false;
-
-    if( chartMaxScale == 1.0e7 ) {
-
-        // This is a vector chart. Scale is not so reliable as a descision criteria, we
-        // have to look at extent instead. Try to make a test that works for very narrow
-        // chart shapes too.
-
-        Extent e;
-        chart->GetChartExtent( &e );
-        double coverage = fabs(e.ELON - e.WLON) / fabs(vp.GetBBox().GetMaxX() - vp.GetBBox().GetMinX());
-        coverage += fabs(e.NLAT - e.SLAT) / fabs(vp.GetBBox().GetMaxY() - vp.GetBBox().GetMinY());
-        if( coverage > (1.0/g_ChartNotRenderScaleFactor) ) okToRender = true;
-
-    } else { // Raster chart.
-        okToRender = chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale;
-    }
-    return okToRender;
+    return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
 
 void ChartCanvas::CancelMeasureRoute()
@@ -3762,22 +3750,7 @@ void ChartCanvas::CancelMeasureRoute()
 
 ViewPort &ChartCanvas::GetVP()
 {
-    /*
-     if(m_pQuilt)
-     {
-     if(VPoint.IsValid() && VPoint.b_quilt)
-     {
-     if(m_pQuilt->IsComposed())
-     return m_pQuilt->GetQuiltVP();
-     else
-     return VPoint;
-     }
-     else
-     return VPoint;
-     }
-     else
-
-     */return VPoint;
+    return VPoint;
 }
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )

@@ -204,7 +204,8 @@ public:
       ArrayOfInts GetQuiltIndexArray(void);
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
-
+      int GetQuiltReferenceChartIndex(void);
+      
       int GetNextContextMenuId();
 
       void SetColorScheme(ColorScheme cs);
