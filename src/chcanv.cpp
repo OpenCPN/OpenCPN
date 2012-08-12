@@ -4596,11 +4596,11 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
     if( !VPoint.b_quilt ) {             // not quilted
         pc = Current_Ch;
         double target_scale_ppm = GetVPScale() / zoom_factor;
-        double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
+        double new_scale_ppm = target_scale_ppm; 
         proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
         //  Clamp the minimum scale zoom-out to the value specified by the chart
-        max_allowed_scale = 1.01 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
+        max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
         if( proposed_scale_onscreen > max_allowed_scale ) {
             if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) )
                 b_do_zoom = false;

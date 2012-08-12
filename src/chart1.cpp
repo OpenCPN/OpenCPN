@@ -606,6 +606,8 @@ char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
+int               g_sticky_chart;
+
 extern wxString OpenCPNVersion; //Gunther
 
 double g_GLMinLineWidth;
@@ -2205,6 +2207,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
     m_COGFilterLast = 0.;
+    
+    g_sticky_chart = -1;
 }
 
 MyFrame::~MyFrame()
@@ -4218,8 +4222,12 @@ void MyFrame::ToggleQuiltMode( void )
         bool cur_mode = cc1->GetQuiltMode();
 
         if( !cc1->GetQuiltMode() && g_bQuiltEnable ) cc1->SetQuiltMode( true );
-        else
-            if( cc1->GetQuiltMode() ) cc1->SetQuiltMode( false );
+        else 
+            if( cc1->GetQuiltMode() ) {
+                cc1->SetQuiltMode( false );
+                g_sticky_chart = cc1->GetQuiltReferenceChartIndex();
+            }
+            
 
         if( cur_mode != cc1->GetQuiltMode() ) SetupQuiltMode();
     }
@@ -4335,7 +4343,7 @@ void MyFrame::SetupQuiltMode( void )
 
                 // Build a temporary chart stack based on tLat, tLon
                 ChartStack TempStack;
-                ChartData->BuildChartStack( &TempStack, tLat, tLon );
+                ChartData->BuildChartStack( &TempStack, tLat, tLon, g_sticky_chart );
 
                 //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
                 //    This will (almost?) always be the reference chart....
@@ -5155,8 +5163,10 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             } else {
                 SelectChartFromStack( selected_index );
             }
-        } else
+        } else {
             SelectChartFromStack( selected_index );
+            g_sticky_chart = selected_dbIndex;
+        }
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ) SelectQuiltRefdbChart(
                 selected_dbIndex );
@@ -5730,7 +5740,7 @@ bool MyFrame::DoChartUpdate( void )
     if( NULL == pCurrentStack ) pCurrentStack = new ChartStack;
 
     // Build a chart stack based on tLat, tLon
-    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon ) )       // Bogus Lat, Lon?
+    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) )       // Bogus Lat, Lon?
             {
         if( NULL == pDummyChart ) {
             pDummyChart = new ChartDummy;
@@ -5774,10 +5784,9 @@ bool MyFrame::DoChartUpdate( void )
 
         int tEntry = -1;
         if( NULL != Current_Ch )                                  // this handles startup case
-        tEntry = ChartData->GetStackEntry( pCurrentStack, Current_Ch->GetFullPath() );
+            tEntry = ChartData->GetStackEntry( pCurrentStack, Current_Ch->GetFullPath() );
 
-        if( tEntry != -1 )                // Current_Ch is in the new stack
-                {
+        if( tEntry != -1 ) {                // Current_Ch is in the new stack
             pCurrentStack->CurrentStackEntry = tEntry;
             bNewChart = false;
         }
@@ -5858,13 +5867,18 @@ bool MyFrame::DoChartUpdate( void )
             double set_scale = cc1->GetVPScale();
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
-            if( !cc1->GetVP().IsValid() ) set_scale = 1. / 200000.;
-            else                                    // otherwise, match scale if elected.
-            {
+            if( !cc1->GetVP().IsValid() )
+                set_scale = 1. / 200000.;
+            else {                                    // otherwise, match scale if elected.
                 double proposed_scale_onscreen;
 
-                double new_scale_ppm = Current_Ch->GetNearestPreferredScalePPM( cc1->GetVPScale() );
-                proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
+                if( cc1->m_bFollow ) {          // autoset the scale only if in autofollow
+                    double new_scale_ppm = Current_Ch->GetNearestPreferredScalePPM( cc1->GetVPScale() );
+                    proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
+                }
+                else
+                    proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / set_scale;
+                
 
                 //  This logic will bring a new chart onscreen at roughly twice the true paper scale equivalent.
                 //  Note that first chart opened on application startup (bOpenSpecified = true) will open at the config saved scale
@@ -5877,10 +5891,12 @@ bool MyFrame::DoChartUpdate( void )
                     proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
                 }
 
-                proposed_scale_onscreen =
+                if( cc1->m_bFollow ) {     // bounds-check the scale only if in autofollow
+                    proposed_scale_onscreen =
                         wxMin(proposed_scale_onscreen, Current_Ch->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-                proposed_scale_onscreen =
+                    proposed_scale_onscreen =
                         wxMax(proposed_scale_onscreen, Current_Ch->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                }
 
                 set_scale = cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
             }

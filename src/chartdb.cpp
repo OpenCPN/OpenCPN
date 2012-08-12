@@ -61,6 +61,7 @@ extern bool         g_bopengl;
 extern ChartCanvas  *cc1;
 extern int          g_GroupIndex;
 extern s52plib      *ps52plib;
+extern ChartDatabase *ChartData;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -113,6 +114,102 @@ bool ChartStack::DoesStackContaindbIndex(int db_index)
 
       return false;
 }
+
+
+void ChartStack::AddChart( int db_add )
+{
+    if( !ChartData ) return;
+    
+    if( !ChartData->IsValid() ) return;
+    
+    int db_index = db_add;
+ 
+    int j = nEntry;
+    
+    if(db_index >= 0) {
+         j++;
+        nEntry = j;
+        SetDBIndex(j-1, db_index);
+    }
+             //    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
+            //    These charts can be in the database due to having the exact same chart in different directories,
+            //    as may be desired for some grouping schemes
+            //    Note that if the target name is actually a directory, then windows fails to produce a valid
+            //    file modification time.  Detect GetFileTime() == 0, and skip the test in this case     
+            for(int id = 0 ; id < j-1 ; id++)
+            {
+                if(GetDBIndex(id) != -1)
+                {
+                    ChartTableEntry *pm = ChartData->GetpChartTableEntry(GetDBIndex(id));
+                    
+                    for(int jd = id+1; jd < j; jd++)
+                    {
+                        if(GetDBIndex(jd) != -1)
+                        {
+                            ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
+                            if( pm->GetFileTime() && pn->GetFileTime()) {
+                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
+                                    if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                                        SetDBIndex(jd, -1);           // mark to remove
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            int id = 0;
+            while( (id < j) )
+            {
+                if(GetDBIndex(id) == -1)
+                {
+                    int jd = id+1;
+                    while( jd < j )
+                    {
+                        int db_index = GetDBIndex(jd);
+                        SetDBIndex(jd-1, db_index);
+                        jd++;
+                    }
+                    
+                    j--;
+                    nEntry = j;
+                    
+                    id = 0;
+                }
+                else
+                    id++;
+            }
+            
+            
+            
+            
+            
+            
+            //    Sort the stack on scale
+            int swap = 1;
+            int ti;
+            while(swap == 1)
+            {
+                swap = 0;
+                for(int i=0 ; i<j-1 ; i++)
+                {
+                    const ChartTableEntry &m = ChartData->GetChartTableEntry(GetDBIndex(i));
+                    const ChartTableEntry &n = ChartData->GetChartTableEntry(GetDBIndex(i+1));
+                    
+                    
+                    if(n.GetScale() < m.GetScale())
+                    {
+                        ti = GetDBIndex(i);
+                        SetDBIndex(i, GetDBIndex(i+1));
+                        SetDBIndex(i+1, ti);
+                        swap = 1;
+                    }
+                }
+            }
+            
+    
+}
+
 
 // ============================================================================
 // ChartDB implementation
@@ -291,7 +388,18 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
       return pch;
 }
 
+//      Build a Chart Stack, and add the indicated chart to the stack, even if the chart does not
+//      cover the lat/lon specification
 
+int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add )
+{
+    BuildChartStack(cstk, lat, lon);
+    
+    if (db_add >= 0 )
+        cstk->AddChart( db_add );
+    
+    return cstk->nEntry;
+}
 
 
 int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
