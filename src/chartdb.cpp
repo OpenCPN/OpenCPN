@@ -61,7 +61,7 @@ extern bool         g_bopengl;
 extern ChartCanvas  *cc1;
 extern int          g_GroupIndex;
 extern s52plib      *ps52plib;
-extern ChartDatabase *ChartData;
+extern ChartDB      *ChartData;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
