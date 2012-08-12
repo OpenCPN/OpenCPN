@@ -7824,6 +7824,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
 
             if( pFindTrackSeg ) {
+                m_pSelectedTrack = NULL;
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
                                              SELTYPE_TRACKSEGMENT, SelectRadius );
 
