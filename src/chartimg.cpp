@@ -2115,8 +2115,8 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
 
 //    Calculate the size and divisors
 
-      int divx = Size_X / (4 * tnx);
-      int divy = Size_Y / (4 * tny);
+      int divx = wxMax(1, Size_X / (4 * tnx) );
+      int divy = wxMax(1, Size_Y / (4 * tny) );
 
       int div_factor = __min(divx, divy);
 
