@@ -597,10 +597,11 @@ public:
       void DrawGLOverLayObjects(void);
 
 protected:
-      void RenderQuiltViewGL(ViewPort &vp, wxRegion Region);
+      void RenderQuiltViewGL(ViewPort &vp, wxRegion Region, bool b_clear = true);
       void BuildFBO(void);
       void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
-
+      void ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region );
+      
       int m_cacheinvalid;
       int max_texture_dimension;
 

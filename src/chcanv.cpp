@@ -12305,36 +12305,39 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, w
 
 }
 
-void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
+void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_clear )
 {
     m_gl_rendered_region.Clear();
 
     if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
         //  Walk the region list to determine whether we need a clear before starting
-        wxRegion clear_test_region = Region;
+        if( b_clear ) {
+            wxRegion clear_test_region = Region;
 
-        ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
-        while( chart ) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                chart = cc1->m_pQuilt->GetNextChart();
-                continue;
+            ChartBase *cchart = cc1->m_pQuilt->GetFirstChart();
+            while( cchart ) {
+                if( ! cc1->IsChartLargeEnoughToRender( cchart, vp ) ) {
+                    cchart = cc1->m_pQuilt->GetNextChart();
+                    continue;
+                }
+
+                QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                if( pqp->b_Valid ) {
+                    wxRegion get_region = pqp->ActiveRegion;
+
+                    if( !get_region.IsEmpty() )
+                        clear_test_region.Subtract( get_region );
+                }
+                cchart = cc1->m_pQuilt->GetNextChart();
             }
-
-            QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-            if( pqp->b_Valid ) {
-                wxRegion get_region = pqp->ActiveRegion;
-
-                if( !get_region.IsEmpty() ) clear_test_region.Subtract( get_region );
-            }
-            chart = cc1->m_pQuilt->GetNextChart();
-        }
 
         //  We only need a screen clear if the test region is non-empty
-        if( !clear_test_region.IsEmpty() )
-            glClear( GL_COLOR_BUFFER_BIT );
-
+            if( !clear_test_region.IsEmpty() )
+                glClear( GL_COLOR_BUFFER_BIT );
+        }
+        
         //  Now render the quilt
-        chart = cc1->m_pQuilt->GetFirstChart();
+        ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
 
         while( chart ) {
             if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
@@ -12458,6 +12461,35 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region )
     else if( !cc1->m_pQuilt->GetnCharts() ) {
         glClear(GL_COLOR_BUFFER_BIT);
     }
+}
+
+void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region )
+{
+    m_gl_rendered_region.Clear();
+    
+    if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
+            ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
+            
+            while( chart ) {
+                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+                    chart = cc1->m_pQuilt->GetNextChart();
+                    continue;
+                }
+                
+                QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                if( pqp->b_Valid ) {
+                    wxRegion get_region = pqp->ActiveRegion;
+                    get_region.Intersect( Region );
+                    
+                    //  Todo  If chart is cm93, and it happens not to render, then calculation will be wrong
+                    //  need a "test render" method for cm93
+                        
+                    m_gl_rendered_region.Union(get_region);
+                }
+                
+                chart = cc1->m_pQuilt->GetNextChart();
+            }
+     }
 }
 
 void glChartCanvas::render()
@@ -12702,8 +12734,8 @@ void glChartCanvas::render()
                                                               GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_cache_tex, 0 );
 
                             //      Render the chart(s) in update region
-                            RenderQuiltViewGL( VPoint, update_region );
-                            m_gl_rendered_region.Union( chart_get_region );
+                            RenderQuiltViewGL( VPoint, update_region, false );          // no clear wanted here
+                            ComputeRenderQuiltViewGLRegion( VPoint, chart_get_region );
                             
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
@@ -12712,8 +12744,6 @@ void glChartCanvas::render()
 
                     else              // not blitable
                     {
-//                                    printf("In OnPaint NOT Blittable dx: %d  dy:%d\n\n", dx, dy);
-
                         ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
                         //      Delete the current cached texture
