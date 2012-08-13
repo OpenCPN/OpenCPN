@@ -14561,8 +14561,8 @@ void AISTargetQueryDialog::UpdateText()
             wxFont *dFont = pFontMgr->GetFont( _("AISTargetQuery"), 12 );
             wxString face = dFont->GetFaceName();
             int sizes[7];
-            for( int i=0; i<7; i++ ) {
-                sizes[i] = dFont->GetPointSize() - 2 + i;
+            for( int i=-2; i<5; i++ ) {
+                sizes[i+2] = dFont->GetPointSize() + i + (i>0?i:0);
             }
 
             html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Blue(),
@@ -14577,7 +14577,7 @@ void AISTargetQueryDialog::UpdateText()
             // Try to create a min size that works across font sizes.
             if( ! IsShown() ) {
                 wxSize sz = m_pQueryTextCtl->GetVirtualSize();
-                sz.x = 400;
+                sz.x = 300;
                 m_pQueryTextCtl->SetSize( sz );
                 m_pQueryTextCtl->Layout();
                 sz.x = m_pQueryTextCtl->GetInternalRepresentation()->GetWidth();
