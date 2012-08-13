@@ -7170,9 +7170,12 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 //  Get the latest bitmap as rendered by the ChartCanvas
     
     if(g_bopengl) {
-        unsigned char *buffer = (unsigned char *)malloc( sx * sy * 3 );
-        glReadPixels(0, 0, sx, sy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
-        wxImage image( sx,sy );
+        int gsx = cc1->GetglCanvas()->GetSize().x;
+        int gsy = cc1->GetglCanvas()->GetSize().y;
+        
+        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 3 );
+        glReadPixels(0, 0, gsx, gsy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
+        wxImage image( gsx,gsy );
         image.SetData(buffer);
         wxImage mir_imag = image.Mirror( false );
         wxBitmap bmp( mir_imag );
