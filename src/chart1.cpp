@@ -7167,13 +7167,29 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     dc->SetDeviceOrigin( (long) posX, (long) posY );
 
 //  Get the latest bitmap as rendered by the ChartCanvas
+    
+    if(g_bopengl) {
+        unsigned char *buffer = (unsigned char *)malloc( sx * sy * 3 );
+        glReadPixels(0, 0, sx, sy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
+        wxImage image( sx,sy );
+        image.SetData(buffer);
+        wxImage mir_imag = image.Mirror( false );
+        wxBitmap bmp( mir_imag );
+        wxMemoryDC mdc;
+        mdc.SelectObject( bmp );
+        dc->Blit( 0, 0, bmp.GetWidth(), bmp.GetHeight(), &mdc, 0, 0 );
+        mdc.SelectObject( wxNullBitmap );
+    }
+    else {
+    
 //  And Blit/scale it onto the Printer DC
-    wxMemoryDC mdc;
-    mdc.SelectObject( *( cc1->pscratch_bm ) );
+        wxMemoryDC mdc;
+        mdc.SelectObject( *( cc1->pscratch_bm ) );
 
-    dc->Blit( 0, 0, cc1->pscratch_bm->GetWidth(), cc1->pscratch_bm->GetHeight(), &mdc, 0, 0 );
+        dc->Blit( 0, 0, cc1->pscratch_bm->GetWidth(), cc1->pscratch_bm->GetHeight(), &mdc, 0, 0 );
 
-    mdc.SelectObject( wxNullBitmap );
+        mdc.SelectObject( wxNullBitmap );
+    }
 
 }
 
