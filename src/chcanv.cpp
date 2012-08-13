@@ -3940,12 +3940,19 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleENCText();
             break;
 
+        case 'O':
+            parent_frame->ToggleChartOutlines();
+            break;
+
         case 1:                      // Ctrl A
             parent_frame->TogglebFollow();
             break;
 
-        case 'O':
-            parent_frame->ToggleChartOutlines();
+        case 2:                      // Ctrl B
+            if( stats ) {
+                if( stats->IsShown() ) stats->Hide();
+                else stats->Show();
+            }
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor // Enter // Drop Marker at boat;
@@ -4594,7 +4601,7 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
     if( !VPoint.b_quilt ) {             // not quilted
         pc = Current_Ch;
         double target_scale_ppm = GetVPScale() / zoom_factor;
-        double new_scale_ppm = target_scale_ppm; 
+        double new_scale_ppm = target_scale_ppm;
         proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
         //  Clamp the minimum scale zoom-out to the value specified by the chart
