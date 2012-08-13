@@ -12703,6 +12703,8 @@ void glChartCanvas::render()
 
                             //      Render the chart(s) in update region
                             RenderQuiltViewGL( VPoint, update_region );
+                            m_gl_rendered_region.Union( chart_get_region );
+                            
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
                         }
