@@ -6328,7 +6328,7 @@ wxString FontMgr::GetSimpleNativeFont( int size )
     int h, w, hm, wm;
     ::wxDisplaySize( &w, &h );            // pixels
     ::wxDisplaySizeMM( &wm, &hm );        // MM
-    double pix_per_inch_v = ( h / hm ) * 25.4;
+    double pix_per_inch_v = wxMax( 72.0, ( h / hm ) * 25.4);
     int lfHeight = -(int) ( ( size * ( pix_per_inch_v / 72.0 ) ) + 0.5 );
 
     nativefont.Printf( _T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"), 0, // version, in case we want to change the format later

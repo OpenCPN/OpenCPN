@@ -3026,10 +3026,10 @@ void MyFrame::DoSetSize( void )
         font_size = wxMax(10, font_size);             // beats me...
 #endif
 
-        wxFont* templateFont = pFontMgr->GetFont( _("StatusBar"), 11 );
-        font_size += templateFont->GetPointSize() - 11;
+        wxFont* templateFont = pFontMgr->GetFont( _("StatusBar"), 12 );
+        font_size += templateFont->GetPointSize() - 10;
 
-        font_size = wxMin( font_size, 11 );
+        font_size = wxMin( font_size, 12 );
         font_size = wxMax( font_size, 5 );
 
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
