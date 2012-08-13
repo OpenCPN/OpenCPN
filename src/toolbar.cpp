@@ -914,6 +914,16 @@ bool ocpnToolBarSimple::DoInsertTool( size_t WXUNUSED(pos), wxToolBarToolBase *t
 {
     ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
 
+    // Check if the plugin is inserting same-named tools. Make sure they have different names,
+    // otherwise the style manager cannot differentiate between them.
+    if( tool->isPluginTool ) {
+        for( unsigned int i=0; i<GetToolsCount(); i++ ) {
+            if( tool->GetToolname() == ((ocpnToolBarTool *)m_tools.Item(i)->GetData())->GetToolname()) {
+                tool->toolname << _T("1");
+            }
+        }
+    }
+
     tool->m_x = m_xPos;
     if( tool->m_x == wxDefaultCoord ) tool->m_x = m_style->GetLeftMargin();
 
@@ -1400,7 +1410,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
         if ( tool->isPluginTool ) {
 
             // First try getting the icon from the Style.
-            // If it is not in the style we build a new icon fro the style BG and the plugin icon.
+            // If it is not in the style we build a new icon from the style BG and the plugin icon.
 
             if( tool->IsToggled() ) {
                 bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );

@@ -470,6 +470,18 @@
 				<offset x="0" y="0"/>
 				<compass-corners  radius="3"/>
 			</compass>
+			<tool name="GoogleEarth">
+				<icon-location x="180" y="60"/>
+				<rollover-location x="180" y="260"/>
+			</tool>
+			<tool name="VDR">
+				<icon-location x="220" y="60"/>
+				<rollover-location x="220" y="260"/>
+			</tool>
+			<tool name="VDR1">
+				<icon-location x="260" y="60"/>
+				<rollover-location x="260" y="260"/>
+			</tool>
 			<tool name="Display">
 				<icon-location x="20" y="370"/>
                 <size x="40" y="40"/>
@@ -697,6 +709,7 @@
 			</icon>
 			<icon name="pencil">
 				<icon-location x="380" y="100"/>
+				<size x="16" y="16"/>
 			</icon>
 			<icon name="up">
 				<icon-location x="420" y="100"/>
@@ -931,6 +944,14 @@
 				<offset x="0" y="0"/>
 				<compass-corners  radius="3"/>
 			</compass>
+			<tool name="VDR">
+				<icon-location x="220" y="60"/>
+				<rollover-location x="220" y="260"/>
+			</tool>
+			<tool name="VDR1">
+				<icon-location x="260" y="60"/>
+				<rollover-location x="260" y="260"/>
+			</tool>
 			<tool name="Dashboard">
 				<icon-location x="658" y="20"/>
 				<rollover-location x="658" y="220"/>
@@ -1128,6 +1149,7 @@
 			</icon>
 			<icon name="pencil">
 				<icon-location x="380" y="100"/>
+				<size x="16" y="16"/>
 			</icon>
 			<icon name="up">
 				<icon-location x="420" y="100"/>
