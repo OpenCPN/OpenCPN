@@ -12371,8 +12371,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
                         if( !b_rendered ) {
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                                get_region.Offset( cc1->VPoint.rv_rect.x, cc1->VPoint.rv_rect.y );
-                                b_rendered = chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, get_region );
+                                wxRegion rr = get_region;
+                                rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
+                                b_rendered = chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, rr );
                             }
                         }
                     }
@@ -12508,7 +12509,10 @@ void glChartCanvas::render()
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
-
+    ViewPort svp = VPoint;
+    svp.pix_width = svp.rv_rect.width;
+    svp.pix_height = svp.rv_rect.height;
+    
     wxRegion ru = GetUpdateRegion();
 
     //  Is this viewpoint the same as the previously painted one?
@@ -12819,7 +12823,7 @@ void glChartCanvas::render()
 
         }         // useFBO
         else {
-            RenderQuiltViewGL( VPoint, chart_get_region );
+            RenderQuiltViewGL( svp, chart_get_region );
         }
 
     }         // quilted
@@ -12854,9 +12858,6 @@ void glChartCanvas::render()
 //    Render the WorldChart
 
     wxRegion chartValidRegion;
-    ViewPort svp = VPoint;
-    svp.pix_width = svp.rv_rect.width;
-    svp.pix_height = svp.rv_rect.height;
 
     if(!VPoint.b_quilt)
         Current_Ch->GetValidCanvasRegion ( svp, &chartValidRegion );
