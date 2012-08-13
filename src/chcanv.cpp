@@ -37,8 +37,6 @@
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
 
-#include <wx/wxhtml.h>
-
 #include "dychart.h"
 
 #include <wx/listimpl.cpp>
@@ -14447,7 +14445,6 @@ void AISTargetQueryDialog::OnIdOKClick( wxCommandEvent& event )
 bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
                                    const wxPoint& pos, const wxSize& size, long style )
 {
-
     //    As a display optimization....
     //    if current color scheme is other than DAY,
     //    Then create the dialog ..WITHOUT.. borders and title bar.
@@ -14475,10 +14472,6 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
     SetColorScheme( global_color_scheme );
 
-// This fits the dialog to the minimum size dictated by
-// the sizers
-    GetSizer()->Fit( this );
-
 // This ensures that the dialog cannot be sized smaller
 // than the minimum size
     GetSizer()->SetSizeHints( this );
@@ -14496,77 +14489,63 @@ void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
 
 void AISTargetQueryDialog::CreateControls()
 {
-
-// A top-level sizer
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( topSizer );
 
-// A second box sizer to give more space around the controls
-    m_pboxSizer = new wxBoxSizer( wxVERTICAL );
-    topSizer->Add( m_pboxSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 0 );
+    m_pQueryTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                wxHW_SCROLLBAR_AUTO );
+    m_pQueryTextCtl->SetBorders( 5 );
 
-// Here is the query result
-    m_pQueryTextCtl = new AISInfoWin( this );
-    m_pQueryTextCtl->SetHPad( 8 );
-    m_pQueryTextCtl->SetVPad( 2 );
+    topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
-    //     wxColour back_color =GetGlobalColor ( _T ( "UIBCK" ) );
-    //     m_pQueryTextCtl->SetBackgroundColour ( back_color );
-
-    //    wxColour text_color = GetGlobalColor ( _T ( "UINFF" ) );          // or UINFD
-    //     m_pQueryTextCtl->SetForegroundColour ( text_color );
-
-    m_pboxSizer->Add( m_pQueryTextCtl, 0, wxALIGN_LEFT | wxALL, 0 );
-
-// A horizontal box sizer to contain Reset, OK, Cancel and Help
-    wxBoxSizer* okCancelBox = new wxBoxSizer( wxHORIZONTAL );
-    topSizer->Add( okCancelBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
-
-//    Button color
-//      wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );;
-
-// The OK button
-
-    m_okButton = new wxButton( this, xID_OK, _("Ok"), wxDefaultPosition, wxDefaultSize, 0 );
-
-    okCancelBox->Add( m_okButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-//      m_okButton->SetBackgroundColour ( button_color );
-//      m_okButton->SetForegroundColour ( text_color );
-
+    wxSizer* ok = CreateButtonSizer( wxOK );
+    topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
 void AISTargetQueryDialog::UpdateText()
 {
-    wxString query_text;
-    int n_nl;
+    wxString html;
 
-    if( m_pQueryTextCtl ) m_pQueryTextCtl->Clear();
+    if( !m_pQueryTextCtl ) return;
 
-    if( m_MMSI != 0 )                        //  Faulty MMSI could be reported as 0
-    {
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    m_pQueryTextCtl->SetBackgroundColour( bg );
+
+    if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            query_text = td->BuildQueryResult();
+            wxFont *dFont = pFontMgr->GetFont( _("AISTargetQuery"), 12 );
+            wxString face = dFont->GetFaceName();
+            int sizes[7];
+            for( int i=0; i<7; i++ ) {
+                sizes[i] = dFont->GetPointSize() - 2 + i;
+            }
 
-            if( m_pQueryTextCtl ) {
-                m_pQueryTextCtl->AppendText( query_text );
-                m_pQueryTextCtl->SetInsertionPoint( 0 );
+            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Blue(),
+                            bg.Green() );
 
-                wxSize osize = m_pQueryTextCtl->GetOptimumSize( &n_nl );
+            html << td->BuildQueryResult();
+            html << _T("</center></font></body></html>");
 
-                m_pQueryTextCtl->SetSize( osize );
-                m_pboxSizer->SetMinSize( osize );
-                m_pboxSizer->FitInside( m_pQueryTextCtl );
+            m_pQueryTextCtl->SetFonts( face, face, sizes );
+            m_pQueryTextCtl->SetPage( html );
 
-                //    Grow/Shrink "this" to fit the contents
-                if( n_nl != m_nl ) {
-                    m_nl = n_nl;
-                    Fit();
-                }
+            // Try to create a min size that works across font sizes.
+            if( ! IsShown() ) {
+                wxSize sz = m_pQueryTextCtl->GetVirtualSize();
+                sz.x = 400;
+                m_pQueryTextCtl->SetSize( sz );
+                m_pQueryTextCtl->Layout();
+                sz.x = m_pQueryTextCtl->GetInternalRepresentation()->GetWidth();
+                sz.y = 100 + m_pQueryTextCtl->GetInternalRepresentation()->GetHeight();
+                SetMinSize( sz );
+                Fit();
             }
         }
     }
 }
+
 void AISTargetQueryDialog::OnMove( wxMoveEvent& event )
 {
     //    Record the dialog position
@@ -14584,7 +14563,14 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
         int pos_x = g_ais_query_dialog_x;
         int pos_y = g_ais_query_dialog_y;
 
-        g_pais_query_dialog_active = new AISTargetQueryDialog();
+        if( g_pais_query_dialog_active ) {
+            delete g_pais_query_dialog_active;
+            g_pais_query_dialog_active = new AISTargetQueryDialog();
+        }
+        else {
+            g_pais_query_dialog_active = new AISTargetQueryDialog();
+        }
+
         g_pais_query_dialog_active->Create( win, -1, _( "AIS Target Query" ),
                                             wxPoint( pos_x, pos_y ) );
 
@@ -15730,7 +15716,6 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
 void S57QueryDialog::CreateControls()
 {
-// A top-level sizer
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( topSizer );
 

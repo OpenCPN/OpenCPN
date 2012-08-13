@@ -39,6 +39,7 @@
 #include "wx/dirctrl.h"
 #include <wx/sound.h>
 #include <wx/grid.h>
+#include <wx/wxhtml.h>
 
 #include <wx/glcanvas.h>
 
@@ -798,7 +799,7 @@ public:
 
       //    Data
       int               m_MMSI;
-      AISInfoWin        *m_pQueryTextCtl;
+      wxHtmlWindow     *m_pQueryTextCtl;
       ColorScheme       m_colorscheme;
       wxBoxSizer        *m_pboxSizer;
       int               m_nl;

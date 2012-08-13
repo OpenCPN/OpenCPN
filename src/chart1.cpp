@@ -1080,8 +1080,9 @@ bool MyApp::OnInit()
 //      Init the Selectable AIS Target List
     pSelectAIS = new Select();
 
-//      Initially AIS display is always on       // pjotrc 2010.02.09
-    g_bShowAIS = true;                       // pjotrc 2010.02.09
+//      Initially AIS display is always on
+    g_bShowAIS = true;
+    g_pais_query_dialog_active = NULL;
 
 //      Who am I?
     phost_name = new wxString( ::wxGetHostName() );
