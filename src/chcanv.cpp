@@ -4583,15 +4583,12 @@ bool ChartCanvas::DoZoomCanvasIn( double factor )
     return true;
 }
 
-bool ChartCanvas::DoZoomCanvasOut( double factor )
+bool ChartCanvas::DoZoomCanvasOut( double zoom_factor )
 {
     if( m_bzooming ) return false;
     m_bzooming = true;
 
     bool b_do_zoom = true;
-
-    double zoom_factor = factor;
-    double max_allowed_scale = 1e8;
 
     double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
     ChartBase *pc = NULL;
@@ -4604,16 +4601,22 @@ bool ChartCanvas::DoZoomCanvasOut( double factor )
         double new_scale_ppm = target_scale_ppm;
         proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
-        //  Clamp the minimum scale zoom-out to the value specified by the chart
-        max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
-        if( proposed_scale_onscreen > max_allowed_scale ) {
-            if( max_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) )
-                b_do_zoom = false;
-            else
-                proposed_scale_onscreen = max_allowed_scale;
+        //      If Current_Ch is not on the screen, unbound the zoomout
+        LLBBox viewbox = VPoint.GetBBox();
+        wxBoundingBox chart_box;
+        int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
+        ChartData->GetDBBoundingBox( current_index, &chart_box );
+        if( ( viewbox.Intersect( chart_box ) == _OUT ) ) {
+            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                            GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
         }
-
-    } else {
+        else {
+        //  Clamp the minimum scale zoom-out to the value specified by the chart
+            double max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
+            proposed_scale_onscreen = wxMin( proposed_scale_onscreen, max_allowed_scale );
+        }
+        
+     } else {
         int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
         if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
